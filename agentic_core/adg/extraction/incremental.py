@@ -163,7 +163,7 @@ def compute_affected_modules(
 
 def _extract_module_path(adg_name: str) -> str:
     if adg_name.startswith(_MODULE_PREFIX):
-        return adg_name[len(_MODULE_PREFIX):]
+        return adg_name[len(_MODULE_PREFIX) :]
     return adg_name
 
 
@@ -296,11 +296,11 @@ def incremental_scan(
     cache.save(cache_path)
 
     # Step 7: run the full scanner — it will use cache for untouched files
-    scanner = ADGStaticScanner(repo_root=repo_root)
-    result = scanner.scan(commit_sha="", cache_path=cache_path)
+    scanner = ADGStaticScanner(repo_root=repo_root, cache_path=cache_path)
+    result = scanner.scan(commit_sha="")
 
     stats.total_modules = len(result.modules)
-    stats.cache_hits = getattr(result, "_cache_hits", 0)
+    stats.cache_hits = getattr(getattr(result, "manifest", None), "cache_hits", 0) or 0
     stats.rescanned = stats.total_modules - stats.cache_hits
     stats.edges_total = len(result.edges)
     stats.edges_added = stats.edges_total  # net total after merge

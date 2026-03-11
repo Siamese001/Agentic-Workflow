@@ -66,6 +66,8 @@ _FILE_GRAPH_RELS: frozenset[str] = frozenset(
         "covers",
         "in_cycle",
         "dead_imports",
+        "exports",  # module re-export edges (structural, module-level)
+        "influences",  # static influence edges between modules
     }
 )
 

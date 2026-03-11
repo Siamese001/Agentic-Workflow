@@ -115,9 +115,13 @@ def load_snapshot(path: Path) -> CanonicalSnapshot:
 def load_latest_snapshot(artifacts_dir: Path) -> CanonicalSnapshot | None:
     """Load the most recent canonical snapshot from artifacts_dir, or None.
 
-    Looks for files matching 'adg_snapshot_*.json' sorted by name (timestamp).
+    Looks for files matching 'adg_graphsnap_*.json' (preferred, avoids
+    collision with the Tier-1 CI snapshot) or the legacy 'adg_snapshot_*.json'
+    pattern, sorted by name (timestamp suffix).
     """
-    candidates = sorted(artifacts_dir.glob("adg_snapshot_*.json"))
+    candidates = sorted(artifacts_dir.glob("adg_graphsnap_*.json"))
+    if not candidates:
+        candidates = sorted(artifacts_dir.glob("adg_snapshot_*.json"))
     if not candidates:
         return None
     return load_snapshot(candidates[-1])

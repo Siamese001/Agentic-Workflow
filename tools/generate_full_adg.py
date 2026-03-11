@@ -81,7 +81,7 @@ def generate_full_adg(adg_artifacts_dir: Path, ts: str) -> None:
         graph_diff = None
         print("[ADG] E7 diff: no previous snapshot found (first run)")
 
-    snap_path = adg_artifacts_dir / f"adg_snapshot_{ts}.json"
+    snap_path = adg_artifacts_dir / f"adg_graphsnap_{ts}.json"
     save_snapshot(snapshot, snap_path)
     print(f"[ADG] E7 snapshot saved: {snap_path.name}")
 

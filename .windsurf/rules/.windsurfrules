@@ -4,10 +4,10 @@ trigger: always_on
 # Agentic Workflow — Sovereign Architecture Rules
 
 > ⛔ **CONSTITUTIONAL FLOOR — READ FIRST**
-> 1. **ADG IS MANDATORY. NO FALLBACK.** If AST graph cannot be built → STOP. Never fall back to grep/search/heuristics. Skill: `dependency-graph-analysis`. Fail-closed rule: §3.6.
-> 2. **No PowerShell.** All commands via `subprocess.run(argv, shell=False)`. §2.
-> 3. **No test skipping.** No `pytest.mark.skip`, no `xfail` without `strict=True`, no weakening assertions. §1.12.
-> 4. **No editing while exploring.** All five repair gates (§6.1) must pass before any edit.
+> 1. **ADG IS MANDATORY. NO FALLBACK.** If AST graph cannot be built → STOP. Never fall back to grep/search/heuristics. Skill: `dependency-graph-analysis`. Fail-closed rule: §2.6.
+> 2. **No PowerShell.** All commands via `subprocess.run(argv, shell=False)`. §3.2.
+> 3. **No test skipping.** No `pytest.mark.skip`, no `xfail` without `strict=True`, no weakening assertions. §1.4.
+> 4. **No editing while exploring.** All five repair gates (§8.1) must pass before any edit.
 > 5. **CI enforces all of this.** `python ops_scripts/ci/run_contract_gates.py`
 
 ---
@@ -25,13 +25,11 @@ For ANY code investigation, analysis, or modification task, Windsurf MUST:
 
 **AUTOMATIC TRIGGERS** — apply §0 when user mentions: files, functions, classes, modules, imports, dependencies, "what uses this", "blast radius", "impact of", refactor, analyze, debug, trace, test coverage, dead code, duplicates, boundaries.
 
-**ADG SCHEMA FREEZE:** On first ADG access, freeze the confirmed field name mapping. Reuse it for ALL subsequent accesses in the same run. Re-probing after freeze = violation. Schema inconsistency mid-run = HARD FAIL.
-
 **FORBIDDEN:**
 - ❌ Starting with grep/ripgrep/filename search/text pattern matching
 - ❌ Assuming relationships without graph proof
 - ❌ Claiming "no dependencies" without graph analysis
-- ❌ Silent fallback from AST failure to text search (§3.6)
+- ❌ Silent fallback from AST failure to text search (§2.6)
 
 **REQUIRED:**
 - ✅ Build AST dependency graph first — imports, calls, inheritance, registry, test edges
@@ -40,386 +38,114 @@ For ANY code investigation, analysis, or modification task, Windsurf MUST:
 
 ---
 
-## §1. TESTING & EVIDENCE
+## §1. TESTING FRAMEWORK
 
 **ENFORCEMENT:** Skill `test-rigor-enforcement` for ALL code generation.
 
-### 1.1 Zero-tolerance: every changed line of logic MUST have deterministic tests
+### 1.1 Coverage Requirements
 
-Use dependency graph to find existing coverage edges and identify gaps. No exceptions.
+**Zero-tolerance coverage:** Every changed line of logic MUST have deterministic tests. Use dependency graph to find existing coverage edges and identify gaps. No exceptions.
 
-### 1.2 Test-first discipline
-
-Tests MUST exist before logic changes are committed. Write them first.
-
-### 1.3 Deterministic tests only
-
-No random inputs, no time-dependent behavior, no external mutable state. Fix seeds and inject timestamps.
-
-### 1.4 No mocks for integration seams
-
-Mocks ONLY for: external services that cannot run locally, hardware interfaces, filesystem permissions in CI. Mocks MUST NOT bypass validation, signature checks, routing gates, replay enforcement, or side-effect guards.
-
-### 1.5–1.9 Required test coverage (mandatory for every changed surface)
-
+**Required test dimensions (mandatory for every changed surface):**
 - **Edge cases:** null/None/missing field, empty input, malformed structure, boundary values, unauthorized input, stale/replay state, dependency failure, negative and recovery paths
 - **State transitions:** valid→valid, invalid→attempted, repeated, interrupted, replayed
 - **Determinism:** identical input → identical output; replay independence from wall clock, randomness, execution order
 - **Fail-closed:** invalid preconditions block operation; no side-effects before block
 - **Matrix:** test all interacting gates (feature flag × input validity, retry × confidence, policy × mutation, etc.)
 
-### 1.10 Ingress-path rule
+**Regression testing:** Every bug fix MUST include a minimal reproducer and an adjacent near-miss case. Mutation-sensitive tests MUST fail if guard clauses are removed or comparisons flip.
 
-Tests MUST target the real entrypoint or enforcement choke point. Test doubles MUST NOT bypass validation, routing gates, replay enforcement, or side-effect guards.
+### 1.2 Quality Standards
 
-### 1.11 Regression tests
+**Test-first discipline:** Tests MUST exist before logic changes are committed. Write them first.
 
-Every bug fix MUST include a minimal reproducer and an adjacent near-miss case. Mutation-sensitive tests MUST fail if guard clauses are removed or comparisons flip.
+**Deterministic tests only:** No random inputs, no time-dependent behavior, no external mutable state. Fix seeds and inject timestamps.
 
-### 1.12 Zero-tolerance for test skipping and xfail drift
+**Mock discipline:** Mocks ONLY for: external services that cannot run locally, hardware interfaces, filesystem permissions in CI. Mocks MUST NOT bypass validation, signature checks, routing gates, replay enforcement, or side-effect guards.
 
-- Run ALL collected tests — no selective skipping
-- Collected ≠ executed = CRITICAL FAILURE
-- `xfail` without `strict=True` = FORBIDDEN
-- Adding `pytest.mark.skip`, `pytest.mark.xfail`, or commenting out assertions to unblock a phase = CONSTITUTIONAL VIOLATION
-- Pre-existing skips MUST be in the skip registry (§17) BEFORE the run begins
+**Ingress-path rule:** Tests MUST target the real entrypoint or enforcement choke point. Test doubles MUST NOT bypass validation, routing gates, replay enforcement, or side-effect guards.
 
----
-
-## §2. EVIDENCE CONTRACT
-
-Each phase produces exactly one evidence file under `docs/reports/plans/`.
-
-**Commands executed via:** `subprocess.run(argv, shell=False, encoding="utf-8", errors="replace")`
-**PowerShell invocation is FORBIDDEN.**
-**File-based Python scripts REQUIRED for complex analysis** — write to `ops_scripts/ci/` or `tools/evidence/`, then execute via subprocess. Never inline Python via PowerShell.
-
-Evidence files MUST be ASCII-only with ANSI escape sequences stripped.
-
-### 2.1 Required evidence sections (in order)
-
-1. `# <Phase Title>`
-2. `## Scope` — with graph justification
-3. `## INSPECTED_FILES`
-4. `## FACT_CLASSIFICATION` — three tiers: DIRECTLY OBSERVED / DERIVED / UNRESOLVED
-5. Command output sections
-6. `## DEPENDENCY_GRAPH` — roots, impacted nodes, upstream set, downstream set, edge classes, boundary/cycle findings, reason each changed file is in scope
-7. `## BRANCH_INVENTORY`
-8. `## ROBUSTNESS_MATRIX` — success/edge/failure/recovery/determinism/side-effect tests per changed surface
-9. `## DEFECT_MODEL`
-
-**Conditional sections** (add when applicable):
-- `## TIMEOUT_RECOVERY` — when timeout occurs (§9)
-- `## TEST_QUALITY_AUDIT` — when test quality enforcement runs (§11)
-- `## SKIP_DRIFT_AUDIT` — when skip drift enforcement runs (§12)
-- `## TEST_COUNT_AUDIT` — when test count invariant enforcement runs (§13)
-- `## CLUSTER_ANALYSIS` — for every repair (§14)
-- `## FAILURE_CAPTURE` — before any repair edit (§14.6)
-- `## PROOF_ARTIFACT_TRUTHFULNESS` — when ADG proof artifact referenced (§15)
-- `## SKIP_CONVERGENCE_GATE` — for every convergence claim (§17)
-- `## POLICY_DRIFT` — when policy regression classified (§18)
-- `## CONTRACT_CONFLICT` — when contract conflict identified (§19)
-- `## ENVIRONMENT_CONTRACT` — when environment dependency involved (§20)
-
-### 2.2 Three-tier fact classification (REQUIRED in all evidence)
-
-| Tier | Label | Meaning |
-|---|---|---|
-| 1 | `DIRECTLY OBSERVED` | Read directly from raw artifact/command stdout — no inference |
-| 2 | `DERIVED` | Computed from secondary command — source command MUST be named |
-| 3 | `UNRESOLVED` | Not yet proven — MUST be listed explicitly, never omitted |
-
-A phase MUST NOT be declared complete while `Unresolved` is non-empty, unless each item is deferred to a named future phase.
-
-### 2.3 Forbidden evidence patterns
-
-- ❌ DERIVED fact without naming the deriving command
-- ❌ Omitting UNRESOLVED facts — silence is not proof of absence
-- ❌ Upgrading DERIVED to DIRECTLY OBSERVED without re-running primary source
-- ❌ Claiming phase complete while UNRESOLVED items remain
-
-### 2.4 Mandatory artifact links
-
-Every artifact reference in a response MUST use backtick citation format: `` `@<absolute_path>` ``. Plain text paths = CONSTITUTIONAL VIOLATION.
-
----
-
-## §3. SCOPE & DETERMINISM
-
-### 3.1 Scope declaration
-
-Before declaring scope: build dependency graph, identify upstream/downstream, identify required test files via graph edges. Record baseline via `git diff --name-only`. Each file in scope MUST have graph justification.
-
-**Four-tier scope record** (required in evidence):
-- `Root target` — exact ADG node
-- `Direct ADG-derived tests` — exact nodeids from ADG output
-- `Widened dependency surface` — additional files with ring depth
-- `Selected execution scope` — final nodeids run
-- `Widening justification` — explicit reason per widened item; "general coverage" FORBIDDEN
-
-### 3.2 Scope contamination
-
-If unrelated files appear: record them → check graph justification → if none, scope contamination → reset to baseline → restore declared files → verify diff and graph justification.
-
-### 3.3 Deterministic analysis
-
-AST detailed parsing by default. Regex/grep for structural logic = FORBIDDEN unless user explicitly states. Repository paths MUST be canonicalized.
-
-### 3.4 AST dependency graph is mandatory
-
-Required for: root cause analysis, impact analysis, file selection, duplicate detection, dead code, boundary validation, layer inversion, test selection, healing scope, refactor planning, execution path analysis, registry/wiring validation.
-
-Graph MUST model: module imports, symbol imports, class inheritance, protocol/mixin realization, function/method calls, decorator attachment, registry lookup/registration, factory/provider resolution, config consumption, CLI entrypoint→function, test→production coverage.
-
-### 3.5 No low-signal search as primary evidence
-
-Forbidden as primary: grep, rg/ripgrep, regex-only sweeps, filename guesses, substring hunts. These MAY only be used AFTER the AST graph has identified a bounded candidate set, for literal string confirmation only.
-
-Text search MUST NEVER be used to define blast radius, infer architecture, ownership, call flow, dependency direction, dead code, test coverage, or file authority.
-
-### 3.6 Fail-closed graph discipline ← **THE HARD RULE**
-
-If AST parsing or graph construction fails:
-1. Record exact parse/graph errors
-2. Identify blocked files
-3. Mark conclusions as partial
-4. Stop — do NOT claim confidence
-5. **Do NOT fall back to grep, regex, or heuristic search**
-
-**Silent fallback from AST graph to text search = HARD FAIL.**
-
-### 3.7 Dependency graph evidence contract
-
-Every meaningful code change MUST include `## DEPENDENCY_GRAPH` section with: graph roots, impacted nodes, upstream set, downstream set, edge classes, boundary/cycle findings, exact reason each changed file is in scope. Changed file without graph justification = scope contamination.
-
----
-
-## §4. ARCHITECTURE LOCKS
-
-### 4.1–4.2 Canonical semantics and SSOT
-
-L0–L6 semantics MUST match repository SSOT (`structure_blueprint.py`). Agent registry SSOT: `agent_discovery_full.json`. Conflicting SSOT sources = execution BLOCKED.
-
-### 4.3 Boundary enforcement
-
-Layer inversion detection MUST be AST-based. Cycles = HARD FAIL. Duplicate mixins forbidden. Cross-layer mutation violating sovereignty = HARD FAIL. Path shape alone is insufficient evidence.
-
-### 4.4 Dependency graph before edit
-
-Before any edit: determine directly affected nodes, first-order upstream/downstream, required tests, layer boundary crossings, registry/factory/provider edge changes. No edit plan without graph-backed impact analysis.
-
-### 4.5 Tooling/runtime boundary
-
-`tools/evidence/` and `ops_scripts/ci/` MUST NOT import `apps_*`.
-
-### 4.6–4.7 Agent discipline
-
-Agents invoked via canonical Python functions only. One canonical agent class per file. Semantic duplicate agents forbidden.
-
----
-
-## §5. CI & CONTRACT GATES
-
-### 5.1 Single entrypoint
-
-`python ops_scripts/ci/run_contract_gates.py`
-
-### 5.2 Graph-backed test selection
-
-Test selection MUST be dependency-graph-backed. For every changed production file, identify tests via: direct test imports, fixture dependency edges, integration entrypoint coverage, registry/factory reachability, CLI-to-function reachability. Filename similarity is not sufficient. No test edge found = coverage gap to fix, not proof no tests are needed.
-
-### 5.2.1 NodeID-first testing discipline
-
-When ADG provides exact test nodeids → run those nodeids first. File-level fallback ONLY when nodeid extraction fails. Directory-level ONLY in final full-suite run. Any fallback MUST be recorded as `## SCOPE_LOSSINESS` in evidence.
-
----
-
-## §6. EXECUTION MODALITY
-
-Execution occurs strictly by defined phase. Each phase produces one evidence file. Scope expansion → STOP and produce plan artifact.
-
-### 6.1 Repair gate — no editing while exploring
-
-**Editing is FORBIDDEN until ALL five gates pass:**
-
-| Gate | Requirement |
-|---|---|
-| G1 | Failure capture exists for every failing test (§14.6) |
-| G2 | Root cause clusters exist (`adg_failure_clusters.json` is fresh) |
-| G3 | Each proposed repair maps to one or more exact failing nodeids |
-| G4 | Repair class declared (§14.8) |
-| G5 | No UNRESOLVED facts in phase evidence for targeted cluster |
-
-Mixing exploration and repair in the same step = HARD FAIL.
-
-### 6.2 Stabilize before refactor
-
-Structural refactors FORBIDDEN while: active scoped failures > 0, UNRESOLVED facts exist, registered skips have expired/missing resolution plans, full-suite not green.
-
-**Priority order:** Correctness → Determinism → Governance integrity → Reproducible green scoped runs → Structural refactors.
-
----
-
-## §7. ACCEPTANCE DISCIPLINE
-
-Acceptance criteria MUST be deterministic, command-exact, exit-code-exact, count-exact. Forbidden language: "should", "expected to", "approximately", "equivalent". Criteria immutable once phase begins.
-
-### 7.1 Forbidden overclaiming vocabulary
-
-| Forbidden claim | Required condition |
-|---|---|
-| "tests are present" | Raw ADG entity count `tests > 0` |
-| "fixtures are present" | Raw ADG entity count `fixtures > 0` |
-| "convergence achieved" | All five §7.2 conditions met |
-| "repair complete" | All six §7.3 conditions met |
-| "repo is healthy" | Post-repair full-suite green (zero fails, errors, unexpected skips) |
-| "no dependencies" | ADG explicitly returned empty edge set |
-| "directly observed" | Fact read directly from raw artifact — no inference |
-
-Using these phrases without the listed condition = CONSTITUTIONAL VIOLATION.
-
-### 7.2 Convergence declaration (scoped claim only)
-
-ALL five conditions must hold simultaneously:
-1. Active scoped failures = 0
-2. Unregistered skips = 0
-3. No expired registry entries
-4. `FACT_CLASSIFICATION.Unresolved` is empty
-5. Scope lossiness documented (if file-level fallback used)
-
-### 7.3 Repair run completion (six conditions)
-
-1. All §7.2 scoped convergence conditions met
-2. Every ADG-reachable dependent of repaired surface executed and passed
-3. Full pytest suite green — zero failures, errors, unexpected skips
-4. Full-suite run timestamp LATER THAN last repair commit timestamp
-5. No new failures introduced (count ≤ pre-repair baseline)
-6. Final summary artifact in `docs/reports/plans/` with empty `Unresolved`
-
----
-
-## §8. ARTIFACT LOCATION
-
-All plans, evidence, and reports MUST reside in: `docs/reports/plans/`
-
-All Python file I/O MUST use `encoding="utf-8"`. Evidence files are raw execution captures, ASCII-only.
-
----
-
-## §9. QUERY TIMEOUT & PROGRESS REPORTING
-
-All queries, searches, and long-running operations MUST have explicit timeout parameters and fail-closed behavior on timeout.
-
-**Timeout ranges:** Fast (grep, file reads, simple AST): 5–30s | Medium (graph construction, test collection): 30–120s | Heavy (full repo analysis): 120–600s | External API: 10–60s.
-
-Operations >5s MUST provide progress reporting (percentage, current item, ETA) at least every 5s.
-
-When timeout occurs: use ADG to isolate the bottleneck, identify root cause, rerun with targeted scope, document recovery in `## TIMEOUT_RECOVERY`. Fail-closed: if ADG cannot be built or bottleneck not identified → raise original TimeoutError.
-
-**CI enforcement:** `ops_scripts/ci/validate_timeout_progress.py`, `ops_scripts/ci/validate_timeout_recovery.py`
-
----
-
-## §10. CRITICAL FUNCTIONALITY FAIL-CLOSED
-
-Critical infrastructure MUST fail-closed. No graceful fallbacks, silent degradation, or best-effort modes.
-
-**Critical infrastructure:** BGE embeddings, AST dependency graph (§3.6), test execution (§1.12), SSOT configuration (§4.2).
-
-FORBIDDEN: `try/except` that catches from critical components and returns None/empty/default; conditional logic providing alternatives when critical components unavailable; `logger.warning()` followed by `pass` for critical operations.
-
-**CI enforcement:** `ops_scripts/ci/check_utility_silent_swallowers.py`
-
----
-
-## §11. TEST QUALITY ENFORCEMENT
-
-Three quality gates — enforced in priority order:
-
+**Three quality gates (enforced in priority order):**
 1. **No silent exception swallowers** — any bare `except: pass` is assumed violation. Must convert to assertion, explicit re-raise, logged degraded path, or `# guardian: allow-silent-swallower` with tight scope and documented justification.
 2. **No zero-assert / fake-healthy tests** — zero assertions, `assert True`, `pass`-only bodies, and broad mocks with no assertions are all FORBIDDEN. Tests MUST assert on returned value, emitted signal, state change, or side effect.
 3. **No non-strict xfail** — `@pytest.mark.xfail` without `strict=True` = FORBIDDEN.
 
-**CI enforcement:** `ops_scripts/ci/check_test_integrity.py`, `ops_scripts/ci/check_no_unconditional_xfail.py`, `ops_scripts/ci/check_utility_silent_swallowers.py`
+### 1.3 Test Selection & Execution
 
----
+**Graph-backed test selection:** Test selection MUST be dependency-graph-backed. For every changed production file, identify tests via: direct test imports, fixture dependency edges, integration entrypoint coverage, registry/factory reachability, CLI-to-function reachability. Filename similarity is not sufficient. No test edge found = coverage gap to fix, not proof no tests are needed.
 
-## §12. BAN SKIP DRIFT AT COLLECTION TIME
+**NodeID-first testing discipline:** When ADG provides exact test nodeids → run those nodeids first. File-level fallback ONLY when nodeid extraction fails. Directory-level ONLY in final full-suite run. Any fallback MUST be recorded as `## SCOPE_LOSSINESS` in evidence.
 
-Test skips MUST be explicitly in the allowlist (`tests/_config/skip_allowlist.py`), fully documented (reason, ticket, expiry/owner), and tracked.
+**Test-file edit restriction:** Test-file edits FORBIDDEN unless cluster root cause is itself in test infrastructure. Never edit tests to make them pass — fix production code.
 
-**Forbidden outside allowlist:** `@pytest.mark.skip`, `@pytest.mark.skipif`, `pytest.skip()`, `unittest.skip*`.
+### 1.4 Skip Management
 
-**Required skip metadata:** `reason` (specific), `ticket`, `expiry_date` OR `owner`, `skip_type`, `test`, `file`.
+**Zero-tolerance for test skipping and xfail drift:**
+- Run ALL collected tests — no selective skipping
+- Collected ≠ executed = CRITICAL FAILURE
+- `xfail` without `strict=True` = FORBIDDEN
+- Adding `pytest.mark.skip`, `pytest.mark.xfail`, or commenting out assertions to unblock a phase = CONSTITUTIONAL VIOLATION
+- Pre-existing skips MUST be in the skip registry BEFORE the run begins
 
-**Forbidden reasons:** "broken", "TODO", "fix later", "not working", "WIP", "temporary", "skip for now".
+**Skip allowlist requirements:**
+- Test skips MUST be explicitly in the allowlist (`tests/_config/skip_allowlist.py`), fully documented (reason, ticket, expiry/owner), and tracked.
+- **Forbidden outside allowlist:** `@pytest.mark.skip`, `@pytest.mark.skipif`, `pytest.skip()`, `unittest.skip*`.
+- **Required skip metadata:** `reason` (specific), `ticket`, `expiry_date` OR `owner`, `skip_type`, `test`, `file`.
+- **Forbidden reasons:** "broken", "TODO", "fix later", "not working", "WIP", "temporary", "skip for now".
 
-**CI enforcement:** `ops_scripts/ci/check_skip_convergence_gate.py`, `ops_scripts/ci/skip_quarantine_check.py`
+**Pre-existing skip registry:** All pre-existing skips MUST be recorded in `artifacts/adg/pre_existing_skip_registry.json` with: `test_id`, `skip_reason` (specific), `cluster_id`, `registered_at`, `owner`, `expiry_date` (within 30 days), `resolution_plan` (concrete).
 
----
+**Convergence BLOCKED unless:** zero unregistered skips, zero expired registry entries, all entries have resolution plans.
 
-## §13. TEST-COUNT AND COLLECTION-COUNT INVARIANTS
+### 1.5 Test Count Invariants
 
-Test counts are invariants. Unexpected drops = CI failure. CI tracks: total collected, per-directory counts, per-marker counts, xfail count, skip count (from allowlist).
+**Test counts are invariants.** Unexpected drops = CI failure. CI tracks: total collected, per-directory counts, per-marker counts, xfail count, skip count (from allowlist).
 
 Baseline: `tests/_config/test_count_baseline.json`. Count drops = FAIL. xfail increases = FAIL. Skip count increases = FAIL. Intentional reduction requires commit justification and manual baseline update.
 
-**CI enforcement:** `ops_scripts/ci/check_test_integrity.py`
+### 1.6 Enforcement Registry
+
+| Requirement | Enforcement Script(s) |
+|-------------|---------------------|
+| Test quality gates | `ops_scripts/ci/check_test_integrity.py`, `ops_scripts/ci/check_no_unconditional_xfail.py`, `ops_scripts/ci/check_utility_silent_swallowers.py` |
+| Skip management | `ops_scripts/ci/check_skip_convergence_gate.py`, `ops_scripts/ci/skip_quarantine_check.py` |
+| Test count invariants | `ops_scripts/ci/check_test_integrity.py` |
+| ADG proof artifacts | `ops_scripts/ci/check_adg_proof_artifact_truthfulness.py` |
+| ADG schema | `ops_scripts/ci/check_adg_schema_field_names.py` |
+| Policy drift | `ops_scripts/ci/check_policy_drift_classification.py` |
+| Environment contract | `ops_scripts/ci/check_environment_contract.py` |
+| C0 boundary | `ops_scripts/ci/check_c0_boundary.py` |
+| Critical infrastructure | `ops_scripts/ci/check_utility_silent_swallowers.py` |
+| Timeout progress | `ops_scripts/ci/validate_timeout_progress.py`, `ops_scripts/ci/validate_timeout_recovery.py` |
+
+**Single entrypoint:** `python ops_scripts/ci/run_contract_gates.py`
+
+### 1.7 Evidence Requirements
+
+**ROBUSTNESS_MATRIX section mandatory:** success/edge/failure/recovery/determinism/side-effect tests per changed surface.
+
+**Conditional sections (add when applicable):**
+- `## TEST_QUALITY_AUDIT` — when test quality enforcement runs
+- `## SKIP_DRIFT_AUDIT` — when skip drift enforcement runs
+- `## TEST_COUNT_AUDIT` — when test count invariant enforcement runs
 
 ---
 
-## §14. ADG REPAIR DISCIPLINE
+## §2. ADG FRAMEWORK
 
-**Four proofs required before every repair edit:** scope, cause, proof surface, dependency justification.
+**ENFORCEMENT:** Skill `dependency-graph-analysis` for ALL code investigation.
 
-### 14.1 ADG artifact freshness gate
+### 2.1 Dependency Graph Requirements
 
-Repair BLOCKED if `adg_failure_clusters.json`, `adg_semantic_graph.json`, or `adg_test_surface_map.json` are missing or older than the current failure run. Rebuild before proceeding.
+**AST dependency graph is mandatory** for: root cause analysis, impact analysis, file selection, duplicate detection, dead code, boundary validation, layer inversion, test selection, healing scope, refactor planning, execution path analysis, registry/wiring validation.
 
-### 14.2 Failure capture (required before any edit — Gate G1)
+**Graph MUST model:** module imports, symbol imports, class inheritance, protocol/mixin realization, function/method calls, decorator attachment, registry lookup/registration, factory/provider resolution, config consumption, CLI entrypoint→function, test→production coverage.
 
-For every failing test, capture before any code edit:
-- `nodeid`, `exception_type`, `exception_message` (first 200 chars)
-- `first_repo_frame` (file inside repo, not test framework frame)
-- `root_module`, `root_function`
-- `cluster_candidate` (real cluster ID or `"UNCLUSTERED"` — never empty)
+### 2.2 Schema Management
 
-Failure count summaries without per-failure records are FORBIDDEN as sole evidence.
+**ADG SCHEMA FREEZE:** On first ADG access, freeze the confirmed field name mapping. Reuse it for ALL subsequent accesses in the same run. Re-probing after freeze = violation. Schema inconsistency mid-run = HARD FAIL.
 
-### 14.3 Exact cluster ID requirement
-
-Every edit commit message MUST include exact cluster ID. Format: `Fix cluster C7A3B2: <description>`. Vague references ("fix cluster issues") = FORBIDDEN.
-
-### 14.4 Test-file edit restriction
-
-Test-file edits FORBIDDEN unless cluster root cause is itself in test infrastructure. Never edit tests to make them pass — fix production code.
-
-### 14.5 Repair classification taxonomy
-
-Every edit MUST be labelled as exactly one class:
-- `production_bug_fix` — defect in production logic
-- `stale_reference_fix` — symbol/path/import no longer canonical
-- `broken_test_fix` — defect inside test itself (does NOT reduce strictness)
-- `policy_regression_fix` — fail-closed/approval/threshold/routing policy drift
-- `environment_contract_fix` — subprocess path, WSL/CUDA/vLLM/HuggingFace, import path, CI vs local mismatch
-
-Class unclear → STOP. Emit as UNRESOLVED. Do not proceed.
-
-Commit message footer MUST include: `repair_class: <class>`
-
----
-
-## §15. ADG PROOF-ARTIFACT TRUTHFULNESS
-
-ADG proof artifacts MUST only assert facts supported by raw ADG output. `*_raw` flags MUST match raw ADG counts exactly. `*_derived` flags MAY be true only when `deriving_command` is recorded with positive `deriving_command_output_lines`.
-
-**CI enforcement:** `ops_scripts/ci/check_adg_proof_artifact_truthfulness.py`
-
----
-
-## §16. ADG SCHEMA CANONICAL FIELD NAMES
-
-ADG artifacts use a single canonical field-name convention. Use canonical names on first attempt — no trial-and-error.
+**Canonical field names:** ADG artifacts use a single canonical field-name convention. Use canonical names on first attempt — no trial-and-error.
 
 | Concept | Canonical key | Forbidden aliases |
 |---|---|---|
@@ -435,21 +161,195 @@ ADG artifacts use a single canonical field-name convention. Use canonical names 
 
 Pre-flight schema check REQUIRED before first field access. Evidence MUST include: `ADG schema pre-flight: PASSED (canonical keys verified: ...)`.
 
-**CI enforcement:** `ops_scripts/ci/check_adg_schema_field_names.py`
+### 2.3 Fail-Closed Discipline ← **THE HARD RULE**
+
+If AST parsing or graph construction fails:
+1. Record exact parse/graph errors
+2. Identify blocked files
+3. Mark conclusions as partial
+4. Stop — do NOT claim confidence
+5. **Do NOT fall back to grep, regex, or heuristic search**
+
+**Silent fallback from AST graph to text search = HARD FAIL.**
+
+### 2.4 Evidence Requirements
+
+Every meaningful code change MUST include `## DEPENDENCY_GRAPH` section with: graph roots, impacted nodes, upstream set, downstream set, edge classes, boundary/cycle findings, exact reason each changed file is in scope. Changed file without graph justification = scope contamination.
+
+**Proof artifact truthfulness:** ADG proof artifacts MUST only assert facts supported by raw ADG output. `*_raw` flags MUST match raw ADG counts exactly. `*_derived` flags MAY be true only when `deriving_command` is recorded with positive `deriving_command_output_lines`.
+
+### 2.5 Repair Discipline
+
+**Four proofs required before every repair edit:** scope, cause, proof surface, dependency justification.
+
+**ADG artifact freshness gate:** Repair BLOCKED if `adg_failure_clusters.json`, `adg_semantic_graph.json`, or `adg_test_surface_map.json` are missing or older than the current failure run. Rebuild before proceeding.
+
+**Failure capture (required before any edit — Gate G1):** For every failing test, capture before any code edit:
+- `nodeid`, `exception_type`, `exception_message` (first 200 chars)
+- `first_repo_frame` (file inside repo, not test framework frame)
+- `root_module`, `root_function`
+- `cluster_candidate` (real cluster ID or `"UNCLUSTERED"` — never empty)
+
+**Exact cluster ID requirement:** Every edit commit message MUST include exact cluster ID. Format: `Fix cluster C7A3B2: <description>`. Vague references ("fix cluster issues") = FORBIDDEN.
+
+**Repair classification taxonomy:** Every edit MUST be labelled as exactly one class:
+- `production_bug_fix` — defect in production logic
+- `stale_reference_fix` — symbol/path/import no longer canonical
+- `broken_test_fix` — defect inside test itself (does NOT reduce strictness)
+- `policy_regression_fix` — fail-closed/approval/threshold/routing policy drift
+- `environment_contract_fix` — subprocess path, WSL/CUDA/vLLM/HuggingFace, import path, CI vs local mismatch
+
+Class unclear → STOP. Emit as UNRESOLVED. Do not proceed.
+
+Commit message footer MUST include: `repair_class: <class>`
 
 ---
 
-## §17. PRE-EXISTING SKIP REGISTRY & CONVERGENCE GATE
+## §3. EVIDENCE & DOCUMENTATION
 
-All pre-existing skips MUST be recorded in `artifacts/adg/pre_existing_skip_registry.json` with: `test_id`, `skip_reason` (specific), `cluster_id`, `registered_at`, `owner`, `expiry_date` (within 30 days), `resolution_plan` (concrete).
+### 3.1 Evidence Contract
 
-**Convergence BLOCKED unless:** zero unregistered skips, zero expired registry entries, all entries have resolution plans.
+Each phase produces exactly one evidence file under `docs/reports/plans/`.
 
-**CI enforcement:** `ops_scripts/ci/check_skip_convergence_gate.py`
+**Commands executed via:** `subprocess.run(argv, shell=False, encoding="utf-8", errors="replace")`
+**PowerShell invocation is FORBIDDEN.**
+**File-based Python scripts REQUIRED for complex analysis** — write to `ops_scripts/ci/` or `tools/evidence/`, then execute via subprocess. Never inline Python via PowerShell.
+
+Evidence files MUST be ASCII-only with ANSI escape sequences stripped.
+
+### 3.2 Required Evidence Sections
+
+**Required sections (in order):**
+1. `# <Phase Title>`
+2. `## Scope` — with graph justification
+3. `## INSPECTED_FILES`
+4. `## FACT_CLASSIFICATION` — three tiers: DIRECTLY OBSERVED / DERIVED / UNRESOLVED
+5. Command output sections
+6. `## DEPENDENCY_GRAPH` — roots, impacted nodes, upstream set, downstream set, edge classes, boundary/cycle findings, reason each changed file is in scope
+7. `## BRANCH_INVENTORY`
+8. `## ROBUSTNESS_MATRIX` — success/edge/failure/recovery/determinism/side-effect tests per changed surface
+9. `## DEFECT_MODEL`
+
+**Conditional sections (add when applicable):**
+- `## TIMEOUT_RECOVERY` — when timeout occurs (§5.4)
+- `## CLUSTER_ANALYSIS` — for every repair (§2.5)
+- `## FAILURE_CAPTURE` — before any repair edit (§2.5)
+- `## PROOF_ARTIFACT_TRUTHFULNESS` — when ADG proof artifact referenced (§2.4)
+- `## POLICY_DRIFT` — when policy regression classified (§6.1)
+- `## CONTRACT_CONFLICT` — when contract conflict identified (§6.2)
+- `## ENVIRONMENT_CONTRACT` — when environment dependency involved (§6.3)
+
+### 3.3 Three-Tier Fact Classification
+
+| Tier | Label | Meaning |
+|---|---|---|
+| 1 | `DIRECTLY OBSERVED` | Read directly from raw artifact/command stdout — no inference |
+| 2 | `DERIVED` | Computed from secondary command — source command MUST be named |
+| 3 | `UNRESOLVED` | Not yet proven — MUST be listed explicitly, never omitted |
+
+A phase MUST NOT be declared complete while `Unresolved` is non-empty, unless each item is deferred to a named future phase.
+
+### 3.4 Forbidden Evidence Patterns
+
+- ❌ DERIVED fact without naming the deriving command
+- ❌ Omitting UNRESOLVED facts — silence is not proof of absence
+- ❌ Upgrading DERIVED to DIRECTLY OBSERVED without re-running primary source
+- ❌ Claiming phase complete while UNRESOLVED items remain
+
+### 3.5 Artifact Links
+
+Every artifact reference in a response MUST use backtick citation format: `` `@<absolute_path>` ``. Plain text paths = CONSTITUTIONAL VIOLATION.
+
+### 3.6 Artifact Location
+
+All plans, evidence, and reports MUST reside in: `docs/reports/plans/`
+
+All Python file I/O MUST use `encoding="utf-8"`. Evidence files are raw execution captures, ASCII-only.
 
 ---
 
-## §18. POLICY DRIFT DETECTION
+## §4. SCOPE & DETERMINISM
+
+### 4.1 Scope Declaration
+
+Before declaring scope: build dependency graph, identify upstream/downstream, identify required test files via graph edges. Record baseline via `git diff --name-only`. Each file in scope MUST have graph justification.
+
+**Four-tier scope record** (required in evidence):
+- `Root target` — exact ADG node
+- `Direct ADG-derived tests` — exact nodeids from ADG output
+- `Widened dependency surface` — additional files with ring depth
+- `Selected execution scope` — final nodeids run
+- `Widening justification` — explicit reason per widened item; "general coverage" FORBIDDEN
+
+### 4.2 Scope Contamination
+
+If unrelated files appear: record them → check graph justification → if none, scope contamination → reset to baseline → restore declared files → verify diff and graph justification.
+
+### 4.3 Deterministic Analysis
+
+AST detailed parsing by default. Regex/grep for structural logic = FORBIDDEN unless user explicitly states. Repository paths MUST be canonicalized.
+
+### 4.4 No Low-Signal Search as Primary Evidence
+
+Forbidden as primary: grep, rg/ripgrep, regex-only sweeps, filename guesses, substring hunts. These MAY only be used AFTER the AST graph has identified a bounded candidate set, for literal string confirmation only.
+
+Text search MUST NEVER be used to define blast radius, infer architecture, ownership, call flow, dependency direction, dead code, test coverage, or file authority.
+
+### 4.5 Dependency Graph Before Edit
+
+Before any edit: determine directly affected nodes, first-order upstream/downstream, required tests, layer boundary crossings, registry/factory/provider edge changes. No edit plan without graph-backed impact analysis.
+
+---
+
+## §5. CI ENFORCEMENT FRAMEWORK
+
+### 5.1 Single Entrypoint
+
+`python ops_scripts/ci/run_contract_gates.py` enforces all gates. CI MUST fail immediately on any violation.
+
+### 5.2 Critical Infrastructure Fail-Closed
+
+Critical infrastructure MUST fail-closed. No graceful fallbacks, silent degradation, or best-effort modes.
+
+**Critical infrastructure:** BGE embeddings, AST dependency graph (§2.6), test execution (§1.4), SSOT configuration (§7.2).
+
+FORBIDDEN: `try/except` that catches from critical components and returns None/empty/default; conditional logic providing alternatives when critical components unavailable; `logger.warning()` followed by `pass` for critical operations.
+
+### 5.3 Query Timeout & Progress Reporting
+
+All queries, searches, and long-running operations MUST have explicit timeout parameters and fail-closed behavior on timeout.
+
+**Timeout ranges:** Fast (grep, file reads, simple AST): 5–30s | Medium (graph construction, test collection): 30–120s | Heavy (full repo analysis): 120–600s | External API: 10–60s.
+
+Operations >5s MUST provide progress reporting (percentage, current item, ETA) at least every 5s.
+
+When timeout occurs: use ADG to isolate the bottleneck, identify root cause, rerun with targeted scope, document recovery in `## TIMEOUT_RECOVERY`. Fail-closed: if ADG cannot be built or bottleneck not identified → raise original TimeoutError.
+
+### 5.4 CI Integrity Gates
+
+CI MUST fail immediately on any of:
+
+| # | Condition |
+|---|---|
+| 1 | Required phase artifact missing from `docs/reports/plans/` |
+| 2 | `FACT_CLASSIFICATION` missing or has UNRESOLVED items |
+| 3 | Broad pytest run before final phase |
+| 4 | Unexpected skip or xfail not in skip registry (§1.4) |
+| 5 | Failing test without `FAILURE_CAPTURE` record (§2.5) |
+| 6 | ADG schema mapping changed mid-run (schema freeze violated) |
+| 7 | Edit commit timestamp before cluster artifact timestamp |
+| 8 | Test strictness weakened (assertion removed, `assert True` added, mock broadened) |
+| 9 | `repair_class` missing from commit touching production code |
+| 10 | Governance module touched with `production_bug_fix` without `POLICY_DRIFT` section |
+| 11 | Two conflicting contracts touched without `CONTRACT_CONFLICT` section |
+| 12 | subprocess/vLLM/CUDA failure without `ENVIRONMENT_CONTRACT` section |
+| 13 | "repair complete" claimed without post-repair full-suite green artifact |
+
+---
+
+## §6. GOVERNANCE FRAMEWORK
+
+### 6.1 Policy Drift Detection
 
 Failures involving governance semantics MUST be classified as `policy_regression_fix`, not `production_bug_fix`.
 
@@ -459,19 +359,13 @@ Evidence MUST include `## POLICY_DRIFT` section with: failing test, policy domai
 
 FORBIDDEN: patching assertion to match broken behavior; adjusting threshold to make test pass; classifying governance bug as `production_bug_fix`.
 
-**CI enforcement:** `ops_scripts/ci/check_policy_drift_classification.py`
-
----
-
-## §19. CONTRACT CONFLICT ESCALATION
+### 6.2 Contract Conflict Escalation
 
 When two rules require incompatible behavior from the same component: STOP, record `## CONTRACT_CONFLICT`, identify winning contract (lower L-number wins, constitutional rules win), name resolution layer. Do NOT resume repair until conflict resolved.
 
 Patching around a contract conflict = HARD FAIL.
 
----
-
-## §20. ENVIRONMENT PARITY
+### 6.3 Environment Parity
 
 Local environment behavior is not valid CI behavior until an environment contract artifact proves parity.
 
@@ -479,11 +373,7 @@ Required when failure involves: subprocess execution, WSL/OS boundary, CUDA/GPU,
 
 Evidence MUST include `## ENVIRONMENT_CONTRACT` section. FORBIDDEN: fixing locally and declaring convergence before CI validation.
 
-**CI enforcement:** `ops_scripts/ci/check_environment_contract.py`
-
----
-
-## §21. C0 INFORMATIONAL BOUNDARY
+### 6.4 C0 Informational Boundary
 
 Informational context (retrieval, memory recall, telemetry, external data) MAY inform decisions but MUST NOT directly mutate routing, policy thresholds, execution authority, or governance controls.
 
@@ -491,29 +381,89 @@ Handoff MUST be explicit (named interface), auditable (signal and effect logged)
 
 FORBIDDEN: retrieval output directly setting routing variable; similarity score directly unlocking mutation gate; memory recall directly bypassing manual review.
 
-**CI enforcement:** `ops_scripts/ci/check_c0_boundary.py`
+---
+
+## §7. ACCEPTANCE DISCIPLINE
+
+Acceptance criteria MUST be deterministic, command-exact, exit-code-exact, count-exact. Forbidden language: "should", "expected to", "approximately", "equivalent". Criteria immutable once phase begins.
+
+### 7.1 Forbidden Overclaiming Vocabulary
+
+| Forbidden claim | Required condition |
+|---|---|
+| "tests are present" | Raw ADG entity count `tests > 0` |
+| "fixtures are present" | Raw ADG entity count `fixtures > 0` |
+| "convergence achieved" | All five §7.2 conditions met |
+| "repair complete" | All six §7.3 conditions met |
+| "repo is healthy" | Post-repair full-suite green (zero fails, errors, unexpected skips) |
+| "no dependencies" | ADG explicitly returned empty edge set |
+| "directly observed" | Fact read directly from raw artifact — no inference |
+
+Using these phrases without the listed condition = CONSTITUTIONAL VIOLATION.
+
+### 7.2 Convergence Declaration (Scoped Claim Only)
+
+ALL five conditions must hold simultaneously:
+1. Active scoped failures = 0
+2. Unregistered skips = 0
+3. No expired registry entries
+4. `FACT_CLASSIFICATION.Unresolved` is empty
+5. Scope lossiness documented (if file-level fallback used)
+
+### 7.3 Repair Run Completion (Six Conditions)
+
+1. All §7.2 scoped convergence conditions met
+2. Every ADG-reachable dependent of repaired surface executed and passed
+3. Full pytest suite green — zero failures, errors, unexpected skips
+4. Full-suite run timestamp LATER THAN last repair commit timestamp
+5. No new failures introduced (count ≤ pre-repair baseline)
+6. Final summary artifact in `docs/reports/plans/` with empty `Unresolved`
 
 ---
 
-## §22. CI INTEGRITY GATES
+## §8. ARCHITECTURE LOCKS
 
-`python ops_scripts/ci/run_contract_gates.py` enforces all gates. CI MUST fail immediately on any of:
+### 8.1 Canonical Semantics and SSOT
 
-| # | Condition |
+L0–L6 semantics MUST match repository SSOT (`structure_blueprint.py`). Agent registry SSOT: `agent_discovery_full.json`. Conflicting SSOT sources = execution BLOCKED.
+
+### 8.2 Boundary Enforcement
+
+Layer inversion detection MUST be AST-based. Cycles = HARD FAIL. Duplicate mixins forbidden. Cross-layer mutation violating sovereignty = HARD FAIL. Path shape alone is insufficient evidence.
+
+### 8.3 Tooling/Runtime Boundary
+
+`tools/evidence/` and `ops_scripts/ci/` MUST NOT import `apps_*`.
+
+### 8.4 Agent Discipline
+
+Agents invoked via canonical Python functions only. One canonical agent class per file. Semantic duplicate agents forbidden.
+
+---
+
+## §9. EXECUTION MODALITY
+
+Execution occurs strictly by defined phase. Each phase produces one evidence file. Scope expansion → STOP and produce plan artifact.
+
+### 9.1 Repair Gate — No Editing While Exploring
+
+**Editing is FORBIDDEN until ALL five gates pass:**
+
+| Gate | Requirement |
 |---|---|
-| 1 | Required phase artifact missing from `docs/reports/plans/` |
-| 2 | `FACT_CLASSIFICATION` missing or has UNRESOLVED items |
-| 3 | Broad pytest run before final phase |
-| 4 | Unexpected skip or xfail not in skip registry (§17) |
-| 5 | Failing test without `FAILURE_CAPTURE` record (§14.6) |
-| 6 | ADG schema mapping changed mid-run (schema freeze violated) |
-| 7 | Edit commit timestamp before cluster artifact timestamp |
-| 8 | Test strictness weakened (assertion removed, `assert True` added, mock broadened) |
-| 9 | `repair_class` missing from commit touching production code |
-| 10 | Governance module touched with `production_bug_fix` without `POLICY_DRIFT` section |
-| 11 | Two conflicting contracts touched without `CONTRACT_CONFLICT` section |
-| 12 | subprocess/vLLM/CUDA failure without `ENVIRONMENT_CONTRACT` section |
-| 13 | "repair complete" claimed without post-repair full-suite green artifact |
+| G1 | Failure capture exists for every failing test (§2.5) |
+| G2 | Root cause clusters exist (`adg_failure_clusters.json` is fresh) |
+| G3 | Each proposed repair maps to one or more exact failing nodeids |
+| G4 | Repair class declared (§2.5) |
+| G5 | No UNRESOLVED facts in phase evidence for targeted cluster |
+
+Mixing exploration and repair in the same step = HARD FAIL.
+
+### 9.2 Stabilize Before Refactor
+
+Structural refactors FORBIDDEN while: active scoped failures > 0, UNRESOLVED facts exist, registered skips have expired/missing resolution plans, full-suite not green.
+
+**Priority order:** Correctness → Determinism → Governance integrity → Reproducible green scoped runs → Structural refactors.
 
 ---
 
