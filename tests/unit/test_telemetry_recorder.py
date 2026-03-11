@@ -54,7 +54,7 @@ class TestTelemetryRecorder:
     def test_get_events_limit(self):
         for i in range(5):
             self.recorder.record(f"event{i}", {}, commit_tick=i)
-        events = self.recorder.get_events(limit=LIMIT)
+        events = self.recorder.get_events(limit=3)
         assert len(events) == 3
         # Should return last 3 events
         assert events[0]["event_type"] == "event2"

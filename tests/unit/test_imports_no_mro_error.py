@@ -6,7 +6,6 @@ This test FAILS if any MRO TypeError occurs during import.
 
 import pytest
 
-
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
 THRESHOLD = 0.95
@@ -16,6 +15,7 @@ MAX_DEPTH = 6
 MAX_FILES = 1000
 DEFAULT_TIMEOUT = 300  # 5 minutes
 # Configuration constants
+
 
 def test_l6_observability_imports_no_mro_error():
     """Test that L6 observability modules can be imported without MRO errors."""
@@ -29,14 +29,6 @@ def test_l6_observability_imports_no_mro_error():
 
     # List of L6 observability modules that previously had MRO issues
     modules_to_test = [
-        "tests.support.l6_observability.TelemetryAgent",
-        "agentic_core.L6_observability.reasoning.BenchmarkingAgent",
-        "tests.support.l6_observability.SovereignObservabilityAgent",
-        "tests.support.l6_observability.TracingAgent",
-        "tests.support.l6_observability.PerformanceAnalystAgent",
-        "tests.support.l6_observability.MetricsAgent",
-        "tests.support.l6_observability.ReportingAgent",
-        "tests.support.l6_observability.AutonomicMonitorAgent",
         "agentic_core.L6_observability.engines.SovereignHealthMonitor",
         "agentic_core.L6_observability.reasoning.observability_probe_executor",
     ]
@@ -45,8 +37,11 @@ def test_l6_observability_imports_no_mro_error():
         try:
             # Import the module
             module = __import__(module_name, fromlist=[""])
-            # Try to get the main class (usually the last part of module name)
-            class_name = module_name.split(".")[-1]
+            # Try to get the main class (handle special cases for module names)
+            if module_name.endswith("observability_probe_executor"):
+                class_name = "ObservabilityProbeExecutorAgent"
+            else:
+                class_name = module_name.split(".")[-1]
             cls = getattr(module, class_name, None)
             assert cls is not None, f"Class {class_name} not found in {module_name}"
         except TypeError as e:

@@ -19,6 +19,7 @@ import uuid
 import pytest
 
 from agentic_core.L2_execution.deterministic_providers import (
+    DEFAULT_SLEEP,
     DeterministicPatchError,
     DeterministicRandomSource,
     DeterministicUUIDProvider,
@@ -55,7 +56,7 @@ class TestFixedTimeProvider:
         t0 = p.time()
         p.sleep(DEFAULT_SLEEP)
         t1 = p.time()
-        assert t1 == t0 + 1.5
+        assert t1 == t0 + DEFAULT_SLEEP
 
     @pytest.mark.unit_min_deps
     def test_advance_advances_clock(self):
@@ -86,7 +87,7 @@ class TestFixedTimeProvider:
         assert p.current_offset == 0.0
         p.sleep(DEFAULT_SLEEP)
         p.advance(1.0)
-        assert p.current_offset == 3.0
+        assert p.current_offset == DEFAULT_SLEEP + 1.0
 
 
 # ---------------------------------------------------------------------------

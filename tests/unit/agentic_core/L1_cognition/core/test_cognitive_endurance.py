@@ -15,6 +15,7 @@ import pytest
 from agentic_core.L4_state.utils.sanitize_telemetry_util import sanitize_tool_output
 from agentic_core.mixins.golden_context_mixin import (
     GOLDEN_CONTEXT_SUMMARY,
+    THRESHOLD,
     GoldenContextMixin,
 )
 
@@ -166,7 +167,7 @@ class TestGoldenContextMixin:
         agent = self.MockAgent()
         messages = [{"role": "user", "content": "Hi"}] * 5
 
-        should_inject = agent.should_inject_golden_context(messages, threshold=THRESHOLD)
+        should_inject = agent.should_inject_golden_context(messages, threshold=10)
         assert should_inject is False
 
     def test_should_inject_above_threshold(self):
@@ -174,7 +175,7 @@ class TestGoldenContextMixin:
         agent = self.MockAgent()
         messages = [{"role": "user", "content": "Hi"}] * 15
 
-        should_inject = agent.should_inject_golden_context(messages, threshold=THRESHOLD)
+        should_inject = agent.should_inject_golden_context(messages, threshold=10)
         assert should_inject is True
 
     def test_should_not_inject_if_recent(self):
@@ -184,7 +185,7 @@ class TestGoldenContextMixin:
         # Add a recent golden context injection
         messages.append({"role": "system", "content": GOLDEN_CONTEXT_SUMMARY})
 
-        should_inject = agent.should_inject_golden_context(messages, threshold=THRESHOLD)
+        should_inject = agent.should_inject_golden_context(messages, threshold=10)
         assert should_inject is False
 
     def test_custom_role(self):

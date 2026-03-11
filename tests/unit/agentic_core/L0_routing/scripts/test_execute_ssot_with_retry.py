@@ -22,7 +22,6 @@ from unittest.mock import patch
 
 import pytest
 
-
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
 THRESHOLD = 0.95
@@ -32,6 +31,7 @@ MAX_DEPTH = 6
 MAX_FILES = 1000
 DEFAULT_TIMEOUT = 300  # 5 minutes
 # Configuration constants
+
 
 def _load():
     try:
@@ -164,7 +164,7 @@ class TestWithRetryExhaustion:
     def test_max_retries_1_calls_once_then_raises(self, retry):
         calls = []
 
-        @retry(max_retries=MAX_RETRIES, delay=0.0)
+        @retry(max_retries=1, delay=0.0)
         def _fn():
             calls.append(1)
             raise ValueError("x")
