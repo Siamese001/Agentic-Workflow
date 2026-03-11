@@ -12,6 +12,10 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from agentic_core.adg.analysis.confidence import confidence_summary, score_edges
+from agentic_core.adg.analysis.ownership import OwnershipRegistry
+from agentic_core.adg.analysis.repair import repair_routing_summary, route_violations
+from agentic_core.adg.analysis.snapshot import build_snapshot
 from agentic_core.adg.client.mcp_client import ADGMCPClient
 from agentic_core.adg.extraction.graph_persister import persist_scan_result
 from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
@@ -79,6 +83,21 @@ def generate_full_adg(output_path: Path) -> None:
     # Compute per-relation edge counts for all graph planes
     edge_counts_by_relation = result.edge_counts_by_relation()
 
+    # Enhancement 6: Deterministic canonical snapshot
+    snapshot = build_snapshot(result)
+
+    # Enhancement 9: Edge confidence / provenance scoring
+    scored_edges = score_edges(list(result.edges))
+    conf_summary = confidence_summary(scored_edges)
+
+    # Enhancement 8: Ownership registry
+    ownership_registry = OwnershipRegistry.from_scan_result(result)
+
+    # Enhancement 10: Repair routing for violations + governance edges
+    violation_edges = [e for e in result.edges if e.relation_type in ("violates", "dynamic_exec", "invokes_provider")]
+    repair_routes = route_violations(violation_edges)
+    routing_summary = repair_routing_summary(repair_routes)
+
     # Build final output
     output = {
         "artifact_digest": artifact_digest,
@@ -129,6 +148,9 @@ def generate_full_adg(output_path: Path) -> None:
             "total_entities": len(entities_with_metadata),
             "high_confidence": len([e for e in entities_with_metadata if e.get("confidence") == "HIGH"]),
         },
+        "canonical_snapshot": snapshot.to_dict(),
+        "confidence_analysis": conf_summary,
+        "repair_routing": routing_summary,
     }
 
     # Write output
@@ -147,6 +169,12 @@ def generate_full_adg(output_path: Path) -> None:
     print(f"      GT_covers={result.manifest.test_covers_count}  (Gap 2 resolved)")
     print(f"      GV_violates={result.manifest.layer_violation_count}  (Gap 3+4 resolved)")
     print(f"      GG_governance={result.manifest.governance_plane_count}  (Gap 5 resolved)")
+    print("[ADG] Enhancement 6-10 analysis:")
+    print(f"      E6 graph_hash={snapshot.graph_hash[:16]}...  nodes={snapshot.node_count}  edges={snapshot.edge_count}")
+    print(f"      E7 diff engine: use diff_snapshots(before, after) on saved snapshots")
+    print(f"      E8 ownership registry: {len(result.modules)} modules indexed")
+    print(f"      E9 confidence: avg={conf_summary['average_confidence']}  high={conf_summary['confidence_tiers']['high']}  low={conf_summary['confidence_tiers']['low']}")
+    print(f"      E10 repair routes: {routing_summary['total_routes']} routes  by_severity={routing_summary['by_severity']}")
 
 
 def main() -> None:
