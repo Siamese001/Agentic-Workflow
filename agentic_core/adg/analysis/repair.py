@@ -105,6 +105,18 @@ _RELATION_TO_ROUTE: dict[str, tuple[RepairAgent, CILane, Severity, str]] = {
         "medium",
         "Execution routed through healing/governance plane: verify replay safety",
     ),
+    "in_cycle": (
+        "ArchitectureGovernorAgent",
+        "layer_guard",
+        "high",
+        "Circular import detected: module participates in a strongly connected component",
+    ),
+    "dead_imports": (
+        "DependencyRepairAgent",
+        "dep_check",
+        "low",
+        "Dead import: name is imported but never referenced in the file body",
+    ),
 }
 
 

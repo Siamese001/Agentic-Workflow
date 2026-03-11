@@ -14,6 +14,7 @@ Naming convention:
     ADG::Decision::<DecisionName>
     ADG::Retrieval::<ComponentName>
     ADG::Run::<run_id>
+    ADG::Cycle::<hash_of_members>
 """
 
 from __future__ import annotations
@@ -67,6 +68,11 @@ RelationType = Literal[
     "bypasses",
     "violates",
     "allows",
+    "covers",
+    "exports",
+    "re_exports",
+    "in_cycle",
+    "dead_imports",
 ]
 
 EdgeKind = Literal[
@@ -77,6 +83,16 @@ EdgeKind = Literal[
     "embedding",
     "retrieval",
     "decision",
+    "dead_import",
+    "star_import",
+    "cycle",
+    "export",
+    "re_export",
+    "decorator",
+    "type_checking_import",
+    "optional_import",
+    "version_guard_import",
+    "type_annotation",
 ]
 
 
@@ -332,6 +348,16 @@ NETWORK_SYMBOLS: frozenset[str] = frozenset(
     }
 )
 
+SYMBOL_KINDS: frozenset[str] = frozenset(
+    {
+        "function",
+        "async_function",
+        "class",
+        "constant",
+        "type_alias",
+    }
+)
+
 
 __all__ = [
     "ADG_NS",
@@ -348,4 +374,5 @@ __all__ = [
     "EMBEDDING_SYMBOLS",
     "WRITE_SIDE_EFFECT_SYMBOLS",
     "NETWORK_SYMBOLS",
+    "SYMBOL_KINDS",
 ]

@@ -1,0 +1,227 @@
+"""E18: Dependency Inversion Detector.
+
+Finds places where a module depends on a *concrete* class when an *abstract*
+base (Protocol/ABC) already exists in the same or a lower layer — a violation
+of the Dependency Inversion Principle (DIP).
+
+Detection algorithm:
+  1. Build a mapping  abstract_base_name -> [concrete_subclass_module, ...]
+     from ``implements`` edges where the base is Protocol/ABC-derived.
+  2. Walk ``imports`` and ``instantiates`` edges: if module A directly
+     references a concrete subclass C and an abstract base B for C exists,
+     and B is accessible to A (same layer or lower), emit a DIP violation.
+
+Output:
+  ``DIPReport`` with:
+    - ``violations``:       list of ``DIPViolation``
+    - ``abstract_bases``:   map of abstract class name -> provider module
+    - ``violation_count``
+
+Usage::
+
+    from agentic_core.adg.analysis.dep_inversion import detect_dip_violations
+
+    report = detect_dip_violations(result)
+    for v in report.violations:
+        print(v.violating_module, "->", v.concrete_class, "(abstract:", v.abstract_base, ")")
+"""
+
+from __future__ import annotations
+
+import json
+from dataclasses import dataclass, field
+from typing import TYPE_CHECKING
+
+from agentic_core.adg.schema import ALLOWED_LAYER_EDGES, module_path_to_layer
+
+if TYPE_CHECKING:
+    from agentic_core.adg.extraction.static_scanner import ScanResult
+
+_MODULE_PREFIX = "ADG::Module::"
+_SYMBOL_PREFIX = "ADG::Symbol::"
+
+_ABSTRACT_MARKERS: frozenset[str] = frozenset({"ABC", "ABCMeta", "Protocol", "abstract", "Abstract"})
+
+
+@dataclass
+class DIPViolation:
+    """One Dependency Inversion Principle violation."""
+
+    violating_module: str
+    concrete_class: str
+    concrete_provider_module: str
+    abstract_base: str
+    abstract_provider_module: str
+    violating_layer: str
+    concrete_layer: str
+    abstract_layer: str
+    line_no: int
+    severity: str = "medium"
+
+    def to_dict(self) -> dict:
+        return {
+            "violating_module": self.violating_module,
+            "concrete_class": self.concrete_class,
+            "concrete_provider_module": self.concrete_provider_module,
+            "abstract_base": self.abstract_base,
+            "abstract_provider_module": self.abstract_provider_module,
+            "violating_layer": self.violating_layer,
+            "concrete_layer": self.concrete_layer,
+            "abstract_layer": self.abstract_layer,
+            "line_no": self.line_no,
+            "severity": self.severity,
+        }
+
+
+@dataclass
+class DIPReport:
+    """Full Dependency Inversion analysis for the repository."""
+
+    violations: list[DIPViolation] = field(default_factory=list)
+    abstract_bases: dict[str, str] = field(default_factory=dict)
+    concrete_to_abstracts: dict[str, list[str]] = field(default_factory=dict)
+    violation_count: int = 0
+
+    @property
+    def summary(self) -> str:
+        return f"DIP violations={self.violation_count} abstract_bases={len(self.abstract_bases)}"
+
+    def to_dict(self) -> dict:
+        return {
+            "violation_count": self.violation_count,
+            "abstract_base_count": len(self.abstract_bases),
+            "summary": self.summary,
+            "violations": [v.to_dict() for v in self.violations],
+            "abstract_bases": dict(sorted(self.abstract_bases.items())),
+            "concrete_to_abstracts": {k: sorted(v) for k, v in sorted(self.concrete_to_abstracts.items())},
+        }
+
+    def to_json(self, indent: int = 2) -> str:
+        return json.dumps(self.to_dict(), indent=indent, sort_keys=True)
+
+
+def _extract_class_name(adg_name: str) -> str:
+    """Extract bare class name from an ADG symbol name like Module::path::ClassName."""
+    parts = adg_name.split("::")
+    return parts[-1] if parts else ""
+
+
+def _sym_to_module(symbol: str) -> str:
+    """Convert dotted symbol 'pkg.sub.ClassName' to 'pkg/sub.py'."""
+    parts = symbol.rsplit(".", 1)
+    if len(parts) == 2:
+        return parts[0].replace(".", "/") + ".py"
+    return symbol.replace(".", "/") + ".py"
+
+
+def detect_dip_violations(result: ScanResult) -> DIPReport:
+    """Detect Dependency Inversion Principle violations.
+
+    Pass 1: identify all abstract bases and their concrete subclasses from
+            ``implements`` edges.
+    Pass 2: for each ``imports`` / ``instantiates`` edge targeting a concrete
+            class that has a known abstract base, check whether the importer
+            could instead depend on the abstract.
+    """
+    # Pass 1: build abstract base index
+    # abstract_bases: class_name -> module_path (where the abstract lives)
+    # concrete_subclasses: concrete_class_name -> [abstract_base_name, ...]
+    abstract_bases: dict[str, str] = {}
+    concrete_to_abstracts: dict[str, list[str]] = {}
+
+    for edge in result.edges:
+        if edge.relation_type != "implements":
+            continue
+        sym = edge.symbol or ""
+        if not any(marker in sym for marker in _ABSTRACT_MARKERS):
+            continue
+
+        # The from_name is ADG::Module::path::ClassName (concrete class)
+        # The symbol is the base class name
+        from_parts = edge.from_name.split("::")
+        concrete_cls = from_parts[-1] if from_parts else ""
+        abstract_cls = sym.rsplit(".", 1)[-1] if "." in sym else sym
+
+        if not concrete_cls or not abstract_cls:
+            continue
+
+        if edge.from_name.startswith(_MODULE_PREFIX):
+            abstract_module = edge.from_name[len(_MODULE_PREFIX) :]
+            abstract_module = abstract_module.split("::")[0]
+        else:
+            abstract_module = ""
+
+        abstract_bases[abstract_cls] = abstract_module
+        concrete_to_abstracts.setdefault(concrete_cls, [])
+        if abstract_cls not in concrete_to_abstracts[concrete_cls]:
+            concrete_to_abstracts[concrete_cls].append(abstract_cls)
+
+    # Pass 2: find DIP violations
+    violations: list[DIPViolation] = []
+
+    for edge in result.edges:
+        if edge.relation_type not in ("imports", "instantiates"):
+            continue
+        if not edge.from_name.startswith(_MODULE_PREFIX):
+            continue
+
+        violator_path = edge.from_name[len(_MODULE_PREFIX) :]
+        violator_layer = module_path_to_layer(violator_path)
+
+        sym = edge.symbol or ""
+        if not sym:
+            continue
+
+        # Extract concrete class name from symbol
+        concrete_cls = sym.rsplit(".", 1)[-1] if "." in sym else sym
+
+        abstracts_for_concrete = concrete_to_abstracts.get(concrete_cls, [])
+        if not abstracts_for_concrete:
+            continue
+
+        concrete_module = _sym_to_module(sym)
+        concrete_layer = module_path_to_layer(concrete_module)
+
+        for abstract_cls in abstracts_for_concrete:
+            abstract_module = abstract_bases.get(abstract_cls, "")
+            abstract_layer = module_path_to_layer(abstract_module) if abstract_module else concrete_layer
+
+            # Only flag if using abstract is actually possible (layer-accessible)
+            can_use_abstract = (
+                abstract_layer == violator_layer or (violator_layer, abstract_layer) in ALLOWED_LAYER_EDGES
+            )
+            if not can_use_abstract:
+                continue
+
+            severity = "high" if violator_layer in ("L0", "L1", "L2") else "medium"
+
+            violations.append(
+                DIPViolation(
+                    violating_module=violator_path,
+                    concrete_class=concrete_cls,
+                    concrete_provider_module=concrete_module,
+                    abstract_base=abstract_cls,
+                    abstract_provider_module=abstract_module,
+                    violating_layer=violator_layer,
+                    concrete_layer=concrete_layer,
+                    abstract_layer=abstract_layer,
+                    line_no=edge.line_no,
+                    severity=severity,
+                )
+            )
+
+    violations.sort(key=lambda v: (v.severity, v.violating_module, v.concrete_class))
+
+    return DIPReport(
+        violations=violations,
+        abstract_bases=abstract_bases,
+        concrete_to_abstracts=concrete_to_abstracts,
+        violation_count=len(violations),
+    )
+
+
+__all__ = [
+    "DIPReport",
+    "DIPViolation",
+    "detect_dip_violations",
+]

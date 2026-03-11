@@ -48,6 +48,10 @@ _RELATION_TO_PROVENANCE: dict[str, tuple[float, Provenance]] = {
     "allows": (0.80, "ast_config_read"),
     "belongs_to_layer": (1.00, "ast_import"),
     "dynamic_exec": (0.70, "ast_call_dynamic"),
+    "exports": (1.00, "ast_symbol_inventory"),
+    "re_exports": (0.90, "ast_symbol_inventory"),
+    "dead_imports": (1.00, "ast_dead_import"),
+    "in_cycle": (0.95, "ast_cycle_detection"),
 }
 
 _EDGE_KIND_ADJUSTMENT: dict[str, float] = {
@@ -59,6 +63,16 @@ _EDGE_KIND_ADJUSTMENT: dict[str, float] = {
     "write": +0.00,
     "call": +0.00,
     "import": +0.00,
+    "dead_import": +0.00,
+    "star_import": -0.10,
+    "cycle": +0.00,
+    "export": +0.00,
+    "re_export": -0.05,
+    "decorator": +0.00,
+    "type_checking_import": -0.05,
+    "optional_import": -0.10,
+    "version_guard_import": -0.05,
+    "type_annotation": +0.00,
 }
 
 

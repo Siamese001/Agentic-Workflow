@@ -1,0 +1,597 @@
+"""Tests for ADG P1 enhancements: E1 (Symbol Inventory), E5 (Cycle Detection), E6 (Dead Imports).
+
+Each enhancement is tested with both positive (feature works) and
+negative (no false positives) cases using synthetic AST fixtures.
+"""
+
+from __future__ import annotations
+
+import ast
+import textwrap
+
+from agentic_core.adg.extraction.static_scanner import (
+    Edge,
+    ScanResult,
+    _detect_cycles,
+    _SymbolInventoryVisitor,
+    _tag_dead_imports,
+    _UnusedImportVisitor,
+)
+
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
+
+
+def _make_module_adg(rel: str) -> str:
+    return f"ADG::Module::{rel}"
+
+
+def _parse(source: str) -> ast.Module:
+    return ast.parse(textwrap.dedent(source))
+
+
+def _make_import_edge(from_mod: str, to_sym: str, symbol: str = "", line_no: int = 1) -> Edge:
+    return Edge(
+        from_name=from_mod,
+        relation_type="imports",
+        to_name=to_sym,
+        edge_kind="import",
+        source_file=from_mod,
+        line_no=line_no,
+        symbol=symbol,
+    )
+
+
+def _make_module_edge(from_rel: str, to_rel: str) -> Edge:
+    return Edge(
+        from_name=_make_module_adg(from_rel),
+        relation_type="imports",
+        to_name=_make_module_adg(to_rel),
+        edge_kind="import",
+        source_file=from_rel,
+        line_no=1,
+        symbol="",
+    )
+
+
+# ===========================================================================
+# E1: Symbol Inventory (_SymbolInventoryVisitor)
+# ===========================================================================
+
+
+class TestSymbolInventoryVisitor:
+    """E1: Verify exports edges are emitted for public top-level symbols."""
+
+    def test_public_function_emits_export_edge(self):
+        source = """
+        def my_func():
+            pass
+        """
+        tree = _parse(source)
+        v = _SymbolInventoryVisitor(_make_module_adg("foo/bar.py"), "foo/bar.py")
+        v.visit(tree)
+        symbols = {e.symbol for e in v.edges if e.relation_type == "exports"}
+        assert "my_func" in symbols
+
+    def test_public_class_emits_export_edge(self):
+        source = """
+        class MyClass:
+            pass
+        """
+        tree = _parse(source)
+        v = _SymbolInventoryVisitor(_make_module_adg("foo/bar.py"), "foo/bar.py")
+        v.visit(tree)
+        symbols = {e.symbol for e in v.edges if e.relation_type == "exports"}
+        assert "MyClass" in symbols
+
+    def test_private_name_not_emitted_without_all(self):
+        source = """
+        def _private():
+            pass
+        class _Internal:
+            pass
+        """
+        tree = _parse(source)
+        v = _SymbolInventoryVisitor(_make_module_adg("foo/bar.py"), "foo/bar.py")
+        v.visit(tree)
+        symbols = {e.symbol for e in v.edges if e.relation_type == "exports"}
+        assert "_private" not in symbols
+        assert "_Internal" not in symbols
+
+    def test_all_controls_exports(self):
+        source = """
+        __all__ = ["PublicClass"]
+        class PublicClass:
+            pass
+        class HiddenClass:
+            pass
+        """
+        tree = _parse(source)
+        v = _SymbolInventoryVisitor(_make_module_adg("foo/bar.py"), "foo/bar.py")
+        v.visit(tree)
+        symbols = {e.symbol for e in v.edges if e.relation_type == "exports"}
+        assert "PublicClass" in symbols
+        assert "HiddenClass" not in symbols
+
+    def test_constant_emits_export_edge(self):
+        source = """
+        MY_CONST = 42
+        _PRIVATE_CONST = 99
+        """
+        tree = _parse(source)
+        v = _SymbolInventoryVisitor(_make_module_adg("foo/bar.py"), "foo/bar.py")
+        v.visit(tree)
+        symbols = {e.symbol for e in v.edges if e.relation_type == "exports"}
+        assert "MY_CONST" in symbols
+        assert "_PRIVATE_CONST" not in symbols
+
+    def test_async_function_emits_export_edge(self):
+        source = """
+        async def async_handler():
+            pass
+        """
+        tree = _parse(source)
+        v = _SymbolInventoryVisitor(_make_module_adg("foo/bar.py"), "foo/bar.py")
+        v.visit(tree)
+        symbols = {e.symbol for e in v.edges if e.relation_type == "exports"}
+        assert "async_handler" in symbols
+
+    def test_edge_kind_is_export(self):
+        source = """
+        def func():
+            pass
+        """
+        tree = _parse(source)
+        v = _SymbolInventoryVisitor(_make_module_adg("foo/bar.py"), "foo/bar.py")
+        v.visit(tree)
+        export_edges = [e for e in v.edges if e.relation_type == "exports"]
+        assert len(export_edges) >= 1
+        assert all(e.edge_kind == "export" for e in export_edges)
+
+    def test_symbol_table_populated(self):
+        source = """
+        def greet():
+            pass
+        class Greeter:
+            pass
+        LIMIT = 10
+        """
+        tree = _parse(source)
+        v = _SymbolInventoryVisitor(_make_module_adg("foo/bar.py"), "foo/bar.py")
+        v.visit(tree)
+        assert "greet" in v.symbol_table
+        assert "Greeter" in v.symbol_table
+        assert "LIMIT" in v.symbol_table
+
+    def test_to_name_uses_canonical_symbol_format(self):
+        source = """
+        def my_func():
+            pass
+        """
+        tree = _parse(source)
+        rel = "foo/bar.py"
+        v = _SymbolInventoryVisitor(_make_module_adg(rel), rel)
+        v.visit(tree)
+        export_edges = [e for e in v.edges if e.symbol == "my_func"]
+        assert len(export_edges) == 1
+        assert export_edges[0].to_name == f"ADG::Symbol::{rel}::my_func"
+
+    def test_empty_module_no_edges(self):
+        tree = _parse("")
+        v = _SymbolInventoryVisitor(_make_module_adg("empty.py"), "empty.py")
+        v.visit(tree)
+        assert v.edges == []
+
+    def test_all_empty_list_emits_nothing(self):
+        source = """
+        __all__ = []
+        def func():
+            pass
+        """
+        tree = _parse(source)
+        v = _SymbolInventoryVisitor(_make_module_adg("foo/bar.py"), "foo/bar.py")
+        v.visit(tree)
+        export_edges = [e for e in v.edges if e.relation_type == "exports"]
+        assert export_edges == []
+
+
+# ===========================================================================
+# E6: Unused Import Detection (_UnusedImportVisitor / _tag_dead_imports)
+# ===========================================================================
+
+
+class TestUnusedImportVisitor:
+    """E6: Verify dead/live import classification."""
+
+    def test_used_import_is_live(self):
+        source = """
+        import os
+        x = os.path.join("a", "b")
+        """
+        tree = _parse(source)
+        v = _UnusedImportVisitor()
+        v.visit(tree)
+        assert "os" in v.live_names
+        assert "os" not in v.dead_names
+
+    def test_unused_import_is_dead(self):
+        source = """
+        import sys
+        x = 1
+        """
+        tree = _parse(source)
+        v = _UnusedImportVisitor()
+        v.visit(tree)
+        assert "sys" in v.dead_names
+        assert "sys" not in v.live_names
+
+    def test_from_import_used_is_live(self):
+        source = """
+        from pathlib import Path
+        p = Path("/tmp")
+        """
+        tree = _parse(source)
+        v = _UnusedImportVisitor()
+        v.visit(tree)
+        assert "Path" in v.live_names
+
+    def test_from_import_unused_is_dead(self):
+        source = """
+        from pathlib import Path
+        x = 1
+        """
+        tree = _parse(source)
+        v = _UnusedImportVisitor()
+        v.visit(tree)
+        assert "Path" in v.dead_names
+
+    def test_aliased_import_tracks_alias(self):
+        source = """
+        import numpy as np
+        arr = np.array([1, 2, 3])
+        """
+        tree = _parse(source)
+        v = _UnusedImportVisitor()
+        v.visit(tree)
+        assert "np" in v.live_names
+        assert "numpy" not in v.imported_names
+
+    def test_aliased_import_dead(self):
+        source = """
+        import json as j
+        x = 1
+        """
+        tree = _parse(source)
+        v = _UnusedImportVisitor()
+        v.visit(tree)
+        assert "j" in v.dead_names
+
+    def test_star_import_skipped(self):
+        source = """
+        from os.path import *
+        """
+        tree = _parse(source)
+        v = _UnusedImportVisitor()
+        v.visit(tree)
+        assert "*" not in v.imported_names
+        assert len(v.imported_names) == 0
+
+    def test_multiple_imports_mixed(self):
+        source = """
+        import os
+        import sys
+        from pathlib import Path
+        x = os.getcwd()
+        p = Path("/")
+        """
+        tree = _parse(source)
+        v = _UnusedImportVisitor()
+        v.visit(tree)
+        assert "os" in v.live_names
+        assert "Path" in v.live_names
+        assert "sys" in v.dead_names
+
+
+class TestTagDeadImports:
+    """E6: Verify _tag_dead_imports re-tags edges correctly."""
+
+    def test_dead_import_edge_retagged(self):
+        edges = [
+            _make_import_edge("ADG::Module::a.py", "ADG::Symbol::sys", symbol="sys"),
+        ]
+        result = _tag_dead_imports(edges, dead_names={"sys"})
+        assert len(result) == 1
+        assert result[0].relation_type == "dead_imports"
+        assert result[0].edge_kind == "dead_import"
+
+    def test_live_import_edge_unchanged(self):
+        edges = [
+            _make_import_edge("ADG::Module::a.py", "ADG::Symbol::os", symbol="os"),
+        ]
+        result = _tag_dead_imports(edges, dead_names={"sys"})
+        assert result[0].relation_type == "imports"
+        assert result[0].edge_kind == "import"
+
+    def test_empty_dead_names_no_changes(self):
+        edges = [
+            _make_import_edge("ADG::Module::a.py", "ADG::Symbol::os", symbol="os"),
+            _make_import_edge("ADG::Module::a.py", "ADG::Symbol::sys", symbol="sys"),
+        ]
+        result = _tag_dead_imports(edges, dead_names=set())
+        assert all(e.relation_type == "imports" for e in result)
+
+    def test_non_import_edges_untouched(self):
+        edges = [
+            Edge(
+                from_name="ADG::Module::a.py",
+                relation_type="calls",
+                to_name="ADG::Symbol::foo",
+                edge_kind="call",
+                source_file="a.py",
+                line_no=1,
+                symbol="foo",
+            ),
+        ]
+        result = _tag_dead_imports(edges, dead_names={"foo"})
+        assert result[0].relation_type == "calls"
+
+    def test_from_import_symbol_tail_matched(self):
+        edges = [
+            _make_import_edge(
+                "ADG::Module::a.py",
+                "ADG::Symbol::pathlib.Path",
+                symbol="pathlib.Path",
+            ),
+        ]
+        result = _tag_dead_imports(edges, dead_names={"Path"})
+        assert result[0].relation_type == "dead_imports"
+
+
+# ===========================================================================
+# E5: Cyclic Dependency Detection (_detect_cycles)
+# ===========================================================================
+
+
+def _make_scan_result_with_edges(edges: list[Edge]) -> ScanResult:
+    result = ScanResult()
+    result.edges = sorted(set(edges))
+    result.modules = []
+    return result
+
+
+class TestDetectCycles:
+    """E5: Verify SCC-based cycle detection produces correct in_cycle edges."""
+
+    def test_simple_two_node_cycle(self):
+        edges = [
+            _make_module_edge("a.py", "b.py"),
+            _make_module_edge("b.py", "a.py"),
+        ]
+        result = _make_scan_result_with_edges(edges)
+        cycle_edges = _detect_cycles(result)
+        assert len(cycle_edges) >= 2
+        assert all(e.relation_type == "in_cycle" for e in cycle_edges)
+        assert all(e.edge_kind == "cycle" for e in cycle_edges)
+
+    def test_three_node_cycle(self):
+        edges = [
+            _make_module_edge("a.py", "b.py"),
+            _make_module_edge("b.py", "c.py"),
+            _make_module_edge("c.py", "a.py"),
+        ]
+        result = _make_scan_result_with_edges(edges)
+        cycle_edges = _detect_cycles(result)
+        assert len(cycle_edges) == 3
+        cycle_nodes = {e.to_name for e in cycle_edges}
+        assert len(cycle_nodes) == 1
+
+    def test_no_cycle_dag(self):
+        edges = [
+            _make_module_edge("a.py", "b.py"),
+            _make_module_edge("b.py", "c.py"),
+        ]
+        result = _make_scan_result_with_edges(edges)
+        cycle_edges = _detect_cycles(result)
+        assert cycle_edges == []
+
+    def test_self_loop_not_a_multi_node_scc(self):
+        edges = [
+            _make_module_edge("a.py", "a.py"),
+        ]
+        result = _make_scan_result_with_edges(edges)
+        cycle_edges = _detect_cycles(result)
+        assert cycle_edges == []
+
+    def test_two_independent_cycles(self):
+        edges = [
+            _make_module_edge("a.py", "b.py"),
+            _make_module_edge("b.py", "a.py"),
+            _make_module_edge("c.py", "d.py"),
+            _make_module_edge("d.py", "c.py"),
+        ]
+        result = _make_scan_result_with_edges(edges)
+        cycle_edges = _detect_cycles(result)
+        cycle_nodes = {e.to_name for e in cycle_edges}
+        assert len(cycle_nodes) == 2
+
+    def test_empty_graph_no_cycles(self):
+        result = _make_scan_result_with_edges([])
+        cycle_edges = _detect_cycles(result)
+        assert cycle_edges == []
+
+    def test_cycle_node_uses_adg_cycle_prefix(self):
+        edges = [
+            _make_module_edge("a.py", "b.py"),
+            _make_module_edge("b.py", "a.py"),
+        ]
+        result = _make_scan_result_with_edges(edges)
+        cycle_edges = _detect_cycles(result)
+        assert all(e.to_name.startswith("ADG::Cycle::") for e in cycle_edges)
+
+    def test_non_module_edges_excluded_from_cycle_detection(self):
+        """Edges where from_name or to_name is a Symbol (not a Module) are excluded."""
+        edges = [
+            Edge(
+                from_name=_make_module_adg("a.py"),
+                relation_type="reads_from",
+                to_name="ADG::Symbol::some.config.VALUE",
+                edge_kind="import",
+                source_file="a.py",
+                line_no=1,
+                symbol="VALUE",
+            ),
+            Edge(
+                from_name="ADG::Symbol::some.config.VALUE",
+                relation_type="reads_from",
+                to_name=_make_module_adg("a.py"),
+                edge_kind="import",
+                source_file="some/config.py",
+                line_no=1,
+                symbol="",
+            ),
+        ]
+        result = _make_scan_result_with_edges(edges)
+        cycle_edges = _detect_cycles(result)
+        assert len(cycle_edges) == 0
+
+    def test_cycle_hash_deterministic(self):
+        edges = [
+            _make_module_edge("a.py", "b.py"),
+            _make_module_edge("b.py", "a.py"),
+        ]
+        result = _make_scan_result_with_edges(edges)
+        run1 = _detect_cycles(result)
+        run2 = _detect_cycles(result)
+        assert [e.to_name for e in run1] == [e.to_name for e in run2]
+
+    def test_calls_edges_included_in_cycle_detection(self):
+        edges = [
+            _make_module_edge("x.py", "y.py"),
+            Edge(
+                from_name=_make_module_adg("y.py"),
+                relation_type="instantiates",
+                to_name=_make_module_adg("x.py"),
+                edge_kind="composition",
+                source_file="y.py",
+                line_no=1,
+                symbol="",
+            ),
+        ]
+        result = _make_scan_result_with_edges(edges)
+        cycle_edges = _detect_cycles(result)
+        assert len(cycle_edges) >= 2
+
+
+# ===========================================================================
+# Integration: confidence scoring of new edge types
+# ===========================================================================
+
+
+class TestConfidenceScoringNewEdges:
+    """Verify confidence.py correctly scores E1/E5/E6 edge types."""
+
+    def test_exports_edge_scores_1_0(self):
+        from agentic_core.adg.analysis.confidence import score_edge
+
+        edge = Edge(
+            from_name="ADG::Module::foo.py",
+            relation_type="exports",
+            to_name="ADG::Symbol::foo.py::MyClass",
+            edge_kind="export",
+            source_file="foo.py",
+            line_no=5,
+            symbol="MyClass",
+        )
+        ec = score_edge(edge)
+        assert ec.confidence == 1.0
+        assert ec.provenance == "ast_symbol_inventory"
+
+    def test_dead_imports_edge_scores_1_0(self):
+        from agentic_core.adg.analysis.confidence import score_edge
+
+        edge = Edge(
+            from_name="ADG::Module::foo.py",
+            relation_type="dead_imports",
+            to_name="ADG::Symbol::sys",
+            edge_kind="dead_import",
+            source_file="foo.py",
+            line_no=1,
+            symbol="sys",
+        )
+        ec = score_edge(edge)
+        assert ec.confidence == 1.0
+        assert ec.provenance == "ast_dead_import"
+
+    def test_in_cycle_edge_scores_0_95(self):
+        from agentic_core.adg.analysis.confidence import score_edge
+
+        edge = Edge(
+            from_name="ADG::Module::a.py",
+            relation_type="in_cycle",
+            to_name="ADG::Cycle::abcdef1234567890",
+            edge_kind="cycle",
+            source_file="a.py",
+            line_no=0,
+            symbol="cycle:abcdef1234567890",
+        )
+        ec = score_edge(edge)
+        assert ec.confidence == 0.95
+        assert ec.provenance == "ast_cycle_detection"
+
+
+# ===========================================================================
+# Integration: repair routing of new edge types
+# ===========================================================================
+
+
+class TestRepairRoutingNewEdges:
+    """Verify repair.py routes E5 and E6 edges to the right agents."""
+
+    def _cycle_edge(self) -> Edge:
+        return Edge(
+            from_name="ADG::Module::a.py",
+            relation_type="in_cycle",
+            to_name="ADG::Cycle::abc123",
+            edge_kind="cycle",
+            source_file="a.py",
+            line_no=0,
+            symbol="cycle:abc123",
+        )
+
+    def _dead_edge(self) -> Edge:
+        return Edge(
+            from_name="ADG::Module::a.py",
+            relation_type="dead_imports",
+            to_name="ADG::Symbol::sys",
+            edge_kind="dead_import",
+            source_file="a.py",
+            line_no=1,
+            symbol="sys",
+        )
+
+    def test_cycle_routes_to_architecture_governor(self):
+        from agentic_core.adg.analysis.repair import route_violations
+
+        routes = route_violations([self._cycle_edge()])
+        assert len(routes) == 1
+        assert routes[0].recommended_agent == "ArchitectureGovernorAgent"
+        assert routes[0].ci_lane == "layer_guard"
+        assert routes[0].severity == "high"
+
+    def test_dead_import_routes_to_dependency_repair(self):
+        from agentic_core.adg.analysis.repair import route_violations
+
+        routes = route_violations([self._dead_edge()])
+        assert len(routes) == 1
+        assert routes[0].recommended_agent == "DependencyRepairAgent"
+        assert routes[0].ci_lane == "dep_check"
+        assert routes[0].severity == "low"
+
+    def test_route_violations_sorted_by_severity(self):
+        from agentic_core.adg.analysis.repair import route_violations
+
+        routes = route_violations([self._dead_edge(), self._cycle_edge()])
+        severities = [r.severity for r in routes]
+        order = {"critical": 0, "high": 1, "medium": 2, "low": 3}
+        assert sorted(severities, key=lambda s: order[s]) == severities

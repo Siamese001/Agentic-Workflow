@@ -169,6 +169,19 @@ class ScanManifest:
     test_covers_count: int = 0
     layer_violation_count: int = 0
     governance_plane_count: int = 0
+    symbol_export_count: int = 0
+    symbol_hit_rate: float = 0.0
+    dead_import_count: int = 0
+    cycle_count: int = 0
+    max_cycle_depth: int = 0
+    decorator_edge_count: int = 0
+    star_import_count: int = 0
+    star_import_resolved_count: int = 0
+    conditional_import_count: int = 0
+    cache_hits: int = 0
+    cache_misses: int = 0
+    cache_hit_rate: float = 0.0
+    type_annotation_count: int = 0
 
     def to_dict(self) -> dict:
         import dataclasses
@@ -524,18 +537,125 @@ class _DynamicExecutionVisitor(ast.NodeVisitor):
 
 
 class _ImportVisitor(ast.NodeVisitor):
-    """Extract import edges from an AST."""
+    """Extract import edges from an AST.
 
-    def __init__(self, module_adg_name: str, source_file: str) -> None:
+    E7: Tracks conditional import context:
+      - TYPE_CHECKING guard  -> edge_kind "type_checking_import"
+      - try/except ImportError -> edge_kind "optional_import"
+      - sys.version_info guard -> edge_kind "version_guard_import"
+      - unconditional           -> edge_kind "import" (or "network")
+
+    E2: Star imports (from X import *) are emitted as edge_kind "star_import".
+        If the source module's __all__ was pre-populated (via _all_registry),
+        individual edges are emitted for each exported name instead.
+    """
+
+    def __init__(
+        self,
+        module_adg_name: str,
+        source_file: str,
+        all_registry: dict[str, list[str]] | None = None,
+    ) -> None:
         self.module_adg_name = module_adg_name
         self.source_file = source_file
         self.edges: list[Edge] = []
+        self._all_registry: dict[str, list[str]] = all_registry or {}
+        self._context_stack: list[str] = []
+        self.star_import_count: int = 0
+        self.star_resolved_count: int = 0
+
+    # ------------------------------------------------------------------
+    # Context tracking for E7
+    # ------------------------------------------------------------------
+
+    def visit_If(self, node: ast.If) -> None:
+        ctx = self._classify_if_context(node.test)
+        if ctx:
+            self._context_stack.append(ctx)
+            for stmt in node.body:
+                self.visit(stmt)
+            self._context_stack.pop()
+            for stmt in node.orelse:
+                self.visit(stmt)
+        else:
+            self.generic_visit(node)
+
+    def visit_Try(self, node: ast.Try) -> None:
+        for stmt in node.body:
+            self.visit(stmt)
+        for handler in node.handlers:
+            is_import_error = False
+            if handler.type is not None:
+                name = self._extract_exception_name(handler.type)
+                if name in ("ImportError", "ModuleNotFoundError"):
+                    is_import_error = True
+            if is_import_error:
+                self._context_stack.append("optional_import")
+                for stmt in handler.body:
+                    self.visit(stmt)
+                self._context_stack.pop()
+            else:
+                for stmt in handler.body:
+                    self.visit(stmt)
+        for stmt in node.orelse + node.finalbody if hasattr(node, "finalbody") else node.orelse:
+            self.visit(stmt)
+
+    def _current_context(self) -> str:
+        return self._context_stack[-1] if self._context_stack else "import"
+
+    @staticmethod
+    def _classify_if_context(test: ast.expr) -> str:
+        if isinstance(test, ast.Name) and test.id == "TYPE_CHECKING":
+            return "type_checking_import"
+        if isinstance(test, ast.Attribute):
+            chain = []
+            cur: ast.expr = test
+            while isinstance(cur, ast.Attribute):
+                chain.append(cur.attr)
+                cur = cur.value
+            if isinstance(cur, ast.Name):
+                chain.append(cur.id)
+            full = ".".join(reversed(chain))
+            if "version_info" in full or "sys.version" in full:
+                return "version_guard_import"
+        if isinstance(test, ast.Compare):
+            if isinstance(test.left, ast.Attribute):
+                chain2 = []
+                cur2: ast.expr = test.left
+                while isinstance(cur2, ast.Attribute):
+                    chain2.append(cur2.attr)
+                    cur2 = cur2.value
+                if isinstance(cur2, ast.Name):
+                    chain2.append(cur2.id)
+                full2 = ".".join(reversed(chain2))
+                if "version_info" in full2:
+                    return "version_guard_import"
+        return ""
+
+    @staticmethod
+    def _extract_exception_name(node: ast.expr) -> str:
+        if isinstance(node, ast.Name):
+            return node.id
+        if isinstance(node, ast.Attribute):
+            return node.attr
+        if isinstance(node, ast.Tuple):
+            names = []
+            for elt in node.elts:
+                if isinstance(elt, ast.Name):
+                    names.append(elt.id)
+            return "|".join(names)
+        return ""
+
+    # ------------------------------------------------------------------
+    # Import visitors
+    # ------------------------------------------------------------------
 
     def visit_Import(self, node: ast.Import) -> None:
+        ctx = self._current_context()
         for alias in node.names:
             imported = alias.name
             to_name = canonical_name("Symbol", imported)
-            edge_kind = self._classify_import_kind(imported)
+            edge_kind = ctx if ctx != "import" else self._classify_import_kind(imported)
             self.edges.append(
                 Edge(
                     from_name=self.module_adg_name,
@@ -547,13 +667,16 @@ class _ImportVisitor(ast.NodeVisitor):
                     symbol=imported,
                 )
             )
-        self.generic_visit(node)
 
     def visit_ImportFrom(self, node: ast.ImportFrom) -> None:
         module = node.module or ""
+        ctx = self._current_context()
         for alias in node.names:
+            if alias.name == "*":
+                self._handle_star_import(module, node.lineno, ctx)
+                continue
             full_sym = f"{module}.{alias.name}" if module else alias.name
-            edge_kind = self._classify_import_kind(module)
+            edge_kind = ctx if ctx != "import" else self._classify_import_kind(module)
             to_name = canonical_name("Symbol", full_sym)
             self.edges.append(
                 Edge(
@@ -566,7 +689,41 @@ class _ImportVisitor(ast.NodeVisitor):
                     symbol=full_sym,
                 )
             )
-        self.generic_visit(node)
+
+    def _handle_star_import(self, module: str, line_no: int, ctx: str) -> None:
+        """E2: Resolve `from X import *` against __all__ if available, else emit star_import edge."""
+        self.star_import_count += 1
+        known_exports = self._all_registry.get(module)
+        if known_exports:
+            self.star_resolved_count += 1
+            for name in known_exports:
+                full_sym = f"{module}.{name}"
+                to_name = canonical_name("Symbol", full_sym)
+                edge_kind = ctx if ctx != "import" else self._classify_import_kind(module)
+                self.edges.append(
+                    Edge(
+                        from_name=self.module_adg_name,
+                        relation_type="imports",
+                        to_name=to_name,
+                        edge_kind=edge_kind,
+                        source_file=self.source_file,
+                        line_no=line_no,
+                        symbol=full_sym,
+                    )
+                )
+        else:
+            to_name = canonical_name("Symbol", f"{module}.*")
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    relation_type="imports",
+                    to_name=to_name,
+                    edge_kind="star_import",
+                    source_file=self.source_file,
+                    line_no=line_no,
+                    symbol=f"{module}.*",
+                )
+            )
 
     @staticmethod
     def _classify_import_kind(module_name: str) -> str:
@@ -835,6 +992,424 @@ class _GovernancePlaneVisitor(ast.NodeVisitor):
         return ""
 
 
+class _TypeAnnotationVisitor(ast.NodeVisitor):
+    """E4: G8 — Emit `reads_from` edges for type annotations on function arguments,
+    return types, and annotated assignments.
+
+    Each named type reference (including dotted names like `pathlib.Path`)
+    emits a `reads_from` edge with edge_kind "type_annotation".  Generic
+    subscripts (e.g. `list[str]`) are unwrapped to extract all referenced
+    names.
+
+    Forward references encoded as string literals are currently skipped
+    (they would require symbol resolution and are handled by E11).
+    """
+
+    def __init__(self, module_adg_name: str, source_file: str) -> None:
+        self.module_adg_name = module_adg_name
+        self.source_file = source_file
+        self.edges: list[Edge] = []
+        self._seen: set[tuple[str, int]] = set()
+
+    def _emit(self, sym: str, line_no: int) -> None:
+        key = (sym, line_no)
+        if key in self._seen:
+            return
+        self._seen.add(key)
+        self.edges.append(
+            Edge(
+                from_name=self.module_adg_name,
+                relation_type="reads_from",
+                to_name=canonical_name("Symbol", sym),
+                edge_kind="type_annotation",
+                source_file=self.source_file,
+                line_no=line_no,
+                symbol=sym,
+            )
+        )
+
+    def _extract_annotation_names(self, node: ast.expr, line_no: int) -> None:
+        """Recursively extract all named type references from an annotation."""
+        if isinstance(node, ast.Name):
+            if node.id not in ("None", "Any", "True", "False"):
+                self._emit(node.id, line_no)
+        elif isinstance(node, ast.Attribute):
+            sym = self._extract_dotted(node)
+            if sym:
+                self._emit(sym, line_no)
+        elif isinstance(node, ast.Subscript):
+            self._extract_annotation_names(node.value, line_no)
+            self._extract_annotation_names(node.slice, line_no)
+        elif isinstance(node, ast.Tuple):
+            for elt in node.elts:
+                self._extract_annotation_names(elt, line_no)
+        elif isinstance(node, ast.BinOp):
+            self._extract_annotation_names(node.left, line_no)
+            self._extract_annotation_names(node.right, line_no)
+        elif isinstance(node, ast.Constant) and isinstance(node.value, str):
+            pass
+
+    @staticmethod
+    def _extract_dotted(node: ast.Attribute) -> str:
+        parts: list[str] = []
+        cur: ast.expr = node
+        while isinstance(cur, ast.Attribute):
+            parts.append(cur.attr)
+            cur = cur.value
+        if isinstance(cur, ast.Name):
+            parts.append(cur.id)
+            return ".".join(reversed(parts))
+        return ""
+
+    def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
+        for arg in node.args.args + node.args.posonlyargs + node.args.kwonlyargs:
+            if arg.annotation:
+                self._extract_annotation_names(arg.annotation, arg.annotation.lineno)
+        if node.args.vararg and node.args.vararg.annotation:
+            self._extract_annotation_names(node.args.vararg.annotation, node.args.vararg.annotation.lineno)
+        if node.args.kwarg and node.args.kwarg.annotation:
+            self._extract_annotation_names(node.args.kwarg.annotation, node.args.kwarg.annotation.lineno)
+        if node.returns:
+            self._extract_annotation_names(node.returns, node.returns.lineno)
+        self.generic_visit(node)
+
+    visit_AsyncFunctionDef = visit_FunctionDef  # type: ignore[assignment]
+
+    def visit_AnnAssign(self, node: ast.AnnAssign) -> None:
+        self._extract_annotation_names(node.annotation, node.annotation.lineno)
+        self.generic_visit(node)
+
+
+class _DecoratorVisitor(ast.NodeVisitor):
+    """E3: G7 — Emit `applies` edges for decorator usage on functions and classes.
+
+    For each decorated definition, emits:
+      module --applies--> ADG::Symbol::<decorator>
+
+    Special cases:
+      - Decorators matching _GOVERNANCE_WRITE_SYMBOLS -> writes_through (already in GG)
+      - Decorators matching _GOVERNANCE_ROUTE_SYMBOLS -> routes_through (already in GG)
+      These are skipped here to avoid duplicate edges with GovernancePlaneVisitor.
+    """
+
+    def __init__(self, module_adg_name: str, source_file: str) -> None:
+        self.module_adg_name = module_adg_name
+        self.source_file = source_file
+        self.edges: list[Edge] = []
+
+    def _process_decorators(self, decorators: list[ast.expr], lineno: int) -> None:
+        for dec in decorators:
+            sym = self._extract_decorator_name(dec)
+            if not sym:
+                continue
+            base = sym.split(".")[0]
+            tail = sym.split(".")[-1]
+            if base in _GOVERNANCE_WRITE_SYMBOLS or tail in _GOVERNANCE_WRITE_SYMBOLS:
+                continue
+            if base in _GOVERNANCE_ROUTE_SYMBOLS or tail in _GOVERNANCE_ROUTE_SYMBOLS:
+                continue
+            to_name = canonical_name("Symbol", sym)
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    relation_type="influences",
+                    to_name=to_name,
+                    edge_kind="decorator",
+                    source_file=self.source_file,
+                    line_no=lineno,
+                    symbol=sym,
+                )
+            )
+
+    def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
+        self._process_decorators(node.decorator_list, node.lineno)
+        self.generic_visit(node)
+
+    visit_AsyncFunctionDef = visit_FunctionDef  # type: ignore[assignment]
+
+    def visit_ClassDef(self, node: ast.ClassDef) -> None:
+        self._process_decorators(node.decorator_list, node.lineno)
+        self.generic_visit(node)
+
+    @staticmethod
+    def _extract_decorator_name(node: ast.expr) -> str:
+        if isinstance(node, ast.Name):
+            return node.id
+        if isinstance(node, ast.Attribute):
+            parts: list[str] = []
+            cur: ast.expr = node
+            while isinstance(cur, ast.Attribute):
+                parts.append(cur.attr)
+                cur = cur.value
+            if isinstance(cur, ast.Name):
+                parts.append(cur.id)
+            return ".".join(reversed(parts))
+        if isinstance(node, ast.Call):
+            return _DecoratorVisitor._extract_decorator_name(node.func)
+        return ""
+
+
+class _SymbolInventoryVisitor(ast.NodeVisitor):
+    """E1: Emit `exports` edges for every public top-level symbol in a module.
+
+    Walks top-level FunctionDef, AsyncFunctionDef, ClassDef, and simple
+    module-level Assign/AnnAssign to build a symbol inventory.  Only
+    public names (not starting with '_') are emitted unless they appear
+    in an explicit __all__ list.
+
+    Also records the complete name→line_no map in `symbol_table` so that
+    downstream passes (E6, E11) can resolve import targets.
+    """
+
+    def __init__(self, module_adg_name: str, source_file: str) -> None:
+        self.module_adg_name = module_adg_name
+        self.source_file = source_file
+        self.edges: list[Edge] = []
+        self.symbol_table: dict[str, int] = {}
+        self._all_names: list[str] | None = None
+        self._collected: list[tuple[str, str, int]] = []
+
+    def visit_Module(self, node: ast.Module) -> None:
+        self._all_names = self._extract_all(node)
+        self.generic_visit(node)
+        self._emit_export_edges()
+
+    def _extract_all(self, module_node: ast.Module) -> list[str] | None:
+        for stmt in module_node.body:
+            if isinstance(stmt, ast.Assign):
+                for target in stmt.targets:
+                    if isinstance(target, ast.Name) and target.id == "__all__":
+                        if isinstance(stmt.value, (ast.List, ast.Tuple)):
+                            names = []
+                            for elt in stmt.value.elts:
+                                if isinstance(elt, ast.Constant) and isinstance(elt.value, str):
+                                    names.append(elt.value)
+                            return names
+        return None
+
+    def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
+        kind = "async_function" if isinstance(node, ast.AsyncFunctionDef) else "function"
+        self._collected.append((node.name, kind, node.lineno))
+        self.symbol_table[node.name] = node.lineno
+
+    visit_AsyncFunctionDef = visit_FunctionDef  # type: ignore[assignment]
+
+    def visit_ClassDef(self, node: ast.ClassDef) -> None:
+        self._collected.append((node.name, "class", node.lineno))
+        self.symbol_table[node.name] = node.lineno
+
+    def visit_Assign(self, node: ast.Assign) -> None:
+        if not isinstance(node.col_offset, int) or node.col_offset != 0:
+            return
+        for target in node.targets:
+            if isinstance(target, ast.Name) and target.id not in ("__all__", "__version__", "__author__"):
+                self._collected.append((target.id, "constant", node.lineno))
+                self.symbol_table[target.id] = node.lineno
+
+    def visit_AnnAssign(self, node: ast.AnnAssign) -> None:
+        if not isinstance(node.col_offset, int) or node.col_offset != 0:
+            return
+        if isinstance(node.target, ast.Name):
+            self._collected.append((node.target.id, "type_alias", node.lineno))
+            self.symbol_table[node.target.id] = node.lineno
+
+    def _emit_export_edges(self) -> None:
+        explicit_all = set(self._all_names) if self._all_names is not None else None
+        for name, kind, line_no in self._collected:
+            if explicit_all is not None:
+                if name not in explicit_all:
+                    continue
+                is_reexport = False
+            else:
+                if name.startswith("_"):
+                    continue
+                is_reexport = False
+            to_sym = canonical_name("Symbol", f"{self.source_file}::{name}")
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    relation_type="exports",
+                    to_name=to_sym,
+                    edge_kind="export",
+                    source_file=self.source_file,
+                    line_no=line_no,
+                    symbol=name,
+                )
+            )
+
+
+class _UnusedImportVisitor(ast.NodeVisitor):
+    """E6: Detect imported names that are never used in the file body.
+
+    Strategy: collect all names imported at module level, then walk the
+    entire AST for Name/Attribute usages.  Any imported name that has
+    zero usages gets tagged `dead_import`.
+
+    Returns two lists:
+      - live_names: set of names that ARE used
+      - dead_names: set of names that are NOT used
+    """
+
+    def __init__(self) -> None:
+        self.imported_names: dict[str, int] = {}
+        self._used_names: set[str] = set()
+        self._in_import: bool = False
+
+    def visit_Import(self, node: ast.Import) -> None:
+        for alias in node.names:
+            local = alias.asname or alias.name.split(".")[0]
+            self.imported_names[local] = node.lineno
+
+    def visit_ImportFrom(self, node: ast.ImportFrom) -> None:
+        for alias in node.names:
+            if alias.name == "*":
+                continue
+            local = alias.asname or alias.name
+            self.imported_names[local] = node.lineno
+
+    def visit_Name(self, node: ast.Name) -> None:
+        if isinstance(node.ctx, (ast.Load, ast.Del)):
+            self._used_names.add(node.id)
+        self.generic_visit(node)
+
+    def visit_Attribute(self, node: ast.Attribute) -> None:
+        cur: ast.expr = node
+        while isinstance(cur, ast.Attribute):
+            cur = cur.value
+        if isinstance(cur, ast.Name):
+            self._used_names.add(cur.id)
+        self.generic_visit(node)
+
+    @property
+    def dead_names(self) -> set[str]:
+        return {n for n in self.imported_names if n not in self._used_names}
+
+    @property
+    def live_names(self) -> set[str]:
+        return {n for n in self.imported_names if n in self._used_names}
+
+
+def _tag_dead_imports(edges: list[Edge], dead_names: set[str]) -> list[Edge]:
+    """E6: Re-tag import edges for unused names with edge_kind='dead_import'.
+
+    Returns a new list with dead imports replaced by dead_import-tagged edges.
+    """
+    result: list[Edge] = []
+    for e in edges:
+        if e.relation_type == "imports" and e.symbol.split(".")[-1] in dead_names:
+            result.append(
+                Edge(
+                    from_name=e.from_name,
+                    relation_type="dead_imports",
+                    to_name=e.to_name,
+                    edge_kind="dead_import",
+                    source_file=e.source_file,
+                    line_no=e.line_no,
+                    symbol=e.symbol,
+                )
+            )
+        else:
+            result.append(e)
+    return result
+
+
+def _detect_cycles(result: ScanResult) -> list[Edge]:
+    """E5: Post-scan pass — detect strongly connected components (cycles) in the import graph.
+
+    Uses Kosaraju's algorithm (pure Python, no external deps) on the import
+    subgraph.  For each SCC with >1 node, emits `in_cycle` edges from each
+    member to a synthetic ADG::Cycle:: entity.
+
+    Returns list of new `in_cycle` edges to add to the result.
+    """
+    import hashlib as _hashlib
+
+    module_prefix = "ADG::Module::"
+
+    adj: dict[str, set[str]] = {}
+    radj: dict[str, set[str]] = {}
+    nodes: set[str] = set()
+
+    for edge in result.edges:
+        if edge.relation_type not in ("imports", "calls", "instantiates"):
+            continue
+        fn = edge.from_name
+        tn = edge.to_name
+        if not fn.startswith(module_prefix) or not tn.startswith(module_prefix):
+            continue
+        nodes.add(fn)
+        nodes.add(tn)
+        adj.setdefault(fn, set()).add(tn)
+        radj.setdefault(tn, set()).add(fn)
+
+    if not nodes:
+        return []
+
+    visited: set[str] = set()
+    order: list[str] = []
+
+    def dfs1(v: str) -> None:
+        stack = [(v, iter(adj.get(v, set())))]
+        visited.add(v)
+        while stack:
+            node, children = stack[-1]
+            try:
+                child = next(children)
+                if child not in visited:
+                    visited.add(child)
+                    stack.append((child, iter(adj.get(child, set()))))
+            except StopIteration:
+                order.append(node)
+                stack.pop()
+
+    for n in sorted(nodes):
+        if n not in visited:
+            dfs1(n)
+
+    visited2: set[str] = set()
+    sccs: list[list[str]] = []
+
+    def dfs2(v: str) -> list[str]:
+        comp: list[str] = []
+        stack = [v]
+        visited2.add(v)
+        while stack:
+            node = stack.pop()
+            comp.append(node)
+            for nb in sorted(radj.get(node, set())):
+                if nb not in visited2:
+                    visited2.add(nb)
+                    stack.append(nb)
+        return comp
+
+    for n in reversed(order):
+        if n not in visited2:
+            scc = dfs2(n)
+            if len(scc) > 1:
+                sccs.append(sorted(scc))
+
+    new_edges: list[Edge] = []
+    for scc in sccs:
+        members_key = "|".join(scc)
+        cycle_hash = _hashlib.sha256(members_key.encode()).hexdigest()[:16]
+        cycle_node = canonical_name("Cycle", cycle_hash)
+        for member in scc:
+            rel = member[len(module_prefix) :]
+            new_edges.append(
+                Edge(
+                    from_name=member,
+                    relation_type="in_cycle",
+                    to_name=cycle_node,
+                    edge_kind="cycle",
+                    source_file=rel,
+                    line_no=0,
+                    symbol=f"cycle:{cycle_hash}",
+                )
+            )
+
+    return new_edges
+
+
 def _emit_layer_violation_edges(result: ScanResult) -> list[Edge]:
     """GV: Post-scan pass — emit deduplicated `violates` edges for forbidden cross-layer imports.
 
@@ -984,6 +1559,27 @@ def _scan_file(
     gov_visitor.visit(tree)
     edges.extend(gov_visitor.edges)
 
+    # E1: Symbol inventory / exports graph
+    sym_visitor = _SymbolInventoryVisitor(module_adg, rel)
+    sym_visitor.visit(tree)
+    edges.extend(sym_visitor.edges)
+
+    # E3: Decorator graph (G7)
+    dec_visitor = _DecoratorVisitor(module_adg, rel)
+    dec_visitor.visit(tree)
+    edges.extend(dec_visitor.edges)
+
+    # E4: Type annotation graph (G8)
+    ann_visitor = _TypeAnnotationVisitor(module_adg, rel)
+    ann_visitor.visit(tree)
+    edges.extend(ann_visitor.edges)
+
+    # E6: Unused import detection — re-tag dead import edges
+    unused_visitor = _UnusedImportVisitor()
+    unused_visitor.visit(tree)
+    if unused_visitor.dead_names:
+        edges = _tag_dead_imports(edges, unused_visitor.dead_names)
+
     return edges, False
 
 
@@ -1092,13 +1688,23 @@ class ADGStaticScanner:
         result.print_digest()
     """
 
-    def __init__(self, repo_root: Path | None = None, include_tests: bool = True) -> None:
+    def __init__(
+        self,
+        repo_root: Path | None = None,
+        include_tests: bool = True,
+        cache_path: Path | None = None,
+    ) -> None:
         self.repo_root = Path(repo_root) if repo_root is not None else Path.cwd()
         self.include_tests = include_tests  # H1
+        self.cache_path = cache_path  # E9: optional incremental cache
 
     def scan(self, commit_sha: str = "") -> ScanResult:
         """Run full static scan. Returns ScanResult with digest computed."""
         import sys
+
+        from agentic_core.adg.extraction.scan_cache import ScanCache, file_hash
+
+        cache = ScanCache.load(self.cache_path) if self.cache_path else ScanCache()
 
         manifest = ScanManifest(
             python_ast_version=f"{sys.version_info.major}.{sys.version_info.minor}",
@@ -1116,13 +1722,42 @@ class ADGStaticScanner:
             rel = _repo_relative(filepath, self.repo_root)
             modules_seen.append(rel)
             manifest.discovered_module_count += 1
-            file_edges, had_error = _scan_file(filepath, self.repo_root, self.include_tests)
+
+            # E9: Check cache before scanning
+            fhash = file_hash(filepath)
+            cached_edge_dicts, cache_hit = cache.get(rel, fhash)
+            if cache_hit and cached_edge_dicts is not None:
+                file_edges = [
+                    Edge(
+                        from_name=d["from_name"],
+                        relation_type=d["relation_type"],
+                        to_name=d["to_name"],
+                        edge_kind=d["edge_kind"],
+                        source_file=d["source_file"],
+                        line_no=d["line_no"],
+                        symbol=d.get("symbol", ""),
+                    )
+                    for d in cached_edge_dicts
+                ]
+                had_error = False
+            else:
+                file_edges, had_error = _scan_file(filepath, self.repo_root, self.include_tests)
+                if not had_error:
+                    cache.put(rel, fhash, file_edges)
+
             if had_error:
                 syntax_error_count += 1
                 syntax_errors.append(rel)
             else:
                 manifest.parsed_module_count += 1
             all_edges.extend(file_edges)
+
+        if self.cache_path:
+            cache.save(self.cache_path)
+        cache_stats = cache.stats()
+        manifest.cache_hits = cache_stats["hits"]
+        manifest.cache_misses = cache_stats["misses"]
+        manifest.cache_hit_rate = cache_stats["hit_rate"]
 
         # A3: zero-parsed-file check
         if manifest.parsed_module_count == 0:
@@ -1153,6 +1788,12 @@ class ADGStaticScanner:
             result.edges = sorted(set(result.edges) | set(violation_edges))
             result.compute_digest()
 
+        # E5: Cyclic dependency detection post-scan pass
+        cycle_edges = _detect_cycles(result)
+        if cycle_edges:
+            result.edges = sorted(set(result.edges) | set(cycle_edges))
+            result.compute_digest()
+
         # Gap manifest counts
         manifest.inter_module_call_count = sum(1 for e in result.edges if e.relation_type == "calls")
         manifest.test_covers_count = sum(1 for e in result.edges if e.relation_type == "covers")
@@ -1160,6 +1801,34 @@ class ADGStaticScanner:
         manifest.governance_plane_count = sum(
             1 for e in result.edges if e.relation_type in ("writes_through", "routes_through")
         )
+        # E1 manifest counts
+        manifest.symbol_export_count = sum(1 for e in result.edges if e.relation_type == "exports")
+        import_total = sum(1 for e in result.edges if e.relation_type == "imports")
+        from_imports = sum(1 for e in result.edges if e.relation_type == "imports" and "::" in e.to_name)
+        if from_imports > 0:
+            hit = sum(
+                1 for e in result.edges if e.relation_type == "imports" and e.symbol and e.symbol != e.to_name
+            )
+            manifest.symbol_hit_rate = round(hit / from_imports, 3)
+        # E6 manifest counts
+        manifest.dead_import_count = sum(1 for e in result.edges if e.relation_type == "dead_imports")
+        # E5 manifest counts
+        cycle_nodes: set[str] = {e.to_name for e in result.edges if e.relation_type == "in_cycle"}
+        manifest.cycle_count = len(cycle_nodes)
+        if cycle_nodes:
+            manifest.max_cycle_depth = max(
+                sum(1 for e in result.edges if e.relation_type == "in_cycle" and e.to_name == cn)
+                for cn in cycle_nodes
+            )
+        # E3 manifest counts
+        manifest.decorator_edge_count = sum(1 for e in result.edges if e.edge_kind == "decorator")
+        # E2 manifest counts
+        manifest.star_import_count = sum(1 for e in result.edges if e.edge_kind == "star_import")
+        # E7 manifest counts
+        _conditional_kinds = frozenset({"type_checking_import", "optional_import", "version_guard_import"})
+        manifest.conditional_import_count = sum(1 for e in result.edges if e.edge_kind in _conditional_kinds)
+        # E4 manifest counts
+        manifest.type_annotation_count = sum(1 for e in result.edges if e.edge_kind == "type_annotation")
 
         return result
 
@@ -1225,4 +1894,11 @@ __all__ = [
     "_TestTraceabilityVisitor",
     "_GovernancePlaneVisitor",
     "_emit_layer_violation_edges",
+    "_SymbolInventoryVisitor",
+    "_UnusedImportVisitor",
+    "_tag_dead_imports",
+    "_detect_cycles",
+    "_DecoratorVisitor",
+    "_ImportVisitor",
+    "_TypeAnnotationVisitor",
 ]
