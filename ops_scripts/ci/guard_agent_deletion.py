@@ -52,6 +52,47 @@ def check_agent_deletions() -> bool:
     if not deleted_agents:
         return True  # No agents deleted, allow
 
+    # HITL: Show user what agents are being deleted and get confirmation
+    print()
+    print("=" * 80)
+    print("⚠️  AGENT DELETION DETECTED - HUMAN CONFIRMATION REQUIRED")
+    print("=" * 80)
+    print()
+    print("The following agents are being deleted in this commit:")
+    print()
+    for agent in deleted_agents:
+        agent_name = Path(agent).stem
+        print(f"  🗑️  {agent}")
+
+        # Show reference count
+        ref_count = count_references(agent_name)
+        if ref_count > 0:
+            print(f"      ⚠️  WARNING: {ref_count} references found in codebase!")
+        else:
+            print(f"      ✅ No active references found")
+
+    print()
+    print("Agent deletion is a DESTRUCTIVE operation that can break production systems.")
+    print()
+
+    # Get user confirmation
+    try:
+        response = input("Do you want to proceed with this deletion? (yes/no): ").strip().lower()
+        if response not in ["yes", "y"]:
+            print()
+            print("❌ Agent deletion cancelled by user")
+            print()
+            return False
+    except (EOFError, KeyboardInterrupt):
+        print()
+        print("❌ Agent deletion cancelled")
+        print()
+        return False
+
+    print()
+    print("✅ User confirmed deletion - checking authorization...")
+    print()
+
     # Read commit message
     commit_msg_file = Path(".git/COMMIT_EDITMSG")
     if not commit_msg_file.exists():
@@ -146,8 +187,8 @@ def check_agent_deletions() -> bool:
     return True
 
 
-def has_references(agent_name: str) -> bool:
-    """Check if agent is still referenced in codebase."""
+def count_references(agent_name: str) -> int:
+    """Count how many references to an agent exist in the codebase."""
     try:
         result = subprocess.run(
             ["git", "grep", "-l", agent_name, "--", "*.py"],
@@ -155,7 +196,7 @@ def has_references(agent_name: str) -> bool:
             text=True,
         )
     except subprocess.CalledProcessError:
-        return False  # No references found
+        return 0  # No references found
 
     # Filter out the agent file itself and test files
     references = [
@@ -166,7 +207,12 @@ def has_references(agent_name: str) -> bool:
         and "/tests/" not in line
         and "DELETED_SHIM_NAMES" not in line  # Ignore deletion registry
     ]
-    return len(references) > 0
+    return len(references)
+
+
+def has_references(agent_name: str) -> bool:
+    """Check if agent is still referenced in codebase."""
+    return count_references(agent_name) > 0
 
 
 def main() -> int:
