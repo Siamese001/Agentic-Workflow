@@ -104,6 +104,8 @@ RelationType = Literal[
     "layer_authority_violation",
     "policy_hash_mismatch",
     "lineage_of",
+    # GA: Behavioral anti-pattern detection (AST-based)
+    "antipattern",
 ]
 
 EdgeKind = Literal[
@@ -142,6 +144,11 @@ EdgeKind = Literal[
     "authority_violation",
     "policy_validation",
     "state_lineage",
+    # GA: Behavioral anti-pattern edge kinds
+    "silent_exception_swallow",
+    "blocking_call_in_async",
+    "global_state_mutation",
+    "retry_without_backoff",
 ]
 
 

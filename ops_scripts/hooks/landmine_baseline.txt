@@ -368,11 +368,6 @@ agentic_core/L0_routing/scripts/fission_executor_util.py:3:magic_configuration:M
 agentic_core/L0_routing/scripts/fission_executor_util.py:5:magic_configuration:Magic configuration: Hardcoded threshold=0.95
 agentic_core/L0_routing/scripts/fission_executor_util.py:8:magic_configuration:Magic configuration: Hardcoded max_depth=6
 agentic_core/L0_routing/scripts/fission_executor_util.py:9:magic_configuration:Magic configuration: Hardcoded max_files=1000
-agentic_core/L0_routing/scripts/flatten_scripts_directory_util.py:10:magic_configuration:Magic configuration: Hardcoded default_timeout=300
-agentic_core/L0_routing/scripts/flatten_scripts_directory_util.py:3:magic_configuration:Magic configuration: Hardcoded max_retries=3
-agentic_core/L0_routing/scripts/flatten_scripts_directory_util.py:5:magic_configuration:Magic configuration: Hardcoded threshold=0.95
-agentic_core/L0_routing/scripts/flatten_scripts_directory_util.py:8:magic_configuration:Magic configuration: Hardcoded max_depth=6
-agentic_core/L0_routing/scripts/flatten_scripts_directory_util.py:9:magic_configuration:Magic configuration: Hardcoded max_files=1000
 agentic_core/L0_routing/scripts/forensic_discovery_prep.py:44:magic_configuration:Magic configuration: Hardcoded max_retries=3
 agentic_core/L0_routing/scripts/forensic_discovery_prep.py:46:magic_configuration:Magic configuration: Hardcoded threshold=0.95
 agentic_core/L0_routing/scripts/forensic_discovery_prep.py:49:magic_configuration:Magic configuration: Hardcoded max_depth=6
@@ -1031,11 +1026,6 @@ agentic_core/L1_cognition/utils/consensus_util.py:12:magic_configuration:Magic c
 agentic_core/L1_cognition/utils/consensus_util.py:13:magic_configuration:Magic configuration: Hardcoded default_timeout=300
 agentic_core/L1_cognition/utils/consensus_util.py:6:magic_configuration:Magic configuration: Hardcoded max_retries=3
 agentic_core/L1_cognition/utils/consensus_util.py:8:magic_configuration:Magic configuration: Hardcoded threshold=0.95
-agentic_core/L1_cognition/utils/constants_util.py:10:magic_configuration:Magic configuration: Hardcoded default_timeout=300
-agentic_core/L1_cognition/utils/constants_util.py:3:magic_configuration:Magic configuration: Hardcoded max_retries=3
-agentic_core/L1_cognition/utils/constants_util.py:5:magic_configuration:Magic configuration: Hardcoded threshold=0.95
-agentic_core/L1_cognition/utils/constants_util.py:8:magic_configuration:Magic configuration: Hardcoded max_depth=6
-agentic_core/L1_cognition/utils/constants_util.py:9:magic_configuration:Magic configuration: Hardcoded max_files=1000
 agentic_core/L1_cognition/utils/execution_util.py:11:magic_configuration:Magic configuration: Hardcoded max_depth=6
 agentic_core/L1_cognition/utils/execution_util.py:12:magic_configuration:Magic configuration: Hardcoded max_files=1000
 agentic_core/L1_cognition/utils/execution_util.py:13:magic_configuration:Magic configuration: Hardcoded default_timeout=300
@@ -4345,6 +4335,11 @@ agentic_core/adg/extraction/__init__.py:11:magic_configuration:Magic configurati
 agentic_core/adg/extraction/__init__.py:12:magic_configuration:Magic configuration: Hardcoded default_timeout=300
 agentic_core/adg/extraction/__init__.py:5:magic_configuration:Magic configuration: Hardcoded max_retries=3
 agentic_core/adg/extraction/__init__.py:7:magic_configuration:Magic configuration: Hardcoded threshold=0.95
+agentic_core/adg/extraction/incremental.py:262:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/adg/extraction/incremental.py:63:magic_configuration:Magic configuration: Hardcoded timeout=10 in function call
+agentic_core/adg/extraction/incremental.py:75:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/adg/extraction/incremental.py:83:magic_configuration:Magic configuration: Hardcoded timeout=10 in function call
+agentic_core/adg/extraction/incremental.py:93:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/adg/extraction/scan_cache.py:103:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/adg/extraction/scan_cache.py:87:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/adg/identity/normalizer.py:204:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
@@ -10848,7 +10843,7 @@ tools/evidence_redis_retest.py:18:magic_configuration:Magic configuration: Hardc
 tools/evidence_redis_retest.py:21:magic_configuration:Magic configuration: Hardcoded max_depth=6
 tools/evidence_redis_retest.py:22:magic_configuration:Magic configuration: Hardcoded max_files=1000
 tools/evidence_redis_retest.py:23:magic_configuration:Magic configuration: Hardcoded default_timeout=300
-tools/generate_full_adg.py:13:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+tools/generate_full_adg.py:23:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
 tools/prove_meta_learning_bus.py:18:magic_configuration:Magic configuration: Hardcoded max_retries=3
 tools/prove_meta_learning_bus.py:20:magic_configuration:Magic configuration: Hardcoded threshold=0.95
 tools/prove_meta_learning_bus.py:23:magic_configuration:Magic configuration: Hardcoded max_depth=6

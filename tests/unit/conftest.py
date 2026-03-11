@@ -15,6 +15,10 @@ from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     TESTS_DIR,
 )
+from tests._config.runtime_antipattern_enforcer import (  # noqa: F401
+    enforce_no_policy_bypass,
+    enforce_no_unverified_writes,
+)
 
 _PROJECT_ROOT = str(Path(__file__).parent.parent.parent)
 

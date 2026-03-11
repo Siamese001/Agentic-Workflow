@@ -178,6 +178,7 @@ class ScanManifest:
     star_import_count: int = 0
     star_import_resolved_count: int = 0
     conditional_import_count: int = 0
+    antipattern_count: int = 0
     cache_hits: int = 0
     cache_misses: int = 0
     cache_hit_rate: float = 0.0
@@ -1080,6 +1081,234 @@ class _TypeAnnotationVisitor(ast.NodeVisitor):
         self.generic_visit(node)
 
 
+_BLOCKING_CALL_PREFIXES: frozenset[str] = frozenset(
+    {
+        "time.sleep",
+        "requests.get",
+        "requests.post",
+        "requests.put",
+        "requests.delete",
+        "requests.patch",
+        "requests.head",
+        "requests.request",
+        "urllib.request.urlopen",
+        "urllib2.urlopen",
+        "http.client",
+        "subprocess.run",
+        "subprocess.call",
+        "subprocess.check_output",
+        "subprocess.Popen",
+        "input",
+        "socket.recv",
+        "socket.accept",
+        "os.system",
+    }
+)
+
+
+class _AntipatternVisitor(ast.NodeVisitor):
+    """GA: Detect behavioral anti-patterns via AST analysis.
+
+    Emits `antipattern` edges for:
+      - silent_exception_swallow: except blocks with only pass/continue/break
+      - blocking_call_in_async: blocking stdlib calls inside async def
+      - global_state_mutation: module-level UPPER_CASE name reassigned inside a function
+      - retry_without_backoff: while/for loops containing try/except but no sleep/delay
+    """
+
+    def __init__(self, module_adg_name: str, source_file: str) -> None:
+        self.module_adg_name = module_adg_name
+        self.source_file = source_file
+        self.edges: list[Edge] = []
+        self._in_async: bool = False
+        self._function_depth: int = 0
+        self._global_names: set[str] = set()
+
+    # ------------------------------------------------------------------
+    # Scope tracking
+    # ------------------------------------------------------------------
+
+    def visit_Module(self, node: ast.Module) -> None:
+        # Collect module-level UPPER_CASE names (potential global constants)
+        for stmt in node.body:
+            if isinstance(stmt, ast.Assign) and stmt.col_offset == 0:
+                for target in stmt.targets:
+                    if isinstance(target, ast.Name) and target.id.isupper():
+                        self._global_names.add(target.id)
+            if isinstance(stmt, ast.AnnAssign) and stmt.col_offset == 0:
+                if isinstance(stmt.target, ast.Name) and stmt.target.id.isupper():
+                    self._global_names.add(stmt.target.id)
+        self.generic_visit(node)
+
+    def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
+        old_async = self._in_async
+        self._in_async = False
+        self._function_depth += 1
+        self.generic_visit(node)
+        self._function_depth -= 1
+        self._in_async = old_async
+
+    def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef) -> None:
+        old_async = self._in_async
+        self._in_async = True
+        self._function_depth += 1
+        self.generic_visit(node)
+        self._function_depth -= 1
+        self._in_async = old_async
+
+    def visit_ClassDef(self, node: ast.ClassDef) -> None:
+        old_async = self._in_async
+        self._in_async = False
+        self.generic_visit(node)
+        self._in_async = old_async
+
+    # ------------------------------------------------------------------
+    # Pattern 1: Silent exception swallowing
+    # ------------------------------------------------------------------
+
+    def visit_ExceptHandler(self, node: ast.ExceptHandler) -> None:
+        if self._is_silent_swallow(node):
+            exc_name = ""
+            if node.type is not None:
+                if isinstance(node.type, ast.Name):
+                    exc_name = node.type.id
+                elif isinstance(node.type, ast.Attribute):
+                    exc_name = self._extract_sym(node.type)
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    relation_type="antipattern",
+                    to_name=canonical_name("Symbol", "silent_exception_swallow"),
+                    edge_kind="silent_exception_swallow",
+                    source_file=self.source_file,
+                    line_no=node.lineno,
+                    symbol=f"except:{exc_name or 'bare'}",
+                )
+            )
+        self.generic_visit(node)
+
+    def _is_silent_swallow(self, node: ast.ExceptHandler) -> bool:
+        """True if the except body has no real action (pass, continue, break, or bare return)."""
+        if not node.body:
+            return True
+        if len(node.body) == 1:
+            stmt = node.body[0]
+            if isinstance(stmt, ast.Pass):
+                return True
+            if isinstance(stmt, (ast.Continue, ast.Break)):
+                return True
+            if isinstance(stmt, ast.Return) and stmt.value is None:
+                return True
+        return False
+
+    # ------------------------------------------------------------------
+    # Pattern 2: Blocking calls inside async functions
+    # ------------------------------------------------------------------
+
+    def visit_Call(self, node: ast.Call) -> None:
+        if self._in_async:
+            sym = self._extract_sym(node.func)
+            if sym and any(sym.startswith(p) for p in _BLOCKING_CALL_PREFIXES):
+                self.edges.append(
+                    Edge(
+                        from_name=self.module_adg_name,
+                        relation_type="antipattern",
+                        to_name=canonical_name("Symbol", "blocking_call_in_async"),
+                        edge_kind="blocking_call_in_async",
+                        source_file=self.source_file,
+                        line_no=node.lineno,
+                        symbol=sym,
+                    )
+                )
+        self.generic_visit(node)
+
+    # ------------------------------------------------------------------
+    # Pattern 3: Global state mutation (UPPER_CASE global reassigned inside function)
+    # ------------------------------------------------------------------
+
+    def visit_Assign(self, node: ast.Assign) -> None:
+        if self._function_depth > 0 and self._global_names:
+            for target in node.targets:
+                if isinstance(target, ast.Name) and target.id in self._global_names:
+                    self.edges.append(
+                        Edge(
+                            from_name=self.module_adg_name,
+                            relation_type="antipattern",
+                            to_name=canonical_name("Symbol", "global_state_mutation"),
+                            edge_kind="global_state_mutation",
+                            source_file=self.source_file,
+                            line_no=node.lineno,
+                            symbol=target.id,
+                        )
+                    )
+        self.generic_visit(node)
+
+    # ------------------------------------------------------------------
+    # Pattern 4: Retry loops without backoff (while/for with try but no sleep)
+    # ------------------------------------------------------------------
+
+    def visit_While(self, node: ast.While) -> None:
+        if self._loop_contains_retry_without_backoff(node):
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    relation_type="antipattern",
+                    to_name=canonical_name("Symbol", "retry_without_backoff"),
+                    edge_kind="retry_without_backoff",
+                    source_file=self.source_file,
+                    line_no=node.lineno,
+                    symbol="while_retry",
+                )
+            )
+        self.generic_visit(node)
+
+    def visit_For(self, node: ast.For) -> None:
+        if self._loop_contains_retry_without_backoff(node):
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    relation_type="antipattern",
+                    to_name=canonical_name("Symbol", "retry_without_backoff"),
+                    edge_kind="retry_without_backoff",
+                    source_file=self.source_file,
+                    line_no=node.lineno,
+                    symbol="for_retry",
+                )
+            )
+        self.generic_visit(node)
+
+    def _loop_contains_retry_without_backoff(self, node: ast.AST) -> bool:
+        """True if loop has a try/except but no sleep/delay call within it."""
+        has_try = False
+        has_backoff = False
+        for child in ast.walk(node):
+            if isinstance(child, ast.Try):
+                has_try = True
+            if isinstance(child, ast.Call):
+                sym = self._extract_sym(child.func)
+                if sym and ("sleep" in sym or "delay" in sym or "backoff" in sym or "wait" in sym):
+                    has_backoff = True
+        return has_try and not has_backoff
+
+    # ------------------------------------------------------------------
+    # Shared helper
+    # ------------------------------------------------------------------
+
+    def _extract_sym(self, node: ast.expr) -> str:
+        if isinstance(node, ast.Name):
+            return node.id
+        if isinstance(node, ast.Attribute):
+            parts: list[str] = []
+            cur: ast.expr = node
+            while isinstance(cur, ast.Attribute):
+                parts.append(cur.attr)
+                cur = cur.value
+            if isinstance(cur, ast.Name):
+                parts.append(cur.id)
+            return ".".join(reversed(parts))
+        return ""
+
+
 class _DecoratorVisitor(ast.NodeVisitor):
     """E3: G7 — Emit `applies` edges for decorator usage on functions and classes.
 
@@ -1580,6 +1809,11 @@ def _scan_file(
     if unused_visitor.dead_names:
         edges = _tag_dead_imports(edges, unused_visitor.dead_names)
 
+    # GA: Behavioral anti-pattern detection
+    ap_visitor = _AntipatternVisitor(module_adg, rel)
+    ap_visitor.visit(tree)
+    edges.extend(ap_visitor.edges)
+
     return edges, False
 
 
@@ -1829,6 +2063,8 @@ class ADGStaticScanner:
         manifest.conditional_import_count = sum(1 for e in result.edges if e.edge_kind in _conditional_kinds)
         # E4 manifest counts
         manifest.type_annotation_count = sum(1 for e in result.edges if e.edge_kind == "type_annotation")
+        # GA: Anti-pattern manifest counts
+        manifest.antipattern_count = sum(1 for e in result.edges if e.relation_type == "antipattern")
 
         return result
 
