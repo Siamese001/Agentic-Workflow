@@ -12,6 +12,7 @@ from dataclasses import dataclass, field
 from typing import Any, NamedTuple
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBridge
 
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
@@ -56,6 +57,22 @@ class BaseDispatchAgent(SovereignBaseAgent):
         super().__post_init__()
         self.TIMEOUT: float = float(self.config_dict.get("timeout", _DEFAULT_TIMEOUT_S))
         Logger.info(f"Initialized {self.__class__.__name__} (timeout={self.TIMEOUT}s)")
+        self._register_in_knowledge_graph()
+
+    def _register_in_knowledge_graph(self) -> None:
+        """Register this agent as an entity in the Memory MCP knowledge graph."""
+        try:
+            bridge = GraphMemoryBridge.get_instance()
+            bridge.create_agent_entity(
+                agent_name=self.__class__.__name__,
+                agent_type="DispatchAgent",
+                observations=[
+                    f"DispatchAgent {self.__class__.__name__} initialized",
+                    f"timeout={self.config_dict.get('timeout', _DEFAULT_TIMEOUT_S)}s",
+                ],
+            )
+        except Exception as e:
+            Logger.debug(f"[{self.__class__.__name__}] KG registration skipped: {e}")
 
     def _run_self_tests(self) -> bool:
         """Phase 1: Self-testing for L3 compliance."""
@@ -67,17 +84,46 @@ class BaseDispatchAgent(SovereignBaseAgent):
         start = time.time()
         try:
             output = self._perform_action(action, params)
-            return ExecutionResult(
+            result = ExecutionResult(
                 SUCCESS=True,
                 OUTPUT=output,
                 duration_ms=(time.time() - start) * 1000,
             )
+            self._persist_outcome(action, result)
+            return result
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
-            return ExecutionResult(
+            result = ExecutionResult(
                 SUCCESS=False,
                 ERROR=str(e),
                 duration_ms=(time.time() - start) * 1000,
             )
+            self._persist_outcome(action, result)
+            return result
+
+    def _persist_outcome(self, action: str, result: ExecutionResult) -> None:
+        """Persist task outcome to Memory MCP knowledge graph."""
+        try:
+            bridge = GraphMemoryBridge.get_instance()
+            score = 1.0 if result.SUCCESS else 0.0
+            task_desc = f"{self.__class__.__name__}:{action}"
+            if result.SUCCESS and score >= 0.8:
+                bridge.create_mastered_task_relation(
+                    agent_name=self.__class__.__name__,
+                    task_description=task_desc,
+                    feedback_score=score,
+                )
+            elif not result.SUCCESS:
+                bridge.create_relation(
+                    from_entity=self.__class__.__name__,
+                    to_entity=f"Task_{action}",
+                    relation_type=GraphMemoryBridge.RELATION_FAILED_TASK,
+                )
+                bridge.add_observation(
+                    entity_name=self.__class__.__name__,
+                    observation=f"Failed action={action} error={result.ERROR}",
+                )
+        except Exception as e:
+            Logger.debug(f"[{self.__class__.__name__}] KG outcome persistence skipped: {e}")
 
     def _perform_action(self, action: str, params: dict[str, Any]) -> Any:
         """Perform the action. Subclasses override for domain routing."""

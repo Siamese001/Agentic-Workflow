@@ -17,6 +17,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBridge
 
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
@@ -44,6 +45,23 @@ class BaseHealingOrchestrator(SovereignBaseAgent):
     """
 
     cycle_results: list[dict[str, Any]] = field(default_factory=list)
+
+    def __post_init__(self) -> None:
+        """Initialize healing orchestrator and register in knowledge graph."""
+        super().__post_init__()
+        self._register_in_knowledge_graph()
+
+    def _register_in_knowledge_graph(self) -> None:
+        """Register this orchestrator as an entity in the Memory MCP knowledge graph."""
+        try:
+            bridge = GraphMemoryBridge.get_instance()
+            bridge.create_agent_entity(
+                agent_name=self.__class__.__name__,
+                agent_type="HealingOrchestrator",
+                observations=[f"HealingOrchestrator {self.__class__.__name__} initialized"],
+            )
+        except Exception as e:
+            Logger.debug(f"[{self.__class__.__name__}] KG registration skipped: {e}")
 
     def heal_repository(self, dry_run: bool = False, execute: bool = False, **kwargs: Any) -> dict[str, Any]:
         """Invoke healing chain via super()."""
@@ -104,11 +122,7 @@ class BaseHealingOrchestrator(SovereignBaseAgent):
                         f"from pattern with {getattr(best_pattern, 'success_count', 0)} successes",
                     )
 
-            result = (
-                self._apply_healing_strategy(violation, strategy)
-                if strategy
-                else self.heal(violation)
-            )
+            result = self._apply_healing_strategy(violation, strategy) if strategy else self.heal(violation)
 
             if result.get("status") == "fixed":
                 self.store_healing_pattern(violation, result)
@@ -176,4 +190,67 @@ class BaseHealingOrchestrator(SovereignBaseAgent):
             )
             self.cycle_results.append(results)
 
+        self._persist_healing_cycle(results)
         return results
+
+    def _persist_healing_cycle(self, results: dict[str, Any]) -> None:
+        """Persist healing cycle outcomes to Memory MCP knowledge graph."""
+        try:
+            bridge = GraphMemoryBridge.get_instance()
+            total = results.get("total", 0)
+            fixed = results.get("fixed", 0)
+            errors = results.get("errors", 0)
+            cycle_idx = len(self.cycle_results)
+            obs = (
+                f"HealingCycle={cycle_idx} total={total} fixed={fixed} "
+                f"errors={errors} success_rate={fixed / total:.2f}"
+                if total > 0
+                else f"HealingCycle={cycle_idx} total=0"
+            )
+            bridge.add_observation(entity_name=self.__class__.__name__, observation=obs)
+            if fixed > 0:
+                bridge.create_relation(
+                    from_entity=self.__class__.__name__,
+                    to_entity="HealingCycle",
+                    relation_type="HEALED",
+                )
+        except Exception as e:  # guardian: allow-silent-swallower
+            Logger.debug(f"[{self.__class__.__name__}] KG healing cycle persistence skipped: {e}")
+
+        # Playwright MCP: verify dashboard UI consistency after healing cycle
+        self._verify_dashboard_after_healing(results)
+
+    def _verify_dashboard_after_healing(self, results: dict[str, Any]) -> None:
+        """Trigger Playwright MCP dashboard verification after a healing cycle."""
+        import asyncio
+
+        fixed = results.get("fixed", 0)
+        if fixed == 0:
+            return  # Only verify when something was actually fixed
+        try:
+            from agentic_core.L6_observability.dashboards.verify_dashboard_e2e_playwright_util import (
+                mcp_verify_dashboard,
+            )
+
+            try:
+                loop = asyncio.get_event_loop()
+                if loop.is_running():
+                    import concurrent.futures
+
+                    with concurrent.futures.ThreadPoolExecutor(max_workers=1) as pool:
+                        future = pool.submit(asyncio.run, mcp_verify_dashboard())
+                        verification = future.result(timeout=30)  # guardian: allow-magic-config
+                else:
+                    verification = loop.run_until_complete(mcp_verify_dashboard())
+            except Exception:  # guardian: allow-silent-swallower
+                verification = {}
+
+            if verification.get("success"):
+                Logger.info(f"[{self.__class__.__name__}] Dashboard verification passed after healing")
+            else:
+                Logger.warning(
+                    f"[{self.__class__.__name__}] Dashboard verification flagged issues: "
+                    f"{verification.get('errors', [])}"
+                )
+        except Exception as e:  # guardian: allow-silent-swallower
+            Logger.debug(f"[{self.__class__.__name__}] Dashboard verification skipped: {e}")

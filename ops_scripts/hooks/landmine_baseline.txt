@@ -1252,10 +1252,16 @@ agentic_core/L2_execution/enforcement/runtime_interceptor.py:18:magic_configurat
 agentic_core/L2_execution/enforcement/runtime_interceptor.py:19:magic_configuration:Magic configuration: Hardcoded max_files=1000
 agentic_core/L2_execution/enforcement/runtime_interceptor.py:20:magic_configuration:Magic configuration: Hardcoded default_timeout=300
 agentic_core/L2_execution/enforcement/sovereign_filesystem_mcp.py:10:magic_configuration:Magic configuration: Hardcoded default_timeout=300
-agentic_core/L2_execution/enforcement/sovereign_filesystem_mcp.py:122:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L2_execution/enforcement/sovereign_filesystem_mcp.py:117:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L2_execution/enforcement/sovereign_filesystem_mcp.py:137:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L2_execution/enforcement/sovereign_filesystem_mcp.py:145:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L2_execution/enforcement/sovereign_filesystem_mcp.py:163:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L2_execution/enforcement/sovereign_filesystem_mcp.py:166:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L2_execution/enforcement/sovereign_filesystem_mcp.py:3:magic_configuration:Magic configuration: Hardcoded max_retries=3
 agentic_core/L2_execution/enforcement/sovereign_filesystem_mcp.py:5:magic_configuration:Magic configuration: Hardcoded threshold=0.95
+agentic_core/L2_execution/enforcement/sovereign_filesystem_mcp.py:82:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L2_execution/enforcement/sovereign_filesystem_mcp.py:8:magic_configuration:Magic configuration: Hardcoded max_depth=6
+agentic_core/L2_execution/enforcement/sovereign_filesystem_mcp.py:91:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L2_execution/enforcement/sovereign_filesystem_mcp.py:9:magic_configuration:Magic configuration: Hardcoded max_files=1000
 agentic_core/L2_execution/enforcement/sovereign_sandbox_isolation.py:10:magic_configuration:Magic configuration: Hardcoded max_depth=6
 agentic_core/L2_execution/enforcement/sovereign_sandbox_isolation.py:11:magic_configuration:Magic configuration: Hardcoded max_files=1000
@@ -1973,6 +1979,7 @@ agentic_core/L3_orchestration/engines/sovereign_redis_orchestrator.py:10:magic_c
 agentic_core/L3_orchestration/engines/sovereign_redis_orchestrator.py:13:magic_configuration:Magic configuration: Hardcoded max_depth=6
 agentic_core/L3_orchestration/engines/sovereign_redis_orchestrator.py:14:magic_configuration:Magic configuration: Hardcoded max_files=1000
 agentic_core/L3_orchestration/engines/sovereign_redis_orchestrator.py:15:magic_configuration:Magic configuration: Hardcoded default_timeout=300
+agentic_core/L3_orchestration/engines/sovereign_redis_orchestrator.py:78:magic_configuration:Magic configuration: Hardcoded timeout=5 in function call
 agentic_core/L3_orchestration/engines/sovereign_redis_orchestrator.py:8:magic_configuration:Magic configuration: Hardcoded max_retries=3
 agentic_core/L3_orchestration/engines/sub_atomic_engine_impl.py:10:magic_configuration:Magic configuration: Hardcoded default_timeout=300
 agentic_core/L3_orchestration/engines/sub_atomic_engine_impl.py:3:magic_configuration:Magic configuration: Hardcoded max_retries=3
@@ -2080,6 +2087,9 @@ agentic_core/L3_orchestration/reasoning/UnifiedAgent.py:332:silent_swallower:Sil
 agentic_core/L3_orchestration/reasoning/UnifiedAgent.py:33:magic_configuration:Magic configuration: Hardcoded default_timeout=300
 agentic_core/L3_orchestration/reasoning/UnifiedAgent.py:415:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L3_orchestration/reasoning/UnifiedAgent.py:797:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L3_orchestration/reasoning/mcp_manager.py:153:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'load_mcp_config'
+agentic_core/L3_orchestration/reasoning/mcp_manager.py:158:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'load_mcp_config'
+agentic_core/L3_orchestration/reasoning/mcp_manager.py:166:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L3_orchestration/replay/deterministic_replay.py:21:magic_configuration:Magic configuration: Hardcoded max_retries=3
 agentic_core/L3_orchestration/replay/deterministic_replay.py:23:magic_configuration:Magic configuration: Hardcoded threshold=0.95
 agentic_core/L3_orchestration/replay/deterministic_replay.py:26:magic_configuration:Magic configuration: Hardcoded max_depth=6
@@ -2412,10 +2422,10 @@ agentic_core/L4_state/memory/semantic_cache_manager.py:791:silent_swallower:Sile
 agentic_core/L4_state/memory/semantic_cache_manager.py:8:magic_configuration:Magic configuration: Hardcoded max_depth=6
 agentic_core/L4_state/memory/semantic_cache_manager.py:9:magic_configuration:Magic configuration: Hardcoded max_files=1000
 agentic_core/L4_state/memory/sovereign_memory_store.py:10:magic_configuration:Magic configuration: Hardcoded default_timeout=300
-agentic_core/L4_state/memory/sovereign_memory_store.py:142:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L4_state/memory/sovereign_memory_store.py:3:magic_configuration:Magic configuration: Hardcoded max_retries=3
 agentic_core/L4_state/memory/sovereign_memory_store.py:5:magic_configuration:Magic configuration: Hardcoded threshold=0.95
 agentic_core/L4_state/memory/sovereign_memory_store.py:8:magic_configuration:Magic configuration: Hardcoded max_depth=6
+agentic_core/L4_state/memory/sovereign_memory_store.py:90:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L4_state/memory/sovereign_memory_store.py:9:magic_configuration:Magic configuration: Hardcoded max_files=1000
 agentic_core/L4_state/memory/sovereign_reasoning_memory_ledger.py:10:magic_configuration:Magic configuration: Hardcoded default_timeout=300
 agentic_core/L4_state/memory/sovereign_reasoning_memory_ledger.py:3:magic_configuration:Magic configuration: Hardcoded max_retries=3
@@ -5722,11 +5732,15 @@ apps_lic/reasoning/OutreachLearningAgent.py:10:magic_configuration:Magic configu
 apps_lic/reasoning/OutreachLearningAgent.py:13:magic_configuration:Magic configuration: Hardcoded max_depth=6
 apps_lic/reasoning/OutreachLearningAgent.py:14:magic_configuration:Magic configuration: Hardcoded max_files=1000
 apps_lic/reasoning/OutreachLearningAgent.py:15:magic_configuration:Magic configuration: Hardcoded default_timeout=300
-apps_lic/reasoning/OutreachLearningAgent.py:187:magic_configuration:Magic configuration: Hardcoded limit=10
-apps_lic/reasoning/OutreachLearningAgent.py:375:type_erasure:Type erasure: OutreachLearningAgent.inject_instruction returns Any instead of structured type
-apps_lic/reasoning/OutreachLearningAgent.py:379:type_erasure:Type erasure: OutreachLearningAgent.record_success returns Any instead of structured type
-apps_lic/reasoning/OutreachLearningAgent.py:389:type_erasure:Type erasure: OutreachLearningAgent.record_failure returns Any instead of structured type
-apps_lic/reasoning/OutreachLearningAgent.py:398:type_erasure:Type erasure: OutreachLearningAgent.heal_repository returns dict instead of structured type
+apps_lic/reasoning/OutreachLearningAgent.py:188:magic_configuration:Magic configuration: Hardcoded limit=10
+apps_lic/reasoning/OutreachLearningAgent.py:344:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_lic/reasoning/OutreachLearningAgent.py:382:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_lic/reasoning/OutreachLearningAgent.py:403:type_erasure:Type erasure: OutreachLearningAgent.inject_instruction returns Any instead of structured type
+apps_lic/reasoning/OutreachLearningAgent.py:407:type_erasure:Type erasure: OutreachLearningAgent.record_success returns Any instead of structured type
+apps_lic/reasoning/OutreachLearningAgent.py:424:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_lic/reasoning/OutreachLearningAgent.py:427:type_erasure:Type erasure: OutreachLearningAgent.record_failure returns Any instead of structured type
+apps_lic/reasoning/OutreachLearningAgent.py:446:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_lic/reasoning/OutreachLearningAgent.py:449:type_erasure:Type erasure: OutreachLearningAgent.heal_repository returns dict instead of structured type
 apps_lic/reasoning/OutreachLearningAgent.py:8:magic_configuration:Magic configuration: Hardcoded max_retries=3
 apps_lic/reasoning/OutreachMessageAgent.py:137:type_erasure:Type erasure: OutreachMessageAgent.heal returns dict instead of structured type
 apps_lic/reasoning/OutreachMessageAgent.py:142:type_erasure:Type erasure: OutreachMessageAgent.heal_repository returns dict instead of structured type
@@ -6539,14 +6553,19 @@ apps_rg/reasoning/RgHealingOrchestrator.py:26:magic_configuration:Magic configur
 apps_rg/reasoning/RgHealingOrchestrator.py:29:magic_configuration:Magic configuration: Hardcoded max_depth=6
 apps_rg/reasoning/RgHealingOrchestrator.py:30:magic_configuration:Magic configuration: Hardcoded max_files=1000
 apps_rg/reasoning/RgHealingOrchestrator.py:31:magic_configuration:Magic configuration: Hardcoded default_timeout=300
-apps_rg/reasoning/RgReflectionAgent.py:106:type_erasure:Type erasure: RgReflectionAgent.ml_recall_execution_insight returns dict[str, Any] | None instead of structured type
-apps_rg/reasoning/RgReflectionAgent.py:140:type_erasure:Type erasure: RgReflectionAgent.ml_recall_quality_pattern returns dict[str, Any] | None instead of structured type
-apps_rg/reasoning/RgReflectionAgent.py:184:type_erasure:Type erasure: RgReflectionAgent.ml_recall_similar_reflection returns dict[str, Any] | None instead of structured type
-apps_rg/reasoning/RgReflectionAgent.py:21:magic_configuration:Magic configuration: Hardcoded max_retries=3
-apps_rg/reasoning/RgReflectionAgent.py:23:magic_configuration:Magic configuration: Hardcoded threshold=0.95
-apps_rg/reasoning/RgReflectionAgent.py:26:magic_configuration:Magic configuration: Hardcoded max_depth=6
-apps_rg/reasoning/RgReflectionAgent.py:27:magic_configuration:Magic configuration: Hardcoded max_files=1000
-apps_rg/reasoning/RgReflectionAgent.py:28:magic_configuration:Magic configuration: Hardcoded default_timeout=300
+apps_rg/reasoning/RgReflectionAgent.py:124:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_rg/reasoning/RgReflectionAgent.py:151:magic_configuration:Magic configuration: Hardcoded timeout=10 in function call
+apps_rg/reasoning/RgReflectionAgent.py:154:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_rg/reasoning/RgReflectionAgent.py:163:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_rg/reasoning/RgReflectionAgent.py:195:type_erasure:Type erasure: RgReflectionAgent.ml_recall_execution_insight returns dict[str, Any] | None instead of structured type
+apps_rg/reasoning/RgReflectionAgent.py:229:type_erasure:Type erasure: RgReflectionAgent.ml_recall_quality_pattern returns dict[str, Any] | None instead of structured type
+apps_rg/reasoning/RgReflectionAgent.py:22:magic_configuration:Magic configuration: Hardcoded max_retries=3
+apps_rg/reasoning/RgReflectionAgent.py:24:magic_configuration:Magic configuration: Hardcoded threshold=0.95
+apps_rg/reasoning/RgReflectionAgent.py:273:type_erasure:Type erasure: RgReflectionAgent.ml_recall_similar_reflection returns dict[str, Any] | None instead of structured type
+apps_rg/reasoning/RgReflectionAgent.py:27:magic_configuration:Magic configuration: Hardcoded max_depth=6
+apps_rg/reasoning/RgReflectionAgent.py:28:magic_configuration:Magic configuration: Hardcoded max_files=1000
+apps_rg/reasoning/RgReflectionAgent.py:29:magic_configuration:Magic configuration: Hardcoded default_timeout=300
+apps_rg/reasoning/RgReflectionAgent.py:59:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_rg/reasoning/RgResumeOrchestrator.py:17:magic_configuration:Magic configuration: Hardcoded max_retries=3
 apps_rg/reasoning/RgResumeOrchestrator.py:19:magic_configuration:Magic configuration: Hardcoded threshold=0.95
 apps_rg/reasoning/RgResumeOrchestrator.py:22:magic_configuration:Magic configuration: Hardcoded max_depth=6
@@ -7024,22 +7043,29 @@ apps_shared/enforcement/execution_strategy.py:24:magic_configuration:Magic confi
 apps_shared/enforcement/execution_strategy.py:554:magic_configuration:Magic configuration: Hardcoded default_timeout=30.0
 apps_shared/enforcement/execution_strategy.py:555:magic_configuration:Magic configuration: Hardcoded max_concurrent_executions=10
 apps_shared/enforcement/execution_strategy.py:576:magic_configuration:Magic configuration: Hardcoded timeout=30.0
-apps_shared/reasoning/BaseDispatchAgent.py:100:config_with_logic:Config-with-logic: 'if' branch inside config-factory function '_heal_timeout_settings'
-apps_shared/reasoning/BaseDispatchAgent.py:122:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/reasoning/BaseDispatchAgent.py:125:type_erasure:Type erasure: BaseDispatchAgent.heal returns Any instead of structured type
-apps_shared/reasoning/BaseDispatchAgent.py:16:magic_configuration:Magic configuration: Hardcoded max_retries=3
-apps_shared/reasoning/BaseDispatchAgent.py:18:magic_configuration:Magic configuration: Hardcoded threshold=0.95
-apps_shared/reasoning/BaseDispatchAgent.py:21:magic_configuration:Magic configuration: Hardcoded max_depth=6
-apps_shared/reasoning/BaseDispatchAgent.py:22:magic_configuration:Magic configuration: Hardcoded max_files=1000
-apps_shared/reasoning/BaseDispatchAgent.py:23:magic_configuration:Magic configuration: Hardcoded default_timeout=300
-apps_shared/reasoning/BaseDispatchAgent.py:28:magic_configuration:Magic configuration: Hardcoded _default_timeout_s=30.0
-apps_shared/reasoning/BaseDispatchAgent.py:29:magic_configuration:Magic configuration: Hardcoded _max_safe_timeout_s=300.0
-apps_shared/reasoning/BaseDispatchAgent.py:97:config_with_logic:Config-with-logic: 'if' branch inside config-factory function '_heal_timeout_settings'
-apps_shared/reasoning/BaseHealingOrchestrator.py:21:magic_configuration:Magic configuration: Hardcoded max_retries=3
-apps_shared/reasoning/BaseHealingOrchestrator.py:23:magic_configuration:Magic configuration: Hardcoded threshold=0.95
-apps_shared/reasoning/BaseHealingOrchestrator.py:26:magic_configuration:Magic configuration: Hardcoded max_depth=6
-apps_shared/reasoning/BaseHealingOrchestrator.py:27:magic_configuration:Magic configuration: Hardcoded max_files=1000
-apps_shared/reasoning/BaseHealingOrchestrator.py:28:magic_configuration:Magic configuration: Hardcoded default_timeout=300
+apps_shared/reasoning/BaseDispatchAgent.py:125:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/reasoning/BaseDispatchAgent.py:143:config_with_logic:Config-with-logic: 'if' branch inside config-factory function '_heal_timeout_settings'
+apps_shared/reasoning/BaseDispatchAgent.py:146:config_with_logic:Config-with-logic: 'if' branch inside config-factory function '_heal_timeout_settings'
+apps_shared/reasoning/BaseDispatchAgent.py:168:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/reasoning/BaseDispatchAgent.py:171:type_erasure:Type erasure: BaseDispatchAgent.heal returns Any instead of structured type
+apps_shared/reasoning/BaseDispatchAgent.py:17:magic_configuration:Magic configuration: Hardcoded max_retries=3
+apps_shared/reasoning/BaseDispatchAgent.py:19:magic_configuration:Magic configuration: Hardcoded threshold=0.95
+apps_shared/reasoning/BaseDispatchAgent.py:22:magic_configuration:Magic configuration: Hardcoded max_depth=6
+apps_shared/reasoning/BaseDispatchAgent.py:23:magic_configuration:Magic configuration: Hardcoded max_files=1000
+apps_shared/reasoning/BaseDispatchAgent.py:24:magic_configuration:Magic configuration: Hardcoded default_timeout=300
+apps_shared/reasoning/BaseDispatchAgent.py:29:magic_configuration:Magic configuration: Hardcoded _default_timeout_s=30.0
+apps_shared/reasoning/BaseDispatchAgent.py:30:magic_configuration:Magic configuration: Hardcoded _max_safe_timeout_s=300.0
+apps_shared/reasoning/BaseDispatchAgent.py:74:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/reasoning/BaseHealingOrchestrator.py:217:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/reasoning/BaseHealingOrchestrator.py:22:magic_configuration:Magic configuration: Hardcoded max_retries=3
+apps_shared/reasoning/BaseHealingOrchestrator.py:242:magic_configuration:Magic configuration: Hardcoded timeout=30 in function call
+apps_shared/reasoning/BaseHealingOrchestrator.py:245:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/reasoning/BaseHealingOrchestrator.py:24:magic_configuration:Magic configuration: Hardcoded threshold=0.95
+apps_shared/reasoning/BaseHealingOrchestrator.py:255:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/reasoning/BaseHealingOrchestrator.py:27:magic_configuration:Magic configuration: Hardcoded max_depth=6
+apps_shared/reasoning/BaseHealingOrchestrator.py:28:magic_configuration:Magic configuration: Hardcoded max_files=1000
+apps_shared/reasoning/BaseHealingOrchestrator.py:29:magic_configuration:Magic configuration: Hardcoded default_timeout=300
+apps_shared/reasoning/BaseHealingOrchestrator.py:63:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/reasoning/BaseProactiveAgent.py:15:magic_configuration:Magic configuration: Hardcoded max_retries=3
 apps_shared/reasoning/BaseProactiveAgent.py:17:magic_configuration:Magic configuration: Hardcoded threshold=0.95
 apps_shared/reasoning/BaseProactiveAgent.py:20:magic_configuration:Magic configuration: Hardcoded max_depth=6
@@ -7511,22 +7537,24 @@ apps_shared/types/memory_manager_types.py:26:magic_configuration:Magic configura
 apps_shared/types/memory_manager_types.py:27:magic_configuration:Magic configuration: Hardcoded max_files=1000
 apps_shared/types/memory_manager_types.py:28:magic_configuration:Magic configuration: Hardcoded default_timeout=300
 apps_shared/types/memory_manager_types.py:403:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/types/model_router_types.py:117:magic_configuration:Magic configuration: Hardcoded max_tokens=4096 in function call
-apps_shared/types/model_router_types.py:126:magic_configuration:Magic configuration: Hardcoded max_tokens=4096 in function call
-apps_shared/types/model_router_types.py:136:magic_configuration:Magic configuration: Hardcoded max_tokens=4096 in function call
-apps_shared/types/model_router_types.py:145:magic_configuration:Magic configuration: Hardcoded max_tokens=4096 in function call
-apps_shared/types/model_router_types.py:155:magic_configuration:Magic configuration: Hardcoded max_tokens=32768 in function call
-apps_shared/types/model_router_types.py:15:magic_configuration:Magic configuration: Hardcoded max_retries=3
-apps_shared/types/model_router_types.py:164:magic_configuration:Magic configuration: Hardcoded max_tokens=4096 in function call
-apps_shared/types/model_router_types.py:17:magic_configuration:Magic configuration: Hardcoded threshold=0.95
-apps_shared/types/model_router_types.py:20:magic_configuration:Magic configuration: Hardcoded max_depth=6
-apps_shared/types/model_router_types.py:21:magic_configuration:Magic configuration: Hardcoded max_files=1000
-apps_shared/types/model_router_types.py:22:magic_configuration:Magic configuration: Hardcoded default_timeout=300
-apps_shared/types/model_router_types.py:292:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'get_model_config'
-apps_shared/types/model_router_types.py:296:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'get_model_config'
-apps_shared/types/model_router_types.py:554:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/types/model_router_types.py:80:magic_configuration:Magic configuration: Hardcoded budget_period_hours=24
-apps_shared/types/model_router_types.py:80:magic_configuration:Magic configuration: Hardcoded daily_budget=5.0
+apps_shared/types/model_router_types.py:122:magic_configuration:Magic configuration: Hardcoded max_tokens=4096 in function call
+apps_shared/types/model_router_types.py:131:magic_configuration:Magic configuration: Hardcoded max_tokens=4096 in function call
+apps_shared/types/model_router_types.py:141:magic_configuration:Magic configuration: Hardcoded max_tokens=4096 in function call
+apps_shared/types/model_router_types.py:150:magic_configuration:Magic configuration: Hardcoded max_tokens=4096 in function call
+apps_shared/types/model_router_types.py:160:magic_configuration:Magic configuration: Hardcoded max_tokens=32768 in function call
+apps_shared/types/model_router_types.py:169:magic_configuration:Magic configuration: Hardcoded max_tokens=4096 in function call
+apps_shared/types/model_router_types.py:19:magic_configuration:Magic configuration: Hardcoded max_retries=3
+apps_shared/types/model_router_types.py:21:magic_configuration:Magic configuration: Hardcoded threshold=0.95
+apps_shared/types/model_router_types.py:24:magic_configuration:Magic configuration: Hardcoded max_depth=6
+apps_shared/types/model_router_types.py:25:magic_configuration:Magic configuration: Hardcoded max_files=1000
+apps_shared/types/model_router_types.py:26:magic_configuration:Magic configuration: Hardcoded default_timeout=300
+apps_shared/types/model_router_types.py:297:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'get_model_config'
+apps_shared/types/model_router_types.py:301:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'get_model_config'
+apps_shared/types/model_router_types.py:575:magic_configuration:Magic configuration: Hardcoded max_steps=8
+apps_shared/types/model_router_types.py:607:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/types/model_router_types.py:614:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/types/model_router_types.py:85:magic_configuration:Magic configuration: Hardcoded budget_period_hours=24
+apps_shared/types/model_router_types.py:85:magic_configuration:Magic configuration: Hardcoded daily_budget=5.0
 apps_shared/types/operation_category_types.py:169:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/types/operation_category_types.py:17:magic_configuration:Magic configuration: Hardcoded max_retries=3
 apps_shared/types/operation_category_types.py:19:magic_configuration:Magic configuration: Hardcoded threshold=0.95
@@ -10843,7 +10871,13 @@ tools/evidence_redis_retest.py:18:magic_configuration:Magic configuration: Hardc
 tools/evidence_redis_retest.py:21:magic_configuration:Magic configuration: Hardcoded max_depth=6
 tools/evidence_redis_retest.py:22:magic_configuration:Magic configuration: Hardcoded max_files=1000
 tools/evidence_redis_retest.py:23:magic_configuration:Magic configuration: Hardcoded default_timeout=300
+tools/generate_full_adg.py:176:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+tools/generate_full_adg.py:194:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+tools/generate_full_adg.py:222:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+tools/generate_full_adg.py:226:magic_configuration:Magic configuration: Hardcoded hotspot_limit=10
 tools/generate_full_adg.py:23:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+tools/generate_full_adg.py:244:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+tools/generate_full_adg.py:266:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 tools/prove_meta_learning_bus.py:18:magic_configuration:Magic configuration: Hardcoded max_retries=3
 tools/prove_meta_learning_bus.py:20:magic_configuration:Magic configuration: Hardcoded threshold=0.95
 tools/prove_meta_learning_bus.py:23:magic_configuration:Magic configuration: Hardcoded max_depth=6

@@ -25,19 +25,25 @@ Fail-closed: raises InfrastructureDependencyError on connection failure.
 """
 
 # 1. STDLIB
+import asyncio
 import os
 import urllib.parse
-from collections import OrderedDict
 from typing import Any
 
 # 2. THIRDPARTY
 import redis
 
+from agentic_core.config.core.sovereign_config import get_sovereign_config
 from agentic_core.L2_execution.types.infra_error_types import InfrastructureDependencyError
 from agentic_core.utils.decorators_compat_util import standard_heal
 
 # NAMING FIXED: SovereignRedisOrchestrator → SovereignRedisOrchestrator
 from agentic_core.utils.timeout_decorator_util import timeout
+
+try:
+    from agentic_core.L3_orchestration.reasoning.mcp_manager import MCPConnectionManager as _MCPManager
+except ImportError:
+    _MCPManager = None  # type: ignore[assignment,misc]
 
 
 @dataclass
@@ -48,6 +54,35 @@ class SovereignRedisOrchestrator(SovereignBaseAgent):
         """Initialize the instance."""
         self.redis_url = os.getenv("REDIS_URL", "redis://localhost:6379")
         self.connection: redis.Redis | None = None
+        self._mcp: Any = None
+        self._use_mcp: bool = get_sovereign_config().REDIS_MCP_ENABLED
+
+    def _get_mcp(self) -> Any:
+        """Lazy-init MCPConnectionManager when REDIS_MCP_ENABLED."""
+        if self._mcp is None and _MCPManager is not None:
+            self._mcp = _MCPManager()
+        return self._mcp
+
+    def _mcp_call(self, tool: str, args: dict) -> Any:
+        """Synchronous wrapper around async MCP call_tool."""
+        mcp = self._get_mcp()
+        if mcp is None:
+            return None
+        try:
+            loop = asyncio.get_event_loop()
+            if loop.is_running():
+                import concurrent.futures
+
+                with concurrent.futures.ThreadPoolExecutor(max_workers=1) as pool:
+                    future = pool.submit(asyncio.run, mcp.call_tool(tool, args))
+                    return future.result(timeout=5)
+            else:
+                return loop.run_until_complete(mcp.call_tool(tool, args))
+        except Exception as e:
+            import logging
+
+            logging.getLogger(__name__).warning(f"[Redis MCP] call_tool('{tool}') failed: {e}")
+            return None
 
     def _create_connection(self) -> redis.Redis:
         """Version-agnostic connection factory"""
@@ -68,38 +103,44 @@ class SovereignRedisOrchestrator(SovereignBaseAgent):
 
     # guardian: allow-type-erasure
     def get(self, key: str) -> Any:
-        """Execute get operation."""
+        """Execute get operation (MCP-routed when REDIS_MCP_ENABLED)."""
+        if self._use_mcp:
+            result = self._mcp_call("redis_get", {"key": key})
+            if result is not None:
+                return result.get("value") if isinstance(result, dict) else result
         try:
             if not self.connection:
                 self.connection = self._create_connection()
             return self.connection.get(key)
         except (redis.ConnectionError, redis.TimeoutError) as exc:
-            raise InfrastructureDependencyError(
-                f"Redis unavailable at {self.redis_url}: {exc}"
-            ) from exc
+            raise InfrastructureDependencyError(f"Redis unavailable at {self.redis_url}: {exc}") from exc
 
     # guardian: allow-type-erasure
     def set(self, key: str, value: Any) -> Any:
-        """Execute set operation."""
+        """Execute set operation (MCP-routed when REDIS_MCP_ENABLED)."""
+        if self._use_mcp:
+            result = self._mcp_call("redis_set", {"key": key, "value": value})
+            if result is not None:
+                return result
         try:
             if not self.connection:
                 self.connection = self._create_connection()
             self.connection.set(key, value)
         except (redis.ConnectionError, redis.TimeoutError) as exc:
-            raise InfrastructureDependencyError(
-                f"Redis unavailable at {self.redis_url}: {exc}"
-            ) from exc
+            raise InfrastructureDependencyError(f"Redis unavailable at {self.redis_url}: {exc}") from exc
 
     def delete(self, key: str) -> bool:
-        """Delete a key from Redis."""
+        """Delete a key from Redis (MCP-routed when REDIS_MCP_ENABLED)."""
+        if self._use_mcp:
+            result = self._mcp_call("redis_delete", {"key": key})
+            if result is not None:
+                return bool(result.get("deleted", False)) if isinstance(result, dict) else bool(result)
         try:
             if not self.connection:
                 self.connection = self._create_connection()
             return self.connection.delete(key) > 0
         except (redis.ConnectionError, redis.TimeoutError) as exc:
-            raise InfrastructureDependencyError(
-                f"Redis unavailable at {self.redis_url}: {exc}"
-            ) from exc
+            raise InfrastructureDependencyError(f"Redis unavailable at {self.redis_url}: {exc}") from exc
 
     def exists(self, key: str) -> bool:
         """Check if key exists in Redis."""
@@ -108,9 +149,7 @@ class SovereignRedisOrchestrator(SovereignBaseAgent):
                 self.connection = self._create_connection()
             return self.connection.exists(key) > 0
         except (redis.ConnectionError, redis.TimeoutError) as exc:
-            raise InfrastructureDependencyError(
-                f"Redis unavailable at {self.redis_url}: {exc}"
-            ) from exc
+            raise InfrastructureDependencyError(f"Redis unavailable at {self.redis_url}: {exc}") from exc
 
     # guardian: allow-type-erasure
     def clear(self) -> Any:
@@ -120,9 +159,7 @@ class SovereignRedisOrchestrator(SovereignBaseAgent):
                 self.connection = self._create_connection()
             self.connection.flushdb()
         except (redis.ConnectionError, redis.TimeoutError) as exc:
-            raise InfrastructureDependencyError(
-                f"Redis unavailable at {self.redis_url}: {exc}"
-            ) from exc
+            raise InfrastructureDependencyError(f"Redis unavailable at {self.redis_url}: {exc}") from exc
 
     # guardian: allow-type-erasure
     def get_connection_info(self) -> dict:

@@ -383,5 +383,66 @@ def main():
     sys.exit(0 if success else 1)
 
 
+async def mcp_verify_dashboard(url: str = DASHBOARD_URL, expected_min_rows: int = EXPECTED_MIN_ROWS) -> dict:
+    """
+    Verify the dashboard via live mcp12_* Playwright MCP tools.
+
+    This is the programmatic entry point for use by BaseHealingOrchestrator
+    and other agents — no subprocess, no CLI, no psutil required.
+
+    Args:
+        url: Dashboard URL to verify
+        expected_min_rows: Minimum expected row count
+
+    Returns:
+        dict with keys: success (bool), text (str), screenshot_name (str), errors (list)
+    """
+    try:
+        from agentic_core.L3_orchestration.reasoning.mcp_manager import MCPConnectionManager
+
+        mcp = MCPConnectionManager()
+
+        errors: list[str] = []
+
+        # Navigate to dashboard
+        await mcp.call_tool("playwright_navigate", {"url": url, "waitUntil": "networkidle", "timeout": 15000})
+
+        # Get visible text to check row counts and TOTAL values
+        text_result = await mcp.call_tool("playwright_get_text", {})
+        page_text: str = text_result if isinstance(text_result, str) else str(text_result)
+
+        # Basic assertions
+        row_ok = page_text.count("TOTAL") >= 1
+        rows_found = page_text.count("\n")
+
+        if not row_ok:
+            errors.append("TOTAL row not found in page text")
+        if rows_found < expected_min_rows:
+            errors.append(f"Expected >= {expected_min_rows} rows, found ~{rows_found}")
+
+        # Capture screenshot
+        ts = __import__("datetime").datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
+        screenshot_name = f"dashboard_verify_{ts}"
+        await mcp.call_tool("playwright_screenshot", {"name": screenshot_name, "fullPage": True})
+
+        success = len(errors) == 0
+        return {
+            "success": success,
+            "text_preview": page_text[:500],
+            "screenshot_name": screenshot_name,
+            "errors": errors,
+            "rows_found": rows_found,
+        }
+
+    except Exception as e:
+        return {
+            "success": False,
+            "text_preview": "",
+            "screenshot_name": "",
+            "errors": [str(e)],
+            "rows_found": 0,
+        }
+
+
 if __name__ == "__main__":
     main()

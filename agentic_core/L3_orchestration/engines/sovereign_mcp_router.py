@@ -21,10 +21,12 @@ import logging
 from pathlib import Path
 from typing import Any
 
+from agentic_core.cache.redis_cache_client import get_hot_cache
 from agentic_core.L3_orchestration.reasoning.mcp_manager import (
     MCPConnectionManager,
     load_mcp_config,
 )
+from agentic_core.L5_safety.enforcement.mcp_sovereign_authority_enforcer import mcp_authority
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 
@@ -169,7 +171,8 @@ class SovereignMcpRouter(SovereignBaseAgent):
                     template_key: Any = f"seq_template:key{key_id}"
                     cached_template: Any = None
                     try:
-                        cached: Any = redis_shield.execute("get", template_key)
+                        _cache = get_hot_cache()
+                        cached: Any = _cache.get(template_key) if _cache else None
                         if cached:
                             cached_template: Any = json.loads(cached)
                             Logger.info(f"[L1 CACHE HIT] Using proven template for Key {key_id}")
@@ -187,12 +190,13 @@ class SovereignMcpRouter(SovereignBaseAgent):
                     )
                     if reasoning_result.get("status") == "success" and (not cached_template):
                         try:
-                            redis_shield.execute(
-                                "set",
-                                template_key,
-                                json.dumps(reasoning_result.get("steps", [])),
-                                ex=60 * 60 * 24 * 30,
-                            )
+                            _cache = get_hot_cache()
+                            if _cache:
+                                _cache.set(
+                                    template_key,
+                                    json.dumps(reasoning_result.get("steps", [])),
+                                    ex=60 * 60 * 24 * 30,
+                                )
                         except (AttributeError, TypeError) as e:
                             Logger.debug(f"Cache write failed: {e}")
                     return {
@@ -267,8 +271,6 @@ class SovereignMcpRouter(SovereignBaseAgent):
                     )
                     return {"status": "l2_deepwiki_qa", "answer": answer.get("response", "")}
                 except Exception as wiki_e:
-                    # TODO: Handle specific exception properly
-                    raise  # Re-raise after logging/handling
                     Logger.warning(f"[L2 DEEPWIKI] Wiki access failed: {wiki_e} — falling back to search")
                     try:
                         search_result: Any = await self.manager.call_tool(
@@ -283,10 +285,9 @@ class SovereignMcpRouter(SovereignBaseAgent):
                             "tool": "brave_search",
                             "results": search_result,
                         }
-                    # guardian: allow-silent-swallow
                     except Exception as search_e:
                         Logger.error(f"[L2 EXECUTION] Brave search failed: {search_e}")
-                    return {"status": "fallback", "reason": str(search_e)}
+                        return {"status": "fallback", "reason": str(search_e)}
             elif key_id == 42:
                 return await self.manager.call_tool(
                     "fission_write",

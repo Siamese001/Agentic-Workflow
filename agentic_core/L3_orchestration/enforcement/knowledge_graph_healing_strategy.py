@@ -15,11 +15,15 @@ Sovereign Knowledge Graph Healing Strategy – Phase 17C (Dec 27, 2025)
 Detects and autonomously corrects structured memory drift.
 L4 state self-healing using official Memory MCP.
 """
+import ast
 import logging
+import re
 from datetime import datetime
 from typing import Any
 
 from agentic_core.L0_routing.P1_core.filesystem_mcp_client_1 import get_filesystem_client
+
+from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBridge
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 
@@ -43,6 +47,7 @@ class KnowledgeGraphHealingStrategy:
         self.priority = 2
         self.fs_client = get_filesystem_client()
         self.processed_today = 0
+        self._bridge = GraphMemoryBridge.get_instance()
         Logger.info("[L0 KG HEALING] Strategy initialized")
 
     async def diagnose(self, issues: list[dict]) -> list[dict]:
@@ -147,7 +152,14 @@ class KnowledgeGraphHealingStrategy:
 
     async def _extract_entities_relations(self, text: str, source_id: str) -> dict[str, Any]:
         """
-        Extract entities and relations from text using Memory MCP.
+        Extract entities and relations from text content.
+
+        Parses Python source using AST to extract:
+        - Class definitions → entities of type "Class"
+        - Function/method definitions → entities of type "Function"
+        - Import statements → IMPORTS_FROM relations between module and source
+
+        Falls back to regex for non-Python content.
 
         Args:
             text: Text content to extract from
@@ -158,13 +170,89 @@ class KnowledgeGraphHealingStrategy:
         """
         try:
             Logger.info(f"[L0 KG HEALING] Extracting entities/relations from {source_id}")
+            entities: list[dict] = []
+            relations: list[dict] = []
+
+            # Attempt AST parse for Python files
+            try:
+                tree = ast.parse(text)
+                for node in ast.walk(tree):
+                    if isinstance(node, ast.ClassDef):
+                        entities.append(
+                            {
+                                "name": node.name,
+                                "entityType": "Class",
+                                "observations": [f"Defined in {source_id} at line {node.lineno}"],
+                                "confidence": 0.95,
+                            }
+                        )
+                        relations.append(
+                            {
+                                "from": source_id,
+                                "to": node.name,
+                                "relationType": "DEFINES_CLASS",
+                                "confidence": 0.95,
+                            }
+                        )
+                    elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                        entities.append(
+                            {
+                                "name": node.name,
+                                "entityType": "Function",
+                                "observations": [f"Defined in {source_id} at line {node.lineno}"],
+                                "confidence": 0.9,
+                            }
+                        )
+                    elif isinstance(node, ast.Import):
+                        for alias in node.names:
+                            relations.append(
+                                {
+                                    "from": source_id,
+                                    "to": alias.name,
+                                    "relationType": "IMPORTS",
+                                    "confidence": 0.85,
+                                }
+                            )
+                    elif isinstance(node, ast.ImportFrom) and node.module:
+                        relations.append(
+                            {
+                                "from": source_id,
+                                "to": node.module,
+                                "relationType": "IMPORTS_FROM",
+                                "confidence": 0.85,
+                            }
+                        )
+            except SyntaxError:
+                # Non-Python content: fall back to regex extraction
+                for match in re.finditer(r"(?m)^class (\w+)", text):
+                    entities.append(
+                        {
+                            "name": match.group(1),
+                            "entityType": "Class",
+                            "observations": [f"Regex-extracted from {source_id}"],
+                            "confidence": 0.7,
+                        }
+                    )
+                for match in re.finditer(r"(?m)^def (\w+)", text):
+                    entities.append(
+                        {
+                            "name": match.group(1),
+                            "entityType": "Function",
+                            "observations": [f"Regex-extracted from {source_id}"],
+                            "confidence": 0.65,
+                        }
+                    )
+
             result = {
-                "entities": [],
-                "relations": [],
+                "entities": entities,
+                "relations": relations,
                 "source_id": source_id,
                 "extracted_at": datetime.utcnow().isoformat(),
             }
-            Logger.info(f"[L0 KG HEALING] Extraction complete for {source_id}")
+            Logger.info(
+                f"[L0 KG HEALING] Extraction complete for {source_id}: "
+                f"{len(entities)} entities, {len(relations)} relations"
+            )
             return result
         except Exception as e:
             Logger.error(f"[L0 KG HEALING] Entity/relation extraction failed: {e}")
@@ -172,7 +260,7 @@ class KnowledgeGraphHealingStrategy:
 
     async def _persist_kg_data(self, entities: list[dict], relations: list[dict], source_id: str) -> bool:
         """
-        Persist entities and relations to L4 state via Memory MCP.
+        Persist entities and relations to L4 state via GraphMemoryBridge → mcp11.
 
         Args:
             entities: List of entity dictionaries
@@ -184,7 +272,34 @@ class KnowledgeGraphHealingStrategy:
         """
         try:
             Logger.info(f"[L0 KG HEALING] Persisting KG data for {source_id}")
-            Logger.info(f"[L0 KG HEALING] Persistence complete for {source_id}")
+
+            # Ensure source file is registered as an entity
+            self._bridge.create_agent_entity(
+                agent_name=source_id,
+                agent_type="SourceFile",
+                observations=[f"Healed KG snapshot taken at {datetime.utcnow().isoformat()}"],
+            )
+
+            # Persist all extracted entities
+            for entity in entities:
+                self._bridge.create_agent_entity(
+                    agent_name=entity["name"],
+                    agent_type=entity.get("entityType", "Entity"),
+                    observations=entity.get("observations"),
+                )
+
+            # Persist all extracted relations
+            for rel in relations:
+                self._bridge.create_relation(
+                    from_entity=rel["from"],
+                    to_entity=rel["to"],
+                    relation_type=rel["relationType"],
+                )
+
+            Logger.info(
+                f"[L0 KG HEALING] Persistence complete for {source_id}: "
+                f"{len(entities)} entities, {len(relations)} relations"
+            )
             return True
         except Exception as e:
             Logger.error(f"[L0 KG HEALING] KG data persistence failed: {e}")

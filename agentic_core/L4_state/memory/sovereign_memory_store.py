@@ -14,13 +14,15 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 Ultra-hardened persistent memory with entities, relations, observations.
 
-L5 shielded + Redis-only (Pinecone removed, BGE+FAISS migration target).
+Delegates all operations through GraphMemoryBridge which routes to the
+live mcp11_* Memory MCP tools (or falls back gracefully in CI).
 
 """
 
-import json
 import logging
 from typing import Any
+
+from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBridge
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 
@@ -32,112 +34,58 @@ max_observation_length: Any = 2000
 max_entity_name_length: Any = 100
 
 
-class _LocalVectorStore:
-    """Minimal in-memory vector store replacing Pinecone for entity search."""
-
-    def __init__(self) -> None:
-        self._store: dict[str, dict] = {}
-
-    def upsert(self, index: str, vectors: list, namespace: str = "") -> None:
-        for vec_id, _vector, metadata in vectors:
-            self._store[vec_id] = metadata
-
-    def query(
-        self, index: str, vector: list, top_k: int = 5, namespace: str = "", include_metadata: bool = True
-    ):
-        class _Result:
-            def __init__(self, items):
-                self.matches = [type("M", (), {"metadata": m})() for m in items]
-
-        return _Result(list(self._store.values())[:top_k])
-
-
 class SovereignMemoryMcp:
-    """Ultra-hardened knowledge graph MCP — eternal sovereign memory."""
+    """Ultra-hardened knowledge graph MCP — delegates to GraphMemoryBridge."""
 
     def __init__(self, mission_id: str, engine=None):
         self.mission_id = mission_id
-
-        self.graph_key = f"memory_graph:{mission_id}"
-
         self.engine = engine
-
-        self._vector_store = _LocalVectorStore()
-
-        self.index_name = "canon-memory-v1"
+        self._bridge = GraphMemoryBridge.get_instance()
 
     async def create_entities(self, entities: list[dict]) -> dict:
-        """Create sovereign entities with L5 validation and dual-store persistence."""
-
+        """Create sovereign entities — delegated to GraphMemoryBridge → mcp11."""
         created: Any = []
 
         try:
             for entity in entities[:20]:
-                name: Any = entity["name"]
-
-                if len(name) > MAX_ENTITY_NAME_LENGTH:
+                name: Any = entity.get("name", "")
+                if not name or len(name) > max_entity_name_length:
                     continue
-
-                redis_shield.execute("hset", f"{self.graph_key}:entities", name, json.dumps(entity))
-
-                embed_text: Any = f"Entity: {name} Type: {entity.get('entityType')} Obs: {','.join(entity.get('observations', []))}"
-
-                vector: Any = await self.engine.get_embedding(embed_text)
-
-                self._vector_store.upsert(
-                    index=self.index_name,
-                    vectors=[(f"entity:{name}", vector, entity)],
-                    namespace="memory",
+                self._bridge.create_agent_entity(
+                    agent_name=name,
+                    agent_type=entity.get("entityType", "Entity"),
+                    observations=entity.get("observations"),
                 )
-
                 created.append(name)
 
             return {"status": "success", "created": created}
 
         except Exception as e:
-            mcp_authority.record_breach(f"Memory Entity Creation Failure: {str(e)}")
-
+            Logger.error(f"[SovereignMemoryMcp] Entity creation failure: {e}")
             return {"status": "error", "msg": str(e)}
 
     async def add_observations(self, observations: list[dict]) -> dict:
-        """Add atomic facts to the graph with L5 size-shielding."""
-
+        """Add atomic facts to the graph with size-shielding — delegated to GraphMemoryBridge."""
         added: Any = {}
 
         try:
             for obs in observations:
-                name: Any = obs["entityName"]
-
-                for content in obs["contents"]:
-                    if len(content) > MAX_OBSERVATION_LENGTH:
-                        continue
-
-                    redis_shield.execute("rpush", f"{self.graph_key}:obs:{name}", content)
-
+                name: Any = obs.get("entityName", "")
+                for content in obs.get("contents", []):
+                    if len(content) > max_observation_length:
+                        content = content[: max_observation_length - 3] + "..."
+                    self._bridge.add_observation(name, content)
                     added.setdefault(name, []).append(content)
 
             return {"status": "success", "added_count": len(added)}
 
         except Exception as e:
-            mcp_authority.record_breach(f"Memory Observation Failure: {str(e)}")
-
+            Logger.error(f"[SovereignMemoryMcp] Observation failure: {e}")
             return {"status": "error", "msg": str(e)}
 
     async def search_nodes(self, query: str) -> list[dict]:
-        """Semantic search across eternal memory with Redis fallback."""
-
+        """Semantic search across eternal memory — delegated to GraphMemoryBridge."""
         try:
-            vector: Any = await self.engine.get_embedding(query)
-
-            results: Any = self._vector_store.query(
-                index=self.index_name,
-                vector=vector,
-                top_k=5,
-                namespace="memory",
-                include_metadata=True,
-            )
-
-            return [match.metadata for match in results.matches]
-
+            return self._bridge.search_entities(query)
         except Exception:
             return []

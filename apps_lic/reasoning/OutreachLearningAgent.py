@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-
+from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBridge
 
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
@@ -14,6 +14,7 @@ MAX_DEPTH = 6
 MAX_FILES = 1000
 DEFAULT_TIMEOUT = 300  # 5 minutes
 # Configuration constants
+
 
 # OutreachEngineContext stub
 class OutreachEngineContext:
@@ -329,6 +330,19 @@ class OutreachLearningAgent(SubatomicTestingMixin, SovereignBaseAgent):
         self.learning_loop = OutreachLearningLoop(ctx)
         self.confidence_scorer = OutreachConfidenceScorer(ctx)
         self.memory = OutreachMemoryPersistence()
+        self._register_in_knowledge_graph()
+
+    def _register_in_knowledge_graph(self) -> None:
+        """Register this agent as an entity in the Memory MCP knowledge graph."""
+        try:
+            bridge = GraphMemoryBridge.get_instance()
+            bridge.create_agent_entity(
+                agent_name=self.__class__.__name__,
+                agent_type="LearningAgent",
+                observations=["OutreachLearningAgent: campaign pattern recognition and confidence scoring"],
+            )
+        except Exception:
+            pass
 
     async def execute(self) -> None:
         """Execute execute operation."""
@@ -353,6 +367,20 @@ class OutreachLearningAgent(SubatomicTestingMixin, SovereignBaseAgent):
         # Store in memory
         self.memory.store("last_lead_score", avg_lead_score)
         self.memory.store("last_message_score", avg_message_score)
+
+        # Persist scores to Memory MCP knowledge graph
+        try:
+            bridge = GraphMemoryBridge.get_instance()
+            bridge.add_observation(
+                entity_name=self.__class__.__name__,
+                observation=(
+                    f"CampaignAnalysis: lead_score={avg_lead_score:.2f} "
+                    f"message_score={avg_message_score:.2f} "
+                    f"leads={len(lead_scores)} messages={len(message_scores)}"
+                ),
+            )
+        except Exception:
+            pass
 
         # Generate recommendations
         recommendations = []
@@ -385,6 +413,16 @@ class OutreachLearningAgent(SubatomicTestingMixin, SovereignBaseAgent):
     ) -> Any:
         """Record a successful pattern."""
         await self.learning_loop.record_success(TaskType, input_context, output_result, confidence)
+        try:
+            bridge = GraphMemoryBridge.get_instance()
+            if confidence >= 0.8:
+                bridge.create_mastered_task_relation(
+                    agent_name=self.__class__.__name__,
+                    task_description=f"outreach:{TaskType}",
+                    feedback_score=confidence,
+                )
+        except Exception:
+            pass
 
     async def record_failure(
         self,
@@ -394,6 +432,19 @@ class OutreachLearningAgent(SubatomicTestingMixin, SovereignBaseAgent):
     ) -> Any:
         """Record a failed pattern."""
         await self.learning_loop.record_failure(TaskType, input_context, error)
+        try:
+            bridge = GraphMemoryBridge.get_instance()
+            bridge.create_relation(
+                from_entity=self.__class__.__name__,
+                to_entity=f"OutreachTask_{TaskType}",
+                relation_type=GraphMemoryBridge.RELATION_FAILED_TASK,
+            )
+            bridge.add_observation(
+                entity_name=self.__class__.__name__,
+                observation=f"FailedTask={TaskType} error={error[:200]}",
+            )
+        except Exception:
+            pass
 
     def heal_repository(self) -> dict:
         """Invoke healing chain via super()."""

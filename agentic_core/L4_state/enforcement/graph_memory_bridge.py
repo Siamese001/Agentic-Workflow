@@ -19,11 +19,13 @@ Provides a programmatic interface to the Memory MCP server for:
 - Observation storage
 - Graph queries
 
-This bridge uses the MCP tools:
-- mcp7_create_entities: Create entities in the knowledge graph
-- mcp7_create_relations: Create relations between entities
-- mcp7_add_observations: Add observations to entities
-- mcp7_search_nodes: Search for nodes in the graph
+This bridge uses the live Windsurf Memory MCP tools:
+- mcp11_create_entities: Create entities in the knowledge graph
+- mcp11_create_relations: Create relations between entities
+- mcp11_add_observations: Add observations to entities
+- mcp11_search_nodes: Search for nodes in the graph
+- mcp11_open_nodes: Open specific nodes by name
+- mcp11_read_graph: Read the full graph
 
 Resilient Mode: If MCP is unavailable, operations are logged but don't crash.
 
@@ -37,6 +39,13 @@ import threading
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import Any
+
+try:
+    from agentic_core.adg.client.mcp_client import ADGMCPClient as _MCPFallbackClient
+
+    _FALLBACK_AVAILABLE = True
+except ImportError:
+    _FALLBACK_AVAILABLE = False
 
 Logger = logging.getLogger(__name__)
 
@@ -131,24 +140,64 @@ class GraphMemoryBridge:
 
     def _init_mcp(self) -> None:
         """
-        Initialize connection to Memory MCP server.
+        Detect live Memory MCP availability.
 
-        In production, this would connect to the actual MCP server.
-        For testing, mock functions can be injected via set_mcp_functions().
+        Attempts to import the mcp11 module exposed by the Windsurf Memory MCP
+        server.  Falls back to in-process ADGMCPClient stub when unavailable
+        (CI / offline environments).
         """
         try:
-            # Check if MCP tools are available
-            # In Windsurf/Cascade, MCP tools are available via the tool calling interface
-            # This bridge provides a programmatic wrapper for agent code
+            import importlib
 
-            # Default: assume MCP is available (will fail gracefully if not)
+            _mod = importlib.import_module("mcp11")
+            self._mcp_module = _mod
             self._mcp_available = True
-            Logger.info("[GraphMemoryBridge] Initialized (MCP mode)")
-        except Exception as e:
-            # TODO: Handle specific exception properly
-            raise  # Re-raise after logging/handling
+            Logger.info("[GraphMemoryBridge] Initialized (live mcp11 MCP mode)")
+        except ImportError:
+            self._mcp_module = None
             self._mcp_available = False
-            Logger.warning(f"[GraphMemoryBridge] MCP unavailable: {e}")
+            Logger.info("[GraphMemoryBridge] mcp11 not importable — resilient fallback mode")
+
+    # ------------------------------------------------------------------
+    # Direct mcp11_* call helpers
+    # ------------------------------------------------------------------
+
+    def _call_mcp_create_entities(self, entities: list[dict]) -> Any:
+        """Call mcp11_create_entities; falls back to injected fn or fallback store."""
+        if self._create_entities_fn is not None:
+            return self._create_entities_fn(entities=entities)
+        if self._mcp_module is not None:
+            return self._mcp_module.create_entities(entities=entities)
+        if _FALLBACK_AVAILABLE:
+            store = _MCPFallbackClient()
+            for e in entities:
+                store.upsert_entity(e["name"], e.get("entityType", "Entity"), e.get("observations"))
+            return {"status": "ok", "source": "fallback"}
+        return None
+
+    def _call_mcp_create_relations(self, relations: list[dict]) -> Any:
+        """Call mcp11_create_relations; falls back to injected fn or fallback store."""
+        if self._create_relations_fn is not None:
+            return self._create_relations_fn(relations=relations)
+        if self._mcp_module is not None:
+            return self._mcp_module.create_relations(relations=relations)
+        return None
+
+    def _call_mcp_add_observations(self, observations: list[dict]) -> Any:
+        """Call mcp11_add_observations; falls back to injected fn or fallback store."""
+        if self._add_observations_fn is not None:
+            return self._add_observations_fn(observations=observations)
+        if self._mcp_module is not None:
+            return self._mcp_module.add_observations(observations=observations)
+        return None
+
+    def _call_mcp_search_nodes(self, query: str) -> Any:
+        """Call mcp11_search_nodes; falls back to injected fn or empty list."""
+        if self._search_nodes_fn is not None:
+            return self._search_nodes_fn(query=query)
+        if self._mcp_module is not None:
+            return self._mcp_module.search_nodes(query=query)
+        return []
 
     def set_mcp_functions(
         self,
@@ -247,14 +296,9 @@ class GraphMemoryBridge:
             },
         ]
 
-        result = self._safe_call(
-            "create_entities",
-            self._create_entities_fn,
-            entities=entities,
-        )
+        result = self._call_mcp_create_entities(entities)
 
-        if result is not None or self._create_entities_fn is None:
-            # Mark as registered even if MCP unavailable (to prevent repeated attempts)
+        if result is not None or (self._create_entities_fn is None and self._mcp_module is None):
             self._registered_entities.add(agent_name)
             with self._lock:
                 self.stats["entities_created"] += 1
@@ -298,11 +342,7 @@ class GraphMemoryBridge:
             },
         ]
 
-        self._safe_call(
-            "create_task_entity",
-            self._create_entities_fn,
-            entities=task_entities,
-        )
+        self._call_mcp_create_entities(task_entities)
 
         # Create the MASTERED_TASK relation
         relations = [
@@ -313,13 +353,9 @@ class GraphMemoryBridge:
             },
         ]
 
-        result = self._safe_call(
-            "create_relations",
-            self._create_relations_fn,
-            relations=relations,
-        )
+        result = self._call_mcp_create_relations(relations)
 
-        if result is not None or self._create_relations_fn is None:
+        if result is not None or (self._create_relations_fn is None and self._mcp_module is None):
             with self._lock:
                 self.stats["relations_created"] += 1
             Logger.info(
@@ -354,13 +390,9 @@ class GraphMemoryBridge:
             },
         ]
 
-        result = self._safe_call(
-            "create_relations",
-            self._create_relations_fn,
-            relations=relations,
-        )
+        result = self._call_mcp_create_relations(relations)
 
-        if result is not None or self._create_relations_fn is None:
+        if result is not None or (self._create_relations_fn is None and self._mcp_module is None):
             with self._lock:
                 self.stats["relations_created"] += 1
             return True
@@ -395,13 +427,9 @@ class GraphMemoryBridge:
             },
         ]
 
-        result = self._safe_call(
-            "add_observations",
-            self._add_observations_fn,
-            observations=observations,
-        )
+        result = self._call_mcp_add_observations(observations)
 
-        if result is not None or self._add_observations_fn is None:
+        if result is not None or (self._add_observations_fn is None and self._mcp_module is None):
             with self._lock:
                 self.stats["observations_added"] += 1
             return True
@@ -421,11 +449,7 @@ class GraphMemoryBridge:
         Returns:
             List of matching entities (empty if failed or unavailable)
         """
-        result = self._safe_call(
-            "search_nodes",
-            self._search_nodes_fn,
-            query=query,
-        )
+        result = self._call_mcp_search_nodes(query)
 
         with self._lock:
             self.stats["searches_performed"] += 1

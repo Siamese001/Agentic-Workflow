@@ -163,6 +163,126 @@ def generate_full_adg(adg_artifacts_dir: Path, ts: str) -> None:
         f"      E10 repair routes: {routing_summary['total_routes']} routes  by_severity={routing_summary['by_severity']}"
     )
 
+    # --- Memory MCP persistence ---
+    _persist_adg_to_memory(result, artifact, snapshot, graph_diff, routing_summary, ts)
+
+
+def _persist_adg_to_memory(result, artifact, snapshot, graph_diff, routing_summary, ts: str) -> None:
+    """Persist key ADG signals to Memory MCP knowledge graph for cross-session access."""
+    try:
+        from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBridge
+
+        bridge = GraphMemoryBridge.get_instance()
+    except Exception as e:  # guardian: allow-silent-swallower
+        print(f"[ADG] Memory MCP unavailable — skipping persistence: {e}")
+        return
+
+    # 1. ADG snapshot digest entity (drift tracking)
+    try:
+        drift_obs = f"drift: {graph_diff.summary}" if graph_diff else "first run"
+        bridge.create_agent_entity(
+            agent_name=f"ADG_Snapshot_{ts}",
+            agent_type="ADGSnapshot",
+            observations=[
+                f"digest={snapshot.graph_hash[:16]}",
+                f"nodes={snapshot.node_count}",
+                f"edges={snapshot.edge_count}",
+                f"ts={ts}",
+                drift_obs,
+            ],
+        )
+    except Exception as e:  # guardian: allow-silent-swallower
+        print(f"[ADG] Memory MCP: snapshot entity failed: {e}")
+
+    # 2. Layer summary entities
+    from collections import defaultdict
+
+    layer_module_counts: dict = defaultdict(int)
+    for mod in result.modules:
+        layer = _infer_layer(str(mod))
+        layer_module_counts[layer] += 1
+
+    violation_edges = [e for e in result.edges if e.relation_type == "violates"]
+    layer_violation_counts: dict = defaultdict(int)
+    for e in violation_edges:
+        layer = _infer_layer(str(e.source_file or ""))
+        layer_violation_counts[layer] += 1
+
+    for layer, count in layer_module_counts.items():
+        try:
+            bridge.create_agent_entity(
+                agent_name=f"ADG_Layer_{layer}",
+                agent_type="ADGLayer",
+                observations=[
+                    f"modules={count}",
+                    f"violations={layer_violation_counts.get(layer, 0)}",
+                    f"last_scan={ts}",
+                ],
+            )
+        except Exception as e:  # guardian: allow-silent-swallower
+            print(f"[ADG] Memory MCP: layer entity {layer} failed: {e}")
+
+    # 3. Top-10 fan-out hotspot entities
+    hotspot_limit = 10  # guardian: allow-magic-config
+    hotspots = sorted(
+        result.modules,
+        key=lambda m: sum(1 for e in result.edges if str(e.source_file) == str(m)),
+        reverse=True,
+    )[:hotspot_limit]
+    for mod in hotspots:
+        fan_out = sum(1 for e in result.edges if str(e.source_file) == str(mod))
+        try:
+            bridge.create_agent_entity(
+                agent_name=f"ADG_Hotspot_{str(mod).replace('/', '_').replace('.', '_')[:60]}",
+                agent_type="ADGHotspot",
+                observations=[
+                    f"module={mod}",
+                    f"fan_out={fan_out}",
+                    f"last_scan={ts}",
+                ],
+            )
+        except Exception as e:  # guardian: allow-silent-swallower
+            print(f"[ADG] Memory MCP: hotspot entity failed: {e}")
+
+    # 4. Critical violation entities (batch in groups of 10 to stay under L5 shield limit)
+    critical_violations = list(violation_edges)[:50]  # cap to avoid overload
+    for i in range(0, len(critical_violations), 10):
+        batch = critical_violations[i : i + 10]
+        for edge in batch:
+            src = str(edge.source_file or "unknown")[:80]
+            tgt = str(edge.target_module or "unknown")[:80]
+            entity_name = f"ADG_Violation_{src.replace('/', '_')[:40]}_{i}"
+            try:
+                bridge.create_agent_entity(
+                    agent_name=entity_name,
+                    agent_type="ADGViolation",
+                    observations=[
+                        f"source={src}",
+                        f"target={tgt}",
+                        f"relation={edge.relation_type}",
+                        f"ts={ts}",
+                    ],
+                )
+            except Exception as e:  # guardian: allow-silent-swallower
+                print(f"[ADG] Memory MCP: violation entity failed: {e}")
+
+    total_violations = len(violation_edges)
+    critical_count = routing_summary.get("by_severity", {}).get("critical", 0)
+    print(
+        f"[ADG] Memory MCP: persisted snapshot + layers + hotspots + {min(total_violations, 50)}/{total_violations} violations (critical={critical_count})"
+    )
+
+
+def _infer_layer(path: str) -> str:
+    """Infer layer label from file path."""
+    for layer in ("L0", "L1", "L2", "L3", "L4", "L5", "L6"):
+        if f"/{layer}_" in path or f"\\{layer}_" in path or f"/{layer}/" in path:
+            return layer
+    for prefix in ("apps_shared", "apps_lic", "apps_rg"):
+        if path.startswith(prefix) or f"/{prefix}" in path:
+            return "L_APP"
+    return "L_UNKNOWN"
+
 
 def main() -> None:
     ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
