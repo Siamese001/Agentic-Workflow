@@ -39,6 +39,11 @@ from agentic_core.L0_routing.config.path_constants import (
     APPS_LIC_DIR,
     APPS_RG_DIR,
 )
+from agentic_core.L5_safety.config.structure_blueprint import (
+    DEPTH_RULES,
+    LAYER_PREFIX_EXEMPT_TERRITORIES,
+    PROJECT_ROOT_WHITELIST,
+)
 
 
 @dataclass
@@ -298,7 +303,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
                 f"FLAT VIOLATION: {flat_violation['message']}",
             )
 
-        expected_depth = SOVEREIGN_TERRITORIES.get(root_folder, {}).get("depth")
+        expected_depth = DEPTH_RULES.get(root_folder)
         actual_depth = len(parts) - 1
 
         # Check if this is a variable-depth subfolder (exempt from strict depth check)
@@ -311,8 +316,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
 
         # Territories with allow_root_py=True permit flat .py files at depth 1
         # even when their canonical subfolder depth is higher.
-        territory_cfg = SOVEREIGN_TERRITORIES.get(root_folder, {})
-        if actual_depth == 1 and territory_cfg.get("allow_root_py") and rel_path.suffix == ".py":
+        if actual_depth == 1 and root_folder in ALLOW_ROOT_PY_TERRITORIES and rel_path.suffix == ".py":
             return True, "OK"
 
         # Standard depth validation (non-variable subfolders)
@@ -343,21 +347,17 @@ class LocationValidatorAgent(SovereignBaseAgent):
     def _validate_filename_patterns(self, file_path: Path) -> tuple[bool, str]:
         """Validate filename patterns for forbidden prefixes and backup files."""
         from agentic_core.L5_safety.config.structure_blueprint import (
-            SOVEREIGN_TERRITORIES,
             check_forbidden_signals,
             has_forbidden_layer_prefix,
         )
 
         # Forbidden layer prefixes — skip for territories declaring layer_prefix_exempt=True
-        # (e.g. system_learning uses l0_–l5_ prefixes intentionally to denote which
-        # agentic layer a module adapts for).
         try:
             _rel = file_path.relative_to(self.project_root)
             _root = _rel.parts[0] if _rel.parts else ""
         except (ValueError, IndexError):
             _root = ""
-        _territory_cfg = SOVEREIGN_TERRITORIES.get(_root, {})
-        if not _territory_cfg.get("layer_prefix_exempt", False):
+        if _root not in LAYER_PREFIX_EXEMPT_TERRITORIES:
             forbidden_prefix = has_forbidden_layer_prefix(file_path.name)
             if forbidden_prefix:
                 return (
@@ -829,10 +829,10 @@ class LocationValidatorAgent(SovereignBaseAgent):
         # [STRICT SCOPE] Target specific roots or all
         if target_territory:
             target_roots = (
-                [target_territory] if target_territory in SOVEREIGN_TERRITORIES else [AGENTIC_CORE_DIR]
+                [target_territory] if target_territory in PROJECT_ROOT_WHITELIST else [AGENTIC_CORE_DIR]
             )
         else:
-            target_roots = list(SOVEREIGN_TERRITORIES.keys())
+            target_roots = sorted(PROJECT_ROOT_WHITELIST)
 
         # Scan targeted roots
         for root_name in target_roots:

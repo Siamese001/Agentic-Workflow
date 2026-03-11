@@ -125,6 +125,16 @@ VOLATILE_TERRITORIES: Final[frozenset[str]] = frozenset(
     },
 )
 
+# Territories that permit a .py file directly at depth-1 (allow_root_py flag)
+ALLOW_ROOT_PY_TERRITORIES: Final[frozenset[str]] = frozenset(
+    k for k, v in SOVEREIGN_TERRITORIES.items() if v.get("allow_root_py")
+)
+
+# Territories that use L0–L6 prefixes intentionally (layer_prefix_exempt flag)
+LAYER_PREFIX_EXEMPT_TERRITORIES: Final[frozenset[str]] = frozenset(
+    k for k, v in SOVEREIGN_TERRITORIES.items() if v.get("layer_prefix_exempt")
+)
+
 
 def is_layer_root(name: str) -> bool:
     """Return True if *name* is a canonical L0–L6 layer root."""

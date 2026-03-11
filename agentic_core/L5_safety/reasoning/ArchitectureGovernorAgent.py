@@ -69,7 +69,7 @@ from agentic_core.L0_routing.config import (
 
 # [PHASE 24] Integrate L0 Maintenance Capability
 from agentic_core.L0_routing.reasoning.SSOTFolderCleanupAgent import SSOTFolderCleanupAgent
-from agentic_core.L5_safety.config.structure_blueprint import SOVEREIGN_TERRITORIES
+from agentic_core.L5_safety.config.structure_blueprint import CORE_SUBFOLDER_MAP, PROJECT_ROOT_WHITELIST
 from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
     FileClassificationAgent,
     get_python_files_fast,
@@ -84,7 +84,7 @@ from agentic_core.L0_routing.config.path_constants import (
 Logger = logging.getLogger(__name__)
 
 # Layer directories from SSOT
-LAYER_DIRS: set[str] = set(SOVEREIGN_TERRITORIES.get("agentic_core", {}).get("subfolders", []))
+LAYER_DIRS: set[str] = set(CORE_SUBFOLDER_MAP.keys())
 
 
 @dataclass
@@ -586,7 +586,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                         Logger.warning(f"⚠️ Target territory not found: {t}")
             else:
                 # GLOBAL SCOPE: Only runs if NO targets are provided
-                scan_targets = [self.project_root / k for k in SOVEREIGN_TERRITORIES.keys()]
+                scan_targets = [self.project_root / k for k in sorted(PROJECT_ROOT_WHITELIST)]
 
             for root_path in scan_targets:
                 if not root_path.exists():

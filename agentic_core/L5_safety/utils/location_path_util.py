@@ -59,7 +59,8 @@ def is_path_compliant(file_path: str | Path, project_root: Path | None = None) -
         False
     """
     from agentic_core.L5_safety.config.structure_blueprint import (
-        SOVEREIGN_TERRITORIES,
+        DEPTH_RULES,
+        PROJECT_ROOT_WHITELIST,
         get_validated_project_root,
     )
 
@@ -81,10 +82,10 @@ def is_path_compliant(file_path: str | Path, project_root: Path | None = None) -
 
     root_folder = parts[0]
 
-    if root_folder not in SOVEREIGN_TERRITORIES:
+    if root_folder not in PROJECT_ROOT_WHITELIST:
         return False
 
-    max_depth = SOVEREIGN_TERRITORIES.get(root_folder, {}).get("depth", 3)
+    max_depth = DEPTH_RULES.get(root_folder, 3)
     if len(parts) > max_depth:
         return False
 

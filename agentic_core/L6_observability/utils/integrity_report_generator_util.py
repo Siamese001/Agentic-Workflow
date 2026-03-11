@@ -37,7 +37,7 @@ from agentic_core.L5_safety.enforcement.three_tier_compliance_enforcer import (
     ComplianceResult,
     ThreeTierComplianceChecker,
 )
-from agentic_core.L5_safety.config.structure_blueprint.ssot import REPORTS_DIR
+from agentic_core.L5_safety.config.structure_blueprint_config import REPORTS_DIR
 
 
 @dataclass

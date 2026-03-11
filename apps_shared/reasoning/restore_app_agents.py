@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# MISPLACED: This admin script belongs in ops_scripts/general/ not apps_shared/reasoning/.
+# TODO(P1-B): Move to ops_scripts/general/restore_app_agents.py
 """
 restore_app_agents.py - Restore incorrectly archived app agents
 

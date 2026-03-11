@@ -33,7 +33,6 @@ if str(project_root) not in sys.path:
 
 from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
-    SOVEREIGN_TERRITORIES,
 )
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 
@@ -154,7 +153,7 @@ def main():
 
     # Iterate over SSOT structure
     # UPDATED: Use SOVEREIGN_TERRITORIES to get agentic_core subfolders
-    l1_folders = SOVEREIGN_TERRITORIES.get("agentic_core", {}).get("subfolders", [])
+    l1_folders = list(CORE_SUBFOLDER_MAP.keys())
 
     for l1 in l1_folders:
         l1_path = core_root / l1

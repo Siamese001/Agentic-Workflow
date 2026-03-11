@@ -27,9 +27,10 @@ from typing import Final
 from agentic_core.L5_safety.config.structure_blueprint import (
     AGENTIC_CORE_DIR,
     L4_APPROVED_FOLDERS,
-    SOVEREIGN_TERRITORIES,
+    PROJECT_ROOT_WHITELIST,
     VARIABLE_DEPTH_SUBFOLDERS,
 )
+from agentic_core.config.core.registry_config import SOVEREIGN_REGISTRY
 from agentic_core.L5_safety.enforcement.registry_verification_enforcer import (
     AgentInfo,
     RegistryVerifier,
@@ -111,17 +112,17 @@ class SSOTStructureValidator:
         first_part = parts[0]
 
         # Check against known territories
-        if first_part in SOVEREIGN_TERRITORIES:
+        if first_part in SOVEREIGN_REGISTRY:
             return first_part
 
         return None
 
     def _get_expected_depth(self, territory: str) -> int:
         """Get expected depth for a territory."""
-        if territory not in SOVEREIGN_TERRITORIES:
+        if territory not in SOVEREIGN_REGISTRY:
             return 2  # Default depth
 
-        territory_def = SOVEREIGN_TERRITORIES[territory]
+        territory_def = SOVEREIGN_REGISTRY[territory]
         return territory_def.get("depth", 2)
 
     def _get_actual_depth(self, path: str) -> int:
@@ -270,10 +271,10 @@ class SSOTStructureValidator:
         normalized = self._normalize_path(agent.relative_path)
         territory = self._get_territory(normalized)
 
-        if not territory or territory not in SOVEREIGN_TERRITORIES:
+        if not territory or territory not in SOVEREIGN_REGISTRY:
             return None
 
-        territory_def = SOVEREIGN_TERRITORIES[territory]
+        territory_def = SOVEREIGN_REGISTRY[territory]
         forbidden = territory_def.get("forbidden_patterns", [])
 
         for pattern in forbidden:

@@ -23,7 +23,17 @@ import pathlib
 
 import pytest
 
-from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    OPS_SCRIPTS_DIR,
+    SYSTEM_LEARNING_DIR,
+    TESTS_DIR,
+    TOOLS_DIR,
+)
+from agentic_core.L5_safety.config.structure_blueprint import (
     DISCOVERY_EXCLUDED_TERRITORIES,
     GLOBAL_EXCLUDED_DIRS,
     SOVEREIGN_EXCLUDED_FOLDERS,
@@ -47,6 +57,8 @@ SCAN_DIRS = [
 ALLOWED_DIRECT = {
     # The blueprint package itself imports its own sub-modules
     "agentic_core/L5_safety/config/structure_blueprint",
+    # This test file must import from structure_blueprint to obtain exclusion constants for its own scan
+    "tests/unit_min_deps/test_ssot_single_entry_point.py",
     # sovereign_kernel is a real module (not a shim), exempt from this rule
     "ops_scripts/ci/check_kernel_extension_boundary.py",
     "tests/ci/test_sovereignty_attack_suite.py",
@@ -77,7 +89,6 @@ ALLOWED_DIRECT = {
     "agentic_core/base_agents/SovereignBaseAgent.py",
     "agentic_core/config/core",
     "agentic_core/interfaces/IBlackboardLeaseVerifierProtocol.py",
-    "agentic_core/interfaces/structure_config.py",
     "agentic_core/mixins/ast_enforcement_mixin.py",
     "agentic_core/runtime/engine/ast_relocator.py",
     "agentic_core/runtime/utils",

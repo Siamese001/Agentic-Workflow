@@ -31,10 +31,10 @@ _LAYER_DIR_PATTERN = re.compile(r"^L[0-6]_")
 
 
 def _get_apps_roots() -> frozenset[str]:
-    """Derive apps_* roots from SOVEREIGN_TERRITORIES — zero hardcoded folder names."""
-    from agentic_core.L5_safety.config.structure_blueprint import SOVEREIGN_TERRITORIES
+    """Derive apps_* roots from PROJECT_ROOT_WHITELIST — zero hardcoded folder names."""
+    from agentic_core.L5_safety.config.structure_blueprint import PROJECT_ROOT_WHITELIST
 
-    return frozenset(k for k in SOVEREIGN_TERRITORIES if k.startswith("apps_"))
+    return frozenset(k for k in PROJECT_ROOT_WHITELIST if k.startswith("apps_"))
 
 
 _APPS_ROOTS: frozenset[str] = _get_apps_roots()

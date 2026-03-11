@@ -133,9 +133,8 @@ class SystemArchitectAgent(SovereignBaseAgent):
         Reuses centralized hierarchy validation to prevent drift.
         """
         violations: Any = []
-        from agentic_core.L5_safety.config.structure_blueprint import (
-            SOVEREIGN_TERRITORIES,
-        )
+        from agentic_core.config.core.registry_config import SOVEREIGN_REGISTRY
+        from agentic_core.L5_safety.config.structure_blueprint import CORE_SUBFOLDER_MAP as _CSM
 
         # [PHASE 20] DEPRECATION: void_compliance.py removed - using HierarchyAgent
         def validate_canonical_hierarchy(proj_root):
@@ -157,21 +156,19 @@ class SystemArchitectAgent(SovereignBaseAgent):
             except ValueError:
                 rel_path: Any = path
             violations.append(f"{rel_path}: {reason}")
-        for root_folder, config in SOVEREIGN_TERRITORIES.items():
+        for root_folder, config in SOVEREIGN_REGISTRY.items():
             root_path: Any = project_root / root_folder
             if not root_path.exists():
                 continue
             if not (root_path / "__init__.py").exists():
                 violations.append(f"{root_folder}: Missing __init__.py (package marker)")
-            for l1_name in config["subfolders"]:
+            for l1_name in config.get("subfolders", []):
                 l1_path: Any = root_path / l1_name
                 if l1_path.exists():
                     if not (l1_path / "__init__.py").exists():
                         violations.append(f"{root_folder}/{l1_name}: Missing __init__.py")
-                    if config["depth"] == 4:
-                        from agentic_core.L5_safety.config.structure_blueprint import (
-                            CORE_SUBFOLDER_MAP,
-                        )
+                    if config.get("depth") == 4:
+                        CORE_SUBFOLDER_MAP = _CSM  # noqa: F841
 
                         l2_list: Any = CORE_SUBFOLDER_MAP.get(l1_name, [])
                         for l2_name in l2_list:
@@ -303,7 +300,8 @@ class SystemArchitectAgent(SovereignBaseAgent):
         from pathlib import Path
 
         from agentic_core.L5_safety.config.structure_blueprint import (
-            SOVEREIGN_TERRITORIES,
+            DEPTH_RULES,
+            PROJECT_ROOT_WHITELIST,
         # guardian: allow-path-string
         )
 
@@ -320,8 +318,8 @@ class SystemArchitectAgent(SovereignBaseAgent):
                 continue
             depth: Any = len(rel_path.parts) - 1
             root_folder: Any = rel_path.parts[0] if rel_path.parts else None
-            if root_folder in SOVEREIGN_TERRITORIES:
-                required_depth: Any = SOVEREIGN_TERRITORIES[root_folder]["depth"]
+            if root_folder in PROJECT_ROOT_WHITELIST:
+                required_depth: Any = DEPTH_RULES.get(root_folder, 2)
                 if depth != required_depth:
                     violations.append(
                         f"{rel_path}: {root_folder} requires exactly depth {required_depth}, found {depth}.",

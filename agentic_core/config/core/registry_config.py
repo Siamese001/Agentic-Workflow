@@ -20,34 +20,37 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 # Configuration constants
 
 def _derive_registry() -> dict:
-    """Build SOVEREIGN_REGISTRY from SOVEREIGN_TERRITORIES (the true SSOT).
+    """Build SOVEREIGN_REGISTRY from SSOT subsets (DEPTH_RULES + subfolder maps).
 
     Produces the flat {name: {depth, subfolders}} shape expected by
     LocationHealerAgent._autonomous_void_violation_resolution().
     """
-    from collections.abc import Mapping as _Mapping
-
     from agentic_core.L5_safety.config.structure_blueprint import (
-        SOVEREIGN_TERRITORIES,
+        DEPTH_RULES,
+        PROJECT_ROOT_WHITELIST,
     )
+    from agentic_core.L5_safety.config.structure_blueprint.derived import (
+        APPS_LIC_SUBFOLDER_MAP as apps_lic_map,
+        APPS_RG_SUBFOLDER_MAP as apps_rg_map,
+        APPS_SHARED_SUBFOLDER_MAP as apps_shared_map,
+        TESTS_SUBFOLDER_MAP as tests_map,
+    )
+    from agentic_core.L5_safety.config.structure_blueprint import CORE_SUBFOLDER_MAP
+
+    subfolder_maps: dict = {
+        "agentic_core": list(CORE_SUBFOLDER_MAP.keys()),
+        "apps_lic": sorted(apps_lic_map.keys()),
+        "apps_rg": sorted(apps_rg_map.keys()),
+        "apps_shared": sorted(apps_shared_map.keys()),
+        "tests": sorted(tests_map.keys()),
+    }
 
     registry: dict = {}
-    for name, cfg in SOVEREIGN_TERRITORIES.items():
-        subfolders = cfg.get("subfolders", {})
-        if isinstance(subfolders, _Mapping):
-            subfolder_list = sorted(subfolders.keys())
-        elif isinstance(subfolders, (list, tuple, frozenset, set)):
-            subfolder_list = sorted(subfolders)
-        else:
-            subfolder_list = []
+    for name in PROJECT_ROOT_WHITELIST:
         entry: dict = {
-            "depth": cfg.get("depth", 2),
-            "subfolders": subfolder_list,
+            "depth": DEPTH_RULES.get(name, 2),
+            "subfolders": subfolder_maps.get(name, []),
         }
-        if cfg.get("layer_prefix_exempt"):
-            entry["layer_prefix_exempt"] = True
-        if cfg.get("volatile"):
-            entry["volatile"] = True
         registry[name] = entry
     return registry
 

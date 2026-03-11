@@ -3,9 +3,22 @@
 # Suggested keywords to add in docstring/code: engine, guardrail, memory, orchestrator, prompt, validator, workflow
 # This boosts alignment detection — review and integrate appropriately
 
+"""dispatch_outreach_tools.py - Execution Module
+
+Domain: outreach
+Generated: 2025-12-07T13:28:54.137995
+DEDUPLICATED — absorbed logic from InvokeGenerationServiceAgent, InvokeMessageServiceAgent
+— redundancy eliminated — 2025-12-30
+Refactored: 2026-03-11 (P2-C) — now subclasses BaseDispatchAgent.
+"""
+
 from __future__ import annotations
 
-from dataclasses import dataclass
+import logging
+from dataclasses import dataclass, field
+from typing import Any
+
+from apps_shared.reasoning.BaseDispatchAgent import BaseDispatchAgent, ExecutionResult
 
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
@@ -17,130 +30,34 @@ MAX_FILES = 1000
 DEFAULT_TIMEOUT = 300  # 5 minutes
 # Configuration constants
 
-"""
-dispatch_outreach_tools.py - Execution Module
-
-Domain: outreach
-Generated: 2025-12-07T13:28:54.137995
-
-# DEDUPLICATED — absorbed logic from InvokeGenerationServiceAgent, InvokeMessageServiceAgent
-# — redundancy eliminated — 2025-12-30
-"""
-import logging
-import time
-from dataclasses import dataclass as dc_dataclass
-from typing import Any
-
 Logger: Any = logging.getLogger(__name__)
-
-
-@dc_dataclass
-class ExecutionResult:
-    """Result of an execution action."""
-
-    SUCCESS: bool = False
-    OUTPUT: Any = None
-    ERROR: str | None = None
-    duration_ms: float = 0.0
-
-
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 
 # NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
 @dataclass
-class DispatchOutreachToolsAgent(SovereignBaseAgent):
-    """Executor for outreach domain."""
+class DispatchOutreachToolsAgent(BaseDispatchAgent):
+    """Executor for outreach domain.
 
-    def __init__(self, config: dict[str, object] | None = None) -> None:
-        """
-        Initialize dispatch outreach tools agent.
+    Inherits execute(), _heal_timeout_settings(), _heal_config_integrity()
+    from BaseDispatchAgent. Adds outreach-specific diagnostics.
+    """
 
-        Args:
-            config: Optional configuration dictionary with timeout settings
-        """
-        self.CONFIG = config or {}
-        self.TIMEOUT = self.CONFIG.get("timeout", 30.0)
-        Logger.info(f"Initialized {self.__class__.__name__}")
+    config_dict: dict[str, Any] = field(default_factory=dict)
 
-    def _run_self_tests(self) -> bool:
-        """Phase 1: Self-testing for L3 compliance."""
-        assert hasattr(self, "CONFIG"), "Missing CONFIG"
-        return True
+    def __post_init__(self) -> None:
+        """Initialize with outreach config."""
+        super().__post_init__()
 
-    def execute(self, action: str, params: dict[str, object]) -> ExecutionResult:
-        """
-        Execute action with parameters.
-
-        Args:
-            action: Action name to execute
-            params: Parameters for the action
-
-        Returns:
-            ExecutionResult with success status, output, and duration
-        """
-        START: Any = time.time()
-        try:
-            OUTPUT: Any = self._perform_action(action, params)
-            return ExecutionResult(SUCCESS=True, OUTPUT=OUTPUT, duration_ms=(time.time() - START) * 1000)
-        except (ValueError, TypeError, RuntimeError, KeyError) as e:
-            return ExecutionResult(SUCCESS=False, ERROR=str(e), duration_ms=(time.time() - START) * 1000)
-
-    def _perform_action(self, action: str, params: dict[str, object]) -> object:
-        """Perform the action."""
-        Logger.info(f"Executing {action} with {params}")
-        return {"action": action, "params": params, "status": "completed"}
-
-    def heal_repository(self) -> None:
-        """Autonomy healing: Validate and auto-correct agent state/config for reliable outreach dispatch.
-
-        - Inherits shared healing from HealerMixin (diagnostics, rollback)
-        - Adds Rg-specific checks: timeout settings, action validation, config integrity
-        - MCP hardening ensures safe healing (no injection during auto-correct)
-        """
-        super().heal_repository()
-
-        self._heal_timeout_settings()
-        self._heal_config_integrity()
-        self._run_outreach_diagnostics()
-
-    def _heal_timeout_settings(self) -> None:
-        """Ensure timeout settings within safe bounds."""
-        if self.TIMEOUT > 300:
-            Logger.warning(f"Timeout {self.TIMEOUT}s exceeds safe limit — resetting to 30s")
-            # guardian: allow-magic-config
-            self.TIMEOUT = 30.0
-        elif self.TIMEOUT < 1:
-            Logger.warning(f"Timeout {self.TIMEOUT}s too low — resetting to 30s")
-            # guardian: allow-magic-config
-            self.TIMEOUT = 30.0
-
-    def _heal_config_integrity(self) -> None:
-        """Validate config structure and repair if corrupted."""
-        if not isinstance(self.CONFIG, dict):
-            Logger.warning("CONFIG corrupted — resetting to defaults")
-            self.CONFIG = {}
-        required_keys = ["timeout"]
-        for key in required_keys:
-            if key not in self.CONFIG:
-                Logger.warning(f"Missing config key {key} — setting default")
-                if key == "timeout":
-                    self.CONFIG[key] = 30.0
-
-    def _run_outreach_diagnostics(self) -> None:
-        """Run outreach-specific health checks (e.g., mock action smoke test)."""
+    def _run_domain_diagnostics(self) -> None:
+        """Run outreach-specific health checks (mock action smoke test)."""
         try:
             test_result = self._perform_action("test", {"query": "diagnostic test"})
             if isinstance(test_result, dict) and "error" in test_result:
                 Logger.error(f"Diagnostics failed: {test_result['error']}")
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             Logger.error(f"Diagnostics exception: {e}")
-
-    def heal(self, violation, **kwargs):
-        return super().heal(violation, **kwargs)
 
 
 def execute(action: str, params: dict[str, object], config: dict | None = None) -> ExecutionResult:
     """Execute action."""
-    return DispatchOutreachToolsAgent(config).execute(action, params)
+    return DispatchOutreachToolsAgent(config_dict=config or {}).execute(action, params)

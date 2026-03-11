@@ -30,7 +30,7 @@ from pathlib import Path
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 from agentic_core.L0_routing.utils.project_root_util import get_validated_project_root
 from agentic_core.L2_execution.tools import write_gateway as _wg
-from agentic_core.L5_safety.config.structure_blueprint.ssot import REPORTS_DIR
+from agentic_core.L5_safety.config.structure_blueprint_config import REPORTS_DIR
 
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
