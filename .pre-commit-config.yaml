@@ -22,7 +22,8 @@ default_language_version:
   python: python3.12
 
 # Global exclude — applied to every hook. Individual hooks may extend this.
-exclude: ^(archives/.*|\.sovereign_healing_backup/.*|^artifacts/migration/)
+# Excludes artifacts that change on every hook run to prevent infinite loops
+exclude: ^(archives/.*|\.sovereign_healing_backup/.*|^artifacts/migration/|artifacts/adg_ci_lane_gate_result\.json|artifacts/healing/healing_events\.jsonl|artifacts/bypass_audit\.jsonl)
 
 repos:
   # ============================================================================
@@ -40,6 +41,15 @@ repos:
         always_run: true
         require_serial: true
         stages: [manual]
+
+      - id: guard-no-verify
+        name: "T0-guard: No-Verify Bypass Authorization"
+        entry: python ops_scripts/ci/guard_no_verify.py
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+        stages: [commit-msg]
 
   # ============================================================================
   # TIER 0: Whitespace & Line-Ending Normalization (deterministic, no churn)

@@ -84,6 +84,9 @@ _make_*              # Make/build script files (any directory)
 runtime_state*.json  # Agentic framework execution telemetry
 temp_complete_rules*.md # Temporary documentation artifacts
 
+# Bypass audit log (security artifact)
+artifacts/bypass_audit.jsonl
+
 # Guardian test output files
 guardian_*.txt       # Guardian framework test output
 guardian_*.json      # Guardian framework JSON results
