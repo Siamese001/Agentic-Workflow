@@ -31,10 +31,10 @@ Complements test_hierarchy_agent_depth_violation.py (happy-path branches) with:
 | HierarchyAgent.py | _heal_depth_violation | repeated DEEP same file, target exists | 2nd call → _legacy_archive | test_idempotent_deep_heal_collision |
 | _constants.py | SOVEREIGN_TERRITORIES | required_subfolders all territories | no depth_aligned | test_no_depth_aligned_in_required_subfolders |
 | _constants.py | SOVEREIGN_TERRITORIES | tests required_subfolders | no l*_* names | test_no_l_layer_in_tests_required_subfolders |
-| _constants.py | SOVEREIGN_TERRITORIES[TESTS_DIR]["subfolders"]["support"] | no subfolders key | flat | test_support_has_no_declared_subfolders |
-| _constants.py | SOVEREIGN_TERRITORIES[TESTS_DIR]["subfolders"] | support exists | approved | test_support_in_approved_tests_subfolders |
-| _constants.py | SOVEREIGN_TERRITORIES[TESTS_DIR]["subfolders"] | depth_aligned absent | not approved | test_depth_aligned_not_in_approved_tests_subfolders |
-| _constants.py | SOVEREIGN_TERRITORIES[TESTS_DIR]["subfolders"] | no l*_* at top level | no l-layer | test_no_l_layer_in_approved_tests_subfolders |
+| _constants.py | get_all_territories()[TESTS_DIR]["subfolders"]["support"] | no subfolders key | flat | test_support_has_no_declared_subfolders |
+| _constants.py | get_all_territories()[TESTS_DIR]["subfolders"] | support exists | approved | test_support_in_approved_tests_subfolders |
+| _constants.py | get_all_territories()[TESTS_DIR]["subfolders"] | depth_aligned absent | not approved | test_depth_aligned_not_in_approved_tests_subfolders |
+| _constants.py | get_all_territories()[TESTS_DIR]["subfolders"] | no l*_* at top level | no l-layer | test_no_l_layer_in_approved_tests_subfolders |
 | HierarchyAgent.py | _create_territory_structure | required_subfolders has depth_aligned | creates it (vulnerability) | test_create_territory_contaminated_blueprint_creates_phantom |
 | HierarchyAgent.py | create_missing_structure | controlled SOVEREIGN_TERRITORIES | no depth_aligned in ensure_dir calls | test_create_missing_structure_no_depth_aligned_dir_calls |
 | HierarchyAgent.py | _heal_depth_violation | apps_rg/depth_aligned/__init__.py depth==expected | returns 0, no gk (bypass) | test_apps_rg_depth_aligned_correct_depth_bypass |
@@ -439,12 +439,12 @@ class TestSovereignTerritoriesDepthAlignedInvariants:
     def test_no_depth_aligned_in_any_required_subfolders(self):
         """HARD INVARIANT: depth_aligned absent from required_subfolders of every territory."""
         from agentic_core.L5_safety.config.structure_blueprint import (
-            SOVEREIGN_TERRITORIES,
+            get_all_territories,
         )
 
         violations = [
             t
-            for t, cfg in SOVEREIGN_TERRITORIES.items()
+            for t, cfg in get_all_territories().items()
             if isinstance(cfg, dict) and "depth_aligned" in cfg.get("required_subfolders", [])
         ]
         assert not violations, (
@@ -454,25 +454,25 @@ class TestSovereignTerritoriesDepthAlignedInvariants:
     def test_no_l_layer_pattern_in_tests_required_subfolders(self):
         """HARD INVARIANT: no l[0-9]_* names in tests.required_subfolders."""
         from agentic_core.L5_safety.config.structure_blueprint import (
-            SOVEREIGN_TERRITORIES,
+            get_all_territories,
         )
 
         l_pattern = re.compile(r"^l[0-9]_[a-z]+$")
-        required = SOVEREIGN_TERRITORIES.get(TESTS_DIR, {}).get("required_subfolders", [])
+        required = get_all_territories().get(TESTS_DIR, {}).get("required_subfolders", [])
         violations = [s for s in required if l_pattern.match(s)]
         assert not violations, f"L-layer names in tests.required_subfolders: {violations}"
 
     def test_support_subfolder_has_no_declared_subfolders(self):
         """
-        HARD INVARIANT: SOVEREIGN_TERRITORIES[TESTS_DIR]['subfolders']['support'] has no 'subfolders' key.
+        HARD INVARIANT: get_all_territories()[TESTS_DIR]['subfolders']['support'] has no 'subfolders' key.
 
         tests/support/ must remain flat — no nested subdirectory structure declared in blueprint.
         """
         from agentic_core.L5_safety.config.structure_blueprint import (
-            SOVEREIGN_TERRITORIES,
+            get_all_territories,
         )
 
-        tests_subs = SOVEREIGN_TERRITORIES.get(TESTS_DIR, {}).get("subfolders", {})
+        tests_subs = get_all_territories().get(TESTS_DIR, {}).get("subfolders", {})
         if not isinstance(tests_subs, _Mapping):
             return
         support_cfg = tests_subs.get("support", {}) if isinstance(tests_subs, _Mapping) else {}
@@ -480,7 +480,7 @@ class TestSovereignTerritoriesDepthAlignedInvariants:
             return
         declared = support_cfg.get("subfolders", None)
         assert declared is None or (hasattr(declared, "__len__") and len(declared) == 0), (
-            f"tests/support/ has declared subfolders in SOVEREIGN_TERRITORIES: {declared}. "
+            f"tests/support/ has declared subfolders in get_all_territories(): {declared}. "
             "This would allow healing agents to create subdirectories inside support/."
         )
 

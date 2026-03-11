@@ -17,8 +17,8 @@ from agentic_core.L0_routing.config.path_constants import (
     APPS_RG_DIR,
     APPS_SHARED_DIR,
 )
-from agentic_core.L5_safety.config.structure_blueprint._constants import (
-    SOVEREIGN_TERRITORIES,
+from agentic_core.L5_safety.config.structure_blueprint.territories import (
+    get_all_territories,
 )
 
 # ============================================================================
@@ -27,9 +27,9 @@ from agentic_core.L5_safety.config.structure_blueprint._constants import (
 
 
 def _derive_depth_rules() -> dict[str, int]:
-    """Derive DEPTH_RULES from SOVEREIGN_TERRITORIES."""
+    """Derive DEPTH_RULES from territory definitions."""
     result: dict[str, int] = {}
-    for territory_name, territory_def in SOVEREIGN_TERRITORIES.items():
+    for territory_name, territory_def in get_all_territories().items():
         if isinstance(territory_def, Mapping):
             depth = territory_def.get("depth", 2)
             result[territory_name] = depth
@@ -37,9 +37,9 @@ def _derive_depth_rules() -> dict[str, int]:
 
 
 def _derive_core_subfolder_map() -> dict[str, list[str]]:
-    """Derive CORE_SUBFOLDER_MAP from SOVEREIGN_TERRITORIES."""
+    """Derive CORE_SUBFOLDER_MAP from territory definitions."""
     result: dict[str, list[str]] = {}
-    agentic_core = SOVEREIGN_TERRITORIES.get("agentic_core", {})
+    agentic_core = get_all_territories().get("agentic_core", {})
     subfolders = agentic_core.get("subfolders", {})
 
     for domain_name, domain_def in subfolders.items():
@@ -56,9 +56,9 @@ def _derive_core_subfolder_map() -> dict[str, list[str]]:
 
 
 def _derive_subfolder_metadata() -> dict[str, dict[str, Any]]:
-    """Derive SUBFOLDER_METADATA from SOVEREIGN_TERRITORIES."""
+    """Derive SUBFOLDER_METADATA from territory definitions."""
     result: dict[str, dict[str, Any]] = {}
-    agentic_core = SOVEREIGN_TERRITORIES.get("agentic_core", {})
+    agentic_core = get_all_territories().get("agentic_core", {})
     subfolders = agentic_core.get("subfolders", {})
 
     for domain_name, domain_def in subfolders.items():
@@ -74,9 +74,9 @@ def _derive_subfolder_metadata() -> dict[str, dict[str, Any]]:
 
 
 def _derive_apps_subfolder_map(territory_name: str) -> dict[str, list[str]]:
-    """Derive APPS_*_SUBFOLDER_MAP from SOVEREIGN_TERRITORIES."""
+    """Derive APPS_*_SUBFOLDER_MAP from territory definitions."""
     result: dict[str, list[str]] = {}
-    territory = SOVEREIGN_TERRITORIES.get(territory_name, {})
+    territory = get_all_territories().get(territory_name, {})
     if not isinstance(territory, Mapping):
         return result
 
@@ -274,7 +274,7 @@ SCRIPTS_PLACEMENT_RULES: Final[Mapping[str, Mapping[str, Any]]] = {
 
 # ============================================================================
 # TESTS SUBFOLDER MAP
-# Derived from SOVEREIGN_TERRITORIES["tests"]["subfolders"] — the single SSOT.
+# Derived from territory definitions["tests"]["subfolders"] — the single SSOT.
 # Do NOT add entries here directly; update _constants.py instead.
 # ============================================================================
 
@@ -282,14 +282,14 @@ SCRIPTS_PLACEMENT_RULES: Final[Mapping[str, Mapping[str, Any]]] = {
 def _derive_tests_subfolder_map() -> dict[str, list[str]]:
     """Build tests subfolder map from the SSOT territory declaration.
 
-    SOVEREIGN_TERRITORIES uses mappingproxy objects (not plain dicts), so we
+    Territory definitions use mappingproxy objects (not plain dicts), so we
     check for a 'keys' attribute (Mapping duck-type) rather than isinstance(dict).
     """
     from agentic_core.L5_safety.config.structure_blueprint.territories import (
-        SOVEREIGN_TERRITORIES,
+        get_all_territories,
     )
 
-    tests_config = SOVEREIGN_TERRITORIES.get("tests", {})
+    tests_config = get_all_territories().get("tests", {})
     raw = tests_config.get("subfolders", {})
     result: dict[str, list[str]] = {}
     if not hasattr(raw, "keys"):

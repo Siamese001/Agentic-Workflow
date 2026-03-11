@@ -29,7 +29,7 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 # Territories - loaded eagerly from leaf node directly (no shim hop)
 # Governance constants - merged into _constants (2026-03-08)
-from agentic_core.L5_safety.config.structure_blueprint._constants import (  # noqa: F401
+from agentic_core.L5_safety.config.structure_blueprint._constants import (
     AGENT_RESILIENCE_CONFIG,
     DOWNSTREAM_ROOTS,
     GRAVITY_CONFIG,
@@ -38,11 +38,12 @@ from agentic_core.L5_safety.config.structure_blueprint._constants import (  # no
     LAYER_OVERRIDES,
     MCP_CAPABILITIES,
     MISSION_CONFIG,
-    SOVEREIGN_TERRITORIES,
+    # SOVEREIGN_TERRITORIES removed from public API - use get_all_territories() instead
+    # Still available via _constants for internal testing only
     UPSTREAM_SOVEREIGN_ROOTS,
     SubfolderDefinition,
     TerritoryDefinition,
-    build_sovereign_territories,
+    # build_sovereign_territories removed from public API - internal only
 )
 
 # HOT imports - always loaded (ssot.py is minimal-cost)
@@ -136,6 +137,11 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     validate_no_duplicate_prefix,
     validate_no_nested_lcd,
     validate_path_within_project,
+)
+from agentic_core.L5_safety.config.structure_blueprint.territories import (
+    get_all_territories,
+    get_territory_metadata,
+    is_valid_root_folder,
 )
 
 
@@ -357,6 +363,8 @@ __all__ = [
     "GLOBAL_EXCLUDED_DIRS",
     "GLOBAL_INTERFACES_FOLDER",
     "GRAVITY_CONFIG",
+    "get_all_territories",
+    "get_territory_metadata",
     "GRAVITY_SURGERY_ENABLED",
     "HEALING_CONFIG",
     "INTERFACE_FILENAME_PATTERN",

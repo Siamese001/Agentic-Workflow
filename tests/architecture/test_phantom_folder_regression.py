@@ -132,10 +132,10 @@ class TestDepthAlignedRegression:
         """
         try:
             from agentic_core.L5_safety.config.structure_blueprint import (
-                SOVEREIGN_TERRITORIES,
+                get_all_territories,
             )
         except ImportError:
-            pytest.fail("SOVEREIGN_TERRITORIES not importable")
+            pytest.fail("get_all_territories not importable")
 
         def _walk(obj: object, path: str = "") -> list[str]:
             found = []
@@ -146,9 +146,9 @@ class TestDepthAlignedRegression:
                     found.extend(_walk(v, f"{path}.{k}"))
             return found
 
-        violations = _walk(SOVEREIGN_TERRITORIES)
+        violations = _walk(get_all_territories())
         assert not violations, (
-            "depth_aligned declared as canonical subfolder in SOVEREIGN_TERRITORIES: "
+            "depth_aligned declared as canonical subfolder in get_all_territories(): "
             + ", ".join(violations)
             + " — this is forbidden."
         )

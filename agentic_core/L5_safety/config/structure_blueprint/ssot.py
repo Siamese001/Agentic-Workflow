@@ -24,11 +24,13 @@ from typing import Any, Final
 
 from agentic_core.L5_safety.config.structure_blueprint._constants import (
     ROOT_WHITELIST,  # noqa: F401 — re-exported via __init__.py
-    SOVEREIGN_TERRITORIES,
 )
 from agentic_core.L5_safety.config.structure_blueprint.derived import (
     L4_APPROVED_FOLDERS,
     L4_SUBFOLDER_MAP,
+)
+from agentic_core.L5_safety.config.structure_blueprint.territories import (
+    get_all_territories,
 )
 
 # ============================================================================
@@ -127,12 +129,12 @@ VOLATILE_TERRITORIES: Final[frozenset[str]] = frozenset(
 
 # Territories that permit a .py file directly at depth-1 (allow_root_py flag)
 ALLOW_ROOT_PY_TERRITORIES: Final[frozenset[str]] = frozenset(
-    k for k, v in SOVEREIGN_TERRITORIES.items() if v.get("allow_root_py")
+    k for k, v in get_all_territories().items() if v.get("allow_root_py")
 )
 
 # Territories that use L0–L6 prefixes intentionally (layer_prefix_exempt flag)
 LAYER_PREFIX_EXEMPT_TERRITORIES: Final[frozenset[str]] = frozenset(
-    k for k, v in SOVEREIGN_TERRITORIES.items() if v.get("layer_prefix_exempt")
+    k for k, v in get_all_territories().items() if v.get("layer_prefix_exempt")
 )
 
 
@@ -414,8 +416,8 @@ VARIABLE_DEPTH_SUBFOLDERS: frozenset[str] = frozenset(
 
 @lru_cache(maxsize=1)
 def get_sovereign_territories() -> Mapping[str, Any]:
-    """Return SOVEREIGN_TERRITORIES (now eagerly available from _constants)."""
-    return SOVEREIGN_TERRITORIES
+    """Return territory definitions (DEPRECATED: use get_all_territories() instead)."""
+    return get_all_territories()
 
 
 @lru_cache(maxsize=1)
@@ -924,15 +926,15 @@ def is_path_allowed(rel_path: str | Path) -> bool:
 
     if len(parts) == 1:
         # Allow sovereign territory directories at root level
-        if parts[0] in SOVEREIGN_TERRITORIES:
+        if parts[0] in get_all_territories():
             return True
         return parts[0] in ROOT_PROTECTED_FILES or parts[0] in ALLOWED_DUPLICATE_FILENAMES
 
     root = parts[0]
-    if root not in SOVEREIGN_TERRITORIES:
+    if root not in get_all_territories():
         return False
 
-    config = SOVEREIGN_TERRITORIES[root]
+    config = get_all_territories()[root]
 
     # 2. Cross-Sovereign Deportation: Prevent App/Test leakage into Core
     filename = parts[-1]
@@ -1032,7 +1034,7 @@ def is_l4_approved(path: str) -> bool:
                             return True
 
         # Fallback: Check l3-specific configuration for l4_specializations
-        root_cfg = SOVEREIGN_TERRITORIES.get(root, {})
+        root_cfg = get_all_territories().get(root, {})
         subs = root_cfg.get("subfolders", {})
 
         # Critical Analysis: Prevent TypeError by ensuring 'subs' is a Dict

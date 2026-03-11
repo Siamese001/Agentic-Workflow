@@ -29,14 +29,14 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 # ---------------------------------------------------------------------------
 # Load SOVEREIGN_TERRITORIES once
 # ---------------------------------------------------------------------------
-from agentic_core.L5_safety.config.structure_blueprint import (
-    SOVEREIGN_TERRITORIES,
-)
 from agentic_core.L0_routing.config.path_constants import TESTS_DIR
+from agentic_core.L5_safety.config.structure_blueprint import (
+    get_all_territories,
+)
 
 
 def _tests_subfolders() -> dict:
-    tests_cfg = SOVEREIGN_TERRITORIES.get("tests", {})
+    tests_cfg = get_all_territories().get("tests", {})
     subs = tests_cfg.get("subfolders", {})
     return dict(subs) if hasattr(subs, "items") else {}
 
@@ -54,27 +54,27 @@ class TestConstantsQuarantineInvariant:
         """
         subs = _tests_subfolders()
         assert "_quarantine" not in subs, (
-            "_quarantine is present in SOVEREIGN_TERRITORIES['tests']['subfolders']. "
+            "_quarantine is present in get_all_territories()['tests']['subfolders']. "
             "This must be removed — healers must never create a _quarantine folder."
         )
 
     def test_tests_territory_exists(self):
-        """tests territory must be declared in SOVEREIGN_TERRITORIES."""
-        assert TESTS_DIR in SOVEREIGN_TERRITORIES
+        """tests territory must be declared in get_all_territories()."""
+        assert TESTS_DIR in get_all_territories()
 
     def test_tests_subfolders_is_dict(self):
         """tests.subfolders must be a dict (not list, not None)."""
-        tests_cfg = SOVEREIGN_TERRITORIES.get("tests", {})
+        tests_cfg = get_all_territories().get("tests", {})
         subs = tests_cfg.get("subfolders", None)
         assert isinstance(subs, (dict, type(SOVEREIGN_TERRITORIES))), (
             f"tests.subfolders must be a dict, got {type(subs)}"
         )
 
     def test_support_in_tests_subfolders(self):
-        """tests/support/ is a canonical subfolder and must be declared in SOVEREIGN_TERRITORIES."""
+        """tests/support/ is a canonical subfolder and must be declared in get_all_territories()."""
         subs = _tests_subfolders()
         assert "support" in subs, (
-            "'support' is missing from SOVEREIGN_TERRITORIES['tests']['subfolders']. "
+            "'support' is missing from get_all_territories()['tests']['subfolders']. "
             "tests/support/ holds real infrastructure agents and must be a declared canonical folder."
         )
 
@@ -95,7 +95,7 @@ class TestConstantsQuarantineInvariant:
     def test_mutation_of_sovereign_territories_raises(self):
         """SOVEREIGN_TERRITORIES must reject mutation at the top level."""
         with pytest.raises((TypeError, AttributeError)):
-            SOVEREIGN_TERRITORIES["__injection__"] = "evil"  # type: ignore[index]
+            get_all_territories()["__injection__"] = "evil"  # type: ignore[index]
 
 
 # ---------------------------------------------------------------------------

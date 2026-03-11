@@ -38,6 +38,7 @@ Design rationale:
 
 from __future__ import annotations
 
+import warnings
 from collections.abc import Mapping, Sequence
 from types import MappingProxyType
 from typing import Any, Final, TypedDict
@@ -600,7 +601,20 @@ def _build_layer_definition(layer_name: str) -> dict[str, Any]:
 
 
 def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
-    """Build the complete SOVEREIGN_TERRITORIES from templates + overrides."""
+    """Build the complete SOVEREIGN_TERRITORIES from templates + overrides.
+
+    DEPRECATED: This function and SOVEREIGN_TERRITORIES are deprecated.
+    Use the new territory API in territories.py instead:
+    - get_territory_metadata(name) for single territory lookup
+    - get_all_territories() for full territory map
+    - is_valid_root_folder(name) for root validation
+    """
+    warnings.warn(
+        "SOVEREIGN_TERRITORIES is deprecated. Use get_territory_metadata() or "
+        "get_all_territories() from structure_blueprint.territories instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     territories: dict[str, Any] = {}
 
     # Build agentic_core with all layers

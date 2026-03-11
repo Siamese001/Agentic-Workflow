@@ -354,10 +354,10 @@ class TestSSOTBlueprintContractsEntry:
     def test_contracts_has_forbidden_patterns(self):
         """Success path: contracts entry has forbidden_patterns key."""
         from agentic_core.L5_safety.config.structure_blueprint import (
-            SOVEREIGN_TERRITORIES,
+            get_all_territories,
         )
 
-        tests_territory = SOVEREIGN_TERRITORIES.get(TESTS_DIR, {})
+        tests_territory = get_all_territories().get(TESTS_DIR, {})
         subfolders = tests_territory.get("subfolders", {})
         contracts = subfolders.get("contracts", {})
         assert "forbidden_patterns" in contracts, "tests/contracts/ SSOT entry missing forbidden_patterns"
@@ -365,10 +365,10 @@ class TestSSOTBlueprintContractsEntry:
     def test_contracts_forbidden_patterns_block_agent(self):
         """Branch: forbidden_patterns blocks *Agent.py."""
         from agentic_core.L5_safety.config.structure_blueprint import (
-            SOVEREIGN_TERRITORIES,
+            get_all_territories,
         )
 
-        tests_territory = SOVEREIGN_TERRITORIES.get(TESTS_DIR, {})
+        tests_territory = get_all_territories().get(TESTS_DIR, {})
         subfolders = tests_territory.get("subfolders", {})
         contracts = subfolders.get("contracts", {})
         patterns = contracts.get("forbidden_patterns", [])
@@ -378,10 +378,10 @@ class TestSSOTBlueprintContractsEntry:
     def test_contracts_forbidden_patterns_block_fake(self):
         """Branch: forbidden_patterns blocks fake_*.py."""
         from agentic_core.L5_safety.config.structure_blueprint import (
-            SOVEREIGN_TERRITORIES,
+            get_all_territories,
         )
 
-        tests_territory = SOVEREIGN_TERRITORIES.get(TESTS_DIR, {})
+        tests_territory = get_all_territories().get(TESTS_DIR, {})
         subfolders = tests_territory.get("subfolders", {})
         contracts = subfolders.get("contracts", {})
         patterns = contracts.get("forbidden_patterns", [])
@@ -391,10 +391,10 @@ class TestSSOTBlueprintContractsEntry:
     def test_contracts_fixtures_subfolder_declared(self):
         """Branch: contracts/ SSOT entry declares fixtures/ as approved subfolder."""
         from agentic_core.L5_safety.config.structure_blueprint import (
-            SOVEREIGN_TERRITORIES,
+            get_all_territories,
         )
 
-        tests_territory = SOVEREIGN_TERRITORIES.get(TESTS_DIR, {})
+        tests_territory = get_all_territories().get(TESTS_DIR, {})
         subfolders = tests_territory.get("subfolders", {})
         contracts = subfolders.get("contracts", {})
         contract_subs = contracts.get("subfolders", {})

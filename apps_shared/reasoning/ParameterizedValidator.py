@@ -18,7 +18,7 @@ Usage:
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Callable
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
@@ -49,7 +49,7 @@ class ParameterizedValidator(SovereignBaseAgent):
 
     # Per-subclass rule registry. Subclasses should define their own
     # class-level dict OR use the register_rule() classmethod decorator.
-    _RULE_REGISTRY: dict[str, Callable] = {}
+    _RULE_REGISTRY: dict[str, Callable] = field(default_factory=dict)
 
     @classmethod
     def register_rule(cls, name: str) -> Callable:

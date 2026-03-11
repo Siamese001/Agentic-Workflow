@@ -250,10 +250,10 @@ class TestFix4SSOTForbiddenPatterns:
 
     def _get_support_config(self) -> dict:
         from agentic_core.L5_safety.config.structure_blueprint import (
-            SOVEREIGN_TERRITORIES,
+            get_all_territories,
         )
 
-        return SOVEREIGN_TERRITORIES[TESTS_DIR]["subfolders"]["support"]
+        return get_all_territories()[TESTS_DIR]["subfolders"]["support"]
 
     def test_ssot_support_has_forbidden_patterns(self) -> None:
         cfg = self._get_support_config()

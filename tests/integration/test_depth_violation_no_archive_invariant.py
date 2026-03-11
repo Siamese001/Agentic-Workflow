@@ -148,14 +148,14 @@ def test_pascal_in_non_agent_folder_in_strategy_map():
 
 
 def test_apps_rg_apps_lic_depth_is_two():
-    """Bug 1 guard: apps_rg and apps_lic must have depth=2 in SOVEREIGN_TERRITORIES."""
+    """Bug 1 guard: apps_rg and apps_lic must have depth=2 in get_all_territories()."""
     from agentic_core.L5_safety.config.structure_blueprint import (
-        SOVEREIGN_TERRITORIES,
+        get_all_territories,
     )
 
     for territory in (APPS_RG_DIR, APPS_LIC_DIR):
-        depth = SOVEREIGN_TERRITORIES.get(territory, {}).get("depth")
+        depth = get_all_territories().get(territory, {}).get("depth")
         assert depth == 2, (
-            f"SSOT depth split: {territory} has depth={depth} in SOVEREIGN_TERRITORIES, "
+            f"SSOT depth split: {territory} has depth={depth} in get_all_territories(), "
             f"expected 2. This causes DEEP VIOLATION false positives and archive fallback."
         )

@@ -14,12 +14,11 @@ from __future__ import annotations
 
 import logging
 import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any
 
-from apps_shared.reasoning.BaseHealingOrchestrator import BaseHealingOrchestrator
-
 from apps_rg.reasoning.healing_cycle import HealingCycle  # noqa: F401  (re-exported)
+from apps_shared.reasoning.BaseHealingOrchestrator import BaseHealingOrchestrator
 
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
@@ -300,7 +299,6 @@ class RgHealingOrchestrator(BaseHealingOrchestrator):
             Healing result dictionary
         """
         return self.ml_enhanced_heal(violation, lambda v, **kw: self.heal(v))
-
 
 
 # HealingCycle is imported from apps_rg.reasoning.healing_cycle (standalone module).

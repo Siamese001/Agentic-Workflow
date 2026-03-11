@@ -11,7 +11,6 @@ to avoid CoreIntegrityVerifier overhead during unit testing.
 
 from pathlib import Path
 
-
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
 THRESHOLD = 0.95
@@ -21,6 +20,7 @@ MAX_DEPTH = 6
 MAX_FILES = 1000
 DEFAULT_TIMEOUT = 300  # 5 minutes
 # Configuration constants
+
 
 def _check_app_domain_violation_logic(
     app_rg_score: float,
@@ -95,11 +95,11 @@ class TestGlobalCandidateVacuum:
     def test_global_weight_superiority(self):
         """100% PASS: Verifies Shared Gravity (95) beats App Gravity (90) in SSOT."""
         from agentic_core.L5_safety.config.structure_blueprint import (
-            SOVEREIGN_TERRITORIES,
+            get_all_territories,
         )
 
-        shared_w = SOVEREIGN_TERRITORIES["apps_shared"]["ast_signals"]["apps_shared/utils"]["weight"]
-        app_w = SOVEREIGN_TERRITORIES["apps_rg"]["ast_signals"]["apps_rg/engines"]["weight"]
+        shared_w = get_all_territories()["apps_shared"]["ast_signals"]["apps_shared/utils"]["weight"]
+        app_w = get_all_territories()["apps_rg"]["ast_signals"]["apps_rg/engines"]["weight"]
 
         assert shared_w == 95
         assert shared_w > app_w, "CRITICAL: Global utility gravity is weaker than domain gravity."

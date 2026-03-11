@@ -64,11 +64,10 @@ from agentic_core.L5_safety.config.structure_blueprint._constants import (  # no
     UPSTREAM_SOVEREIGN_ROOTS,
     SubfolderDefinition,
     TerritoryDefinition,
-    build_sovereign_territories,
+    # build_sovereign_territories removed - internal only
 )
-from agentic_core.L5_safety.config.structure_blueprint._constants import (  # noqa: F401
-    SOVEREIGN_TERRITORIES as SOVEREIGN_REGISTRY,
-)
+
+# SOVEREIGN_REGISTRY (was SOVEREIGN_TERRITORIES) removed - use get_all_territories() instead
 from agentic_core.L5_safety.config.structure_blueprint.artifacts import (  # noqa: F401
     get_app_specific_patterns_compiled,
 )

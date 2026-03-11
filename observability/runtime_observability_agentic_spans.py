@@ -1,5 +1,4 @@
-# MISPLACED: This observability utility belongs in observability/ not apps_shared/reasoning/.
-# TODO(P1-B): Move to observability/agentic_spans.py
+# RELOCATED: Moved from apps_shared/reasoning/ to observability/ (P1-B, 2026-03-11).
 # from archives.legacy_root_folders.runtime.observability.spans import start_span, end_span  # DEPRECATED: Archive import removed to protect archives from validation edits
 
 

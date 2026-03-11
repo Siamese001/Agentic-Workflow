@@ -10,9 +10,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from apps_lic.utils.lic_engine_validation_capability import LICEngineValidationCapability
+from apps_lic.utils.lic_engine_validation_capability_util import LICEngineValidationCapability
 from apps_shared.reasoning.ParameterizedValidator import ParameterizedValidator
-
 
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
