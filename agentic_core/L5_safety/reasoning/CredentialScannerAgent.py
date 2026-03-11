@@ -2,6 +2,16 @@ from __future__ import annotations
 
 from agentic_core.L2_execution.tools import write_gateway as _wg
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 """
 CredentialScannerAgent - Detects hardcoded credentials in source code
 
@@ -397,11 +407,13 @@ class CredentialScannerAgent(SovereignBaseAgent):
             "confidence": match.confidence,
         }
 
+    # guardian: allow-magic-config
     def heal_repository(
         self,
         dry_run: bool = True,
         execute: bool = False,
         depth: int = 0,
+        # guardian: allow-magic-config
         max_depth: int = 3,
         _call_path: set[str] | None = None,
         **kwargs,

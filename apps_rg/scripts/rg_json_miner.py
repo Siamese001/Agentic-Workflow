@@ -11,6 +11,16 @@ import os
 from datetime import datetime
 from pathlib import Path
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 ARCHIVE_PATH = r"C:\Git\Agentic-Workflow\archives\resume_gen_json"
 OUTPUT_REPORT = r"C:\Git\Agentic-Workflow\apps_rg\RG_JSON_KNOWLEDGE_MAP.md"
 

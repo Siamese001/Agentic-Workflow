@@ -5,6 +5,16 @@ from __future__ import annotations
 from agentic_core.interfaces.write_gateway import compute_replay_key
 
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 class TestComputeReplayKey:
     def test_identical_inputs_produce_same_key(self):
         k1 = compute_replay_key("ph1", ["tool_a", "tool_b"], "stdout_digest", "diff_hash")

@@ -13,6 +13,16 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 # Required for File System Watching
 try:
     from watchdog.events import FileSystemEventhandler  # noqa: F401
@@ -141,6 +151,8 @@ class AutonomousRagDaemon:
                     await self.trigger_reindex()
             # guardian: allow-silent-swallow
             except Exception as e:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 Logger.error(f"[TERRITORY] Health check failed: {e}")
 
     async def periodic_reindex_loop(self) -> None:
@@ -156,6 +168,8 @@ class AutonomousRagDaemon:
             await self.retriever.reindex_all()
         # guardian: allow-silent-swallow
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             Logger.error(f"[TERRITORY] Reindexing failed: {e}")
 
     async def stop(self) -> None:

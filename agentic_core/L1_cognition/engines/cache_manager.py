@@ -97,7 +97,7 @@ class CacheStrategyManager:
             AGENTIC_CORE_DIR: DomainConfig(
                 domain=AGENTIC_CORE_DIR,
                 ttl_seconds=3600,  # 1 hour
-                similarity_threshold=0.85,
+                similarity_threshold=THRESHOLD,
                 max_cache_size=10000,
                 eviction_policy=EvictionPolicy.LRU,
                 max_healing_depth=5,
@@ -105,7 +105,7 @@ class CacheStrategyManager:
             APPS_LIC_DIR: DomainConfig(
                 domain=APPS_LIC_DIR,
                 ttl_seconds=7200,  # 2 hours (LIC has longer campaign cycles)
-                similarity_threshold=0.92,  # Higher threshold from LICAgentBase
+                similarity_threshold=THRESHOLD,  # Higher threshold from LICAgentBase
                 max_cache_size=5000,
                 eviction_policy=EvictionPolicy.LRU,
                 max_healing_depth=5,
@@ -113,7 +113,7 @@ class CacheStrategyManager:
             APPS_RG_DIR: DomainConfig(
                 domain=APPS_RG_DIR,
                 ttl_seconds=3600,  # 1 hour
-                similarity_threshold=0.85,  # From RGAgentBase
+                similarity_threshold=THRESHOLD,  # From RGAgentBase
                 max_cache_size=5000,
                 eviction_policy=EvictionPolicy.LRU,
                 max_healing_depth=5,

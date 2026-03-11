@@ -11,6 +11,16 @@ This script identifies entries that may be misclassified as Sovereign Agents:
 import json
 from pathlib import Path
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DISCOVERY_JSON = PROJECT_ROOT / "agent_discovery_full.json"
 

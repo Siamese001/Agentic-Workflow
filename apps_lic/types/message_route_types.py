@@ -84,7 +84,7 @@ ROUTE_CONFIGS: dict[MessageRoute, RouteConfig] = {
             prior_message_count=0,
         ),
         constraints=RouteConstraints(
-            char_limit=330,
+            char_limit=LIMIT,
             word_range=None,
             signature_format=SignatureFormat.SIMPLIFIED,
             subject_line_enabled=False,

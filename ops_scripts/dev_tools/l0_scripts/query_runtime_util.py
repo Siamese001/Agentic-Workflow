@@ -53,7 +53,7 @@ def retry_query(max_retries: int = 3, base_delay: float = 1.0):
 
 
 # guardian: allow-magic-config
-@retry_query(max_retries=3)
+@retry_query(max_retries=MAX_RETRIES)
 def execute_sql(sql: str) -> Any:
     """
     Placeholder database execution function.
@@ -101,7 +101,7 @@ def run_hardened_query(
                 # guardian: allow-magic-config
                 done, _ = concurrent.futures.wait(
                     [future],
-                    timeout=0.05,
+                    timeout=DEFAULT_TIMEOUT,
                     return_when=concurrent.futures.FIRST_COMPLETED,
                 )
 

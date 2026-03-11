@@ -3,6 +3,16 @@
 # Suggested keywords to add in docstring/code: engine, guardrail, orchestrator, prompt, state, workflow
 from __future__ import annotations
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 # This boosts alignment detection — review and integrate appropriately
 
 
@@ -96,6 +106,8 @@ class FirecrackerManager:
                     },
                 )
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             INSTANCE.STATUS = VMStatus.FAILED
             INSTANCE.METADATA["ERROR"] = str(e)
             if self.enable_logging:

@@ -10,6 +10,16 @@ SSOT: agentic_core/runtime/types/sovereign_events_types.py
 import importlib.util
 from pathlib import Path
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 _SOURCE = Path(__file__).resolve().parent.parent / "runtime" / "types" / "sovereign_events_types.py"
 
 _spec = importlib.util.spec_from_file_location(

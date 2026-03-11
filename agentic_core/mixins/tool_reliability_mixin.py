@@ -126,7 +126,7 @@ class ToolReliabilityMixin:
         class MyAgent(ToolReliabilityMixin, SovereignBaseAgent):
             def __init__(self):
                 super().__init__()
-                self.configure_tool_retry("llm_call", max_retries=3)
+                self.configure_tool_retry("llm_call", max_retries=MAX_RETRIES)
                 self.configure_circuit_breaker("external_api")
 
             async def call_external_api(self, data):
@@ -419,6 +419,8 @@ class ToolReliabilityMixin:
             )
         # guardian: allow-silent-swallow
         except Exception as exc:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             Logger.warning("[V15] Retry gateway audit failed (LOG_ONLY): %s", exc)
 
     @runtime_guard("D.with_retry.tool_reliability_mixin")

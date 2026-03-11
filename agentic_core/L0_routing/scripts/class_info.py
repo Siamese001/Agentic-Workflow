@@ -479,6 +479,8 @@ def analyze_file(file_path: Path, archive_base: Path) -> FileAnalysis:
 
         # guardian: allow-silent-swallow
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             analysis.docstring = f"ANALYSIS_ERROR: {e}"
 
     # Classification

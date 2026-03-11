@@ -7,6 +7,16 @@ This script systematically updates all agent files in agentic_core/agents/.
 import re
 from pathlib import Path
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 # NAMING FIXED: AGENT_FILES → agent_files
 agent_files = [
     "memory_architect.py",
@@ -70,6 +80,8 @@ def add_engine_initialization(content: str, class_name: str) -> str:
                 self.safety = get_safety_guardrail()
                 self.fission = get_fission_manager()
             except Exception as e:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 Logger.warning(f"Failed to initialize Sub-Atomic Engine: {e}")
                 self.engine = None
                 self.safety = None

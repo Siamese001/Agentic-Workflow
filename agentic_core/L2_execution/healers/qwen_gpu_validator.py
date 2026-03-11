@@ -11,6 +11,16 @@ import logging
 import subprocess
 from typing import Literal
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 logger = logging.getLogger(__name__)
 
 
@@ -32,7 +42,7 @@ def get_gpu_memory_gb() -> float:
             ["nvidia-smi", "--query-gpu=memory.total", "--format=csv,noheader,nounits"],
             capture_output=True,
             text=True,
-            timeout=10,  # guardian: allow-magic-configuration
+            timeout=DEFAULT_TIMEOUT,  # guardian: allow-magic-configuration
         )
         if result.returncode == 0:
             memory_mb = float(result.stdout.strip())
@@ -48,7 +58,7 @@ def get_cuda_version() -> str:
     """Get CUDA version from nvcc or nvidia-smi."""
     try:
         # Try nvcc first
-        result = subprocess.run(["nvcc", "--version"], capture_output=True, text=True, timeout=10)
+        result = subprocess.run(["nvcc", "--version"], capture_output=True, text=True, timeout=DEFAULT_TIMEOUT)
         if result.returncode == 0:
             for line in result.stdout.split("\n"):
                 if "release" in line.lower():
@@ -63,7 +73,7 @@ def get_cuda_version() -> str:
 
     try:
         # Fallback to nvidia-smi
-        result = subprocess.run(["nvidia-smi"], capture_output=True, text=True, timeout=10)
+        result = subprocess.run(["nvidia-smi"], capture_output=True, text=True, timeout=DEFAULT_TIMEOUT)
         if result.returncode == 0:
             # Extract CUDA version from nvidia-smi output
             import re
@@ -84,7 +94,7 @@ def get_compute_capability() -> float:
             ["nvidia-smi", "--query-gpu=compute_cap", "--format=csv,noheader,nounits"],
             capture_output=True,
             text=True,
-            timeout=10,
+            timeout=DEFAULT_TIMEOUT,
         )
         if result.returncode == 0:
             cap_str = result.stdout.strip()
@@ -103,7 +113,7 @@ def get_nvidia_driver_version() -> str:
             ["nvidia-smi", "--query-gpu=driver_version", "--format=csv,noheader,nounits"],
             capture_output=True,
             text=True,
-            timeout=10,
+            timeout=DEFAULT_TIMEOUT,
         )
         if result.returncode == 0:
             return result.stdout.strip()

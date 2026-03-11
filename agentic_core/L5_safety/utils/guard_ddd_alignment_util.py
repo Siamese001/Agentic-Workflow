@@ -11,6 +11,16 @@ Detects violations of Domain-Driven Design tactical patterns:
 import ast
 from pathlib import Path
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 try:
     from agentic_core.L0_routing.scripts.full_agent_discovery import (
         SCRIPTS_DIR,
@@ -71,6 +81,8 @@ def get_ddd_violations_detailed(root_path: str) -> list[dict]:
             continue
         # guardian: allow-silent-swallow
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             violations.append(
                 {
                     "file": str(relative_path),

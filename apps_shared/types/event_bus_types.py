@@ -17,6 +17,16 @@ from typing import Any
 
 from pydantic import BaseModel, Field
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 logger = logging.getLogger(__name__)
 
 
@@ -572,7 +582,7 @@ class RedisEventBus(EventBus):
                 break
             except Exception as e:
                 logger.error(f"Reader error for stream {channel}: {e}")
-                await asyncio.sleep(1)  # Brief pause before retry
+                await asyncio.sleep(DEFAULT_SLEEP)  # Brief pause before retry
 
     async def _notify_subscribers(self, event: SystemEvent, subscribers: list[Callable]) -> None:
         """Notify all subscribers of an event.
@@ -738,6 +748,8 @@ def event_publisher(event_type: EventType, channel: str | None = None):
                 return result
 
             except Exception as e:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 # Publish error event
                 await publish_event(
                     EventType.ERROR_OCCURRED,

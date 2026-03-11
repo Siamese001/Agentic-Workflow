@@ -1,5 +1,15 @@
 from __future__ import annotations
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 """Swarm Pipeline Orchestration - Main entry point demonstrating full parallel workflow.
 
 This script demonstrates the complete optimized pipeline using all 4 phases:
@@ -33,7 +43,7 @@ def mock_embedder(texts: list[str]) -> list[list[float]]:
     """Mock embedding function simulating network latency."""
     import time
 
-    time.sleep(0.1)
+    time.sleep(DEFAULT_SLEEP)
     return [[0.1] * 768 for _ in texts]
 
 
@@ -46,7 +56,7 @@ class MockSubatomicHop:
 
     async def run(self, **kwargs) -> dict[str, Any]:
         """Simulate HOP execution."""
-        await asyncio.sleep(0.5)
+        await asyncio.sleep(DEFAULT_SLEEP)
         return {
             "hop_id": self.hop_id,
             "status": "completed",
@@ -60,7 +70,7 @@ async def demo_phase2_batch_embeddings() -> Any:
     print("📊 PHASE 2 DEMO: Batch Embeddings")
     print("=" * 80)
     # guardian: allow-magic-config
-    embedder: Any = create_batch_embedding_service(batch_size=32, max_workers=4)
+    embedder: Any = create_batch_embedding_service(batch_size=BATCH_SIZE, max_workers=4)
     sample_texts: Any = [f"Resume section {i}: Python developer with ML experience" for i in range(100)]
     print(f"\n⏱️  Sequential Processing ({len(sample_texts)} texts)...")
     start_seq: Any = time.time()
@@ -103,7 +113,7 @@ async def demo_phase2_vector_cache(embeddings: list) -> Any:
     print("\n🔍 Searching hot cache...")
     query_embedding: Any = embeddings[0]
     start_disk: Any = time.time()
-    await asyncio.sleep(0.08)
+    await asyncio.sleep(DEFAULT_SLEEP)
     time_disk: Any = time.time() - start_disk
     print(f"   Disk-based search: {time_disk * 1000:.1f}ms")
     start_mem: Any = time.time()
@@ -181,7 +191,7 @@ async def demo_full_pipeline() -> Any:
     total_start: Any = time.time()
     print("\n📦 Initializing Services...")
     # guardian: allow-magic-config
-    embedder: Any = create_batch_embedding_service(batch_size=32, max_workers=4)
+    embedder: Any = create_batch_embedding_service(batch_size=BATCH_SIZE, max_workers=4)
     # guardian: allow-magic-config
     vector_cache: Any = create_memory_vector_cache(collection_name="pipeline_demo", max_memory_gb=8)
     # guardian: allow-magic-config

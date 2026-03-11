@@ -5,6 +5,16 @@ from __future__ import annotations
 
 import importlib  # AUTO-INJECTED BY GRAVITY HEALER
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 # This boosts alignment detection — review and integrate appropriately
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L0_routing.utils.ssot_discovery_util import get_python_files
@@ -202,6 +212,8 @@ class DependencyGraph:
                 LOGGER.warning(f"Syntax error in {file_path}: {e}")
             # guardian: allow-silent-swallow
             except Exception as e:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 LOGGER.error(f"Error parsing {file_path}: {e}")
         self._build_reverse_index()
         self._calculate_dependencies()
@@ -749,6 +761,8 @@ class GovernanceAgent(SovereignBaseAgent):
             violations.append({"type": "syntax", "message": f"Syntax error in {file_path}: {e}"})
         # guardian: allow-silent-swallow
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             LOGGER.error(f"Error checking complexity in {file_path}: {e}")
         nesting_violations: Any = self._check_nesting_depth(file_path)
         for Violation in nesting_violations:

@@ -17,6 +17,16 @@ from agentic_core.L2_execution.types.ptc_tool_contracts_types import ToolContrac
 from agentic_core.L2_execution.types.sandbox_envelope_types import SandboxEnvelope, SignatureVerificationError
 
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 class SignatureBoundaryError(RuntimeError):
     """Raised when SandboxEnvelope signature verification fails - fail-closed boundary."""
 

@@ -205,7 +205,7 @@ class TestCLIContract:
             cwd=str(REPO_ROOT),
             capture_output=True,
             text=True,
-            timeout=30,
+            timeout=DEFAULT_TIMEOUT,
             env={**os.environ, "V15_ENFORCEMENT": "0", "PYTHONPATH": str(REPO_ROOT)},
         )
         assert result.returncode == 0, f"--help failed: {result.stderr[:500]}"
@@ -217,7 +217,7 @@ class TestCLIContract:
             cwd=str(REPO_ROOT),
             capture_output=True,
             text=True,
-            timeout=30,
+            timeout=DEFAULT_TIMEOUT,
             env={**os.environ, "V15_ENFORCEMENT": "0", "PYTHONPATH": str(REPO_ROOT)},
         )
         help_text = result.stdout + result.stderr
@@ -259,7 +259,7 @@ class TestNoTrackedArtifacts:
             cwd=str(REPO_ROOT),
             capture_output=True,
             text=True,
-            timeout=120,
+            timeout=DEFAULT_TIMEOUT,
             env={**os.environ, "V15_ENFORCEMENT": "0"},
         )
 

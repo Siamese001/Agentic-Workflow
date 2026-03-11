@@ -10,6 +10,16 @@ to support resume timeline analysis and job alignment.
 
 from datetime import datetime
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 try:
     #     from archives.legacy_root_folders.database.graph_store_neo4j import Neo4jGraphStore  # DEPRECATED: Archive import removed to protect archives from validation edits
     _neo4j_graph: Neo4jGraphStore | None = Neo4jGraphStore()

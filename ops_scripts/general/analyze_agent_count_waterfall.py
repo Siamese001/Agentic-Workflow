@@ -11,6 +11,16 @@ import sys
 from collections import defaultdict
 
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 def get_agent_count_at_commit(commit_hash):
     """Get agent count from agent_discovery_full.json at a specific commit."""
     try:

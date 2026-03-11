@@ -8,6 +8,16 @@ from typing import Any
 
 import pytest
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 pytestmark = pytest.mark.unit_min_deps
 
 from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer
@@ -170,8 +180,8 @@ class FakeHealingConfigOptimizer(HealingConfigOptimizer):
             healer_name="test_healer",
             tier="LOCAL_AGENT",
             failure_type="timeout",
-            current_threshold=0.5,
-            proposed_threshold=0.6,
+            current_threshold=THRESHOLD,
+            proposed_threshold=THRESHOLD,
             reason="Test adjustment",
             confidence=0.8,
         )

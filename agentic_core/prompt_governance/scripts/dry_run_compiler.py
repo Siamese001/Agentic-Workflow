@@ -9,6 +9,16 @@ Uses Jinja2 environment to validate template syntax.
 import sys
 from pathlib import Path
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 # Try to import Jinja2 - should be available in the environment
 try:
     from jinja2 import Environment, FileSystemLoader, TemplateError, TemplateSyntaxError

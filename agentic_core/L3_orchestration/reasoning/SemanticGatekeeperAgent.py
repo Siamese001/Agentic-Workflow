@@ -5,6 +5,16 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 # This boosts alignment detection — review and integrate appropriately
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
@@ -107,6 +117,8 @@ class SemanticGatekeeperAgent(SovereignBaseAgent):
             )
             raise
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             Logger.error(f"Execution failed for trace {trace_id}: {e}")
             self.dead_letter_queue.append(
                 {

@@ -233,8 +233,8 @@ class HardenedGeminiExecutor:
         self._client = None
         self._setup_client()
         self._circuit_breaker = CircuitBreaker(  # guardian: allow-magic_configuration
-            failure_threshold=5,  # guardian: allow-magic_configuration
-            recovery_timeout=60.0,  # guardian: allow-magic_configuration
+            failure_threshold=THRESHOLD,  # guardian: allow-magic_configuration
+            recovery_timeout=DEFAULT_TIMEOUT,  # guardian: allow-magic_configuration
             half_open_max_calls=3,  # guardian: allow-magic_configuration
         )
 
@@ -536,6 +536,8 @@ class HardenedGeminiExecutor:
             return content
 
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             # Log error telemetry
             latency_ms = (time.time() - start_time) * 1000
             telemetry = InteractionTelemetry(

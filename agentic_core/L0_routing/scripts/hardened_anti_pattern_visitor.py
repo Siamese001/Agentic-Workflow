@@ -194,6 +194,8 @@ def main():
                 findings.extend(visitor.findings)
             # guardian: allow-silent-swallow
             except Exception:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 continue
     for _f in findings:
         pass

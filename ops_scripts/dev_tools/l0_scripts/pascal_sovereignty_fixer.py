@@ -297,6 +297,8 @@ class PascalSovereigntyFixer:
                 return result
         # guardian: allow-silent-swallow
         except Exception:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             pass
 
         # Fallback: basic class-name extraction

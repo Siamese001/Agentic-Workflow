@@ -187,6 +187,8 @@ class MetaLearningObservability:
             )
 
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             self._health_status["MetaLearningClient"] = HealthStatus(
                 component="MetaLearningClient",
                 healthy=False,
@@ -211,6 +213,8 @@ class MetaLearningObservability:
             )
 
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             self._health_status["CacheStrategyManager"] = HealthStatus(
                 component="CacheStrategyManager",
                 healthy=False,
@@ -235,6 +239,8 @@ class MetaLearningObservability:
             )
 
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             self._health_status["DomainContextManager"] = HealthStatus(
                 component="DomainContextManager",
                 healthy=False,
@@ -358,7 +364,7 @@ class MetaLearningObservability:
             "performance": self.get_operation_stats(),
             "recent_metrics": [
                 {"name": m.name, "value": m.value, "timestamp": m.timestamp}
-                for m in self.get_metrics(limit=20)
+                for m in self.get_metrics(limit=LIMIT)
             ],
         }
 

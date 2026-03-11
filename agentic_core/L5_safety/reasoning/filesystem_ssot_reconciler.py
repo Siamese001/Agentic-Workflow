@@ -2,6 +2,16 @@ from __future__ import annotations
 
 from agentic_core.L2_execution.tools import write_gateway as _wg
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 """
 FilesystemSSOTReconcilerAgent - FILESYSTEM-LEVEL SSOT RECONCILER
 Territory: agentic_core/L0_routing/scripts/
@@ -494,6 +504,8 @@ class FilesystemSSOTReconcilerAgent(
                 return  # Skip rglob fallback
             # guardian: allow-silent-swallow
             except Exception as e:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 Logger.warning(f"[SSOT] Failed to load discovery JSON: {e}")
 
         # Fallback: scan only agentic_core (not project root)
@@ -525,6 +537,8 @@ class FilesystemSSOTReconcilerAgent(
 
             # guardian: allow-silent-swallow
             except Exception as e:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 Logger.debug(f"Failed to parse {py_file}: {e}")
 
         Logger.info(
@@ -1153,6 +1167,8 @@ class FilesystemSSOTReconcilerAgent(
             compile(content, str(self.blueprint_file), "exec")
         # guardian: allow-silent-swallow
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             issues.append(f"Blueprint syntax error: {e}")
 
     # ===================================================================
@@ -1278,6 +1294,8 @@ class FilesystemSSOTReconcilerAgent(
 
             # guardian: allow-silent-swallow
             except Exception as e:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 action["error"] = str(e)
                 Logger.error(f"[FilesystemSSOTReconcilerAgent] Cleanup error: {e}")
 

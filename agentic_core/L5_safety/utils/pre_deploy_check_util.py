@@ -52,7 +52,7 @@ def run_e2e_tests() -> bool:
             [sys.executable, str(test_script), "--auto", "--yes"],
             cwd=str(PROJECT_ROOT),
             capture_output=False,  # Show output in real-time
-            timeout=300,  # 5 minute timeout
+            timeout=DEFAULT_TIMEOUT,  # 5 minute timeout
             check=False,
         )
 

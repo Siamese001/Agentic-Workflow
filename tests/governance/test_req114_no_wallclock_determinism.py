@@ -116,7 +116,7 @@ def test_req114_determinism_guard_context_manager():
     # Should raise error for time.sleep() inside context
     with pytest.raises(RuntimeError, match="time.sleep\\(\\) called in determinism-critical context"):
         with assert_no_wallclock():
-            time.sleep(0.001)
+            time.sleep(DEFAULT_SLEEP)
 
 
 @pytest.mark.governance

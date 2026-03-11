@@ -9,6 +9,16 @@ from __future__ import annotations
 import logging
 from typing import Any
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 Logger = logging.getLogger(__name__)
 
 
@@ -33,6 +43,8 @@ class HealingCycle:
 
             emitter = get_healing_emitter()
         except Exception:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             emitter = None
 
         passed_agents: list[str] = []
@@ -50,6 +62,8 @@ class HealingCycle:
                         self.ctx.signals.discard(sig)
                         passed_agents.append(f"signal:{sig}")
                     except Exception:
+                        # TODO: Handle specific exception properly
+                        raise  # Re-raise after logging/handling
                         failed_agents.append(f"signal:{sig}")
 
                 converged = len(failed_agents) == 0
@@ -76,6 +90,8 @@ class HealingCycle:
             }
 
         except Exception as exc:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             Logger.error("HealingCycle[%d] failed: %s", self.cycle_num, exc)
             if emitter:
                 emitter.emit(

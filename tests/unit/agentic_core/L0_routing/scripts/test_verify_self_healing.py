@@ -5,6 +5,16 @@ import tempfile
 import time
 from pathlib import Path
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 # Expected sealed checksum from finalization
 SEALED_CHECKSUM = "0083147a0297d06f9149cb0dffd4d00ce3f34e014160f2a2b8e9a55f42ab0e58"
 
@@ -99,10 +109,10 @@ def test_boot_performance():
         start_time = time.time()
 
         # Simulate the phases
-        time.sleep(0.1)  # Cryptographic handshake (very fast)
-        time.sleep(0.2)  # Discovery & compliance (fast with mocks)
-        time.sleep(0.1)  # Sovereignty establishment
-        time.sleep(0.1)  # Runtime initialization
+        time.sleep(DEFAULT_SLEEP)  # Cryptographic handshake (very fast)
+        time.sleep(DEFAULT_SLEEP)  # Discovery & compliance (fast with mocks)
+        time.sleep(DEFAULT_SLEEP)  # Sovereignty establishment
+        time.sleep(DEFAULT_SLEEP)  # Runtime initialization
 
         total_time = time.time() - start_time
 

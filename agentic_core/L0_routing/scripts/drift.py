@@ -127,6 +127,8 @@ def scan_repository(root_path: str = ".") -> int:
                 parse_errors.append(f"{full_path} [SYNTAX ERROR: line {e.lineno}]")
             # guardian: allow-silent-swallow
             except Exception as e:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 parse_errors.append(f"{full_path} [UNKNOWN ERROR: {str(e)}]")
 
     # REPORTING

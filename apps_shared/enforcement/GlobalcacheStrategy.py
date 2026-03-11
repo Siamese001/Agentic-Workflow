@@ -11,6 +11,16 @@ import time
 from collections import OrderedDict
 from typing import Any, Callable
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 try:
     import numpy as np
 except ImportError as _err:
@@ -384,7 +394,7 @@ class GlobalCache:
             return entry.value
 
         # Check L2
-        results = self.l2.search(self.embedder.embed(key), threshold=1.0, max_results=1)
+        results = self.l2.search(self.embedder.embed(key), threshold=THRESHOLD, max_results=1)
         if results:
             entry, _ = results[0]
             self._stats["l2_hits"] += 1

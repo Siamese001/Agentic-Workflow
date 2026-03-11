@@ -5,6 +5,16 @@ from __future__ import annotations
 
 from agentic_core.L2_execution.tools import write_gateway as _wg
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 # This boosts alignment detection — review and integrate appropriately
 
 
@@ -103,6 +113,8 @@ class autonomous_execution_engine:
                 self.last_mission_result = data.get("last_mission")
                 Logger.info("L3: Loaded execution state")
             except Exception as e:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 Logger.error(f"Failed to load execution state: {e}")
 
     def save_state(self):
@@ -116,6 +128,8 @@ class autonomous_execution_engine:
             _wg.write_json_atomic(self.state_path, data)
             Logger.debug("L3: Execution state saved atomically")
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             Logger.error(f"Execution state save failed: {e}")
 
     async def execute_validation_mission(self):
@@ -149,7 +163,7 @@ class autonomous_execution_engine:
             # - Self-recovering orchestrator for workflow healing
 
             # Simulate validation
-            await asyncio.sleep(1)
+            await asyncio.sleep(DEFAULT_SLEEP)
 
             self.last_mission_result = {
                 "status": "success",
@@ -162,6 +176,8 @@ class autonomous_execution_engine:
             Logger.info("L3 MISSION COMPLETE: Canon state verified")
 
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             Logger.error(f"L3 MISSION FAILED: {e}")
             self.consecutive_failures += 1
 
@@ -195,9 +211,11 @@ class autonomous_execution_engine:
                 self.save_state()
 
             except Exception as e:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 Logger.error(f"L3 Execution cycle error: {e}")
                 self.consecutive_failures += 1
-                await asyncio.sleep(60)  # Wait before retry
+                await asyncio.sleep(DEFAULT_SLEEP)  # Wait before retry
 
         Logger.warning("L3: Eternal execution cycle stopped (Safe Mode)")
 

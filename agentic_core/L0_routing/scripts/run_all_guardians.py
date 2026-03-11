@@ -157,6 +157,8 @@ def run_all_guardians(
 
         # guardian: allow-silent-swallow
         except Exception as exc:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             combined.add_check(
                 check_id=f"guardian_{gid}",
                 status=CheckStatus.FAIL,

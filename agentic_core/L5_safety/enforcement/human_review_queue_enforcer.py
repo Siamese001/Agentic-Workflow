@@ -413,6 +413,8 @@ class HumanReviewQueue:
                 callback(request_id, action)
             # guardian: allow-silent-swallow
             except Exception as e:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 Logger.error(f"[REVIEW_QUEUE] Callback error: {e}")
 
     def _emit_policy_update_proposal(
@@ -449,6 +451,8 @@ class HumanReviewQueue:
             emitter.flush_to_artifacts_dir(_log_dir)
         # guardian: allow-silent-swallow
         except Exception as exc:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             Logger.error(
                 "§Wave2.3 PolicyUpdateProposal emission failed at HIL boundary: %s",
                 exc,

@@ -11,6 +11,16 @@ import sys
 from pathlib import Path
 
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 def extract_template_schema(template_path: Path, base_dir: Path) -> dict[str, list[str]]:
     """Extract required variables from template's Phase 4 header."""
     full_path = base_dir / template_path

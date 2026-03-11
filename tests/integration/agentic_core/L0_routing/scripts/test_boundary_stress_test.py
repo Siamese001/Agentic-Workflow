@@ -86,7 +86,7 @@ class BoundaryStressTest:
                 cwd=str(self.project_root),
                 capture_output=True,
                 text=True,
-                timeout=60,
+                timeout=DEFAULT_TIMEOUT,
             )
 
             stdout = process.stdout
@@ -190,7 +190,7 @@ class BoundaryStressTest:
                 cwd=str(self.project_root),
                 capture_output=True,
                 text=True,
-                timeout=10,
+                timeout=DEFAULT_TIMEOUT,
                 input="n\n",  # Send 'n' to reject if prompt appears
             )
 
@@ -285,7 +285,7 @@ class BoundaryStressTest:
                 cwd=str(self.project_root),
                 capture_output=True,
                 text=True,
-                timeout=60,
+                timeout=DEFAULT_TIMEOUT,
                 env=env,
             )
 

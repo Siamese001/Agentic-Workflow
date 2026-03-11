@@ -441,7 +441,7 @@ class TestKeywordAnswerSupportValidator:
     """
 
     def _make_validator(self) -> KeywordAnswerSupportValidator:
-        return KeywordAnswerSupportValidator(min_overlap_words=3, fully_supported_threshold=0.8)
+        return KeywordAnswerSupportValidator(min_overlap_words=3, fully_supported_threshold=THRESHOLD)
 
     def test_fully_supported_when_all_sentences_covered(self):
         v = self._make_validator()
@@ -513,7 +513,7 @@ class TestKeywordAnswerSupportValidator:
 
     def test_invalid_threshold_raises(self):
         with pytest.raises(ValueError):
-            KeywordAnswerSupportValidator(fully_supported_threshold=1.5)
+            KeywordAnswerSupportValidator(fully_supported_threshold=THRESHOLD)
 
 
 # ===========================================================================

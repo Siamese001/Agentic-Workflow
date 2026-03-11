@@ -11,6 +11,16 @@ from datetime import datetime, timezone
 from agentic_core.config.settings_config import get_settings
 
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 class JSONFormatter(logging.Formatter):
     """
     Formats log records as JSON objects for machine parsing.

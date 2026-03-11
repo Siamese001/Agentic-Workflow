@@ -25,6 +25,16 @@ from typing import Any, Generic, TypeVar
 
 from agentic_core.L5_safety.enforcement.circuit_breaker_gate import CircuitBreaker, get_breaker
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 logger = logging.getLogger(__name__)
 
 T = TypeVar("T")  # Legacy agent type
@@ -340,6 +350,8 @@ class AdapterBase(ABC, Generic[T]):
             raw_result = self._execute_legacy(context, *args, **kwargs)
             self._circuit_breaker.record_success()
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             self._circuit_breaker.record_failure(e)
             self._log_audit("execution_error", context, error=e)
 

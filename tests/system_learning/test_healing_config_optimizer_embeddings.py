@@ -36,9 +36,9 @@ class TestHealingConfigOptimizerEmbeddings:
         """Create optimizer with test parameters."""
         return HealingConfigOptimizer(
             min_sample_size=20,
-            low_success_rate_threshold=0.5,
+            low_success_rate_threshold=THRESHOLD,
             escalation_delta=0.1,
-            max_threshold=2.0,
+            max_threshold=THRESHOLD,
             max_delta=0.2,
         )
 
@@ -120,7 +120,7 @@ class TestHealingConfigOptimizerEmbeddings:
                 sample_snapshot,
                 embedding_metadata=embedding_metadata,
                 embedding_influence_cap=0.20,
-                min_sample_threshold=20,
+                min_sample_threshold=THRESHOLD,
             )
 
             # Verify adjustments exist (statistical scoring still works)
@@ -152,7 +152,7 @@ class TestHealingConfigOptimizerEmbeddings:
             small_snapshot,
             embedding_metadata=embedding_metadata,
             embedding_influence_cap=0.20,
-            min_sample_threshold=20,
+            min_sample_threshold=THRESHOLD,
         )
 
         # Verify no adjustments due to small-N guard (base optimizer filters them out)
@@ -179,7 +179,7 @@ class TestHealingConfigOptimizerEmbeddings:
             sample_snapshot,
             embedding_metadata=embedding_metadata,
             embedding_influence_cap=0.20,
-            min_sample_threshold=20,
+            min_sample_threshold=THRESHOLD,
         )
 
         # Verify embedding influence is applied and capped
@@ -217,14 +217,14 @@ class TestHealingConfigOptimizerEmbeddings:
             sample_snapshot,
             embedding_metadata=embedding_metadata,
             embedding_influence_cap=0.25,
-            min_sample_threshold=20,
+            min_sample_threshold=THRESHOLD,
         )
 
         proposal2 = optimizer.propose_threshold_adjustments_with_embeddings(
             sample_snapshot,
             embedding_metadata=embedding_metadata,
             embedding_influence_cap=0.25,
-            min_sample_threshold=20,
+            min_sample_threshold=THRESHOLD,
         )
 
         # Verify same number of adjustments
@@ -267,7 +267,7 @@ class TestHealingConfigOptimizerEmbeddings:
             sample_snapshot,
             embedding_metadata=embedding_metadata,
             embedding_influence_cap=0.25,
-            min_sample_threshold=20,
+            min_sample_threshold=THRESHOLD,
         )
 
         # Verify proposal has adjustments with embedding influence

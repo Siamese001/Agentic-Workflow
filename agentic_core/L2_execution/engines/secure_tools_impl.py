@@ -1,5 +1,15 @@
 from __future__ import annotations
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 """
 Secure Tools - Atomic Module
 Extracted from ActionNode.py via Atomic Fission Protocol
@@ -141,7 +151,7 @@ class SecureToolsImpl:
                 cwd=self.work_dir,
                 capture_output=True,
                 text=True,
-                timeout=30,
+                timeout=DEFAULT_TIMEOUT,
             )
             if result.returncode != 0:
                 Logger.error(f"Command failed with return code {result.returncode}: {result.stderr}")

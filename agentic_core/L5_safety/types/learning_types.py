@@ -7,6 +7,16 @@ import os
 
 from agentic_core.L2_execution.tools import write_gateway as _wg
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 # This boosts alignment detection — review and integrate appropriately
 
 
@@ -109,7 +119,7 @@ class AdaptiveLearningEngine:
         """L1: Continuous self-improvement loop"""
         while self.autonomous_mode:
             try:
-                await asyncio.sleep(300)
+                await asyncio.sleep(DEFAULT_SLEEP)
                 for key in list(self.patterns.keys()):
                     self.patterns[key] = [
                         p
@@ -119,8 +129,10 @@ class AdaptiveLearningEngine:
                 self._save_patterns()
                 Logger.debug("L1 Self-improvement cycle completed")
             except Exception as e:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 Logger.error(f"L1 Self-improvement error: {e}")
-                await asyncio.sleep(60)
+                await asyncio.sleep(DEFAULT_SLEEP)
 
     def _load_patterns(self):
         """Load learned patterns from storage."""
@@ -149,6 +161,8 @@ class AdaptiveLearningEngine:
                     self.patterns[key].append(pattern)
             Logger.info(f"Loaded {sum(len(p) for p in self.patterns.values())} healing patterns")
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             Logger.error(f"Failed to load patterns: {e}")
 
     def _save_patterns(self):
@@ -190,6 +204,8 @@ class AdaptiveLearningEngine:
             _wg.write_json(self.pattern_storage_path, data, indent=2)
             Logger.debug(f"Saved patterns to {self.pattern_storage_path}")
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             Logger.error(f"Failed to save patterns: {e}")
 
     def learn_from_healing(

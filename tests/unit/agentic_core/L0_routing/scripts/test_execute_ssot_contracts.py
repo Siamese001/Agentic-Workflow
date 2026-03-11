@@ -372,7 +372,7 @@ class TestEntrypointBoundaryLock:
             [sys.executable, str(EXECUTE_SSOT_PATH)],
             capture_output=True,
             text=True,
-            timeout=30,
+            timeout=DEFAULT_TIMEOUT,
             cwd=str(REPO_ROOT),
             env=env,
         )
@@ -391,7 +391,7 @@ class TestEntrypointBoundaryLock:
             [sys.executable, "-m", "agentic_core.L0_routing.scripts.execute_ssot_entrypoint"],
             capture_output=True,
             text=True,
-            timeout=30,
+            timeout=DEFAULT_TIMEOUT,
             cwd=str(REPO_ROOT),
             env=env,
         )
@@ -410,7 +410,7 @@ class TestEntrypointBoundaryLock:
             ],
             capture_output=True,
             text=True,
-            timeout=30,
+            timeout=DEFAULT_TIMEOUT,
             cwd=str(REPO_ROOT),
             env=env,
         )
@@ -427,7 +427,7 @@ class TestEntrypointBoundaryLock:
             [sys.executable, "-m", "agentic_core.L0_routing.scripts.execute_ssot_entrypoint", "--help"],
             capture_output=True,
             text=True,
-            timeout=30,
+            timeout=DEFAULT_TIMEOUT,
             cwd=str(REPO_ROOT),
             env=env,
         )

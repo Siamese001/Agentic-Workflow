@@ -13,6 +13,16 @@ from dataclasses import asdict, dataclass, field
 from system_learning.types.healing_outcome_intake_types import HealingOutcomeIntakeRecord
 
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 def _validate_weight(value: float, name: str) -> None:
     """Validate weight is finite and non-negative."""
     if not isinstance(value, (int, float)):

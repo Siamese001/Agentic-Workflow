@@ -126,7 +126,7 @@ class TestDefaultRuleBasedGate:
     def test_medium_impact_approves(self):
         """Medium impact changes are APPROVED (below threshold)."""
         classifier = DefaultRiskClassifier()
-        gate = DefaultRuleBasedGate(classifier, high_impact_threshold=3, allow_high_impact=False)
+        gate = DefaultRuleBasedGate(classifier, high_impact_threshold=THRESHOLD, allow_high_impact=False)
 
         # Medium impact package (tier 2)
         pkg = MockChangePackage(num_surfaces=2, max_delta=0.03, affects_l5=False)

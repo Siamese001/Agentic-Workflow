@@ -18,6 +18,16 @@ from agentic_core.evaluation.metrics.ndcg import NDCG
 from agentic_core.evaluation.metrics.precision_at_k import PrecisionAtK
 from agentic_core.evaluation.metrics.recall_at_k import RecallAtK
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 # ---------------------------------------------------------------------------
 # PrecisionAtK
 # ---------------------------------------------------------------------------

@@ -390,6 +390,8 @@ class CodeValidatorAgent(SovereignBaseAgent):
                     self.Logger.info(f"Auto-fixing: {violation.issue}")
                     violations_fixed += 1
                 except Exception as e:
+                    # TODO: Handle specific exception properly
+                    raise  # Re-raise after logging/handling
                     self.Logger.error(f"Failed to fix {violation.file_path}: {e}")
                     errors += 1
             elif not violation.auto_fixable:

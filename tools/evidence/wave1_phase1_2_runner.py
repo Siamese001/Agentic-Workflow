@@ -13,6 +13,16 @@ import subprocess
 import sys
 from pathlib import Path
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
 EVIDENCE_PATH = REPO_ROOT / "docs" / REPORTS_DIR / "plans" / "wave1_phase1_2_evidence.md"
 

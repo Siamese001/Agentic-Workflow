@@ -62,7 +62,7 @@ class GitHealthSensor:
                 cwd=self.repo_root,
                 capture_output=True,
                 text=True,
-                timeout=30,
+                timeout=DEFAULT_TIMEOUT,
             )
             return result.returncode, result.stdout, result.stderr
         except subprocess.TimeoutExpired:

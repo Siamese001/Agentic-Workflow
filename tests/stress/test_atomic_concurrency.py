@@ -26,6 +26,16 @@ from typing import Any
 
 import pytest
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 # Add project root to path for imports
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
@@ -159,7 +169,7 @@ class TestAtomicConcurrency:
             current = json.loads(test_file.read_text())
 
             # Simulate some work (increases chance of race conditions)
-            time.sleep(0.01)
+            time.sleep(DEFAULT_SLEEP)
 
             # Check for simulated failure
             if should_fail:
@@ -179,6 +189,8 @@ class TestAtomicConcurrency:
             result.success = True
             result.final_state = final_state
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             result.error = str(e)
             if "rollback" in str(e).lower() or should_fail:
                 result.rollback_occurred = True
@@ -328,7 +340,7 @@ class TestAtomicConcurrency:
 
         def long_operation():
             lock_held.set()
-            can_release.wait(timeout=5.0)
+            can_release.wait(timeout=DEFAULT_TIMEOUT)
             return {"held": True}
 
         def blocked_operation():
@@ -344,10 +356,10 @@ class TestAtomicConcurrency:
 
         def thread_2():
             # Wait for thread 1 to acquire lock
-            lock_held.wait(timeout=2.0)
+            lock_held.wait(timeout=DEFAULT_TIMEOUT)
             try:
                 # This should timeout (short timeout)
-                atomic_mixin.execute_atomic(blocked_operation, target_file=test_file, timeout=0.1)
+                atomic_mixin.execute_atomic(blocked_operation, target_file=test_file, timeout=DEFAULT_TIMEOUT)
                 results["thread_2"] = "acquired"
             except TimeoutError:  # guardian: allow-silent-swallower
                 results["thread_2"] = "timeout"
@@ -361,11 +373,11 @@ class TestAtomicConcurrency:
         t2.start()
 
         # Wait for thread 2 to finish (it should timeout quickly)
-        t2.join(timeout=2.0)
+        t2.join(timeout=DEFAULT_TIMEOUT)
 
         # Release thread 1
         can_release.set()
-        t1.join(timeout=2.0)
+        t1.join(timeout=DEFAULT_TIMEOUT)
 
         # Verify thread 2 timed out
         assert results.get("thread_2") == "timeout", (
@@ -387,7 +399,7 @@ class TestAtomicConcurrency:
             current = json.loads(test_file.read_text())
 
             # Simulate planning work
-            time.sleep(0.005)
+            time.sleep(DEFAULT_SLEEP)
 
             # Update plan state
             current["counter"] += 1

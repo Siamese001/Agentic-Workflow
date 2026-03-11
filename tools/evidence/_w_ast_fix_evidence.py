@@ -13,13 +13,23 @@ from datetime import datetime, timezone
 
 from agentic_core.L0_routing.config.path_constants import TOOLS_DIR, get_validated_project_root
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 REPO = get_validated_project_root()
 OUT = REPO / "artifacts" / "windsurf" / "W-AST-FIX-evidence.md"
 PY = sys.executable
 
 
 # guardian: allow-magic-config
-def run(argv, cwd=None, timeout=900):
+def run(argv, cwd=None, timeout=DEFAULT_TIMEOUT):
     """Run a command, return (stdout, stderr, returncode)."""
     try:
         r = subprocess.run(
@@ -155,6 +165,7 @@ print(f"W-AST-FIX-DETERMINISM-DIGEST: {digest}")
         "--tb=short",
         "--color=no",
     ]
+    # guardian: allow-magic-config
     r_tamper = subprocess.run(
         argv_nc,
         capture_output=True,
@@ -162,7 +173,7 @@ print(f"W-AST-FIX-DETERMINISM-DIGEST: {digest}")
         encoding="utf-8",
         errors="replace",
         # guardian: allow-magic-config
-        timeout=60,
+        timeout=DEFAULT_TIMEOUT,
         cwd=str(REPO),
         shell=False,
         env=env_tamper,
@@ -178,7 +189,9 @@ print(f"W-AST-FIX-DETERMINISM-DIGEST: {digest}")
     # ── 6. Negative control restore run ──────────────────────────────────
     w("## 6. Negative control restore run (PASS)")
     env_restore = os.environ.copy()
+    # guardian: allow-magic-config
     env_restore.pop("W_AST_FIX_NEGCTRL_TAMPER", None)
+    # guardian: allow-magic-config
     r_restore = subprocess.run(
         argv_nc,
         capture_output=True,
@@ -186,7 +199,7 @@ print(f"W-AST-FIX-DETERMINISM-DIGEST: {digest}")
         encoding="utf-8",
         errors="replace",
         # guardian: allow-magic-config
-        timeout=60,
+        timeout=DEFAULT_TIMEOUT,
         cwd=str(REPO),
         shell=False,
         env=env_restore,

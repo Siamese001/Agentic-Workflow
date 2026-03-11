@@ -21,6 +21,16 @@ from enum import Enum, auto
 from pathlib import Path
 from typing import Any
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 # [HARDENED] Single inheritance source to prevent MRO conflicts
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.utils.decorators_compat_util import standard_heal
@@ -98,6 +108,8 @@ class CodeDetectorAgent(SovereignBaseAgent):
             try:
                 self._baseline = json.loads(self._detector_config.baseline_path.read_text())
             except Exception as e:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 Logger.warning(f"Failed to load baseline: {e}")
 
     @standard_heal

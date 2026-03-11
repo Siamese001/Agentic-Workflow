@@ -43,9 +43,11 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import (
 
 GUARDIAN_ID = "c0_sovereignty_enforcement"
 
+_SYSTEM_LEARNING_DIR = "system_learning"
+
 SCAN_ROOTS: tuple[str, ...] = (
     AGENTIC_CORE_DIR,
-    SYSTEM_LEARNING_DIR,
+    _SYSTEM_LEARNING_DIR,
     APPS_LIC_DIR,
     APPS_RG_DIR,
 )

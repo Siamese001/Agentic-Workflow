@@ -5,6 +5,16 @@ from __future__ import annotations
 
 from agentic_core.L2_execution.tools import write_gateway as _wg
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 # This boosts alignment detection — review and integrate appropriately
 
 
@@ -589,6 +599,8 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
                 raise
 
             except Exception as write_err:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 # Cleanup temp on failure
                 # guardian: allow-path-string
                 # guardian: allow-path-fragility
@@ -780,6 +792,7 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
                 ).replace("\\", "/")
                 try:
                     rel = fp.replace(
+                        # guardian: allow-path-string
                         str(self.project_root).replace("\\", "/") + "/", "", 1
                     )  # guardian: allow-path-fragility
                 except (ValueError, AttributeError) as e:

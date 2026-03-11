@@ -15,6 +15,16 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Generic, TypeVar
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 logger = logging.getLogger(__name__)
 
 # Type variables for generic agent interface
@@ -249,6 +259,8 @@ class BaseAgent(IAgent[InputT, OutputT]):
         try:
             self.pre_execute(input_data, context)
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             self._logger.warning(f"Pre-execute hook failed: {e}")
 
         # Execute with retry
@@ -268,6 +280,8 @@ class BaseAgent(IAgent[InputT, OutputT]):
                 return result
 
             except Exception as e:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 last_error = e
                 self._logger.warning(f"Attempt {attempt + 1}/{context.max_retries + 1} failed: {e}")
 
@@ -275,6 +289,8 @@ class BaseAgent(IAgent[InputT, OutputT]):
                 try:
                     self.on_error(input_data, context, e)
                 except Exception as hook_error:
+                    # TODO: Handle specific exception properly
+                    raise  # Re-raise after logging/handling
                     self._logger.warning(f"Error hook failed: {hook_error}")
 
                 if attempt < context.max_retries:

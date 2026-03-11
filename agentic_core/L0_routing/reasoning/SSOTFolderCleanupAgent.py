@@ -2,6 +2,16 @@ from __future__ import annotations
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 """
 [PHASE 24] SSOT Folder Cleanup Agent - Automated SSOT Compliance Enforcement.
 
@@ -171,7 +181,7 @@ class SSOTFolderCleanupAgent(SovereignBaseAgent):
             # guardian: allow-magic-config
             self._cognitive_agent = CognitiveDispositionAgent(
                 project_root=self.project_root,
-                confidence_threshold=0.75,  # Unified threshold > 0.75
+                confidence_threshold=THRESHOLD,  # Unified threshold > 0.75
             )
         return self._cognitive_agent
 
@@ -322,6 +332,8 @@ class SSOTFolderCleanupAgent(SovereignBaseAgent):
                     pass
         # guardian: allow-silent-swallow
         except Exception:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             pass
 
         # Fallback to CognitiveDispositionAgent

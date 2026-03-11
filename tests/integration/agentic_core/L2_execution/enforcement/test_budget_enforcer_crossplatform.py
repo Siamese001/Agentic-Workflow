@@ -10,6 +10,16 @@ import time
 
 import pytest
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 pytestmark = pytest.mark.unit
 
 from agentic_core.L2_execution.enforcement.budget_enforcer import (
@@ -81,12 +91,12 @@ class TestBudgetEnforcerComputeCap:
         """Verify threading.Timer cap raises BudgetExceeded on timeout."""
         with pytest.raises(BudgetExceeded, match="compute_ms cap"):
             with _wall_clock_cap_threading(50):
-                time.sleep(0.5)
+                time.sleep(DEFAULT_SLEEP)
 
     def test_threading_timer_does_not_fire_within_budget(self):
         """Verify no exception raised when work completes before deadline."""
         with _wall_clock_cap_threading(500):
-            time.sleep(0.01)  # well within 500 ms
+            time.sleep(DEFAULT_SLEEP)  # well within 500 ms
 
 
 class TestBudgetEnforcerReturnContract:

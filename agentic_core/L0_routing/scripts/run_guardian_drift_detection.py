@@ -188,6 +188,8 @@ def run_drift_detection_guardian(
 
     # guardian: allow-silent-swallow
     except Exception as exc:
+        # TODO: Handle specific exception properly
+        raise  # Re-raise after logging/handling
         result.add_check(
             check_id="root_drift",
             status=CheckStatus.FAIL,

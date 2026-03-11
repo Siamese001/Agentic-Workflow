@@ -2,6 +2,16 @@
 from pathlib import Path
 from agentic_core.L5_safety.static_checks.system_invariant_scanner import scan_repository_for_bypasses
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 root = Path(__file__).resolve().parents[2]
 
 for bucket_rel in [L2_EXECUTION_DIR, L5_SAFETY_DIR, "tests/sovereign_hardening"]:

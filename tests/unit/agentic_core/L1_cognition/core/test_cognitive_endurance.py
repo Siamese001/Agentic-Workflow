@@ -166,7 +166,7 @@ class TestGoldenContextMixin:
         agent = self.MockAgent()
         messages = [{"role": "user", "content": "Hi"}] * 5
 
-        should_inject = agent.should_inject_golden_context(messages, threshold=10)
+        should_inject = agent.should_inject_golden_context(messages, threshold=THRESHOLD)
         assert should_inject is False
 
     def test_should_inject_above_threshold(self):
@@ -174,7 +174,7 @@ class TestGoldenContextMixin:
         agent = self.MockAgent()
         messages = [{"role": "user", "content": "Hi"}] * 15
 
-        should_inject = agent.should_inject_golden_context(messages, threshold=10)
+        should_inject = agent.should_inject_golden_context(messages, threshold=THRESHOLD)
         assert should_inject is True
 
     def test_should_not_inject_if_recent(self):
@@ -184,7 +184,7 @@ class TestGoldenContextMixin:
         # Add a recent golden context injection
         messages.append({"role": "system", "content": GOLDEN_CONTEXT_SUMMARY})
 
-        should_inject = agent.should_inject_golden_context(messages, threshold=10)
+        should_inject = agent.should_inject_golden_context(messages, threshold=THRESHOLD)
         assert should_inject is False
 
     def test_custom_role(self):
@@ -218,7 +218,7 @@ class TestIntegration:
         ] * 5  # 15 messages total
 
         # Should recommend injection
-        assert agent.should_inject_golden_context(messages, threshold=10)
+        assert agent.should_inject_golden_context(messages, threshold=THRESHOLD)
 
         # Inject and verify
         result = agent.inject_golden_context(messages)

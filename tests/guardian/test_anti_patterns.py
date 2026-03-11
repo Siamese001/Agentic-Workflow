@@ -349,7 +349,7 @@ def get_model():
     def test_detects_hardcoded_timeout(self, magic_validator, temp_python_file):
         """Hardcoded timeout values should be detected."""
         code = """
-def call_api(timeout=30):
+def call_api(timeout=DEFAULT_TIMEOUT):
     pass
 """
         file_path = temp_python_file(code)

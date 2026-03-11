@@ -35,6 +35,8 @@ def main():
             ARCHIVE_BASE.mkdir(parents=True, exist_ok=True)
         # guardian: allow-silent-swallow
         except Exception:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             sys.exit(1)
     moved_count = 0
     missing_count = 0
@@ -52,6 +54,8 @@ def main():
                 moved_count += 1
             # guardian: allow-silent-swallow
             except Exception:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 pass
         else:
             missing_count += 1

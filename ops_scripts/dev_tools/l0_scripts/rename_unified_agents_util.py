@@ -68,6 +68,8 @@ def update_class_names_in_unified():
                 py_file.write_text(content, encoding="utf-8")
         # guardian: allow-silent-swallow
         except Exception:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             pass
 
 
@@ -108,6 +110,8 @@ def update_imports_codebase():
                     files_updated += 1
             # guardian: allow-silent-swallow
             except Exception:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 pass
 
 

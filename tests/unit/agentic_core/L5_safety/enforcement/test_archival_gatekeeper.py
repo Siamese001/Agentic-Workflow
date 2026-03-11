@@ -311,7 +311,7 @@ class TestAuditLog:
             source.write_text(f"content {i}")
             gatekeeper.safe_archive(source, "TestAgent", f"Archive {i}")
 
-        logs = gatekeeper.get_audit_log(limit=5)
+        logs = gatekeeper.get_audit_log(limit=LIMIT)
         assert len(logs) == 5
 
 

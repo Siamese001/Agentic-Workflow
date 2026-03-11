@@ -145,6 +145,8 @@ class FileSystemStore:
             temp_path.rename(artifact_path)
 
         except Exception:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             # Clean up temp file if it exists
             if temp_path.exists():
                 try:

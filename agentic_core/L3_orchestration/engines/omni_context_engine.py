@@ -2,6 +2,16 @@ from __future__ import annotations
 
 import asyncio
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 """Brief description of functionality and purpose."""
 
 
@@ -24,7 +34,7 @@ class OmniContext(SubAtomicAgent):
 
     async def execute(self):
         print(f"\n[>>>] {self.name} ACTIVATED: Building Global Context...")
-        await asyncio.sleep(0)
+        await asyncio.sleep(DEFAULT_SLEEP)
 
         # Build context buffer from all Python files
         self._build_context_buffer()

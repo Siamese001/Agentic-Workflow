@@ -7,6 +7,16 @@ structure_blueprint package. It imports ONLY from the Python standard library.
 All sibling modules (ssot.py, derived.py, etc.) import shared static data
 from HERE, eliminating circular dependency patterns.
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 Contents:
   - SubfolderDefinition / TerritoryDefinition TypedDicts
   - LAYER_OVERRIDES (layer-specific template overrides)

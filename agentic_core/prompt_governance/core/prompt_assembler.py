@@ -1,5 +1,15 @@
 from __future__ import annotations
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 """Prompt Assembler - XML-based semantic fencing for robust prompt construction.
 
 This module implements Strategy 3: Semantic Fencing, providing a structured
@@ -236,6 +246,8 @@ You are {role}. Your objective is {objective}.
 
             # guardian: allow-silent-swallow
             except Exception as e:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 Logger.error(f"Failed to load template {file_path}: {e}")
 
     def assemble(

@@ -445,7 +445,7 @@ class TestDeterministicReplay:
         _emit_block_event(target_path, matched_root, str(log_file_1))
 
         # Small delay to ensure different timestamp
-        time.sleep(1.1)
+        time.sleep(DEFAULT_SLEEP)
 
         # Run 2
         log_file_2 = tmp_path / "run2.jsonl"

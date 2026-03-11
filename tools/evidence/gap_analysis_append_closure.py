@@ -31,7 +31,7 @@ SKIP = SOVEREIGN_EXCLUDED_FOLDERS
 
 
 # guardian: allow-magic-config
-def run(argv, timeout=60):
+def run(argv, timeout=DEFAULT_TIMEOUT):
     cmd = " ".join(str(a) for a in argv)
     try:
         r = subprocess.run(
@@ -217,9 +217,9 @@ def run_determinism_proof():
     try:
         cmd1 = [PY, str(script_path), str(REPO)]
         # guardian: allow-magic-config
-        c1_str, out1, err1, rc1 = run(cmd1, timeout=60)
+        c1_str, out1, err1, rc1 = run(cmd1, timeout=DEFAULT_TIMEOUT)
         # guardian: allow-magic-config
-        c2_str, out2, err2, rc2 = run(cmd1, timeout=60)
+        c2_str, out2, err2, rc2 = run(cmd1, timeout=DEFAULT_TIMEOUT)
 
         d1 = re.search(r"DETERMINISM_DIGEST: ([a-f0-9]+)", out1)
         d2 = re.search(r"DETERMINISM_DIGEST: ([a-f0-9]+)", out2)

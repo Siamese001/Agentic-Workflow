@@ -8,6 +8,16 @@ import ast
 import logging
 import sys
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 # Logger Setup
 Logger = logging.getLogger("sovereign.models")
 handler = logging.StreamHandler(sys.stderr)
@@ -63,6 +73,8 @@ def main():
             try:
                 ModelVisitor().visit(ast.parse(f.read()))
             except Exception as e:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 Logger.warning(f"Parse Warning in {arg}: {e}")
 
 

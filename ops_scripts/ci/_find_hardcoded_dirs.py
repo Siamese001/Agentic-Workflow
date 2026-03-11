@@ -17,6 +17,16 @@ import ast
 import pathlib
 import sys
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
@@ -42,6 +52,7 @@ SSOT_DIR_NAMES: frozenset[str] = (
 )
 
 # Minimum overlap: a literal set with >= this many SSOT-owned names is a violation
+# guardian: allow-magic-config
 MIN_OVERLAP = 2
 
 # Files / dirs that ARE the SSOT source — skip them

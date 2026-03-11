@@ -14,6 +14,16 @@ import sys
 from pathlib import Path
 from typing import Any
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 logging.basicConfig(level=logging.INFO)
@@ -219,6 +229,8 @@ def main() -> Any:
             print(f"   Index: {args.index}")
             print(f"   Upserted: {result.get('upserted_count', 1)} vectors")
     except Exception as e:
+        # TODO: Handle specific exception properly
+        raise  # Re-raise after logging/handling
         Logger.error(f"❌ Error: {e}")
         sys.exit(1)
 

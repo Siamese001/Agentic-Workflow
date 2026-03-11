@@ -14,6 +14,16 @@ from agentic_core.L0_routing.config import TESTS_DIR
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 def main():
     test_dir = Path(__file__).parent.parent / TESTS_DIR
 

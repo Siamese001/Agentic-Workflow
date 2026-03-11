@@ -11,6 +11,16 @@ from pathlib import Path
 
 import numpy as np
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 # Import the factory to patch it
 import system_learning.engines.embedding_service_factory as factory_module
 from system_learning.engines.embedding_service_factory import EmbeddingServiceFactory
@@ -138,7 +148,7 @@ def main():
             # Small delay to ensure different random seed
             import time
 
-            time.sleep(0.01)
+            time.sleep(DEFAULT_SLEEP)
 
             # Run 2
             EmbeddingServiceFactory._INSTANCE = None
@@ -231,7 +241,7 @@ def main():
         import shutil
         import time
 
-        time.sleep(0.1)  # Brief pause for Windows file handle release
+        time.sleep(DEFAULT_SLEEP)  # Brief pause for Windows file handle release
         shutil.rmtree(pack_dir, ignore_errors=True)
 
         EmbeddingServiceFactory._INSTANCE = None

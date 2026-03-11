@@ -134,6 +134,8 @@ class ReplayEvaluationRunner:
             )
             self.l4_store.put(artifact)
         except Exception:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             pass
 
 

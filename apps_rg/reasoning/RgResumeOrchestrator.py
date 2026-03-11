@@ -14,6 +14,16 @@ from agentic_core.base_agents.timeout_decorator import timeout
 
 from apps_rg.utils.RGAgentBase import RGAgentBase
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 _logger = logging.getLogger(__name__)
 
 # DUPLICATE ACCEPTED: App-specific customization valid

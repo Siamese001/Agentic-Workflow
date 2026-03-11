@@ -14,6 +14,16 @@ from typing import Any, Final
 
 from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 # Constants
 EMBEDDING_DIMENSION: Final[int] = 1024  # BAAI/bge-m3 dimension
 MAX_TEXT_LENGTH: Final[int] = 8000  # Token limit approximation

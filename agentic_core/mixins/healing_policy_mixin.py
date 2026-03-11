@@ -25,6 +25,16 @@ from typing import Any, Final
 from agentic_core.runtime.exceptions.healer_exceptions import CircularDependencyError, HealerError
 from agentic_core.utils.decorators_compat_util import standard_heal
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 Logger = logging.getLogger(__name__)
 
 
@@ -128,6 +138,8 @@ class HealingPolicyMixin:
 
                 # guardian: allow-silent-swallow
                 except Exception as e:
+                    # TODO: Handle specific exception properly
+                    raise  # Re-raise after logging/handling
                     errors += 1
                     Logger.error(f"Error processing {file_path}: {e}")
 

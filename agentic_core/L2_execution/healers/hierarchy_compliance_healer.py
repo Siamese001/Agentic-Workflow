@@ -82,6 +82,8 @@ def heal_missing_structure(
             performed.append(f"created_{level}:{normalize_repo_path(rel_path)}")
         # guardian: allow-silent-swallow
         except Exception as exc:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             remaining.append(f"failed_mkdir:{rel_path}:{exc}")
 
     performed.sort()

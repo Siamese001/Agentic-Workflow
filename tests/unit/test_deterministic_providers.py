@@ -53,7 +53,7 @@ class TestFixedTimeProvider:
         """sleep() advances virtual clock monotonically."""
         p = FixedTimeProvider("trace-sleep")
         t0 = p.time()
-        p.sleep(1.5)
+        p.sleep(DEFAULT_SLEEP)
         t1 = p.time()
         assert t1 == t0 + 1.5
 
@@ -84,7 +84,7 @@ class TestFixedTimeProvider:
         """current_offset reflects accumulated advances."""
         p = FixedTimeProvider("trace-offset")
         assert p.current_offset == 0.0
-        p.sleep(2.0)
+        p.sleep(DEFAULT_SLEEP)
         p.advance(1.0)
         assert p.current_offset == 3.0
 

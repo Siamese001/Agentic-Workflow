@@ -1,5 +1,15 @@
 from __future__ import annotations
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 """L3 Orchestration: Sovereign MCP Marketplace Integration
 Safe discovery and registration of marketplace MCPs with L5 sovereignty enforcement.
 GEMINI-ONLY policy — forbidden providers auto-blocked.
@@ -60,6 +70,8 @@ class SovereignMcpMarketplace:
                     self.safe_tools.append(name)
                     Logger.info(f"[L3 MARKETPLACE] Sovereign MCP validated and armed: {name}")
                 except Exception as e:
+                    # TODO: Handle specific exception properly
+                    raise  # Re-raise after logging/handling
                     Logger.warning(f"Failed to register {name}: {e}")
 
         if not self.safe_tools:

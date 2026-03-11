@@ -115,9 +115,9 @@ class SubatomicHop:
         self.generation_breaker = CircuitBreakerFactory.get(
             "generation_engine",
             CircuitBreakerConfig(
-                failure_threshold=3,
-                recovery_timeout=60.0,
-                timeout=30.0,  # 30 second timeout for generation
+                failure_threshold=THRESHOLD,
+                recovery_timeout=DEFAULT_TIMEOUT,
+                timeout=DEFAULT_TIMEOUT,  # 30 second timeout for generation
             ),
         )
 
@@ -600,7 +600,7 @@ class SubatomicHop:
                         "signal_score": signal_assessment.composite_score,
                     },
                 ),
-                timeout=15.0,
+                timeout=DEFAULT_TIMEOUT,
             )
         except asyncio.TimeoutError:
             logger.warning(

@@ -16,6 +16,16 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 def _get_routing_config_and_active():
     from agentic_core.L4_state.config.versioned_configs import RoutingConfig, get_active_configs
 

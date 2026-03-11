@@ -189,7 +189,7 @@ def run_discovery(force: bool = False) -> int:
             cwd=str(PROJECT_ROOT),
             capture_output=True,
             text=True,
-            timeout=300,  # 5 min max
+            timeout=DEFAULT_TIMEOUT,  # 5 min max
             check=False,
         )
         elapsed = time.time() - start

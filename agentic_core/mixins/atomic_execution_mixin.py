@@ -23,6 +23,16 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 logger = logging.getLogger(__name__)
 
 
@@ -161,6 +171,8 @@ class AtomicExecutionMixin:
                     shutil.copy2(backup.backup_path, backup.original_path)
                     logger.debug(f"Restored {backup.original_path} from backup")
             except Exception as e:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 errors.append(f"Failed to restore {backup.original_path}: {e}")
 
         # Remove created files
@@ -170,6 +182,8 @@ class AtomicExecutionMixin:
                     created_path.unlink()
                     logger.debug(f"Removed created file {created_path}")
             except Exception as e:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 errors.append(f"Failed to remove {created_path}: {e}")
 
         txn.rolled_back = True

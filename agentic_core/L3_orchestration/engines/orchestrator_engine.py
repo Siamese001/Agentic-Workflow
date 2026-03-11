@@ -35,6 +35,16 @@ from enum import Enum
 from pathlib import Path
 from typing import Any
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 # [PHASE 2] SSOT Discovery Integration
 from agentic_core.utils.ssot_discovery_validator import get_agent_paths
 
@@ -640,7 +650,7 @@ class Orchestrator(SovereignBaseAgent):
                 [sys.executable, "-c", f"import {module_path}"],
                 capture_output=True,
                 text=True,
-                timeout=10,
+                timeout=DEFAULT_TIMEOUT,
                 cwd=str(self.project_root),
             )
 

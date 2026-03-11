@@ -5,6 +5,16 @@ import pathlib
 import subprocess
 import sys
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 env = os.environ.copy()
 env["QWEN_VLLM_ENABLED"] = "true"
 env["SOVEREIGN_AUTO_APPROVE"] = "1"
@@ -32,7 +42,7 @@ proc = subprocess.Popen(
 )
 
 try:
-    out, err = proc.communicate(timeout=600)
+    out, err = proc.communicate(timeout=DEFAULT_TIMEOUT)
 except subprocess.TimeoutExpired:
     proc.kill()
     out, err = proc.communicate()

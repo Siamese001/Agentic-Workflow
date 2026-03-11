@@ -163,6 +163,8 @@ def run_manifest_guardian(
             ]
     # guardian: allow-silent-swallow
     except Exception as exc:
+        # TODO: Handle specific exception properly
+        raise  # Re-raise after logging/handling
         result.add_check(
             check_id="checksum_match",
             status=CheckStatus.FAIL,

@@ -6,6 +6,16 @@ With Advanced AST Analysis & Architectural Integrity Verification
 COMPLETE SSOT REFACTOR: All directory constants and paths MUST be imported
 from structure_blueprint.py. NO hardcoded strings allowed.
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 This script serves as the canonical entry point for agent discovery operations.
 It delegates core enumeration to the SSOT discovery utility but strictly
 ENFORCES architectural integrity using deep AST analysis.
@@ -348,6 +358,8 @@ def perform_deep_integrity_scan(
             validate_path_within_project(project_root, full_path)
         # guardian: allow-silent-swallow
         except Exception:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             stats["invalid"] += 1
             agent_entry["verification_status"] = {
                 "valid": False,
@@ -698,6 +710,8 @@ def cli_interface() -> None:
         sys.exit(130)
     # guardian: allow-silent-swallow
     except Exception as e:
+        # TODO: Handle specific exception properly
+        raise  # Re-raise after logging/handling
         Logger.error(f"[DISCOVERY] CLI operation failed: {e}")
         sys.exit(1)
 

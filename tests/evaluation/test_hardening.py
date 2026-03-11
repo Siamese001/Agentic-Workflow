@@ -212,7 +212,7 @@ class TestBoundaryNDCG:
 class TestBoundaryDriftMonitorThresholds:
     """§1.4: RetrievalDriftMonitor threshold boundaries."""
 
-    def _monitor(self, hit_threshold=0.70, std_threshold=0.20, stab_threshold=0.60):
+    def _monitor(self, hit_threshold=THRESHOLD, std_threshold=THRESHOLD, stab_threshold=THRESHOLD):
         return RetrievalDriftMonitor(
             hit_rate_threshold=hit_threshold,
             score_std_threshold=std_threshold,
@@ -229,7 +229,7 @@ class TestBoundaryDriftMonitorThresholds:
             top_k_stability=0.80,
             sample_size=10,
         )
-        alerts = self._monitor(hit_threshold=0.70).check_alerts(snap)
+        alerts = self._monitor(hit_threshold=THRESHOLD).check_alerts(snap)
         hit_alerts = [a for a in alerts if a.metric_name == "retrieval_hit_rate"]
         assert len(hit_alerts) == 0
 
@@ -243,7 +243,7 @@ class TestBoundaryDriftMonitorThresholds:
             top_k_stability=0.80,
             sample_size=10,
         )
-        alerts = self._monitor(hit_threshold=0.70).check_alerts(snap)
+        alerts = self._monitor(hit_threshold=THRESHOLD).check_alerts(snap)
         assert any(a.metric_name == "retrieval_hit_rate" for a in alerts)
 
     def test_score_std_exactly_at_threshold_no_alert(self):
@@ -256,7 +256,7 @@ class TestBoundaryDriftMonitorThresholds:
             top_k_stability=0.80,
             sample_size=10,
         )
-        alerts = self._monitor(std_threshold=0.20).check_alerts(snap)
+        alerts = self._monitor(std_threshold=THRESHOLD).check_alerts(snap)
         std_alerts = [a for a in alerts if a.metric_name == "score_distribution_std"]
         assert len(std_alerts) == 0
 
@@ -270,7 +270,7 @@ class TestBoundaryDriftMonitorThresholds:
             top_k_stability=0.80,
             sample_size=10,
         )
-        alerts = self._monitor(std_threshold=0.20).check_alerts(snap)
+        alerts = self._monitor(std_threshold=THRESHOLD).check_alerts(snap)
         assert any(a.metric_name == "score_distribution_std" for a in alerts)
 
     def test_stability_exactly_at_threshold_no_alert(self):
@@ -283,7 +283,7 @@ class TestBoundaryDriftMonitorThresholds:
             top_k_stability=0.60,  # == threshold
             sample_size=10,
         )
-        alerts = self._monitor(stab_threshold=0.60).check_alerts(snap)
+        alerts = self._monitor(stab_threshold=THRESHOLD).check_alerts(snap)
         stab_alerts = [a for a in alerts if a.metric_name == "top_k_stability"]
         assert len(stab_alerts) == 0
 
@@ -297,7 +297,7 @@ class TestBoundaryDriftMonitorThresholds:
             top_k_stability=0.599,  # < 0.60
             sample_size=10,
         )
-        alerts = self._monitor(stab_threshold=0.60).check_alerts(snap)
+        alerts = self._monitor(stab_threshold=THRESHOLD).check_alerts(snap)
         assert any(a.metric_name == "top_k_stability" for a in alerts)
 
     def test_n_equals_one_no_stability_drift(self):
@@ -448,7 +448,7 @@ class TestBoundaryProposerBridgeThresholds:
 class TestBoundaryEmbeddingDriftMonitor:
     """§1.4: EmbeddingDriftMonitor norm_std and sim_mean thresholds."""
 
-    def _monitor(self, norm_threshold=0.15, sim_threshold=0.50):
+    def _monitor(self, norm_threshold=THRESHOLD, sim_threshold=THRESHOLD):
         return EmbeddingDriftMonitor(
             norm_std_threshold=norm_threshold,
             similarity_mean_threshold=sim_threshold,
@@ -465,7 +465,7 @@ class TestBoundaryEmbeddingDriftMonitor:
             version_mismatch_detected=False,
             sample_size=10,
         )
-        alerts = self._monitor(norm_threshold=0.15).check_alerts(snap)
+        alerts = self._monitor(norm_threshold=THRESHOLD).check_alerts(snap)
         norm_alerts = [a for a in alerts if a.metric_name == "vector_norm_std"]
         assert len(norm_alerts) == 0
 
@@ -480,7 +480,7 @@ class TestBoundaryEmbeddingDriftMonitor:
             version_mismatch_detected=False,
             sample_size=10,
         )
-        alerts = self._monitor(norm_threshold=0.15).check_alerts(snap)
+        alerts = self._monitor(norm_threshold=THRESHOLD).check_alerts(snap)
         assert any(a.metric_name == "vector_norm_std" for a in alerts)
 
     def test_similarity_exactly_at_threshold_no_alert(self):
@@ -494,7 +494,7 @@ class TestBoundaryEmbeddingDriftMonitor:
             version_mismatch_detected=False,
             sample_size=10,
         )
-        alerts = self._monitor(sim_threshold=0.50).check_alerts(snap)
+        alerts = self._monitor(sim_threshold=THRESHOLD).check_alerts(snap)
         sim_alerts = [a for a in alerts if a.metric_name == "similarity_distribution_mean"]
         assert len(sim_alerts) == 0
 
@@ -509,7 +509,7 @@ class TestBoundaryEmbeddingDriftMonitor:
             version_mismatch_detected=False,
             sample_size=10,
         )
-        alerts = self._monitor(sim_threshold=0.50).check_alerts(snap)
+        alerts = self._monitor(sim_threshold=THRESHOLD).check_alerts(snap)
         assert any(a.metric_name == "similarity_distribution_mean" for a in alerts)
 
 
@@ -518,9 +518,9 @@ class TestBoundaryAnswerQualityMonitor:
 
     def _monitor(self):
         return AnswerQualityMonitor(
-            groundedness_threshold=0.70,
-            hallucination_threshold=0.15,
-            override_threshold=0.20,
+            groundedness_threshold=THRESHOLD,
+            hallucination_threshold=THRESHOLD,
+            override_threshold=THRESHOLD,
         )
 
     def test_groundedness_exactly_at_threshold_no_alert(self):
@@ -1446,7 +1446,7 @@ class TestStatefulSemanticEdge:
 
     def test_similarity_threshold_stored(self):
         """similarity_threshold is stored; may be used by injected embedder."""
-        p = SemanticChunkPolicy(target_size=50, similarity_threshold=0.90)
+        p = SemanticChunkPolicy(target_size=50, similarity_threshold=THRESHOLD)
         assert p.similarity_threshold == pytest.approx(0.90)
 
     def test_embedder_injection_does_not_break_chunking(self):

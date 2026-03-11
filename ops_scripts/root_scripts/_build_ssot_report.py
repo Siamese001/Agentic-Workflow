@@ -4,6 +4,16 @@ import json
 import re
 from collections import defaultdict
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 data = json.load(open("_ssot_results_v2.json", encoding="utf-8"))
 stderr = open("_ssot_stderr_v2.log", encoding="utf-8").read()
 

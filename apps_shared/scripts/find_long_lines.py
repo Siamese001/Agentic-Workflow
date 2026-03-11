@@ -8,6 +8,16 @@ from apps_shared.utils.ConfigurationService import ConfigurationService
 
 from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 Logger: Any = logging.getLogger(__name__)
 
 
@@ -31,6 +41,8 @@ def find_long_lines() -> None:
                                 ConfigurationService().Logger.info(f"  {line[:150]}...")
                                 ConfigurationService().Logger.info("")
                 except Exception:
+                    # TODO: Handle specific exception properly
+                    raise  # Re-raise after logging/handling
                     ConfigurationService().Logger.warning("Swallowed exception", exc_info=True)
     ConfigurationService().Logger.info(
         f"\nTotal violations: {len(ConfigurationService().violations)}",

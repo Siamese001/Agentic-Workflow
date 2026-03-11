@@ -339,7 +339,7 @@ class TestSecureToolsSideEffectSafety:
 class TestTimeshiftRouter:
     @pytest.mark.governance
     def test_returns_standard_when_no_prior_signal(self):
-        cfg = _mock_routing_config(threshold=0.5)
+        cfg = _mock_routing_config(threshold=THRESHOLD)
         with patch(
             "agentic_core.L0_routing.engines.timeshift_router._get_prior_detection_signal",
             return_value=lambda tick: None,
@@ -349,7 +349,7 @@ class TestTimeshiftRouter:
 
     @pytest.mark.governance
     def test_returns_compliance_when_prior_anomaly_at_threshold(self):
-        cfg = _mock_routing_config(threshold=0.5)
+        cfg = _mock_routing_config(threshold=THRESHOLD)
         prior = _mock_prior(anomaly_score=0.5)
         with patch(
             "agentic_core.L0_routing.engines.timeshift_router._get_prior_detection_signal",
@@ -360,7 +360,7 @@ class TestTimeshiftRouter:
 
     @pytest.mark.governance
     def test_returns_compliance_when_prior_anomaly_exceeds_threshold(self):
-        cfg = _mock_routing_config(threshold=0.5)
+        cfg = _mock_routing_config(threshold=THRESHOLD)
         prior = _mock_prior(anomaly_score=0.9)
         with patch(
             "agentic_core.L0_routing.engines.timeshift_router._get_prior_detection_signal",
@@ -371,7 +371,7 @@ class TestTimeshiftRouter:
 
     @pytest.mark.governance
     def test_returns_standard_when_prior_anomaly_just_below_threshold(self):
-        cfg = _mock_routing_config(threshold=0.5)
+        cfg = _mock_routing_config(threshold=THRESHOLD)
         prior = _mock_prior(anomaly_score=0.49)
         with patch(
             "agentic_core.L0_routing.engines.timeshift_router._get_prior_detection_signal",
@@ -382,7 +382,7 @@ class TestTimeshiftRouter:
 
     @pytest.mark.governance
     def test_same_cycle_influence_always_false(self):
-        cfg = _mock_routing_config(threshold=0.5)
+        cfg = _mock_routing_config(threshold=THRESHOLD)
         with patch(
             "agentic_core.L0_routing.engines.timeshift_router._get_prior_detection_signal",
             return_value=lambda tick: None,
@@ -392,7 +392,7 @@ class TestTimeshiftRouter:
 
     @pytest.mark.governance
     def test_same_cycle_influence_false_even_when_escalating(self):
-        cfg = _mock_routing_config(threshold=0.1)
+        cfg = _mock_routing_config(threshold=THRESHOLD)
         prior = _mock_prior(anomaly_score=0.9)
         with patch(
             "agentic_core.L0_routing.engines.timeshift_router._get_prior_detection_signal",
@@ -403,7 +403,7 @@ class TestTimeshiftRouter:
 
     @pytest.mark.governance
     def test_decision_includes_prior_signal_hash_when_present(self):
-        cfg = _mock_routing_config(threshold=0.5)
+        cfg = _mock_routing_config(threshold=THRESHOLD)
         prior = _mock_prior(anomaly_score=0.9, signal_hash="deadbeef")
         with patch(
             "agentic_core.L0_routing.engines.timeshift_router._get_prior_detection_signal",
@@ -414,7 +414,7 @@ class TestTimeshiftRouter:
 
     @pytest.mark.governance
     def test_decision_prior_signal_hash_none_when_no_prior(self):
-        cfg = _mock_routing_config(threshold=0.5)
+        cfg = _mock_routing_config(threshold=THRESHOLD)
         with patch(
             "agentic_core.L0_routing.engines.timeshift_router._get_prior_detection_signal",
             return_value=lambda tick: None,
@@ -424,7 +424,7 @@ class TestTimeshiftRouter:
 
     @pytest.mark.governance
     def test_decision_prior_anomaly_score_none_when_no_prior(self):
-        cfg = _mock_routing_config(threshold=0.5)
+        cfg = _mock_routing_config(threshold=THRESHOLD)
         with patch(
             "agentic_core.L0_routing.engines.timeshift_router._get_prior_detection_signal",
             return_value=lambda tick: None,
@@ -434,7 +434,7 @@ class TestTimeshiftRouter:
 
     @pytest.mark.governance
     def test_decision_threshold_used_matches_config(self):
-        cfg = _mock_routing_config(threshold=0.75)
+        cfg = _mock_routing_config(threshold=THRESHOLD)
         with patch(
             "agentic_core.L0_routing.engines.timeshift_router._get_prior_detection_signal",
             return_value=lambda tick: None,
@@ -444,7 +444,7 @@ class TestTimeshiftRouter:
 
     @pytest.mark.governance
     def test_boundary_exactly_at_threshold_routes_to_compliance(self):
-        cfg = _mock_routing_config(threshold=0.75)
+        cfg = _mock_routing_config(threshold=THRESHOLD)
         prior = _mock_prior(anomaly_score=0.75)
         with patch(
             "agentic_core.L0_routing.engines.timeshift_router._get_prior_detection_signal",
@@ -455,7 +455,7 @@ class TestTimeshiftRouter:
 
     @pytest.mark.governance
     def test_boundary_one_below_threshold_routes_to_standard(self):
-        cfg = _mock_routing_config(threshold=0.75)
+        cfg = _mock_routing_config(threshold=THRESHOLD)
         prior = _mock_prior(anomaly_score=0.74)
         with patch(
             "agentic_core.L0_routing.engines.timeshift_router._get_prior_detection_signal",
@@ -470,7 +470,7 @@ class TestTimeshiftRouter:
 
     @pytest.mark.governance
     def test_deterministic_for_same_tick_and_config(self):
-        cfg = _mock_routing_config(threshold=0.5)
+        cfg = _mock_routing_config(threshold=THRESHOLD)
         prior = _mock_prior(anomaly_score=0.3)
         with patch(
             "agentic_core.L0_routing.engines.timeshift_router._get_prior_detection_signal",

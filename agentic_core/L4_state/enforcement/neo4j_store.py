@@ -1,5 +1,15 @@
 from __future__ import annotations
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 try:
     """Brief description of functionality and purpose."""
     from neo4j import GraphDatabase
@@ -65,6 +75,8 @@ class Neo4jGraphStore:
                 },
             )
         except Exception:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             # Fallback without APOC if not available
             fallback_cypher = """
             MERGE (e:Entity {id: $id})
@@ -125,6 +137,8 @@ class Neo4jGraphStore:
                 """
                 params["attrs"] = attrs
             except Exception:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 # Fallback without APOC
                 CYPHER += "\nSET r += $attrs"
                 params["attrs"] = attrs

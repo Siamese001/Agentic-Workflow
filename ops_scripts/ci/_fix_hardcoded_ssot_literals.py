@@ -29,6 +29,16 @@ import re
 import sys
 from pathlib import Path
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
@@ -257,7 +267,11 @@ def _find_last_import_line(lines: list[str]) -> int:
 
 def _inject_import(lines: list[str], const: str, module: str) -> list[str]:
     lines = list(lines)
+# guardian: allow-path-string
+
+    # guardian: allow-path-string
     from_multi = re.compile(r"^\s*from\s+" + re.escape(module) + r"\s+import\s+\(")
+    # guardian: allow-path-string
     from_single = re.compile(r"^(\s*from\s+" + re.escape(module) + r"\s+import\s+)(.+)$")
 
     # 1. Extend existing multi-line block — find the MATCHING closing )

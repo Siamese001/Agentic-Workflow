@@ -25,6 +25,16 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 # Use ASCII-safe symbols for Windows compatibility
 SYMBOL_OK = "[OK]"
 SYMBOL_WARN = "[WARN]"
@@ -41,7 +51,7 @@ from agentic_core.L5_safety.validators.report_location_validator import (  # noq
     ReportLocationValidator,
 )
 
-COMPLIANCE_LOG_DIR = PROJECT_ROOT / AGENTIC_CORE_DIR / "L0_routing" / "logs" / "compliance_reports"
+COMPLIANCE_LOG_DIR = PROJECT_ROOT / "agentic_core" / "L0_routing" / "logs" / "compliance_reports"
 
 
 def get_staged_files() -> list[Path]:

@@ -11,6 +11,16 @@ import time
 from collections.abc import Awaitable, Callable
 from typing import Any
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
@@ -298,7 +308,7 @@ class AgentGym(SovereignBaseAgent):
                 ScenarioType=ScenarioType.GOLDEN_DATASET,
                 DESCRIPTION="Core test cases from golden dataset",
                 test_cases=self.golden_evaluator.golden_cases,
-                success_threshold=0.8,
+                success_threshold=THRESHOLD,
             )
             self._scenarios[scenario.id] = scenario
 

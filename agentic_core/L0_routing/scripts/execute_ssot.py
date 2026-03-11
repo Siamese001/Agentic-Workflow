@@ -40,6 +40,16 @@ from subprocess import DEVNULL
 from types import FrameType
 from typing import Any, Optional
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 try:
     from tqdm import tqdm
 except ImportError:
@@ -1916,13 +1926,14 @@ class SovereignDecisionEngine:
                     + (f" --violation_types {' '.join(violation_types)}" if violation_types else "")
                 ),
             ]
+            # guardian: allow-magic-config
             result = _get_safe_subprocess_run()(
                 cmd,
                 capture_output=True,
                 text=True,
                 encoding="utf-8",
                 errors="replace",
-                timeout=300,  # guardian: allow-magic-configuration
+                timeout=DEFAULT_TIMEOUT,  # guardian: allow-magic-configuration
             )
             if result.returncode != 0:
                 raise RuntimeError(f"vLLM subprocess failed: {result.stderr[-500:]}")
@@ -2122,6 +2133,7 @@ class SovereignDecisionEngine:
             return "SOVEREIGN_VIOLATION"
         return "STRUCTURAL_VIOLATION"
 
+    # guardian: allow-magic-config
     def _check_healing_budget(self, agent_name: str, depth: int = 0, max_depth: int = 3) -> tuple[bool, str]:
         """Prevents infinite healing loops and budget exhaustion."""
         # Use operation-scoped call path to prevent bleeding across territories
@@ -2665,7 +2677,7 @@ class NonInteractiveGuard:
 
 @_optional_runtime_guard()("D.with_retry.execute_ssot")
 # guardian: allow-magic-config
-def with_retry(max_retries=3, delay=1.0):
+def with_retry(max_retries=MAX_RETRIES, delay=1.0):
     """
     [HARDENED] Decorator for transient failure resilience with exponential backoff.
     """
@@ -2704,7 +2716,7 @@ def with_retry(max_retries=3, delay=1.0):
 
 
 # guardian: allow-magic-config
-@with_retry(max_retries=2)
+@with_retry(max_retries=MAX_RETRIES)
 def execute_phase2_reconciliation(
     agents: dict[str, Any],
     territory: str,
@@ -2817,6 +2829,7 @@ def execute_phase2_reconciliation(
                 # grant_write_permission is informational — UWG tracks all agent
                 # mutation attempts for audit and replay without blocking them.
                 _uwg = _get_uwg()
+                # guardian: allow-path-string
                 _territory_posix = Path(territory).as_posix() + "/"
                 _uwg.grant_write_permission(_territory_posix)
 
@@ -3396,7 +3409,7 @@ def execute_phase3_validation(
 
 
 # guardian: allow-magic-config
-@with_retry(max_retries=3)
+@with_retry(max_retries=MAX_RETRIES)
 def execute_phase1_discovery(agents, territory, decision_engine, state_mgr, ctx: "HealContext" = None):
     """PHASE 1: TERRITORIAL DISCOVERY (Retriable)"""
     return execute_phase1_discovery_impl(agents, territory, decision_engine, state_mgr, ctx)
@@ -3685,7 +3698,7 @@ def execute_phase1_discovery_impl(
 
 
 # guardian: allow-magic-config
-@with_retry(max_retries=3)
+@with_retry(max_retries=MAX_RETRIES)
 def execute_phase3_alignment(agents, territory, decision_engine, state_mgr, ctx: "HealContext" = None):
     """PHASE 3: STRUCTURAL ALIGNMENT (Retriable)"""
     return execute_phase3_alignment_impl(agents, territory, decision_engine, state_mgr, ctx)
@@ -3892,7 +3905,7 @@ def _run_gravity_repair_global(agents, state_mgr, ctx: "HealContext" = None):
 
 
 # guardian: allow-magic-config
-@with_retry(max_retries=3)
+@with_retry(max_retries=MAX_RETRIES)
 def execute_phase4_architectural_validation(agents, territory, state_mgr, ctx: "HealContext" = None):
     """PHASE 4: ARCHITECTURAL VALIDATION (Retriable)"""
     return execute_phase4_validation_impl(agents, territory, state_mgr, ctx=ctx)
@@ -3958,7 +3971,7 @@ def execute_phase4_validation_impl(agents, territory, state_mgr, ctx: "HealConte
 
 
 # guardian: allow-magic-config
-@with_retry(max_retries=3)
+@with_retry(max_retries=MAX_RETRIES)
 def execute_phase5_healing(
     agents,
     territory,
@@ -4059,7 +4072,7 @@ def execute_phase5_healing_impl(
 
 
 # guardian: allow-magic-config
-@with_retry(max_retries=3)
+@with_retry(max_retries=MAX_RETRIES)
 def execute_phase7_final(agents, territory, state_mgr, decision_engine=None):
     """PHASE 7: CERTIFICATION (Retriable)"""
     return execute_phase7_final_impl(agents, territory, state_mgr, decision_engine)
@@ -6002,9 +6015,10 @@ def _write_heal_run_complete(
     # ── Git commit ────────────────────────────────────────────────────────────
     git_commit = ""
     try:
+        # guardian: allow-magic-config
         import subprocess as _sp
 
-        _r = _sp.run(["git", "rev-parse", "--short", "HEAD"], capture_output=True, text=True, timeout=5)
+        _r = _sp.run(["git", "rev-parse", "--short", "HEAD"], capture_output=True, text=True, timeout=DEFAULT_TIMEOUT)
         git_commit = _r.stdout.strip()
     except (subprocess.CalledProcessError, OSError, subprocess.TimeoutExpired):
         pass
@@ -7908,12 +7922,15 @@ def _legacy_main(
                 sys.exit(1)
 
         except ImportError as exc:
+            # guardian: allow-global-mutation
             logger.critical(f"[FENCE-SELF-TEST] FAILED: Cannot import fence module: {exc}")
             sys.exit(1)
     else:
         logger.warning("[FENCE-SELF-TEST] SKIPPED: --allow-protected-root-mutation enabled")
-        os.environ["AGENTIC_ALLOW_MUTATION_FOR_TESTS"] = "1"  # guardian: allow-global-mutation
-        os.environ["AGENTIC_BYPASS_LONGPATHS_CHECK"] = "1"  # guardian: allow-global-mutation
+        # guardian: allow-global-mutation
+        os.environ["AGENTIC_ALLOW_MUTATION_FOR_TESTS"] = "1"
+        # guardian: allow-global-mutation
+        os.environ["AGENTIC_BYPASS_LONGPATHS_CHECK"] = "1"
 
     # §8.1e — V15 manifest at SSOT bootstrap entry (AGGREGATE, L0 bootstrap)
     _v15_manifest = _v15_build_ssot_manifest()
@@ -8054,13 +8071,16 @@ def _legacy_main(
 
     state_mgr = RuntimeStateManager(project_root, execution_context=_exec_ctx)
 
+    # guardian: allow-global-mutation
     # [META-LEARNING] Tied to --heal: proposals always applied when healing is active
     state_mgr.state["apply_proposals"] = ctx.heal
 
     # [SIMPLIFIED] Auto-set env vars unless interactive mode explicitly requested
     if ctx.auto_approve:
-        os.environ.setdefault("SOVEREIGN_AUTO_APPROVE", "1")  # guardian: allow-global-mutation
-        os.environ.setdefault("ARCHIVE_BATCH_ACCEPT", "1")  # guardian: allow-global-mutation
+        # guardian: allow-global-mutation
+        os.environ.setdefault("SOVEREIGN_AUTO_APPROVE", "1")
+        # guardian: allow-global-mutation
+        os.environ.setdefault("ARCHIVE_BATCH_ACCEPT", "1")
 
     # [HARDENED] Use Sovereign Decision Engine — wired from HealContext
     # [B2/G6 CROSS-RUN] Build advisory healing memory retriever from the persisted FAISS

@@ -3898,3 +3898,8 @@ The existing single entrypoint `python ops_scripts/ci/run_contract_gates.py` MUS
 
 ## Test Count Invariants
 - Test counts are invariants. Unexpected drops = CI failure.
+
+## Safe Automated Remediation
+- Automated fixes must prove scope before mutation.
+- Parse health and checker health are hard gates — integrity beats numeric burndown.
+- No commits from a corrupted state. Rollback must always be available.

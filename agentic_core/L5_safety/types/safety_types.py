@@ -2,6 +2,16 @@ from __future__ import annotations
 
 from agentic_core.L2_execution.tools import write_gateway as _wg
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 """
 Self-Updating Safety Engine - L5 Safety Enhancement
 
@@ -229,6 +239,8 @@ class SelfUpdatingSafetyEngine:
 
             Logger.info(f"Loaded {len(self.rules)} safety rules")
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             Logger.error(f"Failed to load rules: {e}")
 
     def _save_rules(self):
@@ -245,6 +257,8 @@ class SelfUpdatingSafetyEngine:
 
             Logger.debug(f"Saved {len(self.rules)} rules")
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             Logger.error(f"Failed to save rules: {e}")
 
     async def detect_threats(self, text: str, context: dict[str, Any] | None = None) -> ThreatDetection:

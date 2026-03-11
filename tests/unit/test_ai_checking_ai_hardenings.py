@@ -9,6 +9,16 @@ from __future__ import annotations
 import asyncio
 from unittest.mock import AsyncMock, MagicMock, patch
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 # ---------------------------------------------------------------------------
 # GAP-02 — ReflectionEngine fail-closed circuit breaker
 # ---------------------------------------------------------------------------
@@ -148,7 +158,7 @@ class TestSocraticJudgeHardening:
                 "builtins.__import__",
                 side_effect=ImportError("mocked"),
             ):
-                pass  # just verify rate_limit=0 path handles audit log
+                pass  # just verify rate_limit=LIMIT path handles audit log
 
         # Trigger error path directly (ImportError from get_llm_router_client)
         with patch.dict(
@@ -450,24 +460,24 @@ class TestJudgeEvaluatorEdgeCases:
         # heuristic path: identical strings → score ≈ 1.0; threshold=0.5
         ev = JudgeEvaluator(
             criteria=[JudgmentCriterion.ACCURACY],
-            pass_threshold=0.0,
+            pass_threshold=THRESHOLD,
             enable_logging=False,
         )
         result = asyncio.run(ev.evaluate("x", expected=None))
-        assert result.passed is True, "threshold=0.0 must always pass"
+        assert result.passed is True, "threshold=THRESHOLD must always pass"
 
     def test_threshold_above_max_score_always_fails(self):
-        """pass_threshold=1.0 with imperfect heuristic must produce passed=False."""
+        """pass_threshold=THRESHOLD with imperfect heuristic must produce passed=False."""
         from apps_shared.types.judge_evaluator_types import JudgeEvaluator, JudgmentCriterion
 
         ev = JudgeEvaluator(
             criteria=[JudgmentCriterion.ACCURACY],
-            pass_threshold=1.0,
+            pass_threshold=THRESHOLD,
             enable_logging=False,
         )
         result = asyncio.run(ev.evaluate("a", expected="completely different text here"))
         # Heuristic score will be < 1.0 for mismatched strings
-        assert result.passed is False, "pass_threshold=1.0 must fail on non-identical output"
+        assert result.passed is False, "pass_threshold=THRESHOLD must fail on non-identical output"
 
     # --- replayed transition (§1.7 determinism) ---
 

@@ -9,6 +9,16 @@ from agentic_core.config.blueprint_sovereign.environments.sovereign_config impor
 from agentic_core.L4_state.caching.redis_mcp_client import SovereignRedisMCPClient, get_redis_client
 
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 class TestRedisMCPIntegration:
     """Test suite for Redis MCP client integration."""
 

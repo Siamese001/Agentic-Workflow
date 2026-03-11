@@ -11,6 +11,16 @@ from enum import Enum
 from typing import Any
 
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 class WorkflowStatus(Enum):
     """Status of workflow execution."""
 
@@ -76,6 +86,8 @@ class OrchestrationMixin:
                 )
 
             except Exception as e:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 step.status = WorkflowStatus.FAILED
                 step.error = str(e)
                 results["errors"].append({"step": step.name, "error": str(e)})
@@ -168,6 +180,8 @@ class OrchestrationMixin:
                         completed.add(agent_name)
                         progress_made = True
                     except Exception as e:
+                        # TODO: Handle specific exception properly
+                        raise  # Re-raise after logging/handling
                         results[agent_name] = {"status": "failed", "error": str(e)}
                         errors.append({"agent": agent_name, "error": str(e)})
                         completed.add(agent_name)  # Mark as processed even if failed

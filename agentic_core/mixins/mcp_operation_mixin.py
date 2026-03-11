@@ -4,6 +4,16 @@ MCPOperationMixin - Unified MCP Access for Agents
 [PHASE 3 MIGRATION] Provides single interface to all MCP operations.
 [MIXIN REFACTOR] Merged hardened call logic (retry, backoff, audit, idempotency)
 from mcp_hardened_mixin.py. That file is now a backwards-compat shim.
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 """
 
 from __future__ import annotations

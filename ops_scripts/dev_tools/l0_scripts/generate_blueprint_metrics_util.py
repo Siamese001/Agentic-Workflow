@@ -46,7 +46,7 @@ def generate_unified_diff(canonical: Path, duplicate: Path) -> str:
         result = safe_git_execute(
             ["diff", "--no-index", "--unified=3", str(canonical), str(duplicate)],
             repo_root=canonical.parent,
-            timeout=30,
+            timeout=DEFAULT_TIMEOUT,
             check=False,
         )
         return result.stdout

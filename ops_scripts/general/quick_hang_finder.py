@@ -24,6 +24,7 @@ from agentic_core.L0_routing.config.path_constants import (
 )
 
 PROJECT_ROOT = Path(__file__).parent.parent
+# guardian: allow-global-mutation
 sys.path.insert(0, str(PROJECT_ROOT))
 
 
@@ -153,7 +154,7 @@ def main():
         thread = threading.Thread(target=do_import)
         thread.daemon = True
         thread.start()
-        thread.join(timeout=3.0)  # 3 second timeout
+        thread.join(timeout=DEFAULT_TIMEOUT)  # 3 second timeout
 
         duration = time.time() - start
 

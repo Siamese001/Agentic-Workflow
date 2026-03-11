@@ -626,6 +626,8 @@ def _invoke_healer(
         result = healer_fn(check_dict, repo_root=repo_root, apply=apply)
     # guardian: allow-silent-swallow
     except Exception as exc:
+        # TODO: Handle specific exception properly
+        raise  # Re-raise after logging/handling
         result = HealCheckResult(
             check_id=check_id,
             status=HealStatus.FAILED,

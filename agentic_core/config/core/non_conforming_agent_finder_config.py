@@ -130,6 +130,8 @@ def main():
             tree = ast.parse(source)
         # guardian: allow-silent-swallow
         except Exception:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             continue  # Skip unparseable files
 
         source_lines = source.splitlines()

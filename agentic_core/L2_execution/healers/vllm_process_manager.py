@@ -13,6 +13,16 @@ import time
 
 from agentic_core.L2_execution.healers.healing_tier_config import QWEN_GPU_MEM_UTIL
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 logger = logging.getLogger(__name__)
 
 
@@ -56,7 +66,7 @@ class VLLMProcessManager:
             self.start_time = time.time()
 
             # Wait a moment for startup
-            time.sleep(5)
+            time.sleep(DEFAULT_SLEEP)
 
             if self.process.poll() is not None:
                 stdout, stderr = self.process.communicate()
@@ -84,7 +94,7 @@ class VLLMProcessManager:
 
             # Wait for graceful shutdown
             try:
-                self.process.wait(timeout=10)
+                self.process.wait(timeout=DEFAULT_TIMEOUT)
                 logger.info("vLLM server stopped gracefully")
             except subprocess.TimeoutExpired:
                 # Force kill if graceful shutdown fails
@@ -107,7 +117,7 @@ class VLLMProcessManager:
         try:
             import urllib.request as _urllib_request
 
-            with _urllib_request.urlopen(f"{self.base_url}/health", timeout=5) as _resp:  # noqa: S310
+            with _urllib_request.urlopen(f"{self.base_url}/health", timeout=DEFAULT_TIMEOUT) as _resp:  # noqa: S310
                 return _resp.status == 200
         except Exception:
             return False
@@ -121,7 +131,7 @@ class VLLMProcessManager:
                 ["nvidia-smi", "--query-gpu=memory.used,memory.total", "--format=csv,noheader,nounits"],
                 capture_output=True,
                 text=True,
-                timeout=10,
+                timeout=DEFAULT_TIMEOUT,
             )
             if result.returncode == 0:
                 used, total = map(int, result.stdout.strip().split(", "))

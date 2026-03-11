@@ -22,7 +22,7 @@ class TestIntegrationConfig:
         config = IntegrationConfig(
             domain="test",
             domain_prefix="apps_test",
-            similarity_threshold=0.85,
+            similarity_threshold=THRESHOLD,
             ttl_seconds=3600,
         )
         assert config.domain == "test"
@@ -35,7 +35,7 @@ class TestIntegrationConfig:
         config = IntegrationConfig(
             domain="test",
             domain_prefix="apps_test",
-            similarity_threshold=0.85,
+            similarity_threshold=THRESHOLD,
             ttl_seconds=3600,
         )
         assert config.rate_limit_requests == 100
@@ -48,7 +48,7 @@ class TestIntegrationConfig:
         config = IntegrationConfig(
             domain="test",
             domain_prefix="apps_test",
-            similarity_threshold=0.85,
+            similarity_threshold=THRESHOLD,
             ttl_seconds=3600,
             required_flags=["FLAG1"],
         )

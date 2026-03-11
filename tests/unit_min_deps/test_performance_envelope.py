@@ -74,7 +74,7 @@ def test_store_list_limit_deterministic():
             store.put(artifact)
 
         # List with limit should return first N in deterministic order
-        limited_refs = store.list(limit=5)
+        limited_refs = store.list(limit=LIMIT)
         all_refs = store.list()
 
         assert len(limited_refs) == 5
@@ -130,7 +130,7 @@ def test_scaling_200_small_artifacts():
                 assert prev_ref.kind < curr_ref.kind
 
         # Test listing with limits
-        first_10 = store.list(limit=10)
+        first_10 = store.list(limit=LIMIT)
         assert len(first_10) == 10
         assert first_10 == all_refs[:10]
 

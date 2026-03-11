@@ -220,6 +220,8 @@ def run_hierarchy_compliance_guardian(
             )
     # guardian: allow-silent-swallow
     except Exception as exc:
+        # TODO: Handle specific exception properly
+        raise  # Re-raise after logging/handling
         result.add_check(
             check_id="missing_structure",
             status=CheckStatus.FAIL,
@@ -250,6 +252,8 @@ def run_hierarchy_compliance_guardian(
             )
     # guardian: allow-silent-swallow
     except Exception as exc:
+        # TODO: Handle specific exception properly
+        raise  # Re-raise after logging/handling
         result.add_check(
             check_id="subfolder_compliance",
             status=CheckStatus.FAIL,

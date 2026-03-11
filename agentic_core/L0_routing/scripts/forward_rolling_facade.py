@@ -191,6 +191,8 @@ class ForwardRollingFacade:
                 self._metrics.static_dag_executions += 1
 
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             # Fallback on error if enabled
             if self._config.get_config().fallback_on_error:
                 self._metrics.fallback_count += 1

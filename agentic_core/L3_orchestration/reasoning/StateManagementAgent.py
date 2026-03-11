@@ -2,6 +2,16 @@ from __future__ import annotations
 
 from agentic_core.L2_execution.tools import write_gateway as _wg
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 """
 StateManagementAgent - Consolidated L4 State Controller (Phase 5)
 
@@ -229,12 +239,16 @@ class StateManagementAgent(SovereignBaseAgent):
                         self._manifest[key] = StateEntry.from_dict(entry_data)
                     # guardian: allow-silent-swallow
                     except Exception as e:
+                        # TODO: Handle specific exception properly
+                        raise  # Re-raise after logging/handling
                         Logger.warning(f"Failed to load manifest entry {key}: {e}")
 
                 Logger.debug(f"Loaded {len(self._manifest)} manifest entries")
 
             # guardian: allow-silent-swallow
             except Exception as e:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 Logger.error(f"Failed to load manifest: {e}")
                 # Try backup
                 if self.manifest_backup.exists():
@@ -446,6 +460,8 @@ class StateManagementAgent(SovereignBaseAgent):
                             hash_mismatches.append(key)
                     # guardian: allow-silent-swallow
                     except Exception:
+                        # TODO: Handle specific exception properly
+                        raise  # Re-raise after logging/handling
                         pass
 
             # Log findings
@@ -628,6 +644,8 @@ class StateManagementAgent(SovereignBaseAgent):
                 callback(key, action)
             # guardian: allow-silent-swallow
             except Exception as e:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 Logger.warning(f"Registry callback failed: {e}")
 
     # =========================================================================
@@ -670,6 +688,8 @@ class StateManagementAgent(SovereignBaseAgent):
                 break
             # guardian: allow-silent-swallow
             except Exception as e:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 Logger.error(f"Heartbeat error: {e}")
 
     # =========================================================================

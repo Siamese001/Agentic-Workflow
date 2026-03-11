@@ -884,6 +884,8 @@ class Orchestrator(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
                 agents_executed.append(agent_name)
             # guardian: allow-silent-swallow
             except Exception as e:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 errors.append(f"{agent_name}: {str(e)}")
 
         duration = (time.time() - start_time) * 1000

@@ -10,7 +10,7 @@ Coverage targets per .windsurfrules §1.2:
   - RuntimeError WITHOUT "prompt" → retried normally
   - sleep called with exponential backoff (delay * 2^attempt)
   - error logged on each failed attempt
-  - max_retries=0 → raises immediately (edge case)
+  - max_retries=MAX_RETRIES → raises immediately (edge case)
   - different delay values respected
   - return value preserved on success
 """
@@ -22,6 +22,16 @@ from unittest.mock import patch
 
 import pytest
 
+
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
 
 def _load():
     try:
@@ -50,7 +60,7 @@ class TestWithRetrySuccess:
     def test_success_first_attempt_returns_value(self, retry):
         call_count = []
 
-        @retry(max_retries=3, delay=0.0)
+        @retry(max_retries=MAX_RETRIES, delay=0.0)
         def _fn():
             call_count.append(1)
             return 42
@@ -62,7 +72,7 @@ class TestWithRetrySuccess:
         assert len(call_count) == 1
 
     def test_success_first_attempt_no_sleep(self, retry):
-        @retry(max_retries=3, delay=0.0)
+        @retry(max_retries=MAX_RETRIES, delay=0.0)
         def _fn():
             return "ok"
 
@@ -74,7 +84,7 @@ class TestWithRetrySuccess:
     def test_success_second_attempt_calls_sleep_once(self, retry):
         attempt = [0]
 
-        @retry(max_retries=3, delay=1.0)
+        @retry(max_retries=MAX_RETRIES, delay=1.0)
         def _fn():
             attempt[0] += 1
             if attempt[0] < 2:
@@ -90,7 +100,7 @@ class TestWithRetrySuccess:
     def test_success_on_third_attempt(self, retry):
         attempt = [0]
 
-        @retry(max_retries=3, delay=1.0)
+        @retry(max_retries=MAX_RETRIES, delay=1.0)
         def _fn():
             attempt[0] += 1
             if attempt[0] < 3:
@@ -103,7 +113,7 @@ class TestWithRetrySuccess:
         assert result == "third"
 
     def test_return_value_preserved(self, retry):
-        @retry(max_retries=3, delay=0.0)
+        @retry(max_retries=MAX_RETRIES, delay=0.0)
         def _fn():
             return {"key": [1, 2, 3]}
 
@@ -120,7 +130,7 @@ class TestWithRetrySuccess:
 
 class TestWithRetryExhaustion:
     def test_all_retries_exhausted_raises_last_exception(self, retry):
-        @retry(max_retries=3, delay=0.0)
+        @retry(max_retries=MAX_RETRIES, delay=0.0)
         def _fn():
             raise ValueError("always fails")
 
@@ -131,7 +141,7 @@ class TestWithRetryExhaustion:
     def test_call_count_equals_max_retries(self, retry):
         calls = []
 
-        @retry(max_retries=3, delay=0.0)
+        @retry(max_retries=MAX_RETRIES, delay=0.0)
         def _fn():
             calls.append(1)
             raise RuntimeError("fail")
@@ -143,7 +153,7 @@ class TestWithRetryExhaustion:
         assert len(calls) == 3
 
     def test_last_exception_type_preserved(self, retry):
-        @retry(max_retries=2, delay=0.0)
+        @retry(max_retries=MAX_RETRIES, delay=0.0)
         def _fn():
             raise TypeError("type error specific")
 
@@ -154,7 +164,7 @@ class TestWithRetryExhaustion:
     def test_max_retries_1_calls_once_then_raises(self, retry):
         calls = []
 
-        @retry(max_retries=1, delay=0.0)
+        @retry(max_retries=MAX_RETRIES, delay=0.0)
         def _fn():
             calls.append(1)
             raise ValueError("x")
@@ -175,7 +185,7 @@ class TestWithRetryPassThrough:
     def test_recursion_error_not_retried(self, retry):
         calls = []
 
-        @retry(max_retries=3, delay=0.0)
+        @retry(max_retries=MAX_RETRIES, delay=0.0)
         def _fn():
             calls.append(1)
             raise RecursionError("stack overflow")
@@ -190,7 +200,7 @@ class TestWithRetryPassThrough:
     def test_runtime_error_with_prompt_not_retried(self, retry):
         calls = []
 
-        @retry(max_retries=3, delay=0.0)
+        @retry(max_retries=MAX_RETRIES, delay=0.0)
         def _fn():
             calls.append(1)
             raise RuntimeError("prompt validation failed")
@@ -205,7 +215,7 @@ class TestWithRetryPassThrough:
     def test_runtime_error_without_prompt_is_retried(self, retry):
         calls = []
 
-        @retry(max_retries=3, delay=0.0)
+        @retry(max_retries=MAX_RETRIES, delay=0.0)
         def _fn():
             calls.append(1)
             raise RuntimeError("generic failure")
@@ -220,7 +230,7 @@ class TestWithRetryPassThrough:
         """'PROMPT' uppercase is NOT the same as 'prompt' — only lowercase matched."""
         calls = []
 
-        @retry(max_retries=3, delay=0.0)
+        @retry(max_retries=MAX_RETRIES, delay=0.0)
         def _fn():
             calls.append(1)
             raise RuntimeError("PROMPT validation")
@@ -239,7 +249,7 @@ class TestWithRetryPassThrough:
 
 class TestWithRetryBackoff:
     def test_exponential_backoff_delays(self, retry):
-        @retry(max_retries=3, delay=1.0)
+        @retry(max_retries=MAX_RETRIES, delay=1.0)
         def _fn():
             raise ValueError("fail")
 
@@ -253,7 +263,7 @@ class TestWithRetryBackoff:
         assert sleep_calls[2] == pytest.approx(4.0)
 
     def test_custom_delay_respected(self, retry):
-        @retry(max_retries=2, delay=0.5)
+        @retry(max_retries=MAX_RETRIES, delay=0.5)
         def _fn():
             raise ValueError("fail")
 
@@ -266,7 +276,7 @@ class TestWithRetryBackoff:
         assert sleep_calls[1] == pytest.approx(1.0)
 
     def test_zero_delay_no_sleep_time(self, retry):
-        @retry(max_retries=3, delay=0.0)
+        @retry(max_retries=MAX_RETRIES, delay=0.0)
         def _fn():
             raise ValueError("fail")
 
@@ -285,7 +295,7 @@ class TestWithRetryBackoff:
 
 class TestWithRetryLogging:
     def test_error_logged_on_each_retry(self, retry, mod):
-        @retry(max_retries=3, delay=0.0)
+        @retry(max_retries=MAX_RETRIES, delay=0.0)
         def _fn():
             raise ValueError("test-error")
 
@@ -297,7 +307,7 @@ class TestWithRetryLogging:
         assert mock_log.call_count >= 3
 
     def test_exhaustion_error_logged(self, retry, mod):
-        @retry(max_retries=2, delay=0.0)
+        @retry(max_retries=MAX_RETRIES, delay=0.0)
         def _fn():
             raise ValueError("x")
 
@@ -317,7 +327,7 @@ class TestWithRetryLogging:
 
 class TestWithRetryMetadata:
     def test_function_name_preserved(self, retry):
-        @retry(max_retries=1, delay=0.0)
+        @retry(max_retries=MAX_RETRIES, delay=0.0)
         def my_special_function():
             return 1
 
@@ -326,7 +336,7 @@ class TestWithRetryMetadata:
     def test_args_and_kwargs_forwarded(self, retry):
         received = []
 
-        @retry(max_retries=1, delay=0.0)
+        @retry(max_retries=MAX_RETRIES, delay=0.0)
         def _fn(a, b, *, key="default"):
             received.append((a, b, key))
             return a + b

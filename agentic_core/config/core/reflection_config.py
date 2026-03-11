@@ -14,6 +14,16 @@ from typing import Any, Optional
 
 from pydantic import BaseModel, Field, validator
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 try:
     from agentic_core.L5_safety.validators.circuit_breaker_types import (
         CircuitBreakerConfig,
@@ -160,7 +170,7 @@ class ReflectionEngine:
         # Initialize circuit breaker for LLM calls
         self.circuit_breaker = CircuitBreakerFactory.get(
             "reflection_engine",
-            CircuitBreakerConfig(failure_threshold=3, recovery_timeout=60.0, timeout=self.config.timeout),
+            CircuitBreakerConfig(failure_threshold=THRESHOLD, recovery_timeout=DEFAULT_TIMEOUT, timeout=self.config.timeout),
         )
 
         logger.info(f"Initialized ReflectionEngine with model: {self.config.llm_model}")
@@ -378,7 +388,7 @@ Respond in JSON format:
         For now, returns a mock response.
         """
         # Mock implementation - in production, use actual LLM
-        await asyncio.sleep(0.1)  # Simulate network delay
+        await asyncio.sleep(DEFAULT_SLEEP)  # Simulate network delay
 
         # Simple heuristic based on prompt content
         if "json" in prompt.lower():

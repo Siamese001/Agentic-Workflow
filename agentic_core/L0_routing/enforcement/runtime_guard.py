@@ -115,6 +115,8 @@ def _guarded_call(
         )
         return result
     except Exception:
+        # TODO: Handle specific exception properly
+        raise  # Re-raise after logging/handling
         Logger.debug(
             "[V15-GUARD] EXIT %s correlation_id=%s status=ERROR",
             entry_point_id,
@@ -155,6 +157,8 @@ async def _async_guarded_call(
         )
         return result
     except Exception:
+        # TODO: Handle specific exception properly
+        raise  # Re-raise after logging/handling
         Logger.debug(
             "[V15-GUARD] EXIT %s correlation_id=%s status=ERROR",
             entry_point_id,

@@ -7,6 +7,16 @@ Phase 3: Functional coverage - create tests for highest priority missing modules
 import pathlib
 
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 def get_critical_missing_modules() -> list[tuple[pathlib.Path, pathlib.Path]]:
     """Get list of critical modules that need tests created."""
     critical_modules = [

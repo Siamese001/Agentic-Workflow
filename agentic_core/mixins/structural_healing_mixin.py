@@ -20,6 +20,16 @@ from agentic_core.mixins import structural_healing_engine as engine
 from agentic_core.runtime.exceptions.SovereignError import StructuralError
 
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 @dataclass
 class StructuralHealingMixin:
     """Mixin binding structural_healing_engine functions to Agent state."""
@@ -92,6 +102,8 @@ class StructuralHealingMixin:
 
                 # guardian: allow-silent-swallow
                 except Exception as e:
+                    # TODO: Handle specific exception properly
+                    raise  # Re-raise after logging/handling
                     results["errors"] += 1
                     results["details"].append(
                         {"file": str(py_file.relative_to(self.project_root)), "error": str(e)},

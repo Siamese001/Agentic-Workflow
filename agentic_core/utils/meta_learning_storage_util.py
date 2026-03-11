@@ -17,6 +17,16 @@ import logging
 import threading
 from typing import Any
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 Logger = logging.getLogger(__name__)
 
 
@@ -53,6 +63,8 @@ class MetaLearningStorage:
                         Logger.debug(f"[{agent_name}] Connected to Hive Mind")
                     # guardian: allow-silent-swallow
                     except Exception as e:
+                        # TODO: Handle specific exception properly
+                        raise  # Re-raise after logging/handling
                         cls._lobotomized = True
                         Logger.critical(
                             f"[{agent_name}] LOBOTOMY PROTOCOL ACTIVE: Hive Mind unavailable ({e})",
@@ -85,6 +97,8 @@ class MetaLearningStorage:
             await cls._memory.learn_async(context, namespace, result)
         # guardian: allow-silent-swallow
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             Logger.warning(f"[{namespace}] Async learn failed: {e}")
 
     @classmethod
@@ -154,6 +168,8 @@ class MetaLearningStorage:
                         Logger.debug(f"[{agent_name}] Connected to Graph Memory Bridge")
                     # guardian: allow-silent-swallow
                     except Exception as e:
+                        # TODO: Handle specific exception properly
+                        raise  # Re-raise after logging/handling
                         Logger.warning(f"[{agent_name}] Graph Memory Bridge unavailable: {e}")
 
     @classmethod
@@ -169,6 +185,8 @@ class MetaLearningStorage:
             )
         # guardian: allow-silent-swallow
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             Logger.warning(f"[{agent_name}] Agent entity registration failed: {e}")
 
     @classmethod
@@ -189,6 +207,8 @@ class MetaLearningStorage:
             )
         # guardian: allow-silent-swallow
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             Logger.warning(f"[{agent_name}] MASTERED_TASK relation creation failed: {e}")
 
     @classmethod

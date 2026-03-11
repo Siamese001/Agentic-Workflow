@@ -12,6 +12,16 @@ from contextlib import contextmanager
 from typing import Generator
 
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 @contextmanager
 def assert_no_uuid4() -> Generator[None, None, None]:
     """Context manager to assert no uuid4 is used within the context.

@@ -7,6 +7,16 @@ This test FAILS if any MRO TypeError occurs during import.
 import pytest
 
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 def test_l6_observability_imports_no_mro_error():
     """Test that L6 observability modules can be imported without MRO errors."""
     import sys
@@ -46,6 +56,8 @@ def test_l6_observability_imports_no_mro_error():
                 # Other TypeErrors are acceptable for this test
                 pass
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             # Import/Attribute errors are acceptable - we only care about MRO
             if "method resolution" in str(e):
                 pytest.fail(f"MRO error importing {module_name}: {e}")

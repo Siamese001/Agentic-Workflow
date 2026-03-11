@@ -95,6 +95,8 @@ class DecompositionOrchestrator(SovereignBaseAgent):
                         self._agent_registry[name] = agent
             # guardian: allow-silent-swallow
             except Exception:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 pass
 
     def _build_capability_index(self) -> None:

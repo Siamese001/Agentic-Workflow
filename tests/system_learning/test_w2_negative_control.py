@@ -85,9 +85,9 @@ class TestW2NegativeControl:
 
         optimizer = HealingConfigOptimizer(
             min_sample_size=20,
-            low_success_rate_threshold=0.5,
+            low_success_rate_threshold=THRESHOLD,
             escalation_delta=0.1,
-            max_threshold=2.0,
+            max_threshold=THRESHOLD,
             max_delta=0.2,
         )
         snapshot = _make_snapshot_above_threshold()
@@ -100,13 +100,13 @@ class TestW2NegativeControl:
                 snapshot,
                 embedding_metadata=meta,
                 embedding_influence_cap=0.25,
-                min_sample_threshold=20,
+                min_sample_threshold=THRESHOLD,
             )
             proposal2 = optimizer.propose_threshold_adjustments_with_embeddings(
                 snapshot,
                 embedding_metadata=meta,
                 embedding_influence_cap=0.25,
-                min_sample_threshold=20,
+                min_sample_threshold=THRESHOLD,
             )
 
             conf1 = proposal1.adjustments[0].confidence
@@ -126,9 +126,9 @@ class TestW2NegativeControl:
 
         optimizer = HealingConfigOptimizer(
             min_sample_size=20,
-            low_success_rate_threshold=0.5,
+            low_success_rate_threshold=THRESHOLD,
             escalation_delta=0.1,
-            max_threshold=2.0,
+            max_threshold=THRESHOLD,
             max_delta=0.2,
         )
 
@@ -157,7 +157,7 @@ class TestW2NegativeControl:
             snapshot,
             embedding_metadata=meta,
             embedding_influence_cap=0.25,
-            min_sample_threshold=20,
+            min_sample_threshold=THRESHOLD,
         )
         assert len(proposal.adjustments) == 0, (
             "Small-N guard should block adjustments when total_count < min_sample_size"

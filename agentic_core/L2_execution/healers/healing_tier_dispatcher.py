@@ -495,6 +495,8 @@ def invoke_qwen_with_oom_protection(
     try:
         return invoker.invoke_qwen_vllm(healing_input, decision, config, agent_name=agent_name)
     except Exception as exc:
+        # TODO: Handle specific exception properly
+        raise  # Re-raise after logging/handling
         if "out of memory" in str(exc).lower():
             # Route through choke point - router handles retry_count >= 3 -> GEMINI escalation
             escalated_decision = handle_qwen_oom_via_router(healing_input, config)

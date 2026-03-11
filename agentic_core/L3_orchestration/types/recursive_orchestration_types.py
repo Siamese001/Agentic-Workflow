@@ -529,6 +529,8 @@ class RecursiveOrchestrator:
                     metrics["violations_fixed"] += 1
 
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             Logger.error(f"[HEAL] RecursiveOrchestrator healing failed: {e}")
             metrics["errors"] += 1
         finally:

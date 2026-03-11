@@ -1,6 +1,16 @@
 """Parse anti-pattern scan results and identify all violations by category."""
 import sys
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 def parse_scan_results(filename):
     """Parse scan results and categorize violations."""
     with open(filename, encoding='utf-8', errors='ignore') as f:

@@ -25,6 +25,16 @@ import sys
 import time
 from pathlib import Path
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 try:
     from playwright.sync_api import TimeoutError as PlaywrightTimeout
     from playwright.sync_api import sync_playwright
@@ -76,7 +86,7 @@ def kill_existing_servers():
                     print(f"   ⚠️  Could not terminate {pid}: {e}")
 
             # Wait for processes to terminate
-            time.sleep(1.5)
+            time.sleep(DEFAULT_SLEEP)
 
             # Force kill any that didn't terminate
             for pid in pids_to_kill:
@@ -105,7 +115,7 @@ def start_server():
     proc = safe_popen([sys.executable, str(serve_path)], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     # Wait for server to be ready
-    time.sleep(2)
+    time.sleep(DEFAULT_SLEEP)
 
     # Verify server is running
     if proc.poll() is not None:
@@ -165,7 +175,7 @@ def verify_with_playwright(headless: bool = False, screenshot_dir: Path = None):
             print(f"3. Navigating to: {cache_bust_url}")
 
             try:
-                response = page.goto(cache_bust_url, wait_until="networkidle", timeout=15000)
+                response = page.goto(cache_bust_url, wait_until="networkidle", timeout=DEFAULT_TIMEOUT)
 
                 if not response or response.status != 200:
                     print(f"   ❌ HTTP {response.status if response else 'NO RESPONSE'}")
@@ -180,14 +190,14 @@ def verify_with_playwright(headless: bool = False, screenshot_dir: Path = None):
             # Wait for table to appear
             print("4. Waiting for tables to render...")
             try:
-                page.wait_for_selector("#kpiGrid table tbody tr", timeout=10000)
+                page.wait_for_selector("#kpiGrid table tbody tr", timeout=DEFAULT_TIMEOUT)
                 print("   ✅ Tables found in DOM")
             except PlaywrightTimeout:
                 print("   ❌ Tables did not appear within 10s")
                 raise
 
             # Give JavaScript time to fully execute
-            time.sleep(1)
+            time.sleep(DEFAULT_SLEEP)
 
             # Count table rows (excluding header)
             print("5. Verifying table content...")
@@ -362,7 +372,7 @@ def main():
     # Clean up
     try:
         server.terminate()
-        server.wait(timeout=5)
+        server.wait(timeout=DEFAULT_TIMEOUT)
         print("✅ Server stopped")
     except:
         try:

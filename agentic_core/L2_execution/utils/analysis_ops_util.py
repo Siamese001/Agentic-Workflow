@@ -1,5 +1,15 @@
 from __future__ import annotations
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 """
 Analysis Operations - AST Parsing, Linting, and Code Quality Tools
 Consolidated from core_utils.py and security_utils.py
@@ -55,7 +65,7 @@ def run_ruff_check(file_path: str, fix: bool = False) -> tuple[int, str, str]:
         cmd.append("--fix")
     try:
         # Use check=False because ruff returns non-zero when violations are found
-        result: Any = safe_execute(cmd, capture_output=True, text=True, timeout=30, check=False)
+        result: Any = safe_execute(cmd, capture_output=True, text=True, timeout=DEFAULT_TIMEOUT, check=False)
         return (result.returncode, result.stdout, result.stderr)
     except subprocess.TimeoutExpired:
         return (-1, "", "Ruff check timed out")
@@ -81,7 +91,7 @@ def run_black_format(file_path: str, check_only: bool = False) -> tuple[int, str
         cmd.append("--check")
     try:
         # Use check=False because black returns non-zero when formatting changes are needed
-        result: Any = safe_execute(cmd, capture_output=True, text=True, timeout=30, check=False)
+        result: Any = safe_execute(cmd, capture_output=True, text=True, timeout=DEFAULT_TIMEOUT, check=False)
         return (result.returncode, result.stdout, result.stderr)
     except subprocess.TimeoutExpired:
         return (-1, "", "Black format timed out")

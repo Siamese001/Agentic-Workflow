@@ -9,6 +9,16 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 Logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
@@ -181,6 +191,8 @@ class DomainPlannerAgent(L3OrchestrationBase):
             metrics["skipped"] = 1
         # guardian: allow-silent-swallow
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             Logger.error(f"[{agent_name}] Healing failed: {e}")
             metrics["errors"] += 1
         finally:
@@ -309,6 +321,8 @@ class RiskAssessorAgent(SovereignBaseAgent):
             metrics["skipped"] = 1
         # guardian: allow-silent-swallow
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             Logger.error(f"[{agent_name}] Healing failed: {e}")
             metrics["errors"] += 1
         finally:
@@ -438,6 +452,8 @@ class FeasibilityAnalystAgent(SovereignBaseAgent):
             metrics["skipped"] = 1
         # guardian: allow-silent-swallow
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             Logger.error(f"[{agent_name}] Healing failed: {e}")
             metrics["errors"] += 1
         finally:
@@ -599,6 +615,8 @@ class StrategyScenarioSimulatorAgent(SovereignBaseAgent):
             metrics["skipped"] = 1
         # guardian: allow-silent-swallow
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             Logger.error(f"[{agent_name}] Healing failed: {e}")
             metrics["errors"] += 1
         finally:
@@ -786,6 +804,8 @@ class StrategyCoordinatorAgent(SovereignBaseAgent):
             metrics["skipped"] = 1
         # guardian: allow-silent-swallow
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             Logger.error(f"[{agent_name}] Healing failed: {e}")
             metrics["errors"] += 1
         finally:

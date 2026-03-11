@@ -155,7 +155,7 @@ class TestOpenState:
     def test_open_after_threshold_failures(self):
         from agentic_core.L5_safety.enforcement.circuit_breaker_gate import get_breaker
 
-        breaker = get_breaker("test_open_threshold", failure_threshold=2, reset_timeout_seconds=999.0)
+        breaker = get_breaker("test_open_threshold", failure_threshold=THRESHOLD, reset_timeout_seconds=999.0)
 
         for _ in range(2):
             breaker.record_failure()
@@ -165,7 +165,7 @@ class TestOpenState:
     def test_open_state_rejects_requests(self):
         from agentic_core.L5_safety.enforcement.circuit_breaker_gate import get_breaker
 
-        breaker = get_breaker("test_open_reject", failure_threshold=1, reset_timeout_seconds=999.0)
+        breaker = get_breaker("test_open_reject", failure_threshold=THRESHOLD, reset_timeout_seconds=999.0)
 
         breaker.record_failure()
         assert breaker.is_open, "Breaker must be OPEN after 1 failure"

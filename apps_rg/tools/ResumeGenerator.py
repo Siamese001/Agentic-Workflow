@@ -9,6 +9,16 @@ from typing import Any
 
 from runtime.shared.multi_provider_clients import Provider, get_client
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 Logger = logging.getLogger(__name__)
 
 
@@ -284,6 +294,8 @@ Return ONLY the rewritten description, no additional text."""
             response = gateway.generate(request)
             return response.text if hasattr(response, "text") else str(response)
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             Logger.error(
                 "ResumeGenerator._generate_with_gemini: SovereignLLMGateway failed: %s; "
                 "direct SDK fallback is NOT permitted — raising",

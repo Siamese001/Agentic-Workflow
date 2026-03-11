@@ -3,6 +3,16 @@
 # Suggested keywords to add in docstring/code: engine, memory, workflow
 from __future__ import annotations
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 # This boosts alignment detection — review and integrate appropriately
 from dataclasses import dataclass
 
@@ -231,6 +241,8 @@ class NervousSystemAgent(SovereignBaseAgent):
                             del self.coverage_bias_state[layer]
             # guardian: allow-silent-swallow
             except Exception:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 # If metrics unavailable, just decrement cycles
                 pass
 
@@ -357,6 +369,8 @@ class NervousSystemAgent(SovereignBaseAgent):
                     )
                 # guardian: allow-silent-swallow
                 except Exception as exc:
+                    # TODO: Handle specific exception properly
+                    raise  # Re-raise after logging/handling
                     LOGGER.warning("[V15] Gateway audit failed (LOG_ONLY): %s", exc)
 
         start_time = time.time()
@@ -411,7 +425,7 @@ class NervousSystemAgent(SovereignBaseAgent):
             modified_count=modified_count,
             signals_list=signals_list,
             modified_files=list(self._modified_files),
-            timeout=300,
+            timeout=DEFAULT_TIMEOUT,
         )
 
         if intervention_status is False:  # Vetoed
@@ -758,6 +772,8 @@ class NervousSystemAgent(SovereignBaseAgent):
 
             # guardian: allow-silent-swallow
             except Exception as e:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 action["error"] = str(e)
                 Logger.error(f"[NervousSystemAgent] Cleanup error: {e}")
 

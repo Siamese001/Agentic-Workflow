@@ -178,6 +178,8 @@ def main():
             tree = ast.parse(source)
         # guardian: allow-silent-swallow
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             errors.append(f"Parse error in {py_file.name}: {e}")
             continue
 

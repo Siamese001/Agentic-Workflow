@@ -8,6 +8,16 @@ from system_learning.engines.in_memory_healing_outcome_intake_store import InMem
 from system_learning.types.healing_outcome_types import HealingOutcomeEvent
 
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 @pytest.mark.unit_min_deps
 class TestHealingOutcomeIntakeAdapter:
     """Test suite for HealingOutcomeIntakeAdapter."""

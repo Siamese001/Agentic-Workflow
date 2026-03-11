@@ -32,6 +32,16 @@ import sqlite3
 from pathlib import Path
 from typing import Any
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 try:
     import networkx as nx
 except ImportError as _e:
@@ -111,8 +121,7 @@ def _build_graph() -> tuple[nx.DiGraph, dict[str, str], list]:
     module_to_file: dict[str, str] = {}
     syntax_errors: list[tuple[str, str]] = []
 
-    for d in SSOT_DIRS:
-        scan_root = ROOT / d
+    for scan_root in SSOT_DIR_PATHS:
         if not scan_root.exists():
             continue
         for py in sorted(scan_root.rglob("*.py")):

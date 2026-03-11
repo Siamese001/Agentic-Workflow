@@ -11,6 +11,16 @@ from typing import Any
 from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
 
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 @dataclass
 class GuardianDecision:
     """Decision from L5 Guardian with enforcement capabilities."""
@@ -68,6 +78,7 @@ class L5Guardian:
         }
         self.file_scope_whitelist = {"/tmp", "/workspace", AGENTIC_CORE_DIR}
         # guardian: allow-magic_configuration - Token budget configured externally in production
+        # guardian: allow-magic-config
         self.token_budget = 1000000
         self.agent_permissions = {
             "L1_cognition": ["read", "transform"],

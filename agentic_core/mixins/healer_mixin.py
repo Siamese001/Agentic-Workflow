@@ -11,6 +11,16 @@ Canonical location: agentic_core.mixins.healing_policy_mixin.HealingPolicyMixin
 from agentic_core.mixins.healing_policy_mixin import HealingPolicyMixin
 
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 class HealerMixin(HealingPolicyMixin):
     """Backwards-compat alias. Use HealingPolicyMixin directly for new code."""
 

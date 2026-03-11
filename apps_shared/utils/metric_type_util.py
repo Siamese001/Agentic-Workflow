@@ -12,6 +12,16 @@ from datetime import datetime
 from enum import Enum
 from typing import Any
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 logger = logging.getLogger(__name__)
 
 
@@ -306,7 +316,7 @@ class ObservabilityPlanningOrchestrator:
             sampling_rate=sampling_rate,
             include_payload=False,
             max_spans_per_trace=1000,
-            export_batch_size=100,
+            export_batch_size=BATCH_SIZE,
         )
 
     def _plan_alerts(self, request: dict[str, Any]) -> list[AlertRule]:
@@ -322,7 +332,7 @@ class ObservabilityPlanningOrchestrator:
                 name=f"{service_name}_high_error_rate",
                 condition="error_rate > 0.05",
                 severity=AlertSeverity.HIGH,
-                threshold=0.05,
+                threshold=THRESHOLD,
                 duration=300,  # 5 minutes
                 notification_channels=["slack", "email"],
             ),
@@ -333,7 +343,7 @@ class ObservabilityPlanningOrchestrator:
                 name=f"{service_name}_high_latency",
                 condition="p95_latency > 1000",
                 severity=AlertSeverity.MEDIUM,
-                threshold=1000.0,
+                threshold=THRESHOLD,
                 duration=600,  # 10 minutes
                 notification_channels=["slack"],
             ),
@@ -346,7 +356,7 @@ class ObservabilityPlanningOrchestrator:
                     name=f"{service_name}_api_availability",
                     condition="availability < 0.99",
                     severity=AlertSeverity.CRITICAL,
-                    threshold=0.99,
+                    threshold=THRESHOLD,
                     duration=60,  # 1 minute
                     notification_channels=["pagerduty", "slack", "email"],
                 ),
@@ -357,7 +367,7 @@ class ObservabilityPlanningOrchestrator:
                     name=f"{service_name}_queue_backlog",
                     condition="queue_size > 1000",
                     severity=AlertSeverity.HIGH,
-                    threshold=1000.0,
+                    threshold=THRESHOLD,
                     duration=300,  # 5 minutes
                     notification_channels=["slack", "email"],
                 ),

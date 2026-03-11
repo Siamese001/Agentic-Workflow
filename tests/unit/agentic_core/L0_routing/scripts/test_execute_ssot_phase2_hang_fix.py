@@ -12,6 +12,16 @@ from unittest.mock import patch
 
 import pytest
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -40,7 +50,7 @@ class HangingAgent:
         for _ in range(100):
             if self._cancel:
                 return {}
-            time.sleep(0.1)
+            time.sleep(DEFAULT_SLEEP)
         return {}
 
 

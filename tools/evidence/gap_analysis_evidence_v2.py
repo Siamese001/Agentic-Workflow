@@ -33,7 +33,7 @@ SKIP = SOVEREIGN_EXCLUDED_FOLDERS
 
 
 # guardian: allow-magic-config
-def run_cmd(argv, cwd=None, timeout=30):
+def run_cmd(argv, cwd=None, timeout=DEFAULT_TIMEOUT):
     """Run command, return (cmd_string, stdout, stderr, exitcode)."""
     cmd_str = " ".join(str(a) for a in argv)
     try:
@@ -1414,7 +1414,7 @@ def main():
 
     w("## 5a. pytest collection count")
     # guardian: allow-magic-config
-    cmd, stdout, stderr, rc = run_cmd([PY, "-m", "pytest", "--collect-only", "-q", "--color=no"], timeout=60)
+    cmd, stdout, stderr, rc = run_cmd([PY, "-m", "pytest", "--collect-only", "-q", "--color=no"], timeout=DEFAULT_TIMEOUT)
     w("```")
     w(f"$ {cmd}")
     # Show last 20 lines of output (collection summary)

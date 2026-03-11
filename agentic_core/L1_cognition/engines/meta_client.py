@@ -19,6 +19,16 @@ Guardrails:
 from __future__ import annotations
 
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 def _get_redis_sovereign_agent():
     from agentic_core.interfaces.execution_agents import RedisSovereignAgent
 
@@ -324,6 +334,8 @@ class MetaLearningClient:
                 Logger.info(f"[MetaLearningClient] Stored pattern: {pattern_id}")
                 return pattern_id
             except Exception as e:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 Logger.warning(f"[MetaLearningClient] Vector store failed: {e}")
 
         # Fallback: store in Redis cache

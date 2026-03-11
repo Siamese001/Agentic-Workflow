@@ -39,8 +39,8 @@ class TestMetaLearningPipelinePathDWiring:
 
         # Create RLHF optimizer
         rlhf_optimizer = DefaultDeterministicRLHFOptimizer(
-            min_threshold=0.1,
-            max_threshold=2.0,
+            min_threshold=THRESHOLD,
+            max_threshold=THRESHOLD,
             approve_relax_delta=0.1,
             reject_tighten_delta=-0.1,
         )

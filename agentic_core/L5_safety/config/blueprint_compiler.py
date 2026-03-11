@@ -5,6 +5,16 @@ This module eliminates duplication by computing CORE_SUBFOLDER_MAP, SUBFOLDER_ME
 APPS_*_SUBFOLDER_MAP, L4_SUBFOLDER_MAP, L4_APPROVED_FOLDERS, and VARIABLE_DEPTH_SUBFOLDERS
 from the single SSOT: SOVEREIGN_TERRITORIES.
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 Usage:
     from agentic_core.L5_safety.config.blueprint_compiler import compile_blueprint
     compiled = compile_blueprint(SOVEREIGN_TERRITORIES)

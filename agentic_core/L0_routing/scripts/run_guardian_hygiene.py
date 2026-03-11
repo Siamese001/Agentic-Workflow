@@ -205,6 +205,8 @@ def run_hygiene_guardian(
             result.metrics["temp_artifact_count"] = 0
     # guardian: allow-silent-swallow
     except Exception as exc:
+        # TODO: Handle specific exception properly
+        raise  # Re-raise after logging/handling
         result.add_check(
             check_id="temp_artifacts",
             status=CheckStatus.FAIL,
@@ -231,6 +233,8 @@ def run_hygiene_guardian(
         result.metrics["empty_folder_count"] = len(empty)
     # guardian: allow-silent-swallow
     except Exception as exc:
+        # TODO: Handle specific exception properly
+        raise  # Re-raise after logging/handling
         result.add_check(
             check_id="empty_folders",
             status=CheckStatus.FAIL,
@@ -257,6 +261,8 @@ def run_hygiene_guardian(
         result.metrics["init_only_folder_count"] = len(init_only)
     # guardian: allow-silent-swallow
     except Exception as exc:
+        # TODO: Handle specific exception properly
+        raise  # Re-raise after logging/handling
         result.add_check(
             check_id="init_only_folders",
             status=CheckStatus.FAIL,

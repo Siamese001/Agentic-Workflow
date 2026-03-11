@@ -17,6 +17,16 @@ import sys
 import traceback
 from pathlib import Path
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 os.chdir(REPO_ROOT)
 sys.path.insert(0, str(REPO_ROOT))
@@ -54,6 +64,8 @@ except SystemExit as e:
     if exit_code != 0:
         exit_status = f"EXIT_{exit_code}"
 except Exception:
+    # TODO: Handle specific exception properly
+    raise  # Re-raise after logging/handling
     exit_status = "EXCEPTION"
     exc_text = traceback.format_exc()
 
@@ -71,6 +83,8 @@ if rsp.exists():
         keys = list(data.keys())[:10]
         _log(f"runtime_state.json: PARSE_OK keys={keys}")
     except Exception as e2:
+        # TODO: Handle specific exception properly
+        raise  # Re-raise after logging/handling
         _log(f"runtime_state.json: PARSE_FAIL: {e2}")
 else:
     _log("runtime_state.json: NOT_FOUND")

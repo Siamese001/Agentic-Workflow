@@ -4,6 +4,16 @@ from __future__ import annotations
 
 import pytest
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 pytestmark = pytest.mark.unit_min_deps
 
 from system_learning.engines.healing_config_optimizer import (
@@ -30,7 +40,7 @@ class TestHealingConfigOptimizerWithPatterns:
         optimizer = HealingConfigOptimizer(
             escalation_delta=0.1,
             max_delta=0.2,  # Small max delta for testing
-            max_threshold=2.0,
+            max_threshold=THRESHOLD,
         )
 
         # Create snapshot
@@ -86,7 +96,7 @@ class TestHealingConfigOptimizerWithPatterns:
 
     def test_multiple_findings_deterministic_application_order(self):
         """Test that multiple findings are applied in deterministic order."""
-        optimizer = HealingConfigOptimizer(escalation_delta=0.1, max_delta=0.3, max_threshold=2.0)
+        optimizer = HealingConfigOptimizer(escalation_delta=0.1, max_delta=0.3, max_threshold=THRESHOLD)
 
         # Create snapshot
         aggregates = [
@@ -150,7 +160,7 @@ class TestHealingConfigOptimizerWithPatterns:
 
     def test_routing_drift_tightens_thresholds(self):
         """Test that ROUTING_DRIFT_HIGH finding tightens thresholds."""
-        optimizer = HealingConfigOptimizer(escalation_delta=0.1, max_delta=0.2, max_threshold=2.0)
+        optimizer = HealingConfigOptimizer(escalation_delta=0.1, max_delta=0.2, max_threshold=THRESHOLD)
 
         # Create snapshot
         aggregates = [
@@ -201,7 +211,7 @@ class TestHealingConfigOptimizerWithPatterns:
         optimizer = HealingConfigOptimizer(
             escalation_delta=0.2,  # Large delta
             max_delta=0.1,  # Small max delta
-            max_threshold=2.0,
+            max_threshold=THRESHOLD,
         )
 
         # Create snapshot

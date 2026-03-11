@@ -18,6 +18,16 @@ import logging
 import time
 from typing import Any
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 _logger = logging.getLogger("SSOTCircuitBreaker")
 
 
@@ -112,6 +122,8 @@ class SSOTCircuitBreakerMixin:
             raise
 
         except Exception as exc:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             # Record failure (unless replay mode)
             if not getattr(self, "is_replay_mode", False):
                 state["failure_count"] += 1

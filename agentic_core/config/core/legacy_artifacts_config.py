@@ -12,6 +12,16 @@ from dataclasses import dataclass, field
 from re import Pattern
 from typing import Final
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 # [PHASE 30 DEEP HARVEST: From ProfileAnalysisAgent.py]
 # Patterns identifying weak or passive voice openings in outreach
 WEAK_OPENING_PATTERNS: Final[dict[str, Pattern]] = {  # Optimized for zero-allocation

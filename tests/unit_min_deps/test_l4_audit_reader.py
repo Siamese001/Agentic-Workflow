@@ -14,6 +14,16 @@ import pytest
 from system_learning.enforcement.authority_invariants import AuthorityViolation
 from system_learning.engines.l4_audit_reader import AuditStore, pull_audit_data
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 pytestmark = pytest.mark.unit_min_deps
 
 

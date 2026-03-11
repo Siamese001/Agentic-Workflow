@@ -14,6 +14,16 @@ import asyncio
 import logging
 from typing import Any, Protocol
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 Logger = logging.getLogger(__name__)
 
 
@@ -225,6 +235,8 @@ def register_red_team_validators() -> dict[str, Any]:
             orchestrator.register_validator("adversarial_probe", get_adversarial_validator())
             registered.append("adversarial_probe")
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             errors.append(f"adversarial_probe: {e}")
 
         # Register boundary validator
@@ -232,6 +244,8 @@ def register_red_team_validators() -> dict[str, Any]:
             orchestrator.register_validator("boundary_testing", get_boundary_validator())
             registered.append("boundary_testing")
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             errors.append(f"boundary_testing: {e}")
 
         Logger.info(f"[Red Team Integration] Registered {len(registered)} validators")

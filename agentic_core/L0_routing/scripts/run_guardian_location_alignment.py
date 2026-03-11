@@ -187,6 +187,8 @@ def run_location_alignment_guardian(
 
     # guardian: allow-silent-swallow
     except Exception as exc:
+        # TODO: Handle specific exception properly
+        raise  # Re-raise after logging/handling
         result.add_check(
             check_id="misplaced_files",
             status=CheckStatus.FAIL,
@@ -215,6 +217,8 @@ def run_location_alignment_guardian(
 
     # guardian: allow-silent-swallow
     except Exception as exc:
+        # TODO: Handle specific exception properly
+        raise  # Re-raise after logging/handling
         result.add_check(
             check_id="missing_directories",
             status=CheckStatus.FAIL,

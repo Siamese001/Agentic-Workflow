@@ -6,6 +6,16 @@ import ast
 import pathlib
 import sys
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))  # guardian: allow-global-mutation
@@ -28,6 +38,7 @@ from agentic_core.L0_routing.config.path_constants import (
 SSOT_DIR_NAMES: frozenset[str] = (
     GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
 )
+# guardian: allow-magic-config
 MIN_OVERLAP = 2
 SSOT_PATHS = {
     "agentic_core/L5_safety/config/structure_blueprint/ssot.py",

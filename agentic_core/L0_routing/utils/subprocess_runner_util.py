@@ -14,6 +14,16 @@ import sys
 from pathlib import Path
 from typing import Any
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 __all__ = [
     "invoke_arch_governor",
     "invoke_orchestrator_mission",
@@ -62,7 +72,7 @@ def invoke_arch_governor(
             cmd,
             capture_output=True,
             text=True,
-            timeout=300,  # 5 minute timeout
+            timeout=DEFAULT_TIMEOUT,  # 5 minute timeout
         )
         if result.stdout.strip():
             return json.loads(result.stdout.strip())
@@ -117,7 +127,7 @@ def invoke_orchestrator_mission(
             cmd,
             capture_output=True,
             text=True,
-            timeout=600,  # 10 minute timeout for missions
+            timeout=DEFAULT_TIMEOUT,  # 10 minute timeout for missions
         )
         if result.stdout.strip():
             return json.loads(result.stdout.strip())
@@ -153,7 +163,7 @@ def invoke_agent_roster_validation() -> dict[str, Any]:
             cmd,
             capture_output=True,
             text=True,
-            timeout=120,  # 2 minute timeout
+            timeout=DEFAULT_TIMEOUT,  # 2 minute timeout
         )
         if result.stdout.strip():
             return json.loads(result.stdout.strip())
@@ -199,7 +209,7 @@ def invoke_hierarchy_agent(
             cmd,
             capture_output=True,
             text=True,
-            timeout=300,  # 5 minute timeout
+            timeout=DEFAULT_TIMEOUT,  # 5 minute timeout
         )
         if result.stdout.strip():
             return json.loads(result.stdout.strip())
@@ -250,7 +260,7 @@ def invoke_code_validator(
             cmd,
             capture_output=True,
             text=True,
-            timeout=300,  # 5 minute timeout
+            timeout=DEFAULT_TIMEOUT,  # 5 minute timeout
         )
         if result.stdout.strip():
             return json.loads(result.stdout.strip())

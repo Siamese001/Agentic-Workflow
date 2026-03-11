@@ -2,6 +2,16 @@ from __future__ import annotations
 
 from agentic_core.interfaces.write_gateway import get_write_gateway
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 def _get_write_gateway():
     """Get UWG instance - L4 may only use, not import tools."""
     return get_write_gateway()
@@ -574,6 +584,8 @@ class CheckpointManager(SovereignBaseAgent):
                 Logger.debug(f"Loaded {len(self.checkpoints)} checkpoints from index")
             # guardian: allow-silent-swallow
             except Exception as e:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 Logger.warning(f"Failed to load checkpoint index: {e}")
 
     def _save_index(self) -> None:
@@ -591,6 +603,8 @@ class CheckpointManager(SovereignBaseAgent):
             _get_write_gateway().write_json(index_path, index_data, indent=2)
         # guardian: allow-silent-swallow
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             Logger.error(f"Failed to save checkpoint index: {e}")
 
     def _cleanup_old_checkpoints(self) -> None:

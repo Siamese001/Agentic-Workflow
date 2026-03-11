@@ -390,8 +390,8 @@ def test_inv_blast_radius_deterministically_bounded():
         "proposal_id": "prop_001",
         "files_changed": [f"file_{i}.py" for i in range(15)],
     }
-    r1 = _compute_blast_radius(proposal, max_files=10)
-    r2 = _compute_blast_radius(proposal, max_files=10)
+    r1 = _compute_blast_radius(proposal, max_files=MAX_FILES)
+    r2 = _compute_blast_radius(proposal, max_files=MAX_FILES)
 
     assert r1 == r2 == 10  # capped at max
     assert r1 <= 10
@@ -474,7 +474,7 @@ def test_global_sovereignty_invariant_all_pass():
         seal.emit("t_inv", {})
 
     # §9 Blast radius
-    assert _compute_blast_radius({"files_changed": ["f"] * 20}, max_files=5) == 5
+    assert _compute_blast_radius({"files_changed": ["f"] * 20}, max_files=MAX_FILES) == 5
 
     # §10 Canonical digest
     payload = {"key": "value", "tick": 1}

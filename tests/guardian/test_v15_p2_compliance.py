@@ -442,7 +442,7 @@ class TestP2_6_2_TrajectoryReuse:
         c = TrajectoryReuseConstraint(
             trace_id="t1",
             similarity_score=0.95,
-            similarity_threshold=0.8,
+            similarity_threshold=THRESHOLD,
             failure_reason="ImportError",
             candidate_failure_reason="ImportError",
         )
@@ -452,7 +452,7 @@ class TestP2_6_2_TrajectoryReuse:
         c = TrajectoryReuseConstraint(
             trace_id="t1",
             similarity_score=0.5,
-            similarity_threshold=0.8,
+            similarity_threshold=THRESHOLD,
             failure_reason="ImportError",
             candidate_failure_reason="ImportError",
         )
@@ -462,7 +462,7 @@ class TestP2_6_2_TrajectoryReuse:
         c = TrajectoryReuseConstraint(
             trace_id="t1",
             similarity_score=0.95,
-            similarity_threshold=0.8,
+            similarity_threshold=THRESHOLD,
             failure_reason="ImportError",
             candidate_failure_reason="SyntaxError",
         )

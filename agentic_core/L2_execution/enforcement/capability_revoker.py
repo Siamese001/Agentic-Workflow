@@ -15,6 +15,16 @@ import threading
 from agentic_core.L2_execution.enforcement.key_derivation import get_key_version
 
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 class TokenRevocationError(RuntimeError):
     """Raised when a token is used after revocation."""
 

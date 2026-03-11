@@ -16,6 +16,16 @@ import importlib
 
 import pytest
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 # Guard against broken upstream deps in orchestrator_engine (G5 note: the engine
 # depends on agentic_core.utils.ssot_discovery_validator which may be absent).
 try:

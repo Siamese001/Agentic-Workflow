@@ -1,5 +1,15 @@
 from __future__ import annotations
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 """
 ULTRA-HARDENED Redis cache Mixin
 
@@ -247,6 +257,8 @@ class RedisCacheMixin:
             try:
                 await self.redis.delete(full_key)
             except Exception:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 pass
 
     async def cache_invalidate(self, key_pattern: str = "") -> int:
@@ -266,6 +278,8 @@ class RedisCacheMixin:
                     await self.redis.delete(*keys)
                     deleted += len(keys)
             except Exception:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 pass
 
         # Clear local matches

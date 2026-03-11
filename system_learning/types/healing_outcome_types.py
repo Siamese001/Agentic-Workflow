@@ -14,6 +14,16 @@ from __future__ import annotations
 import decimal
 from dataclasses import dataclass, field
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 # Stable rounding context: round-half-up to 4 decimal places.
 _ROUND_CTX = decimal.Context(rounding=decimal.ROUND_HALF_UP)
 _QUANT = decimal.Decimal("0.0001")

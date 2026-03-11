@@ -12,6 +12,16 @@ import os
 import re
 import socket
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 Logger = logging.getLogger(__name__)
 
 # LLM provider endpoints patterns (including localhost variants)
@@ -151,6 +161,8 @@ def _guarded_connect(self, address: tuple[str, int] | str) -> None:
 
         caller_module = inspect.stack()[1].frame.f_globals.get("__name__")
     except Exception:
+        # TODO: Handle specific exception properly
+        raise  # Re-raise after logging/handling
         # guardian: allow-silent-swallower
         # If we can't determine caller module, proceed without it
         pass

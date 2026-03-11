@@ -7,6 +7,16 @@ Sovereignty and isolation exception types for architectural boundary enforcement
 from agentic_core.runtime.exceptions.SovereignError import SovereignError
 
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 class SovereigntyViolationError(SovereignError):
     """Raised when an architectural sovereignty boundary is violated."""
 

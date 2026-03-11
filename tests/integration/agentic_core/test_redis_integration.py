@@ -166,12 +166,12 @@ class TestRedisTTL:
     def test_key_expires_after_ttl(self, hot):
         hot.set("ttl:expires", b"ephemeral", ttl_seconds=1)
         assert hot.get("ttl:expires") == b"ephemeral"
-        time.sleep(1.5)
+        time.sleep(DEFAULT_SLEEP)
         assert hot.get("ttl:expires") is None, "Key must have expired in Redis after TTL"
 
     def test_key_survives_within_ttl(self, hot):
         hot.set("ttl:survives", b"durable", ttl_seconds=30)
-        time.sleep(0.2)
+        time.sleep(DEFAULT_SLEEP)
         assert hot.get("ttl:survives") == b"durable"
 
     def test_redis_ttl_command_reflects_set_value(self, hot):

@@ -8,6 +8,16 @@ import re
 
 import requests
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 try:
     from bs4 import BeautifulSoup
 except ImportError as _err:
@@ -26,7 +36,7 @@ def inspect_dashboard():
         # Fetch the dashboard HTML
         print("\n1. Fetching http://localhost:8080/autonomy_dashboard.html...")
         # guardian: allow-magic-config
-        response = requests.get("http://localhost:8080/autonomy_dashboard.html", timeout=5)
+        response = requests.get("http://localhost:8080/autonomy_dashboard.html", timeout=DEFAULT_TIMEOUT)
 
         if response.status_code != 200:
             print(f"   ❌ HTTP {response.status_code}: {response.reason}")

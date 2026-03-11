@@ -26,6 +26,16 @@ import json
 import sys
 from pathlib import Path
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 DEFAULT_GAP_JSON = Path("docs/reports/plans/v15_gap_analysis.json")
 
 # Canonical layer keys — every sub-capability MUST use exactly these.

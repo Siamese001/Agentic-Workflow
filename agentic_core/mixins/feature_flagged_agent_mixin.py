@@ -545,6 +545,8 @@ class FeatureFlaggedAgentMixin:
             try:
                 result = do_heal()
             except Exception as e:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 result = {
                     "status": "error",
                     "error": str(e),

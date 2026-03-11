@@ -489,7 +489,7 @@ class TestP5_26_HashMismatchEscalation:
         assert tracker.escalated is True
 
     def test_custom_threshold(self):
-        tracker = HashMismatchTracker(wave_id="w1", escalation_threshold=3)
+        tracker = HashMismatchTracker(wave_id="w1", escalation_threshold=THRESHOLD)
         record_hash_mismatch(tracker)
         record_hash_mismatch(tracker)
         assert tracker.escalated is False

@@ -13,6 +13,16 @@ from __future__ import annotations
 
 import pytest
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 pytestmark = pytest.mark.unit_min_deps
 
 from agentic_core.L2_execution.types.vllm_backpressure_types import (
@@ -71,7 +81,7 @@ def test_queue_controller_release_decrements():
 
 
 def test_queue_controller_full_acquire_fails():
-    ctrl = VLLMQueueController(max_depth=2)
+    ctrl = VLLMQueueController(max_depth=MAX_DEPTH)
     ctrl.acquire()
     ctrl.acquire()
     assert not ctrl.acquire()

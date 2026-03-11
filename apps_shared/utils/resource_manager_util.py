@@ -18,6 +18,16 @@ from typing import Any
 import aiofiles
 import aiofiles.os
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 logger = logging.getLogger(__name__)
 
 
@@ -216,7 +226,7 @@ class ResourceManager:
         """Background cleanup loop."""
         while self._running:
             try:
-                await asyncio.sleep(60)  # Cleanup every minute
+                await asyncio.sleep(DEFAULT_SLEEP)  # Cleanup every minute
 
                 # Clean up resources unused for 10 minutes
                 cutoff_time = time.time() - 600
@@ -320,6 +330,8 @@ class ResourceManager:
             logger.debug(f"Atomically wrote {file_path}")
 
         except Exception:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             # Cleanup on failure
             try:
                 await aiofiles.os.remove(temp_path)

@@ -3,6 +3,16 @@ architecture_governor_healer — HEALER_REGISTRY entry for architecture_governan
 
 L2.3 healing subsystem: applies architectural governance fixes (naming,
 import compliance, layer gravity) via ArchitectureGovernorAgent. Registered
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 in HEALER_REGISTRY under check_id "architecture_governance".
 """
 

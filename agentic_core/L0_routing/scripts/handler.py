@@ -42,7 +42,7 @@ def debug_dashboard():
     server_thread = threading.Thread(target=serve, daemon=True)
     server_thread.start()
     print(f"[SERVER] Started at http://localhost:{PORT}")
-    time.sleep(1)
+    time.sleep(DEFAULT_SLEEP)
 
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=False)  # Visible browser for debugging
@@ -62,8 +62,8 @@ def debug_dashboard():
 
         print(f"\n[LOADING] http://localhost:{PORT}/autonomy_dashboard.html")
         # guardian: allow-magic-config
-        page.goto(f"http://localhost:{PORT}/autonomy_dashboard.html", timeout=30000)
-        time.sleep(5)  # Wait for everything to load
+        page.goto(f"http://localhost:{PORT}/autonomy_dashboard.html", timeout=DEFAULT_TIMEOUT)
+        time.sleep(DEFAULT_SLEEP)  # Wait for everything to load
 
         print("\n" + "=" * 70)
         print("DIAGNOSTIC RESULTS")

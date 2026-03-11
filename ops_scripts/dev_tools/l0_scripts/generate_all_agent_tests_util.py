@@ -78,6 +78,8 @@ class Test{class_name}:
         except ImportError:
             pytest.skip("Import dependencies not available")
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             # Agent exists but requires specific initialization
             assert True, f"Agent class exists: {{e}}"
 
