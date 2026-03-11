@@ -121,7 +121,6 @@ def is_path_compliant(file_path: str | Path, project_root: Path | None = None) -
         FORBIDDEN_FOLDER_PATTERN,
         FORBIDDEN_ROOT_FOLDERS,
         ROOT_WHITELIST,
-        SOVEREIGN_TERRITORIES,
         get_validated_project_root,
     )
 

@@ -290,7 +290,6 @@ class LocationValidatorAgent(SovereignBaseAgent):
         to catch violations like mixins/contracts/ that bypass depth validation.
         """
         from agentic_core.L5_safety.config.structure_blueprint import (
-            SOVEREIGN_TERRITORIES,
             VARIABLE_DEPTH_SUBFOLDERS,
             validate_flat_directory,
         )
