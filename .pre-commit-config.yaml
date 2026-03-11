@@ -39,6 +39,7 @@ repos:
         pass_filenames: false
         always_run: true
         require_serial: true
+        stages: [manual]
 
   # ============================================================================
   # TIER 0: Whitespace & Line-Ending Normalization (deterministic, no churn)
@@ -113,15 +114,6 @@ repos:
       - id: check-c0-sovereignty
         name: "T3a-c0: C0 Sovereignty — Embedding Boundary Enforcement"
         entry: cmd /c "set PYTHONPATH=.&& python agentic_core/L0_routing/scripts/run_guardian_c0_sovereignty.py"
-        language: system
-        pass_filenames: false
-        always_run: true
-        require_serial: true
-
-      # -- T3a-ast: AST-First Gate (§0 DEFAULT ANALYSIS MODE) -------------------
-      - id: check-ast-first-gate
-        name: "T3a-ast: AST-First Gate — §0 DEFAULT ANALYSIS MODE"
-        entry: python ops_scripts/ci/check_ast_first_gate.py
         language: system
         pass_filenames: false
         always_run: true

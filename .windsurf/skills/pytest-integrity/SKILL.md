@@ -1,6 +1,9 @@
 ---
 name: pytest-integrity
 description: Ensures pytest collection and execution counts match, preventing silent test deselection. Use when pytest is part of phase acceptance criteria, when collected and executed counts differ, or when conftest hooks may be filtering tests. Provides collection vs execution protocol and conftest hook audit procedure.
+enforcement_layer: pre-commit
+enforcement_timing: after_work
+enforcement_type: structural
 ---
 
 # Pytest Integrity Skill

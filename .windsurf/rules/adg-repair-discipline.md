@@ -75,6 +75,31 @@ blast-radius verification and full suite per §7.3 repair run completion conditi
 
 ---
 
+## MANDATORY PRE-CONDITION (Constitutional — no bypass)
+
+**BEFORE making ANY code edit during a repair session:**
+
+1. **Answer all 4 litmus questions**:
+   - Which ADG cluster? (cluster ID from `artifacts/adg_failure_clusters.json`)
+   - What is the root module? (canonical definition node from dependency chain)
+   - Which scoped tests? (specific test IDs from `artifacts/adg_test_surface_map.json`)
+   - Why is this file in the blast radius? (edge path from semantic graph)
+
+2. **Write answers to**: Evidence section titled `## ADG_REPAIR_LITMUS`
+
+**Format required**:
+```
+## ADG_REPAIR_LITMUS
+Cluster: <cluster_id>
+Root module: <path/to/definition/file.py>
+Scoped tests: <test_id_1>, <test_id_2>, ...
+Blast radius: <edge_path: test → import → module>
+```
+
+**IF you cannot answer all 4 questions → STOP. The edit is FORBIDDEN.**
+
+Only after `ADG_REPAIR_LITMUS` section is written may you make the edit.
+
 ## LITMUS TEST
 
 Every edit must pass this check before being made:

@@ -1,6 +1,9 @@
 ---
 name: test-rigor-enforcement
 description: Enforces §1 TESTING & EVIDENCE requirements from .windsurfrules during code generation. Use before any code changes to declare test requirements, during code generation to validate test-first discipline, and after code changes to verify test coverage. Prevents code commits without deterministic tests.
+enforcement_layer: pre-commit
+enforcement_timing: after_work
+enforcement_type: structural
 ---
 
 # Test Rigor Enforcement Skill

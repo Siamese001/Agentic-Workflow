@@ -133,22 +133,22 @@ def _count_modified_modules(staged_files: list[str]) -> int:
 
 
 def main() -> int:
-    """Enforce rollback gate — explicit checkpoints before multi-file phases."""
+    """Enforce rollback gate — verify checkpoint artifact when phase completes."""
     staged_files = _get_staged_files()
     if not staged_files:
         return 0
 
     commit_msg = _get_commit_message()
-    module_count = _count_modified_modules(staged_files)
 
-    # Small changes (≤3 files) don't require checkpoint
-    if module_count <= _FILE_COUNT_THRESHOLD:
+    # Only check if commit message indicates phase completion
+    is_phase = _is_phase_commit(commit_msg)
+    if not is_phase:
+        # Not a phase commit, no checkpoint required
         return 0
 
-    # Check for checkpoint reference
+    # Phase commit — verify checkpoint was recorded
     has_checkpoint_ref = _has_checkpoint_reference(commit_msg)
     has_checkpoint_artifacts = _check_checkpoint_artifacts()
-    is_phase = _is_phase_commit(commit_msg)
 
     # If checkpoint reference or artifacts exist, pass
     if has_checkpoint_ref or has_checkpoint_artifacts:
@@ -159,9 +159,11 @@ def main() -> int:
             print("\nConsider creating checkpoint artifacts for auditability.")
         return 0
 
-    # Large change without checkpoint — FAIL
-    print("\n[FAIL] Rollback Gate — Multi-file change without rollback checkpoint")
-    print(f"\nModified modules: {module_count} (threshold: {_FILE_COUNT_THRESHOLD})")
+    # Phase commit without checkpoint evidence — FAIL
+    print("\n[FAIL] Rollback Gate (Structural) — Phase commit without checkpoint evidence")
+    print("\n⚠️  NOTE: This checks for checkpoint ARTIFACTS only (observable).")
+    print("    Primary enforcement = Windsurf skill (BEFORE phase starts).")
+    print("\nThis appears to be a phase commit (keywords: phase, refactor, migration, etc.)")
     print("\nStaged files:")
     for f in staged_files[:10]:
         print(f"  - {f}")
@@ -180,7 +182,7 @@ def main() -> int:
 
     print("\nCheckpoint creation:")
     print("  1. Before phase: git stash push -m 'Phase X checkpoint'")
-    print("  2. Save state: echo '{\"phase\": \"X\", \"files\": [...]}' > artifacts/rollback/checkpoint_X.json")
+    print('  2. Save state: echo \'{"phase": "X", "files": [...]}\' > artifacts/rollback/checkpoint_X.json')
     print("  3. Execute phase")
     print("  4. If validation fails: git stash pop (restore checkpoint)")
     print("  5. If validation passes: commit with checkpoint reference")

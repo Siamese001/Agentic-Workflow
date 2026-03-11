@@ -81,11 +81,7 @@ def _get_staged_files() -> list[str]:
     )
     if result.returncode != 0:
         return []
-    return [
-        line.strip()
-        for line in result.stdout.splitlines()
-        if line.strip().endswith(".py")
-    ]
+    return [line.strip() for line in result.stdout.splitlines() if line.strip().endswith(".py")]
 
 
 def _get_staged_diff(file_path: str) -> str:
@@ -194,30 +190,22 @@ def main() -> int:
         # Check for new agents
         agent_violations = _check_for_new_agents(diff_content)
         if agent_violations:
-            all_violations["agents"].extend(
-                [f"{file_path}: {v}" for v in agent_violations]
-            )
+            all_violations["agents"].extend([f"{file_path}: {v}" for v in agent_violations])
 
         # Check for new mixins
         mixin_violations = _check_for_new_mixins(diff_content)
         if mixin_violations:
-            all_violations["mixins"].extend(
-                [f"{file_path}: {v}" for v in mixin_violations]
-            )
+            all_violations["mixins"].extend([f"{file_path}: {v}" for v in mixin_violations])
 
         # Check for new utilities
         utility_violations = _check_for_new_utilities(diff_content)
         if utility_violations:
-            all_violations["utilities"].extend(
-                [f"{file_path}: {v}" for v in utility_violations]
-            )
+            all_violations["utilities"].extend([f"{file_path}: {v}" for v in utility_violations])
 
         # Check for new constants
         constant_violations = _check_for_new_constants(diff_content, file_path)
         if constant_violations:
-            all_violations["constants"].extend(
-                [f"{file_path}: {v}" for v in constant_violations]
-            )
+            all_violations["constants"].extend([f"{file_path}: {v}" for v in constant_violations])
 
     # If no violations found, pass
     has_violations = any(all_violations.values())
@@ -230,8 +218,10 @@ def main() -> int:
         print("\nCommit message contains dedup search evidence. Allowing commit.")
         return 0
 
-    # Violations found and no evidence — FAIL
-    print("\n[FAIL] Dedup Guard — New symbols without dedup search evidence")
+    # Violations found and no evidence — FAIL (but this is a PROXY check only)
+    print("\n[FAIL] Dedup Guard (Proxy) — New symbols detected without dedup evidence")
+    print("\n⚠️  NOTE: This is a PROXY check. Full dedup enforcement happens in Windsurf.")
+    print("    Pre-commit can only detect NEW symbols, not semantic duplicates.")
     print("\nNew symbols detected:")
 
     if all_violations["agents"]:
@@ -254,18 +244,16 @@ def main() -> int:
         for v in all_violations["constants"][:5]:
             print(f"    - {v}")
 
-    print("\n§DEDUP-GUARD requires:")
-    print("  1. Search for semantically equivalent symbols BEFORE creation")
-    print("  2. Use ADG semantic graph or AST-backed search")
-    print("  3. Document justification if creating despite equivalents")
-    print("\nRequired in commit message:")
-    print("  - 'dedup', 'no duplicate', 'searched for', 'ADG search', or")
-    print("  - 'semantic search', 'no equivalent'")
-    print("\nForbidden:")
-    print("  ❌ Creating agents without checking for duplicates")
-    print("  ❌ Adding mixins without semantic equivalence check")
-    print("  ❌ Defining utilities that duplicate existing functions")
-    print("  ❌ Hardcoding constants outside SSOT modules")
+    print("\n§DEDUP-GUARD (Windsurf skill) requires:")
+    print("  1. 4-step search BEFORE creation (AST, name, behavioral, registry)")
+    print("  2. Document search results in DEDUP_SEARCH evidence section")
+    print("  3. Decision: reuse | extend | create (with justification)")
+    print("\nTo pass this pre-commit check, add to commit message:")
+    print("  - 'dedup', 'no duplicate', 'searched for', or")
+    print("  - 'DEDUP_SEARCH: decision=create'")
+    print("\nReminder:")
+    print("  ✅ Primary enforcement = Windsurf skill (BEFORE creation)")
+    print("  ⚠️  This CI gate = proxy flag only (AFTER creation)")
     print("\nSee: .windsurf/skills/dedup-guard/")
 
     return 1

@@ -1,6 +1,9 @@
 ---
 name: layer-boundary-guard
 description: Prevents layer gravity violations before any import is added or file created in agentic_core. Use before adding any import statement crossing layer boundaries, before creating files in any L0-L6 layer directory, or when reviewing diffs for layer inversion. Enforces gravity rules where LN can only import from L0..LN.
+enforcement_layer: pre-commit
+enforcement_timing: after_work
+enforcement_type: structural
 ---
 
 # Layer Boundary Guard Skill

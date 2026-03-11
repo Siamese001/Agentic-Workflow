@@ -1,150 +1,52 @@
 # Windsurf Rules & CI Gates — Master Index
 
-**Last Updated**: 2026-03-11  
+**Last Updated**: 2026-03-11
 **Purpose**: Comprehensive mapping of all constitutional rules, skills, and CI enforcement gates
 
 ---
 
 ## Constitutional Rules
 
-### §0: DEFAULT ANALYSIS MODE
-- **Rule**: AST dependency graph REQUIRED before code investigation
-- **Location**: `.windsurf/skills/ast-first-gate/`
-- **CI Gate**: `ops_scripts/ci/check_ast_first_gate.py` ✅
-- **Pre-commit Hook**: T3a-ast
-- **Status**: ENFORCED
+| Rule | Layer | Timing | Type | Location | Status |
+|------|-------|--------|------|----------|--------|
+| **§0: DEFAULT ANALYSIS MODE** | Windsurf | Before work | Behavioural | `.windsurf/skills/ast-first-gate/` | ✅ ENFORCED |
+| **§ADG-1: ADG Repair Discipline** | Windsurf | Before work | Behavioural | `.windsurf/rules/adg-repair-discipline.md` | ✅ ENFORCED |
+| **Plan Location Rule** | Pre-commit | After work | Structural | `.windsurf/rules/plan-location.md` | ✅ ENFORCED |
 
-### §ADG-1: ADG Repair Discipline
-- **Rule**: Graph-first repair protocol for all code repairs
-- **Location**: `.windsurf/rules/adg-repair-discipline.md`
-- **CI Gate**: `tools/adg_ci_gate.py` ⚠️
-- **Pre-commit Hook**: T0-ADG (manual stage → automatic)
-- **Status**: PARTIAL → ENFORCED
-
-### Plan Location Rule
-- **Rule**: Plans MUST be in `docs/reports/plans/`
-- **Location**: `.windsurf/rules/plan-location.md`
-- **CI Gate**: `ops_scripts/ci/check_plan_location_compliance.py` ✅
-- **Pre-commit Hook**: T3b
-- **Status**: ENFORCED
+**Notes**:
+- §0: CI gate removed (was misplaced — process rule cannot be verified at commit time)
+- §ADG-1: Pre-commit gate reverted to manual stage (repair phase state is session context)
+- Plan Location: Pure structural rule — file path observable at commit time
 
 ---
 
 ## Skills & Enforcement Gates
 
-### 1. AST-First Gate
-- **Skill**: `.windsurf/skills/ast-first-gate/`
-- **Purpose**: Block code investigation without ADG dependency graph
-- **CI Gate**: `ops_scripts/ci/check_ast_first_gate.py` ✅
-- **Pre-commit Hook**: T3a-ast (always_run)
-- **Trigger**: Code analysis commits without graph evidence
-- **Status**: ENFORCED
+| # | Skill | Layer | Timing | Type | CI Gate | Pre-commit Hook | Status |
+|---|-------|-------|--------|------|---------|----------------|--------|
+| 1 | **AST-First Gate** | Windsurf | Before work | Behavioural | ~~Removed~~ | ~~T3a-ast~~ | ✅ ENFORCED (Windsurf only) |
+| 2 | **Dedup Guard** | Both | Before work | Behavioural + Structural | `check_dedup_violations.py` (proxy) | T3a-dedup | ✅ ENFORCED |
+| 3 | **Dependency Graph Analysis** | Windsurf | Before work | Behavioural | None | None | ✅ ENFORCED (Windsurf only) |
+| 4 | **Evidence Bundle** | Windsurf | During work | Behavioural | None | None | ✅ WORKFLOW-ENFORCED |
+| 5 | **Import Hygiene** | Both | After work | Structural | Ruff F401, `validate_import_dependencies.py` | T2a, T4a | ✅ ENFORCED |
+| 6 | **Layer Boundary Guard** | Pre-commit | After work | Structural | ADG GV edges | None | ✅ ENFORCED |
+| 7 | **MCP Tool Verify** | Windsurf | During work | Behavioural | None | None | ✅ RUNTIME-ENFORCED |
+| 8 | **Pytest Integrity** | Pre-commit | After work | Structural | `adg_ci_lane_gate.py --fail-on-skip` | T3a-skip | ✅ ENFORCED |
 
-### 2. Dedup Guard
-- **Skill**: `.windsurf/skills/dedup-guard/`
-- **Purpose**: Prevent duplicate agents, mixins, utility functions
-- **CI Gate**: `ops_scripts/ci/check_dedup_violations.py` ✅
-- **Pre-commit Hook**: T3a-dedup (always_run)
-- **Trigger**: New agent/mixin/utility creation
-- **Status**: ENFORCED
+| 9 | **Rollback Gate** | Both | Before work | Behavioural + Structural | `check_rollback_checkpoints.py` (artifact) | T3a-rollback | ✅ ENFORCED |
+| 10 | **Scope Guard** | Windsurf | Before work | Behavioural | None | None | ✅ ENFORCED (Windsurf only) |
+| 11 | **Script Sprawl Guard** | Both | Before work | Behavioural + Structural | `check_script_sprawl.py` | T3a-sprawl | ✅ ENFORCED |
+| 12 | **Shim Discipline** | Both | Before work | Behavioural + Structural | `check_shim_discipline.py` | T3a-shim | ✅ ENFORCED |
+| 13 | **SSOT Write Gate** | Pre-commit | After work | Structural | `validate_report_location.py` | T3b | ✅ ENFORCED |
+| 14 | **Test Rigor Enforcement** | Pre-commit | After work | Structural | `adg_ci_lane_gate.py` | T3a-skip | ✅ ENFORCED |
 
-### 3. Dependency Graph Analysis
-- **Skill**: `.windsurf/skills/dependency-graph-analysis/`
-- **Purpose**: Enforce graph-first impact analysis
-- **CI Gate**: Integrated with `check_ast_first_gate.py` ✅
-- **Pre-commit Hook**: T3a-ast
-- **Trigger**: Impact analysis without dependency graph
-- **Status**: ENFORCED
-
-### 4. Evidence Bundle
-- **Skill**: `.windsurf/skills/evidence-bundle/`
-- **Purpose**: Capture command outputs into evidence files
-- **CI Gate**: Manual verification (workflow-based)
-- **Pre-commit Hook**: None (workflow enforcement)
-- **Trigger**: Work unit execution
-- **Status**: WORKFLOW-ENFORCED
-
-### 5. Import Hygiene
-- **Skill**: `.windsurf/skills/import-hygiene/`
-- **Purpose**: Prevent dead imports, forbidden imports, duplicate imports
-- **CI Gates**: 
-  - Ruff F401 (dead imports) ✅
-  - `ops_scripts/ci/validate_import_dependencies.py` ✅
-- **Pre-commit Hooks**: T2a (ruff), T4a (import validation)
-- **Trigger**: Import statement changes
-- **Status**: ENFORCED
-
-### 6. Layer Boundary Guard
-- **Skill**: `.windsurf/skills/layer-boundary-guard/`
-- **Purpose**: Prevent layer gravity violations
-- **CI Gate**: ADG GV violates edges (240 tracked) ✅
-- **Pre-commit Hook**: None (ADG artifact-based)
-- **Trigger**: Cross-layer imports
-- **Status**: ENFORCED
-
-### 7. MCP Tool Verify
-- **Skill**: `.windsurf/skills/mcp-tool-verify/`
-- **Purpose**: Verify MCP filesystem tool calls post-execution
-- **CI Gate**: Manual verification (post-call discipline)
-- **Pre-commit Hook**: None (runtime verification)
-- **Trigger**: MCP write operations
-- **Status**: RUNTIME-ENFORCED
-
-### 8. Pytest Integrity
-- **Skill**: `.windsurf/skills/pytest-integrity/`
-- **Purpose**: Ensure pytest collection and execution counts match
-- **CI Gate**: `tools/adg_ci_lane_gate.py --fail-on-skip` ✅
-- **Pre-commit Hook**: T3a-skip (always_run)
-- **Trigger**: pytest.skip in UNIT_STRICT tests
-- **Status**: ENFORCED
-
-### 9. Rollback Gate
-- **Skill**: `.windsurf/skills/rollback-gate/`
-- **Purpose**: Enforce explicit rollback checkpoints before multi-file phases
-- **CI Gate**: `ops_scripts/ci/check_rollback_checkpoints.py` ✅
-- **Pre-commit Hook**: T3a-rollback (always_run)
-- **Trigger**: Commits modifying >3 modules
-- **Status**: ENFORCED
-
-### 10. Scope Guard
-- **Skill**: `.windsurf/skills/scope-guard/`
-- **Purpose**: Prevent scope drift using ADG dependency graph
-- **CI Gate**: Integrated with `check_ast_first_gate.py` ✅
-- **Pre-commit Hook**: T3a-ast
-- **Trigger**: File edits outside declared scope
-- **Status**: ENFORCED
-
-### 11. Script Sprawl Guard
-- **Skill**: `.windsurf/skills/script-sprawl-guard/`
-- **Purpose**: Prevent creation of new runner scripts
-- **CI Gate**: `ops_scripts/ci/check_script_sprawl.py` ✅
-- **Pre-commit Hook**: T3a-sprawl (always_run)
-- **Trigger**: New .py files in tools/ or ops_scripts/
-- **Status**: ENFORCED
-
-### 12. Shim Discipline
-- **Skill**: `.windsurf/skills/shim-discipline/`
-- **Purpose**: Enforce consistent shim/backward-compatibility discipline
-- **CI Gate**: `ops_scripts/ci/check_shim_discipline.py` ✅
-- **Pre-commit Hook**: T3a-shim (always_run)
-- **Trigger**: Module moves/renames without shims
-- **Status**: ENFORCED
-
-### 13. SSOT Write Gate
-- **Skill**: `.windsurf/skills/ssot-write-gate/`
-- **Purpose**: Validate artifact target paths against SSOT territories
-- **CI Gate**: `ops_scripts/hooks/validate_report_location.py` ✅
-- **Pre-commit Hook**: T3b (always_run)
-- **Trigger**: File writes to non-SSOT locations
-- **Status**: ENFORCED
-
-### 14. Test Rigor Enforcement
-- **Skill**: `.windsurf/skills/test-rigor-enforcement/`
-- **Purpose**: Enforce §1 TESTING & EVIDENCE requirements
-- **CI Gate**: `tools/adg_ci_lane_gate.py` ✅
-- **Pre-commit Hook**: T3a-skip
-- **Trigger**: Code changes without deterministic tests
-- **Status**: ENFORCED
+**Key**:
+- **Layer**: Windsurf (AI-time only) | Pre-commit (commit-time only) | Both (dual enforcement)
+- **Timing**: Before work (process rules) | After work (structural checks) | During work (runtime)
+- **Type**: Behavioural (HOW AI works) | Structural (WHAT is in code) | Both
+- **CI Gate**: Script name or "None" if Windsurf-only enforcement
+- **(proxy)** = Pre-commit can only detect symptoms, not full violation
+- **(artifact)** = Pre-commit verifies artifact exists, not process compliance
 
 ---
 
@@ -153,9 +55,9 @@
 ### Tier 0-ADG: ADG Phase Gate
 - **Hook ID**: `adg-phase-gate`
 - **Script**: `tools/adg_ci_gate.py check-phase`
-- **Stage**: automatic (promoted from manual)
+- **Stage**: manual (reverted from automatic — repair phase state is session context)
 - **Purpose**: Block full-suite pytest during PHASE 5-6 repair loops
-- **Always Run**: Yes
+- **Always Run**: Yes (when manually invoked)
 
 ### Tier 0: Normalization
 - **Hooks**: trailing-whitespace, end-of-file-fixer, mixed-line-ending, check-merge-conflict
@@ -232,10 +134,9 @@
 3. `check_agent_registry_completeness.py`
 4. `check_anti_patterns.py` ✅
 5. `check_apps_output_contract.py`
-6. `check_ast_first_gate.py` ✅ NEW
-7. `check_c0_boundary.py`
-8. `check_ci_integrity.py`
-9. `check_dedup_violations.py` ✅ NEW
+6. `check_c0_boundary.py`
+7. `check_ci_integrity.py`
+8. `check_dedup_violations.py` ✅ UPDATED (proxy check only)
 10. `check_determinism_replay.py`
 11. `check_determinism_violations.py`
 12. `check_direct_execute_calls.py`
@@ -296,7 +197,7 @@
 ### Testing a Gate
 ```bash
 # Test specific gate
-pre-commit run check-ast-first-gate --all-files
+pre-commit run check-dedup-violations --all-files
 
 # Test all gates
 pre-commit run --all-files
@@ -307,8 +208,7 @@ git commit --no-verify -m "..."
 
 ### Bypassing a Gate (Justified)
 Include justification keywords in commit message:
-- AST-First: "ADG", "dependency graph", "blast radius"
-- Dedup: "dedup", "no duplicate", "searched for"
+- Dedup: "dedup", "no duplicate", "searched for", "DEDUP_SEARCH: decision=create"
 - Script Sprawl: "script-sprawl", "CI gate", "canonical invocation"
 - Shim: "shim-discipline", "backward-compatibility"
 - Rollback: "checkpoint", "rollback", "phase checkpoint"
@@ -317,12 +217,18 @@ Include justification keywords in commit message:
 
 ## Maintenance
 
-**Review Frequency**: Monthly  
-**Owner**: Platform Team  
-**Last Audit**: 2026-03-11  
+**Review Frequency**: Monthly
+**Owner**: Platform Team
+**Last Audit**: 2026-03-11
 **Next Audit**: 2026-04-11
 
 **Changelog**:
-- 2026-03-11: Initial index creation, added 5 new CI gates (AST-first, dedup, script-sprawl, shim, rollback)
-- 2026-03-11: Promoted adg-phase-gate to automatic stage
-- 2026-03-11: Achieved 100% rule coverage with CI enforcement
+- 2026-03-11: Initial index creation, added 5 new CI gates
+- 2026-03-11: **ARCHITECTURE REDESIGN** — Removed misfits from pre-commit, strengthened Windsurf skills
+  - Deleted `check_ast_first_gate.py` (misplaced — process rule, not structural)
+  - Reverted `adg-phase-gate` to manual stage (repair phase state is session context)
+  - Added MANDATORY PRE-CONDITION blocks to 5 Windsurf skills (ast-first, scope, rollback, dedup, adg-repair)
+  - Tightened dedup and rollback CI gates to proxy/artifact checks only
+  - Added `enforcement_layer` metadata to all skills
+  - Created `docs/rules/enforcement_architecture.md` canonical contract
+  - Updated RULES_INDEX.md with Layer, Timing, Type columns
