@@ -49,6 +49,17 @@ EntityType = Literal[
     "commit",
     "snapshot",
     "scan_run",
+    # P6: Prompt governance
+    "prompt_slot",
+    "prompt_template",
+    "prompt_assembly",
+    # P7: Observability
+    "execution_trace",
+    # P3: Runtime graph
+    "agent_action",
+    "tool_invocation",
+    "layer_transition",
+    "mutation_record",
 ]
 
 RelationType = Literal[
@@ -73,6 +84,26 @@ RelationType = Literal[
     "re_exports",
     "in_cycle",
     "dead_imports",
+    # P6: Prompt governance
+    "generates_prompt",
+    "consumes_prompt",
+    "assembles_into",
+    "injects_into",
+    "overrides_prompt",
+    # P7: Observability
+    "executed_with_prompt",
+    "triggered_telemetry",
+    "proposed_improvement",
+    "updated_prompt",
+    # P3: Runtime graph / authority / mutation
+    "executes_action",
+    "invokes_tool",
+    "crosses_layer",
+    "bypasses_uwg",
+    "routes_through_uwg",
+    "layer_authority_violation",
+    "policy_hash_mismatch",
+    "lineage_of",
 ]
 
 EdgeKind = Literal[
@@ -93,7 +124,86 @@ EdgeKind = Literal[
     "optional_import",
     "version_guard_import",
     "type_annotation",
+    # P6: Prompt governance
+    "prompt_generation",
+    "prompt_consumption",
+    "prompt_assembly",
+    "prompt_injection",
+    "prompt_authority_violation",
+    # P7: Observability
+    "trace_prompt_link",
+    "prompt_drift",
+    # P3: Runtime graph / authority / mutation
+    "agent_execution",
+    "tool_call",
+    "layer_boundary_cross",
+    "uwg_bypass",
+    "uwg_compliant_write",
+    "authority_violation",
+    "policy_validation",
+    "state_lineage",
 ]
+
+
+# P6: Prompt slot authority ordering (S0 highest authority → U0 lowest)
+PROMPT_SLOT_TYPES: tuple[str, ...] = ("S0", "D0", "I0", "C0", "U0")
+PROMPT_SLOT_AUTHORITY: dict[str, int] = {slot: i for i, slot in enumerate(PROMPT_SLOT_TYPES)}
+
+# P6: Authority hierarchy — high-authority slots that low-authority slots must not override
+PROMPT_AUTHORITY_RULES: tuple[tuple[str, str], ...] = (
+    ("U0", "S0"),  # user must not mutate system
+    ("U0", "D0"),  # user must not mutate injection fences
+    ("U0", "I0"),  # user must not mutate instructional
+    ("C0", "S0"),  # context must not mutate system
+    ("C0", "D0"),  # context must not introduce injection fences
+    ("I0", "S0"),  # instructional must not mutate system
+)
+
+# P6: Prompt slot field names in GovernedPayload → slot type mapping
+PROMPT_FIELD_TO_SLOT: dict[str, str] = {
+    "s0_system": "S0",
+    "d0_injections": "D0",
+    "i0_instructional": "I0",
+    "c0_context": "C0",
+    "u0_user_prompt": "U0",
+}
+
+# P3: UWG canonical symbol — all writes_through must target this
+UWG_CANONICAL_SYMBOL: str = "ADG::Symbol::UniversalWriteGateway"
+UWG_MODULE_PATH: str = "agentic_core/L2_execution/UniversalWriteGateway.py"
+UWG_INTERFACE_PATH: str = "agentic_core/interfaces/write_gateway.py"
+
+# P3: Layer authority rules — which relations are FORBIDDEN per layer
+# Format: layer_prefix → frozenset of forbidden relation_types
+LAYER_AUTHORITY_FORBIDDEN: dict[str, frozenset[str]] = {
+    "L1": frozenset({"writes_to", "writes_through"}),  # L1 must not mutate state
+    "L3": frozenset({"invokes_tool", "invokes_provider"}),  # L3 must not directly invoke tools
+    "L4": frozenset({"calls", "invokes_provider"}),  # L4 must not contain business logic
+    "L6": frozenset({"writes_to", "writes_through", "routes_through"}),  # L6 must not alter execution
+}
+
+# P3: L1 write symbols that are allowlisted (self-copies, not persistent mutations)
+L1_WRITE_ALLOWLIST: frozenset[str] = frozenset(
+    {
+        "copy",
+        "output.copy",
+        "self.strategy_weights.copy",
+        "copy.deepcopy",
+        "self.guardrails._cache_sizes.copy",
+        "visited.copy",
+    }
+)
+
+# P3: UWG write symbols (compliant write targets)
+UWG_WRITE_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "UniversalWriteGateway",
+        "uwg.write",
+        "uwg.write_bytes",
+        "write_gateway.write_text",
+        "write_gateway.write_bytes",
+    }
+)
 
 
 def canonical_name(entity_type: str, *parts: str) -> str:
@@ -375,4 +485,16 @@ __all__ = [
     "WRITE_SIDE_EFFECT_SYMBOLS",
     "NETWORK_SYMBOLS",
     "SYMBOL_KINDS",
+    # P6
+    "PROMPT_SLOT_TYPES",
+    "PROMPT_SLOT_AUTHORITY",
+    "PROMPT_AUTHORITY_RULES",
+    "PROMPT_FIELD_TO_SLOT",
+    # P3
+    "UWG_CANONICAL_SYMBOL",
+    "UWG_MODULE_PATH",
+    "UWG_INTERFACE_PATH",
+    "LAYER_AUTHORITY_FORBIDDEN",
+    "L1_WRITE_ALLOWLIST",
+    "UWG_WRITE_SYMBOLS",
 ]

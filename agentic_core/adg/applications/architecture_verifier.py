@@ -1,0 +1,192 @@
+"""E30: Architecture Verifier — unified verification tool.
+
+Orchestrates all P3 analyzers into a single pass:
+    E26: Runtime execution graph (runtime_graph)
+    E27: Layer authority enforcement (layer_authority)
+    E28: Mutation path verification (mutation_authority)
+    E31: Policy hash runtime validation (policy_hash_validator)
+
+Produces a consolidated ArchitectureVerificationReport with:
+    - pass/fail per plane
+    - total violation count
+    - exit_code() for CI integration
+
+Usage::
+
+    from agentic_core.adg.applications.architecture_verifier import verify_architecture
+
+    report = verify_architecture(result)
+    report.print_summary()
+    sys.exit(report.exit_code())
+"""
+
+from __future__ import annotations
+
+import json
+from dataclasses import dataclass, field
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from agentic_core.adg.extraction.static_scanner import ScanResult
+
+
+@dataclass
+class PlaneResult:
+    """Result for one architectural plane."""
+
+    plane: str
+    passed: bool
+    violation_count: int
+    summary: str
+    details: dict = field(default_factory=dict)
+
+    def to_dict(self) -> dict:
+        return {
+            "plane": self.plane,
+            "passed": self.passed,
+            "violation_count": self.violation_count,
+            "summary": self.summary,
+        }
+
+
+@dataclass
+class ArchitectureVerificationReport:
+    """Consolidated architecture verification across all planes."""
+
+    planes: list[PlaneResult] = field(default_factory=list)
+    total_violations: int = 0
+    commit_sha: str = ""
+
+    @property
+    def passed(self) -> bool:
+        return self.total_violations == 0
+
+    @property
+    def summary(self) -> str:
+        status = "PASS" if self.passed else "FAIL"
+        plane_statuses = " | ".join(f"{p.plane}={'OK' if p.passed else 'FAIL'}" for p in self.planes)
+        return (
+            f"Architecture verification: {status} | "
+            f"total_violations={self.total_violations} | {plane_statuses}"
+        )
+
+    def exit_code(self) -> int:
+        return 0 if self.passed else 1
+
+    def print_summary(self) -> None:
+        print(self.summary)
+        for p in self.planes:
+            status = "✓" if p.passed else "✗"
+            print(f"  {status} [{p.plane}] {p.summary}")
+
+    def to_dict(self) -> dict:
+        return {
+            "passed": self.passed,
+            "total_violations": self.total_violations,
+            "commit_sha": self.commit_sha,
+            "summary": self.summary,
+            "planes": [p.to_dict() for p in self.planes],
+        }
+
+    def to_json(self, indent: int = 2) -> str:
+        return json.dumps(self.to_dict(), indent=indent, sort_keys=True)
+
+
+def verify_architecture(
+    result: ScanResult,
+    *,
+    skip_planes: frozenset[str] = frozenset(),
+) -> ArchitectureVerificationReport:
+    """Run all architectural verification planes against a ScanResult.
+
+    Parameters
+    ----------
+    result:
+        The ADG ScanResult to verify.
+    skip_planes:
+        Optional set of plane names to skip. Valid values:
+        ``"runtime_graph"``, ``"layer_authority"``, ``"mutation_paths"``,
+        ``"policy_hash"``.
+    """
+    planes: list[PlaneResult] = []
+    total = 0
+
+    # E26: Runtime execution graph
+    if "runtime_graph" not in skip_planes:
+        from agentic_core.adg.applications.runtime_graph import build_runtime_graph
+
+        rg = build_runtime_graph(result)
+        upward = len(rg.upward_layer_violations)
+        planes.append(
+            PlaneResult(
+                plane="runtime_graph",
+                passed=upward == 0,
+                violation_count=upward,
+                summary=rg.summary,
+                details=rg.to_dict(),
+            )
+        )
+        total += upward
+
+    # E27: Layer authority
+    if "layer_authority" not in skip_planes:
+        from agentic_core.adg.analysis.layer_authority import detect_layer_authority_violations
+
+        la = detect_layer_authority_violations(result)
+        planes.append(
+            PlaneResult(
+                plane="layer_authority",
+                passed=la.violation_count == 0,
+                violation_count=la.violation_count,
+                summary=la.summary,
+                details=la.to_dict(),
+            )
+        )
+        total += la.violation_count
+
+    # E28: Mutation paths
+    if "mutation_paths" not in skip_planes:
+        from agentic_core.adg.analysis.mutation_authority import verify_mutation_paths
+
+        mp = verify_mutation_paths(result)
+        # Only critical violations fail the build
+        critical = len(mp.critical_violations())
+        planes.append(
+            PlaneResult(
+                plane="mutation_paths",
+                passed=critical == 0,
+                violation_count=mp.violation_count,
+                summary=mp.summary,
+                details=mp.to_dict(),
+            )
+        )
+        total += critical
+
+    # E31: Policy hash coupling
+    if "policy_hash" not in skip_planes:
+        from agentic_core.adg.analysis.policy_hash_validator import validate_policy_hash_coupling
+
+        ph = validate_policy_hash_coupling(result)
+        planes.append(
+            PlaneResult(
+                plane="policy_hash",
+                passed=ph.violation_count == 0,
+                violation_count=ph.violation_count,
+                summary=ph.summary,
+                details=ph.to_dict(),
+            )
+        )
+        total += ph.violation_count
+
+    return ArchitectureVerificationReport(
+        planes=planes,
+        total_violations=total,
+        commit_sha=getattr(result, "commit_sha", ""),
+    )
+
+
+__all__ = [
+    "ArchitectureVerificationReport",
+    "PlaneResult",
+    "verify_architecture",
+]

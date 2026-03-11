@@ -1,0 +1,252 @@
+"""E24: Prompt Impact Analyzer.
+
+Given a set of changed prompt templates or prompt-generating modules, computes:
+  - Which agents consume the affected prompts (blast radius)
+  - Which assembly modules are impacted
+  - Which slot types are affected (S0/D0/I0/C0/U0)
+  - Risk label based on slot authority and fan-in
+
+This extends E12 (rename safety) to the prompt governance plane.
+
+Usage::
+
+    from agentic_core.adg.applications.prompt_impact import analyze_prompt_impact
+
+    report = analyze_prompt_impact(result, changed_files=["agentic_core/prompt_governance/core/prompt_entry_types.py"])
+    print(report.summary)
+"""
+
+from __future__ import annotations
+
+import json
+from dataclasses import dataclass, field
+from typing import TYPE_CHECKING
+
+from agentic_core.adg.schema import PROMPT_SLOT_AUTHORITY, PROMPT_SLOT_TYPES
+
+if TYPE_CHECKING:
+    from agentic_core.adg.extraction.static_scanner import ScanResult
+
+_MODULE_PREFIX = "ADG::Module::"
+_PROMPT_SLOT_PREFIX = "ADG::PromptSlot::"
+_PROMPT_TEMPLATE_PREFIX = "ADG::PromptTemplate::"
+_PROMPT_ASSEMBLY_PREFIX = "ADG::PromptAssembly::"
+
+
+@dataclass
+class PromptImpactEntry:
+    """One module impacted by a prompt change."""
+
+    module_path: str
+    impact_reason: str
+    affected_slots: list[str]
+    relation_path: list[str]
+    risk_level: str = "medium"
+
+    def to_dict(self) -> dict:
+        return {
+            "module_path": self.module_path,
+            "impact_reason": self.impact_reason,
+            "affected_slots": sorted(self.affected_slots),
+            "relation_path": self.relation_path,
+            "risk_level": self.risk_level,
+        }
+
+
+@dataclass
+class PromptImpactReport:
+    """Full prompt impact analysis for a set of changed files."""
+
+    changed_files: list[str] = field(default_factory=list)
+    impacted_modules: list[PromptImpactEntry] = field(default_factory=list)
+    affected_slot_types: list[str] = field(default_factory=list)
+    assembly_modules_affected: list[str] = field(default_factory=list)
+    risk_label: str = "LOW"
+    risk_score: float = 0.0
+    impacted_count: int = 0
+
+    @property
+    def summary(self) -> str:
+        return (
+            f"Prompt impact: changed={len(self.changed_files)} "
+            f"impacted={self.impacted_count} "
+            f"slots={self.affected_slot_types} "
+            f"risk={self.risk_label}({self.risk_score:.4f})"
+        )
+
+    def to_dict(self) -> dict:
+        return {
+            "changed_files": self.changed_files,
+            "impacted_count": self.impacted_count,
+            "affected_slot_types": self.affected_slot_types,
+            "assembly_modules_affected": sorted(self.assembly_modules_affected),
+            "risk_label": self.risk_label,
+            "risk_score": self.risk_score,
+            "summary": self.summary,
+            "impacted_modules": [e.to_dict() for e in self.impacted_modules],
+        }
+
+    def to_json(self, indent: int = 2) -> str:
+        return json.dumps(self.to_dict(), indent=indent, sort_keys=True)
+
+
+def _slot_authority_score(slots: list[str]) -> float:
+    """Compute a risk score 0-1 based on affected slot authority levels."""
+    if not slots:
+        return 0.0
+    # S0 is highest authority (index 0) → highest risk
+    min_rank = min(PROMPT_SLOT_AUTHORITY.get(s, len(PROMPT_SLOT_TYPES)) for s in slots)
+    # Normalize: rank 0 (S0) → score 1.0, rank 4 (U0) → score 0.2
+    return round(1.0 - (min_rank / len(PROMPT_SLOT_TYPES)) * 0.8, 4)
+
+
+def _risk_label(score: float, impacted: int) -> str:
+    if score >= 0.8 or impacted >= 20:
+        return "CRITICAL"
+    if score >= 0.6 or impacted >= 10:
+        return "HIGH"
+    if score >= 0.3 or impacted >= 3:
+        return "MEDIUM"
+    return "LOW"
+
+
+def analyze_prompt_impact(
+    result: ScanResult,
+    changed_files: list[str] | None = None,
+) -> PromptImpactReport:
+    """Analyze blast radius of changes to prompt-generating or prompt-consuming modules.
+
+    Pass 1: Build index of generates_prompt and consumes_prompt edges.
+    Pass 2: Find which modules generate prompts from changed files.
+    Pass 3: Trace forward via consumes_prompt to find all consumers.
+    Pass 4: Compute risk score based on affected slot authority levels.
+    """
+    changed_set = set(changed_files or [])
+
+    # Normalize paths to forward slashes
+    changed_set = {p.replace("\\", "/") for p in changed_set}
+
+    # Pass 1: Build prompt dependency indices
+    # generators: module_path -> [(slot_type, to_name, line_no)]
+    generators: dict[str, list[tuple[str, str, int]]] = {}
+    # consumers: template_name -> [module_path]
+    consumers: dict[str, list[str]] = {}
+    # assembly: module_path -> [slot_type]
+    assembly: dict[str, list[str]] = {}
+
+    for edge in result.edges:
+        if edge.relation_type == "generates_prompt":
+            if not edge.from_name.startswith(_MODULE_PREFIX):
+                continue
+            mod = edge.from_name[len(_MODULE_PREFIX) :]
+            slot = edge.symbol.split(":")[0] if ":" in edge.symbol else ""
+            if not slot:
+                # Try extracting from to_name
+                if edge.to_name.startswith(_PROMPT_SLOT_PREFIX):
+                    rest = edge.to_name[len(_PROMPT_SLOT_PREFIX) :]
+                    candidate = rest.split("::")[0]
+                    if candidate in PROMPT_SLOT_TYPES:
+                        slot = candidate
+            generators.setdefault(mod, []).append((slot, edge.to_name, edge.line_no))
+
+        elif edge.relation_type == "consumes_prompt":
+            if not edge.from_name.startswith(_MODULE_PREFIX):
+                continue
+            mod = edge.from_name[len(_MODULE_PREFIX) :]
+            template = edge.to_name
+            consumers.setdefault(template, []).append(mod)
+
+        elif edge.relation_type == "assembles_into":
+            if not edge.from_name.startswith(_MODULE_PREFIX):
+                continue
+            mod = edge.from_name[len(_MODULE_PREFIX) :]
+            assembly.setdefault(mod, [])
+
+    # Pass 2: Find directly impacted generator modules (from changed files)
+    directly_impacted: set[str] = set()
+    affected_slots: set[str] = set()
+
+    for mod, slot_list in generators.items():
+        if mod in changed_set:
+            directly_impacted.add(mod)
+            for slot, _, _ in slot_list:
+                if slot:
+                    affected_slots.add(slot)
+
+    # Also check if any changed file IS a generator (by source_file match)
+    for edge in result.edges:
+        if edge.relation_type == "generates_prompt":
+            if edge.source_file.replace("\\", "/") in changed_set:
+                if edge.from_name.startswith(_MODULE_PREFIX):
+                    mod = edge.from_name[len(_MODULE_PREFIX) :]
+                    directly_impacted.add(mod)
+                    slot = edge.symbol.split(":")[0] if ":" in edge.symbol else ""
+                    if slot and slot in PROMPT_SLOT_TYPES:
+                        affected_slots.add(slot)
+
+    # Pass 3: Trace consumers of affected templates
+    affected_templates: set[str] = set()
+    for mod in directly_impacted:
+        for slot, to_name, _ in generators.get(mod, []):
+            affected_templates.add(to_name)
+
+    impacted_consumer_modules: set[str] = set()
+    for tmpl in affected_templates:
+        for consumer_mod in consumers.get(tmpl, []):
+            impacted_consumer_modules.add(consumer_mod)
+
+    # Pass 4: Build impacted entries
+    impacted_entries: list[PromptImpactEntry] = []
+    assembly_affected: set[str] = set()
+
+    for mod in directly_impacted:
+        slots_for_mod = [s for s, _, _ in generators.get(mod, []) if s]
+        risk = _risk_label(_slot_authority_score(slots_for_mod), len(directly_impacted))
+        impacted_entries.append(
+            PromptImpactEntry(
+                module_path=mod,
+                impact_reason="direct_generator",
+                affected_slots=slots_for_mod,
+                relation_path=[mod],
+                risk_level=risk,
+            )
+        )
+        if mod in assembly:
+            assembly_affected.add(mod)
+
+    for mod in impacted_consumer_modules - directly_impacted:
+        impacted_entries.append(
+            PromptImpactEntry(
+                module_path=mod,
+                impact_reason="prompt_consumer",
+                affected_slots=list(affected_slots),
+                relation_path=["(changed file)", "->", mod],
+                risk_level="medium",
+            )
+        )
+        if mod in assembly:
+            assembly_affected.add(mod)
+
+    # Risk computation
+    slot_score = _slot_authority_score(list(affected_slots))
+    total_impacted = len(impacted_entries)
+    risk_label = _risk_label(slot_score, total_impacted)
+
+    impacted_entries.sort(key=lambda e: (e.risk_level, e.module_path))
+
+    return PromptImpactReport(
+        changed_files=sorted(changed_set),
+        impacted_modules=impacted_entries,
+        affected_slot_types=sorted(affected_slots, key=lambda s: PROMPT_SLOT_AUTHORITY.get(s, 99)),
+        assembly_modules_affected=sorted(assembly_affected),
+        risk_label=risk_label,
+        risk_score=slot_score,
+        impacted_count=total_impacted,
+    )
+
+
+__all__ = [
+    "PromptImpactEntry",
+    "PromptImpactReport",
+    "analyze_prompt_impact",
+]

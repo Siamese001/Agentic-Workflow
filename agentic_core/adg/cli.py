@@ -285,6 +285,113 @@ def _cmd_dip_check(args: argparse.Namespace) -> int:
     return 1 if report.violation_count > 0 else 0
 
 
+def _cmd_runtime_graph(args: argparse.Namespace) -> int:
+    import json
+
+    from agentic_core.adg.applications.runtime_graph import build_runtime_graph
+    from agentic_core.adg.runtime.cache_loader import load_or_scan
+
+    repo_root = Path(args.repo_root)
+    result = load_or_scan(repo_root=str(repo_root))
+    result.print_digest()
+
+    report = build_runtime_graph(result)
+    print(report.summary)
+    print(json.dumps(report.to_dict(), indent=2))
+    return 0
+
+
+def _cmd_layer_authority(args: argparse.Namespace) -> int:
+    import json
+
+    from agentic_core.adg.analysis.layer_authority import detect_layer_authority_violations
+    from agentic_core.adg.runtime.cache_loader import load_or_scan
+
+    repo_root = Path(args.repo_root)
+    result = load_or_scan(repo_root=str(repo_root))
+    result.print_digest()
+
+    report = detect_layer_authority_violations(result)
+    print(report.summary)
+    print(json.dumps(report.to_dict(), indent=2))
+    return 1 if report.violation_count > 0 else 0
+
+
+def _cmd_mutation_paths(args: argparse.Namespace) -> int:
+    import json
+
+    from agentic_core.adg.analysis.mutation_authority import verify_mutation_paths
+    from agentic_core.adg.runtime.cache_loader import load_or_scan
+
+    repo_root = Path(args.repo_root)
+    result = load_or_scan(repo_root=str(repo_root))
+    result.print_digest()
+
+    report = verify_mutation_paths(result)
+    print(report.summary)
+    print(json.dumps(report.to_dict(), indent=2))
+    critical = len(report.critical_violations())
+    return 1 if critical > 0 else 0
+
+
+def _cmd_state_lineage(args: argparse.Namespace) -> int:
+    import json
+
+    from agentic_core.adg.applications.state_lineage import build_lineage_index
+    from agentic_core.adg.runtime.cache_loader import load_or_scan
+
+    repo_root = Path(args.repo_root)
+    result = load_or_scan(repo_root=str(repo_root))
+    result.print_digest()
+
+    index = build_lineage_index(result)
+    summary = index.coverage_summary()
+
+    if args.query:
+        records = index.mutations_for_state(args.query)
+        print(f"Mutations for state key '{args.query}': {len(records)} records")
+        print(json.dumps([r.to_dict() for r in records[:50]], indent=2))
+    else:
+        print(json.dumps(summary, indent=2))
+    return 0
+
+
+def _cmd_verify_architecture(args: argparse.Namespace) -> int:
+    from agentic_core.adg.applications.architecture_verifier import verify_architecture
+    from agentic_core.adg.runtime.cache_loader import load_or_scan
+
+    repo_root = Path(args.repo_root)
+    result = load_or_scan(repo_root=str(repo_root))
+    result.print_digest()
+
+    skip: frozenset[str] = frozenset(args.skip_planes) if args.skip_planes else frozenset()
+    report = verify_architecture(result, skip_planes=skip)
+    report.print_summary()
+
+    if args.json:
+        import json
+
+        print(json.dumps(report.to_dict(), indent=2))
+
+    return report.exit_code()
+
+
+def _cmd_policy_hash(args: argparse.Namespace) -> int:
+    import json
+
+    from agentic_core.adg.analysis.policy_hash_validator import validate_policy_hash_coupling
+    from agentic_core.adg.runtime.cache_loader import load_or_scan
+
+    repo_root = Path(args.repo_root)
+    result = load_or_scan(repo_root=str(repo_root))
+    result.print_digest()
+
+    report = validate_policy_hash_coupling(result)
+    print(report.summary)
+    print(json.dumps(report.to_dict(), indent=2))
+    return 1 if report.violation_count > 0 else 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         prog="adg",
@@ -360,6 +467,38 @@ def main(argv: list[str] | None = None) -> int:
     subparsers.add_parser("api-surface", help="Public API surface extraction (E13)")
     subparsers.add_parser("dip-check", help="Dependency Inversion Principle check (E18)")
 
+    # P6 prompt governance
+    subparsers.add_parser(
+        "prompt-authority", help="Prompt authority DAG enforcement — slot hierarchy violations (E21)"
+    )
+    subparsers.add_parser("prompt-lifecycle", help="Prompt lifecycle graph — generates/consumes edges (E20)")
+    pi_p = subparsers.add_parser("prompt-impact", help="Prompt blast radius for changed files (E24)")
+    pi_p.add_argument("--changed", nargs="*", metavar="FILE", help="Changed files for prompt impact analysis")
+
+    # P3 runtime / authority / mutation / policy
+    subparsers.add_parser(
+        "runtime-graph", help="Runtime execution graph — AgentAction/ToolInvocation/LayerTransition (E26)"
+    )
+    subparsers.add_parser(
+        "layer-authority", help="Layer authority enforcement — behavioral contract violations (E27)"
+    )
+    subparsers.add_parser("mutation-paths", help="Mutation path verification — UWG bypass detection (E28)")
+    sl_p = subparsers.add_parser("state-lineage", help="State lineage query — who mutated this state? (E29)")
+    sl_p.add_argument(
+        "--query", default="", metavar="STATE_KEY", help="State symbol key to trace mutations for"
+    )
+    va_p = subparsers.add_parser(
+        "verify-architecture", help="Unified architecture verification across all planes (E30)"
+    )
+    va_p.add_argument(
+        "--skip-planes",
+        nargs="*",
+        metavar="PLANE",
+        help="Planes to skip: runtime_graph layer_authority mutation_paths policy_hash",
+    )
+    va_p.add_argument("--json", action="store_true", default=False, help="Emit full JSON report")
+    subparsers.add_parser("policy-hash", help="Policy hash runtime coupling validation (E31)")
+
     parsed = parser.parse_args(argv)
 
     if parsed.command == "scan":
@@ -382,6 +521,28 @@ def main(argv: list[str] | None = None) -> int:
         return _cmd_api_surface(parsed)
     if parsed.command == "dip-check":
         return _cmd_dip_check(parsed)
+
+    # P6 prompt governance
+    if parsed.command == "prompt-authority":
+        return _cmd_prompt_authority(parsed)
+    if parsed.command == "prompt-lifecycle":
+        return _cmd_prompt_lifecycle(parsed)
+    if parsed.command == "prompt-impact":
+        return _cmd_prompt_impact(parsed)
+
+    # P3 runtime / authority / mutation / policy
+    if parsed.command == "runtime-graph":
+        return _cmd_runtime_graph(parsed)
+    if parsed.command == "layer-authority":
+        return _cmd_layer_authority(parsed)
+    if parsed.command == "mutation-paths":
+        return _cmd_mutation_paths(parsed)
+    if parsed.command == "state-lineage":
+        return _cmd_state_lineage(parsed)
+    if parsed.command == "verify-architecture":
+        return _cmd_verify_architecture(parsed)
+    if parsed.command == "policy-hash":
+        return _cmd_policy_hash(parsed)
 
     parser.print_help()
     return 1
