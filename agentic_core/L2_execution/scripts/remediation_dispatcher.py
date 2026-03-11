@@ -24,12 +24,15 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import logging
 import re as _re
 import sys
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
 from typing import Any
+
+logger = logging.getLogger(__name__)
 
 from agentic_core.L2_execution.healers.healing_tier_config import (
     load_default_healing_tier_config,
@@ -624,10 +627,8 @@ def _invoke_healer(
     healer_fn = HEALER_REGISTRY[check_id]
     try:
         result = healer_fn(check_dict, repo_root=repo_root, apply=apply)
-    # guardian: allow-silent-swallow
     except Exception as exc:
-        # TODO: Handle specific exception properly
-        raise  # Re-raise after logging/handling
+        logger.warning("healer %s raised %s: %s", check_id, type(exc).__name__, exc)
         result = HealCheckResult(
             check_id=check_id,
             status=HealStatus.FAILED,

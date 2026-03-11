@@ -24,6 +24,7 @@ from typing import TYPE_CHECKING, Any, Protocol
 from agentic_core.L2_execution.healers.healing_tier_config import HealingTierConfig
 from agentic_core.L2_execution.healers.healing_tier_router import route_healing_tier
 from agentic_core.L2_execution.healers.healing_tier_types import (
+    FailureSignal,
     HealingDecision,
     HealingInput,
     HealingTier,
@@ -267,7 +268,9 @@ def dispatch_healing(
         invoker = DefaultHealingProviderInvoker()
 
     # P2-G3: Wire live L4-backed prior provider when caller does not supply one
-    effective_prior_provider = meta_prior_provider if meta_prior_provider is not None else _get_l4_prior_provider()
+    effective_prior_provider = (
+        meta_prior_provider if meta_prior_provider is not None else _get_l4_prior_provider()
+    )
 
     decision = route_healing_tier(
         healing_input,

@@ -13,6 +13,10 @@ data/tmp/
 data/**/*.bin
 # [REFACTOR 2026-02-05] Healing backups folder (replaces archives/)
 archives/
+# Runtime append-only healing event log (grows on every test run)
+artifacts/healing/healing_events.jsonl
+# Runtime CI lane gate result (timing changes on every test run)
+artifacts/adg_ci_lane_gate_result.json
 # Generated one-off patch scripts
 tools/_patch_evidence.py
 .healing_backups/
