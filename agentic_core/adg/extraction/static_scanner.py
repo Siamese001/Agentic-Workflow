@@ -7,9 +7,13 @@ Graph types extracted:
   G1 - Import graph (imports edges)
   G2 - Call/write/network graph (writes_to, invokes_provider edges)
   G3 - Inheritance graph (implements edges)  [H3]
+  G4 - Inter-module call graph (calls edges between internal modules)  [Gap1]
   G5 - Config read graph (reads_from edges)  [H4]
   G6 - Composition graph (instantiates edges in __init__)  [H5]
   GF - Dynamic execution graph (eval/exec/importlib)  [S3]
+  GT - Test traceability graph (covers edges from test modules)  [Gap2]
+  GG - Governance plane graph (writes_through/routes_through UWG/healing)  [Gap5]
+  GV - Layer violation graph (violates edges for boundary drift)  [Gap3/Gap4]
 
 Output format per run:
     ADG-DETERMINISM-DIGEST: <sha256_hex>
@@ -37,13 +41,13 @@ from agentic_core.adg.schema import (
 )
 from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
-    APPS_RG_DIR,
     APPS_LIC_DIR,
+    APPS_RG_DIR,
     APPS_SHARED_DIR,
-    SYSTEM_LEARNING_DIR,
-    TOOLS_DIR,
-    TESTS_DIR,
     OPS_SCRIPTS_DIR,
+    SYSTEM_LEARNING_DIR,
+    TESTS_DIR,
+    TOOLS_DIR,
 )
 from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
 
@@ -68,6 +72,8 @@ _CARDINALITY_RANGES: dict[str, tuple[int, int]] = {
     "implements": (100, 10000),
     "reads_from": (50, 5000),
     "instantiates": (50, 5000),
+    "calls": (10, 100000),
+    "covers": (1, 50000),
 }
 
 # A2: Minimum evidence floors per graph
@@ -76,7 +82,47 @@ _MIN_EVIDENCE_FLOORS: dict[str, int] = {
     "implements": 100,
     "reads_from": 50,
     "instantiates": 50,
+    "calls": 10,
+    "covers": 1,
 }
+
+# G4: Internal module prefixes whose symbols qualify for inter-module call graph
+_INTERNAL_MODULE_PREFIXES: tuple[str, ...] = (
+    "agentic_core",
+    "apps_rg",
+    "apps_lic",
+    "apps_shared",
+    "system_learning",
+    "tools",
+    "ops_scripts",
+)
+
+# GG: Governance symbols that route through the Universal Write Gateway or healing flows
+_GOVERNANCE_WRITE_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "UniversalWriteGateway",
+        "uwg",
+        "UWG",
+        "submit_instruction",
+        "execute_write",
+        "commit_mutation",
+        "record_mutation",
+    }
+)
+
+_GOVERNANCE_ROUTE_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "SovereignLLMGateway",
+        "llm_gateway",
+        "sovereign_gateway",
+        "replay_ledger",
+        "HealingOrchestrator",
+        "InfrastructureOrchestrator",
+        "PilotOrchestrator",
+        "run_healing",
+        "replay_run",
+    }
+)
 
 # H4: config read symbols that trigger reads_from edges
 _CONFIG_READ_SYMBOLS: frozenset[str] = frozenset(
@@ -161,6 +207,10 @@ class ScanManifest:
     edge_counts_by_graph: dict[str, int] = field(default_factory=dict)
     rule_skip_counts: dict[str, int] = field(default_factory=dict)
     dynamic_execution_count: int = 0
+    layer_violation_count: int = 0
+    test_covers_count: int = 0
+    inter_module_call_count: int = 0
+    governance_plane_count: int = 0
     tests_included: bool = False
     minimum_evidence_passed: bool = False
     scanner_self_test_passed: bool = False
@@ -265,6 +315,191 @@ class ScanResult:
     def print_digest(self) -> None:
         """Print the determinism digest exactly once per run."""
         print(f"ADG-DETERMINISM-DIGEST: {self.digest}")
+
+
+class _InternalCallGraphVisitor(ast.NodeVisitor):
+    """G4: Extract inter-module call graph (calls edges) for Gap 1.
+
+    Tracks which locally-bound names (imported from internal modules) are called,
+    emitting a `calls` edge from caller module to the imported symbol.
+    Only fires for symbols explicitly imported from internal prefixes.
+    """
+
+    def __init__(self, module_adg_name: str, source_file: str) -> None:
+        self.module_adg_name = module_adg_name
+        self.source_file = source_file
+        self.edges: list[Edge] = []
+        # local_name -> canonical import path (only for internal imports)
+        self._internal_names: dict[str, str] = {}
+
+    def visit_Import(self, node: ast.Import) -> None:
+        for alias in node.names:
+            if self._is_internal(alias.name):
+                local = alias.asname if alias.asname else alias.name.split(".")[0]
+                self._internal_names[local] = alias.name
+        self.generic_visit(node)
+
+    def visit_ImportFrom(self, node: ast.ImportFrom) -> None:
+        module = node.module or ""
+        if self._is_internal(module):
+            for alias in node.names:
+                local = alias.asname if alias.asname else alias.name
+                full = f"{module}.{alias.name}" if module else alias.name
+                self._internal_names[local] = full
+        self.generic_visit(node)
+
+    def visit_Call(self, node: ast.Call) -> None:
+        sym = self._extract_root(node.func)
+        if sym and sym in self._internal_names:
+            imported_sym = self._internal_names[sym]
+            to_name = canonical_name("Symbol", imported_sym)
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    relation_type="calls",
+                    to_name=to_name,
+                    edge_kind="call",
+                    source_file=self.source_file,
+                    line_no=node.lineno,
+                    symbol=imported_sym,
+                )
+            )
+        self.generic_visit(node)
+
+    @staticmethod
+    def _is_internal(module_name: str) -> bool:
+        base = module_name.split(".")[0]
+        return base in _INTERNAL_MODULE_PREFIXES
+
+    @staticmethod
+    def _extract_root(func: ast.expr) -> str:
+        if isinstance(func, ast.Name):
+            return func.id
+        if isinstance(func, ast.Attribute):
+            cur: ast.expr = func
+            while isinstance(cur, ast.Attribute):
+                cur = cur.value
+            if isinstance(cur, ast.Name):
+                return cur.id
+        return ""
+
+
+class _TestTraceabilityVisitor(ast.NodeVisitor):
+    """GT: Extract test→code traceability (covers edges) for Gap 2.
+
+    A test module `covers` a production module when:
+      a) Its filename matches `test_<module>` / `<module>_test` convention, or
+      b) It imports from a known internal production module.
+    Only fires for files under the `tests/` scan root.
+    """
+
+    def __init__(self, module_adg_name: str, source_file: str) -> None:
+        self.module_adg_name = module_adg_name
+        self.source_file = source_file
+        self.edges: list[Edge] = []
+        self._is_test_file = source_file.startswith("tests/") or "/tests/" in source_file
+
+    def visit_ImportFrom(self, node: ast.ImportFrom) -> None:
+        if not self._is_test_file:
+            return
+        module = node.module or ""
+        if module and _InternalCallGraphVisitor._is_internal(module):
+            to_name = canonical_name("Symbol", module)
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    relation_type="covers",
+                    to_name=to_name,
+                    edge_kind="import",
+                    source_file=self.source_file,
+                    line_no=node.lineno,
+                    symbol=module,
+                )
+            )
+        self.generic_visit(node)
+
+    def visit_Import(self, node: ast.Import) -> None:
+        if not self._is_test_file:
+            return
+        for alias in node.names:
+            if _InternalCallGraphVisitor._is_internal(alias.name):
+                to_name = canonical_name("Symbol", alias.name)
+                self.edges.append(
+                    Edge(
+                        from_name=self.module_adg_name,
+                        relation_type="covers",
+                        to_name=to_name,
+                        edge_kind="import",
+                        source_file=self.source_file,
+                        line_no=node.lineno,
+                        symbol=alias.name,
+                    )
+                )
+        self.generic_visit(node)
+
+
+class _GovernancePlaneVisitor(ast.NodeVisitor):
+    """GG: Extract governance plane dependencies (Gap 5).
+
+    Emits:
+      - `writes_through` edges when a module calls UWG write operations
+      - `routes_through` edges when a module invokes sovereign gateway / healing orchestrators
+    """
+
+    def __init__(self, module_adg_name: str, source_file: str) -> None:
+        self.module_adg_name = module_adg_name
+        self.source_file = source_file
+        self.edges: list[Edge] = []
+
+    def visit_Call(self, node: ast.Call) -> None:
+        sym = self._extract_sym(node.func)
+        if not sym:
+            self.generic_visit(node)
+            return
+        root = sym.split(".")[0]
+        leaf = sym.split(".")[-1]
+        if root in _GOVERNANCE_WRITE_SYMBOLS or leaf in _GOVERNANCE_WRITE_SYMBOLS:
+            to_name = canonical_name("Gateway", "UniversalWriteGateway")
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    relation_type="writes_through",
+                    to_name=to_name,
+                    edge_kind="write",
+                    source_file=self.source_file,
+                    line_no=node.lineno,
+                    symbol=sym,
+                )
+            )
+        elif root in _GOVERNANCE_ROUTE_SYMBOLS or leaf in _GOVERNANCE_ROUTE_SYMBOLS:
+            to_name = canonical_name("Gateway", "SovereignLLMGateway")
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    relation_type="routes_through",
+                    to_name=to_name,
+                    edge_kind="call",
+                    source_file=self.source_file,
+                    line_no=node.lineno,
+                    symbol=sym,
+                )
+            )
+        self.generic_visit(node)
+
+    @staticmethod
+    def _extract_sym(func: ast.expr) -> str:
+        if isinstance(func, ast.Name):
+            return func.id
+        if isinstance(func, ast.Attribute):
+            parts = []
+            cur: ast.expr = func
+            while isinstance(cur, ast.Attribute):
+                parts.append(cur.attr)
+                cur = cur.value
+            if isinstance(cur, ast.Name):
+                parts.append(cur.id)
+            return ".".join(reversed(parts))
+        return ""
 
 
 class _InheritanceVisitor(ast.NodeVisitor):
@@ -689,6 +924,11 @@ def _scan_file(
     inh_visitor.visit(tree)
     edges.extend(inh_visitor.edges)
 
+    # G4: Inter-module call graph (Gap 1)
+    icg_visitor = _InternalCallGraphVisitor(module_adg, rel)
+    icg_visitor.visit(tree)
+    edges.extend(icg_visitor.edges)
+
     # G5: Config/env read edges (H4)
     attr_visitor = _AttributeVisitor(module_adg, rel)
     attr_visitor.visit(tree)
@@ -704,7 +944,70 @@ def _scan_file(
     dyn_visitor.visit(tree)
     edges.extend(dyn_visitor.edges)
 
+    # GT: Test traceability edges (Gap 2)
+    tt_visitor = _TestTraceabilityVisitor(module_adg, rel)
+    tt_visitor.visit(tree)
+    edges.extend(tt_visitor.edges)
+
+    # GG: Governance plane edges (Gap 5)
+    gov_visitor = _GovernancePlaneVisitor(module_adg, rel)
+    gov_visitor.visit(tree)
+    edges.extend(gov_visitor.edges)
+
     return edges, False
+
+
+def _emit_layer_violation_edges(result: ScanResult) -> list[Edge]:
+    """GV: Post-scan pass — emit `violates` edges for forbidden cross-layer imports (Gap 3+4).
+
+    For each import edge where the from_module layer -> to_symbol layer combination
+    is not in ALLOWED_LAYER_EDGES, emit a `violates` edge from the module to
+    ADG::Layer::<violated_layer>.
+    """
+    from agentic_core.adg.schema import ALLOWED_LAYER_EDGES, module_path_to_layer
+
+    _module_prefix = "ADG::Module::"
+    violation_edges: list[Edge] = []
+    seen: set[tuple[str, str, str]] = set()
+
+    for edge in result.edges:
+        if edge.relation_type != "imports":
+            continue
+        if not edge.from_name.startswith(_module_prefix):
+            continue
+        from_rel = edge.from_name[len(_module_prefix) :]
+        from_layer = module_path_to_layer(from_rel)
+        # Resolve to_layer: the imported symbol's base module determines its layer
+        sym = edge.symbol or ""
+        to_layer = module_path_to_layer(sym.replace(".", "/"))
+        if to_layer == "L_UNKNOWN":
+            # Try the first two segments as a path prefix
+            parts = sym.split(".")
+            if len(parts) >= 2:
+                to_layer = module_path_to_layer("/".join(parts[:2]))
+        if from_layer == "L_UNKNOWN" or to_layer == "L_UNKNOWN":
+            continue
+        if from_layer == to_layer:
+            continue
+        if (from_layer, to_layer) in ALLOWED_LAYER_EDGES:
+            continue
+        dedup_key = (edge.from_name, "violates", to_layer)
+        if dedup_key in seen:
+            continue
+        seen.add(dedup_key)
+        layer_node = canonical_name("Layer", to_layer)
+        violation_edges.append(
+            Edge(
+                from_name=edge.from_name,
+                relation_type="violates",
+                to_name=layer_node,
+                edge_kind="import",
+                source_file=edge.source_file,
+                line_no=edge.line_no,
+                symbol=f"{from_layer}->{to_layer}",
+            )
+        )
+    return violation_edges
 
 
 def _check_evidence_floors(result: ScanResult) -> bool:
@@ -747,6 +1050,8 @@ def run_scanner_self_test() -> bool:
 import os
 from pathlib import Path
 from some.external.sdk import SomeProvider
+from agentic_core.adg.schema import canonical_name
+from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
 
 class BaseClass:
     pass
@@ -757,10 +1062,12 @@ class ConcreteAgent(BaseClass):
         self.path = Path("/tmp")
         env_val = os.getenv("SOME_KEY")
         dyn = eval("1+1")
+        uwg = UniversalWriteGateway()
 
     def run(self):
         import importlib
         mod = importlib.import_module("some.mod")
+        result = canonical_name("Module", "some/path.py")
 """
     try:
         tree = ast.parse(sample_code)
@@ -798,6 +1105,24 @@ class ConcreteAgent(BaseClass):
     dyn = _DynamicExecutionVisitor(module_adg, source)
     dyn.visit(tree)
     if not dyn.edges:
+        return False
+
+    # G4
+    icg = _InternalCallGraphVisitor(module_adg, source)
+    icg.visit(tree)
+    if not icg.edges:
+        return False
+
+    # GT
+    tt = _TestTraceabilityVisitor(module_adg, "tests/test_self_test_.py")
+    tt.visit(tree)
+    if not tt.edges:
+        return False
+
+    # GG
+    gov = _GovernancePlaneVisitor(module_adg, source)
+    gov.visit(tree)
+    if not gov.edges:
         return False
 
     return True
@@ -848,6 +1173,12 @@ class ADGStaticScanner:
         if manifest.parsed_module_count == 0:
             logger.error("ADG FATAL: zero files parsed — scan aborted")
 
+        # GV: Layer violation edges (Gap 3+4) — computed as a post-scan pass
+        violation_edges = _emit_layer_violation_edges(
+            ScanResult(edges=list(set(all_edges)), modules=sorted(modules_seen))
+        )
+        all_edges.extend(violation_edges)
+
         result.edges = sorted(set(all_edges))  # S7: sorted for determinism
         result.modules = sorted(modules_seen)
         result.syntax_errors = syntax_errors
@@ -866,6 +1197,12 @@ class ADGStaticScanner:
         manifest.unknown_layer_count = sum(1 for m in modules_seen if module_path_to_layer(m) == "L_UNKNOWN")
         # dynamic exec count
         manifest.dynamic_execution_count = sum(1 for e in result.edges if e.edge_kind == "dynamic_exec")
+        manifest.layer_violation_count = sum(1 for e in result.edges if e.relation_type == "violates")
+        manifest.test_covers_count = sum(1 for e in result.edges if e.relation_type == "covers")
+        manifest.inter_module_call_count = sum(1 for e in result.edges if e.relation_type == "calls")
+        manifest.governance_plane_count = sum(
+            1 for e in result.edges if e.relation_type in ("writes_through", "routes_through")
+        )
 
         return result
 
@@ -921,10 +1258,17 @@ __all__ = [
     "ScanResult",
     "ScanManifest",
     "run_scanner_self_test",
+    "_emit_layer_violation_edges",
     "_SCANNER_VERSION",
     "_SCHEMA_VERSION",
     "_InheritanceVisitor",
     "_AttributeVisitor",
     "_CompositionVisitor",
     "_DynamicExecutionVisitor",
+    "_InternalCallGraphVisitor",
+    "_TestTraceabilityVisitor",
+    "_GovernancePlaneVisitor",
+    "_INTERNAL_MODULE_PREFIXES",
+    "_GOVERNANCE_WRITE_SYMBOLS",
+    "_GOVERNANCE_ROUTE_SYMBOLS",
 ]

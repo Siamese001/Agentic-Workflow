@@ -180,8 +180,9 @@ class TestStaticScannerExceptionPaths:
 
         bad_file = tmp_path / "bad.py"
         bad_file.write_text("def foo(:\n", encoding="utf-8")
-        edges = _scan_file(bad_file, tmp_path)
+        edges, had_error = _scan_file(bad_file, tmp_path)
         assert edges == []
+        assert had_error is True
 
     @pytest.mark.architecture
     def test_oserror_file_produces_no_edges(self, tmp_path: Path) -> None:
@@ -189,8 +190,9 @@ class TestStaticScannerExceptionPaths:
         from agentic_core.adg.extraction.static_scanner import _scan_file
 
         missing = tmp_path / "nonexistent.py"
-        edges = _scan_file(missing, tmp_path)
+        edges, had_error = _scan_file(missing, tmp_path)
         assert edges == []
+        assert had_error is True
 
     @pytest.mark.architecture
     def test_unicode_decode_file_handled(self, tmp_path: Path) -> None:
@@ -213,8 +215,9 @@ class TestStaticScannerExceptionPaths:
 
         empty = tmp_path / "empty.py"
         empty.write_text("", encoding="utf-8")
-        edges = _scan_file(empty, tmp_path)
+        edges, had_error = _scan_file(empty, tmp_path)
         assert edges == []
+        assert had_error is False
 
     @pytest.mark.architecture
     def test_comment_only_file_produces_no_edges(self, tmp_path: Path) -> None:
@@ -223,8 +226,9 @@ class TestStaticScannerExceptionPaths:
 
         f = tmp_path / "comments.py"
         f.write_text("# just a comment\n# another\n", encoding="utf-8")
-        edges = _scan_file(f, tmp_path)
+        edges, had_error = _scan_file(f, tmp_path)
         assert edges == []
+        assert had_error is False
 
 
 class TestStaticScannerMalformedInputs:

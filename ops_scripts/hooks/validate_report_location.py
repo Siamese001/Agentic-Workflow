@@ -51,7 +51,7 @@ from agentic_core.L5_safety.validators.report_location_validator import (  # noq
     ReportLocationValidator,
 )
 
-COMPLIANCE_LOG_DIR = PROJECT_ROOT / AGENTIC_CORE_DIR / "L0_routing" / "logs" / "compliance_reports"
+COMPLIANCE_LOG_DIR = PROJECT_ROOT / "agentic_core" / "L0_routing" / "logs" / "compliance_reports"
 
 
 def get_staged_files() -> list[Path]:
