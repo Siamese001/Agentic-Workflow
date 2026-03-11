@@ -13,9 +13,15 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))  # guardian: allow-global-mutation
 
 from agentic_core.adg.analysis.confidence import confidence_summary, score_edges
-from agentic_core.adg.analysis.ownership import OwnershipRegistry
+from agentic_core.adg.analysis.diff import diff_snapshots
+from agentic_core.adg.analysis.impact import impact_summary, predict_impact
+from agentic_core.adg.analysis.ownership import OwnershipRegistry, _infer_ownership
 from agentic_core.adg.analysis.repair import repair_routing_summary, route_violations
-from agentic_core.adg.analysis.snapshot import build_snapshot
+from agentic_core.adg.analysis.snapshot import (
+    build_snapshot,
+    load_latest_snapshot,
+    save_snapshot,
+)
 from agentic_core.adg.client.mcp_client import ADGMCPClient
 from agentic_core.adg.extraction.graph_persister import persist_scan_result
 from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
@@ -68,6 +74,14 @@ def generate_full_adg(output_path: Path) -> None:
         if "path" in obs_dict:
             entity_with_meta["resolved_path"] = obs_dict["path"]
 
+        # Enhancement 8: Add ownership overlay to every module entity
+        if entity["entityType"] == "module":
+            module_path = obs_dict.get("path", entity["name"])
+            ownership = _infer_ownership(module_path)
+            entity_with_meta["owner"] = ownership.owner
+            entity_with_meta["criticality"] = ownership.criticality
+            entity_with_meta["runtime_surface"] = ownership.runtime_surface
+
         entities_with_metadata.append(entity_with_meta)
 
     # Calculate artifact digest
@@ -86,12 +100,31 @@ def generate_full_adg(output_path: Path) -> None:
     # Enhancement 6: Deterministic canonical snapshot
     snapshot = build_snapshot(result)
 
+    # Enhancement 7: Historical graph diff — load previous snapshot and diff
+    adg_artifacts_dir = ROOT / "artifacts" / "adg"
+    previous_snapshot = load_latest_snapshot(adg_artifacts_dir)
+    if previous_snapshot is not None and previous_snapshot.graph_hash != snapshot.graph_hash:
+        graph_diff = diff_snapshots(previous_snapshot, snapshot)
+        print(f"[ADG] E7 diff: {graph_diff.summary}")
+    elif previous_snapshot is not None:
+        graph_diff = diff_snapshots(previous_snapshot, snapshot)
+        print(f"[ADG] E7 diff: {graph_diff.summary}")
+    else:
+        graph_diff = None
+        print("[ADG] E7 diff: no previous snapshot found (first run)")
+
+    # Persist current snapshot for future diffs
+    ts_snap = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    snap_path = adg_artifacts_dir / f"adg_snapshot_{ts_snap}.json"
+    save_snapshot(snapshot, snap_path)
+    print(f"[ADG] E7 snapshot saved: {snap_path.name}")
+
+    # Enhancement 8: Ownership registry + per-entity overlay
+    ownership_registry = OwnershipRegistry.from_scan_result(result)
+
     # Enhancement 9: Edge confidence / provenance scoring
     scored_edges = score_edges(list(result.edges))
     conf_summary = confidence_summary(scored_edges)
-
-    # Enhancement 8: Ownership registry
-    ownership_registry = OwnershipRegistry.from_scan_result(result)
 
     # Enhancement 10: Repair routing for violations + governance edges
     violation_edges = [
@@ -99,6 +132,37 @@ def generate_full_adg(output_path: Path) -> None:
     ]
     repair_routes = route_violations(violation_edges)
     routing_summary = repair_routing_summary(repair_routes)
+
+    # Enhancement 5: Change-impact prediction
+    # Seed with modules that have the most outgoing violation edges (hotspots).
+    # Falls back to a representative sample of high-criticality platform modules.
+    violation_sources = [
+        e.source_file
+        for e in result.edges
+        if e.relation_type == "imports"
+        and e.source_file
+        and any(
+            e.source_file.startswith(p)
+            for p in (
+                "agentic_core/L2_execution",
+                "agentic_core/L0_routing",
+                "agentic_core/L5_safety",
+            )
+        )
+    ]
+    # Pick up to 5 unique high-criticality source files as representative seed
+    seed_files: list[str] = []
+    seen_seeds: set[str] = set()
+    for sf in violation_sources:
+        if sf not in seen_seeds:
+            seen_seeds.add(sf)
+            seed_files.append(sf)
+        if len(seed_files) >= 5:
+            break
+    if not seed_files:
+        seed_files = list(result.modules[:5])
+    impact_report = predict_impact(result, seed_files)
+    imp_summary = impact_summary(impact_report)
 
     # Build final output
     output = {
@@ -153,6 +217,27 @@ def generate_full_adg(output_path: Path) -> None:
         "canonical_snapshot": snapshot.to_dict(),
         "confidence_analysis": conf_summary,
         "repair_routing": routing_summary,
+        "impact_prediction": imp_summary,
+        "graph_drift": graph_diff.to_dict() if graph_diff is not None else {"status": "no_previous_snapshot"},
+        "ownership_summary": {
+            "by_owner": dict(
+                sorted(
+                    {
+                        _infer_ownership(e.get("resolved_path", e["adg_name"])).owner: 0
+                        for e in entities_with_metadata
+                        if e["entity_type"] == "module"
+                    }.items()
+                )
+            ),
+            "by_criticality": {
+                lvl: sum(1 for e in entities_with_metadata if e.get("criticality") == lvl)
+                for lvl in ("high", "medium", "low")
+            },
+            "by_runtime_surface": {
+                surf: sum(1 for e in entities_with_metadata if e.get("runtime_surface") == surf)
+                for surf in ("prod", "governance", "CI", "healing", "unknown")
+            },
+        },
     }
 
     # Write output
@@ -171,12 +256,20 @@ def generate_full_adg(output_path: Path) -> None:
     print(f"      GT_covers={result.manifest.test_covers_count}  (Gap 2 resolved)")
     print(f"      GV_violates={result.manifest.layer_violation_count}  (Gap 3+4 resolved)")
     print(f"      GG_governance={result.manifest.governance_plane_count}  (Gap 5 resolved)")
-    print("[ADG] Enhancement 6-10 analysis:")
+    print("[ADG] Enhancement 5-10 analysis:")
+    print(
+        f"      E5 impact: {imp_summary['impacted_module_count']} impacted  "
+        f"{imp_summary['covering_test_count']} tests  risk={imp_summary['risk_label']} ({imp_summary['risk_score']:.4f})"
+    )
     print(
         f"      E6 graph_hash={snapshot.graph_hash[:16]}...  nodes={snapshot.node_count}  edges={snapshot.edge_count}"
     )
-    print("      E7 diff engine: use diff_snapshots(before, after) on saved snapshots")
-    print(f"      E8 ownership registry: {len(result.modules)} modules indexed")
+    if graph_diff is not None:
+        print(f"      E7 drift: {graph_diff.summary}")
+    else:
+        print("      E7 drift: first run — snapshot persisted for next diff")
+    owned_high = sum(1 for e in entities_with_metadata if e.get("criticality") == "high")
+    print(f"      E8 ownership: {len(result.modules)} modules  high_criticality={owned_high}")
     print(
         f"      E9 confidence: avg={conf_summary['average_confidence']}  high={conf_summary['confidence_tiers']['high']}  low={conf_summary['confidence_tiers']['low']}"
     )

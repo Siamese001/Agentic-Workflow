@@ -12,6 +12,7 @@ from __future__ import annotations
 import hashlib
 import json
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -98,6 +99,28 @@ class CanonicalSnapshot:
     @classmethod
     def from_json(cls, s: str) -> CanonicalSnapshot:
         return cls.from_dict(json.loads(s))
+
+
+def save_snapshot(snapshot: CanonicalSnapshot, path: Path) -> None:
+    """Persist a CanonicalSnapshot to disk as JSON."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(snapshot.to_json(), encoding="utf-8")
+
+
+def load_snapshot(path: Path) -> CanonicalSnapshot:
+    """Load a CanonicalSnapshot from a JSON file on disk."""
+    return CanonicalSnapshot.from_json(path.read_text(encoding="utf-8"))
+
+
+def load_latest_snapshot(artifacts_dir: Path) -> CanonicalSnapshot | None:
+    """Load the most recent canonical snapshot from artifacts_dir, or None.
+
+    Looks for files matching 'adg_snapshot_*.json' sorted by name (timestamp).
+    """
+    candidates = sorted(artifacts_dir.glob("adg_snapshot_*.json"))
+    if not candidates:
+        return None
+    return load_snapshot(candidates[-1])
 
 
 def build_snapshot(result: ScanResult) -> CanonicalSnapshot:

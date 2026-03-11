@@ -35,7 +35,6 @@ from agentic_core.adg.schema import (
     canonical_name,
     module_path_to_layer,
 )
-from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
 from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     APPS_LIC_DIR,
@@ -46,6 +45,7 @@ from agentic_core.L0_routing.config.path_constants import (
     TESTS_DIR,
     TOOLS_DIR,
 )
+from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
 
 logger = logging.getLogger(__name__)
 
@@ -165,6 +165,10 @@ class ScanManifest:
     minimum_evidence_passed: bool = False
     scanner_self_test_passed: bool = False
     cardinality_violations: list[str] = field(default_factory=list)
+    inter_module_call_count: int = 0
+    test_covers_count: int = 0
+    layer_violation_count: int = 0
+    governance_plane_count: int = 0
 
     def to_dict(self) -> dict:
         import dataclasses
@@ -630,6 +634,267 @@ class _CallVisitor(ast.NodeVisitor):
         return "", ""
 
 
+_INTERNAL_MODULE_PREFIXES: tuple[str, ...] = (
+    "agentic_core",
+    "apps_rg",
+    "apps_lic",
+    "apps_shared",
+    "system_learning",
+    "ops_scripts",
+    "tools",
+    "tests",
+)
+
+_TEST_FILE_INDICATORS: tuple[str, ...] = ("tests/", "test_", "_test.py")
+
+_GOVERNANCE_WRITE_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "UniversalWriteGateway",
+        "execute_write",
+        "submit_instruction",
+        "commit_write",
+        "uwg",
+    }
+)
+
+_GOVERNANCE_ROUTE_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "HealingOrchestrator",
+        "SovereignLLMGateway",
+        "sovereign_gateway",
+        "run_healing",
+        "replay_run",
+        "route_instruction",
+        "healing_orchestrator",
+    }
+)
+
+
+class _InternalCallGraphVisitor(ast.NodeVisitor):
+    """G4: Extract calls to internal module symbols (inter-module call graph)."""
+
+    def __init__(self, module_adg_name: str, source_file: str) -> None:
+        self.module_adg_name = module_adg_name
+        self.source_file = source_file
+        self.edges: list[Edge] = []
+        self._internal_locals: dict[str, str] = {}
+
+    def visit_Import(self, node: ast.Import) -> None:
+        for alias in node.names:
+            if any(alias.name.startswith(p) for p in _INTERNAL_MODULE_PREFIXES):
+                local = alias.asname or alias.name.split(".")[0]
+                self._internal_locals[local] = alias.name
+        self.generic_visit(node)
+
+    def visit_ImportFrom(self, node: ast.ImportFrom) -> None:
+        module = node.module or ""
+        if any(module.startswith(p) for p in _INTERNAL_MODULE_PREFIXES):
+            for alias in node.names:
+                local = alias.asname or alias.name
+                self._internal_locals[local] = f"{module}.{alias.name}"
+        self.generic_visit(node)
+
+    def visit_Call(self, node: ast.Call) -> None:
+        sym = self._extract_symbol(node.func)
+        if sym:
+            base = sym.split(".")[0]
+            if base in self._internal_locals:
+                full_sym = self._internal_locals[base]
+                to_name = canonical_name("Symbol", full_sym)
+                self.edges.append(
+                    Edge(
+                        from_name=self.module_adg_name,
+                        relation_type="calls",
+                        to_name=to_name,
+                        edge_kind="call",
+                        source_file=self.source_file,
+                        line_no=node.lineno,
+                        symbol=full_sym,
+                    )
+                )
+        self.generic_visit(node)
+
+    @staticmethod
+    def _extract_symbol(func_node: ast.expr) -> str:
+        if isinstance(func_node, ast.Name):
+            return func_node.id
+        if isinstance(func_node, ast.Attribute):
+            parts: list[str] = []
+            current: ast.expr = func_node
+            while isinstance(current, ast.Attribute):
+                parts.append(current.attr)
+                current = current.value
+            if isinstance(current, ast.Name):
+                parts.append(current.id)
+            return ".".join(reversed(parts))
+        return ""
+
+
+class _TestTraceabilityVisitor(ast.NodeVisitor):
+    """GT: Emit `covers` edges from test modules to the internal modules they import."""
+
+    def __init__(self, module_adg_name: str, source_file: str) -> None:
+        self.module_adg_name = module_adg_name
+        self.source_file = source_file
+        self.edges: list[Edge] = []
+        self._is_test = any(ind in source_file for ind in _TEST_FILE_INDICATORS)
+
+    def visit_Import(self, node: ast.Import) -> None:
+        if not self._is_test:
+            return
+        for alias in node.names:
+            if any(alias.name.startswith(p) for p in _INTERNAL_MODULE_PREFIXES):
+                to_name = canonical_name("Symbol", alias.name)
+                self.edges.append(
+                    Edge(
+                        from_name=self.module_adg_name,
+                        relation_type="covers",
+                        to_name=to_name,
+                        edge_kind="import",
+                        source_file=self.source_file,
+                        line_no=node.lineno,
+                        symbol=alias.name,
+                    )
+                )
+        self.generic_visit(node)
+
+    def visit_ImportFrom(self, node: ast.ImportFrom) -> None:
+        if not self._is_test:
+            return
+        module = node.module or ""
+        if any(module.startswith(p) for p in _INTERNAL_MODULE_PREFIXES):
+            to_name = canonical_name("Symbol", module)
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    relation_type="covers",
+                    to_name=to_name,
+                    edge_kind="import",
+                    source_file=self.source_file,
+                    line_no=node.lineno,
+                    symbol=module,
+                )
+            )
+        self.generic_visit(node)
+
+
+class _GovernancePlaneVisitor(ast.NodeVisitor):
+    """GG: Emit writes_through / routes_through edges for governance chokepoints."""
+
+    def __init__(self, module_adg_name: str, source_file: str) -> None:
+        self.module_adg_name = module_adg_name
+        self.source_file = source_file
+        self.edges: list[Edge] = []
+
+    def visit_Call(self, node: ast.Call) -> None:
+        sym = self._extract_symbol(node.func)
+        if sym:
+            base = sym.split(".")[0]
+            tail = sym.split(".")[-1]
+            if base in _GOVERNANCE_WRITE_SYMBOLS or tail in _GOVERNANCE_WRITE_SYMBOLS:
+                to_name = canonical_name("Symbol", sym)
+                self.edges.append(
+                    Edge(
+                        from_name=self.module_adg_name,
+                        relation_type="writes_through",
+                        to_name=to_name,
+                        edge_kind="write",
+                        source_file=self.source_file,
+                        line_no=node.lineno,
+                        symbol=sym,
+                    )
+                )
+            elif base in _GOVERNANCE_ROUTE_SYMBOLS or tail in _GOVERNANCE_ROUTE_SYMBOLS:
+                to_name = canonical_name("Symbol", sym)
+                self.edges.append(
+                    Edge(
+                        from_name=self.module_adg_name,
+                        relation_type="routes_through",
+                        to_name=to_name,
+                        edge_kind="call",
+                        source_file=self.source_file,
+                        line_no=node.lineno,
+                        symbol=sym,
+                    )
+                )
+        self.generic_visit(node)
+
+    @staticmethod
+    def _extract_symbol(func_node: ast.expr) -> str:
+        if isinstance(func_node, ast.Name):
+            return func_node.id
+        if isinstance(func_node, ast.Attribute):
+            parts: list[str] = []
+            current: ast.expr = func_node
+            while isinstance(current, ast.Attribute):
+                parts.append(current.attr)
+                current = current.value
+            if isinstance(current, ast.Name):
+                parts.append(current.id)
+            return ".".join(reversed(parts))
+        return ""
+
+
+def _emit_layer_violation_edges(result: ScanResult) -> list[Edge]:
+    """GV: Post-scan pass — emit deduplicated `violates` edges for forbidden cross-layer imports.
+
+    Only fires on `imports` edges where the from-module layer is forbidden from
+    importing the to-symbol's layer.  Deduplicates on (from_module, from_layer, to_layer).
+    """
+    from agentic_core.adg.schema import ALLOWED_LAYER_EDGES
+
+    violations: list[Edge] = []
+    seen: set[tuple[str, str, str]] = set()
+
+    for edge in result.edges:
+        if edge.relation_type != "imports":
+            continue
+
+        from_rel = edge.source_file
+        from_layer = module_path_to_layer(from_rel)
+        if from_layer == "L_UNKNOWN":
+            continue
+
+        sym = edge.symbol
+        sym_parts = sym.replace("-", "_").split(".")
+        to_layer = "L_UNKNOWN"
+        for length in range(len(sym_parts), 0, -1):
+            candidate = "/".join(sym_parts[:length])
+            found = module_path_to_layer(candidate)
+            if found != "L_UNKNOWN":
+                to_layer = found
+                break
+
+        if to_layer == "L_UNKNOWN":
+            continue
+
+        if from_layer == to_layer:
+            continue
+
+        if (from_layer, to_layer) in ALLOWED_LAYER_EDGES:
+            continue
+
+        dedup_key = (edge.from_name, from_layer, to_layer)
+        if dedup_key in seen:
+            continue
+        seen.add(dedup_key)
+
+        to_layer_adg = canonical_name("Layer", to_layer)
+        violations.append(
+            Edge(
+                from_name=edge.from_name,
+                relation_type="violates",
+                to_name=to_layer_adg,
+                edge_kind="import",
+                source_file=edge.source_file,
+                line_no=edge.line_no,
+                symbol=f"{from_layer}->{to_layer}",
+            )
+        )
+
+    return violations
+
+
 def _iter_python_files(repo_root: Path) -> Iterator[Path]:
     """Yield all .py files under SCAN_ROOTS, deterministic (sorted) order."""
     all_files: list[Path] = []
@@ -703,6 +968,21 @@ def _scan_file(
     dyn_visitor = _DynamicExecutionVisitor(module_adg, rel)
     dyn_visitor.visit(tree)
     edges.extend(dyn_visitor.edges)
+
+    # G4: Inter-module call graph
+    icg_visitor = _InternalCallGraphVisitor(module_adg, rel)
+    icg_visitor.visit(tree)
+    edges.extend(icg_visitor.edges)
+
+    # GT: Test traceability graph
+    tt_visitor = _TestTraceabilityVisitor(module_adg, rel)
+    tt_visitor.visit(tree)
+    edges.extend(tt_visitor.edges)
+
+    # GG: Governance plane graph
+    gov_visitor = _GovernancePlaneVisitor(module_adg, rel)
+    gov_visitor.visit(tree)
+    edges.extend(gov_visitor.edges)
 
     return edges, False
 
@@ -867,6 +1147,20 @@ class ADGStaticScanner:
         # dynamic exec count
         manifest.dynamic_execution_count = sum(1 for e in result.edges if e.edge_kind == "dynamic_exec")
 
+        # GV: Layer violation post-scan pass
+        violation_edges = _emit_layer_violation_edges(result)
+        if violation_edges:
+            result.edges = sorted(set(result.edges) | set(violation_edges))
+            result.compute_digest()
+
+        # Gap manifest counts
+        manifest.inter_module_call_count = sum(1 for e in result.edges if e.relation_type == "calls")
+        manifest.test_covers_count = sum(1 for e in result.edges if e.relation_type == "covers")
+        manifest.layer_violation_count = sum(1 for e in result.edges if e.relation_type == "violates")
+        manifest.governance_plane_count = sum(
+            1 for e in result.edges if e.relation_type in ("writes_through", "routes_through")
+        )
+
         return result
 
     def scan_files(self, files: list[str], commit_sha: str = "") -> ScanResult:
@@ -927,4 +1221,8 @@ __all__ = [
     "_AttributeVisitor",
     "_CompositionVisitor",
     "_DynamicExecutionVisitor",
+    "_InternalCallGraphVisitor",
+    "_TestTraceabilityVisitor",
+    "_GovernancePlaneVisitor",
+    "_emit_layer_violation_edges",
 ]
