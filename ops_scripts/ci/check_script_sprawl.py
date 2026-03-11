@@ -199,10 +199,10 @@ def main() -> int:
     print("  - 'CI gate', 'pre-commit hook', etc.")
 
     print("\nCanonical invocation policy:")
-    print("  ❌ Create new runner script: tools/run_my_module.py")
-    print("  ✅ Invoke module directly: python -m my_module")
-    print("\n  ❌ Wrapper script that calls subprocess.run()")
-    print("  ✅ Add __main__.py to module for direct invocation")
+    print("  [X] Create new runner script: tools/run_my_module.py")
+    print("  [OK] Invoke module directly: python -m my_module")
+    print("\n  [X] Wrapper script that calls subprocess.run()")
+    print("  [OK] Add __main__.py to module for direct invocation")
 
     print("\nSee: .windsurf/skills/script-sprawl-guard/")
 

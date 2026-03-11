@@ -59,10 +59,11 @@ def load_classification(check_freshness: bool = True) -> dict:
         sys.exit(2)
     if check_freshness:
         import time
+
         age = time.time() - CLASSIFICATION_PATH.stat().st_mtime
         if age > _MAX_ARTIFACT_AGE_S:
             print(
-                f"ERROR: classification artifact is {age/3600:.1f}h old (limit 24h): {CLASSIFICATION_PATH}"
+                f"ERROR: classification artifact is {age / 3600:.1f}h old (limit 24h): {CLASSIFICATION_PATH}"
             )
             print("  Run: python tools/adg_test_classifier.py --refresh")
             sys.exit(2)
@@ -78,16 +79,27 @@ def get_files_for_lane(art: dict, lane: str) -> list[str]:
     return art["bucket_files"].get(key_map[lane], [])
 
 
-def run_pytest(test_files: list[str], extra_args: list[str], extra_env: dict | None = None) -> tuple[int, str]:
+def run_pytest(
+    test_files: list[str], extra_args: list[str], extra_env: dict | None = None
+) -> tuple[int, str]:
     import os
+
     env = os.environ.copy()
     if extra_env:
         env.update(extra_env)
 
-    cmd = [
-        sys.executable, "-m", "pytest",
-        "--tb=short", "-q", "--no-header",
-    ] + extra_args + test_files
+    cmd = (
+        [
+            sys.executable,
+            "-m",
+            "pytest",
+            "--tb=short",
+            "-q",
+            "--no-header",
+        ]
+        + extra_args
+        + test_files
+    )
 
     result = subprocess.run(cmd, capture_output=True, text=True, env=env, cwd=str(REPO))
     output = result.stdout + result.stderr
@@ -97,6 +109,7 @@ def run_pytest(test_files: list[str], extra_args: list[str], extra_env: dict | N
 def _parse_counts(output: str) -> dict[str, int]:
     """Parse pytest summary line into a counts dict."""
     import re
+
     counts: dict[str, int] = {"passed": 0, "failed": 0, "error": 0, "skipped": 0, "xfailed": 0}
     # e.g. "1736 passed, 8 xfailed, 21 warnings in 6.49s"
     for m in re.finditer(r"(\d+)\s+(passed|failed|error|skipped|xfailed|xpassed|warning)", output):
@@ -163,14 +176,14 @@ def lane_violations(art: dict) -> int:
     """Fail CI if any INTEGRATION_INFRA file lives under tests/unit/."""
     violations = art.get("unit_violations", [])
     infra_in_unit = [
-        v for v in violations
-        if v["classification"] == "INTEGRATION_INFRA"
-        and v["file"].startswith("tests/unit/")
+        v
+        for v in violations
+        if v["classification"] == "INTEGRATION_INFRA" and v["file"].startswith("tests/unit/")
     ]
     degraded_in_unit = [
-        v for v in violations
-        if v["classification"] == "DEGRADED_PATH"
-        and v["file"].startswith("tests/unit/")
+        v
+        for v in violations
+        if v["classification"] == "DEGRADED_PATH" and v["file"].startswith("tests/unit/")
     ]
 
     result = {
@@ -227,7 +240,18 @@ def _print_and_save(
     }
     if extra_counts:
         result["counts"] = extra_counts
-    RESULT_PATH.write_text(json.dumps(result, indent=2), encoding="utf-8")
+    new_text = json.dumps(result, indent=2)
+    # Only write if content changed — prevents pre-commit dirty-file loop caused by
+    # timing-sensitive summary strings (e.g. "in 8.63s" vs "in 8.65s")
+    import re as _re
+
+    def _strip_timing(s: str) -> str:
+        return _re.sub(r"in \d+\.\d+s", "in X.XXs", s)
+
+    if not RESULT_PATH.exists() or _strip_timing(RESULT_PATH.read_text(encoding="utf-8")) != _strip_timing(
+        new_text
+    ):
+        RESULT_PATH.write_text(new_text, encoding="utf-8")
     print(f"\n[{lane.upper()}] {'PASS' if rc == 0 else 'FAIL'}  {summary}")
 
 
@@ -258,10 +282,7 @@ def main() -> None:
 
     if args.reclassify:
         print("Re-running classifier...")
-        r = subprocess.run(
-            [sys.executable, "tools/adg_test_classifier.py"],
-            cwd=str(REPO)
-        )
+        r = subprocess.run([sys.executable, "tools/adg_test_classifier.py"], cwd=str(REPO))
         if r.returncode != 0:
             print("ERROR: classifier failed")
             sys.exit(2)
@@ -269,10 +290,12 @@ def main() -> None:
     art = load_classification(check_freshness=not args.reclassify)
     schema = art.get("schema", "unknown")
     print(f"Classification: {schema}")
-    print(f"  UNIT_STRICT={art['summary']['unit_strict']}  "
-          f"DEGRADED_PATH={art['summary']['degraded_path']}  "
-          f"INTEGRATION_INFRA={art['summary']['integration_infra']}  "
-          f"violations={art['summary']['unit_violations']}")
+    print(
+        f"  UNIT_STRICT={art['summary']['unit_strict']}  "
+        f"DEGRADED_PATH={art['summary']['degraded_path']}  "
+        f"INTEGRATION_INFRA={art['summary']['integration_infra']}  "
+        f"violations={art['summary']['unit_violations']}"
+    )
     print()
 
     lane_fn = {

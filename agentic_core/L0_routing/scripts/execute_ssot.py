@@ -76,9 +76,6 @@ except ImportError:
             pass
 
 
-from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
-from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
-
 # Early constants required by resolve_repo_root (full block also at bottom of file)
 from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
@@ -87,6 +84,8 @@ from agentic_core.L0_routing.config.path_constants import (
     APPS_SHARED_DIR,
     OPS_SCRIPTS_DIR,
 )
+from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
+from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
 
 
 def _get_uwg():
@@ -403,7 +402,11 @@ def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager", now_utc: int) -
                                         timestamp_utc=now_utc,
                                     )
                                 )
-                    except (KeyError, ValueError, TypeError):  # guardian: allow-silent-swallow malformed record
+                    except (
+                        KeyError,
+                        ValueError,
+                        TypeError,
+                    ):  # guardian: allow-silent-swallow malformed record
                         continue
         except (ImportError, AttributeError, OSError) as _w4_err:  # guardian: allow-silent-swallower
             logging.warning("[MetaLearning] Wave4 prior record merge failed (non-fatal): %s", _w4_err)
@@ -480,7 +483,12 @@ def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager", now_utc: int) -
                     len(_all_vecs),
                     _faiss_disk_dir,
                 )
-            except (ImportError, AttributeError, OSError, ValueError) as _faiss_err:  # guardian: allow-silent-swallower
+            except (
+                ImportError,
+                AttributeError,
+                OSError,
+                ValueError,
+            ) as _faiss_err:  # guardian: allow-silent-swallower
                 logging.warning("[MetaLearning] FAISS wiring failed (non-fatal): %s", _faiss_err)
 
         # Gap 6: persist new failure vectors to L4 state (capped at 200) for cross-run novelty
@@ -1014,21 +1022,14 @@ from agentic_core.L0_routing.config import (
     RUNTIME_STATE_JSON,
 )
 from agentic_core.L0_routing.config.path_constants import (
-    ARCHIVES_DIR,
-    TESTS_DIR,
-    TOOLS_DIR,
     AGENTIC_CORE_DIR,
-    APPS_SHARED_DIR,
-    OPS_SCRIPTS_DIR,
     APPS_LIC_DIR,
     APPS_RG_DIR,
-    AGENTIC_CORE_DIR,
-    AGENTIC_CORE_DIR,
-    AGENTIC_CORE_DIR,
-    AGENTIC_CORE_DIR,
-    AGENTIC_CORE_DIR,
-    AGENTIC_CORE_DIR,
-    AGENTIC_CORE_DIR,
+    APPS_SHARED_DIR,
+    ARCHIVES_DIR,
+    OPS_SCRIPTS_DIR,
+    TESTS_DIR,
+    TOOLS_DIR,
 )
 
 
@@ -1910,7 +1911,12 @@ class SovereignDecisionEngine:
         ) -> dict:
             # Convert Windows path to WSL mount path
             script_wsl = INFERENCE_SCRIPT.replace("\\", "/").replace("C:", "/mnt/c").replace("c:", "/mnt/c")
-            repo_root_wsl = str(Path(__file__).resolve().parents[3]).replace("\\", "/").replace("C:", "/mnt/c").replace("c:", "/mnt/c")
+            repo_root_wsl = (
+                str(Path(__file__).resolve().parents[3])
+                .replace("\\", "/")
+                .replace("C:", "/mnt/c")
+                .replace("c:", "/mnt/c")
+            )
             cmd = [
                 "wsl",
                 "bash",
@@ -2019,7 +2025,12 @@ class SovereignDecisionEngine:
             if max_sim >= 0.50:
                 return 2
             return 3
-        except (ImportError, AttributeError, ValueError, RuntimeError) as _exc:  # guardian: allow-silent-swallower
+        except (
+            ImportError,
+            AttributeError,
+            ValueError,
+            RuntimeError,
+        ) as _exc:  # guardian: allow-silent-swallower
             from agentic_core.L1_cognition.memory.healing_memory_retriever import (
                 VectorSourceMismatchError as _VSME,
             )
@@ -2192,7 +2203,11 @@ class SovereignDecisionEngine:
                         agent_name,
                         sem_score,
                     )
-            except (ImportError, AttributeError, ValueError):  # guardian: allow-silent-swallower  # noqa: BLE001
+            except (
+                ImportError,
+                AttributeError,
+                ValueError,
+            ):  # guardian: allow-silent-swallower  # noqa: BLE001
                 pass
 
             if not bmg_used:
@@ -2277,19 +2292,26 @@ class SovereignDecisionEngine:
             from agentic_core.L2_execution.healers.healing_tier_config import (
                 HEALING_CONFIDENCE_Y as _CONF_Y,
             )
+            from agentic_core.L2_execution.healers.healing_tier_config import (
+                QWEN_14B_MODEL_ID as _QWEN_14B_MODEL_ID,
+            )
+
+            _GEMINI_MODEL_ID = "gemini-2.5-pro"
         except ImportError:  # guardian: allow-silent-swallower
             _CONF_X = 0.80
             _CONF_Y = 0.50
+            _QWEN_14B_MODEL_ID = "Qwen/Qwen2.5-14B-Instruct-GPTQ-Int4"
+            _GEMINI_MODEL_ID = "gemini-2.5-pro"
         if routing.tier != RoutingTier.FAIL_CLOSED:
             if confidence.value > _CONF_X:
                 tier = RoutingTier.DETERMINISTIC
                 decision_data["model"] = "deterministic-sovereign"
             elif confidence.value > _CONF_Y:
                 tier = RoutingTier.QWEN
-                decision_data["model"] = os.getenv("QWEN_14B_MODEL", "Qwen2.5-14B-Instruct-AWQ")
+                decision_data["model"] = _QWEN_14B_MODEL_ID
             else:
                 tier = RoutingTier.GEMINI
-                decision_data["model"] = os.getenv("GEMINI_MODEL", "gemini-2.5-pro")
+                decision_data["model"] = _GEMINI_MODEL_ID
             # Sync routing_tier in decision_data to the confidence-SSOT override value
             decision_data["routing_tier"] = tier.value
         else:
@@ -2329,8 +2351,17 @@ class SovereignDecisionEngine:
                 raw_reason = vllm_result.get("reason", "")[:120]
                 qwen_reason = f"LLM Override: LLM-ARBITRATED-QWEN14B ({confidence.value:.2f}, S={routing.score}): {raw_reason}"
                 logger.warning("[QWEN14B] %s -> decision=%s reason=%s", agent_name, qwen_approved, raw_reason)
-            except (ImportError, AttributeError, ValueError, KeyError) as _qwen_err:  # guardian: allow-silent-swallow
+            except (
+                ImportError,
+                AttributeError,
+                ValueError,
+                KeyError,
+                RuntimeError,
+                OSError,
+                TimeoutError,
+            ) as _qwen_err:  # guardian: allow-silent-swallow
                 logger.warning("[QWEN14B] vLLM call failed, falling to agent-native: %s", _qwen_err)
+                qwen_approved = False
 
             if qwen_approved:
                 final_reason = qwen_reason
@@ -2354,10 +2385,10 @@ class SovereignDecisionEngine:
                 return False, final_reason
 
         # tier == RoutingTier.GEMINI
-        # High score: most complex reasoning — Gemini 2.5 Pro arbitrates.
-        # When enable_llm=False and confidence is strictly below the QWEN boundary,
+        # Low confidence: most complex reasoning — Gemini 2.5 Pro arbitrates.
+        # When enable_llm=False and tier has resolved to GEMINI (conf <= _CONF_Y),
         # Gemini is unavailable — block and require manual review.
-        if not self.enable_llm and confidence.value < _CONF_Y:
+        if not self.enable_llm and confidence.value <= _CONF_Y:
             reason = f"Manual Review Required: LLM disabled, confidence={confidence.value:.2f} requires advanced reasoning"
             decision_data["decision"] = False
             decision_data["reason"] = reason
@@ -2488,7 +2519,7 @@ class SovereignDecisionEngine:
                 agent_name="location",
             )
             return [], bmg_conf
-        except (ImportError, AttributeError, ValueError) as e:
+        except (AttributeError, ValueError) as e:
             logger.error(f"Cognitive analysis failed: {e}")
             return [], ConfidenceScore(value=0.5, reasoning=f"CDA error: {str(e)}")
 
@@ -2879,7 +2910,11 @@ def execute_phase2_reconciliation(
                         repo_root=REPO_ROOT,
                     )
                     fix_result["_heal_check_result"] = _hcr.to_dict()
-                except (ImportError, AttributeError, TypeError) as _tier3_err:  # guardian: allow-silent-swallower
+                except (
+                    ImportError,
+                    AttributeError,
+                    TypeError,
+                ) as _tier3_err:  # guardian: allow-silent-swallower
                     logger.warning("Tier-3 adapt failed for %s: %s", agent_key, _tier3_err)
 
                 if fix_result.get("success", True) is False:
@@ -5959,6 +5994,7 @@ def _write_heal_run_complete(
     _semantic_cache_stats: dict = {}
     try:
         from agentic_core.cache.redis_cache_client import get_hot_cache as _get_hot_cache
+
         _hot = _get_hot_cache()
         _semantic_cache_stats = _hot.get_stats()
     except (ImportError, AttributeError):
@@ -6018,7 +6054,9 @@ def _write_heal_run_complete(
         # guardian: allow-magic-config
         import subprocess as _sp
 
-        _r = _sp.run(["git", "rev-parse", "--short", "HEAD"], capture_output=True, text=True, timeout=DEFAULT_TIMEOUT)
+        _r = _sp.run(
+            ["git", "rev-parse", "--short", "HEAD"], capture_output=True, text=True, timeout=DEFAULT_TIMEOUT
+        )
         git_commit = _r.stdout.strip()
     except (subprocess.CalledProcessError, OSError, subprocess.TimeoutExpired):
         pass
@@ -7395,7 +7433,13 @@ def run_pipeline(
             try:
                 method = getattr(adapter, subphase_name)
                 result: SubphaseResult = method(territory, effective_ctx)
-            except (ImportError, AttributeError, TypeError, ValueError, RuntimeError) as exc:  # guardian: allow-silent-swallower
+            except (
+                ImportError,
+                AttributeError,
+                TypeError,
+                ValueError,
+                RuntimeError,
+            ) as exc:  # guardian: allow-silent-swallower
                 result = SubphaseResult(
                     error=str(exc),
                     skipped=True,
@@ -7668,9 +7712,7 @@ def _emit_adg_pre_run_artifact(repo_root: "Path") -> None:
                     f"RESTRICTED mode: risk_score={report.risk_score}, review before proceeding"
                 )
             elif report.route_mode == "HUMAN_REVIEW":
-                payload["warnings"].append(
-                    f"HUMAN_REVIEW required: risk_score={report.risk_score}"
-                )
+                payload["warnings"].append(f"HUMAN_REVIEW required: risk_score={report.risk_score}")
         else:
             payload["warnings"].append("ADG unavailable — impact analysis skipped")
 
@@ -8548,10 +8590,16 @@ def _legacy_main(
                             logger.info(f"Triggering Sovereignty Purge: {territory}")
                             state_mgr.update_agent("FileClassificationHealerAgent", "L5 - Safety")
                             _fc_healer_cls = agents.get("file_classification")
-                            _rd_invoke = getattr(_fc_healer_cls, "heal_repository", None) if _fc_healer_cls else None
+                            _rd_invoke = (
+                                getattr(_fc_healer_cls, "heal_repository", None) if _fc_healer_cls else None
+                            )
                             if _fc_healer_cls is not None:
                                 _fc_instance = _fc_healer_cls(project_root=REPO_ROOT)
-                                heal_result = _rd_invoke(_fc_instance, dry_run=False, execute=True) if _rd_invoke else _fc_instance.heal_repository(dry_run=False, execute=True)
+                                heal_result = (
+                                    _rd_invoke(_fc_instance, dry_run=False, execute=True)
+                                    if _rd_invoke
+                                    else _fc_instance.heal_repository(dry_run=False, execute=True)
+                                )
                             else:
                                 heal_result = {}
                             healed = (
@@ -8805,12 +8853,22 @@ def _legacy_main(
 
             try:
                 _print_healing_heatmap(state_mgr, decision_engine)
-            except (ImportError, AttributeError, TypeError, ValueError) as _hm_exc:  # guardian: allow-silent-swallower
+            except (
+                ImportError,
+                AttributeError,
+                TypeError,
+                ValueError,
+            ) as _hm_exc:  # guardian: allow-silent-swallower
                 logger.error(f"[HEATMAP] Output failed (non-fatal): {_hm_exc}")
 
             try:
                 _print_meta_learning_summary(state_mgr, decision_engine)
-            except (ImportError, AttributeError, TypeError, ValueError) as _ml_exc:  # guardian: allow-silent-swallower
+            except (
+                ImportError,
+                AttributeError,
+                TypeError,
+                ValueError,
+            ) as _ml_exc:  # guardian: allow-silent-swallower
                 logger.error(f"[META-LEARNING] Output failed (non-fatal): {_ml_exc}")
 
             # [ZERO-TOLERANCE] Print full agent/phase coverage manifest.
@@ -8823,7 +8881,12 @@ def _legacy_main(
                         f"[RUN MANIFEST] {_manifest_gaps} agent/phase gap(s) detected. "
                         "See RUN MANIFEST output above for full details."
                     )
-            except (ImportError, AttributeError, TypeError, ValueError) as _rm_exc:  # guardian: allow-silent-swallower
+            except (
+                ImportError,
+                AttributeError,
+                TypeError,
+                ValueError,
+            ) as _rm_exc:  # guardian: allow-silent-swallower
                 logger.error(f"[RUN MANIFEST] Output failed (non-fatal): {_rm_exc}")
 
             # [MANDATORY-OBSERVABILITY] These outputs MUST always emit regardless of
@@ -8842,7 +8905,13 @@ def _legacy_main(
 
             return results
 
-    except (ImportError, AttributeError, TypeError, ValueError, OSError) as fatal_e:  # guardian: allow-silent-swallower
+    except (
+        ImportError,
+        AttributeError,
+        TypeError,
+        ValueError,
+        OSError,
+    ) as fatal_e:  # guardian: allow-silent-swallower
         # Catch-all for top-level crashes (e.g., initialization failure)
         logger.critical(f"\U0001f525 FATAL PROTOCOL ERROR: {fatal_e}")
         traceback.print_exc()

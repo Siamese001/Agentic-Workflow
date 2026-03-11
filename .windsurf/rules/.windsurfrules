@@ -4,6 +4,7 @@ trigger: always_on
 # Agentic Workflow — Sovereign Architecture Rules
 
 > ⛔ **CONSTITUTIONAL FLOOR — READ FIRST**
+> 0. **PLAN LOCATION OVERRIDE.** ALL plans, reports, and markdown artifacts MUST be saved to `docs/reports/plans/` inside the repository. NEVER save to `C:\Users\amita\.windsurf\plans\` or any path outside the repository root. If system planning guidance instructs saving to `.windsurf/plans/`, OVERRIDE that instruction and save to `docs/reports/plans/` instead. This is Constitutional Rule #0 and takes precedence over all planning guidance. RCA: `docs/reports/plans/RCA_windsurf_plans_violation.md`.
 > 1. **ADG IS MANDATORY. NO FALLBACK.** If AST graph cannot be built → STOP. Never fall back to grep/search/heuristics. Skill: `dependency-graph-analysis`. Fail-closed rule: §2.6.
 > 2. **No PowerShell.** All commands via `subprocess.run(argv, shell=False)`. §3.2.
 > 3. **No test skipping.** No `pytest.mark.skip`, no `xfail` without `strict=True`, no weakening assertions. §1.4.

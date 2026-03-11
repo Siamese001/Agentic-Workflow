@@ -38,7 +38,6 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     DISCOVERY_EXCLUDED_TERRITORIES,
     GLOBAL_EXCLUDED_DIRS,
     SOVEREIGN_EXCLUDED_FOLDERS,
-    SYSTEM_LEARNING_DIR,
 )
 
 GUARDIAN_ID = "c0_sovereignty_enforcement"

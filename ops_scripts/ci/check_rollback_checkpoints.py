@@ -161,7 +161,7 @@ def main() -> int:
 
     # Phase commit without checkpoint evidence — FAIL
     print("\n[FAIL] Rollback Gate (Structural) — Phase commit without checkpoint evidence")
-    print("\n⚠️  NOTE: This checks for checkpoint ARTIFACTS only (observable).")
+    print("\n[!] NOTE: This checks for checkpoint ARTIFACTS only (observable).")
     print("    Primary enforcement = Windsurf skill (BEFORE phase starts).")
     print("\nThis appears to be a phase commit (keywords: phase, refactor, migration, etc.)")
     print("\nStaged files:")

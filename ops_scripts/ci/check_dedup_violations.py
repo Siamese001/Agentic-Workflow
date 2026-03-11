@@ -220,7 +220,7 @@ def main() -> int:
 
     # Violations found and no evidence — FAIL (but this is a PROXY check only)
     print("\n[FAIL] Dedup Guard (Proxy) — New symbols detected without dedup evidence")
-    print("\n⚠️  NOTE: This is a PROXY check. Full dedup enforcement happens in Windsurf.")
+    print("\n[!] NOTE: This is a PROXY check. Full dedup enforcement happens in Windsurf.")
     print("    Pre-commit can only detect NEW symbols, not semantic duplicates.")
     print("\nNew symbols detected:")
 
@@ -252,8 +252,8 @@ def main() -> int:
     print("  - 'dedup', 'no duplicate', 'searched for', or")
     print("  - 'DEDUP_SEARCH: decision=create'")
     print("\nReminder:")
-    print("  ✅ Primary enforcement = Windsurf skill (BEFORE creation)")
-    print("  ⚠️  This CI gate = proxy flag only (AFTER creation)")
+    print("  [OK] Primary enforcement = Windsurf skill (BEFORE creation)")
+    print("  [!] This CI gate = proxy flag only (AFTER creation)")
     print("\nSee: .windsurf/skills/dedup-guard/")
 
     return 1
