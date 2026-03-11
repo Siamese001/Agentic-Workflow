@@ -20,20 +20,13 @@ import logging
 from datetime import datetime
 
 from agentic_core.seams.contracts.mcp import MCPConnectionManager
-
-# Derived from SOVEREIGN_TERRITORIES
-SOVEREIGN_REGISTRY = {
-    "agentic_core": {"depth": 4},
-    "apps_lic": {"depth": 3},
-    "apps_rg": {"depth": 3},
-    "apps_shared": {"depth": 3},
-}
+from agentic_core.L5_safety.config.structure_blueprint_config import PROJECT_ROOT_WHITELIST
 
 Logger = logging.getLogger(__name__)
 
-# [SSOT] Sovereign territory boundaries derived from SOVEREIGN_REGISTRY
+# [SSOT] Sovereign territory boundaries derived from PROJECT_ROOT_WHITELIST
 # NAMING FIXED: ALLOWED_ROOT_PREFIXES → allowed_root_prefixes
-allowed_root_prefixes = set(SOVEREIGN_REGISTRY.keys()) | {"config"}  # config is a subfolder, add explicitly
+allowed_root_prefixes = set(PROJECT_ROOT_WHITELIST) | {"config"}  # config is a subfolder, add explicitly
 # NAMING FIXED: FORBIDDEN_PATH_PATTERNS → forbidden_path_patterns
 forbidden_path_patterns = {
     "..",

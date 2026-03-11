@@ -815,10 +815,10 @@ class LocationValidatorAgent(SovereignBaseAgent):
         Args:
             target_territory: If provided, restricts scan to this domain (Strict Targeting).
 
-        Phase 4.1 Upgrade: Universal root scanning using SOVEREIGN_TERRITORIES.
+        Phase 4.1 Upgrade: Universal root scanning using PROJECT_ROOT_WHITELIST.
         """
         from agentic_core.L5_safety.config.structure_blueprint import (
-            SOVEREIGN_TERRITORIES,
+            PROJECT_ROOT_WHITELIST,
         )
 
         violations = []

@@ -21,10 +21,9 @@ from agentic_core.L0_routing.config import (
     ROOT_PROTECTED_FILES,
     ROOT_WHITELIST,
 )
+from agentic_core.L5_safety.config.structure_blueprint_config import DEPTH_RULES
 
-# Derived from SOVEREIGN_TERRITORIES
-SOVEREIGN_REGISTRY = {"agentic_core": {"depth": 4}, "apps_lic": {"depth": 3}, "apps_rg": {"depth": 3}}
-depth_map: Any = {root: cfg["depth"] for root, cfg in SOVEREIGN_REGISTRY.items()}
+depth_map: Any = dict(DEPTH_RULES)
 max_lines: Any = 200
 min_lines: Any = 10
 excluded_dirs: Any = {

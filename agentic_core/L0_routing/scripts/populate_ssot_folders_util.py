@@ -35,26 +35,7 @@ from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
 )
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
-
-# CORE_SUBFOLDER_MAP derived from SOVEREIGN_TERRITORIES
-CORE_SUBFOLDER_MAP = {
-    "L0_routing": ["config", "reasoning", "scripts", "types", "utils", "enforcement"],
-    "L1_cognition": ["P1_core", "reasoning", "types", "utils"],
-    "L2_execution": ["P1_core", "enforcement", "reasoning", "types", "utils"],
-    "L3_orchestration": ["P1_core", "engines", "reasoning", "types", "utils"],
-    "L4_state": ["P1_core", "memory", "reasoning", "types", "utils"],
-    "L5_safety": [
-        "P1_core",
-        "config",
-        "core_kernel",
-        "guardians",
-        "reasoning",
-        "types",
-        "utils",
-        "validators",
-    ],
-    "L6_observability": ["P1_core", "dashboards", "reasoning", "types", "utils"],
-}
+from agentic_core.L5_safety.config.structure_blueprint_config import CORE_SUBFOLDER_MAP
 
 core_root = project_root / AGENTIC_CORE_DIR
 

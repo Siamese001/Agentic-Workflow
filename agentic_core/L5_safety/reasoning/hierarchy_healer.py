@@ -1046,8 +1046,8 @@ class HierarchyAgent(SovereignBaseAgent):
     def _enforce_apps_depth(self) -> int:
         """Enforce apps_* depth rule using generic handler for each apps folder."""
         total_violations = 0
-        # Derive apps_* keys from SOVEREIGN_TERRITORIES — zero hardcoded folder names.
-        for apps_key in sorted(k for k in SOVEREIGN_TERRITORIES if k.startswith("apps_")):
+        # Derive apps_* keys from PROJECT_ROOT_WHITELIST — zero hardcoded folder names.
+        for apps_key in sorted(k for k in PROJECT_ROOT_WHITELIST if k.startswith("apps_")):
             violations = self._enforce_depth_for_root(
                 apps_key,
                 lambda r, key=apps_key: r == key,
