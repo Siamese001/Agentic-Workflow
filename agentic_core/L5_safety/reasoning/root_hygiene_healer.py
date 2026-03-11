@@ -288,9 +288,9 @@ class RootHygieneAgent(SovereignBaseAgent):
         # Sovereign territory dirs derived live from SSOT — zero hardcoded folder names.
         # Dotdirs / VCS / IDE tooling are NOT code territories; they stay explicit here.
         try:
-            from agentic_core.L5_safety.config.structure_blueprint import SOVEREIGN_TERRITORIES as _ST
+            from agentic_core.L5_safety.config.structure_blueprint import PROJECT_ROOT_WHITELIST
 
-            _sovereign_dirs: set[str] = set(_ST.keys())
+            _sovereign_dirs: set[str] = set(PROJECT_ROOT_WHITELIST)
         except (ImportError, AttributeError):
             _sovereign_dirs = set()
 

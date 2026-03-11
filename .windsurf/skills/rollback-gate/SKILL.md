@@ -1,6 +1,9 @@
 ---
 name: rollback-gate
 description: Enforces explicit rollback checkpoints before every multi-file phase and blocks partial commits when phase validation fails. Use before starting any phase touching more than 3 files, before any refactor that spans multiple modules, and after phase execution when validation fails. Prevents the repository from being left in a broken intermediate state.
+enforcement_layer: both
+enforcement_timing: before_work
+enforcement_type: behavioural_primary_structural_secondary
 ---
 
 # Rollback Gate Skill
@@ -39,6 +42,37 @@ After every phase:
 - **NO partial commits.** A phase either passes fully or is fully rolled back.
 - **NO "we'll fix it in the next phase."** Fix now or roll back.
 - Rollback command MUST be documented BEFORE phase starts (not after failure).
+
+## MANDATORY PRE-CONDITION (Constitutional — no bypass)
+
+**BEFORE starting any phase that modifies >3 files:**
+
+1. **Execute**: `git rev-parse HEAD`
+2. **Record output**: Store as `BASELINE_HASH` in evidence
+3. **Declare rollback command**: `git reset --hard <BASELINE_HASH>`
+4. **Define acceptance criteria**: List specific tests/checks that must pass for phase to be committed
+5. **Write to**: Evidence section titled `## ROLLBACK_CHECKPOINT`
+
+**Format required**:
+```
+## ROLLBACK_CHECKPOINT
+Baseline: <git_hash>
+Rollback command: git reset --hard <git_hash>
+Acceptance criteria:
+  - pytest <scoped_tests> passes
+  - No new layer violations
+  - Scope matches declaration
+Phase: <phase_name>
+Files to modify: N
+```
+
+**IF any step fails → STOP. Do not start the phase.**
+
+After phase execution:
+1. Run ALL acceptance criteria
+2. If ALL pass → commit
+3. If ANY fail → execute rollback command immediately
+4. NO partial commits allowed
 
 ## Constitutional Requirements Enforced
 

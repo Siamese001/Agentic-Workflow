@@ -1,6 +1,9 @@
 ---
 name: import-hygiene
 description: Prevents dead imports, forbidden imports, and duplicate imports before they enter the codebase. Use before adding any import statement, during any refactor touching imports, and before committing any file with import changes. Enforces ruff F401 compliance and blocks forbidden import patterns defined in windsurfrules.
+enforcement_layer: both
+enforcement_timing: after_work
+enforcement_type: structural
 ---
 
 # Import Hygiene Skill

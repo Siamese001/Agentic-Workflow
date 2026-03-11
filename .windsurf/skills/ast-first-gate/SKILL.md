@@ -1,6 +1,9 @@
 ---
 name: ast-first-gate
 description: BLOCKS all code investigation and analysis work until AST dependency graph is built per §0 DEFAULT ANALYSIS MODE. Use automatically before any code investigation, impact analysis, refactoring, or modification. Enforces "DEFAULT = DETAILED AST DEPENDENCY GRAPH" constitutional requirement.
+enforcement_layer: windsurf
+enforcement_timing: before_work
+enforcement_type: behavioural
 ---
 
 # AST-First Gate Skill
@@ -70,6 +73,28 @@ This skill is a PREREQUISITE for:
 - `scope-guard` (needs graph for scope justification)
 - `evidence-bundle` (needs graph for DEPENDENCY_GRAPH section)
 - `dependency-graph-analysis` (provides the actual graph construction)
+
+## MANDATORY PRE-CONDITION (Constitutional — no bypass)
+
+**BEFORE any tool call involving code analysis, file editing, or impact assessment:**
+
+1. **Execute**: Build AST dependency graph using `tools/generate_full_adg.py` or equivalent
+2. **Write output to**: Evidence section titled `## DEPENDENCY_GRAPH`
+3. **Document**:
+   - Graph node count (modules scanned)
+   - Graph edge count (dependencies found)
+   - Edge types extracted (G1 imports, G3 implements, G4 calls, GT covers, GV violates, GG governance)
+   - Blast radius for changed files (if applicable)
+4. **Verify**: Graph contains >0 nodes and >0 edges
+
+**IF any step fails → STOP. Do not proceed with code investigation.**
+
+Only after `DEPENDENCY_GRAPH` section is written may you:
+- Trace import chains
+- Identify root modules
+- Compute blast radius
+- Select files to edit
+- Declare scope
 
 ## Bypass Conditions
 

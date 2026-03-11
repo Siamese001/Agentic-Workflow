@@ -19,12 +19,13 @@ class TestStructureBlueprintConfig:
         assert path.exists(), "structure_blueprint_config.py should exist"
 
     def test_sovereign_territories_defined(self):
-        """SOVEREIGN_TERRITORIES should be defined."""
+        """PROJECT_ROOT_WHITELIST should be defined (replaces SOVEREIGN_TERRITORIES)."""
         try:
-            from agentic_core.L0_routing.config import SOVEREIGN_TERRITORIES
+            from agentic_core.L5_safety.config.structure_blueprint import PROJECT_ROOT_WHITELIST
 
-            assert SOVEREIGN_TERRITORIES is not None
-            assert isinstance(SOVEREIGN_TERRITORIES, dict)
+            assert PROJECT_ROOT_WHITELIST is not None
+            assert isinstance(PROJECT_ROOT_WHITELIST, frozenset)
+            assert len(PROJECT_ROOT_WHITELIST) > 0
         except ImportError as e:
             pytest.fail(f"Could not import: {e}")
 
@@ -53,27 +54,25 @@ class TestBlueprintConsistency:
     """Tests for blueprint internal consistency."""
 
     def test_all_layers_in_territories(self):
-        """All LAYER_ROOTS should be in SOVEREIGN_TERRITORIES (nested under agentic_core)."""
+        """All LAYER_ROOTS should be in CORE_SUBFOLDER_MAP (derived from SOVEREIGN_TERRITORIES)."""
         try:
-            from agentic_core.L5_safety.config.structure_blueprint_config import (
+            from agentic_core.L5_safety.config.structure_blueprint import (
+                CORE_SUBFOLDER_MAP,
                 LAYER_ROOTS,
-                SOVEREIGN_TERRITORIES,
             )
 
-            # Layers are nested under agentic_core in SOVEREIGN_TERRITORIES
-            agentic_core_subfolders = SOVEREIGN_TERRITORIES.get("agentic_core", {}).get("subfolders", {})
             for layer in LAYER_ROOTS:
-                assert layer in agentic_core_subfolders, f"{layer} should be in agentic_core subfolders"
+                assert layer in CORE_SUBFOLDER_MAP, f"{layer} should be in CORE_SUBFOLDER_MAP"
         except ImportError as e:
             pytest.fail(f"Could not import: {e}")
 
     def test_apps_folders_in_territories(self):
-        """apps_rg, apps_lic, apps_shared should be in SOVEREIGN_TERRITORIES."""
+        """apps_rg, apps_lic, apps_shared should be in PROJECT_ROOT_WHITELIST."""
         try:
-            from agentic_core.L0_routing.config import SOVEREIGN_TERRITORIES
+            from agentic_core.L5_safety.config.structure_blueprint import PROJECT_ROOT_WHITELIST
 
             for app in [APPS_RG_DIR, APPS_LIC_DIR, APPS_SHARED_DIR]:
-                assert app in SOVEREIGN_TERRITORIES, f"{app} should be in SOVEREIGN_TERRITORIES"
+                assert app in PROJECT_ROOT_WHITELIST, f"{app} should be in PROJECT_ROOT_WHITELIST"
         except ImportError as e:
             pytest.fail(f"Could not import: {e}")
 

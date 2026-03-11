@@ -1,6 +1,9 @@
 ---
 name: script-sprawl-guard
 description: Prevents creation of new runner scripts and wrapper executables. Use when invoking any Python module or agent, when deciding how to add an entrypoint, or when tempted to create a new file to run an existing one. Provides canonical invocation policy and an entrypoint decision tree.
+enforcement_layer: both
+enforcement_timing: before_work
+enforcement_type: behavioural_primary_structural_secondary
 ---
 
 # Script Sprawl Guard Skill

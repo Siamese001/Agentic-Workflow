@@ -3,3420 +3,425 @@ trigger: always_on
 ---
 # Agentic Workflow — Sovereign Architecture Rules
 
+> ⛔ **CONSTITUTIONAL FLOOR — READ FIRST**
+> 1. **ADG IS MANDATORY. NO FALLBACK.** If AST graph cannot be built → STOP. Never fall back to grep/search/heuristics. Skill: `dependency-graph-analysis`. Fail-closed rule: §3.6.
+> 2. **No PowerShell.** All commands via `subprocess.run(argv, shell=False)`. §2.
+> 3. **No test skipping.** No `pytest.mark.skip`, no `xfail` without `strict=True`, no weakening assertions. §1.12.
+> 4. **No editing while exploring.** All five repair gates (§6.1) must pass before any edit.
+> 5. **CI enforces all of this.** `python ops_scripts/ci/run_contract_gates.py`
+
+---
+
 ## §0. DEFAULT ANALYSIS MODE
 
 **DEFAULT = DETAILED AST DEPENDENCY GRAPH**
 
 For ANY code investigation, analysis, or modification task, Windsurf MUST:
 
-1. **Build AST dependency graph FIRST** (before any other analysis)
-2. **Use graph as PRIMARY evidence** (text search only as secondary confirmation)
-3. **Block work if graph cannot be built** (fail-closed, no silent fallback)
-4. **Document graph in all evidence** (DEPENDENCY_GRAPH section mandatory)
+1. **Build AST dependency graph FIRST** — invoke skill `dependency-graph-analysis`, build per `graph_construction_protocol.md`
+2. **Use graph as PRIMARY evidence** — text search only as secondary confirmation of literals/constants
+3. **Block work if graph cannot be built** — fail-closed, record errors, mark conclusions partial, STOP
+4. **Document graph in all evidence** — `## DEPENDENCY_GRAPH` section mandatory in every evidence file
 
-This is the DEFAULT mode. No exceptions without explicit user override.
+**AUTOMATIC TRIGGERS** — apply §0 when user mentions: files, functions, classes, modules, imports, dependencies, "what uses this", "blast radius", "impact of", refactor, analyze, debug, trace, test coverage, dead code, duplicates, boundaries.
 
-**AUTOMATIC TRIGGERS:**
-- User mentions: files, functions, classes, modules, imports, dependencies
-- User asks: "what uses this", "what depends on", "impact of", "blast radius"
-- User requests: refactor, modify, analyze, investigate, debug, trace
-- User inquires: test coverage, dead code, duplicates, boundaries
+**ADG SCHEMA FREEZE:** On first ADG access, freeze the confirmed field name mapping. Reuse it for ALL subsequent accesses in the same run. Re-probing after freeze = violation. Schema inconsistency mid-run = HARD FAIL.
 
-**IMMEDIATE ACTIONS (before responding):**
-1. Invoke `dependency-graph-analysis` skill
-2. Build graph per `graph_construction_protocol.md`
-3. Extract all required relationships
-4. Document in DEPENDENCY_GRAPH section
-5. THEN proceed with user request using graph-backed evidence
-
-**ADG SCHEMA FREEZE DISCIPLINE:**
-
-If the ADG artifact schema differs from expectation on first access:
-1. Stop and record the actual keys present.
-2. Freeze the confirmed schema mapping in the current work unit's evidence.
-3. Reuse that frozen mapping for ALL subsequent accesses in the same run.
-4. Do NOT re-probe the schema on each access — one freeze, then commit.
-
-Schema inconsistency mid-run = HARD FAIL. Re-probing after freeze = violation.
-
-**FORBIDDEN DEFAULT BEHAVIOR:**
-- ❌ Starting with grep/ripgrep
-- ❌ Starting with filename searches
-- ❌ Starting with text pattern matching
+**FORBIDDEN:**
+- ❌ Starting with grep/ripgrep/filename search/text pattern matching
 - ❌ Assuming relationships without graph proof
 - ❌ Claiming "no dependencies" without graph analysis
-- ❌ Re-discovering ADG field names after they have been frozen for the run
+- ❌ Silent fallback from AST failure to text search (§3.6)
 
-**REQUIRED DEFAULT BEHAVIOR:**
-- ✅ Build AST dependency graph first
-- ✅ Extract all edge types (imports, calls, inheritance, registry, tests)
+**REQUIRED:**
+- ✅ Build AST dependency graph first — imports, calls, inheritance, registry, test edges
 - ✅ Identify upstream and downstream relationships
-- ✅ Detect cycles, boundaries, and violations
-- ✅ Map test coverage via graph edges
-- ✅ Document graph metadata and completeness
+- ✅ Document graph metadata and completeness in evidence
 
 ---
 
 ## §1. TESTING & EVIDENCE
 
-**ENFORCEMENT:** Use skill `test-rigor-enforcement` for ALL code generation.
+**ENFORCEMENT:** Skill `test-rigor-enforcement` for ALL code generation.
 
-**WORKFLOW:**
-1. BEFORE code changes: `pre_code_generation_gate.md` (declare scope & test requirements)
-2. DURING code changes: `test_first_protocol.md` (write tests BEFORE logic)
-3. AFTER code changes: `post_code_validation.md` (verify coverage & no skipping)
+### 1.1 Zero-tolerance: every changed line of logic MUST have deterministic tests
 
-**VALIDATOR:** `agentic_core.L5_safety.enforcement.test_rigor_enforcer.TestRigorEnforcer`
-
-### 1.1 Zero-tolerance: any changed logic MUST have tests
-
-**PREREQUISITE:** Build AST dependency graph to identify test coverage edges (§0, §5.2).
-
-Every line of changed logic MUST be covered by deterministic tests.
-
-If you change logic, you MUST write tests that prove it works.
-
-Test identification MUST be graph-backed:
-- Use dependency graph to find existing test coverage edges
-- Use dependency graph to identify coverage gaps
-- Create new tests for any function/class without test coverage edge
-
-No exceptions.
-
----
+Use dependency graph to find existing coverage edges and identify gaps. No exceptions.
 
 ### 1.2 Test-first discipline
 
-Tests MUST exist before logic changes are committed.
-
-If tests do not exist, write them first.
-
-If tests are inadequate, expand them until they are exhaustive.
-
----
+Tests MUST exist before logic changes are committed. Write them first.
 
 ### 1.3 Deterministic tests only
 
-Tests MUST be deterministic.
-
-No random inputs, no time-dependent behavior, no external state.
-
-If the system under test uses randomness, the test MUST fix the seed.
-
-If the system uses time, the test MUST inject deterministic timestamps.
-
----
+No random inputs, no time-dependent behavior, no external mutable state. Fix seeds and inject timestamps.
 
 ### 1.4 No mocks for integration seams
 
-If the risk surface is an integration seam, tests MUST use real integration.
+Mocks ONLY for: external services that cannot run locally, hardware interfaces, filesystem permissions in CI. Mocks MUST NOT bypass validation, signature checks, routing gates, replay enforcement, or side-effect guards.
 
-Mocks are ONLY allowed for:
+### 1.5–1.9 Required test coverage (mandatory for every changed surface)
 
-- external services that cannot be run locally
-- hardware interfaces
-- filesystem permissions in CI environments
-
-Mocks MUST NOT be used to bypass:
-
-- validation
-- signature checks
-- routing gates
-- replay enforcement
-- side-effect guards
-
----
-
-### 1.5 Edge cases are mandatory
-
-Every changed surface MUST include tests covering:
-
-- null / None / missing field
-- empty input
-- malformed structure
-- boundary values
-- unauthorized input
-- stale state
-- replay input
-- dependency failure
-- negative control path
-- recovery path
-
-Malformed-but-plausible inputs MUST be tested for contract boundaries.
-
----
-
-### 1.6 State transition testing
-
-Every changed state transition MUST test:
-
-- valid predecessor â†’ valid successor
-- invalid predecessor â†’ attempted successor
-- repeated transition
-- interrupted transition
-- replayed transition
-
----
-
-### 1.7 Deterministic decision surfaces
-
-For deterministic scoring, routing, hashing, ranking, or threshold logic tests MUST prove:
-
-- identical input â†’ identical output
-- normalized equivalent input â†’ identical output
-- distinct input does not collapse unintentionally
-- stable tie-break ordering
-- exact threshold edge behavior
-
-Replay-sensitive surfaces MUST prove independence from:
-
-- wall clock
-- randomness
-- execution order
-- external mutable state
-
-Unproven determinism = HARD FAIL.
-
----
-
-### 1.8 Fail-closed and side-effect safety
-
-Tests MUST prove:
-
-- invalid preconditions block operation
-- no side-effects occur before block
-
-Mutation paths MUST assert:
-
-- return values
-- exception behavior
-- file writes
-- state mutations
-- external calls
-- audit emission where required
-
----
-
-### 1.9 Matrix testing
-
-Matrix testing REQUIRED when logic depends on multiple interacting gates.
-
-Typical axes include:
-
-- feature flag Ã— input validity
-- retry count Ã— confidence tier
-- policy allow/deny Ã— mutation attempt
-- replay mode Ã— dependency behavior
-- cache state Ã— freshness
-- signature state Ã— side-effect attempt
-
-Unexplained matrix pruning = HARD FAIL.
-
----
+- **Edge cases:** null/None/missing field, empty input, malformed structure, boundary values, unauthorized input, stale/replay state, dependency failure, negative and recovery paths
+- **State transitions:** valid→valid, invalid→attempted, repeated, interrupted, replayed
+- **Determinism:** identical input → identical output; replay independence from wall clock, randomness, execution order
+- **Fail-closed:** invalid preconditions block operation; no side-effects before block
+- **Matrix:** test all interacting gates (feature flag × input validity, retry × confidence, policy × mutation, etc.)
 
 ### 1.10 Ingress-path rule
 
-Tests MUST target the real entrypoint or enforcement choke point.
+Tests MUST target the real entrypoint or enforcement choke point. Test doubles MUST NOT bypass validation, routing gates, replay enforcement, or side-effect guards.
 
-Test doubles MUST NOT bypass:
+### 1.11 Regression tests
 
-- validation
-- signature checks
-- routing gates
-- replay enforcement
-- side-effect guards
-
----
-
-### 1.11 Regression and mutation tests
-
-Every bug fix MUST include:
-
-- minimal reproducer
-- adjacent near-miss case
-
-Mutation-sensitive tests MUST fail if:
-
-- comparison operator flips
-- guard clause removed
-- boundary shifts
-- retry skipped
-- fail-closed becomes permissive
-
----
+Every bug fix MUST include a minimal reproducer and an adjacent near-miss case. Mutation-sensitive tests MUST fail if guard clauses are removed or comparisons flip.
 
 ### 1.12 Zero-tolerance for test skipping and xfail drift
 
-Under NO EXCEPTIONS can tests be skipped and silently passed.
-
-Test execution MUST:
-
-- run ALL collected tests without selective skipping
-- fail HARD if any test is deselected or bypassed
-- report exact count of collected vs executed tests
-- treat collection/execution mismatch as CRITICAL FAILURE
-
-Test frameworks MUST be configured to:
-
-- disable selective test skipping mechanisms
-- enforce full test suite execution
-- prevent silent test deselection
-- raise explicit errors for test collection mismatches
-
-**xfail drift is a failure:** Any `xfail` that unexpectedly passes (xpass) without being removed from the allowlist = HARD FAIL.
-
-**Adding skip or xfail to make progress is FORBIDDEN:**
-- Do NOT add `pytest.mark.skip`, `pytest.mark.xfail`, or `skipif` to unblock a phase.
-- Do NOT comment out assertions to make a test pass.
-- Pre-existing skips must be registered per §17 BEFORE the run begins — not discovered mid-run and retroactively justified.
-- A skip or xfail discovered mid-run that is NOT in the registry = open integrity debt that BLOCKS phase completion.
-
-Any deviation from full test execution = CONSTITUTIONAL VIOLATION.
+- Run ALL collected tests — no selective skipping
+- Collected ≠ executed = CRITICAL FAILURE
+- `xfail` without `strict=True` = FORBIDDEN
+- Adding `pytest.mark.skip`, `pytest.mark.xfail`, or commenting out assertions to unblock a phase = CONSTITUTIONAL VIOLATION
+- Pre-existing skips MUST be in the skip registry (§17) BEFORE the run begins
 
 ---
 
-## Â§2. EVIDENCE CONTRACT
+## §2. EVIDENCE CONTRACT
 
-### 2.1 Deterministic execution record
+Each phase produces exactly one evidence file under `docs/reports/plans/`.
 
-Each phase produces exactly one evidence file under:
+**Commands executed via:** `subprocess.run(argv, shell=False, encoding="utf-8", errors="replace")`
+**PowerShell invocation is FORBIDDEN.**
+**File-based Python scripts REQUIRED for complex analysis** — write to `ops_scripts/ci/` or `tools/evidence/`, then execute via subprocess. Never inline Python via PowerShell.
 
-`docs/reports/plans/`
+Evidence files MUST be ASCII-only with ANSI escape sequences stripped.
 
-Evidence order:
+### 2.1 Required evidence sections (in order)
 
 1. `# <Phase Title>`
-2. `## Scope`
+2. `## Scope` — with graph justification
 3. `## INSPECTED_FILES`
-4. `## FACT_CLASSIFICATION` (see §2.1.1)
-5. command sections
-6. `## BRANCH_INVENTORY`
-7. `## ROBUSTNESS_MATRIX`
-8. `## DEFECT_MODEL`
+4. `## FACT_CLASSIFICATION` — three tiers: DIRECTLY OBSERVED / DERIVED / UNRESOLVED
+5. Command output sections
+6. `## DEPENDENCY_GRAPH` — roots, impacted nodes, upstream set, downstream set, edge classes, boundary/cycle findings, reason each changed file is in scope
+7. `## BRANCH_INVENTORY`
+8. `## ROBUSTNESS_MATRIX` — success/edge/failure/recovery/determinism/side-effect tests per changed surface
+9. `## DEFECT_MODEL`
 
-Commands executed via:
+**Conditional sections** (add when applicable):
+- `## TIMEOUT_RECOVERY` — when timeout occurs (§9)
+- `## TEST_QUALITY_AUDIT` — when test quality enforcement runs (§11)
+- `## SKIP_DRIFT_AUDIT` — when skip drift enforcement runs (§12)
+- `## TEST_COUNT_AUDIT` — when test count invariant enforcement runs (§13)
+- `## CLUSTER_ANALYSIS` — for every repair (§14)
+- `## FAILURE_CAPTURE` — before any repair edit (§14.6)
+- `## PROOF_ARTIFACT_TRUTHFULNESS` — when ADG proof artifact referenced (§15)
+- `## SKIP_CONVERGENCE_GATE` — for every convergence claim (§17)
+- `## POLICY_DRIFT` — when policy regression classified (§18)
+- `## CONTRACT_CONFLICT` — when contract conflict identified (§19)
+- `## ENVIRONMENT_CONTRACT` — when environment dependency involved (§20)
 
-`subprocess.run(argv, shell=False, encoding="utf-8", errors="replace")`
-
-PowerShell invocation is forbidden.
-
-**File-based Python scripts are REQUIRED for complex analysis operations.**
-
-Inline Python commands via PowerShell are FORBIDDEN due to:
-- Heredoc parsing issues
-- Complex pipeline failures
-- Quote escaping fragility
-- Silent hangs and errors
-
-For any analysis, evidence generation, or multi-step operation:
-
-1. Write analysis logic to a Python script file in `ops_scripts/ci/` or `tools/evidence/`
-2. Execute the script via `subprocess.run(["python", script_path], ...)`
-3. Never attempt inline Python via PowerShell `-Command` or heredocs
-
-ANSI escape sequences MUST be stripped.
-
-Evidence file MUST be ASCII-only.
-
-Evidence rebuilt each run:
-
-`evidence_lines = []`
-
-Contradictory success/failure markers in same block = HARD FAIL.
-
-#### 2.1.1 Three-tier fact classification (REQUIRED in all evidence)
-
-Every claim in an evidence file MUST be labelled with its epistemic tier:
+### 2.2 Three-tier fact classification (REQUIRED in all evidence)
 
 | Tier | Label | Meaning |
 |---|---|---|
-| 1 | `DIRECTLY OBSERVED` | Fact read directly from a raw artifact, command stdout, or file — no inference |
-| 2 | `DERIVED` | Fact computed from a secondary command, calculation, or cross-reference — source command must be named |
-| 3 | `UNRESOLVED` | Fact not yet proven — must be listed explicitly, not omitted |
+| 1 | `DIRECTLY OBSERVED` | Read directly from raw artifact/command stdout — no inference |
+| 2 | `DERIVED` | Computed from secondary command — source command MUST be named |
+| 3 | `UNRESOLVED` | Not yet proven — MUST be listed explicitly, never omitted |
 
-**Forbidden patterns:**
-```
-❌ Presenting a DERIVED fact without naming the deriving command
-❌ Omitting UNRESOLVED facts — silence is not proof of absence
-❌ Upgrading a DERIVED fact to DIRECTLY OBSERVED without re-running the primary source
-❌ Claiming phase complete while UNRESOLVED facts remain in the phase's required claims
-```
+A phase MUST NOT be declared complete while `Unresolved` is non-empty, unless each item is deferred to a named future phase.
 
-**Required evidence section format:**
-```markdown
-## FACT_CLASSIFICATION
+### 2.3 Forbidden evidence patterns
 
-### Directly Observed
-- <fact> [source: <artifact or command>]
+- ❌ DERIVED fact without naming the deriving command
+- ❌ Omitting UNRESOLVED facts — silence is not proof of absence
+- ❌ Upgrading DERIVED to DIRECTLY OBSERVED without re-running primary source
+- ❌ Claiming phase complete while UNRESOLVED items remain
 
-### Derived
-- <fact> [derived via: <command>] [output lines: <n>]
+### 2.4 Mandatory artifact links
 
-### Unresolved
-- <fact or question not yet answered>
-```
-
-A phase MUST NOT be declared complete while its `Unresolved` list is non-empty, unless each unresolved item is explicitly deferred to a named future phase.
+Every artifact reference in a response MUST use backtick citation format: `` `@<absolute_path>` ``. Plain text paths = CONSTITUTIONAL VIOLATION.
 
 ---
 
-### 2.2 Evidence sections
-
-All evidence files MUST include the following sections in order:
-
-#### 2.2.1 Core evidence sections (REQUIRED for all phases)
-
-**`## DEPENDENCY_GRAPH`** (§3.7)
-
-MUST contain:
-1. Graph roots analyzed
-2. Impacted nodes
-3. Upstream set
-4. Downstream set
-5. Edge classes used
-6. Boundary/cycle findings
-7. Exact reason each changed file is in scope
-
-Any changed file not justified by the dependency graph = scope contamination.
-
-**`## BRANCH_INVENTORY`**
-
-List of all branches and control paths exercised.
-
-**`## ROBUSTNESS_MATRIX`**
-
-MUST map each changed surface to:
-- Success tests
-- Edge tests
-- Failure tests
-- Recovery tests
-- Determinism tests
-- Side-effect tests
-
-**`## DEFECT_MODEL`**
-
-MUST list defect classes targeted by tests (e.g., `fake_healthy_test`, `silent_swallower`, `skip_drift`).
-
-#### 2.2.2 Specialized evidence sections (REQUIRED when applicable)
-
-**`## TIMEOUT_RECOVERY`** (§9.6.5)
-
-Required when timeout occurs. MUST include:
-- Initial timeout details (operation, timeout, scope, items attempted)
-- ADG analysis (bottleneck identification, blocking operations found, problematic files)
-- Isolation strategy (strategy used, isolated scope, items excluded)
-- Recovery result (retry timeout, success/failure, items processed, duration)
-
-**`## TEST_QUALITY_AUDIT`** (§11.7)
-
-Required when test quality enforcement runs. MUST include:
-- Silent swallowers (files scanned, violations, allow markers, remediation)
-- Fake-healthy tests (tests scanned, pattern breakdown, total violations, remediation, merge blocked)
-- Non-strict xfail (tests scanned, non-strict count, strict count, remediation)
-
-**`## SKIP_DRIFT_AUDIT`** (§12.9)
-
-Required when skip drift enforcement runs. MUST include:
-- Allowlist status (file location, total allowed skips, skips with expiry_date, skips with owner)
-- Violations (skips outside allowlist, missing metadata, forbidden reasons, total)
-- Warnings (expired skips, long-running skips >90 days, skips without owner)
-- Enforcement (CI check pass/fail, merge blocked yes/no)
-
-**`## TEST_COUNT_AUDIT`** (§13.8)
-
-Required when test count invariant enforcement runs. MUST include:
-- Baseline comparison (baseline total, current total, delta)
-- Directory counts (per critical directory: baseline → current)
-- Marker counts (per critical marker: baseline → current)
-- Special counts (xfail, skip allowlist: baseline → current)
-- Violations (total violations, count drops, count increases)
-- Enforcement (CI check pass/fail, merge blocked yes/no, baseline updated yes/no)
-
-#### 2.2.3 Evidence template
-
-Complete evidence file structure:
-
-```markdown
-# <Phase Title>
-
-## Scope
-<Declared scope with graph justification>
-
-## INSPECTED_FILES
-<List of files analyzed>
-
-## DEPENDENCY_GRAPH
-<Graph analysis per §2.2.1>
-
-## <Command Sections>
-<Command outputs>
-
-## BRANCH_INVENTORY
-<Branch coverage>
-
-## ROBUSTNESS_MATRIX
-<Test coverage matrix>
-
-## DEFECT_MODEL
-<Defect classes targeted>
-
-## TIMEOUT_RECOVERY (if applicable)
-<Timeout recovery details per §2.2.2>
-
-## TEST_QUALITY_AUDIT (if applicable)
-<Test quality metrics per §2.2.2>
-
-## SKIP_DRIFT_AUDIT (if applicable)
-<Skip drift metrics per §2.2.2>
-
-## TEST_COUNT_AUDIT (if applicable)
-<Test count invariant metrics per §2.2.2>
-```
-
----
-
-## Â§3. SCOPE & DETERMINISM
+## §3. SCOPE & DETERMINISM
 
 ### 3.1 Scope declaration
 
-**PREREQUISITE:** Build AST dependency graph to determine true scope (§0, §3.4).
+Before declaring scope: build dependency graph, identify upstream/downstream, identify required test files via graph edges. Record baseline via `git diff --name-only`. Each file in scope MUST have graph justification.
 
-Before declaring scope:
-1. Build dependency graph from proposed changes
-2. Identify all upstream dependencies
-3. Identify all downstream dependents
-4. Identify all required test files via graph edges
-5. Declare scope with graph justification for each file
-
-Record baseline:
-
-`git diff --name-only`
-
-If changed files exceed declared scope:
-
-STOP and produce a plan artifact.
-
-**Each file in scope MUST have graph justification (§3.7).**
-
-#### 3.1.1 Four-tier scope record (REQUIRED in all evidence)
-
-Every scoped execution MUST record all four tiers explicitly:
-
-```markdown
-## SCOPE_RECORD
-
-### Root target
-<exact module/node from ADG that triggered this scope>
-
-### Direct ADG-derived tests
-<exact test nodeids obtained directly from ADG impact/test-surface output>
-
-### Widened dependency surface
-<additional test files/nodeids pulled in via first-ring or N-ring expansion — list each with ring depth>
-
-### Selected execution scope
-<final list of nodeids/files actually run>
-
-### Widening justification
-<for each widened item: explicit reason it was included; "general coverage" is FORBIDDEN>
-```
-
-**Silent widening is forbidden:** Any expansion of the execution scope beyond the direct ADG-derived set MUST be recorded with explicit justification. Undocumented widening = scope contamination (§3.2).
-
----
+**Four-tier scope record** (required in evidence):
+- `Root target` — exact ADG node
+- `Direct ADG-derived tests` — exact nodeids from ADG output
+- `Widened dependency surface` — additional files with ring depth
+- `Selected execution scope` — final nodeids run
+- `Widening justification` — explicit reason per widened item; "general coverage" FORBIDDEN
 
 ### 3.2 Scope contamination
 
-If unrelated files appear:
-
-1. record them
-2. **check if files have graph justification** (§3.7)
-3. if NO graph justification → scope contamination
-4. reset to baseline
-5. restore declared files only
-6. verify diff
-7. verify each file has graph justification
-
----
+If unrelated files appear: record them → check graph justification → if none, scope contamination → reset to baseline → restore declared files → verify diff and graph justification.
 
 ### 3.3 Deterministic analysis
 
-- Code analysis MUST use AST detailed parsing by default.
-- Regex or grep for structural logic is FORBIDDEN unless explicitly stated by user.
-- Repository paths MUST be canonicalized.
-- Scan roots MUST be explicitly defined.
-- No heuristic scanning.
-- No randomness in deterministic surfaces.
+AST detailed parsing by default. Regex/grep for structural logic = FORBIDDEN unless user explicitly states. Repository paths MUST be canonicalized.
 
 ### 3.4 AST dependency graph is mandatory
 
-AST dependency graphs are the PRIMARY and REQUIRED analysis primitive for this repository.
+Required for: root cause analysis, impact analysis, file selection, duplicate detection, dead code, boundary validation, layer inversion, test selection, healing scope, refactor planning, execution path analysis, registry/wiring validation.
 
-For any non-trivial code investigation, Windsurf MUST build and use an AST-derived dependency graph before making conclusions, proposing edits, selecting files, or claiming blast radius.
-
-This is mandatory for:
-
-- root cause analysis
-- impact analysis
-- file selection
-- duplicate detection
-- dead code detection
-- boundary validation
-- layer inversion detection
-- test selection
-- healing scope
-- refactor planning
-- execution path analysis
-- registry and wiring validation
-
-"Dependency graph" here means a structured graph derived from AST and module inspection, not a text search result.
-
-At minimum the graph MUST model, where applicable:
-
-- module import edges
-- symbol import edges
-- class inheritance edges
-- protocol / mixin realization edges
-- function and method call edges
-- decorator attachment edges
-- registry lookup / registration edges
-- factory/provider resolution edges
-- config consumption edges
-- CLI entrypoint → function edges
-- test → production coverage edges
-
-If a task involves architecture, orchestration, healing, validation, routing, registry wiring, or blast radius, Windsurf MUST assume the dependency graph is required even if the user does not restate it.
+Graph MUST model: module imports, symbol imports, class inheritance, protocol/mixin realization, function/method calls, decorator attachment, registry lookup/registration, factory/provider resolution, config consumption, CLI entrypoint→function, test→production coverage.
 
 ### 3.5 No low-signal search as primary evidence
 
-Low-signal search is FORBIDDEN as a primary analysis method.
+Forbidden as primary: grep, rg/ripgrep, regex-only sweeps, filename guesses, substring hunts. These MAY only be used AFTER the AST graph has identified a bounded candidate set, for literal string confirmation only.
 
-Forbidden primary methods include:
+Text search MUST NEVER be used to define blast radius, infer architecture, ownership, call flow, dependency direction, dead code, test coverage, or file authority.
 
-- grep
-- rg / ripgrep
-- regex-only repo sweeps
-- filename-only guesses
-- substring hunts
-- IDE search result counts
-- "search until something looks right"
+### 3.6 Fail-closed graph discipline ← **THE HARD RULE**
 
-These MAY be used only after the AST dependency graph has already identified a bounded candidate set, and only as a secondary confirmation tool for literal strings or exact constants.
+If AST parsing or graph construction fails:
+1. Record exact parse/graph errors
+2. Identify blocked files
+3. Mark conclusions as partial
+4. Stop — do NOT claim confidence
+5. **Do NOT fall back to grep, regex, or heuristic search**
 
-Text search MUST NEVER be used to:
-
-- define blast radius
-- infer architecture
-- infer ownership
-- infer call flow
-- infer dependency direction
-- infer dead code
-- infer test coverage
-- infer whether a component is unused
-- infer whether a file is authoritative
-
-If the graph and text search disagree, the graph wins unless Windsurf proves the graph extractor is incomplete and records the limitation explicitly.
-
-### 3.6 Fail-closed graph discipline
-
-If AST parsing or graph construction fails, Windsurf MUST fail closed.
-
-Required behavior:
-
-1. record exact parse/graph errors
-2. identify the blocked files
-3. mark conclusions as partial
-4. stop short of claiming confidence
-5. do NOT fall back to grep, regex, or heuristic search as a silent substitute
-
-Silent fallback from AST graph analysis to text search = HARD FAIL.
+**Silent fallback from AST graph to text search = HARD FAIL.**
 
 ### 3.7 Dependency graph evidence contract
 
-For every meaningful code change, repair, or audit, evidence MUST include a `## DEPENDENCY_GRAPH` section per §2.2.1.
-
-The dependency graph evidence MUST contain:
-
-1. Graph roots analyzed
-2. Impacted nodes
-3. Upstream set
-4. Downstream set
-5. Edge classes used (imports, calls, inheritance, registry, tests, etc.)
-6. Boundary/cycle findings
-7. Exact reason each changed file is in scope
-
-Any changed file not justified by the dependency graph = scope contamination.
+Every meaningful code change MUST include `## DEPENDENCY_GRAPH` section with: graph roots, impacted nodes, upstream set, downstream set, edge classes, boundary/cycle findings, exact reason each changed file is in scope. Changed file without graph justification = scope contamination.
 
 ---
 
-## Â§4. ARCHITECTURE LOCKS
+## §4. ARCHITECTURE LOCKS
 
-### 4.1 Canonical L0â€“L6 semantics
+### 4.1–4.2 Canonical semantics and SSOT
 
-Canonical L0â€“L6 semantics MUST match repository SSOT.
-
-No reinterpretation of layers allowed.
-
-Architecture enforcement MUST reference repository artifacts.
-
----
-
-### 4.2 Structural SSOT
-
-Structural SSOT:
-
-`structure_blueprint.py`
-
-Agent registry SSOT:
-
-`agent_discovery_full.json`
-
-If conflicting SSOT sources exist execution is BLOCKED.
-
----
+L0–L6 semantics MUST match repository SSOT (`structure_blueprint.py`). Agent registry SSOT: `agent_discovery_full.json`. Conflicting SSOT sources = execution BLOCKED.
 
 ### 4.3 Boundary enforcement
 
-- layer inversion detection MUST be AST-based
-- cycles are HARD FAIL
-- duplicate mixins forbidden
-- cross-layer mutation violating sovereignty = HARD FAIL
-
-Boundary enforcement MUST use the AST dependency graph, not grep or path-name heuristics.
-
-Layer conclusions MUST be supported by explicit graph edges showing:
-
-- who imports whom
-- who calls whom
-- who inherits from whom
-- who registers or resolves whom
-- who mutates whom
-
-Path shape alone is insufficient evidence.
+Layer inversion detection MUST be AST-based. Cycles = HARD FAIL. Duplicate mixins forbidden. Cross-layer mutation violating sovereignty = HARD FAIL. Path shape alone is insufficient evidence.
 
 ### 4.4 Dependency graph before edit
 
-Before proposing or applying any code edit, Windsurf MUST determine:
-
-- the directly affected nodes
-- first-order upstream dependencies
-- first-order downstream dependents
-- required test nodes
-- whether the change crosses a layer boundary
-- whether the change alters any registry, factory, or provider edge
-
-No edit plan without dependency-graph-backed impact analysis.
-
----
+Before any edit: determine directly affected nodes, first-order upstream/downstream, required tests, layer boundary crossings, registry/factory/provider edge changes. No edit plan without graph-backed impact analysis.
 
 ### 4.5 Tooling/runtime boundary
 
-Directories:
+`tools/evidence/` and `ops_scripts/ci/` MUST NOT import `apps_*`.
 
-`tools/evidence/`
-`ops_scripts/ci/`
+### 4.6–4.7 Agent discipline
 
-MUST NOT import `apps_*`.
-
----
-
-### 4.6 Agent invocation discipline
-
-Agents MUST be invoked via canonical Python functions.
-
-CLI entrypoints MUST:
-
-- import module
-- parse args
-- call one function
-
-No business logic in CLI wrappers.
+Agents invoked via canonical Python functions only. One canonical agent class per file. Semantic duplicate agents forbidden.
 
 ---
 
-### 4.7 Duplicate authority prevention
-
-One canonical agent class per file.
-
-Semantic duplicate agents are forbidden.
-
----
-
-## Â§5. CI & CONTRACT GATES
+## §5. CI & CONTRACT GATES
 
 ### 5.1 Single entrypoint
 
 `python ops_scripts/ci/run_contract_gates.py`
 
-Execution order:
-
-1. pytest
-2. evidence contract checker
-3. tooling boundary checker
-
-CI MUST:
-
-- match local execution
-- fail on violations
-- not mutate baselines
-
 ### 5.2 Graph-backed test selection
 
-Test selection and validation MUST be dependency-graph-backed.
+Test selection MUST be dependency-graph-backed. For every changed production file, identify tests via: direct test imports, fixture dependency edges, integration entrypoint coverage, registry/factory reachability, CLI-to-function reachability. Filename similarity is not sufficient. No test edge found = coverage gap to fix, not proof no tests are needed.
 
-For every changed production file, Windsurf MUST identify tests via graph relationships first, including:
+### 5.2.1 NodeID-first testing discipline
 
-- direct test imports
-- fixture dependency edges
-- integration entrypoint coverage
-- registry/factory reachability
-- CLI-to-function reachability
-
-Filename similarity is not sufficient.
-
-If no tests are found through the graph, Windsurf MUST treat that as a coverage gap to be fixed, not as evidence that no tests are needed.
-
-#### 5.2.1 NodeID-first testing discipline
-
-**When ADG provides exact test nodeids, those nodeids MUST be run first — not the containing file.**
-
-Execution priority order:
-1. **Exact nodeids** from ADG test-surface output (e.g. `tests/unit/test_foo.py::TestBar::test_baz`)
-2. **File-level** fallback ONLY when nodeid extraction fails
-3. **Directory-level** ONLY in the final full-suite run (§7.3 condition 3)
-
-**Lossiness rule:** If falling back from nodeid-level to file-level execution, the evidence MUST record:
-```markdown
-## SCOPE_LOSSINESS
-- Fallback reason: <exact reason nodeid execution was not possible>
-- Lossiness: file-level (may include unrelated tests in same file)
-- Mitigating action: <e.g. -k filter applied, or accepted as broader coverage>
-```
-
-Running `pytest <directory>` instead of exact nodeids without recording lossiness = scope contamination.
+When ADG provides exact test nodeids → run those nodeids first. File-level fallback ONLY when nodeid extraction fails. Directory-level ONLY in final full-suite run. Any fallback MUST be recorded as `## SCOPE_LOSSINESS` in evidence.
 
 ---
 
-## Â§6. EXECUTION MODALITY
+## §6. EXECUTION MODALITY
 
-Execution occurs strictly by defined phase.
+Execution occurs strictly by defined phase. Each phase produces one evidence file. Scope expansion → STOP and produce plan artifact.
 
-Each phase produces:
+### 6.1 Repair gate — no editing while exploring
 
-one evidence file.
-
-If scope expands:
-
-STOP and produce a plan artifact.
-
-### 6.1 Repair gate (no editing while exploring)
-
-**Editing is FORBIDDEN until ALL of the following gates are passed:**
+**Editing is FORBIDDEN until ALL five gates pass:**
 
 | Gate | Requirement |
 |---|---|
-| G1 | Failure capture exists for every failing test (per §14.6) |
-| G2 | Root cause clusters exist (per §14.2, `adg_failure_clusters.json` is fresh) |
+| G1 | Failure capture exists for every failing test (§14.6) |
+| G2 | Root cause clusters exist (`adg_failure_clusters.json` is fresh) |
 | G3 | Each proposed repair maps to one or more exact failing nodeids |
-| G4 | Repair class is declared (per §14.8) |
-| G5 | No UNRESOLVED facts remain in phase evidence for the targeted cluster |
-
-Phases:
-- **Exploration phase:** ADG build, impact query, failure capture, clustering — NO edits allowed.
-- **Repair phase:** Begins only after all five gates are passed.
+| G4 | Repair class declared (§14.8) |
+| G5 | No UNRESOLVED facts in phase evidence for targeted cluster |
 
 Mixing exploration and repair in the same step = HARD FAIL.
 
 ### 6.2 Stabilize before refactor
 
-Structural refactors are FORBIDDEN while the active failure surface is unstable.
+Structural refactors FORBIDDEN while: active scoped failures > 0, UNRESOLVED facts exist, registered skips have expired/missing resolution plans, full-suite not green.
 
-**"Unstable" means ANY of:**
-- Active scoped failures > 0
-- UNRESOLVED facts in current phase evidence
-- Registered skips with expired or missing resolution plans
-- Full-suite run not yet green
-
-**Priority order (REQUIRED):**
-1. Correctness — fix actual defects
-2. Determinism — eliminate non-deterministic behavior
-3. Governance integrity — restore fail-closed contracts
-4. Reproducible green scoped runs
-5. Structural refactors — ONLY after 1–4 are satisfied
+**Priority order:** Correctness → Determinism → Governance integrity → Reproducible green scoped runs → Structural refactors.
 
 ---
 
-## Â§7. ACCEPTANCE DISCIPLINE
+## §7. ACCEPTANCE DISCIPLINE
 
-Acceptance criteria MUST be:
-
-- deterministic
-- command-exact
-- exit-code-exact
-- count-exact where applicable
-
-Open-ended language forbidden:
-
-- should
-- expected to
-- approximately
-- equivalent
-
-Acceptance criteria immutable once phase begins.
-
-Unmet criteria → phase BLOCKED.
+Acceptance criteria MUST be deterministic, command-exact, exit-code-exact, count-exact. Forbidden language: "should", "expected to", "approximately", "equivalent". Criteria immutable once phase begins.
 
 ### 7.1 Forbidden overclaiming vocabulary
 
-The following claims are FORBIDDEN unless the exact condition listed is met:
-
-| Forbidden claim | Condition required before use |
+| Forbidden claim | Required condition |
 |---|---|
-| "tests are present" | Raw ADG entity count `tests > 0` for the node |
-| "fixtures are present" | Raw ADG entity count `fixtures > 0` for the node |
-| "convergence achieved" | All five conditions in §7.2 are met |
-| "repair complete" | All six conditions in §7.3 are met |
-| "stabilization complete" | All six conditions in §7.3 are met |
-| "repo is healthy" | Final full-suite run is green (zero fails, zero errors, zero unexpected skips) |
-| "no dependencies" | ADG explicitly returned empty edge set for the node |
-| "directly observed" | Fact was read directly from raw artifact or command stdout — no inference |
+| "tests are present" | Raw ADG entity count `tests > 0` |
+| "fixtures are present" | Raw ADG entity count `fixtures > 0` |
+| "convergence achieved" | All five §7.2 conditions met |
+| "repair complete" | All six §7.3 conditions met |
+| "repo is healthy" | Post-repair full-suite green (zero fails, errors, unexpected skips) |
+| "no dependencies" | ADG explicitly returned empty edge set |
+| "directly observed" | Fact read directly from raw artifact — no inference |
 
-Using these phrases without meeting the listed condition = CONSTITUTIONAL VIOLATION.
+Using these phrases without the listed condition = CONSTITUTIONAL VIOLATION.
 
-### 7.2 Convergence declaration conditions
+### 7.2 Convergence declaration (scoped claim only)
 
-**Convergence is a scoped claim only.** It asserts that the declared target surface is green. It does NOT assert that the repository is healthy or that the repair run is complete.
+ALL five conditions must hold simultaneously:
+1. Active scoped failures = 0
+2. Unregistered skips = 0
+3. No expired registry entries
+4. `FACT_CLASSIFICATION.Unresolved` is empty
+5. Scope lossiness documented (if file-level fallback used)
 
-Convergence MUST NOT be declared until ALL five conditions hold simultaneously:
+### 7.3 Repair run completion (six conditions)
 
-1. **Active scoped failures = 0** — every test in the scoped surface passes
-2. **Unregistered skips = 0** — every skip is in the pre-existing skip registry (§17)
-3. **No expired registry entries** — every registered skip has a valid non-expired `expiry_date`
-4. **FACT_CLASSIFICATION.Unresolved is empty** — no open facts in the phase evidence
-5. **Scope lossiness documented** — if file-level fallback was used, lossiness is recorded (§5.2.1)
-
-Claiming convergence before all five = HARD FAIL.
-
-### 7.3 Repair run completion conditions
-
-**Scoped convergence (§7.2) does not complete a repair run.** A repair run is complete only when ALL six conditions hold:
-
-1. **Scoped convergence conditions met** — all five conditions in §7.2 are satisfied
-2. **Blast-radius surface verified** — every ADG-reachable dependent of the repaired surface has been executed and passed; evidence of this execution exists in `docs/reports/plans/`
-3. **Full pytest suite green** — `pytest` run against the full repository returns zero failures, zero errors, zero unexpected skips
-4. **Full-suite run is post-repair** — the full-suite run timestamp is later than the last repair commit timestamp; a pre-existing green run does NOT satisfy this condition
-5. **No new failures introduced** — full-suite failure count is ≤ the pre-repair baseline failure count
-6. **Repair run evidence artifact complete** — a final summary artifact exists in `docs/reports/plans/` with FACT_CLASSIFICATION.Unresolved empty
-
-Claiming "repair complete" or "stabilization complete" before all six = CONSTITUTIONAL VIOLATION.
-
-**Failure mode this prevents:** An agent that makes the scoped target green and then treats that as completion — skipping blast-radius verification and the full suite — satisfies §7.2 but violates §7.3. §7.2 green is a necessary but not sufficient condition for repair run completion.
+1. All §7.2 scoped convergence conditions met
+2. Every ADG-reachable dependent of repaired surface executed and passed
+3. Full pytest suite green — zero failures, errors, unexpected skips
+4. Full-suite run timestamp LATER THAN last repair commit timestamp
+5. No new failures introduced (count ≤ pre-repair baseline)
+6. Final summary artifact in `docs/reports/plans/` with empty `Unresolved`
 
 ---
 
 ## §8. ARTIFACT LOCATION
 
-All plans, evidence, and reports MUST reside in:
+All plans, evidence, and reports MUST reside in: `docs/reports/plans/`
 
-`docs/reports/plans/`
-
-Artifacts outside canonical paths are invalid.
-
-All Python file I/O MUST use:
-
-`encoding="utf-8"`
-
-Evidence files are raw execution captures following the template in §2.2.3.
-
-### 8.1 Mandatory artifact links in every response
-
-**CRITICAL:** Cascade MUST provide clickable links to ALL artifacts on EVERY turn.
-
-**FORBIDDEN patterns:**
-```
-❌ "Plan updated and saved to @c:\Git\Agentic-Workflow\docs\reports\plans\file.md"
-❌ "Evidence saved to docs/reports/plans/evidence.md"
-❌ "Created plan at <path>"
-```
-
-**REQUIRED patterns:**
-```
-✅ "Plan updated: `@c:\Git\Agentic-Workflow\docs\reports\plans\file.md`"
-✅ "Evidence: `@c:\Git\Agentic-Workflow\docs\reports\plans\evidence.md`"
-✅ "Created: `@c:\Git\Agentic-Workflow\docs\reports\plans\plan.md`"
-```
-
-**Requirements:**
-- Every artifact reference MUST use backtick citation format: `` `@<absolute_path>` ``
-- Artifact links MUST be clickable in the IDE
-- Plain text paths without backticks are FORBIDDEN
-- Parenthetical notes like "(since no link)" indicate a VIOLATION
-
-**Enforcement:**
-- Any response mentioning an artifact without a clickable link = CONSTITUTIONAL VIOLATION
-- CI gates MUST verify all artifact references use citation format
-- User feedback indicating missing links = immediate remediation required
+All Python file I/O MUST use `encoding="utf-8"`. Evidence files are raw execution captures, ASCII-only.
 
 ---
 
 ## §9. QUERY TIMEOUT & PROGRESS REPORTING
 
-### 9.1 Mandatory timeout for all queries
+All queries, searches, and long-running operations MUST have explicit timeout parameters and fail-closed behavior on timeout.
 
-ALL queries, searches, analysis operations, and long-running computations MUST have:
+**Timeout ranges:** Fast (grep, file reads, simple AST): 5–30s | Medium (graph construction, test collection): 30–120s | Heavy (full repo analysis): 120–600s | External API: 10–60s.
 
-- **Explicit timeout parameter** (no infinite waits)
-- **Timeout value appropriate to operation type**
-- **Fail-closed behavior on timeout** (raise exception, do not silently continue)
+Operations >5s MUST provide progress reporting (percentage, current item, ETA) at least every 5s.
 
-Forbidden behaviors:
-- ❌ Queries without timeout parameters
-- ❌ Infinite loops without termination conditions
-- ❌ Blocking operations without timeout guards
-- ❌ Silent timeout handling (must raise or log)
+When timeout occurs: use ADG to isolate the bottleneck, identify root cause, rerun with targeted scope, document recovery in `## TIMEOUT_RECOVERY`. Fail-closed: if ADG cannot be built or bottleneck not identified → raise original TimeoutError.
 
-Required timeout ranges by operation type:
-- **Fast queries** (grep, file reads, simple AST): 5-30 seconds
-- **Medium queries** (dependency graph construction, test collection): 30-120 seconds
-- **Heavy queries** (full repo analysis, multi-file refactor): 120-600 seconds
-- **External API calls**: 10-60 seconds with retry budget
-
-### 9.2 Mandatory progress reporting
-
-ALL operations expected to take >5 seconds MUST provide:
-
-- **Progress bar with percentage completion** (0-100%)
-- **Current operation description** (what is being processed)
-- **Estimated time remaining** (when calculable)
-- **Incremental progress updates** (not just start/end)
-
-Required progress reporting format:
-```
-[████████░░░░░░░░░░░░] 40% | Processing: <current_item> | ETA: <time>
-```
-
-Progress updates MUST occur:
-- At least every 5 seconds for operations >30 seconds
-- At least every 10 seconds for operations >120 seconds
-- On each major phase transition
-- On completion (100%)
-
-### 9.3 Enforcement points
-
-Timeout and progress requirements MUST be enforced at:
-
-1. **AST dependency graph construction** (§0, §3.4)
-   - Timeout per file parse
-   - Overall graph build timeout
-   - Progress: files parsed / total files
-
-2. **Test collection and execution** (§1, §5.2)
-   - Timeout per test collection
-   - Timeout per test execution
-   - Progress: tests collected/executed / total
-
-3. **Evidence generation** (§2)
-   - Timeout per command execution
-   - Progress: commands executed / total commands
-
-4. **File operations** (grep, search, read)
-   - Timeout per search operation
-   - Progress: files searched / total files
-
-5. **External tool invocations**
-   - Timeout for all subprocess calls
-   - Progress when tool supports it
-
-### 9.4 Implementation requirements
-
-Code implementing queries MUST:
-
-```python
-# Example timeout pattern
-import signal
-from contextlib import contextmanager
-
-@contextmanager
-def timeout_guard(seconds: int, operation: str):
-    def timeout_handler(signum, frame):
-        raise TimeoutError(f"{operation} exceeded {seconds}s timeout")
-
-    signal.signal(signal.SIGALRM, timeout_handler)
-    signal.alarm(seconds)
-    try:
-        yield
-    finally:
-        signal.alarm(0)
-
-# Example progress pattern
-from tqdm import tqdm
-
-def process_with_progress(items: list, operation: str):
-    with tqdm(total=len(items), desc=operation, unit="item") as pbar:
-        for item in items:
-            # process item
-            pbar.update(1)
-```
-
-### 9.5 Validation
-
-CI gates MUST verify:
-- No queries without timeout parameters
-- No long operations without progress reporting
-- Timeout values within acceptable ranges
-
-Evidence documentation per §2.2.2 (TIMEOUT_RECOVERY section when applicable).
-
-### 9.6 Automatic timeout recovery with AST dependency graph
-
-When a query exceeds timeout, the system MUST automatically:
-
-1. **Use AST dependency graph to isolate the bottleneck**
-2. **Identify the root cause** (module-level execution, heavy imports, blocking calls)
-3. **Rerun with targeted scope** based on ADG findings
-4. **Document recovery in evidence**
-
-This is MANDATORY for:
-- Test collection timeouts
-- Test execution timeouts
-- Dependency graph construction timeouts
-- File search/grep timeouts
-- Any query timeout where scope can be narrowed
-
-#### 9.6.1 Timeout recovery protocol
-
-When timeout occurs:
-
-```python
-try:
-    result = run_full_query(items, timeout=TIMEOUT)
-except TimeoutError as e:
-    # Step 1: Build AST dependency graph to isolate issue
-    adg = build_dependency_graph_for_timeout_analysis(items)
-
-    # Step 2: Identify bottleneck using ADG
-    bottleneck = identify_bottleneck_from_adg(adg, items)
-
-    # Step 3: Isolate problematic scope
-    isolated_scope = isolate_scope_from_bottleneck(bottleneck)
-
-    # Step 4: Rerun with isolated scope
-    result = run_isolated_query(isolated_scope, timeout=TIMEOUT)
-
-    # Step 5: Document recovery
-    document_timeout_recovery(e, bottleneck, isolated_scope, result)
-```
-
-#### 9.6.2 ADG-based bottleneck identification
-
-For **test collection timeouts**, ADG MUST identify:
-
-- **Module-level execution risks**: Code executing at import time (not inside functions)
-- **Heavy transitive dependencies**: Imports that pull in large dependency chains
-- **Blocking operations at module scope**: `read_text()`, `subprocess.run()`, network calls
-- **Import chain depth**: Modules with deep import hierarchies
-
-Detection pattern:
-```python
-# Find module-level calls that execute at collection time
-for node in ast.iter_child_nodes(tree):
-    if isinstance(node, (ast.FunctionDef, ast.ClassDef)):
-        continue  # Skip function/class definitions
-
-    # Module-level assignments with function calls
-    if isinstance(node, ast.Assign):
-        for child in ast.walk(node):
-            if isinstance(child, ast.Call):
-                # Check for risky operations
-                if is_blocking_operation(child):
-                    record_bottleneck(file, node.lineno, child)
-```
-
-Risky operations at module scope:
-- `read_text()`, `read()`, `open()` - File I/O
-- `subprocess.run()`, `Popen()`, `check_output()` - Process execution
-- `requests.get()`, `urllib.request()` - Network calls
-- `time.sleep()` - Blocking delays
-- Heavy computations (AST parsing, embedding models, filesystem scans)
-
-#### 9.6.3 Scope isolation strategies
-
-Based on ADG findings, isolate scope using:
-
-**Strategy 1: Exclude problematic modules**
-```python
-# If ADG identifies specific files with module-level blocking
-excluded_files = adg.find_module_level_blocking_operations()
-isolated_scope = [f for f in all_files if f not in excluded_files]
-```
-
-**Strategy 2: Partition by dependency depth**
-```python
-# Run shallow dependencies first, deep dependencies separately
-shallow = adg.filter_by_import_depth(max_depth=2)
-deep = adg.filter_by_import_depth(min_depth=3)
-```
-
-**Strategy 3: Isolate by import chain**
-```python
-# Group files by their import dependencies
-independent_groups = adg.partition_by_import_independence()
-for group in independent_groups:
-    run_isolated_query(group, timeout=TIMEOUT)
-```
-
-**Strategy 4: Target modified files only**
-```python
-# For test timeouts, run only tests covering modified files
-modified_files = get_modified_files()
-relevant_tests = adg.find_tests_covering_files(modified_files)
-```
-
-#### 9.6.4 Example: Test collection timeout recovery
-
-```python
-def collect_tests_with_timeout_recovery(test_dirs: list[str], timeout: int) -> list:
-    """Collect tests with automatic timeout recovery."""
-
-    try:
-        # Attempt full collection
-        with timeout_guard(timeout, "test collection"):
-            return pytest.main(["--collect-only"] + test_dirs)
-
-    except TimeoutError as e:
-        logger.warning(f"Test collection timed out after {timeout}s")
-
-        # Build ADG to identify bottleneck
-        adg = build_test_dependency_graph(test_dirs)
-
-        # Find module-level blocking operations
-        blocking_modules = adg.find_module_level_blocking_ops([
-            'read_text', 'read', 'subprocess', 'run', 'Popen',
-            'requests', 'urllib', 'time.sleep'
-        ])
-
-        logger.info(f"ADG identified {len(blocking_modules)} blocking modules:")
-        for mod, line, op in blocking_modules:
-            logger.info(f"  {mod}:{line} - {op}")
-
-        # Strategy: Exclude blocking modules and retry
-        safe_test_dirs = [
-            d for d in test_dirs
-            if not any(str(d) in str(m) for m, _, _ in blocking_modules)
-        ]
-
-        logger.info(f"Retrying with {len(safe_test_dirs)} safe test directories")
-
-        with timeout_guard(timeout, "test collection (isolated)"):
-            return pytest.main(["--collect-only"] + safe_test_dirs)
-```
-
-#### 9.6.5 Evidence documentation for timeout recovery
-
-Evidence documentation per §2.2.2 (TIMEOUT_RECOVERY section).
-
-#### 9.6.6 Fail-closed recovery behavior
-
-Timeout recovery MUST be fail-closed:
-
-- If ADG cannot be built → raise original TimeoutError
-- If bottleneck cannot be identified → raise original TimeoutError
-- If isolated scope is empty → raise original TimeoutError
-- If retry also times out → raise TimeoutError with both attempts documented
-- Never silently skip work or return partial results without explicit documentation
-
-#### 9.6.7 Integration with existing rules
-
-Timeout recovery integrates with:
-
-- **§0 (AST Dependency Graph)**: ADG is PRIMARY tool for timeout analysis
-- **§1 (Testing)**: Test collection/execution timeouts use ADG to isolate slow tests
-- **§2 (Evidence)**: All recovery attempts documented in evidence
-- **§3 (Scope)**: Isolated scope must have graph justification
-- **§5 (CI Gates)**: CI validates timeout recovery patterns
+**CI enforcement:** `ops_scripts/ci/validate_timeout_progress.py`, `ops_scripts/ci/validate_timeout_recovery.py`
 
 ---
 
 ## §10. CRITICAL FUNCTIONALITY FAIL-CLOSED
 
-### 10.1 No graceful fallbacks for critical infrastructure
+Critical infrastructure MUST fail-closed. No graceful fallbacks, silent degradation, or best-effort modes.
 
-Critical infrastructure components MUST fail-closed when unavailable or misconfigured.
+**Critical infrastructure:** BGE embeddings, AST dependency graph (§3.6), test execution (§1.12), SSOT configuration (§4.2).
 
-**FORBIDDEN:** Graceful fallbacks, silent degradation, or "best effort" modes for critical functionality.
+FORBIDDEN: `try/except` that catches from critical components and returns None/empty/default; conditional logic providing alternatives when critical components unavailable; `logger.warning()` followed by `pass` for critical operations.
 
-**REQUIRED:** Hard failures with explicit error messages when critical components are unavailable.
-
-### 10.2 Critical infrastructure inventory
-
-The following are classified as **critical infrastructure** and MUST NOT have graceful fallbacks:
-
-#### 10.2.1 BGE Embeddings
-- **Component:** BGE embedding model (BAAI/bge-small-en-v1.5 or equivalent)
-- **Critical operations:**
-  - Vector store recall
-  - Semantic search
-  - Long-term memory promotion
-  - Embedding-based retrieval
-- **Fail-closed behavior:**
-  - If BGE model unavailable → raise `RuntimeError("BGE embedding model required but unavailable")`
-  - If embedding generation fails → raise exception, do NOT return None or empty vector
-  - If vector store write fails → raise exception, do NOT silently skip
-  - If vector store recall fails → raise exception, do NOT return None or empty results
-- **FORBIDDEN patterns:**
-  ```python
-  # ❌ FORBIDDEN: Graceful fallback
-  try:
-      embedding = bge_model.encode(text)
-  except Exception:
-      return None  # Silent failure
-
-  # ❌ FORBIDDEN: Optional degradation
-  if bge_available:
-      return vector_search(query)
-  else:
-      return keyword_search(query)  # Fallback to inferior method
-
-  # ❌ FORBIDDEN: Best-effort mode
-  try:
-      store_in_vector_db(embedding)
-  except Exception:
-      logger.warning("Vector store unavailable, skipping")
-      pass  # Silent skip
-  ```
-- **REQUIRED patterns:**
-  ```python
-  # ✅ REQUIRED: Fail-closed
-  if not bge_model_available():
-      raise RuntimeError("BGE embedding model required but unavailable")
-
-  embedding = bge_model.encode(text)
-  if embedding is None or len(embedding) == 0:
-      raise ValueError(f"BGE embedding generation failed for text: {text[:50]}")
-
-  # ✅ REQUIRED: Explicit dependency check
-  def require_bge_embeddings():
-      if not BGE_MODEL_LOADED:
-          raise RuntimeError(
-              "BGE embeddings are critical infrastructure. "
-              "Install: pip install sentence-transformers"
-          )
-  ```
-
-#### 10.2.2 AST Dependency Graph
-- **Component:** AST parsing and dependency graph construction (§0, §3.4)
-- **Fail-closed behavior:** Already enforced by §3.6
-- If AST parsing fails → fail closed, no grep fallback
-
-#### 10.2.3 Test Execution
-- **Component:** pytest collection and execution (§1.12)
-- **Fail-closed behavior:** Already enforced by §1.12
-- If test collection/execution mismatch → HARD FAIL
-
-#### 10.2.4 SSOT Configuration
-- **Component:** Structure blueprint, agent registry (§4.2)
-- **Fail-closed behavior:** Already enforced by §4.2
-- If conflicting SSOT sources → execution BLOCKED
-
-### 10.3 Graceful fallback audit
-
-Code reviews and CI gates MUST detect and reject graceful fallbacks for critical infrastructure:
-
-**Detection patterns:**
-- `try/except` blocks that catch exceptions from critical components and return None/empty/default
-- Conditional logic that provides alternative implementations when critical components unavailable
-- `logger.warning()` followed by `pass` or `return None` for critical operations
-- Optional parameters that disable critical functionality
-- Feature flags that bypass critical infrastructure
-
-**CI enforcement:**
-```python
-# CI gate must verify:
-def audit_critical_infrastructure_fallbacks():
-    """Detect graceful fallbacks in critical infrastructure."""
-
-    critical_components = [
-        "bge_model", "vector_store", "embedding",
-        "ast_parse", "dependency_graph",
-        "pytest", "test_collection"
-    ]
-
-    for file in get_python_files():
-        ast_tree = ast.parse(file.read_text())
-
-        for node in ast.walk(ast_tree):
-            if isinstance(node, ast.Try):
-                # Check if exception handler returns None/empty for critical ops
-                if has_critical_component_in_try(node, critical_components):
-                    for handler in node.handlers:
-                        if returns_none_or_empty(handler):
-                            raise CriticalFallbackViolation(
-                                f"{file}:{node.lineno} - "
-                                f"Graceful fallback detected for critical infrastructure"
-                            )
-```
-
-### 10.4 Test requirements for critical infrastructure
-
-Tests for critical infrastructure MUST verify fail-closed behavior:
-
-**Required test cases:**
-1. **Unavailable component test:** Verify exception raised when component unavailable
-2. **Failed operation test:** Verify exception raised when operation fails
-3. **No silent degradation test:** Verify no fallback to inferior methods
-4. **Error message quality test:** Verify error messages are actionable
-
-**Example for BGE embeddings:**
-```python
-def test_bge_unavailable_raises_error():
-    """BGE embeddings MUST fail-closed when unavailable."""
-    with patch('bge_model.encode', side_effect=RuntimeError("Model not loaded")):
-        with pytest.raises(RuntimeError, match="BGE embedding model required"):
-            promote_to_long_term_memory(memory)
-
-def test_bge_embedding_none_raises_error():
-    """BGE embeddings MUST fail-closed on None result."""
-    with patch('bge_model.encode', return_value=None):
-        with pytest.raises(ValueError, match="BGE embedding generation failed"):
-            promote_to_long_term_memory(memory)
-
-def test_vector_store_write_failure_raises_error():
-    """Vector store writes MUST fail-closed on failure."""
-    with patch('vector_store.add', side_effect=Exception("DB unavailable")):
-        with pytest.raises(Exception, match="DB unavailable"):
-            promote_to_long_term_memory(memory)
-
-def test_no_fallback_to_keyword_search():
-    """MUST NOT fall back to keyword search when vector search fails."""
-    with patch('bge_model.encode', side_effect=RuntimeError("Model unavailable")):
-        with pytest.raises(RuntimeError):
-            # Should raise, not fall back to keyword search
-            recall_from_long_term_memory(query)
-```
-
-### 10.5 Documentation requirements
-
-Every critical infrastructure component MUST document:
-
-1. **Criticality declaration:** Why this component is critical
-2. **Fail-closed contract:** Exact failure modes and exceptions raised
-3. **No fallback policy:** Explicit statement that graceful fallbacks are forbidden
-4. **Setup requirements:** How to properly configure the component
-5. **Failure recovery:** How to diagnose and fix failures (not how to bypass them)
-
-**Example documentation:**
-```python
-class BGEEmbeddingService:
-    """
-    BGE embedding service for semantic search and vector storage.
-
-    CRITICAL INFRASTRUCTURE: This component is fail-closed.
-
-    Fail-closed contract:
-    - Raises RuntimeError if BGE model is not loaded
-    - Raises ValueError if embedding generation returns None/empty
-    - Raises Exception if vector store operations fail
-    - NO graceful fallbacks or degraded modes
-
-    Setup requirements:
-    - pip install sentence-transformers
-    - Model: BAAI/bge-small-en-v1.5
-    - Vector store: ChromaDB or equivalent
-
-    Failure recovery:
-    - If model not loaded: Install dependencies and restart
-    - If embedding fails: Check input text validity
-    - If vector store fails: Check DB connection and permissions
-    """
-```
+**CI enforcement:** `ops_scripts/ci/check_utility_silent_swallowers.py`
 
 ---
 
 ## §11. TEST QUALITY ENFORCEMENT
 
-### 11.1 Core principle
+Three quality gates — enforced in priority order:
 
-**No hidden failure. No fake pass. No ambiguous expected failure.**
+1. **No silent exception swallowers** — any bare `except: pass` is assumed violation. Must convert to assertion, explicit re-raise, logged degraded path, or `# guardian: allow-silent-swallower` with tight scope and documented justification.
+2. **No zero-assert / fake-healthy tests** — zero assertions, `assert True`, `pass`-only bodies, and broad mocks with no assertions are all FORBIDDEN. Tests MUST assert on returned value, emitted signal, state change, or side effect.
+3. **No non-strict xfail** — `@pytest.mark.xfail` without `strict=True` = FORBIDDEN.
 
-All test code MUST adhere to three quality gates:
-
-1. **No silent exception swallowers**
-2. **No zero-assert tests** (without real contract assertions)
-3. **No non-strict xfail**
-
-These are enforced in priority order during code review and CI.
-
-### 11.2 Silent exception swallowers
-
-#### 11.2.1 Default assumption: VIOLATION
-
-Any silent `except` block is assumed to be a **violation** until proven otherwise.
-
-**FORBIDDEN patterns:**
-```python
-# ❌ FORBIDDEN: Bare except with pass
-try:
-    critical_operation()
-except:
-    pass
-
-# ❌ FORBIDDEN: Broad except returning None with no signal
-try:
-    result = important_function()
-except Exception:
-    return None  # Silent failure
-
-# ❌ FORBIDDEN: Fallback behavior that hides failure
-try:
-    use_primary_method()
-except:
-    use_fallback_method()  # No logging, no signal, hides failure
-```
-
-#### 11.2.2 Required remediation
-
-Silent swallowers MUST be converted to one of these acceptable outcomes:
-
-**Option 1: Convert to assertion**
-```python
-# ✅ ACCEPTABLE: Explicit assertion
-result = critical_operation()
-assert result is not None, "Critical operation must return a value"
-```
-
-**Option 2: Explicit error propagation**
-```python
-# ✅ ACCEPTABLE: Re-raise with context
-try:
-    result = critical_operation()
-except SpecificError as e:
-    raise RuntimeError(f"Critical operation failed: {e}") from e
-```
-
-**Option 3: Logged/warned degraded path with test coverage**
-```python
-# ✅ ACCEPTABLE: Observable degradation with coverage
-try:
-    result = primary_method()
-except SpecificError as e:
-    logger.warning(f"Primary method failed ({e}), using fallback")
-    result = fallback_method()
-    # REQUIRED: Test must verify this path is exercised
-```
-
-**Option 4: Documented narrow allow marker**
-```python
-# ✅ ACCEPTABLE: Explicit annotation for intentional swallowing
-try:
-    optional_cleanup()
-except OSError:
-    # guardian: allow-silent-swallower
-    # Justification: Cleanup is best-effort, failure is acceptable
-    pass
-```
-
-#### 11.2.3 Allow marker requirements
-
-The `# guardian: allow-silent-swallower` marker is ONLY acceptable when:
-
-1. **Tightly scoped:** Catches specific exception types, not `Exception` or bare `except`
-2. **Documented:** Includes justification comment explaining why silence is acceptable
-3. **Truly intentional:** The operation is genuinely optional or best-effort
-4. **Narrow scope:** Limited to cleanup, optional telemetry, or non-critical operations
-
-**FORBIDDEN use of allow marker:**
-```python
-# ❌ FORBIDDEN: Allow marker on critical operation
-try:
-    save_user_data()
-except Exception:
-    # guardian: allow-silent-swallower
-    # Justification: We'll try again later
-    pass  # VIOLATION: Data loss is not acceptable
-```
-
-#### 11.2.4 CI enforcement
-
-CI gates MUST detect silent swallowers:
-
-```python
-def audit_silent_swallowers():
-    """Detect silent exception swallowers in test and production code."""
-
-    violations = []
-
-    for file in get_python_files():
-        tree = ast.parse(file.read_text())
-
-        for node in ast.walk(tree):
-            if isinstance(node, ast.Try):
-                for handler in node.handlers:
-                    # Check for silent swallowing
-                    if is_silent_swallower(handler):
-                        # Check for allow marker
-                        if not has_allow_marker(file, handler.lineno):
-                            violations.append({
-                                'file': file,
-                                'line': handler.lineno,
-                                'type': 'silent_swallower',
-                                'pattern': get_handler_pattern(handler)
-                            })
-
-    if violations:
-        raise SilentSwallowerViolation(violations)
-```
-
-### 11.3 Zero-assert and fake-healthy tests
-
-#### 11.3.1 Default assumption: FAKE HEALTHY TEST
-
-Tests that appear to pass but provide no real verification are **fake healthy tests** that provide false confidence.
-
-**Canonical defect class:** `fake_healthy_test` (from failure mode catalog)
-
-**FORBIDDEN patterns:**
-
-**Pattern 1: Zero assertions**
-```python
-# ❌ FORBIDDEN: Zero assertions, no contract verification
-def test_process_data():
-    """Test data processing."""
-    result = process_data(input_data)
-    # No assertions - fake pass
-```
-
-**Pattern 2: `assert True` (meaningless assertion)**
-```python
-# ❌ FORBIDDEN: Fake assertion added to satisfy linter
-def test_calculate():
-    """Test calculation."""
-    result = calculate(10, 20)
-    assert True  # Meaningless assertion
-```
-
-**Pattern 3: `pass` statement only**
-```python
-# ❌ FORBIDDEN: Test body is just pass
-def test_feature():
-    """Test feature."""
-    pass  # Placeholder test that always passes
-```
-
-**Pattern 4: "No exception raised" without verification**
-```python
-# ❌ FORBIDDEN: Implicit no-exception test without output verification
-def test_no_error():
-    """Test that operation doesn't error."""
-    process_data(input_data)
-    # No exception = pass, but doesn't verify correctness
-```
-
-**Pattern 5: Broad mocks with no assertion on behavior**
-```python
-# ❌ FORBIDDEN: Mock everything, assert nothing
-def test_with_mocks():
-    """Test with mocks."""
-    with patch('module.function1'), \
-         patch('module.function2'), \
-         patch('module.function3'):
-        result = run_operation()
-        # No assertions on mock calls or result
-```
-
-#### 11.3.2 Required remediation
-
-Fake-healthy tests MUST be replaced with **real contract assertions**.
-
-**Do NOT blindly add `assert True`** - that creates fake healthy tests.
-
-**REQUIRED: Assert on real contracts**
-
-**Option 1: Assert on returned value**
-```python
-# ✅ REQUIRED: Assert on actual return value
-def test_calculate_sum():
-    """Test sum calculation."""
-    result = calculate_sum(10, 20)
-    assert result == 30, "Sum should be 30"
-```
-
-**Option 2: Assert on emitted signal**
-```python
-# ✅ REQUIRED: Assert on signal emission
-def test_event_emitted():
-    """Test event emission."""
-    with capture_events() as events:
-        trigger_action()
-    assert len(events) == 1, "Should emit exactly one event"
-    assert events[0].type == "action_triggered"
-```
-
-**Option 3: Assert on state change**
-```python
-# ✅ REQUIRED: Assert on state mutation
-def test_state_update():
-    """Test state update."""
-    initial_state = get_state()
-    update_state(new_value=42)
-    final_state = get_state()
-    assert final_state.value == 42, "State should be updated"
-    assert final_state != initial_state, "State should change"
-```
-
-**Option 4: Assert on side effect**
-```python
-# ✅ REQUIRED: Assert on observable side effect
-def test_file_written():
-    """Test file write."""
-    write_output(data, path)
-    assert path.exists(), "File should be created"
-    assert path.read_text() == expected_content, "Content should match"
-```
-
-**Option 5: Assert on specific invariant**
-```python
-# ✅ REQUIRED: Assert on invariant preservation
-def test_invariant_preserved():
-    """Test invariant preservation."""
-    before_count = count_items()
-    process_items()
-    after_count = count_items()
-    assert after_count >= before_count, "Items should not decrease"
-```
-
-**Option 6: Assert on mock behavior (when mocks are necessary)**
-```python
-# ✅ REQUIRED: Assert on mock calls and behavior
-def test_with_mocks():
-    """Test with mocks."""
-    with patch('module.external_api') as mock_api:
-        mock_api.return_value = {'status': 'success'}
-
-        result = run_operation()
-
-        # Assert on mock interactions
-        mock_api.assert_called_once_with(expected_param)
-        # Assert on result
-        assert result.status == 'success'
-        assert result.processed is True
-```
-
-#### 11.3.3 "Should not raise" tests
-
-If the intent is "should not raise an exception," make that **explicit and meaningful**.
-
-**FORBIDDEN: Implicit no-exception test**
-```python
-# ❌ FORBIDDEN: Implicit assumption that no exception = pass
-def test_no_error():
-    """Test that operation doesn't error."""
-    process_data()  # Implicit: if no exception, test passes
-```
-
-**REQUIRED: Explicit no-exception contract**
-```python
-# ✅ REQUIRED: Explicit no-exception assertion with context
-def test_valid_input_does_not_raise():
-    """Test that valid input processes without exception."""
-    try:
-        result = process_data(valid_input)
-        # Also assert on the result to verify correctness
-        assert result is not None, "Should return a result"
-        assert result.status == "success", "Should succeed"
-    except Exception as e:
-        pytest.fail(f"Should not raise exception for valid input: {e}")
-```
-
-**ACCEPTABLE: pytest.raises context with negative assertion**
-```python
-# ✅ ACCEPTABLE: Use does_not_raise for clarity (pytest 7.0+)
-from pytest import does_not_raise
-
-def test_valid_input_accepted():
-    """Test that valid input is accepted."""
-    with does_not_raise():
-        result = process_data(valid_input)
-    assert result.is_valid(), "Result should be valid"
-```
-
-#### 11.3.4 CI enforcement
-
-CI gates MUST detect ALL fake-healthy test patterns and BLOCK merges.
-
-**Canonical defect class:** `fake_healthy_test`
-
-```python
-def audit_fake_healthy_tests():
-    """
-    Detect fake-healthy tests that provide false confidence.
-
-    Scans for:
-    1. Zero assertions
-    2. assert True (meaningless assertion)
-    3. pass statement only
-    4. No exception raised without verification
-    5. Broad mocks with no assertion on behavior
-    """
-
-    violations = []
-
-    for test_file in get_test_files():
-        tree = ast.parse(test_file.read_text())
-
-        for node in ast.walk(tree):
-            if isinstance(node, ast.FunctionDef) and node.name.startswith('test_'):
-
-                # Pattern 1: Zero assertions
-                assert_count = count_assertions(node)
-                if assert_count == 0:
-                    # Acceptable: pytest.raises or pytest.warns context
-                    if not has_pytest_raises(node) and not has_pytest_warns(node):
-                        violations.append({
-                            'file': test_file,
-                            'line': node.lineno,
-                            'test': node.name,
-                            'type': 'fake_healthy_test',
-                            'pattern': 'zero_assertions',
-                            'message': 'Test has zero assertions - no contract verification'
-                        })
-
-                # Pattern 2: assert True (meaningless assertion)
-                if has_assert_true_only(node):
-                    violations.append({
-                        'file': test_file,
-                        'line': node.lineno,
-                        'test': node.name,
-                        'type': 'fake_healthy_test',
-                        'pattern': 'assert_true',
-                        'message': 'Test only contains "assert True" - meaningless assertion'
-                    })
-
-                # Pattern 3: pass statement only
-                if is_pass_only_test(node):
-                    violations.append({
-                        'file': test_file,
-                        'line': node.lineno,
-                        'test': node.name,
-                        'type': 'fake_healthy_test',
-                        'pattern': 'pass_only',
-                        'message': 'Test body is only "pass" - placeholder test'
-                    })
-
-                # Pattern 4: No exception raised without verification
-                if is_no_exception_without_verification(node):
-                    violations.append({
-                        'file': test_file,
-                        'line': node.lineno,
-                        'test': node.name,
-                        'type': 'fake_healthy_test',
-                        'pattern': 'no_exception_without_verification',
-                        'message': 'Test relies on "no exception" without verifying output/state/signal'
-                    })
-
-                # Pattern 5: Broad mocks with no assertion on behavior
-                if has_broad_mocks_without_assertions(node):
-                    violations.append({
-                        'file': test_file,
-                        'line': node.lineno,
-                        'test': node.name,
-                        'type': 'fake_healthy_test',
-                        'pattern': 'broad_mocks_no_assertions',
-                        'message': 'Test uses mocks but has no assertions on mock behavior or result'
-                    })
-
-    if violations:
-        raise FakeHealthyTestViolation(
-            f"Found {len(violations)} fake-healthy tests. "
-            f"These tests provide false confidence and MUST be fixed.",
-            violations
-        )
-
-
-def has_assert_true_only(test_node: ast.FunctionDef) -> bool:
-    """
-    Detect tests that only contain 'assert True' or 'assert 1'.
-
-    Returns True if:
-    - Test has exactly one assertion
-    - That assertion is 'assert True' or 'assert 1'
-    """
-    assertions = [
-        node for node in ast.walk(test_node)
-        if isinstance(node, ast.Assert)
-    ]
-
-    if len(assertions) != 1:
-        return False
-
-    assertion = assertions[0]
-
-    # Check for 'assert True'
-    if isinstance(assertion.test, ast.Constant) and assertion.test.value is True:
-        return True
-
-    # Check for 'assert 1'
-    if isinstance(assertion.test, ast.Constant) and assertion.test.value == 1:
-        return True
-
-    # Check for 'assert True' as Name node (older Python AST)
-    if isinstance(assertion.test, ast.Name) and assertion.test.id == 'True':
-        return True
-
-    return False
-
-
-def is_pass_only_test(test_node: ast.FunctionDef) -> bool:
-    """
-    Detect tests whose body is only a 'pass' statement.
-
-    Returns True if test body contains only:
-    - pass statement
-    - docstring + pass statement
-    """
-    body = test_node.body
-
-    # Skip docstring if present
-    start_idx = 0
-    if (body and isinstance(body[0], ast.Expr) and
-        isinstance(body[0].value, (ast.Str, ast.Constant))):
-        start_idx = 1
-
-    # Check if remaining body is only 'pass'
-    remaining_body = body[start_idx:]
-
-    if len(remaining_body) == 1 and isinstance(remaining_body[0], ast.Pass):
-        return True
-
-    return False
-
-
-def is_no_exception_without_verification(test_node: ast.FunctionDef) -> bool:
-    """
-    Detect tests that rely on "no exception raised" without verifying output.
-
-    Returns True if:
-    - Test has function calls
-    - Test has zero assertions
-    - Test does NOT use pytest.raises or pytest.warns
-    - Test does NOT use pytest.does_not_raise
-    """
-    has_function_calls = any(
-        isinstance(node, ast.Call)
-        for node in ast.walk(test_node)
-    )
-
-    assert_count = count_assertions(test_node)
-
-    has_pytest_context = (
-        has_pytest_raises(test_node) or
-        has_pytest_warns(test_node) or
-        has_pytest_does_not_raise(test_node)
-    )
-
-    return has_function_calls and assert_count == 0 and not has_pytest_context
-
-
-def has_broad_mocks_without_assertions(test_node: ast.FunctionDef) -> bool:
-    """
-    Detect tests with mocks but no assertions on mock behavior.
-
-    Returns True if:
-    - Test uses patch/Mock
-    - Test has no assertions on mock calls (assert_called, assert_called_once, etc.)
-    - Test has no assertions on result/state
-    """
-    has_mocks = any(
-        is_mock_usage(node)
-        for node in ast.walk(test_node)
-    )
-
-    if not has_mocks:
-        return False
-
-    has_mock_assertions = any(
-        is_mock_assertion(node)
-        for node in ast.walk(test_node)
-    )
-
-    has_value_assertions = count_assertions(test_node) > 0
-
-    # If has mocks but no mock assertions AND no value assertions = violation
-    return has_mocks and not has_mock_assertions and not has_value_assertions
-
-
-def is_mock_usage(node: ast.AST) -> bool:
-    """Detect usage of patch, Mock, MagicMock, etc."""
-    if isinstance(node, ast.Call):
-        if isinstance(node.func, ast.Name):
-            return node.func.id in {'patch', 'Mock', 'MagicMock', 'AsyncMock'}
-        if isinstance(node.func, ast.Attribute):
-            return node.func.attr in {'patch', 'object'}
-
-    if isinstance(node, ast.With):
-        for item in node.items:
-            if isinstance(item.context_expr, ast.Call):
-                if is_mock_usage(item.context_expr):
-                    return True
-
-    return False
-
-
-def is_mock_assertion(node: ast.AST) -> bool:
-    """Detect assertions on mock behavior."""
-    if isinstance(node, ast.Call):
-        if isinstance(node.func, ast.Attribute):
-            # Mock assertion methods
-            mock_assertion_methods = {
-                'assert_called',
-                'assert_called_once',
-                'assert_called_with',
-                'assert_called_once_with',
-                'assert_any_call',
-                'assert_has_calls',
-                'assert_not_called'
-            }
-            return node.func.attr in mock_assertion_methods
-
-    return False
-```
-
-**Merge blocking:**
-
-CI MUST fail and block merge if ANY fake-healthy tests are detected:
-
-```python
-# In CI pipeline
-try:
-    audit_fake_healthy_tests()
-except FakeHealthyTestViolation as e:
-    print(f"❌ MERGE BLOCKED: {e}")
-    print("\nViolations:")
-    for v in e.violations:
-        print(f"  {v['file']}:{v['line']} - {v['test']}")
-        print(f"    Pattern: {v['pattern']}")
-        print(f"    Message: {v['message']}")
-    sys.exit(1)
-```
-
-### 11.4 Non-strict xfail
-
-#### 11.4.1 Default assumption: AMBIGUOUS EXPECTED FAILURE
-
-`@pytest.mark.xfail` without `strict=True` is **ambiguous** and hides real failures.
-
-**FORBIDDEN patterns:**
-```python
-# ❌ FORBIDDEN: Non-strict xfail
-@pytest.mark.xfail
-def test_known_bug():
-    """Test for known bug."""
-    assert buggy_function() == expected_result
-
-# ❌ FORBIDDEN: xfail with reason but no strict
-@pytest.mark.xfail(reason="Bug #123")
-def test_regression():
-    """Test for regression."""
-    assert broken_feature() works()
-```
-
-#### 11.4.2 Required remediation
-
-**Rule: `xfail` is ONLY acceptable with `strict=True`**
-
-**Option 1: Convert to strict xfail with tracked defect**
-```python
-# ✅ REQUIRED: Strict xfail tied to tracked defect
-@pytest.mark.xfail(
-    strict=True,
-    reason="Bug #123: BGE embeddings fail on empty input"
-)
-def test_empty_input_handling():
-    """Test handling of empty input - currently fails."""
-    result = process_with_bge("")
-    assert result is not None
-```
-
-**Option 2: Convert to normal failing test**
-```python
-# ✅ ACCEPTABLE: Remove xfail, let it fail normally
-def test_known_bug():
-    """Test for known bug #123."""
-    # This test currently fails - fix the bug to make it pass
-    assert buggy_function() == expected_result
-```
-
-**Option 3: Remove the test**
-```python
-# ✅ ACCEPTABLE: Remove if test is no longer relevant
-# (Delete the test entirely if the feature is deprecated or the bug is wontfix)
-```
-
-#### 11.4.3 Strict xfail requirements
-
-When using `@pytest.mark.xfail(strict=True)`:
-
-1. **MUST include reason:** Explain why the test is expected to fail
-2. **SHOULD reference defect:** Link to tracked issue/bug number
-3. **MUST be temporary:** Plan to fix and remove xfail marker
-4. **MUST fail consistently:** If test passes, strict=True will fail the test
-
-**Example of proper strict xfail:**
-```python
-@pytest.mark.xfail(
-    strict=True,
-    reason="Issue #456: Vector store recall returns None after promotion. "
-           "BGE embeddings not properly initialized in test environment."
-)
-def test_promote_to_long_term_enables_vector_store_recall():
-    """Test that promotion enables vector store recall."""
-    memory = create_test_memory()
-    promoted = promote_to_long_term(memory)
-    assert promoted, "Promotion should succeed"
-
-    # This assertion currently fails - vector store not working
-    recalled = recall_from_long_term(memory.query)
-    assert recalled is not None, "Should recall from vector store"
-```
-
-#### 11.4.4 CI enforcement
-
-CI gates MUST detect non-strict xfail:
-
-```python
-def audit_non_strict_xfail():
-    """Detect xfail markers without strict=True."""
-
-    violations = []
-
-    for test_file in get_test_files():
-        tree = ast.parse(test_file.read_text())
-
-        for node in ast.walk(tree):
-            if isinstance(node, ast.FunctionDef):
-                for decorator in node.decorator_list:
-                    if is_xfail_decorator(decorator):
-                        if not has_strict_true(decorator):
-                            violations.append({
-                                'file': test_file,
-                                'line': node.lineno,
-                                'test': node.name,
-                                'type': 'non_strict_xfail'
-                            })
-
-    if violations:
-        raise NonStrictXfailViolation(violations)
-```
-
-### 11.5 Priority order for remediation
-
-When fixing test quality issues, address them in this order:
-
-**Priority 1: Silent swallowers** (highest risk)
-- Hidden failures in production code
-- Hidden failures in test setup/teardown
-- Masked exceptions that prevent proper debugging
-
-**Priority 2: Fake/weak zero-assert tests**
-- Tests that provide false confidence
-- Tests that never actually verify behavior
-- Tests that pass regardless of correctness
-
-**Priority 3: Non-strict xfail**
-- Ambiguous expected failures
-- Tests that hide regressions
-- Tests that may be passing but marked as failing
-
-### 11.6 Integration with existing rules
-
-Test quality enforcement integrates with:
-
-- **§1 (Testing & Evidence):** All tests must be deterministic and meaningful
-- **§1.12 (Zero-tolerance for test skipping):** No silent test deselection
-- **§10 (Critical Functionality Fail-Closed):** No graceful fallbacks in critical paths
-
-### 11.7 Evidence requirements
-
-Evidence documentation per §2.2.2 (TEST_QUALITY_AUDIT section when applicable).
+**CI enforcement:** `ops_scripts/ci/check_test_integrity.py`, `ops_scripts/ci/check_no_unconditional_xfail.py`, `ops_scripts/ci/check_utility_silent_swallowers.py`
 
 ---
 
 ## §12. BAN SKIP DRIFT AT COLLECTION TIME
 
-### 12.1 Core principle
+Test skips MUST be explicitly in the allowlist (`tests/_config/skip_allowlist.py`), fully documented (reason, ticket, expiry/owner), and tracked.
 
-**No permanent "temporary" skips.**
+**Forbidden outside allowlist:** `@pytest.mark.skip`, `@pytest.mark.skipif`, `pytest.skip()`, `unittest.skip*`.
 
-Test skips MUST be:
-- **Explicitly allowed** (via allowlist file)
-- **Fully documented** (reason, ticket, expiry/owner)
-- **Tracked and reviewed** (not forgotten)
+**Required skip metadata:** `reason` (specific), `ticket`, `expiry_date` OR `owner`, `skip_type`, `test`, `file`.
 
-Skip drift (temporary skips becoming permanent) is a **constitutional violation**.
+**Forbidden reasons:** "broken", "TODO", "fix later", "not working", "WIP", "temporary", "skip for now".
 
-### 12.2 Forbidden skip patterns
-
-The following skip mechanisms are **FORBIDDEN** outside the explicit allowlist:
-
-**Pattern 1: `@pytest.mark.skip`**
-```python
-# ❌ FORBIDDEN outside allowlist
-@pytest.mark.skip
-def test_feature():
-    pass
-```
-
-**Pattern 2: `@pytest.mark.skipif`**
-```python
-# ❌ FORBIDDEN outside allowlist
-@pytest.mark.skipif(condition, reason="...")
-def test_conditional():
-    pass
-```
-
-**Pattern 3: `pytest.skip()` (runtime skip)**
-```python
-# ❌ FORBIDDEN outside allowlist
-def test_runtime_skip():
-    pytest.skip("Not ready yet")
-```
-
-**Pattern 4: `unittest.skip*` decorators**
-```python
-# ❌ FORBIDDEN outside allowlist
-@unittest.skip("Broken")
-def test_unittest_style():
-    pass
-
-@unittest.skipIf(condition, "reason")
-def test_conditional_skip():
-    pass
-
-@unittest.skipUnless(condition, "reason")
-def test_unless_skip():
-    pass
-```
-
-### 12.3 Skip allowlist
-
-**Allowlist file location:**
-```
-tests/_config/skip_allowlist.py
-```
-
-**Allowlist format:**
-```python
-"""
-Skip allowlist for tests that are legitimately skipped.
-
-All skips MUST be documented here with:
-- reason: Why the test is skipped
-- ticket: Issue/bug tracker reference
-- expiry_date: When skip should be reviewed (YYYY-MM-DD)
-- owner: Who is responsible for fixing/reviewing
-
-Skips outside this allowlist will FAIL CI.
-"""
-
-ALLOWED_SKIPS = [
-    {
-        'test': 'test_external_api_integration',
-        'file': 'tests/integration/test_external_api.py',
-        'reason': 'External API unavailable in CI environment',
-        'ticket': 'INFRA-456',
-        'expiry_date': '2026-04-01',
-        'owner': 'infrastructure-team',
-        'skip_type': 'pytest.mark.skipif'
-    },
-    {
-        'test': 'test_windows_only_feature',
-        'file': 'tests/platform/test_windows.py',
-        'reason': 'Windows-specific test, skipped on Linux CI',
-        'ticket': 'PLAT-123',
-        'expiry_date': '2026-06-01',
-        'owner': 'platform-team',
-        'skip_type': 'pytest.mark.skipif'
-    },
-]
-```
-
-### 12.4 Required skip metadata
-
-Every skip in the allowlist MUST include:
-
-**1. `reason` string (REQUIRED)**
-- Clear explanation of why test is skipped
-- MUST be specific, not generic ("broken", "TODO", "later")
-- MUST explain the blocking condition
-
-**2. `ticket` reference (REQUIRED)**
-- Issue tracker reference (JIRA, GitHub issue, etc.)
-- Format: `PROJ-123` or `#456` or full URL
-- MUST link to tracked work item
-
-**3. `expiry_date` OR `owner` (REQUIRED - at least one)**
-- **`expiry_date`**: Date when skip should be reviewed (YYYY-MM-DD format)
-- **`owner`**: Team/person responsible for fixing or reviewing
-- Prevents "temporary" skips from becoming permanent
-
-**4. `skip_type` (REQUIRED)**
-- Exact skip mechanism used
-- One of: `pytest.mark.skip`, `pytest.mark.skipif`, `pytest.skip`, `unittest.skip`, `unittest.skipIf`, `unittest.skipUnless`
-
-**5. `test` name (REQUIRED)**
-- Exact test function name
-
-**6. `file` path (REQUIRED)**
-- Relative path from repository root
-
-### 12.5 Forbidden skip reasons
-
-The following skip reasons are **FORBIDDEN** and will fail CI:
-
-**Generic/vague reasons:**
-- ❌ "broken"
-- ❌ "TODO"
-- ❌ "fix later"
-- ❌ "not working"
-- ❌ "WIP"
-- ❌ "temporary"
-- ❌ "skip for now"
-
-**REQUIRED: Specific reasons:**
-- ✅ "BGE embeddings not available in CI environment - requires GPU"
-- ✅ "External API rate limit exceeded - waiting for quota increase"
-- ✅ "Windows-specific COM interface not available on Linux CI"
-- ✅ "Database migration pending - blocked by INFRA-789"
-
-### 12.6 CI enforcement
-
-CI gates MUST detect and fail on skip drift:
-
-```python
-def audit_skip_drift():
-    """
-    Detect test skips outside the allowlist.
-
-    Fails if:
-    - Skip found outside allowlist
-    - Skip in allowlist missing required metadata
-    - Skip reason is generic/forbidden
-    - Skip expiry date has passed
-    """
-
-    from tests._config.skip_allowlist import ALLOWED_SKIPS
-
-    violations = []
-    warnings = []
-
-    # Build allowlist lookup
-    allowlist_lookup = {
-        (skip['file'], skip['test']): skip
-        for skip in ALLOWED_SKIPS
-    }
-
-    # Scan all test files for skip markers
-    for test_file in get_test_files():
-        tree = ast.parse(test_file.read_text())
-        source_lines = test_file.read_text().splitlines()
-
-        for node in ast.walk(tree):
-            if isinstance(node, ast.FunctionDef) and node.name.startswith('test_'):
-
-                # Check for skip decorators
-                for decorator in node.decorator_list:
-                    skip_type = get_skip_type(decorator)
-
-                    if skip_type:
-                        # Check if in allowlist
-                        key = (str(test_file), node.name)
-
-                        if key not in allowlist_lookup:
-                            violations.append({
-                                'file': test_file,
-                                'line': node.lineno,
-                                'test': node.name,
-                                'skip_type': skip_type,
-                                'type': 'skip_drift',
-                                'message': f'Skip found outside allowlist: {skip_type}'
-                            })
-                        else:
-                            # Validate allowlist entry
-                            skip_entry = allowlist_lookup[key]
-                            validate_skip_metadata(skip_entry, violations, warnings)
-
-                # Check for runtime pytest.skip() calls
-                for child in ast.walk(node):
-                    if is_pytest_skip_call(child):
-                        key = (str(test_file), node.name)
-
-                        if key not in allowlist_lookup:
-                            violations.append({
-                                'file': test_file,
-                                'line': child.lineno,
-                                'test': node.name,
-                                'skip_type': 'pytest.skip',
-                                'type': 'skip_drift',
-                                'message': 'Runtime pytest.skip() found outside allowlist'
-                            })
-
-    # Check for expired skips
-    check_expired_skips(ALLOWED_SKIPS, warnings)
-
-    if violations:
-        raise SkipDriftViolation(
-            f"Found {len(violations)} test skips outside allowlist. "
-            f"All skips MUST be in tests/_config/skip_allowlist.py",
-            violations
-        )
-
-    if warnings:
-        print(f"⚠️  {len(warnings)} skip warnings:")
-        for w in warnings:
-            print(f"  {w['message']}")
-
-
-def get_skip_type(decorator: ast.AST) -> str | None:
-    """Detect skip decorator type."""
-    if isinstance(decorator, ast.Call):
-        func = decorator.func
-    else:
-        func = decorator
-
-    # pytest.mark.skip
-    if isinstance(func, ast.Attribute):
-        if (isinstance(func.value, ast.Attribute) and
-            isinstance(func.value.value, ast.Name) and
-            func.value.value.id == 'pytest' and
-            func.value.attr == 'mark'):
-            if func.attr in {'skip', 'skipif'}:
-                return f'pytest.mark.{func.attr}'
-
-    # unittest.skip*
-    if isinstance(func, ast.Attribute):
-        if (isinstance(func.value, ast.Name) and
-            func.value.id == 'unittest'):
-            if func.attr in {'skip', 'skipIf', 'skipUnless'}:
-                return f'unittest.{func.attr}'
-
-    return None
-
-
-def is_pytest_skip_call(node: ast.AST) -> bool:
-    """Detect pytest.skip() runtime calls."""
-    if isinstance(node, ast.Call):
-        if isinstance(node.func, ast.Attribute):
-            if (isinstance(node.func.value, ast.Name) and
-                node.func.value.id == 'pytest' and
-                node.func.attr == 'skip'):
-                return True
-    return False
-
-
-def validate_skip_metadata(skip_entry: dict, violations: list, warnings: list):
-    """Validate skip allowlist entry has required metadata."""
-
-    # Required fields
-    required_fields = ['test', 'file', 'reason', 'ticket', 'skip_type']
-    for field in required_fields:
-        if field not in skip_entry or not skip_entry[field]:
-            violations.append({
-                'file': skip_entry.get('file', 'unknown'),
-                'test': skip_entry.get('test', 'unknown'),
-                'type': 'skip_metadata_missing',
-                'message': f'Skip allowlist entry missing required field: {field}'
-            })
-
-    # Must have expiry_date OR owner
-    if 'expiry_date' not in skip_entry and 'owner' not in skip_entry:
-        violations.append({
-            'file': skip_entry.get('file', 'unknown'),
-            'test': skip_entry.get('test', 'unknown'),
-            'type': 'skip_metadata_missing',
-            'message': 'Skip allowlist entry must have expiry_date OR owner'
-        })
-
-    # Check for forbidden generic reasons
-    forbidden_reasons = {
-        'broken', 'todo', 'fix later', 'not working',
-        'wip', 'temporary', 'skip for now'
-    }
-
-    reason = skip_entry.get('reason', '').lower()
-    if any(forbidden in reason for forbidden in forbidden_reasons):
-        violations.append({
-            'file': skip_entry.get('file', 'unknown'),
-            'test': skip_entry.get('test', 'unknown'),
-            'type': 'skip_reason_forbidden',
-            'message': f'Skip reason is too generic: "{skip_entry.get("reason")}"'
-        })
-
-
-def check_expired_skips(allowed_skips: list, warnings: list):
-    """Check for skips past their expiry date."""
-    from datetime import datetime
-
-    today = datetime.now().date()
-
-    for skip in allowed_skips:
-        if 'expiry_date' in skip:
-            try:
-                expiry = datetime.strptime(skip['expiry_date'], '%Y-%m-%d').date()
-
-                if expiry < today:
-                    warnings.append({
-                        'file': skip['file'],
-                        'test': skip['test'],
-                        'type': 'skip_expired',
-                        'message': (
-                            f"{skip['file']}::{skip['test']} - "
-                            f"Skip expired on {skip['expiry_date']}. "
-                            f"Review and update or remove. "
-                            f"Owner: {skip.get('owner', 'unassigned')}"
-                        )
-                    })
-            except ValueError:
-                warnings.append({
-                    'file': skip['file'],
-                    'test': skip['test'],
-                    'type': 'skip_date_invalid',
-                    'message': f"Invalid expiry_date format: {skip['expiry_date']} (use YYYY-MM-DD)"
-                })
-```
-
-**Merge blocking:**
-
-CI MUST fail and block merge if ANY skip drift violations are detected:
-
-```python
-# In CI pipeline
-try:
-    audit_skip_drift()
-except SkipDriftViolation as e:
-    print(f"❌ MERGE BLOCKED: {e}")
-    print("\nViolations:")
-    for v in e.violations:
-        print(f"  {v['file']}:{v.get('line', '?')} - {v['test']}")
-        print(f"    Type: {v['type']}")
-        print(f"    Message: {v['message']}")
-    print("\nTo fix:")
-    print("1. Add skip to tests/_config/skip_allowlist.py with full metadata")
-    print("2. Or remove the skip and fix the test")
-    sys.exit(1)
-```
-
-### 12.7 Skip allowlist maintenance
-
-**Monthly review (REQUIRED):**
-
-Run skip allowlist audit to identify:
-- Expired skips (past `expiry_date`)
-- Long-running skips (>90 days)
-- Skips without owners
-
-**Automated reminder:**
-```python
-def generate_skip_review_report():
-    """Generate monthly skip review report."""
-    from tests._config.skip_allowlist import ALLOWED_SKIPS
-    from datetime import datetime, timedelta
-
-    today = datetime.now().date()
-    ninety_days_ago = today - timedelta(days=90)
-
-    expired = []
-    long_running = []
-    no_owner = []
-
-    for skip in ALLOWED_SKIPS:
-        # Check expiry
-        if 'expiry_date' in skip:
-            expiry = datetime.strptime(skip['expiry_date'], '%Y-%m-%d').date()
-            if expiry < today:
-                expired.append(skip)
-
-        # Check age (if created_date tracked)
-        if 'created_date' in skip:
-            created = datetime.strptime(skip['created_date'], '%Y-%m-%d').date()
-            if created < ninety_days_ago:
-                long_running.append(skip)
-
-        # Check owner
-        if 'owner' not in skip or not skip['owner']:
-            no_owner.append(skip)
-
-    report = f"""
-# Skip Allowlist Review Report
-Generated: {today}
-
-## Expired Skips ({len(expired)})
-{format_skip_list(expired)}
-
-## Long-Running Skips >90 days ({len(long_running)})
-{format_skip_list(long_running)}
-
-## Skips Without Owner ({len(no_owner)})
-{format_skip_list(no_owner)}
-
-## Action Required
-- Review expired skips: Fix test or extend expiry with justification
-- Review long-running skips: Prioritize fixing or document permanent skip
-- Assign owners to unowned skips
-"""
-
-    return report
-```
-
-### 12.8 Integration with existing rules
-
-Skip drift enforcement integrates with:
-
-- **§1.12 (Zero-tolerance for test skipping):** No silent test deselection
-- **§11 (Test Quality Enforcement):** No fake-healthy tests
-- **§2 (Evidence Contract):** Document skip audit in evidence
-
-### 12.9 Evidence requirements
-
-Evidence documentation per §2.2.2 (SKIP_DRIFT_AUDIT section when applicable).
+**CI enforcement:** `ops_scripts/ci/check_skip_convergence_gate.py`, `ops_scripts/ci/skip_quarantine_check.py`
 
 ---
 
 ## §13. TEST-COUNT AND COLLECTION-COUNT INVARIANTS
 
-### 13.1 Core principle
+Test counts are invariants. Unexpected drops = CI failure. CI tracks: total collected, per-directory counts, per-marker counts, xfail count, skip count (from allowlist).
 
-**Test counts are invariants. Unexpected drops = CI failure.**
+Baseline: `tests/_config/test_count_baseline.json`. Count drops = FAIL. xfail increases = FAIL. Skip count increases = FAIL. Intentional reduction requires commit justification and manual baseline update.
 
-Test collection counts MUST be tracked, stored, and compared across CI runs to detect:
-- Renamed files not discovered
-- Broken test collection
-- Silent deselection
-- Moved tests
-- Accidental marker filtering
-
-This is a **critical anti-cheat control** that prevents tests from disappearing silently.
-
-### 13.2 Required count tracking
-
-CI MUST store and compare the following counts:
-
-**1. Total tests collected**
-```python
-total_collected = pytest.collect(all_test_dirs)
-```
-
-**2. Tests per critical directory**
-```python
-directory_counts = {
-    'tests/architecture/': count_tests('tests/architecture/'),
-    'tests/integration/': count_tests('tests/integration/'),
-    'tests/unit/': count_tests('tests/unit/'),
-    'tests/ci/': count_tests('tests/ci/'),
-    # Add all critical test directories
-}
-```
-
-**3. Tests per marker**
-```python
-marker_counts = {
-    'unit': count_tests_with_marker('unit'),
-    'integration': count_tests_with_marker('integration'),
-    'slow': count_tests_with_marker('slow'),
-    'requires_gpu': count_tests_with_marker('requires_gpu'),
-    # Add all critical markers
-}
-```
-
-**4. xfail count**
-```python
-xfail_count = count_tests_with_marker('xfail')
-```
-
-**5. skip count (from allowlist)**
-```python
-skip_count = len(ALLOWED_SKIPS)  # From tests/_config/skip_allowlist.py
-```
-
-### 13.3 Count baseline storage
-
-**Baseline file location:**
-```
-tests/_config/test_count_baseline.json
-```
-
-**Baseline format:**
-```json
-{
-  "last_updated": "2026-03-09T22:00:00Z",
-  "commit_sha": "abc123def456",
-  "total_collected": 1247,
-  "directory_counts": {
-    "tests/architecture/": 156,
-    "tests/integration/": 89,
-    "tests/unit/": 892,
-    "tests/ci/": 45,
-    "tests/system_learning/": 65
-  },
-  "marker_counts": {
-    "unit": 892,
-    "integration": 89,
-    "slow": 34,
-    "requires_gpu": 12
-  },
-  "xfail_count": 3,
-  "skip_count": 2,
-  "metadata": {
-    "python_version": "3.11.5",
-    "pytest_version": "7.4.3"
-  }
-}
-```
-
-### 13.4 Count comparison and validation
-
-CI MUST compare current counts against baseline and FAIL if:
-
-**Condition 1: Total collected drops**
-```python
-if current_total < baseline_total:
-    raise TestCountDropViolation(
-        f"Total tests dropped from {baseline_total} to {current_total}. "
-        f"Missing {baseline_total - current_total} tests."
-    )
-```
-
-**Condition 2: Directory count drops unexpectedly**
-```python
-for directory, baseline_count in baseline_directory_counts.items():
-    current_count = current_directory_counts.get(directory, 0)
-
-    if current_count < baseline_count:
-        raise TestCountDropViolation(
-            f"Tests in {directory} dropped from {baseline_count} to {current_count}. "
-            f"Missing {baseline_count - current_count} tests."
-        )
-```
-
-**Condition 3: Marker count drops unexpectedly**
-```python
-for marker, baseline_count in baseline_marker_counts.items():
-    current_count = current_marker_counts.get(marker, 0)
-
-    if current_count < baseline_count:
-        raise TestCountDropViolation(
-            f"Tests with @pytest.mark.{marker} dropped from {baseline_count} to {current_count}. "
-            f"Missing {baseline_count - current_count} tests."
-        )
-```
-
-**Condition 4: xfail count increases (strict xfail only allowed)**
-```python
-if current_xfail_count > baseline_xfail_count:
-    raise TestCountViolation(
-        f"xfail count increased from {baseline_xfail_count} to {current_xfail_count}. "
-        f"New xfails must use strict=True and be documented (§11.4)."
-    )
-```
-
-**Condition 5: skip count increases (must be in allowlist)**
-```python
-if current_skip_count > baseline_skip_count:
-    raise TestCountViolation(
-        f"Skip count increased from {baseline_skip_count} to {current_skip_count}. "
-        f"New skips must be in allowlist with full metadata (§12)."
-    )
-```
-
-### 13.5 Acceptable count changes
-
-Count increases are ACCEPTABLE and update the baseline:
-
-**New tests added:**
-```python
-if current_total > baseline_total:
-    logger.info(f"✅ Test count increased: {baseline_total} → {current_total} (+{current_total - baseline_total})")
-    update_baseline(current_counts)
-```
-
-**Intentional test removal (requires justification):**
-
-To intentionally reduce test count, developer MUST:
-1. Document reason in commit message
-2. Update baseline manually with justification
-3. Get code review approval
-
-```python
-# In baseline file, add justification
-{
-  "total_collected": 1200,  # Reduced from 1247
-  "reduction_justification": {
-    "commit": "def789abc123",
-    "reason": "Removed 47 duplicate tests after consolidation",
-    "approved_by": "tech-lead",
-    "date": "2026-03-10"
-  }
-}
-```
-
-### 13.6 CI enforcement implementation
-
-```python
-def audit_test_count_invariants():
-    """
-    Enforce test-count and collection-count invariants.
-
-    Detects:
-    - Renamed files not discovered
-    - Broken test collection
-    - Silent deselection
-    - Moved tests
-    - Accidental marker filtering
-    """
-
-    from tests._config.test_count_baseline import BASELINE
-    import json
-    from pathlib import Path
-
-    # Collect current counts
-    current_counts = collect_test_counts()
-
-    violations = []
-
-    # Check total collected
-    if current_counts['total_collected'] < BASELINE['total_collected']:
-        violations.append({
-            'type': 'total_count_drop',
-            'baseline': BASELINE['total_collected'],
-            'current': current_counts['total_collected'],
-            'missing': BASELINE['total_collected'] - current_counts['total_collected'],
-            'message': f"Total tests dropped from {BASELINE['total_collected']} to {current_counts['total_collected']}"
-        })
-
-    # Check directory counts
-    for directory, baseline_count in BASELINE['directory_counts'].items():
-        current_count = current_counts['directory_counts'].get(directory, 0)
-
-        if current_count < baseline_count:
-            violations.append({
-                'type': 'directory_count_drop',
-                'directory': directory,
-                'baseline': baseline_count,
-                'current': current_count,
-                'missing': baseline_count - current_count,
-                'message': f"Tests in {directory} dropped from {baseline_count} to {current_count}"
-            })
-
-    # Check marker counts
-    for marker, baseline_count in BASELINE['marker_counts'].items():
-        current_count = current_counts['marker_counts'].get(marker, 0)
-
-        if current_count < baseline_count:
-            violations.append({
-                'type': 'marker_count_drop',
-                'marker': marker,
-                'baseline': baseline_count,
-                'current': current_count,
-                'missing': baseline_count - current_count,
-                'message': f"Tests with @pytest.mark.{marker} dropped from {baseline_count} to {current_count}"
-            })
-
-    # Check xfail count (increases are violations)
-    if current_counts['xfail_count'] > BASELINE['xfail_count']:
-        violations.append({
-            'type': 'xfail_count_increase',
-            'baseline': BASELINE['xfail_count'],
-            'current': current_counts['xfail_count'],
-            'added': current_counts['xfail_count'] - BASELINE['xfail_count'],
-            'message': f"xfail count increased from {BASELINE['xfail_count']} to {current_counts['xfail_count']}. Must use strict=True (§11.4)"
-        })
-
-    # Check skip count (increases are violations)
-    if current_counts['skip_count'] > BASELINE['skip_count']:
-        violations.append({
-            'type': 'skip_count_increase',
-            'baseline': BASELINE['skip_count'],
-            'current': current_counts['skip_count'],
-            'added': current_counts['skip_count'] - BASELINE['skip_count'],
-            'message': f"Skip count increased from {BASELINE['skip_count']} to {current_counts['skip_count']}. Must be in allowlist (§12)"
-        })
-
-    if violations:
-        raise TestCountInvariantViolation(
-            f"Found {len(violations)} test count invariant violations. "
-            f"Test counts unexpectedly dropped or increased.",
-            violations
-        )
-
-    # If counts increased (new tests added), update baseline
-    if current_counts['total_collected'] > BASELINE['total_collected']:
-        logger.info(f"✅ Test count increased: {BASELINE['total_collected']} → {current_counts['total_collected']}")
-        update_baseline_file(current_counts)
-
-
-def collect_test_counts() -> dict:
-    """Collect current test counts."""
-    import pytest
-    from tests._config.skip_allowlist import ALLOWED_SKIPS
-
-    # Collect all tests
-    collected = pytest.main(['--collect-only', '-q', 'tests/'])
-    total_collected = parse_collection_count(collected)
-
-    # Count by directory
-    directory_counts = {}
-    for test_dir in get_critical_test_directories():
-        count = pytest.main(['--collect-only', '-q', test_dir])
-        directory_counts[test_dir] = parse_collection_count(count)
-
-    # Count by marker
-    marker_counts = {}
-    for marker in get_critical_markers():
-        count = pytest.main(['--collect-only', '-q', '-m', marker, 'tests/'])
-        marker_counts[marker] = parse_collection_count(count)
-
-    # Count xfail
-    xfail_count = pytest.main(['--collect-only', '-q', '-m', 'xfail', 'tests/'])
-
-    # Count skips from allowlist
-    skip_count = len(ALLOWED_SKIPS)
-
-    return {
-        'total_collected': total_collected,
-        'directory_counts': directory_counts,
-        'marker_counts': marker_counts,
-        'xfail_count': parse_collection_count(xfail_count),
-        'skip_count': skip_count,
-        'metadata': {
-            'python_version': sys.version,
-            'pytest_version': pytest.__version__
-        }
-    }
-
-
-def update_baseline_file(current_counts: dict):
-    """Update baseline file with new counts."""
-    from datetime import datetime
-    import json
-    from pathlib import Path
-
-    baseline_path = Path('tests/_config/test_count_baseline.json')
-
-    baseline = {
-        'last_updated': datetime.utcnow().isoformat() + 'Z',
-        'commit_sha': get_current_commit_sha(),
-        **current_counts
-    }
-
-    baseline_path.write_text(json.dumps(baseline, indent=2))
-    logger.info(f"Updated test count baseline: {baseline_path}")
-```
-
-**Merge blocking:**
-
-CI MUST fail and block merge if ANY test count invariant violations are detected:
-
-```python
-# In CI pipeline
-try:
-    audit_test_count_invariants()
-except TestCountInvariantViolation as e:
-    print(f"❌ MERGE BLOCKED: {e}")
-    print("\nViolations:")
-    for v in e.violations:
-        print(f"  {v['type']}: {v['message']}")
-        if 'missing' in v:
-            print(f"    Missing: {v['missing']} tests")
-        if 'added' in v:
-            print(f"    Added: {v['added']} tests")
-    print("\nPossible causes:")
-    print("- Renamed test files not discovered by pytest")
-    print("- Broken test collection (import errors, syntax errors)")
-    print("- Silent test deselection (conftest hooks, markers)")
-    print("- Moved tests to different directory")
-    print("- Accidental marker filtering")
-    sys.exit(1)
-```
-
-### 13.7 Integration with existing rules
-
-Test count invariants integrate with:
-
-- **§1.12 (Zero-tolerance for test skipping):** Prevents collection/execution mismatch
-- **§11.4 (Non-strict xfail):** Tracks xfail count increases
-- **§12 (Ban skip drift):** Tracks skip count increases
-- **§2 (Evidence Contract):** Document count audit in evidence
-
-### 13.8 Evidence requirements
-
-Evidence documentation per §2.2.2. Add TEST_COUNT_AUDIT section when applicable:
-
-```markdown
-## TEST_COUNT_AUDIT
-
-### Baseline Comparison
-- Baseline total: <count>
-- Current total: <count>
-- Delta: <+/- count>
-
-### Directory Counts
-- tests/architecture/: <baseline> → <current>
-- tests/integration/: <baseline> → <current>
-- tests/unit/: <baseline> → <current>
-- tests/ci/: <baseline> → <current>
-
-### Marker Counts
-- @pytest.mark.unit: <baseline> → <current>
-- @pytest.mark.integration: <baseline> → <current>
-- @pytest.mark.slow: <baseline> → <current>
-
-### Special Counts
-- xfail: <baseline> → <current>
-- skip (allowlist): <baseline> → <current>
-
-### Violations
-- Total violations: <count>
-- Count drops: <count>
-- Count increases (xfail/skip): <count>
-
-### Enforcement
-- CI check: <pass/fail>
-- Merge blocked: <yes/no>
-- Baseline updated: <yes/no>
-```
+**CI enforcement:** `ops_scripts/ci/check_test_integrity.py`
 
 ---
 
 ## §14. ADG REPAIR DISCIPLINE
 
-### 14.1 Core principle
+**Four proofs required before every repair edit:** scope, cause, proof surface, dependency justification.
 
-**ADG-led repair requires four proofs before every change: scope, cause, proof surface, and dependency justification.**
+### 14.1 ADG artifact freshness gate
 
-All test failure repair MUST be driven by AST dependency graph analysis, not by test stabilization hacks or scope guessing.
+Repair BLOCKED if `adg_failure_clusters.json`, `adg_semantic_graph.json`, or `adg_test_surface_map.json` are missing or older than the current failure run. Rebuild before proceeding.
 
-### 14.2 ADG artifact freshness gate
+### 14.2 Failure capture (required before any edit — Gate G1)
 
-**HARD GATE:** Repair is BLOCKED if ADG artifacts are missing, stale, or older than the current failure run.
+For every failing test, capture before any code edit:
+- `nodeid`, `exception_type`, `exception_message` (first 200 chars)
+- `first_repo_frame` (file inside repo, not test framework frame)
+- `root_module`, `root_function`
+- `cluster_candidate` (real cluster ID or `"UNCLUSTERED"` — never empty)
 
-Before any repair work begins, verify:
-
-1. **`adg_failure_clusters.json` exists and is fresh**
-   - File MUST exist in `artifacts/adg/`
-   - File timestamp MUST be newer than or equal to current failure run
-   - File MUST contain cluster analysis for current failures
-
-2. **`adg_semantic_graph.json` exists and is fresh**
-   - File MUST exist in `artifacts/adg/`
-   - File timestamp MUST be newer than or equal to current failure run
-   - File MUST contain semantic graph for current codebase state
-
-3. **`adg_test_surface_map.json` exists and is fresh**
-   - File MUST exist in `artifacts/adg/`
-   - File timestamp MUST be newer than or equal to current failure run
-   - File MUST contain test surface mapping for current failures
-
-**Forbidden behavior:**
-- ❌ Using stale ADG artifacts from previous failure runs
-- ❌ Proceeding with repair when ADG artifacts are missing
-- ❌ Claiming "ADG analysis complete" without fresh artifact verification
-- ❌ Manually creating or editing ADG artifacts
-
-**Required behavior:**
-- ✅ Verify ADG artifact timestamps before repair
-- ✅ Rebuild ADG artifacts if missing or stale
-- ✅ Block repair until fresh artifacts are available
-- ✅ Document artifact freshness in evidence
-
-**Verification protocol:**
-
-```python
-from pathlib import Path
-from datetime import datetime
-
-def verify_adg_artifact_freshness(failure_run_timestamp: datetime) -> bool:
-    """Verify ADG artifacts are fresh relative to failure run."""
-
-    required_artifacts = [
-        'artifacts/adg/adg_failure_clusters.json',
-        'artifacts/adg/adg_semantic_graph.json',
-        'artifacts/adg/adg_test_surface_map.json'
-    ]
-
-    for artifact_path in required_artifacts:
-        path = Path(artifact_path)
-
-        # Check existence
-        if not path.exists():
-            raise ValueError(f"ADG artifact missing: {artifact_path}")
-
-        # Check freshness
-        artifact_mtime = datetime.fromtimestamp(path.stat().st_mtime)
-        if artifact_mtime < failure_run_timestamp:
-            raise ValueError(
-                f"ADG artifact stale: {artifact_path}\n"
-                f"  Artifact timestamp: {artifact_mtime}\n"
-                f"  Failure run timestamp: {failure_run_timestamp}\n"
-                f"  Rebuild ADG artifacts before proceeding."
-            )
-
-    return True
-```
-
-### 14.6 Machine-readable failure capture (REQUIRED before any repair)
-
-For every failing test in a scoped run, the following record MUST be captured and stored in evidence BEFORE any code edit begins:
-
-```json
-{
-  "nodeid": "tests/unit/test_foo.py::TestBar::test_baz",
-  "exception_type": "AssertionError",
-  "exception_message": "<first 200 chars of the message>",
-  "first_repo_frame": "agentic_core/L2_execution/foo.py:47 in run_pipeline",
-  "root_module": "agentic_core/L2_execution/foo.py",
-  "root_function": "run_pipeline",
-  "cluster_candidate": "<cluster ID from ADG or 'UNCLUSTERED'>"
-}
-```
-
-**Rules:**
-- Failure count summaries without per-failure records are FORBIDDEN as the sole evidence.
-- `cluster_candidate` MUST be either a real cluster ID or `"UNCLUSTERED"` — never empty.
-- `first_repo_frame` MUST point to a file inside the repository, not to a test framework frame.
-- All failure records MUST be written before the repair phase begins (Gate G1 in §6.1).
-
-**Evidence section:**
-```markdown
-## FAILURE_CAPTURE
-
-| nodeid | exception_type | first_repo_frame | cluster_candidate |
-|---|---|---|---|
-| <nodeid> | <type> | <file:line in function> | <cluster_id> |
-```
-
-### 14.7 No overclaiming convergence
-
-Do not claim convergence until the conditions in §7.2 are all met.
-
-Do not claim repo health before a final full-suite green run.
-
-Do not claim a defect is fixed until the exact failing nodeid passes in a re-run.
-
-### 14.8 Repair classification taxonomy
-
-Every edit MUST be labelled as exactly one of the following classes before being applied:
-
-| Class | Definition |
-|---|---|
-| `production_bug_fix` | Defect in production logic: wrong output, missing guard, incorrect state transition |
-| `stale_reference_fix` | Symbol, path, constant, or import that no longer points to the current canonical location |
-| `broken_test_fix` | Defect inside the test itself (broken fixture, wrong setup, incorrect parametrize) — does NOT reduce strictness |
-| `policy_regression_fix` | Fail-closed/fail-open behavior, approval/rejection logic, confidence thresholds, manual review routing that drifted from intended policy |
-| `environment_contract_fix` | Subprocess path, WSL/CUDA/vLLM/HuggingFace dependency, import path, or CI vs local behavior mismatch |
-
-**If the class is unclear:** STOP. Emit the ambiguity as an UNRESOLVED fact in the evidence. Do NOT proceed with an edit whose class is unknown.
-
-**CI enforcement:** Every commit message during repair MUST include `repair_class: <class>` in the footer.
+Failure count summaries without per-failure records are FORBIDDEN as sole evidence.
 
 ### 14.3 Exact cluster ID requirement
 
-**HARD REQUIREMENT:** Every edit commit message and evidence artifact MUST include exact cluster ID(s).
-
-**Forbidden patterns:**
-```
-❌ "Fix current cluster"
-❌ "Repair test failures"
-❌ "Address failing tests"
-❌ "Fix cluster issues"
-```
-
-**Required patterns:**
-```
-✅ "Fix cluster C7A3B2: module-level execution in test_agent_discovery.py"
-✅ "Repair clusters C7A3B2, C9F1E4: import cycle in L2_execution"
-✅ "Resolve cluster C7A3B2 (5 failures): BGE embedding initialization"
-```
-
-**Commit message format:**
-
-```
-Fix cluster <CLUSTER_ID>: <brief_description>
-
-Cluster: <CLUSTER_ID>
-Failures: <count>
-Root cause: <specific_cause_from_ADG>
-Files changed: <list>
-ADG justification: <dependency_graph_reason>
-
-Evidence: docs/reports/plans/<evidence_file>.md
-```
-
-**Evidence artifact requirements:**
-
-Every evidence file MUST include:
-
-```markdown
-## CLUSTER_ANALYSIS
-
-### Cluster ID
-- Primary cluster: <CLUSTER_ID>
-- Related clusters: <CLUSTER_ID_LIST>
-
-### Cluster Metadata
-- Failure count: <count>
-- First seen: <timestamp>
-- Last seen: <timestamp>
-- Failure pattern: <pattern_from_adg_failure_clusters.json>
-
-### Root Cause (from ADG)
-<Exact root cause identified by ADG semantic graph analysis>
-
-### Dependency Justification
-<Graph edges proving why each changed file is in scope>
-```
-
-**CI enforcement:**
-
-```python
-def validate_cluster_id_in_commit(commit_message: str) -> bool:
-    """Validate commit message includes exact cluster ID."""
-
-    import re
-
-    # Pattern: "cluster C[0-9A-F]{6}" or "clusters C[0-9A-F]{6}(, C[0-9A-F]{6})*"
-    cluster_pattern = r'\bcluster[s]?\s+C[0-9A-F]{6}(?:,\s*C[0-9A-F]{6})*\b'
-
-    if not re.search(cluster_pattern, commit_message, re.IGNORECASE):
-        raise ValueError(
-            "Commit message MUST include exact cluster ID(s).\n"
-            "Format: 'Fix cluster C7A3B2: <description>'\n"
-            f"Got: {commit_message[:100]}"
-        )
-
-    return True
-```
+Every edit commit message MUST include exact cluster ID. Format: `Fix cluster C7A3B2: <description>`. Vague references ("fix cluster issues") = FORBIDDEN.
 
 ### 14.4 Test-file edit restriction
 
-**HARD RESTRICTION:** Test-file edits are FORBIDDEN unless the failing cluster's root cause is itself in test infrastructure.
+Test-file edits FORBIDDEN unless cluster root cause is itself in test infrastructure. Never edit tests to make them pass — fix production code.
 
-**Forbidden behavior:**
-- ❌ Editing test files to make tests pass without fixing root cause
-- ❌ Adding `pytest.mark.skip` to failing tests
-- ❌ Weakening assertions to avoid failures
-- ❌ Adding try/except to swallow test failures
-- ❌ Changing test expectations to match broken behavior
+### 14.5 Repair classification taxonomy
 
-**Allowed test-file edits (ONLY when root cause is in test infrastructure):**
-- ✅ Fixing broken test fixtures
-- ✅ Repairing test setup/teardown logic
-- ✅ Correcting test configuration errors
-- ✅ Fixing test import errors
-- ✅ Repairing test parametrization bugs
+Every edit MUST be labelled as exactly one class:
+- `production_bug_fix` — defect in production logic
+- `stale_reference_fix` — symbol/path/import no longer canonical
+- `broken_test_fix` — defect inside test itself (does NOT reduce strictness)
+- `policy_regression_fix` — fail-closed/approval/threshold/routing policy drift
+- `environment_contract_fix` — subprocess path, WSL/CUDA/vLLM/HuggingFace, import path, CI vs local mismatch
 
-**Root cause determination:**
+Class unclear → STOP. Emit as UNRESOLVED. Do not proceed.
 
-Use ADG semantic graph to determine if root cause is in test infrastructure:
-
-```python
-def is_test_infrastructure_root_cause(cluster_id: str, adg_graph: dict) -> bool:
-    """Determine if cluster root cause is in test infrastructure."""
-
-    cluster = adg_graph['clusters'][cluster_id]
-    root_cause = cluster['root_cause']
-
-    # Test infrastructure root causes
-    test_infra_patterns = [
-        'fixture',
-        'conftest',
-        'test setup',
-        'test teardown',
-        'test parametrization',
-        'test collection',
-        'pytest plugin',
-        'test configuration'
-    ]
-
-    return any(pattern in root_cause.lower() for pattern in test_infra_patterns)
-```
-
-**Enforcement protocol:**
-
-```python
-def validate_test_file_edits(changed_files: list, cluster_id: str, adg_graph: dict):
-    """Validate test-file edits are justified by root cause."""
-
-    test_files = [f for f in changed_files if '/test_' in f or f.startswith('tests/')]
-
-    if not test_files:
-        return  # No test files edited, OK
-
-    # Check if root cause is in test infrastructure
-    if not is_test_infrastructure_root_cause(cluster_id, adg_graph):
-        raise ValueError(
-            f"Test-file edits FORBIDDEN for cluster {cluster_id}.\n"
-            f"Root cause is NOT in test infrastructure.\n"
-            f"Test files edited: {test_files}\n"
-            f"Root cause: {adg_graph['clusters'][cluster_id]['root_cause']}\n"
-            f"\n"
-            f"Fix the production code, not the tests."
-        )
-```
-
-**Evidence requirements:**
-
-When test files ARE edited (for test infrastructure root causes), evidence MUST include:
-
-```markdown
-## TEST_FILE_EDIT_JUSTIFICATION
-
-### Root Cause Classification
-- Root cause type: Test infrastructure
-- Specific issue: <exact_test_infrastructure_issue>
-- ADG evidence: <graph_proof_of_test_infra_root_cause>
-
-### Test Files Edited
-<list_of_test_files>
-
-### Production Files Edited
-<list_of_production_files_or_NONE>
-
-### Justification
-<Why test-file edits are necessary and justified by root cause>
-```
-
-### 14.5 Four-proof requirement
-
-Before any repair edit, evidence MUST prove:
-
-**1. Scope proof (§3.7)**
-- Dependency graph shows exact files in scope
-- Each changed file has graph justification
-- No scope contamination
-
-**2. Cause proof (§14.3)**
-- ADG semantic graph identifies root cause
-- Cluster ID documented
-- Root cause is specific, not generic
-
-**3. Proof surface proof (§14.4)**
-- Test surface map shows which tests cover the root cause
-- Test-file edits justified by root cause type
-- Production code fixes target actual root cause
-
-**4. Dependency justification (§14.2)**
-- Fresh ADG artifacts used
-- Dependency edges prove file relationships
-- No stale graph data
-
-### 14.6 Integration with existing rules
-
-ADG repair discipline integrates with:
-
-- **§0 (AST Dependency Graph):** ADG is PRIMARY tool for repair analysis
-- **§1 (Testing & Evidence):** Repairs MUST have deterministic tests
-- **§2 (Evidence Contract):** All repairs documented with cluster analysis
-- **§3 (Scope & Determinism):** Scope MUST be graph-justified
-- **§11 (Test Quality):** No test stabilization hacks
-
-### 14.7 Evidence requirements
-
-Evidence documentation per §2.2.2. Add CLUSTER_ANALYSIS and TEST_FILE_EDIT_JUSTIFICATION sections when applicable.
+Commit message footer MUST include: `repair_class: <class>`
 
 ---
 
 ## §15. ADG PROOF-ARTIFACT TRUTHFULNESS
 
-### 15.1 Core principle
+ADG proof artifacts MUST only assert facts supported by raw ADG output. `*_raw` flags MUST match raw ADG counts exactly. `*_derived` flags MAY be true only when `deriving_command` is recorded with positive `deriving_command_output_lines`.
 
-**An ADG proof artifact MUST only assert facts that are directly supported by the raw ADG output it inspects.**
-
-Any field whose value is derived from a secondary command (e.g. `adg_cli.py impact`) rather than from the raw ADG entity/node counts MUST be labelled as `derived` and the deriving command MUST be recorded inline.
-
-### 15.2 Forbidden overclaim patterns
-
-```
-❌ "tests_present": true     — when raw ADG shows tests=0
-❌ "fixtures_present": true  — when raw ADG shows fixtures=0
-❌ Any boolean flag set to true when the underlying raw count is 0
-❌ Justifying a true flag by referencing a secondary command without labelling it "derived"
-```
-
-### 15.3 Required truth-tracking schema
-
-Every ADG proof artifact MUST use the following structure for count-derived boolean flags:
-
-```json
-{
-  "raw_counts": {
-    "module": 3213,
-    "symbol": 5600,
-    "tests": 0,
-    "fixtures": 0
-  },
-  "derived_facts": {
-    "tests_reachable_via_impact": true,
-    "deriving_command": "python tools/adg_cli.py impact --node execute_ssot --include-tests",
-    "deriving_command_output_lines": 47
-  },
-  "flags": {
-    "tests_present_raw": false,
-    "tests_present_derived": true,
-    "fixtures_present_raw": false,
-    "fixtures_present_derived": false
-  }
-}
-```
-
-**Rules:**
-- `*_raw` flags MUST match raw ADG counts exactly (zero count → false).
-- `*_derived` flags MAY be true only when a `deriving_command` is recorded.
-- The field `deriving_command_output_lines` MUST be a positive integer (not zero) if the derived flag is true.
-- If `deriving_command_output_lines` is 0, the derived flag MUST be false.
-
-### 15.4 Evidence section requirement
-
-Any evidence file that produces or references an ADG proof artifact MUST include a `## PROOF_ARTIFACT_TRUTHFULNESS` section:
-
-```markdown
-## PROOF_ARTIFACT_TRUTHFULNESS
-
-### Raw ADG counts (from artifact, not derived)
-- modules: <n>
-- symbols: <n>
-- tests: <n>
-- fixtures: <n>
-
-### Derived facts (secondary commands)
-| Field | Deriving command | Output lines | Flag value |
-|---|---|---|---|
-| tests_reachable | adg_cli.py impact ... | <n> | true/false |
-
-### Truthfulness verdict
-- Raw counts match artifact: yes/no
-- All derived flags have recorded commands: yes/no
-- No overclaim detected: yes/no
-```
-
-If any item is "no", the work unit is **BLOCKED** until corrected.
-
-### 15.5 CI enforcement
-
-CI MUST run `ops_scripts/ci/check_adg_proof_artifact_truthfulness.py` on every proof artifact under `docs/reports/plans/` that contains a `raw_counts` block. The checker MUST fail if:
-
-1. Any `*_raw` flag disagrees with the corresponding `raw_counts` value.
-2. Any `*_derived` flag is `true` but `deriving_command` is absent or empty.
-3. Any `*_derived` flag is `true` but `deriving_command_output_lines` ≤ 0.
+**CI enforcement:** `ops_scripts/ci/check_adg_proof_artifact_truthfulness.py`
 
 ---
 
 ## §16. ADG SCHEMA CANONICAL FIELD NAMES
 
-### 16.1 Core principle
+ADG artifacts use a single canonical field-name convention. Use canonical names on first attempt — no trial-and-error.
 
-**ADG artifacts use a single canonical field-name convention. Any code or evidence that reads ADG artifacts MUST use the canonical names on first attempt — no trial-and-error.**
-
-### 16.2 Canonical field name table
-
-| Concept | Canonical JSON key | Forbidden aliases |
+| Concept | Canonical key | Forbidden aliases |
 |---|---|---|
 | Entity type | `entity_type` | `entityType`, `type`, `kind` |
 | Entity name | `name` | `entityName`, `node_name` |
@@ -3425,431 +430,90 @@ CI MUST run `ops_scripts/ci/check_adg_proof_artifact_truthfulness.py` on every p
 | Test edges | `tests` | `test_edges`, `covered_by` |
 | Fixture edges | `fixtures` | `fixture_edges` |
 | Module path | `module_path` | `path`, `file_path`, `module` |
-| Symbol kind | `symbol_kind` | `kind`, `symbol_type` |
 | Cluster ID | `cluster_id` | `id`, `clusterID` |
 | Root cause | `root_cause` | `cause`, `rootCause` |
 
-### 16.3 Pre-flight schema check requirement
+Pre-flight schema check REQUIRED before first field access. Evidence MUST include: `ADG schema pre-flight: PASSED (canonical keys verified: ...)`.
 
-Before any script, evidence generator, or Cascade reasoning reads an ADG artifact, it MUST execute a schema pre-flight:
-
-```python
-def precheck_adg_schema(artifact: dict, required_keys: list[str]) -> None:
-    """Verify canonical field names exist before processing."""
-    missing = [k for k in required_keys if k not in artifact]
-    if missing:
-        raise KeyError(
-            f"ADG artifact missing canonical keys: {missing}. "
-            f"Check §16.2 for canonical field names. "
-            f"Found keys: {list(artifact.keys())[:20]}"
-        )
-```
-
-This pre-flight MUST be run before the first field access, not discovered on first access failure.
-
-### 16.4 CI enforcement
-
-`ops_scripts/ci/check_adg_schema_field_names.py` MUST scan all Python files under `ops_scripts/` and `tools/` for ADG artifact accesses and verify they use canonical keys from §16.2. Files that access non-canonical keys fail CI.
-
-### 16.5 Evidence requirement
-
-Any evidence file that reads an ADG artifact MUST include a one-line schema confirmation:
-
-```
-ADG schema pre-flight: PASSED (canonical keys verified: entity_type, name, imports, ...)
-```
-
-If the pre-flight was not run, the evidence file is **INVALID**.
+**CI enforcement:** `ops_scripts/ci/check_adg_schema_field_names.py`
 
 ---
 
 ## §17. PRE-EXISTING SKIP REGISTRY & CONVERGENCE GATE
 
-### 17.1 Core principle
+All pre-existing skips MUST be recorded in `artifacts/adg/pre_existing_skip_registry.json` with: `test_id`, `skip_reason` (specific), `cluster_id`, `registered_at`, `owner`, `expiry_date` (within 30 days), `resolution_plan` (concrete).
 
-**Convergence cannot be declared while unregistered skipped tests exist in the scoped test surface.**
+**Convergence BLOCKED unless:** zero unregistered skips, zero expired registry entries, all entries have resolution plans.
 
-A pre-existing skip is not a free pass — it is a **registered debt item** that MUST be tracked, owned, and scheduled for resolution.
-
-### 17.2 Skip registry
-
-All pre-existing skips MUST be recorded in `artifacts/adg/pre_existing_skip_registry.json`:
-
-```json
-{
-  "_schema_version": "1.0",
-  "_description": "Registry of pre-existing skipped tests acknowledged before convergence.",
-  "skips": [
-    {
-      "test_id": "tests/unit/test_foo.py::test_bar",
-      "skip_reason": "vLLM subprocess path issue on CI",
-      "cluster_id": "C7A3B2",
-      "registered_at": "2026-03-10T00:00:00Z",
-      "owner": "cascade",
-      "expiry_date": "2026-04-10",
-      "resolution_plan": "Fix subprocess path in L2_execution vllm adapter"
-    }
-  ]
-}
-```
-
-**Required fields per entry:**
-- `test_id` — exact pytest node ID
-- `skip_reason` — specific reason (no vague "known issue")
-- `cluster_id` — ADG cluster responsible for the skip
-- `registered_at` — ISO-8601 timestamp
-- `owner` — who is responsible for resolution
-- `expiry_date` — MUST be within 30 days of `registered_at`
-- `resolution_plan` — concrete action, not "will fix later"
-
-### 17.3 Convergence gate
-
-Scoped convergence (§7.2) is **BLOCKED** unless ALL of the following hold:
-
-1. **Zero unregistered skips** — every `pytest.mark.skip` or `skipif` in the scoped surface has a matching entry in the skip registry.
-2. **Zero expired registry entries** — no entry has `expiry_date` in the past.
-3. **All registry entries have resolution plans** — no entry has an empty or placeholder `resolution_plan`.
-
-```python
-def assert_convergence_skip_gate(scoped_test_ids: list[str], registry_path: str) -> None:
-    """Block convergence if unregistered or expired skips exist."""
-    import json
-    from datetime import date, datetime
-
-    registry = json.loads(open(registry_path).read())
-    registered = {e["test_id"] for e in registry["skips"]}
-
-    unregistered = [t for t in scoped_test_ids if _is_skipped(t) and t not in registered]
-    if unregistered:
-        raise ConvergenceBlockedError(
-            f"CONVERGENCE BLOCKED: {len(unregistered)} unregistered skips found.\n"
-            f"Register them in {registry_path} per §17.2 before declaring convergence.\n"
-            f"Unregistered: {unregistered}"
-        )
-
-    today = date.today()
-    expired = [
-        e for e in registry["skips"]
-        if date.fromisoformat(e["expiry_date"]) < today
-    ]
-    if expired:
-        raise ConvergenceBlockedError(
-            f"CONVERGENCE BLOCKED: {len(expired)} skip registry entries are expired.\n"
-            f"Resolve or renew (with updated expiry_date and owner approval) before convergence.\n"
-            f"Expired: {[e['test_id'] for e in expired]}"
-        )
-```
-
-### 17.4 Evidence requirement
-
-Any evidence file covering a scoped test execution or convergence check MUST include a `## SKIP_CONVERGENCE_GATE` section:
-
-```markdown
-## SKIP_CONVERGENCE_GATE
-
-### Scoped test surface skips
-- Total scoped tests: <n>
-- Skipped in scope: <n>
-- Unregistered skips: <n> (MUST be 0 for convergence)
-
-### Registry status
-- Registry path: artifacts/adg/pre_existing_skip_registry.json
-- Registered entries: <n>
-- Expired entries: <n> (MUST be 0 for convergence)
-
-### Gate verdict
-- Convergence allowed: yes/no
-- Blocking reason (if no): <reason>
-```
-
-### 17.5 CI enforcement
-
-`ops_scripts/ci/check_skip_convergence_gate.py` MUST:
-
-1. Collect all `pytest.mark.skip` and `skipif` markers in the scoped test surface.
-2. Cross-reference against `artifacts/adg/pre_existing_skip_registry.json`.
-3. Fail CI if any skip is unregistered.
-4. Fail CI if any registry entry is expired.
-5. Fail CI if any registry entry has an empty `resolution_plan`.
-
-### 17.6 Integration with existing rules
-
-- **§1.12 (Zero-tolerance for test skipping):** Pre-existing skips are the ONLY exemption; they MUST be registered per §17.2.
-- **§12 (Skip Drift Audit):** The skip registry under §17 is the authoritative allowlist referenced by §12.
-- **§14 (ADG Repair Discipline):** Each registered skip MUST have a `cluster_id` linking it to an open ADG cluster.
+**CI enforcement:** `ops_scripts/ci/check_skip_convergence_gate.py`
 
 ---
 
 ## §18. POLICY DRIFT DETECTION
 
-### 18.1 Core principle
+Failures involving governance semantics MUST be classified as `policy_regression_fix`, not `production_bug_fix`.
 
-**Failures that involve governance semantics are NOT generic assertion mismatches — they are policy drift and MUST be classified and escalated before repair.**
+**Policy drift triggers:** fail-closed vs fail-open behavior, approval/rejection logic, confidence thresholds, manual review routing, replay enforcement, side-effect guards, mutation gate bypass.
 
-### 18.2 Policy drift classification trigger
+Evidence MUST include `## POLICY_DRIFT` section with: failing test, policy domain, intended vs observed behavior, winning contract, resolution layer, repair plan.
 
-A failure MUST be classified as `policy_regression_fix` (§14.8) — not generic `production_bug_fix` — when the failing assertion involves ANY of:
+FORBIDDEN: patching assertion to match broken behavior; adjusting threshold to make test pass; classifying governance bug as `production_bug_fix`.
 
-| Domain | Examples |
-|---|---|
-| Fail-closed vs fail-open behavior | `run_pipeline` returning success on invalid input |
-| Approval / rejection logic | Human review not triggered when required |
-| Confidence thresholds | Routing below threshold allowed through |
-| Manual review routing | Auto-approval path invoked when manual review required |
-| Replay enforcement | Replayed input accepted without rejection |
-| Side-effect guards | Write executed before precondition check |
-| Mutation gate bypass | Durable write bypassing UWG |
-
-### 18.3 Policy drift evidence requirement
-
-When a failure is classified as policy drift, evidence MUST include a `## POLICY_DRIFT` section:
-
-```markdown
-## POLICY_DRIFT
-
-### Failing test
-- nodeid: <exact nodeid>
-- exception: <type and message>
-
-### Policy domain
-- Domain: <from table in §18.2>
-- Intended behavior: <what the policy says SHOULD happen>
-- Observed behavior: <what the code actually does>
-
-### Winning contract
-- The intended policy is: <exact rule reference, e.g. §10.1, §1.8>
-- Resolution layer: <L0–L6 layer where the fix must land>
-
-### Repair plan
-- repair_class: policy_regression_fix
-- Target file: <production file, not the test file>
-- Change required: <minimal description>
-```
-
-### 18.4 Forbidden policy drift responses
-
-```
-❌ Patching assertion to match broken behavior
-❌ Adjusting threshold constant to make test pass without reviewing policy
-❌ Adding skipif to avoid policy test
-❌ Classifying as production_bug_fix when the bug is in governance semantics
-```
-
-### 18.5 CI enforcement
-
-CI MUST detect policy drift commits that are misclassified as `production_bug_fix` when the changed files include governance/routing/protocol modules. `ops_scripts/ci/check_policy_drift_classification.py` MUST flag commits with `repair_class: production_bug_fix` that touch `L0_routing`, `L3_orchestration`, or `L5_safety` modules without a corresponding `## POLICY_DRIFT` section in the linked evidence file.
+**CI enforcement:** `ops_scripts/ci/check_policy_drift_classification.py`
 
 ---
 
 ## §19. CONTRACT CONFLICT ESCALATION
 
-### 19.1 Core principle
-
-**When two intended controls collide, the correct response is escalation and resolution — not patching around the conflict.**
+When two rules require incompatible behavior from the same component: STOP, record `## CONTRACT_CONFLICT`, identify winning contract (lower L-number wins, constitutional rules win), name resolution layer. Do NOT resume repair until conflict resolved.
 
 Patching around a contract conflict = HARD FAIL.
-
-### 19.2 Contract conflict identification
-
-A contract conflict exists when BOTH of the following are true:
-
-1. Two separate rules or contracts each require incompatible behavior from the same component.
-2. Satisfying one contract necessarily violates the other.
-
-**Known conflict patterns:**
-
-| Pattern | Example |
-|---|---|
-| Persistence required vs mutation prohibited | Component must persist state but UWG blocks the write path |
-| Manual review required vs auto-approval path | Routing requires human approval but a code path auto-approves |
-| Fail-closed required vs optional dependency | Module must fail-closed but optional import silently disables the guard |
-| Replay rejection required vs idempotency required | Replayed input must be rejected but idempotency requires accepting it |
-
-### 19.3 Escalation protocol
-
-When a contract conflict is identified:
-
-1. **STOP all repair work** on the conflicting component.
-2. **Record the conflict** in a `## CONTRACT_CONFLICT` evidence section.
-3. **Identify the winning contract** — the one with higher sovereignty priority (lower L-number wins, constitutional rules win over local rules).
-4. **Name the resolution layer** — which L-layer is responsible for resolving the conflict.
-5. **Do not resume repair** until the conflict is resolved or explicitly deferred to a named future phase.
-
-```markdown
-## CONTRACT_CONFLICT
-
-### Conflicting contracts
-- Contract A: <rule reference> — requires: <behavior A>
-- Contract B: <rule reference> — requires: <behavior B>
-
-### Conflict description
-<Why satisfying A necessarily violates B>
-
-### Winning contract
-- Winner: Contract <A or B>
-- Reason: <sovereignty priority / L-layer precedence / constitutional rule>
-
-### Resolution layer
-- Layer: L<n> — <layer name>
-- Owner module: <canonical module responsible for resolution>
-
-### Repair blocked until
-<Condition that must be met before repair on this component resumes>
-```
-
-### 19.4 CI enforcement
-
-If a commit touches both contracts in a known conflict pattern without a `## CONTRACT_CONFLICT` section in the linked evidence, CI MUST flag the commit for manual review.
 
 ---
 
 ## §20. ENVIRONMENT PARITY
 
-### 20.1 Core principle
+Local environment behavior is not valid CI behavior until an environment contract artifact proves parity.
 
-**Local environment behavior is not valid CI behavior until an environment contract artifact proves parity.**
+Required when failure involves: subprocess execution, WSL/OS boundary, CUDA/GPU, HuggingFace/vLLM, import path manipulation, filesystem layout assumptions, network/external services.
 
-### 20.2 Environment contract trigger
+Evidence MUST include `## ENVIRONMENT_CONTRACT` section. FORBIDDEN: fixing locally and declaring convergence before CI validation.
 
-An environment contract artifact MUST be produced before repair begins when a failure involves ANY of:
-
-| Environment dependency | Examples |
-|---|---|
-| Subprocess execution | `subprocess.run`, `Popen`, `check_output` |
-| WSL / OS boundary | Path separators, symlinks, case sensitivity |
-| CUDA / GPU | Model loading, device selection, memory allocation |
-| Hugging Face / vLLM | Model weight paths, tokenizer paths, quantization config |
-| Import path | `sys.path` manipulation, `PYTHONPATH`, relative imports |
-| Filesystem layout | Hardcoded absolute paths, `__file__` assumptions |
-| Network / external service | Any call to an external endpoint |
-
-### 20.3 Environment contract artifact format
-
-```markdown
-## ENVIRONMENT_CONTRACT
-
-### Failure context
-- nodeid: <failing test>
-- Environment dependency: <from table in §20.2>
-
-### Local environment state
-- Python version: <x.y.z>
-- OS: <name and version>
-- Relevant env vars: <KEY=value, ...>
-- Relevant paths: <path values>
-
-### CI environment expectation
-- CI runner: <ubuntu-latest / etc.>
-- Expected Python version: <x.y.z>
-- Expected env vars: <KEY=value, ...>
-- Parity gap: <what differs between local and CI>
-
-### Repair classification
-- repair_class: environment_contract_fix
-- Parity fix: <what change makes local and CI behave identically>
-- Validation: <how to confirm parity after fix>
-```
-
-### 20.4 Forbidden environment assumptions
-
-```
-❌ Assuming local subprocess path is valid in CI without checking
-❌ Hardcoding absolute paths that differ between local and CI
-❌ Using sys.path hacks that work locally but fail in CI
-❌ Assuming CUDA/vLLM is available in CI without explicit check
-❌ Assuming Hugging Face model weights are cached in CI
-❌ Fixing locally and declaring convergence before CI validation
-```
-
-### 20.5 CI enforcement
-
-CI MUST run `ops_scripts/ci/check_environment_contract.py` which scans for:
-- Hardcoded absolute paths outside approved roots
-- `subprocess.run` calls without explicit `cwd` or path validation
-- `sys.path.insert` / `sys.path.append` in production code
-- Imports of `vllm`, `torch`, `cuda` without availability guards
+**CI enforcement:** `ops_scripts/ci/check_environment_contract.py`
 
 ---
 
 ## §21. C0 INFORMATIONAL BOUNDARY
 
-### 21.1 Core principle
+Informational context (retrieval, memory recall, telemetry, external data) MAY inform decisions but MUST NOT directly mutate routing, policy thresholds, execution authority, or governance controls.
 
-**Informational context (retrieval output, memory recall, telemetry, external data) MAY inform decisions but MUST NOT directly mutate routing, policy thresholds, execution authority, or governance controls.**
+Handoff MUST be explicit (named interface), auditable (signal and effect logged), and governed (control logic applies its own validation).
 
-### 21.2 C0 boundary definition
+FORBIDDEN: retrieval output directly setting routing variable; similarity score directly unlocking mutation gate; memory recall directly bypassing manual review.
 
-The C0 informational boundary separates:
-
-| Side | Content | Allowed to... |
-|---|---|---|
-| **Informational** | Retrieved context, memory recall, telemetry signals, search results, similarity scores | Inform decisions made by authoritative control logic |
-| **Control** | Routing gates, policy thresholds, approval/rejection logic, execution authority, mutation gates | Make binding decisions; must not accept informational input as authoritative |
-
-### 21.3 Forbidden C0 violations
-
-```
-❌ Retrieval output directly setting a routing decision variable
-❌ Similarity score from vector search directly unlocking a mutation gate
-❌ Telemetry signal directly altering a confidence threshold constant
-❌ Memory recall output directly bypassing a manual review requirement
-❌ Any informational input silently altering control flow without explicit governance approval
-```
-
-### 21.4 Required pattern
-
-When informational context informs a control decision, the handoff MUST be:
-
-1. **Explicit** — the control logic reads the informational signal through a named interface.
-2. **Auditable** — the signal value and its effect on the decision is logged.
-3. **Governed** — the control logic applies its own validation before acting on the signal.
-
-```python
-# ✅ REQUIRED: Explicit, auditable, governed handoff
-context_signal = retrieve_context(query)  # informational layer
-decision = routing_gate.evaluate(
-    input=request,
-    context_hint=context_signal,   # named parameter — not silently injected
-)
-audit_log.record(signal=context_signal, decision=decision)
-
-# ❌ FORBIDDEN: Silent injection
-CONFIDENCE_THRESHOLD = retrieval_result["score"]  # direct mutation of control constant
-```
-
-### 21.5 CI enforcement
-
-`ops_scripts/ci/check_c0_boundary.py` MUST scan for patterns where retrieval/telemetry outputs are assigned directly to routing constants, threshold variables, or approval flags without going through a governed decision function.
+**CI enforcement:** `ops_scripts/ci/check_c0_boundary.py`
 
 ---
 
 ## §22. CI INTEGRITY GATES
 
-### 22.1 Full CI integrity trigger list
+`python ops_scripts/ci/run_contract_gates.py` enforces all gates. CI MUST fail immediately on any of:
 
-CI MUST fail immediately if ANY of the following conditions are detected:
-
-| # | Condition | Detection method |
-|---|---|---|
-| 1 | Required phase artifact is missing | Check `docs/reports/plans/` for expected file per phase |
-| 2 | Phase claims do not match artifact status | `FACT_CLASSIFICATION` section missing or has UNRESOLVED items |
-| 3 | Broad pytest run before final phase | `pytest tests/` or `pytest tests/unit` in any phase < final |
-| 4 | Unexpected skip or xfail appears | Skip/xfail not in pre-existing skip registry (§17) |
-| 5 | Failure evidence incomplete | Failing test without `FAILURE_CAPTURE` record (§14.6) |
-| 6 | ADG schema mapping changed mid-run | Schema freeze violated (§0 ADG SCHEMA FREEZE DISCIPLINE) |
-| 7 | Repair began before clustering | Edit commit timestamp before cluster artifact timestamp |
-| 8 | Test strictness weakened | Assertion removed, `assert True` added, mock broadened to hide failure |
-| 9 | repair_class missing from commit | Commit touching production code without `repair_class:` footer |
-| 10 | Policy drift misclassified | Governance module touched with `repair_class: production_bug_fix` without POLICY_DRIFT section |
-| 11 | Contract conflict unresolved | Two conflicting contracts both touched without CONTRACT_CONFLICT section |
-| 12 | Environment contract missing | subprocess/vLLM/CUDA failure without ENVIRONMENT_CONTRACT section |
-| 13 | Repair run declared complete without full-suite evidence | Any claim of "repair complete" or "stabilization complete" without a post-repair full-suite green artifact (§7.3 condition 3–4) |
-
-### 22.2 Integration with §5.1
-
-The existing single entrypoint `python ops_scripts/ci/run_contract_gates.py` MUST enforce all 13 conditions in §22.1 in addition to its existing gates.
-
-`ops_scripts/ci/check_ci_integrity.py` MUST be added to the gate sequence and run after the evidence contract checker.
+| # | Condition |
+|---|---|
+| 1 | Required phase artifact missing from `docs/reports/plans/` |
+| 2 | `FACT_CLASSIFICATION` missing or has UNRESOLVED items |
+| 3 | Broad pytest run before final phase |
+| 4 | Unexpected skip or xfail not in skip registry (§17) |
+| 5 | Failing test without `FAILURE_CAPTURE` record (§14.6) |
+| 6 | ADG schema mapping changed mid-run (schema freeze violated) |
+| 7 | Edit commit timestamp before cluster artifact timestamp |
+| 8 | Test strictness weakened (assertion removed, `assert True` added, mock broadened) |
+| 9 | `repair_class` missing from commit touching production code |
+| 10 | Governance module touched with `production_bug_fix` without `POLICY_DRIFT` section |
+| 11 | Two conflicting contracts touched without `CONTRACT_CONFLICT` section |
+| 12 | subprocess/vLLM/CUDA failure without `ENVIRONMENT_CONTRACT` section |
+| 13 | "repair complete" claimed without post-repair full-suite green artifact |
 
 ---
 
@@ -3858,18 +522,18 @@ The existing single entrypoint `python ops_scripts/ci/run_contract_gates.py` MUS
 ## Testing & Evidence
 - Every defect fixed becomes a deterministic invariant enforced by automated tests.
 - If the evidence does not prove it, it did not happen.
-- **Proof artifacts must only assert what the raw data proves. Derived facts must be labelled.**
-- **Three tiers: directly observed / derived / unresolved. Silence is not proof of absence.**
+- Proof artifacts must only assert what the raw data proves. Derived facts must be labelled.
+- Three tiers: directly observed / derived / unresolved. Silence is not proof of absence.
 
 ## Analysis & Dependencies
 - If the dependency graph does not prove the relationship, assume the relationship is unproven.
-- **ADG field names are canonical. Schema pre-flight is mandatory before first field access.**
-- **Schema is frozen once per run. Re-probing after freeze = violation.**
+- ADG field names are canonical. Schema pre-flight is mandatory before first field access.
+- Schema is frozen once per run. Re-probing after freeze = violation.
 
 ## Scope & Testing
-- **Run exact nodeids first. File-level fallback must be recorded as lossy.**
-- **Silent widening = scope contamination. Every expansion needs explicit justification.**
-- **No editing while exploring. All five repair gates must pass before the first edit.**
+- Run exact nodeids first. File-level fallback must be recorded as lossy.
+- Silent widening = scope contamination. Every expansion needs explicit justification.
+- No editing while exploring. All five repair gates must pass before the first edit.
 
 ## Performance & Reliability
 - Every query has a timeout. Every long operation reports progress.
@@ -3878,14 +542,14 @@ The existing single entrypoint `python ops_scripts/ci/run_contract_gates.py` MUS
 - Critical infrastructure fails closed. No graceful fallbacks.
 - No hidden failure. No fake pass. No ambiguous expected failure.
 - No permanent "temporary" skips.
-- **Pre-existing skips are registered debt, not free passes. Convergence is blocked until all are registered and non-expired.**
-- **xfail drift is a failure. Adding skip/xfail to make progress is forbidden.**
+- Pre-existing skips are registered debt, not free passes. Convergence blocked until all are registered and non-expired.
+- xfail drift is a failure. Adding skip/xfail to make progress is forbidden.
 
 ## Governance & Policy
-- **Policy drift is not a generic bug. Classify and escalate before repair.**
-- **Contract conflicts are escalated, not patched around. Identify the winning contract first.**
-- **Informational context informs decisions; it does not make them.**
-- **Local environment behavior is not CI behavior. Prove parity before declaring convergence.**
+- Policy drift is not a generic bug. Classify and escalate before repair.
+- Contract conflicts are escalated, not patched around. Identify the winning contract first.
+- Informational context informs decisions; it does not make them.
+- Local environment behavior is not CI behavior. Prove parity before declaring convergence.
 
 ## Stabilization Order
 - Correctness → Determinism → Governance integrity → Green scoped runs → Structural refactors.
@@ -3893,7 +557,7 @@ The existing single entrypoint `python ops_scripts/ci/run_contract_gates.py` MUS
 
 ## Convergence
 - Convergence requires: zero scoped failures + zero unregistered skips + no expired registry entries + empty Unresolved list + documented lossiness.
-- **Scoped convergence ≠ repair complete.** Scoped green is a necessary but not sufficient condition. Blast-radius verification and a post-repair full-suite green run are also required (§7.3).
+- Scoped convergence ≠ repair complete. Blast-radius verification and a post-repair full-suite green run are also required (§7.3).
 - Full suite runs only once: at the end.
 
 ## Test Count Invariants

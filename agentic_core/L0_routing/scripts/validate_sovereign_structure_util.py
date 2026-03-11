@@ -25,29 +25,12 @@ from agentic_core.L0_routing.config import (
     APPS_SHARED_DIR,
 )
 from agentic_core.L0_routing.config.path_constants import TESTS_DIR
-
-# Subfolder maps derived from SOVEREIGN_TERRITORIES - inline to avoid L5 import
-CORE_SUBFOLDER_MAP = {
-    "L0_routing": ["config", "reasoning", "scripts", "types", "utils", "enforcement"],
-    "L1_cognition": ["P1_core", "reasoning", "types", "utils"],
-    "L2_execution": ["P1_core", "enforcement", "reasoning", "types", "utils"],
-    "L3_orchestration": ["P1_core", "engines", "reasoning", "types", "utils"],
-    "L4_state": ["P1_core", "memory", "reasoning", "types", "utils"],
-    "L5_safety": [
-        "P1_core",
-        "config",
-        "core_kernel",
-        "guardians",
-        "reasoning",
-        "types",
-        "utils",
-        "validators",
-    ],
-    "L6_observability": ["P1_core", "dashboards", "reasoning", "types", "utils"],
-}
-APPS_LIC_SUBFOLDER_MAP = {"shared": [], "lic": []}
-APPS_RG_SUBFOLDER_MAP = {"shared": [], "rg": []}
-APPS_SHARED_SUBFOLDER_MAP = {"shared": []}
+from agentic_core.L5_safety.config.structure_blueprint_config import (
+    CORE_SUBFOLDER_MAP,
+    APPS_LIC_SUBFOLDER_MAP,
+    APPS_RG_SUBFOLDER_MAP,
+    APPS_SHARED_SUBFOLDER_MAP,
+)
 TESTS_L2_SUBFOLDER_MAP = {
     "unit": ["test_agents", "test_utils", "test_core"],
     "integration": ["test_workflows", "test_pipelines"],

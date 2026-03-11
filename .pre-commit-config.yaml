@@ -119,6 +119,42 @@ repos:
         always_run: true
         require_serial: true
 
+      # -- T3a-dedup: Dedup Guard (prevent duplicate symbols) -------------------
+      - id: check-dedup-violations
+        name: "T3a-dedup: Dedup Guard — Prevent Duplicate Symbols"
+        entry: python ops_scripts/ci/check_dedup_violations.py
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+
+      # -- T3a-sprawl: Script Sprawl Guard (block new runner scripts) -----------
+      - id: check-script-sprawl
+        name: "T3a-sprawl: Script Sprawl Guard — Block New Runners"
+        entry: python ops_scripts/ci/check_script_sprawl.py
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+
+      # -- T3a-shim: Shim Discipline (backward-compatibility enforcement) -------
+      - id: check-shim-discipline
+        name: "T3a-shim: Shim Discipline — Backward-Compatibility"
+        entry: python ops_scripts/ci/check_shim_discipline.py
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+
+      # -- T3a-rollback: Rollback Gate (multi-file phase checkpoints) -----------
+      - id: check-rollback-checkpoints
+        name: "T3a-rollback: Rollback Gate — Phase Checkpoints"
+        entry: python ops_scripts/ci/check_rollback_checkpoints.py
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+
       # -- T3b: Report location SSOT (staged-only, structural) ------------------
       - id: check-report-location
         name: "T3b: Report Location SSOT Check"

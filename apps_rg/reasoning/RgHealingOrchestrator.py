@@ -1,10 +1,7 @@
-"""
-RgHealingOrchestrator - Extracted for one-class-per-file pattern.
+"""RgHealingOrchestrator — RG domain healing orchestrator.
 
-Originally from: SignalRouterAgent.py
-Extracted: 2026-01-06 (Surgical Extraction)
-
-Orchestrates the complete self-healing process for resume generation.
+Originally from: SignalRouterAgent.py (Surgical Extraction 2026-01-06)
+Refactored: 2026-03-11 (P3-B) — now subclasses BaseHealingOrchestrator.
 
 PHASE 4 META-LEARNING (Feb 2026):
 - MetaLearningClient integration for healing pattern memory
@@ -20,7 +17,7 @@ import time
 from dataclasses import dataclass, field
 from typing import Any
 
-from apps_rg.utils.RGAgentBase import RGAgentBase
+from apps_shared.reasoning.BaseHealingOrchestrator import BaseHealingOrchestrator
 
 from apps_rg.reasoning.healing_cycle import HealingCycle  # noqa: F401  (re-exported)
 
@@ -38,9 +35,8 @@ Logger = logging.getLogger(__name__)
 
 
 @dataclass
-class RgHealingOrchestrator(RGAgentBase):
-    """
-    Orchestrates the complete self-healing process for resume generation.
+class RgHealingOrchestrator(BaseHealingOrchestrator):
+    """Orchestrates the complete self-healing process for resume generation.
 
     Manages multiple healing cycles with convergence detection, budget tracking,
     and automatic rollback on critical failures.
@@ -51,16 +47,12 @@ class RgHealingOrchestrator(RGAgentBase):
     - Tracks healing depth to prevent infinite loops
     - Domain-specific pattern matching (apps_rg)
 
-    Attributes:
-        ctx: Resume engine context containing resume state
-        max_cycles: Maximum number of healing cycles to run
-        enable_reflection: Whether to run reflection agent after healing
-        cycle_results: List of results from each healing cycle
+    Inherits ml_heal_with_learning_enhanced(), orchestrate_healing_cycle(),
+    and _apply_healing_strategy() from BaseHealingOrchestrator (2026-03-11, P3-B).
     """
 
     max_cycles: int = 5
     enable_reflection: bool = True
-    cycle_results: list[dict[str, Any]] = field(default_factory=list)
 
     def __post_init__(self) -> None:
         """Initialize healing orchestrator."""
@@ -309,158 +301,6 @@ class RgHealingOrchestrator(RGAgentBase):
         """
         return self.ml_enhanced_heal(violation, lambda v, **kw: self.heal(v))
 
-    # ==================== PHASE 2.3: ENHANCED HEALING ORCHESTRATION ====================
-
-    def ml_heal_with_learning_enhanced(
-        self,
-        violation: dict[str, Any],
-    ) -> dict[str, Any]:
-        """
-        Enhanced healing with full meta-learning integration.
-
-        Uses guardrails for depth checking, pattern retrieval for strategy
-        selection, and pattern storage for successful fixes.
-
-        Args:
-            violation: The violation to heal
-
-        Returns:
-            Healing result with status, violation_id, and optional reason
-        """
-        import hashlib
-        import json
-
-        # Generate violation ID
-        violation_str = json.dumps(violation, sort_keys=True)
-        violation_id = hashlib.sha256(violation_str.encode()).hexdigest()[:16]
-
-        # Check healing depth using guardrails
-        if not self.guardrails_check_healing_depth(violation_id):
-            Logger.warning(f"[{self.__class__.__name__}] Healing depth limit reached for {violation_id}")
-            return {
-                "status": "skipped",
-                "violation_id": violation_id,
-                "reason": "healing_depth_limit_reached",
-            }
-
-        # Increment healing depth
-        self.guardrails_increment_healing_depth(violation_id)
-
-        try:
-            # Try to retrieve similar healing patterns
-            similar_patterns = self.retrieve_healing_patterns(violation, top_k=3)
-
-            strategy = None
-            if similar_patterns:
-                # Use the most successful pattern's strategy
-                best_pattern = max(
-                    similar_patterns,
-                    key=lambda p: getattr(p, "success_count", 0),
-                    default=None,
-                )
-                if best_pattern:
-                    strategy = getattr(best_pattern, "healing_strategy", None)
-                    Logger.info(
-                        f"[{self.__class__.__name__}] Using learned strategy "
-                        f"from pattern with {getattr(best_pattern, 'success_count', 0)} successes",
-                    )
-
-            # Perform healing (with or without learned strategy)
-            if strategy:
-                result = self._apply_healing_strategy(violation, strategy)
-            else:
-                result = self.heal(violation) if hasattr(self, "heal") else {"status": "error"}
-
-            # If successful, store the pattern
-            if result.get("status") == "fixed":
-                self.store_healing_pattern(violation, result)
-                self.guardrails_reset_healing_depth(violation_id)
-                Logger.info(f"[{self.__class__.__name__}] Healing successful, pattern stored")
-
-            return {
-                "status": result.get("status", "error"),
-                "violation_id": violation_id,
-                "used_learned_strategy": strategy is not None,
-            }
-
-        except Exception as e:
-            Logger.error(f"[{self.__class__.__name__}] Enhanced healing failed: {e}")
-            return {
-                "status": "error",
-                "violation_id": violation_id,
-                "reason": str(e),
-            }
-
-    def _apply_healing_strategy(
-        self,
-        violation: dict[str, Any],
-        strategy: dict[str, Any],
-    ) -> dict[str, Any]:
-        """
-        Apply a learned healing strategy to a violation.
-
-        Args:
-            violation: The violation to heal
-            strategy: The learned strategy to apply
-
-        Returns:
-            Healing result
-        """
-        action = strategy.get("action", "default")
-        Logger.debug(f"[{self.__class__.__name__}] Applying strategy action: {action}")
-
-        # Delegate to standard heal with strategy hints
-        if hasattr(self, "heal"):
-            return self.heal(violation, strategy_hint=strategy)
-        return {"status": "error", "reason": "heal method not available"}
-
-    def orchestrate_healing_cycle(
-        self,
-        violations: list[dict[str, Any]],
-    ) -> dict[str, Any]:
-        """
-        Orchestrate a full healing cycle for multiple violations.
-
-        Args:
-            violations: List of violations to heal
-
-        Returns:
-            Cycle result with statistics
-        """
-        results = {
-            "total": len(violations),
-            "fixed": 0,
-            "skipped": 0,
-            "errors": 0,
-            "details": [],
-        }
-
-        for violation in violations:
-            result = self.ml_heal_with_learning_enhanced(violation)
-            results["details"].append(result)
-
-            if result["status"] == "fixed":
-                results["fixed"] += 1
-            elif result["status"] == "skipped":
-                results["skipped"] += 1
-            else:
-                results["errors"] += 1
-
-        # Cache the cycle pattern if successful
-        if results["fixed"] > 0:
-            cycle_pattern = {
-                "total": results["total"],
-                "fixed": results["fixed"],
-                "success_rate": results["fixed"] / results["total"],
-            }
-            self.cache_pattern_with_metadata(
-                "healing_cycle",
-                f"cycle_{len(self.cycle_results)}",
-                cycle_pattern,
-            )
-            self.cycle_results.append(results)
-
-        return results
 
 
 # HealingCycle is imported from apps_rg.reasoning.healing_cycle (standalone module).

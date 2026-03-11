@@ -3,6 +3,14 @@
 Usage:
     python -m agentic_core.adg.cli scan [--repo-root .] [--commit <sha>] [--diff-files f1 f2]
     python -m agentic_core.adg.cli blast-radius --changed f1 f2 [--repo-root .]
+    python -m agentic_core.adg.cli refactor --analyze FILE [--repo-root .]
+    python -m agentic_core.adg.cli refactor --rename OLD NEW [--repo-root .]
+    python -m agentic_core.adg.cli refactor --plan [--files f1 f2] [--repo-root .]
+    python -m agentic_core.adg.cli hotspots [--top N] [--repo-root .]
+    python -m agentic_core.adg.cli test-gaps [--repo-root .]
+    python -m agentic_core.adg.cli coupling [--repo-root .]
+    python -m agentic_core.adg.cli api-surface [--repo-root .]
+    python -m agentic_core.adg.cli dip-check [--repo-root .]
 
 Each invocation prints:
     ADG-DETERMINISM-DIGEST: <sha256_hex>
@@ -68,8 +76,6 @@ def _cmd_blast_radius(args: argparse.Namespace) -> int:
 
 
 def _cmd_build_artifact(args: argparse.Namespace) -> int:
-    import json
-
     from agentic_core.adg.artifact.builder import build_artifact
     from agentic_core.adg.artifact.serializer import write_artifact
     from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
@@ -115,6 +121,168 @@ def _cmd_impact(args: argparse.Namespace) -> int:
         print(json.dumps(impact.to_dict(), indent=2))
 
     return 0 if impact.route_mode == "NORMAL" else 1
+
+
+def _cmd_refactor(args: argparse.Namespace) -> int:
+    import json
+
+    from agentic_core.adg.runtime.cache_loader import load_or_scan
+
+    repo_root = Path(args.repo_root)
+    result = load_or_scan(repo_root=str(repo_root))
+    result.print_digest()
+
+    if getattr(args, "rename", None):
+        from agentic_core.adg.applications.rename_safety import analyze_rename
+
+        old_path, new_path = args.rename
+        report = analyze_rename(result, old_path=old_path, new_path=new_path)
+        print(report.summary)
+        print(json.dumps(report.to_dict(), indent=2))
+        return 0 if report.is_safe else 1
+
+    if getattr(args, "analyze", None):
+        from agentic_core.adg.analysis.coupling_metrics import compute_coupling_metrics
+        from agentic_core.adg.analysis.hotspot_index import HotspotIndex
+        from agentic_core.adg.analysis.test_gap import detect_test_gaps
+        from agentic_core.adg.applications.placement_advisor import PlacementAdvisor
+
+        target = args.analyze
+        idx = HotspotIndex.build(result)
+        coupling = compute_coupling_metrics(result)
+        gaps = detect_test_gaps(result, hotspot_index=idx)
+        advisor = PlacementAdvisor(result, repo_root=repo_root)
+        ctx = advisor.get_file_context(target)
+
+        m = idx.metrics(target)
+        has_gap = target in {e.module_path for e in gaps.uncovered_modules}
+        output = {
+            "target": target,
+            "coupling": m.to_dict(),
+            "zone": coupling.metrics_by_module.get(target, None)
+            and coupling.metrics_by_module[target].to_dict(),
+            "test_gap": has_gap,
+            "file_context": {
+                "layer": ctx.layer,
+                "direct_importers": ctx.direct_importers,
+                "direct_imports": ctx.direct_imports,
+                "likely_tests": ctx.likely_tests,
+                "structural_risks": ctx.structural_risks,
+            },
+        }
+        print(json.dumps(output, indent=2))
+        return 0
+
+    if getattr(args, "plan", False):
+        from agentic_core.adg.applications.refactoring_planner import build_refactoring_plan
+
+        files = getattr(args, "files", None) or []
+        plan = build_refactoring_plan(result, target_files=files or None)
+        print(plan.summary)
+        print(json.dumps(plan.to_dict(), indent=2))
+        return 0
+
+    print("refactor: specify --rename OLD NEW, --analyze FILE, or --plan", file=sys.stderr)
+    return 1
+
+
+def _cmd_hotspots(args: argparse.Namespace) -> int:
+    import json
+
+    from agentic_core.adg.analysis.hotspot_index import HotspotIndex
+    from agentic_core.adg.runtime.cache_loader import load_or_scan
+
+    repo_root = Path(args.repo_root)
+    result = load_or_scan(repo_root=str(repo_root))
+    result.print_digest()
+
+    idx = HotspotIndex.build(result)
+    n = getattr(args, "top", 20) or 20
+    key = getattr(args, "key", "coupling") or "coupling"
+    hotspots = idx.top_hotspots(n=n, threshold=0, key=key)
+    print(
+        json.dumps(
+            {"stats": idx.stats(), "hotspots": [h.to_dict() for h in hotspots]},
+            indent=2,
+        )
+    )
+    return 0
+
+
+def _cmd_test_gaps(args: argparse.Namespace) -> int:
+    import json
+
+    from agentic_core.adg.analysis.hotspot_index import HotspotIndex
+    from agentic_core.adg.analysis.test_gap import detect_test_gaps
+    from agentic_core.adg.runtime.cache_loader import load_or_scan
+
+    repo_root = Path(args.repo_root)
+    result = load_or_scan(repo_root=str(repo_root))
+    result.print_digest()
+
+    idx = HotspotIndex.build(result)
+    report = detect_test_gaps(result, hotspot_index=idx)
+    print(report.summary)
+    print(json.dumps(report.to_dict(), indent=2))
+    return 0
+
+
+def _cmd_coupling(args: argparse.Namespace) -> int:
+    import json
+
+    from agentic_core.adg.analysis.coupling_metrics import compute_coupling_metrics
+    from agentic_core.adg.runtime.cache_loader import load_or_scan
+
+    repo_root = Path(args.repo_root)
+    result = load_or_scan(repo_root=str(repo_root))
+    result.print_digest()
+
+    report = compute_coupling_metrics(result)
+    pain = [m.to_dict() for m in report.top_pain_zone[:20]]
+    useless = [m.to_dict() for m in report.top_uselessness_zone[:20]]
+    unstable = [m.to_dict() for m in report.most_unstable[:20]]
+    print(
+        json.dumps(
+            {
+                "pain_zone": pain,
+                "uselessness_zone": useless,
+                "most_unstable": unstable,
+            },
+            indent=2,
+        )
+    )
+    return 0
+
+
+def _cmd_api_surface(args: argparse.Namespace) -> int:
+    import json
+
+    from agentic_core.adg.applications.api_surface import build_api_surface
+    from agentic_core.adg.runtime.cache_loader import load_or_scan
+
+    repo_root = Path(args.repo_root)
+    result = load_or_scan(repo_root=str(repo_root))
+    result.print_digest()
+
+    report = build_api_surface(result)
+    print(json.dumps(report.to_dict(), indent=2))
+    return 0
+
+
+def _cmd_dip_check(args: argparse.Namespace) -> int:
+    import json
+
+    from agentic_core.adg.analysis.dep_inversion import detect_dip_violations
+    from agentic_core.adg.runtime.cache_loader import load_or_scan
+
+    repo_root = Path(args.repo_root)
+    result = load_or_scan(repo_root=str(repo_root))
+    result.print_digest()
+
+    report = detect_dip_violations(result)
+    print(report.summary)
+    print(json.dumps(report.to_dict(), indent=2))
+    return 1 if report.violation_count > 0 else 0
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -175,6 +343,23 @@ def main(argv: list[str] | None = None) -> int:
         help="Output path for impact JSON",
     )
 
+    ref_p = subparsers.add_parser("refactor", help="Refactoring safety and planning (E12, E17)")
+    ref_p.add_argument("--rename", nargs=2, metavar=("OLD", "NEW"), help="Rename/move safety analysis")
+    ref_p.add_argument("--analyze", metavar="FILE", help="Full structural analysis of a file")
+    ref_p.add_argument("--plan", action="store_true", default=False, help="Generate refactoring plan")
+    ref_p.add_argument("--files", nargs="*", metavar="FILE", help="Target files for refactoring plan")
+
+    hs_p = subparsers.add_parser("hotspots", help="Show fan-in/fan-out hotspot index (E14)")
+    hs_p.add_argument("--top", type=int, default=20, help="Number of hotspots to show")
+    hs_p.add_argument(
+        "--key", default="coupling", choices=["coupling", "fan_in", "fan_out", "instability"], help="Sort key"
+    )
+
+    subparsers.add_parser("test-gaps", help="Detect modules with no test coverage signal (E15)")
+    subparsers.add_parser("coupling", help="Coupling/cohesion metrics — Martin stability (E16)")
+    subparsers.add_parser("api-surface", help="Public API surface extraction (E13)")
+    subparsers.add_parser("dip-check", help="Dependency Inversion Principle check (E18)")
+
     parsed = parser.parse_args(argv)
 
     if parsed.command == "scan":
@@ -185,6 +370,18 @@ def main(argv: list[str] | None = None) -> int:
         return _cmd_build_artifact(parsed)
     if parsed.command == "impact":
         return _cmd_impact(parsed)
+    if parsed.command == "refactor":
+        return _cmd_refactor(parsed)
+    if parsed.command == "hotspots":
+        return _cmd_hotspots(parsed)
+    if parsed.command == "test-gaps":
+        return _cmd_test_gaps(parsed)
+    if parsed.command == "coupling":
+        return _cmd_coupling(parsed)
+    if parsed.command == "api-surface":
+        return _cmd_api_surface(parsed)
+    if parsed.command == "dip-check":
+        return _cmd_dip_check(parsed)
 
     parser.print_help()
     return 1

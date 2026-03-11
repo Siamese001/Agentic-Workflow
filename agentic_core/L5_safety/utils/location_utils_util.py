@@ -21,7 +21,7 @@ All location-related agents should import from this module.
 import os
 from pathlib import Path
 
-from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
+from agentic_core.L5_safety.config.structure_blueprint import DEPTH_RULES, SOVEREIGN_EXCLUDED_FOLDERS
 from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
 
 
@@ -121,7 +121,6 @@ def is_path_compliant(file_path: str | Path, project_root: Path | None = None) -
         FORBIDDEN_FOLDER_PATTERN,
         FORBIDDEN_ROOT_FOLDERS,
         ROOT_WHITELIST,
-        SOVEREIGN_TERRITORIES,
         get_validated_project_root,
     )
 
@@ -166,7 +165,7 @@ def is_path_compliant(file_path: str | Path, project_root: Path | None = None) -
         return False
 
     # Check 4: Depth requirements
-    expected_depth = SOVEREIGN_TERRITORIES.get(root_folder, {}).get("depth")
+    expected_depth = DEPTH_RULES.get(root_folder)
     if expected_depth is not None:
         actual_depth = len(parts) - 1
         if actual_depth != expected_depth:

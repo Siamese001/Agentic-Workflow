@@ -1,6 +1,9 @@
 ---
 name: dedup-guard
 description: Prevents creation of duplicate agents, mixins, utility functions, and constants before they proliferate. Use before creating any new agent class, mixin, utility function, or SSOT constant. Requires AST-backed search for semantically equivalent symbols first. Blocks creation without documented justification that no equivalent exists.
+enforcement_layer: both
+enforcement_timing: before_work
+enforcement_type: behavioural_primary_structural_secondary
 ---
 
 # Dedup Guard Skill
@@ -29,6 +32,39 @@ Enforces an AST-backed duplicate search before any new symbol, agent, or constan
 
 If any match found → STOP, document finding, choose branch 1 or 2.
 Only proceed to create if all four searches return no match AND justification is written.
+
+## MANDATORY PRE-CONDITION (Constitutional — no bypass)
+
+**BEFORE creating any new Agent, Mixin, Orchestrator, Engine, utility function, or SSOT constant:**
+
+1. **Execute 4-step search**:
+   - AST symbol search (find all classes/functions with equivalent signatures)
+   - Name pattern search (find all symbols with overlapping name stems)
+   - Behavioral search (find all symbols that read/write same data or call same APIs)
+   - Registry check (verify not in agent registry or SSOT constants)
+
+2. **Document search results**: Write to evidence section titled `## DEDUP_SEARCH`
+
+3. **Make decision**:
+   - If exact duplicate found → STOP, reuse existing
+   - If near-duplicate found → STOP, extend existing
+   - If no duplicate found → proceed with creation, document justification
+
+**Format required**:
+```
+## DEDUP_SEARCH
+Symbol to create: <ClassName> or <function_name> or <CONSTANT_NAME>
+AST search: <N> matches found [list if >0]
+Name pattern search: <N> matches found [list if >0]
+Behavioral search: <N> matches found [list if >0]
+Registry check: <found | not found>
+Decision: <reuse | extend | create>
+Justification (if create): <why no existing symbol is suitable>
+```
+
+**IF any match found → STOP. Do not create duplicate.**
+
+Only after `DEDUP_SEARCH` section is written with decision="create" may you create the new symbol.
 
 ## Constitutional Requirements Enforced
 

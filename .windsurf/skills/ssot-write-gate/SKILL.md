@@ -1,6 +1,9 @@
 ---
 name: ssot-write-gate
 description: Validates artifact target paths against SSOT sovereign territories before any file write. Use before writing any .md, .json, or .py artifact to disk. Blocks writes to user home directories, .windsurf/plans/, or any path outside PROJECT_ROOT_WHITELIST. Resolves canonical paths by artifact type.
+enforcement_layer: pre-commit
+enforcement_timing: after_work
+enforcement_type: structural
 ---
 
 # SSOT Write Gate Skill

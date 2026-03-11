@@ -26,6 +26,16 @@ from agentic_core.L5_safety.config.structure_blueprint._constants import (
 # ============================================================================
 
 
+def _derive_depth_rules() -> dict[str, int]:
+    """Derive DEPTH_RULES from SOVEREIGN_TERRITORIES."""
+    result: dict[str, int] = {}
+    for territory_name, territory_def in SOVEREIGN_TERRITORIES.items():
+        if isinstance(territory_def, Mapping):
+            depth = territory_def.get("depth", 2)
+            result[territory_name] = depth
+    return result
+
+
 def _derive_core_subfolder_map() -> dict[str, list[str]]:
     """Derive CORE_SUBFOLDER_MAP from SOVEREIGN_TERRITORIES."""
     result: dict[str, list[str]] = {}
@@ -101,6 +111,7 @@ def _derive_apps_subfolder_map(territory_name: str) -> dict[str, list[str]]:
 # DERIVED REGISTRIES
 # ============================================================================
 
+DEPTH_RULES: Final[Mapping[str, int]] = _derive_depth_rules()
 CORE_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = _derive_core_subfolder_map()
 SUBFOLDER_METADATA: Final[Mapping[str, Mapping[str, Any]]] = _derive_subfolder_metadata()
 APPS_RG_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = _derive_apps_subfolder_map(APPS_RG_DIR)

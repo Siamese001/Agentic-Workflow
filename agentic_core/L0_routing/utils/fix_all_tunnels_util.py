@@ -21,9 +21,7 @@ from typing import Any
 
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
-
-# Derive registry depth from SOVEREIGN_TERRITORIES
-SOVEREIGN_REGISTRY = {"agentic_core": {"depth": 4}}
+from agentic_core.L5_safety.config.structure_blueprint_config import DEPTH_RULES
 from agentic_core.utils.ssot_discovery_validator import get_python_files
 
 from agentic_core.L0_routing.config import (
@@ -32,7 +30,7 @@ from agentic_core.L0_routing.config import (
 
 ROOT: Any = Path(__file__).parent.parent.parent.parent
 CORE: Any = ROOT / AGENTIC_CORE_DIR
-REQUIRED_DEPTH: Any = SOVEREIGN_REGISTRY["agentic_core"]["depth"]
+REQUIRED_DEPTH: Any = DEPTH_RULES.get("agentic_core", 4)
 
 
 def fix_tunnel_violations() -> Any:

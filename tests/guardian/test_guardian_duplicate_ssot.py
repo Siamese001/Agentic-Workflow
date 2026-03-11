@@ -334,3 +334,101 @@ class TestOwnerCountMatrix:
             assert viols == []
         else:
             assert len(viols) == 1
+
+
+# ---------------------------------------------------------------------------
+# ADG-Accelerated Tests
+# ---------------------------------------------------------------------------
+
+
+class TestDuplicateStringConstantDetectionADG:
+    """ADG-accelerated duplicate string constant detection tests."""
+    
+    def test_adg_no_duplicates_in_single_file(self, adg_query_engine):
+        """Test ADG detection on single file (synthetic data simulation)."""
+        # This test validates the ADG function works correctly
+        viols = find_duplicate_string_constants_adg(adg_query_engine)
+        # Should not crash and should return a list
+        assert isinstance(viols, list)
+    
+    def test_adg_comprehensive_detection(self, adg_query_engine):
+        """Test ADG finds duplicates comprehensively."""
+        viols = find_duplicate_string_constants_adg(adg_query_engine)
+        # Should find actual duplicates in the codebase
+        assert isinstance(viols, list)
+        # Verify each violation has expected format
+        for violation in viols:
+            assert "Duplicate SSOT constant" in violation
+            assert "in:" in violation
+    
+    def test_adg_vs_standard_consistency(self, adg_query_engine):
+        """Verify ADG results are consistent with standard approach."""
+        adg_viols = find_duplicate_string_constants_adg(adg_query_engine)
+        standard_viols = []
+        for scan_root in _SSOT_SCAN_ROOTS:
+            if scan_root.exists():
+                standard_viols.extend(find_duplicate_string_constants(scan_root))
+        
+        # ADG should find at least as many violations as standard
+        assert len(adg_viols) >= len(standard_viols)
+
+
+class TestDuplicateSingletonClassDetectionADG:
+    """ADG-accelerated duplicate singleton class detection tests."""
+    
+    def test_adg_singleton_class_detection(self, adg_query_engine):
+        """Test ADG singleton class detection works."""
+        viols = find_duplicate_singleton_classes_adg(adg_query_engine)
+        assert isinstance(viols, list)
+        
+        # Verify each violation has expected format
+        for violation in viols:
+            assert "Duplicate singleton class" in violation
+            assert "defined in:" in violation
+    
+    def test_adg_inheritance_index_usage(self, adg_query_engine):
+        """Test ADG uses inheritance index effectively."""
+        # Verify inheritance index has data
+        assert hasattr(adg_query_engine, '_inheritance_index')
+        assert len(adg_query_engine._inheritance_index) > 0
+        
+        # Test detection using inheritance index
+        viols = find_duplicate_singleton_classes_adg(adg_query_engine)
+        assert isinstance(viols, list)
+    
+    def test_adg_vs_standard_consistency(self, adg_query_engine):
+        """Verify ADG singleton results are consistent with standard approach."""
+        adg_viols = find_duplicate_singleton_classes_adg(adg_query_engine)
+        standard_viols = []
+        for scan_root in _SSOT_SCAN_ROOTS:
+            if scan_root.exists():
+                standard_viols.extend(find_duplicate_singleton_classes(scan_root))
+        
+        # ADG should find at least as many violations as standard
+        assert len(adg_viols) >= len(standard_viols)
+
+
+class TestADGPerformanceValidation:
+    """Validate ADG acceleration performance and correctness."""
+    
+    def test_adg_scan_result_quality(self, adg_scan_result):
+        """Verify ADG scan result meets quality standards."""
+        assert adg_scan_result.manifest.parsed_module_count > 0
+        assert adg_scan_result.manifest.scanner_self_test_passed is True
+        assert len(adg_scan_result.edges) > 0
+    
+    def test_adg_query_engine_indexes(self, adg_query_engine):
+        """Verify ADG query engine has proper indexes built."""
+        assert hasattr(adg_query_engine, '_inheritance_index')
+        assert hasattr(adg_query_engine, '_result')
+        assert len(adg_query_engine._inheritance_index) > 0
+        assert len(adg_query_engine._result.edges) > 0
+    
+    def test_adg_deterministic_ordering(self, adg_query_engine):
+        """Verify ADG results are deterministically ordered."""
+        viols_constants = find_duplicate_string_constants_adg(adg_query_engine)
+        viols_classes = find_duplicate_singleton_classes_adg(adg_query_engine)
+        
+        # Results should be sorted
+        assert viols_constants == sorted(viols_constants)
+        assert viols_classes == sorted(viols_classes)

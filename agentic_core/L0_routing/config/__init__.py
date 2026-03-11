@@ -32,8 +32,6 @@ from agentic_core.L0_routing.config.path_constants import (
     VARIABLE_DEPTH_SUBFOLDERS,
     get_validated_project_root,
 )
-from agentic_core.L5_safety.config.structure_blueprint._constants import SOVEREIGN_TERRITORIES as _ST
-SOVEREIGN_TERRITORIES: dict = dict(_ST)
 from agentic_core.L0_routing.config.structure_blueprint_data import (
     APP_DOMAIN_PREFIXES,
     AST_PLACEMENT_SIGNALS,

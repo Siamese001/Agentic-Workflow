@@ -2,6 +2,7 @@
 
 Consolidates: ATSCompatibilityAgent, BrandComplianceAgent, FactCheckAgent, SectionBalanceAgent
 Created: 2026-02-08 (Structural Agent Count Reduction)
+Updated: 2026-03-11 (P3-A: now subclasses ParameterizedValidator)
 """
 
 from __future__ import annotations
@@ -9,7 +10,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Callable
 
-from apps_rg.utils.RGAgentBase import RGAgentBase
+from apps_shared.reasoning.ParameterizedValidator import ParameterizedValidator
 
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
@@ -21,7 +22,7 @@ MAX_FILES = 1000
 DEFAULT_TIMEOUT = 300  # 5 minutes
 # Configuration constants
 
-# Domain-specific collect_issues implementations stored as registry
+# Domain-specific collect_issues implementations stored as module-level registry
 _RULE_REGISTRY: dict[str, Callable] = {}
 
 
@@ -133,11 +134,14 @@ def _section_collect_issues(self, resume_data: dict, job_data: dict | None = Non
 
 
 @dataclass
-class RGValidationExecutor(RGAgentBase):
+class RGValidationExecutor(ParameterizedValidator):
     """Parameterized RG validation agent.
 
     Usage:
         validator = RGValidationExecutor(rule_set="ats_compatibility")
+
+    Inherits execute(), collect_issues() skeleton, and _RULE_REGISTRY dispatch
+    from ParameterizedValidator (P3-A). Rule functions registered via @register_rule above.
     """
 
     rule_set: str = "generic"
@@ -152,7 +156,7 @@ class RGValidationExecutor(RGAgentBase):
             "passed": len(issues) == 0,
         }
 
-    def collect_issues(self, resume_data: dict, job_data: dict | None = None) -> list[dict]:
+    def collect_issues(self, resume_data: dict, job_data: dict | None = None, **kwargs) -> list[dict]:
         """Dispatch to registered rule implementation."""
         handler = _RULE_REGISTRY.get(self.rule_set)
         if handler is None:

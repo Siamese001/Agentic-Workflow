@@ -69,7 +69,7 @@ from agentic_core.L0_routing.config import (
 
 # [PHASE 24] Integrate L0 Maintenance Capability
 from agentic_core.L0_routing.reasoning.SSOTFolderCleanupAgent import SSOTFolderCleanupAgent
-from agentic_core.L5_safety.config.structure_blueprint import SOVEREIGN_TERRITORIES
+from agentic_core.L5_safety.config.structure_blueprint import CORE_SUBFOLDER_MAP, PROJECT_ROOT_WHITELIST
 from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
     FileClassificationAgent,
     get_python_files_fast,
@@ -84,7 +84,7 @@ from agentic_core.L0_routing.config.path_constants import (
 Logger = logging.getLogger(__name__)
 
 # Layer directories from SSOT
-LAYER_DIRS: set[str] = set(SOVEREIGN_TERRITORIES.get("agentic_core", {}).get("subfolders", []))
+LAYER_DIRS: set[str] = set(CORE_SUBFOLDER_MAP.keys())
 
 
 @dataclass
@@ -321,15 +321,9 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
             roots_scanned = []
             all_violations = []
 
-            # [STRICT SCOPE] Filter SOVEREIGN_TERRITORIES to prevent audit bleed
-            from agentic_core.L5_safety.config.structure_blueprint import (
-                get_sovereign_territories as _get_sovereign_territories,
-            )
-
-            sovereign_territories = _get_sovereign_territories()
-
+            # [STRICT SCOPE] Filter territories to prevent audit bleed
             if target_territory:
-                if target_territory in sovereign_territories and target_territory != AGENTIC_CORE_DIR:
+                if target_territory in PROJECT_ROOT_WHITELIST and target_territory != AGENTIC_CORE_DIR:
                     target_roots = [target_territory]
                 elif (self.project_root / AGENTIC_CORE_DIR / target_territory).exists():
                     # Sub-layer of agentic_core (e.g. "L2_execution", "L5_safety")
@@ -338,7 +332,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                     target_roots = [AGENTIC_CORE_DIR]
                 Logger.info(f"[{agent_name}] TARGETED AUDIT: {target_territory} (Roots: {target_roots})")
             else:
-                target_roots = list(sovereign_territories.keys())
+                target_roots = list(sorted(PROJECT_ROOT_WHITELIST))
 
             for root_name in target_roots:
                 root_path = self.project_root / root_name
@@ -586,7 +580,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                         Logger.warning(f"⚠️ Target territory not found: {t}")
             else:
                 # GLOBAL SCOPE: Only runs if NO targets are provided
-                scan_targets = [self.project_root / k for k in SOVEREIGN_TERRITORIES.keys()]
+                scan_targets = [self.project_root / k for k in sorted(PROJECT_ROOT_WHITELIST)]
 
             for root_path in scan_targets:
                 if not root_path.exists():

@@ -425,11 +425,11 @@ class FilesystemSSOTReconcilerAgent(
         # [STRICT SCOPE] Filter roots based on target territory
         if target_territory:
             from agentic_core.L5_safety.config.structure_blueprint import (
-                SOVEREIGN_TERRITORIES,
+                PROJECT_ROOT_WHITELIST,
             )
 
             # Logic: If territory is a root (apps_lic), scan only that. Else target agentic_core.
-            if target_territory in SOVEREIGN_TERRITORIES and target_territory != AGENTIC_CORE_DIR:
+            if target_territory in PROJECT_ROOT_WHITELIST and target_territory != AGENTIC_CORE_DIR:
                 roots_to_scan = [target_territory]
             else:
                 roots_to_scan = [AGENTIC_CORE_DIR]

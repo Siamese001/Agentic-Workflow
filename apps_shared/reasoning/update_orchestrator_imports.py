@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# MISPLACED: This migration script belongs in ops_scripts/general/ not apps_shared/reasoning/.
+# TODO(P1-B): Move to ops_scripts/general/update_orchestrator_imports.py
 """
 update_orchestrator_imports.py - Phase 1 Global Search & Replace for Orchestrators
 

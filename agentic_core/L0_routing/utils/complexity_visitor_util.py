@@ -131,7 +131,7 @@ from agentic_core.L0_routing.seams.canonical_truth_seam import (
     categorize_agent,
     get_canonical_layer,
 )
-from agentic_core.L5_safety.config.structure_blueprint.ssot import REPORTS_DIR
+from agentic_core.L5_safety.config.structure_blueprint_config import REPORTS_DIR
 
 # Fix Windows console UnicodeEncodeError when printing warnings/emojis
 if platform.system() == "Windows":

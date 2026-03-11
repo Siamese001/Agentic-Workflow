@@ -1,6 +1,9 @@
 ---
 name: shim-discipline
 description: Enforces consistent shim and backward-compatibility stub discipline when moving or renaming canonical modules. Use when relocating any Python module, when creating files ending in _util.py/_shim.py/_compat.py, or when a canonical symbol's import path changes. Prevents undocumented shims and shimless moves that break consumers.
+enforcement_layer: both
+enforcement_timing: before_work
+enforcement_type: behavioural_primary_structural_secondary
 ---
 
 # Shim Discipline Skill

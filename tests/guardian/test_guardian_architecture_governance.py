@@ -64,6 +64,18 @@ def real_result() -> GuardianResult:
 
 
 @pytest.fixture()
+def real_result_adg(adg_query_engine) -> GuardianResult:
+    """Run ADG-accelerated architecture governance guardian on the real repo."""
+    from agentic_core.L0_routing.scripts.run_guardian_architecture_governance import (
+        run_architecture_governance_guardian_adg,
+    )
+    return run_architecture_governance_guardian_adg(
+        repo_root=PROJECT_ROOT,
+        timestamp=FIXED_TIMESTAMP,
+    )
+
+
+@pytest.fixture()
 def clean_synthetic_repo(tmp_path: Path) -> Path:
     """Create a synthetic repo with no import violations."""
     ac = tmp_path / AGENTIC_CORE_DIR
@@ -262,3 +274,63 @@ class TestNoMutations:
                 after.add(os.path.join(dirpath, fname))
 
         assert before == after, f"Guardian created files: {after - before}"
+
+
+# ---------------------------------------------------------------------------
+# ADG-Accelerated Tests
+# ---------------------------------------------------------------------------
+
+
+class TestSchemaValidityADG:
+    """Verify ADG-accelerated guardian result conforms to contract schema."""
+
+    def test_guardian_id_adg(self, real_result_adg: GuardianResult) -> None:
+        assert real_result_adg.guardian_id == GUARDIAN_ID
+
+    def test_timestamp_injected_adg(self, real_result_adg: GuardianResult) -> None:
+        assert real_result_adg.timestamp == FIXED_TIMESTAMP
+
+    def test_status_is_valid_adg(self, real_result_adg: GuardianResult) -> None:
+        valid_statuses = {s.value for s in GuardianStatus}
+        assert real_result_adg.status in valid_statuses
+
+    def test_checks_nonempty_adg(self, real_result_adg: GuardianResult) -> None:
+        assert len(real_result_adg.checks) >= 2
+
+    def test_adg_metrics_present(self, real_result_adg: GuardianResult) -> None:
+        assert "adg_accelerated" in real_result_adg.metrics
+        assert real_result_adg.metrics["adg_accelerated"] is True
+        assert "adg_scan_time_ms" in real_result_adg.metrics
+
+    def test_acceleration_evidence_adg(self, real_result_adg: GuardianResult) -> None:
+        """Verify ADG acceleration evidence is present."""
+        for check in real_result_adg.checks:
+            assert "acceleration" in check.evidence
+            if check.check_id == "import_compliance":
+                assert check.evidence["acceleration"] == "ADG_G1_import_graph"
+            elif check.check_id == "layer_gravity":
+                assert check.evidence["acceleration"] == "ADG_G3_inheritance_index"
+
+
+class TestDeterministicEvidenceADG:
+    """Verify ADG-accelerated evidence is deterministically ordered."""
+
+    def test_import_violations_sorted_adg(self, real_result_adg: GuardianResult) -> None:
+        check = next(
+            (c for c in real_result_adg.checks if c.check_id == "import_compliance"),
+            None,
+        )
+        assert check is not None
+        violations = check.evidence.get("violations", [])
+        keys = [(v["path"], v["line_number"]) for v in violations]
+        assert keys == sorted(keys)
+
+    def test_gravity_violations_sorted_adg(self, real_result_adg: GuardianResult) -> None:
+        check = next(
+            (c for c in real_result_adg.checks if c.check_id == "layer_gravity"),
+            None,
+        )
+        assert check is not None
+        violations = check.evidence.get("violations", [])
+        paths = [v["path"] for v in violations]
+        assert paths == sorted(paths)

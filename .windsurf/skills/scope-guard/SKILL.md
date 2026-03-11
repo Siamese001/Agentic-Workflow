@@ -1,6 +1,9 @@
 ---
 name: scope-guard
 description: Prevents scope drift and contamination during phase execution using AST dependency graph analysis (§3.4, §3.7). Use before editing any files to build dependency graph and declare graph-justified scope, after editing to verify no unexpected files appeared, and when out-of-scope files are detected to execute decontamination. Provides scope precheck, decontamination protocol, and phase revision template.
+enforcement_layer: windsurf
+enforcement_timing: before_work
+enforcement_type: behavioural
 ---
 
 # Scope Guard Skill
@@ -22,6 +25,33 @@ Three artifacts for scope discipline with mandatory dependency graph backing:
 - Before any file edits: run `scope_precheck.md` (includes mandatory dependency graph build).
 - When unexpected files appear in diff: run `decontamination_protocol.md`.
 - When scope must legitimately expand: fill `scope_expansion_revision_template.md` first.
+
+## MANDATORY PRE-CONDITION (Constitutional — no bypass)
+
+**BEFORE the first file edit in any phase:**
+
+1. **Execute**: Build AST dependency graph (prerequisite: `ast-first-gate` skill)
+2. **Declare scope**: Create artifact listing exact files to be modified
+3. **Justify each file**: Document graph edge path showing why file is in blast radius
+4. **Record baseline**: Execute `git diff --name-only HEAD` and verify output is empty
+5. **Write to**: Evidence section titled `## SCOPE_DECLARATION`
+
+**Format required**:
+```
+## SCOPE_DECLARATION
+Files to modify: N
+1. path/to/file1.py — Reason: root module per ADG cluster X
+2. path/to/file2.py — Reason: imports file1, edge (file2 → file1) in graph
+...
+Baseline: git diff clean (no uncommitted changes)
+```
+
+**IF any step fails → STOP. Do not make any edits.**
+
+After each edit batch:
+- Execute `git diff --name-only HEAD`
+- Verify output matches declared scope exactly
+- If unexpected files appear → invoke `decontamination_protocol.md`
 
 ## Constitutional Requirements Enforced
 

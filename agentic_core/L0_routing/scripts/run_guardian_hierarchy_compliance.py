@@ -66,15 +66,13 @@ def scan_missing_structure(repo_root: Path) -> list[dict]:
     """
     from agentic_core.L0_routing.config import (
         AGENTIC_CORE_DIR,
-        SOVEREIGN_TERRITORIES,
     )
+    from agentic_core.L5_safety.config.structure_blueprint import CORE_SUBFOLDER_MAP
 
     violations: list[dict] = []
 
-    # L2 layers under agentic_core
-    agentic_core_def = SOVEREIGN_TERRITORIES.get("agentic_core", {})
-    l2_subfolders = agentic_core_def.get("subfolders", {})
-    approved_l2 = list(l2_subfolders.keys()) if hasattr(l2_subfolders, "keys") else []
+    # L2 layers under agentic_core (from CORE_SUBFOLDER_MAP)
+    approved_l2 = list(CORE_SUBFOLDER_MAP.keys())
 
     for layer_name in sorted(approved_l2):
         layer_path = repo_root / AGENTIC_CORE_DIR / layer_name
@@ -87,9 +85,8 @@ def scan_missing_structure(repo_root: Path) -> list[dict]:
             )
             continue  # Can't check L3 if L2 doesn't exist
 
-        # L3 sub-territories: extracted from nested SOVEREIGN_TERRITORIES
-        layer_def = l2_subfolders.get(layer_name, {})
-        expected_l3 = _get_l3_subfolders(layer_def)
+        # L3 sub-territories: extracted from CORE_SUBFOLDER_MAP
+        expected_l3 = CORE_SUBFOLDER_MAP.get(layer_name, [])
         for sub_name in sorted(expected_l3):
             sub_path = layer_path / sub_name
             if not sub_path.exists():
@@ -118,14 +115,13 @@ def scan_subfolder_compliance(repo_root: Path) -> list[dict]:
     """
     from agentic_core.L0_routing.config import (
         SOVEREIGN_EXCLUDED_FOLDERS,
-        SOVEREIGN_TERRITORIES,
     )
+    from agentic_core.L5_safety.config.structure_blueprint import CORE_SUBFOLDER_MAP
 
     violations: list[dict] = []
 
-    agentic_core_def = SOVEREIGN_TERRITORIES.get("agentic_core", {})
-    l2_subfolders = agentic_core_def.get("subfolders", {})
-    approved_l2 = list(l2_subfolders.keys()) if hasattr(l2_subfolders, "keys") else []
+    # L2 layers under agentic_core (from CORE_SUBFOLDER_MAP)
+    approved_l2 = list(CORE_SUBFOLDER_MAP.keys())
 
     agentic_core_path = repo_root / AGENTIC_CORE_DIR
     if not agentic_core_path.exists():
@@ -136,9 +132,8 @@ def scan_subfolder_compliance(repo_root: Path) -> list[dict]:
         if not layer_path.exists():
             continue
 
-        # Extract approved L3 directly from nested SOVEREIGN_TERRITORIES
-        layer_def = l2_subfolders.get(layer_name, {})
-        approved_l3 = set(_get_l3_subfolders(layer_def))
+        # Extract approved L3 directly from CORE_SUBFOLDER_MAP
+        approved_l3 = set(CORE_SUBFOLDER_MAP.get(layer_name, []))
         if not approved_l3:
             continue
 

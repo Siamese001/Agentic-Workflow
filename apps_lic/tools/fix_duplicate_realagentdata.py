@@ -23,7 +23,7 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 # Configuration constants
 
 # Import SSOT for dashboard directory - NO HARDCODING
-from agentic_core.interfaces.structure_config import (
+from agentic_core.L5_safety.config.structure_blueprint_config import (
     DASHBOARD_DIR,
     get_validated_project_root,
 )

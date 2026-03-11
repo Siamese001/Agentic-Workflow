@@ -7759,9 +7759,9 @@ def _build_ssot_territory_targets(project_root: "Path") -> list[str]:
     need the full agent pipeline.
     """
     try:
-        from agentic_core.L5_safety.config.structure_blueprint import SOVEREIGN_TERRITORIES
+        from agentic_core.L5_safety.config.structure_blueprint import PROJECT_ROOT_WHITELIST
 
-        all_keys = list(SOVEREIGN_TERRITORIES.keys())
+        all_keys = sorted(PROJECT_ROOT_WHITELIST)
     except ImportError:
         # Fallback to previous hardcoded list if SSOT import unavailable
         logger.warning("[territory-build] SSOT import failed — using legacy hardcoded list")

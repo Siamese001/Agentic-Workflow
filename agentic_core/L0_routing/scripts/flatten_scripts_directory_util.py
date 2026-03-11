@@ -28,14 +28,12 @@ from agentic_core.L0_routing.utils.path_util import (
     validate_no_duplicate_prefix,
 )
 from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
-
-# Derived from SOVEREIGN_TERRITORIES
-SOVEREIGN_REGISTRY = {"agentic_core": {"depth": 4}}
+from agentic_core.L5_safety.config.structure_blueprint_config import DEPTH_RULES
 
 root: Any = Path("C:/Git/Agentic-Workflow")
 core: Any = ROOT / AGENTIC_CORE_DIR
 scripts_dir: Any = CORE / "L0_routing/scripts"
-required_depth: Any = SOVEREIGN_REGISTRY["agentic_core"]["depth"]
+required_depth: Any = DEPTH_RULES.get("agentic_core", 4)
 
 
 def flatten_scripts() -> Any:

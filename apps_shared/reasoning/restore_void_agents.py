@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# MISPLACED: This admin script belongs in ops_scripts/general/ not apps_shared/reasoning/.
+# TODO(P1-B): Move to ops_scripts/general/restore_void_agents.py
 """
 restore_void_agents.py - Restore functional agents from void_violations
 
