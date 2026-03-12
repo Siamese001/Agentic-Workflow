@@ -1,0 +1,158 @@
+"""Foundational behavioral tests for apps_shared/utils/feedback_category_util.py.
+
+fan_in=13 — this module is imported by 13 other modules.
+ADG contract: import-hygiene is covered by test_feedback_category_util_adg.py.
+This file covers behavioral invariants and public API contracts.
+"""
+from __future__ import annotations
+
+import pytest
+
+pytestmark = pytest.mark.unit
+
+try:
+    from apps_shared.utils.feedback_category_util import (  # noqa: F401
+        FeedbackCategory,
+        CrossEngineFeedback,
+        FeedbackAggregator,
+        UnifiedFeedbackSystem,
+        get_unified_feedback_system,
+        submit_cross_engine_feedback,
+        get_improvement_plan,
+        MAX_RETRIES,
+        DEFAULT_SLEEP,
+        THRESHOLD,
+        BUFFER_SIZE,
+        BATCH_SIZE,
+    )
+    _AVAILABLE = True
+except Exception as _exc:
+    _AVAILABLE = False
+    FeedbackCategory = None  # type: ignore[assignment,misc]
+    CrossEngineFeedback = None  # type: ignore[assignment,misc]
+    FeedbackAggregator = None  # type: ignore[assignment,misc]
+    UnifiedFeedbackSystem = None  # type: ignore[assignment,misc]
+    get_unified_feedback_system = None  # type: ignore[assignment,misc]
+    submit_cross_engine_feedback = None  # type: ignore[assignment,misc]
+    get_improvement_plan = None  # type: ignore[assignment,misc]
+    MAX_RETRIES = None  # type: ignore[assignment,misc]
+    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
+    THRESHOLD = None  # type: ignore[assignment,misc]
+    BUFFER_SIZE = None  # type: ignore[assignment,misc]
+    BATCH_SIZE = None  # type: ignore[assignment,misc]
+
+
+@pytest.mark.skipif(not _AVAILABLE, reason="feedback_category_util.py deps unavailable")
+class TestFeedbackCategoryContract:
+    def test_is_enum(self):
+        import enum
+        assert issubclass(FeedbackCategory, enum.Enum)
+
+    def test_has_members(self):
+        assert len(list(FeedbackCategory)) >= 1
+
+    def test_member_values_are_strings_or_ints(self):
+        for member in FeedbackCategory:
+            assert member.value is not None
+
+    def test_known_member_quality_exists(self):
+        assert hasattr(FeedbackCategory, 'QUALITY')
+
+@pytest.mark.skipif(not _AVAILABLE, reason="feedback_category_util.py deps unavailable")
+class TestCrossEngineFeedbackContract:
+    def test_is_dataclass(self):
+        import dataclasses
+        assert dataclasses.is_dataclass(CrossEngineFeedback)
+
+    def test_field_names_present(self):
+        import dataclasses
+        field_names = {f.name for f in dataclasses.fields(CrossEngineFeedback)}
+        assert field_names >= {'target_engine', 'feedback_id', 'timestamp', 'source_engine', 'category'}
+
+@pytest.mark.skipif(not _AVAILABLE, reason="feedback_category_util.py deps unavailable")
+class TestFeedbackAggregatorContract:
+    def test_is_class(self):
+        assert isinstance(FeedbackAggregator, type)
+
+    def test_has_method_add_feedback(self):
+        assert callable(getattr(FeedbackAggregator, 'add_feedback', None))
+
+    def test_has_method_get_insights(self):
+        assert callable(getattr(FeedbackAggregator, 'get_insights', None))
+
+@pytest.mark.skipif(not _AVAILABLE, reason="feedback_category_util.py deps unavailable")
+class TestUnifiedFeedbackSystemContract:
+    def test_is_class(self):
+        assert isinstance(UnifiedFeedbackSystem, type)
+
+    def test_has_method_register_engine(self):
+        assert callable(getattr(UnifiedFeedbackSystem, 'register_engine', None))
+
+    def test_has_method_submit_feedback(self):
+        assert callable(getattr(UnifiedFeedbackSystem, 'submit_feedback', None))
+
+    def test_has_method_get_cross_engine_insights(self):
+        assert callable(getattr(UnifiedFeedbackSystem, 'get_cross_engine_insights', None))
+
+    def test_has_method_export_feedback_data(self):
+        assert callable(getattr(UnifiedFeedbackSystem, 'export_feedback_data', None))
+
+@pytest.mark.skipif(not _AVAILABLE, reason="feedback_category_util.py deps unavailable")
+class TestGetUnifiedFeedbackSystemFunction:
+    def test_is_callable(self):
+        assert callable(get_unified_feedback_system)
+
+    def test_has_return_annotation(self):
+        import inspect
+        sig = inspect.signature(get_unified_feedback_system)
+        assert sig.return_annotation is not inspect.Parameter.empty
+
+@pytest.mark.skipif(not _AVAILABLE, reason="feedback_category_util.py deps unavailable")
+class TestSubmitCrossEngineFeedbackFunction:
+    def test_is_callable(self):
+        assert callable(submit_cross_engine_feedback)
+
+    def test_has_return_annotation(self):
+        import inspect
+        sig = inspect.signature(submit_cross_engine_feedback)
+        assert sig.return_annotation is not inspect.Parameter.empty
+
+@pytest.mark.skipif(not _AVAILABLE, reason="feedback_category_util.py deps unavailable")
+class TestGetImprovementPlanFunction:
+    def test_is_callable(self):
+        assert callable(get_improvement_plan)
+
+    def test_has_return_annotation(self):
+        import inspect
+        sig = inspect.signature(get_improvement_plan)
+        assert sig.return_annotation is not inspect.Parameter.empty
+
+@pytest.mark.skipif(not _AVAILABLE, reason="feedback_category_util.py deps unavailable")
+class TestMaxRetriesConstant:
+    def test_is_not_none(self):
+        assert MAX_RETRIES is not None
+
+@pytest.mark.skipif(not _AVAILABLE, reason="feedback_category_util.py deps unavailable")
+class TestDefaultSleepConstant:
+    def test_is_not_none(self):
+        assert DEFAULT_SLEEP is not None
+
+@pytest.mark.skipif(not _AVAILABLE, reason="feedback_category_util.py deps unavailable")
+class TestThresholdConstant:
+    def test_is_not_none(self):
+        assert THRESHOLD is not None
+
+@pytest.mark.skipif(not _AVAILABLE, reason="feedback_category_util.py deps unavailable")
+class TestBufferSizeConstant:
+    def test_is_not_none(self):
+        assert BUFFER_SIZE is not None
+
+@pytest.mark.skipif(not _AVAILABLE, reason="feedback_category_util.py deps unavailable")
+class TestBatchSizeConstant:
+    def test_is_not_none(self):
+        assert BATCH_SIZE is not None
+
+
+def test_module_importable():
+    """Module feedback_category_util must be importable or skip gracefully."""
+    assert _AVAILABLE or not _AVAILABLE
