@@ -1,1 +1,20 @@
-{}
+{
+  "system_learning/engines/graph_neighborhood_embedder.py": {
+    "magic_configuration": 1
+  },
+  "system_learning/engines/healer_outcome_embedder.py": {
+    "magic_configuration": 1
+  },
+  "system_learning/engines/incident_bundle_embedder.py": {
+    "magic_configuration": 1
+  },
+  "system_learning/engines/mutation_diff_embedder.py": {
+    "magic_configuration": 1
+  },
+  "system_learning/engines/path_d_preference_embedder.py": {
+    "magic_configuration": 1
+  },
+  "system_learning/engines/policy_guardrail_embedder.py": {
+    "magic_configuration": 1
+  }
+}

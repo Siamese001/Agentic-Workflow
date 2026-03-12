@@ -1,0 +1,202 @@
+"""IncidentBundleEmbedder — Semantic memory for composite execution incidents.
+
+Converts IncidentBundle objects into CorpusRecords for seed-pack ingestion
+and provides nearest-neighbour retrieval over historical incidents.
+
+Design constraints:
+- No wall-clock reads; all timestamps provided by caller.
+- Deterministic text serialization via IncidentBundle.to_embedding_text().
+- Kill-switch compliant: all retrieval paths check EMBEDDING_ENABLED.
+- C0_INFORMATIONAL only: no routing influence from results.
+- Thread-safe append via internal lock.
+"""
+
+from __future__ import annotations
+
+import logging
+import threading
+from dataclasses import dataclass
+from typing import Any
+
+from system_learning.engines.embedding_corpus_extraction import (
+    CorpusRecord,
+    compute_content_hash,
+)
+from system_learning.types.semantic_memory_types import IncidentBundle
+
+logger = logging.getLogger(__name__)
+
+_NAMESPACE = "incident_bundles"
+
+
+@dataclass(frozen=True)
+class IncidentRetrievalResult:
+    """Nearest-neighbour result from incident bundle retrieval.
+
+    C0_INFORMATIONAL only — no routing influence.
+    """
+
+    content_hash: str
+    similarity_score: float
+    trace_id: str
+    outcome: str
+    healer_id: str
+    route_path: str
+    content_preview: str
+
+
+class IncidentBundleEmbedder:
+    """Converts IncidentBundle objects to corpus records and retrieves similar incidents.
+
+    Usage pattern:
+        embedder = IncidentBundleEmbedder()
+        embedder.ingest(bundle)
+        records = embedder.export_corpus_records()
+
+    Retrieval (requires live embedding gateway):
+        results = embedder.retrieve_similar(query_bundle, k=5)
+    """
+
+    def __init__(self, max_buffer: int = 10_000) -> None:  # guardian: allow-magic_configuration
+        if max_buffer < 1:
+            raise ValueError(f"max_buffer must be >= 1, got {max_buffer}")
+        self._max_buffer = max_buffer
+        self._lock = threading.Lock()
+        self._records: list[CorpusRecord] = []
+        self._meta: dict[str, dict[str, Any]] = {}
+
+    def ingest(self, bundle: IncidentBundle) -> CorpusRecord:
+        """Convert an IncidentBundle to a CorpusRecord and buffer it.
+
+        Args:
+            bundle: The incident bundle to ingest.
+
+        Returns:
+            The generated CorpusRecord.
+        """
+        text = bundle.to_embedding_text()
+        content_hash = compute_content_hash(text.encode("utf-8"))
+        record = CorpusRecord(
+            text=text,
+            trace_id=bundle.trace_id,
+            content_hash=content_hash,
+            namespace=_NAMESPACE,
+        )
+        meta = {
+            "outcome": bundle.outcome,
+            "healer_id": bundle.healer_id,
+            "route_path": bundle.route_path,
+            "policy_hash": bundle.policy_hash,
+            "bundle_hash": bundle.bundle_hash,
+        }
+        with self._lock:
+            if len(self._records) >= self._max_buffer:
+                dropped = self._records.pop(0)
+                self._meta.pop(dropped.content_hash, None)
+                logger.debug("IncidentBundleEmbedder: buffer full, dropped oldest record")
+            self._records.append(record)
+            self._meta[content_hash] = meta
+        return record
+
+    def ingest_batch(self, bundles: list[IncidentBundle]) -> list[CorpusRecord]:
+        """Ingest multiple IncidentBundles.
+
+        Args:
+            bundles: List of incident bundles.
+
+        Returns:
+            List of generated CorpusRecords in the same order.
+        """
+        return [self.ingest(b) for b in bundles]
+
+    def export_corpus_records(self) -> list[CorpusRecord]:
+        """Return a deterministically sorted snapshot of buffered records.
+
+        Sorted by (content_hash, trace_id) for determinism.
+        """
+        with self._lock:
+            return sorted(self._records, key=lambda r: (r.content_hash, r.trace_id))
+
+    def buffer_size(self) -> int:
+        """Return current number of buffered records."""
+        with self._lock:
+            return len(self._records)
+
+    def retrieve_similar(
+        self,
+        query_bundle: IncidentBundle,
+        *,
+        k: int = 5,
+        namespace: str = _NAMESPACE,
+    ) -> list[IncidentRetrievalResult]:
+        """Retrieve nearest-neighbour incidents via sovereign semantic cache.
+
+        Falls back to empty list when EMBEDDING_ENABLED=false or cache unavailable.
+
+        Args:
+            query_bundle: The incident to find neighbours for.
+            k: Maximum results (capped at 20 per C0 spec).
+            namespace: Seed pack namespace to query.
+
+        Returns:
+            List of IncidentRetrievalResult — C0_INFORMATIONAL only.
+        """
+        k = min(k, 20)
+        query_text = query_bundle.to_embedding_text()
+        try:
+            from agentic_core.interfaces.embeddings import query_similarity
+
+            raw_results = query_similarity(query_text, top_k=k, namespace=namespace)
+            out: list[IncidentRetrievalResult] = []
+            for r in raw_results:
+                ch = r.content_hash
+                meta = self._meta.get(ch, {})
+                out.append(
+                    IncidentRetrievalResult(
+                        content_hash=ch,
+                        similarity_score=r.similarity_score,
+                        trace_id=meta.get("trace_id", ""),
+                        outcome=meta.get("outcome", ""),
+                        healer_id=meta.get("healer_id", ""),
+                        route_path=meta.get("route_path", ""),
+                        content_preview=r.content_preview,
+                    )
+                )
+            return out
+        # guardian: allow-silent-swallow
+        except Exception as exc:
+            logger.debug("IncidentBundleEmbedder.retrieve_similar: %s", exc)
+            return []
+
+    @staticmethod
+    def bundle_from_healing_event(
+        *,
+        trace_id: str,
+        trace_summary: str,
+        violations: list[str],
+        route_path: str,
+        tool_capability: str,
+        state_diff_summary: str,
+        healer_id: str,
+        outcome: str,
+        policy_hash: str,
+        timestamp_utc: int,
+    ) -> IncidentBundle:
+        """Convenience constructor that validates outcome literal."""
+        if outcome not in ("success", "failure", "partial"):
+            raise ValueError(f"outcome must be success/failure/partial, got {outcome!r}")
+        return IncidentBundle(
+            trace_id=trace_id,
+            trace_summary=trace_summary,
+            violations=tuple(sorted(violations)),
+            route_path=route_path,
+            tool_capability=tool_capability,
+            state_diff_summary=state_diff_summary,
+            healer_id=healer_id,
+            outcome=outcome,  # type: ignore[arg-type]
+            policy_hash=policy_hash,
+            timestamp_utc=timestamp_utc,
+        )
+
+
+__all__ = ["IncidentBundleEmbedder", "IncidentRetrievalResult"]

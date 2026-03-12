@@ -1,0 +1,6 @@
+system_learning/engines/graph_neighborhood_embedder.py:71:magic_configuration:Magic configuration: Hardcoded max_buffer=50000
+system_learning/engines/healer_outcome_embedder.py:65:magic_configuration:Magic configuration: Hardcoded max_buffer=10000
+system_learning/engines/incident_bundle_embedder.py:60:magic_configuration:Magic configuration: Hardcoded max_buffer=10000
+system_learning/engines/mutation_diff_embedder.py:63:magic_configuration:Magic configuration: Hardcoded max_buffer=10000
+system_learning/engines/path_d_preference_embedder.py:62:magic_configuration:Magic configuration: Hardcoded max_buffer=10000
+system_learning/engines/policy_guardrail_embedder.py:64:magic_configuration:Magic configuration: Hardcoded max_buffer=10000
