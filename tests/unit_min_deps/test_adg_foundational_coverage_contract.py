@@ -126,27 +126,27 @@ def _count_assertions(path: Path) -> int:
 
 
 def _has_foundational_test(module_path: str) -> bool:
-    """Return True if at least one non-_adg test file imports this module."""
+    """Return True if at least one non-_adg test file covers this module."""
     parts = Path(module_path).parts
     stem = Path(parts[-1]).stem
+
+    # Check tests/unit/<module_path_dir>/
     test_dir = ROOT / "tests" / "unit" / Path(*parts[:-1])
-    if not test_dir.exists():
-        # Also check unit_min_deps
-        test_dir2 = ROOT / "tests" / "unit_min_deps"
-        # Search by stem anywhere in unit_min_deps
-        for f in test_dir2.glob(f"test_{stem}*.py"):
-            if not f.name.endswith("_adg.py"):
-                if _count_assertions(f) >= FOUNDATIONAL_DEPTH_MIN:
-                    return True
-        return False
-    for f in test_dir.iterdir():
-        if (
-            f.name.startswith(f"test_{stem}")
-            and f.suffix == ".py"
-            and not f.name.endswith("_adg.py")
-            and _count_assertions(f) >= FOUNDATIONAL_DEPTH_MIN
-        ):
+    if test_dir.exists():
+        for f in test_dir.iterdir():
+            if (
+                f.name.startswith(f"test_{stem}")
+                and f.suffix == ".py"
+                and not f.name.endswith("_adg.py")
+                and _count_assertions(f) >= FOUNDATIONAL_DEPTH_MIN
+            ):
+                return True
+
+    # Always also check tests/unit_min_deps/ (flat directory, stem-based glob)
+    for f in (ROOT / "tests" / "unit_min_deps").glob(f"test_{stem}*.py"):
+        if not f.name.endswith("_adg.py") and _count_assertions(f) >= FOUNDATIONAL_DEPTH_MIN:
             return True
+
     return False
 
 
