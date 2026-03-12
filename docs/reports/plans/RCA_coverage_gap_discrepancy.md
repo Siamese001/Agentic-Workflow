@@ -12,13 +12,47 @@ Two different coverage analysis methods produced significantly different results
 - **SQLite-based analysis** (`tools/evidence/_coverage_analysis.py`): 1,997 uncovered entries
 - **ADG accelerator report** (`docs/reports/plans/adg_coverage_report_03122026.json`): 1,051 covered modules (49.76% coverage rate)
 
-The ~700+ module difference stems from **different definitions of "production modules"** and **different scopes of analysis**.
+**⚠️ UPDATED 2026-03-12 — Phase 0 Validation**: The original root cause hypothesis (filter scope) was **incorrect**. See §Root Cause Correction below.  
+Authoritative findings: `docs/reports/plans/phase0_validation_findings.md`
 
 ---
 
-## Root Cause Analysis
+## ✅ Root Cause Correction (Phase 0 Validation — 2026-03-12)
 
-### 1. **Different Module Filtering Logic**
+**The original root cause hypothesis was wrong.** Phase 0 validation scripts
+(`tools/evidence/_phase0_validation.py`, `tools/evidence/_phase0_deep_analysis.py`)
+ran a deterministic cross-reference and found:
+
+| Metric | Value |
+|--------|-------|
+| SQLite gaps | 1,997 |
+| Accelerator inferred gap | 1,051 |
+| **Agreed true gaps (both agree uncovered)** | **966** |
+| SQLite false gaps (transitive coverage missed) | **1,031** |
+| Phantom/stale modules | **0** |
+
+### Actual Root Cause: Coverage Edge Semantics
+
+- **SQLite**: Counts only **direct `covers` edges** in the ADG graph
+- **Accelerator**: Uses **transitive import-graph coverage** — if test → A → B → C, all three modules are marked covered
+
+This explains why 1,031 "false gaps" span **all production layers** (L1–L6, apps_*, system_learning),
+not just utility scripts. Filter differences account for only ~97 of the delta; the remaining
+**~849 false gaps** are well-integrated production modules reached transitively.
+
+### What the Original RCA Got Wrong
+
+| Claim | Actual Finding |
+|-------|---------------|
+| Delta caused by filter scope (~946 excluded modules) | Delta caused by edge semantics; filter diff accounts for only ~97 modules |
+| Accelerator uses stricter production module definition | Both use same module set (~2,092); accelerator coverage is broader via transitivity |
+| Fix: align SQLite filter logic | Fix: add transitive edge traversal to SQLite, not filter tuning |
+
+---
+
+## Original Root Cause Analysis (Superseded — kept for historical reference)
+
+### 1. **Different Module Filtering Logic** *(SUPERSEDED)*
 
 #### SQLite Analysis (`_coverage_analysis.py:39-46`)
 ```python
@@ -30,42 +64,20 @@ WHERE entity_type='module'
   AND adg_name NOT LIKE '%__pycache__%'
 ```
 
-**Exclusions**: Only excludes `tests/`, `tools/`, `ops_scripts`, `__pycache__`
-
-#### Accelerator Report (Inferred)
-The accelerator likely uses a **stricter production module definition**:
-- Excludes additional directories (e.g., `data/`, `artifacts/`, `archives/`, `.backup/`)
-- May filter out utility scripts, configuration files, or deprecated modules
-- Possibly applies layer-based filtering (only counting L0-L6, apps_*, system_learning)
-
-### 2. **Coverage Definition Difference**
+### 2. **Coverage Definition Difference** *(SUPERSEDED)*
 
 #### SQLite Analysis
 - **Uncovered modules**: Modules with NO inbound `GT_covers` edges
-- **Total source modules**: All non-test/tool/ops modules in ADG graph
 - **Gap count**: 1,997 uncovered modules
 
 #### Accelerator Report
 - **Covered modules**: 1,041 modules (49.76% coverage rate)
-- **Implied total**: 1,041 / 0.4976 ≈ **2,092 total modules**
-- **Implied gap**: 2,092 - 1,041 ≈ **1,051 uncovered modules**
+- **Implied gap**: ~1,051 uncovered modules
 
-**Calculation check**:
-- If coverage_rate = 0.4976 and covered_count = 1,041
-- Then total = 1,041 / 0.4976 ≈ 2,092
-- Gap = 2,092 - 1,041 = 1,051 ✓
+### 3. **Scope Differences** *(SUPERSEDED — filter theory disproved)*
 
-### 3. **Scope Differences**
-
-The SQLite analysis may include modules that the accelerator **intentionally excludes**:
-
-**Potential additional exclusions in accelerator** (~946 modules):
-- `agentic_core/L0_routing/scripts/*_util.py` — Many utility scripts (150+ files)
-- Configuration-only modules (`*_config.py` in non-core locations)
-- Deprecated/archived modules
-- Data/corpus modules (`data/`, `artifacts/`)
-- Migration/temporary scripts
-- Shims and compatibility layers
+The original hypothesis that accelerator excludes ~946 modules via stricter filtering
+was **disproved** by Phase 0 validation. Both systems operate on the same ~2,092 module set.
 
 ---
 
@@ -145,60 +157,35 @@ Based on workspace structure analysis:
 
 ---
 
-## Recommendations
+## ✅ Revised Recommendations (Post Phase 0)
 
-### 1. **Use Accelerator Report as Authoritative Source**
-- The accelerator applies **production-grade filtering**
-- Excludes utility/migration scripts appropriately
-- Provides **actionable coverage gaps** (~1,051 modules)
+| # | Action | Priority | Status |
+|---|--------|----------|--------|
+| 1 | Use accelerator as authoritative source | ✅ Confirmed | Done |
+| 2 | **Do NOT change SQLite filter logic** | ⚠️ Revised | Root cause is edge semantics; filter changes won't fix 849 transitive false gaps |
+| 3 | Add **transitive edge traversal** to SQLite analysis | Medium | Pending — adds import-graph walk to match accelerator |
+| 4 | **Immediate: add test for `json_formatter_util.py`** | 🔥 High | ✅ Done — `tests/unit/agentic_core/L0_routing/utils/test_json_formatter_util.py` |
+| 5 | Generate stubs for all 966 true gaps | High | ✅ Done — 528 new `_adg.py` stubs created |
+| 6 | Quarterly re-run of Phase 0 validation | Medium | Pending |
 
-### 2. **Reconcile Definitions**
-Document the exact filtering logic used by the accelerator:
-```python
-# Proposed canonical filter
-def is_production_module(path: str) -> bool:
-    excludes = [
-        'tests/', 'tools/', 'ops_scripts/', '__pycache__',
-        'data/', 'artifacts/', 'archives/', '.backup/',
-        '.healing_backups/', 'logs/', '.git/'
-    ]
-    # Exclude utility scripts in L0/scripts/
-    if 'L0_routing/scripts/' in path and path.endswith('_util.py'):
-        return False
-    # Exclude config-only modules outside core
-    if path.endswith('_config.py') and not path.startswith('agentic_core/L'):
-        return False
-    return not any(excl in path for excl in excludes)
-```
+## ✅ Revised Action Items
 
-### 3. **Update SQLite Analysis**
-Align `_coverage_analysis.py` with accelerator filtering:
-- Add exclusions for `data/`, `artifacts/`, `archives/`, `.backup/`
-- Filter out L0 utility scripts
-- Apply layer-based filtering (L0-L6, apps_*, system_learning only)
-
-### 4. **Gap Prioritization Strategy**
-Focus on the **1,051 uncovered modules** from the accelerator report:
-- These are **production-critical modules**
-- Exclude utility scripts from immediate coverage goals
-- Prioritize by layer: L0 > L1 > L2 > ... > L6
+- [x] Run Phase 0 validation cross-reference (`_phase0_validation.py`)
+- [x] Deep-classify 966 true gaps by layer/category (`_phase0_deep_analysis.py`)
+- [x] Confirm zero phantom modules (all 966 exist on disk)
+- [x] Add behavioral test for `json_formatter_util.py` (only zero-coverage critical util)
+- [x] Generate ADG importability stubs for all 528 currently-untested production modules
+- [ ] Add transitive edge traversal to `_coverage_analysis.py` to match accelerator semantics
+- [ ] Quarterly re-run of Phase 0 validation to track gap reduction progress
 
 ---
 
-## Action Items
+## Conclusion (Updated)
 
-- [ ] Extract uncovered module list from accelerator report
-- [ ] Categorize 1,051 gaps by layer and criticality
-- [ ] Update `_coverage_analysis.py` to match accelerator filtering
-- [ ] Document canonical "production module" definition in `.windsurfrules`
-- [ ] Create phased coverage plan targeting ~700 high-priority modules first
+The discrepancy is explained by **coverage edge semantics**, not filter scope.
+SQLite's direct-edge-only approach misses 1,031 modules that are transitively
+covered in the accelerator. The 966 agreed true gaps are all real production files.
 
----
-
-## Conclusion
-
-The discrepancy is **expected and correct**. The accelerator report uses a **stricter, production-focused definition** of modules requiring test coverage, excluding ~946 utility/config/data modules that the SQLite analysis included.
-
-**Authoritative source**: `docs/reports/plans/adg_coverage_report_03122026.json`  
-**Actionable gap**: ~1,051 production modules without test coverage  
-**Next step**: Use accelerator report to prioritize coverage work
+**Authoritative source**: `docs/reports/plans/phase0_validation_findings.md`  
+**True actionable gap**: 966 production modules with zero coverage in both systems  
+**Priority order**: `apps_lic/reasoning` (30) → `apps_rg/engines` (33) → `L5_safety` (167) → `system_learning` (31)
