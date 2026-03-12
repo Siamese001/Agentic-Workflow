@@ -1,0 +1,207 @@
+"""G21 (gap): Anti-pattern registry runtime.
+
+Tracks every anti-pattern occurrence detected by the ADG static scanner:
+  caller → registers_antipattern → AntipatternRegistry
+  caller → classifies_antipattern → PatternClassifier
+
+Data structures only — no side-effects on import.
+"""
+
+from __future__ import annotations
+
+import time
+import uuid
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Any
+
+
+class AntipatternSeverity(str, Enum):
+    """Severity of a detected anti-pattern."""
+
+    CRITICAL = "critical"
+    HIGH = "high"
+    MEDIUM = "medium"
+    LOW = "low"
+    INFO = "info"
+
+
+class AntipatternCategory(str, Enum):
+    """Canonical anti-pattern categories matching ADG static scanner edge kinds."""
+
+    SILENT_EXCEPTION_SWALLOW = "silent_exception_swallow"
+    BLOCKING_CALL_IN_ASYNC = "blocking_call_in_async"
+    GLOBAL_STATE_MUTATION = "global_state_mutation"
+    RETRY_WITHOUT_BACKOFF = "retry_without_backoff"
+    BARE_EXCEPT = "bare_except"
+    MUTABLE_DEFAULT_ARG = "mutable_default_arg"
+    STAR_IMPORT_USE = "star_import_use"
+    HARDCODED_SECRET = "hardcoded_secret"
+    DEAD_CODE = "dead_code"
+    OVERLY_BROAD_CATCH = "overly_broad_catch"
+
+
+_SEVERITY_MAP: dict[AntipatternCategory, AntipatternSeverity] = {
+    AntipatternCategory.HARDCODED_SECRET: AntipatternSeverity.CRITICAL,
+    AntipatternCategory.GLOBAL_STATE_MUTATION: AntipatternSeverity.HIGH,
+    AntipatternCategory.SILENT_EXCEPTION_SWALLOW: AntipatternSeverity.HIGH,
+    AntipatternCategory.BLOCKING_CALL_IN_ASYNC: AntipatternSeverity.HIGH,
+    AntipatternCategory.RETRY_WITHOUT_BACKOFF: AntipatternSeverity.MEDIUM,
+    AntipatternCategory.BARE_EXCEPT: AntipatternSeverity.MEDIUM,
+    AntipatternCategory.OVERLY_BROAD_CATCH: AntipatternSeverity.MEDIUM,
+    AntipatternCategory.MUTABLE_DEFAULT_ARG: AntipatternSeverity.LOW,
+    AntipatternCategory.STAR_IMPORT_USE: AntipatternSeverity.LOW,
+    AntipatternCategory.DEAD_CODE: AntipatternSeverity.INFO,
+}
+
+
+@dataclass
+class AntipatternRecord:
+    """A single anti-pattern occurrence."""
+
+    record_id: str = field(default_factory=lambda: f"apr-{uuid.uuid4().hex[:12]}")
+    agent_id: str = ""
+    run_id: str = ""
+    category: AntipatternCategory = AntipatternCategory.SILENT_EXCEPTION_SWALLOW
+    severity: AntipatternSeverity = AntipatternSeverity.MEDIUM
+    source_file: str = ""
+    line_no: int = 0
+    symbol: str = ""
+    description: str = ""
+    suppressed: bool = False
+    detected_at: float = field(default_factory=time.time)
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "record_id": self.record_id,
+            "agent_id": self.agent_id,
+            "run_id": self.run_id,
+            "category": self.category.value,
+            "severity": self.severity.value,
+            "source_file": self.source_file,
+            "line_no": self.line_no,
+            "symbol": self.symbol,
+            "description": self.description,
+            "suppressed": self.suppressed,
+            "detected_at": self.detected_at,
+        }
+
+
+@dataclass
+class AntipatternRegistryReport:
+    """Aggregated anti-pattern report for a run."""
+
+    agent_id: str
+    run_id: str
+    records: list[AntipatternRecord] = field(default_factory=list)
+
+    @property
+    def total_count(self) -> int:
+        return len(self.records)
+
+    @property
+    def critical_count(self) -> int:
+        return sum(1 for r in self.records if r.severity == AntipatternSeverity.CRITICAL)
+
+    @property
+    def suppressed_count(self) -> int:
+        return sum(1 for r in self.records if r.suppressed)
+
+    @property
+    def active_count(self) -> int:
+        return sum(1 for r in self.records if not r.suppressed)
+
+    @property
+    def by_category(self) -> dict[str, int]:
+        result: dict[str, int] = {}
+        for r in self.records:
+            result[r.category.value] = result.get(r.category.value, 0) + 1
+        return result
+
+    @property
+    def by_severity(self) -> dict[str, int]:
+        result: dict[str, int] = {}
+        for r in self.records:
+            result[r.severity.value] = result.get(r.severity.value, 0) + 1
+        return result
+
+    @property
+    def affected_files(self) -> set[str]:
+        return {r.source_file for r in self.records if r.source_file}
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "agent_id": self.agent_id,
+            "run_id": self.run_id,
+            "total_count": self.total_count,
+            "critical_count": self.critical_count,
+            "suppressed_count": self.suppressed_count,
+            "active_count": self.active_count,
+            "affected_file_count": len(self.affected_files),
+            "by_category": self.by_category,
+            "by_severity": self.by_severity,
+        }
+
+
+class AntipatternRegistry:
+    """G21 runtime registry: records and classifies anti-pattern occurrences.
+
+    Lifecycle:
+        registry = AntipatternRegistry(agent_id, run_id)
+        registry.register(AntipatternCategory.SILENT_EXCEPTION_SWALLOW, "foo.py", 42)
+        registry.suppress(record)
+        report = registry.report
+    """
+
+    def __init__(self, agent_id: str, run_id: str) -> None:
+        self._agent_id = agent_id
+        self._run_id = run_id
+        self._report = AntipatternRegistryReport(agent_id=agent_id, run_id=run_id)
+
+    @property
+    def report(self) -> AntipatternRegistryReport:
+        return self._report
+
+    def register(
+        self,
+        category: AntipatternCategory,
+        source_file: str = "",
+        line_no: int = 0,
+        symbol: str = "",
+        description: str = "",
+        severity: AntipatternSeverity | None = None,
+    ) -> AntipatternRecord:
+        """Register a detected anti-pattern."""
+        resolved_severity = severity or _SEVERITY_MAP.get(category, AntipatternSeverity.MEDIUM)
+        record = AntipatternRecord(
+            agent_id=self._agent_id,
+            run_id=self._run_id,
+            category=category,
+            severity=resolved_severity,
+            source_file=source_file,
+            line_no=line_no,
+            symbol=symbol,
+            description=description,
+        )
+        self._report.records.append(record)
+        return record
+
+    def suppress(self, record: AntipatternRecord) -> None:
+        """Mark a detected anti-pattern as reviewed and suppressed."""
+        record.suppressed = True
+
+    def classify(self, edge_kind: str) -> AntipatternCategory | None:
+        """Map an ADG edge kind string to an AntipatternCategory, or None if not a pattern."""
+        for cat in AntipatternCategory:
+            if cat.value == edge_kind:
+                return cat
+        return None
+
+    def register_from_edge_kind(
+        self, edge_kind: str, source_file: str = "", line_no: int = 0, symbol: str = ""
+    ) -> AntipatternRecord | None:
+        """Convenience: register an anti-pattern directly from an ADG edge kind string."""
+        category = self.classify(edge_kind)
+        if category is None:
+            return None
+        return self.register(category, source_file=source_file, line_no=line_no, symbol=symbol)

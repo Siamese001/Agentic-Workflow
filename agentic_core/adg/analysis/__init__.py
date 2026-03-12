@@ -10,6 +10,11 @@ Modules:
 
 from agentic_core.adg.analysis.confidence import EdgeConfidence, score_edges
 from agentic_core.adg.analysis.diff import GraphDiff, diff_snapshots
+from agentic_core.adg.analysis.healer_validator_graph import (
+    HealerValidatorEdge,
+    HealerValidatorReport,
+    detect_healer_validator_relationships,
+)
 from agentic_core.adg.analysis.impact import ImpactReport, predict_impact
 from agentic_core.adg.analysis.ownership import ModuleOwnership, OwnershipRegistry
 from agentic_core.adg.analysis.repair import RepairRoute, route_violations
@@ -28,4 +33,8 @@ __all__ = [
     "score_edges",
     "RepairRoute",
     "route_violations",
+    # G1 (gap): Healer/validator graph
+    "HealerValidatorEdge",
+    "HealerValidatorReport",
+    "detect_healer_validator_relationships",
 ]

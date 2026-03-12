@@ -78,24 +78,7 @@ def _build_snapshot(artifact: ADGArtifact) -> dict:
             "orphan_module_count": sm.get("orphan_module_count", 0),
             "layer_violation_count": sm.get("layer_violation_count", 0),
         },
-        "graph_plane_counts": {
-            k: v
-            for k, v in by_rel.items()
-            if k
-            in (
-                "imports",
-                "calls",
-                "implements",
-                "writes_to",
-                "writes_through",
-                "covers",
-                "violates",
-                "invokes_provider",
-                "routes_through",
-                "generates_prompt",
-                "bypasses_uwg",
-            )
-        },
+        "graph_plane_counts": {k: v for k, v in sorted(by_rel.items()) if v > 0},
         "by_layer": sm.get("by_layer", {}),
         "blind_spots": {
             "parse_failure_count": bs.get("parse_failure_count", 0),
@@ -144,6 +127,24 @@ CREATE TABLE IF NOT EXISTS meta (
     key   TEXT PRIMARY KEY,
     value TEXT NOT NULL
 );
+
+CREATE VIEW IF NOT EXISTS edge_view AS
+    SELECT
+        e.id            AS edge_id,
+        src.adg_name    AS from_name,
+        e.relation_type AS relation_type,
+        dst.adg_name    AS to_name,
+        e.edge_kind     AS edge_kind,
+        src.entity_type AS from_type,
+        dst.entity_type AS to_type,
+        src.layer       AS from_layer,
+        dst.layer       AS to_layer,
+        e.source_file   AS source_file,
+        e.line_no       AS line_no,
+        e.symbol        AS symbol
+    FROM edges e
+    JOIN nodes src ON src.id = e.src_id
+    JOIN nodes dst ON dst.id = e.dst_id;
 """
 
 
@@ -160,15 +161,17 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
         # Insert nodes in bulk
         node_rows = []
         for nid_str, node in ng_full.nodes.items():
-            node_rows.append((
-                int(nid_str),
-                node.get("n", ""),
-                node.get("t", ""),
-                node.get("l", ""),
-                node.get("k", ""),
-                node.get("c", ""),
-                node.get("p", ""),
-            ))
+            node_rows.append(
+                (
+                    int(nid_str),
+                    node.get("n", ""),
+                    node.get("t", ""),
+                    node.get("l", ""),
+                    node.get("k", ""),
+                    node.get("c", ""),
+                    node.get("p", ""),
+                )
+            )
         conn.executemany(
             "INSERT OR REPLACE INTO nodes(id,adg_name,entity_type,layer,identity_kind,confidence,resolved_path) "
             "VALUES (?,?,?,?,?,?,?)",
@@ -178,15 +181,17 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
         # Insert edges in bulk
         edge_rows = []
         for e in ng_full.edges:
-            edge_rows.append((
-                e["s"],
-                e["d"],
-                e["r"],
-                e["k"],
-                e["f"],
-                e["ln"],
-                e.get("sym", ""),
-            ))
+            edge_rows.append(
+                (
+                    e["s"],
+                    e["d"],
+                    e["r"],
+                    e["k"],
+                    e["f"],
+                    e["ln"],
+                    e.get("sym", ""),
+                )
+            )
         conn.executemany(
             "INSERT INTO edges(src_id,dst_id,relation_type,edge_kind,source_file,line_no,symbol) "
             "VALUES (?,?,?,?,?,?,?)",
@@ -220,12 +225,11 @@ def _create_latest_symlinks(
     governance_graph_path: Path,
 ) -> None:
     """Create LATEST symlinks pointing to the newest timestamped artifacts.
-    
+
     On Windows, creates copies instead of symlinks if symlink creation fails.
     """
-    import os
     import shutil
-    
+
     symlink_map = {
         "adg_LATEST.sqlite": sqlite_path,
         "adg_LATEST_snapshot.json": snap_path,
@@ -233,17 +237,17 @@ def _create_latest_symlinks(
         "adg_LATEST_symbol_graph.json": symbol_graph_path,
         "adg_LATEST_governance_graph.json": governance_graph_path,
     }
-    
+
     for link_name, target_path in symlink_map.items():
         if not target_path.exists():
             continue
-            
+
         link_path = out_dir / link_name
-        
+
         # Remove existing symlink/file
         if link_path.exists() or link_path.is_symlink():
             link_path.unlink()
-        
+
         # Try to create symlink, fall back to copy on Windows
         try:
             link_path.symlink_to(target_path.name)
@@ -260,7 +264,7 @@ def _create_latest_symlinks(
 @dataclass
 class ArtifactPaths:
     """Paths of all artifacts written by write_all_artifacts.
-    
+
     Non-redundant output set (5 files, 100% edge coverage):
         snapshot          - Tier 1: metrics only (~50 KB)
         sqlite            - Tier 2: primary queryable store (~38 MB, all 18 edge types)

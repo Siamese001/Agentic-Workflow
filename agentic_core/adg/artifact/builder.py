@@ -28,9 +28,14 @@ if TYPE_CHECKING:
 from agentic_core.adg.identity.normalizer import (
     IdentityKind,
     IdentityNormalizer,
-    NormalizationReport,
 )
-from agentic_core.adg.schema import canonical_name, module_path_to_layer
+from agentic_core.adg.schema import (
+    GATEWAY_ALLOWLIST,
+    PROVIDER_SDK_SYMBOLS,
+    SEAM_MODULE_PATTERNS,
+    canonical_name,
+    module_path_to_layer,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -262,7 +267,14 @@ class ADGArtifactBuilder:
     def _populate_relations(self, result: ScanResult, artifact: ADGArtifact) -> None:
         seen: set[tuple] = set()
         for edge in sorted(result.edges):
-            key = (edge.from_name, edge.relation_type, edge.to_name, edge.edge_kind, edge.source_file, edge.line_no)
+            key = (
+                edge.from_name,
+                edge.relation_type,
+                edge.to_name,
+                edge.edge_kind,
+                edge.source_file,
+                edge.line_no,
+            )
             if key in seen:
                 continue
             seen.add(key)
@@ -297,6 +309,25 @@ class ADGArtifactBuilder:
                 )
             )
             existing_adg.add(adg)
+            # G12: emit belongs_to_layer relation for every module
+            layer_node = canonical_name("Layer", layer)
+            artifact.relations.append(
+                RelationRecord(
+                    from_name=adg,
+                    relation_type="belongs_to_layer",
+                    to_name=layer_node,
+                    edge_kind="layer_membership",
+                    source_file=rel_path,
+                    line_no=0,
+                    symbol=layer,
+                )
+            )
+
+    @staticmethod
+    def _is_seam_module(rel_path: str) -> bool:
+        """G9: Return True if the module path matches a seam pattern."""
+        norm = rel_path.replace("\\", "/")
+        return any(norm.startswith(p) for p in SEAM_MODULE_PATTERNS)
 
     def _populate_symbol_entities(self, result: ScanResult, artifact: ADGArtifact) -> None:
         """Normalize all symbol nodes referenced in edges, classify their identity."""
@@ -304,53 +335,148 @@ class ADGArtifactBuilder:
 
         symbol_prefix = "ADG::Symbol::"
         module_prefix = "ADG::Module::"
+        layer_prefix = "ADG::Layer::"
+        gateway_prefix = "ADG::Gateway::"
+        prompt_slot_prefix = "ADG::PromptSlot::"
+        prompt_template_prefix = "ADG::PromptTemplate::"
 
         # Collect all unique to_names that need identity resolution
         to_resolve: set[str] = set()
         for edge in result.edges:
-            if edge.to_name.startswith(symbol_prefix) or edge.to_name.startswith(module_prefix):
-                if edge.to_name not in existing_adg:
-                    to_resolve.add(edge.to_name)
+            if edge.to_name not in existing_adg:
+                to_resolve.add(edge.to_name)
+            if edge.from_name not in existing_adg:
+                to_resolve.add(edge.from_name)
 
         for adg_target in sorted(to_resolve):
             if adg_target in existing_adg:
                 continue
 
-            if adg_target.startswith(symbol_prefix):
-                dot_name = adg_target[len(symbol_prefix):]
-                rec = self._normalizer.normalize(dot_name)
-                layer = module_path_to_layer(rec.resolved_path) if rec.resolved_path else "L_UNKNOWN"
+            if adg_target.startswith(layer_prefix):
+                # G7: materialize Layer nodes with correct entity_type
+                layer_label = adg_target[len(layer_prefix) :]
                 artifact.entities.append(
                     EntityRecord(
                         adg_name=adg_target,
-                        entity_type="symbol",
-                        layer=layer,
-                        identity_kind=rec.kind.value,
-                        confidence=rec.confidence.value,
-                        resolved_path=rec.resolved_path,
-                        observations=[
-                            f"raw_name:{dot_name}",
-                            f"identity_kind:{rec.kind.value}",
-                            f"reason:{rec.reason}",
-                        ],
+                        entity_type="layer",
+                        layer=layer_label,
+                        identity_kind="layer_node",
+                        confidence="HIGH",
+                        resolved_path="",
+                        observations=[f"layer:{layer_label}"],
                     )
                 )
-                if rec.kind == IdentityKind.UNRESOLVED_IMPORT:
-                    artifact.unresolved_imports.append(
-                        {
-                            "raw_name": dot_name,
-                            "adg_name": adg_target,
-                            "reason": rec.reason,
-                            "confidence": rec.confidence.value,
-                        }
-                    )
-            elif adg_target.startswith(module_prefix):
-                rel_path = adg_target[len(module_prefix):]
-                layer = module_path_to_layer(rel_path)
+            elif adg_target.startswith(gateway_prefix):
+                # G8: materialize Gateway nodes
+                gw_name = adg_target[len(gateway_prefix) :]
+                gw_path = GATEWAY_ALLOWLIST.get(gw_name, "")
                 artifact.entities.append(
                     EntityRecord(
                         adg_name=adg_target,
-                        entity_type="module",
+                        entity_type="gateway",
+                        layer="L2",
+                        identity_kind="gateway_node",
+                        confidence="HIGH",
+                        resolved_path=gw_path,
+                        observations=[f"gateway:{gw_name}", f"path:{gw_path}"],
+                    )
+                )
+            elif adg_target.startswith(prompt_slot_prefix):
+                # G2: PromptSlot nodes get entity_type=prompt_slot
+                slot_key = adg_target[len(prompt_slot_prefix) :]
+                artifact.entities.append(
+                    EntityRecord(
+                        adg_name=adg_target,
+                        entity_type="prompt_slot",
+                        layer="L_PG",
+                        identity_kind="prompt_slot",
+                        confidence="HIGH",
+                        resolved_path="",
+                        observations=[f"slot:{slot_key}"],
+                    )
+                )
+            elif adg_target.startswith(prompt_template_prefix):
+                # G2: PromptTemplate nodes get entity_type=prompt_template
+                tmpl_key = adg_target[len(prompt_template_prefix) :]
+                artifact.entities.append(
+                    EntityRecord(
+                        adg_name=adg_target,
+                        entity_type="prompt_template",
+                        layer="L_PG",
+                        identity_kind="prompt_template",
+                        confidence="HIGH",
+                        resolved_path="",
+                        observations=[f"template:{tmpl_key}"],
+                    )
+                )
+            elif adg_target.startswith(symbol_prefix):
+                dot_name = adg_target[len(symbol_prefix) :]
+                # G8: gateway-allowlist symbols get entity_type=gateway
+                if dot_name in GATEWAY_ALLOWLIST:
+                    gw_path = GATEWAY_ALLOWLIST[dot_name]
+                    artifact.entities.append(
+                        EntityRecord(
+                            adg_name=adg_target,
+                            entity_type="gateway",
+                            layer="L2",
+                            identity_kind="gateway_node",
+                            confidence="HIGH",
+                            resolved_path=gw_path,
+                            observations=[f"gateway:{dot_name}", f"path:{gw_path}"],
+                        )
+                    )
+                    existing_adg.add(adg_target)
+                    continue
+                # G10: provider symbols get entity_type=provider
+                base = dot_name.split(".")[0]
+                if base in {s.split(".")[0] for s in PROVIDER_SDK_SYMBOLS}:
+                    artifact.entities.append(
+                        EntityRecord(
+                            adg_name=adg_target,
+                            entity_type="provider",
+                            layer="L_UNKNOWN",
+                            identity_kind="external_provider",
+                            confidence="HIGH",
+                            resolved_path="",
+                            observations=[f"provider_sdk:{base}", f"raw_name:{dot_name}"],
+                        )
+                    )
+                else:
+                    rec = self._normalizer.normalize(dot_name)
+                    layer = module_path_to_layer(rec.resolved_path) if rec.resolved_path else "L_UNKNOWN"
+                    artifact.entities.append(
+                        EntityRecord(
+                            adg_name=adg_target,
+                            entity_type="symbol",
+                            layer=layer,
+                            identity_kind=rec.kind.value,
+                            confidence=rec.confidence.value,
+                            resolved_path=rec.resolved_path,
+                            observations=[
+                                f"raw_name:{dot_name}",
+                                f"identity_kind:{rec.kind.value}",
+                                f"reason:{rec.reason}",
+                            ],
+                        )
+                    )
+                    if rec.kind == IdentityKind.UNRESOLVED_IMPORT:
+                        artifact.unresolved_imports.append(
+                            {
+                                "raw_name": dot_name,
+                                "adg_name": adg_target,
+                                "reason": rec.reason,
+                                "confidence": rec.confidence.value,
+                            }
+                        )
+            elif adg_target.startswith(module_prefix):
+                rel_path = adg_target[len(module_prefix) :]
+                layer = module_path_to_layer(rel_path)
+                # G9: seam modules get entity_type=seam
+                etype = "seam" if self._is_seam_module(rel_path) else "module"
+                artifact.entities.append(
+                    EntityRecord(
+                        adg_name=adg_target,
+                        entity_type=etype,
                         layer=layer,
                         identity_kind=IdentityKind.REPO_MODULE.value,
                         confidence="HIGH",
@@ -402,18 +528,16 @@ class ADGArtifactBuilder:
 
         # Orphan modules: appear in entities but have no in or out edges
         module_adg_names = {e.adg_name for e in artifact.entities if e.entity_type == "module"}
-        modules_with_edges = {r.from_name for r in artifact.relations} | {r.to_name for r in artifact.relations}
+        modules_with_edges = {r.from_name for r in artifact.relations} | {
+            r.to_name for r in artifact.relations
+        }
         m.orphan_modules = sorted(module_adg_names - modules_with_edges)
 
         m.high_fan_in_modules = [
-            {"module": k, "fan_in": v}
-            for k, v in fan_in.items()
-            if v >= self._FAN_IN_THRESHOLD
+            {"module": k, "fan_in": v} for k, v in fan_in.items() if v >= self._FAN_IN_THRESHOLD
         ]
         m.high_fan_out_modules = [
-            {"module": k, "fan_out": v}
-            for k, v in fan_out.items()
-            if v >= self._FAN_OUT_THRESHOLD
+            {"module": k, "fan_out": v} for k, v in fan_out.items() if v >= self._FAN_OUT_THRESHOLD
         ]
 
         # Relation type distribution
@@ -427,12 +551,13 @@ class ADGArtifactBuilder:
 
         # Layer violations (upward imports across non-allowed edges)
         from agentic_core.adg.schema import ALLOWED_LAYER_EDGES
+
         violations = 0
         for rel in artifact.relations:
             if rel.relation_type != "imports":
                 continue
-            from_path = rel.from_name[len(module_prefix):] if rel.from_name.startswith(module_prefix) else ""
-            to_path = rel.to_name[len(module_prefix):] if rel.to_name.startswith(module_prefix) else ""
+            from_path = rel.from_name[len(module_prefix) :] if rel.from_name.startswith(module_prefix) else ""
+            to_path = rel.to_name[len(module_prefix) :] if rel.to_name.startswith(module_prefix) else ""
             if from_path and to_path:
                 fl = module_path_to_layer(from_path)
                 tl = module_path_to_layer(to_path)

@@ -65,12 +65,12 @@ if TYPE_CHECKING:
 _FILE_GRAPH_RELS: frozenset[str] = frozenset(
     {
         "imports",
-        "exports",       # module re-export edges (structural, module-level)
+        "exports",  # module re-export edges (structural, module-level)
         "dead_imports",
-        "covers",        # test→module coverage (canonical home)
-        "influences",    # static influence edges between modules
+        "covers",  # test→module coverage (canonical home)
+        "influences",  # static influence edges between modules
         "belongs_to_layer",
-        "in_cycle",      # canonical home: file_graph (removed from governance)
+        "in_cycle",  # canonical home: file_graph (removed from governance)
     }
 )
 
@@ -116,6 +116,119 @@ _GOVERNANCE_GRAPH_RELS: frozenset[str] = frozenset(
         # GA: behavioral anti-pattern detection edges
         "antipattern",
         # NOTE: in_cycle removed — lives in file_graph
+        # --- Runtime-state / config read edges ---
+        "reads_config",
+        "reads_env",
+        "reads_runtime_state",
+        "reads_policy_state",
+        "reads_secret",
+        "invokes_dynamic",
+        # --- G1 (gap): Healer/validator loop ---
+        "heals",
+        "orchestrates_healing",
+        "healing_dispatch",
+        "validator_check",
+        # --- G3 (gap): Embedding pipeline ---
+        "embeds_into",
+        "stores_embedding",
+        "retrieves_via",
+        "chunks_into",
+        # --- G4 (gap): HITL / confidence gating ---
+        "gated_by_confidence",
+        "escalates_to_human",
+        # --- G5 (gap): Safety enforcement ---
+        "applies_guardrail",
+        "verifies_policy",
+        # --- G7 (gap): Sandbox airlock ---
+        "stamps_work_contract",
+        "issues_capability_token",
+        "enters_sandbox",
+        "exits_sandbox",
+        # --- G8 (gap): Capability budget ---
+        "consumes_budget",
+        "grants_resource",
+        "exceeds_budget",
+        # --- G9 (gap): JIT context sync ---
+        "pulls_context",
+        "freezes_context",
+        "unfreezes_context",
+        # --- G10 (gap): Boundary verification ---
+        "verifies_boundary",
+        "rejects_packet",
+        "certifies_envelope",
+        # --- G11 (gap): Determinism control ---
+        "seeds_rng",
+        "patches_time",
+        "guards_replay",
+        "emits_determinism_digest",
+        # --- G12 (gap): IO interception ---
+        "intercepts_io",
+        "transcripts_response",
+        "hard_fails_untranscripted",
+        # --- G13 (gap): Mutation transport ---
+        "packages_diff",
+        "validates_blast_radius",
+        "signs_execution_trace",
+        "commits_mutation",
+        "distributes_mutation",
+        # --- G14 (gap): Execution proof ---
+        "records_execution_trace",
+        "emits_replay_key",
+        "compares_proof",
+        # --- G15 (gap): Path control ---
+        "routes_path",
+        "forces_stall",
+        "reenters_safety",
+        "vigilance_reroute",
+        # --- G16 (gap): Evaluation spine ---
+        "scores_groundedness",
+        "emits_drift_alert",
+        "builds_dpo_batch",
+        "commits_optimization",
+        # --- G17 (gap): Secret / credential access ---
+        "reads_secret_vault",
+        "accesses_credential",
+        "rotates_secret",
+        # --- G18 (gap): Config governance ---
+        "reads_governed_config",
+        "validates_config_schema",
+        "caches_config",
+        # --- G19 (gap): Dynamic invocation ---
+        "invokes_eval",
+        "invokes_exec",
+        "invokes_importlib",
+        "invokes_getattr_dynamic",
+        # --- G20 (gap): Policy state observation ---
+        "observes_policy_state",
+        "observes_runtime_state",
+        "snapshots_state",
+        # --- G21 (gap): Anti-pattern registry ---
+        "registers_antipattern",
+        "classifies_antipattern",
+        # --- G22 (gap): Healing orchestrator ---
+        "dispatches_healing_run",
+        "confirms_heal",
+        "aborts_heal",
+        # --- G23 (gap): Non-determinism primitive detection ---
+        "uses_wall_clock",
+        "uses_random",
+        "uses_uuid",
+        # --- G24 (gap): External HTTP / network egress ---
+        "external_http_call",
+        # --- G25 (gap): Agent-to-agent dispatch ---
+        "agent_executes_agent",
+        # --- G26 (gap): L5 validation proof edges ---
+        "validated_by_registry",
+        "validated_by_safety_plane",
+        "validated_by_llm_gateway",
+        "execution_terminates_at_uwg",
+        "references_policy_hash",
+        # --- G27 (gap): Learning / prompt provenance ---
+        "proposal_commits_routing",
+        "prompt_template_used_by",
+        "instruction_injection_source",
+        "produces_preference_pair",
+        "requires_human_review",
     }
 )
 
@@ -135,7 +248,7 @@ def _is_test_module(adg_name: str) -> bool:
 @dataclass
 class SplitArtifact:
     """Container for three non-overlapping graph plane sub-artifacts.
-    
+
     Together these three planes provide 100% edge coverage with zero
     redundancy between planes.
     """

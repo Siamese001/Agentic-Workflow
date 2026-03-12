@@ -6,6 +6,24 @@
 .nox/integration/Scripts/activate_this.py:28:path_fragility:Path fragility: os.path.basename() - use pathlib.Path instead
 .nox/integration/Scripts/activate_this.py:33:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
 .nox/integration/Scripts/activate_this.py:33:path_fragility:Path fragility: os.path.realpath() - use pathlib.Path instead
+__dbg_classes.py:34:magic_configuration:Magic configuration: Hardcoded timeout=12 in function call
+__dbg_methods.py:22:magic_configuration:Magic configuration: Hardcoded timeout=8 in function call
+__dbg_routing_matrix.py:20:magic_configuration:Magic configuration: Hardcoded timeout=12 in function call
+__dbg_routing_matrix.py:6:magic_configuration:Magic configuration: Hardcoded timeout=10 in function call
+__dbg_scripts.py:14:magic_configuration:Magic configuration: Hardcoded timeout=10 in function call
+__dbg_scripts.py:15:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+__dbg_scripts.py:15:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+__dbg_scripts.py:22:magic_configuration:Magic configuration: Hardcoded timeout=8 in function call
+__dbg_scripts2.py:13:magic_configuration:Magic configuration: Hardcoded timeout=10 in function call
+__dbg_scripts2.py:14:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+__dbg_scripts2.py:14:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+__dbg_scripts2.py:20:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+__dbg_scripts2.py:20:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+__dbg_scripts2.py:20:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+__dbg_scripts2.py:20:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+__dbg_scripts2.py:22:magic_configuration:Magic configuration: Hardcoded timeout=8 in function call
+__dbg_ssot.py:3:magic_configuration:Magic configuration: Hardcoded timeout=10 in function call
+_adg_gap_check.py:40:path_fragility:Path fragility: os.path.basename() - use pathlib.Path instead
 agentic_core/L0_routing/config/path_constants.py:18:magic_configuration:Magic configuration: Hardcoded max_retries=3
 agentic_core/L0_routing/config/path_constants.py:20:magic_configuration:Magic configuration: Hardcoded threshold=0.95
 agentic_core/L0_routing/config/path_constants.py:23:magic_configuration:Magic configuration: Hardcoded max_depth=6
@@ -1296,8 +1314,8 @@ agentic_core/L2_execution/engines/batch_embedding_service.py:5:magic_configurati
 agentic_core/L2_execution/engines/batch_embedding_service.py:8:magic_configuration:Magic configuration: Hardcoded max_depth=6
 agentic_core/L2_execution/engines/batch_embedding_service.py:9:magic_configuration:Magic configuration: Hardcoded max_files=1000
 agentic_core/L2_execution/engines/execute_command_executor.py:10:magic_configuration:Magic configuration: Hardcoded default_timeout=300
-agentic_core/L2_execution/engines/execute_command_executor.py:137:magic_configuration:Magic configuration: Hardcoded timeout=30
-agentic_core/L2_execution/engines/execute_command_executor.py:264:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L2_execution/engines/execute_command_executor.py:138:magic_configuration:Magic configuration: Hardcoded timeout=30
+agentic_core/L2_execution/engines/execute_command_executor.py:265:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L2_execution/engines/execute_command_executor.py:3:magic_configuration:Magic configuration: Hardcoded max_retries=3
 agentic_core/L2_execution/engines/execute_command_executor.py:5:magic_configuration:Magic configuration: Hardcoded threshold=0.95
 agentic_core/L2_execution/engines/execute_command_executor.py:8:magic_configuration:Magic configuration: Hardcoded max_depth=6
@@ -1383,6 +1401,8 @@ agentic_core/L2_execution/healers/healing_provider_adapters.py:307:silent_swallo
 agentic_core/L2_execution/healers/healing_provider_adapters.py:309:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L2_execution/healers/healing_provider_adapters.py:67:magic_configuration:Magic configuration: Hardcoded max_tokens=2048
 agentic_core/L2_execution/healers/healing_provider_adapters.py:68:magic_configuration:Magic configuration: Hardcoded max_output_tokens=2048
+agentic_core/L2_execution/healers/healing_tier_dispatcher.py:317:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L2_execution/healers/healing_tier_dispatcher.py:325:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L2_execution/healers/healing_tier_dispatcher.py:336:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L2_execution/healers/healing_tier_dispatcher.py:365:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L2_execution/healers/healing_tier_dispatcher.py:402:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -2744,8 +2764,8 @@ agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py:11:magic_configur
 agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py:12:magic_configuration:Magic configuration: Hardcoded default_timeout=300
 agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py:215:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py:5:magic_configuration:Magic configuration: Hardcoded max_retries=3
-agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py:698:magic_configuration:Magic configuration: Hardcoded limit=100
-agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py:724:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py:708:magic_configuration:Magic configuration: Hardcoded limit=100
+agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py:734:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py:7:magic_configuration:Magic configuration: Hardcoded threshold=0.95
 agentic_core/L5_safety/enforcement/artifact_emission_prohibition_enforcer.py:16:magic_configuration:Magic configuration: Hardcoded max_retries=3
 agentic_core/L5_safety/enforcement/artifact_emission_prohibition_enforcer.py:18:magic_configuration:Magic configuration: Hardcoded threshold=0.95
@@ -3684,6 +3704,10 @@ agentic_core/L5_safety/types/rag_validation_result_types.py:3:magic_configuratio
 agentic_core/L5_safety/types/rag_validation_result_types.py:5:magic_configuration:Magic configuration: Hardcoded threshold=0.95
 agentic_core/L5_safety/types/rag_validation_result_types.py:8:magic_configuration:Magic configuration: Hardcoded max_depth=6
 agentic_core/L5_safety/types/rag_validation_result_types.py:9:magic_configuration:Magic configuration: Hardcoded max_files=1000
+agentic_core/L5_safety/types/resource_management_types.py:83:magic_configuration:Magic configuration: Hardcoded limit=1000000 in function call
+agentic_core/L5_safety/types/resource_management_types.py:88:magic_configuration:Magic configuration: Hardcoded limit=1000 in function call
+agentic_core/L5_safety/types/resource_management_types.py:93:magic_configuration:Magic configuration: Hardcoded limit=100.0 in function call
+agentic_core/L5_safety/types/resource_management_types.py:94:magic_configuration:Magic configuration: Hardcoded limit=1024 in function call
 agentic_core/L5_safety/types/rule_types.py:10:magic_configuration:Magic configuration: Hardcoded default_timeout=300
 agentic_core/L5_safety/types/rule_types.py:3:magic_configuration:Magic configuration: Hardcoded max_retries=3
 agentic_core/L5_safety/types/rule_types.py:5:magic_configuration:Magic configuration: Hardcoded threshold=0.95
@@ -4310,6 +4334,8 @@ agentic_core/adg/adapters/memory_mcp_adapter.py:32:magic_configuration:Magic con
 agentic_core/adg/adapters/memory_mcp_adapter.py:33:magic_configuration:Magic configuration: Hardcoded _max_hotspots=20
 agentic_core/adg/adapters/memory_mcp_adapter.py:34:magic_configuration:Magic configuration: Hardcoded _max_modules=200
 agentic_core/adg/adapters/memory_mcp_adapter.py:35:magic_configuration:Magic configuration: Hardcoded _observation_limit=2000
+agentic_core/adg/analysis/hotspot_index.py:103:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+agentic_core/adg/analysis/hotspot_index.py:104:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
 agentic_core/adg/analysis/hotspot_index.py:35:magic_configuration:Magic configuration: Hardcoded _default_hotspot_threshold=10
 agentic_core/adg/applications/blast_radius.py:29:magic_configuration:Magic configuration: Hardcoded max_retries=3
 agentic_core/adg/applications/blast_radius.py:31:magic_configuration:Magic configuration: Hardcoded threshold=0.95
@@ -4328,8 +4354,8 @@ agentic_core/adg/applications/refactoring_planner.py:52:magic_configuration:Magi
 agentic_core/adg/applications/refactoring_planner.py:53:magic_configuration:Magic configuration: Hardcoded _coupling_threshold_extract=25
 agentic_core/adg/applications/refactoring_planner.py:54:magic_configuration:Magic configuration: Hardcoded _instability_threshold=0.8
 agentic_core/adg/applications/refactoring_planner.py:55:magic_configuration:Magic configuration: Hardcoded _orphan_threshold=2
-agentic_core/adg/artifact/builder.py:219:magic_configuration:Magic configuration: Hardcoded _fan_in_threshold=10
-agentic_core/adg/artifact/builder.py:220:magic_configuration:Magic configuration: Hardcoded _fan_out_threshold=15
+agentic_core/adg/artifact/builder.py:224:magic_configuration:Magic configuration: Hardcoded _fan_in_threshold=10
+agentic_core/adg/artifact/builder.py:225:magic_configuration:Magic configuration: Hardcoded _fan_out_threshold=15
 agentic_core/adg/ci/__init__.py:10:magic_configuration:Magic configuration: Hardcoded max_depth=6
 agentic_core/adg/ci/__init__.py:11:magic_configuration:Magic configuration: Hardcoded max_files=1000
 agentic_core/adg/ci/__init__.py:12:magic_configuration:Magic configuration: Hardcoded default_timeout=300
@@ -4345,11 +4371,11 @@ agentic_core/adg/client/mcp_client.py:18:magic_configuration:Magic configuration
 agentic_core/adg/client/mcp_client.py:21:magic_configuration:Magic configuration: Hardcoded max_depth=6
 agentic_core/adg/client/mcp_client.py:22:magic_configuration:Magic configuration: Hardcoded max_files=1000
 agentic_core/adg/client/mcp_client.py:23:magic_configuration:Magic configuration: Hardcoded default_timeout=300
-agentic_core/adg/extraction/__init__.py:10:magic_configuration:Magic configuration: Hardcoded max_depth=6
-agentic_core/adg/extraction/__init__.py:11:magic_configuration:Magic configuration: Hardcoded max_files=1000
-agentic_core/adg/extraction/__init__.py:12:magic_configuration:Magic configuration: Hardcoded default_timeout=300
-agentic_core/adg/extraction/__init__.py:5:magic_configuration:Magic configuration: Hardcoded max_retries=3
-agentic_core/adg/extraction/__init__.py:7:magic_configuration:Magic configuration: Hardcoded threshold=0.95
+agentic_core/adg/extraction/__init__.py:10:magic_configuration:Magic configuration: Hardcoded max_retries=3
+agentic_core/adg/extraction/__init__.py:12:magic_configuration:Magic configuration: Hardcoded threshold=0.95
+agentic_core/adg/extraction/__init__.py:15:magic_configuration:Magic configuration: Hardcoded max_depth=6
+agentic_core/adg/extraction/__init__.py:16:magic_configuration:Magic configuration: Hardcoded max_files=1000
+agentic_core/adg/extraction/__init__.py:17:magic_configuration:Magic configuration: Hardcoded default_timeout=300
 agentic_core/adg/extraction/incremental.py:262:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/adg/extraction/incremental.py:63:magic_configuration:Magic configuration: Hardcoded timeout=10 in function call
 agentic_core/adg/extraction/incremental.py:75:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -4366,6 +4392,9 @@ agentic_core/adg/runtime/cache_loader.py:21:magic_configuration:Magic configurat
 agentic_core/adg/runtime/cache_loader.py:41:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/adg/runtime/cache_loader.py:83:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/adg/runtime/cache_loader.py:98:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/adg/runtime/config_governance.py:142:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'read_config'
+agentic_core/adg/runtime/eval_spine.py:259:magic_configuration:Magic configuration: Hardcoded threshold=0.05
+agentic_core/adg/runtime/mutation_transport.py:141:magic_configuration:Magic configuration: Hardcoded _blast_radius_threshold=0.8
 agentic_core/adg/runtime/query_engine.py:19:magic_configuration:Magic configuration: Hardcoded max_retries=3
 agentic_core/adg/runtime/query_engine.py:21:magic_configuration:Magic configuration: Hardcoded threshold=0.95
 agentic_core/adg/runtime/query_engine.py:24:magic_configuration:Magic configuration: Hardcoded max_depth=6
@@ -5377,6 +5406,7 @@ agentic_core/seams/orchestration_protocols.py:18:magic_configuration:Magic confi
 agentic_core/seams/orchestration_protocols.py:21:magic_configuration:Magic configuration: Hardcoded max_depth=6
 agentic_core/seams/orchestration_protocols.py:22:magic_configuration:Magic configuration: Hardcoded max_files=1000
 agentic_core/seams/orchestration_protocols.py:23:magic_configuration:Magic configuration: Hardcoded default_timeout=300
+agentic_core/utils/ast_fuzzy.py:20:magic_configuration:Magic configuration: Hardcoded _default_threshold=0.6
 agentic_core/utils/ast_fuzzy_util.py:12:magic_configuration:Magic configuration: Hardcoded max_retries=3
 agentic_core/utils/ast_fuzzy_util.py:14:magic_configuration:Magic configuration: Hardcoded threshold=0.95
 agentic_core/utils/ast_fuzzy_util.py:17:magic_configuration:Magic configuration: Hardcoded max_depth=6
@@ -6061,16 +6091,16 @@ apps_lic/tools/run_workflow.py:16:magic_configuration:Magic configuration: Hardc
 apps_lic/tools/run_workflow.py:17:magic_configuration:Magic configuration: Hardcoded max_files=1000
 apps_lic/tools/run_workflow.py:18:magic_configuration:Magic configuration: Hardcoded default_timeout=300
 apps_lic/tools/run_workflow.py:26:path_fragility:Path fragility: os.path.exists() - use pathlib.Path instead
-apps_lic/tools/run_workflow_lic.py:11:magic_configuration:Magic configuration: Hardcoded max_retries=3
-apps_lic/tools/run_workflow_lic.py:13:magic_configuration:Magic configuration: Hardcoded threshold=0.95
-apps_lic/tools/run_workflow_lic.py:16:magic_configuration:Magic configuration: Hardcoded max_depth=6
-apps_lic/tools/run_workflow_lic.py:17:magic_configuration:Magic configuration: Hardcoded max_files=1000
-apps_lic/tools/run_workflow_lic.py:18:magic_configuration:Magic configuration: Hardcoded default_timeout=300
-apps_lic/tools/run_workflow_lic.py:230:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_lic/tools/run_workflow_lic.py:245:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_lic/tools/run_workflow_lic.py:305:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_lic/tools/run_workflow_lic.py:37:path_fragility:Path fragility: os.path.exists() - use pathlib.Path instead
-apps_lic/tools/run_workflow_lic.py:39:path_fragility:Path fragility: os.path.abspath() - use pathlib.Path instead
+apps_lic/tools/run_workflow_lic.py:12:magic_configuration:Magic configuration: Hardcoded max_retries=3
+apps_lic/tools/run_workflow_lic.py:14:magic_configuration:Magic configuration: Hardcoded threshold=0.95
+apps_lic/tools/run_workflow_lic.py:17:magic_configuration:Magic configuration: Hardcoded max_depth=6
+apps_lic/tools/run_workflow_lic.py:18:magic_configuration:Magic configuration: Hardcoded max_files=1000
+apps_lic/tools/run_workflow_lic.py:19:magic_configuration:Magic configuration: Hardcoded default_timeout=300
+apps_lic/tools/run_workflow_lic.py:231:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_lic/tools/run_workflow_lic.py:246:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_lic/tools/run_workflow_lic.py:306:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_lic/tools/run_workflow_lic.py:38:path_fragility:Path fragility: os.path.exists() - use pathlib.Path instead
+apps_lic/tools/run_workflow_lic.py:40:path_fragility:Path fragility: os.path.abspath() - use pathlib.Path instead
 apps_lic/tools/validation_tools.py:13:magic_configuration:Magic configuration: Hardcoded max_retries=3
 apps_lic/tools/validation_tools.py:15:magic_configuration:Magic configuration: Hardcoded threshold=0.95
 apps_lic/tools/validation_tools.py:18:magic_configuration:Magic configuration: Hardcoded max_depth=6
@@ -6124,12 +6154,12 @@ apps_lic/types/lic_vector_memory_types.py:16:magic_configuration:Magic configura
 apps_lic/types/lic_vector_memory_types.py:17:magic_configuration:Magic configuration: Hardcoded max_files=1000
 apps_lic/types/lic_vector_memory_types.py:18:magic_configuration:Magic configuration: Hardcoded default_timeout=300
 apps_lic/types/lic_vector_memory_types.py:224:magic_configuration:Magic configuration: Hardcoded max_age_days=90
-apps_lic/types/message_route_types.py:86:magic_configuration:Magic configuration: Hardcoded cta_max_words=5 in function call
-apps_lic/types/qa_block_type_types.py:10:magic_configuration:Magic configuration: Hardcoded max_depth=6
-apps_lic/types/qa_block_type_types.py:11:magic_configuration:Magic configuration: Hardcoded max_files=1000
-apps_lic/types/qa_block_type_types.py:12:magic_configuration:Magic configuration: Hardcoded default_timeout=300
-apps_lic/types/qa_block_type_types.py:5:magic_configuration:Magic configuration: Hardcoded max_retries=3
-apps_lic/types/qa_block_type_types.py:7:magic_configuration:Magic configuration: Hardcoded threshold=0.95
+apps_lic/types/message_route_types.py:92:magic_configuration:Magic configuration: Hardcoded cta_max_words=5 in function call
+apps_lic/types/qa_block_type_types.py:10:magic_configuration:Magic configuration: Hardcoded threshold=0.95
+apps_lic/types/qa_block_type_types.py:13:magic_configuration:Magic configuration: Hardcoded max_depth=6
+apps_lic/types/qa_block_type_types.py:14:magic_configuration:Magic configuration: Hardcoded max_files=1000
+apps_lic/types/qa_block_type_types.py:15:magic_configuration:Magic configuration: Hardcoded default_timeout=300
+apps_lic/types/qa_block_type_types.py:8:magic_configuration:Magic configuration: Hardcoded max_retries=3
 apps_lic/types/stack_modernization_agent_types.py:14:magic_configuration:Magic configuration: Hardcoded max_retries=3
 apps_lic/types/stack_modernization_agent_types.py:16:magic_configuration:Magic configuration: Hardcoded threshold=0.95
 apps_lic/types/stack_modernization_agent_types.py:191:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -6830,22 +6860,22 @@ apps_rg/types/SovereignContext.py:13:magic_configuration:Magic configuration: Ha
 apps_rg/types/SovereignContext.py:16:magic_configuration:Magic configuration: Hardcoded max_depth=6
 apps_rg/types/SovereignContext.py:17:magic_configuration:Magic configuration: Hardcoded max_files=1000
 apps_rg/types/SovereignContext.py:18:magic_configuration:Magic configuration: Hardcoded default_timeout=300
-apps_rg/types/gap_closure_architect_agent_types.py:15:magic_configuration:Magic configuration: Hardcoded max_retries=3
-apps_rg/types/gap_closure_architect_agent_types.py:17:magic_configuration:Magic configuration: Hardcoded threshold=0.95
-apps_rg/types/gap_closure_architect_agent_types.py:20:magic_configuration:Magic configuration: Hardcoded max_depth=6
-apps_rg/types/gap_closure_architect_agent_types.py:21:magic_configuration:Magic configuration: Hardcoded max_files=1000
-apps_rg/types/gap_closure_architect_agent_types.py:22:magic_configuration:Magic configuration: Hardcoded default_timeout=300
-apps_rg/types/provenance_pattern_types.py:10:magic_configuration:Magic configuration: Hardcoded max_depth=6
-apps_rg/types/provenance_pattern_types.py:11:magic_configuration:Magic configuration: Hardcoded max_files=1000
-apps_rg/types/provenance_pattern_types.py:12:magic_configuration:Magic configuration: Hardcoded default_timeout=300
-apps_rg/types/provenance_pattern_types.py:5:magic_configuration:Magic configuration: Hardcoded max_retries=3
-apps_rg/types/provenance_pattern_types.py:7:magic_configuration:Magic configuration: Hardcoded threshold=0.95
-apps_rg/types/resume_analysis_plan_types.py:12:magic_configuration:Magic configuration: Hardcoded max_retries=3
-apps_rg/types/resume_analysis_plan_types.py:14:magic_configuration:Magic configuration: Hardcoded threshold=0.95
-apps_rg/types/resume_analysis_plan_types.py:17:magic_configuration:Magic configuration: Hardcoded max_depth=6
-apps_rg/types/resume_analysis_plan_types.py:18:magic_configuration:Magic configuration: Hardcoded max_files=1000
-apps_rg/types/resume_analysis_plan_types.py:19:magic_configuration:Magic configuration: Hardcoded default_timeout=300
-apps_rg/types/resume_analysis_plan_types.py:449:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_rg/types/gap_closure_architect_agent_types.py:18:magic_configuration:Magic configuration: Hardcoded max_retries=3
+apps_rg/types/gap_closure_architect_agent_types.py:20:magic_configuration:Magic configuration: Hardcoded threshold=0.95
+apps_rg/types/gap_closure_architect_agent_types.py:23:magic_configuration:Magic configuration: Hardcoded max_depth=6
+apps_rg/types/gap_closure_architect_agent_types.py:24:magic_configuration:Magic configuration: Hardcoded max_files=1000
+apps_rg/types/gap_closure_architect_agent_types.py:25:magic_configuration:Magic configuration: Hardcoded default_timeout=300
+apps_rg/types/provenance_pattern_types.py:12:magic_configuration:Magic configuration: Hardcoded max_depth=6
+apps_rg/types/provenance_pattern_types.py:13:magic_configuration:Magic configuration: Hardcoded max_files=1000
+apps_rg/types/provenance_pattern_types.py:14:magic_configuration:Magic configuration: Hardcoded default_timeout=300
+apps_rg/types/provenance_pattern_types.py:7:magic_configuration:Magic configuration: Hardcoded max_retries=3
+apps_rg/types/provenance_pattern_types.py:9:magic_configuration:Magic configuration: Hardcoded threshold=0.95
+apps_rg/types/resume_analysis_plan_types.py:15:magic_configuration:Magic configuration: Hardcoded max_retries=3
+apps_rg/types/resume_analysis_plan_types.py:17:magic_configuration:Magic configuration: Hardcoded threshold=0.95
+apps_rg/types/resume_analysis_plan_types.py:20:magic_configuration:Magic configuration: Hardcoded max_depth=6
+apps_rg/types/resume_analysis_plan_types.py:21:magic_configuration:Magic configuration: Hardcoded max_files=1000
+apps_rg/types/resume_analysis_plan_types.py:22:magic_configuration:Magic configuration: Hardcoded default_timeout=300
+apps_rg/types/resume_analysis_plan_types.py:452:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_rg/types/resume_section_node_types.py:12:magic_configuration:Magic configuration: Hardcoded max_retries=3
 apps_rg/types/resume_section_node_types.py:14:magic_configuration:Magic configuration: Hardcoded threshold=0.95
 apps_rg/types/resume_section_node_types.py:17:magic_configuration:Magic configuration: Hardcoded max_depth=6
@@ -6891,11 +6921,11 @@ apps_rg/types/two_phase_generation_node_types.py:17:magic_configuration:Magic co
 apps_rg/types/two_phase_generation_node_types.py:20:magic_configuration:Magic configuration: Hardcoded max_depth=6
 apps_rg/types/two_phase_generation_node_types.py:21:magic_configuration:Magic configuration: Hardcoded max_files=1000
 apps_rg/types/two_phase_generation_node_types.py:22:magic_configuration:Magic configuration: Hardcoded default_timeout=300
-apps_rg/types/validation_result_types.py:30:magic_configuration:Magic configuration: Hardcoded max_retries=3
-apps_rg/types/validation_result_types.py:32:magic_configuration:Magic configuration: Hardcoded threshold=0.95
-apps_rg/types/validation_result_types.py:35:magic_configuration:Magic configuration: Hardcoded max_depth=6
-apps_rg/types/validation_result_types.py:36:magic_configuration:Magic configuration: Hardcoded max_files=1000
-apps_rg/types/validation_result_types.py:37:magic_configuration:Magic configuration: Hardcoded default_timeout=300
+apps_rg/types/validation_result_types.py:32:magic_configuration:Magic configuration: Hardcoded max_retries=3
+apps_rg/types/validation_result_types.py:34:magic_configuration:Magic configuration: Hardcoded threshold=0.95
+apps_rg/types/validation_result_types.py:37:magic_configuration:Magic configuration: Hardcoded max_depth=6
+apps_rg/types/validation_result_types.py:38:magic_configuration:Magic configuration: Hardcoded max_files=1000
+apps_rg/types/validation_result_types.py:39:magic_configuration:Magic configuration: Hardcoded default_timeout=300
 apps_rg/utils/agent_executor_util.py:13:magic_configuration:Magic configuration: Hardcoded max_retries=3
 apps_rg/utils/agent_executor_util.py:15:magic_configuration:Magic configuration: Hardcoded threshold=0.95
 apps_rg/utils/agent_executor_util.py:18:magic_configuration:Magic configuration: Hardcoded max_depth=6
@@ -7430,16 +7460,18 @@ apps_shared/types/golden_state_evaluator_types.py:15:magic_configuration:Magic c
 apps_shared/types/golden_state_evaluator_types.py:18:magic_configuration:Magic configuration: Hardcoded max_depth=6
 apps_shared/types/golden_state_evaluator_types.py:19:magic_configuration:Magic configuration: Hardcoded max_files=1000
 apps_shared/types/golden_state_evaluator_types.py:20:magic_configuration:Magic configuration: Hardcoded default_timeout=300
-apps_shared/types/hardened_gemini_executor_types.py:135:magic_configuration:Magic configuration: Hardcoded failure_threshold=5
-apps_shared/types/hardened_gemini_executor_types.py:136:magic_configuration:Magic configuration: Hardcoded recovery_timeout=60.0
-apps_shared/types/hardened_gemini_executor_types.py:137:magic_configuration:Magic configuration: Hardcoded half_open_max_calls=3
-apps_shared/types/hardened_gemini_executor_types.py:235:magic_configuration:Magic configuration: Hardcoded half_open_max_calls=3 in function call
-apps_shared/types/hardened_gemini_executor_types.py:317:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/types/hardened_gemini_executor_types.py:72:magic_configuration:Magic configuration: Hardcoded safety_threshold_ratio=0.8
-apps_shared/types/hardened_gemini_executor_types.py:78:magic_configuration:Magic configuration: Hardcoded max_output_tokens=8192
-apps_shared/types/hardened_gemini_executor_types.py:80:magic_configuration:Magic configuration: Hardcoded max_retries=5
-apps_shared/types/hardened_gemini_executor_types.py:81:magic_configuration:Magic configuration: Hardcoded retry_min_wait=2.0
-apps_shared/types/hardened_gemini_executor_types.py:82:magic_configuration:Magic configuration: Hardcoded retry_max_wait=30.0
+apps_shared/types/hardened_gemini_executor_types.py:138:magic_configuration:Magic configuration: Hardcoded failure_threshold=5
+apps_shared/types/hardened_gemini_executor_types.py:139:magic_configuration:Magic configuration: Hardcoded recovery_timeout=60.0
+apps_shared/types/hardened_gemini_executor_types.py:140:magic_configuration:Magic configuration: Hardcoded half_open_max_calls=3
+apps_shared/types/hardened_gemini_executor_types.py:238:magic_configuration:Magic configuration: Hardcoded half_open_max_calls=3 in function call
+apps_shared/types/hardened_gemini_executor_types.py:320:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/types/hardened_gemini_executor_types.py:47:magic_configuration:Magic configuration: Hardcoded threshold=5
+apps_shared/types/hardened_gemini_executor_types.py:48:magic_configuration:Magic configuration: Hardcoded default_timeout=60
+apps_shared/types/hardened_gemini_executor_types.py:75:magic_configuration:Magic configuration: Hardcoded safety_threshold_ratio=0.8
+apps_shared/types/hardened_gemini_executor_types.py:81:magic_configuration:Magic configuration: Hardcoded max_output_tokens=8192
+apps_shared/types/hardened_gemini_executor_types.py:83:magic_configuration:Magic configuration: Hardcoded max_retries=5
+apps_shared/types/hardened_gemini_executor_types.py:84:magic_configuration:Magic configuration: Hardcoded retry_min_wait=2.0
+apps_shared/types/hardened_gemini_executor_types.py:85:magic_configuration:Magic configuration: Hardcoded retry_max_wait=30.0
 apps_shared/types/health_status_types.py:161:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/types/health_status_types.py:17:magic_configuration:Magic configuration: Hardcoded max_retries=3
 apps_shared/types/health_status_types.py:19:magic_configuration:Magic configuration: Hardcoded threshold=0.95
@@ -8577,42 +8609,6 @@ artifacts/windsurf/run_qwen_e2e.py:57:path_fragility:Path fragility: os.path.joi
 artifacts/windsurf/run_qwen_e2e.py:58:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
 artifacts/windsurf/run_qwen_e2e.py:72:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 artifacts/windsurf/run_qwen_e2e.py:82:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-fix_agent_files_v2.py:29:magic_configuration:Magic configuration: Hardcoded max_retries=3
-fix_agent_files_v2.py:31:magic_configuration:Magic configuration: Hardcoded threshold=0.95
-fix_agent_files_v2.py:34:magic_configuration:Magic configuration: Hardcoded max_depth=6
-fix_agent_files_v2.py:35:magic_configuration:Magic configuration: Hardcoded max_files=1000
-fix_agent_files_v2.py:36:magic_configuration:Magic configuration: Hardcoded default_timeout=300
-fix_agent_files_v3.py:32:magic_configuration:Magic configuration: Hardcoded max_retries=3
-fix_agent_files_v3.py:34:magic_configuration:Magic configuration: Hardcoded threshold=0.95
-fix_agent_files_v3.py:37:magic_configuration:Magic configuration: Hardcoded max_depth=6
-fix_agent_files_v3.py:38:magic_configuration:Magic configuration: Hardcoded max_files=1000
-fix_agent_files_v3.py:39:magic_configuration:Magic configuration: Hardcoded default_timeout=300
-fix_agent_imports_safe.py:22:magic_configuration:Magic configuration: Hardcoded max_retries=3
-fix_agent_imports_safe.py:24:magic_configuration:Magic configuration: Hardcoded threshold=0.95
-fix_agent_imports_safe.py:27:magic_configuration:Magic configuration: Hardcoded max_depth=6
-fix_agent_imports_safe.py:28:magic_configuration:Magic configuration: Hardcoded max_files=1000
-fix_agent_imports_safe.py:29:magic_configuration:Magic configuration: Hardcoded default_timeout=300
-fix_assert_true.py:12:magic_configuration:Magic configuration: Hardcoded max_retries=3
-fix_assert_true.py:14:magic_configuration:Magic configuration: Hardcoded threshold=0.95
-fix_assert_true.py:17:magic_configuration:Magic configuration: Hardcoded max_depth=6
-fix_assert_true.py:18:magic_configuration:Magic configuration: Hardcoded max_files=1000
-fix_assert_true.py:19:magic_configuration:Magic configuration: Hardcoded default_timeout=300
-fix_assert_true_bulk.py:13:magic_configuration:Magic configuration: Hardcoded max_retries=3
-fix_assert_true_bulk.py:15:magic_configuration:Magic configuration: Hardcoded threshold=0.95
-fix_assert_true_bulk.py:18:magic_configuration:Magic configuration: Hardcoded max_depth=6
-fix_assert_true_bulk.py:19:magic_configuration:Magic configuration: Hardcoded max_files=1000
-fix_assert_true_bulk.py:20:magic_configuration:Magic configuration: Hardcoded default_timeout=300
-fix_remaining_swallowers.py:10:magic_configuration:Magic configuration: Hardcoded max_files=1000
-fix_remaining_swallowers.py:11:magic_configuration:Magic configuration: Hardcoded default_timeout=300
-fix_remaining_swallowers.py:4:magic_configuration:Magic configuration: Hardcoded max_retries=3
-fix_remaining_swallowers.py:6:magic_configuration:Magic configuration: Hardcoded threshold=0.95
-fix_remaining_swallowers.py:9:magic_configuration:Magic configuration: Hardcoded max_depth=6
-fix_syntax_error_swallowers.py:19:magic_configuration:Magic configuration: Hardcoded max_retries=3
-fix_syntax_error_swallowers.py:21:magic_configuration:Magic configuration: Hardcoded threshold=0.95
-fix_syntax_error_swallowers.py:24:magic_configuration:Magic configuration: Hardcoded max_depth=6
-fix_syntax_error_swallowers.py:25:magic_configuration:Magic configuration: Hardcoded max_files=1000
-fix_syntax_error_swallowers.py:26:magic_configuration:Magic configuration: Hardcoded default_timeout=300
-get_collection_errors.py:8:magic_configuration:Magic configuration: Hardcoded timeout=120 in function call
 ops_scripts/audit_skips.py:11:magic_configuration:Magic configuration: Hardcoded max_depth=6
 ops_scripts/audit_skips.py:12:magic_configuration:Magic configuration: Hardcoded max_files=1000
 ops_scripts/audit_skips.py:13:magic_configuration:Magic configuration: Hardcoded default_timeout=300
@@ -9196,6 +9192,7 @@ ops_scripts/ci/scan_llm_validator_calls.py:22:magic_configuration:Magic configur
 ops_scripts/ci/scan_llm_validator_calls.py:25:magic_configuration:Magic configuration: Hardcoded max_depth=6
 ops_scripts/ci/scan_llm_validator_calls.py:26:magic_configuration:Magic configuration: Hardcoded max_files=1000
 ops_scripts/ci/scan_llm_validator_calls.py:27:magic_configuration:Magic configuration: Hardcoded default_timeout=300
+ops_scripts/ci/scan_llm_validator_calls.py:32:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
 ops_scripts/ci/shim_contract_check.py:26:magic_configuration:Magic configuration: Hardcoded max_retries=3
 ops_scripts/ci/shim_contract_check.py:28:magic_configuration:Magic configuration: Hardcoded threshold=0.95
 ops_scripts/ci/shim_contract_check.py:31:magic_configuration:Magic configuration: Hardcoded max_depth=6
@@ -10054,13 +10051,6 @@ ops_scripts/security/secure_store_secrets.py:13:magic_configuration:Magic config
 ops_scripts/security/secure_store_secrets.py:16:magic_configuration:Magic configuration: Hardcoded max_depth=6
 ops_scripts/security/secure_store_secrets.py:17:magic_configuration:Magic configuration: Hardcoded max_files=1000
 ops_scripts/security/secure_store_secrets.py:18:magic_configuration:Magic configuration: Hardcoded default_timeout=300
-probe_phase8.py:12:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
-probe_phase8.py:24:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-probe_phase8.py:2:magic_configuration:Magic configuration: Hardcoded max_retries=3
-probe_phase8.py:4:magic_configuration:Magic configuration: Hardcoded threshold=0.95
-probe_phase8.py:7:magic_configuration:Magic configuration: Hardcoded max_depth=6
-probe_phase8.py:8:magic_configuration:Magic configuration: Hardcoded max_files=1000
-probe_phase8.py:9:magic_configuration:Magic configuration: Hardcoded default_timeout=300
 system_learning/adapters/l1_meta_adapter.py:19:magic_configuration:Magic configuration: Hardcoded max_retries=3
 system_learning/adapters/l1_meta_adapter.py:21:magic_configuration:Magic configuration: Hardcoded threshold=0.95
 system_learning/adapters/l1_meta_adapter.py:24:magic_configuration:Magic configuration: Hardcoded max_depth=6
@@ -10621,11 +10611,6 @@ system_learning/validators/shadow_evaluator.py:18:magic_configuration:Magic conf
 system_learning/validators/shadow_evaluator.py:21:magic_configuration:Magic configuration: Hardcoded max_depth=6
 system_learning/validators/shadow_evaluator.py:22:magic_configuration:Magic configuration: Hardcoded max_files=1000
 system_learning/validators/shadow_evaluator.py:23:magic_configuration:Magic configuration: Hardcoded default_timeout=300
-temp_parse_antipatterns.py:10:magic_configuration:Magic configuration: Hardcoded max_files=1000
-temp_parse_antipatterns.py:11:magic_configuration:Magic configuration: Hardcoded default_timeout=300
-temp_parse_antipatterns.py:4:magic_configuration:Magic configuration: Hardcoded max_retries=3
-temp_parse_antipatterns.py:6:magic_configuration:Magic configuration: Hardcoded threshold=0.95
-temp_parse_antipatterns.py:9:magic_configuration:Magic configuration: Hardcoded max_depth=6
 tools/_adg_heal_subgraph.py:14:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
 tools/_adg_heal_subgraph.py:15:path_fragility:Path fragility: os.path.basename() - use pathlib.Path instead
 tools/_adg_inspect_nodes.py:8:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
@@ -10661,6 +10646,8 @@ tools/adg_cli.py:54:global_mutation:Global mutation: sys.path.insert() modifies 
 tools/adg_semantic_builder.py:354:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 tools/adg_semantic_builder.py:36:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
 tools/adg_semantic_builder.py:560:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+tools/adg_test_accelerator.py:115:magic_configuration:Magic configuration: Hardcoded max_depth=4
+tools/adg_test_accelerator.py:37:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
 tools/adg_test_classifier.py:150:magic_configuration:Magic configuration: Hardcoded max_depth=6
 tools/adg_test_classifier.py:199:magic_configuration:Magic configuration: Hardcoded max_depth=6 in function call
 tools/branch_cleanup_helper.py:64:silent_swallower:Silent exception swallower: catches (bare except) without raise or proper return
@@ -10682,11 +10669,30 @@ tools/dump_runtime_state_ml.py:11:magic_configuration:Magic configuration: Hardc
 tools/dump_runtime_state_ml.py:12:magic_configuration:Magic configuration: Hardcoded default_timeout=300
 tools/dump_runtime_state_ml.py:5:magic_configuration:Magic configuration: Hardcoded max_retries=3
 tools/dump_runtime_state_ml.py:7:magic_configuration:Magic configuration: Hardcoded threshold=0.95
+tools/evidence/_fill_hardgate_gaps.py:7:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+tools/evidence/_fix_final_34.py:14:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+tools/evidence/_fix_importlib_covers.py:15:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+tools/evidence/_generate_adg_gap_tests.py:21:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+tools/evidence/_generate_adg_gap_tests.py:311:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+tools/evidence/_generate_foundational_skeletons.py:23:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+tools/evidence/_generate_foundational_skeletons.py:27:magic_configuration:Magic configuration: Hardcoded fan_in_threshold=3
+tools/evidence/_generate_foundational_skeletons.py:458:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+tools/evidence/_generate_remaining_121.py:15:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+tools/evidence/_generate_remaining_121.py:493:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+tools/evidence/_generate_true_gap_adg_stubs.py:21:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+tools/evidence/_generate_true_gap_adg_stubs.py:245:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+tools/evidence/_graph_overlap_audit.py:19:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+tools/evidence/_overlap_audit.py:19:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
 tools/evidence/_print_ssot_summary.py:11:magic_configuration:Magic configuration: Hardcoded max_depth=6
 tools/evidence/_print_ssot_summary.py:12:magic_configuration:Magic configuration: Hardcoded max_files=1000
 tools/evidence/_print_ssot_summary.py:13:magic_configuration:Magic configuration: Hardcoded default_timeout=300
 tools/evidence/_print_ssot_summary.py:6:magic_configuration:Magic configuration: Hardcoded max_retries=3
 tools/evidence/_print_ssot_summary.py:8:magic_configuration:Magic configuration: Hardcoded threshold=0.95
+tools/evidence/_prune_redundant_adg.py:18:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+tools/evidence/_prune_redundant_adg.py:22:magic_configuration:Magic configuration: Hardcoded foundational_depth_threshold=5
+tools/evidence/_recount_violations.py:15:magic_configuration:Magic configuration: Hardcoded fan_in_threshold=3
+tools/evidence/_recount_violations.py:48:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+tools/evidence/_recount_violations.py:9:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
 tools/evidence/_run_ssot_healing.py:14:magic_configuration:Magic configuration: Hardcoded max_retries=3
 tools/evidence/_run_ssot_healing.py:16:magic_configuration:Magic configuration: Hardcoded threshold=0.95
 tools/evidence/_run_ssot_healing.py:19:magic_configuration:Magic configuration: Hardcoded max_depth=6
@@ -10936,9 +10942,9 @@ tools/evidence_redis_retest.py:18:magic_configuration:Magic configuration: Hardc
 tools/evidence_redis_retest.py:21:magic_configuration:Magic configuration: Hardcoded max_depth=6
 tools/evidence_redis_retest.py:22:magic_configuration:Magic configuration: Hardcoded max_files=1000
 tools/evidence_redis_retest.py:23:magic_configuration:Magic configuration: Hardcoded default_timeout=300
-tools/generate_full_adg.py:176:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-tools/generate_full_adg.py:191:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-tools/generate_full_adg.py:23:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+tools/generate_full_adg.py:175:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+tools/generate_full_adg.py:190:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+tools/generate_full_adg.py:26:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
 tools/prove_meta_learning_bus.py:18:magic_configuration:Magic configuration: Hardcoded max_retries=3
 tools/prove_meta_learning_bus.py:20:magic_configuration:Magic configuration: Hardcoded threshold=0.95
 tools/prove_meta_learning_bus.py:23:magic_configuration:Magic configuration: Hardcoded max_depth=6

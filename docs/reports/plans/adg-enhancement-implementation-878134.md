@@ -1,6 +1,8 @@
 # ADG Enhancement Implementation Plan
 
-Implement 7 of 10 proposed ADG enhancements across 4 phases, adding a Hybrid ADG (static + runtime unified graph) as the foundational layer plus ~680 LOC of new static analysis capability.
+Implement 7 of 10 proposed ADG enhancements across 6 phases, adding a Hybrid ADG (static + runtime unified graph) as the foundational layer plus ~1,400 LOC of new static analysis capability.
+
+**ADG basis:** schema_version 4.0.0 — 76,809 nodes, 209,559 edges (refreshed Mar 12 2026)
 
 ---
 
@@ -14,7 +16,33 @@ Implement 7 of 10 proposed ADG enhancements across 4 phases, adding a Hybrid ADG
 - ❌ #7 Meta-learning loops — no gap, already modeled
 - ❌ #9 Agent behavioral correctness — pure runtime state machine
 
-**Total estimated effort:** ~680 LOC (static analyzers) + ~400 LOC (Hybrid ADG foundation)
+**Total estimated effort:** ~1,400 LOC (static analyzers + tests) + ~400 LOC (Hybrid ADG foundation)
+
+---
+
+## ADG Refresh Delta
+
+| Metric | Previous scan | New ADG (v4.0.0) | Delta | Plan impact |
+|--------|--------------|-----------------|-------|-------------|
+| Total nodes | ~49,000 | **76,809** | +57% | Scope of all analyzers expanded |
+| Total edges | ~161,000 | **209,559** | +30% | More coverage needed |
+| `dead_imports` | 3,421 | **6,274** | +83% | Dead import on L5 safety = unenforced check |
+| `dead_imports` L5 | 397 | **1,015** | +156% | Strengthens case for #2 and #11 |
+| `dead_imports` L_APP | 224 | **1,067** | +376% | L_APP coverage newly critical |
+| `writes_to` bypass gap | ~1,161 | **1,172** | stable | #1 + #12 scope confirmed |
+| L_SL `writes_through` | 0 | **0** | unchanged | #12 still needed |
+| `invokes_provider` callers | 228 | **229** | stable | 218 still ungoverned in production |
+| `generates_prompt` governed | 1 | **11** | +10 | Still 218 ungoverned production callers |
+| L5 consultation gap | ~85 est. | **443 modules** | larger | #2 scope increased significantly |
+| `antipattern` total | 1,462 | **1,439** | −23 | #13 scope stable |
+| `violates` | 224 | **224** | unchanged | #15 unchanged |
+| `routes_through` sources | 6 | **15** | +9 | Improved but 733 seams unverified |
+| Seam-named modules | 8 | **733** | +725 | #14 scope dramatically expanded |
+| L_APP test coverage | partial | **0% (1,204 uncovered)** | worse | New gap: L_APP has zero `covers` edges |
+
+### New gap surfaced by refresh: L_APP test coverage
+
+**Evidence:** L_APP has 1,204 module nodes. `covers` edges to L_APP modules: **0**. This is a complete blind spot — the test suite has no registered coverage of any L_APP module in the ADG. This is a candidate for a future Phase 4 enhancement (test coverage enforcement plane) but is noted here as out-of-scope for the current plan.
 
 ---
 
@@ -59,7 +87,7 @@ These queries directly unblock the **highest-value enhancements**: #2 (L5 consul
 # In schema.py — add canonical node ID function
 def canonical_node_id(module_path: str, *, commit_sha: str = "") -> str:
     """Stable node ID = canonical ADG name (path-based, not content-hash).
-    
+
     Path-based identity is intentional: we want 'same file = same node'.
     Moves are tracked via the alias_index, not by changing the primary ID.
     """
@@ -203,6 +231,8 @@ Defer: `PRODUCED_BY`, `sandbox_envelope`, `change_package` — premature without
 
 **Gap:** `WRITE_SIDE_EFFECT_SYMBOLS` in `schema.py` covers filesystem/subprocess only. Database and vector store writes bypass detection entirely.
 
+**Evidence (new ADG):** `writes_to` distinct sources: **1,182**. `writes_through` distinct sources: **10**. Bypass gap: **1,172 modules** writing outside UWG.
+
 > **Architectural role:** `schema.py` change = ADG core (adds symbol facts). `uwg_write_authority.py` change = analyzer (interprets which writes violate UWG policy). Both correctly placed.
 
 **Files:**
@@ -292,6 +322,8 @@ Create `docs/architecture/ADG_STATIC_VS_RUNTIME_BOUNDARY.md` with:
 ### Enhancement #2: L5 Safety Consultation Coverage
 
 **Gap:** No static proof that modules performing sensitive operations (writes, tool calls, provider invocations) import L5 enforcement infrastructure.
+
+**Evidence (new ADG):** Modules with sensitive ops (`writes_to` ∪ `invokes_provider` ∪ `invokes_tool`): **1,329**. Modules importing L5_safety: **886**. Gap: **443 modules** performing sensitive operations with no L5 import.
 
 > **Architectural role:** Analyzer — interprets `ScanResult` edges (`writes_to`, `invokes_tool`, `invokes_provider`, `imports`). Returns `L5ConsultationReport`. Never writes to the graph.
 
@@ -552,7 +584,9 @@ PlaneResult(
 
 > **Architectural role:** `prompt_authority.py` and `prompt_drift.py` are pure analyzers — they read `generates_prompt`, `consumes_prompt`, `invokes_provider` edges and return report objects. `prompt_governance_coverage.py` (new) is also a pure analyzer. None write to the graph. `architecture_verifier.py` wiring = orchestration only.
 
-**Gap:** `prompt_authority.py` (E21) and `prompt_drift.py` (E22) exist as complete analyzers but are not wired into `architecture_verifier.py`. ADG scan shows **227 of 228** `invokes_provider` callers have zero `generates_prompt` edge — the governed prompt pipeline is almost entirely unenforced at the ADG level.
+**Gap:** `prompt_authority.py` (E21) and `prompt_drift.py` (E22) exist as complete analyzers but are not wired into `architecture_verifier.py`. ADG scan shows **218 of 229** `invokes_provider` callers have zero `generates_prompt` edge — the governed prompt pipeline is almost entirely unenforced at the ADG level.
+
+**Evidence (new ADG):** Ungoverned by layer — L_TEST: 58, L_APP: 46, L0: 32, L5: 21, L2: 18, L_TOOLS: 16, L3: 7, L4: 3, L_SL: 3, L1: 1, L6: 1. Production layers (L0–L6 + L_APP + L_SL) = **132 ungoverned production callers**.
 
 **Files:**
 - `agentic_core/adg/applications/architecture_verifier.py` — wire `E21` and `E22` (existing)
@@ -581,7 +615,9 @@ Severity: CRITICAL for L0-L3 callers, WARNING for L_APP callers
 
 ### Enhancement #12: System Learning UWG Bypass
 
-**Gap:** Enhancement #1 adds DB/vector write symbols to `WRITE_SIDE_EFFECT_SYMBOLS`. But L_SL (`system_learning/`) makes **166 direct writes** (`f.write`, `open`, `mkdir`, `write_text`) — raw filesystem ops that bypass UWG. This is a distinct violation category: the learning loop commits to L4 state via `l4_state_writer.py` without routing through `UniversalWriteGateway`. Enhancement #1 will not catch these (they are filesystem, not DB/vector) but they have no `writes_through` edge.
+**Gap:** Enhancement #1 adds DB/vector write symbols to `WRITE_SIDE_EFFECT_SYMBOLS`. But L_SL (`system_learning/`) has **38 distinct modules** making raw filesystem writes (`f.write`, `open`, `mkdir`, `write_text`) — **166 write edges** total — bypassing UWG entirely. This is a distinct violation category: the learning loop commits to L4 state via `l4_state_writer.py` without routing through `UniversalWriteGateway`. Enhancement #1 will not catch these (they are filesystem, not DB/vector) and `writes_through` for L_SL = **0**.
+
+**Evidence (new ADG):** L_SL `writes_to` distinct sources: **38**. L_SL `writes_through`: **0**.
 
 > **Architectural role:** Analyzer — reads `writes_to`, `writes_through` edges and layer metadata from `ScanResult`. The new `LEARNING_LOOP_BYPASSES_UWG` violation type is a new interpretation of existing graph facts, not a new graph fact. Returns updated `MutationAuthorityReport`. Never writes to the graph.
 
@@ -608,11 +644,13 @@ New detection pass in `verify_mutation_paths()`:
 
 ## Phase 3.5 — Anti-Pattern Triage & Seam Coverage (P2)
 
-*Evidence: 1,462 antipattern edges with no severity ranking. `routes_through` has only 49 edges covering 6 modules. 8 L0 seam modules call providers with no `routes_through` edge. 224 `violates` edges with no pattern classification.*
+*Evidence (new ADG, schema v4.0.0): 1,439 antipattern edges with no severity ranking. `routes_through` has 49 edges covering 15 distinct sources, but 733 seam-named modules exist and 228 provider callers have no `routes_through` edge. 224 `violates` edges with no pattern classification.*
 
 ### Enhancement #13: Anti-Pattern Severity Classification
 
-**Gap:** ADG detects 1,462 anti-patterns uniformly: `retry_without_backoff` (806), `silent_exception_swallow` (578), `global_state_mutation` (70), `blocking_call_in_async` (8). No severity distinction exists. `global_state_mutation` in `execution_gateway.py` (an enforcement module) is categorically more dangerous than `retry_without_backoff` in a utility script.
+**Gap:** ADG detects **1,439** anti-patterns uniformly: `retry_without_backoff` (801), `silent_exception_swallow` (560), `global_state_mutation` (70), `blocking_call_in_async` (8). No severity distinction exists. `global_state_mutation` in `execution_gateway.py` (an enforcement module) is categorically more dangerous than `retry_without_backoff` in a utility script.
+
+**Evidence (new ADG):** Total antipattern edges: **1,439** (down from 1,462 — 23 resolved). Breakdown stable; enforcement-layer CRITICAL cases unchanged.
 
 > **Architectural role:** Analyzer — reads `antipattern` edges and layer metadata from `ScanResult`. Severity classification is interpretation of existing facts, not new graph construction. Returns `AntipatternSeverityReport`. Never writes to the graph.
 
@@ -645,7 +683,9 @@ Critical module patterns:
 
 ### Enhancement #14: Seam Coverage Enforcement
 
-**Gap:** `routes_through` plane has only 49 edges covering 6 modules routing through `SovereignLLMGateway`. The 8 L0 seam modules (`canonical_truth_seam.py`, `layer_emission_seam.py`, `observability_seam.py`, `safety_enforcement_seam.py`, `safety_kernel_seam.py`, `safety_reasoning_seam.py`, `safety_validators_seam.py`, `vigilance_seam.py`) all have `invokes_provider` edges but **zero** `routes_through` edges. The ADG cannot currently prove that all LLM calls route through architectural seams.
+**Gap:** `routes_through` plane has **49 edges** across **15 distinct sources** routing through `SovereignLLMGateway`. However the ADG now resolves **733 modules** matching seam name patterns — a dramatic increase from 8 previously identified. Of 229 `invokes_provider` callers, only 15 have `routes_through` edges. The ADG cannot currently prove that all LLM calls route through architectural seams.
+
+**Evidence (new ADG):** `routes_through` edges: **49**, distinct sources: **15**, seam-named modules: **733**, ungoverned provider callers: **228**. Gap between seam inventory and `routes_through` coverage is significant.
 
 > **Architectural role:** Analyzer — reads `invokes_provider`, `routes_through`, `imports` edges and module name patterns from `ScanResult`. Returns `SeamCoverageReport`. Never writes to the graph.
 
@@ -682,7 +722,9 @@ Violation types:
 
 ### Enhancement #15: Layer Violation Pattern Classifier
 
-**Gap:** 224 `violates` edges exist but are all recorded identically. The ADG cannot answer: "what *kind* of violation is this?" L0→L_SL (routing importing learning = upward gravity) is architecturally different from L3→invokes_provider directly (gateway bypass) which is different from L0→L5 (routing calling safety directly, possibly intentional).
+**Gap:** **224** `violates` edges exist but are all recorded identically. The ADG cannot answer: "what *kind* of violation is this?" The new ADG confirms L0 is the dominant violating layer: L0→L5 (routing calling safety = safety_skip), L0→L2 (routing calling execution directly = gateway bypass), L0→L4 (routing calling state = state direct), L0→L_SL (upward gravity). All 224 are indistinguishable in current graph.
+
+**Evidence (new ADG):** Violates total: **224** (unchanged). All sourced predominantly from L0. Pattern breakdown requires the new classifier to distinguish actionable from intentional violations.
 
 > **Architectural role:** Analyzer — reads `violates` edges and layer metadata from `ScanResult`. `ViolationPattern` is an interpretation taxonomy, not a new edge type in the graph. Returns `ViolationPatternReport`. Never writes to the graph.
 
@@ -826,8 +868,8 @@ All tests: deterministic, no mocks of core logic, use synthetic `ScanResult` fix
 - All planes appear in `ArchitectureVerificationReport`
 
 ### Phase 3.5 Complete When:
-- `classify_antipattern_severity()` ranks all 1,462 antipatterns by layer+type severity
-- `detect_seam_coverage_gaps()` detects the 8 L0 seam modules missing `routes_through`
+- `classify_antipattern_severity()` ranks all 1,439 antipatterns by layer+type severity
+- `detect_seam_coverage_gaps()` detects modules from 733-seam inventory missing `routes_through` (only 15 currently covered)
 - `classify_violation_patterns()` classifies all 224 `violates` edges by pattern type
 - All 3 test files green
 - `python -m pytest tests/adg/` — zero failures

@@ -133,12 +133,18 @@ def _persist_edges(
         if sym_node not in symbol_obs_map:
             symbol_obs_map[sym_node] = []
 
-        for obs in [
+        obs_list = [
             f"edge_kind:{edge.edge_kind}",
             f"symbol:{edge.symbol}",
             f"source_file:{edge.source_file}",
             f"line_no:{edge.line_no}",
-        ]:
+        ]
+        # G16: attach structured rule_id to violation/bypass edges
+        rule_id = _derive_rule_id(edge.relation_type, edge.symbol)
+        if rule_id:
+            obs_list.append(f"rule_id:{rule_id}")
+
+        for obs in obs_list:
             if obs not in symbol_obs_map[sym_node]:
                 symbol_obs_map[sym_node].append(obs)
 
@@ -150,12 +156,40 @@ def _persist_edges(
         client.add_observation(snapshot_node, [f"edge_count:{len(result.edges)}"])
 
 
+_RULE_TYPE_MAP: dict[str, str] = {
+    "violates": "LAYER_GRAVITY",
+    "bypasses_uwg": "UWG_BYPASS",
+    "seam_bypass": "SEAM_BYPASS",
+}
+
+
+def _derive_rule_id(relation_type: str, symbol: str) -> str:
+    """G16: Return structured rule_id for violation/bypass edges, else empty string."""
+    prefix = _RULE_TYPE_MAP.get(relation_type, "")
+    if not prefix:
+        return ""
+    if symbol:
+        return f"{prefix}:{symbol}"
+    return prefix
+
+
 def _infer_entity_type(adg_name: str) -> str:
     parts = adg_name.split("::")
     if len(parts) >= 2:
         t = parts[1].lower()
-        if t in ("symbol", "module", "gateway", "layer"):
-            return t
+        # G2: map canonical ADG prefix to entity_type
+        _prefix_to_type: dict[str, str] = {
+            "symbol": "symbol",
+            "module": "module",
+            "gateway": "gateway",
+            "layer": "layer",
+            "seam": "seam",
+            "provider": "provider",
+            "promptslot": "prompt_slot",
+            "prompttemplate": "prompt_template",
+        }
+        if t in _prefix_to_type:
+            return _prefix_to_type[t]
     return "symbol"
 
 

@@ -1,0 +1,217 @@
+"""G1 (gap): Healer/Validator Relationship Graph Analysis.
+
+Analyses a ScanResult for healer and validator node relationships extracted by
+the ``_HealerValidatorVisitor`` in static_scanner.py.
+
+Gap 1 of the ADG mental model describes the runtime behavior plane containing:
+  - Agent observe/reason/act/evaluate/learn loops
+  - Healer orchestrators dispatching to validators
+  - Meta-learning feedback from healing outcomes
+
+This analyser produces a static approximation of that plane from the code structure:
+  1. Which modules inherit from healer bases (heals edges)
+  2. Which modules inherit from validator bases (validates edges)
+  3. Which modules dispatch healing method calls (orchestrates_healing edges)
+  4. Healer→validator relationships (healer module dispatching to a validator)
+
+Output:
+  ``HealerValidatorReport`` with:
+    - ``healer_modules``: set of modules that are healer subclasses
+    - ``validator_modules``: set of modules that are validator subclasses
+    - ``healing_dispatch_edges``: edges representing healing method calls
+    - ``healer_validator_pairs``: pairs of (healer_module, validator_module)
+      detected from co-occurrence in orchestrates_healing edges
+    - ``unbound_healers``: healer modules with no detected validator dependency
+    - ``unbound_validators``: validator modules with no detected healer
+
+Usage::
+
+    from agentic_core.adg.analysis.healer_validator_graph import detect_healer_validator_relationships
+
+    result = scanner.scan(repo_root=Path("."))
+    report = detect_healer_validator_relationships(result)
+    print(f"Healers: {len(report.healer_modules)}")
+    print(f"Validators: {len(report.validator_modules)}")
+    for h, v in report.healer_validator_pairs:
+        print(f"  {h} -> {v}")
+"""
+
+from __future__ import annotations
+
+import json
+from dataclasses import dataclass, field
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from agentic_core.adg.extraction.static_scanner import ScanResult
+
+
+@dataclass
+class HealerValidatorEdge:
+    """A detected healer/validator structural relationship edge."""
+
+    from_module: str
+    relation_type: str
+    to_symbol: str
+    source_file: str
+    line_no: int
+
+
+@dataclass
+class HealerValidatorReport:
+    """Results of healer/validator relationship analysis.
+
+    Attributes:
+        healer_modules:         Modules that inherit from healer bases.
+        validator_modules:      Modules that inherit from validator bases.
+        healing_dispatch_edges: All orchestrates_healing / dispatches_to edges.
+        healer_validator_pairs: (healer_module, validator_symbol) pairs
+                                inferred from dispatch edges.
+        unbound_healers:        Healer modules with no detected validator target.
+        unbound_validators:     Validator modules never targeted by a healer.
+        raw_edges:              All raw healer/validator edges from the scan.
+    """
+
+    healer_modules: set[str] = field(default_factory=set)
+    validator_modules: set[str] = field(default_factory=set)
+    healing_dispatch_edges: list[HealerValidatorEdge] = field(default_factory=list)
+    healer_validator_pairs: list[tuple[str, str]] = field(default_factory=list)
+    unbound_healers: set[str] = field(default_factory=set)
+    unbound_validators: set[str] = field(default_factory=set)
+    raw_edges: list[HealerValidatorEdge] = field(default_factory=list)
+
+    @property
+    def healer_count(self) -> int:
+        return len(self.healer_modules)
+
+    @property
+    def validator_count(self) -> int:
+        return len(self.validator_modules)
+
+    @property
+    def pair_count(self) -> int:
+        return len(self.healer_validator_pairs)
+
+    @property
+    def summary(self) -> str:
+        lines = [
+            f"Healer/Validator Graph: {self.healer_count} healers, "
+            f"{self.validator_count} validators, {self.pair_count} pairs",
+            f"  Unbound healers (no validator target): {len(self.unbound_healers)}",
+            f"  Unbound validators (no healer caller): {len(self.unbound_validators)}",
+        ]
+        if self.healer_validator_pairs:
+            lines.append("  Healer → Validator bindings:")
+            for h, v in sorted(self.healer_validator_pairs):
+                lines.append(f"    {h} → {v}")
+        return "\n".join(lines)
+
+    def to_dict(self) -> dict:
+        return {
+            "healer_modules": sorted(self.healer_modules),
+            "validator_modules": sorted(self.validator_modules),
+            "pair_count": self.pair_count,
+            "healer_validator_pairs": sorted(self.healer_validator_pairs),
+            "unbound_healers": sorted(self.unbound_healers),
+            "unbound_validators": sorted(self.unbound_validators),
+            "healing_dispatch_edge_count": len(self.healing_dispatch_edges),
+        }
+
+    def to_json(self, indent: int = 2) -> str:
+        return json.dumps(self.to_dict(), indent=indent, sort_keys=True)
+
+
+_HEALER_RELATIONS: frozenset[str] = frozenset({"heals", "orchestrates_healing", "dispatches_to"})
+_VALIDATOR_RELATIONS: frozenset[str] = frozenset({"validates"})
+_DISPATCH_RELATIONS: frozenset[str] = frozenset({"orchestrates_healing", "dispatches_to"})
+
+
+def detect_healer_validator_relationships(result: ScanResult) -> HealerValidatorReport:
+    """Analyse a ScanResult for healer/validator structural relationships.
+
+    Processes all edges produced by ``_HealerValidatorVisitor`` and builds a
+    structured report of the healing loop topology visible in the static code.
+
+    Args:
+        result: A completed ScanResult from ADGStaticScanner.scan().
+
+    Returns:
+        HealerValidatorReport with all detected relationships.
+    """
+    report = HealerValidatorReport()
+
+    for edge in result.edges:
+        if edge.relation_type in _HEALER_RELATIONS or edge.relation_type in _VALIDATOR_RELATIONS:
+            hv_edge = HealerValidatorEdge(
+                from_module=edge.from_name,
+                relation_type=edge.relation_type,
+                to_symbol=edge.to_name,
+                source_file=edge.source_file,
+                line_no=edge.line_no,
+            )
+            report.raw_edges.append(hv_edge)
+
+            if edge.relation_type == "heals":
+                report.healer_modules.add(edge.from_name)
+            elif edge.relation_type == "validates":
+                report.validator_modules.add(edge.from_name)
+            elif edge.relation_type in _DISPATCH_RELATIONS:
+                report.healing_dispatch_edges.append(hv_edge)
+
+    _infer_healer_validator_pairs(report)
+    _compute_unbound(report)
+
+    return report
+
+
+def _infer_healer_validator_pairs(report: HealerValidatorReport) -> None:
+    """Infer healer→validator pairings from dispatch edges.
+
+    A healer module that dispatches_to a symbol that is in validator_modules
+    (or whose name contains a known validator class suffix) forms a pair.
+    """
+    validator_name_fragments: frozenset[str] = frozenset(
+        {
+            "Validator",
+            "validator",
+            "ResolutionValidator",
+            "HealerValidator",
+            "ValidationAgent",
+        }
+    )
+
+    seen: set[tuple[str, str]] = set()
+    for edge in report.healing_dispatch_edges:
+        if edge.from_module not in report.healer_modules:
+            continue
+        target = edge.to_symbol
+        is_validator = target in report.validator_modules or any(
+            frag in target for frag in validator_name_fragments
+        )
+        if is_validator:
+            pair = (edge.from_module, target)
+            if pair not in seen:
+                seen.add(pair)
+                report.healer_validator_pairs.append(pair)
+
+
+def _compute_unbound(report: HealerValidatorReport) -> None:
+    """Compute unbound healers and validators."""
+    bound_healers = {h for h, _ in report.healer_validator_pairs}
+    bound_validators = {v for _, v in report.healer_validator_pairs}
+    report.unbound_healers = report.healer_modules - bound_healers
+    report.unbound_validators = report.validator_modules - {
+        m for m in report.validator_modules if canonical_name_of(m) in bound_validators
+    }
+
+
+def canonical_name_of(module_adg_name: str) -> str:
+    """Return the module adg name as-is (identity mapping for set membership)."""
+    return module_adg_name
+
+
+__all__ = [
+    "HealerValidatorEdge",
+    "HealerValidatorReport",
+    "detect_healer_validator_relationships",
+]
