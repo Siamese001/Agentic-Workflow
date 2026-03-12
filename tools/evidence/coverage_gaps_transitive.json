@@ -1,34 +1,6 @@
 [
   [
     "L0",
-    "ADG::Module::agentic_core/L0_routing/__init__.py"
-  ],
-  [
-    "L0",
-    "ADG::Module::agentic_core/L0_routing/config/__init__.py"
-  ],
-  [
-    "L0",
-    "ADG::Module::agentic_core/L0_routing/enforcement/__init__.py"
-  ],
-  [
-    "L0",
-    "ADG::Module::agentic_core/L0_routing/engines/__init__.py"
-  ],
-  [
-    "L0",
-    "ADG::Module::agentic_core/L0_routing/meta_control/__init__.py"
-  ],
-  [
-    "L0",
-    "ADG::Module::agentic_core/L0_routing/reasoning/__init__.py"
-  ],
-  [
-    "L0",
-    "ADG::Module::agentic_core/L0_routing/scripts/__init__.py"
-  ],
-  [
-    "L0",
     "ADG::Module::agentic_core/L0_routing/scripts/add_subatomic_safe_util.py"
   ],
   [
@@ -537,14 +509,6 @@
   ],
   [
     "L0",
-    "ADG::Module::agentic_core/L0_routing/types/__init__.py"
-  ],
-  [
-    "L0",
-    "ADG::Module::agentic_core/L0_routing/utils/__init__.py"
-  ],
-  [
-    "L0",
     "ADG::Module::agentic_core/L0_routing/utils/add_test_coverage_util.py"
   ],
   [
@@ -625,14 +589,6 @@
   ],
   [
     "L1",
-    "ADG::Module::agentic_core/L1_cognition/__init__.py"
-  ],
-  [
-    "L1",
-    "ADG::Module::agentic_core/L1_cognition/config/__init__.py"
-  ],
-  [
-    "L1",
     "ADG::Module::agentic_core/L1_cognition/enforcement/__init__.py"
   ],
   [
@@ -670,10 +626,6 @@
   [
     "L1",
     "ADG::Module::agentic_core/L1_cognition/memory/__init__.py"
-  ],
-  [
-    "L1",
-    "ADG::Module::agentic_core/L1_cognition/reasoning/__init__.py"
   ],
   [
     "L1",
@@ -725,23 +677,11 @@
   ],
   [
     "L2",
-    "ADG::Module::agentic_core/L2_execution/audit/__init__.py"
-  ],
-  [
-    "L2",
-    "ADG::Module::agentic_core/L2_execution/config/__init__.py"
-  ],
-  [
-    "L2",
     "ADG::Module::agentic_core/L2_execution/coordination/__init__.py"
   ],
   [
     "L2",
     "ADG::Module::agentic_core/L2_execution/determinism/__init__.py"
-  ],
-  [
-    "L2",
-    "ADG::Module::agentic_core/L2_execution/enforcement/__init__.py"
   ],
   [
     "L2",
@@ -777,10 +717,6 @@
   ],
   [
     "L2",
-    "ADG::Module::agentic_core/L2_execution/healers/__init__.py"
-  ],
-  [
-    "L2",
     "ADG::Module::agentic_core/L2_execution/healers/qwen_health.py"
   ],
   [
@@ -805,15 +741,7 @@
   ],
   [
     "L2",
-    "ADG::Module::agentic_core/L2_execution/reasoning/__init__.py"
-  ],
-  [
-    "L2",
     "ADG::Module::agentic_core/L2_execution/scripts/__init__.py"
-  ],
-  [
-    "L2",
-    "ADG::Module::agentic_core/L2_execution/types/__init__.py"
   ],
   [
     "L2",
@@ -1005,19 +933,11 @@
   ],
   [
     "L3",
-    "ADG::Module::agentic_core/L3_orchestration/reasoning/__init__.py"
-  ],
-  [
-    "L3",
     "ADG::Module::agentic_core/L3_orchestration/scripts/__init__.py"
   ],
   [
     "L3",
     "ADG::Module::agentic_core/L3_orchestration/scripts/guardian_heal_orchestrator.py"
-  ],
-  [
-    "L3",
-    "ADG::Module::agentic_core/L3_orchestration/types/__init__.py"
   ],
   [
     "L3",
@@ -1034,10 +954,6 @@
   [
     "L3",
     "ADG::Module::agentic_core/L3_orchestration/utils/log_orchestration_metrics_util.py"
-  ],
-  [
-    "L4",
-    "ADG::Module::agentic_core/L4_state/__init__.py"
   ],
   [
     "L4",
@@ -1129,10 +1045,6 @@
   ],
   [
     "L4",
-    "ADG::Module::agentic_core/L4_state/memory/__init__.py"
-  ],
-  [
-    "L4",
     "ADG::Module::agentic_core/L4_state/memory/in_memory_vector_cache.py"
   ],
   [
@@ -1161,15 +1073,7 @@
   ],
   [
     "L4",
-    "ADG::Module::agentic_core/L4_state/reasoning/__init__.py"
-  ],
-  [
-    "L4",
     "ADG::Module::agentic_core/L4_state/types/state_validation_types.py"
-  ],
-  [
-    "L4",
-    "ADG::Module::agentic_core/L4_state/utils/__init__.py"
   ],
   [
     "L4",
@@ -1249,10 +1153,6 @@
   ],
   [
     "L5",
-    "ADG::Module::agentic_core/L5_safety/config/structure_blueprint/__init__.py"
-  ],
-  [
-    "L5",
     "ADG::Module::agentic_core/L5_safety/config/structure_blueprint/_simulate_verify.py"
   ],
   [
@@ -1278,10 +1178,6 @@
   [
     "L5",
     "ADG::Module::agentic_core/L5_safety/enforcement/HumanReviewAdapter.py"
-  ],
-  [
-    "L5",
-    "ADG::Module::agentic_core/L5_safety/enforcement/__init__.py"
   ],
   [
     "L5",
@@ -1653,10 +1549,6 @@
   ],
   [
     "L5",
-    "ADG::Module::agentic_core/L5_safety/reasoning/__init__.py"
-  ],
-  [
-    "L5",
     "ADG::Module::agentic_core/L5_safety/reasoning/root_hygiene_validator.py"
   ],
   [
@@ -1857,10 +1749,6 @@
   ],
   [
     "L5",
-    "ADG::Module::agentic_core/L5_safety/validators/__init__.py"
-  ],
-  [
-    "L5",
     "ADG::Module::agentic_core/L5_safety/validators/achv_bullet_synthesizer_validator.py"
   ],
   [
@@ -1918,10 +1806,6 @@
   [
     "L6",
     "ADG::Module::agentic_core/L6_observability/__init__.py"
-  ],
-  [
-    "L6",
-    "ADG::Module::agentic_core/L6_observability/dashboards/__init__.py"
   ],
   [
     "L6",
@@ -2009,10 +1893,6 @@
   ],
   [
     "L6",
-    "ADG::Module::agentic_core/L6_observability/reasoning/__init__.py"
-  ],
-  [
-    "L6",
     "ADG::Module::agentic_core/L6_observability/types/__init__.py"
   ],
   [
@@ -2022,10 +1902,6 @@
   [
     "L6",
     "ADG::Module::agentic_core/L6_observability/utils/integrity_report_generator_util.py"
-  ],
-  [
-    "L_ADG",
-    "ADG::Module::agentic_core/adg/__init__.py"
   ],
   [
     "L_ADG",
@@ -2069,10 +1945,6 @@
   ],
   [
     "L_APP_RG",
-    "ADG::Module::apps_rg/config/__init__.py"
-  ],
-  [
-    "L_APP_RG",
     "ADG::Module::apps_rg/config/agent_spec_config.py"
   ],
   [
@@ -2090,10 +1962,6 @@
   [
     "L_APP_RG",
     "ADG::Module::apps_rg/enforcement/SovereigncontextStrategy.py"
-  ],
-  [
-    "L_APP_RG",
-    "ADG::Module::apps_rg/engines/__init__.py"
   ],
   [
     "L_APP_RG",
@@ -2317,10 +2185,6 @@
   ],
   [
     "L_APP_RG",
-    "ADG::Module::apps_rg/types/__init__.py"
-  ],
-  [
-    "L_APP_RG",
     "ADG::Module::apps_rg/types/provenance_pattern_types.py"
   ],
   [
@@ -2389,10 +2253,6 @@
   ],
   [
     "L_APP_RG",
-    "ADG::Module::apps_rg/validators/__init__.py"
-  ],
-  [
-    "L_APP_RG",
     "ADG::Module::apps_rg/validators/hallucination_detector_validator.py"
   ],
   [
@@ -2413,15 +2273,7 @@
   ],
   [
     "L_RUNTIME",
-    "ADG::Module::agentic_core/runtime/__init__.py"
-  ],
-  [
-    "L_RUNTIME",
     "ADG::Module::agentic_core/runtime/boundary_validator.py"
-  ],
-  [
-    "L_RUNTIME",
-    "ADG::Module::agentic_core/runtime/config/__init__.py"
   ],
   [
     "L_RUNTIME",
@@ -2493,19 +2345,11 @@
   ],
   [
     "L_RUNTIME",
-    "ADG::Module::agentic_core/runtime/exceptions/__init__.py"
-  ],
-  [
-    "L_RUNTIME",
     "ADG::Module::agentic_core/runtime/exceptions/runtime_exceptions.py"
   ],
   [
     "L_RUNTIME",
     "ADG::Module::agentic_core/runtime/exceptions/workflow_exceptions.py"
-  ],
-  [
-    "L_RUNTIME",
-    "ADG::Module::agentic_core/runtime/types/__init__.py"
   ],
   [
     "L_RUNTIME",
@@ -2550,10 +2394,6 @@
   [
     "L_RUNTIME",
     "ADG::Module::agentic_core/runtime/utils/trait_system_util.py"
-  ],
-  [
-    "L_SHARED",
-    "ADG::Module::apps_shared/config/__init__.py"
   ],
   [
     "L_SHARED",
@@ -2766,10 +2606,6 @@
   [
     "L_SHARED",
     "ADG::Module::apps_shared/types/multi_provider_clients.py"
-  ],
-  [
-    "L_SHARED",
-    "ADG::Module::apps_shared/utils/__init__.py"
   ],
   [
     "L_SHARED",
@@ -3273,10 +3109,6 @@
   ],
   [
     "L_SL",
-    "ADG::Module::system_learning/ports/__init__.py"
-  ],
-  [
-    "L_SL",
     "ADG::Module::system_learning/ports/l4_meta_prior_provider.py"
   ],
   [
@@ -3309,19 +3141,11 @@
   ],
   [
     "L_SL",
-    "ADG::Module::system_learning/types/__init__.py"
-  ],
-  [
-    "L_SL",
     "ADG::Module::system_learning/validators/__init__.py"
   ],
   [
     "L_SL",
     "ADG::Module::system_learning/validators/readonly_access.py"
-  ],
-  [
-    "L_UTILS",
-    "ADG::Module::agentic_core/utils/__init__.py"
   ],
   [
     "L_UTILS",
@@ -3513,18 +3337,6 @@
   ],
   [
     "OTHER",
-    "ADG::Module::agentic_core/base_agents/__init__.py"
-  ],
-  [
-    "OTHER",
-    "ADG::Module::agentic_core/cache/__init__.py"
-  ],
-  [
-    "OTHER",
-    "ADG::Module::agentic_core/config/__init__.py"
-  ],
-  [
-    "OTHER",
     "ADG::Module::agentic_core/config/core/agent_defaults_config.py"
   ],
   [
@@ -3569,19 +3381,7 @@
   ],
   [
     "OTHER",
-    "ADG::Module::agentic_core/evaluation/__init__.py"
-  ],
-  [
-    "OTHER",
     "ADG::Module::agentic_core/evaluation/judges/__init__.py"
-  ],
-  [
-    "OTHER",
-    "ADG::Module::agentic_core/evaluation/metrics/__init__.py"
-  ],
-  [
-    "OTHER",
-    "ADG::Module::agentic_core/evaluation/retrieval/__init__.py"
   ],
   [
     "OTHER",
@@ -3653,10 +3453,6 @@
   ],
   [
     "OTHER",
-    "ADG::Module::agentic_core/mixins/__init__.py"
-  ],
-  [
-    "OTHER",
     "ADG::Module::agentic_core/mixins/adaptive_execution_mixin.py"
   ],
   [
@@ -3725,19 +3521,7 @@
   ],
   [
     "OTHER",
-    "ADG::Module::agentic_core/prompt_governance/__init__.py"
-  ],
-  [
-    "OTHER",
-    "ADG::Module::agentic_core/prompt_governance/contracts/__init__.py"
-  ],
-  [
-    "OTHER",
     "ADG::Module::agentic_core/prompt_governance/contracts/context_contracts.py"
-  ],
-  [
-    "OTHER",
-    "ADG::Module::agentic_core/prompt_governance/core/__init__.py"
   ],
   [
     "OTHER",
@@ -3825,10 +3609,6 @@
   ],
   [
     "OTHER",
-    "ADG::Module::agentic_core/prompt_governance/security/validators/__init__.py"
-  ],
-  [
-    "OTHER",
     "ADG::Module::agentic_core/prompt_governance/validation/validate_assembly.py"
   ],
   [
@@ -3866,10 +3646,6 @@
   [
     "OTHER",
     "ADG::Module::apps_lic/config/retry_policy_config.py"
-  ],
-  [
-    "OTHER",
-    "ADG::Module::apps_lic/engines/__init__.py"
   ],
   [
     "OTHER",
@@ -4038,10 +3814,6 @@
   [
     "OTHER",
     "ADG::Module::apps_lic/utils/PIISanitizerSpecialistAgent_util.py"
-  ],
-  [
-    "OTHER",
-    "ADG::Module::apps_lic/utils/__init__.py"
   ],
   [
     "OTHER",
