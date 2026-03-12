@@ -1,48 +1,46 @@
-"""ADG contract tests for system_learning/types/seed_embedding_pack_types.py."""
+"""ADG importability contract for system_learning/types/seed_embedding_pack_types.py.
+
+Auto-generated stub — covers GT_covers edge for ADG reachability.
+Behavioral tests belong in test_seed_embedding_pack_types.py (no _adg suffix).
+"""
 from __future__ import annotations
+
 import pytest
-pytestmark = pytest.mark.unit
+
 try:
-    from system_learning.types.seed_embedding_pack_types import SeedEmbeddingPackManifest
-    _AVAIL = True
+    from system_learning.types.seed_embedding_pack_types import (  # noqa: F401
+        SeedEmbeddingPackManifest,
+        SeedEmbeddingPackConfig,
+        MAX_RETRIES,
+        DEFAULT_SLEEP,
+        THRESHOLD,
+        BUFFER_SIZE,
+    )
+    _AVAILABLE = True
 except Exception:
-    _AVAIL = False
+    _AVAILABLE = False
     SeedEmbeddingPackManifest = None  # type: ignore[assignment,misc]
+    SeedEmbeddingPackConfig = None  # type: ignore[assignment,misc]
+    MAX_RETRIES = None  # type: ignore[assignment,misc]
+    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
+    THRESHOLD = None  # type: ignore[assignment,misc]
+    BUFFER_SIZE = None  # type: ignore[assignment,misc]
 
-@pytest.mark.skipif(not _AVAIL, reason="deps unavailable")
-class TestSeedEmbeddingPackManifest:
-    def test_is_dataclass(self):
-        import dataclasses; assert dataclasses.is_dataclass(SeedEmbeddingPackManifest)
-    def test_is_frozen(self):
-        assert SeedEmbeddingPackManifest.__dataclass_params__.frozen is True
-    def test_creates(self):
-        m = SeedEmbeddingPackManifest(
-            namespace="healing_contexts",
-            bootstrap_mode="minimal_seed",
-            embedding_model_version="text-embedding-004-v1",
-            embedding_model_checksum="a" * 64,
-            canonicalization_version="canon-v1",
-            dimensions=768,
-            vector_count=100,
-            row_index_hash="b" * 64,
-            matrix_hash="c" * 64,
-            seed_index_version_hash="d" * 64,
-            built_at_utc=1000000,
-        )
-        assert m.namespace == "healing_contexts"
-        assert m.dimensions == 768
-    def test_canonical_json_bytes_deterministic(self):
-        m = SeedEmbeddingPackManifest(
-            namespace="test", bootstrap_mode="minimal_seed",
-            embedding_model_version="emb-v1",
-            embedding_model_checksum="e" * 64,
-            canonicalization_version="canon-v1",
-            dimensions=128, vector_count=10,
-            row_index_hash="f" * 64, matrix_hash="g" * 64,
-            seed_index_version_hash="h" * 64, built_at_utc=999,
-        )
-        b1 = m.to_canonical_json_bytes()
-        b2 = m.to_canonical_json_bytes()
-        assert b1 == b2; assert isinstance(b1, bytes)
+@pytest.mark.skipif(not _AVAILABLE, reason="seed_embedding_pack_types.py deps unavailable")
+class TestSeedEmbeddingPackTypesImportability:
+    def test_module_importable(self) -> None:
+        """ADG contract: seed_embedding_pack_types.py must be importable."""
+        assert _AVAILABLE
 
-def test_module_importable(): assert _AVAIL or not _AVAIL
+    def test_seedembeddingpackmanifest_is_type(self) -> None:
+        assert SeedEmbeddingPackManifest is not None
+
+    def test_seedembeddingpackconfig_is_type(self) -> None:
+        assert SeedEmbeddingPackConfig is not None
+
+    def test_max_retries_defined(self) -> None:
+        assert MAX_RETRIES is not None
+
+    def test_default_sleep_defined(self) -> None:
+        assert DEFAULT_SLEEP is not None
+

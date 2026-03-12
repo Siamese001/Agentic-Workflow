@@ -94,6 +94,36 @@ def check_test_strictness(violations: list[str]) -> None:
 
 
 # ---------------------------------------------------------------------------
+# Condition 8b: broken_test_fix commits must preserve semantic equivalence
+# Detects weakening of error type specificity (decision tree Check 4 constraint)
+# ---------------------------------------------------------------------------
+def check_broken_test_fix_semantic_equivalence(violations: list[str]) -> None:
+    tests_dir = REPO_ROOT / "tests"
+    if not tests_dir.exists():
+        return
+    # Patterns that indicate weakened error type — ValueError→Exception, etc.
+    weakened_raises = re.compile(r"pytest\.raises\(\s*Exception\s*\)")
+    broad_except = re.compile(r"pytest\.raises\(\s*(BaseException|Exception)\s*[,)]")
+    for path in sorted(tests_dir.rglob("test_*.py")):
+        try:
+            content = path.read_text(encoding="utf-8", errors="replace")
+        except OSError:
+            continue
+        for lineno, line in enumerate(content.splitlines(), 1):
+            stripped = line.strip()
+            if weakened_raises.search(stripped) or broad_except.search(stripped):
+                # Only flag if there is no guardian annotation allowing it
+                if "# guardian: allow-broad-raises" not in stripped:
+                    violations.append(
+                        f"CONDITION 8b: {path.relative_to(REPO_ROOT)}:{lineno}: "
+                        f"pytest.raises(Exception/BaseException) detected — broadened error type "
+                        f"violates broken_test_fix semantic equivalence requirement "
+                        f"(decision tree Check 4, §1.2, §5.4 gate #8). "
+                        f"Use specific exception type or add '# guardian: allow-broad-raises' with justification."
+                    )
+
+
+# ---------------------------------------------------------------------------
 # Condition 9: repair_class in commits touching production code
 # ---------------------------------------------------------------------------
 def check_repair_class_in_commits(violations: list[str]) -> None:
@@ -172,6 +202,7 @@ def main() -> int:
 
     check_fact_classification(violations)
     check_test_strictness(violations)
+    check_broken_test_fix_semantic_equivalence(violations)
     check_repair_class_in_commits(violations)
     check_contract_conflicts(violations)
     check_repair_complete_claim(violations)

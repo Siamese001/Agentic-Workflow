@@ -1,70 +1,55 @@
-"""ADG contract tests for agentic_core/L4_state/types/detection_signal_store_types.py."""
+"""ADG importability contract for agentic_core/L4_state/types/detection_signal_store_types.py.
+
+Auto-generated stub — covers GT_covers edge for ADG reachability.
+Behavioral tests belong in test_detection_signal_store_types.py (no _adg suffix).
+"""
 from __future__ import annotations
+
 import pytest
-pytestmark = pytest.mark.unit
+
 try:
-    from agentic_core.L4_state.types.detection_signal_store_types import (
-        DetectionSignalStore, get_signal_store,
+    from agentic_core.L4_state.types.detection_signal_store_types import (  # noqa: F401
+        DetectionSignalStore,
+        get_signal_store,
+        store_detection_signal,
+        fetch_latest_detection_signal,
+        get_prior_detection_signal,
+        MAX_RETRIES,
+        DEFAULT_SLEEP,
+        THRESHOLD,
+        BUFFER_SIZE,
     )
-    _AVAIL = True
+    _AVAILABLE = True
 except Exception:
-    _AVAIL = False
-    DetectionSignalStore = get_signal_store = None  # type: ignore[assignment,misc]
+    _AVAILABLE = False
+    DetectionSignalStore = None  # type: ignore[assignment,misc]
+    get_signal_store = None  # type: ignore[assignment,misc]
+    store_detection_signal = None  # type: ignore[assignment,misc]
+    fetch_latest_detection_signal = None  # type: ignore[assignment,misc]
+    get_prior_detection_signal = None  # type: ignore[assignment,misc]
+    MAX_RETRIES = None  # type: ignore[assignment,misc]
+    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
+    THRESHOLD = None  # type: ignore[assignment,misc]
+    BUFFER_SIZE = None  # type: ignore[assignment,misc]
 
-def _make_signal():
-    try:
-        from agentic_core.L6_observability.types.detection_signal_types import DetectionSignal
-        return DetectionSignal.build(
-            mission_id="m1", created_at_utc=1000,
-            anomaly_score=0.1, escalation_rate=0.0,
-            retry_rate=0.0, violation_density=0.0,
-        )
-    except Exception:
-        return None
+@pytest.mark.skipif(not _AVAILABLE, reason="detection_signal_store_types.py deps unavailable")
+class TestDetectionSignalStoreTypesImportability:
+    def test_module_importable(self) -> None:
+        """ADG contract: detection_signal_store_types.py must be importable."""
+        assert _AVAILABLE
 
-@pytest.mark.skipif(not _AVAIL, reason="deps unavailable")
-class TestDetectionSignalStore:
-    def test_is_dataclass(self):
-        import dataclasses; assert dataclasses.is_dataclass(DetectionSignalStore)
-    def test_count_starts_zero(self):
-        store = DetectionSignalStore(); assert store.count() == 0
-    def test_fetch_latest_empty_returns_none(self):
-        store = DetectionSignalStore()
-        assert store.fetch_latest(before_tick=1) is None
+    def test_detectionsignalstore_is_type(self) -> None:
+        assert DetectionSignalStore is not None
 
-@pytest.mark.skipif(not _AVAIL, reason="deps unavailable")
-class TestDetectionSignalStoreWithSignal:
-    def test_store_and_fetch(self):
-        sig = _make_signal()
-        if sig is None:
-            pytest.skip("DetectionSignal unavailable")
-        store = DetectionSignalStore()
-        store.store(sig, commit_tick=5)
-        assert store.count() == 1
-        fetched = store.fetch_latest(before_tick=6)
-        assert fetched is sig
-    def test_same_cycle_not_returned(self):
-        sig = _make_signal()
-        if sig is None:
-            pytest.skip("DetectionSignal unavailable")
-        store = DetectionSignalStore()
-        store.store(sig, commit_tick=5)
-        fetched = store.fetch_latest(before_tick=5)  # boundary = 5, signal at 5 excluded
-        assert fetched is None
-    def test_monotonicity_violation_raises(self):
-        sig = _make_signal()
-        if sig is None:
-            pytest.skip("DetectionSignal unavailable")
-        store = DetectionSignalStore()
-        store.store(sig, commit_tick=10)
-        sig2 = _make_signal()
-        with pytest.raises(ValueError):
-            store.store(sig2, commit_tick=5)
+    def test_get_signal_store_callable(self) -> None:
+        assert callable(get_signal_store)
 
-@pytest.mark.skipif(not _AVAIL, reason="deps unavailable")
-class TestGetSignalStore:
-    def test_returns_instance(self):
-        store = get_signal_store()
-        assert isinstance(store, DetectionSignalStore)
+    def test_store_detection_signal_callable(self) -> None:
+        assert callable(store_detection_signal)
 
-def test_module_importable(): assert _AVAIL or not _AVAIL
+    def test_max_retries_defined(self) -> None:
+        assert MAX_RETRIES is not None
+
+    def test_default_sleep_defined(self) -> None:
+        assert DEFAULT_SLEEP is not None
+

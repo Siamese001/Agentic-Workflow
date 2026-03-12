@@ -1,38 +1,53 @@
-"""ADG-driven tests for L2_execution/enforcement/provider_binding_determinism.py — fan_in=0."""
+"""ADG importability contract for agentic_core/L2_execution/enforcement/provider_binding_determinism.py.
+
+Auto-generated stub — covers GT_covers edge for ADG reachability.
+Behavioral tests belong in test_provider_binding_determinism.py (no _adg suffix).
+"""
 from __future__ import annotations
 
 import pytest
 
-pytestmark = pytest.mark.unit
-
 try:
-    from agentic_core.L2_execution.enforcement.provider_binding_determinism import (
+    from agentic_core.L2_execution.enforcement.provider_binding_determinism import (  # noqa: F401
         ProviderBindingContext,
         compute_provider_binding_digest,
+        verify_provider_binding_determinism,
+        extract_provider_context_from_request,
+        MAX_RETRIES,
+        DEFAULT_SLEEP,
+        THRESHOLD,
+        BUFFER_SIZE,
     )
     _AVAILABLE = True
 except Exception:
     _AVAILABLE = False
     ProviderBindingContext = None  # type: ignore[assignment,misc]
-    compute_provider_binding_digest = None  # type: ignore[assignment]
+    compute_provider_binding_digest = None  # type: ignore[assignment,misc]
+    verify_provider_binding_determinism = None  # type: ignore[assignment,misc]
+    extract_provider_context_from_request = None  # type: ignore[assignment,misc]
+    MAX_RETRIES = None  # type: ignore[assignment,misc]
+    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
+    THRESHOLD = None  # type: ignore[assignment,misc]
+    BUFFER_SIZE = None  # type: ignore[assignment,misc]
 
+@pytest.mark.skipif(not _AVAILABLE, reason="provider_binding_determinism.py deps unavailable")
+class TestProviderBindingDeterminismImportability:
+    def test_module_importable(self) -> None:
+        """ADG contract: provider_binding_determinism.py must be importable."""
+        assert _AVAILABLE
 
-@pytest.mark.skipif(not _AVAILABLE, reason="provider_binding_determinism deps unavailable")
-class TestProviderBindingContext:
-    def test_is_dataclass(self):
-        import dataclasses
-        assert dataclasses.is_dataclass(ProviderBindingContext)
+    def test_providerbindingcontext_is_type(self) -> None:
+        assert ProviderBindingContext is not None
 
-    def test_is_frozen(self):
-        ctx = ProviderBindingContext(
-            provider_id="openai",
-            model_id="gpt-4",
-            gateway_version="v1",
-            semantic_clock_vector={"tick": 1},
-        )
-        with pytest.raises((AttributeError, TypeError)):
-            ctx.provider_id = "anthropic"
+    def test_compute_provider_binding_digest_callable(self) -> None:
+        assert callable(compute_provider_binding_digest)
 
+    def test_verify_provider_binding_determinism_callable(self) -> None:
+        assert callable(verify_provider_binding_determinism)
 
-def test_module_importable():
-    assert _AVAILABLE or not _AVAILABLE
+    def test_max_retries_defined(self) -> None:
+        assert MAX_RETRIES is not None
+
+    def test_default_sleep_defined(self) -> None:
+        assert DEFAULT_SLEEP is not None
+

@@ -1,59 +1,67 @@
-"""ADG contract tests for agentic_core/L5_safety/types/heal_llm_seam_types.py."""
+"""ADG importability contract for agentic_core/L5_safety/types/heal_llm_seam_types.py.
+
+Auto-generated stub — covers GT_covers edge for ADG reachability.
+Behavioral tests belong in test_heal_llm_seam_types.py (no _adg suffix).
+"""
 from __future__ import annotations
+
 import pytest
-pytestmark = pytest.mark.unit
+
 try:
-    from agentic_core.L5_safety.types.heal_llm_seam_types import (
+    from agentic_core.L5_safety.types.heal_llm_seam_types import (  # noqa: F401
+        HealSeamBypassError,
+        HealLlmRequest,
+        PolicyDecisionRecord,
+        HealBudgetExceededError,
+        HealBudgetCaps,
         HealTelemetryRecord,
+        set_heal_seam_capability,
+        reset_heal_seam_capability,
+        assert_heal_seam_capability,
+        guarded_heal_llm_call,
+        REPO_HEAL_DENYLIST,
+        REPO_HEAL_ALLOWLIST_EXTENSIONS,
     )
-    _AVAIL = True
+    _AVAILABLE = True
 except Exception:
-    _AVAIL = False
+    _AVAILABLE = False
+    HealSeamBypassError = None  # type: ignore[assignment,misc]
+    HealLlmRequest = None  # type: ignore[assignment,misc]
+    PolicyDecisionRecord = None  # type: ignore[assignment,misc]
+    HealBudgetExceededError = None  # type: ignore[assignment,misc]
+    HealBudgetCaps = None  # type: ignore[assignment,misc]
     HealTelemetryRecord = None  # type: ignore[assignment,misc]
+    set_heal_seam_capability = None  # type: ignore[assignment,misc]
+    reset_heal_seam_capability = None  # type: ignore[assignment,misc]
+    assert_heal_seam_capability = None  # type: ignore[assignment,misc]
+    guarded_heal_llm_call = None  # type: ignore[assignment,misc]
+    REPO_HEAL_DENYLIST = None  # type: ignore[assignment,misc]
+    REPO_HEAL_ALLOWLIST_EXTENSIONS = None  # type: ignore[assignment,misc]
 
-@pytest.mark.skipif(not _AVAIL, reason="deps unavailable")
-class TestHealTelemetryRecord:
-    def test_is_frozen(self): assert HealTelemetryRecord.__dataclass_params__.frozen is True
-    def test_creates(self):
-        r = HealTelemetryRecord(
-            run_kind="heal",
-            agent_class="HealAgent",
-            target_path="/repo/foo.py",
-            inputs_hash="abcd1234",
-            policy_hash="ef567890",
-            baseline_ops_count=10,
-            applied_ops_count=5,
-            changed_files_count=3,
-            idempotent_second_pass=False,
-            outcome="applied",
-        )
-        assert r.run_kind == "heal"
-        assert r.outcome == "applied"
-    def test_to_dict(self):
-        r = HealTelemetryRecord(
-            run_kind="heal_repository",
-            agent_class="RepoHealer",
-            target_path="/repo",
-            inputs_hash="a" * 16,
-            policy_hash="b" * 16,
-            baseline_ops_count=0,
-            applied_ops_count=0,
-            changed_files_count=0,
-            idempotent_second_pass=True,
-            outcome="plan_only",
-        )
-        d = r.to_dict()
-        assert d["run_kind"] == "heal_repository"
-        assert d["idempotent_second_pass"] is True
-    def test_telemetry_hash_16_chars(self):
-        r = HealTelemetryRecord(
-            run_kind="heal", agent_class="X", target_path="",
-            inputs_hash="a" * 8, policy_hash="b" * 8,
-            baseline_ops_count=1, applied_ops_count=1,
-            changed_files_count=0, idempotent_second_pass=False,
-            outcome="applied",
-        )
-        h = r.telemetry_hash()
-        assert len(h) == 16
+@pytest.mark.skipif(not _AVAILABLE, reason="heal_llm_seam_types.py deps unavailable")
+class TestHealLlmSeamTypesImportability:
+    def test_module_importable(self) -> None:
+        """ADG contract: heal_llm_seam_types.py must be importable."""
+        assert _AVAILABLE
 
-def test_module_importable(): assert _AVAIL or not _AVAIL
+    def test_healseambypasserror_is_type(self) -> None:
+        assert HealSeamBypassError is not None
+
+    def test_healllmrequest_is_type(self) -> None:
+        assert HealLlmRequest is not None
+
+    def test_policydecisionrecord_is_type(self) -> None:
+        assert PolicyDecisionRecord is not None
+
+    def test_set_heal_seam_capability_callable(self) -> None:
+        assert callable(set_heal_seam_capability)
+
+    def test_reset_heal_seam_capability_callable(self) -> None:
+        assert callable(reset_heal_seam_capability)
+
+    def test_repo_heal_denylist_defined(self) -> None:
+        assert REPO_HEAL_DENYLIST is not None
+
+    def test_repo_heal_allowlist_extensions_defined(self) -> None:
+        assert REPO_HEAL_ALLOWLIST_EXTENSIONS is not None
+

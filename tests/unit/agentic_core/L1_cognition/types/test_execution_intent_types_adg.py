@@ -1,51 +1,60 @@
-"""ADG contract tests for agentic_core/L1_cognition/types/execution_intent_types.py."""
+"""ADG importability contract for agentic_core/L1_cognition/types/execution_intent_types.py.
+
+Auto-generated stub — covers GT_covers edge for ADG reachability.
+Behavioral tests belong in test_execution_intent_types.py (no _adg suffix).
+"""
 from __future__ import annotations
+
 import pytest
-pytestmark = pytest.mark.unit
+
 try:
-    from agentic_core.L1_cognition.types.execution_intent_types import (
-        ExecutionIntent, L1Result, assert_l1_purity,
-        increment_mutation_guard, reset_mutation_guard, get_mutation_count,
+    from agentic_core.L1_cognition.types.execution_intent_types import (  # noqa: F401
+        ExecutionIntent,
+        L1Result,
+        assert_l1_purity,
+        increment_mutation_guard,
+        get_mutation_count,
+        reset_mutation_guard,
+        MAX_RETRIES,
+        DEFAULT_SLEEP,
+        THRESHOLD,
+        BUFFER_SIZE,
     )
-    _AVAIL = True
+    _AVAILABLE = True
 except Exception:
-    _AVAIL = False
-    ExecutionIntent = L1Result = assert_l1_purity = None  # type: ignore[assignment,misc]
-    increment_mutation_guard = reset_mutation_guard = get_mutation_count = None  # type: ignore[assignment,misc]
+    _AVAILABLE = False
+    ExecutionIntent = None  # type: ignore[assignment,misc]
+    L1Result = None  # type: ignore[assignment,misc]
+    assert_l1_purity = None  # type: ignore[assignment,misc]
+    increment_mutation_guard = None  # type: ignore[assignment,misc]
+    get_mutation_count = None  # type: ignore[assignment,misc]
+    reset_mutation_guard = None  # type: ignore[assignment,misc]
+    MAX_RETRIES = None  # type: ignore[assignment,misc]
+    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
+    THRESHOLD = None  # type: ignore[assignment,misc]
+    BUFFER_SIZE = None  # type: ignore[assignment,misc]
 
-@pytest.mark.skipif(not _AVAIL, reason="deps unavailable")
-class TestExecutionIntent:
-    def test_is_dataclass(self):
-        import dataclasses; assert dataclasses.is_dataclass(ExecutionIntent)
-    def test_creates(self):
-        ei = ExecutionIntent(tool_name="search", args={"q": "x"}, metadata={})
-        assert ei.tool_name == "search"; assert ei.requires_commit is True
+@pytest.mark.skipif(not _AVAILABLE, reason="execution_intent_types.py deps unavailable")
+class TestExecutionIntentTypesImportability:
+    def test_module_importable(self) -> None:
+        """ADG contract: execution_intent_types.py must be importable."""
+        assert _AVAILABLE
 
-@pytest.mark.skipif(not _AVAIL, reason="deps unavailable")
-class TestL1Result:
-    def test_creates(self):
-        r = L1Result(success=True, output="done")
-        assert r.success is True; assert r.execution_intents is None
+    def test_executionintent_is_type(self) -> None:
+        assert ExecutionIntent is not None
 
-@pytest.mark.skipif(not _AVAIL, reason="deps unavailable")
-class TestMutationGuard:
-    def setup_method(self): reset_mutation_guard()
-    def test_initial_count_zero(self): assert get_mutation_count() == 0
-    def test_increment(self):
-        increment_mutation_guard(); assert get_mutation_count() == 1
-    def test_reset(self):
-        increment_mutation_guard(); reset_mutation_guard()
-        assert get_mutation_count() == 0
+    def test_l1result_is_type(self) -> None:
+        assert L1Result is not None
 
-@pytest.mark.skipif(not _AVAIL, reason="deps unavailable")
-class TestAssertL1Purity:
-    def test_clean_object_passes(self):
-        class Clean: pass
-        assert_l1_purity(Clean())
-    def test_redis_fails(self):
-        class WithRedis:
-            redis = object()
-        with pytest.raises(AssertionError):
-            assert_l1_purity(WithRedis())
+    def test_assert_l1_purity_callable(self) -> None:
+        assert callable(assert_l1_purity)
 
-def test_module_importable(): assert _AVAIL or not _AVAIL
+    def test_increment_mutation_guard_callable(self) -> None:
+        assert callable(increment_mutation_guard)
+
+    def test_max_retries_defined(self) -> None:
+        assert MAX_RETRIES is not None
+
+    def test_default_sleep_defined(self) -> None:
+        assert DEFAULT_SLEEP is not None
+

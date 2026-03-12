@@ -25,6 +25,7 @@ Enforces constitutional testing requirements (§1.1-§1.12) during code generati
 - **ALWAYS before code generation:** Use `pre_code_generation_gate.md` to declare test requirements
 - **During code generation:** Use `test_first_protocol.md` to write tests before logic
 - **ALWAYS after code changes:** Use `post_code_validation.md` to verify compliance
+- **ALWAYS when triaging a test failure:** Follow the 5-check decision tree in `docs/technical/TEST_FAILURE_decision_tree.md` to assign repair class before any edit (§2.5)
 
 ## Constitutional Requirements Enforced
 

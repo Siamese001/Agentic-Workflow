@@ -13,6 +13,7 @@
 |------|-------|--------|------|----------|--------|
 | **§0: DEFAULT ANALYSIS MODE** | Windsurf | Before work | Behavioural | `.windsurf/skills/ast-first-gate/` | ✅ ENFORCED |
 | **§ADG-1: ADG Repair Discipline** | Windsurf | Before work | Behavioural | `.windsurf/rules/adg-repair-discipline.md` | ✅ ENFORCED |
+| **§2.5: Test Failure Triage Protocol** | Both | Before repair | Behavioural + Structural | `docs/technical/TEST_FAILURE_decision_tree.md` | ✅ ENFORCED (CI: cond. 8b) |
 | **Plan Location Rule** | Pre-commit | After work | Structural | `.windsurf/rules/plan-location.md` | ✅ ENFORCED |
 
 **Notes**:
@@ -137,7 +138,7 @@
 4. `check_anti_patterns.py` ✅
 5. `check_apps_output_contract.py`
 6. `check_c0_boundary.py`
-7. `check_ci_integrity.py`
+7. `check_ci_integrity.py` ✅ UPDATED (added cond. 8b: broken_test_fix semantic equivalence)
 8. `check_dedup_violations.py` ✅ UPDATED (proxy check only)
 10. `check_determinism_replay.py`
 11. `check_determinism_violations.py`
@@ -178,7 +179,7 @@
 
 | Category | Total | Enforced | Partial | Missing |
 |----------|-------|----------|---------|---------|
-| Constitutional Rules | 3 | 3 | 0 | 0 |
+| Constitutional Rules | 4 | 4 | 0 | 0 |
 | Skills | 14 | 14 | 0 | 0 |
 | CI Gates | 41 | 41 | 0 | 0 |
 | Pre-commit Hooks | 25+ | 25+ | 0 | 0 |
@@ -221,10 +222,11 @@ Include justification keywords in commit message:
 
 **Review Frequency**: Monthly
 **Owner**: Platform Team
-**Last Audit**: 2026-03-11
+**Last Audit**: 2026-03-12
 **Next Audit**: 2026-04-11
 
 **Changelog**:
+- 2026-03-12: **TEST FAILURE TRIAGE PROTOCOL** — Added canonical 5-check decision tree (`docs/technical/TEST_FAILURE_decision_tree.md`). Registered as §2.5 constitutional rule. Added CI condition 8b (`check_broken_test_fix_semantic_equivalence`) to `check_ci_integrity.py`. Updated `adg-repair-discipline.md` with triage step before repair loop. Updated `test-rigor-enforcement` skill with triage trigger. Reference added to `.windsurfrules` §2.5 without duplicating taxonomy.
 - 2026-03-11: **RULES CONSOLIDATION** — `.windsurfrules` reduced 3906→~400 lines. Removed all Python code blocks (redundant with `ops_scripts/ci/`). Added Constitutional Floor banner to top. Wired 4 previously dormant CI gates into `run_contract_gates.py`: `check_powershell_ban`, `check_test_integrity`, `check_no_unconditional_xfail`, `check_utility_silent_swallowers`.
 - 2026-03-11: Initial index creation, added 5 new CI gates
 - 2026-03-11: **ARCHITECTURE REDESIGN** — Removed misfits from pre-commit, strengthened Windsurf skills

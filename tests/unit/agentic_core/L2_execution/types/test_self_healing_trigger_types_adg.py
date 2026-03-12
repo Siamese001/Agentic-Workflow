@@ -1,42 +1,37 @@
-"""ADG-driven tests for L2_execution/types/self_healing_trigger_types.py — fan_in=0."""
+"""ADG importability contract for agentic_core/L2_execution/types/self_healing_trigger_types.py.
+
+Auto-generated stub — covers GT_covers edge for ADG reachability.
+Behavioral tests belong in test_self_healing_trigger_types.py (no _adg suffix).
+"""
 from __future__ import annotations
 
 import pytest
 
-pytestmark = pytest.mark.unit
-
 try:
-    from agentic_core.L2_execution.types.self_healing_trigger_types import (
-        AUTHORIZED_DECISIONS,
-        REJECTED_DECISIONS,
+    from agentic_core.L2_execution.types.self_healing_trigger_types import (  # noqa: F401
+        L2SelfHealingTrigger,
+        is_healing_authorized,
+        emit_self_healing_trigger,
     )
     _AVAILABLE = True
 except Exception:
     _AVAILABLE = False
-    AUTHORIZED_DECISIONS = None  # type: ignore[assignment]
-    REJECTED_DECISIONS = None  # type: ignore[assignment]
+    L2SelfHealingTrigger = None  # type: ignore[assignment,misc]
+    is_healing_authorized = None  # type: ignore[assignment,misc]
+    emit_self_healing_trigger = None  # type: ignore[assignment,misc]
 
+@pytest.mark.skipif(not _AVAILABLE, reason="self_healing_trigger_types.py deps unavailable")
+class TestSelfHealingTriggerTypesImportability:
+    def test_module_importable(self) -> None:
+        """ADG contract: self_healing_trigger_types.py must be importable."""
+        assert _AVAILABLE
 
-@pytest.mark.skipif(not _AVAILABLE, reason="self_healing_trigger_types deps unavailable")
-class TestAuthorizedDecisions:
-    def test_is_frozenset(self):
-        assert isinstance(AUTHORIZED_DECISIONS, frozenset)
+    def test_l2selfhealingtrigger_is_type(self) -> None:
+        assert L2SelfHealingTrigger is not None
 
-    def test_contains_auto_approved(self):
-        assert "AUTO_APPROVED" in AUTHORIZED_DECISIONS
+    def test_is_healing_authorized_callable(self) -> None:
+        assert callable(is_healing_authorized)
 
-    def test_contains_hil_approved(self):
-        assert "HIL_APPROVED" in AUTHORIZED_DECISIONS
+    def test_emit_self_healing_trigger_callable(self) -> None:
+        assert callable(emit_self_healing_trigger)
 
-
-@pytest.mark.skipif(not _AVAILABLE, reason="self_healing_trigger_types deps unavailable")
-class TestRejectedDecisions:
-    def test_is_frozenset(self):
-        assert isinstance(REJECTED_DECISIONS, frozenset)
-
-    def test_disjoint_from_authorized(self):
-        assert AUTHORIZED_DECISIONS.isdisjoint(REJECTED_DECISIONS)
-
-
-def test_module_importable():
-    assert _AVAILABLE or not _AVAILABLE

@@ -8,6 +8,11 @@ import pathlib
 import pytest
 
 pytestmark = pytest.mark.unit
+try:
+    import agentic_core.L3_orchestration.scripts.guardian_heal_orchestrator as _mod  # noqa: F401  # ADG covers
+except Exception:
+    _mod = None
+
 
 _SRC = (
     pathlib.Path(__file__).parents[5]

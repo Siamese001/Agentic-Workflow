@@ -1,0 +1,43 @@
+"""ADG importability contract for agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py.
+
+Auto-generated stub — covers GT_covers edge for ADG reachability.
+Behavioral tests belong in test_human_review_queue_enforcer.py (no _adg suffix).
+"""
+from __future__ import annotations
+
+import pytest
+
+try:
+    from agentic_core.L5_safety.enforcement.human_review_queue_enforcer import (  # noqa: F401
+        ReviewStatus,
+        ProposedDiff,
+        SimulatedOutcome,
+        ContextBundle,
+        ReviewRequest,
+        HumanReviewQueue,
+    )
+    _AVAILABLE = True
+except Exception:
+    _AVAILABLE = False
+    ReviewStatus = None  # type: ignore[assignment,misc]
+    ProposedDiff = None  # type: ignore[assignment,misc]
+    SimulatedOutcome = None  # type: ignore[assignment,misc]
+    ContextBundle = None  # type: ignore[assignment,misc]
+    ReviewRequest = None  # type: ignore[assignment,misc]
+    HumanReviewQueue = None  # type: ignore[assignment,misc]
+
+@pytest.mark.skipif(not _AVAILABLE, reason="human_review_queue_enforcer.py deps unavailable")
+class TestHumanReviewQueueEnforcerImportability:
+    def test_module_importable(self) -> None:
+        """ADG contract: human_review_queue_enforcer.py must be importable."""
+        assert _AVAILABLE
+
+    def test_reviewstatus_is_type(self) -> None:
+        assert ReviewStatus is not None
+
+    def test_proposeddiff_is_type(self) -> None:
+        assert ProposedDiff is not None
+
+    def test_simulatedoutcome_is_type(self) -> None:
+        assert SimulatedOutcome is not None
+

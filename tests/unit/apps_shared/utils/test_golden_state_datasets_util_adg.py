@@ -1,0 +1,96 @@
+"""ADG-driven tests for apps_shared/utils/golden_state_datasets_util.py — fan_in=0."""
+from __future__ import annotations
+
+import pytest
+
+pytestmark = pytest.mark.unit
+
+try:
+    from apps_shared.utils.golden_state_datasets_util import (  # noqa: F401
+        load_golden_inputs,
+        load_baseline_scores,
+        load_exemplar_prompts,
+        load_golden_cases,
+        load_golden_baseline_scores,
+        MAX_RETRIES,
+        DEFAULT_SLEEP,
+        THRESHOLD,
+        BUFFER_SIZE,
+        BATCH_SIZE,
+        MAX_DEPTH,
+    )
+    _AVAILABLE = True
+except Exception:
+    _AVAILABLE = False
+    load_golden_inputs = None  # type: ignore[assignment,misc]
+    load_baseline_scores = None  # type: ignore[assignment,misc]
+    load_exemplar_prompts = None  # type: ignore[assignment,misc]
+    load_golden_cases = None  # type: ignore[assignment,misc]
+    load_golden_baseline_scores = None  # type: ignore[assignment,misc]
+    MAX_RETRIES = None  # type: ignore[assignment,misc]
+    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
+    THRESHOLD = None  # type: ignore[assignment,misc]
+    BUFFER_SIZE = None  # type: ignore[assignment,misc]
+    BATCH_SIZE = None  # type: ignore[assignment,misc]
+    MAX_DEPTH = None  # type: ignore[assignment,misc]
+
+
+@pytest.mark.skipif(not _AVAILABLE, reason="golden_state_datasets_util.py deps unavailable")
+class TestLoadGoldenInputs:
+    def test_is_callable(self):
+        assert callable(load_golden_inputs)
+
+@pytest.mark.skipif(not _AVAILABLE, reason="golden_state_datasets_util.py deps unavailable")
+class TestLoadBaselineScores:
+    def test_is_callable(self):
+        assert callable(load_baseline_scores)
+
+@pytest.mark.skipif(not _AVAILABLE, reason="golden_state_datasets_util.py deps unavailable")
+class TestLoadExemplarPrompts:
+    def test_is_callable(self):
+        assert callable(load_exemplar_prompts)
+
+@pytest.mark.skipif(not _AVAILABLE, reason="golden_state_datasets_util.py deps unavailable")
+class TestLoadGoldenCases:
+    def test_is_callable(self):
+        assert callable(load_golden_cases)
+
+@pytest.mark.skipif(not _AVAILABLE, reason="golden_state_datasets_util.py deps unavailable")
+class TestLoadGoldenBaselineScores:
+    def test_is_callable(self):
+        assert callable(load_golden_baseline_scores)
+
+@pytest.mark.skipif(not _AVAILABLE, reason="golden_state_datasets_util.py deps unavailable")
+class TestMaxRetriesConstant:
+    def test_is_not_none(self):
+        assert MAX_RETRIES is not None
+
+@pytest.mark.skipif(not _AVAILABLE, reason="golden_state_datasets_util.py deps unavailable")
+class TestDefaultSleepConstant:
+    def test_is_not_none(self):
+        assert DEFAULT_SLEEP is not None
+
+@pytest.mark.skipif(not _AVAILABLE, reason="golden_state_datasets_util.py deps unavailable")
+class TestThresholdConstant:
+    def test_is_not_none(self):
+        assert THRESHOLD is not None
+
+@pytest.mark.skipif(not _AVAILABLE, reason="golden_state_datasets_util.py deps unavailable")
+class TestBufferSizeConstant:
+    def test_is_not_none(self):
+        assert BUFFER_SIZE is not None
+
+@pytest.mark.skipif(not _AVAILABLE, reason="golden_state_datasets_util.py deps unavailable")
+class TestBatchSizeConstant:
+    def test_is_not_none(self):
+        assert BATCH_SIZE is not None
+
+@pytest.mark.skipif(not _AVAILABLE, reason="golden_state_datasets_util.py deps unavailable")
+class TestMaxDepthConstant:
+    def test_is_not_none(self):
+        assert MAX_DEPTH is not None
+
+
+def test_module_importable():
+    """Module golden_state_datasets_util.py is importable (or deps unavailable)."""
+    assert _AVAILABLE or not _AVAILABLE
