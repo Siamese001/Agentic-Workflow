@@ -1,37 +1,39 @@
 """ADG Layer Splitter — separate graph planes for targeted consumers.
 
-Splits the monolithic ADGArtifact into four independent sub-graphs that
-consumers can load selectively. This avoids loading 57 MB when you only
-need test coverage edges.
+Splits the monolithic ADGArtifact into THREE independent sub-graphs with
+zero edge-type overlap between planes. Together they cover 100% of all
+edge types present in the SQLite index.
 
 Sub-graphs
 ----------
 file_graph
     Node type: module only.
-    Edge types: imports, belongs_to_layer, covers (module→module only).
-    Consumer: CI import validation, layer boundary checks, ownership queries.
+    Edge types: imports, exports, dead_imports, covers, influences,
+                belongs_to_layer, in_cycle.
+    Consumer: CI import validation, layer boundary checks, test coverage,
+              ownership queries.
+    NOTE: covers lives here (file→file coverage). in_cycle lives here.
 
 symbol_graph
     Node types: module + symbol.
     Edge types: calls, instantiates, implements, reads_from, writes_to,
-                writes_through, invokes_provider, routes_through.
+                writes_through, invokes_provider, routes_through,
+                type_annotation, decorated_by.
     Consumer: blast-radius, rename-safety, mutation-authority.
-
-test_graph
-    Node types: module (test + non-test).
-    Edge types: covers, covers_module.
-    Consumer: test-gap detection, blast-radius for test coverage.
 
 governance_graph
     Node types: all (including prompt_slot, execution_trace, agent_action, etc.)
     Edge types: generates_prompt, consumes_prompt, assembles_into, injects_into,
                 overrides_prompt, executed_with_prompt, triggered_telemetry,
-                executes_action, invokes_tool, crosses_layer, bypasses_uwg,
-                routes_through_uwg, layer_authority_violation, policy_hash_mismatch,
-                lineage_of, violates, dynamic_exec.
+                proposed_improvement, updated_prompt, executes_action,
+                invokes_tool, crosses_layer, bypasses_uwg, routes_through_uwg,
+                layer_authority_violation, policy_hash_mismatch, lineage_of,
+                violates, dynamic_exec, antipattern.
     Consumer: P3+P6+P7 analysis modules — layer authority, mutation paths, policy hash.
+    NOTE: in_cycle removed (lives in file_graph). antipattern added here.
 
 Each sub-graph is a NormalizedGraph (compact node/edge format).
+No edge type appears in more than one plane.
 
 Usage::
 
@@ -40,8 +42,9 @@ Usage::
     planes = split_artifact(artifact)
     planes.file_graph.write(out_dir / "adg_file_graph.json")
     planes.symbol_graph.write(out_dir / "adg_symbol_graph.json")
-    planes.test_graph.write(out_dir / "adg_test_graph.json")
     planes.governance_graph.write(out_dir / "adg_governance_graph.json")
+    # or write all three at once:
+    planes.write_all(out_dir)
 """
 
 from __future__ import annotations
@@ -62,12 +65,12 @@ if TYPE_CHECKING:
 _FILE_GRAPH_RELS: frozenset[str] = frozenset(
     {
         "imports",
-        "belongs_to_layer",
-        "covers",
-        "in_cycle",
+        "exports",       # module re-export edges (structural, module-level)
         "dead_imports",
-        "exports",  # module re-export edges (structural, module-level)
-        "influences",  # static influence edges between modules
+        "covers",        # test→module coverage (canonical home)
+        "influences",    # static influence edges between modules
+        "belongs_to_layer",
+        "in_cycle",      # canonical home: file_graph (removed from governance)
     }
 )
 
@@ -83,14 +86,6 @@ _SYMBOL_GRAPH_RELS: frozenset[str] = frozenset(
         "routes_through",
         "type_annotation",
         "decorated_by",
-    }
-)
-
-_TEST_GRAPH_RELS: frozenset[str] = frozenset(
-    {
-        "covers",
-        "covers_module",
-        "covers_symbol",
     }
 )
 
@@ -118,7 +113,9 @@ _GOVERNANCE_GRAPH_RELS: frozenset[str] = frozenset(
         # Existing violation/governance
         "violates",
         "dynamic_exec",
-        "in_cycle",
+        # GA: behavioral anti-pattern detection edges
+        "antipattern",
+        # NOTE: in_cycle removed — lives in file_graph
     }
 )
 
@@ -137,21 +134,23 @@ def _is_test_module(adg_name: str) -> bool:
 
 @dataclass
 class SplitArtifact:
-    """Container for all four graph plane sub-artifacts."""
+    """Container for three non-overlapping graph plane sub-artifacts.
+    
+    Together these three planes provide 100% edge coverage with zero
+    redundancy between planes.
+    """
 
     file_graph: NormalizedGraph = field(default_factory=NormalizedGraph)
     symbol_graph: NormalizedGraph = field(default_factory=NormalizedGraph)
-    test_graph: NormalizedGraph = field(default_factory=NormalizedGraph)
     governance_graph: NormalizedGraph = field(default_factory=NormalizedGraph)
 
     def write_all(self, out_dir: Path) -> dict[str, Path]:
-        """Write all four planes to out_dir. Returns {plane: path}."""
+        """Write all three planes to out_dir. Returns {plane: path}."""
         out_dir.mkdir(parents=True, exist_ok=True)
         paths = {}
         for plane, graph, fname in (
             ("file_graph", self.file_graph, "adg_file_graph.json"),
             ("symbol_graph", self.symbol_graph, "adg_symbol_graph.json"),
-            ("test_graph", self.test_graph, "adg_test_graph.json"),
             ("governance_graph", self.governance_graph, "adg_governance_graph.json"),
         ):
             p = graph.write(out_dir / fname, indent=None)
@@ -164,7 +163,6 @@ class SplitArtifact:
             for plane, graph in (
                 ("file_graph", self.file_graph),
                 ("symbol_graph", self.symbol_graph),
-                ("test_graph", self.test_graph),
                 ("governance_graph", self.governance_graph),
             )
         }
@@ -284,10 +282,11 @@ def _build_plane(
 
 
 def split_artifact(artifact: ADGArtifact) -> SplitArtifact:
-    """Split an ADGArtifact into four focused graph planes.
+    """Split an ADGArtifact into three non-overlapping graph planes.
 
-    Returns a SplitArtifact with .file_graph, .symbol_graph, .test_graph,
-    .governance_graph — each a compact NormalizedGraph.
+    Returns a SplitArtifact with .file_graph, .symbol_graph, .governance_graph —
+    each a compact NormalizedGraph with zero edge-type overlap between planes.
+    Together they cover 100% of all edge types.
     """
     file_graph = _build_plane(
         artifact,
@@ -301,12 +300,6 @@ def split_artifact(artifact: ADGArtifact) -> SplitArtifact:
         node_type_filter=None,  # include both module and symbol nodes
         plane_name="symbol_graph",
     )
-    test_graph = _build_plane(
-        artifact,
-        _TEST_GRAPH_RELS,
-        node_type_filter=None,
-        plane_name="test_graph",
-    )
     governance_graph = _build_plane(
         artifact,
         _GOVERNANCE_GRAPH_RELS,
@@ -316,7 +309,6 @@ def split_artifact(artifact: ADGArtifact) -> SplitArtifact:
     return SplitArtifact(
         file_graph=file_graph,
         symbol_graph=symbol_graph,
-        test_graph=test_graph,
         governance_graph=governance_graph,
     )
 
@@ -326,6 +318,5 @@ __all__ = [
     "split_artifact",
     "_FILE_GRAPH_RELS",
     "_SYMBOL_GRAPH_RELS",
-    "_TEST_GRAPH_RELS",
     "_GOVERNANCE_GRAPH_RELS",
 ]

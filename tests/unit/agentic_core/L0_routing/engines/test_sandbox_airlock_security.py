@@ -30,6 +30,16 @@ from agentic_core.L0_routing.engines.escalation_router import (
 from agentic_core.L0_routing.engines.execution_orchestrator import ExecutionOrchestrator
 from agentic_core.L0_routing.engines.path_router import Path, PathRouter
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.75
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300
+
+
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -463,7 +473,7 @@ class TestEscalationRouter:
     @pytest.mark.governance
     def test_returns_escalated_when_severity_at_threshold(self):
         cfg = _make_routing_config(threshold=THRESHOLD)
-        store = _make_store([_ViolationEvent(severity_score=0.5)])
+        store = _make_store([_ViolationEvent(severity_score=THRESHOLD)])
         result = decide_mode_from_prior_violations(10, cfg, store)
         assert result == "escalated"
 
@@ -512,7 +522,7 @@ class TestEscalationRouter:
     @pytest.mark.governance
     def test_returns_custom_escalation_mode(self):
         cfg = _make_routing_config(threshold=THRESHOLD, escalation_mode="critical_hold")
-        store = _make_store([_ViolationEvent(severity_score=0.5)])
+        store = _make_store([_ViolationEvent(severity_score=THRESHOLD)])
         result = decide_mode_from_prior_violations(10, cfg, store)
         assert result == "critical_hold"
 

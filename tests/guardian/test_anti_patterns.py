@@ -47,6 +47,16 @@ from agentic_core.L5_safety.validators.type_erasure_validator import (
     TypeErasureDetector,
 )
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300
+
+
 # ============================================================================
 # Test Fixtures
 # ============================================================================
@@ -796,38 +806,27 @@ class TestScanFileErrorHandling:
         detector = SilentSwallowerDetector()
         result = detector.scan_file(p)
         assert isinstance(result, DetectionResult)
-
     def test_whitelisted_file_returns_empty_result(self, tmp_path):
         p = tmp_path / "my_module.py"
         p.write_text("try:\n    x()\nexcept Exception:\n    pass\n", encoding="utf-8")
         detector = SilentSwallowerDetector(whitelisted_files=["my_module.py"])
         result = detector.scan_file(p)
         assert result.violation_count == 0
-
-
 class TestTypeErasureDetectorABCInheritance:
     """TypeErasureDetector correctly inherits and extends AntiPatternDetector."""
-
     def test_is_subclass_of_anti_pattern_detector(self):
         from agentic_core.L5_safety.validators.type_erasure_validator import TypeErasureDetector
-
         assert issubclass(TypeErasureDetector, AntiPatternDetector)
-
     def test_category_returns_type_erasure(self):
         from agentic_core.L5_safety.validators.type_erasure_validator import TypeErasureDetector
-
         detector = TypeErasureDetector(check_agent_classes_only=False)
         assert detector.category == AntiPatternCategory.TYPE_ERASURE
-
     def test_category_value_is_string(self):
         from agentic_core.L5_safety.validators.type_erasure_validator import TypeErasureDetector
-
         detector = TypeErasureDetector()
         assert isinstance(detector.category.value, str)
-
     def test_allowed_dict_types_are_not_flagged(self, tmp_path):
         from agentic_core.L5_safety.validators.type_erasure_validator import TypeErasureDetector
-
         p = tmp_path / "my_agent.py"
         p.write_text(
             "class MyAgent:\n    def run(self) -> dict[str, str]:\n        return {}\n",

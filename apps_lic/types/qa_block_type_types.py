@@ -1,5 +1,8 @@
 """Types and models for message_assembler."""
-
+from __future__ import annotations
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Any, Optional
 import logging
 
 MAX_RETRIES = 3

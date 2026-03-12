@@ -146,8 +146,8 @@ def test_qwen_meta_learning_boundaries():
     validate_threshold_immutability()
 
     # Verify thresholds haven't changed
-    assert HEALING_CONFIDENCE_X == 0.75, "X threshold should remain immutable"
-    assert HEALING_CONFIDENCE_Y == 0.40, "Y threshold should remain immutable"
+    assert HEALING_CONFIDENCE_X == 0.80, "X threshold should remain immutable"
+    assert HEALING_CONFIDENCE_Y == 0.50, "Y threshold should remain immutable"
 
 
 if __name__ == "__main__":

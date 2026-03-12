@@ -3,11 +3,11 @@ PYTEST TEST SYSTEM
 
 REPOSITORY
 │
-│ Analogy: Hospital building
+│ Analogy: Library building
 │
 └── pytest
     │
-    │ Analogy: Head doctor coordinating all patient exams
+    │ Analogy: Head librarian coordinating all book inspections
     │
     │ Responsibilities
     │ • discovers tests
@@ -19,38 +19,38 @@ REPOSITORY
         │
         │ Example: test_math.py
         │
-        │ Analogy: Medical procedure sheets
+        │ Analogy: Library shelves containing books to inspect
         │
         └── Test Functions
             │
             │ Example
             │ def test_add():
             │
-            │ Analogy: A specific medical exam
+            │ Analogy: A librarian inspecting one specific book
             │
             └── Code Execution
                 │
                 │ result = add(2,3)
                 │
-                │ Analogy: Performing the exam
+                │ Analogy: The librarian reads the book and compares it to records
                 │
                 └── Assertions
                     │
                     │ Example
                     │ assert result == 5
                     │
-                    │ Analogy: Diagnostic rule
-                    │ "expected medical result must match measurement"
+                    │ Analogy: Catalog verification rule
+                    │ "book contents must match the official catalog record"
                     │
                     ├── TRUE
                     │     │
                     │     └── PASS
-                    │         Analogy: patient exam normal
+                    │         Analogy: book matches catalog perfectly
                     │
                     └── FALSE
                           │
                           └── FAIL
-                              Analogy: diagnosis mismatch
+                              Analogy: book record does not match catalog
 
 
 EXECUTION FLOW

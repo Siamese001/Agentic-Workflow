@@ -64,8 +64,10 @@ OPS_SCRIPTS_DIR: Final[str] = "ops_scripts"
 SCRIPTS_DIR: Final[str] = "scripts"
 SYSTEM_LEARNING_DIR: Final[str] = "system_learning"
 TESTS_DIR: Final[str] = "tests"
+TESTS_UNIT_DIR: Final[str] = "tests/unit"
 TOOLS_DIR: Final[str] = "tools"
 DASHBOARD_DIR: Final[str] = "agentic_core/L6_observability/dashboards"
+REPORTS_DIR: Final[str] = "reports"
 
 # Layer-specific directories
 L0_MAINTENANCE_DIR: Final[str] = "agentic_core/L0_maintenance"

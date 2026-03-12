@@ -3,7 +3,9 @@ E2E test example - should be routed to tests/e2e/
 """
 
 import pytest
-from playwright.sync_api import Page
+
+playwright = pytest.importorskip("playwright", reason="playwright not installed")
+from playwright.sync_api import Page  # noqa: E402
 
 
 MAX_RETRIES = 3

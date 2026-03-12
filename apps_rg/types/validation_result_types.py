@@ -21,11 +21,13 @@ Non-responsibilities:
 - Headline composition
 """
 
+from __future__ import annotations
 import logging
 import os
 import re
 from dataclasses import dataclass
 from dataclasses import field as Field
+from typing import Any
 
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0

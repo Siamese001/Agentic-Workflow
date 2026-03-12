@@ -28,6 +28,16 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 # Configuration constants
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from agentic_core.L0_routing.config.path_constants import (  # noqa: E402
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    SYSTEM_LEARNING_DIR,
+)
 
 DEFAULT_ALLOWLIST = Path(__file__).parent / "llm_validator_allowlist.json"
 

@@ -24,6 +24,10 @@ _EVIDENCE_FLOORS = {
     "implements": 100,
     "reads_from": 50,
     "instantiates": 50,
+    # GA: behavioral anti-pattern graph (emitted by _AntipatternVisitor)
+    "antipattern": 1,
+    # GT: test traceability graph
+    "covers": 100,
 }
 
 
@@ -91,6 +95,22 @@ class TestGraphEvidenceFloors:
             f"instantiates graph: {actual} edges < floor {_EVIDENCE_FLOORS['instantiates']}"
         )
 
+    def test_antipattern_floor(self, scan_result):
+        """GA: _AntipatternVisitor must have found at least one behavioral anti-pattern."""
+        counts = scan_result.edge_counts_by_relation()
+        actual = counts.get("antipattern", 0)
+        assert actual >= _EVIDENCE_FLOORS["antipattern"], (
+            f"antipattern graph: {actual} edges < floor {_EVIDENCE_FLOORS['antipattern']}"
+        )
+
+    def test_covers_floor(self, scan_result):
+        """GT: Test traceability graph must have minimum covers edges."""
+        counts = scan_result.edge_counts_by_relation()
+        actual = counts.get("covers", 0)
+        assert actual >= _EVIDENCE_FLOORS["covers"], (
+            f"covers graph: {actual} edges < floor {_EVIDENCE_FLOORS['covers']}"
+        )
+
 
 class TestGraphCoverage:
     """All 6 graph types must be present in a full scan."""
@@ -134,4 +154,142 @@ class TestLayerLabelCoverage:
         """After H2 mapping, unknown count should be very low (external deps only)."""
         assert scan_result.manifest.unknown_layer_count < 50, (
             f"Too many L_UNKNOWN modules: {scan_result.manifest.unknown_layer_count}"
+        )
+
+
+class TestAntipatternCoverage:
+    """GA: Behavioral anti-pattern graph must be populated."""
+
+    def test_antipattern_edges_present(self, scan_result):
+        """GA: at least one antipattern edge must be produced in the full repo scan."""
+        relation_types = {e.relation_type for e in scan_result.edges}
+        assert "antipattern" in relation_types, (
+            "No antipattern edges found — _AntipatternVisitor may be broken"
+        )
+
+    def test_antipattern_edge_kinds_are_known(self, scan_result):
+        """GA: every antipattern edge_kind must be one of the four declared kinds."""
+        known_kinds = {
+            "silent_exception_swallow",
+            "blocking_call_in_async",
+            "global_state_mutation",
+            "retry_without_backoff",
+        }
+        bad = [
+            e for e in scan_result.edges
+            if e.relation_type == "antipattern" and e.edge_kind not in known_kinds
+        ]
+        assert bad == [], f"Unknown antipattern edge_kinds: {[b.edge_kind for b in bad[:5]]}"
+
+    def test_antipattern_manifest_count_nonzero(self, scan_result):
+        """GA: manifest.antipattern_count must be populated."""
+        assert scan_result.manifest.antipattern_count > 0, (
+            "manifest.antipattern_count is 0 — counting may be broken"
+        )
+
+    def test_antipattern_manifest_matches_edge_count(self, scan_result):
+        """GA: manifest count must equal actual edge count."""
+        actual = sum(1 for e in scan_result.edges if e.relation_type == "antipattern")
+        assert scan_result.manifest.antipattern_count == actual, (
+            f"manifest.antipattern_count={scan_result.manifest.antipattern_count} "
+            f"but actual={actual}"
+        )
+
+
+class TestTestTraceabilityGraph:
+    """GT: covers graph must be non-trivial."""
+
+    def test_covers_edges_present(self, scan_result):
+        """GT: covers edges must exist (test files import production modules)."""
+        relation_types = {e.relation_type for e in scan_result.edges}
+        assert "covers" in relation_types, "No covers edges found"
+
+    def test_covers_sources_are_test_modules(self, scan_result):
+        """GT: all covers edges must originate from test modules."""
+        bad = [
+            e for e in scan_result.edges
+            if e.relation_type == "covers"
+            and not any(ind in e.source_file for ind in ("tests/", "test_", "_test.py"))
+        ]
+        assert bad == [], (
+            f"{len(bad)} covers edges originate from non-test files: "
+            f"{[b.source_file for b in bad[:3]]}"
+        )
+
+    def test_covers_ratio_reasonable(self, scan_result):
+        """GT: test_covers_count must exceed 1% of parsed module count (basic hygiene).
+
+        covers edges point to ADG::Symbol:: targets (imported symbols), not Module nodes.
+        We therefore compare manifest.test_covers_count against parsed_module_count.
+        """
+        covers_count = scan_result.manifest.test_covers_count
+        total = scan_result.manifest.parsed_module_count
+        if total == 0:
+            pytest.skip("No modules parsed")
+        ratio = covers_count / total
+        assert ratio >= 0.01, (
+            f"Too few covers edges relative to module count: "
+            f"{covers_count} covers / {total} modules = {ratio:.1%} (need >= 1%)"
+        )
+
+
+class TestPromptSlotGraph:
+    """E20: Prompt lifecycle graph — if prompt edges exist they must be well-formed.
+
+    Tests skip gracefully when the repo contains no prompt-slot call sites yet.
+    The schema/visitor wiring correctness is covered by unit tests in tests/adg/.
+    """
+
+    def test_prompt_slot_to_names_use_canonical_prefix(self, scan_result):
+        """E20: generates_prompt to_name must follow ADG::PromptSlot:: prefix."""
+        gen_edges = [e for e in scan_result.edges if e.relation_type == "generates_prompt"]
+        if not gen_edges:
+            pytest.skip("No generates_prompt edges in repo — visitor correctness tested in unit tests")
+        bad = [e for e in gen_edges if not e.to_name.startswith("ADG::PromptSlot::")]
+        assert bad == [], (
+            f"{len(bad)} generates_prompt edges have wrong to_name prefix: "
+            f"{[b.to_name for b in bad[:3]]}"
+        )
+
+    def test_consumes_prompt_to_names_use_canonical_prefix(self, scan_result):
+        """E20: consumes_prompt to_name must follow ADG::PromptTemplate:: prefix."""
+        con_edges = [e for e in scan_result.edges if e.relation_type == "consumes_prompt"]
+        if not con_edges:
+            pytest.skip("No consumes_prompt edges in repo — visitor correctness tested in unit tests")
+        bad = [e for e in con_edges if not e.to_name.startswith("ADG::PromptTemplate::")]
+        assert bad == [], (
+            f"{len(bad)} consumes_prompt edges have wrong to_name prefix: "
+            f"{[b.to_name for b in bad[:3]]}"
+        )
+
+
+class TestScannerWiring:
+    """S1/A1: Verify that all visitors are wired into the main scan loop."""
+
+    def test_all_graph_types_covered(self, scan_result):
+        """Every declared graph type must produce at least one edge."""
+        required_relations = {
+            "imports",       # G1
+            "implements",    # G3
+            "reads_from",    # G5
+            "instantiates",  # G6
+            "violates",      # GV
+            "covers",        # GT
+            "antipattern",   # GA
+        }
+        present = {e.relation_type for e in scan_result.edges}
+        missing = required_relations - present
+        assert missing == set(), (
+            f"Missing relation types in full scan: {sorted(missing)}"
+        )
+
+    def test_manifest_parse_failure_rate_low(self, scan_result):
+        """A3: Parse failure rate must be below 1%."""
+        total = scan_result.manifest.parsed_module_count
+        failures = scan_result.manifest.syntax_error_count
+        if total == 0:
+            pytest.skip("No modules parsed")
+        rate = failures / total
+        assert rate < 0.01, (
+            f"Parse failure rate too high: {failures}/{total} = {rate:.1%}"
         )

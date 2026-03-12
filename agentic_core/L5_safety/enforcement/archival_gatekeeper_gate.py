@@ -454,7 +454,17 @@ class ArchivalGatekeeper:
         try:
             # Check destination existence to prevent silent overwrite
             if destination.exists() and not overwrite:
-                raise FileExistsError(f"Destination already exists: {destination}")
+                result = ArchivalResult(
+                    success=False,
+                    operation=ArchivalOperation.MOVE,
+                    source_path=source,
+                    destination_path=destination,
+                    requester_agent=requester_agent,
+                    reason=reason,
+                    error=f"Destination already exists: {destination}",
+                )
+                self._log_operation(result)
+                return result
 
             # Create parent directories if needed
             if create_parents:

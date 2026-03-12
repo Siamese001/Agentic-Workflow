@@ -38,6 +38,8 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
+from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
+
 from agentic_core.L0_routing.types.guardian_registry_types import (
     ALL_GUARDIANS,
     GuardianTier,

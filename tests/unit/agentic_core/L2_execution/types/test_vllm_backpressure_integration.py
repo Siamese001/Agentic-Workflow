@@ -81,7 +81,7 @@ def test_queue_controller_release_decrements():
 
 
 def test_queue_controller_full_acquire_fails():
-    ctrl = VLLMQueueController(max_depth=MAX_DEPTH)
+    ctrl = VLLMQueueController(max_depth=2)
     ctrl.acquire()
     ctrl.acquire()
     assert not ctrl.acquire()

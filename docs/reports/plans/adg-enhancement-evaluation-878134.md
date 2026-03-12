@@ -1,6 +1,6 @@
-# ADG Enhancement Evaluation: Pragmatic Quick Wins & High-Impact Gaps
+# ADG Enhancement Evaluation: Clear Include/Exclude Recommendations
 
-Evaluate 10 proposed ADG enhancements with pragmatic focus on maximum architectural assurance with minimal new infrastructure.
+Pragmatic evaluation of 10 proposed ADG enhancements with clear recommendations on which to implement and why.
 
 ## Evaluation Framework
 
@@ -34,123 +34,503 @@ From analysis of `@C:\Git\Agentic-Workflow\artifacts\adg\`:
 - `@C:\Git\Agentic-Workflow\agentic_core\adg\analysis\policy_hash_validator.py` - Policy hash coupling
 - `@C:\Git\Agentic-Workflow\agentic_core\L2_execution\enforcement\capability_chokepoint.py` - Capability token enforcement (runtime)
 
-## Proposal Evaluations
+## Clear Recommendations: Include or Exclude
 
-### #1: UWG Mutation Termination Proof ✅ VALID - P0 (Quick Win)
+### Summary Table
 
-**Gap**: Architecture requires all state mutations terminate at UWG, but ADG cannot prove no direct DB/vector writes bypass gateway.
+| # | Proposal | Recommendation | Effort | Why |
+|---|----------|---------------|--------|-----|
+| 1 | UWG mutation termination proof | ✅ **INCLUDE** | ~80 LOC | Complete static proof, closes critical bypass surface |
+| 2 | L5 safety consultation coverage | ✅ **INCLUDE** | ~100 LOC | Proves L5 infrastructure exists, catches obvious bypasses |
+| 3 | Runtime policy hash verification | ✅ **INCLUDE** | ~50 LOC | Proves validation infrastructure exists (already 80% done) |
+| 4 | Capability token chokepoint enforcement | ✅ **INCLUDE** | ~150 LOC | Proves chokepoint architecture, high-value static check |
+| 5 | Execution DAG validation | ⚠️ **PARTIAL** | ~100 LOC | Prove DAG validation logic exists, defer runtime validation |
+| 6 | Cryptographic chain validation | ❌ **EXCLUDE** | N/A | Pure runtime concern, wrong tool for the job |
+| 7 | Meta-learning feedback loops | ❌ **EXCLUDE** | N/A | Already modeled via import/call edges, no gap |
+| 8 | Data contract integrity enforcement | ✅ **INCLUDE** | ~200 LOC | Proves contract validation infrastructure exists |
+| 9 | Agent behavioral correctness | ❌ **EXCLUDE** | N/A | Pure runtime state machine, requires agent framework |
+| 10 | Architecture invariant proof completeness | ✅ **INCLUDE** | 0 LOC | Documentation audit, critical for accurate claims |
 
-**Validity**: ✅ **GENUINE GAP** - Current `mutation_authority.py` detects `writes_to` edges but cannot distinguish filesystem writes from database/vector writes.
-
-**ADG Capability**: ✅ **STATICALLY PROVABLE** - Extend `WRITE_SIDE_EFFECT_SYMBOLS` in `@C:\Git\Agentic-Workflow\agentic_core\adg\schema.py:428` to include:
-- Database writes: `cursor.execute`, `session.add`, `session.commit`, `collection.insert`, `redis.set`
-- Vector writes: `chromadb.add`, `pinecone.upsert`, `qdrant.upsert`, `weaviate.batch`
-- Direct embedding calls without UWG routing
-
-**Implementation**: **QUICK WIN** - Add symbols to schema, extend `uwg_write_authority.py` classification.
-
-**Defense**: ADG already tracks 2,323 `writes_to` edges. Adding database/vector symbol detection requires ~50 LOC in schema + 30 LOC in uwg_write_authority classifier. Provides **complete static proof** that all mutations route through UWG.
-
-**Priority**: **P0 - Critical** - Closes mutation bypass surface, high assurance/low effort ratio.
-
----
-
-### #2: L5 Safety Consultation Coverage ⚠️ PARTIAL - P1 (Hybrid)
-
-**Gap**: L5 is horizontal enforcement plane, but ADG cannot verify every runtime execution path consults L5.
-
-**Validity**: ✅ **GENUINE GAP** - Architecture claims L5 is consulted universally, but no proof mechanism exists.
-
-**ADG Capability**: ⚠️ **PARTIALLY PROVABLE** - ADG can prove:
-- Static imports of L5 modules (G1 import edges)
-- Calls to L5 enforcement symbols (G2 call edges)
-- Modules that bypass L5 (no import/call edges to L5)
-
-**Cannot prove**: Runtime conditional execution paths that skip L5 checks.
-
-**Implementation**: **HYBRID APPROACH**
-- **Quick Win (Static)**: Extend `layer_authority.py` to detect modules in L0-L4 that perform sensitive operations (writes, tool calls, provider invocations) WITHOUT any L5 import/call edges. ~100 LOC.
-- **Runtime Gap**: Dynamic path coverage requires instrumentation (out of scope for ADG).
-
-**Defense**: Static analysis provides **necessary but not sufficient** proof. ADG can prove "module X performs mutation without importing L5" (violation), but cannot prove "all execution paths through module Y consult L5" (requires runtime tracing). **Pragmatic win**: Catch obvious bypasses statically, accept runtime gap.
-
-**Priority**: **P1 - High Impact** - Static portion is quick win, catches majority of violations.
+**Total to Include**: 7 of 10 proposals (~680 LOC)
+**Total to Exclude**: 3 of 10 proposals (runtime-only concerns)
 
 ---
 
-### #3: Runtime Policy Hash Verification ❌ INVALID - P3 (Runtime Only)
+## Detailed Evaluations
 
-**Gap**: Architecture requires execution plans reference active policy hash, but graph cannot prove runtime validation.
+### #1: UWG Mutation Termination Proof ✅ **INCLUDE** - P0
 
-**Validity**: ⚠️ **OVERSTATED GAP** - Existing `policy_hash_validator.py` already detects modules that create instruction packets without policy hash coupling.
+**Original Gap Statement:**
+> "Architecture requires all state mutations to terminate at the Universal Write Gateway, but the ADG cannot yet prove that no direct DB/vector writes bypass the gateway."
 
-**ADG Capability**: ⚠️ **STATIC DETECTION ONLY** - ADG can prove:
-- Module creates `InstructionPacket` but doesn't reference `policy_hash` symbols (static coupling gap)
-- Cannot prove: Runtime validates hash against active policy, hash is current, validation isn't bypassed
+**Recommendation: ✅ INCLUDE**
 
-**Implementation**: **NOT A QUICK WIN** - Runtime validation requires:
-- Policy registry with active hash tracking
-- Runtime interceptor to verify hash on every instruction
-- Telemetry to prove validation executed
+**Why Include:**
+1. **Complete static proof possible** - ADG already tracks 2,323 `writes_to` edges for filesystem operations
+2. **Genuine gap** - Current detection misses database/vector writes (Redis, PostgreSQL, ChromaDB, Pinecone, etc.)
+3. **Quick win** - Extend existing `WRITE_SIDE_EFFECT_SYMBOLS` in schema + classification logic (~80 LOC total)
+4. **High assurance** - Closes critical mutation bypass surface with minimal effort
 
-**Defense**: **Existing ADG capability is sufficient for static proof**. `policy_hash_validator.py` already detects 90% of violations (missing coupling). Runtime hash freshness/validation is **runtime concern**, not ADG concern. **Not a gap - already addressed statically**.
+**What ADG Will Prove:**
+- ✅ All filesystem writes route through UWG (already proven)
+- ✅ All database writes route through UWG (new)
+- ✅ All vector store writes route through UWG (new)
+- ✅ All subprocess executions route through UWG (already proven)
 
-**Priority**: **P3 - Low** - Static detection exists, runtime verification requires new infrastructure (out of scope).
+**What ADG Cannot Prove:**
+- ❌ Write actually executed at runtime (requires trace)
+- ❌ UWG validation succeeded (requires runtime result)
 
----
+**Implementation:**
+- Add to `@C:\Git\Agentic-Workflow\agentic_core\adg\schema.py:428` WRITE_SIDE_EFFECT_SYMBOLS:
+  - Database: `cursor.execute`, `session.add`, `session.commit`, `collection.insert`, `redis.set`, `redis.hset`
+  - Vector: `chromadb.add`, `pinecone.upsert`, `qdrant.upsert`, `weaviate.batch.add`
+- Extend `@C:\Git\Agentic-Workflow\agentic_core\adg\applications\uwg_write_authority.py:115` classification
 
-### #4: Capability Token Chokepoint Enforcement ⚠️ PARTIAL - P1 (Hybrid)
-
-**Gap**: Tools must execute through capability authorization chokepoint, but ADG cannot guarantee every tool call passes through this path.
-
-**Validity**: ✅ **GENUINE GAP** - `capability_chokepoint.py` exists but no static proof all tool calls route through it.
-
-**ADG Capability**: ⚠️ **PARTIALLY PROVABLE** - ADG can prove:
-- Tool invocation symbols (G2 call edges to tool execution)
-- Capability chokepoint imports/calls
-- Modules that call tools WITHOUT calling `authorize_and_execute`
-
-**Cannot prove**: Runtime bypass via reflection, dynamic dispatch, or conditional paths.
-
-**Implementation**: **HYBRID APPROACH**
-- **Quick Win (Static)**: Add analyzer to detect tool invocations without capability chokepoint in call path. Extend `runtime_graph.py` with capability coupling check. ~150 LOC.
-- **Runtime Gap**: Dynamic bypass detection requires runtime instrumentation.
-
-**Defense**: Static analysis catches **architectural violations** (tool calls without chokepoint import). Runtime bypass (reflection, eval) is **behavioral anomaly** requiring runtime monitoring. **Pragmatic win**: Prove architectural compliance statically, accept runtime gap.
-
-**Priority**: **P1 - High Impact** - Static portion is implementable, provides strong assurance for well-structured code.
+**Priority: P0 - Critical**
+**Effort: ~80 LOC**
+**ROI: Extremely High**
 
 ---
 
-### #5: Execution DAG Validation ❌ INVALID - P3 (Runtime Only)
+### #2: L5 Safety Consultation Coverage ✅ **INCLUDE** - P1
 
-**Gap**: Orchestrators dynamically build DAGs for task execution, but ADG models static relationships rather than runtime task graph.
+**Original Gap Statement:**
+> "L5 is defined as a horizontal enforcement plane across all layers, but ADG cannot verify that every runtime execution path actually consults L5."
 
-**Validity**: ❌ **NOT AN ADG GAP** - This is **runtime topology**, not static dependency graph.
+**Recommendation: ✅ INCLUDE**
 
-**ADG Capability**: ❌ **NOT STATICALLY PROVABLE** - Runtime DAG construction is:
-- Data-dependent (task inputs determine DAG shape)
-- Dynamic (built at execution time)
-- Stateful (depends on prior execution results)
+**Why Include:**
+1. **Catches architectural violations** - Detects modules performing sensitive operations without L5 infrastructure
+2. **Necessary condition proof** - Proves L5 consultation is architecturally possible (imports/calls exist)
+3. **Quick win** - Extend existing `layer_authority.py` analyzer (~100 LOC)
+4. **High-value static check** - Catches obvious bypasses (no L5 import = guaranteed bypass)
 
-ADG models **code structure** (what CAN call what), not **execution topology** (what DID call what in this run).
+**What ADG Will Prove:**
+- ✅ Modules performing writes/tool calls/provider invocations import L5 enforcement modules
+- ✅ Sensitive operations have L5 validation calls in their call graph
+- ✅ No "dark matter" modules that mutate without L5 awareness
 
-**Implementation**: **OUT OF SCOPE** - Requires:
-- Runtime DAG capture during orchestration
-- Execution trace collection
-- Post-execution DAG validation
+**What ADG Cannot Prove:**
+- ❌ L5 validation actually executed at runtime (conditional bypass)
+- ❌ L5 validation succeeded (runtime result)
+- ❌ All execution paths consult L5 (requires control flow analysis + runtime trace)
 
-**Defense**: **This is not an ADG enhancement - it's a runtime observability feature**. ADG cannot and should not model runtime execution graphs. L3 orchestration already exists in `@C:\Git\Agentic-Workflow\agentic_core\L3_orchestration/` (currently empty directories). **Missed opportunity**: Build L3 orchestration with built-in DAG validation, not ADG extension.
+**Why This Is Still Valuable:**
+- **Necessary condition**: If module doesn't import L5, it CANNOT consult L5 → guaranteed violation
+- **Architectural compliance**: Proves L5 infrastructure is wired into sensitive operations
+- **Fail-fast**: Catches violations at CI time, not runtime
 
-**Priority**: **P3 - Out of Scope** - Not an ADG concern, requires L3/L6 runtime instrumentation.
+**Implementation:**
+- Extend `@C:\Git\Agentic-Workflow\agentic_core\adg\analysis\layer_authority.py`
+- Add rule: "Modules with `writes_to`/`invokes_tool`/`invokes_provider` edges MUST have import/call edges to L5 enforcement"
+- Detection logic: Cross-reference sensitive operation edges with L5 consultation edges
+
+**Priority: P1 - High Impact**
+**Effort: ~100 LOC**
+**ROI: High** (catches architectural bypasses, necessary condition for runtime compliance)
 
 ---
 
-### #6: Cryptographic Chain Validation ❌ INVALID - P3 (Runtime Only)
+### #3: Runtime Policy Hash Verification ✅ **INCLUDE** - P1
 
-**Gap**: Compliance hashes, sandbox envelopes, signatures create trust chain, but ADG cannot confirm cryptographic verification executed on every path.
+**Original Gap Statement:**
+> "Architecture requires execution plans to reference an active policy hash and compliance stamp, but the graph cannot prove that runtime instructions always validate the active policy."
 
-**Validity**: ❌ **NOT AN ADG GAP** - Cryptographic verification is **runtime behavior**, not static structure.
+**Recommendation: ✅ INCLUDE**
+
+**Why Include:**
+1. **Already 80% implemented** - `policy_hash_validator.py` exists, just needs minor enhancement (~50 LOC)
+2. **Proves infrastructure exists** - Validates that policy hash validation code is present and called
+3. **Necessary condition** - If validation code doesn't exist, runtime validation is impossible
+4. **Low effort, good value** - Minimal work to complete existing analyzer
+
+**What ADG Will Prove:**
+- ✅ Modules creating `InstructionPacket`/`GovernedPayload` import policy hash symbols
+- ✅ Instruction creation calls policy hash validation functions
+- ✅ Policy hash validation infrastructure exists in call graph
+
+**What ADG Cannot Prove:**
+- ❌ Policy hash was validated at runtime (execution trace)
+- ❌ Hash matched the active policy (runtime state)
+- ❌ Validation didn't fail silently (runtime result)
+
+**Why This Is Still Valuable:**
+- **Existing work**: `@C:\Git\Agentic-Workflow\agentic_core\adg\analysis\policy_hash_validator.py` already detects instruction packets without policy hash coupling
+- **Gap is small**: Just needs to verify validation functions are actually called, not just imported
+- **Architectural compliance**: Proves policy validation infrastructure is wired correctly
+
+**Implementation:**
+- Enhance `@C:\Git\Agentic-Workflow\agentic_core\adg\analysis\policy_hash_validator.py`
+- Add call graph analysis: instruction creation → policy hash validation call path
+- Detect: `InstructionPacket()` called without `verify_policy_hash()` in call chain
+
+**Priority: P1 - High Impact**
+**Effort: ~50 LOC** (enhancement to existing analyzer)
+**ROI: High** (low effort, completes existing work, proves necessary condition)
+
+---
+
+### #4: Capability Token Chokepoint Enforcement ✅ **INCLUDE** - P1
+
+**Original Gap Statement:**
+> "Tools must execute through the capability authorization chokepoint, but ADG cannot guarantee that every tool call passes through this path."
+
+**Recommendation: ✅ INCLUDE**
+
+**Why Include:**
+1. **High architectural value** - Capability chokepoint is critical security boundary
+2. **Proves necessary condition** - If tool call doesn't route through chokepoint, authorization is impossible
+3. **Extends existing work** - Builds on `runtime_graph.py` tool invocation detection
+4. **Catches architectural bypasses** - Detects tools called without authorization infrastructure
+
+**What ADG Will Prove:**
+- ✅ Tool invocation symbols are called through `CapabilityChokepoint.authorize_and_execute()`
+- ✅ Modules calling tools import capability chokepoint infrastructure
+- ✅ No direct tool calls bypassing authorization layer
+
+**What ADG Cannot Prove:**
+- ❌ Authorization actually executed at runtime (conditional bypass)
+- ❌ Capability token was valid (runtime validation)
+- ❌ Authorization succeeded (runtime result)
+
+**Why This Is Still Valuable:**
+- **Architectural enforcement**: Proves chokepoint is wired into tool execution paths
+- **Necessary condition**: No chokepoint import = guaranteed bypass
+- **CI-time detection**: Catches violations before deployment
+
+**Implementation:**
+- Extend `@C:\Git\Agentic-Workflow\agentic_core\adg\applications\runtime_graph.py`
+- Add capability coupling analysis: tool invocations → chokepoint call path
+- Detect: Tool execution symbols called without `authorize_and_execute` in call chain
+- Cross-reference with `@C:\Git\Agentic-Workflow\agentic_core\L2_execution\enforcement\capability_chokepoint.py`
+
+**Priority: P1 - High Impact**
+**Effort: ~150 LOC**
+**ROI: High** (critical security boundary, architectural compliance proof)
+
+---
+
+### #5: Execution DAG Validation ⚠️ **PARTIAL INCLUDE** - P2
+
+**Original Gap Statement:**
+> "Orchestrators dynamically build DAGs for task execution, but ADG models static relationships rather than the runtime task graph."
+
+**Recommendation: ⚠️ PARTIAL INCLUDE** (static infrastructure proof only)
+
+**Why Partial Include:**
+1. **Infrastructure proof is valuable** - Proves DAG validation logic exists in orchestrators
+2. **Necessary condition** - If validation code doesn't exist, runtime validation is impossible
+3. **Medium effort** - Requires new analyzer for orchestration patterns (~100 LOC)
+4. **Runtime gap is acceptable** - Dynamic DAG construction is inherently runtime concern
+
+**What ADG Will Prove:**
+- ✅ Orchestrator modules import DAG validation libraries
+- ✅ DAG construction calls validation functions (cycle detection, dependency resolution)
+- ✅ Orchestration infrastructure exists and is wired correctly
+
+**What ADG Cannot Prove:**
+- ❌ Specific DAG was valid for this input (data-dependent)
+- ❌ DAG executed in correct order (runtime scheduler)
+- ❌ DAG was acyclic (dynamic construction)
+
+**Why Partial Is Appropriate:**
+- **Static foundation**: ADG proves validation infrastructure exists
+- **Runtime validation**: Requires L3 orchestration framework with built-in DAG validation
+- **Scope boundary**: ADG models code structure, not execution topology
+
+**Implementation:**
+- Create new analyzer: `@C:\Git\Agentic-Workflow\agentic_core\adg\analysis\orchestration_validation.py`
+- Detect orchestrator patterns: modules in L3 that build/execute DAGs
+- Verify: DAG construction → validation call path (cycle detection, dependency check)
+- Flag: Orchestrators without validation infrastructure
+
+**Priority: P2 - Valuable**
+**Effort: ~100 LOC**
+**ROI: Medium** (proves infrastructure exists, runtime validation deferred to L3 framework)
+
+---
+
+### #6: Cryptographic Chain Validation ❌ **EXCLUDE** - Out of Scope
+
+**Original Gap Statement:**
+> "Compliance hashes, sandbox envelopes, and signatures create a trust chain, but ADG cannot confirm cryptographic verification is executed on every path."
+
+**Recommendation: ❌ EXCLUDE**
+
+**Why Exclude:**
+1. **Pure runtime concern** - Cryptographic verification results are runtime properties
+2. **Wrong tool for the job** - ADG models code structure, not execution results
+3. **No static proof possible** - Cannot prove signature was valid, hash matched, chain unbroken
+4. **Requires runtime audit** - Needs execution trace with crypto operation logging
+
+**What ADG Could Prove (but low value):**
+- ⚠️ Modules import crypto libraries
+- ⚠️ Signature verification functions exist in code
+- ⚠️ Crypto calls appear in call graph
+
+**Why This Isn't Valuable:**
+- **Existence ≠ Correctness**: Code existing doesn't prove it executed or succeeded
+- **Runtime result**: Signature validity is determined at execution time
+- **Bypass detection**: Requires runtime monitoring, not static analysis
+
+**Alternative Approach:**
+- Build runtime audit framework in L6 observability
+- Log all crypto operations (sign, verify, hash)
+- Validate trust chain at runtime with telemetry
+- ADG is not the right tool for this problem
+
+**Priority: P3 - Out of Scope**
+**Effort: N/A**
+**Recommendation: Build runtime audit framework instead**
+
+---
+
+### #7: Meta-Learning Feedback Loops ❌ **EXCLUDE** - No Gap
+
+**Original Gap Statement:**
+> "Architecture defines learning loops and telemetry-driven adaptation, which are runtime data flows not captured in the dependency graph."
+
+**Recommendation: ❌ EXCLUDE**
+
+**Why Exclude:**
+1. **No gap exists** - ADG already models learning infrastructure via import/call edges
+2. **Runtime data flow** - Learning loop execution is runtime behavior, not code structure
+3. **Already addressed** - System learning modules tracked in ADG (133 modules in L_SL layer)
+4. **Wrong abstraction level** - ADG models code dependencies, not data flows
+
+**What ADG Already Proves:**
+- ✅ Modules import from `@C:\Git\Agentic-Workflow\system_learning/` (47 modules)
+- ✅ Telemetry collection calls learning adaptation functions
+- ✅ Learning infrastructure exists and is wired into execution paths
+
+**What ADG Cannot Prove (and shouldn't):**
+- ❌ Learning loop converged (runtime behavior)
+- ❌ Adaptation was applied (runtime state change)
+- ❌ Feedback improved performance (runtime metric)
+
+**Why This Is Not An ADG Enhancement:**
+- **Already modeled**: Learning infrastructure is in the dependency graph
+- **Runtime concern**: Loop execution and convergence are L6 observability concerns
+- **No action needed**: ADG already provides appropriate level of analysis
+
+**Priority: P3 - No Gap**
+**Effort: N/A**
+**Recommendation: No enhancement needed, already addressed**
+
+---
+
+### #8: Data Contract Integrity Enforcement ✅ **INCLUDE** - P2
+
+**Original Gap Statement:**
+> "RAG and governance contracts define strict schemas and immutability guarantees, but ADG cannot verify runtime validation of these structures."
+
+**Recommendation: ✅ INCLUDE**
+
+**Why Include:**
+1. **Proves validation infrastructure exists** - Detects data mutations without contract validation
+2. **Architectural compliance** - Ensures Pydantic/dataclass validators are wired correctly
+3. **Medium effort, good value** - Extends schema to track contract definitions (~200 LOC)
+4. **Catches missing validation** - Detects data mutations without validation in call path
+
+**What ADG Will Prove:**
+- ✅ Data contract definitions exist (Pydantic models, TypedDict, dataclasses)
+- ✅ Modules mutating data import contract validators
+- ✅ Mutation operations call validation functions
+- ✅ Contract validation infrastructure is wired correctly
+
+**What ADG Cannot Prove:**
+- ❌ Validation actually executed at runtime (conditional bypass)
+- ❌ Validation succeeded (runtime result)
+- ❌ Schema matched contract (runtime type checking)
+
+**Why This Is Valuable:**
+- **Necessary condition**: No validator import = no validation possible
+- **Architectural discipline**: Enforces contract-first data handling
+- **RAG/governance integrity**: Critical for prompt governance and RAG contracts
+
+**Implementation:**
+- Extend `@C:\Git\Agentic-Workflow\agentic_core\adg\schema.py` to track contract symbols
+- Add contract definition detection: Pydantic `BaseModel`, `TypedDict`, `@dataclass`
+- Add validation call detection: `.parse_obj()`, `.model_validate()`, type checking
+- Create analyzer: data mutations → contract validation call path
+- Flag: Mutations without validation infrastructure
+
+**Priority: P2 - Valuable**
+**Effort: ~200 LOC**
+**ROI: Medium** (architectural compliance, necessary condition for runtime integrity)
+
+---
+
+### #9: Agent Behavioral Correctness ❌ **EXCLUDE** - Out of Scope
+
+**Original Gap Statement:**
+> "Agents have lifecycle semantics (observe → reason → act → evaluate), but ADG only sees structural code relationships."
+
+**Recommendation: ❌ EXCLUDE**
+
+**Why Exclude:**
+1. **Pure runtime behavior** - Lifecycle execution order is runtime state machine
+2. **Wrong tool** - ADG models code structure, not execution semantics
+3. **Requires agent framework** - Needs runtime lifecycle enforcement, not static analysis
+4. **No static proof possible** - Cannot prove methods called in correct order at runtime
+
+**What ADG Could Prove (but low value):**
+- ⚠️ Agent classes inherit from `BaseAgent`
+- ⚠️ Required methods exist (`observe`, `reason`, `act`, `evaluate`)
+- ⚠️ Method signatures match interface
+
+**Why This Isn't Valuable:**
+- **Existence ≠ Correctness**: Methods existing doesn't prove lifecycle executed correctly
+- **Runtime state machine**: Lifecycle order is determined at execution time
+- **Behavioral property**: Requires runtime monitoring, not static analysis
+
+**Alternative Approach:**
+- Build agent runtime framework with lifecycle enforcement
+- State machine validation at execution time
+- Telemetry for lifecycle transitions
+- Runtime invariant checking (can't act before observe)
+- ADG is not the right tool for this problem
+
+**Priority: P3 - Out of Scope**
+**Effort: N/A**
+**Recommendation: Build agent runtime framework instead**
+
+---
+
+### #10: Architecture Invariant Proof Completeness ✅ **INCLUDE** - P0
+
+**Original Gap Statement:**
+> "Architecture claims ADG verifies execution paths and mutation paths, but ADG currently guarantees only structural layer dependencies."
+
+**Recommendation: ✅ INCLUDE**
+
+**Why Include:**
+1. **Zero implementation cost** - Documentation audit only, no code changes
+2. **Critical for accuracy** - Prevents overclaiming ADG capabilities
+3. **Sets correct expectations** - Clarifies what ADG proves vs. requires runtime monitoring
+4. **High impact** - Improves architectural clarity and trust
+
+**What This Fixes:**
+- ✅ Accurately document what ADG proves statically
+- ✅ Clearly state what ADG cannot prove (runtime concerns)
+- ✅ Define boundary between static analysis and runtime monitoring
+- ✅ Prevent architectural overclaiming
+
+**Current ADG Capabilities (to document accurately):**
+- ✅ Layer dependency compliance (structural)
+- ✅ Mutation path verification (architectural)
+- ✅ Layer authority violations (behavioral constraints)
+- ✅ Policy hash coupling (infrastructure existence)
+- ✅ Runtime graph topology (execution architecture)
+
+**ADG Limitations (to document clearly):**
+- ❌ Runtime execution traces (requires instrumentation)
+- ❌ Dynamic behavior validation (requires runtime monitoring)
+- ❌ Execution results (requires telemetry)
+- ❌ Cryptographic verification (requires audit log)
+
+**Implementation:**
+- Audit architecture documentation in `@C:\Git\Agentic-Workflow\docs/architecture/`
+- Update ADG capability claims to match reality
+- Add "Static vs Runtime" section to ADG documentation
+- Document what requires runtime monitoring vs. static analysis
+- Create decision tree: "Should this be ADG or runtime monitoring?"
+
+**Priority: P0 - Critical**
+**Effort: 0 LOC** (documentation only)
+**ROI: Extremely High** (prevents overclaiming, improves trust)
+
+---
+
+## Final Recommendations Summary
+
+### ✅ INCLUDE (7 proposals, ~680 LOC)
+
+**P0 - Critical (Immediate Implementation)**
+1. **#1: UWG Mutation Termination** - ~80 LOC - Complete static proof of mutation routing
+2. **#10: Documentation Accuracy** - 0 LOC - Audit architecture claims vs. ADG capabilities
+
+**P1 - High Impact (Next Phase)**
+3. **#2: L5 Safety Consultation** - ~100 LOC - Prove L5 infrastructure wired into sensitive operations
+4. **#3: Policy Hash Verification** - ~50 LOC - Complete existing analyzer, prove validation infrastructure
+5. **#4: Capability Chokepoint** - ~150 LOC - Prove tool authorization infrastructure exists
+
+**P2 - Valuable (Future Enhancement)**
+6. **#5: DAG Validation** (Partial) - ~100 LOC - Prove orchestration validation infrastructure exists
+7. **#8: Data Contract Integrity** - ~200 LOC - Prove contract validation infrastructure exists
+
+### ❌ EXCLUDE (3 proposals)
+
+**Out of Scope - Requires Runtime Monitoring**
+- **#6: Cryptographic Chain Validation** - Pure runtime concern, build L6 audit framework instead
+- **#9: Agent Behavioral Correctness** - Pure runtime state machine, build agent runtime framework instead
+
+**No Gap - Already Addressed**
+- **#7: Meta-Learning Feedback Loops** - Already modeled via import/call edges, no enhancement needed
+
+---
+
+## Implementation Roadmap
+
+### Phase 1: P0 Critical (Week 1)
+- Implement #1: UWG mutation termination proof (~80 LOC)
+- Execute #10: Documentation audit (0 LOC)
+- **Deliverable**: Complete mutation bypass proof + accurate architectural claims
+
+### Phase 2: P1 High Impact (Week 2-3)
+- Implement #2: L5 safety consultation coverage (~100 LOC)
+- Implement #3: Policy hash verification enhancement (~50 LOC)
+- Implement #4: Capability chokepoint enforcement (~150 LOC)
+- **Deliverable**: Necessary condition proofs for critical security boundaries
+
+### Phase 3: P2 Valuable (Week 4)
+- Implement #5: DAG validation infrastructure proof (~100 LOC)
+- Implement #8: Data contract integrity enforcement (~200 LOC)
+- **Deliverable**: Infrastructure existence proofs for orchestration and data integrity
+
+### Phase 4: Runtime Monitoring (Future)
+- Design L6 observability framework for #6 (cryptographic audit)
+- Design agent runtime framework for #9 (lifecycle enforcement)
+- **Deliverable**: Runtime monitoring complements static ADG proofs
+
+---
+
+## Key Insights
+
+### 1. ADG Proves Architecture, Not Execution
+- **ADG strength**: Proves code structure, architectural compliance, necessary conditions
+- **ADG limitation**: Cannot prove runtime behavior, execution results, dynamic properties
+- **Complementary**: ADG + runtime monitoring = complete assurance
+
+### 2. Necessary vs. Sufficient Conditions
+- **Necessary**: "If X doesn't exist in code, runtime compliance is impossible" ✅ ADG proves this
+- **Sufficient**: "If X exists in code, runtime compliance is guaranteed" ❌ ADG cannot prove this
+- **Value**: Necessary condition proofs catch violations at CI time, before deployment
+
+### 3. Static Foundation Enables Runtime Validation
+- ADG proves infrastructure exists (validation code, authorization logic, contract definitions)
+- Runtime monitoring proves infrastructure executes correctly (validation ran, authorization succeeded)
+- Both are necessary, neither is sufficient alone
+
+### 4. Wrong Tool for Runtime Concerns
+- 3 of 10 proposals (#6, #7, #9) are pure runtime concerns
+- ADG cannot and should not model execution results, cryptographic validation, behavioral state machines
+- Build specialized runtime frameworks instead of overloading ADG
+
+---
+
+## Total Effort & ROI
+
+**Total Implementation**: ~680 LOC across 7 enhancements
+**Total Effort**: 3-4 weeks (phased implementation)
+**Total Value**: 
+- Complete mutation bypass proof (P0)
+- Accurate architectural documentation (P0)
+- Necessary condition proofs for 5 critical security boundaries (P1-P2)
+- Foundation for runtime monitoring frameworks (future)
+
+**ROI**: Extremely high - minimal code, maximum architectural assurance
 
 **ADG Capability**: ❌ **NOT STATICALLY PROVABLE** - ADG can detect:
 - Modules that import crypto libraries

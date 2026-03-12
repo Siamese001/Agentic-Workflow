@@ -1,0 +1,54 @@
+"""ADG-driven tests for runtime/execution_trace.py — fan_in=1."""
+from __future__ import annotations
+
+import pytest
+
+pytestmark = pytest.mark.unit
+
+from agentic_core.runtime.execution_trace import ExecutionTrace, ExecutionTraceManager
+
+
+class TestExecutionTrace:
+    def test_creates(self):
+        trace = ExecutionTrace(
+            trace_id="trace-abc",
+            plan_hash="phash",
+            policy_hash="pohash",
+            determinism_digest="ddig",
+            hierarchy_hash="hhash",
+            metadata={},
+        )
+        assert trace.trace_id == "trace-abc"
+
+    def test_is_frozen(self):
+        trace = ExecutionTrace(
+            trace_id="t",
+            plan_hash="p",
+            policy_hash="po",
+            determinism_digest="d",
+            hierarchy_hash="h",
+            metadata={},
+        )
+        with pytest.raises(Exception):
+            trace.trace_id = "modified"
+
+
+class TestExecutionTraceManager:
+    def test_creates(self):
+        manager = ExecutionTraceManager()
+        assert manager is not None
+
+    def test_start_trace_returns_str(self):
+        manager = ExecutionTraceManager()
+        trace_id = manager.start_trace(
+            plan_hash="p",
+            policy_hash="po",
+            hierarchy_hash="h",
+        )
+        assert isinstance(trace_id, str)
+        assert len(trace_id) > 0
+
+    def test_has_active_trace_after_start(self):
+        manager = ExecutionTraceManager()
+        manager.start_trace(plan_hash="p", policy_hash="po", hierarchy_hash="h")
+        assert manager._active_trace is not None

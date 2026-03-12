@@ -1,6 +1,8 @@
 """Dataclass models for achv_bullet_synthesizer_types."""
-
+from __future__ import annotations
 import logging
+from dataclasses import dataclass, field
+from typing import Any
 
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0

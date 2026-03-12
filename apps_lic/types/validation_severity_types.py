@@ -3,6 +3,10 @@ LIC Validator Rules - Error codes, content cleanliness, and signal quality scori
 
 Ported from: archives/legacy_lic/Agentic LIC/validator_rules_LIC.json
 """
+from __future__ import annotations
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Any
 
 
 class ValidationSeverity(Enum):

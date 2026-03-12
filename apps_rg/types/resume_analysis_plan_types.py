@@ -7,7 +7,10 @@ This is the L1 planning layer that coordinates:
 Resume Analysis Planning → K1 Extraction → K2 Cleaning → K3 Quantification → K4 Rewriting → K5 Skill Mapping → K6 Section Assembly → K7 Formatting → K8 Validation
 """
 
+from __future__ import annotations
 import logging
+from dataclasses import dataclass, field
+from typing import Any
 
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0

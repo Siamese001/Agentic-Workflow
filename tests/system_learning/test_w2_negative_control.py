@@ -29,6 +29,16 @@ from system_learning.types.healing_outcome_learning_types import (
     HealingOutcomeAggregateSnapshot,
 )
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300
+
+
 _TAMPER = os.environ.get("W2_NEGCTRL_TAMPER", "0") == "1"
 
 

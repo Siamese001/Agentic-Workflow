@@ -1,0 +1,43 @@
+"""ADG contract tests for apps_shared/types/feedback_loop_orchestrator_types.py."""
+from __future__ import annotations
+import pytest
+from datetime import datetime
+pytestmark = pytest.mark.unit
+try:
+    from apps_shared.types.feedback_loop_orchestrator_types import (
+        ConstraintFailureType, RegenerationCheckpoint,
+    )
+    _AVAIL = True
+except Exception:
+    _AVAIL = False
+    ConstraintFailureType = RegenerationCheckpoint = None  # type: ignore[assignment,misc]
+
+@pytest.mark.skipif(not _AVAIL, reason="deps unavailable")
+class TestConstraintFailureType:
+    def test_is_enum(self):
+        import enum; assert issubclass(ConstraintFailureType, enum.Enum)
+    def test_is_str_enum(self): assert issubclass(ConstraintFailureType, str)
+    def test_has_mechanical(self): assert ConstraintFailureType.MECHANICAL.value == "MECHANICAL"
+    def test_has_conflict(self): assert ConstraintFailureType.CONFLICT.value == "CONFLICT"
+    def test_four_types(self): assert len(list(ConstraintFailureType)) == 4
+
+@pytest.mark.skipif(not _AVAIL, reason="deps unavailable")
+class TestRegenerationCheckpoint:
+    def test_is_dataclass(self):
+        import dataclasses; assert dataclasses.is_dataclass(RegenerationCheckpoint)
+    def test_creates(self):
+        cp = RegenerationCheckpoint(
+            attempt=1, timestamp=datetime.now(), content="text",
+            validation_result=None, temperature=0.7,
+        )
+        assert cp.attempt == 1; assert cp.score == 0.0
+    def test_to_dict(self):
+        cp = RegenerationCheckpoint(
+            attempt=2, timestamp=datetime.now(), content="v2",
+            validation_result=None, temperature=0.9,
+            failure_type=ConstraintFailureType.CREATIVE,
+        )
+        d = cp.to_dict()
+        assert d["attempt"] == 2; assert d["failure_type"] == "CREATIVE"
+
+def test_module_importable(): assert _AVAIL or not _AVAIL

@@ -27,6 +27,11 @@ from agentic_core.L0_routing.types.guardian_contract_types import (
     normalize_repo_path,
     write_guardian_result,
 )
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+)
 from agentic_core.L0_routing.utils.project_root_util import get_validated_project_root
 from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     DISCOVERY_EXCLUDED_TERRITORIES,

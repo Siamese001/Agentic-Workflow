@@ -1,21 +1,24 @@
 """Generate full ADG with entities and relations in the comprehensive format.
 
-Outputs three artifact tiers per run:
-    Tier 1  adg_snapshot_<ts>.json      CI-light (~50 KB) — metrics only
-    Tier 2  adg_full_<ts>.json          Normalized compact (~15-20 MB vs 57 MB)
-    Tier 3  adg_indexed_<ts>.sqlite     Queryable SQLite (~8-12 MB)
+Non-redundant output set (5 files, 100% edge coverage):
+    adg_snapshot_<ts>.json        Tier 1: CI-light (~50 KB) — metrics only
+    adg_indexed_<ts>.sqlite       Tier 2: primary queryable store (~38 MB, all 18 edge types)
+    adg_file_graph_<ts>.json      imports, exports, dead_imports, covers, influences, in_cycle
+    adg_symbol_graph_<ts>.json    calls, implements, reads_from, writes_to, instantiates, ...
+    adg_governance_graph_<ts>.json violates, antipattern, generates_prompt, ...
 
-Plus four split-plane sub-graphs:
-    adg_file_graph_<ts>.json
-    adg_symbol_graph_<ts>.json
-    adg_test_graph_<ts>.json
-    adg_governance_graph_<ts>.json
+Timestamp format: MMDDYYYY in US Eastern time  (e.g. 03122026 for March 12, 2026)
+Internal state file (not part of the 5-file model):
+    adg_graphsnap_<ts>.json       E7 drift detection — previous-run snapshot for diff
+
+NOTE: adg_full.json removed (SQLite supersedes it). test_graph removed (covers lives in file_graph).
+NOTE: adg_LATEST_* copies not generated (create_latest_symlinks=False by default).
 """
 
 from __future__ import annotations
 
 import sys
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -58,15 +61,11 @@ def generate_full_adg(adg_artifacts_dir: Path, ts: str) -> None:
 
     # Size report
     sizes = paths.size_report()
-    full_path = paths.full
-    full_sz_mb = full_path.stat().st_size / (1024 * 1024) if full_path.exists() else 0
 
     print(f"[ADG] Tier 1 snapshot:  {paths.snapshot.name}  ({sizes['snapshot']})")
-    print(f"[ADG] Tier 2 full:      {paths.full.name}  ({sizes['full']})")
-    print(f"[ADG] Tier 3 sqlite:    {paths.sqlite.name}  ({sizes['sqlite']})")
+    print(f"[ADG] Tier 2 sqlite:    {paths.sqlite.name}  ({sizes['sqlite']})")
     print(f"[ADG] file_graph:       {paths.file_graph.name}  ({sizes['file_graph']})")
     print(f"[ADG] symbol_graph:     {paths.symbol_graph.name}  ({sizes['symbol_graph']})")
-    print(f"[ADG] test_graph:       {paths.test_graph.name}  ({sizes['test_graph']})")
     print(f"[ADG] governance_graph: {paths.governance_graph.name}  ({sizes['governance_graph']})")
     print(f"[ADG] entities={len(artifact.entities)}  relations={len(artifact.relations)}")
     print(f"[ADG] artifact_digest={artifact.artifact_digest[:16]}...")
@@ -212,7 +211,9 @@ def _infer_layer(path: str) -> str:
 
 
 def main() -> None:
-    ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    # Timestamp in US Eastern time, format MMDDYYYY
+    est = timezone(timedelta(hours=-5))  # EST (UTC-5); no DST adjustment needed for artifact names
+    ts = datetime.now(est).strftime("%m%d%Y")
     adg_artifacts_dir = ROOT / "artifacts" / "adg"
     generate_full_adg(adg_artifacts_dir, ts)
 

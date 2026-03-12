@@ -62,6 +62,7 @@ from agentic_core.L0_routing.config.path_constants import (
 )
 
 SSOT_DIRS = [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR, SYSTEM_LEARNING_DIR]
+SSOT_DIR_PATHS = [ROOT / d for d in SSOT_DIRS]
 DB_PATH = ROOT / "artifacts" / "dep_graph.sqlite"
 
 LAYER_ORDER: dict[str, int] = {

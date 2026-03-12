@@ -24,6 +24,16 @@ from agentic_core.L0_routing.engines.timeshift_router import (
 )
 from agentic_core.L2_execution.engines.secure_tools_impl import SecureToolsImpl
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.75
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300
+
+
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -350,7 +360,7 @@ class TestTimeshiftRouter:
     @pytest.mark.governance
     def test_returns_compliance_when_prior_anomaly_at_threshold(self):
         cfg = _mock_routing_config(threshold=THRESHOLD)
-        prior = _mock_prior(anomaly_score=0.5)
+        prior = _mock_prior(anomaly_score=THRESHOLD)
         with patch(
             "agentic_core.L0_routing.engines.timeshift_router._get_prior_detection_signal",
             return_value=lambda tick: prior,

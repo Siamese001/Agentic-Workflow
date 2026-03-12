@@ -24,6 +24,8 @@ from agentic_core.L5_safety.enforcement.archival_gatekeeper_gate import (
 )
 from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR
 
+LIMIT = 5
+
 
 @pytest.fixture
 def temp_project():

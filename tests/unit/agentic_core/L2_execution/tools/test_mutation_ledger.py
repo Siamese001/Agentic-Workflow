@@ -9,6 +9,7 @@ Per .windsurfrules §1.8: Fail-closed and side-effect safety.
 
 import hashlib
 import json
+import sys
 from pathlib import Path
 
 import pytest
@@ -124,6 +125,7 @@ def test_mutation_ledger_detects_no_op_write(tmp_path):
     )
 
 
+@pytest.mark.skipif(sys.platform == "win32", reason="chmod read-only not enforced on Windows")
 def test_mutation_ledger_records_write_failure(tmp_path):
     """
     PASS: Write failure records FAILED entry with error message.

@@ -17,6 +17,8 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import TESTS_DIR
+
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
 THRESHOLD = 0.95

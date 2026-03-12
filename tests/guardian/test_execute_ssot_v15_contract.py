@@ -22,6 +22,16 @@ from agentic_core.L0_routing.config.path_constants import (
     L0_ROUTING_DIR,
 )
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300
+
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
 EXECUTE_SSOT = REPO_ROOT / L0_ROUTING_DIR / "scripts" / "execute_ssot.py"
 EXECUTE_SSOT_ENTRYPOINT = REPO_ROOT / L0_ROUTING_DIR / "scripts" / "execute_ssot_entrypoint.py"

@@ -79,8 +79,8 @@ class HyDeProcessor:
         self.max_retries = max_retries
         self.fallback_enabled = fallback_enabled
 
-    def expand_query(self, original_query: str, Archetype: str, industry: str | None = None) -> HyDEResult:
-        return HyDEResult(
+    def expand_query(self, original_query: str, Archetype: str, industry: str | None = None) -> HyDeResult:
+        return HyDeResult(
             original_query=original_query,
             expanded_query=original_query,
             hypothetical_doc=None,

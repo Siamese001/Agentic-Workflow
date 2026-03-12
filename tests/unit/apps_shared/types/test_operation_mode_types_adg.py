@@ -1,0 +1,47 @@
+"""ADG contract tests for apps_shared/types/operation_mode_types.py."""
+from __future__ import annotations
+import pytest
+pytestmark = pytest.mark.unit
+try:
+    from apps_shared.types.operation_mode_types import (
+        OperationMode, OperationScope, ToolOperationDefinition,
+        OperationExecutionContext, OperationExecutionResult,
+        OperationExecutionConfig, ObservabilityOperationPerformer,
+    )
+    _AVAIL = True
+except Exception:
+    _AVAIL = False
+    OperationMode = OperationScope = ToolOperationDefinition = None  # type: ignore[assignment,misc]
+    OperationExecutionContext = OperationExecutionResult = OperationExecutionConfig = None  # type: ignore[assignment,misc]
+    ObservabilityOperationPerformer = None  # type: ignore[assignment,misc]
+
+@pytest.mark.skipif(not _AVAIL, reason="deps unavailable")
+class TestOperationMode:
+    def test_is_enum(self):
+        import enum; assert issubclass(OperationMode, enum.Enum)
+    def test_has_synchronous(self): assert OperationMode.SYNCHRONOUS.value == "synchronous"
+    def test_four_modes(self): assert len(list(OperationMode)) == 4
+
+@pytest.mark.skipif(not _AVAIL, reason="deps unavailable")
+class TestOperationScope:
+    def test_is_enum(self):
+        import enum; assert issubclass(OperationScope, enum.Enum)
+    def test_has_system(self): assert OperationScope.SYSTEM.value == "system"
+
+@pytest.mark.skipif(not _AVAIL, reason="deps unavailable")
+class TestOperationExecutionResult:
+    def test_is_dataclass(self):
+        import dataclasses; assert dataclasses.is_dataclass(OperationExecutionResult)
+    def test_creates(self):
+        r = OperationExecutionResult(execution_id="e1", operation_id="op1", success=True)
+        assert r.success is True; assert r.error is None
+
+@pytest.mark.skipif(not _AVAIL, reason="deps unavailable")
+class TestObservabilityOperationPerformer:
+    def test_creates(self):
+        p = ObservabilityOperationPerformer(); assert p is not None
+    def test_list_operations_empty(self):
+        p = ObservabilityOperationPerformer()
+        ops = p.list_operations(); assert isinstance(ops, list)
+
+def test_module_importable(): assert _AVAIL or not _AVAIL

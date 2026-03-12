@@ -27,6 +27,16 @@ from agentic_core.L0_routing.config.path_constants import (
     TOOLS_DIR,
 )
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300
+
+
 # ---------------------------------------------------------------------------
 # Paths
 # ---------------------------------------------------------------------------
@@ -415,13 +425,9 @@ _LIVE_REDIS_INDICATORS = {
     "aioredis",
     "Redis(",
 }
-
 _TOMBSTONE_CLASS_PREFIX = "_Tombstoned"
-
-
 def _ast_has_live_redis(source: str, filepath: Path) -> list[str]:
     """Return list of AST node descriptions where live Redis is imported at module level.
-
     Guarded imports inside function/method bodies (e.g. ``try: import redis``) are
     acceptable optional-dependency patterns and are NOT flagged.  Only module-level
     imports create unconditional shadow Redis clients.
@@ -430,14 +436,11 @@ def _ast_has_live_redis(source: str, filepath: Path) -> list[str]:
         tree = ast.parse(source, filename=str(filepath))
     except SyntaxError:
         return []
-
     # Collect all import nodes that are direct children of the module (top-level)
     module_level_imports: set[int] = set()
     for node in ast.iter_child_nodes(tree):
         module_level_imports.add(id(node))
-
     violations: list[str] = []
-
     for node in ast.walk(tree):
         if id(node) not in module_level_imports:
             continue  # skip imports inside functions/methods/classes
@@ -448,19 +451,13 @@ def _ast_has_live_redis(source: str, filepath: Path) -> list[str]:
         elif isinstance(node, ast.ImportFrom):
             if node.module and (node.module.startswith("redis") or node.module.startswith("aioredis")):
                 violations.append(f"line {node.lineno}: from {node.module} import ...")
-
     return violations
-
-
 def _is_tombstone_file(source: str) -> bool:
     """Return True if the file is a tombstone (no live symbols)."""
     return "TOMBSTONED" in source
-
-
 def test_no_live_redis_client_in_l4_state():
     """AST-scan: L4_state must not contain live Redis imports outside tombstones."""
     violations: dict[str, list[str]] = {}
-
     for py_file in L4_STATE_DIR.rglob("*.py"):
         source = py_file.read_text(encoding="utf-8", errors="replace")
         if _is_tombstone_file(source):
@@ -469,74 +466,50 @@ def test_no_live_redis_client_in_l4_state():
         if hits:
             rel = py_file.relative_to(REPO_ROOT)
             violations[str(rel)] = hits
-
     assert not violations, (
         "L4_state must not own live Redis clients. "
         "Route through agentic_core.cache instead.\n"
         + "\n".join(f"  {path}:\n" + "\n".join(f"    {v}" for v in hits) for path, hits in violations.items())
     )
-
-
 def test_tombstoned_redis_classes_raise_on_instantiation():
     """Tombstoned shadow-Redis classes must raise RuntimeError, not silently succeed."""
     from agentic_core.L4_state.memory import blob_storage_provider as bsp
-
     assert hasattr(bsp, "_TombstonedRedisDistributedLock")
     assert hasattr(bsp, "_TombstonedRedisHotCache")
     assert hasattr(bsp, "_TombstonedHotBrainCache")
-
     with pytest.raises(RuntimeError, match="tombstoned"):
         bsp._TombstonedRedisDistributedLock()
-
     with pytest.raises(RuntimeError, match="tombstoned"):
         bsp._TombstonedRedisHotCache()
-
     with pytest.raises(RuntimeError, match="tombstoned"):
         bsp._TombstonedHotBrainCache()
-
-
 def test_tombstoned_classes_reject_positional_args():
     """Tombstoned classes must reject instantiation with positional args."""
     from agentic_core.L4_state.memory import blob_storage_provider as bsp
-
     with pytest.raises(RuntimeError, match="tombstoned"):
         bsp._TombstonedRedisDistributedLock("arg1", "arg2")
-
     with pytest.raises(RuntimeError, match="tombstoned"):
         bsp._TombstonedRedisHotCache(None, 3600)
-
     with pytest.raises(RuntimeError, match="tombstoned"):
         bsp._TombstonedHotBrainCache("redis://localhost")
-
-
 def test_tombstoned_classes_reject_keyword_args():
     """Tombstoned classes must reject instantiation with keyword args."""
     from agentic_core.L4_state.memory import blob_storage_provider as bsp
-
     with pytest.raises(RuntimeError, match="tombstoned"):
         bsp._TombstonedRedisDistributedLock(redis_client=None, lock_timeout=DEFAULT_TIMEOUT)
-
     with pytest.raises(RuntimeError, match="tombstoned"):
         bsp._TombstonedRedisHotCache(redis_client=None, default_ttl=3600)
-
     with pytest.raises(RuntimeError, match="tombstoned"):
         bsp._TombstonedHotBrainCache(redis_url="redis://localhost")
-
-
 def test_tombstoned_classes_reject_mixed_args():
     """Tombstoned classes must reject instantiation with mixed positional + keyword args."""
     from agentic_core.L4_state.memory import blob_storage_provider as bsp
-
     with pytest.raises(RuntimeError, match="tombstoned"):
         bsp._TombstonedRedisDistributedLock(None, lock_timeout=DEFAULT_TIMEOUT)
-
     with pytest.raises(RuntimeError, match="tombstoned"):
         bsp._TombstonedRedisHotCache(None, default_ttl=7200)
-
     with pytest.raises(RuntimeError, match="tombstoned"):
         bsp._TombstonedHotBrainCache("redis://localhost", extra_arg="value")
-
-
 def test_l4_caching_redis_mcp_client_has_no_live_symbols():
     """redis_mcp_client.py must be a tombstone with no callable symbols."""
     redis_mcp = REPO_ROOT / L4_STATE_DIR / "caching" / "redis_mcp_client.py"
@@ -555,110 +528,76 @@ def test_l4_caching_redis_mcp_client_has_no_live_symbols():
     ]
     assert not live_classes, f"redis_mcp_client.py has live classes: {live_classes}"
     assert not live_functions, f"redis_mcp_client.py has live functions: {live_functions}"
-
-
 # ---------------------------------------------------------------------------
 # §3  HASH VALIDATION STRICTNESS
 # ---------------------------------------------------------------------------
-
-
 def test_require_hash_segment_strict_mode_rejects_short_strings(monkeypatch):
     """In strict mode, non-64-hex strings must raise ValueError."""
     monkeypatch.setenv("REDIS_CACHE_STRICT_HASH_VALIDATION", "1")
     # Force reimport to pick up env-var at call time (function reads env inline)
     from agentic_core.cache.cache_key_builders import _require_hash_segment
-
     with pytest.raises(ValueError, match="64-char"):
         _require_hash_segment("test_hash", "abc123")
-
     with pytest.raises(ValueError, match="64-char"):
         _require_hash_segment("test_hash", "g" * 64)  # invalid hex char
-
     with pytest.raises(ValueError, match="64-char"):
         _require_hash_segment("test_hash", "a" * 63)  # one short
-
-
 def test_require_hash_segment_strict_mode_accepts_valid_sha256(monkeypatch):
     monkeypatch.setenv("REDIS_CACHE_STRICT_HASH_VALIDATION", "1")
     from agentic_core.cache.cache_key_builders import _require_hash_segment
-
     valid = "a" * 64
     _require_hash_segment("test_hash", valid)  # must not raise
     assert True  # no-exception contract
-
-
 def test_require_hash_segment_permissive_mode_accepts_short_strings(monkeypatch):
     """With REDIS_CACHE_STRICT_HASH_VALIDATION=0, any non-empty string is accepted."""
     monkeypatch.setenv("REDIS_CACHE_STRICT_HASH_VALIDATION", "0")
     from agentic_core.cache.cache_key_builders import _require_hash_segment
-
     _require_hash_segment("test_hash", "short-placeholder")  # must not raise
     _require_hash_segment("test_hash", "x" * 10)
     assert True  # no-exception contract
-
-
 def test_require_hash_segment_rejects_empty_in_all_modes(monkeypatch):
     """Empty string must always be rejected regardless of strict mode."""
     for val in ("0", "1"):
         monkeypatch.setenv("REDIS_CACHE_STRICT_HASH_VALIDATION", val)
         from agentic_core.cache.cache_key_builders import _require_hash_segment
-
         with pytest.raises(ValueError, match="must not be empty"):
             _require_hash_segment("test_hash", "")
-
-
 def test_require_hash_segment_strict_rejects_uppercase_hex(monkeypatch):
     """Strict mode must reject uppercase hex (SHA-256 must be lowercase)."""
     monkeypatch.setenv("REDIS_CACHE_STRICT_HASH_VALIDATION", "1")
     from agentic_core.cache.cache_key_builders import _require_hash_segment
-
     with pytest.raises(ValueError, match="64-char"):
         _require_hash_segment("test_hash", "A" * 64)
-
-
 def test_require_hash_segment_strict_rejects_mixed_case(monkeypatch):
     """Strict mode must reject mixed case hex."""
     monkeypatch.setenv("REDIS_CACHE_STRICT_HASH_VALIDATION", "1")
     from agentic_core.cache.cache_key_builders import _require_hash_segment
-
     with pytest.raises(ValueError, match="64-char"):
         _require_hash_segment("test_hash", "aB" * 32)
-
-
 def test_require_hash_segment_strict_rejects_65_chars(monkeypatch):
     """Strict mode must reject 65-char strings (one too long)."""
     monkeypatch.setenv("REDIS_CACHE_STRICT_HASH_VALIDATION", "1")
     from agentic_core.cache.cache_key_builders import _require_hash_segment
-
     with pytest.raises(ValueError, match="64-char"):
         _require_hash_segment("test_hash", "a" * 65)
-
-
 def test_require_hash_segment_strict_rejects_non_hex_chars(monkeypatch):
     """Strict mode must reject strings with non-hex characters."""
     monkeypatch.setenv("REDIS_CACHE_STRICT_HASH_VALIDATION", "1")
     from agentic_core.cache.cache_key_builders import _require_hash_segment
-
     invalid_chars = ["g", "z", "@", " ", "-"]
     for char in invalid_chars:
         bad_hash = "a" * 63 + char
         with pytest.raises(ValueError, match="64-char"):
             _require_hash_segment("test_hash", bad_hash)
-
-
 def test_require_hash_segment_permissive_accepts_uppercase(monkeypatch):
     """Permissive mode accepts uppercase (for test placeholders)."""
     monkeypatch.setenv("REDIS_CACHE_STRICT_HASH_VALIDATION", "0")
     from agentic_core.cache.cache_key_builders import _require_hash_segment
-
     _require_hash_segment("test_hash", "PLACEHOLDER")  # must not raise
     assert True  # no-exception contract
-
-
 def test_require_hash_segment_permissive_accepts_single_char(monkeypatch):
     """Permissive mode accepts single-char placeholders."""
     monkeypatch.setenv("REDIS_CACHE_STRICT_HASH_VALIDATION", "0")
     from agentic_core.cache.cache_key_builders import _require_hash_segment
-
     _require_hash_segment("test_hash", "x")  # must not raise
     assert True  # no-exception contract

@@ -1,27 +1,27 @@
-"""ADG Multi-Writer — produces all three artifact tiers in one pass.
+"""ADG Multi-Writer — produces all artifact tiers in one pass, zero redundancy.
 
 Tier 1  adg_snapshot.json        CI-light, ~50 KB
     Metrics only: counts, digests, graph_plane_counts, violation summary,
     blind_spots, top-20 hotspots. No entities or edges.
     Used by: CI gate, drift detection, quick health checks.
 
-Tier 2  adg_full.json            Canonical offline export, ~55 MB
-    Full normalized format (NormalizedGraph v4.0.0) with all nodes and
-    compact integer-indexed edges. Replaces the old verbose format.
-    Used by: offline analysis, ADG CLI commands, all analysis modules.
-
-Tier 3  adg_indexed.sqlite        Compact queryable store, ~8–12 MB
+Tier 2  adg_indexed.sqlite        Primary queryable store, ~38 MB
     SQLite database with three tables:
         nodes (id, adg_name, entity_type, layer, identity_kind, confidence, resolved_path)
         edges (id, src_id, dst_id, relation_type, edge_kind, source_file, line_no, symbol)
         meta  (key, value)
-    Used by: state-lineage queries, layer-authority checks, mutation-path scans.
+    Used by: all analysis, queries, layer-authority checks, mutation-path scans.
+    NOTE: adg_full.json removed — SQLite is the canonical complete store.
 
-The four split-plane sub-graphs are written alongside:
-    adg_file_graph.json
-    adg_symbol_graph.json
-    adg_test_graph.json
-    adg_governance_graph.json
+Three non-overlapping split-plane sub-graphs (together = 100% edge coverage):
+    adg_file_graph.json        imports, exports, dead_imports, covers, influences, in_cycle
+    adg_symbol_graph.json      calls, implements, reads_from, writes_to, instantiates, ...
+    adg_governance_graph.json  violates, antipattern, generates_prompt, ...
+    NOTE: test_graph removed — covers edges live in file_graph.
+
+Minimal ingestion set (non-redundant, 100% coverage):
+    adg_LATEST.sqlite           ← primary: all 18 edge types, queryable
+    adg_LATEST_snapshot.json    ← metrics / health summary only
 
 Usage::
 
@@ -211,6 +211,47 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
     return db_path
 
 
+def _create_latest_symlinks(
+    out_dir: Path,
+    sqlite_path: Path,
+    snap_path: Path,
+    file_graph_path: Path,
+    symbol_graph_path: Path,
+    governance_graph_path: Path,
+) -> None:
+    """Create LATEST symlinks pointing to the newest timestamped artifacts.
+    
+    On Windows, creates copies instead of symlinks if symlink creation fails.
+    """
+    import os
+    import shutil
+    
+    symlink_map = {
+        "adg_LATEST.sqlite": sqlite_path,
+        "adg_LATEST_snapshot.json": snap_path,
+        "adg_LATEST_file_graph.json": file_graph_path,
+        "adg_LATEST_symbol_graph.json": symbol_graph_path,
+        "adg_LATEST_governance_graph.json": governance_graph_path,
+    }
+    
+    for link_name, target_path in symlink_map.items():
+        if not target_path.exists():
+            continue
+            
+        link_path = out_dir / link_name
+        
+        # Remove existing symlink/file
+        if link_path.exists() or link_path.is_symlink():
+            link_path.unlink()
+        
+        # Try to create symlink, fall back to copy on Windows
+        try:
+            link_path.symlink_to(target_path.name)
+        except (OSError, NotImplementedError):
+            # Windows without admin rights or filesystem doesn't support symlinks
+            shutil.copy2(target_path, link_path)
+
+
 # ---------------------------------------------------------------------------
 # Main entry point
 # ---------------------------------------------------------------------------
@@ -218,25 +259,29 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
 
 @dataclass
 class ArtifactPaths:
-    """Paths of all artifacts written by write_all_artifacts."""
+    """Paths of all artifacts written by write_all_artifacts.
+    
+    Non-redundant output set (5 files, 100% edge coverage):
+        snapshot          - Tier 1: metrics only (~50 KB)
+        sqlite            - Tier 2: primary queryable store (~38 MB, all 18 edge types)
+        file_graph        - imports, exports, dead_imports, covers, influences, in_cycle
+        symbol_graph      - calls, implements, reads_from, writes_to, instantiates, ...
+        governance_graph  - violates, antipattern, generates_prompt, ...
+    """
 
     snapshot: Path
-    full: Path
     sqlite: Path
     file_graph: Path
     symbol_graph: Path
-    test_graph: Path
     governance_graph: Path
 
     def size_report(self) -> dict[str, str]:
         result = {}
         for name, path in (
             ("snapshot", self.snapshot),
-            ("full", self.full),
             ("sqlite", self.sqlite),
             ("file_graph", self.file_graph),
             ("symbol_graph", self.symbol_graph),
-            ("test_graph", self.test_graph),
             ("governance_graph", self.governance_graph),
         ):
             if path.exists():
@@ -254,9 +299,10 @@ def write_all_artifacts(
     ts: str = "",
     write_split_planes: bool = True,
     write_sqlite: bool = True,
+    create_latest_symlinks: bool = False,
 ) -> ArtifactPaths:
-    """Write Tier 1 (snapshot), Tier 2 (full normalized), Tier 3 (sqlite)
-    and four split-plane graphs to out_dir.
+    """Write Tier 1 (snapshot), Tier 2 (sqlite) and three non-overlapping
+    split-plane graphs to out_dir. Zero redundancy, 100% edge coverage.
 
     Parameters
     ----------
@@ -268,51 +314,54 @@ def write_all_artifacts(
         Timestamp string for filenames, e.g. ``"20260311T154637Z"``.
         If empty, no timestamp suffix is added.
     write_split_planes:
-        Whether to write the four plane sub-graphs.
+        Whether to write the three plane sub-graphs.
     write_sqlite:
         Whether to write the SQLite index.
+    create_latest_symlinks:
+        Whether to create LATEST symlinks pointing to the newest artifacts.
     """
     out_dir.mkdir(parents=True, exist_ok=True)
     suffix = f"_{ts}" if ts else ""
-
-    # --- Tier 2: normalized full artifact ---
-    normalizer = ArtifactNormalizer()
-    ng_full = normalizer.normalize(artifact)
-    full_path = out_dir / f"adg_full{suffix}.json"
-    ng_full.write(full_path, indent=None)
 
     # --- Tier 1: lightweight snapshot ---
     snap_dict = _build_snapshot(artifact)
     snap_path = out_dir / f"adg_snapshot{suffix}.json"
     snap_path.write_text(json.dumps(snap_dict, sort_keys=True, indent=2), encoding="utf-8")
 
-    # --- Tier 3: SQLite index ---
+    # --- Tier 2: SQLite index (primary store, replaces adg_full.json) ---
+    normalizer = ArtifactNormalizer()
+    ng_full = normalizer.normalize(artifact)
     sqlite_path = out_dir / f"adg_indexed{suffix}.sqlite"
     if write_sqlite:
         _write_sqlite(ng_full, sqlite_path)
-    else:
-        sqlite_path = out_dir / f"adg_indexed{suffix}.sqlite"  # path only, not written
 
-    # --- Split planes ---
+    # --- Split planes (non-overlapping, together = 100% edge coverage) ---
     file_graph_path = out_dir / f"adg_file_graph{suffix}.json"
     symbol_graph_path = out_dir / f"adg_symbol_graph{suffix}.json"
-    test_graph_path = out_dir / f"adg_test_graph{suffix}.json"
     governance_graph_path = out_dir / f"adg_governance_graph{suffix}.json"
 
     if write_split_planes:
         planes = split_artifact(artifact)
         planes.file_graph.write(file_graph_path, indent=None)
         planes.symbol_graph.write(symbol_graph_path, indent=None)
-        planes.test_graph.write(test_graph_path, indent=None)
         planes.governance_graph.write(governance_graph_path, indent=None)
+
+    # --- Create LATEST symlinks for easy discovery ---
+    if create_latest_symlinks and ts:
+        _create_latest_symlinks(
+            out_dir,
+            sqlite_path,
+            snap_path,
+            file_graph_path,
+            symbol_graph_path,
+            governance_graph_path,
+        )
 
     return ArtifactPaths(
         snapshot=snap_path,
-        full=full_path,
         sqlite=sqlite_path,
         file_graph=file_graph_path,
         symbol_graph=symbol_graph_path,
-        test_graph=test_graph_path,
         governance_graph=governance_graph_path,
     )
 

@@ -294,8 +294,6 @@ Return ONLY the rewritten description, no additional text."""
             response = gateway.generate(request)
             return response.text if hasattr(response, "text") else str(response)
         except Exception as e:
-            # TODO: Handle specific exception properly
-            raise  # Re-raise after logging/handling
             Logger.error(
                 "ResumeGenerator._generate_with_gemini: SovereignLLMGateway failed: %s; "
                 "direct SDK fallback is NOT permitted — raising",

@@ -26,6 +26,15 @@ from apps_rg.engines.sovereign_context import SovereignContext
 
 from apps_rg.engines.resume_orchestrator_engine import ResumeOrchestratorEngine
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300
+
 
 async def test_full_system_lifecycle_happy_path():
     """

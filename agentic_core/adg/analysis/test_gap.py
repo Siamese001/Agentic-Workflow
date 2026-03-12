@@ -35,6 +35,7 @@ if TYPE_CHECKING:
     from agentic_core.adg.extraction.static_scanner import ScanResult
 
 _MODULE_PREFIX = "ADG::Module::"
+_SYMBOL_PREFIX = "ADG::Symbol::"
 
 _PRODUCTION_EXCLUDES: tuple[str, ...] = (
     "tests/",
@@ -123,13 +124,27 @@ def detect_test_gaps(
         include_layers: Optional layer whitelist — gaps are only reported for
                         modules in these layers.
     """
+    module_set: set[str] = set(result.modules)
+
     # Step 1: modules that are covered
     covered: set[str] = set()
     for edge in result.edges:
         if edge.relation_type == "covers":
             to_name = edge.to_name
             if to_name.startswith(_MODULE_PREFIX):
-                covered.add(to_name[len(_MODULE_PREFIX) :])
+                covered.add(to_name[len(_MODULE_PREFIX):])
+            elif to_name.startswith(_SYMBOL_PREFIX):
+                # ADG::Symbol::a.b.c  ->  a/b/c.py  or  a/b/c/__init__.py
+                sym = to_name[len(_SYMBOL_PREFIX):]
+                parts = sym.split(".")
+                for n in range(len(parts), 0, -1):
+                    prefix = "/".join(parts[:n])
+                    if (prefix + ".py") in module_set:
+                        covered.add(prefix + ".py")
+                        break
+                    if (prefix + "/__init__.py") in module_set:
+                        covered.add(prefix + "/__init__.py")
+                        break
 
     # Step 2: production modules
     production = [m for m in result.modules if _is_production(m)]

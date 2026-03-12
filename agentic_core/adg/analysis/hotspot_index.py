@@ -74,22 +74,47 @@ class HotspotIndex:
 
     @classmethod
     def build(cls, result: ScanResult) -> HotspotIndex:
-        """Build the index in a single linear pass over result.edges."""
+        """Build the index in a single linear pass over result.edges.
+
+        Handles both ``ADG::Module::a/b/c.py`` and ``ADG::Symbol::a.b.c``
+        node names — the latter is resolved to ``a/b/c.py`` so fan-in
+        counts reflect real structural coupling even when edges use
+        symbol-level addressing.
+        """
         idx = cls()
-        idx._all_modules = set(result.modules)
+        module_set = set(result.modules)
+        idx._all_modules = module_set
+
+        _sym = "ADG::Symbol::"
+        _mod = _MODULE_PREFIX
+
+        def _to_path(name: str) -> str | None:
+            if name.startswith(_mod):
+                return name[len(_mod):]
+            if name.startswith(_sym):
+                sym = name[len(_sym):]
+                parts = sym.split(".")
+                # Try from most-specific to least-specific:
+                # a.b.c.func -> a/b/c/func.py, a/b/c.py, a/b/__init__.py ...
+                for n in range(len(parts), 0, -1):
+                    prefix = "/".join(parts[:n])
+                    if prefix + ".py" in module_set:
+                        return prefix + ".py"
+                    if prefix + "/__init__.py" in module_set:
+                        return prefix + "/__init__.py"
+            return None
 
         for edge in result.edges:
-            if edge.relation_type not in ("imports", "calls", "instantiates", "implements"):
+            if edge.relation_type not in (
+                "imports", "reads_from", "calls", "instantiates", "implements",
+            ):
                 continue
-            if not edge.from_name.startswith(_MODULE_PREFIX):
-                continue
-            if not edge.to_name.startswith(_MODULE_PREFIX):
+            if not edge.from_name.startswith(_mod):
                 continue
 
-            from_path = edge.from_name[len(_MODULE_PREFIX) :]
-            to_path = edge.to_name[len(_MODULE_PREFIX) :]
-
-            if from_path == to_path:
+            from_path = edge.from_name[len(_mod):]
+            to_path = _to_path(edge.to_name)
+            if to_path is None or from_path == to_path:
                 continue
 
             idx._fan_out.setdefault(from_path, set()).add(to_path)

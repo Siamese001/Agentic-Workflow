@@ -48,7 +48,7 @@ from agentic_core.L2_execution.healers.tiering_allowlist import (
     is_tiering_allowed_by_path,
 )
 
-REPO_ROOT = Path(__file__).resolve().parents[4]
+REPO_ROOT = Path(__file__).resolve().parents[5]
 
 # Explicit config for all tests — no silent defaults
 TEST_CONFIG = HealingTierConfig(

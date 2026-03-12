@@ -6,6 +6,13 @@ for agentic LinkedIn outreach workflow.
 
 Integrated with: apps_lic/L3_orchestration/kx_nodes_outreach.py
 """
+from __future__ import annotations
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Any
+
+LIMIT: int = 5
+THRESHOLD: float = 0.95
 
 
 class Route(str, Enum):

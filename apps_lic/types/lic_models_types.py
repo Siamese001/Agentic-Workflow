@@ -3,6 +3,10 @@
 # REFACTOR: v13.0 - Slimmed down to support HOP-based architecture.
 # - Removed RAGCritique, MessageClaim (logic moved to tools/agents).
 # - Kept core enums, mission objects, and FactualGapError.
+from __future__ import annotations
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Any
 
 __version__ = "13.0"
 

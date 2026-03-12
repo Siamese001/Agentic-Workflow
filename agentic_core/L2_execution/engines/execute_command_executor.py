@@ -48,6 +48,7 @@ def get_project_root() -> Path:
         if (current_path / ".git").exists() or (current_path / "pyproject.toml").exists():
             _cached_project_root = current_path
             return current_path
+        current_path = current_path.parent
     _cached_project_root = Path(__file__).resolve().parent
     return _cached_project_root
 

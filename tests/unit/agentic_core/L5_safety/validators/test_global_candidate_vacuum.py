@@ -11,6 +11,11 @@ to avoid CoreIntegrityVerifier overhead during unit testing.
 
 from pathlib import Path
 
+from agentic_core.L5_safety.config.structure_blueprint import (
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+)
+
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
 THRESHOLD = 0.95

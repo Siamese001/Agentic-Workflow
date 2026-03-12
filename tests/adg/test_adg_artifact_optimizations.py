@@ -2,8 +2,9 @@
 
 Covers:
 - ArtifactNormalizer: compact integer-indexed format, round-trip fidelity
-- ArtifactLayerSplitter: four plane sub-graphs with correct edge routing
-- MultiWriter: three-tier output (snapshot/full/sqlite) + split planes
+- ArtifactLayerSplitter: three non-overlapping plane sub-graphs with correct edge routing
+  (test_graph removed: covers lives in file_graph)
+- MultiWriter: non-redundant output (snapshot/sqlite + 3 split planes, no adg_full.json)
 - IncrementalScan: affected module propagation, cache eviction
 - CLI: build-artifacts, incremental-scan subcommands
 """
@@ -96,7 +97,7 @@ def _make_artifact():
             "ADG::Symbol::some.state",
             edge_kind="write",
         ),
-        # test_graph
+        # file_graph: covers (canonical home is file_graph)
         _make_relation(
             "ADG::Module::tests/unit/test_foo.py",
             "covers",
@@ -259,15 +260,16 @@ class TestArtifactNormalizer:
 
 
 class TestLayerSplitter:
-    def test_split_produces_four_planes(self):
+    def test_split_produces_three_planes(self):
+        """Three non-overlapping planes: file_graph, symbol_graph, governance_graph."""
         from agentic_core.adg.artifact.layer_splitter import split_artifact
 
         a = _make_artifact()
         planes = split_artifact(a)
         assert planes.file_graph is not None
         assert planes.symbol_graph is not None
-        assert planes.test_graph is not None
         assert planes.governance_graph is not None
+        assert not hasattr(planes, "test_graph"), "test_graph must not exist (removed)"
 
     def test_file_graph_contains_imports(self):
         from agentic_core.adg.artifact.layer_splitter import split_artifact
@@ -294,12 +296,13 @@ class TestLayerSplitter:
         assert "calls" in rel_types
         assert "writes_to" in rel_types
 
-    def test_test_graph_contains_covers(self):
+    def test_file_graph_contains_covers(self):
+        """covers is now canonical in file_graph (not test_graph)."""
         from agentic_core.adg.artifact.layer_splitter import split_artifact
 
         a = _make_artifact()
         planes = split_artifact(a)
-        rel_types = {e["r"] for e in planes.test_graph.edges}
+        rel_types = {e["r"] for e in planes.file_graph.edges}
         assert "covers" in rel_types
 
     def test_governance_graph_contains_violates(self):
@@ -324,7 +327,7 @@ class TestLayerSplitter:
 
         a = _make_artifact()
         planes = split_artifact(a)
-        for plane in (planes.file_graph, planes.symbol_graph, planes.test_graph, planes.governance_graph):
+        for plane in (planes.file_graph, planes.symbol_graph, planes.governance_graph):
             assert plane.schema_version == "4.0.0"
 
     def test_write_all_creates_files(self, tmp_path):
@@ -342,7 +345,7 @@ class TestLayerSplitter:
         a = _make_artifact()
         planes = split_artifact(a)
         sizes = planes.size_summary()
-        assert set(sizes.keys()) == {"file_graph", "symbol_graph", "test_graph", "governance_graph"}
+        assert set(sizes.keys()) == {"file_graph", "symbol_graph", "governance_graph"}
         for sz in sizes.values():
             assert sz > 0
 
@@ -353,7 +356,6 @@ class TestLayerSplitter:
         planes = split_artifact(a)
         assert planes.file_graph.meta["plane"] == "file_graph"
         assert planes.symbol_graph.meta["plane"] == "symbol_graph"
-        assert planes.test_graph.meta["plane"] == "test_graph"
         assert planes.governance_graph.meta["plane"] == "governance_graph"
 
 
@@ -364,16 +366,19 @@ class TestLayerSplitter:
 
 class TestMultiWriter:
     def test_write_all_artifacts_creates_all_files(self, tmp_path):
+        """Five non-redundant files: snapshot + sqlite + 3 planes. No adg_full, no test_graph."""
         from agentic_core.adg.artifact.multi_writer import write_all_artifacts
 
         a = _make_artifact()
         paths = write_all_artifacts(a, out_dir=tmp_path, ts="20260101T000000Z")
         assert paths.snapshot.exists()
-        assert paths.full.exists()
+        assert paths.sqlite.exists()
         assert paths.file_graph.exists()
         assert paths.symbol_graph.exists()
-        assert paths.test_graph.exists()
         assert paths.governance_graph.exists()
+        # These must NOT be generated
+        assert not (tmp_path / "adg_full_20260101T000000Z.json").exists(), "adg_full must not exist"
+        assert not (tmp_path / "adg_test_graph_20260101T000000Z.json").exists(), "test_graph must not exist"
 
     def test_sqlite_created_by_default(self, tmp_path):
         from agentic_core.adg.artifact.multi_writer import write_all_artifacts
@@ -448,26 +453,19 @@ class TestMultiWriter:
         snap = json.loads(paths.snapshot.read_text())
         assert snap["commit_sha"] == "abc123"
 
-    def test_full_tier2_uses_normalized_schema(self, tmp_path):
+    def test_sqlite_tier2_has_schema_v4(self, tmp_path):
+        """SQLite is the canonical complete store (replaces adg_full.json)."""
         from agentic_core.adg.artifact.multi_writer import write_all_artifacts
 
         a = _make_artifact()
-        paths = write_all_artifacts(a, out_dir=tmp_path, ts="20260101T000000Z")
-        full = json.loads(paths.full.read_text())
-        assert full["schema_version"] == "4.0.0"
-        assert "nodes" in full
-        assert "edges" in full
-
-    def test_full_tier2_edges_are_compact(self, tmp_path):
-        from agentic_core.adg.artifact.multi_writer import write_all_artifacts
-
-        a = _make_artifact()
-        paths = write_all_artifacts(a, out_dir=tmp_path, ts="20260101T000000Z")
-        full = json.loads(paths.full.read_text())
-        # Edges should use integer IDs, not string ADG names
-        for edge in full["edges"]:
-            assert isinstance(edge["s"], int)
-            assert isinstance(edge["d"], int)
+        paths = write_all_artifacts(a, out_dir=tmp_path, ts="20260101T000000Z", write_sqlite=True)
+        conn = sqlite3.connect(str(paths.sqlite))
+        try:
+            row = conn.execute("SELECT value FROM meta WHERE key = 'schema_version'").fetchone()
+        finally:
+            conn.close()
+        assert row is not None
+        assert row[0] == "4.0.0"
 
     def test_size_report_returns_all_keys(self, tmp_path):
         from agentic_core.adg.artifact.multi_writer import write_all_artifacts
@@ -476,11 +474,12 @@ class TestMultiWriter:
         paths = write_all_artifacts(a, out_dir=tmp_path, ts="20260101T000000Z")
         sizes = paths.size_report()
         assert "snapshot" in sizes
-        assert "full" in sizes
+        assert "sqlite" in sizes
         assert "file_graph" in sizes
         assert "symbol_graph" in sizes
-        assert "test_graph" in sizes
         assert "governance_graph" in sizes
+        assert "full" not in sizes, "adg_full must not appear in size_report"
+        assert "test_graph" not in sizes, "test_graph must not appear in size_report"
 
     def test_timestamped_filenames(self, tmp_path):
         from agentic_core.adg.artifact.multi_writer import write_all_artifacts
@@ -488,8 +487,8 @@ class TestMultiWriter:
         a = _make_artifact()
         paths = write_all_artifacts(a, out_dir=tmp_path, ts="20260311T154637Z")
         assert "20260311T154637Z" in paths.snapshot.name
-        assert "20260311T154637Z" in paths.full.name
         assert "20260311T154637Z" in paths.sqlite.name
+        assert "20260311T154637Z" in paths.file_graph.name
 
     def test_no_timestamp_gives_clean_names(self, tmp_path):
         from agentic_core.adg.artifact.multi_writer import write_all_artifacts
@@ -497,7 +496,7 @@ class TestMultiWriter:
         a = _make_artifact()
         paths = write_all_artifacts(a, out_dir=tmp_path, ts="")
         assert paths.snapshot.name == "adg_snapshot.json"
-        assert paths.full.name == "adg_full.json"
+        assert paths.sqlite.name == "adg_indexed.sqlite"
 
 
 # ---------------------------------------------------------------------------
@@ -669,10 +668,16 @@ class TestSchemaConstants:
         assert "writes_to" in _SYMBOL_GRAPH_RELS
         assert "writes_through" in _SYMBOL_GRAPH_RELS
 
-    def test_test_graph_rels_contains_covers(self):
-        from agentic_core.adg.artifact.layer_splitter import _TEST_GRAPH_RELS
+    def test_file_graph_rels_contains_covers(self):
+        """covers canonical home is file_graph (not test_graph)."""
+        from agentic_core.adg.artifact.layer_splitter import _FILE_GRAPH_RELS
 
-        assert "covers" in _TEST_GRAPH_RELS
+        assert "covers" in _FILE_GRAPH_RELS
+
+    def test_test_graph_rels_removed(self):
+        """_TEST_GRAPH_RELS must not exist in layer_splitter."""
+        import agentic_core.adg.artifact.layer_splitter as ls
+        assert not hasattr(ls, "_TEST_GRAPH_RELS"), "_TEST_GRAPH_RELS was removed; covers lives in file_graph"
 
     def test_governance_rels_contains_violates_and_uwg(self):
         from agentic_core.adg.artifact.layer_splitter import _GOVERNANCE_GRAPH_RELS
@@ -714,7 +719,7 @@ class TestEndToEnd:
 
         a = _make_artifact()
         planes = split_artifact(a)
-        for plane in (planes.file_graph, planes.symbol_graph, planes.test_graph, planes.governance_graph):
+        for plane in (planes.file_graph, planes.symbol_graph, planes.governance_graph):
             assert len(plane.artifact_digest) == 64
 
     def test_multi_write_then_sqlite_query_by_relation(self, tmp_path):

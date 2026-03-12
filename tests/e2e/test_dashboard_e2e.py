@@ -57,6 +57,8 @@ if sys.platform.startswith("win"):
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
+from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR  # noqa: E402
+
 DASHBOARD_DIR = PROJECT_ROOT / AGENTIC_CORE_DIR / "L6_observability" / "dashboards"
 DASHBOARD_URL = "http://localhost:8765/autonomy_dashboard.html"
 SERVER_PORT = 8765

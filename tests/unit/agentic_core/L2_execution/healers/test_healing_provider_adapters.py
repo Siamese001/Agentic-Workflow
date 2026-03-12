@@ -275,7 +275,7 @@ class TestGeminiAdapterContract:
             sys.modules.pop("google.generativeai", None)
 
     def test_gemini_adapter_raises_import_error_when_sdk_missing(self) -> None:
-        """Gemini adapter should raise ImportError when Google SDK is not available."""
+        """Gemini adapter logs error and returns record when Google SDK is not available."""
         # Clear any cached imports and remove the module
         sys.modules.pop("google.generativeai", None)
 
@@ -299,11 +299,13 @@ class TestGeminiAdapterContract:
         config = load_default_healing_tier_config()
         decision = route_healing_tier(healing_input, config)
 
-        with pytest.raises(ImportError, match="google-generativeai SDK is required"):
-            adapter.invoke_gemini(healing_input, decision, config)
+        # Adapter swallows SDK errors and returns a record with response_text=None
+        record = adapter.invoke_gemini(healing_input, decision, config)
+        assert record is not None
+        assert record.response_text is None
 
     def test_gemini_adapter_handles_sdk_error(self) -> None:
-        """Gemini adapter should properly handle and log SDK errors."""
+        """Gemini adapter logs SDK errors and returns record with response_text=None."""
         # Setup fake google.generativeai module that raises an error
         fake_genai = Mock()
         fake_model = Mock()
@@ -333,9 +335,10 @@ class TestGeminiAdapterContract:
             config = load_default_healing_tier_config()
             decision = route_healing_tier(healing_input, config)
 
-            # Should raise the SDK error
-            with pytest.raises(Exception, match="Gemini API Error"):
-                adapter.invoke_gemini(healing_input, decision, config)
+            # Adapter swallows SDK errors and returns record with response_text=None
+            record = adapter.invoke_gemini(healing_input, decision, config)
+            assert record is not None
+            assert record.response_text is None
 
         finally:
             sys.modules.pop("google.generativeai", None)

@@ -1,0 +1,14 @@
+agent_name,layer,file_path,failure_type,confidence_range,rationale,tiering
+CodeHealerAgent,L5_safety,agentic_core/L5_safety/reasoning/CodeHealerAgent.py,syntax_error,0.75-1.0,Handles code syntax healing,YES_TIERING
+GravityLeakRepairAgent,L5_safety,agentic_core/L5_safety/reasoning/GravityLeakRepairAgent.py,layer_violation,0.75-1.0,Repairs layer gravity leaks,YES_TIERING
+IntegrityGateExecutorAgent,L5_safety,agentic_core/L5_safety/reasoning/IntegrityGateExecutorAgent.py,integrity_violation,0.75-1.0,Executes integrity gate checks,YES_TIERING
+LocationHealerAgent,L5_safety,agentic_core/L5_safety/reasoning/LocationHealerAgent.py,file_misplaced,0.75-1.0,Heals file location violations,YES_TIERING
+SafetyExecutorAgent,L5_safety,agentic_core/L5_safety/reasoning/SafetyExecutorAgent.py,safety_violation,0.75-1.0,Executes safety enforcement,YES_TIERING
+StructureHealerAgent,L5_safety,agentic_core/L5_safety/reasoning/StructureHealerAgent.py,structural_violation,0.75-1.0,Heals structural violations,YES_TIERING
+TypeHintFixerAgent,L5_safety,agentic_core/L5_safety/reasoning/TypeHintFixerAgent.py,type_hint_error,0.75-1.0,Fixes type hint violations,YES_TIERING
+DispatchOutreachToolsAgent,apps_lic,apps_lic/reasoning/DispatchOutreachToolsAgent.py,outreach_error,0.75-1.0,Dispatches outreach tools,YES_TIERING
+OutreachValidationExecutorAgent,apps_lic,apps_lic/reasoning/OutreachValidationExecutorAgent.py,validation_error,0.75-1.0,Validates outreach execution,YES_TIERING
+DispatchResumeToolsAgent,apps_rg,apps_rg/reasoning/DispatchResumeToolsAgent.py,resume_error,0.75-1.0,Dispatches resume tools,YES_TIERING
+remediation_dispatcher,L2_execution,agentic_core/L2_execution/scripts/remediation_dispatcher.py,remediation_error,0.75-1.0,Dispatches remediation tasks,YES_TIERING
+CoverageAgent,L3_orchestration,agentic_core/L3_orchestration/reasoning/CoverageAgent.py,coverage_error,0.0-0.75,Coverage reporting only,NO_TIERING
+CognitiveDispositionAgent,L1_cognition,agentic_core/L1_cognition/reasoning/CognitiveDispositionAgent.py,cognition_error,0.0-0.75,Cognitive disposition only,NO_TIERING

@@ -394,7 +394,7 @@ def _cmd_policy_hash(args: argparse.Namespace) -> int:
 
 def _cmd_build_artifacts(args: argparse.Namespace) -> int:
     import json
-    from datetime import datetime, timezone
+    from datetime import datetime, timezone, timedelta
 
     from agentic_core.adg.artifact.builder import build_artifact
     from agentic_core.adg.artifact.multi_writer import write_all_artifacts
@@ -404,18 +404,17 @@ def _cmd_build_artifacts(args: argparse.Namespace) -> int:
     result = load_or_scan(repo_root=str(repo_root))
     result.print_digest()
 
-    ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    est = timezone(timedelta(hours=-5))
+    ts = datetime.now(est).strftime("%m%d%Y")
     out_dir = Path(getattr(args, "output_dir", None) or repo_root / "artifacts" / "adg")
     artifact = build_artifact(result, repo_root=repo_root)
     paths = write_all_artifacts(artifact, out_dir=out_dir, ts=ts)
     sizes = paths.size_report()
     report = {
         "snapshot": str(paths.snapshot),
-        "full": str(paths.full),
         "sqlite": str(paths.sqlite),
         "file_graph": str(paths.file_graph),
         "symbol_graph": str(paths.symbol_graph),
-        "test_graph": str(paths.test_graph),
         "governance_graph": str(paths.governance_graph),
         "sizes": sizes,
         "artifact_digest": artifact.artifact_digest,
@@ -571,7 +570,7 @@ def main(argv: list[str] | None = None) -> int:
     # Artifact management
     ba_p = subparsers.add_parser(
         "build-artifacts",
-        help="Write all three artifact tiers: snapshot (CI), full (normalized), sqlite (queryable) + split planes",
+        help="Write non-redundant artifact set: snapshot (CI), sqlite (primary), + 3 split planes (100% edge coverage)",
     )
     ba_p.add_argument(
         "--output-dir",

@@ -104,46 +104,34 @@ class TestStructuralRetryMixin:
     def test_build_manifest_constructs_surgical_manifest(self):
         body = _method_body_source("ToolReliabilityMixin", "_v15_build_retry_manifest")
         assert "SurgicalManifest(" in body
-
     def test_build_manifest_checks_enforcement(self):
         body = _method_body_source("ToolReliabilityMixin", "_v15_build_retry_manifest")
         assert "is_v15_enforced()" in body
-
     def test_audit_calls_gateway_execute(self):
         body = _method_body_source("ToolReliabilityMixin", "_v15_retry_audit")
         assert "gw.execute(" in body
-
     def test_serialization_canon(self):
         body = _method_body_source("ToolReliabilityMixin", "_v15_build_retry_manifest")
         assert 'serialization_canon="tool_reliability_mixin"' in body
-
     def test_target_layer_is_l2(self):
         body = _method_body_source("ToolReliabilityMixin", "_v15_build_retry_manifest")
         assert 'target_layer="L2"' in body
-
     def test_imports_is_v15_enforced(self):
         assert "is_v15_enforced" in MIXIN_SRC
-
     def test_no_result_emission_in_retry(self):
         """Retry wrappers must not emit RESULT — they are infrastructure."""
         for method in ("with_retry", "with_retry_sync"):
             body = _method_body_source("ToolReliabilityMixin", method)
             # RESULT should not appear as an artifact_class in retry bodies
             assert "RESULT" not in body or "retry_audit" in body
-
-
 # ===========================================================================
 # B) Runtime Tests — manifest + trace_id survive retries
 # ===========================================================================
-
-
 class _StubMixin:
     """Minimal stub to test ToolReliabilityMixin without deep agent deps."""
-
     def __init__(self):
         # Satisfy ToolReliabilityMixin.__init__ expectations
         import threading
-
         self._retry_policies = {}
         self._circuit_configs = {}
         self._tool_health = {}
@@ -151,16 +139,20 @@ class _StubMixin:
         self._half_open_calls = {}
         self._reliability_lock = threading.RLock()
         self._tool_reliability_initialized = True
-
-
 class _TestableReliabilityMixin(_StubMixin):
     """Combine stub with the real mixin methods for isolated testing."""
-
     pass
-
-
 # Dynamically attach mixin methods to the testable class
 from agentic_core.mixins.tool_reliability_mixin import ToolReliabilityMixin
+
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300
 
 for _name in (
     "_v15_build_retry_manifest",
@@ -174,11 +166,8 @@ for _name in (
     "configure_tool_retry",
 ):
     setattr(_TestableReliabilityMixin, _name, getattr(ToolReliabilityMixin, _name))
-
-
 class TestRuntimeRetryManifest:
     """Runtime proof that manifest + trace_id survive retries."""
-
     @patch.dict(os.environ, {"V15_ENFORCEMENT": "log"})
     def test_manifest_constructed_when_enforced(self):
         mixin = _TestableReliabilityMixin()
@@ -187,105 +176,82 @@ class TestRuntimeRetryManifest:
         assert isinstance(manifest, SurgicalManifest)
         assert manifest.target_layer == "L2"
         assert manifest.serialization_canon == "tool_reliability_mixin"
-
     @patch.dict(os.environ, {"V15_ENFORCEMENT": "0"})
     def test_manifest_none_when_not_enforced(self):
         mixin = _TestableReliabilityMixin()
         manifest = mixin._v15_build_retry_manifest("test_tool")
         assert manifest is None
-
     @patch.dict(os.environ, {"V15_ENFORCEMENT": "log"})
     def test_trace_id_format(self):
         mixin = _TestableReliabilityMixin()
         manifest = mixin._v15_build_retry_manifest("test_tool")
         assert manifest is not None
         assert re.match(r"^CC3AL1-[0-9A-F]{8}$", manifest.correlation_id)
-
     @patch.dict(os.environ, {"V15_ENFORCEMENT": "log"})
     def test_manifest_survives_multiple_retries_sync(self):
         """Prove manifest + trace_id are stable across >=2 retries."""
         from agentic_core.L0_routing.enforcement.execution_gateway import (
             V15ExecutionGateway,
         )
-
         mixin = _TestableReliabilityMixin()
         mixin.configure_tool_retry("flaky", max_retries=MAX_RETRIES, base_delay_seconds=0.0, jitter=False)
-
         captured_manifests = []
         _orig = V15ExecutionGateway.execute
-
         def _spy(self_gw, execution_input, *args, **kwargs):
             captured_manifests.append(execution_input)
             return _orig(self_gw, execution_input, *args, **kwargs)
-
         call_count = 0
-
         def _flaky_op():
             nonlocal call_count
             call_count += 1
             if call_count < 3:
                 raise ValueError(f"Flaky failure #{call_count}")
             return "success"
-
         with patch.object(V15ExecutionGateway, "execute", _spy):
             result = mixin.with_retry_sync("flaky", _flaky_op)
-
         assert result == "success"
         assert call_count == 3, "operation should have been called 3 times"
         # Manifest was constructed once and passed to gateway once (at entry)
         assert len(captured_manifests) == 1
         assert isinstance(captured_manifests[0], SurgicalManifest)
-
     @patch.dict(os.environ, {"V15_ENFORCEMENT": "log"})
     def test_trace_id_stable_across_retries(self):
         """The single manifest's trace_id must not change across retries."""
         mixin = _TestableReliabilityMixin()
         mixin.configure_tool_retry("flaky2", max_retries=MAX_RETRIES, base_delay_seconds=0.0, jitter=False)
-
         # Build manifest once (same as what with_retry_sync does internally)
         manifest = mixin._v15_build_retry_manifest("flaky2")
         assert manifest is not None
         trace_id_before = manifest.correlation_id
-
         # Simulate retries — manifest object is the same, trace_id unchanged
         call_count = 0
-
         def _flaky():
             nonlocal call_count
             call_count += 1
             if call_count < 2:
                 raise ValueError("fail")
             return "ok"
-
         result = mixin.with_retry_sync("flaky2", _flaky)
         assert result == "ok"
-
         # Build manifest again with same tool_name — deterministic trace_id
         manifest2 = mixin._v15_build_retry_manifest("flaky2")
         assert manifest2.correlation_id == trace_id_before
-
     @patch.dict(os.environ, {"V15_ENFORCEMENT": "log"})
     def test_gateway_receives_manifest_instance(self):
         """Gateway.execute must receive the exact manifest instance."""
         from agentic_core.L0_routing.enforcement.execution_gateway import (
             V15ExecutionGateway,
         )
-
         mixin = _TestableReliabilityMixin()
-
         captured = []
         _orig = V15ExecutionGateway.execute
-
         def _spy(self_gw, execution_input, *args, **kwargs):
             captured.append({"manifest": execution_input, "trace_id": kwargs.get("trace_id")})
             return _orig(self_gw, execution_input, *args, **kwargs)
-
         manifest = mixin._v15_build_retry_manifest("gw_test")
         assert manifest is not None
-
         with patch.object(V15ExecutionGateway, "execute", _spy):
             mixin._v15_retry_audit(manifest, trace_id=manifest.correlation_id)
-
         assert len(captured) == 1
         assert captured[0]["manifest"] is manifest
         assert captured[0]["trace_id"] == manifest.correlation_id

@@ -66,8 +66,9 @@ class TestConstantsQuarantineInvariant:
         """tests.subfolders must be a dict (not list, not None)."""
         tests_cfg = get_all_territories().get("tests", {})
         subs = tests_cfg.get("subfolders", None)
-        assert isinstance(subs, (dict, type(SOVEREIGN_TERRITORIES))), (
-            f"tests.subfolders must be a dict, got {type(subs)}"
+        import types as _types
+        assert isinstance(subs, (dict, _types.MappingProxyType)), (
+            f"tests.subfolders must be a dict or MappingProxyType, got {type(subs)}"
         )
 
     def test_support_in_tests_subfolders(self):
@@ -88,8 +89,9 @@ class TestConstantsQuarantineInvariant:
         """SOVEREIGN_TERRITORIES must be immutable (MappingProxyType), not a plain dict."""
         import builtins
 
-        assert not isinstance(SOVEREIGN_TERRITORIES, builtins.dict), (
-            "SOVEREIGN_TERRITORIES must be a MappingProxyType, not a plain mutable dict."
+        import types
+        assert isinstance(get_all_territories(), types.MappingProxyType), (
+            "get_all_territories() must return a MappingProxyType, not a plain mutable dict."
         )
 
     def test_mutation_of_sovereign_territories_raises(self):
@@ -118,7 +120,7 @@ class TestConstantsDepthAlignedInvariant:
                     )
                     _walk(v, f"{path}.{k}")
 
-        _walk(SOVEREIGN_TERRITORIES)
+        _walk(get_all_territories())
 
     def test_tests_subfolders_count_is_nonzero(self):
         """Sanity: tests/ must have at least several canonical subfolders."""

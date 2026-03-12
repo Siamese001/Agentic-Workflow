@@ -10,7 +10,10 @@ Legacy K-Node: K.9 (K.8 in some versions)
 Location: apps_rg/engines/ (Application Logic - Resume Generator)
 """
 
+from __future__ import annotations
 import logging
+from dataclasses import dataclass, field
+from typing import Any
 
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0

@@ -44,6 +44,9 @@ except ImportError:  # guardian: multi_provider_clients module missing — provi
 
 logger = logging.getLogger(__name__)
 
+THRESHOLD = 5  # failure_threshold for CircuitBreaker
+DEFAULT_TIMEOUT = 60  # recovery_timeout (seconds) for CircuitBreaker
+
 
 # Custom Exceptions
 class ContextOverflowError(Exception):

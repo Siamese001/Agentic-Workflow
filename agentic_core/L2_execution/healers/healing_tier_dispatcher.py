@@ -314,7 +314,7 @@ def dispatch_healing(
                     record=record,
                     success=success,
                 )
-            except (AttributeError, TypeError, ValueError) as e:
+            except Exception as e:  # guardian: allow-silent-swallower
                 logger.warning("outcome_write_back_hook raised — continuing", exc_info=True)
         # Phase 3: C0 informational-only pattern advisor (cannot change tier)
         if pattern_advisor is not None:
@@ -322,7 +322,7 @@ def dispatch_healing(
                 pattern_advice = pattern_advisor.advise(healing_input)
                 if pattern_advice is not None and timestamp_utc is not None:
                     _emit_pattern_advice(pattern_advice, healing_input, agent_name, timestamp_utc)
-            except (AttributeError, TypeError, ValueError) as e:
+            except Exception as e:  # guardian: allow-silent-swallower
                 logger.warning("pattern_advisor raised — continuing", exc_info=True)
         # Phase 4: Publish outcome to MetaLearningBus (proposal_only=True)
         if meta_outcome_bus_hook is not None:

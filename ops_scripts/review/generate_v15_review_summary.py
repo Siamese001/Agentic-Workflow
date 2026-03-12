@@ -32,7 +32,7 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 # ---------------------------------------------------------------------------
 # Constants
 # ---------------------------------------------------------------------------
-from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, get_validated_project_root
+from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, REPORTS_DIR, get_validated_project_root
 from agentic_core.L0_routing.types.integration_contract_types import (
     Finding,
     ResultEnvelope,

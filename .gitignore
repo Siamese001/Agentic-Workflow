@@ -17,6 +17,9 @@ archives/
 artifacts/healing/healing_events.jsonl
 # Runtime CI lane gate result (timing changes on every test run)
 artifacts/adg_ci_lane_gate_result.json
+# ADG LATEST symlinks/copies (auto-generated, point to timestamped artifacts)
+artifacts/adg/adg_LATEST*.sqlite
+artifacts/adg/adg_LATEST*.json
 # Generated one-off patch scripts
 tools/_patch_evidence.py
 .healing_backups/

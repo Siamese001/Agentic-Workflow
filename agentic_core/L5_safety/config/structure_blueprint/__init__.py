@@ -268,6 +268,11 @@ def __getattr__(name: str):
 
         return getattr(derived, name)
 
+    if name == "SOVEREIGN_TERRITORIES":
+        from agentic_core.L5_safety.config.structure_blueprint._constants import SOVEREIGN_TERRITORIES
+
+        return SOVEREIGN_TERRITORIES
+
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 

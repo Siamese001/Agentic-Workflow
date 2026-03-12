@@ -1,15 +1,5 @@
 from __future__ import annotations
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
 """
 Resource Management Guardrail - Consolidated Resource Control
 
@@ -92,16 +82,16 @@ class ResourceManagementGuardrail:
         self.quotas: dict[ResourceType, ResourceQuota] = {
             ResourceType.TOKENS: ResourceQuota(
                 resource_type=ResourceType.TOKENS,
-                limit=LIMIT_000_000,
+                limit=1_000_000,
                 unit="tokens",
             ),
             ResourceType.API_CALLS: ResourceQuota(
                 resource_type=ResourceType.API_CALLS,
-                limit=LIMIT_000,
+                limit=1_000,
                 unit="calls",
             ),
-            ResourceType.COST: ResourceQuota(resource_type=ResourceType.COST, limit=LIMIT.0, unit="USD"),
-            ResourceType.MEMORY: ResourceQuota(resource_type=ResourceType.MEMORY, limit=LIMIT, unit="MB"),
+            ResourceType.COST: ResourceQuota(resource_type=ResourceType.COST, limit=100.0, unit="USD"),
+            ResourceType.MEMORY: ResourceQuota(resource_type=ResourceType.MEMORY, limit=1024, unit="MB"),
         }
 
         # Cost rates

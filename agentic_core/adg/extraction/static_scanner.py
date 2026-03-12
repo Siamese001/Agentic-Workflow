@@ -64,9 +64,11 @@ _SCANNER_VERSION = "2.0.0"
 _SCHEMA_VERSION = "2.0"
 
 # S9: Cardinality ranges for sanity checking (upper bounds include tests/ scan territory)
+# reads_from upper bound raised to 100000: os.environ/getenv/config.get calls appear in
+# large test suites and generate ~62k edges when tests/ is included in the scan.
 _CARDINALITY_RANGES: dict[str, tuple[int, int]] = {
     "implements": (100, 10000),
-    "reads_from": (50, 5000),
+    "reads_from": (50, 100000),
     "instantiates": (50, 5000),
 }
 
@@ -1309,6 +1311,168 @@ class _AntipatternVisitor(ast.NodeVisitor):
         return ""
 
 
+class _PromptSlotVisitor(ast.NodeVisitor):
+    """E20: Prompt lifecycle graph — extract prompt-slot generation and consumption edges.
+
+    Emits:
+      module --generates_prompt--> ADG::PromptSlot::<SLOT>::<source_file>
+          for each GovernedPayload / AirlockAssembler.assemble() call with slot kwargs.
+      module --consumes_prompt--> ADG::PromptTemplate::<KEY>
+          for each get_prompt(<KEY>) / get_constitution() call.
+    """
+
+    _ASSEMBLER_NAMES: frozenset[str] = frozenset(
+        {"AirlockAssembler", "GovernedPayload", "assemble", "build_payload"}
+    )
+    _CONSUME_NAMES: frozenset[str] = frozenset(
+        {"get_prompt", "get_constitution", "load_prompt", "fetch_prompt"}
+    )
+
+    def __init__(self, module_adg_name: str, source_file: str) -> None:
+        self.module_adg_name = module_adg_name
+        self.source_file = source_file
+        self.edges: list[Edge] = []
+
+    def visit_Call(self, node: ast.Call) -> None:
+        func_sym = self._sym(node.func)
+        func_tail = func_sym.split(".")[-1] if func_sym else ""
+
+        if func_sym in self._ASSEMBLER_NAMES or func_tail in self._ASSEMBLER_NAMES:
+            self._handle_assembler(node)
+        elif func_sym in self._CONSUME_NAMES or func_tail in self._CONSUME_NAMES:
+            self._handle_consume(node)
+
+        self.generic_visit(node)
+
+    def _handle_assembler(self, node: ast.Call) -> None:
+        """Emit generates_prompt for each recognised slot kwarg."""
+        from agentic_core.adg.schema import PROMPT_FIELD_TO_SLOT
+
+        for kw in node.keywords:
+            slot = PROMPT_FIELD_TO_SLOT.get(kw.arg or "")
+            if slot:
+                to_name = canonical_name("PromptSlot", slot, self.source_file)
+                self.edges.append(
+                    Edge(
+                        from_name=self.module_adg_name,
+                        relation_type="generates_prompt",
+                        to_name=to_name,
+                        edge_kind="prompt_generation",
+                        source_file=self.source_file,
+                        line_no=node.lineno,
+                        symbol=f"{slot}:{kw.arg}",
+                    )
+                )
+
+    def _handle_consume(self, node: ast.Call) -> None:
+        """Emit consumes_prompt for get_prompt(<KEY>) and get_constitution() calls."""
+        key = ""
+        if node.args:
+            arg0 = node.args[0]
+            if isinstance(arg0, ast.Constant) and isinstance(arg0.value, str):
+                key = arg0.value
+        if not key:
+            key = "CONSTITUTION"
+        to_name = canonical_name("PromptTemplate", key)
+        self.edges.append(
+            Edge(
+                from_name=self.module_adg_name,
+                relation_type="consumes_prompt",
+                to_name=to_name,
+                edge_kind="prompt_consumption",
+                source_file=self.source_file,
+                line_no=node.lineno,
+                symbol=key,
+            )
+        )
+
+    @staticmethod
+    def _sym(node: ast.expr) -> str:
+        if isinstance(node, ast.Name):
+            return node.id
+        if isinstance(node, ast.Attribute):
+            parts: list[str] = []
+            cur: ast.expr = node
+            while isinstance(cur, ast.Attribute):
+                parts.append(cur.attr)
+                cur = cur.value
+            if isinstance(cur, ast.Name):
+                parts.append(cur.id)
+            return ".".join(reversed(parts))
+        return ""
+
+
+_TRACE_CALL_NAMES: frozenset[str] = frozenset(
+    {
+        "record_trace",
+        "emit_telemetry",
+        "log_run",
+        "record_run",
+        "emit_trace",
+        "log_trace",
+    }
+)
+_TRACE_ID_KWARGS: frozenset[str] = frozenset({"trace_id", "run_id", "request_id", "execution_id"})
+
+
+class _ExecutionTraceVisitor(ast.NodeVisitor):
+    """E23: Execution trace → prompt linkage graph.
+
+    Emits:
+      module --triggered_telemetry--> ADG::ExecutionTrace::<trace_id or source_file>
+          for each record_trace() / emit_telemetry() / log_run() call site.
+    """
+
+    def __init__(self, module_adg_name: str, source_file: str) -> None:
+        self.module_adg_name = module_adg_name
+        self.source_file = source_file
+        self.edges: list[Edge] = []
+
+    def visit_Call(self, node: ast.Call) -> None:
+        func_sym = self._sym(node.func)
+        func_tail = func_sym.split(".")[-1] if func_sym else ""
+
+        if func_sym in _TRACE_CALL_NAMES or func_tail in _TRACE_CALL_NAMES:
+            trace_id = self._extract_id(node)
+            to_name = canonical_name("ExecutionTrace", trace_id or self.source_file)
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    relation_type="triggered_telemetry",
+                    to_name=to_name,
+                    edge_kind="trace_prompt_link",
+                    source_file=self.source_file,
+                    line_no=node.lineno,
+                    symbol=trace_id or "",
+                )
+            )
+
+        self.generic_visit(node)
+
+    def _extract_id(self, node: ast.Call) -> str:
+        """Return the trace/run id kwarg value if present, else empty string."""
+        for kw in node.keywords:
+            if kw.arg in _TRACE_ID_KWARGS:
+                if isinstance(kw.value, ast.Constant) and isinstance(kw.value.value, str):
+                    return kw.value.value
+        return ""
+
+    @staticmethod
+    def _sym(node: ast.expr) -> str:
+        if isinstance(node, ast.Name):
+            return node.id
+        if isinstance(node, ast.Attribute):
+            parts: list[str] = []
+            cur: ast.expr = node
+            while isinstance(cur, ast.Attribute):
+                parts.append(cur.attr)
+                cur = cur.value
+            if isinstance(cur, ast.Name):
+                parts.append(cur.id)
+            return ".".join(reversed(parts))
+        return ""
+
+
 class _DecoratorVisitor(ast.NodeVisitor):
     """E3: G7 — Emit `applies` edges for decorator usage on functions and classes.
 
@@ -1813,6 +1977,16 @@ def _scan_file(
     ap_visitor = _AntipatternVisitor(module_adg, rel)
     ap_visitor.visit(tree)
     edges.extend(ap_visitor.edges)
+
+    # E20: Prompt lifecycle graph (generates_prompt / consumes_prompt)
+    ps_visitor = _PromptSlotVisitor(module_adg, rel)
+    ps_visitor.visit(tree)
+    edges.extend(ps_visitor.edges)
+
+    # E23: Execution trace → telemetry linkage (triggered_telemetry)
+    et_visitor = _ExecutionTraceVisitor(module_adg, rel)
+    et_visitor.visit(tree)
+    edges.extend(et_visitor.edges)
 
     return edges, False
 
