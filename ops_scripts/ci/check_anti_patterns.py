@@ -68,7 +68,13 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import (
 BASELINE_FILE = PROJECT_ROOT / OPS_SCRIPTS_DIR / "hooks" / "landmine_baseline.txt"
 
 # Transient / non-source directories excluded from all scans.
-_EXCLUDE_DIRS = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
+_EXCLUDE_DIRS = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES | {".nox"}
+
+# File patterns to exclude from scanning
+_EXCLUDE_FILE_PATTERNS = [
+    "__dbg_*.py",  # Temporary debug files
+    "**/activate_this.py",  # Virtual environment activation scripts
+]
 
 
 def load_baseline() -> set[str]:
@@ -127,7 +133,9 @@ def check_files(file_paths: list[str]) -> int:
     if not file_paths:
         all_python_files = sorted(PROJECT_ROOT.rglob("*.py"))
         python_files = [
-            f for f in all_python_files if not (set(f.relative_to(PROJECT_ROOT).parts) & _EXCLUDE_DIRS)
+            f for f in all_python_files
+            if not (set(f.relative_to(PROJECT_ROOT).parts) & _EXCLUDE_DIRS)
+            and not any(f.match(pattern) for pattern in _EXCLUDE_FILE_PATTERNS)
         ]
     else:
         # Filter to only Python files
@@ -265,7 +273,9 @@ def main() -> int:
 
         all_python_files = sorted(PROJECT_ROOT.rglob("*.py"))
         all_python_files = [
-            f for f in all_python_files if not (set(f.relative_to(PROJECT_ROOT).parts) & _EXCLUDE_DIRS)
+            f for f in all_python_files
+            if not (set(f.relative_to(PROJECT_ROOT).parts) & _EXCLUDE_DIRS)
+            and not any(f.match(pattern) for pattern in _EXCLUDE_FILE_PATTERNS)
         ]
 
         scanner = AntiPatternScanner(

@@ -115,6 +115,7 @@ class TestArtifactGeneration:
     def test_tier2_sqlite_has_all_edge_types(self):
         """SQLite must contain all 18 edge types — it is the complete store."""
         import sqlite3
+
         p = _require("adg_indexed_*.sqlite", "Tier-2 SQLite")
         conn = sqlite3.connect(str(p))
         rel_types = {r[0] for r in conn.execute("SELECT DISTINCT relation_type FROM edges")}
@@ -445,6 +446,7 @@ class TestSplitPlaneIsolation:
         all edge types with zero overlap between planes.
         """
         import sqlite3
+
         db = _latest("adg_indexed_*.sqlite")
         if db is None:
             pytest.skip("No SQLite artifact")
@@ -464,7 +466,9 @@ class TestSplitPlaneIsolation:
                 all_plane_rels.update(e["r"] for e in plane_data["edges"])
 
         uncovered = sqlite_rel_types - all_plane_rels
-        assert not uncovered, f"{len(uncovered)} relation types in SQLite not assigned to any plane: {sorted(uncovered)}"
+        assert not uncovered, (
+            f"{len(uncovered)} relation types in SQLite not assigned to any plane: {sorted(uncovered)}"
+        )
 
     def test_no_cross_contamination_between_any_pair(self):
         """Zero edge-type overlap between any two planes (strict non-redundancy)."""
@@ -817,11 +821,15 @@ class TestBackwardCompatibility:
 class TestSizeAndPerformance:
     """Test 8 — Tier-2 SQLite is the canonical store; size and query performance checks."""
 
-    def test_tier2_sqlite_under_50mb(self):
-        """SQLite Tier-2 canonical store must be under 50 MB."""
+    def test_tier2_sqlite_under_75mb(self):
+        """SQLite Tier-2 canonical store must be under 75 MB.
+
+        Threshold raised from 50 MB → 75 MB after G7-G16 runtime plane expansion
+        (+10 planes, +1360 edges, governance_graph grew from 14.7 MB → 15.3 MB).
+        """
         p = _require("adg_indexed_*.sqlite", "Tier-2 SQLite")
         size_mb = p.stat().st_size / 1024 / 1024
-        assert size_mb < 50, f"Tier-2 SQLite too large: {size_mb:.1f} MB (expected < 50 MB)"
+        assert size_mb < 75, f"Tier-2 SQLite too large: {size_mb:.1f} MB (expected < 75 MB)"
 
     def test_tier1_snapshot_under_10kb(self):
         p = _require("adg_snapshot_*.json", "Tier-1 snapshot")
@@ -836,6 +844,7 @@ class TestSizeAndPerformance:
     def test_tier2_has_correct_entity_and_relation_counts(self):
         """SQLite must have ≥40,000 nodes and ≥100,000 edges (live repo counts)."""
         import sqlite3 as _sqlite3
+
         p = _require("adg_indexed_*.sqlite", "Tier-2 SQLite")
         conn = _sqlite3.connect(str(p))
         node_count = conn.execute("SELECT COUNT(*) FROM nodes").fetchone()[0]

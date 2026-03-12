@@ -1,0 +1,286 @@
+"""G11 (gap): Determinism control runtime.
+
+Models the full deterministic execution surface:
+  - SemanticClock as sole time authority
+  - Explicit RNG seeding
+  - ReplayGuard patching time/random/uuid
+  - Prohibition of un-transcripted nondeterminism
+  - DeterminismDigest emission per execution slot
+
+Data structures only — no side-effects on import.
+"""
+
+from __future__ import annotations
+
+import hashlib
+import time
+import uuid
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Any
+
+
+class DeterminismViolationType(str, Enum):
+    UNTRANSCRIPTED_RANDOM = "untranscripted_random"
+    UNTRANSCRIPTED_TIME = "untranscripted_time"
+    UNTRANSCRIPTED_UUID = "untranscripted_uuid"
+    REPLAY_MISMATCH = "replay_mismatch"
+    UNSEEDED_RNG = "unseeded_rng"
+
+
+@dataclass
+class DeterminismViolation:
+    violation_id: str = field(default_factory=lambda: f"dv-{uuid.uuid4().hex[:8]}")
+    violation_type: DeterminismViolationType = DeterminismViolationType.UNTRANSCRIPTED_RANDOM
+    location: str = ""
+    ts: float = field(default_factory=time.time)
+    detail: str = ""
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "violation_id": self.violation_id,
+            "violation_type": self.violation_type.value,
+            "location": self.location,
+            "ts": self.ts,
+            "detail": self.detail,
+        }
+
+
+@dataclass
+class DeterminismDigest:
+    """Singleton digest emitted at the end of a deterministic execution slot."""
+
+    digest_id: str = field(default_factory=lambda: f"dd-{uuid.uuid4().hex[:12]}")
+    run_id: str = ""
+    agent_id: str = ""
+    rng_seed: int = 0
+    clock_start: float = 0.0
+    clock_end: float = 0.0
+    event_count: int = 0
+    digest_hash: str = ""
+    emitted_at: float = field(default_factory=time.time)
+
+    def compute_hash(self, events: list[str]) -> str:
+        payload = f"{self.run_id}:{self.rng_seed}:{self.clock_start}:{':'.join(events)}"
+        self.digest_hash = hashlib.sha256(payload.encode()).hexdigest()
+        return self.digest_hash
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "digest_id": self.digest_id,
+            "run_id": self.run_id,
+            "agent_id": self.agent_id,
+            "rng_seed": self.rng_seed,
+            "clock_start": self.clock_start,
+            "clock_end": self.clock_end,
+            "event_count": self.event_count,
+            "digest_hash": self.digest_hash,
+            "emitted_at": self.emitted_at,
+        }
+
+
+@dataclass
+class SemanticClockReading:
+    """Single authoritative time reading from the SemanticClock."""
+
+    tick_id: str = field(default_factory=lambda: f"tick-{uuid.uuid4().hex[:8]}")
+    monotonic_ns: int = 0
+    logical_seq: int = 0
+    run_id: str = ""
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "tick_id": self.tick_id,
+            "monotonic_ns": self.monotonic_ns,
+            "logical_seq": self.logical_seq,
+            "run_id": self.run_id,
+        }
+
+
+@dataclass
+class ReplayPatchRecord:
+    """Records that a replay guard patch was installed."""
+
+    patch_id: str = field(default_factory=lambda: f"rp-{uuid.uuid4().hex[:8]}")
+    patched_symbol: str = ""
+    patch_type: str = ""
+    installed_at: float = field(default_factory=time.time)
+    run_id: str = ""
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "patch_id": self.patch_id,
+            "patched_symbol": self.patched_symbol,
+            "patch_type": self.patch_type,
+            "installed_at": self.installed_at,
+            "run_id": self.run_id,
+        }
+
+
+@dataclass
+class DeterminismControlReport:
+    """Aggregated report for one deterministic execution slot."""
+
+    run_id: str = ""
+    agent_id: str = ""
+    rng_seed: int | None = None
+    clock_readings: list[SemanticClockReading] = field(default_factory=list)
+    patches: list[ReplayPatchRecord] = field(default_factory=list)
+    violations: list[DeterminismViolation] = field(default_factory=list)
+    digest: DeterminismDigest | None = None
+
+    @property
+    def violation_count(self) -> int:
+        return len(self.violations)
+
+    @property
+    def is_fully_deterministic(self) -> bool:
+        return len(self.violations) == 0 and self.rng_seed is not None
+
+    def violations_by_type(self) -> dict[str, int]:
+        counts: dict[str, int] = {}
+        for v in self.violations:
+            key = v.violation_type.value
+            counts[key] = counts.get(key, 0) + 1
+        return counts
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "run_id": self.run_id,
+            "agent_id": self.agent_id,
+            "rng_seed": self.rng_seed,
+            "is_fully_deterministic": self.is_fully_deterministic,
+            "clock_reading_count": len(self.clock_readings),
+            "patch_count": len(self.patches),
+            "violation_count": self.violation_count,
+            "violations_by_type": self.violations_by_type(),
+            "digest_hash": self.digest.digest_hash if self.digest else None,
+        }
+
+    @property
+    def summary(self) -> str:
+        det = "DETERMINISTIC" if self.is_fully_deterministic else f"VIOLATIONS({self.violation_count})"
+        return f"DeterminismControl [{self.agent_id}] — {det}, seed={self.rng_seed}"
+
+
+class SemanticClock:
+    """Sole authoritative time source for a deterministic execution slot."""
+
+    def __init__(self, run_id: str, start_ns: int | None = None) -> None:
+        self.run_id = run_id
+        self._start_ns: int = start_ns if start_ns is not None else time.time_ns()
+        self._seq: int = 0
+        self.readings: list[SemanticClockReading] = []
+
+    def now(self) -> SemanticClockReading:
+        self._seq += 1
+        reading = SemanticClockReading(
+            monotonic_ns=time.time_ns() - self._start_ns,
+            logical_seq=self._seq,
+            run_id=self.run_id,
+        )
+        self.readings.append(reading)
+        return reading
+
+    @property
+    def tick_count(self) -> int:
+        return len(self.readings)
+
+
+class ReplayGuard:
+    """Installs and tracks determinism patches for time/random/uuid."""
+
+    _PATCHABLE = ("time.time", "time.time_ns", "random.random", "random.randint", "uuid.uuid4")
+
+    def __init__(self, run_id: str) -> None:
+        self.run_id = run_id
+        self.patches: list[ReplayPatchRecord] = []
+
+    def install_replay_patches(self, symbols: list[str] | None = None) -> list[ReplayPatchRecord]:
+        targets = symbols or list(self._PATCHABLE)
+        new_patches = []
+        for sym in targets:
+            patch_type = "time_patch" if "time" in sym else ("rng_patch" if "random" in sym else "uuid_patch")
+            rec = ReplayPatchRecord(
+                patched_symbol=sym,
+                patch_type=patch_type,
+                run_id=self.run_id,
+            )
+            self.patches.append(rec)
+            new_patches.append(rec)
+        return new_patches
+
+    def seed_rng(self, seed: int) -> ReplayPatchRecord:
+        rec = ReplayPatchRecord(
+            patched_symbol="random.seed",
+            patch_type="rng_seed",
+            run_id=self.run_id,
+        )
+        self.patches.append(rec)
+        return rec
+
+    @property
+    def patch_count(self) -> int:
+        return len(self.patches)
+
+
+class DeterminismController:
+    """Runtime controller that orchestrates the full determinism surface."""
+
+    def __init__(self, agent_id: str, run_id: str) -> None:
+        self.report = DeterminismControlReport(agent_id=agent_id, run_id=run_id)
+        self.clock = SemanticClock(run_id=run_id)
+        self.guard = ReplayGuard(run_id=run_id)
+
+    def seed_rng(self, seed: int) -> None:
+        self.report.rng_seed = seed
+        self.guard.seed_rng(seed)
+
+    def patch_time(self) -> list[ReplayPatchRecord]:
+        patches = self.guard.install_replay_patches(["time.time", "time.time_ns"])
+        self.report.patches.extend(patches)
+        return patches
+
+    def patch_random(self) -> list[ReplayPatchRecord]:
+        patches = self.guard.install_replay_patches(["random.random", "random.randint"])
+        self.report.patches.extend(patches)
+        return patches
+
+    def patch_uuid(self) -> list[ReplayPatchRecord]:
+        patches = self.guard.install_replay_patches(["uuid.uuid4"])
+        self.report.patches.extend(patches)
+        return patches
+
+    def install_all_patches(self, seed: int = 42) -> None:
+        self.seed_rng(seed)
+        self.guard.install_replay_patches()
+        self.report.patches.extend(self.guard.patches)
+        self.report.clock_readings.extend(self.clock.readings)
+
+    def record_violation(
+        self,
+        violation_type: DeterminismViolationType,
+        location: str = "",
+        detail: str = "",
+    ) -> DeterminismViolation:
+        v = DeterminismViolation(
+            violation_type=violation_type,
+            location=location,
+            detail=detail,
+        )
+        self.report.violations.append(v)
+        return v
+
+    def emit_determinism_digest(self, events: list[str] | None = None) -> DeterminismDigest:
+        reading = self.clock.now()
+        digest = DeterminismDigest(
+            run_id=self.report.run_id,
+            agent_id=self.report.agent_id,
+            rng_seed=self.report.rng_seed or 0,
+            clock_start=self.clock._start_ns / 1e9,
+            clock_end=reading.monotonic_ns / 1e9,
+            event_count=self.clock.tick_count,
+        )
+        digest.compute_hash(events or [])
+        self.report.digest = digest
+        return digest

@@ -1,0 +1,292 @@
+"""Tests for Phase 4 confidence scoring and structural integrity (G17).
+
+Covers:
+- G17: Evidence-based confidence scoring in builder.py (module=HIGH, external=LOW, unresolved=NONE)
+- Structural integrity: no duplicate entities in artifact
+- Artifact digest determinism
+- Structural metrics correctness with new node types
+"""
+
+from __future__ import annotations
+
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
+
+
+def _make_edge(
+    from_name, relation_type, to_name, edge_kind="import", source_file="test.py", line_no=1, symbol=""
+):
+    from agentic_core.adg.extraction.static_scanner import Edge
+
+    return Edge(
+        from_name=from_name,
+        relation_type=relation_type,
+        to_name=to_name,
+        edge_kind=edge_kind,
+        source_file=source_file,
+        line_no=line_no,
+        symbol=symbol,
+    )
+
+
+def _build_artifact(edges, modules=None):
+    from agentic_core.adg.artifact.builder import ADGArtifactBuilder
+    from agentic_core.adg.extraction.static_scanner import ScanResult
+
+    result = ScanResult(commit_sha="test_sha")
+    result.edges = edges
+    result.modules = modules or []
+    result.syntax_errors = []
+    result.compute_digest()
+    builder = ADGArtifactBuilder(repo_root=ROOT)
+    return builder.build(result)
+
+
+# ---------------------------------------------------------------------------
+# G17: Confidence scoring
+# ---------------------------------------------------------------------------
+
+
+class TestG17ConfidenceScoring:
+    def test_repo_module_confidence_is_high(self):
+        artifact = _build_artifact(
+            edges=[],
+            modules=["agentic_core/L2_execution/SomeAgent.py"],
+        )
+        module_entities = [
+            e for e in artifact.entities if e.entity_type == "module" and "SomeAgent.py" in e.adg_name
+        ]
+        assert module_entities, "Module entity should be materialized"
+        assert module_entities[0].confidence == "HIGH"
+
+    def test_layer_node_confidence_is_high(self):
+        edges = [
+            _make_edge(
+                "ADG::Module::test.py",
+                "violates",
+                "ADG::Layer::L2",
+                symbol="L0->L2",
+            )
+        ]
+        artifact = _build_artifact(edges)
+        layer_ent = next((e for e in artifact.entities if e.adg_name == "ADG::Layer::L2"), None)
+        assert layer_ent is not None
+        assert layer_ent.confidence == "HIGH"
+
+    def test_gateway_node_confidence_is_high(self):
+        edges = [
+            _make_edge(
+                "ADG::Module::test.py",
+                "writes_through",
+                "ADG::Gateway::UniversalWriteGateway",
+                edge_kind="write",
+            )
+        ]
+        artifact = _build_artifact(edges)
+        gw = next((e for e in artifact.entities if "ADG::Gateway::" in e.adg_name), None)
+        assert gw is not None
+        assert gw.confidence == "HIGH"
+
+    def test_prompt_slot_confidence_is_high(self):
+        edges = [
+            _make_edge(
+                "ADG::Module::test.py",
+                "generates_prompt",
+                "ADG::PromptSlot::S0::test.py",
+                edge_kind="prompt_generation",
+            )
+        ]
+        artifact = _build_artifact(edges)
+        slot = next((e for e in artifact.entities if "ADG::PromptSlot::" in e.adg_name), None)
+        assert slot is not None
+        assert slot.confidence == "HIGH"
+
+    def test_provider_symbol_confidence_is_high(self):
+        edges = [
+            _make_edge(
+                "ADG::Module::test.py",
+                "invokes_provider",
+                "ADG::Symbol::openai.ChatCompletion",
+                edge_kind="network",
+                symbol="openai.ChatCompletion",
+            )
+        ]
+        artifact = _build_artifact(edges)
+        provider = next((e for e in artifact.entities if "openai.ChatCompletion" in e.adg_name), None)
+        assert provider is not None
+        assert provider.confidence == "HIGH"
+
+
+# ---------------------------------------------------------------------------
+# Structural integrity: no duplicate entities
+# ---------------------------------------------------------------------------
+
+
+class TestNoDuplicateEntities:
+    def test_no_duplicate_adg_names(self):
+        edges = [
+            _make_edge("ADG::Module::a.py", "imports", "ADG::Symbol::os.path", symbol="os.path"),
+            _make_edge("ADG::Module::b.py", "imports", "ADG::Symbol::os.path", symbol="os.path"),
+        ]
+        artifact = _build_artifact(edges)
+        adg_names = [e.adg_name for e in artifact.entities]
+        assert len(adg_names) == len(set(adg_names)), "No two entities should share the same adg_name"
+
+    def test_no_duplicate_module_and_symbol_for_same_name(self):
+        # If a module is referenced both from edges (as from_name) and in modules list,
+        # it should only appear once.
+        edges = [
+            _make_edge(
+                "ADG::Module::agentic_core/L2_execution/SomeAgent.py",
+                "imports",
+                "ADG::Symbol::os",
+                symbol="os",
+            )
+        ]
+        artifact = _build_artifact(
+            edges,
+            modules=["agentic_core/L2_execution/SomeAgent.py"],
+        )
+        agent_entities = [e for e in artifact.entities if "SomeAgent.py" in e.adg_name]
+        assert len(agent_entities) == 1, (
+            "Module referenced in both edges and modules list should only appear once"
+        )
+
+    def test_layer_node_not_duplicated(self):
+        edges = [
+            _make_edge("ADG::Module::a.py", "violates", "ADG::Layer::L1", symbol="L0->L1"),
+            _make_edge("ADG::Module::b.py", "violates", "ADG::Layer::L1", symbol="L0->L1"),
+        ]
+        artifact = _build_artifact(edges)
+        l1_entities = [e for e in artifact.entities if e.adg_name == "ADG::Layer::L1"]
+        assert len(l1_entities) == 1, "ADG::Layer::L1 should only appear once even with multiple references"
+
+
+# ---------------------------------------------------------------------------
+# Artifact digest determinism
+# ---------------------------------------------------------------------------
+
+
+class TestArtifactDigestDeterminism:
+    def test_same_edges_produce_same_digest(self):
+        edges = [
+            _make_edge("ADG::Module::a.py", "imports", "ADG::Symbol::os", symbol="os"),
+            _make_edge("ADG::Module::b.py", "calls", "ADG::Symbol::some_func", symbol="some_func"),
+        ]
+        a1 = _build_artifact(edges)
+        a2 = _build_artifact(edges)
+        assert a1.artifact_digest == a2.artifact_digest, (
+            "Same ScanResult must always produce the same artifact_digest"
+        )
+
+    def test_different_edges_produce_different_digest(self):
+        edges1 = [_make_edge("ADG::Module::a.py", "imports", "ADG::Symbol::os", symbol="os")]
+        edges2 = [_make_edge("ADG::Module::a.py", "imports", "ADG::Symbol::sys", symbol="sys")]
+        a1 = _build_artifact(edges1)
+        a2 = _build_artifact(edges2)
+        assert a1.artifact_digest != a2.artifact_digest, (
+            "Different ScanResults must produce different artifact_digests"
+        )
+
+    def test_digest_is_non_empty(self):
+        edges = [_make_edge("ADG::Module::a.py", "imports", "ADG::Symbol::os", symbol="os")]
+        artifact = _build_artifact(edges)
+        assert artifact.artifact_digest, "artifact_digest must not be empty"
+        assert len(artifact.artifact_digest) == 64, "SHA256 digest must be 64 hex chars"
+
+
+# ---------------------------------------------------------------------------
+# Structural metrics with new node types
+# ---------------------------------------------------------------------------
+
+
+class TestStructuralMetricsWithNewNodeTypes:
+    def test_total_entities_counts_all_types(self):
+        edges = [
+            _make_edge("ADG::Module::a.py", "violates", "ADG::Layer::L1", symbol="L0->L1"),
+            _make_edge("ADG::Module::a.py", "writes_through", "ADG::Gateway::UniversalWriteGateway"),
+            _make_edge("ADG::Module::a.py", "generates_prompt", "ADG::PromptSlot::S0::a.py"),
+        ]
+        artifact = _build_artifact(edges, modules=["a.py"])
+        assert artifact.structural_metrics.total_entities >= 4, (
+            "Total entities should count module + layer + gateway + prompt_slot nodes"
+        )
+
+    def test_relation_type_distribution_includes_new_types(self):
+        edges = [
+            _make_edge("ADG::Module::a.py", "invokes_dynamic", "ADG::Symbol::eval", edge_kind="dynamic_exec"),
+            _make_edge("ADG::Module::b.py", "decorated_by", "ADG::Symbol::some_deco", edge_kind="decorator"),
+            _make_edge("ADG::Module::c.py", "reads_env", "ADG::Symbol::os.getenv", edge_kind="reads_env"),
+        ]
+        artifact = _build_artifact(edges)
+        by_rel = artifact.structural_metrics.by_relation_type
+        assert "invokes_dynamic" in by_rel, "invokes_dynamic should appear in by_relation_type"
+        assert "decorated_by" in by_rel, "decorated_by should appear in by_relation_type"
+        assert "reads_env" in by_rel, "reads_env should appear in by_relation_type"
+
+    def test_module_count_excludes_layer_gateway_nodes(self):
+        edges = [
+            _make_edge("ADG::Module::a.py", "violates", "ADG::Layer::L1", symbol="L0->L1"),
+        ]
+        artifact = _build_artifact(edges, modules=["a.py"])
+        # Layer node should not count toward module_count
+        assert artifact.structural_metrics.module_count >= 1
+        layer_entities = [e for e in artifact.entities if e.entity_type == "layer"]
+        assert layer_entities, "Layer entities should exist"
+        # module_count counts entity_type==module only
+        module_count = sum(1 for e in artifact.entities if e.entity_type == "module")
+        assert artifact.structural_metrics.module_count == module_count
+
+
+# ---------------------------------------------------------------------------
+# Integration: scan + build pipeline with new relation types
+# ---------------------------------------------------------------------------
+
+
+class TestIntegrationNewRelationTypes:
+    def test_artifact_can_serialize_new_relation_types(self):
+        import json
+
+        edges = [
+            _make_edge("ADG::Module::a.py", "invokes_dynamic", "ADG::Symbol::eval", edge_kind="dynamic_exec"),
+            _make_edge("ADG::Module::a.py", "decorated_by", "ADG::Symbol::deco", edge_kind="decorator"),
+            _make_edge("ADG::Module::a.py", "reads_env", "ADG::Symbol::os.getenv", edge_kind="reads_env"),
+            _make_edge("ADG::Module::a.py", "seam_bypass", "ADG::Symbol::openai.create", edge_kind="network"),
+        ]
+        artifact = _build_artifact(edges)
+        # Must serialize without error
+        d = artifact.to_dict()
+        serialized = json.dumps(d)
+        assert serialized, "Artifact with new relation types must serialize cleanly"
+
+    def test_artifact_contains_all_new_relation_types(self):
+        edges = [
+            _make_edge("ADG::Module::a.py", "invokes_dynamic", "ADG::Symbol::eval", edge_kind="dynamic_exec"),
+            _make_edge("ADG::Module::a.py", "decorated_by", "ADG::Symbol::deco", edge_kind="decorator"),
+            _make_edge("ADG::Module::a.py", "reads_env", "ADG::Symbol::os.getenv", edge_kind="reads_env"),
+            _make_edge(
+                "ADG::Module::a.py", "reads_secret", "ADG::Symbol::get_secret", edge_kind="reads_secret"
+            ),
+            _make_edge(
+                "ADG::Module::a.py",
+                "reads_policy_state",
+                "ADG::Symbol::get_policy",
+                edge_kind="reads_policy_state",
+            ),
+        ]
+        artifact = _build_artifact(edges)
+        rel_types = {r.relation_type for r in artifact.relations}
+        assert "invokes_dynamic" in rel_types
+        assert "decorated_by" in rel_types
+        assert "reads_env" in rel_types
+        assert "reads_secret" in rel_types
+        assert "reads_policy_state" in rel_types

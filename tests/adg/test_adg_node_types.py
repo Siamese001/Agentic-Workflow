@@ -1,0 +1,338 @@
+"""Tests for Phase 2 node type materialization (G7-G11).
+
+Covers:
+- G7: Layer nodes get entity_type=layer in builder.py
+- G8: Gateway nodes materialized with entity_type=gateway
+- G9: Seam modules promoted to entity_type=seam
+- G10: Provider SDK symbols get entity_type=provider
+- G11: 3 missing LAYER_PREFIXES entries in schema.py
+- G2: PromptSlot/PromptTemplate entity_type correctly set
+"""
+
+from __future__ import annotations
+
+import sys
+from pathlib import Path
+
+import pytest
+
+ROOT = Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
+
+
+def _make_scan_result_with_edges(edges):
+    """Build a minimal ScanResult-like object for builder tests."""
+    from agentic_core.adg.extraction.static_scanner import ScanResult
+
+    result = ScanResult(commit_sha="test_sha")
+    result.edges = edges
+    result.modules = []
+    result.syntax_errors = []
+    result.compute_digest()
+    return result
+
+
+def _make_edge(from_name, relation_type, to_name, edge_kind="import", source_file="test.py", symbol=""):
+    from agentic_core.adg.extraction.static_scanner import Edge
+
+    return Edge(
+        from_name=from_name,
+        relation_type=relation_type,
+        to_name=to_name,
+        edge_kind=edge_kind,
+        source_file=source_file,
+        line_no=1,
+        symbol=symbol,
+    )
+
+
+def _build_artifact(edges, modules=None):
+    from agentic_core.adg.artifact.builder import ADGArtifactBuilder
+
+    result = _make_scan_result_with_edges(edges)
+    if modules:
+        result.modules = modules
+    builder = ADGArtifactBuilder(repo_root=ROOT)
+    return builder.build(result)
+
+
+# ---------------------------------------------------------------------------
+# G7: Layer nodes entity_type=layer
+# ---------------------------------------------------------------------------
+
+
+class TestG7LayerEntityType:
+    def test_layer_node_gets_layer_entity_type(self):
+        edges = [
+            _make_edge(
+                "ADG::Module::agentic_core/L2_execution/UniversalWriteGateway.py",
+                "violates",
+                "ADG::Layer::L1",
+                edge_kind="import",
+                symbol="L2->L1",
+            )
+        ]
+        artifact = _build_artifact(edges)
+        layer_entities = [e for e in artifact.entities if e.adg_name == "ADG::Layer::L1"]
+        assert layer_entities, "ADG::Layer::L1 node should be materialized"
+        assert layer_entities[0].entity_type == "layer", (
+            f"Layer node entity_type should be 'layer', got '{layer_entities[0].entity_type}'"
+        )
+
+    def test_layer_node_has_correct_layer_field(self):
+        edges = [
+            _make_edge(
+                "ADG::Module::test.py",
+                "violates",
+                "ADG::Layer::L3",
+                symbol="L0->L3",
+            )
+        ]
+        artifact = _build_artifact(edges)
+        layer_entity = next((e for e in artifact.entities if e.adg_name == "ADG::Layer::L3"), None)
+        assert layer_entity is not None
+        assert layer_entity.layer == "L3"
+
+
+# ---------------------------------------------------------------------------
+# G8: Gateway nodes materialized
+# ---------------------------------------------------------------------------
+
+
+class TestG8GatewayNodes:
+    def test_gateway_node_gets_gateway_entity_type(self):
+        edges = [
+            _make_edge(
+                "ADG::Module::agentic_core/L2_execution/SomeAgent.py",
+                "writes_through",
+                "ADG::Gateway::UniversalWriteGateway",
+                edge_kind="write",
+            )
+        ]
+        artifact = _build_artifact(edges)
+        gw_entities = [e for e in artifact.entities if e.adg_name == "ADG::Gateway::UniversalWriteGateway"]
+        assert gw_entities, "ADG::Gateway::UniversalWriteGateway should be materialized"
+        assert gw_entities[0].entity_type == "gateway"
+
+    def test_gateway_node_has_resolved_path(self):
+        from agentic_core.adg.schema import GATEWAY_ALLOWLIST
+
+        edges = [
+            _make_edge(
+                "ADG::Module::test.py",
+                "routes_through",
+                "ADG::Gateway::SovereignLLMGateway",
+                edge_kind="call",
+            )
+        ]
+        artifact = _build_artifact(edges)
+        gw = next((e for e in artifact.entities if "SovereignLLMGateway" in e.adg_name), None)
+        assert gw is not None
+        expected_path = GATEWAY_ALLOWLIST.get("SovereignLLMGateway", "")
+        assert gw.resolved_path == expected_path
+
+
+# ---------------------------------------------------------------------------
+# G9: Seam modules get entity_type=seam
+# ---------------------------------------------------------------------------
+
+
+class TestG9SeamEntityType:
+    def test_seam_module_gets_seam_entity_type(self):
+        from agentic_core.adg.schema import SEAM_MODULE_PATTERNS
+
+        if not SEAM_MODULE_PATTERNS:
+            pytest.skip("No SEAM_MODULE_PATTERNS defined")
+        seam_path = SEAM_MODULE_PATTERNS[0] + "some_seam.py"
+        edges = [
+            _make_edge(
+                "ADG::Module::some/caller.py",
+                "calls",
+                f"ADG::Module::{seam_path}",
+                edge_kind="call",
+            )
+        ]
+        artifact = _build_artifact(edges)
+        seam_entity = next((e for e in artifact.entities if seam_path in e.adg_name), None)
+        assert seam_entity is not None, f"Seam module {seam_path} should be materialized"
+        assert seam_entity.entity_type == "seam", (
+            f"Seam module should have entity_type='seam', got '{seam_entity.entity_type}'"
+        )
+
+    def test_non_seam_module_stays_module(self):
+        edges = [
+            _make_edge(
+                "ADG::Module::agentic_core/L2_execution/SomeAgent.py",
+                "calls",
+                "ADG::Module::agentic_core/L1_cognition/reasoning.py",
+                edge_kind="call",
+            )
+        ]
+        artifact = _build_artifact(edges)
+        non_seam = next((e for e in artifact.entities if "L1_cognition/reasoning.py" in e.adg_name), None)
+        if non_seam:
+            assert non_seam.entity_type == "module"
+
+    def test_is_seam_module_helper(self):
+        from agentic_core.adg.artifact.builder import ADGArtifactBuilder
+
+        assert ADGArtifactBuilder._is_seam_module("agentic_core/L0_routing/seams/some_seam.py")
+        assert ADGArtifactBuilder._is_seam_module("agentic_core/seams/my_seam.py")
+        assert not ADGArtifactBuilder._is_seam_module("agentic_core/L2_execution/SomeAgent.py")
+        assert not ADGArtifactBuilder._is_seam_module("apps_rg/engines/ats_engine.py")
+
+
+# ---------------------------------------------------------------------------
+# G10: Provider SDK symbols get entity_type=provider
+# ---------------------------------------------------------------------------
+
+
+class TestG10ProviderEntityType:
+    def test_openai_symbol_gets_provider_entity_type(self):
+        edges = [
+            _make_edge(
+                "ADG::Module::agentic_core/L2_execution/SomeAgent.py",
+                "invokes_provider",
+                "ADG::Symbol::openai.ChatCompletion",
+                edge_kind="network",
+                symbol="openai.ChatCompletion",
+            )
+        ]
+        artifact = _build_artifact(edges)
+        provider = next((e for e in artifact.entities if "openai.ChatCompletion" in e.adg_name), None)
+        assert provider is not None
+        assert provider.entity_type == "provider", (
+            f"openai symbol should have entity_type='provider', got '{provider.entity_type}'"
+        )
+
+    def test_anthropic_symbol_gets_provider_entity_type(self):
+        edges = [
+            _make_edge(
+                "ADG::Module::test.py",
+                "invokes_provider",
+                "ADG::Symbol::anthropic.Anthropic",
+                edge_kind="network",
+                symbol="anthropic.Anthropic",
+            )
+        ]
+        artifact = _build_artifact(edges)
+        provider = next((e for e in artifact.entities if "anthropic.Anthropic" in e.adg_name), None)
+        assert provider is not None
+        assert provider.entity_type == "provider"
+
+    def test_internal_symbol_stays_symbol(self):
+        edges = [
+            _make_edge(
+                "ADG::Module::test.py",
+                "calls",
+                "ADG::Symbol::agentic_core.some_func",
+                edge_kind="call",
+                symbol="agentic_core.some_func",
+            )
+        ]
+        artifact = _build_artifact(edges)
+        sym = next((e for e in artifact.entities if "agentic_core.some_func" in e.adg_name), None)
+        if sym:
+            assert sym.entity_type == "symbol"
+
+
+# ---------------------------------------------------------------------------
+# G2: PromptSlot / PromptTemplate entity_type
+# ---------------------------------------------------------------------------
+
+
+class TestG2PromptEntityTypes:
+    def test_prompt_slot_gets_correct_entity_type(self):
+        edges = [
+            _make_edge(
+                "ADG::Module::apps_rg/reasoning/SomeAgent.py",
+                "generates_prompt",
+                "ADG::PromptSlot::S0::apps_rg/reasoning/SomeAgent.py",
+                edge_kind="prompt_generation",
+                symbol="S0:s0_system",
+            )
+        ]
+        artifact = _build_artifact(edges)
+        slot = next((e for e in artifact.entities if "ADG::PromptSlot::" in e.adg_name), None)
+        assert slot is not None, "PromptSlot node should be materialized"
+        assert slot.entity_type == "prompt_slot", (
+            f"PromptSlot should have entity_type='prompt_slot', got '{slot.entity_type}'"
+        )
+
+    def test_prompt_template_gets_correct_entity_type(self):
+        edges = [
+            _make_edge(
+                "ADG::Module::apps_rg/reasoning/SomeAgent.py",
+                "consumes_prompt",
+                "ADG::PromptTemplate::CONSTITUTION",
+                edge_kind="prompt_consumption",
+                symbol="CONSTITUTION",
+            )
+        ]
+        artifact = _build_artifact(edges)
+        tmpl = next((e for e in artifact.entities if "ADG::PromptTemplate::" in e.adg_name), None)
+        assert tmpl is not None, "PromptTemplate node should be materialized"
+        assert tmpl.entity_type == "prompt_template", (
+            f"PromptTemplate should have entity_type='prompt_template', got '{tmpl.entity_type}'"
+        )
+
+    def test_prompt_slot_layer_is_l_pg(self):
+        edges = [
+            _make_edge(
+                "ADG::Module::test.py",
+                "generates_prompt",
+                "ADG::PromptSlot::D0::test.py",
+                edge_kind="prompt_generation",
+            )
+        ]
+        artifact = _build_artifact(edges)
+        slot = next((e for e in artifact.entities if "ADG::PromptSlot::" in e.adg_name), None)
+        assert slot is not None
+        assert slot.layer == "L_PG"
+
+
+# ---------------------------------------------------------------------------
+# G11: LAYER_PREFIXES has all required entries
+# ---------------------------------------------------------------------------
+
+
+class TestG11LayerPrefixes:
+    def test_compat_dir_mapped(self):
+        from agentic_core.adg.schema import LAYER_PREFIXES
+
+        assert "agentic_core/_compat" in LAYER_PREFIXES, (
+            "agentic_core/_compat must be in LAYER_PREFIXES (G11)"
+        )
+
+    def test_embeddings_dir_mapped(self):
+        from agentic_core.adg.schema import LAYER_PREFIXES
+
+        assert "agentic_core/embeddings" in LAYER_PREFIXES, (
+            "agentic_core/embeddings must be in LAYER_PREFIXES (G11)"
+        )
+
+    def test_enforcement_dir_mapped(self):
+        from agentic_core.adg.schema import LAYER_PREFIXES
+
+        assert "agentic_core/enforcement" in LAYER_PREFIXES, (
+            "agentic_core/enforcement must be in LAYER_PREFIXES (G11)"
+        )
+
+    def test_new_entries_map_to_l_shared(self):
+        from agentic_core.adg.schema import LAYER_PREFIXES
+
+        for key in ("agentic_core/_compat", "agentic_core/embeddings", "agentic_core/enforcement"):
+            assert LAYER_PREFIXES.get(key) == "L_SHARED", f"{key} should map to L_SHARED in LAYER_PREFIXES"
+
+    def test_module_path_to_layer_resolves_new_entries(self):
+        from agentic_core.adg.schema import module_path_to_layer
+
+        assert module_path_to_layer("agentic_core/_compat/some_module.py") == "L_SHARED"
+        assert module_path_to_layer("agentic_core/embeddings/vertex.py") == "L_SHARED"
+        assert module_path_to_layer("agentic_core/enforcement/rules.py") == "L_SHARED"

@@ -28,9 +28,72 @@ from pathlib import Path
 from typing import Iterator
 
 from agentic_core.adg.schema import (
+    AGENT_DISPATCH_CLASSES,
+    AGENT_DISPATCH_METHODS,
+    AGENT_REGISTRY_CLASSES,
+    ANTIPATTERN_CATEGORY_NAMES,
+    ANTIPATTERN_REGISTRY_CLASSES,
+    BOUNDARY_VERIFIER_CLASSES,
+    BUDGET_EXCEEDED_EXCEPTIONS,
+    CAPABILITY_CHOKEPOINT_CLASSES,
+    CAPABILITY_TOKEN_CLASSES,
+    CONFIDENCE_SCORING_CLASSES,
+    CONFIG_ACCESS_METHODS,
+    CONFIG_READER_CLASSES,
+    DETERMINISM_PATCH_METHODS,
+    DPO_BATCH_CLASSES,
+    DRIFT_ALERT_METHODS,
+    DYNAMIC_EVAL_SYMBOLS,
+    DYNAMIC_GETATTR_SYMBOLS,
+    EMBEDDING_PIPELINE_SYMBOLS,
     EMBEDDING_SYMBOLS,
+    EVAL_METRIC_CLASSES,
+    EXECUTION_TRACE_CLASSES,
+    EXTERNAL_HTTP_SYMBOLS,
+    FREEZE_METHOD_NAMES,
+    GUARDRAIL_CLASS_NAMES,
+    HEALER_BASE_CLASSES,
+    HEALER_METHOD_NAMES,
+    HEALING_DISPATCH_METHODS,
+    HEALING_ORCHESTRATOR_CLASSES,
+    HITL_ESCALATION_METHODS,
+    HUMAN_REVIEW_SYMBOLS,
+    IO_INTERCEPT_CLASSES,
+    JIT_CONTEXT_CLASSES,
+    MUTATION_TRANSPORT_CLASSES,
     NETWORK_SYMBOLS,
+    NETWORK_TRANSCRIPT_SYMBOLS,
+    NONDETERMINISM_RANDOM_SYMBOLS,
+    NONDETERMINISM_UUID_SYMBOLS,
+    # G23-G27 (gap): new proof-edge frozensets
+    NONDETERMINISM_WALL_CLOCK_SYMBOLS,
+    PATH_CONTROL_CLASSES,
+    PATH_REROUTE_METHODS,
+    POLICY_HASH_METHODS,
+    POLICY_HASH_SYMBOLS,
+    POLICY_STATE_READ_METHODS,
+    POLICY_STATE_READER_CLASSES,
+    PREFERENCE_PAIR_SYMBOLS,
+    PROMPT_INJECTION_SYMBOLS,
+    PROMPT_TEMPLATE_SYMBOLS,
     PROVIDER_SDK_SYMBOLS,
+    REPLAY_GUARD_CLASSES,
+    REPLAY_KEY_METHODS,
+    RETRIEVAL_SYMBOLS,
+    RFC6902_DIFF_SYMBOLS,
+    ROUTING_COMMIT_SYMBOLS,
+    SAFETY_PLANE_CLASSES,
+    SANDBOX_ENVELOPE_CLASSES,
+    SECRET_ACCESS_METHODS,
+    SECRET_ENV_PATTERNS,
+    SECRET_VAULT_CLASSES,
+    SEMANTIC_CLOCK_CLASSES,
+    TOOL_BUDGET_CLASSES,
+    UWG_TERMINATION_SYMBOLS,
+    VALIDATOR_BASE_CLASSES,
+    VECTOR_STORE_SYMBOLS,
+    WORK_CONTRACT_METHODS,
+    WRITE_SIDE_EFFECT_EXCLUSIONS,
     WRITE_SIDE_EFFECT_SYMBOLS,
     canonical_name,
     module_path_to_layer,
@@ -351,10 +414,23 @@ class _AttributeVisitor(ast.NodeVisitor):
         sub_type = self._classify_config_read(sym)
         if sub_type:
             to_name = canonical_name("Symbol", sym)
+            # G6: use sub_type as relation_type for reads_env/reads_secret/reads_policy_state
+            rel_type = (
+                sub_type
+                if sub_type
+                in (
+                    "reads_env",
+                    "reads_secret",
+                    "reads_policy_state",
+                    "reads_runtime_state",
+                    "reads_config",
+                )
+                else "reads_from"
+            )
             self.edges.append(
                 Edge(
                     from_name=self.module_adg_name,
-                    relation_type="reads_from",
+                    relation_type=rel_type,
                     to_name=to_name,
                     edge_kind=sub_type,
                     source_file=self.source_file,
@@ -369,10 +445,23 @@ class _AttributeVisitor(ast.NodeVisitor):
         sub_type = self._classify_config_read(sym)
         if sub_type and isinstance(node, ast.Attribute):
             to_name = canonical_name("Symbol", sym)
+            # G6: use sub_type as relation_type for reads_env/reads_secret/reads_policy_state
+            rel_type = (
+                sub_type
+                if sub_type
+                in (
+                    "reads_env",
+                    "reads_secret",
+                    "reads_policy_state",
+                    "reads_runtime_state",
+                    "reads_config",
+                )
+                else "reads_from"
+            )
             self.edges.append(
                 Edge(
                     from_name=self.module_adg_name,
-                    relation_type="reads_from",
+                    relation_type=rel_type,
                     to_name=to_name,
                     edge_kind=sub_type,
                     source_file=self.source_file,
@@ -513,7 +602,7 @@ class _DynamicExecutionVisitor(ast.NodeVisitor):
             self.edges.append(
                 Edge(
                     from_name=self.module_adg_name,
-                    relation_type="invokes_provider",
+                    relation_type="invokes_dynamic",  # G1: separate from invokes_provider
                     to_name=to_name,
                     edge_kind="dynamic_exec",
                     source_file=self.source_file,
@@ -785,6 +874,9 @@ class _CallVisitor(ast.NodeVisitor):
         if sym in WRITE_SIDE_EFFECT_SYMBOLS or any(
             sym.endswith(w.split(".")[-1]) for w in WRITE_SIDE_EFFECT_SYMBOLS
         ):
+            # G3: exclude false-positive write symbols
+            if sym in WRITE_SIDE_EFFECT_EXCLUSIONS:
+                return "", ""
             return "write", "writes_to"
         if sym in NETWORK_SYMBOLS or any(sym.startswith(n.split(".")[0]) for n in NETWORK_SYMBOLS):
             return "network", "invokes_provider"
@@ -1505,7 +1597,7 @@ class _DecoratorVisitor(ast.NodeVisitor):
             self.edges.append(
                 Edge(
                     from_name=self.module_adg_name,
-                    relation_type="influences",
+                    relation_type="decorated_by",  # G5: renamed from influences
                     to_name=to_name,
                     edge_kind="decorator",
                     source_file=self.source_file,
@@ -1654,6 +1746,9 @@ class _UnusedImportVisitor(ast.NodeVisitor):
             self.imported_names[local] = node.lineno
 
     def visit_ImportFrom(self, node: ast.ImportFrom) -> None:
+        # G4: exclude __future__ imports from dead-import tracking
+        if (node.module or "") == "__future__":
+            return
         for alias in node.names:
             if alias.name == "*":
                 continue
@@ -1863,6 +1958,1303 @@ def _emit_layer_violation_edges(result: ScanResult) -> list[Edge]:
     return violations
 
 
+class _HealerValidatorVisitor(ast.NodeVisitor):
+    """G1 (gap): Runtime behavior plane — healer/validator loop edge extraction.
+
+    Emits:
+      module --heals--> ADG::Symbol::<HealerBase>
+          when a class inherits from a known healer base.
+      module --validates--> ADG::Symbol::<ValidatorBase>
+          when a class inherits from a known validator base.
+      module --orchestrates_healing--> ADG::Symbol::<method>
+          when a known healing orchestration method is called.
+      module --dispatches_to--> ADG::Symbol::<callee>
+          when heal() / validate() is called on another object.
+    """
+
+    def __init__(self, module_adg_name: str, source_file: str) -> None:
+        self.module_adg_name = module_adg_name
+        self.source_file = source_file
+        self.edges: list[Edge] = []
+
+    def visit_ClassDef(self, node: ast.ClassDef) -> None:
+        for base in node.bases:
+            base_name = self._sym(base)
+            base_tail = base_name.split(".")[-1] if base_name else ""
+            if base_tail in HEALER_BASE_CLASSES:
+                to_name = canonical_name("Symbol", base_name or base_tail)
+                self.edges.append(
+                    Edge(
+                        from_name=self.module_adg_name,
+                        relation_type="heals",
+                        to_name=to_name,
+                        edge_kind="healer_action",
+                        source_file=self.source_file,
+                        line_no=node.lineno,
+                        symbol=base_name or base_tail,
+                    )
+                )
+            elif base_tail in VALIDATOR_BASE_CLASSES:
+                to_name = canonical_name("Symbol", base_name or base_tail)
+                self.edges.append(
+                    Edge(
+                        from_name=self.module_adg_name,
+                        relation_type="validates",
+                        to_name=to_name,
+                        edge_kind="validator_check",
+                        source_file=self.source_file,
+                        line_no=node.lineno,
+                        symbol=base_name or base_tail,
+                    )
+                )
+        self.generic_visit(node)
+
+    def visit_Call(self, node: ast.Call) -> None:
+        sym = self._sym(node.func)
+        tail = sym.split(".")[-1] if sym else ""
+        if tail in HEALER_METHOD_NAMES:
+            to_name = canonical_name("Symbol", sym or tail)
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    relation_type="orchestrates_healing",
+                    to_name=to_name,
+                    edge_kind="healing_dispatch",
+                    source_file=self.source_file,
+                    line_no=node.lineno,
+                    symbol=sym or tail,
+                )
+            )
+        self.generic_visit(node)
+
+    @staticmethod
+    def _sym(node: ast.expr) -> str:
+        if isinstance(node, ast.Name):
+            return node.id
+        if isinstance(node, ast.Attribute):
+            parts: list[str] = []
+            cur: ast.expr = node
+            while isinstance(cur, ast.Attribute):
+                parts.append(cur.attr)
+                cur = cur.value
+            if isinstance(cur, ast.Name):
+                parts.append(cur.id)
+            return ".".join(reversed(parts))
+        return ""
+
+
+class _EmbeddingPipelineVisitor(ast.NodeVisitor):
+    """G3 (gap): Embedding/knowledge graph — pipeline edge extraction.
+
+    Emits:
+      module --chunks_into--> ADG::Symbol::<chunker>
+          for each known text-splitting / chunking call.
+      module --embeds_into--> ADG::Symbol::<embedder>
+          for each known embedding class instantiation or call.
+      module --stores_embedding--> ADG::Symbol::<store>
+          for each known vector-store write call (add_documents, upsert, ...).
+      module --retrieves_via--> ADG::Symbol::<retriever>
+          for each known retrieval call (similarity_search, as_retriever, ...).
+    """
+
+    def __init__(self, module_adg_name: str, source_file: str) -> None:
+        self.module_adg_name = module_adg_name
+        self.source_file = source_file
+        self.edges: list[Edge] = []
+
+    def visit_Call(self, node: ast.Call) -> None:
+        sym = self._sym(node.func)
+        tail = sym.split(".")[-1] if sym else ""
+        base = sym.split(".")[0] if sym else ""
+
+        if tail in EMBEDDING_PIPELINE_SYMBOLS or base in EMBEDDING_PIPELINE_SYMBOLS:
+            self._emit("chunks_into", "chunking_pipeline", sym or tail, node.lineno)
+        elif tail in EMBEDDING_SYMBOLS or base in EMBEDDING_SYMBOLS:
+            self._emit("embeds_into", "embedding_pipeline", sym or tail, node.lineno)
+        elif tail in VECTOR_STORE_SYMBOLS or base in VECTOR_STORE_SYMBOLS:
+            self._emit("stores_embedding", "embedding_pipeline", sym or tail, node.lineno)
+        elif tail in RETRIEVAL_SYMBOLS or sym in RETRIEVAL_SYMBOLS:
+            self._emit("retrieves_via", "retrieval_pipeline", sym or tail, node.lineno)
+
+        self.generic_visit(node)
+
+    def _emit(self, relation: str, edge_kind: str, sym: str, line_no: int) -> None:
+        to_name = canonical_name("Symbol", sym)
+        self.edges.append(
+            Edge(
+                from_name=self.module_adg_name,
+                relation_type=relation,
+                to_name=to_name,
+                edge_kind=edge_kind,
+                source_file=self.source_file,
+                line_no=line_no,
+                symbol=sym,
+            )
+        )
+
+    @staticmethod
+    def _sym(node: ast.expr) -> str:
+        if isinstance(node, ast.Name):
+            return node.id
+        if isinstance(node, ast.Attribute):
+            parts: list[str] = []
+            cur: ast.expr = node
+            while isinstance(cur, ast.Attribute):
+                parts.append(cur.attr)
+                cur = cur.value
+            if isinstance(cur, ast.Name):
+                parts.append(cur.id)
+            return ".".join(reversed(parts))
+        return ""
+
+
+class _HITLVisitor(ast.NodeVisitor):
+    """G4 (gap): HITL / confidence-threshold gating edge extraction.
+
+    Emits:
+      module --gated_by_confidence--> ADG::Symbol::<ConfidenceScorer>
+          when a known confidence scoring class is instantiated or called.
+      module --escalates_to_human--> ADG::Symbol::<escalation_method>
+          when a known HITL escalation method is called.
+    """
+
+    def __init__(self, module_adg_name: str, source_file: str) -> None:
+        self.module_adg_name = module_adg_name
+        self.source_file = source_file
+        self.edges: list[Edge] = []
+
+    def visit_Call(self, node: ast.Call) -> None:
+        sym = self._sym(node.func)
+        tail = sym.split(".")[-1] if sym else ""
+        base = sym.split(".")[0] if sym else ""
+
+        if tail in CONFIDENCE_SCORING_CLASSES or base in CONFIDENCE_SCORING_CLASSES:
+            to_name = canonical_name("Symbol", sym or tail)
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    relation_type="gated_by_confidence",
+                    to_name=to_name,
+                    edge_kind="confidence_gate",
+                    source_file=self.source_file,
+                    line_no=node.lineno,
+                    symbol=sym or tail,
+                )
+            )
+        elif tail in HITL_ESCALATION_METHODS:
+            to_name = canonical_name("Symbol", sym or tail)
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    relation_type="escalates_to_human",
+                    to_name=to_name,
+                    edge_kind="hitl_escalation",
+                    source_file=self.source_file,
+                    line_no=node.lineno,
+                    symbol=sym or tail,
+                )
+            )
+
+        self.generic_visit(node)
+
+    @staticmethod
+    def _sym(node: ast.expr) -> str:
+        if isinstance(node, ast.Name):
+            return node.id
+        if isinstance(node, ast.Attribute):
+            parts: list[str] = []
+            cur: ast.expr = node
+            while isinstance(cur, ast.Attribute):
+                parts.append(cur.attr)
+                cur = cur.value
+            if isinstance(cur, ast.Name):
+                parts.append(cur.id)
+            return ".".join(reversed(parts))
+        return ""
+
+
+class _SafetyEnforcementVisitor(ast.NodeVisitor):
+    """G5 (gap): Safety enforcement runtime plane — guardrail + policy hash edge extraction.
+
+    Emits:
+      module --applies_guardrail--> ADG::Symbol::<GuardrailClass>
+          when a known guardrail class is instantiated or called.
+      module --verifies_policy--> ADG::Symbol::<policy_hash_method>
+          when a known policy hash verification method is called.
+    """
+
+    def __init__(self, module_adg_name: str, source_file: str) -> None:
+        self.module_adg_name = module_adg_name
+        self.source_file = source_file
+        self.edges: list[Edge] = []
+
+    def visit_Call(self, node: ast.Call) -> None:
+        sym = self._sym(node.func)
+        tail = sym.split(".")[-1] if sym else ""
+        base = sym.split(".")[0] if sym else ""
+
+        if tail in GUARDRAIL_CLASS_NAMES or base in GUARDRAIL_CLASS_NAMES:
+            to_name = canonical_name("Symbol", sym or tail)
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    relation_type="applies_guardrail",
+                    to_name=to_name,
+                    edge_kind="guardrail_execution",
+                    source_file=self.source_file,
+                    line_no=node.lineno,
+                    symbol=sym or tail,
+                )
+            )
+        elif tail in POLICY_HASH_METHODS:
+            to_name = canonical_name("Symbol", sym or tail)
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    relation_type="verifies_policy",
+                    to_name=to_name,
+                    edge_kind="policy_verification",
+                    source_file=self.source_file,
+                    line_no=node.lineno,
+                    symbol=sym or tail,
+                )
+            )
+
+        self.generic_visit(node)
+
+    @staticmethod
+    def _sym(node: ast.expr) -> str:
+        if isinstance(node, ast.Name):
+            return node.id
+        if isinstance(node, ast.Attribute):
+            parts: list[str] = []
+            cur: ast.expr = node
+            while isinstance(cur, ast.Attribute):
+                parts.append(cur.attr)
+                cur = cur.value
+            if isinstance(cur, ast.Name):
+                parts.append(cur.id)
+            return ".".join(reversed(parts))
+        return ""
+
+
+class _SandboxAirlockVisitor(ast.NodeVisitor):
+    """G7 (gap): Sandbox airlock / work-contract edge extraction.
+
+    Emits:
+      module --stamps_work_contract--> ADG::Symbol::<WorkContract>
+      module --issues_capability_token--> ADG::Symbol::<CapabilityToken>
+      module --enters_sandbox--> ADG::Symbol::<SandboxEnvelope>
+    """
+
+    def __init__(self, module_adg_name: str, source_file: str) -> None:
+        self.module_adg_name = module_adg_name
+        self.source_file = source_file
+        self.edges: list[Edge] = []
+
+    def visit_Call(self, node: ast.Call) -> None:
+        sym = _sym_of(node.func)
+        tail = sym.split(".")[-1] if sym else ""
+        base = sym.split(".")[0] if sym else ""
+        if tail in SANDBOX_ENVELOPE_CLASSES or base in SANDBOX_ENVELOPE_CLASSES:
+            self._emit("enters_sandbox", "sandbox_entry", sym or tail, node.lineno)
+        elif tail in CAPABILITY_TOKEN_CLASSES or base in CAPABILITY_TOKEN_CLASSES:
+            self._emit("issues_capability_token", "capability_token_issue", sym or tail, node.lineno)
+        elif tail in WORK_CONTRACT_METHODS:
+            self._emit("stamps_work_contract", "work_contract_stamp", sym or tail, node.lineno)
+        self.generic_visit(node)
+
+    def _emit(self, relation: str, edge_kind: str, sym: str, line_no: int) -> None:
+        self.edges.append(
+            Edge(
+                from_name=self.module_adg_name,
+                relation_type=relation,
+                to_name=canonical_name("Symbol", sym),
+                edge_kind=edge_kind,
+                source_file=self.source_file,
+                line_no=line_no,
+                symbol=sym,
+            )
+        )
+
+
+class _CapabilityBudgetVisitor(ast.NodeVisitor):
+    """G8 (gap): Capability-token / tool-budget resource governance edge extraction.
+
+    Emits:
+      module --grants_resource--> ADG::Symbol::<ToolBudget>
+      module --exceeds_budget--> ADG::Symbol::<BudgetExceededException>
+    """
+
+    def __init__(self, module_adg_name: str, source_file: str) -> None:
+        self.module_adg_name = module_adg_name
+        self.source_file = source_file
+        self.edges: list[Edge] = []
+
+    def visit_Call(self, node: ast.Call) -> None:
+        sym = _sym_of(node.func)
+        tail = sym.split(".")[-1] if sym else ""
+        base = sym.split(".")[0] if sym else ""
+        if tail in TOOL_BUDGET_CLASSES or base in TOOL_BUDGET_CLASSES:
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    relation_type="grants_resource",
+                    to_name=canonical_name("Symbol", sym or tail),
+                    edge_kind="budget_grant",
+                    source_file=self.source_file,
+                    line_no=node.lineno,
+                    symbol=sym or tail,
+                )
+            )
+        self.generic_visit(node)
+
+    def visit_Raise(self, node: ast.Raise) -> None:
+        if node.exc is None:
+            self.generic_visit(node)
+            return
+        sym = _sym_of(node.exc)
+        tail = sym.split(".")[-1] if sym else ""
+        if tail in BUDGET_EXCEEDED_EXCEPTIONS or sym in BUDGET_EXCEEDED_EXCEPTIONS:
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    relation_type="exceeds_budget",
+                    to_name=canonical_name("Symbol", sym or tail),
+                    edge_kind="budget_exceeded",
+                    source_file=self.source_file,
+                    line_no=node.lineno,
+                    symbol=sym or tail,
+                )
+            )
+        self.generic_visit(node)
+
+
+class _JITContextVisitor(ast.NodeVisitor):
+    """G9 (gap): JIT context sync / freeze edge extraction.
+
+    Emits:
+      module --pulls_context--> ADG::Symbol::<JITContext>
+      module --freezes_context--> ADG::Symbol::<freeze_method>
+    """
+
+    def __init__(self, module_adg_name: str, source_file: str) -> None:
+        self.module_adg_name = module_adg_name
+        self.source_file = source_file
+        self.edges: list[Edge] = []
+
+    def visit_Call(self, node: ast.Call) -> None:
+        sym = _sym_of(node.func)
+        tail = sym.split(".")[-1] if sym else ""
+        base = sym.split(".")[0] if sym else ""
+        if tail in JIT_CONTEXT_CLASSES or base in JIT_CONTEXT_CLASSES:
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    relation_type="pulls_context",
+                    to_name=canonical_name("Symbol", sym or tail),
+                    edge_kind="context_pull",
+                    source_file=self.source_file,
+                    line_no=node.lineno,
+                    symbol=sym or tail,
+                )
+            )
+        elif tail in FREEZE_METHOD_NAMES:
+            if "unfreeze" in tail:
+                relation, edge_kind = "unfreezes_context", "context_pull"
+            elif "pull" in tail or "sync" in tail:
+                relation, edge_kind = "pulls_context", "context_pull"
+            else:
+                relation, edge_kind = "freezes_context", "context_freeze"
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    relation_type=relation,
+                    to_name=canonical_name("Symbol", sym or tail),
+                    edge_kind=edge_kind,
+                    source_file=self.source_file,
+                    line_no=node.lineno,
+                    symbol=sym or tail,
+                )
+            )
+        self.generic_visit(node)
+
+
+class _BoundaryVerifierVisitor(ast.NodeVisitor):
+    """G10 (gap): Execution boundary verification edge extraction.
+
+    Emits:
+      module --verifies_boundary--> ADG::Symbol::<L2BoundaryVerifier>
+      module --certifies_envelope--> ADG::Symbol::<CapabilityChokepoint>
+    """
+
+    def __init__(self, module_adg_name: str, source_file: str) -> None:
+        self.module_adg_name = module_adg_name
+        self.source_file = source_file
+        self.edges: list[Edge] = []
+
+    def visit_Call(self, node: ast.Call) -> None:
+        sym = _sym_of(node.func)
+        tail = sym.split(".")[-1] if sym else ""
+        base = sym.split(".")[0] if sym else ""
+        if tail in BOUNDARY_VERIFIER_CLASSES or base in BOUNDARY_VERIFIER_CLASSES:
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    relation_type="verifies_boundary",
+                    to_name=canonical_name("Symbol", sym or tail),
+                    edge_kind="boundary_accept",
+                    source_file=self.source_file,
+                    line_no=node.lineno,
+                    symbol=sym or tail,
+                )
+            )
+        elif tail in CAPABILITY_CHOKEPOINT_CLASSES or base in CAPABILITY_CHOKEPOINT_CLASSES:
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    relation_type="certifies_envelope",
+                    to_name=canonical_name("Symbol", sym or tail),
+                    edge_kind="boundary_accept",
+                    source_file=self.source_file,
+                    line_no=node.lineno,
+                    symbol=sym or tail,
+                )
+            )
+        self.generic_visit(node)
+
+
+class _DeterminismControlVisitor(ast.NodeVisitor):
+    """G11 (gap): Determinism control runtime edge extraction.
+
+    Emits:
+      module --seeds_rng--> ADG::Symbol::<SemanticClock|rng_seed_method>
+      module --patches_time--> ADG::Symbol::<patch_time method>
+      module --guards_replay--> ADG::Symbol::<ReplayGuard>
+      module --emits_determinism_digest--> ADG::Symbol::<emit_method>
+    """
+
+    def __init__(self, module_adg_name: str, source_file: str) -> None:
+        self.module_adg_name = module_adg_name
+        self.source_file = source_file
+        self.edges: list[Edge] = []
+
+    def visit_Call(self, node: ast.Call) -> None:
+        sym = _sym_of(node.func)
+        tail = sym.split(".")[-1] if sym else ""
+        base = sym.split(".")[0] if sym else ""
+        if tail in SEMANTIC_CLOCK_CLASSES or base in SEMANTIC_CLOCK_CLASSES:
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    relation_type="patches_time",
+                    to_name=canonical_name("Symbol", sym or tail),
+                    edge_kind="replay_patch",
+                    source_file=self.source_file,
+                    line_no=node.lineno,
+                    symbol=sym or tail,
+                )
+            )
+        elif tail in REPLAY_GUARD_CLASSES or base in REPLAY_GUARD_CLASSES:
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    relation_type="guards_replay",
+                    to_name=canonical_name("Symbol", sym or tail),
+                    edge_kind="replay_patch",
+                    source_file=self.source_file,
+                    line_no=node.lineno,
+                    symbol=sym or tail,
+                )
+            )
+        elif tail in DETERMINISM_PATCH_METHODS:
+            if "digest" in tail:
+                relation, edge_kind = "emits_determinism_digest", "determinism_digest_emit"
+            elif "seed" in tail or "rng" in tail or "random" in tail or "uuid" in tail:
+                relation, edge_kind = "seeds_rng", "determinism_seed"
+            else:
+                relation, edge_kind = "patches_time", "replay_patch"
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    relation_type=relation,
+                    to_name=canonical_name("Symbol", sym or tail),
+                    edge_kind=edge_kind,
+                    source_file=self.source_file,
+                    line_no=node.lineno,
+                    symbol=sym or tail,
+                )
+            )
+        self.generic_visit(node)
+
+
+class _IOInterceptionVisitor(ast.NodeVisitor):
+    """G12 (gap): Network / I/O interception edge extraction.
+
+    Emits:
+      module --intercepts_io--> ADG::Symbol::<IOInterceptor>
+      module --transcripts_response--> ADG::Symbol::<transcript_method>
+      module --hard_fails_untranscripted--> ADG::Symbol::<hard_fail_method>
+    """
+
+    def __init__(self, module_adg_name: str, source_file: str) -> None:
+        self.module_adg_name = module_adg_name
+        self.source_file = source_file
+        self.edges: list[Edge] = []
+
+    def visit_Call(self, node: ast.Call) -> None:
+        sym = _sym_of(node.func)
+        tail = sym.split(".")[-1] if sym else ""
+        base = sym.split(".")[0] if sym else ""
+        if tail in IO_INTERCEPT_CLASSES or base in IO_INTERCEPT_CLASSES:
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    relation_type="intercepts_io",
+                    to_name=canonical_name("Symbol", sym or tail),
+                    edge_kind="io_transcript",
+                    source_file=self.source_file,
+                    line_no=node.lineno,
+                    symbol=sym or tail,
+                )
+            )
+        elif tail in NETWORK_TRANSCRIPT_SYMBOLS:
+            if "hard_fail" in tail:
+                relation, ek = "hard_fails_untranscripted", "io_hard_fail"
+            else:
+                relation, ek = "transcripts_response", "io_transcript"
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    relation_type=relation,
+                    to_name=canonical_name("Symbol", sym or tail),
+                    edge_kind=ek,
+                    source_file=self.source_file,
+                    line_no=node.lineno,
+                    symbol=sym or tail,
+                )
+            )
+        self.generic_visit(node)
+
+
+class _MutationTransportVisitor(ast.NodeVisitor):
+    """G13 (gap): Mutation transport / commit protocol edge extraction.
+
+    Emits:
+      module --packages_diff--> ADG::Symbol::<RFC6902 diff method>
+      module --validates_blast_radius--> ADG::Symbol::<BlastRadiusChecker>
+      module --signs_execution_trace--> ADG::Symbol::<MutationTransport>
+      module --commits_mutation--> ADG::Symbol::<TwoPhaseCommit>
+    """
+
+    def __init__(self, module_adg_name: str, source_file: str) -> None:
+        self.module_adg_name = module_adg_name
+        self.source_file = source_file
+        self.edges: list[Edge] = []
+
+    def visit_Call(self, node: ast.Call) -> None:
+        sym = _sym_of(node.func)
+        tail = sym.split(".")[-1] if sym else ""
+        base = sym.split(".")[0] if sym else ""
+        if tail in RFC6902_DIFF_SYMBOLS:
+            if "blast" in tail:
+                relation, ek = "validates_blast_radius", "blast_radius_check"
+            else:
+                relation, ek = "packages_diff", "diff_package"
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    relation_type=relation,
+                    to_name=canonical_name("Symbol", sym or tail),
+                    edge_kind=ek,
+                    source_file=self.source_file,
+                    line_no=node.lineno,
+                    symbol=sym or tail,
+                )
+            )
+        elif tail in MUTATION_TRANSPORT_CLASSES or base in MUTATION_TRANSPORT_CLASSES:
+            if "commit" in tail.lower() or "TwoPhase" in tail:
+                relation, ek = "commits_mutation", "two_phase_commit"
+            elif "Distrib" in tail:
+                relation, ek = "distributes_mutation", "mutation_distribution"
+            else:
+                relation, ek = "signs_execution_trace", "diff_package"
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    relation_type=relation,
+                    to_name=canonical_name("Symbol", sym or tail),
+                    edge_kind=ek,
+                    source_file=self.source_file,
+                    line_no=node.lineno,
+                    symbol=sym or tail,
+                )
+            )
+        self.generic_visit(node)
+
+
+class _ExecutionProofVisitor(ast.NodeVisitor):
+    """G14 (gap): Execution trace / proof runtime edge extraction.
+
+    Emits:
+      module --records_execution_trace--> ADG::Symbol::<ExecutionTrace>
+      module --emits_replay_key--> ADG::Symbol::<emit_replay_key method>
+      module --compares_proof--> ADG::Symbol::<compare_proof method>
+    """
+
+    def __init__(self, module_adg_name: str, source_file: str) -> None:
+        self.module_adg_name = module_adg_name
+        self.source_file = source_file
+        self.edges: list[Edge] = []
+
+    def visit_Call(self, node: ast.Call) -> None:
+        sym = _sym_of(node.func)
+        tail = sym.split(".")[-1] if sym else ""
+        base = sym.split(".")[0] if sym else ""
+        if tail in EXECUTION_TRACE_CLASSES or base in EXECUTION_TRACE_CLASSES:
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    relation_type="records_execution_trace",
+                    to_name=canonical_name("Symbol", sym or tail),
+                    edge_kind="execution_trace_record",
+                    source_file=self.source_file,
+                    line_no=node.lineno,
+                    symbol=sym or tail,
+                )
+            )
+        elif tail in REPLAY_KEY_METHODS:
+            if "compare" in tail:
+                relation, ek = "compares_proof", "proof_comparison"
+            elif "replay" in tail and "key" in tail or "replay_key" in tail:
+                relation, ek = "emits_replay_key", "replay_key_emit"
+            else:
+                relation, ek = "records_execution_trace", "execution_trace_record"
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    relation_type=relation,
+                    to_name=canonical_name("Symbol", sym or tail),
+                    edge_kind=ek,
+                    source_file=self.source_file,
+                    line_no=node.lineno,
+                    symbol=sym or tail,
+                )
+            )
+        self.generic_visit(node)
+
+
+class _PathControlVisitor(ast.NodeVisitor):
+    """G15 (gap): Execution path control runtime edge extraction.
+
+    Emits:
+      module --routes_path--> ADG::Symbol::<PathRouter>
+      module --forces_stall--> ADG::Symbol::<StallForcer>
+      module --reenters_safety--> ADG::Symbol::<SafetyReentryGate>
+      module --vigilance_reroute--> ADG::Symbol::<VigilanceRerouter>
+    """
+
+    def __init__(self, module_adg_name: str, source_file: str) -> None:
+        self.module_adg_name = module_adg_name
+        self.source_file = source_file
+        self.edges: list[Edge] = []
+
+    def visit_Call(self, node: ast.Call) -> None:
+        sym = _sym_of(node.func)
+        tail = sym.split(".")[-1] if sym else ""
+        base = sym.split(".")[0] if sym else ""
+        if tail in PATH_CONTROL_CLASSES or base in PATH_CONTROL_CLASSES:
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    relation_type="routes_path",
+                    to_name=canonical_name("Symbol", sym or tail),
+                    edge_kind="path_route",
+                    source_file=self.source_file,
+                    line_no=node.lineno,
+                    symbol=sym or tail,
+                )
+            )
+        elif tail in PATH_REROUTE_METHODS:
+            if "stall" in tail or "force" in tail:
+                relation, ek = "forces_stall", "path_stall"
+            elif "reenter" in tail or "safety" in tail:
+                relation, ek = "reenters_safety", "path_safety_reentry"
+            elif "vigilance" in tail or "reroute" in tail:
+                relation, ek = "vigilance_reroute", "path_vigilance_reroute"
+            else:
+                relation, ek = "routes_path", "path_route"
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    relation_type=relation,
+                    to_name=canonical_name("Symbol", sym or tail),
+                    edge_kind=ek,
+                    source_file=self.source_file,
+                    line_no=node.lineno,
+                    symbol=sym or tail,
+                )
+            )
+        self.generic_visit(node)
+
+
+class _EvalSpineVisitor(ast.NodeVisitor):
+    """G16 (gap): Evaluation / optimization spine runtime edge extraction.
+
+    Emits:
+      module --scores_groundedness--> ADG::Symbol::<EvalMetric>
+      module --emits_drift_alert--> ADG::Symbol::<drift_alert method>
+      module --builds_dpo_batch--> ADG::Symbol::<DPOBatchBuilder>
+      module --commits_optimization--> ADG::Symbol::<commit_optimization>
+    """
+
+    def __init__(self, module_adg_name: str, source_file: str) -> None:
+        self.module_adg_name = module_adg_name
+        self.source_file = source_file
+        self.edges: list[Edge] = []
+
+    def visit_Call(self, node: ast.Call) -> None:
+        sym = _sym_of(node.func)
+        tail = sym.split(".")[-1] if sym else ""
+        base = sym.split(".")[0] if sym else ""
+        if tail in EVAL_METRIC_CLASSES or base in EVAL_METRIC_CLASSES:
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    relation_type="scores_groundedness",
+                    to_name=canonical_name("Symbol", sym or tail),
+                    edge_kind="eval_score",
+                    source_file=self.source_file,
+                    line_no=node.lineno,
+                    symbol=sym or tail,
+                )
+            )
+        elif tail in DPO_BATCH_CLASSES or base in DPO_BATCH_CLASSES:
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    relation_type="builds_dpo_batch",
+                    to_name=canonical_name("Symbol", sym or tail),
+                    edge_kind="dpo_build",
+                    source_file=self.source_file,
+                    line_no=node.lineno,
+                    symbol=sym or tail,
+                )
+            )
+        elif tail in DRIFT_ALERT_METHODS:
+            if "drift" in tail:
+                relation, ek = "emits_drift_alert", "drift_alert"
+            elif "dpo" in tail or "batch" in tail:
+                relation, ek = "builds_dpo_batch", "dpo_build"
+            elif "commit" in tail:
+                relation, ek = "commits_optimization", "optimization_commit"
+            else:
+                relation, ek = "scores_groundedness", "eval_score"
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    relation_type=relation,
+                    to_name=canonical_name("Symbol", sym or tail),
+                    edge_kind=ek,
+                    source_file=self.source_file,
+                    line_no=node.lineno,
+                    symbol=sym or tail,
+                )
+            )
+        self.generic_visit(node)
+
+
+class _SecretAccessVisitor(ast.NodeVisitor):
+    """G17 (gap): Secret / credential access edge extraction.
+
+    Emits:
+      module --reads_secret_vault--> ADG::Symbol::<SecretVault>
+      module --accesses_credential--> ADG::Symbol::<CredentialStore>
+      module --rotates_secret--> ADG::Symbol::<SecretVault>
+    """
+
+    def __init__(self, module_adg_name: str, source_file: str) -> None:
+        self.module_adg_name = module_adg_name
+        self.source_file = source_file
+        self.edges: list[Edge] = []
+
+    def visit_Call(self, node: ast.Call) -> None:
+        sym = _sym_of(node.func)
+        tail = sym.split(".")[-1] if sym else ""
+        base = sym.split(".")[0] if sym else ""
+        if tail in SECRET_VAULT_CLASSES or base in SECRET_VAULT_CLASSES:
+            self._emit("reads_secret_vault", "secret_read", sym or tail, node.lineno)
+        elif tail in SECRET_ACCESS_METHODS:
+            if "rotat" in tail:
+                self._emit("rotates_secret", "secret_rotation", sym or tail, node.lineno)
+            else:
+                self._emit("accesses_credential", "credential_access", sym or tail, node.lineno)
+        elif any(p in sym for p in SECRET_ENV_PATTERNS):
+            self._emit("accesses_credential", "credential_access", sym or tail, node.lineno)
+        self.generic_visit(node)
+
+    def _emit(self, relation: str, edge_kind: str, sym: str, line_no: int) -> None:
+        self.edges.append(
+            Edge(
+                from_name=self.module_adg_name,
+                relation_type=relation,
+                to_name=canonical_name("Symbol", sym),
+                edge_kind=edge_kind,
+                source_file=self.source_file,
+                line_no=line_no,
+                symbol=sym,
+            )
+        )
+
+
+class _ConfigGovernanceVisitor(ast.NodeVisitor):
+    """G18 (gap): Config governance edge extraction.
+
+    Emits:
+      module --reads_governed_config--> ADG::Symbol::<ConfigReader>
+      module --validates_config_schema--> ADG::Symbol::<GovernedConfig>
+      module --caches_config--> ADG::Symbol::<ConfigLoader>
+    """
+
+    def __init__(self, module_adg_name: str, source_file: str) -> None:
+        self.module_adg_name = module_adg_name
+        self.source_file = source_file
+        self.edges: list[Edge] = []
+
+    def visit_Call(self, node: ast.Call) -> None:
+        sym = _sym_of(node.func)
+        tail = sym.split(".")[-1] if sym else ""
+        base = sym.split(".")[0] if sym else ""
+        if tail in CONFIG_READER_CLASSES or base in CONFIG_READER_CLASSES:
+            self._emit("reads_governed_config", "governed_config_read", sym or tail, node.lineno)
+        elif tail in CONFIG_ACCESS_METHODS:
+            if "valid" in tail:
+                self._emit("validates_config_schema", "config_schema_validation", sym or tail, node.lineno)
+            elif "cache" in tail:
+                self._emit("caches_config", "governed_config_read", sym or tail, node.lineno)
+            else:
+                self._emit("reads_governed_config", "governed_config_read", sym or tail, node.lineno)
+        self.generic_visit(node)
+
+    def _emit(self, relation: str, edge_kind: str, sym: str, line_no: int) -> None:
+        self.edges.append(
+            Edge(
+                from_name=self.module_adg_name,
+                relation_type=relation,
+                to_name=canonical_name("Symbol", sym),
+                edge_kind=edge_kind,
+                source_file=self.source_file,
+                line_no=line_no,
+                symbol=sym,
+            )
+        )
+
+
+class _DynamicInvocationVisitor(ast.NodeVisitor):
+    """G19 (gap): Dynamic invocation edge extraction.
+
+    Emits:
+      module --invokes_eval--> ADG::Symbol::eval
+      module --invokes_exec--> ADG::Symbol::exec
+      module --invokes_importlib--> ADG::Symbol::importlib.import_module
+      module --invokes_getattr_dynamic--> ADG::Symbol::getattr
+    """
+
+    def __init__(self, module_adg_name: str, source_file: str) -> None:
+        self.module_adg_name = module_adg_name
+        self.source_file = source_file
+        self.edges: list[Edge] = []
+
+    def visit_Call(self, node: ast.Call) -> None:
+        sym = _sym_of(node.func)
+        tail = sym.split(".")[-1] if sym else ""
+        if sym in DYNAMIC_EVAL_SYMBOLS or tail in DYNAMIC_EVAL_SYMBOLS:
+            if tail in ("eval",):
+                self._emit("invokes_eval", "eval_call", sym or tail, node.lineno)
+            elif tail in ("exec",):
+                self._emit("invokes_exec", "exec_call", sym or tail, node.lineno)
+            elif "import_module" in sym or "spec_from_file" in sym or "module_from_spec" in sym:
+                self._emit("invokes_importlib", "importlib_call", sym or tail, node.lineno)
+            elif "run_module" in sym or "run_path" in sym:
+                self._emit("invokes_importlib", "importlib_call", sym or tail, node.lineno)
+            else:
+                self._emit("invokes_eval", "eval_call", sym or tail, node.lineno)
+        elif sym in DYNAMIC_GETATTR_SYMBOLS or tail in DYNAMIC_GETATTR_SYMBOLS:
+            self._emit("invokes_getattr_dynamic", "dynamic_getattr", sym or tail, node.lineno)
+        self.generic_visit(node)
+
+    def _emit(self, relation: str, edge_kind: str, sym: str, line_no: int) -> None:
+        self.edges.append(
+            Edge(
+                from_name=self.module_adg_name,
+                relation_type=relation,
+                to_name=canonical_name("Symbol", sym),
+                edge_kind=edge_kind,
+                source_file=self.source_file,
+                line_no=line_no,
+                symbol=sym,
+            )
+        )
+
+
+class _PolicyStateObserverVisitor(ast.NodeVisitor):
+    """G20 (gap): Policy state observation edge extraction.
+
+    Emits:
+      module --observes_policy_state--> ADG::Symbol::<PolicyStateReader>
+      module --observes_runtime_state--> ADG::Symbol::<RuntimeStateObserver>
+      module --snapshots_state--> ADG::Symbol::<StateSnapshot>
+    """
+
+    def __init__(self, module_adg_name: str, source_file: str) -> None:
+        self.module_adg_name = module_adg_name
+        self.source_file = source_file
+        self.edges: list[Edge] = []
+
+    def visit_Call(self, node: ast.Call) -> None:
+        sym = _sym_of(node.func)
+        tail = sym.split(".")[-1] if sym else ""
+        base = sym.split(".")[0] if sym else ""
+        if tail in POLICY_STATE_READER_CLASSES or base in POLICY_STATE_READER_CLASSES:
+            if "Snapshot" in tail:
+                self._emit("snapshots_state", "runtime_state_snapshot", sym or tail, node.lineno)
+            elif "Runtime" in tail or "Health" in tail:
+                self._emit("observes_runtime_state", "runtime_state_snapshot", sym or tail, node.lineno)
+            else:
+                self._emit("observes_policy_state", "policy_state_observation", sym or tail, node.lineno)
+        elif tail in POLICY_STATE_READ_METHODS:
+            if "runtime" in tail or "health" in tail or "probe" in tail:
+                self._emit("observes_runtime_state", "runtime_state_snapshot", sym or tail, node.lineno)
+            elif "snapshot" in tail:
+                self._emit("snapshots_state", "runtime_state_snapshot", sym or tail, node.lineno)
+            else:
+                self._emit("observes_policy_state", "policy_state_observation", sym or tail, node.lineno)
+        self.generic_visit(node)
+
+    def _emit(self, relation: str, edge_kind: str, sym: str, line_no: int) -> None:
+        self.edges.append(
+            Edge(
+                from_name=self.module_adg_name,
+                relation_type=relation,
+                to_name=canonical_name("Symbol", sym),
+                edge_kind=edge_kind,
+                source_file=self.source_file,
+                line_no=line_no,
+                symbol=sym,
+            )
+        )
+
+
+class _AntipatternRegistryVisitor(ast.NodeVisitor):
+    """G21 (gap): Anti-pattern registry edge extraction.
+
+    Emits:
+      module --registers_antipattern--> ADG::Symbol::<AntipatternRegistry>
+      module --classifies_antipattern--> ADG::Symbol::<PatternClassifier>
+    """
+
+    def __init__(self, module_adg_name: str, source_file: str) -> None:
+        self.module_adg_name = module_adg_name
+        self.source_file = source_file
+        self.edges: list[Edge] = []
+
+    def visit_Call(self, node: ast.Call) -> None:
+        sym = _sym_of(node.func)
+        tail = sym.split(".")[-1] if sym else ""
+        base = sym.split(".")[0] if sym else ""
+        if tail in ANTIPATTERN_REGISTRY_CLASSES or base in ANTIPATTERN_REGISTRY_CLASSES:
+            if "Classifier" in tail or "Detector" in tail:
+                self._emit("classifies_antipattern", "antipattern_classification", sym or tail, node.lineno)
+            else:
+                self._emit("registers_antipattern", "antipattern_classification", sym or tail, node.lineno)
+        elif tail in ANTIPATTERN_CATEGORY_NAMES:
+            self._emit("classifies_antipattern", "antipattern_classification", sym or tail, node.lineno)
+        self.generic_visit(node)
+
+    def _emit(self, relation: str, edge_kind: str, sym: str, line_no: int) -> None:
+        self.edges.append(
+            Edge(
+                from_name=self.module_adg_name,
+                relation_type=relation,
+                to_name=canonical_name("Symbol", sym),
+                edge_kind=edge_kind,
+                source_file=self.source_file,
+                line_no=line_no,
+                symbol=sym,
+            )
+        )
+
+
+class _HealingOrchestratorVisitor(ast.NodeVisitor):
+    """G22 (gap): Healing orchestrator edge extraction.
+
+    Emits:
+      module --dispatches_healing_run--> ADG::Symbol::<HealingOrchestrator>
+      module --confirms_heal--> ADG::Symbol::<HealingOrchestrator>
+      module --aborts_heal--> ADG::Symbol::<HealingOrchestrator>
+    """
+
+    def __init__(self, module_adg_name: str, source_file: str) -> None:
+        self.module_adg_name = module_adg_name
+        self.source_file = source_file
+        self.edges: list[Edge] = []
+
+    def visit_Call(self, node: ast.Call) -> None:
+        sym = _sym_of(node.func)
+        tail = sym.split(".")[-1] if sym else ""
+        base = sym.split(".")[0] if sym else ""
+        if tail in HEALING_ORCHESTRATOR_CLASSES or base in HEALING_ORCHESTRATOR_CLASSES:
+            self._emit("dispatches_healing_run", "healing_dispatch", sym or tail, node.lineno)
+        elif tail in HEALING_DISPATCH_METHODS:
+            if "abort" in tail:
+                self._emit("aborts_heal", "healing_abort", sym or tail, node.lineno)
+            elif "confirm" in tail:
+                self._emit("confirms_heal", "healing_confirm", sym or tail, node.lineno)
+            else:
+                self._emit("dispatches_healing_run", "healing_dispatch", sym or tail, node.lineno)
+        self.generic_visit(node)
+
+    def _emit(self, relation: str, edge_kind: str, sym: str, line_no: int) -> None:
+        self.edges.append(
+            Edge(
+                from_name=self.module_adg_name,
+                relation_type=relation,
+                to_name=canonical_name("Symbol", sym),
+                edge_kind=edge_kind,
+                source_file=self.source_file,
+                line_no=line_no,
+                symbol=sym,
+            )
+        )
+
+
+class _NondeterminismVisitor(ast.NodeVisitor):
+    """G23 (gap): Non-determinism primitive detection.
+
+    Emits:
+      module --uses_wall_clock--> ADG::Symbol::<datetime/time call>
+      module --uses_random-->     ADG::Symbol::<random/secrets call>
+      module --uses_uuid-->       ADG::Symbol::<uuid call>
+    """
+
+    def __init__(self, module_adg_name: str, source_file: str) -> None:
+        self.module_adg_name = module_adg_name
+        self.source_file = source_file
+        self.edges: list[Edge] = []
+
+    def visit_Call(self, node: ast.Call) -> None:
+        sym = _sym_of(node.func)
+        if sym in NONDETERMINISM_WALL_CLOCK_SYMBOLS:
+            self._emit("uses_wall_clock", "wall_clock_use", sym, node.lineno)
+        elif sym in NONDETERMINISM_RANDOM_SYMBOLS:
+            self._emit("uses_random", "random_use", sym, node.lineno)
+        elif sym in NONDETERMINISM_UUID_SYMBOLS:
+            self._emit("uses_uuid", "uuid_use", sym, node.lineno)
+        self.generic_visit(node)
+
+    def _emit(self, relation: str, edge_kind: str, sym: str, line_no: int) -> None:
+        self.edges.append(
+            Edge(
+                from_name=self.module_adg_name,
+                relation_type=relation,
+                to_name=canonical_name("Symbol", sym),
+                edge_kind=edge_kind,
+                source_file=self.source_file,
+                line_no=line_no,
+                symbol=sym,
+            )
+        )
+
+
+class _ExternalHttpVisitor(ast.NodeVisitor):
+    """G24 (gap): External HTTP / network egress detection.
+
+    Emits:
+      module --external_http_call--> ADG::Symbol::<requests.get / httpx.post / ...>
+    """
+
+    def __init__(self, module_adg_name: str, source_file: str) -> None:
+        self.module_adg_name = module_adg_name
+        self.source_file = source_file
+        self.edges: list[Edge] = []
+
+    def visit_Call(self, node: ast.Call) -> None:
+        sym = _sym_of(node.func)
+        if sym in EXTERNAL_HTTP_SYMBOLS:
+            self._emit("external_http_call", "http_egress_call", sym, node.lineno)
+        self.generic_visit(node)
+
+    def _emit(self, relation: str, edge_kind: str, sym: str, line_no: int) -> None:
+        self.edges.append(
+            Edge(
+                from_name=self.module_adg_name,
+                relation_type=relation,
+                to_name=canonical_name("Symbol", sym),
+                edge_kind=edge_kind,
+                source_file=self.source_file,
+                line_no=line_no,
+                symbol=sym,
+            )
+        )
+
+
+class _AgentDispatchVisitor(ast.NodeVisitor):
+    """G25 (gap): Agent-to-agent dispatch proof edges.
+
+    Emits:
+      module --agent_executes_agent--> ADG::Symbol::<AgentDispatcher / invoke_agent / ...>
+    """
+
+    def __init__(self, module_adg_name: str, source_file: str) -> None:
+        self.module_adg_name = module_adg_name
+        self.source_file = source_file
+        self.edges: list[Edge] = []
+
+    def visit_Call(self, node: ast.Call) -> None:
+        sym = _sym_of(node.func)
+        tail = sym.split(".")[-1] if sym else ""
+        base = sym.split(".")[0] if sym else ""
+        if tail in AGENT_DISPATCH_CLASSES or base in AGENT_DISPATCH_CLASSES or tail in AGENT_DISPATCH_METHODS:
+            self._emit("agent_executes_agent", "agent_dispatch", sym or tail, node.lineno)
+        self.generic_visit(node)
+
+    def _emit(self, relation: str, edge_kind: str, sym: str, line_no: int) -> None:
+        self.edges.append(
+            Edge(
+                from_name=self.module_adg_name,
+                relation_type=relation,
+                to_name=canonical_name("Symbol", sym),
+                edge_kind=edge_kind,
+                source_file=self.source_file,
+                line_no=line_no,
+                symbol=sym,
+            )
+        )
+
+
+class _L5ValidationProofVisitor(ast.NodeVisitor):
+    """G26 (gap): L5 validation proof edges.
+
+    Emits:
+      module --validated_by_registry-->      ADG::Symbol::<AgentRegistry / ...>
+      module --validated_by_safety_plane-->  ADG::Symbol::<SafetyPlane / SovereignLLMGateway / ...>
+      module --validated_by_llm_gateway-->   ADG::Symbol::<SovereignLLMGateway / ...>
+      module --execution_terminates_at_uwg-->ADG::Symbol::<UniversalWriteGateway / ...>
+      module --references_policy_hash-->     ADG::Symbol::<PolicyHash / PolicyConfigGuard / ...>
+    """
+
+    def __init__(self, module_adg_name: str, source_file: str) -> None:
+        self.module_adg_name = module_adg_name
+        self.source_file = source_file
+        self.edges: list[Edge] = []
+
+    def visit_Call(self, node: ast.Call) -> None:
+        sym = _sym_of(node.func)
+        tail = sym.split(".")[-1] if sym else ""
+        base = sym.split(".")[0] if sym else ""
+        name = tail or base
+        if name in AGENT_REGISTRY_CLASSES or base in AGENT_REGISTRY_CLASSES:
+            self._emit("validated_by_registry", "registry_validation", sym or name, node.lineno)
+        if name in SAFETY_PLANE_CLASSES or base in SAFETY_PLANE_CLASSES:
+            if "LLMGateway" in name or "MCPGateway" in name:
+                self._emit("validated_by_llm_gateway", "llm_gateway_validation", sym or name, node.lineno)
+            else:
+                self._emit("validated_by_safety_plane", "safety_plane_validation", sym or name, node.lineno)
+        if name in UWG_TERMINATION_SYMBOLS or base in UWG_TERMINATION_SYMBOLS:
+            self._emit("execution_terminates_at_uwg", "uwg_termination", sym or name, node.lineno)
+        if name in POLICY_HASH_SYMBOLS or base in POLICY_HASH_SYMBOLS:
+            self._emit("references_policy_hash", "policy_hash_link", sym or name, node.lineno)
+        self.generic_visit(node)
+
+    def visit_Attribute(self, node: ast.Attribute) -> None:
+        if node.attr in POLICY_HASH_SYMBOLS:
+            self._emit("references_policy_hash", "policy_hash_link", node.attr, node.lineno)
+        self.generic_visit(node)
+
+    def _emit(self, relation: str, edge_kind: str, sym: str, line_no: int) -> None:
+        self.edges.append(
+            Edge(
+                from_name=self.module_adg_name,
+                relation_type=relation,
+                to_name=canonical_name("Symbol", sym),
+                edge_kind=edge_kind,
+                source_file=self.source_file,
+                line_no=line_no,
+                symbol=sym,
+            )
+        )
+
+
+class _LearningProvenanceVisitor(ast.NodeVisitor):
+    """G27 (gap): Learning pipeline and prompt provenance proof edges.
+
+    Emits:
+      module --proposal_commits_routing-->    ADG::Symbol::<MetaLearningProposal / ...>
+      module --prompt_template_used_by-->     ADG::Symbol::<PromptTemplate / ...>
+      module --instruction_injection_source-->ADG::Symbol::<InstructionInjector / ...>
+      module --produces_preference_pair-->    ADG::Symbol::<DPOPair / PreferencePair / ...>
+      module --requires_human_review-->       ADG::Symbol::<HumanReviewGate / ...>
+    """
+
+    def __init__(self, module_adg_name: str, source_file: str) -> None:
+        self.module_adg_name = module_adg_name
+        self.source_file = source_file
+        self.edges: list[Edge] = []
+
+    def visit_Call(self, node: ast.Call) -> None:
+        sym = _sym_of(node.func)
+        tail = sym.split(".")[-1] if sym else ""
+        base = sym.split(".")[0] if sym else ""
+        name = tail or base
+        if name in ROUTING_COMMIT_SYMBOLS or base in ROUTING_COMMIT_SYMBOLS:
+            self._emit("proposal_commits_routing", "routing_commit", sym or name, node.lineno)
+        if name in PROMPT_TEMPLATE_SYMBOLS or base in PROMPT_TEMPLATE_SYMBOLS:
+            self._emit("prompt_template_used_by", "prompt_template_link", sym or name, node.lineno)
+        if name in PROMPT_INJECTION_SYMBOLS or base in PROMPT_INJECTION_SYMBOLS:
+            self._emit("instruction_injection_source", "injection_source_link", sym or name, node.lineno)
+        if name in PREFERENCE_PAIR_SYMBOLS or base in PREFERENCE_PAIR_SYMBOLS:
+            self._emit("produces_preference_pair", "preference_pair_link", sym or name, node.lineno)
+        if name in HUMAN_REVIEW_SYMBOLS or base in HUMAN_REVIEW_SYMBOLS:
+            self._emit("requires_human_review", "human_review_gate", sym or name, node.lineno)
+        self.generic_visit(node)
+
+    def visit_Attribute(self, node: ast.Attribute) -> None:
+        if node.attr in HUMAN_REVIEW_SYMBOLS:
+            self._emit("requires_human_review", "human_review_gate", node.attr, node.lineno)
+        if node.attr in ROUTING_COMMIT_SYMBOLS:
+            self._emit("proposal_commits_routing", "routing_commit", node.attr, node.lineno)
+        self.generic_visit(node)
+
+    def _emit(self, relation: str, edge_kind: str, sym: str, line_no: int) -> None:
+        self.edges.append(
+            Edge(
+                from_name=self.module_adg_name,
+                relation_type=relation,
+                to_name=canonical_name("Symbol", sym),
+                edge_kind=edge_kind,
+                source_file=self.source_file,
+                line_no=line_no,
+                symbol=sym,
+            )
+        )
+
+
+def _sym_of(node: ast.expr) -> str:
+    """Shared symbol extractor used by gap-plane visitors."""
+    if isinstance(node, ast.Name):
+        return node.id
+    if isinstance(node, ast.Attribute):
+        parts: list[str] = []
+        cur: ast.expr = node
+        while isinstance(cur, ast.Attribute):
+            parts.append(cur.attr)
+            cur = cur.value
+        if isinstance(cur, ast.Name):
+            parts.append(cur.id)
+        return ".".join(reversed(parts))
+    return ""
+
+
 def _iter_python_files(repo_root: Path) -> Iterator[Path]:
     """Yield all .py files under SCAN_ROOTS, deterministic (sorted) order."""
     all_files: list[Path] = []
@@ -1987,6 +3379,133 @@ def _scan_file(
     et_visitor = _ExecutionTraceVisitor(module_adg, rel)
     et_visitor.visit(tree)
     edges.extend(et_visitor.edges)
+
+    # G1 (gap): Healer/validator loop graph (heals, validates, orchestrates_healing)
+    hv_visitor = _HealerValidatorVisitor(module_adg, rel)
+    hv_visitor.visit(tree)
+    edges.extend(hv_visitor.edges)
+
+    # G3 (gap): Embedding pipeline graph (chunks_into, embeds_into, stores_embedding, retrieves_via)
+    emb_visitor = _EmbeddingPipelineVisitor(module_adg, rel)
+    emb_visitor.visit(tree)
+    edges.extend(emb_visitor.edges)
+
+    # G4 (gap): HITL / confidence-threshold gating (gated_by_confidence, escalates_to_human)
+    hitl_visitor = _HITLVisitor(module_adg, rel)
+    hitl_visitor.visit(tree)
+    edges.extend(hitl_visitor.edges)
+
+    # G5 (gap): Safety enforcement plane (applies_guardrail, verifies_policy)
+    safety_visitor = _SafetyEnforcementVisitor(module_adg, rel)
+    safety_visitor.visit(tree)
+    edges.extend(safety_visitor.edges)
+
+    # G7 (gap): Sandbox airlock / work-contract (enters_sandbox, issues_capability_token, stamps_work_contract)
+    sandbox_visitor = _SandboxAirlockVisitor(module_adg, rel)
+    sandbox_visitor.visit(tree)
+    edges.extend(sandbox_visitor.edges)
+
+    # G8 (gap): Capability-token / tool-budget (grants_resource, exceeds_budget)
+    budget_visitor = _CapabilityBudgetVisitor(module_adg, rel)
+    budget_visitor.visit(tree)
+    edges.extend(budget_visitor.edges)
+
+    # G9 (gap): JIT context sync / freeze (pulls_context, freezes_context, unfreezes_context)
+    jit_visitor = _JITContextVisitor(module_adg, rel)
+    jit_visitor.visit(tree)
+    edges.extend(jit_visitor.edges)
+
+    # G10 (gap): Execution boundary verification (verifies_boundary, certifies_envelope)
+    boundary_visitor = _BoundaryVerifierVisitor(module_adg, rel)
+    boundary_visitor.visit(tree)
+    edges.extend(boundary_visitor.edges)
+
+    # G11 (gap): Determinism control (seeds_rng, patches_time, guards_replay, emits_determinism_digest)
+    determinism_visitor = _DeterminismControlVisitor(module_adg, rel)
+    determinism_visitor.visit(tree)
+    edges.extend(determinism_visitor.edges)
+
+    # G12 (gap): Network / I/O interception (intercepts_io, transcripts_response, hard_fails_untranscripted)
+    io_visitor = _IOInterceptionVisitor(module_adg, rel)
+    io_visitor.visit(tree)
+    edges.extend(io_visitor.edges)
+
+    # G13 (gap): Mutation transport / commit (packages_diff, validates_blast_radius, commits_mutation)
+    mutation_transport_visitor = _MutationTransportVisitor(module_adg, rel)
+    mutation_transport_visitor.visit(tree)
+    edges.extend(mutation_transport_visitor.edges)
+
+    # G14 (gap): Execution trace / proof (records_execution_trace, emits_replay_key, compares_proof)
+    proof_visitor = _ExecutionProofVisitor(module_adg, rel)
+    proof_visitor.visit(tree)
+    edges.extend(proof_visitor.edges)
+
+    # G15 (gap): Path control (routes_path, forces_stall, reenters_safety, vigilance_reroute)
+    path_visitor = _PathControlVisitor(module_adg, rel)
+    path_visitor.visit(tree)
+    edges.extend(path_visitor.edges)
+
+    # G16 (gap): Evaluation / optimization spine (scores_groundedness, emits_drift_alert, builds_dpo_batch)
+    eval_visitor = _EvalSpineVisitor(module_adg, rel)
+    eval_visitor.visit(tree)
+    edges.extend(eval_visitor.edges)
+
+    # G17 (gap): Secret / credential access (reads_secret_vault, accesses_credential, rotates_secret)
+    secret_visitor = _SecretAccessVisitor(module_adg, rel)
+    secret_visitor.visit(tree)
+    edges.extend(secret_visitor.edges)
+
+    # G18 (gap): Config governance (reads_governed_config, validates_config_schema, caches_config)
+    config_gov_visitor = _ConfigGovernanceVisitor(module_adg, rel)
+    config_gov_visitor.visit(tree)
+    edges.extend(config_gov_visitor.edges)
+
+    # G19 (gap): Dynamic invocation (invokes_eval, invokes_exec, invokes_importlib, invokes_getattr_dynamic)
+    dyn_inv_visitor = _DynamicInvocationVisitor(module_adg, rel)
+    dyn_inv_visitor.visit(tree)
+    edges.extend(dyn_inv_visitor.edges)
+
+    # G20 (gap): Policy state observation (observes_policy_state, observes_runtime_state, snapshots_state)
+    pso_visitor = _PolicyStateObserverVisitor(module_adg, rel)
+    pso_visitor.visit(tree)
+    edges.extend(pso_visitor.edges)
+
+    # G21 (gap): Anti-pattern registry (registers_antipattern, classifies_antipattern)
+    ap_reg_visitor = _AntipatternRegistryVisitor(module_adg, rel)
+    ap_reg_visitor.visit(tree)
+    edges.extend(ap_reg_visitor.edges)
+
+    # G22 (gap): Healing orchestrator (dispatches_healing_run, confirms_heal, aborts_heal)
+    healing_orch_visitor = _HealingOrchestratorVisitor(module_adg, rel)
+    healing_orch_visitor.visit(tree)
+    edges.extend(healing_orch_visitor.edges)
+
+    # G23 (gap): Non-determinism primitive detection (uses_wall_clock, uses_random, uses_uuid)
+    nondet_visitor = _NondeterminismVisitor(module_adg, rel)
+    nondet_visitor.visit(tree)
+    edges.extend(nondet_visitor.edges)
+
+    # G24 (gap): External HTTP / network egress (external_http_call)
+    http_visitor = _ExternalHttpVisitor(module_adg, rel)
+    http_visitor.visit(tree)
+    edges.extend(http_visitor.edges)
+
+    # G25 (gap): Agent-to-agent dispatch (agent_executes_agent)
+    agent_dispatch_visitor = _AgentDispatchVisitor(module_adg, rel)
+    agent_dispatch_visitor.visit(tree)
+    edges.extend(agent_dispatch_visitor.edges)
+
+    # G26 (gap): L5 validation proof edges (validated_by_registry, validated_by_safety_plane,
+    #            validated_by_llm_gateway, execution_terminates_at_uwg, references_policy_hash)
+    l5_proof_visitor = _L5ValidationProofVisitor(module_adg, rel)
+    l5_proof_visitor.visit(tree)
+    edges.extend(l5_proof_visitor.edges)
+
+    # G27 (gap): Learning / prompt provenance (proposal_commits_routing, prompt_template_used_by,
+    #            instruction_injection_source, produces_preference_pair, requires_human_review)
+    learning_prov_visitor = _LearningProvenanceVisitor(module_adg, rel)
+    learning_prov_visitor.visit(tree)
+    edges.extend(learning_prov_visitor.edges)
 
     return edges, False
 
