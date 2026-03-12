@@ -9,9 +9,7 @@ W1 implementation with:
 - Fork guard with (pid, ctime) identity
 - C0-INFORMATIONAL ONLY outputs
 """
-
 from __future__ import annotations
-
 import hashlib
 import importlib.util
 import logging
@@ -20,73 +18,37 @@ import threading
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
-
 import numpy as np
 import psutil
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-# BLAS thread lock MUST execute before numpy computes threading defaults
-os.environ["OMP_NUM_THREADS"] = "1"
-os.environ["MKL_NUM_THREADS"] = "1"
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+# guardian: allow-global-mutation
+os.environ['OMP_NUM_THREADS'] = '1'
+# guardian: allow-global-mutation
+os.environ['MKL_NUM_THREADS'] = '1'
 logger = logging.getLogger(__name__)
-
-
-# =============================================================================
-# Exceptions
-# =============================================================================
-
 
 class EmbeddingDisabledError(RuntimeError):
     """Raised when embedding operations are attempted while disabled."""
-
     pass
-
 
 class EmbeddingForkViolationError(RuntimeError):
     """Raised when embedding service is used across process boundaries."""
-
     pass
-
 
 class EmbeddingIntegrityError(RuntimeError):
     """Raised when seed pack integrity validation fails."""
 
-
 class EmbeddingReplayViolationError(RuntimeError):
     """Raised when a replay operation is attempted with a mismatched pack hash."""
-
     pass
-
-
-# =============================================================================
-# Result Types
-# =============================================================================
-
 
 @dataclass(frozen=True, slots=True)
 class EmbeddingResult:
     """Result from embedding retrieval."""
-
     content_hash: str
     score_round6: float
     row_idx: int
     embedding_artifact_hash: str
-
-
-# =============================================================================
-# Disabled Service Sentinel
-# =============================================================================
-
 
 class _DisabledEmbeddingService:
     """Sentinel service returned when embedding_enabled=false.
@@ -98,7 +60,7 @@ class _DisabledEmbeddingService:
     def is_disabled(self) -> bool:
         return True
 
-    def retrieve(self, query_vector: np.ndarray, k: int, cutoff: float = 0.5) -> list[EmbeddingResult] | None:
+    def retrieve(self, query_vector: np.ndarray, k: int, cutoff: float=0.5) -> list[EmbeddingResult] | None:
         """Always returns None when disabled."""
         return None
 
@@ -106,20 +68,13 @@ class _DisabledEmbeddingService:
         return False
 
     def replay_key(self) -> str:
-        return "disabled"
-
-
-# =============================================================================
-# Main Factory
-# =============================================================================
-
+        return 'disabled'
 
 class EmbeddingServiceFactory:
     """Singleton factory for zero-loss compliant embedding service.
 
     Enforces total kill-switch coverage, determinism, and memory safety.
     """
-
     _LOCK: threading.Lock = threading.Lock()
     _INSTANCE: EmbeddingServiceFactory | None = None
     _INSTANCE_IDENTITY: tuple[int, float] | None = None
@@ -130,29 +85,21 @@ class EmbeddingServiceFactory:
         Args:
             pack_base_path: Base path to seed pack directory.
         """
-        # Kill-switch object lifetime guard
         if not self._is_embedding_enabled():
-            raise EmbeddingDisabledError(
-                "EmbeddingServiceFactory construction attempted while EMBEDDING_ENABLED=false"
-            )
-
+            raise EmbeddingDisabledError('EmbeddingServiceFactory construction attempted while EMBEDDING_ENABLED=false')
         self._pack_base_path = pack_base_path
         self._blas_impl = self._get_blas_fingerprint()
         self._integrity_ok: bool = False
         self._last_spotcheck_ok: bool = False
         self._normalized: np.ndarray | None = None
-        self._normalized_pack_hash: str = ""
+        self._normalized_pack_hash: str = ''
         self._manifest: dict[str, Any] | None = None
         self._row_hashes: list[str] | None = None
-
-        # Load and validate pack
         self._load_pack()
-
-        # Store process identity for fork guard
         EmbeddingServiceFactory._INSTANCE_IDENTITY = (os.getpid(), psutil.Process().create_time())
 
     @classmethod
-    def get_or_disabled(cls, pack_base_path: Path | None = None) -> Any:
+    def get_or_disabled(cls, pack_base_path: Path | None=None) -> Any:
         """Get embedding service or disabled sentinel.
 
         This is the ONLY public entrypoint. All callers must use this method
@@ -164,22 +111,11 @@ class EmbeddingServiceFactory:
         Returns:
             EmbeddingServiceFactory instance or _DisabledEmbeddingService.
         """
-        # Check kill-switch first - NO instantiation if disabled
         if not cls._is_embedding_enabled():
-            # Runtime guard: assert no embedding model instance may exist
             if cls._INSTANCE is not None:
-                raise EmbeddingIntegrityError(
-                    "KILL_SWITCH_VIOLATION: EmbeddingServiceFactory instance exists while EMBEDDING_ENABLED=false"
-                )
+                raise EmbeddingIntegrityError('KILL_SWITCH_VIOLATION: EmbeddingServiceFactory instance exists while EMBEDDING_ENABLED=false')
             return _DisabledEmbeddingService()
-
-        # Service is enabled - get singleton instance
-        return cls.get(
-            pack_base_path
-            or Path(
-                "C:/AgenticEmbeddings/seed_packs/healing_contexts/5d94b5b12ec92312d0240be9984ff92b9478f74ed6f1335511a202c5351520d9"
-            )
-        )
+        return cls.get(pack_base_path or Path('C:/AgenticEmbeddings/seed_packs/healing_contexts/5d94b5b12ec92312d0240be9984ff92b9478f74ed6f1335511a202c5351520d9'))
 
     @classmethod
     def reset_instance(cls):
@@ -190,43 +126,23 @@ class EmbeddingServiceFactory:
 
     @classmethod
     @classmethod
-    def get(
-        cls,
-        pack_base_path: Path,
-        replay_mode: bool = False,
-        expected_pack_hash: str | None = None,
-    ) -> EmbeddingServiceFactory:
+    def get(cls, pack_base_path: Path, replay_mode: bool=False, expected_pack_hash: str | None=None) -> EmbeddingServiceFactory:
         """Get singleton instance with fork guard validation."""
         with cls._LOCK:
             if cls._INSTANCE is None:
                 cls._INSTANCE = cls(pack_base_path)
-
-            # Sovereign Replay Guard: In replay mode, the pack hash must match.
             if replay_mode:
                 if not expected_pack_hash:
-                    raise EmbeddingReplayViolationError(
-                        "Replay mode is active, but no expected_pack_hash was provided."
-                    )
-                actual_pack_hash = cls._INSTANCE._manifest.get("seed_index_version_hash")
+                    raise EmbeddingReplayViolationError('Replay mode is active, but no expected_pack_hash was provided.')
+                actual_pack_hash = cls._INSTANCE._manifest.get('seed_index_version_hash')
                 if actual_pack_hash != expected_pack_hash:
-                    raise EmbeddingReplayViolationError(
-                        f"Pack hash mismatch in replay mode. Expected: {expected_pack_hash}, Actual: {actual_pack_hash}"
-                    )
-
+                    raise EmbeddingReplayViolationError(f'Pack hash mismatch in replay mode. Expected: {expected_pack_hash}, Actual: {actual_pack_hash}')
             else:
-                # Defensive assertion: prevent duplicate construction
                 if str(pack_base_path) != str(cls._INSTANCE._pack_base_path):
-                    raise EmbeddingIntegrityError(
-                        f"EmbeddingServiceFactory already constructed with different pack: "
-                        f"existing={cls._INSTANCE._pack_base_path}, requested={pack_base_path}"
-                    )
-                # Validate process identity (fork guard)
+                    raise EmbeddingIntegrityError(f'EmbeddingServiceFactory already constructed with different pack: existing={cls._INSTANCE._pack_base_path}, requested={pack_base_path}')
                 current_identity = (os.getpid(), psutil.Process().create_time())
                 if current_identity != cls._INSTANCE_IDENTITY:
-                    raise EmbeddingForkViolationError(
-                        f"EmbeddingServiceFactory used across process boundary: "
-                        f"stored={cls._INSTANCE_IDENTITY}, current={current_identity}"
-                    )
+                    raise EmbeddingForkViolationError(f'EmbeddingServiceFactory used across process boundary: stored={cls._INSTANCE_IDENTITY}, current={current_identity}')
             return cls._INSTANCE
 
     @staticmethod
@@ -235,26 +151,23 @@ class EmbeddingServiceFactory:
 
         For now, reads from environment. Must be explicitly 'true'.
         """
-        # This is a sovereign kill-switch. It overrides all other configuration.
-        # It must be explicitly set to "true" to be enabled.
-        return os.environ.get("EMBEDDING_ENABLED", "false").lower() == "true"
+        return os.environ.get('EMBEDDING_ENABLED', 'false').lower() == 'true'
 
     @staticmethod
     def _faiss_gpu_available() -> bool:
         """Return True only when faiss-gpu is installed and a CUDA device is present."""
-        if importlib.util.find_spec("faiss") is None:
+        if importlib.util.find_spec('faiss') is None:
             return False
         try:
-            import faiss  # noqa: PLC0415
-
-            return hasattr(faiss, "StandardGpuResources")
-        except Exception:  # guardian: allow-silent_swallower
+            import faiss
+            return hasattr(faiss, 'StandardGpuResources')
+        except Exception:
             return False
 
     @staticmethod
     def _embedding_device() -> str:
         """Return 'cuda' or 'cpu' based on EMBEDDING_DEVICE env var (default: cpu)."""
-        return os.environ.get("EMBEDDING_DEVICE", "cpu").lower()
+        return os.environ.get('EMBEDDING_DEVICE', 'cpu').lower()
 
     @staticmethod
     def _build_gpu_index(cpu_matrix: np.ndarray) -> Any:
@@ -267,8 +180,7 @@ class EmbeddingServiceFactory:
             faiss GpuIndex on device 0, or None if construction fails.
         """
         try:
-            import faiss  # noqa: PLC0415
-
+            import faiss
             res = faiss.StandardGpuResources()
             dim = cpu_matrix.shape[1]
             cpu_index = faiss.IndexFlatIP(dim)
@@ -276,150 +188,103 @@ class EmbeddingServiceFactory:
             gpu_index = faiss.index_cpu_to_gpu(res, 0, cpu_index)
             return gpu_index
         except Exception as exc:
-            logger.warning("faiss-gpu index construction failed, staying on CPU: %s", exc)
+            logger.warning('faiss-gpu index construction failed, staying on CPU: %s', exc)
             return None
 
     def _get_blas_fingerprint(self) -> str:
         """Get BLAS implementation fingerprint for replay key."""
         try:
             blas_info = np.__config__.blas_opt_info
-            libraries = blas_info.get("libraries", ["unknown"])
-            return libraries[0] if libraries else "unknown"
+            libraries = blas_info.get('libraries', ['unknown'])
+            return libraries[0] if libraries else 'unknown'
         except (AttributeError, KeyError):
-            return "unknown"
+            return 'unknown'
 
     def _load_pack(self) -> None:
         """Load and validate seed pack."""
-        # Load manifest
-        manifest_path = self._pack_base_path / "seed_manifest.json"
+        manifest_path = self._pack_base_path / 'seed_manifest.json'
         if not manifest_path.exists():
-            raise EmbeddingIntegrityError(f"Manifest not found: {manifest_path}")
-
+            raise EmbeddingIntegrityError(f'Manifest not found: {manifest_path}')
         import json
-
         with open(manifest_path) as f:
             self._manifest = json.load(f)
-
-        # Pack hash verification is now handled by the caller
-
-        # Load row index for content hashes
-        row_index_path = self._pack_base_path / "row_index.jsonl"
+        row_index_path = self._pack_base_path / 'row_index.jsonl'
         if not row_index_path.exists():
-            raise EmbeddingIntegrityError(f"Row index not found: {row_index_path}")
-
+            raise EmbeddingIntegrityError(f'Row index not found: {row_index_path}')
         self._row_hashes = []
         with open(row_index_path) as f:
             for line in f:
                 if line.strip():
                     data = json.loads(line)
-                    self._row_hashes.append(data.get("content_hash", ""))
-
-        # Load embeddings with integrity check
-        embeddings_path = self._pack_base_path / "embeddings.f32"
+                    self._row_hashes.append(data.get('content_hash', ''))
+        embeddings_path = self._pack_base_path / 'embeddings.f32'
         if not embeddings_path.exists():
-            raise EmbeddingIntegrityError(f"Embeddings file not found: {embeddings_path}")
-
-        # Startup integrity check
+            raise EmbeddingIntegrityError(f'Embeddings file not found: {embeddings_path}')
         self._verify_integrity(embeddings_path)
-
-        # Load with memmap
-        N = self._manifest["vector_count"]
-        D = self._manifest["dimensions"]
-        self._raw = np.memmap(embeddings_path, dtype=np.float32, mode="r", shape=(N, D))
-
-        # Normalize with eps-guard
+        N = self._manifest['vector_count']
+        D = self._manifest['dimensions']
+        self._raw = np.memmap(embeddings_path, dtype=np.float32, mode='r', shape=(N, D))
         eps = 1e-12
         norms = np.linalg.norm(self._raw, axis=1, keepdims=True)
         anomaly_count = int((norms < eps * 2).sum())
-
         if self._is_embedding_enabled():
-            logger.info(f"Embedding norm anomalies: {anomaly_count}")
-            # TODO: Emit telemetry when telemetry system available
-
+            logger.info(f'Embedding norm anomalies: {anomaly_count}')
         norms = np.maximum(norms, eps)
         self._normalized = (self._raw / norms).astype(np.float32)
-
-        # Optionally promote to GPU FAISS index for VRAM-resident similarity search.
-        # Only activated when EMBEDDING_DEVICE=cuda AND faiss-gpu is installed.
-        # Falls back to CPU numpy dot-product silently on any failure.
         self._gpu_index: Any = None
-        if self._embedding_device() == "cuda" and self._faiss_gpu_available():
+        if self._embedding_device() == 'cuda' and self._faiss_gpu_available():
             self._gpu_index = self._build_gpu_index(self._normalized)
             if self._gpu_index is not None and self._is_embedding_enabled():
-                logger.info(
-                    "Embedding service: GPU FAISS index active (device=cuda, ntotal=%d)",
-                    self._gpu_index.ntotal,
-                )
-
-        # Compute streaming normalized hash
+                logger.info('Embedding service: GPU FAISS index active (device=cuda, ntotal=%d)', self._gpu_index.ntotal)
         self._normalized_pack_hash = self._compute_streaming_hash(self._normalized)
-
-        # Deterministic spot-check
         self._perform_spot_check()
-
         self._integrity_ok = True
 
     def _verify_integrity(self, embeddings_path: Path) -> None:
         """Verify SHA-256 of embeddings file matches manifest."""
-        manifest_hash = self._manifest.get("matrix_hash")
+        manifest_hash = self._manifest.get('matrix_hash')
         if not manifest_hash:
-            raise EmbeddingIntegrityError("No matrix_hash in manifest")
-
-        # Stream compute file hash
+            raise EmbeddingIntegrityError('No matrix_hash in manifest')
         hasher = hashlib.sha256()
-        with open(embeddings_path, "rb") as f:
-            for chunk in iter(lambda: f.read(8192), b""):
+        with open(embeddings_path, 'rb') as f:
+            for chunk in iter(lambda: f.read(8192), b''):
                 hasher.update(chunk)
-
         file_hash = hasher.hexdigest()
         if file_hash != manifest_hash:
             if self._is_embedding_enabled():
-                logger.error(f"Embedding integrity failure: expected {manifest_hash}, got {file_hash}")
-                # TODO: Emit telemetry when available
-            raise EmbeddingIntegrityError("Embedding file integrity check failed")
-
+                logger.error(f'Embedding integrity failure: expected {manifest_hash}, got {file_hash}')
+            raise EmbeddingIntegrityError('Embedding file integrity check failed')
         if self._is_embedding_enabled():
-            logger.info("Embedding integrity check passed")
-            # TODO: Emit telemetry when available
+            logger.info('Embedding integrity check passed')
 
     def _compute_streaming_hash(self, matrix: np.ndarray) -> str:
         """Compute SHA-256 hash without materializing full bytes object."""
         hasher = hashlib.sha256()
-        # Iterate in C order for deterministic hashing
-        for chunk in np.nditer(matrix, flags=["external_loop"], order="C"):
+        for chunk in np.nditer(matrix, flags=['external_loop'], order='C'):
             hasher.update(chunk.tobytes())
         return hasher.hexdigest()
 
     def _perform_spot_check(self) -> None:
         """Perform deterministic spot-check seeded by vector_pack_hash."""
-        pack_hash = self._manifest.get("seed_index_version_hash", "")
+        pack_hash = self._manifest.get('seed_index_version_hash', '')
         if not pack_hash:
             self._last_spotcheck_ok = False
             return
-
-        # Derive deterministic seed from pack hash
         seed = int(pack_hash[:8], 16)
         rng = np.random.default_rng(seed)
-
-        N = self._manifest["vector_count"]
+        N = self._manifest['vector_count']
         row_idx = rng.integers(0, N)
-
-        # Compute row checksum
         row_bytes = self._raw[row_idx].tobytes()
         row_hash = hashlib.sha256(row_bytes).hexdigest()
-
-        # For now, consider spot-check OK if we can read the row
-        # TODO: Store baseline in manifest for stricter validation
         self._last_spotcheck_ok = True
-
         if self._is_embedding_enabled():
-            logger.info(f"Spot-check row {row_idx}: hash {row_hash[:16]}...")
+            logger.info(f'Spot-check row {row_idx}: hash {row_hash[:16]}...')
 
     def is_disabled(self) -> bool:
         """Check if service is disabled."""
         return False
 
-    def retrieve(self, query_vector: np.ndarray, k: int, cutoff: float = 0.5) -> list[EmbeddingResult] | None:
+    def retrieve(self, query_vector: np.ndarray, k: int, cutoff: float=0.5) -> list[EmbeddingResult] | None:
         """Retrieve top-k most similar embeddings.
 
         Args:
@@ -432,106 +297,47 @@ class EmbeddingServiceFactory:
         """
         if self._normalized is None or self._row_hashes is None:
             return None
-
-        # Enforce top_k_cap from governance (TODO: read from L4)
-        max_k = 20  # Placeholder - will read from governance
+        # guardian: allow-magic-config
+        max_k = 20
         k = min(k, max_k)
-
-        # Normalize query with eps-guard
         query_norm = np.linalg.norm(query_vector)
         if query_norm < 1e-12:
             return None
         q_norm = query_vector / max(query_norm, 1e-12)
-
-        # Compute cosine similarities (dot product with normalized matrix)
         scores = np.dot(self._normalized, q_norm.astype(np.float32))
-
-        # Round to 6 decimal places for determinism
         scores_rounded = np.round(scores, 6)
-
-        # Apply cutoff
         mask = scores_rounded >= cutoff
         if not np.any(mask):
             return None
-
-        # Get indices of top-k scores
         indices = np.where(mask)[0]
         if len(indices) == 0:
             return None
-
-        # Sort by score (desc) then content_hash (asc) for deterministic tie-break
         sorted_indices = sorted(indices, key=lambda i: (-scores_rounded[i], self._row_hashes[i]))
-
-        # Take top-k
         top_indices = sorted_indices[:k]
-
-        # Build results
         results = []
         for idx in top_indices:
             score = float(scores_rounded[idx])
             content_hash = self._row_hashes[idx]
-
-            # Compute artifact hash
             artifact_material = f"{self._manifest['seed_index_version_hash']}{idx}{score:.6f}"
             artifact_hash = hashlib.sha256(artifact_material.encode()).hexdigest()
-
-            results.append(
-                EmbeddingResult(
-                    content_hash=content_hash,
-                    score_round6=score,
-                    row_idx=int(idx),
-                    embedding_artifact_hash=artifact_hash,
-                )
-            )
-
+            results.append(EmbeddingResult(content_hash=content_hash, score_round6=score, row_idx=int(idx), embedding_artifact_hash=artifact_hash))
         return results
 
     def is_healthy(self) -> bool:
         """Check if service is healthy."""
-        return (
-            self._integrity_ok
-            and self._last_spotcheck_ok
-            and self._normalized is not None
-            and self._normalized_pack_hash != ""
-        )
+        return self._integrity_ok and self._last_spotcheck_ok and (self._normalized is not None) and (self._normalized_pack_hash != '')
 
-    def replay_key(self, k: int = 10, cutoff: float = 0.5) -> str:
+    def replay_key(self, k: int=10, cutoff: float=0.5) -> str:
         """Compute deterministic replay key with complete embedder metadata."""
         if not self._manifest or not self._normalized_pack_hash:
-            return "uninitialized"
-
-        # Extract all required metadata for replay key
-        hf_repo = self._manifest.get("hf_repo", "BAAI/bge-large-en-v1.5")
-        revision = self._manifest.get("revision", "main")
-        embedding_dim = self._manifest.get("embedding_dim", 1024)
-        dtype = self._manifest.get("dtype", "float32")
-        normalize = self._manifest.get("normalize", True)
-        thread_lock_sig = (
-            f"OMP={os.environ.get('OMP_NUM_THREADS', '1')}_MKL={os.environ.get('MKL_NUM_THREADS', '1')}"
-        )
-
-        distance_metric = self._manifest.get("distance_metric", "cosine")
-
-        material = (
-            f"hf_repo={hf_repo}"
-            f"|revision={revision}"
-            f"|embedding_dim={embedding_dim}"
-            f"|dtype={dtype}"
-            f"|normalize={normalize}"
-            f"|distance_metric={distance_metric}"
-            f"|thread_lock_sig={thread_lock_sig}"
-            f"|pack_hash={self._normalized_pack_hash}"
-            f"|k={k}"
-            f"|cutoff={round(cutoff, 6)}"
-            f"|blas_impl={self._blas_impl}"
-        )
+            return 'uninitialized'
+        hf_repo = self._manifest.get('hf_repo', 'BAAI/bge-large-en-v1.5')
+        revision = self._manifest.get('revision', 'main')
+        embedding_dim = self._manifest.get('embedding_dim', 1024)
+        dtype = self._manifest.get('dtype', 'float32')
+        normalize = self._manifest.get('normalize', True)
+        thread_lock_sig = f"OMP={os.environ.get('OMP_NUM_THREADS', '1')}_MKL={os.environ.get('MKL_NUM_THREADS', '1')}"
+        distance_metric = self._manifest.get('distance_metric', 'cosine')
+        material = f'hf_repo={hf_repo}|revision={revision}|embedding_dim={embedding_dim}|dtype={dtype}|normalize={normalize}|distance_metric={distance_metric}|thread_lock_sig={thread_lock_sig}|pack_hash={self._normalized_pack_hash}|k={k}|cutoff={round(cutoff, 6)}|blas_impl={self._blas_impl}'
         return hashlib.sha256(material.encode()).hexdigest()
-
-
-__all__ = [
-    "EmbeddingServiceFactory",
-    "EmbeddingResult",
-    "EmbeddingDisabledError",
-    "EmbeddingForkViolationError",
-    "EmbeddingIntegrityError",
-]
+__all__ = ['EmbeddingServiceFactory', 'EmbeddingResult', 'EmbeddingDisabledError', 'EmbeddingForkViolationError', 'EmbeddingIntegrityError']

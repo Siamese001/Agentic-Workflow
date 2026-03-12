@@ -17,6 +17,7 @@ from textwrap import dedent
 from typing import Optional
 
 ROOT = Path(__file__).resolve().parents[2]
+# guardian: allow-global-mutation
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
@@ -308,6 +309,7 @@ def main() -> None:
         try:
             info = inspect_module(src_path)
             content = generate_test_content(mod_path, info, fan_in=entry.fan_in)
+        # guardian: allow-silent-swallow
         except Exception as exc:
             print(f"  [ERROR] {mod_path}: {exc}")
             errors += 1

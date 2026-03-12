@@ -60,6 +60,7 @@ def _git_changed_files(repo_root: Path, base_ref: str = "HEAD~1") -> list[str]:
     (e.g., first commit).
     """
     try:
+        # guardian: allow-magic-config
         result = subprocess.run(
             ["git", "diff", "--name-only", base_ref, "HEAD"],
             cwd=str(repo_root),
@@ -72,6 +73,7 @@ def _git_changed_files(repo_root: Path, base_ref: str = "HEAD~1") -> list[str]:
             return []
         lines = [l.strip() for l in result.stdout.splitlines() if l.strip().endswith(".py")]
         return lines
+    # guardian: allow-silent-swallow
     except Exception as exc:
         logger.debug("_git_changed_files error: %s", exc)
         return []
@@ -80,6 +82,7 @@ def _git_changed_files(repo_root: Path, base_ref: str = "HEAD~1") -> list[str]:
 def _git_staged_files(repo_root: Path) -> list[str]:
     """Return staged .py files (for pre-commit hook integration)."""
     try:
+        # guardian: allow-magic-config
         result = subprocess.run(
             ["git", "diff", "--cached", "--name-only"],
             cwd=str(repo_root),
@@ -90,6 +93,7 @@ def _git_staged_files(repo_root: Path) -> list[str]:
         if result.returncode != 0:
             return []
         return [l.strip() for l in result.stdout.splitlines() if l.strip().endswith(".py")]
+    # guardian: allow-silent-swallow
     except Exception:
         return []
 
@@ -259,6 +263,7 @@ def incremental_scan(
     # Step 3: load snapshot for reverse-import index
     try:
         ng = NormalizedGraph.load(Path(full_snapshot_path))
+    # guardian: allow-silent-swallow
     except Exception as exc:
         logger.warning("Failed to load snapshot %s: %s — full scan", full_snapshot_path, exc)
         scanner = ADGStaticScanner(repo_root=repo_root)

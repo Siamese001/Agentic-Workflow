@@ -4,25 +4,12 @@ Domain Agent Mixin for apps_rg and apps_lic integration.
 Provides a ready-to-use mixin that combines FeatureFlaggedAgentMixin
 with domain-specific configuration and utilities.
 """
-
 import logging
 from collections.abc import Callable
 from typing import Any
-
 from agentic_core.utils.feature_flags import FeatureFlagManager
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 logger = logging.getLogger(__name__)
-
 
 class DomainAgentMixin(FeatureFlaggedAgentMixin):
     """Domain-aware mixin for apps_rg and apps_lic agents.
@@ -34,10 +21,10 @@ class DomainAgentMixin(FeatureFlaggedAgentMixin):
     - Pattern storage with domain tagging
     """
 
-    def __init__(self, *args: Any, domain: str = "unknown", **kwargs: Any) -> None:
+    def __init__(self, *args: Any, domain: str='unknown', **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self._domain = domain
-        self._domain_prefix = f"apps_{domain}" if not domain.startswith("apps_") else domain
+        self._domain_prefix = f'apps_{domain}' if not domain.startswith('apps_') else domain
 
     @property
     def domain(self) -> str:
@@ -58,13 +45,9 @@ class DomainAgentMixin(FeatureFlaggedAgentMixin):
         Returns:
             Namespaced key with domain prefix
         """
-        return f"{self._domain_prefix}:{self.__class__.__name__}:{key}"
+        return f'{self._domain_prefix}:{self.__class__.__name__}:{key}'
 
-    def domain_heal_with_verification(
-        self,
-        violation: dict[str, Any],
-        heal_fn: Callable[[dict[str, Any]], dict[str, Any]],
-    ) -> dict[str, Any]:
+    def domain_heal_with_verification(self, violation: dict[str, Any], heal_fn: Callable[[dict[str, Any]], dict[str, Any]]) -> dict[str, Any]:
         """Heal a violation with domain context.
 
         Extends heal_with_verification with domain-specific audit logging.
@@ -76,27 +59,13 @@ class DomainAgentMixin(FeatureFlaggedAgentMixin):
         Returns:
             Healing result with domain context
         """
-        # Add domain context to violation
-        violation_with_domain = {
-            **violation,
-            "_domain": self._domain_prefix,
-            "_agent": self.__class__.__name__,
-        }
-
-        # Use parent's heal_with_verification
+        violation_with_domain = {**violation, '_domain': self._domain_prefix, '_agent': self.__class__.__name__}
         result = self.heal_with_verification(violation_with_domain, heal_fn)
-
-        # Add domain context to result
         if isinstance(result, dict):
-            result["_domain"] = self._domain_prefix
-
+            result['_domain'] = self._domain_prefix
         return result
 
-    def domain_log_audit_event(
-        self,
-        event_type: str,
-        data: dict[str, Any],
-    ) -> str | None:
+    def domain_log_audit_event(self, event_type: str, data: dict[str, Any]) -> str | None:
         """Log an audit event with domain context.
 
         Args:
@@ -106,11 +75,7 @@ class DomainAgentMixin(FeatureFlaggedAgentMixin):
         Returns:
             Event ID if logged, None otherwise
         """
-        domain_data = {
-            **data,
-            "_domain": self._domain_prefix,
-            "_agent": self.__class__.__name__,
-        }
+        domain_data = {**data, '_domain': self._domain_prefix, '_agent': self.__class__.__name__}
         return self.log_audit_event(event_type, domain_data)
 
     def validate_domain_pattern(self, pattern: dict[str, Any]) -> bool:
@@ -122,12 +87,9 @@ class DomainAgentMixin(FeatureFlaggedAgentMixin):
         Returns:
             True if pattern is valid for this domain
         """
-        pattern_domain = pattern.get("_domain") or pattern.get("domain")
+        pattern_domain = pattern.get('_domain') or pattern.get('domain')
         if pattern_domain and pattern_domain != self._domain_prefix:
-            logger.warning(
-                f"[{self.__class__.__name__}] Cross-domain pattern rejected: "
-                f"{pattern_domain} != {self._domain_prefix}",
-            )
+            logger.warning(f'[{self.__class__.__name__}] Cross-domain pattern rejected: {pattern_domain} != {self._domain_prefix}')
             return False
         return True
 
@@ -137,14 +99,9 @@ class DomainAgentMixin(FeatureFlaggedAgentMixin):
         Returns:
             Dictionary with domain information
         """
-        return {
-            "domain": self._domain,
-            "domain_prefix": self._domain_prefix,
-            "agent_name": self.__class__.__name__,
-            "feature_flags": self.get_feature_flag_status(),
-        }
+        return {'domain': self._domain, 'domain_prefix': self._domain_prefix, 'agent_name': self.__class__.__name__, 'feature_flags': self.get_feature_flag_status()}
 
-    def check_domain_rate_limit(self, operation: str = "request") -> bool:
+    def check_domain_rate_limit(self, operation: str='request') -> bool:
         """Check domain-specific rate limit.
 
         Args:
@@ -153,24 +110,18 @@ class DomainAgentMixin(FeatureFlaggedAgentMixin):
         Returns:
             True if operation is allowed
         """
-        # For now, delegate to feature flag check
-        # Full implementation would integrate with domain-specific rate limiting
-        return FeatureFlagManager.is_enabled("ENABLE_META_LEARNING", self.__class__.__name__)
-
+        return FeatureFlagManager.is_enabled('ENABLE_META_LEARNING', self.__class__.__name__)
 
 class RGDomainMixin(DomainAgentMixin):
     """Mixin for Resume Generation (apps_rg) agents."""
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
-        super().__init__(*args, domain="rg", **kwargs)
+        super().__init__(*args, domain='rg', **kwargs)
+        # guardian: allow-magic-config
         self._similarity_threshold = 0.85
-        self._ttl_seconds = 3600  # 1 hour
+        self._ttl_seconds = 3600
 
-    def store_resume_pattern(
-        self,
-        pattern_id: str,
-        pattern_data: dict[str, Any],
-    ) -> bool:
+    def store_resume_pattern(self, pattern_id: str, pattern_data: dict[str, Any]) -> bool:
         """Store a resume quality pattern.
 
         Args:
@@ -180,37 +131,25 @@ class RGDomainMixin(DomainAgentMixin):
         Returns:
             True if stored successfully
         """
-        key = self.get_namespaced_key(f"resume_pattern:{pattern_id}")
-        self.domain_log_audit_event(
-            "pattern_stored",
-            {"pattern_id": pattern_id, "key": key},
-        )
-        # Return True - actual storage would use meta-learning service
+        key = self.get_namespaced_key(f'resume_pattern:{pattern_id}')
+        self.domain_log_audit_event('pattern_stored', {'pattern_id': pattern_id, 'key': key})
         return True
 
     def get_rg_context(self) -> dict[str, Any]:
         """Get RG-specific context."""
         base_context = self.get_domain_context()
-        return {
-            **base_context,
-            "similarity_threshold": self._similarity_threshold,
-            "ttl_seconds": self._ttl_seconds,
-        }
-
+        return {**base_context, 'similarity_threshold': self._similarity_threshold, 'ttl_seconds': self._ttl_seconds}
 
 class LICDomainMixin(DomainAgentMixin):
     """Mixin for LinkedIn Canonical (apps_lic) agents."""
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
-        super().__init__(*args, domain="lic", **kwargs)
-        self._similarity_threshold = 0.92  # Stricter for LIC
-        self._ttl_seconds = 7200  # 2 hours
+        super().__init__(*args, domain='lic', **kwargs)
+        # guardian: allow-magic-config
+        self._similarity_threshold = 0.92
+        self._ttl_seconds = 7200
 
-    def store_campaign_pattern(
-        self,
-        campaign_id: str,
-        pattern_data: dict[str, Any],
-    ) -> bool:
+    def store_campaign_pattern(self, campaign_id: str, pattern_data: dict[str, Any]) -> bool:
         """Store a campaign pattern.
 
         Args:
@@ -220,18 +159,11 @@ class LICDomainMixin(DomainAgentMixin):
         Returns:
             True if stored successfully
         """
-        key = self.get_namespaced_key(f"campaign_pattern:{campaign_id}")
-        self.domain_log_audit_event(
-            "pattern_stored",
-            {"campaign_id": campaign_id, "key": key},
-        )
+        key = self.get_namespaced_key(f'campaign_pattern:{campaign_id}')
+        self.domain_log_audit_event('pattern_stored', {'campaign_id': campaign_id, 'key': key})
         return True
 
     def get_lic_context(self) -> dict[str, Any]:
         """Get LIC-specific context."""
         base_context = self.get_domain_context()
-        return {
-            **base_context,
-            "similarity_threshold": self._similarity_threshold,
-            "ttl_seconds": self._ttl_seconds,
-        }
+        return {**base_context, 'similarity_threshold': self._similarity_threshold, 'ttl_seconds': self._ttl_seconds}

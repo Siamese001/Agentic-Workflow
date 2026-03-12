@@ -4,19 +4,8 @@ Safety Domain Mixins - Shared pure logic for safety-related operations.
 These mixins extract pure, stateless logic that can be reused across
 safety domain agents while preserving stateful orchestration locally.
 """
-
 from typing import Any
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 class SafetyAnalysisMixin:
     """Mixin providing pure safety analysis logic."""
@@ -33,12 +22,10 @@ class SafetyAnalysisMixin:
         Returns:
             -1 if level1 < level2, 0 if equal, 1 if level1 > level2
         """
-        threat_order = ["LOW", "MEDIUM", "HIGH", "CRITICAL"]
-
+        threat_order = ['LOW', 'MEDIUM', 'HIGH', 'CRITICAL']
         try:
             idx1 = threat_order.index(level1.upper())
             idx2 = threat_order.index(level2.upper())
-
             if idx1 < idx2:
                 return -1
             elif idx1 > idx2:
@@ -46,7 +33,6 @@ class SafetyAnalysisMixin:
             else:
                 return 0
         except ValueError:
-            # Fallback to string comparison if levels not recognized
             return (level1 > level2) - (level1 < level2)
 
     @staticmethod
@@ -62,35 +48,18 @@ class SafetyAnalysisMixin:
             List of recommendation strings
         """
         recommendations = []
-
-        if threat_level.upper() == "CRITICAL":
-            recommendations.extend(
-                ["Immediate action required", "Escalate to security team", "Consider system isolation"]
-            )
-        elif threat_level.upper() == "HIGH":
-            recommendations.extend(
-                ["Address within 24 hours", "Review security controls", "Monitor for related issues"]
-            )
-        elif threat_level.upper() == "MEDIUM":
-            recommendations.extend(
-                ["Address within 1 week", "Document mitigation plan", "Schedule follow-up review"]
-            )
-        else:  # LOW
-            recommendations.extend(
-                [
-                    "Address in next maintenance cycle",
-                    "Consider for future improvements",
-                    "Document for awareness",
-                ]
-            )
-
-        # Add context-specific recommendations
-        if "file_count" in context and context["file_count"] > 100:
-            recommendations.append("Consider bulk remediation approach")
-
-        if "system_critical" in context and context["system_critical"]:
-            recommendations.append("Prioritize system availability")
-
+        if threat_level.upper() == 'CRITICAL':
+            recommendations.extend(['Immediate action required', 'Escalate to security team', 'Consider system isolation'])
+        elif threat_level.upper() == 'HIGH':
+            recommendations.extend(['Address within 24 hours', 'Review security controls', 'Monitor for related issues'])
+        elif threat_level.upper() == 'MEDIUM':
+            recommendations.extend(['Address within 1 week', 'Document mitigation plan', 'Schedule follow-up review'])
+        else:
+            recommendations.extend(['Address in next maintenance cycle', 'Consider for future improvements', 'Document for awareness'])
+        if 'file_count' in context and context['file_count'] > 100:
+            recommendations.append('Consider bulk remediation approach')
+        if 'system_critical' in context and context['system_critical']:
+            recommendations.append('Prioritize system availability')
         return recommendations
 
     @staticmethod
@@ -107,17 +76,12 @@ class SafetyAnalysisMixin:
         """
         if not pattern or not target:
             return False
-
-        # Simple wildcard matching
-        if "*" in pattern:
-            # Convert to regex-like pattern
+        if '*' in pattern:
             import re
-
-            pattern_regex = pattern.replace("*", ".*")
+            pattern_regex = pattern.replace('*', '.*')
             return re.fullmatch(pattern_regex, target) is not None
         else:
             return pattern == target
-
 
 class HealingMixin:
     """Mixin providing pure healing logic."""
@@ -135,43 +99,29 @@ class HealingMixin:
         Returns:
             Healing result dictionary
         """
-        result = {
-            "file_path": file_path,
-            "issue_type": issue_type,
-            "healed": False,
-            "actions_taken": [],
-            "warnings": [],
-        }
-
-        # Standard healing actions based on issue type
-        if issue_type == "import_error":
-            result["actions_taken"].append("Attempted import path correction")
-            result["healed"] = True
-        elif issue_type == "syntax_error":
-            result["actions_taken"].append("Syntax validation failed - manual review required")
-            result["warnings"].append("Syntax errors require manual intervention")
-        elif issue_type == "missing_dependency":
-            result["actions_taken"].append("Documented missing dependency")
-            result["warnings"].append("Dependency installation may be required")
+        result = {'file_path': file_path, 'issue_type': issue_type, 'healed': False, 'actions_taken': [], 'warnings': []}
+        if issue_type == 'import_error':
+            result['actions_taken'].append('Attempted import path correction')
+            result['healed'] = True
+        elif issue_type == 'syntax_error':
+            result['actions_taken'].append('Syntax validation failed - manual review required')
+            result['warnings'].append('Syntax errors require manual intervention')
+        elif issue_type == 'missing_dependency':
+            result['actions_taken'].append('Documented missing dependency')
+            result['warnings'].append('Dependency installation may be required')
         else:
-            result["actions_taken"].append(f"Applied standard healing for {issue_type}")
-            result["healed"] = True
-
-        # Add context-specific actions
-        if "backup_available" in context and context["backup_available"]:
-            result["actions_taken"].append("Backup created before healing")
-
+            result['actions_taken'].append(f'Applied standard healing for {issue_type}')
+            result['healed'] = True
+        if 'backup_available' in context and context['backup_available']:
+            result['actions_taken'].append('Backup created before healing')
         return result
-
 
 class StateAnalysisMixin:
     """Mixin providing pure state analysis logic."""
 
     @staticmethod
-    def _check_past_failures(
-        state_history: list[dict[str, Any]], failure_threshold: int = 3
-    ) -> dict[str, Any]:
-        # guardian: allow-magic-configuration
+    # guardian: allow-magic-config
+    def _check_past_failures(state_history: list[dict[str, Any]], failure_threshold: int=3) -> dict[str, Any]:
         """
         Analyze past failures to determine retry strategy.
 
@@ -183,27 +133,13 @@ class StateAnalysisMixin:
             Analysis result with recommendations
         """
         if not state_history:
-            return {
-                "failures_detected": False,
-                "failure_count": 0,
-                "recommendation": "Proceed normally",
-                "retry_delay": 0,
-            }
-
-        failure_count = sum(1 for state in state_history if state.get("status") == "failed")
-
-        result = {
-            "failures_detected": failure_count > 0,
-            "failure_count": failure_count,
-            "recommendation": "Proceed normally",
-            "retry_delay": 0,
-        }
-
+            return {'failures_detected': False, 'failure_count': 0, 'recommendation': 'Proceed normally', 'retry_delay': 0}
+        failure_count = sum((1 for state in state_history if state.get('status') == 'failed'))
+        result = {'failures_detected': failure_count > 0, 'failure_count': failure_count, 'recommendation': 'Proceed normally', 'retry_delay': 0}
         if failure_count >= failure_threshold:
-            result["recommendation"] = "Change approach or escalate"
-            result["retry_delay"] = min(300, 30 * failure_count)  # Max 5 minutes
+            result['recommendation'] = 'Change approach or escalate'
+            result['retry_delay'] = min(300, 30 * failure_count)
         elif failure_count > 0:
-            result["recommendation"] = "Retry with caution"
-            result["retry_delay"] = min(60, 10 * failure_count)  # Max 1 minute
-
+            result['recommendation'] = 'Retry with caution'
+            result['retry_delay'] = min(60, 10 * failure_count)
         return result

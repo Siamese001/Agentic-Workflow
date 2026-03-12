@@ -1,27 +1,9 @@
 from __future__ import annotations
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-"""
-L6 observability: Gemini Spy
-
-Monitors and logs Gemini API interactions for observability.
-"""
-
-
+'\nL6 observability: Gemini Spy\n\nMonitors and logs Gemini API interactions for observability.\n'
 import logging
 from typing import Any
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 Logger = logging.getLogger(__name__)
-
 
 class GeminiSpy:
     """Monitors Gemini API calls for observability."""
@@ -33,7 +15,7 @@ class GeminiSpy:
     def record_call(self, endpoint: str, request: Any, response: Any) -> None:
         """Record a Gemini API call."""
         if self.enabled:
-            self.calls.append({"endpoint": endpoint, "request": request, "response": response})
+            self.calls.append({'endpoint': endpoint, 'request': request, 'response': response})
 
     def get_call_count(self) -> int:
         """Get total number of recorded calls."""

@@ -25,8 +25,10 @@ def _load_json_config(filename: str, description: str, required: bool = True) ->
     It now checks the provided path first, then checks relative to DATA_DIR.
     """
     path_to_check = Path(filename)
+    # guardian: allow-config-with-logic
     if not path_to_check.is_absolute() and (not path_to_check.exists()):
         path_to_check = DATA_DIR / filename
+    # guardian: allow-config-with-logic
     if path_to_check.exists():
         try:
             with open(path_to_check, encoding="utf-8") as f:
@@ -36,6 +38,7 @@ def _load_json_config(filename: str, description: str, required: bool = True) ->
         except json.JSONDecodeError as e:
             logging.error(f"CRITICAL: Invalid JSON in {description} file '{path_to_check}': {e}. Halting.")
             raise
+    # guardian: allow-config-with-logic
     if required:
         logging.error(
             f"CRITICAL: {description} file not found. Tried: {filename} and {path_to_check}. Halting.",

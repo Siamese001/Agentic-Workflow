@@ -1,38 +1,19 @@
 from __future__ import annotations
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-"""
-GenerateSummarySection.py - Execution Module
-
-Domain: resume
-Generated: 2025-12-07T13:28:54.248636
-"""
+'\nGenerateSummarySection.py - Execution Module\n\nDomain: resume\nGenerated: 2025-12-07T13:28:54.248636\n'
 import logging
 import time
 from typing import Any
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 LOGGER = logging.getLogger(__name__)
-
 Logger: Any = logging.getLogger(__name__)
 
-
-# NOT_AN_AGENT — Task service executor, not a true agent — excluded from agent discovery
 class GenerateSummarySection:
     """Executor for resume domain."""
 
-    def __init__(self, config: dict[str, object] | None = None):
+    def __init__(self, config: dict[str, object] | None=None):
         self.CONFIG = config or {}
-        self.TIMEOUT = self.CONFIG.get("timeout", 30.0)
-        LOGGER.info(f"Initialized {self.__class__.__name__}")
+        self.TIMEOUT = self.CONFIG.get('timeout', 30.0)
+        LOGGER.info(f'Initialized {self.__class__.__name__}')
 
     def execute(self, action: str, params: dict[str, object]) -> ExecutionResult:
         """Execute action."""
@@ -45,10 +26,9 @@ class GenerateSummarySection:
 
     def _perform_action(self, action: str, params: dict[str, object]) -> object:
         """Perform the action."""
-        LOGGER.info(f"Executing {action} with {params}")
-        return {"action": action, "params": params, "status": "completed"}
+        LOGGER.info(f'Executing {action} with {params}')
+        return {'action': action, 'params': params, 'status': 'completed'}
 
-
-def execute(action: str, params: dict[str, object], config: dict | None = None) -> ExecutionResult:
+def execute(action: str, params: dict[str, object], config: dict | None=None) -> ExecutionResult:
     """Execute action."""
     return GenerateSummarySection(config).execute(action, params)

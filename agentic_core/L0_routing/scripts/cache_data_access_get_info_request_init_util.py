@@ -1,53 +1,18 @@
 from __future__ import annotations
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-"""
-Get Info Request Module
-
-This module provides cached information request handling within the Agentic-Workflow system.
-It is part of the scripts/cache/data_access/get_info_request component and offers specialized functionality
-for efficient data processing and workflow management.
-
-Key Responsibilities:
-- Coordinating operations within the module scope
-- Providing standardized interfaces for related functionality
-- Ensuring proper error handling and logging
-- Maintaining performance optimization and resource management
-
-Integration:
-This module integrates with other components of the Agentic-Workflow system
-to provide seamless data flow and processing capabilities.
-
-Author: Agentic-Workflow Team
-Version: 1.0.0
-License: Internal Use Only
-"""
+'\nGet Info Request Module\n\nThis module provides cached information request handling within the Agentic-Workflow system.\nIt is part of the scripts/cache/data_access/get_info_request component and offers specialized functionality\nfor efficient data processing and workflow management.\n\nKey Responsibilities:\n- Coordinating operations within the module scope\n- Providing standardized interfaces for related functionality\n- Ensuring proper error handling and logging\n- Maintaining performance optimization and resource management\n\nIntegration:\nThis module integrates with other components of the Agentic-Workflow system\nto provide seamless data flow and processing capabilities.\n\nAuthor: Agentic-Workflow Team\nVersion: 1.0.0\nLicense: Internal Use Only\n'
 import logging
 from typing import Any
-
 from services.configuration import ConfigurationService
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 Logger: Any = logging.getLogger(__name__)
-module_version: Any = "1.0.0"
-module_author: Any = "Agentic-Workflow Team"
+module_version: Any = '1.0.0'
+module_author: Any = 'Agentic-Workflow Team'
 __all__ = []
-
 
 def _initialize_module() -> None:
     """Initialize module with required setup."""
-    ConfigurationService().Logger.debug(f"Initializing Get Info Request module v{MODULE_VERSION}")
-
-
+    ConfigurationService().Logger.debug(f'Initializing Get Info Request module v{MODULE_VERSION}')
 _initialize_module()
 __version__ = ConfigurationService().MODULE_VERSION
 __author__ = ConfigurationService().MODULE_AUTHOR
-__docformat__ = "restructuredtext en"
+__docformat__ = 'restructuredtext en'

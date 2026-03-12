@@ -3,22 +3,10 @@ Base Metric Interface
 
 All evaluation metrics must implement the EvaluationMetric protocol.
 """
-
 from __future__ import annotations
-
 from abc import ABC, abstractmethod
 from typing import Any
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 class EvaluationMetric(ABC):
     """Abstract base for all evaluation metrics."""
@@ -30,12 +18,7 @@ class EvaluationMetric(ABC):
         ...
 
     @abstractmethod
-    def compute(
-        self,
-        prediction: Any,
-        ground_truth: Any,
-        context: Any = None,
-    ) -> float:
+    def compute(self, prediction: Any, ground_truth: Any, context: Any=None) -> float:
         """Compute metric score.
 
         Args:
@@ -48,7 +31,6 @@ class EvaluationMetric(ABC):
         """
         ...
 
-
 class RetrievalMetric(EvaluationMetric):
     """Base class for retrieval-oriented metrics.
 
@@ -57,14 +39,8 @@ class RetrievalMetric(EvaluationMetric):
     """
 
     @abstractmethod
-    def compute(
-        self,
-        prediction: list[str],
-        ground_truth: list[str],
-        context: Any = None,
-    ) -> float:
+    def compute(self, prediction: list[str], ground_truth: list[str], context: Any=None) -> float:
         ...
-
 
 class GenerationMetric(EvaluationMetric):
     """Base class for generation-oriented metrics.
@@ -75,17 +51,6 @@ class GenerationMetric(EvaluationMetric):
     """
 
     @abstractmethod
-    def compute(
-        self,
-        prediction: str,
-        ground_truth: str,
-        context: Any = None,
-    ) -> float:
+    def compute(self, prediction: str, ground_truth: str, context: Any=None) -> float:
         ...
-
-
-__all__ = [
-    "EvaluationMetric",
-    "RetrievalMetric",
-    "GenerationMetric",
-]
+__all__ = ['EvaluationMetric', 'RetrievalMetric', 'GenerationMetric']

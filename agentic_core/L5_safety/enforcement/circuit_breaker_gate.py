@@ -10,52 +10,35 @@ References:
 - V10 Diagram: "Fix Rejected with Exponential Backoff + Escalation + Circuit Breaker"
 - Human Review Gate: "Retry up to N → escalate"
 """
-
 import logging
 import threading
 import time
 from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 logger = logging.getLogger(__name__)
-
 
 class CircuitState(Enum):
     """Circuit breaker states per V10 specification."""
-
-    CLOSED = "closed"  # Normal operation
-    OPEN = "open"  # Failing, reject all requests
-    HALF_OPEN = "half_open"  # Testing recovery
-
+    CLOSED = 'closed'
+    OPEN = 'open'
+    HALF_OPEN = 'half_open'
 
 @dataclass
 class CircuitBreakerConfig:
     """Configuration for circuit breaker behavior."""
-
-    failure_threshold: int = 5  # Failures before opening
-    success_threshold: int = 2  # Successes in half-open to close
-    reset_timeout_seconds: float = 60.0  # Time before half-open
-    max_reset_timeout_seconds: float = 600.0  # Max backoff cap
-    backoff_multiplier: float = 2.0  # Exponential backoff factor
-    half_open_max_calls: int = 3  # Max concurrent calls in half-open
-    execution_timeout_seconds: float = 30.0  # Max time a function can run before killed
-
+    failure_threshold: int = 5
+    success_threshold: int = 2
+    reset_timeout_seconds: float = 60.0
+    max_reset_timeout_seconds: float = 600.0
+    backoff_multiplier: float = 2.0
+    half_open_max_calls: int = 3
+    execution_timeout_seconds: float = 30.0
 
 @dataclass
 class CircuitBreakerMetrics:
     """Metrics for observability dashboard."""
-
     total_calls: int = 0
     successful_calls: int = 0
     failed_calls: int = 0
@@ -66,17 +49,13 @@ class CircuitBreakerMetrics:
     last_success_time: float | None = None
     current_backoff: float = 0.0
 
-
 class CircuitBreakerOpenError(Exception):
     """Raised when circuit is open and rejecting calls."""
 
     def __init__(self, breaker_name: str, time_until_retry: float):
         self.breaker_name = breaker_name
         self.time_until_retry = time_until_retry
-        super().__init__(
-            f"Circuit breaker '{breaker_name}' is OPEN. Retry in {time_until_retry:.1f} seconds.",
-        )
-
+        super().__init__(f"Circuit breaker '{breaker_name}' is OPEN. Retry in {time_until_retry:.1f} seconds.")
 
 class CircuitBreakerTimeoutError(Exception):
     """Raised when execution exceeds the configured timeout."""
@@ -85,21 +64,13 @@ class CircuitBreakerTimeoutError(Exception):
         self.breaker_name = breaker_name
         self.timeout = timeout
         super().__init__(f"Circuit breaker '{breaker_name}' execution timed out after {timeout}s")
-
-
-# Global registry with simple lock pattern to prevent deadlock
 _breaker_lock = threading.Lock()
-_breakers: dict[str, "CircuitBreaker"] = {}
-
+_breakers: dict[str, 'CircuitBreaker'] = {}
 
 class CircuitBreaker:
     """V10-Compliant Circuit Breaker with Non-Blocking Execution Timeout."""
 
-    def __init__(
-        self,
-        name: str,
-        config: CircuitBreakerConfig | None = None,
-    ):
+    def __init__(self, name: str, config: CircuitBreakerConfig | None=None):
         self.name = name
         self.config = config or CircuitBreakerConfig()
         self._state = CircuitState.CLOSED
@@ -144,10 +115,8 @@ class CircuitBreaker:
         """
         with self._state_lock:
             self.metrics.total_calls += 1
-
             if self._state == CircuitState.CLOSED:
                 return True
-
             if self._state == CircuitState.OPEN:
                 if self._should_attempt_reset():
                     self._transition_to_half_open()
@@ -155,7 +124,6 @@ class CircuitBreaker:
                 else:
                     self.metrics.rejected_calls += 1
                     return False
-
             if self._state == CircuitState.HALF_OPEN:
                 if self._half_open_calls < self.config.half_open_max_calls:
                     self._half_open_calls += 1
@@ -163,7 +131,6 @@ class CircuitBreaker:
                 else:
                     self.metrics.rejected_calls += 1
                     return False
-
             return False
 
     def record_success(self) -> None:
@@ -171,25 +138,21 @@ class CircuitBreaker:
         with self._state_lock:
             self.metrics.successful_calls += 1
             self.metrics.last_success_time = time.time()
-
             if self._state == CircuitState.HALF_OPEN:
                 self._success_count += 1
                 if self._success_count >= self.config.success_threshold:
                     self._transition_to_closed()
             elif self._state == CircuitState.CLOSED:
-                # Reset failure count on success
                 self._failure_count = 0
 
-    def record_failure(self, error: Exception | None = None) -> None:
+    def record_failure(self, error: Exception | None=None) -> None:
         """Record a failed call."""
         with self._state_lock:
             self.metrics.failed_calls += 1
             self.metrics.last_failure_time = time.time()
             self._last_failure_time = time.time()
-
             if isinstance(error, CircuitBreakerTimeoutError):
                 self.metrics.timed_out_calls += 1
-
             if self._state == CircuitState.HALF_OPEN:
                 self._apply_exponential_backoff()
                 self._transition_to_open()
@@ -197,21 +160,17 @@ class CircuitBreaker:
                 self._failure_count += 1
                 if self._failure_count >= self.config.failure_threshold:
                     self._transition_to_open()
-
             logger.warning(f"Circuit breaker '{self.name}' failure: {error}")
 
     def _should_attempt_reset(self) -> bool:
         """Check if enough time has passed to attempt reset."""
         if self._last_failure_time is None:
             return True
-        return (time.time() - self._last_failure_time) >= self._current_reset_timeout
+        return time.time() - self._last_failure_time >= self._current_reset_timeout
 
     def _apply_exponential_backoff(self) -> None:
         """Increase timeout exponentially."""
-        self._current_reset_timeout = min(
-            self._current_reset_timeout * self.config.backoff_multiplier,
-            self.config.max_reset_timeout_seconds,
-        )
+        self._current_reset_timeout = min(self._current_reset_timeout * self.config.backoff_multiplier, self.config.max_reset_timeout_seconds)
         self.metrics.current_backoff = self._current_reset_timeout
 
     def _transition_to_open(self) -> None:
@@ -251,63 +210,45 @@ class CircuitBreaker:
         """Decorator with non-blocking execution timeout."""
 
         def wrapper(*args, **kwargs):
-            # 1. Check circuit state (fast, minimal lock time)
             if not self.allow_request():
                 raise CircuitBreakerOpenError(self.name, self.get_time_until_retry())
-
-            # 2. Run in daemon thread to allow non-blocking timeout
             result_container = {}
             execution_complete = threading.Event()
 
             def target():
                 try:
-                    result_container["result"] = func(*args, **kwargs)
+                    result_container['result'] = func(*args, **kwargs)
                 except Exception as e:
-                    # TODO: Handle specific exception properly
-                    raise  # Re-raise after logging/handling
-                    result_container["exception"] = e
+                    raise
+                    result_container['exception'] = e
                 finally:
                     execution_complete.set()
-
-            # IMPORTANT: daemon=True ensures this thread is killed when main process exits
             t = threading.Thread(target=target)
             t.daemon = True
             t.start()
-
-            # Wait for either completion or timeout
             execution_complete.wait(timeout=self.config.execution_timeout_seconds)
-
-            # 3. Handle result or timeout
             if not execution_complete.is_set():
-                # Timeout occurred - record failure without waiting for thread
                 error = CircuitBreakerTimeoutError(self.name, self.config.execution_timeout_seconds)
-                # Record failure outside of any thread locks
                 try:
                     self.record_failure(error)
                 except (AttributeError, TypeError) as e:
-                    self.logger.debug(f"Failed to record failure: {e}")
+                    self.logger.debug(f'Failed to record failure: {e}')
                 raise error
-
-            if "exception" in result_container:
+            if 'exception' in result_container:
                 try:
-                    self.record_failure(result_container["exception"])
+                    self.record_failure(result_container['exception'])
                 except (AttributeError, TypeError) as e:
-                    self.logger.debug(f"Failed to record failure: {e}")
-                    # Still raise the original exception
-                raise result_container["exception"]
-
+                    self.logger.debug(f'Failed to record failure: {e}')
+                raise result_container['exception']
             try:
                 self.record_success()
             except (AttributeError, TypeError) as e:
-                self.logger.debug(f"Failed to record success: {e}")
-                # Still return the result
-            return result_container["result"]
-
+                self.logger.debug(f'Failed to record success: {e}')
+            return result_container['result']
         wrapper.__name__ = func.__name__
         return wrapper
 
-
-def get_breaker(name: str, **kwargs) -> "CircuitBreaker":
+def get_breaker(name: str, **kwargs) -> 'CircuitBreaker':
     """Get or create a circuit breaker by name using deadlock-free pattern."""
     if name not in _breakers:
         with _breaker_lock:
@@ -316,12 +257,10 @@ def get_breaker(name: str, **kwargs) -> "CircuitBreaker":
                 _breakers[name] = CircuitBreaker(name, config)
     return _breakers[name]
 
-
-def get_all_breakers() -> dict[str, "CircuitBreaker"]:
+def get_all_breakers() -> dict[str, 'CircuitBreaker']:
     """Get all registered circuit breakers for dashboard."""
     with _breaker_lock:
         return dict(_breakers)
-
 
 def reset_registry() -> None:
     """Reset the circuit breaker registry - for testing only."""

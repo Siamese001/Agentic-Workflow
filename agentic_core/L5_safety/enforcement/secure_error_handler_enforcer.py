@@ -1,45 +1,20 @@
-# SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
-# File appears to be a sovereign component but missing canon high-signal keywords.
-# Suggested keywords to add in docstring/code: engine, guardrail, memory, orchestrator, prompt, state, workflow
 from __future__ import annotations
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-# This boosts alignment detection — review and integrate appropriately
-
-
-"""Secure Error Handling - Prevents sensitive data leakage in exceptions.
-
-This module provides secure exception handling that sanitizes error messages,
-removes sensitive information from stack traces, and provides safe error
-reporting mechanisms.
-"""
-
+'Secure Error Handling - Prevents sensitive data leakage in exceptions.\n\nThis module provides secure exception handling that sanitizes error messages,\nremoves sensitive information from stack traces, and provides safe error\nreporting mechanisms.\n'
 import inspect
 import logging
 import re
 import traceback
 from functools import wraps
 from typing import Any
-
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 Logger = logging.getLogger(__name__)
-
 
 class SecureError(Exception):
     """Base class for secure errors with sanitized messages."""
 
-    def __init__(self, message: str, ErrorCode: str | None = None, context: dict[str, Any] | None = None):
+    def __init__(self, message: str, ErrorCode: str | None=None, context: dict[str, Any] | None=None):
         """Initialize secure error.
 
         Args:
@@ -58,79 +33,28 @@ class SecureError(Exception):
         Returns:
             Dictionary with error details
         """
-        return {
-            "error_type": self.__class__.__name__,
-            "message": str(self),
-            "ErrorCode": self.ErrorCode,
-            "context": self.context,
-            "timestamp": self.timestamp,
-        }
-
+        return {'error_type': self.__class__.__name__, 'message': str(self), 'ErrorCode': self.ErrorCode, 'context': self.context, 'timestamp': self.timestamp}
 
 class SecurityError(SecureError):
     """Raised for security-related errors."""
-
     pass
-
 
 class ConfigurationError(SecureError):
     """Raised for configuration-related errors."""
-
     pass
-
 
 class ValidationError(SecureError):
     """Raised for validation errors."""
-
     pass
-
 
 class ExecutionError(SecureError):
     """Raised for execution errors."""
-
     pass
-
 
 class ErrorSanitizer:
     """Sanitizes error messages to prevent sensitive data leakage."""
-
-    # Patterns to detect and redact sensitive information
-    SENSITIVE_PATTERNS = [
-        # File paths with sensitive directories
-        (
-            r"(/[a-zA-Z0-9_-]+)*(?:/(?:home|users|Documents|Desktop|Downloads)[/][^/\s]+)",
-            "/REDACTED_PATH",
-        ),
-        # Environment variables
-        (r"\$[A-Z_][A-Z0-9_]*", "$REDACTED"),
-        # Passwords and secrets in connection strings
-        (r'(?i)(password|passwd|pwd|secret|token|key)[\s=:]+[^\s&\'}"]+', "password=REDACTED"),
-        # API keys
-        (r"(?i)(api[_-]?key|apikey)[\s=:]+[a-zA-Z0-9+/]{20,}", "api_key=REDACTED"),
-        # Database connection strings
-        (r"(?i)(mongodb|mysql|postgres)://[^@\s]+@", r"\1://REDACTED@"),
-        # URLs with query parameters
-        (r"https?://[^/?]+\?[^\s]*", "https://REDACTED/?parameters=REDACTED"),
-        # Email addresses
-        (r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b", "EMAIL@REDACTED"),
-        # Phone numbers
-        (r"\b\d{3}[-.]?\d{3}[-.]?\d{4}\b", "XXX-XXX-XXXX"),
-        # Large numeric values (potentially IDs)
-        (r"\b\d{10,}\b", "REDACTED_ID"),
-    ]
-
-    # Stack trace patterns to sanitize
-    STACK_PATTERNS = [
-        # Local variable values in stack traces
-        (r"(?<=\s)[a-zA-Z_][a-zA-Z0-9_]*\s*=\s*<[^>]*>", "variable=<REDACTED>"),
-        # File paths in stack traces
-        (
-            r'File\s+"([^"]*(?:home|users|Documents|Desktop|Downloads)[^"]*)"',
-            'File "<REDACTED_PATH>"',
-        ),
-        # Argument values in function calls
-        (r"(?<=\()\s*[^)]*(?:password|secret|token|key)[^)]*(?=\))", "REDACTED_ARGS"),
-    ]
+    SENSITIVE_PATTERNS = [('(/[a-zA-Z0-9_-]+)*(?:/(?:home|users|Documents|Desktop|Downloads)[/][^/\\s]+)', '/REDACTED_PATH'), ('\\$[A-Z_][A-Z0-9_]*', '$REDACTED'), ('(?i)(password|passwd|pwd|secret|token|key)[\\s=:]+[^\\s&\\\'}"]+', 'password=REDACTED'), ('(?i)(api[_-]?key|apikey)[\\s=:]+[a-zA-Z0-9+/]{20,}', 'api_key=REDACTED'), ('(?i)(mongodb|mysql|postgres)://[^@\\s]+@', '\\1://REDACTED@'), ('https?://[^/?]+\\?[^\\s]*', 'https://REDACTED/?parameters=REDACTED'), ('\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\\b', 'EMAIL@REDACTED'), ('\\b\\d{3}[-.]?\\d{3}[-.]?\\d{4}\\b', 'XXX-XXX-XXXX'), ('\\b\\d{10,}\\b', 'REDACTED_ID')]
+    STACK_PATTERNS = [('(?<=\\s)[a-zA-Z_][a-zA-Z0-9_]*\\s*=\\s*<[^>]*>', 'variable=<REDACTED>'), ('File\\s+"([^"]*(?:home|users|Documents|Desktop|Downloads)[^"]*)"', 'File "<REDACTED_PATH>"'), ('(?<=\\()\\s*[^)]*(?:password|secret|token|key)[^)]*(?=\\))', 'REDACTED_ARGS')]
 
     @classmethod
     def sanitize_message(cls, message: str) -> str:
@@ -144,17 +68,11 @@ class ErrorSanitizer:
         """
         if not isinstance(message, str):
             message = str(message)
-
         sanitized = message
-
-        # Apply sensitive patterns
         for pattern, replacement in cls.SENSITIVE_PATTERNS:
             sanitized = re.sub(pattern, replacement, sanitized, flags=re.IGNORECASE)
-
-        # Truncate very long messages
         if len(sanitized) > 500:
-            sanitized = sanitized[:497] + "..."
-
+            sanitized = sanitized[:497] + '...'
         return sanitized
 
     @classmethod
@@ -168,24 +86,13 @@ class ErrorSanitizer:
             Sanitized stack trace
         """
         sanitized = tb_str
-
-        # Apply stack-specific patterns
         for pattern, replacement in cls.STACK_PATTERNS:
             sanitized = re.sub(pattern, replacement, sanitized, flags=re.IGNORECASE)
-
-        # Remove local variable sections
-        sanitized = re.sub(r"\n\s+[a-zA-Z_][a-zA-Z0-9_]*\s*=\s*.*\n", "\n", sanitized)
-
+        sanitized = re.sub('\\n\\s+[a-zA-Z_][a-zA-Z0-9_]*\\s*=\\s*.*\\n', '\n', sanitized)
         return sanitized
 
     @classmethod
-    def create_secure_error(
-        cls,
-        error_type: type[SecureError],
-        original_error: Exception,
-        ErrorCode: str | None = None,
-        add_context: dict[str, Any] | None = None,
-    ) -> SecureError:
+    def create_secure_error(cls, error_type: type[SecureError], original_error: Exception, ErrorCode: str | None=None, add_context: dict[str, Any] | None=None) -> SecureError:
         """Create a secure error from an original exception.
 
         Args:
@@ -197,38 +104,18 @@ class ErrorSanitizer:
         Returns:
             Secure error instance
         """
-        # Sanitize the original message
         sanitized_message = cls.sanitize_message(str(original_error))
-
-        # Prepare context
-        context = {
-            "original_type": type(original_error).__name__,
-            "module": getattr(original_error, "__module__", "unknown"),
-        }
-
+        context = {'original_type': type(original_error).__name__, 'module': getattr(original_error, '__module__', 'unknown')}
         if add_context:
-            # Sanitize context values
             for key, value in add_context.items():
                 if isinstance(value, str):
                     context[key] = cls.sanitize_message(value)
                 else:
-                    context[key] = "<sanitized>"
-
-        # Create secure error
-        secure_error = error_type(
-            f"{sanitized_message} (Error: {ErrorCode or 'UNKNOWN'})",
-            ErrorCode=ErrorCode,
-            context=context,
-        )
-
+                    context[key] = '<sanitized>'
+        secure_error = error_type(f"{sanitized_message} (Error: {ErrorCode or 'UNKNOWN'})", ErrorCode=ErrorCode, context=context)
         return secure_error
 
-
-def secure_exception(
-    error_type: type[SecureError] = SecurityError,
-    ErrorCode: str | None = None,
-    sanitize_args: bool = True,
-):
+def secure_exception(error_type: type[SecureError]=SecurityError, ErrorCode: str | None=None, sanitize_args: bool=True):
     """Decorator to secure exceptions from functions.
 
     Args:
@@ -241,32 +128,25 @@ def secure_exception(
     """
 
     def decorator(func):
+
         @wraps(func)
         async def async_wrapper(*args, **kwargs):
             try:
                 return await func(*args, **kwargs)
             except SecureError:
-                # Already secure, re-raise
                 raise
             except Exception as e:
-                # TODO: Handle specific exception properly
-                raise  # Re-raise after logging/handling
-                # Prepare context
+                raise
                 context = {}
                 if sanitize_args:
-                    # Get function signature
                     sig = inspect.signature(func)
                     bound_args = sig.bind(*args, **kwargs)
                     bound_args.apply_defaults()
-
-                    # Add sanitized arguments to context
                     for name, value in bound_args.arguments.items():
                         if isinstance(value, str) and len(value) < 200:
-                            context[f"arg_{name}"] = ErrorSanitizer.sanitize_message(value)
+                            context[f'arg_{name}'] = ErrorSanitizer.sanitize_message(value)
                         else:
-                            context[f"arg_{name}"] = "<sanitized>"
-
-                # Create and raise secure error
+                            context[f'arg_{name}'] = '<sanitized>'
                 secure_error = ErrorSanitizer.create_secure_error(error_type, e, ErrorCode, context)
                 raise secure_error
 
@@ -275,43 +155,31 @@ def secure_exception(
             try:
                 return func(*args, **kwargs)
             except SecureError:
-                # Already secure, re-raise
                 raise
             except Exception as e:
-                # TODO: Handle specific exception properly
-                raise  # Re-raise after logging/handling
-                # Prepare context
+                raise
                 context = {}
                 if sanitize_args:
-                    # Get function signature
                     sig = inspect.signature(func)
                     bound_args = sig.bind(*args, **kwargs)
                     bound_args.apply_defaults()
-
-                    # Add sanitized arguments to context
                     for name, value in bound_args.arguments.items():
                         if isinstance(value, str) and len(value) < 200:
-                            context[f"arg_{name}"] = ErrorSanitizer.sanitize_message(value)
+                            context[f'arg_{name}'] = ErrorSanitizer.sanitize_message(value)
                         else:
-                            context[f"arg_{name}"] = "<sanitized>"
-
-                # Create and raise secure error
+                            context[f'arg_{name}'] = '<sanitized>'
                 secure_error = ErrorSanitizer.create_secure_error(error_type, e, ErrorCode, context)
                 raise secure_error
-
-        # Return appropriate wrapper based on function type
         if inspect.iscoroutinefunction(func):
             return async_wrapper
         else:
             return sync_wrapper
-
     return decorator
-
 
 class SecureErrorHandler:
     """Handles errors securely throughout the application."""
 
-    def __init__(self, logger_name: str = "secure_errors"):
+    def __init__(self, logger_name: str='secure_errors'):
         """Initialize the error handler.
 
         Args:
@@ -319,12 +187,7 @@ class SecureErrorHandler:
         """
         self.Logger = logging.getLogger(logger_name)
 
-    def handle_error(
-        self,
-        error: Exception,
-        context: dict[str, Any] | None = None,
-        include_stack: bool = False,
-    ) -> SecureError:
+    def handle_error(self, error: Exception, context: dict[str, Any] | None=None, include_stack: bool=False) -> SecureError:
         """Handle an error securely.
 
         Args:
@@ -335,39 +198,21 @@ class SecureErrorHandler:
         Returns:
             Secure error instance
         """
-        # Determine error type
         if isinstance(error, SecureError):
             secure_error = error
         else:
             secure_error = ErrorSanitizer.create_secure_error(SecurityError, error, add_context=context)
-
-        # Log the error securely
-        log_data = {
-            "error_type": secure_error.__class__.__name__,
-            "ErrorCode": secure_error.ErrorCode,
-            "message": str(secure_error),
-        }
-
+        log_data = {'error_type': secure_error.__class__.__name__, 'ErrorCode': secure_error.ErrorCode, 'message': str(secure_error)}
         if context:
-            log_data["context"] = dict.fromkeys(context.keys(), "<sanitized>")
-
-        self.Logger.error("Secure error: %s", log_data)
-
-        # Log stack trace if requested (sanitized)
-        if include_stack and not isinstance(error, SecureError):
-            tb_str = "".join(traceback.format_tb(error.__traceback__))
+            log_data['context'] = dict.fromkeys(context.keys(), '<sanitized>')
+        self.Logger.error('Secure error: %s', log_data)
+        if include_stack and (not isinstance(error, SecureError)):
+            tb_str = ''.join(traceback.format_tb(error.__traceback__))
             sanitized_tb = ErrorSanitizer.sanitize_stack_trace(tb_str)
-            self.Logger.debug("Sanitized stack trace:\n%s", sanitized_tb)
-
+            self.Logger.debug('Sanitized stack trace:\n%s', sanitized_tb)
         return secure_error
 
-    def raise_secure(
-        self,
-        error_type: type[SecureError],
-        message: str,
-        ErrorCode: str | None = None,
-        context: dict[str, Any] | None = None,
-    ) -> None:
+    def raise_secure(self, error_type: type[SecureError], message: str, ErrorCode: str | None=None, context: dict[str, Any] | None=None) -> None:
         """Raise a secure error.
 
         Args:
@@ -378,43 +223,31 @@ class SecureErrorHandler:
         """
         sanitized_message = ErrorSanitizer.sanitize_message(message)
         secure_error = error_type(sanitized_message, ErrorCode, context)
-        self.Logger.error("Raising secure error: %s", secure_error.to_dict())
+        self.Logger.error('Raising secure error: %s', secure_error.to_dict())
         raise secure_error
 
     @timeout(300)
     @standard_heal
-    def heal_repository(
-        self,
-        dry_run: bool = True,
-        execute: bool = False,
-        depth: int = 0,
-        max_depth: int = 3,
-        _call_path: set | None = None,
-    ) -> dict[str, int]:
+    # guardian: allow-magic-config
+    def heal_repository(self, dry_run: bool=True, execute: bool=False, depth: int=0, max_depth: int=3, _call_path: set | None=None) -> dict[str, int]:
         """L5 safety agent - operational only."""
-        # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
         super().heal_repository()
-
         if _call_path is None:
             _call_path = set()
-        agent_name = "SecureErrorHandler"
+        agent_name = 'SecureErrorHandler'
         if agent_name in _call_path:
-            return {"errors": 1, "cycle_detected": True}
+            return {'errors': 1, 'cycle_detected': True}
         if depth > max_depth:
-            return {"errors": 1, "depth_limited": True}
+            return {'errors': 1, 'depth_limited': True}
         _call_path.add(agent_name)
         try:
-            print(f"[{agent_name}] L5 safety - operational only")
-            return {"skipped": 1}
+            print(f'[{agent_name}] L5 safety - operational only')
+            return {'skipped': 1}
         finally:
             _call_path.discard(agent_name)
-
-
-# Global error handler instance
 default_error_handler = SecureErrorHandler()
 
-
-def handle_secure_error(error: Exception, context: dict[str, Any] | None = None) -> SecureError:
+def handle_secure_error(error: Exception, context: dict[str, Any] | None=None) -> SecureError:
     """Handle an error using the default secure error handler.
 
     Args:

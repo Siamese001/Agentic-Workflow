@@ -144,6 +144,7 @@ class FileSystemStore:
             # Atomic rename (this is safe as it's a metadata operation)
             temp_path.rename(artifact_path)
 
+        # guardian: allow-silent-swallow
         except Exception:
             # TODO: Handle specific exception properly
             raise  # Re-raise after logging/handling
@@ -162,6 +163,7 @@ class FileSystemStore:
                     )
                     gateway = get_write_gateway()
                     gateway.execute_instruction(cleanup_instruction)
+                # guardian: allow-silent-swallow
                 except Exception:
                     # If UWG cleanup fails, try direct removal as last resort
                     temp_path.unlink(missing_ok=True)

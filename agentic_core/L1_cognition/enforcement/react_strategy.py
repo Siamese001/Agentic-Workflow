@@ -1,24 +1,8 @@
-# ReAct Strategy Implementation (Mocked for Phase 3)
-# Strategy: Simulate reasoning without a live LLM for architectural testing
-# Zero-Ambiguity Standard: Renamed from ReActPattern.py to ReActStrategy.py
-# Category: STRATEGY (Reasoning behavioral strategy)
-
 from typing import Any
-
 from agentic_core.patterns.base import BaseReasoningPattern
 from agentic_core.runtime.state import AgentState
 from agentic_core.runtime.tools import ToolRegistry
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 class ReActStrategy(BaseReasoningPattern):
     """
@@ -36,15 +20,9 @@ class ReActStrategy(BaseReasoningPattern):
         - If turn 2: Finish
         """
         if state.turn_count == 0:
-            return "search_tool", {"query": state.user_input}
-
+            return ('search_tool', {'query': state.user_input})
         elif state.turn_count == 1:
-            # Simulate using info from previous turn
-            return "calc_tool", {"expression": "2 + 2"}
-
+            return ('calc_tool', {'expression': '2 + 2'})
         else:
-            return "Final Answer", {"result": "Task Complete"}
-
-
-# Backward compatibility alias
+            return ('Final Answer', {'result': 'Task Complete'})
 ReActPattern = ReActStrategy

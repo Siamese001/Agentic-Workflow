@@ -5,23 +5,12 @@ Emits deterministic TelemetryEvent artifacts and forwards them to L4
 telemetry recording via an injected seam. L1 never branches on safety
 state and does not couple to L2/L5.
 """
-
 import copy
 import hashlib
 import json
 from dataclasses import dataclass
 from typing import Any
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 def compute_event_hash(stage: str, kind: str, commit_tick: int, details: dict[str, Any]) -> str:
     """
@@ -36,31 +25,22 @@ def compute_event_hash(stage: str, kind: str, commit_tick: int, details: dict[st
     Returns:
         SHA-256 hash of canonical JSON representation
     """
-    # Create canonical data structure
-    canonical_data = {"stage": stage, "kind": kind, "commit_tick": commit_tick, "details": details}
-
-    # Convert to canonical JSON
-    canonical_json = json.dumps(canonical_data, sort_keys=True, separators=(",", ":"))
-
-    # Compute SHA-256 hash
-    return hashlib.sha256(canonical_json.encode("utf-8")).hexdigest()
-
+    canonical_data = {'stage': stage, 'kind': kind, 'commit_tick': commit_tick, 'details': details}
+    canonical_json = json.dumps(canonical_data, sort_keys=True, separators=(',', ':'))
+    return hashlib.sha256(canonical_json.encode('utf-8')).hexdigest()
 
 @dataclass(frozen=True)
 class TelemetryEvent:
     """Immutable telemetry event artifact."""
-
     trace_id: str
     stage: str
     kind: str
-    commit_tick: int  # REQUIRED input (no wall-clock)
-    details: dict  # stored as a deep-copied canonical dict
-    event_hash: str  # sha256(canonical_json_bytes(stage,kind,commit_tick,details))
+    commit_tick: int
+    details: dict
+    event_hash: str
 
     @classmethod
-    def create(
-        cls, trace_id: str, stage: str, kind: str, commit_tick: int, details: dict[str, Any]
-    ) -> "TelemetryEvent":
+    def create(cls, trace_id: str, stage: str, kind: str, commit_tick: int, details: dict[str, Any]) -> 'TelemetryEvent':
         """
         Create a new TelemetryEvent with deterministic event_hash.
 
@@ -74,21 +54,9 @@ class TelemetryEvent:
         Returns:
             New TelemetryEvent with computed event_hash
         """
-        # Deep copy details to ensure immutability
         details_copy = copy.deepcopy(details)
-
-        # Compute deterministic event hash
         event_hash = compute_event_hash(stage, kind, commit_tick, details_copy)
-
-        return cls(
-            trace_id=trace_id,
-            stage=stage,
-            kind=kind,
-            commit_tick=commit_tick,
-            details=details_copy,
-            event_hash=event_hash,
-        )
-
+        return cls(trace_id=trace_id, stage=stage, kind=kind, commit_tick=commit_tick, details=details_copy, event_hash=event_hash)
 
 class TelemetryEmitter:
     """
@@ -108,9 +76,7 @@ class TelemetryEmitter:
         """
         record_fn(event)
 
-    def build_event(
-        self, *, trace_id: str, stage: str, kind: str, commit_tick: int, details: dict[str, Any]
-    ) -> TelemetryEvent:
+    def build_event(self, *, trace_id: str, stage: str, kind: str, commit_tick: int, details: dict[str, Any]) -> TelemetryEvent:
         """
         Convenience constructor for TelemetryEvent.
 

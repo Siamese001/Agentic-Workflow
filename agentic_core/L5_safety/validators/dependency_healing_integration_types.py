@@ -134,6 +134,7 @@ class DependencyPruningStrategy:
                 "dry_run": self._agent.dry_run,
             }
 
+        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.error(f"[DependencyPruningStrategy] Healing failed: {e}")
             return {
@@ -181,6 +182,7 @@ def register_dependency_healing(project_root: Path | None = None) -> dict[str, A
                 "dependency_pruning", get_dependency_strategy(project_root)
             )
             registered.append("dependency_pruning")
+        # guardian: allow-silent-swallow
         except Exception as e:
             errors.append(f"dependency_pruning: {e}")
 

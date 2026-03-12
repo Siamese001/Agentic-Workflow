@@ -4,32 +4,17 @@ This module implements a lightweight dependency injection container to eliminate
 global singletons and improve testability. Services are registered by type
 and resolved as needed throughout the application.
 """
-
 import logging
 from abc import ABC
 from collections.abc import Callable
 from typing import Any, TypeVar
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 logger = logging.getLogger(__name__)
-
-T = TypeVar("T")
-
+T = TypeVar('T')
 
 class ServiceNotFoundError(Exception):
     """Raised when a requested service is not registered."""
-
     pass
-
 
 class ServiceContainer:
     """Simple dependency injection container.
@@ -41,7 +26,7 @@ class ServiceContainer:
     - Transient instances (new each time)
     """
 
-    def __init__(self, name: str = "default"):
+    def __init__(self, name: str='default'):
         """Initialize the container.
 
         Args:
@@ -51,15 +36,9 @@ class ServiceContainer:
         self._services: dict[type, Any] = {}
         self._factories: dict[type, Callable[[], Any]] = {}
         self._singletons: dict[type, Any] = {}
-        self._lifecycle: dict[type, str] = {}  # "singleton" or "transient"
+        self._lifecycle: dict[type, str] = {}
 
-    def register(
-        self,
-        interface: type[T],
-        implementation: T | None = None,
-        factory: Callable[[], T] | None = None,
-        lifecycle: str = "singleton",
-    ) -> None:
+    def register(self, interface: type[T], implementation: T | None=None, factory: Callable[[], T] | None=None, lifecycle: str='singleton') -> None:
         """Register a service in the container.
 
         Args:
@@ -72,22 +51,17 @@ class ServiceContainer:
             ValueError: If neither implementation nor factory is provided
         """
         if implementation is None and factory is None:
-            raise ValueError("Must provide either implementation or factory")
-
-        if lifecycle not in ["singleton", "transient"]:
+            raise ValueError('Must provide either implementation or factory')
+        if lifecycle not in ['singleton', 'transient']:
             raise ValueError("Lifecycle must be 'singleton' or 'transient'")
-
         self._lifecycle[interface] = lifecycle
-
         if implementation is not None:
-            if lifecycle == "singleton":
+            if lifecycle == 'singleton':
                 self._singletons[interface] = implementation
             else:
                 self._services[interface] = implementation
-
         if factory is not None:
             self._factories[interface] = factory
-
         logger.debug(f"Registered {interface.__name__} in container '{self.name}'")
 
     def resolve(self, interface: type[T]) -> T:
@@ -102,44 +76,30 @@ class ServiceContainer:
         Raises:
             ServiceNotFoundError: If the service is not registered
         """
-        # Check if service is registered
         if interface not in self._lifecycle:
-            raise ServiceNotFoundError(f"{interface.__name__} not registered in container")
-
+            raise ServiceNotFoundError(f'{interface.__name__} not registered in container')
         lifecycle = self._lifecycle[interface]
-
-        # Handle singleton lifecycle
-        if lifecycle == "singleton":
+        if lifecycle == 'singleton':
             if interface in self._singletons:
                 return self._singletons[interface]
-
-            # Create singleton if not exists
             if interface in self._factories:
                 instance = self._factories[interface]()
                 self._singletons[interface] = instance
                 return instance
-
             if interface in self._services:
                 return self._services[interface]
-
-        # Handle transient lifecycle
-        if lifecycle == "transient":
+        if lifecycle == 'transient':
             if interface in self._factories:
                 return self._factories[interface]()
-
             if interface in self._services:
-                # For transient, we need to create a copy if possible
                 implementation = self._services[interface]
                 try:
                     return type(implementation)()
+                # guardian: allow-silent-swallow
                 except Exception:
-                    # If we can't create a new instance, return the original
-                    logger.warning(
-                        f"Could not create transient instance of {interface.__name__}, returning singleton",
-                    )
+                    logger.warning(f'Could not create transient instance of {interface.__name__}, returning singleton')
                     return implementation
-
-        raise ServiceNotFoundError(f"Could not resolve {interface.__name__}")
+        raise ServiceNotFoundError(f'Could not resolve {interface.__name__}')
 
     def is_registered(self, interface: type) -> bool:
         """Check if a service is registered.
@@ -167,11 +127,7 @@ class ServiceContainer:
             Dictionary mapping types to lifecycle names
         """
         return self._lifecycle.copy()
-
-
-# Global default container for backward compatibility
 _default_container: ServiceContainer | None = None
-
 
 def get_default_container() -> ServiceContainer:
     """Get the default container instance.
@@ -181,16 +137,10 @@ def get_default_container() -> ServiceContainer:
     """
     global _default_container
     if _default_container is None:
-        _default_container = ServiceContainer("default")
+        _default_container = ServiceContainer('default')
     return _default_container
 
-
-def register_default(
-    interface: type[T],
-    implementation: T | None = None,
-    factory: Callable[[], T] | None = None,
-    lifecycle: str = "singleton",
-) -> None:
+def register_default(interface: type[T], implementation: T | None=None, factory: Callable[[], T] | None=None, lifecycle: str='singleton') -> None:
     """Register a service in the default container.
 
     This is a convenience function for global registration.
@@ -202,7 +152,6 @@ def register_default(
         lifecycle: "singleton" (default) or "transient"
     """
     get_default_container().register(interface, implementation, factory, lifecycle)
-
 
 def resolve_default(interface: type[T]) -> T:
     """Resolve a service from the default container.
@@ -217,9 +166,6 @@ def resolve_default(interface: type[T]) -> T:
     """
     return get_default_container().resolve(interface)
 
-
-# Service marker interface for better type safety
 class Service(ABC):
     """Base class for services that can be dependency injected."""
-
     pass

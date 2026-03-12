@@ -1,31 +1,17 @@
 """
 Seam for L6 vigilance event types - approved L0→L6 interface.
 """
-
 from __future__ import annotations
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 def load_vigilance_types():
     """Load vigilance event types from L6."""
     import importlib
-
-    return importlib.import_module("agentic_core.L6_observability.types.vigilance_event_types")
-
+    return importlib.import_module('agentic_core.L6_observability.types.vigilance_event_types')
 
 def get_vigilance_event_artifact():
     """Get VigilanceEventArtifact class."""
     return load_vigilance_types().VigilanceEventArtifact
-
 
 def get_vigilance_severity():
     """Get VigilanceSeverity enum."""

@@ -1,33 +1,15 @@
-# Local Ephemeral Vector Store (For Testing/Dev)
-# Strategy: FAISS IndexFlatIP with L2-normalised vectors (cosine similarity) — primary path.
-#           Pure-Python cosine is the fallback when faiss is not installed.
-# Zero-Ambiguity Standard: Renamed from InMemoryVectorStore.py to InMemoryVectorStoreAdapter.py
-# Category: ADAPTER (Adapts in-memory dict to VectorStore interface)
-
 from __future__ import annotations
-
 import importlib.util
 import math
-
 from agentic_core.L4_state.types.memory_item_types import MemoryItem, MemoryQuery
 from agentic_core.L4_state.types.vector_store_types import BaseVectorStore
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 def _faiss_available() -> bool:
-    return importlib.util.find_spec("faiss") is not None
-
+    return importlib.util.find_spec('faiss') is not None
 
 class InMemoryVectorStore(BaseVectorStore):
+
     def __init__(self):
         self._storage: dict[str, MemoryItem] = {}
         self._ordered_ids: list[str] = []
@@ -44,7 +26,6 @@ class InMemoryVectorStore(BaseVectorStore):
             return
         import faiss
         import numpy as np
-
         items = [self._storage[uid] for uid in self._ordered_ids if uid in self._storage]
         if not items:
             self._faiss_index = None
@@ -85,13 +66,10 @@ class InMemoryVectorStore(BaseVectorStore):
         Fallback path: pure-Python cosine when faiss is not installed.
         """
         q_vec = query.vector
-
         candidate_ids: list[str] = list(self._ordered_ids)
-
         if _faiss_available() and self._faiss_index is not None:
             import faiss
             import numpy as np
-
             q_arr = np.array([q_vec], dtype=np.float32)
             faiss.normalize_L2(q_arr)
             k = min(query.top_k * 4 if query.filter_metadata else query.top_k, self._faiss_index.ntotal)
@@ -108,33 +86,30 @@ class InMemoryVectorStore(BaseVectorStore):
                 if item is None:
                     continue
                 if query.filter_metadata:
-                    match = all(item.metadata.get(k) == v for k, v in query.filter_metadata.items())
+                    match = all((item.metadata.get(k) == v for k, v in query.filter_metadata.items()))
                     if not match:
                         continue
                 item_copy = item.model_copy()
                 item_copy.score = float(score)
                 results.append(item_copy)
             results.sort(key=lambda x: x.score or 0.0, reverse=True)
-            return results[: query.top_k]
-
-        # --- Pure-Python cosine fallback ---
-        q_mag = math.sqrt(sum(x * x for x in q_vec))
+            return results[:query.top_k]
+        q_mag = math.sqrt(sum((x * x for x in q_vec)))
         results = []
         for uid in candidate_ids:
             item = self._storage.get(uid)
             if item is None:
                 continue
             if query.filter_metadata:
-                match = all(item.metadata.get(k) == v for k, v in query.filter_metadata.items())
+                match = all((item.metadata.get(k) == v for k, v in query.filter_metadata.items()))
                 if not match:
                     continue
             d_vec = item.embedding
-            dot_product = sum(a * b for a, b in zip(q_vec, d_vec, strict=False))
-            d_mag = math.sqrt(sum(x * x for x in d_vec))
+            dot_product = sum((a * b for a, b in zip(q_vec, d_vec, strict=False)))
+            d_mag = math.sqrt(sum((x * x for x in d_vec)))
             similarity = dot_product / (d_mag * q_mag) if d_mag * q_mag != 0 else 0.0
             item_copy = item.model_copy()
             item_copy.score = similarity
             results.append(item_copy)
-
         results.sort(key=lambda x: x.score or 0.0, reverse=True)
-        return results[: query.top_k]
+        return results[:query.top_k]

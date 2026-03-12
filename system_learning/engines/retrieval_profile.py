@@ -7,23 +7,11 @@ W4-A: RetrievalProfile Authority (L4 Only)
 W4-B: Shadow Embedder wiring for drift detection (non-influential)
 D2: embeddings_enabled is always True — BGE is a mandatory system dependency.
 """
-
 from __future__ import annotations
-
 import hashlib
 import json
 from dataclasses import asdict, dataclass
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 @dataclass(frozen=True, slots=True)
 class RetrievalProfile:
@@ -36,7 +24,6 @@ class RetrievalProfile:
     It is versioned, deterministic, and stored in L4.
     Shadow embedder provides parallel embeddings for telemetry.
     """
-
     profile_id: str
     primary_embedder_id: str
     embedding_dim: int
@@ -44,8 +31,6 @@ class RetrievalProfile:
     top_k: int
     influence_cap: float
     normalization_policy: str
-
-    # Optional fields
     shadow_embedder_id: str | None = None
     hybrid_alpha: float | None = None
     embeddings_enabled: bool = True
@@ -56,19 +41,12 @@ class RetrievalProfile:
         Returns:
             Canonical JSON string with sorted keys and fixed precision.
         """
-        # Convert to dict and handle None values
         data = asdict(self)
-
-        # Remove None values to ensure deterministic serialization
         data = {k: v for k, v in data.items() if v is not None}
-
-        # Round floats to 6 decimal places for deterministic output
         for key, value in data.items():
             if isinstance(value, float):
                 data[key] = round(value, 6)
-
-        # Serialize with sorted keys and no whitespace
-        return json.dumps(data, separators=(",", ":"), sort_keys=True)
+        return json.dumps(data, separators=(',', ':'), sort_keys=True)
 
     @property
     def profile_digest(self) -> str:
@@ -82,7 +60,7 @@ class RetrievalProfile:
 
     def emit_digest(self) -> None:
         """Print the profile digest for determinism verification."""
-        print(f"W4-PROFILE-DIGEST: {self.profile_digest}")
+        print(f'W4-PROFILE-DIGEST: {self.profile_digest}')
 
     @classmethod
     def create_default(cls) -> RetrievalProfile:
@@ -93,21 +71,5 @@ class RetrievalProfile:
         Returns:
             Default profile with current hardcoded values.
         """
-        return cls(
-            profile_id="retrieval-profile-v3",
-            primary_embedder_id="BAAI/bge-m3",
-            embedding_dim=1024,
-            similarity_cutoff=0.75,
-            top_k=10,
-            influence_cap=0.25,
-            normalization_policy="l2",
-            shadow_embedder_id=None,
-            hybrid_alpha=None,
-            embeddings_enabled=True,
-        )
-
-
-# Export public interface
-__all__ = [
-    "RetrievalProfile",
-]
+        return cls(profile_id='retrieval-profile-v3', primary_embedder_id='BAAI/bge-m3', embedding_dim=1024, similarity_cutoff=0.75, top_k=10, influence_cap=0.25, normalization_policy='l2', shadow_embedder_id=None, hybrid_alpha=None, embeddings_enabled=True)
+__all__ = ['RetrievalProfile']

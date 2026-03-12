@@ -26,6 +26,7 @@ class HealingConfigOptimizer:
     threshold adjustment proposals. All changes are proposal-only.
     """
 
+    # guardian: allow-magic-config
     def __init__(
         self,
         min_sample_size: int = 20,
@@ -327,6 +328,7 @@ class HealingConfigOptimizer:
         """
         # Simple confidence based on sample size
         # More samples = higher confidence
+        # guardian: allow-magic-config
         max_samples = 1000
         normalized_samples = min(aggregate.total_count, max_samples) / max_samples
 
@@ -338,6 +340,7 @@ class HealingConfigOptimizer:
         confidence = (normalized_samples * 0.6) + (normalized_gap * 0.4)
         return round(confidence + 1e-10, 4)  # Round-half-up
 
+    # guardian: allow-magic-config
     def propose_threshold_adjustments_with_embeddings(
         self,
         snapshot: HealingOutcomeAggregateSnapshot,

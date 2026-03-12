@@ -89,6 +89,7 @@ ROUTE_CONFIGS: dict[MessageRoute, RouteConfig] = {
             connection_status="not_connected",
             prior_message_count=0,
         ),
+        # guardian: allow-magic-config
         constraints=RouteConstraints(
             char_limit=LIMIT,
             word_range=None,

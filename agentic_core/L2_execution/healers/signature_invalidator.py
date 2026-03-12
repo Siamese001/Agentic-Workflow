@@ -1,35 +1,17 @@
 from __future__ import annotations
-
 import hashlib
 from typing import Any, NamedTuple
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-# Placeholder for a more complex Plan object.
-# In a real system, this would be a dataclass with many fields.
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 HealedPlan = dict[str, Any]
-
 
 class StaleSignatureViolation(Exception):
     """Raised when a healed plan is executed with a stale signature."""
-
     pass
-
 
 class InvalidationResult(NamedTuple):
     """The result of invalidating a plan's signature."""
-
     invalidated_plan: HealedPlan
     new_policy_hash: str
-
 
 def invalidate_signature_and_rehash(plan: HealedPlan) -> InvalidationResult:
     """
@@ -47,28 +29,15 @@ def invalidate_signature_and_rehash(plan: HealedPlan) -> InvalidationResult:
         An InvalidationResult containing the plan with its signature stripped
         and a new policy hash for re-validation.
     """
-    # Make a copy to avoid mutating the original plan in-place
     invalidated_plan = plan.copy()
-
-    # 1. Strip the previous signature and related metadata.
-    # In a real system, this would be more robust than just popping keys.
-    invalidated_plan.pop("l5_signature", None)
-    invalidated_plan.pop("l5_approval_timestamp", None)
-    invalidated_plan.pop("policy_hash", None)  # Remove the old hash
-
-    # 2. Regenerate the policy_hash from the canonical representation of the
-    #    modified plan. This uses a simplified canonicalization for demonstration.
-    #    The real implementation would use the canonical JSON from digest_authority.
+    invalidated_plan.pop('l5_signature', None)
+    invalidated_plan.pop('l5_approval_timestamp', None)
+    invalidated_plan.pop('policy_hash', None)
     import json
-
-    canonical_string = json.dumps(invalidated_plan, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    canonical_string = json.dumps(invalidated_plan, sort_keys=True, separators=(',', ':')).encode('utf-8')
     new_policy_hash = hashlib.sha256(canonical_string).hexdigest()
-
-    # 3. Add the new policy hash to the plan for the next validation cycle.
-    invalidated_plan["policy_hash"] = new_policy_hash
-
+    invalidated_plan['policy_hash'] = new_policy_hash
     return InvalidationResult(invalidated_plan=invalidated_plan, new_policy_hash=new_policy_hash)
-
 
 def verify_no_stale_signature(plan: HealedPlan):
     """
@@ -84,7 +53,5 @@ def verify_no_stale_signature(plan: HealedPlan):
         StaleSignatureViolation: If a signature is present on a healed plan that
                                  should have been invalidated.
     """
-    # This check assumes that if a plan has been healed, it will have a
-    # 'healed_by' field. If that field is present, no signature should be.
-    if "healed_by" in plan and "l5_signature" in plan:
-        raise StaleSignatureViolation("Healed plan contains a stale L5 signature. It must be re-validated.")
+    if 'healed_by' in plan and 'l5_signature' in plan:
+        raise StaleSignatureViolation('Healed plan contains a stale L5 signature. It must be re-validated.')

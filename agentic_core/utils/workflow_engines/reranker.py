@@ -4,32 +4,19 @@ Reranker Implementations
 Heuristic reranker (zero-dependency, deterministic) and an interface stub
 for cross-encoder injection.
 """
-
 from __future__ import annotations
-
 import re
 from typing import Callable
-
 from .interfaces import Document, IReranker
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 def _query_term_overlap(query: str, content: str) -> float:
     """Count query token overlap with document content (normalized)."""
+
     def tokenize(text: str) -> set:
         text = text.lower()
-        text = re.sub(r"[^\w\s]", " ", text)
+        text = re.sub('[^\\w\\s]', ' ', text)
         return set(text.split())
-
     query_tokens = tokenize(query)
     content_tokens = tokenize(content)
     if not query_tokens:
@@ -37,18 +24,13 @@ def _query_term_overlap(query: str, content: str) -> float:
     overlap = query_tokens & content_tokens
     return len(overlap) / len(query_tokens)
 
-
 class HeuristicReranker(IReranker):
     """Deterministic reranker using query-term coverage as the rerank signal.
 
     Production use: inject a cross-encoder via the ``scorer`` callable.
     """
 
-    def __init__(
-        self,
-        scorer: Callable[[str, str], float] | None = None,
-        top_k: int = 10,
-    ):
+    def __init__(self, scorer: Callable[[str, str], float] | None=None, top_k: int=10):
         self._scorer = scorer or _query_term_overlap
         self.top_k = top_k
 
@@ -64,26 +46,17 @@ class HeuristicReranker(IReranker):
         """
         if not candidates:
             return []
-
         scored = []
         for doc in candidates:
             rerank_score = self._scorer(query, doc.content)
-            scored.append(
-                Document(
-                    doc_id=doc.doc_id,
-                    content=doc.content,
-                    score=rerank_score,
-                    metadata={**doc.metadata, "rerank_score": rerank_score},
-                )
-            )
+            scored.append(Document(doc_id=doc.doc_id, content=doc.content, score=rerank_score, metadata={**doc.metadata, 'rerank_score': rerank_score}))
         scored.sort(key=lambda d: -d.score)
-        return scored[: self.top_k]
-
+        return scored[:self.top_k]
 
 class PassthroughReranker(IReranker):
     """No-op reranker that preserves original order, optionally truncating to top_k."""
 
-    def __init__(self, top_k: int = 10):
+    def __init__(self, top_k: int=10):
         self.top_k = top_k
 
     def rerank(self, query: str, candidates: list[Document]) -> list[Document]:
@@ -96,7 +69,5 @@ class PassthroughReranker(IReranker):
         Returns:
             First top_k candidates in original order
         """
-        return candidates[: self.top_k]
-
-
-__all__ = ["HeuristicReranker", "PassthroughReranker"]
+        return candidates[:self.top_k]
+__all__ = ['HeuristicReranker', 'PassthroughReranker']

@@ -2,64 +2,39 @@
 
 Callers MUST use .execute_contracted() to ensure AgentOutputContract is emitted.
 """
-
 from __future__ import annotations
-
 import ast
 import sys
 from pathlib import Path
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 REPO_ROOT = Path(__file__).resolve().parents[2]
-ALLOWED_PATHS = {
-    "apps_rg/engines/base_rg_engine.py",
-    "apps_lic/engines/base_lic_engine.py",  # if it exists
-}
+ALLOWED_PATHS = {'apps_rg/engines/base_rg_engine.py', 'apps_lic/engines/base_lic_engine.py'}
 SCAN_ROOTS = [APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR, AGENTIC_CORE_DIR]
-
 
 def main() -> int:
     violations: list[str] = []
     for root in SCAN_ROOTS:
-        for path in (REPO_ROOT / root).rglob("*.py"):
+        for path in (REPO_ROOT / root).rglob('*.py'):
             rel = path.relative_to(REPO_ROOT).as_posix()
             if rel in ALLOWED_PATHS:
                 continue
             try:
-                tree = ast.parse(path.read_text(encoding="utf-8", errors="replace"))
+                tree = ast.parse(path.read_text(encoding='utf-8', errors='replace'))
             except SyntaxError:
                 continue
             for node in ast.walk(tree):
-                if (
-                    isinstance(node, ast.Call)
-                    and isinstance(node.func, ast.Attribute)
-                    and node.func.attr == "execute"
-                ):
-                    # Heuristic: receiver name ends with Engine/Agent
-                    recv = ""
+                if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute) and (node.func.attr == 'execute'):
+                    recv = ''
                     if isinstance(node.func.value, ast.Name):
                         recv = node.func.value.id
-                    if any(kw in recv for kw in ("engine", "agent", "Engine", "Agent")):
-                        violations.append(
-                            f"{rel}:{node.lineno}: direct .execute() call on '{recv}' — use .execute_contracted()"
-                        )
+                    if any((kw in recv for kw in ('engine', 'agent', 'Engine', 'Agent'))):
+                        violations.append(f"{rel}:{node.lineno}: direct .execute() call on '{recv}' — use .execute_contracted()")
     if violations:
-        print(f"FAIL: {len(violations)} direct .execute() call(s) found:")
+        print(f'FAIL: {len(violations)} direct .execute() call(s) found:')
         for v in violations:
-            print(f"  {v}")
+            print(f'  {v}')
         return 1
-    print("OK: no direct .execute() calls outside base")
+    print('OK: no direct .execute() calls outside base')
     return 0
-
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     sys.exit(main())

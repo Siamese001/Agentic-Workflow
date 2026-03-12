@@ -9,6 +9,7 @@ from pathlib import Path
 from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, get_validated_project_root
 
 ROOT = get_validated_project_root()
+# guardian: allow-global-mutation
 sys.path.insert(0, str(ROOT))
 
 from agentic_core.L5_safety.reasoning.FileClassificationAgent import (

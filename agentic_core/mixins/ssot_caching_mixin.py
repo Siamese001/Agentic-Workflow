@@ -10,27 +10,13 @@ Provides in-memory caching that:
 Layer: L2 Execution Aid
 Authority: Local cache only. No L4 mutation. No routing influence.
 """
-
 from __future__ import annotations
-
 import logging
 import time
 from typing import Any
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-_logger = logging.getLogger("SSOTCaching")
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+_logger = logging.getLogger('SSOTCaching')
 _SENTINEL = object()
-
 
 class SSOTCachingMixin:
     """Policy-hash-scoped in-memory cache with replay safety.
@@ -53,22 +39,14 @@ class SSOTCachingMixin:
         entry = self._ssot_cache.get(scoped_key)
         if entry is None:
             return None
-
-        # Check TTL (disabled under replay mode)
-        is_replay = getattr(self, "is_replay_mode", False)
-        if not is_replay and entry.get("ttl") is not None:
-            if time.time() - entry["created_at"] > entry["ttl"]:
+        is_replay = getattr(self, 'is_replay_mode', False)
+        if not is_replay and entry.get('ttl') is not None:
+            if time.time() - entry['created_at'] > entry['ttl']:
                 del self._ssot_cache[scoped_key]
                 return None
+        return entry['value']
 
-        return entry["value"]
-
-    def cache_set(
-        self,
-        key: str,
-        value: Any,
-        ttl: float | None = 300.0,
-    ) -> None:
+    def cache_set(self, key: str, value: Any, ttl: float | None=300.0) -> None:
         """Store a value in the cache (policy-hash-scoped).
 
         Parameters
@@ -81,17 +59,11 @@ class SSOTCachingMixin:
             Time-to-live in seconds. None = no expiry.
             Under replay mode, TTL is always disabled.
         """
-        is_replay = getattr(self, "is_replay_mode", False)
+        is_replay = getattr(self, 'is_replay_mode', False)
         effective_ttl = None if is_replay else ttl
-
         scoped_key = self._scoped_key(key)
-        self._ssot_cache[scoped_key] = {
-            "value": value,
-            "created_at": time.time(),
-            "ttl": effective_ttl,
-            "policy_hash": getattr(self, "active_policy_hash", "unknown"),
-        }
-        _logger.debug("[SSOTCache] SET %s (ttl=%s)", scoped_key, effective_ttl)
+        self._ssot_cache[scoped_key] = {'value': value, 'created_at': time.time(), 'ttl': effective_ttl, 'policy_hash': getattr(self, 'active_policy_hash', 'unknown')}
+        _logger.debug('[SSOTCache] SET %s (ttl=%s)', scoped_key, effective_ttl)
 
     def cache_invalidate(self, key: str) -> bool:
         """Remove a key from the cache. Returns True if key existed."""
@@ -113,5 +85,5 @@ class SSOTCachingMixin:
 
     def _scoped_key(self, key: str) -> str:
         """Prefix key with active_policy_hash for isolation."""
-        policy_hash = getattr(self, "active_policy_hash", "unknown")
-        return f"{policy_hash}:{key}"
+        policy_hash = getattr(self, 'active_policy_hash', 'unknown')
+        return f'{policy_hash}:{key}'

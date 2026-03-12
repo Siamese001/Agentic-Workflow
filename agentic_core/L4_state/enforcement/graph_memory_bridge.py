@@ -1,72 +1,32 @@
 from __future__ import annotations
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-"""
-[PHASE 21] Graph Memory Bridge - Interface to Memory MCP Knowledge Graph.
-
-Provides a programmatic interface to the Memory MCP server for:
-- Entity creation (agents, tasks, protocols)
-- Relation creation (MASTERED_TASK, INTERACTS_WITH, etc.)
-- Observation storage
-- Graph queries
-
-This bridge uses the live Windsurf Memory MCP tools:
-- mcp11_create_entities: Create entities in the knowledge graph
-- mcp11_create_relations: Create relations between entities
-- mcp11_add_observations: Add observations to entities
-- mcp11_search_nodes: Search for nodes in the graph
-- mcp11_open_nodes: Open specific nodes by name
-- mcp11_read_graph: Read the full graph
-
-Resilient Mode: If MCP is unavailable, operations are logged but don't crash.
-
-[SSOT] This is the canonical interface for Memory MCP operations.
-"""
-
-
+"\n[PHASE 21] Graph Memory Bridge - Interface to Memory MCP Knowledge Graph.\n\nProvides a programmatic interface to the Memory MCP server for:\n- Entity creation (agents, tasks, protocols)\n- Relation creation (MASTERED_TASK, INTERACTS_WITH, etc.)\n- Observation storage\n- Graph queries\n\nThis bridge uses the live Windsurf Memory MCP tools:\n- mcp11_create_entities: Create entities in the knowledge graph\n- mcp11_create_relations: Create relations between entities\n- mcp11_add_observations: Add observations to entities\n- mcp11_search_nodes: Search for nodes in the graph\n- mcp11_open_nodes: Open specific nodes by name\n- mcp11_read_graph: Read the full graph\n\nResilient Mode: If MCP is unavailable, operations are logged but don't crash.\n\n[SSOT] This is the canonical interface for Memory MCP operations.\n"
 import hashlib
 import logging
 import threading
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import Any
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 try:
     from agentic_core.adg.client.mcp_client import ADGMCPClient as _MCPFallbackClient
-
     _FALLBACK_AVAILABLE = True
 except ImportError:
     _FALLBACK_AVAILABLE = False
-
 Logger = logging.getLogger(__name__)
-
 
 @dataclass
 class EntityDefinition:
     """Definition for creating an entity in the Knowledge Graph."""
-
     name: str
     entity_type: str
     observations: list[str] = field(default_factory=list)
 
-
 @dataclass
 class RelationDefinition:
     """Definition for creating a relation in the Knowledge Graph."""
-
     from_entity: str
     to_entity: str
     relation_type: str
-
 
 class GraphMemoryBridge:
     """
@@ -86,16 +46,13 @@ class GraphMemoryBridge:
         bridge.create_agent_entity("GovernorAgent")
         bridge.create_mastered_task_relation("GovernorAgent", "task_hash_123")
     """
-
     _instance: GraphMemoryBridge | None = None
     _instance_lock = threading.RLock()
-
-    # Relation types for DNA mapping
-    RELATION_MASTERED_TASK = "MASTERED_TASK"
-    RELATION_FAILED_TASK = "FAILED_TASK"
-    RELATION_INTERACTS_WITH = "INTERACTS_WITH"
-    RELATION_DEPENDS_ON = "DEPENDS_ON"
-    RELATION_INHERITS_FROM = "INHERITS_FROM"
+    RELATION_MASTERED_TASK = 'MASTERED_TASK'
+    RELATION_FAILED_TASK = 'FAILED_TASK'
+    RELATION_INTERACTS_WITH = 'INTERACTS_WITH'
+    RELATION_DEPENDS_ON = 'DEPENDS_ON'
+    RELATION_INHERITS_FROM = 'INHERITS_FROM'
 
     @classmethod
     def get_instance(cls) -> GraphMemoryBridge:
@@ -115,27 +72,12 @@ class GraphMemoryBridge:
         """Initialize the Graph Memory Bridge."""
         self._lock = threading.RLock()
         self._mcp_available = False
-
-        # MCP tool functions (injected or mocked)
         self._create_entities_fn: Callable | None = None
         self._create_relations_fn: Callable | None = None
         self._add_observations_fn: Callable | None = None
         self._search_nodes_fn: Callable | None = None
-
-        # Statistics
-        self.stats = {
-            "entities_created": 0,
-            "relations_created": 0,
-            "observations_added": 0,
-            "searches_performed": 0,
-            "mcp_errors": 0,
-            "operations_skipped": 0,
-        }
-
-        # Registered entities cache (to avoid duplicate registrations)
+        self.stats = {'entities_created': 0, 'relations_created': 0, 'observations_added': 0, 'searches_performed': 0, 'mcp_errors': 0, 'operations_skipped': 0}
         self._registered_entities: set[str] = set()
-
-        # Try to initialize MCP connection
         self._init_mcp()
 
     def _init_mcp(self) -> None:
@@ -148,19 +90,14 @@ class GraphMemoryBridge:
         """
         try:
             import importlib
-
-            _mod = importlib.import_module("mcp11")
+            _mod = importlib.import_module('mcp11')
             self._mcp_module = _mod
             self._mcp_available = True
-            Logger.info("[GraphMemoryBridge] Initialized (live mcp11 MCP mode)")
+            Logger.info('[GraphMemoryBridge] Initialized (live mcp11 MCP mode)')
         except ImportError:
             self._mcp_module = None
             self._mcp_available = False
-            Logger.info("[GraphMemoryBridge] mcp11 not importable — resilient fallback mode")
-
-    # ------------------------------------------------------------------
-    # Direct mcp11_* call helpers
-    # ------------------------------------------------------------------
+            Logger.info('[GraphMemoryBridge] mcp11 not importable — resilient fallback mode')
 
     def _call_mcp_create_entities(self, entities: list[dict]) -> Any:
         """Call mcp11_create_entities; falls back to injected fn or fallback store."""
@@ -171,8 +108,8 @@ class GraphMemoryBridge:
         if _FALLBACK_AVAILABLE:
             store = _MCPFallbackClient()
             for e in entities:
-                store.upsert_entity(e["name"], e.get("entityType", "Entity"), e.get("observations"))
-            return {"status": "ok", "source": "fallback"}
+                store.upsert_entity(e['name'], e.get('entityType', 'Entity'), e.get('observations'))
+            return {'status': 'ok', 'source': 'fallback'}
         return None
 
     def _call_mcp_create_relations(self, relations: list[dict]) -> Any:
@@ -199,13 +136,7 @@ class GraphMemoryBridge:
             return self._mcp_module.search_nodes(query=query)
         return []
 
-    def set_mcp_functions(
-        self,
-        create_entities: Callable | None = None,
-        create_relations: Callable | None = None,
-        add_observations: Callable | None = None,
-        search_nodes: Callable | None = None,
-    ) -> None:
+    def set_mcp_functions(self, create_entities: Callable | None=None, create_relations: Callable | None=None, add_observations: Callable | None=None, search_nodes: Callable | None=None) -> None:
         """
         Inject MCP tool functions (for testing or custom implementations).
 
@@ -219,11 +150,8 @@ class GraphMemoryBridge:
         self._create_relations_fn = create_relations
         self._add_observations_fn = add_observations
         self._search_nodes_fn = search_nodes
-
-        # Mark as available if any function is provided
         self._mcp_available = any([create_entities, create_relations, add_observations, search_nodes])
-
-        Logger.debug("[GraphMemoryBridge] MCP functions injected")
+        Logger.debug('[GraphMemoryBridge] MCP functions injected')
 
     @property
     def is_available(self) -> bool:
@@ -243,32 +171,25 @@ class GraphMemoryBridge:
             Result of the operation or None if failed/unavailable
         """
         if not self._mcp_available:
-            Logger.debug(f"[GraphMemoryBridge] Skipping {operation}: MCP unavailable")
+            Logger.debug(f'[GraphMemoryBridge] Skipping {operation}: MCP unavailable')
             with self._lock:
-                self.stats["operations_skipped"] += 1
+                self.stats['operations_skipped'] += 1
             return None
-
         if fn is None:
-            Logger.debug(f"[GraphMemoryBridge] Skipping {operation}: No function provided")
+            Logger.debug(f'[GraphMemoryBridge] Skipping {operation}: No function provided')
             with self._lock:
-                self.stats["operations_skipped"] += 1
+                self.stats['operations_skipped'] += 1
             return None
-
         try:
             result = fn(*args, **kwargs)
             return result
         except Exception as e:
             with self._lock:
-                self.stats["mcp_errors"] += 1
-            Logger.warning(f"[GraphMemoryBridge] {operation} failed: {e}")
+                self.stats['mcp_errors'] += 1
+            Logger.warning(f'[GraphMemoryBridge] {operation} failed: {e}')
             return None
 
-    def create_agent_entity(
-        self,
-        agent_name: str,
-        agent_type: str = "Agent",
-        observations: list[str] | None = None,
-    ) -> bool:
+    def create_agent_entity(self, agent_name: str, agent_type: str='Agent', observations: list[str] | None=None) -> bool:
         """
         Create an agent entity in the Knowledge Graph.
 
@@ -283,36 +204,20 @@ class GraphMemoryBridge:
         Returns:
             True if created (or already exists), False if failed
         """
-        # Check if already registered (idempotent)
         if agent_name in self._registered_entities:
-            Logger.debug(f"[GraphMemoryBridge] Entity already registered: {agent_name}")
+            Logger.debug(f'[GraphMemoryBridge] Entity already registered: {agent_name}')
             return True
-
-        entities = [
-            {
-                "name": agent_name,
-                "entityType": agent_type,
-                "observations": observations or [f"Agent {agent_name} registered in Knowledge Graph"],
-            },
-        ]
-
+        entities = [{'name': agent_name, 'entityType': agent_type, 'observations': observations or [f'Agent {agent_name} registered in Knowledge Graph']}]
         result = self._call_mcp_create_entities(entities)
-
         if result is not None or (self._create_entities_fn is None and self._mcp_module is None):
             self._registered_entities.add(agent_name)
             with self._lock:
-                self.stats["entities_created"] += 1
-            Logger.debug(f"[GraphMemoryBridge] Entity created: {agent_name}")
+                self.stats['entities_created'] += 1
+            Logger.debug(f'[GraphMemoryBridge] Entity created: {agent_name}')
             return True
-
         return False
 
-    def create_mastered_task_relation(
-        self,
-        agent_name: str,
-        task_description: str,
-        feedback_score: float,
-    ) -> bool:
+    def create_mastered_task_relation(self, agent_name: str, task_description: str, feedback_score: float) -> bool:
         """
         Create a MASTERED_TASK relation when memory is promoted to Long-Term DNA.
 
@@ -326,51 +231,20 @@ class GraphMemoryBridge:
         Returns:
             True if relation created, False if failed
         """
-        # Hash the task description for the entity name
         task_hash = hashlib.sha256(task_description.encode()).hexdigest()[:16]
-        task_entity_name = f"Task_{task_hash}"
-
-        # First, ensure the task entity exists
-        task_entities = [
-            {
-                "name": task_entity_name,
-                "entityType": "Task",
-                "observations": [
-                    f"Task mastered by {agent_name} with score {feedback_score:.2f}",
-                    f"Description hash: {task_hash}",
-                ],
-            },
-        ]
-
+        task_entity_name = f'Task_{task_hash}'
+        task_entities = [{'name': task_entity_name, 'entityType': 'Task', 'observations': [f'Task mastered by {agent_name} with score {feedback_score:.2f}', f'Description hash: {task_hash}']}]
         self._call_mcp_create_entities(task_entities)
-
-        # Create the MASTERED_TASK relation
-        relations = [
-            {
-                "from": agent_name,
-                "to": task_entity_name,
-                "relationType": self.RELATION_MASTERED_TASK,
-            },
-        ]
-
+        relations = [{'from': agent_name, 'to': task_entity_name, 'relationType': self.RELATION_MASTERED_TASK}]
         result = self._call_mcp_create_relations(relations)
-
         if result is not None or (self._create_relations_fn is None and self._mcp_module is None):
             with self._lock:
-                self.stats["relations_created"] += 1
-            Logger.info(
-                f"[GraphMemoryBridge] MASTERED_TASK relation created: {agent_name} -> {task_entity_name}",
-            )
+                self.stats['relations_created'] += 1
+            Logger.info(f'[GraphMemoryBridge] MASTERED_TASK relation created: {agent_name} -> {task_entity_name}')
             return True
-
         return False
 
-    def create_relation(
-        self,
-        from_entity: str,
-        to_entity: str,
-        relation_type: str,
-    ) -> bool:
+    def create_relation(self, from_entity: str, to_entity: str, relation_type: str) -> bool:
         """
         Create a generic relation between two entities.
 
@@ -382,28 +256,15 @@ class GraphMemoryBridge:
         Returns:
             True if created, False if failed
         """
-        relations = [
-            {
-                "from": from_entity,
-                "to": to_entity,
-                "relationType": relation_type,
-            },
-        ]
-
+        relations = [{'from': from_entity, 'to': to_entity, 'relationType': relation_type}]
         result = self._call_mcp_create_relations(relations)
-
         if result is not None or (self._create_relations_fn is None and self._mcp_module is None):
             with self._lock:
-                self.stats["relations_created"] += 1
+                self.stats['relations_created'] += 1
             return True
-
         return False
 
-    def add_observation(
-        self,
-        entity_name: str,
-        observation: str,
-    ) -> bool:
+    def add_observation(self, entity_name: str, observation: str) -> bool:
         """
         Add an observation to an existing entity.
 
@@ -416,30 +277,17 @@ class GraphMemoryBridge:
         Returns:
             True if added, False if failed
         """
-        # Truncate observation if too large (4KB safety limit)
         if len(observation) > 4096:
-            observation = observation[:4093] + "..."
-
-        observations = [
-            {
-                "entityName": entity_name,
-                "contents": [observation],
-            },
-        ]
-
+            observation = observation[:4093] + '...'
+        observations = [{'entityName': entity_name, 'contents': [observation]}]
         result = self._call_mcp_add_observations(observations)
-
         if result is not None or (self._add_observations_fn is None and self._mcp_module is None):
             with self._lock:
-                self.stats["observations_added"] += 1
+                self.stats['observations_added'] += 1
             return True
-
         return False
 
-    def search_entities(
-        self,
-        query: str,
-    ) -> list[dict[str, Any]]:
+    def search_entities(self, query: str) -> list[dict[str, Any]]:
         """
         Search for entities in the Knowledge Graph.
 
@@ -450,20 +298,13 @@ class GraphMemoryBridge:
             List of matching entities (empty if failed or unavailable)
         """
         result = self._call_mcp_search_nodes(query)
-
         with self._lock:
-            self.stats["searches_performed"] += 1
-
+            self.stats['searches_performed'] += 1
         if result is not None:
             return result if isinstance(result, list) else []
-
         return []
 
     def get_statistics(self) -> dict[str, Any]:
         """Get bridge statistics."""
         with self._lock:
-            return {
-                **self.stats,
-                "mcp_available": self._mcp_available,
-                "registered_entities": len(self._registered_entities),
-            }
+            return {**self.stats, 'mcp_available': self._mcp_available, 'registered_entities': len(self._registered_entities)}

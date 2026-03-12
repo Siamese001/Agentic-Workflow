@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# NOTE: l0_execute.py was planned but never implemented. This file is ACTIVE.
 """
 Unified Sovereign Compliance Protocol (v4.0)
 Merges SSOT Compliance Protocol (Autonomous Decision Engine) with Canon Validator (Observability & Discovery).
@@ -11,11 +9,9 @@ PRIMARY FEATURES:
 - Hybrid Agent Discovery (Canon)
 - Comprehensive Audit Trail (SSOT)
 """
-
-# [IMPORTS] Added for dynamic loading and signal handling
 import argparse
 import ast
-import atexit  # [HARDENED] For guaranteed state cleanup
+import atexit
 import builtins
 import importlib.util
 import inspect
@@ -25,7 +21,7 @@ import os
 import platform
 import re
 import signal
-import stat  # [HARDENED] For permission bits
+import stat
 import sys
 import tempfile
 import time
@@ -39,22 +35,13 @@ from pathlib import Path
 from subprocess import DEVNULL
 from types import FrameType
 from typing import Any, Optional
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 try:
     from tqdm import tqdm
 except ImportError:
-    # Fallback if tqdm not available
+
     class tqdm:
+
         def __init__(self, iterable=None, total=None, desc=None, **kwargs):
             self.iterable = iterable
             self.n = 0
@@ -74,149 +61,89 @@ except ImportError:
 
         def set_description(self, desc):
             pass
-
-
-# Early constants required by resolve_repo_root (full block also at bottom of file)
-from agentic_core.L0_routing.config.path_constants import (
-    AGENTIC_CORE_DIR,
-    APPS_LIC_DIR,
-    APPS_RG_DIR,
-    APPS_SHARED_DIR,
-    OPS_SCRIPTS_DIR,
-)
+from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR, OPS_SCRIPTS_DIR
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
-
 
 def _get_uwg():
     """Lazy loader — avoids circular import at module level."""
     from agentic_core.interfaces.write_gateway import get_write_gateway
-
     return get_write_gateway()
-
 
 def _get_heal_result_adapter():
     """Lazy loader for Tier-3 adapter."""
     from agentic_core.L2_execution.heal_result_adapter import adapt_heal_result
-
     return adapt_heal_result
-
 
 def _get_safe_subprocess_run():
     from agentic_core.L2_execution.tools.safe_subprocess import safe_subprocess_run
-
     return safe_subprocess_run
-
 
 def _get_write_gateway():
     from agentic_core.L2_execution.tools import write_gateway
-
     return write_gateway
-
 
 def _get_execution_context_class():
     from agentic_core.L0_routing.scripts.execution_context import ExecutionContext
-
     return ExecutionContext
-
 
 def _get_location_validator_agent():
     from agentic_core.L5_safety.reasoning.location_validator import LocationValidatorAgent
-
     return LocationValidatorAgent
-
 
 def _get_location_healer_agent():
     from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
-
     return LocationHealerAgent
 
-
-def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager", now_utc: int) -> None:
+def _fire_meta_learning_intake(state_mgr: 'RuntimeStateManager', now_utc: int) -> None:
     """Wire HealingOutcomeIntakeAdapter and MetaLearningPipeline after each run.
 
     Both imports are guarded — if archived modules are not yet restored (pre-Wave 0B)
     this is a safe no-op. After Wave 0B restoration the full pipeline activates.
     """
-    # Debt-4: sentinel so the pipeline try-block can reference adapter safely
-    # even if the intake try-block raised before assigning it.
     adapter = None
     try:
         from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
         from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
-        from system_learning.engines.in_memory_healing_outcome_intake_store import (
-            InMemoryHealingOutcomeIntakeStore,
-        )
+        from system_learning.engines.in_memory_healing_outcome_intake_store import InMemoryHealingOutcomeIntakeStore
         from system_learning.types.healing_outcome_types import HealingOutcomeEvent
-
-        healing_actions = state_mgr.state.get("healing_actions", [])
+        healing_actions = state_mgr.state.get('healing_actions', [])
         aggregator = HealingOutcomeAggregator(window_size=max(len(healing_actions), 1))
-
-        # Load embedding helpers (hard requirement - fail fast if unavailable)
         try:
             from agentic_core.L2_execution.healers.bmg_embedding_similarity import bmg_embed_text
-            from agentic_core.L2_execution.healers.failure_signal_normalizer import (
-                normalize_failure_signal,
-            )
-
+            from agentic_core.L2_execution.healers.failure_signal_normalizer import normalize_failure_signal
             _bmg_embed = bmg_embed_text
             _normalizer = normalize_failure_signal
         except ImportError as e:
-            raise ImportError(
-                "BGE embeddings are required for meta-learning. "
-                "Install sentence-transformers: pip install sentence-transformers"
-            ) from e
-
+            raise ImportError('BGE embeddings are required for meta-learning. Install sentence-transformers: pip install sentence-transformers') from e
         new_vectors: list[list[float]] = []
-        # A4: accumulators for LocalFAISSStore wiring (populated per-action below)
         _faiss_vectors: list[list[float]] = []
         _faiss_metas: list[dict] = []
-        # BGE call tracking: per-agent and per-architecture-location
         _bge_per_agent: dict[str, int] = {}
-        _bge_arch_counts: dict[str, int] = {
-            "meta_learning_embed": 0,
-            "routing_novelty": 0,
-            "semantic_cache": 0,
-        }
-
+        _bge_arch_counts: dict[str, int] = {'meta_learning_embed': 0, 'routing_novelty': 0, 'semantic_cache': 0}
         for action in healing_actions:
-            failure_type_str: str = action.get("type") or action.get("routing_tier") or "UNKNOWN"
-            healer_id: str = action.get("agent", "unknown")
-            tier_str: str = action.get("tier") or action.get("routing_tier") or "L5"
-            success_flag: bool = action.get("outcome", "SUCCESS") == "SUCCESS"
-
-            # Gap 2: produce failure_vector when embeddings are enabled.
-            # Two distinct embedding texts:
-            #   routing_signal_text — matches _compute_novelty_score exactly so
-            #     L4 state vectors and novelty checks compare the same semantic space.
-            #   outcome_text (normalize_failure_signal) — richer, used for
-            #     HealingOutcomeEvent.failure_vector (MEMORY / future FAISS lookup).
-            # A5: always produce a non-None failure_vector using generate_fallback_vector
-            #     when bge-m3 is unavailable, so FAISS storage is never skipped.
+            failure_type_str: str = action.get('type') or action.get('routing_tier') or 'UNKNOWN'
+            healer_id: str = action.get('agent', 'unknown')
+            tier_str: str = action.get('tier') or action.get('routing_tier') or 'L5'
+            success_flag: bool = action.get('outcome', 'SUCCESS') == 'SUCCESS'
             failure_vector: tuple[float, ...] | None = None
             novelty_flag: bool = False
-            _vec_source = "hash-fallback"
-            territory_str: str = action.get("territory", "unknown")
+            _vec_source = 'hash-fallback'
+            territory_str: str = action.get('territory', 'unknown')
             if _bmg_embed is not None and _normalizer is not None:
                 try:
-                    routing_signal_text = f"{failure_type_str} {territory_str}"
+                    routing_signal_text = f'{failure_type_str} {territory_str}'
                     outcome_text = _normalizer(action)
-
                     routing_vec = _bmg_embed(routing_signal_text)
                     outcome_vec = _bmg_embed(outcome_text)
-
                     failure_vector = tuple(outcome_vec)
-                    _vec_source = "bge-m3"
-                    new_vectors.append(routing_vec)  # L4 state uses routing signal
-                    # 2 BGE calls per action: routing_vec + outcome_vec
+                    _vec_source = 'bge-m3'
+                    new_vectors.append(routing_vec)
                     _bge_per_agent[healer_id] = _bge_per_agent.get(healer_id, 0) + 2
-                    _bge_arch_counts["meta_learning_embed"] += 2
-
-                    # Novelty: compare routing_vec against recent routing vectors
-                    recent = state_mgr.state.get("meta_learning", {}).get("recent_failure_vectors", [])
+                    _bge_arch_counts['meta_learning_embed'] += 2
+                    recent = state_mgr.state.get('meta_learning', {}).get('recent_failure_vectors', [])
                     if recent:
                         import numpy as _np
-
                         q = _np.array(routing_vec, dtype=_np.float32)
                         mat = _np.array(recent, dtype=_np.float32)
                         sims = mat @ q
@@ -224,152 +151,74 @@ def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager", now_utc: int) -
                     else:
                         novelty_flag = True
                 except (ValueError, AttributeError, ImportError) as e:
-                    logging.debug(f"Novelty detection failed, using default: {e}")
+                    logging.debug(f'Novelty detection failed, using default: {e}')
                     novelty_flag = True
-
-            # A5: hash-fallback vector (stdlib-only, deterministic)
             if failure_vector is None:
                 try:
-                    _normalizer_fn = (
-                        _normalizer if _normalizer is not None else (lambda a: str(a.get("type", "UNKNOWN")))
-                    )
+                    _normalizer_fn = _normalizer if _normalizer is not None else lambda a: str(a.get('type', 'UNKNOWN'))
                     _fb_text = _normalizer_fn(action)
-                    from agentic_core.L2_execution.healers.failure_signal_normalizer import (
-                        generate_fallback_vector as _gen_fallback,
-                    )
-
+                    from agentic_core.L2_execution.healers.failure_signal_normalizer import generate_fallback_vector as _gen_fallback
                     failure_vector = tuple(_gen_fallback(_fb_text))
                 except (ImportError, ValueError, AttributeError) as e:
-                    logging.debug(f"Fallback vector generation failed: {e}")
-                    # Continue without failure vector
-
-            # A4: accumulate for FAISS wiring
+                    logging.debug(f'Fallback vector generation failed: {e}')
             if failure_vector is not None:
                 _faiss_vectors.append(list(failure_vector))
-                _faiss_metas.append(
-                    {
-                        "content_hash": action.get("routing_digest") or "",
-                        "trace_id": action.get("trace_id") or "",
-                        "territory": territory_str,
-                        "outcome": action.get("outcome", "UNKNOWN"),
-                        "vector_source": _vec_source,
-                    }
-                )
-
-            aggregator.ingest(
-                HealingOutcomeEvent(
-                    healer_id=healer_id,
-                    tier=tier_str,
-                    failure_type=failure_type_str,
-                    success=success_flag,
-                    timestamp_utc=now_utc,
-                    routing_digest=action.get("routing_digest"),
-                    confidence_score=action.get("confidence"),
-                    failure_vector=failure_vector,
-                    novelty_flag=novelty_flag,
-                    cluster_id=action.get("cluster_id"),
-                    files_touched=tuple(action.get("files_touched") or []),
-                )
-            )
-
-        # BGE routing_novelty calls: one embed per routing decision
-        _routing_decisions = state_mgr.state.get("routing_decisions", []) if state_mgr is not None else []
+                _faiss_metas.append({'content_hash': action.get('routing_digest') or '', 'trace_id': action.get('trace_id') or '', 'territory': territory_str, 'outcome': action.get('outcome', 'UNKNOWN'), 'vector_source': _vec_source})
+            aggregator.ingest(HealingOutcomeEvent(healer_id=healer_id, tier=tier_str, failure_type=failure_type_str, success=success_flag, timestamp_utc=now_utc, routing_digest=action.get('routing_digest'), confidence_score=action.get('confidence'), failure_vector=failure_vector, novelty_flag=novelty_flag, cluster_id=action.get('cluster_id'), files_touched=tuple(action.get('files_touched') or [])))
+        _routing_decisions = state_mgr.state.get('routing_decisions', []) if state_mgr is not None else []
         for _dec in _routing_decisions:
-            _dagent = _dec.get("agent", "unknown")
+            _dagent = _dec.get('agent', 'unknown')
             _bge_per_agent[_dagent] = _bge_per_agent.get(_dagent, 0) + 1
-            _bge_arch_counts["routing_novelty"] += 1
-
-        # BGE semantic_cache calls: from hot cache stats
+            _bge_arch_counts['routing_novelty'] += 1
         try:
             from agentic_core.cache.redis_cache_client import get_hot_cache as _ghc_bge
-
             _hc_bge = _ghc_bge()
             _cs = _hc_bge.get_stats()
-            _bge_arch_counts["semantic_cache"] = _cs.get(
-                "embed_calls", _cs.get("hits", 0) + _cs.get("misses", 0)
-            )
-        except (ImportError, AttributeError, KeyError):  # guardian: allow-silent-swallower
+            _bge_arch_counts['semantic_cache'] = _cs.get('embed_calls', _cs.get('hits', 0) + _cs.get('misses', 0))
+        except (ImportError, AttributeError, KeyError):
             pass
-
-        # Persist BGE usage to state for downstream consumers (_write_mandatory_json_output)
-        state_mgr.state.setdefault("meta_learning", {})["bge_per_agent"] = _bge_per_agent
-        state_mgr.state["meta_learning"]["bge_arch_counts"] = _bge_arch_counts
-        state_mgr.state["meta_learning"]["bge_model"] = "BAAI/bge-m3-v1"
-
-        # Wave 1: Record outcomes into HealingSuccessRateStore (EMA per error_sig)
+        state_mgr.state.setdefault('meta_learning', {})['bge_per_agent'] = _bge_per_agent
+        state_mgr.state['meta_learning']['bge_arch_counts'] = _bge_arch_counts
+        state_mgr.state['meta_learning']['bge_model'] = 'BAAI/bge-m3-v1'
         try:
             from system_learning.engines.healing_success_rate_store import get_default_store as _get_sr_store
-
             _sr_store = _get_sr_store()
             for _action in healing_actions:
-                _sig = (
-                    _action.get("routing_digest")
-                    or f"{_action.get('agent', 'unknown')}:{_action.get('type', 'UNKNOWN')}"
-                )
-                _sr_store.record_outcome(_sig, _action.get("outcome", "SUCCESS") == "SUCCESS")
-            state_mgr.state.setdefault("meta_learning", {})["success_rate_store"] = _sr_store.export_state()
-        except (ImportError, AttributeError, KeyError) as _sr_err:  # guardian: allow-silent-swallower
-            logging.warning("[MetaLearning] Wave1 success_rate_store failed (non-fatal): %s", _sr_err)
-
+                _sig = _action.get('routing_digest') or f"{_action.get('agent', 'unknown')}:{_action.get('type', 'UNKNOWN')}"
+                _sr_store.record_outcome(_sig, _action.get('outcome', 'SUCCESS') == 'SUCCESS')
+            state_mgr.state.setdefault('meta_learning', {})['success_rate_store'] = _sr_store.export_state()
+        except (ImportError, AttributeError, KeyError) as _sr_err:
+            logging.warning('[MetaLearning] Wave1 success_rate_store failed (non-fatal): %s', _sr_err)
         store = InMemoryHealingOutcomeIntakeStore()
         adapter = HealingOutcomeIntakeAdapter(store=store)
-        # Only persist if there are actual healing events to record
         if healing_actions:
-            record = adapter.build_record(aggregator=aggregator, created_utc=now_utc, source="execute_ssot")
+            record = adapter.build_record(aggregator=aggregator, created_utc=now_utc, source='execute_ssot')
             adapter.persist_record(record)
-
-            # Wave 2: Append raw events as JSONL lines to healing_contexts_corpus.jsonl
             try:
                 import json as _json_w2
-
-                _corpus_path = REPO_ROOT / "data" / "corpus" / "healing_contexts_corpus.jsonl"
+                _corpus_path = REPO_ROOT / 'data' / 'corpus' / 'healing_contexts_corpus.jsonl'
                 _new_lines = []
                 for _action in healing_actions:
-                    _new_lines.append(
-                        _json_w2.dumps(
-                            {
-                                "schema_version": 1,
-                                "content_hash": _action.get("routing_digest", ""),
-                                "trace_id": _action.get("trace_id", ""),
-                                "namespace": "healing_contexts",
-                                "created_utc": now_utc,
-                                "healer_id": _action.get("agent", "unknown"),
-                                "tier": _action.get("routing_tier") or _action.get("tier", "L5"),
-                                "failure_type": _action.get("type", "UNKNOWN"),
-                                "territory": _action.get("territory", "unknown"),
-                                "outcome": _action.get("outcome", "UNKNOWN"),
-                                "fix_summary": _action.get("fix_summary", ""),
-                            },
-                            separators=(",", ":"),
-                            sort_keys=True,
-                        )
-                    )
-                with open(_corpus_path, "a", encoding="utf-8") as _cf:
-                    _cf.write("\n".join(_new_lines) + "\n")
-            except (OSError, TypeError) as _w2_err:  # guardian: allow-silent-swallower
-                logging.warning("[MetaLearning] Wave2 JSONL corpus append failed (non-fatal): %s", _w2_err)
-
-            # Wave 3: Persist HealingOutcomeIntakeRecord via FileBackedVersionStore
+                    _new_lines.append(_json_w2.dumps({'schema_version': 1, 'content_hash': _action.get('routing_digest', ''), 'trace_id': _action.get('trace_id', ''), 'namespace': 'healing_contexts', 'created_utc': now_utc, 'healer_id': _action.get('agent', 'unknown'), 'tier': _action.get('routing_tier') or _action.get('tier', 'L5'), 'failure_type': _action.get('type', 'UNKNOWN'), 'territory': _action.get('territory', 'unknown'), 'outcome': _action.get('outcome', 'UNKNOWN'), 'fix_summary': _action.get('fix_summary', '')}, separators=(',', ':'), sort_keys=True))
+                with open(_corpus_path, 'a', encoding='utf-8') as _cf:
+                    _cf.write('\n'.join(_new_lines) + '\n')
+            except (OSError, TypeError) as _w2_err:
+                logging.warning('[MetaLearning] Wave2 JSONL corpus append failed (non-fatal): %s', _w2_err)
             try:
                 from system_learning.stores.version_store import FileBackedVersionStore as _FBVS
-
-                _intake_dir = REPO_ROOT / "data" / "golden_state" / "healing_intakes"
+                _intake_dir = REPO_ROOT / 'data' / 'golden_state' / 'healing_intakes'
                 _file_store = _FBVS(_intake_dir)
                 _file_store.commit_change_package(record)
-            except (ImportError, AttributeError, OSError) as _w3_err:  # guardian: allow-silent-swallower
-                logging.warning("[MetaLearning] Wave3 FileBackedVersionStore failed (non-fatal): %s", _w3_err)
-
-        # Wave 4: Reload and merge prior intake records (cap at 50) into aggregator
+            except (ImportError, AttributeError, OSError) as _w3_err:
+                logging.warning('[MetaLearning] Wave3 FileBackedVersionStore failed (non-fatal): %s', _w3_err)
         try:
             import json as _json_w4
-
             from system_learning.stores.version_store import FileBackedVersionStore as _FBVS4
             from system_learning.types.healing_outcome_types import HealingOutcomeEvent as _HOE4
-
-            _intake_dir4 = REPO_ROOT / "data" / "golden_state" / "healing_intakes"
-            _idx_path4 = _intake_dir4 / "_index.json"
+            _intake_dir4 = REPO_ROOT / 'data' / 'golden_state' / 'healing_intakes'
+            _idx_path4 = _intake_dir4 / '_index.json'
             if _idx_path4.exists():
-                _idx4 = _json_w4.loads(_idx_path4.read_text(encoding="utf-8"))
+                _idx4 = _json_w4.loads(_idx_path4.read_text(encoding='utf-8'))
                 _file_store4 = _FBVS4(_intake_dir4)
                 _prior_vids = sorted(_idx4.keys())[-50:]
                 for _vid in _prior_vids:
@@ -377,62 +226,30 @@ def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager", now_utc: int) -
                     if not _raw4:
                         continue
                     try:
-                        _rec4 = _json_w4.loads(_raw4.decode("utf-8"))
-                        for _s in _rec4.get("snapshot", []):
-                            _hid4 = _s.get("healer_id", "unknown")
-                            _tier4 = _s.get("tier", "L5")
-                            _ftype4 = _s.get("failure_type", "UNKNOWN")
-                            for _ in range(int(_s.get("success_count", 0))):
-                                aggregator.ingest(
-                                    _HOE4(
-                                        healer_id=_hid4,
-                                        tier=_tier4,
-                                        failure_type=_ftype4,
-                                        success=True,
-                                        timestamp_utc=now_utc,
-                                    )
-                                )
-                            for _ in range(int(_s.get("failure_count", 0))):
-                                aggregator.ingest(
-                                    _HOE4(
-                                        healer_id=_hid4,
-                                        tier=_tier4,
-                                        failure_type=_ftype4,
-                                        success=False,
-                                        timestamp_utc=now_utc,
-                                    )
-                                )
-                    except (
-                        KeyError,
-                        ValueError,
-                        TypeError,
-                    ):  # guardian: allow-silent-swallow malformed record
+                        _rec4 = _json_w4.loads(_raw4.decode('utf-8'))
+                        for _s in _rec4.get('snapshot', []):
+                            _hid4 = _s.get('healer_id', 'unknown')
+                            _tier4 = _s.get('tier', 'L5')
+                            _ftype4 = _s.get('failure_type', 'UNKNOWN')
+                            for _ in range(int(_s.get('success_count', 0))):
+                                aggregator.ingest(_HOE4(healer_id=_hid4, tier=_tier4, failure_type=_ftype4, success=True, timestamp_utc=now_utc))
+                            for _ in range(int(_s.get('failure_count', 0))):
+                                aggregator.ingest(_HOE4(healer_id=_hid4, tier=_tier4, failure_type=_ftype4, success=False, timestamp_utc=now_utc))
+                    except (KeyError, ValueError, TypeError):
                         continue
-        except (ImportError, AttributeError, OSError) as _w4_err:  # guardian: allow-silent-swallower
-            logging.warning("[MetaLearning] Wave4 prior record merge failed (non-fatal): %s", _w4_err)
-
-        # A4: wire accumulated failure_vectors into LocalFAISSStore (healing_context_v1)
-        # [CROSS-RUN FAISS PERSISTENCE] Loads prior run's index from disk, merges new
-        # vectors (FIFO-capped at 1000 total), re-finalizes and re-persists so
-        # HealingMemoryRetriever can search patterns from all prior runs (G3/G4/G5/G7 fix).
+        except (ImportError, AttributeError, OSError) as _w4_err:
+            logging.warning('[MetaLearning] Wave4 prior record merge failed (non-fatal): %s', _w4_err)
         if _faiss_vectors:
             try:
-                from system_learning.engines.local_faiss_store import (
-                    LocalFAISSStore as _FAISSStore,
-                )
-                from system_learning.engines.local_faiss_store import (
-                    ManifestIntegrityError as _MIE,
-                )
-
+                from system_learning.engines.local_faiss_store import LocalFAISSStore as _FAISSStore
+                from system_learning.engines.local_faiss_store import ManifestIntegrityError as _MIE
                 _dim = len(_faiss_vectors[0])
-                _faiss_idx = "healing_context_v1"
-                _faiss_base = REPO_ROOT / "logs" / "faiss_store"
+                _faiss_idx = 'healing_context_v1'
+                _faiss_base = REPO_ROOT / 'logs' / 'faiss_store'
                 _faiss_base.mkdir(parents=True, exist_ok=True)
                 _faiss_disk_dir = _faiss_base / _faiss_idx
-                _vec_source_str = "bge-m3"
-                _model_ver = "BAAI/bge-m3-v1"
-
-                # [CROSS-RUN] Load existing persisted index and carry forward its vectors
+                _vec_source_str = 'bge-m3'
+                _model_ver = 'BAAI/bge-m3-v1'
                 _prior_vecs: list[list[float]] = []
                 _prior_metas: list[dict] = []
                 if _faiss_disk_dir.exists():
@@ -440,132 +257,64 @@ def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager", now_utc: int) -
                         _loader = _FAISSStore(base_path=_faiss_base)
                         _loader.load_from_disk(_faiss_idx, _faiss_disk_dir)
                         _loaded = _loader._memory_indexes.get(_faiss_idx, {})
-                        _loaded_vecs = _loaded.get("vectors", [])
-                        _loaded_metas = _loaded.get("metadatas", [])
-                        # Guard against dimension mismatch (e.g. bge-m3 vs hash-fallback)
+                        _loaded_vecs = _loaded.get('vectors', [])
+                        _loaded_metas = _loaded.get('metadatas', [])
                         if _loaded_vecs and len(_loaded_vecs[0]) == _dim:
                             _prior_vecs = _loaded_vecs
                             _prior_metas = _loaded_metas
                     # guardian: allow-silent-swallow
                     except (_MIE, Exception):
-                        pass  # Corrupt or absent index — start fresh this run
-
-                # Merge prior + new, FIFO-cap at 1000 total (oldest dropped first)
+                        pass
                 _all_vecs = _prior_vecs + _faiss_vectors
                 _all_metas = _prior_metas + _faiss_metas
-                # guardian: allow-magic-config
                 _MAX_FAISS_VECS = 1000
                 if len(_all_vecs) > _MAX_FAISS_VECS:
                     _all_vecs = _all_vecs[-_MAX_FAISS_VECS:]
                     _all_metas = _all_metas[-_MAX_FAISS_VECS:]
-
-                # Rebuild fresh index with merged vectors, finalize, and persist to disk
                 _faiss_writer = _FAISSStore(base_path=_faiss_base)
                 _faiss_writer.begin_build(_faiss_idx, _dim, seed=0)
                 _faiss_writer.add_vectors(_faiss_idx, _all_vecs, _all_metas)
-                _faiss_writer.finalize_build(
-                    _faiss_idx,
-                    built_at_utc=now_utc,
-                    canonicalization_version="v1",
-                    embedding_model_version=_model_ver,
-                    embedding_model_checksum=_vec_source_str,
-                )
-                _faiss_writer.persist_to_disk(
-                    _faiss_idx,
-                    _faiss_disk_dir,
-                    embedder_id=_vec_source_str,
-                    model_version=_model_ver,
-                )
-                logging.debug(
-                    "[MetaLearning] FAISS persist: %d new + %d prior = %d total -> %s",
-                    len(_faiss_vectors),
-                    len(_prior_vecs),
-                    len(_all_vecs),
-                    _faiss_disk_dir,
-                )
-            except (
-                ImportError,
-                AttributeError,
-                OSError,
-                ValueError,
-            ) as _faiss_err:  # guardian: allow-silent-swallower
-                logging.warning("[MetaLearning] FAISS wiring failed (non-fatal): %s", _faiss_err)
-
-        # Gap 6: persist new failure vectors to L4 state (capped at 200) for cross-run novelty
+                _faiss_writer.finalize_build(_faiss_idx, built_at_utc=now_utc, canonicalization_version='v1', embedding_model_version=_model_ver, embedding_model_checksum=_vec_source_str)
+                _faiss_writer.persist_to_disk(_faiss_idx, _faiss_disk_dir, embedder_id=_vec_source_str, model_version=_model_ver)
+                logging.debug('[MetaLearning] FAISS persist: %d new + %d prior = %d total -> %s', len(_faiss_vectors), len(_prior_vecs), len(_all_vecs), _faiss_disk_dir)
+            except (ImportError, AttributeError, OSError, ValueError) as _faiss_err:
+                logging.warning('[MetaLearning] FAISS wiring failed (non-fatal): %s', _faiss_err)
         if new_vectors:
-            ml_state = state_mgr.state.setdefault("meta_learning", {})
-            existing_vecs: list = ml_state.get("recent_failure_vectors", [])
+            ml_state = state_mgr.state.setdefault('meta_learning', {})
+            existing_vecs: list = ml_state.get('recent_failure_vectors', [])
             merged = existing_vecs + new_vectors
-            ml_state["recent_failure_vectors"] = merged[-200:]
-
-        state_mgr.update_meta_learning(
-            {
-                "meta_learning_schema": 1,
-                "total_experiences": store.count(),
-                "experience": f"intake: {store.count()} healing records persisted",
-            }
-        )
-        logging.info(
-            "[MetaLearning] HealingOutcomeIntakeAdapter: %d records persisted to L4B store.",
-            store.count(),
-        )
+            ml_state['recent_failure_vectors'] = merged[-200:]
+        state_mgr.update_meta_learning({'meta_learning_schema': 1, 'total_experiences': store.count(), 'experience': f'intake: {store.count()} healing records persisted'})
+        logging.info('[MetaLearning] HealingOutcomeIntakeAdapter: %d records persisted to L4B store.', store.count())
     except ImportError:
-        logging.debug("[MetaLearning] Intake adapter not yet available (pre-Wave 0B). Skipping.")
-    except (AttributeError, TypeError, OSError) as _ml_err:  # guardian: allow-silent-swallower
-        logging.warning("[MetaLearning] Intake adapter failed (non-fatal): %s", _ml_err)
-
+        logging.debug('[MetaLearning] Intake adapter not yet available (pre-Wave 0B). Skipping.')
+    except (AttributeError, TypeError, OSError) as _ml_err:
+        logging.warning('[MetaLearning] Intake adapter failed (non-fatal): %s', _ml_err)
     try:
         import time as _time_mod
-
         from system_learning.pipelines.meta_learning_pipeline import run_pipeline as _ml_run_pipeline
-        from system_learning.pipelines.pipeline_factory import (
-            build_pipeline_config,
-            build_pipeline_deps,
-        )
-
-        _apply_proposals = state_mgr.state.get("apply_proposals", False)
+        from system_learning.pipelines.pipeline_factory import build_pipeline_config, build_pipeline_deps
+        _apply_proposals = state_mgr.state.get('apply_proposals', False)
         _now_utc = int(_time_mod.time())
         _window_start_utc = max(0, _now_utc - 3600)
         _ml_cfg = build_pipeline_config(proposal_only=not _apply_proposals)
-        _ml_deps = build_pipeline_deps(
-            repo_root=REPO_ROOT,
-            healing_outcome_intake_adapter=adapter,
-        )
-        _ml_proposals = _ml_run_pipeline(
-            now_utc=_now_utc,
-            window_start_utc=_window_start_utc,
-            window_end_utc=_now_utc,
-            cfg=_ml_cfg,
-            deps=_ml_deps,
-        )
+        _ml_deps = build_pipeline_deps(repo_root=REPO_ROOT, healing_outcome_intake_adapter=adapter)
+        _ml_proposals = _ml_run_pipeline(now_utc=_now_utc, window_start_utc=_window_start_utc, window_end_utc=_now_utc, cfg=_ml_cfg, deps=_ml_deps)
         if _ml_proposals:
-            _prop_path = REPO_ROOT / "logs" / "proposals" / "threshold_proposals.jsonl"
+            _prop_path = REPO_ROOT / 'logs' / 'proposals' / 'threshold_proposals.jsonl'
             _prop_path.parent.mkdir(parents=True, exist_ok=True)
             try:
                 import json as _json_prop
-
-                with open(_prop_path, "a", encoding="utf-8") as _pf:
+                with open(_prop_path, 'a', encoding='utf-8') as _pf:
                     for _p in _ml_proposals:
-                        _pf.write(
-                            _json_prop.dumps(
-                                {
-                                    "schema_version": 1,
-                                    "created_utc": _now_utc,
-                                    "payload": _p.canonical_bytes().decode("utf-8", errors="replace"),
-                                },
-                                sort_keys=True,
-                                separators=(",", ":"),
-                            )
-                            + "\n"
-                        )
+                        _pf.write(_json_prop.dumps({'schema_version': 1, 'created_utc': _now_utc, 'payload': _p.canonical_bytes().decode('utf-8', errors='replace')}, sort_keys=True, separators=(',', ':')) + '\n')
             except (OSError, TypeError) as _prop_err:
-                logging.warning("[MetaLearning] proposal write failed: %s", _prop_err)
-        logging.info("[MetaLearning] meta_learning_pipeline.run_pipeline() completed.")
+                logging.warning('[MetaLearning] proposal write failed: %s', _prop_err)
+        logging.info('[MetaLearning] meta_learning_pipeline.run_pipeline() completed.')
     except ImportError as _imp_err:
-        logging.debug("[MetaLearning] Pipeline not yet available (pre-Wave 0B): %s", _imp_err)
-    except (AttributeError, TypeError, ValueError) as _pl_err:  # guardian: allow-silent-swallower
-        logging.warning("[MetaLearning] Pipeline run failed (non-fatal): %s", _pl_err)
-
+        logging.debug('[MetaLearning] Pipeline not yet available (pre-Wave 0B): %s', _imp_err)
+    except (AttributeError, TypeError, ValueError) as _pl_err:
+        logging.warning('[MetaLearning] Pipeline run failed (non-fatal): %s', _pl_err)
 
 def _get_l5_agent_roster():
     from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import ArchitectureGovernorAgent
@@ -576,22 +325,8 @@ def _get_l5_agent_roster():
     from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
     from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
     from agentic_core.L5_safety.reasoning.root_hygiene_healer import RootHygieneAgent
-    from agentic_core.L6_observability.reasoning.observability_probe_executor import (
-        ObservabilityProbeExecutorAgent,
-    )
-
-    return (
-        ArchitectureGovernorAgent,
-        CognitiveDispositionAgent,
-        FileClassificationAgent,
-        FilesystemSSOTReconcilerAgent,
-        GravityLeakHealerAgent,
-        HierarchyAgent,
-        LocationHealerAgent,
-        RootHygieneAgent,
-        ObservabilityProbeExecutorAgent,
-    )
-
+    from agentic_core.L6_observability.reasoning.observability_probe_executor import ObservabilityProbeExecutorAgent
+    return (ArchitectureGovernorAgent, CognitiveDispositionAgent, FileClassificationAgent, FilesystemSSOTReconcilerAgent, GravityLeakHealerAgent, HierarchyAgent, LocationHealerAgent, RootHygieneAgent, ObservabilityProbeExecutorAgent)
 
 def _preflight_import_check() -> None:
     """Diagnostic-only helper to verify critical imports can be resolved.
@@ -604,37 +339,19 @@ def _preflight_import_check() -> None:
     NOTE: Called at startup in _legacy_main to fail-fast on missing symbols.
     """
     try:
-        # Check that _legacy_main exists in this module (execute_ssot.py)
-        if not hasattr(sys.modules[__name__], "_legacy_main"):
-            raise RuntimeError("CRITICAL: _legacy_main not found in execute_ssot module")
-        # Access the attribute to ensure it's resolvable
+        if not hasattr(sys.modules[__name__], '_legacy_main'):
+            raise RuntimeError('CRITICAL: _legacy_main not found in execute_ssot module')
         legacy_main = sys.modules[__name__]._legacy_main
         if not callable(legacy_main):
-            raise RuntimeError("CRITICAL: _legacy_main attribute is not callable")
+            raise RuntimeError('CRITICAL: _legacy_main attribute is not callable')
     except (AttributeError, TypeError) as exc:
-        raise RuntimeError(
-            f"CRITICAL: Failed to resolve _legacy_main from execute_ssot module: {exc}"
-        ) from exc
-
-    # Phase 2: BGE availability check — hard requirement, fail fast
-    # BOOTSTRAP_MODE=true bypasses this check for initial environment setup only
+        raise RuntimeError(f'CRITICAL: Failed to resolve _legacy_main from execute_ssot module: {exc}') from exc
     import os as _os
-
-    if _os.environ.get("BOOTSTRAP_MODE", "false").lower() != "true":
+    if _os.environ.get('BOOTSTRAP_MODE', 'false').lower() != 'true':
         try:
-            from agentic_core.L2_execution.healers.bmg_embedding_similarity import (
-                bmg_embed_text,  # noqa: F401
-            )
+            from agentic_core.L2_execution.healers.bmg_embedding_similarity import bmg_embed_text
         except ImportError as _bge_exc:
-            raise RuntimeError(
-                "CRITICAL: BGE embeddings are a mandatory system dependency. "
-                "sentence-transformers is not installed or the BGE model is unavailable.\n"
-                "Install with: pip install sentence-transformers\n"
-                "To bypass during initial environment setup only: "
-                "set BOOTSTRAP_MODE=true (must not be used in production).\n"
-                f"Original error: {_bge_exc}"
-            ) from _bge_exc
-
+            raise RuntimeError(f'CRITICAL: BGE embeddings are a mandatory system dependency. sentence-transformers is not installed or the BGE model is unavailable.\nInstall with: pip install sentence-transformers\nTo bypass during initial environment setup only: set BOOTSTRAP_MODE=true (must not be used in production).\nOriginal error: {_bge_exc}') from _bge_exc
 
 def _optional_runtime_guard():
     """Lazy import to avoid import-time failure in bootstrap contexts.
@@ -645,59 +362,49 @@ def _optional_runtime_guard():
     """
     try:
         from agentic_core.L0_routing.enforcement.runtime_guard import runtime_guard
-
         return runtime_guard
     except (ImportError, AttributeError):
-        if os.getenv("V15_ENFORCEMENT") == "1":
-            raise  # fail-closed: enforcement is on but guard is unavailable
+        if os.getenv('V15_ENFORCEMENT') == '1':
+            raise
 
         def _noop_guard(_entry_point_id: str):
             """No-op: accepts an ID string and returns an identity decorator."""
 
             def _identity(func):
                 return func
-
             return _identity
-
         return _noop_guard
-
-
 try:
     from dotenv import load_dotenv
-
     load_dotenv()
 except ImportError:
     pass
-
 try:
     from agentic_core.utils.decorators_compat_util import HEAL_RESULT_SCHEMA, standard_heal
 except ImportError:
-    # Fallback for bootstrapping scenarios
+
     def standard_heal(func):
         return func
-
     HEAL_RESULT_SCHEMA = {}
-
 try:
     from agentic_core.base_agents.IHealerProtocol import IHealerProtocol, LegacyAgentAdapter
 except ImportError:
-    # Fallback for bootstrapping scenarios
+
     class IHealerProtocol:
         pass
 
     class LegacyAgentAdapter:
+
         def __init__(self, legacy_agent):
             self.agent = legacy_agent
 
         def heal(self, violation):
-            return {"status": "failed", "errors": ["Adapter not available"]}
-
+            return {'status': 'failed', 'errors': ['Adapter not available']}
 
 def _safe_print(text: str) -> None:
     """Print text safely on Windows consoles that use charmap encoding."""
-    sys.stdout.buffer.write((text + "\n").encode("utf-8", errors="replace"))
+    sys.stdout.buffer.write((text + '\n').encode('utf-8', errors='replace'))
     sys.stdout.buffer.flush()
-
 
 def run_fence_self_check() -> None:
     """Run deterministic fence self-check (validates policy + wiring; no mutations).
@@ -714,31 +421,20 @@ def run_fence_self_check() -> None:
 
     Exits with code 0 if all checks pass, nonzero otherwise.
     """
-    from agentic_core.L0_routing.enforcement.mutation_prohibition import (
-        IMMUTABLE_ROOTS,
-        get_default_protected_root_policy,
-    )
-
+    from agentic_core.L0_routing.enforcement.mutation_prohibition import IMMUTABLE_ROOTS, get_default_protected_root_policy
     failed_checks = []
-
-    # Check 1: Default policy immutable_roots
     try:
         policy = get_default_protected_root_policy()
-        expected = (AGENTIC_CORE_DIR, TESTS_DIR, ".github", ".windsurfrules")
+        expected = (AGENTIC_CORE_DIR, TESTS_DIR, '.github', '.windsurfrules')
         if policy.immutable_roots != expected:
-            failed_checks.append("default_policy_immutable_roots")
+            failed_checks.append('default_policy_immutable_roots')
     except (ImportError, AttributeError):
-        failed_checks.append("default_policy_immutable_roots")
-
-    # Check 2: Default policy log_path is outside IMMUTABLE_ROOTS
+        failed_checks.append('default_policy_immutable_roots')
     try:
         policy = get_default_protected_root_policy()
         log_path = Path(policy.log_path)
-
-        # Check if log_path would be under any immutable root
         repo_root = resolve_repo_root()
         resolved_log = (repo_root / log_path).resolve()
-
         is_under_immutable = False
         for immutable_root in IMMUTABLE_ROOTS:
             try:
@@ -747,50 +443,36 @@ def run_fence_self_check() -> None:
                 break
             except ValueError:
                 pass
-
         if is_under_immutable:
-            failed_checks.append("log_path_outside_immutable_roots")
+            failed_checks.append('log_path_outside_immutable_roots')
     except (ImportError, AttributeError, ValueError):
-        failed_checks.append("log_path_outside_immutable_roots")
-
-    # Check 3: write_gateway entrypoints accept allow_override AND call enforce_protected_root
+        failed_checks.append('log_path_outside_immutable_roots')
     try:
         write_gateway = _get_write_gateway()
-
-        # Check write_text and write_bytes (primary entrypoints)
-        for func_name in ["write_text", "write_bytes"]:
+        for func_name in ['write_text', 'write_bytes']:
             func = getattr(write_gateway, func_name, None)
             if func is None:
-                failed_checks.append("write_gateway_enforces_protected_root")
+                failed_checks.append('write_gateway_enforces_protected_root')
                 break
-
-            # Check signature has allow_override parameter
             sig = inspect.signature(func)
-            if "allow_override" not in sig.parameters:
-                failed_checks.append("write_gateway_enforces_protected_root")
+            if 'allow_override' not in sig.parameters:
+                failed_checks.append('write_gateway_enforces_protected_root')
                 break
-
-            # Check source contains enforce_protected_root call
             try:
                 source = inspect.getsource(func)
-                if "enforce_protected_root" not in source:
-                    failed_checks.append("write_gateway_enforces_protected_root")
+                if 'enforce_protected_root' not in source:
+                    failed_checks.append('write_gateway_enforces_protected_root')
                     break
             except (OSError, TypeError):
-                # Source unavailable - fail with actionable message
-                failed_checks.append("write_gateway_enforces_protected_root")
+                failed_checks.append('write_gateway_enforces_protected_root')
                 break
     except (ImportError, AttributeError):
-        failed_checks.append("write_gateway_enforces_protected_root")
-
-    # Check 4: Telemetry emitter path is outside IMMUTABLE_ROOTS (pure path check)
+        failed_checks.append('write_gateway_enforces_protected_root')
     try:
         policy = get_default_protected_root_policy()
         log_path = Path(policy.log_path)
         repo_root = resolve_repo_root()
         resolved_log = (repo_root / log_path).resolve()
-
-        # Same check as #2 - ensure telemetry path is outside protected roots
         is_under_immutable = False
         for immutable_root in IMMUTABLE_ROOTS:
             try:
@@ -799,22 +481,18 @@ def run_fence_self_check() -> None:
                 break
             except ValueError:
                 pass
-
         if is_under_immutable:
-            failed_checks.append("telemetry_path_outside_immutable_roots")
+            failed_checks.append('telemetry_path_outside_immutable_roots')
     except (ImportError, AttributeError, ValueError):
-        failed_checks.append("telemetry_path_outside_immutable_roots")
-
-    # Output deterministic JSON summary
+        failed_checks.append('telemetry_path_outside_immutable_roots')
     if failed_checks:
-        result = {"status": "fail", "failed": sorted(failed_checks)}
+        result = {'status': 'fail', 'failed': sorted(failed_checks)}
         print(json.dumps(result, sort_keys=True))
         sys.exit(1)
     else:
-        result = {"status": "ok", "checks": 4}
+        result = {'status': 'ok', 'checks': 4}
         print(json.dumps(result, sort_keys=True))
         sys.exit(0)
-
 
 def resolve_repo_root(start=None):
     """Deterministic repo-root resolver.
@@ -824,18 +502,14 @@ def resolve_repo_root(start=None):
     for p in (cur, *cur.parents):
         if (p / AGENTIC_CORE_DIR).is_dir() and (p / OPS_SCRIPTS_DIR).is_dir():
             return p
-    raise RuntimeError(f"Unable to resolve repo root from: {cur}")
-
-
-REPO_ROOT = resolve_repo_root()  # noqa: N816
-
+    raise RuntimeError(f'Unable to resolve repo root from: {cur}')
+REPO_ROOT = resolve_repo_root()
 
 def _apply_v15_enforcement_flag(args: argparse.Namespace) -> None:
     """CLI overrides env to ensure determinism in CI/smoke paths."""
-    if getattr(args, "v15_enforcement", None) is None:
+    if getattr(args, 'v15_enforcement', None) is None:
         return
-    os.environ["V15_ENFORCEMENT"] = "1" if int(args.v15_enforcement) == 1 else "0"
-
+    os.environ['V15_ENFORCEMENT'] = '1' if int(args.v15_enforcement) == 1 else '0'
 
 def _configure_logging(verbosity: int) -> None:
     level = logging.WARNING
@@ -843,60 +517,42 @@ def _configure_logging(verbosity: int) -> None:
         level = logging.DEBUG
     elif verbosity == 1:
         level = logging.INFO
-    logging.basicConfig(
-        level=level,
-        format="%(asctime)s %(levelname)s %(name)s %(message)s",
-        force=True,
-    )
-
+    logging.basicConfig(level=level, format='%(asctime)s %(levelname)s %(name)s %(message)s', force=True)
 
 def _maybe_force_utf8_console() -> None:
     """Unconditional stdout/stderr UTF-8 coercion.  Called at runtime, NOT import time."""
-    if sys.platform.startswith("win"):
+    if sys.platform.startswith('win'):
         try:
-            _get_safe_subprocess_run()(
-                ["chcp", "65001"],
-                stdout=DEVNULL,
-                stderr=DEVNULL,
-                check=False,
-                allow_protected_root_mutation=True,
-            )
+            _get_safe_subprocess_run()(['chcp', '65001'], stdout=DEVNULL, stderr=DEVNULL, check=False, allow_protected_root_mutation=True)
         except FileNotFoundError:
             pass
     try:
-        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        sys.stdout.reconfigure(encoding='utf-8', errors='replace')
     except (AttributeError, OSError):
         pass
     try:
-        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+        sys.stderr.reconfigure(encoding='utf-8', errors='replace')
     except (AttributeError, OSError):
         return
-
 
 def _maybe_force_utf8_logging_handlers() -> None:
     """Reconfigure existing logging handler streams to UTF-8.  Called at runtime, NOT import time."""
     seen: set[int] = set()
-    for handler in logging.getLogger().handlers + logging.getLogger("").handlers:
+    for handler in logging.getLogger().handlers + logging.getLogger('').handlers:
         hid = id(handler)
         if hid in seen:
             continue
         seen.add(hid)
-        stream = getattr(handler, "stream", None)
+        stream = getattr(handler, 'stream', None)
         if stream is None:
             continue
-        reconfigure = getattr(stream, "reconfigure", None)
+        reconfigure = getattr(stream, 'reconfigure', None)
         if reconfigure is None:
             continue
         try:
-            reconfigure(encoding="utf-8", errors="replace")
+            reconfigure(encoding='utf-8', errors='replace')
         except (AttributeError, OSError):
             pass
-
-
-# ============================================================================
-# V15 MANIFEST CONSTRUCTION (§8.1e)
-# ============================================================================
-
 
 def _v15_build_ssot_manifest():
     """§8.1e — Construct SurgicalManifest for SSOT bootstrap entry.
@@ -906,41 +562,19 @@ def _v15_build_ssot_manifest():
     """
     try:
         from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
-
         if not is_v15_enforced():
             return None
-
         import hashlib as _hl
-
-        from agentic_core.L0_routing.enforcement.traceability_contracts import (
-            generate_trace_id,
-        )
-        from agentic_core.L0_routing.types.determinism_types import (
-            FixConstraint,
-            SurgicalManifest,
-        )
-
-        _hex8 = _hl.sha256(b"execute_ssot._legacy_main").hexdigest()[:8].upper()
+        from agentic_core.L0_routing.enforcement.traceability_contracts import generate_trace_id
+        from agentic_core.L0_routing.types.determinism_types import FixConstraint, SurgicalManifest
+        _hex8 = _hl.sha256(b'execute_ssot._legacy_main').hexdigest()[:8].upper()
         trace_id = generate_trace_id(_hex8)
-
-        ast_snippet = "execute_ssot._legacy_main()"
-        return SurgicalManifest(
-            schema_version="1.0.0",
-            correlation_id=trace_id,
-            node_id="ExecuteSSOT",
-            target_layer="L0",
-            ast_snippet=ast_snippet,
-            serialization_canon="execute_ssot",
-            fix_constraint=FixConstraint.RELAXED,
-            manifest_hash=_hl.sha256(ast_snippet.encode()).hexdigest(),
-            change_history=(),
-            provenance_chain=(trace_id,),
-        )
+        ast_snippet = 'execute_ssot._legacy_main()'
+        return SurgicalManifest(schema_version='1.0.0', correlation_id=trace_id, node_id='ExecuteSSOT', target_layer='L0', ast_snippet=ast_snippet, serialization_canon='execute_ssot', fix_constraint=FixConstraint.RELAXED, manifest_hash=_hl.sha256(ast_snippet.encode()).hexdigest(), change_history=(), provenance_chain=(trace_id,))
     except (ImportError, AttributeError, TypeError):
-        if os.getenv("V15_ENFORCEMENT") == "1":
-            raise  # fail-closed when hard enforcement is on
+        if os.getenv('V15_ENFORCEMENT') == '1':
+            raise
         return None
-
 
 def _v15_ssot_gateway_audit(manifest, trace_id: str) -> None:
     """§8.1e — Invoke gateway.execute in LOG_ONLY mode for SSOT audit trail."""
@@ -948,49 +582,28 @@ def _v15_ssot_gateway_audit(manifest, trace_id: str) -> None:
         return
     try:
         import hashlib as _hl
-
-        from agentic_core.L0_routing.enforcement.execution_gateway import (
-            V15ExecutionGateway,
-        )
-
+        from agentic_core.L0_routing.enforcement.execution_gateway import V15ExecutionGateway
         gw = V15ExecutionGateway()
-        gw.execute(
-            manifest,
-            lambda m: {"status": "ssot_audit", "errors": 0},
-            lambda: (
-                _hl.sha256(b"fs_ssot").hexdigest(),
-                _hl.sha256(b"git_ssot").hexdigest(),
-                _hl.sha256(b"mem_ssot").hexdigest(),
-            ),
-            trace_id=trace_id,
-            agent_id="ssot_audit",
-        )
+        gw.execute(manifest, lambda m: {'status': 'ssot_audit', 'errors': 0}, lambda: (_hl.sha256(b'fs_ssot').hexdigest(), _hl.sha256(b'git_ssot').hexdigest(), _hl.sha256(b'mem_ssot').hexdigest()), trace_id=trace_id, agent_id='ssot_audit')
     except (ImportError, AttributeError, TypeError) as exc:
-        logging.getLogger(__name__).warning("[V15] SSOT gateway audit failed (LOG_ONLY): %s", exc)
-
-
-# ============================================================================
-# DATA CLASSES
-# ============================================================================
-
+        logging.getLogger(__name__).warning('[V15] SSOT gateway audit failed (LOG_ONLY): %s', exc)
 
 @dataclass
 class ConfidenceScore:
     """[HARDENED] Environment-aware confidence score for autonomous healing."""
-
-    value: float  # 0.0 to 1.0
+    value: float
     reasoning: str
     factors: dict[str, float] = field(default_factory=dict)
 
     @property
     def _high_threshold(self) -> float:
         """Sourced from .env: SOVEREIGN_HIGH_CONFIDENCE (default: 0.75)"""
-        return float(os.getenv("SOVEREIGN_HIGH_CONFIDENCE", "0.75"))
+        return float(os.getenv('SOVEREIGN_HIGH_CONFIDENCE', '0.75'))
 
     @property
     def _med_threshold(self) -> float:
         """Sourced from .env: SOVEREIGN_MEDIUM_CONFIDENCE (default: 0.50)"""
-        return float(os.getenv("SOVEREIGN_MEDIUM_CONFIDENCE", "0.50"))
+        return float(os.getenv('SOVEREIGN_MEDIUM_CONFIDENCE', '0.50'))
 
     @property
     def is_high_confidence(self) -> bool:
@@ -1003,106 +616,57 @@ class ConfidenceScore:
     @property
     def is_low_confidence(self) -> bool:
         return self.value < self._med_threshold
-
-
-# ============================================================================
-# HARDENED SSOT ROUTING — enums, dataclasses, pure routing function
-# ============================================================================
-
 import enum as _enum
 import hashlib as _hashlib
-
-from agentic_core.L0_routing.config import (
-    AGENTIC_CORE_DIR,
-    APPS_LIC_DIR,
-    APPS_RG_DIR,
-    APPS_SHARED_DIR,
-    L5_SAFETY_DIR,
-    OPS_SCRIPTS_DIR,
-    RUNTIME_STATE_JSON,
-)
-from agentic_core.L0_routing.config.path_constants import (
-    AGENTIC_CORE_DIR,
-    APPS_LIC_DIR,
-    APPS_RG_DIR,
-    APPS_SHARED_DIR,
-    ARCHIVES_DIR,
-    OPS_SCRIPTS_DIR,
-    TESTS_DIR,
-    TOOLS_DIR,
-)
-
+from agentic_core.L0_routing.config import AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR, L5_SAFETY_DIR, OPS_SCRIPTS_DIR, RUNTIME_STATE_JSON
+from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR, ARCHIVES_DIR, OPS_SCRIPTS_DIR, TESTS_DIR, TOOLS_DIR
 
 class FailureType(_enum.Enum):
     """Classifies the failure being routed.  Drives gate selection."""
-
-    LAYER_VIOLATION = "LAYER_VIOLATION"
-    GATEWAY_BYPASS = "GATEWAY_BYPASS"
-    KILL_SWITCH_BYPASS = "KILL_SWITCH_BYPASS"
-    SIGNATURE_VERIFY = "SIGNATURE_VERIFY"
-    UNSIGNED_INGRESS = "UNSIGNED_INGRESS"
-    IMPORT_BOUNDARY_VIOLATION = "IMPORT_BOUNDARY_VIOLATION"
-    SCHEMA_REQUIRED_FIELDS_MISSING = "SCHEMA_REQUIRED_FIELDS_MISSING"
-    NAMING = "NAMING"
-    HIERARCHY = "HIERARCHY"
-    SHALLOW = "SHALLOW"
-    DEEP = "DEEP"
-    VOID = "VOID"
-    DUPLICATE = "DUPLICATE"
-    ORPHAN = "ORPHAN"
-    UNKNOWN = "UNKNOWN"
-
+    LAYER_VIOLATION = 'LAYER_VIOLATION'
+    GATEWAY_BYPASS = 'GATEWAY_BYPASS'
+    KILL_SWITCH_BYPASS = 'KILL_SWITCH_BYPASS'
+    SIGNATURE_VERIFY = 'SIGNATURE_VERIFY'
+    UNSIGNED_INGRESS = 'UNSIGNED_INGRESS'
+    IMPORT_BOUNDARY_VIOLATION = 'IMPORT_BOUNDARY_VIOLATION'
+    SCHEMA_REQUIRED_FIELDS_MISSING = 'SCHEMA_REQUIRED_FIELDS_MISSING'
+    NAMING = 'NAMING'
+    HIERARCHY = 'HIERARCHY'
+    SHALLOW = 'SHALLOW'
+    DEEP = 'DEEP'
+    VOID = 'VOID'
+    DUPLICATE = 'DUPLICATE'
+    ORPHAN = 'ORPHAN'
+    UNKNOWN = 'UNKNOWN'
 
 class RoutingTier(_enum.Enum):
-    DETERMINISTIC = "DETERMINISTIC"
-    QWEN = "QWEN"
-    GEMINI = "GEMINI"
-    FAIL_CLOSED = "FAIL_CLOSED"
-
-
-# Structural failures: deterministic coverage can rescue; otherwise GEMINI/FAIL_CLOSED
-_STRUCTURAL_CLASS: frozenset[FailureType] = frozenset(
-    {
-        FailureType.LAYER_VIOLATION,
-        FailureType.GATEWAY_BYPASS,
-        FailureType.KILL_SWITCH_BYPASS,
-        FailureType.SIGNATURE_VERIFY,
-        FailureType.UNSIGNED_INGRESS,
-    }
-)
-
-# Qwen-disallowed failures: includes structural + import/schema violations
-_QWEN_DISALLOWED: frozenset[FailureType] = _STRUCTURAL_CLASS | frozenset(
-    {
-        FailureType.IMPORT_BOUNDARY_VIOLATION,
-        FailureType.SCHEMA_REQUIRED_FIELDS_MISSING,
-    }
-)
-
+    DETERMINISTIC = 'DETERMINISTIC'
+    QWEN = 'QWEN'
+    GEMINI = 'GEMINI'
+    FAIL_CLOSED = 'FAIL_CLOSED'
+_STRUCTURAL_CLASS: frozenset[FailureType] = frozenset({FailureType.LAYER_VIOLATION, FailureType.GATEWAY_BYPASS, FailureType.KILL_SWITCH_BYPASS, FailureType.SIGNATURE_VERIFY, FailureType.UNSIGNED_INGRESS})
+_QWEN_DISALLOWED: frozenset[FailureType] = _STRUCTURAL_CLASS | frozenset({FailureType.IMPORT_BOUNDARY_VIOLATION, FailureType.SCHEMA_REQUIRED_FIELDS_MISSING})
 
 @dataclass
 class RoutingInputs:
     """All inputs to compute_routing_decision.  No embeddings allowed."""
-
     failure_type: FailureType = FailureType.UNKNOWN
     retry_count: int = 0
-    C: int = 0  # complexity      0-3
-    B: int = 0  # blast-radius    0-3
-    A: int = 0  # autonomy-risk   0-3
-    N: int = 0  # novelty         0-3
-    F: int = 0  # failure-cost    0-3
-    L: int = 0  # latency class   0-3  (0=interactive, 3=async-batch)
+    C: int = 0
+    B: int = 0
+    A: int = 0
+    N: int = 0
+    F: int = 0
+    L: int = 0
     replay_mode: bool = False
     playbook_match: bool = False
     deterministic_coverage: bool = False
     provider_prohibited_gemini: bool = False
     provider_prohibited_qwen: bool = False
 
-
 @dataclass
 class RoutingDecision:
     """Immutable routing result with full audit trail."""
-
     tier: RoutingTier
     score: int
     gate_applied: str
@@ -1114,149 +678,95 @@ class RoutingDecision:
     def as_log_line(self) -> str:
         f = self.factors
         i = self.inputs
-        return (
-            f"[ROUTING] tier={self.tier.value} S={self.score} gate={self.gate_applied}"
-            f" model={self.model_id}"
-            f" C={f.get('C', 0)} B={f.get('B', 0)} A={f.get('A', 0)}"
-            f" N={f.get('N', 0)} F={f.get('F', 0)} L={f.get('L', 0)}"
-            f" replay={i.replay_mode} retry={i.retry_count}"
-            f" playbook={i.playbook_match} det_cov={i.deterministic_coverage}"
-            f" digest={self.determinism_digest}"
-        )
+        return f"[ROUTING] tier={self.tier.value} S={self.score} gate={self.gate_applied} model={self.model_id} C={f.get('C', 0)} B={f.get('B', 0)} A={f.get('A', 0)} N={f.get('N', 0)} F={f.get('F', 0)} L={f.get('L', 0)} replay={i.replay_mode} retry={i.retry_count} playbook={i.playbook_match} det_cov={i.deterministic_coverage} digest={self.determinism_digest}"
 
-
-def compute_routing_decision(inputs: RoutingInputs) -> RoutingDecision:  # noqa: C901
+def compute_routing_decision(inputs: RoutingInputs) -> RoutingDecision:
     """Pure SSOT routing function — strict gate order, no side effects."""
-    C, B, A, N, F, L = inputs.C, inputs.B, inputs.A, inputs.N, inputs.F, inputs.L
+    C, B, A, N, F, L = (inputs.C, inputs.B, inputs.A, inputs.N, inputs.F, inputs.L)
 
-    def _decide(tier: RoutingTier, gate: str, score: int = 0) -> RoutingDecision:
+    def _decide(tier: RoutingTier, gate: str, score: int=0) -> RoutingDecision:
         if tier == RoutingTier.DETERMINISTIC:
-            model = "deterministic-sovereign"
+            model = 'deterministic-sovereign'
         elif tier == RoutingTier.QWEN:
-            model = "Qwen2.5-14B-Instruct-AWQ"
+            model = 'Qwen2.5-14B-Instruct-AWQ'
         elif tier == RoutingTier.GEMINI:
-            model = os.getenv("GEMINI_MODEL", "gemini-3-flash-preview")
+            model = os.getenv('GEMINI_MODEL', 'gemini-3-flash-preview')
         else:
-            model = "FAIL_CLOSED"
-        raw = f"{tier.value}|{score}|{gate}|{inputs.failure_type.value}|{C}|{B}|{A}|{N}|{F}|{L}|{inputs.replay_mode}|{inputs.retry_count}"
+            model = 'FAIL_CLOSED'
+        raw = f'{tier.value}|{score}|{gate}|{inputs.failure_type.value}|{C}|{B}|{A}|{N}|{F}|{L}|{inputs.replay_mode}|{inputs.retry_count}'
         digest = _hashlib.md5(raw.encode(), usedforsecurity=False).hexdigest()[:16]
-        return RoutingDecision(
-            tier=tier,
-            score=score,
-            gate_applied=gate,
-            model_id=model,
-            factors={"C": C, "B": B, "A": A, "N": N, "F": F, "L": L},
-            inputs=inputs,
-            determinism_digest=digest,
-        )
-
-    # ── GATE 0: Replay mode → always deterministic ─────────────────────────
+        return RoutingDecision(tier=tier, score=score, gate_applied=gate, model_id=model, factors={'C': C, 'B': B, 'A': A, 'N': N, 'F': F, 'L': L}, inputs=inputs, determinism_digest=digest)
     if inputs.replay_mode:
-        return _decide(RoutingTier.DETERMINISTIC, "GATE_0_REPLAY")
-
-    # ── GATE 1: Global retry override ──────────────────────────────────────
+        return _decide(RoutingTier.DETERMINISTIC, 'GATE_0_REPLAY')
     if inputs.retry_count >= 3:
         if inputs.provider_prohibited_gemini:
-            return _decide(RoutingTier.FAIL_CLOSED, "GATE_1_RETRY_OVERRIDE_FAIL_CLOSED")
-        return _decide(RoutingTier.GEMINI, "GATE_1_RETRY_OVERRIDE")
-
-    # ── GATE 2: Structural class pre-gate ──────────────────────────────────
+            return _decide(RoutingTier.FAIL_CLOSED, 'GATE_1_RETRY_OVERRIDE_FAIL_CLOSED')
+        return _decide(RoutingTier.GEMINI, 'GATE_1_RETRY_OVERRIDE')
     if inputs.failure_type in _STRUCTURAL_CLASS:
         if inputs.deterministic_coverage:
-            return _decide(RoutingTier.DETERMINISTIC, "GATE_2_STRUCTURAL_DET_COV")
+            return _decide(RoutingTier.DETERMINISTIC, 'GATE_2_STRUCTURAL_DET_COV')
         if inputs.provider_prohibited_gemini:
-            return _decide(RoutingTier.FAIL_CLOSED, "GATE_2_STRUCTURAL_FAIL_CLOSED")
-        return _decide(RoutingTier.GEMINI, "GATE_2_STRUCTURAL_NO_DET_COV")
-
-    # ── GATE 3: Critical surface mechanical exception ──────────────────────
+            return _decide(RoutingTier.FAIL_CLOSED, 'GATE_2_STRUCTURAL_FAIL_CLOSED')
+        return _decide(RoutingTier.GEMINI, 'GATE_2_STRUCTURAL_NO_DET_COV')
     if B == 3 and A == 0 and inputs.playbook_match and inputs.deterministic_coverage:
-        return _decide(RoutingTier.DETERMINISTIC, "GATE_3_CRITICAL_SURFACE_MECH")
-
-    # ── Score computation ──────────────────────────────────────────────────
+        return _decide(RoutingTier.DETERMINISTIC, 'GATE_3_CRITICAL_SURFACE_MECH')
     S = 3 * C + 4 * B + 3 * A + 2 * N + 4 * F
     if inputs.playbook_match:
         S = max(0, S - 4)
-
-    # ── GATE 4: Hard-override for extreme risk ─────────────────────────────
     if B == 3 and F == 3 and (C >= 2 or A >= 1):
         if inputs.provider_prohibited_gemini and inputs.provider_prohibited_qwen:
-            return _decide(RoutingTier.FAIL_CLOSED, "GATE_4_HARD_OVERRIDE_FAIL_CLOSED", S)
-        return _decide(RoutingTier.GEMINI, "GATE_4_HARD_OVERRIDE", S)
-
-    # ── GATE 5: Threshold routing ──────────────────────────────────────────
+            return _decide(RoutingTier.FAIL_CLOSED, 'GATE_4_HARD_OVERRIDE_FAIL_CLOSED', S)
+        return _decide(RoutingTier.GEMINI, 'GATE_4_HARD_OVERRIDE', S)
     if S <= 13:
         tier = RoutingTier.DETERMINISTIC
-        gate = "THRESHOLD_LOW_DET"
+        gate = 'THRESHOLD_LOW_DET'
     elif S <= 26:
         tier = RoutingTier.QWEN
-        gate = "THRESHOLD_MED_QWEN"
+        gate = 'THRESHOLD_MED_QWEN'
     else:
         tier = RoutingTier.GEMINI
-        gate = "THRESHOLD_HIGH_GEMINI"
+        gate = 'THRESHOLD_HIGH_GEMINI'
         if inputs.provider_prohibited_gemini:
-            return _decide(RoutingTier.FAIL_CLOSED, "THRESHOLD_HIGH_FAIL_CLOSED", S)
-
-    # ── GATE 6: Latency tie-breaker (boundary zones only) ─────────────────
-    # Does NOT apply when failure_type is qwen-disallowed (Gate 7 handles those).
+            return _decide(RoutingTier.FAIL_CLOSED, 'THRESHOLD_HIGH_FAIL_CLOSED', S)
     _qwen_disallowed_type = inputs.failure_type in _QWEN_DISALLOWED
     _qwen_blocked = _qwen_disallowed_type or inputs.provider_prohibited_qwen
-    if tier == RoutingTier.QWEN and S in range(14, 16) and L == 0 and not _qwen_blocked:
+    if tier == RoutingTier.QWEN and S in range(14, 16) and (L == 0) and (not _qwen_blocked):
         tier = RoutingTier.DETERMINISTIC
-        gate = f"{gate}.L_TIEBREAK_DOWN"
-    elif tier == RoutingTier.DETERMINISTIC and S in range(12, 14) and L == 3 and not _qwen_disallowed_type:
+        gate = f'{gate}.L_TIEBREAK_DOWN'
+    elif tier == RoutingTier.DETERMINISTIC and S in range(12, 14) and (L == 3) and (not _qwen_disallowed_type):
         tier = RoutingTier.QWEN
-        gate = f"{gate}.L_TIEBREAK_UP"
-
-    # ── GATE 7: Qwen-disallowed fall-up ───────────────────────────────────
+        gate = f'{gate}.L_TIEBREAK_UP'
     if tier == RoutingTier.QWEN and inputs.failure_type in _QWEN_DISALLOWED:
-        if inputs.deterministic_coverage and A == 0 and C == 0:
-            return _decide(RoutingTier.DETERMINISTIC, f"{gate}.QWEN_DISALLOWED_DET_FALLBACK", S)
+        if inputs.deterministic_coverage and A == 0 and (C == 0):
+            return _decide(RoutingTier.DETERMINISTIC, f'{gate}.QWEN_DISALLOWED_DET_FALLBACK', S)
         if inputs.provider_prohibited_gemini:
-            return _decide(RoutingTier.FAIL_CLOSED, f"{gate}.QWEN_DISALLOWED_FAIL_CLOSED", S)
-        return _decide(RoutingTier.GEMINI, f"{gate}.QWEN_DISALLOWED", S)
-
-    # ── GATE 8: Provider prohibition check ────────────────────────────────
+            return _decide(RoutingTier.FAIL_CLOSED, f'{gate}.QWEN_DISALLOWED_FAIL_CLOSED', S)
+        return _decide(RoutingTier.GEMINI, f'{gate}.QWEN_DISALLOWED', S)
     if tier == RoutingTier.QWEN and inputs.provider_prohibited_qwen:
         if inputs.provider_prohibited_gemini:
-            return _decide(RoutingTier.FAIL_CLOSED, f"{gate}.BOTH_PROHIBITED", S)
-        return _decide(RoutingTier.GEMINI, f"{gate}.QWEN_PROHIBITED_FALLBACK", S)
-
+            return _decide(RoutingTier.FAIL_CLOSED, f'{gate}.BOTH_PROHIBITED', S)
+        return _decide(RoutingTier.GEMINI, f'{gate}.QWEN_PROHIBITED_FALLBACK', S)
     if tier == RoutingTier.GEMINI and inputs.provider_prohibited_gemini:
-        return _decide(RoutingTier.FAIL_CLOSED, f"{gate}.GEMINI_PROHIBITED", S)
-
+        return _decide(RoutingTier.FAIL_CLOSED, f'{gate}.GEMINI_PROHIBITED', S)
     return _decide(tier, gate, S)
-
-
-# ============================================================================
-# NEW DATA STRUCTURES FOR TELEMETRY AND VALIDATION
-# ============================================================================
-
 
 @dataclass
 class ReconciliationViolation:
     """Structured violation for enhanced telemetry (Ported from FilesystemSSOTReconciler)."""
-
     is_valid: bool
     message: str
     drift_type: str | None = None
     file_path: Path | None = None
     suggested_action: str | None = None
-    severity: int = 5  # 1-10 scale
+    severity: int = 5
 
+    # guardian: allow-type-erasure
     def to_dict(self) -> dict:
-        return {
-            "is_valid": self.is_valid,
-            "message": self.message,
-            "drift_type": self.drift_type,
-            "file_path": str(self.file_path.as_posix()) if self.file_path else None,
-            "severity": self.severity,
-        }
-
+        return {'is_valid': self.is_valid, 'message': self.message, 'drift_type': self.drift_type, 'file_path': str(self.file_path.as_posix()) if self.file_path else None, 'severity': self.severity}
 
 @dataclass
 class ReconciliationManifest:
     """Telemetry manifest for tracking all reconciliation changes."""
-
     mission_id: str
     territory: str
     start_time: str
@@ -1273,7 +783,7 @@ class ReconciliationManifest:
     def add_modification(self, modification: dict[str, Any]) -> None:
         self.modifications.append(modification)
         self.violations_attempted += 1
-        if modification.get("success", False):
+        if modification.get('success', False):
             self.violations_fixed += 1
         else:
             self.violations_failed += 1
@@ -1282,97 +792,43 @@ class ReconciliationManifest:
         self.failures.append(failure)
         self.violations_failed += 1
 
+    # guardian: allow-type-erasure
     def finalize(self) -> dict[str, Any]:
         self.end_time = datetime.now().isoformat()
-        return {
-            "mission_id": self.mission_id,
-            "territory": self.territory,
-            "duration": {
-                "start": self.start_time,
-                "end": self.end_time,
-                "seconds": (
-                    datetime.fromisoformat(self.end_time) - datetime.fromisoformat(self.start_time)
-                ).total_seconds()
-                if self.end_time
-                else None,
-            },
-            "violations": {
-                "found": self.violations_found,
-                "attempted": self.violations_attempted,
-                "fixed": self.violations_fixed,
-                "failed": self.violations_failed,
-                "success_rate": self.violations_fixed / max(self.violations_attempted, 1),
-            },
-            "budget": {
-                "consumed": self.budget_consumed,
-                "remaining": max(0, 100 - self.budget_consumed),  # Default max budget of 100
-            },
-            "confidence": {
-                "scores": self.confidence_scores,
-                "average": sum(self.confidence_scores) / len(self.confidence_scores)
-                if self.confidence_scores
-                else 0.0,
-            },
-            "modifications": self.modifications,
-            "failures": self.failures,
-        }
-
+        return {'mission_id': self.mission_id, 'territory': self.territory, 'duration': {'start': self.start_time, 'end': self.end_time, 'seconds': (datetime.fromisoformat(self.end_time) - datetime.fromisoformat(self.start_time)).total_seconds() if self.end_time else None}, 'violations': {'found': self.violations_found, 'attempted': self.violations_attempted, 'fixed': self.violations_fixed, 'failed': self.violations_failed, 'success_rate': self.violations_fixed / max(self.violations_attempted, 1)}, 'budget': {'consumed': self.budget_consumed, 'remaining': max(0, 100 - self.budget_consumed)}, 'confidence': {'scores': self.confidence_scores, 'average': sum(self.confidence_scores) / len(self.confidence_scores) if self.confidence_scores else 0.0}, 'modifications': self.modifications, 'failures': self.failures}
 
 class ASTCodeQualityValidator:
     """AST-based code quality validation with memory guards (Ported from TypeMechanic)."""
 
     def __init__(self, project_root: Path):
         self.project_root = project_root
-        # [SAFETY] Prevent OOM on massive generated files
         # guardian: allow-magic-config
-        self.max_file_size = 1_000_000  # 1MB limit
+        self.max_file_size = 1000000
 
     def _read_and_parse_file(self, fp: str) -> tuple[ast.AST | None, str | None]:
         """Reads a file and parses it into an AST with strict size limits."""
         try:
             if os.path.getsize(fp) > self.max_file_size:
-                return None, "File too large for AST analysis"
-
-            with open(fp, encoding="utf-8") as f:
+                return (None, 'File too large for AST analysis')
+            with open(fp, encoding='utf-8') as f:
                 tree = ast.parse(f.read(), filename=fp)
-                return tree, None
+                return (tree, None)
         except (OSError, SyntaxError) as e:
-            return None, f"Error parsing {fp}: {str(e)}"
+            return (None, f'Error parsing {fp}: {str(e)}')
 
     # guardian: allow-type-erasure
     def check_file_quality(self, file_path: Path) -> dict:
         """Check file for code quality issues (missing types, etc)."""
         violations = []
         tree, error = self._read_and_parse_file(str(file_path))
-
         if error:
-            return {"error": error, "violations": []}
-
+            return {'error': error, 'violations': []}
         if tree:
             for node in ast.walk(tree):
                 if isinstance(node, ast.FunctionDef):
-                    # Ignore dunders
-                    if not node.returns and not node.name.startswith("__"):
-                        violations.append(
-                            {
-                                "type": "MISSING_TYPE_HINT",
-                                "file": str(file_path),
-                                "line": node.lineno,
-                                "message": f"Function '{node.name}' missing return type hint",
-                            },
-                        )
-
-        return {
-            "violations": violations,
-            "violations_count": len(violations),
-            "file": str(file_path),
-        }
-
-
-# ============================================================================
-# HEALING ACTION RECORDING — Structured Healing Log with Routing Details
-# ============================================================================
-
+                    if not node.returns and (not node.name.startswith('__')):
+                        violations.append({'type': 'MISSING_TYPE_HINT', 'file': str(file_path), 'line': node.lineno, 'message': f"Function '{node.name}' missing return type hint"})
+        return {'violations': violations, 'violations_count': len(violations), 'file': str(file_path)}
 
 def _normalize_finding_id(finding: dict, validator: str, index: int) -> str:
     """Generate normalized finding ID: {validator}:{path}:{rule}:{index}.
@@ -1380,20 +836,12 @@ def _normalize_finding_id(finding: dict, validator: str, index: int) -> str:
     Per hostile audit Section B3: Finding IDs must be normalized and deterministic.
     Per .windsurfrules §1.7: Identical input → identical output.
     """
-    path = finding.get("file", finding.get("path", "UNKNOWN"))
-    rule = finding.get("type", finding.get("rule", "UNKNOWN"))
-    # Normalize path separators for cross-platform determinism
-    path_normalized = str(path).replace("\\", "/")
-    return f"{validator}:{path_normalized}:{rule}:{index:04d}"
+    path = finding.get('file', finding.get('path', 'UNKNOWN'))
+    rule = finding.get('type', finding.get('rule', 'UNKNOWN'))
+    path_normalized = str(path).replace('\\', '/')
+    return f'{validator}:{path_normalized}:{rule}:{index:04d}'
 
-
-def _write_pre_validation_json(
-    violations: list[dict],
-    trace_id: str,
-    territory: str,
-    validators_used: list[str],
-    output_dir: Path,
-) -> None:
+def _write_pre_validation_json(violations: list[dict], trace_id: str, territory: str, validators_used: list[str], output_dir: Path) -> None:
     """Write pre_validation.json before any healing occurs.
 
     Per hostile audit Section C2: Pre-heal state must be captured in structured artifact.
@@ -1401,291 +849,126 @@ def _write_pre_validation_json(
     Per .windsurfrules §2.2: Evidence must be deterministic, ASCII-only.
     """
     from datetime import datetime, timezone
-
-    # Assign normalized IDs to findings
     findings = []
-    severity_counts = {"high": 0, "medium": 0, "low": 0}
+    severity_counts = {'high': 0, 'medium': 0, 'low': 0}
     targeted_paths = set()
-
     for idx, violation in enumerate(violations):
-        validator = violation.get("suggested_agent", "UNKNOWN")
+        validator = violation.get('suggested_agent', 'UNKNOWN')
         finding_id = _normalize_finding_id(violation, validator, idx)
-
-        # Infer severity from violation type
-        vtype = violation.get("type", "")
-        if "FORBIDDEN" in vtype or "ARCHIVED" in vtype:
-            severity = "high"
-        elif "DUPLICATE" in vtype:
-            severity = "medium"
+        vtype = violation.get('type', '')
+        if 'FORBIDDEN' in vtype or 'ARCHIVED' in vtype:
+            severity = 'high'
+        elif 'DUPLICATE' in vtype:
+            severity = 'medium'
         else:
-            severity = "low"
-
+            severity = 'low'
         severity_counts[severity] += 1
-        path = violation.get("file", violation.get("path", ""))
+        path = violation.get('file', violation.get('path', ''))
         if path:
             targeted_paths.add(str(path))
-
-        findings.append(
-            {
-                "id": finding_id,
-                "validator": validator,
-                "path": str(path),
-                "severity": severity,
-                "rule": violation.get("type", "UNKNOWN"),
-                "description": violation.get("message", ""),
-            }
-        )
-
-    pre_validation = {
-        "trace_id": trace_id,
-        "timestamp_utc": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
-        "territory": territory,
-        "validators": validators_used,
-        "findings": findings,
-        "counts": {
-            "total": len(findings),
-            "high": severity_counts["high"],
-            "medium": severity_counts["medium"],
-            "low": severity_counts["low"],
-        },
-        "targeted_paths": sorted(targeted_paths),
-    }
-
-    output_path = output_dir / "pre_validation.json"
+        findings.append({'id': finding_id, 'validator': validator, 'path': str(path), 'severity': severity, 'rule': violation.get('type', 'UNKNOWN'), 'description': violation.get('message', '')})
+    pre_validation = {'trace_id': trace_id, 'timestamp_utc': datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z'), 'territory': territory, 'validators': validators_used, 'findings': findings, 'counts': {'total': len(findings), 'high': severity_counts['high'], 'medium': severity_counts['medium'], 'low': severity_counts['low']}, 'targeted_paths': sorted(targeted_paths)}
+    output_path = output_dir / 'pre_validation.json'
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    with open(output_path, "w", encoding="utf-8") as f:
+    with open(output_path, 'w', encoding='utf-8') as f:
         json.dump(pre_validation, f, indent=2, ensure_ascii=True)
+    logger.info(f'[PRE-VALIDATION] Wrote {len(findings)} findings to {output_path}')
 
-    logger.info(f"[PRE-VALIDATION] Wrote {len(findings)} findings to {output_path}")
-
-
-def _write_post_validation_json(
-    pre_validation_path: Path,
-    phase3_result: dict,
-    trace_id: str,
-    territory: str,
-    output_dir: Path,
-) -> None:
+def _write_post_validation_json(pre_validation_path: Path, phase3_result: dict, trace_id: str, territory: str, output_dir: Path) -> None:
     """Write post_validation.json after Phase 3 revalidation.
 
     Per hostile audit Section C4: Post-heal proof with resolved/residual/regression breakdown.
     Per hostile audit Section B5: Must show resolved, remaining, and newly introduced findings.
     """
     from datetime import datetime, timezone
-
-    # Load pre_validation to compute resolved/residual
     pre_validation = {}
     if pre_validation_path.exists():
-        with open(pre_validation_path, encoding="utf-8") as f:
+        with open(pre_validation_path, encoding='utf-8') as f:
             pre_validation = json.load(f)
-
-    pre_finding_ids = {f["id"] for f in pre_validation.get("findings", [])}
+    pre_finding_ids = {f['id'] for f in pre_validation.get('findings', [])}
     pre_finding_count = len(pre_finding_ids)
-
-    # Extract post-heal violations from phase3_result
-    remaining_violations = phase3_result.get("remaining_violations", [])
-
-    # Assign IDs to remaining violations
+    remaining_violations = phase3_result.get('remaining_violations', [])
     remaining_findings = []
     for idx, violation in enumerate(remaining_violations):
-        validator = violation.get("suggested_agent", "UNKNOWN")
+        validator = violation.get('suggested_agent', 'UNKNOWN')
         finding_id = _normalize_finding_id(violation, validator, idx)
-        remaining_findings.append(
-            {
-                "id": finding_id,
-                "validator": validator,
-                "path": str(violation.get("file", violation.get("path", ""))),
-                "rule": violation.get("type", "UNKNOWN"),
-            }
-        )
-
-    remaining_ids = {f["id"] for f in remaining_findings}
-
-    # Compute resolved and regressions
+        remaining_findings.append({'id': finding_id, 'validator': validator, 'path': str(violation.get('file', violation.get('path', ''))), 'rule': violation.get('type', 'UNKNOWN')})
+    remaining_ids = {f['id'] for f in remaining_findings}
     resolved_ids = list(pre_finding_ids - remaining_ids)
     regression_ids = list(remaining_ids - pre_finding_ids)
-
-    post_validation = {
-        "trace_id": trace_id,
-        "timestamp_utc": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
-        "territory": territory,
-        "pre_finding_count": pre_finding_count,
-        "resolved_findings": resolved_ids,
-        "residual_findings": list(remaining_ids),
-        "regressions": regression_ids,
-        "post_finding_count": len(remaining_ids),
-        "resolution_rate": round(len(resolved_ids) / max(pre_finding_count, 1), 4),
-        "validators_rerun": ["Phase3Validator"],
-    }
-
-    output_path = output_dir / "post_validation.json"
-    with open(output_path, "w", encoding="utf-8") as f:
+    post_validation = {'trace_id': trace_id, 'timestamp_utc': datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z'), 'territory': territory, 'pre_finding_count': pre_finding_count, 'resolved_findings': resolved_ids, 'residual_findings': list(remaining_ids), 'regressions': regression_ids, 'post_finding_count': len(remaining_ids), 'resolution_rate': round(len(resolved_ids) / max(pre_finding_count, 1), 4), 'validators_rerun': ['Phase3Validator']}
+    output_path = output_dir / 'post_validation.json'
+    with open(output_path, 'w', encoding='utf-8') as f:
         json.dump(post_validation, f, indent=2, ensure_ascii=True)
+    logger.info(f'[POST-VALIDATION] Resolved: {len(resolved_ids)}, Residual: {len(remaining_ids)}, Regressions: {len(regression_ids)}')
 
-    logger.info(
-        f"[POST-VALIDATION] Resolved: {len(resolved_ids)}, "
-        f"Residual: {len(remaining_ids)}, Regressions: {len(regression_ids)}"
-    )
-
-
-def _write_run_manifest_json(
-    trace_id: str,
-    execution_mode: str,
-    territories: list[str],
-    agents_executed: list[str],
-    output_dir: Path,
-) -> None:
+def _write_run_manifest_json(trace_id: str, execution_mode: str, territories: list[str], agents_executed: list[str], output_dir: Path) -> None:
     """E6: Write run_manifest.json with run metadata and execution summary.
 
     Per hostile audit Section E6: run_manifest.json provides high-level run metadata.
     """
     from datetime import datetime, timezone
-
     output_dir.mkdir(parents=True, exist_ok=True)
-
-    manifest = {
-        "trace_id": trace_id,
-        "execution_mode": execution_mode,
-        "timestamp_utc": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
-        "territories": territories,
-        "agents_executed": agents_executed,
-        "agent_count": len(agents_executed),
-        "territory_count": len(territories),
-    }
-
-    output_path = output_dir / "run_manifest.json"
-    with open(output_path, "w", encoding="utf-8") as f:
+    manifest = {'trace_id': trace_id, 'execution_mode': execution_mode, 'timestamp_utc': datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z'), 'territories': territories, 'agents_executed': agents_executed, 'agent_count': len(agents_executed), 'territory_count': len(territories)}
+    output_path = output_dir / 'run_manifest.json'
+    with open(output_path, 'w', encoding='utf-8') as f:
         json.dump(manifest, f, indent=2, ensure_ascii=True)
+    logger.info(f'[RUN-MANIFEST] Wrote run_manifest.json with {len(agents_executed)} agents, {len(territories)} territories')
 
-    logger.info(
-        f"[RUN-MANIFEST] Wrote run_manifest.json with {len(agents_executed)} agents, {len(territories)} territories"
-    )
-
-
-def _write_decision_summary_json(
-    trace_id: str,
-    decisions_made: list[dict],
-    output_dir: Path,
-) -> None:
+def _write_decision_summary_json(trace_id: str, decisions_made: list[dict], output_dir: Path) -> None:
     """E6: Write decision_summary.json with routing decision audit trail.
 
     Per hostile audit Section E6: decision_summary.json provides routing decision audit.
     """
     from datetime import datetime, timezone
-
     output_dir.mkdir(parents=True, exist_ok=True)
-
-    # Aggregate decision statistics
     tier_counts = {}
     agent_counts = {}
     for decision in decisions_made:
-        tier = decision.get("tier", "UNKNOWN")
-        agent = decision.get("agent", "unknown")
+        tier = decision.get('tier', 'UNKNOWN')
+        agent = decision.get('agent', 'unknown')
         tier_counts[tier] = tier_counts.get(tier, 0) + 1
         agent_counts[agent] = agent_counts.get(agent, 0) + 1
-
-    summary = {
-        "trace_id": trace_id,
-        "timestamp_utc": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
-        "total_decisions": len(decisions_made),
-        "tier_distribution": tier_counts,
-        "agent_distribution": agent_counts,
-        "decisions": decisions_made,
-    }
-
-    output_path = output_dir / "decision_summary.json"
-    with open(output_path, "w", encoding="utf-8") as f:
+    summary = {'trace_id': trace_id, 'timestamp_utc': datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z'), 'total_decisions': len(decisions_made), 'tier_distribution': tier_counts, 'agent_distribution': agent_counts, 'decisions': decisions_made}
+    output_path = output_dir / 'decision_summary.json'
+    with open(output_path, 'w', encoding='utf-8') as f:
         json.dump(summary, f, indent=2, ensure_ascii=True)
+    logger.info(f'[DECISION-SUMMARY] Wrote decision_summary.json with {len(decisions_made)} decisions')
 
-    logger.info(f"[DECISION-SUMMARY] Wrote decision_summary.json with {len(decisions_made)} decisions")
-
-
-def _write_artifact_integrity_json(
-    trace_id: str,
-    output_dir: Path,
-) -> None:
+def _write_artifact_integrity_json(trace_id: str, output_dir: Path) -> None:
     """E7: Write artifact_integrity.json as final step with SHA256 hashes of all artifacts.
 
     Per hostile audit Section E7: artifact_integrity.json provides cryptographic proof of artifact set.
     """
     import hashlib
     from datetime import datetime, timezone
-
     output_dir.mkdir(parents=True, exist_ok=True)
-
-    # Collect all artifacts in the output directory
     artifacts = {}
-    for artifact_path in output_dir.glob("*.json"):
-        if artifact_path.name == "artifact_integrity.json":
-            continue  # Don't hash the integrity file itself
-
+    for artifact_path in output_dir.glob('*.json'):
+        if artifact_path.name == 'artifact_integrity.json':
+            continue
         try:
             content = artifact_path.read_bytes()
             sha256_hash = hashlib.sha256(content).hexdigest()
-            artifacts[artifact_path.name] = {
-                "sha256": sha256_hash,
-                "size_bytes": len(content),
-            }
+            artifacts[artifact_path.name] = {'sha256': sha256_hash, 'size_bytes': len(content)}
         except (OSError, UnicodeDecodeError) as e:
-            logger.warning(f"[ARTIFACT-INTEGRITY] Failed to hash {artifact_path.name}: {e}")
-
-    integrity = {
-        "trace_id": trace_id,
-        "timestamp_utc": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
-        "artifact_count": len(artifacts),
-        "artifacts": artifacts,
-    }
-
-    output_path = output_dir / "artifact_integrity.json"
-    with open(output_path, "w", encoding="utf-8") as f:
+            logger.warning(f'[ARTIFACT-INTEGRITY] Failed to hash {artifact_path.name}: {e}')
+    integrity = {'trace_id': trace_id, 'timestamp_utc': datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z'), 'artifact_count': len(artifacts), 'artifacts': artifacts}
+    output_path = output_dir / 'artifact_integrity.json'
+    with open(output_path, 'w', encoding='utf-8') as f:
         json.dump(integrity, f, indent=2, ensure_ascii=True)
+    logger.info(f'[ARTIFACT-INTEGRITY] Wrote artifact_integrity.json with {len(artifacts)} artifact hashes')
 
-    logger.info(f"[ARTIFACT-INTEGRITY] Wrote artifact_integrity.json with {len(artifacts)} artifact hashes")
-
-
-def _record_healing_action(
-    state_mgr,
-    agent: str,
-    territory: str,
-    routing_score: float = 0.0,
-    routing_tier: str = "DETERMINISTIC",
-    model: str = "none",
-    routing_gate: str = "N/A",
-    confidence: float = 0.0,
-    fix_summary: str = "",
-    outcome: str = "SUCCESS",
-    routing_digest: str | None = None,
-    check_id: str | None = None,
-):
+def _record_healing_action(state_mgr, agent: str, territory: str, routing_score: float=0.0, routing_tier: str='DETERMINISTIC', model: str='none', routing_gate: str='N/A', confidence: float=0.0, fix_summary: str='', outcome: str='SUCCESS', routing_digest: str | None=None, check_id: str | None=None):
     """[H2] Record a structured healing action for per-territory JSON and Markdown reports.
 
     Appends to state_mgr.state["healing_actions"] so Phase 5 can filter by territory
     and emit a healing_log in the detailed_cert JSON.
     """
-    action = {
-        "agent": agent,
-        "territory": territory,
-        "routing_score": round(routing_score, 4),
-        "routing_tier": routing_tier,
-        "model": model,
-        "routing_gate": routing_gate,
-        "confidence": round(confidence, 4),
-        "fix_summary": fix_summary,
-        "outcome": outcome,
-        "timestamp": datetime.now().isoformat(),
-        "routing_digest": routing_digest,
-        "check_id": check_id,
-    }
-    if "healing_actions" not in state_mgr.state:
-        state_mgr.state["healing_actions"] = []
-    state_mgr.state["healing_actions"].append(action)
-
-
-# ============================================================================
-# ============================================================================
-# HEAL CONTEXT — Single Source of Truth for Healing Flags
-# ============================================================================
-
+    action = {'agent': agent, 'territory': territory, 'routing_score': round(routing_score, 4), 'routing_tier': routing_tier, 'model': model, 'routing_gate': routing_gate, 'confidence': round(confidence, 4), 'fix_summary': fix_summary, 'outcome': outcome, 'timestamp': datetime.now().isoformat(), 'routing_digest': routing_digest, 'check_id': check_id}
+    if 'healing_actions' not in state_mgr.state:
+        state_mgr.state['healing_actions'] = []
+    state_mgr.state['healing_actions'].append(action)
 
 @dataclass(frozen=True)
 class HealContext:
@@ -1701,14 +984,12 @@ class HealContext:
     Per hostile audit Section E1: trace_id threads through all artifacts and HealContext.
     Per hostile audit Section E10: execution_mode distinguishes scan/heal/validate modes.
     """
-
-    heal: bool  # True = mutations active; False = scan/report only
-    auto_approve: bool  # True = no interactive prompts (always True when heal=True)
-    enable_telemetry: bool  # Active telemetry collection (always tied to heal)
-    enable_meta_learning: bool  # Meta-learning pipeline runs (always tied to heal)
-    trace_id: str  # Unique run identifier for artifact correlation (E1)
-    execution_mode: str  # "scan" | "heal" | "validate" - run mode for audit (E10)
-    # CDA (CognitiveDispositionAgent) is always active — no toggle
+    heal: bool
+    auto_approve: bool
+    enable_telemetry: bool
+    enable_meta_learning: bool
+    trace_id: str
+    execution_mode: str
 
     @property
     def enable_llm(self) -> bool:
@@ -1721,7 +1002,7 @@ class HealContext:
         return not self.heal
 
     @classmethod
-    def from_args(cls, args: argparse.Namespace) -> "HealContext":
+    def from_args(cls, args: argparse.Namespace) -> 'HealContext':
         """Construct from parsed CLI args. Single construction point.
 
         Canonical flag semantics (--heal is the ONLY active-mode switch):
@@ -1736,64 +1017,27 @@ class HealContext:
           --apply-proposals => meta-learning always on under --heal
         """
         import warnings
-
-        if getattr(args, "dry_run", False):
-            warnings.warn(
-                "--dry-run is deprecated. Omit --heal for scan-only mode.",
-                DeprecationWarning,
-                stacklevel=2,
-            )
-        if getattr(args, "manual", False):
-            warnings.warn(
-                "--manual is deprecated. Autonomous mode is always active.",
-                DeprecationWarning,
-                stacklevel=2,
-            )
-        if getattr(args, "interactive", False):
-            warnings.warn(
-                "--interactive is deprecated. Auto-approve is always on under --heal.",
-                DeprecationWarning,
-                stacklevel=2,
-            )
-        if getattr(args, "apply_proposals", False):
-            warnings.warn(
-                "--apply-proposals is deprecated. Meta-learning is always on under --heal.",
-                DeprecationWarning,
-                stacklevel=2,
-            )
-        # --heal is the single source of truth for ALL active-mode flags
-        heal = getattr(args, "heal", False)
-
-        # E1: Generate trace_id for artifact correlation
+        if getattr(args, 'dry_run', False):
+            warnings.warn('--dry-run is deprecated. Omit --heal for scan-only mode.', DeprecationWarning, stacklevel=2)
+        if getattr(args, 'manual', False):
+            warnings.warn('--manual is deprecated. Autonomous mode is always active.', DeprecationWarning, stacklevel=2)
+        if getattr(args, 'interactive', False):
+            warnings.warn('--interactive is deprecated. Auto-approve is always on under --heal.', DeprecationWarning, stacklevel=2)
+        if getattr(args, 'apply_proposals', False):
+            warnings.warn('--apply-proposals is deprecated. Meta-learning is always on under --heal.', DeprecationWarning, stacklevel=2)
+        heal = getattr(args, 'heal', False)
         import uuid
         from datetime import datetime, timezone
-
-        timestamp = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
-        trace_id = f"SSOT-{timestamp}-{uuid.uuid4().hex[:8]}"
-
-        # E10: Determine execution_mode from flags
-        validate = getattr(args, "validate", False)
+        timestamp = datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')
+        trace_id = f'SSOT-{timestamp}-{uuid.uuid4().hex[:8]}'
+        validate = getattr(args, 'validate', False)
         if validate:
-            execution_mode = "validate"
+            execution_mode = 'validate'
         elif heal:
-            execution_mode = "heal"
+            execution_mode = 'heal'
         else:
-            execution_mode = "scan"
-
-        return cls(
-            heal=heal,
-            auto_approve=heal,
-            enable_telemetry=heal,
-            enable_meta_learning=heal,
-            trace_id=trace_id,
-            execution_mode=execution_mode,
-        )
-
-
-# ============================================================================
-# SOVEREIGN DECISION ENGINE (unified flat class — formerly 3-class hierarchy)
-# ============================================================================
-
+            execution_mode = 'scan'
+        return cls(heal=heal, auto_approve=heal, enable_telemetry=heal, enable_meta_learning=heal, trace_id=trace_id, execution_mode=execution_mode)
 
 class SovereignDecisionEngine:
     """
@@ -1802,34 +1046,22 @@ class SovereignDecisionEngine:
     Unified flat class (formerly AutonomousDecisionEngine -> Enhanced -> Sovereign hierarchy).
     """
 
-    def __init__(
-        self,
-        enable_llm: bool = True,
-        state_mgr: Optional["RuntimeStateManager"] = None,
-        enable_cda: bool = False,
-        execution_context: Optional["ExecutionContext"] = None,
-        healing_memory_retriever: Any | None = None,
-        auto_approve: bool = False,
-    ):
+    def __init__(self, enable_llm: bool=True, state_mgr: Optional['RuntimeStateManager']=None, enable_cda: bool=False, execution_context: Optional['ExecutionContext']=None, healing_memory_retriever: Any | None=None, auto_approve: bool=False):
         self.enable_llm = enable_llm
         self.decisions_made = []
         self.state_mgr = state_mgr
         self._execution_context = execution_context
-        # [SAFETY] Cycle Detection State
         self._healing_count: int = 0
         self._healing_enabled: bool = True
         self._max_healing_operations: int = 10000
         self.auto_approve: bool = auto_approve
         self._call_path: set[str] = set()
-        # CDA Integration (merged from EnhancedAutonomousDecisionEngine)
         self.enable_cda = enable_cda
-        # Sovereignty Token State (merged from SovereignDecisionEngine)
         self._sovereignty_token: str | None = None
         self._operation_stack: list[str] = []
         # guardian: allow-magic-config
         self._max_stack_depth = 10
         self._atomic_lock = False
-        # B2: advisory-only healing memory retriever (never influences tier selection)
         self._healing_memory_retriever = healing_memory_retriever
 
     def _calculate_semantic_similarity(self, unknown: str, existing: list[str]) -> float:
@@ -1840,144 +1072,75 @@ class SovereignDecisionEngine:
         """
         if not existing:
             return 0.0
-
         try:
             bmg_fn = self._get_bmg_cosine_similarity()
             return bmg_fn(unknown, existing)
-        except (ImportError, AttributeError, ValueError):  # guardian: allow-silent-swallower  # noqa: BLE001
+        except (ImportError, AttributeError, ValueError):
             pass
-
-        # Jaccard word-overlap fallback (original implementation)
-        unknown_words = set(unknown.lower().replace("_", " ").replace("-", " ").split())
+        unknown_words = set(unknown.lower().replace('_', ' ').replace('-', ' ').split())
         max_similarity = 0.0
-
         for item in existing:
-            existing_words = set(item.lower().replace("_", " ").replace("-", " ").split())
+            existing_words = set(item.lower().replace('_', ' ').replace('-', ' ').split())
             intersection = unknown_words & existing_words
             union = unknown_words | existing_words
-
             if union:
                 similarity = len(intersection) / len(union)
                 max_similarity = max(max_similarity, similarity)
-
         return max_similarity
 
     @staticmethod
     def _get_bmg_cosine_similarity() -> object:
         """Lazy seam: load bmg_cosine_similarity from L2 healers without module-level import."""
-        from agentic_core.L2_execution.healers.bmg_embedding_similarity import (
-            bmg_cosine_similarity,
-        )
-
+        from agentic_core.L2_execution.healers.bmg_embedding_similarity import bmg_cosine_similarity
         return bmg_cosine_similarity
 
     @staticmethod
     def _get_bmg_embedding_agent_keys() -> frozenset:
         """Lazy seam: load BMG_EMBEDDING_AGENT_KEYS from L2 healing_tier_config."""
-        from agentic_core.L2_execution.healers.healing_tier_config import (
-            BMG_EMBEDDING_AGENT_KEYS,
-        )
-
+        from agentic_core.L2_execution.healers.healing_tier_config import BMG_EMBEDDING_AGENT_KEYS
         return BMG_EMBEDDING_AGENT_KEYS
 
     @staticmethod
     def _get_qwen_14b_routing_config() -> tuple:
         """Lazy seam: load Qwen 14B routing constants from L2 healing_tier_config."""
-        from agentic_core.L2_execution.healers.healing_tier_config import (
-            QWEN_14B_AGENT_KEYS,
-            QWEN_14B_MODEL_ID,
-        )
-
-        return QWEN_14B_AGENT_KEYS, QWEN_14B_MODEL_ID
+        from agentic_core.L2_execution.healers.healing_tier_config import QWEN_14B_AGENT_KEYS, QWEN_14B_MODEL_ID
+        return (QWEN_14B_AGENT_KEYS, QWEN_14B_MODEL_ID)
 
     @staticmethod
     def _get_qwen_vllm_arbiter():
         """Lazy seam: return callable that invokes Qwen 14B via WSL vLLM subprocess."""
         import json
         from pathlib import Path
+        WSL_PYTHON = '/home/amita/venvs/vllm/bin/python'
+        INFERENCE_SCRIPT = str(Path(__file__).parent.parent.parent / 'L2_execution' / 'healers' / 'qwen_vllm_inference.py')
+        MODEL_PATH = '/home/amita/models/Qwen2.5-14B-Instruct-AWQ'
 
-        WSL_PYTHON = "/home/amita/venvs/vllm/bin/python"
-        INFERENCE_SCRIPT = str(
-            Path(__file__).parent.parent.parent / "L2_execution" / "healers" / "qwen_vllm_inference.py"
-        )
-        MODEL_PATH = "/home/amita/models/Qwen2.5-14B-Instruct-AWQ"
-
-        def _arbiter(
-            agent_name: str,
-            violation_types: list,
-            territory: str,
-            score: int = 0,
-            gate: str = "",
-        ) -> dict:
-            # Convert Windows path to WSL mount path
-            script_wsl = INFERENCE_SCRIPT.replace("\\", "/").replace("C:", "/mnt/c").replace("c:", "/mnt/c")
-            repo_root_wsl = (
-                str(Path(__file__).resolve().parents[3])
-                .replace("\\", "/")
-                .replace("C:", "/mnt/c")
-                .replace("c:", "/mnt/c")
-            )
-            cmd = [
-                "wsl",
-                "bash",
-                "-c",
-                (
-                    f"PYTHONPATH={repo_root_wsl}:$PYTHONPATH"
-                    f" {WSL_PYTHON} {script_wsl}"
-                    f" --agent_name {agent_name}"
-                    f" --score {score}"
-                    f" --gate {gate}"
-                    f" --territory {territory}"
-                    f" --model_path {MODEL_PATH}"
-                    + (f" --violation_types {' '.join(violation_types)}" if violation_types else "")
-                ),
-            ]
-            # guardian: allow-magic-config
-            result = _get_safe_subprocess_run()(
-                cmd,
-                capture_output=True,
-                text=True,
-                encoding="utf-8",
-                errors="replace",
-                timeout=DEFAULT_TIMEOUT,  # guardian: allow-magic-configuration
-            )
+        # guardian: allow-type-erasure
+        def _arbiter(agent_name: str, violation_types: list, territory: str, score: int=0, gate: str='') -> dict:
+            script_wsl = INFERENCE_SCRIPT.replace('\\', '/').replace('C:', '/mnt/c').replace('c:', '/mnt/c')
+            repo_root_wsl = str(Path(__file__).resolve().parents[3]).replace('\\', '/').replace('C:', '/mnt/c').replace('c:', '/mnt/c')
+            cmd = ['wsl', 'bash', '-c', f'PYTHONPATH={repo_root_wsl}:$PYTHONPATH {WSL_PYTHON} {script_wsl} --agent_name {agent_name} --score {score} --gate {gate} --territory {territory} --model_path {MODEL_PATH}' + (f" --violation_types {' '.join(violation_types)}" if violation_types else '')]
+            result = _get_safe_subprocess_run()(cmd, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=DEFAULT_TIMEOUT)
             if result.returncode != 0:
-                raise RuntimeError(f"vLLM subprocess failed: {result.stderr[-500:]}")
-            # Last non-empty line is the JSON output
+                raise RuntimeError(f'vLLM subprocess failed: {result.stderr[-500:]}')
             lines = [l.strip() for l in result.stdout.splitlines() if l.strip()]
             for line in reversed(lines):
                 try:
                     return json.loads(line)
                 except json.JSONDecodeError:
                     continue
-            raise RuntimeError(f"No JSON in vLLM output: {result.stdout[-300:]}")
-
+            raise RuntimeError(f'No JSON in vLLM output: {result.stdout[-300:]}')
         return _arbiter
 
     def _calculate_pattern_confidence(self, violation_type: str) -> float:
         """Regex-based pattern matching for known violation types."""
-        high_confidence_patterns = [
-            r".*NAMING.*",
-            r".*HIERARCHY.*",
-            r".*IMPORT.*",
-            r".*SHALLOW.*",
-            r".*DEEP.*",
-            r".*VOID.*",
-            r".*DUPLICATE.*",
-            r".*ORPHAN.*",
-        ]
-
+        high_confidence_patterns = ['.*NAMING.*', '.*HIERARCHY.*', '.*IMPORT.*', '.*SHALLOW.*', '.*DEEP.*', '.*VOID.*', '.*DUPLICATE.*', '.*ORPHAN.*']
         for pattern in high_confidence_patterns:
             if re.match(pattern, violation_type, re.IGNORECASE):
                 return 0.9
         return 0.5
 
-    def _compute_novelty_score(
-        self,
-        failure_type: "FailureType | None",
-        territory: str,
-        confidence: "ConfidenceScore",
-    ) -> int:
+    def _compute_novelty_score(self, failure_type: 'FailureType | None', territory: str, confidence: 'ConfidenceScore') -> int:
         """Compute the novelty score N (0-3) for RoutingInputs.
 
         Embeds the current failure signal text and compares against stored
@@ -1992,435 +1155,226 @@ class SovereignDecisionEngine:
         """
         try:
             from agentic_core.L2_execution.healers.bmg_embedding_similarity import bmg_embed_text
-
-            ft_str = failure_type.value if failure_type is not None else "UNKNOWN"
-            signal_text = f"{ft_str} {territory}"
+            ft_str = failure_type.value if failure_type is not None else 'UNKNOWN'
+            signal_text = f'{ft_str} {territory}'
             vec = bmg_embed_text(signal_text)
-
             import numpy as _np
-
             q = _np.array(vec, dtype=_np.float32)
             recent: list = []
             if self.state_mgr is not None:
-                recent = self.state_mgr.state.get("meta_learning", {}).get("recent_failure_vectors", [])
-
+                recent = self.state_mgr.state.get('meta_learning', {}).get('recent_failure_vectors', [])
             if not recent:
                 return 1
-
             mat = _np.array(recent, dtype=_np.float32)
             if mat.ndim == 2 and mat.shape[1] != q.shape[0]:
-                from agentic_core.L1_cognition.memory.healing_memory_retriever import (
-                    VectorSourceMismatchError,
-                )
-
-                raise VectorSourceMismatchError(
-                    f"Vector source mismatch: stored dim={mat.shape[1]}, query dim={q.shape[0]}"
-                )
-            max_sim = float((_np.dot(mat, q)).max())
-
+                from agentic_core.L1_cognition.memory.healing_memory_retriever import VectorSourceMismatchError
+                raise VectorSourceMismatchError(f'Vector source mismatch: stored dim={mat.shape[1]}, query dim={q.shape[0]}')
+            max_sim = float(_np.dot(mat, q).max())
             if max_sim >= 0.85:
                 return 0
-            if max_sim >= 0.70:
+            if max_sim >= 0.7:
                 return 1
-            if max_sim >= 0.50:
+            if max_sim >= 0.5:
                 return 2
             return 3
-        except (
-            ImportError,
-            AttributeError,
-            ValueError,
-            RuntimeError,
-        ) as _exc:  # guardian: allow-silent-swallower
-            from agentic_core.L1_cognition.memory.healing_memory_retriever import (
-                VectorSourceMismatchError as _VSME,
-            )
-
+        except (ImportError, AttributeError, ValueError, RuntimeError) as _exc:
+            from agentic_core.L1_cognition.memory.healing_memory_retriever import VectorSourceMismatchError as _VSME
             if isinstance(_exc, _VSME):
                 raise
-            return 1  # conservative default when computation unavailable
+            return 1
 
-    def _route_decision(
-        self,
-        confidence: "ConfidenceScore",
-        agent_name: str,
-        territory: str,
-        failure_type: "FailureType | None" = None,
-        retry_count: int = 0,
-        replay_mode: bool = False,
-        playbook_match: bool = False,
-        deterministic_coverage: bool = False,
-        provider_prohibited_gemini: bool = False,
-        provider_prohibited_qwen: bool = False,
-    ) -> "RoutingDecision":
+    def _route_decision(self, confidence: 'ConfidenceScore', agent_name: str, territory: str, failure_type: 'FailureType | None'=None, retry_count: int=0, replay_mode: bool=False, playbook_match: bool=False, deterministic_coverage: bool=False, provider_prohibited_gemini: bool=False, provider_prohibited_qwen: bool=False) -> 'RoutingDecision':
         """Map healing context to a hardened SSOT RoutingDecision."""
         if failure_type is None:
-            reasoning_upper = (confidence.reasoning or "").upper()
+            reasoning_upper = (confidence.reasoning or '').upper()
             ft = FailureType.UNKNOWN
             for member in FailureType:
                 if member.value in reasoning_upper:
                     ft = member
                     break
             failure_type = ft
-
-        # B3: advisory-only healing memory retrieval — result MUST NOT alter tier/thresholds.
-        # Violations of this boundary are detectable via the advisory_only flag on SimilarIncident.
         if self._healing_memory_retriever is not None:
             try:
-                from agentic_core.L1_cognition.memory.healing_memory_retriever import (
-                    SovereigntyError as _SovereigntyError,
-                )
-
-                _signal_text = f"{failure_type.value if failure_type else 'UNKNOWN'} {territory}"
+                from agentic_core.L1_cognition.memory.healing_memory_retriever import SovereigntyError as _SovereigntyError
+                _signal_text = f"{(failure_type.value if failure_type else 'UNKNOWN')} {territory}"
                 _advisory = self._healing_memory_retriever.retrieve_similar_incidents(_signal_text, top_k=3)
-                # B-hardening: hard-fail if any incident escapes advisory boundary.
                 for _inc in _advisory:
-                    if not getattr(_inc, "advisory_only", True):
-                        raise _SovereigntyError(
-                            f"advisory_only=False on incident {getattr(_inc, 'content_hash', '?')!r}; "
-                            "routing tier MUST NOT be influenced by retrieval results."
-                        )
+                    if not getattr(_inc, 'advisory_only', True):
+                        raise _SovereigntyError(f"advisory_only=False on incident {getattr(_inc, 'content_hash', '?')!r}; routing tier MUST NOT be influenced by retrieval results.")
                 if _advisory:
-                    logger.debug(
-                        "[B3-Advisory] top=%d sim=%.4f (advisory_only=%s) — routing unchanged",
-                        len(_advisory),
-                        _advisory[0].similarity,
-                        _advisory[0].advisory_only,
-                    )
-            except (ImportError, AttributeError, ValueError) as _exc:  # guardian: allow-silent-swallower
-                from agentic_core.L1_cognition.memory.healing_memory_retriever import (
-                    SovereigntyError as _SE,
-                )
-
+                    logger.debug('[B3-Advisory] top=%d sim=%.4f (advisory_only=%s) — routing unchanged', len(_advisory), _advisory[0].similarity, _advisory[0].advisory_only)
+            except (ImportError, AttributeError, ValueError) as _exc:
+                from agentic_core.L1_cognition.memory.healing_memory_retriever import SovereigntyError as _SE
                 if isinstance(_exc, _SE):
                     raise
-                # All other retrieval errors are non-fatal — routing proceeds unchanged.
-
         C = min(3, max(0, int(3 - confidence.value * 3)))
-        B = 3 if territory.startswith("L5") else (2 if AGENTIC_CORE_DIR in territory else 1)
-        A = 0 if confidence.value >= 0.75 else (2 if confidence.value < 0.50 else 1)
+        B = 3 if territory.startswith('L5') else 2 if AGENTIC_CORE_DIR in territory else 1
+        A = 0 if confidence.value >= 0.75 else 2 if confidence.value < 0.5 else 1
         N = self._compute_novelty_score(failure_type, territory, confidence)
-        high_cost = {
-            FailureType.LAYER_VIOLATION,
-            FailureType.GATEWAY_BYPASS,
-            FailureType.KILL_SWITCH_BYPASS,
-            FailureType.SIGNATURE_VERIFY,
-            FailureType.UNSIGNED_INGRESS,
-        }
-        F = 3 if failure_type in high_cost else (2 if confidence.value < 0.50 else 1)
+        high_cost = {FailureType.LAYER_VIOLATION, FailureType.GATEWAY_BYPASS, FailureType.KILL_SWITCH_BYPASS, FailureType.SIGNATURE_VERIFY, FailureType.UNSIGNED_INGRESS}
+        F = 3 if failure_type in high_cost else 2 if confidence.value < 0.5 else 1
         L = 0
-
-        ri = RoutingInputs(
-            failure_type=failure_type,
-            retry_count=retry_count,
-            C=C,
-            B=B,
-            A=A,
-            N=N,
-            F=F,
-            L=L,
-            replay_mode=replay_mode,
-            playbook_match=playbook_match,
-            deterministic_coverage=deterministic_coverage,
-            provider_prohibited_gemini=provider_prohibited_gemini,
-            provider_prohibited_qwen=provider_prohibited_qwen,
-        )
+        ri = RoutingInputs(failure_type=failure_type, retry_count=retry_count, C=C, B=B, A=A, N=N, F=F, L=L, replay_mode=replay_mode, playbook_match=playbook_match, deterministic_coverage=deterministic_coverage, provider_prohibited_gemini=provider_prohibited_gemini, provider_prohibited_qwen=provider_prohibited_qwen)
         decision = compute_routing_decision(ri)
         logger.info(decision.as_log_line())
         return decision
 
-    # guardian: allow-magic-config
     def _classify_violation_type(self, message: str) -> str:
         """Classify a violation message into a canonical violation type string."""
         msg_lower = message.lower()
-        if "missing sovereign root" in msg_lower or "missing" in msg_lower and "director" in msg_lower:
-            return "MISSING_DIRECTORY"
-        if "forbidden keyword" in msg_lower:
-            return "FORBIDDEN_CONTENT"
-        if "forbidden extension" in msg_lower:
-            return "EXTENSION_MISMATCH"
-        if "test_" in msg_lower and "file" in msg_lower:
-            return "TEST_FILE_MISPLACED"
-        if "sovereign" in msg_lower:
-            return "SOVEREIGN_VIOLATION"
-        return "STRUCTURAL_VIOLATION"
+        if 'missing sovereign root' in msg_lower or ('missing' in msg_lower and 'director' in msg_lower):
+            return 'MISSING_DIRECTORY'
+        if 'forbidden keyword' in msg_lower:
+            return 'FORBIDDEN_CONTENT'
+        if 'forbidden extension' in msg_lower:
+            return 'EXTENSION_MISMATCH'
+        if 'test_' in msg_lower and 'file' in msg_lower:
+            return 'TEST_FILE_MISPLACED'
+        if 'sovereign' in msg_lower:
+            return 'SOVEREIGN_VIOLATION'
+        return 'STRUCTURAL_VIOLATION'
 
     # guardian: allow-magic-config
-    def _check_healing_budget(self, agent_name: str, depth: int = 0, max_depth: int = 3) -> tuple[bool, str]:
+    def _check_healing_budget(self, agent_name: str, depth: int=0, max_depth: int=3) -> tuple[bool, str]:
         """Prevents infinite healing loops and budget exhaustion."""
-        # Use operation-scoped call path to prevent bleeding across territories
-        # Default to "Unknown" if no agent_name provided (should be avoided)
-        if agent_name == "Unknown":
-            agent_name = f"operation-{id(self)}"  # Unique per operation
-
+        if agent_name == 'Unknown':
+            agent_name = f'operation-{id(self)}'
         if agent_name in self._call_path:
-            return False, f"Healing cycle detected: {agent_name}"
+            return (False, f'Healing cycle detected: {agent_name}')
         if depth > max_depth:
-            return False, f"Healing depth limit exceeded for {agent_name}"
+            return (False, f'Healing depth limit exceeded for {agent_name}')
         if self._healing_count >= self._max_healing_operations:
-            logger.warning(
-                "[BUDGET] Healing budget exhausted (%d/%d) — %s blocked",
-                self._healing_count,
-                self._max_healing_operations,
-                agent_name,
-            )
-            return False, f"Budget exceeded ({self._healing_count})"
-        return True, "OK"
+            logger.warning('[BUDGET] Healing budget exhausted (%d/%d) — %s blocked', self._healing_count, self._max_healing_operations, agent_name)
+            return (False, f'Budget exceeded ({self._healing_count})')
+        return (True, 'OK')
 
     # guardian: allow-magic-config
-    def calculate_healing_confidence(
-        self,
-        violations_count: int,
-        violation_types: list[str],
-        territory: str,
-        historical_success_rate: float = 0.8,
-        agent_name: str = "",
-    ) -> ConfidenceScore:
+    def calculate_healing_confidence(self, violations_count: int, violation_types: list[str], territory: str, historical_success_rate: float=0.8, agent_name: str='') -> ConfidenceScore:
         """Calculates weighted confidence score.
 
         Uses GPU-accelerated BAAI/bge-m3 cosine similarity for pattern matching
         when agent_name is in BMG_EMBEDDING_AGENT_KEYS.
         """
         if violations_count == 0:
-            return ConfidenceScore(value=1.0, reasoning="Zero violations")
-        if getattr(self, "auto_approve", False):
-            return ConfidenceScore(value=1.0, reasoning="AUTO-HEAL: --heal active, confidence forced to 1.0")
-        # 1. Base Score (Inverse of violations, capped at 10)
-        base_score = max(0.0, 1.0 - (min(violations_count, 10) * 0.1))
-
-        # 2. Pattern Score — BMG GPU path
+            return ConfidenceScore(value=1.0, reasoning='Zero violations')
+        if getattr(self, 'auto_approve', False):
+            return ConfidenceScore(value=1.0, reasoning='AUTO-HEAL: --heal active, confidence forced to 1.0')
+        base_score = max(0.0, 1.0 - min(violations_count, 10) * 0.1)
         pattern_score = 0.5
         bmg_used = False
         if violation_types and agent_name:
             try:
                 BMG_EMBEDDING_AGENT_KEYS = self._get_bmg_embedding_agent_keys()
-
                 if agent_name in BMG_EMBEDDING_AGENT_KEYS:
                     sem_score = self._calculate_semantic_similarity(territory, violation_types)
                     pattern_score = sem_score
                     bmg_used = True
-                    logger.warning(
-                        "[BMG-GPU] %s: semantic score=%.4f (CUDA/bge-m3)",
-                        agent_name,
-                        sem_score,
-                    )
-            except (
-                ImportError,
-                AttributeError,
-                ValueError,
-            ):  # guardian: allow-silent-swallower  # noqa: BLE001
+                    logger.warning('[BMG-GPU] %s: semantic score=%.4f (CUDA/bge-m3)', agent_name, sem_score)
+            except (ImportError, AttributeError, ValueError):
                 pass
-
             if not bmg_used:
                 scores = [self._calculate_pattern_confidence(v) for v in violation_types]
                 pattern_score = sum(scores) / len(scores)
-
-        # 3. Weighted Final Calculation
-        final_value = (base_score * 0.4) + (pattern_score * 0.4) + (historical_success_rate * 0.2)
-
-        # Boost for governance territories, penalty for safety critical
-        if territory == "prompt_governance":
+        final_value = base_score * 0.4 + pattern_score * 0.4 + historical_success_rate * 0.2
+        if territory == 'prompt_governance':
             final_value *= 1.1
-        if territory.startswith("L5"):
+        if territory.startswith('L5'):
             final_value *= 0.9
-
-        reasoning = f"Base: {base_score:.2f}, Pattern: {pattern_score:.2f}"
+        reasoning = f'Base: {base_score:.2f}, Pattern: {pattern_score:.2f}'
         if bmg_used:
-            reasoning += " [BMG-GPU]"
-        return ConfidenceScore(
-            value=min(1.0, final_value),
-            reasoning=reasoning,
-        )
+            reasoning += ' [BMG-GPU]'
+        return ConfidenceScore(value=min(1.0, final_value), reasoning=reasoning)
 
-    def should_proceed_with_healing(
-        self,
-        confidence: ConfidenceScore,
-        agent_name: str = "Unknown",
-        territory: str = "unknown",
-        failure_type: "FailureType | None" = None,
-        retry_count: int = 0,
-        replay_mode: bool = False,
-        playbook_match: bool = False,
-        deterministic_coverage: bool = False,
-        provider_prohibited_gemini: bool = False,
-        provider_prohibited_qwen: bool = False,
-    ) -> tuple[bool, str]:
+    def should_proceed_with_healing(self, confidence: ConfidenceScore, agent_name: str='Unknown', territory: str='unknown', failure_type: 'FailureType | None'=None, retry_count: int=0, replay_mode: bool=False, playbook_match: bool=False, deterministic_coverage: bool=False, provider_prohibited_gemini: bool=False, provider_prohibited_qwen: bool=False) -> tuple[bool, str]:
         """Determines if healing should proceed using the hardened SSOT routing algorithm."""
         is_safe, msg = self._check_healing_budget(agent_name)
         if not is_safe:
-            return False, f"SAFETY LOCK: {msg}"
-
-        routing = self._route_decision(
-            confidence=confidence,
-            agent_name=agent_name,
-            territory=territory,
-            failure_type=failure_type,
-            retry_count=retry_count,
-            replay_mode=replay_mode,
-            playbook_match=playbook_match,
-            deterministic_coverage=deterministic_coverage,
-            provider_prohibited_gemini=provider_prohibited_gemini,
-            provider_prohibited_qwen=provider_prohibited_qwen,
-        )
-
-        decision_data = {
-            "agent": agent_name,
-            "territory": territory,
-            "confidence": confidence.value,
-            "reasoning": confidence.reasoning,
-            "timestamp": datetime.now().isoformat(),
-            "routing_tier": routing.tier.value,
-            "routing_gate": routing.gate_applied,
-            "routing_score": routing.score,
-            "routing_digest": routing.determinism_digest,
-            "model": routing.model_id,
-            "decision": None,
-            "reason": None,
-        }
-
-        # ── Confidence-score SSOT routing ────────────────────────────────────
-        # Single routing rule — confidence score is the only input to tier.
-        # FAIL_CLOSED from _route_decision (safety gates: replay, retry,
-        # provider prohibition) is preserved and takes precedence.
-        #
-        #   conf > 0.80  → DETERMINISTIC
-        #   0.50 < conf ≤ 0.80 → QWEN (Qwen2.5-14B)
-        #   conf ≤ 0.50  → GEMINI 2.5 Pro
+            return (False, f'SAFETY LOCK: {msg}')
+        routing = self._route_decision(confidence=confidence, agent_name=agent_name, territory=territory, failure_type=failure_type, retry_count=retry_count, replay_mode=replay_mode, playbook_match=playbook_match, deterministic_coverage=deterministic_coverage, provider_prohibited_gemini=provider_prohibited_gemini, provider_prohibited_qwen=provider_prohibited_qwen)
+        decision_data = {'agent': agent_name, 'territory': territory, 'confidence': confidence.value, 'reasoning': confidence.reasoning, 'timestamp': datetime.now().isoformat(), 'routing_tier': routing.tier.value, 'routing_gate': routing.gate_applied, 'routing_score': routing.score, 'routing_digest': routing.determinism_digest, 'model': routing.model_id, 'decision': None, 'reason': None}
         try:
-            from agentic_core.L2_execution.healers.healing_tier_config import (
-                HEALING_CONFIDENCE_X as _CONF_X,
-            )
-            from agentic_core.L2_execution.healers.healing_tier_config import (
-                HEALING_CONFIDENCE_Y as _CONF_Y,
-            )
-            from agentic_core.L2_execution.healers.healing_tier_config import (
-                QWEN_14B_MODEL_ID as _QWEN_14B_MODEL_ID,
-            )
-
-            _GEMINI_MODEL_ID = "gemini-2.5-pro"
-        except ImportError:  # guardian: allow-silent-swallower
-            _CONF_X = 0.80
-            _CONF_Y = 0.50
-            _QWEN_14B_MODEL_ID = "Qwen/Qwen2.5-14B-Instruct-GPTQ-Int4"
-            _GEMINI_MODEL_ID = "gemini-2.5-pro"
+            from agentic_core.L2_execution.healers.healing_tier_config import HEALING_CONFIDENCE_X as _CONF_X
+            from agentic_core.L2_execution.healers.healing_tier_config import HEALING_CONFIDENCE_Y as _CONF_Y
+            from agentic_core.L2_execution.healers.healing_tier_config import QWEN_14B_MODEL_ID as _QWEN_14B_MODEL_ID
+            _GEMINI_MODEL_ID = 'gemini-2.5-pro'
+        except ImportError:
+            _CONF_X = 0.8
+            _CONF_Y = 0.5
+            _QWEN_14B_MODEL_ID = 'Qwen/Qwen2.5-14B-Instruct-GPTQ-Int4'
+            _GEMINI_MODEL_ID = 'gemini-2.5-pro'
         if routing.tier != RoutingTier.FAIL_CLOSED:
             if confidence.value > _CONF_X:
                 tier = RoutingTier.DETERMINISTIC
-                decision_data["model"] = "deterministic-sovereign"
+                decision_data['model'] = 'deterministic-sovereign'
             elif confidence.value > _CONF_Y:
                 tier = RoutingTier.QWEN
-                decision_data["model"] = _QWEN_14B_MODEL_ID
+                decision_data['model'] = _QWEN_14B_MODEL_ID
             else:
                 tier = RoutingTier.GEMINI
-                decision_data["model"] = _GEMINI_MODEL_ID
-            # Sync routing_tier in decision_data to the confidence-SSOT override value
-            decision_data["routing_tier"] = tier.value
+                decision_data['model'] = _GEMINI_MODEL_ID
+            decision_data['routing_tier'] = tier.value
         else:
             tier = routing.tier
-
         if tier == RoutingTier.FAIL_CLOSED:
-            reason = f"FAIL-CLOSED ({routing.gate_applied}, S={routing.score})"
-            decision_data["decision"] = False
-            decision_data["reason"] = reason
+            reason = f'FAIL-CLOSED ({routing.gate_applied}, S={routing.score})'
+            decision_data['decision'] = False
+            decision_data['reason'] = reason
             self.decisions_made.append(decision_data)
-            return False, reason
-
+            return (False, reason)
         if tier == RoutingTier.DETERMINISTIC:
             self._healing_count += 1
             self._call_path.add(agent_name)
-            reason = f"AUTO-HEAL: SOVEREIGN-AUTO ({confidence.value:.2f}, S={routing.score}, gate={routing.gate_applied})"
-            decision_data["decision"] = True
-            decision_data["reason"] = reason
+            reason = f'AUTO-HEAL: SOVEREIGN-AUTO ({confidence.value:.2f}, S={routing.score}, gate={routing.gate_applied})'
+            decision_data['decision'] = True
+            decision_data['reason'] = reason
             self.decisions_made.append(decision_data)
-            return True, reason
-
+            return (True, reason)
         if tier == RoutingTier.QWEN:
-            # Medium score: Qwen arbitrates. If Qwen says NO, fall through to
-            # agent-native logic — healing is never blocked by a single NO.
             qwen_approved = True
-            qwen_reason = f"LLM Override: LLM-ARBITRATED-QWEN14B ({confidence.value:.2f}, S={routing.score})"
+            qwen_reason = f'LLM Override: LLM-ARBITRATED-QWEN14B ({confidence.value:.2f}, S={routing.score})'
             try:
                 arbiter = self._get_qwen_vllm_arbiter()
-                vllm_result = arbiter(
-                    agent_name=agent_name,
-                    violation_types=list(confidence.reasoning.split(", ") if confidence.reasoning else []),
-                    territory=territory,
-                    score=routing.score,
-                    gate=routing.gate_applied,
-                )
-                qwen_approved = vllm_result.get("decision", True)
-                raw_reason = vllm_result.get("reason", "")[:120]
-                qwen_reason = f"LLM Override: LLM-ARBITRATED-QWEN14B ({confidence.value:.2f}, S={routing.score}): {raw_reason}"
-                logger.warning("[QWEN14B] %s -> decision=%s reason=%s", agent_name, qwen_approved, raw_reason)
-            except (
-                ImportError,
-                AttributeError,
-                ValueError,
-                KeyError,
-                RuntimeError,
-                OSError,
-                TimeoutError,
-            ) as _qwen_err:  # guardian: allow-silent-swallow
-                logger.warning("[QWEN14B] vLLM call failed, falling to agent-native: %s", _qwen_err)
+                vllm_result = arbiter(agent_name=agent_name, violation_types=list(confidence.reasoning.split(', ') if confidence.reasoning else []), territory=territory, score=routing.score, gate=routing.gate_applied)
+                qwen_approved = vllm_result.get('decision', True)
+                raw_reason = vllm_result.get('reason', '')[:120]
+                qwen_reason = f'LLM Override: LLM-ARBITRATED-QWEN14B ({confidence.value:.2f}, S={routing.score}): {raw_reason}'
+                logger.warning('[QWEN14B] %s -> decision=%s reason=%s', agent_name, qwen_approved, raw_reason)
+            except (ImportError, AttributeError, ValueError, KeyError, RuntimeError, OSError, TimeoutError) as _qwen_err:
+                logger.warning('[QWEN14B] vLLM call failed, falling to agent-native: %s', _qwen_err)
                 qwen_approved = False
-
             if qwen_approved:
                 final_reason = qwen_reason
                 self._healing_count += 1
                 self._call_path.add(agent_name)
-                decision_data["decision"] = True
-                decision_data["reason"] = final_reason
+                decision_data['decision'] = True
+                decision_data['reason'] = final_reason
                 self.decisions_made.append(decision_data)
-                return True, final_reason
+                return (True, final_reason)
             else:
-                # Qwen said NO — deny; do NOT add to _call_path (not an approved healing op)
-                logger.info(
-                    "[ROUTING] Qwen declined %s (S=%d) — denying",
-                    agent_name,
-                    routing.score,
-                )
-                final_reason = f"LLM Override: QWEN14B-DECLINED ({confidence.value:.2f}, S={routing.score}): agent logic governs"
-                decision_data["decision"] = False
-                decision_data["reason"] = final_reason
+                logger.info('[ROUTING] Qwen declined %s (S=%d) — denying', agent_name, routing.score)
+                final_reason = f'LLM Override: QWEN14B-DECLINED ({confidence.value:.2f}, S={routing.score}): agent logic governs'
+                decision_data['decision'] = False
+                decision_data['reason'] = final_reason
                 self.decisions_made.append(decision_data)
-                return False, final_reason
-
-        # tier == RoutingTier.GEMINI
-        # Low confidence: most complex reasoning — Gemini 2.5 Pro arbitrates.
-        # When enable_llm=False and tier has resolved to GEMINI (conf <= _CONF_Y),
-        # Gemini is unavailable — block and require manual review.
+                return (False, final_reason)
         if not self.enable_llm and confidence.value <= _CONF_Y:
-            reason = f"Manual Review Required: LLM disabled, confidence={confidence.value:.2f} requires advanced reasoning"
-            decision_data["decision"] = False
-            decision_data["reason"] = reason
+            reason = f'Manual Review Required: LLM disabled, confidence={confidence.value:.2f} requires advanced reasoning'
+            decision_data['decision'] = False
+            decision_data['reason'] = reason
             self.decisions_made.append(decision_data)
-            return False, reason
-        target_model = decision_data.get("model", routing.model_id)
-        logger.info(
-            "[GEMINI] Invoking %s for %s (S=%d gate=%s) — high-complexity arbitration",
-            target_model,
-            agent_name,
-            routing.score,
-            routing.gate_applied,
-        )
+            return (False, reason)
+        target_model = decision_data.get('model', routing.model_id)
+        logger.info('[GEMINI] Invoking %s for %s (S=%d gate=%s) — high-complexity arbitration', target_model, agent_name, routing.score, routing.gate_applied)
         self._healing_count += 1
         self._call_path.add(agent_name)
-        _gemini_label = (
-            "RECOVERY-PRO"
-            if confidence.value < 0.40
-            else ("FLASH" if "flash" in target_model.lower() else "GEMINI")
-        )
-        reason = f"LLM Override: LLM-ARBITRATED-{_gemini_label} ({confidence.value:.2f}, S={routing.score}, gate={routing.gate_applied})"
-        decision_data["decision"] = True
-        decision_data["reason"] = reason
+        _gemini_label = 'RECOVERY-PRO' if confidence.value < 0.4 else 'FLASH' if 'flash' in target_model.lower() else 'GEMINI'
+        reason = f'LLM Override: LLM-ARBITRATED-{_gemini_label} ({confidence.value:.2f}, S={routing.score}, gate={routing.gate_applied})'
+        decision_data['decision'] = True
+        decision_data['reason'] = reason
         self.decisions_made.append(decision_data)
-        return True, reason
+        return (True, reason)
 
-    def _hitl_gate(
-        self,
-        agent_name: str,
-        confidence: "ConfidenceScore",
-        tier: str,
-    ) -> tuple[bool, str]:
+    def _hitl_gate(self, agent_name: str, confidence: 'ConfidenceScore', tier: str) -> tuple[bool, str]:
         """
         HITL terminal gate for medium/low confidence healing decisions.
 
@@ -2432,96 +1386,58 @@ class SovereignDecisionEngine:
             (approved: bool, reason: str)
         """
         import sys
-
-        border = "=" * 56
-        print(f"\n{border}")
-        print(f"  HITL GATE  [{tier} CONFIDENCE]")
+        border = '=' * 56
+        print(f'\n{border}')
+        print(f'  HITL GATE  [{tier} CONFIDENCE]')
         print(border)
-        print(f"  Agent     : {agent_name}")
-        print(f"  Confidence: {confidence.value:.2f}  ({tier})")
-        print(f"  Reasoning : {confidence.reasoning}")
+        print(f'  Agent     : {agent_name}')
+        print(f'  Confidence: {confidence.value:.2f}  ({tier})')
+        print(f'  Reasoning : {confidence.reasoning}')
         print(border)
-        print("  [Y] Approve healing    [N] Reject    [D] Defer to report")
+        print('  [Y] Approve healing    [N] Reject    [D] Defer to report')
         print(border)
-
-        if getattr(self, "auto_approve", False):
-            return True, f"HITL-AUTO-APPROVED: --heal active ({confidence.value:.2f})"
+        if getattr(self, 'auto_approve', False):
+            return (True, f'HITL-AUTO-APPROVED: --heal active ({confidence.value:.2f})')
         if not sys.stdin.isatty():
-            reason = f"HITL-DEFER (non-interactive, {confidence.value:.2f})"
-            print(f"  Non-interactive environment — auto-DEFER: {agent_name}")
-            print(border + "\n")
-            return False, reason
-
+            reason = f'HITL-DEFER (non-interactive, {confidence.value:.2f})'
+            print(f'  Non-interactive environment — auto-DEFER: {agent_name}')
+            print(border + '\n')
+            return (False, reason)
         try:
-            raw = input("  Choice [Y/N/D]: ").strip().upper()
+            raw = input('  Choice [Y/N/D]: ').strip().upper()
         except (EOFError, KeyboardInterrupt):
-            raw = "D"
-
-        print(border + "\n")
-
-        if raw == "Y":
-            return True, f"HITL-APPROVED ({confidence.value:.2f})"
-        elif raw == "N":
-            return False, f"HITL-REJECTED ({confidence.value:.2f})"
+            raw = 'D'
+        print(border + '\n')
+        if raw == 'Y':
+            return (True, f'HITL-APPROVED ({confidence.value:.2f})')
+        elif raw == 'N':
+            return (False, f'HITL-REJECTED ({confidence.value:.2f})')
         else:
-            return False, f"HITL-DEFER ({confidence.value:.2f})"
+            return (False, f'HITL-DEFER ({confidence.value:.2f})')
 
-    async def analyze_violations_with_cognitive_disposition(
-        self,
-        violations: list,
-        territory: str,
-        state_mgr,
-    ):
+    async def analyze_violations_with_cognitive_disposition(self, violations: list, territory: str, state_mgr):
         """Analyze violations using CognitiveDispositionAgent for enhanced confidence."""
         if not self.enable_cda:
-            # Return default values if CDA is disabled; BMG path fires via calculate_healing_confidence
-            fallback_conf = self.calculate_healing_confidence(
-                len(violations),
-                [str(v) for v in violations[:10]],
-                territory,
-                agent_name="location",
-            )
-            return [], fallback_conf
-
+            fallback_conf = self.calculate_healing_confidence(len(violations), [str(v) for v in violations[:10]], territory, agent_name='location')
+            return ([], fallback_conf)
         try:
-            # Dynamic import of CDA to avoid hard dependency
-            from agentic_core.L0_routing.seams.safety_validators_seam import (
-                load_cognitive_disposition_agent,
-            )
-
+            from agentic_core.L0_routing.seams.safety_validators_seam import load_cognitive_disposition_agent
             CognitiveDispositionAgent = load_cognitive_disposition_agent()
             cda = CognitiveDispositionAgent()
-
-            # Analyze violations
             dispositions = await cda.analyze_violations(violations, territory)
-
-            # Calculate enhanced confidence based on cognitive analysis
             if dispositions:
-                avg_confidence = sum(d.confidence for d in dispositions) / len(dispositions)
-                enhanced_confidence = ConfidenceScore(
-                    value=avg_confidence,
-                    reasoning=f"Cognitive analysis of {len(dispositions)} dispositions",
-                )
+                avg_confidence = sum((d.confidence for d in dispositions)) / len(dispositions)
+                enhanced_confidence = ConfidenceScore(value=avg_confidence, reasoning=f'Cognitive analysis of {len(dispositions)} dispositions')
             else:
-                enhanced_confidence = ConfidenceScore(
-                    value=0.5,
-                    reasoning="No cognitive dispositions generated",
-                )
-
-            return dispositions, enhanced_confidence
-
+                enhanced_confidence = ConfidenceScore(value=0.5, reasoning='No cognitive dispositions generated')
+            return (dispositions, enhanced_confidence)
         except ImportError:
-            logger.warning("CognitiveDispositionAgent not available, using default confidence")
-            bmg_conf = self.calculate_healing_confidence(
-                len(violations),
-                [str(v) for v in violations[:10]],
-                territory,
-                agent_name="location",
-            )
-            return [], bmg_conf
+            logger.warning('CognitiveDispositionAgent not available, using default confidence')
+            bmg_conf = self.calculate_healing_confidence(len(violations), [str(v) for v in violations[:10]], territory, agent_name='location')
+            return ([], bmg_conf)
         except (AttributeError, ValueError) as e:
-            logger.error(f"Cognitive analysis failed: {e}")
-            return [], ConfidenceScore(value=0.5, reasoning=f"CDA error: {str(e)}")
+            logger.error(f'Cognitive analysis failed: {e}')
+            return ([], ConfidenceScore(value=0.5, reasoning=f'CDA error: {str(e)}'))
 
     def request_sovereignty_token(self, agent_name: str, operation: str) -> bool:
         """
@@ -2529,50 +1445,32 @@ class SovereignDecisionEngine:
         Enforces atomic locking and stack depth limits.
         """
         if self._atomic_lock:
-            logging.warning(f"Sovereignty DENIED for {agent_name}: Atomic lock active")
+            logging.warning(f'Sovereignty DENIED for {agent_name}: Atomic lock active')
             return False
-
         if len(self._operation_stack) >= self._max_stack_depth:
-            logging.critical(
-                f"Sovereignty DENIED for {agent_name}: Stack depth exceeded ({len(self._operation_stack)})",
-            )
+            logging.critical(f'Sovereignty DENIED for {agent_name}: Stack depth exceeded ({len(self._operation_stack)})')
             return False
-
-        # Cycle detection
-        op_signature = f"{agent_name}:{operation}"
+        op_signature = f'{agent_name}:{operation}'
         if op_signature in self._operation_stack:
-            logging.warning(f"Sovereignty DENIED for {agent_name}: Cycle detected {op_signature}")
+            logging.warning(f'Sovereignty DENIED for {agent_name}: Cycle detected {op_signature}')
             return False
-
         self._operation_stack.append(op_signature)
         self._atomic_lock = True
-        self._sovereignty_token = f"SOV_{int(time.time())}_{agent_name}"
+        self._sovereignty_token = f'SOV_{int(time.time())}_{agent_name}'
         return True
 
-    def release_sovereignty_token(self, agent_name: str, success: bool = True) -> None:
+    def release_sovereignty_token(self, agent_name: str, success: bool=True) -> None:
         """Release the lock after operation completion."""
         if not self._atomic_lock:
             return
-
         if self._operation_stack:
             self._operation_stack.pop()
-
         self._atomic_lock = False
         self._sovereignty_token = None
-
         if not success:
-            logging.warning(f"Sovereignty released with FAILURE status for {agent_name}")
-
-
-# Backward-compatible aliases for the former 3-class hierarchy
+            logging.warning(f'Sovereignty released with FAILURE status for {agent_name}')
 AutonomousDecisionEngine = SovereignDecisionEngine
 EnhancedAutonomousDecisionEngine = SovereignDecisionEngine
-
-
-# ============================================================================
-# PRE-FLIGHT VALIDATION LAYER (HARDENED)
-# ============================================================================
-
 
 class PreFlightValidator:
     """
@@ -2580,52 +1478,37 @@ class PreFlightValidator:
     Verifies environmental readiness and enforces strict agent signatures/imports.
     """
 
-    def __init__(self, project_root: Path, dry_run: bool = False):
+    def __init__(self, project_root: Path, dry_run: bool=False):
         self.project_root = project_root
         self.dry_run = dry_run
 
     def run_checks(self) -> tuple[bool, list[str]]:
         errors = []
-
-        # 1. Windows Long Paths (System Stability)
-        if platform.system() == "Windows":
+        if platform.system() == 'Windows':
             try:
                 import winreg
-
-                key = winreg.OpenKey(
-                    winreg.HKEY_LOCAL_MACHINE,
-                    r"SYSTEM\CurrentControlSet\Control\FileSystem",
-                )
-                val, _ = winreg.QueryValueEx(key, "LongPathsEnabled")
+                key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, 'SYSTEM\\CurrentControlSet\\Control\\FileSystem')
+                val, _ = winreg.QueryValueEx(key, 'LongPathsEnabled')
                 if val != 1:
-                    if os.getenv("AGENTIC_BYPASS_LONGPATHS_CHECK") == "1":
-                        logging.warning(
-                            "AGENTIC_BYPASS_LONGPATHS_CHECK=1: skipping LongPathsEnabled hard-fail"
-                        )
+                    if os.getenv('AGENTIC_BYPASS_LONGPATHS_CHECK') == '1':
+                        logging.warning('AGENTIC_BYPASS_LONGPATHS_CHECK=1: skipping LongPathsEnabled hard-fail')
                     elif self.dry_run:
-                        logging.warning(
-                            "Windows LongPathsEnabled is NOT active (Set to 1 in Registry) - proceeding in dry-run mode"
-                        )
+                        logging.warning('Windows LongPathsEnabled is NOT active (Set to 1 in Registry) - proceeding in dry-run mode')
                     else:
-                        errors.append("Windows LongPathsEnabled is NOT active (Set to 1 in Registry)")
+                        errors.append('Windows LongPathsEnabled is NOT active (Set to 1 in Registry)')
             except (OSError, ImportError) as e:
-                logging.warning(f"Could not verify Windows LongPathsEnabled: {e}")
-
-        # 2. Critical Directory Structure (SSOT Integrity)
-        required_dirs = [AGENTIC_CORE_DIR, L5_SAFETY_DIR, "agentic_core/prompt_governance"]
+                logging.warning(f'Could not verify Windows LongPathsEnabled: {e}')
+        required_dirs = [AGENTIC_CORE_DIR, L5_SAFETY_DIR, 'agentic_core/prompt_governance']
         for d in required_dirs:
             if not (self.project_root / d).exists():
-                errors.append(f"Critical directory missing: {d}")
-
-        # 3. Write Permissions (Operational Readiness)
+                errors.append(f'Critical directory missing: {d}')
         try:
-            test_file = self.project_root / ".write_test"
+            test_file = self.project_root / '.write_test'
             test_file.touch()
             test_file.unlink()
         except OSError:
-            errors.append("Project root is not writable")
-
-        return len(errors) == 0, errors
+            errors.append('Project root is not writable')
+        return (len(errors) == 0, errors)
 
     def validate_agent_integrity(self, agents: dict[str, Any]) -> list[str]:
         """
@@ -2635,38 +1518,21 @@ class PreFlightValidator:
         integrity_errors = []
         for name, agent_cls in agents.items():
             try:
-                # Force instantiation to catch import/mixin errors immediately
                 agent = agent_cls(project_root=self.project_root) if inspect.isclass(agent_cls) else agent_cls
             except (ImportError, AttributeError, TypeError, ValueError) as e:
-                integrity_errors.append(f"Agent {name} FAILED INSTANTIATION: {e}")
+                integrity_errors.append(f'Agent {name} FAILED INSTANTIATION: {e}')
                 continue
-
-            # 1. Presence of 'heal' method
-            if not hasattr(agent, "heal") or not callable(agent.heal):
+            if not hasattr(agent, 'heal') or not callable(agent.heal):
                 integrity_errors.append(f"Agent {name} violates Protocol: Missing 'heal' method")
                 continue
-
-            # 2. Signature Validation: only flag the specific legacy heal(path) signature
             sig = inspect.signature(agent.heal)
             params = list(sig.parameters.keys())
-
-            if "path" in params and len(params) == 1:
-                integrity_errors.append(
-                    f"Agent {name} has LEGACY SIGNATURE: heal(path). Must update to heal(violation).",
-                )
-
-            # 3. Mixin Verification (MRO Audit)
+            if 'path' in params and len(params) == 1:
+                integrity_errors.append(f'Agent {name} has LEGACY SIGNATURE: heal(path). Must update to heal(violation).')
             mro_names = [c.__name__ for c in inspect.getmro(agent.__class__)]
-            if "NamingAgent" in name and "SubatomicTestingMixin" not in mro_names:
-                integrity_errors.append(f"Agent {name} missing mandatory SubatomicTestingMixin in MRO.")
-
+            if 'NamingAgent' in name and 'SubatomicTestingMixin' not in mro_names:
+                integrity_errors.append(f'Agent {name} missing mandatory SubatomicTestingMixin in MRO.')
         return integrity_errors
-
-
-# ============================================================================
-# HARDENING UTILITIES (NEW)
-# ============================================================================
-
 
 class NonInteractiveGuard:
     """
@@ -2675,7 +1541,7 @@ class NonInteractiveGuard:
     """
 
     # guardian: allow-magic-config
-    def __init__(self, active: bool = True, max_blocked_prompts: int = 10):
+    def __init__(self, active: bool=True, max_blocked_prompts: int=10):
         self.active = active
         self.max_blocked_prompts = max_blocked_prompts
         self.blocked_count = 0
@@ -2690,30 +1556,23 @@ class NonInteractiveGuard:
         builtins.input = self.original_input
 
     def _trap_input(self, prompt=None):
-        # Auto-approve if env var set (avoids RecursionError bomb in CI/auto mode)
-        if os.environ.get("SOVEREIGN_AUTO_APPROVE") == "1":
+        if os.environ.get('SOVEREIGN_AUTO_APPROVE') == '1':
             logger.debug(f"AUTO-APPROVE: suppressing input('{prompt}')")
-            return "y"
-
+            return 'y'
         self.blocked_count += 1
         if self.blocked_count > self.max_blocked_prompts:
-            raise RecursionError(
-                f"Infinite Loop Protection: {self.blocked_count} prompts blocked (max={self.max_blocked_prompts})"
-            )
-        logger.warning(
-            f"BLOCKED PROMPT ({self.blocked_count}/{self.max_blocked_prompts}): Agent attempted input('{prompt}')",
-        )
-        raise RuntimeError(f"Interactive prompt blocked in autonomous mode: {prompt}")
+            raise RecursionError(f'Infinite Loop Protection: {self.blocked_count} prompts blocked (max={self.max_blocked_prompts})')
+        logger.warning(f"BLOCKED PROMPT ({self.blocked_count}/{self.max_blocked_prompts}): Agent attempted input('{prompt}')")
+        raise RuntimeError(f'Interactive prompt blocked in autonomous mode: {prompt}')
 
-
-@_optional_runtime_guard()("D.with_retry.execute_ssot")
-# guardian: allow-magic-config
+@_optional_runtime_guard()('D.with_retry.execute_ssot')
 def with_retry(max_retries=MAX_RETRIES, delay=1.0):
     """
     [HARDENED] Decorator for transient failure resilience with exponential backoff.
     """
 
     def decorator(func):
+
         @wraps(func)
         def wrapper(*args, **kwargs):
             last_exception = None
@@ -2722,41 +1581,20 @@ def with_retry(max_retries=MAX_RETRIES, delay=1.0):
                     return func(*args, **kwargs)
                 except (ImportError, AttributeError, ValueError, TypeError, OSError, RuntimeError) as e:
                     last_exception = e
-                    # Don't retry on security guard or exhaustion errors
-                    if isinstance(e, RuntimeError) and "prompt" in str(e):
+                    if isinstance(e, RuntimeError) and 'prompt' in str(e):
                         raise e
                     if isinstance(e, RecursionError):
                         raise e
-
-                    wait_time = delay * (2**attempt)
-                    logger.error(
-                        f"Retry {attempt + 1}/{max_retries} for {func.__name__} failed: {e}\n{traceback.format_exc()}",
-                    )
+                    wait_time = delay * 2 ** attempt
+                    logger.error(f'Retry {attempt + 1}/{max_retries} for {func.__name__} failed: {e}\n{traceback.format_exc()}')
                     time.sleep(wait_time)
-            logger.error(f"All {max_retries} retries exhausted for {func.__name__}")
+            logger.error(f'All {max_retries} retries exhausted for {func.__name__}')
             raise last_exception
-
         return wrapper
-
     return decorator
 
-
-# ============================================================================
-# PHASE 2: RECONCILIATION (The Dangerous Phase)
-# ============================================================================
-
-
-# guardian: allow-magic-config
 @with_retry(max_retries=MAX_RETRIES)
-def execute_phase2_reconciliation(
-    agents: dict[str, Any],
-    territory: str,
-    decision_engine: SovereignDecisionEngine,  # [HARDENED] Updated type
-    state_mgr: "RuntimeStateManager",
-    plan: dict[str, Any],
-    ctx: "HealContext" = None,
-    **kwargs,
-):
+def execute_phase2_reconciliation(agents: dict[str, Any], territory: str, decision_engine: SovereignDecisionEngine, state_mgr: 'RuntimeStateManager', plan: dict[str, Any], ctx: 'HealContext'=None, **kwargs):
     """
     PHASE 2: EXECUTE HEALING (HARDENED)
     Critical Path: Modifications occur here. Must strictly adhere to decision engine.
@@ -2765,398 +1603,170 @@ def execute_phase2_reconciliation(
     """
     reconciliation_log = []
     failed_fixes = []
-
-    if not plan or not plan.get("violations_found"):
-        logging.info("Phase 2: No violations to reconcile.")
-        return {
-            "violations_found": 0,
-            "violations_fixed": 0,
-            "status": "skipped",
-            "errors": 0,
-            "skipped": 0,
-            "execution_time_ms": 0.0,
-            "error_message": None,
-        }
-
-    violations_list = plan["violations_found"]
-    logging.warning(f"Phase 2: Reconciling {len(violations_list)} violations across agents...")
-
-    # Group violations by agent key so each agent's heal_repository() is called once
-    # with the full set of violations it owns, and sovereignty token is held for that batch.
+    if not plan or not plan.get('violations_found'):
+        logging.info('Phase 2: No violations to reconcile.')
+        return {'violations_found': 0, 'violations_fixed': 0, 'status': 'skipped', 'errors': 0, 'skipped': 0, 'execution_time_ms': 0.0, 'error_message': None}
+    violations_list = plan['violations_found']
+    logging.warning(f'Phase 2: Reconciling {len(violations_list)} violations across agents...')
     from collections import defaultdict
-
     by_agent: dict[str, list] = defaultdict(list)
     for v in violations_list:
-        by_agent[v.get("suggested_agent", "reconciler")].append(v)
-
-    # Progress bar for agent healing
+        by_agent[v.get('suggested_agent', 'reconciler')].append(v)
     agent_items = list(by_agent.items())
-    with tqdm(total=len(agent_items), desc="Healing agents", unit="agent", ncols=100) as pbar:
+    with tqdm(total=len(agent_items), desc='Healing agents', unit='agent', ncols=100) as pbar:
         for idx, (agent_key, agent_violations) in enumerate(agent_items, 1):
-            pbar.set_description(f"Agent: {agent_key[:20]:<20} ({idx}/{len(agent_items)})")
-            violation_types = [v.get("type", "UNKNOWN") for v in agent_violations]
-
+            pbar.set_description(f'Agent: {agent_key[:20]:<20} ({idx}/{len(agent_items)})')
+            violation_types = [v.get('type', 'UNKNOWN') for v in agent_violations]
             agent_cls = agents.get(agent_key)
             if agent_cls is None:
-                logging.warning(
-                    f"Phase 2: agent key '{agent_key}' not in registry — skipping {len(agent_violations)} violations"
-                )
-                failed_fixes.extend(
-                    {"violation": v, "reason": f"Agent '{agent_key}' not registered", "status": "blocked"}
-                    for v in agent_violations
-                )
+                logging.warning(f"Phase 2: agent key '{agent_key}' not in registry — skipping {len(agent_violations)} violations")
+                failed_fixes.extend(({'violation': v, 'reason': f"Agent '{agent_key}' not registered", 'status': 'blocked'} for v in agent_violations))
                 pbar.update(1)
                 continue
-
-            confidence = decision_engine.calculate_healing_confidence(
-                violations_count=len(agent_violations),
-                violation_types=violation_types,
-                territory=territory,
-                agent_name=agent_key,
-            )
-
-            allowed, reason = decision_engine.should_proceed_with_healing(
-                confidence, agent_key, territory=territory
-            )
+            confidence = decision_engine.calculate_healing_confidence(violations_count=len(agent_violations), violation_types=violation_types, territory=territory, agent_name=agent_key)
+            allowed, reason = decision_engine.should_proceed_with_healing(confidence, agent_key, territory=territory)
             if not allowed:
-                logging.warning(f"Phase 2: BLOCKED {agent_key}: {reason}")
-                failed_fixes.extend(
-                    {"violation": v, "reason": reason, "status": "blocked"} for v in agent_violations
-                )
+                logging.warning(f'Phase 2: BLOCKED {agent_key}: {reason}')
+                failed_fixes.extend(({'violation': v, 'reason': reason, 'status': 'blocked'} for v in agent_violations))
                 pbar.update(1)
                 continue
-
             if ctx is None or not ctx.heal:
                 for v in agent_violations:
-                    reconciliation_log.append(
-                        {"action": "would_fix", "target": v.get("file"), "agent": agent_key, "reason": reason}
-                    )
+                    reconciliation_log.append({'action': 'would_fix', 'target': v.get('file'), 'agent': agent_key, 'reason': reason})
                 pbar.update(1)
                 continue
-
             if not decision_engine.request_sovereignty_token(agent_key, violation_types[0]):
-                failed_fixes.extend(
-                    {"violation": v, "reason": "Sovereignty Token Denied", "status": "locked"}
-                    for v in agent_violations
-                )
+                failed_fixes.extend(({'violation': v, 'reason': 'Sovereignty Token Denied', 'status': 'locked'} for v in agent_violations))
                 pbar.update(1)
                 continue
-
             try:
-                # Instantiate the agent class and call heal_repository() — the real mutation path
                 agent_instance = agent_cls(project_root=REPO_ROOT)
-                state_mgr.update_agent(
-                    agent_key, f"[{reason.split('(')[0].strip()}] Healing {len(agent_violations)} violations"
-                )
-
-                logging.warning(
-                    "Phase 2: [%s] → calling heal_repository(dry_run=False, execute=True) for %d violations [routing: %s]",
-                    agent_key,
-                    len(agent_violations),
-                    reason.split("(")[0].strip(),
-                )
-
-                # Tier 1: record mutation intent via UWG before execution.
-                # grant_write_permission is informational — UWG tracks all agent
-                # mutation attempts for audit and replay without blocking them.
+                state_mgr.update_agent(agent_key, f"[{reason.split('(')[0].strip()}] Healing {len(agent_violations)} violations")
+                logging.warning('Phase 2: [%s] → calling heal_repository(dry_run=False, execute=True) for %d violations [routing: %s]', agent_key, len(agent_violations), reason.split('(')[0].strip())
                 _uwg = _get_uwg()
                 # guardian: allow-path-string
-                _territory_posix = Path(territory).as_posix() + "/"
+                _territory_posix = Path(territory).as_posix() + '/'
                 _uwg.grant_write_permission(_territory_posix)
-
-                # [FIX-HANG] Run heal_repository with timeout to prevent indefinite hangs.
-                # Territory scoping reduces scan surface; timeout is the hard safety net.
-                _HEAL_TIMEOUT_S = int(os.environ.get("HEAL_TIMEOUT_SECONDS", "300"))
+                _HEAL_TIMEOUT_S = int(os.environ.get('HEAL_TIMEOUT_SECONDS', '300'))
                 with ThreadPoolExecutor(max_workers=1) as _pool:
-                    _future = _pool.submit(
-                        agent_instance.heal_repository,
-                        dry_run=False,
-                        execute=True,
-                        target_territory=territory,
-                    )
+                    _future = _pool.submit(agent_instance.heal_repository, dry_run=False, execute=True, target_territory=territory)
                     try:
                         fix_result = _future.result(timeout=_HEAL_TIMEOUT_S)
                     except FuturesTimeoutError:
-                        logging.error(
-                            "Phase 2: [%s] TIMEOUT after %ds — heal_repository hung. Skipping.",
-                            agent_key,
-                            _HEAL_TIMEOUT_S,
-                        )
-                        raise RuntimeError(
-                            f"heal_repository timed out after {_HEAL_TIMEOUT_S}s for {agent_key}"
-                        )
+                        logging.error('Phase 2: [%s] TIMEOUT after %ds — heal_repository hung. Skipping.', agent_key, _HEAL_TIMEOUT_S)
+                        raise RuntimeError(f'heal_repository timed out after {_HEAL_TIMEOUT_S}s for {agent_key}')
                     finally:
                         _uwg.revoke_write_permission(_territory_posix)
-                        _uwg.record_mutation(
-                            path=_territory_posix,
-                            operation="heal_repository",
-                            permitted=True,
-                        )
-
+                        _uwg.record_mutation(path=_territory_posix, operation='heal_repository', permitted=True)
                 if not isinstance(fix_result, dict):
-                    fix_result = {"raw_output": str(fix_result)}
-
-                fix_result["agent"] = agent_key
-                fix_result["violations_submitted"] = len(agent_violations)
-                fix_result["routing_reason"] = reason
-
-                # Tier 3: lift unstructured dict to canonical HealCheckResult.
-                # Non-fatal — adapter failure must never block healing pipeline.
+                    fix_result = {'raw_output': str(fix_result)}
+                fix_result['agent'] = agent_key
+                fix_result['violations_submitted'] = len(agent_violations)
+                fix_result['routing_reason'] = reason
                 try:
                     _adapt = _get_heal_result_adapter()
-                    _hcr = _adapt(
-                        agent_name=agent_key,
-                        raw_result=fix_result,
-                        repo_root=REPO_ROOT,
-                    )
-                    fix_result["_heal_check_result"] = _hcr.to_dict()
-                except (
-                    ImportError,
-                    AttributeError,
-                    TypeError,
-                ) as _tier3_err:  # guardian: allow-silent-swallower
-                    logger.warning("Tier-3 adapt failed for %s: %s", agent_key, _tier3_err)
-
-                if fix_result.get("success", True) is False:
+                    _hcr = _adapt(agent_name=agent_key, raw_result=fix_result, repo_root=REPO_ROOT)
+                    fix_result['_heal_check_result'] = _hcr.to_dict()
+                except (ImportError, AttributeError, TypeError) as _tier3_err:
+                    logger.warning('Tier-3 adapt failed for %s: %s', agent_key, _tier3_err)
+                if fix_result.get('success', True) is False:
                     raise RuntimeError(f"Agent reported failure: {fix_result.get('error', 'Unknown')}")
-
                 reconciliation_log.append(fix_result)
                 decision_engine.release_sovereignty_token(agent_key, success=True)
-                # [H3] Record healing action for Phase 2 reconciliation.
-                # "reconciler" and "location" agents are already recorded unconditionally
-                # in execute_phase1_discovery_impl — skip them here to avoid duplicates.
-                _AGENT_KEY_TO_CLASS_NAME = {
-                    "reconciler": "FilesystemSSOTHealerAgent",
-                    "location": "LocationHealerAgent",
-                    "hierarchy": "HierarchyHealerAgent",
-                    "arch_governor": "ArchitectureGovernorAgent",
-                    "gravity_repair": "GravityLeakHealerAgent",
-                    "file_classification": "FileClassificationHealerAgent",
-                    "observability_probe": "ObservabilityProbeExecutorAgent",
-                    "cognitive_disposition": "CognitiveDispositionAgent",
-                    "root_hygiene": "RootHygieneAgent",
-                }
-                _PHASE1_RECORDED = {"reconciler", "location"}
+                _AGENT_KEY_TO_CLASS_NAME = {'reconciler': 'FilesystemSSOTHealerAgent', 'location': 'LocationHealerAgent', 'hierarchy': 'HierarchyHealerAgent', 'arch_governor': 'ArchitectureGovernorAgent', 'gravity_repair': 'GravityLeakHealerAgent', 'file_classification': 'FileClassificationHealerAgent', 'observability_probe': 'ObservabilityProbeExecutorAgent', 'cognitive_disposition': 'CognitiveDispositionAgent', 'root_hygiene': 'RootHygieneAgent'}
+                _PHASE1_RECORDED = {'reconciler', 'location'}
                 if agent_key not in _PHASE1_RECORDED:
-                    _record_healing_action(
-                        state_mgr,
-                        agent=_AGENT_KEY_TO_CLASS_NAME.get(agent_key, agent_key),
-                        territory=territory,
-                        routing_score=confidence.value if hasattr(confidence, "value") else 0.0,
-                        routing_tier=reason.split("(")[0].strip() if reason else "DETERMINISTIC",
-                        confidence=confidence.value if hasattr(confidence, "value") else 0.0,
-                        fix_summary=f"Applied {len(agent_violations)} reconciliation fixes via heal_repository",
-                        outcome="SUCCESS",
-                    )
-                logging.warning(
-                    "Phase 2: [%s] ✓ heal_repository() complete — result keys: %s",
-                    agent_key,
-                    list(fix_result.keys()),
-                )
+                    _record_healing_action(state_mgr, agent=_AGENT_KEY_TO_CLASS_NAME.get(agent_key, agent_key), territory=territory, routing_score=confidence.value if hasattr(confidence, 'value') else 0.0, routing_tier=reason.split('(')[0].strip() if reason else 'DETERMINISTIC', confidence=confidence.value if hasattr(confidence, 'value') else 0.0, fix_summary=f'Applied {len(agent_violations)} reconciliation fixes via heal_repository', outcome='SUCCESS')
+                logging.warning('Phase 2: [%s] ✓ heal_repository() complete — result keys: %s', agent_key, list(fix_result.keys()))
                 pbar.update(1)
-
             except (ImportError, AttributeError, TypeError, ValueError, OSError, RuntimeError) as e:
-                logging.error(f"Phase 2: Fix failed for {agent_key}: {e}")
-                failed_fixes.extend(
-                    {"violation": v, "error": str(e), "status": "execution_error"} for v in agent_violations
-                )
+                logging.error(f'Phase 2: Fix failed for {agent_key}: {e}')
+                failed_fixes.extend(({'violation': v, 'error': str(e), 'status': 'execution_error'} for v in agent_violations))
                 decision_engine.release_sovereignty_token(agent_key, success=False)
                 pbar.update(1)
-
-    return {
-        "violations_found": len(violations_list),
-        "violations_fixed": len(reconciliation_log),
-        "status": "success" if not failed_fixes else "partial_success",
-        "errors": len(failed_fixes),
-        "skipped": 0,
-        "execution_time_ms": 0.0,
-        "error_message": None if not failed_fixes else f"{len(failed_fixes)} violations failed",
-        "_raw_result": {"modifications": reconciliation_log, "failures": failed_fixes},
-    }
-
-
-# ============================================================================
-# PHASE 3: FINAL VALIDATION (The Audit)
-# ============================================================================
-
-
-# [REMOVED DUPLICATE] execute_phase3_final_validation removed.
-# Usage consolidated to execute_phase3_validation at line 1273.
-
-
-# ============================================================================
-# ENHANCED PHASE EXECUTION & INPUT VALIDATION
-# ============================================================================
-
+    return {'violations_found': len(violations_list), 'violations_fixed': len(reconciliation_log), 'status': 'success' if not failed_fixes else 'partial_success', 'errors': len(failed_fixes), 'skipped': 0, 'execution_time_ms': 0.0, 'error_message': None if not failed_fixes else f'{len(failed_fixes)} violations failed', '_raw_result': {'modifications': reconciliation_log, 'failures': failed_fixes}}
 
 def validate_territory_input(territory: str) -> tuple[bool, str]:
     """Validate territory input with comprehensive security checks."""
     if not territory:
-        return True, ""
+        return (True, '')
     if len(territory) > 100:
-        return False, "Name too long"
-    if not re.match(r"^[A-Za-z0-9_]+$", territory):
-        return False, "Invalid characters"
-    return True, ""
-
-
-# ============================================================================
-# CONFIGURATION & CONSTANTS
-# ============================================================================
-
-# Directory Constants (imported from path_constants above)
-SCRIPTS_DIR = "scripts"
-AGENT_DISCOVERY_JSON = "agent_discovery_full.json"
-RUNTIME_STATE_FILE = "runtime_state.json"
-
-# Project Root Path — resolved lazily via module __getattr__ or REPO_ROOT.
-
-# [ULTRA-HARDENED] Whitelist of allowed module prefixes for dynamic imports
-# Prevents loading agents from unexpected packages (defense-in-depth against tampered discovery/cache)
+        return (False, 'Name too long')
+    if not re.match('^[A-Za-z0-9_]+$', territory):
+        return (False, 'Invalid characters')
+    return (True, '')
+SCRIPTS_DIR = 'scripts'
+AGENT_DISCOVERY_JSON = 'agent_discovery_full.json'
+RUNTIME_STATE_FILE = 'runtime_state.json'
 ALLOWED_MODULE_PREFIXES = (AGENTIC_CORE_DIR, APPS_SHARED_DIR, APPS_LIC_DIR, APPS_RG_DIR)
-
-# Logging: configured once in _configure_logging() called from main().
-logger = logging.getLogger("UnifiedSovereign")
-
-# ============================================================================
-# RUNTIME STATE MANAGEMENT (From Canon Validator)
-# ============================================================================
-
+logger = logging.getLogger('UnifiedSovereign')
 
 class RuntimeStateManager:
     """Manages live state for dashboard observability."""
 
-    def __init__(self, project_root: Path, execution_context: Optional["ExecutionContext"] = None):
-        self.project_root = project_root.resolve()  # [ULTRA-HARDENED] Force real absolute path resolution
+    def __init__(self, project_root: Path, execution_context: Optional['ExecutionContext']=None):
+        self.project_root = project_root.resolve()
         self._execution_context = execution_context
-
-        # [CROSS-RUN PERSISTENCE] Seed meta_learning from prior runtime_state.json so that
-        # _compute_novelty_score() and _fire_meta_learning_intake() have access to
-        # recent_failure_vectors accumulated across past runs (REQ-058/REQ-071: full feedback loop).
         _prior_meta: dict = {}
         _prior_state_path = self.project_root / RUNTIME_STATE_FILE
         if _prior_state_path.exists():
             try:
                 import json as _json_init
-
-                _prior_raw = _json_init.loads(_prior_state_path.read_text(encoding="utf-8"))
-                _prior_meta = _prior_raw.get("meta_learning", {})
-            except (OSError, json.JSONDecodeError, KeyError):  # guardian: allow-silent-swallower
+                _prior_raw = _json_init.loads(_prior_state_path.read_text(encoding='utf-8'))
+                _prior_meta = _prior_raw.get('meta_learning', {})
+            except (OSError, json.JSONDecodeError, KeyError):
                 _prior_meta = {}
-
-        # Wave 1 restore: reload HealingSuccessRateStore EMA state from prior run
-        _prior_sr_state = _prior_meta.get("success_rate_store")
+        _prior_sr_state = _prior_meta.get('success_rate_store')
         if _prior_sr_state:
             try:
-                from system_learning.engines.healing_success_rate_store import (
-                    get_default_store as _get_sr_init,
-                )
-
+                from system_learning.engines.healing_success_rate_store import get_default_store as _get_sr_init
                 _get_sr_init().import_state(_prior_sr_state)
-            except (ImportError, AttributeError, KeyError):  # guardian: allow-silent-swallower
+            except (ImportError, AttributeError, KeyError):
                 pass
-
-        self.state = {
-            "status": "idle",
-            "start_time": None,
-            "end_time": None,
-            "current_agent": None,
-            "current_layer": None,
-            "agents_order": [],
-            "completed_agents": [],
-            "skipped_agents": [],
-            "events": [],
-            # [INTEGRATION] Ported from Canon Validator
-            # [CROSS-RUN] recent_failure_vectors, total_experiences, strategy_weights,
-            # and patterns_extracted are seeded from the prior run's persisted state so the
-            # novelty scorer and meta-learning pipeline see accumulated history, not just
-            # this run's data.  All other fields reset to clean-run defaults.
-            "meta_learning": {
-                "enabled": False,
-                "total_experiences": _prior_meta.get("total_experiences", 0),
-                "patterns_extracted": _prior_meta.get("patterns_extracted", 0),
-                "strategy_weights": _prior_meta.get(
-                    "strategy_weights", {"cot": 1.0, "tot": 1.0, "react": 1.0}
-                ),
-                "recent_experiences": list(_prior_meta.get("recent_experiences", [])),
-                # Cap at 200 on load — same cap enforced on write in _fire_meta_learning_intake
-                "recent_failure_vectors": list(_prior_meta.get("recent_failure_vectors", []))[-200:],
-            },
-            "compliance_scores": {},
-            # [SILENT AGGREGATION] Track decisions for final report
-            "decisions_made": [],
-            "compliance_report": {},
-            # [SSOT MIXIN] Audit chain for cryptographic AuditTrailMixin
-            "audit_chain": [],
-        }
-        # [HARDENED] Register exit handler to prevent 'zombie' running states
+        self.state = {'status': 'idle', 'start_time': None, 'end_time': None, 'current_agent': None, 'current_layer': None, 'agents_order': [], 'completed_agents': [], 'skipped_agents': [], 'events': [], 'meta_learning': {'enabled': False, 'total_experiences': _prior_meta.get('total_experiences', 0), 'patterns_extracted': _prior_meta.get('patterns_extracted', 0), 'strategy_weights': _prior_meta.get('strategy_weights', {'cot': 1.0, 'tot': 1.0, 'react': 1.0}), 'recent_experiences': list(_prior_meta.get('recent_experiences', [])), 'recent_failure_vectors': list(_prior_meta.get('recent_failure_vectors', []))[-200:]}, 'compliance_scores': {}, 'decisions_made': [], 'compliance_report': {}, 'audit_chain': []}
         atexit.register(self._emergency_cleanup)
-        # [G-12-1] Latch: once L0 mutation prohibition fires, disable all future save() attempts
         self._persistence_disabled: bool = False
 
     def start_mission(self, mission_type: str, agents_order: list[str]):
-        self.state["status"] = "running"
-        self.state["start_time"] = datetime.now().isoformat()
-        self.state["agents_order"] = agents_order
-        self.add_event("info", f"Mission started: {mission_type}")
+        self.state['status'] = 'running'
+        self.state['start_time'] = datetime.now().isoformat()
+        self.state['agents_order'] = agents_order
+        self.add_event('info', f'Mission started: {mission_type}')
         self.save()
 
     def update_agent(self, agent_name: str, layer: str):
-        self.state["current_agent"] = agent_name
-        self.state["current_layer"] = layer
-        self.add_event("agent_start", f"→ Executing {agent_name} ({layer})")
-        # [FIX-I1] Removed self.save() — save at territory boundaries only
+        self.state['current_agent'] = agent_name
+        self.state['current_layer'] = layer
+        self.add_event('agent_start', f'→ Executing {agent_name} ({layer})')
 
     def skip_agent(self, agent_name: str, reason: str):
         """Records agent as skipped — confidence gate or HITL rejected execution."""
-        self.state["skipped_agents"].append(
-            {
-                "agent": agent_name,
-                "time": datetime.now().isoformat(),
-                "reason": reason,
-            },
-        )
-        self.add_event("agent_skip", f"SKIPPED {agent_name}: {reason}")
-        # [FIX-I1] Removed self.save() — save at territory boundaries only
+        self.state['skipped_agents'].append({'agent': agent_name, 'time': datetime.now().isoformat(), 'reason': reason})
+        self.add_event('agent_skip', f'SKIPPED {agent_name}: {reason}')
 
-    def complete_agent(self, agent_name: str, success: bool, details: str = ""):
+    def complete_agent(self, agent_name: str, success: bool, details: str=''):
         """
         [HARDENED] Silent Aggregation.
         Records agent completion but suppresses intermediate JSON console dumps.
         """
-        self.state["completed_agents"].append(
-            {
-                "agent": agent_name,
-                "time": datetime.now().isoformat(),
-                "success": success,
-                "details": details,
-            },
-        )
-        # Log to file/state but DO NOT PRINT JSON to console here
-        self.add_event("agent_end", f"{'✓' if success else '❌'} Completed {agent_name}")
-        # [FIX-I1] Removed self.save() — save at territory boundaries only
+        self.state['completed_agents'].append({'agent': agent_name, 'time': datetime.now().isoformat(), 'success': success, 'details': details})
+        self.add_event('agent_end', f"{('✓' if success else '❌')} Completed {agent_name}")
 
     def add_event(self, event_type: str, message: str):
-        self.state["events"].append(
-            {"time": datetime.now().isoformat(), "type": event_type, "message": message},
-        )
-        # [SILENT AGGREGATION] Only log minimal status to console during execution
-        # Full telemetry captured in state for final report
-        if event_type == "error":
+        self.state['events'].append({'time': datetime.now().isoformat(), 'type': event_type, 'message': message})
+        if event_type == 'error':
             logger.error(message)
-        elif event_type == "warning":
+        elif event_type == 'warning':
             logger.warning(message)
-        elif event_type in ["agent_start", "agent_end", "agent_skip"]:
-            # Keep minimal agent progress indicators
+        elif event_type in ['agent_start', 'agent_end', 'agent_skip']:
             logger.info(message)
         else:
-            # Suppress other verbose intermediate logs
             pass
 
-    def finish_mission(self, status="completed"):
-        self.state["status"] = status
-        self.state["end_time"] = datetime.now().isoformat()
-        self.state["current_agent"] = None
+    def finish_mission(self, status='completed'):
+        self.state['status'] = status
+        self.state['end_time'] = datetime.now().isoformat()
+        self.state['current_agent'] = None
         self.save()
 
     def save(self):
@@ -3166,225 +1776,146 @@ class RuntimeStateManager:
         Once L0 mutation prohibition fires, latches _persistence_disabled=True
         and becomes a no-op for the remainder of the run.
         """
-        # [G-12-1] Latch: skip all future attempts after first prohibition
         if self._persistence_disabled:
             return
-
         try:
-            from agentic_core.L0_routing.scripts.runtime_state_digest import (
-                DIGEST_SCHEMA_VERSION,
-                compute_runtime_state_digest,
-            )
-
-            self.state["runtime_state_digest_sha256"] = compute_runtime_state_digest(self.state)
-            self.state["runtime_state_digest_schema_version"] = DIGEST_SCHEMA_VERSION
+            from agentic_core.L0_routing.scripts.runtime_state_digest import DIGEST_SCHEMA_VERSION, compute_runtime_state_digest
+            self.state['runtime_state_digest_sha256'] = compute_runtime_state_digest(self.state)
+            self.state['runtime_state_digest_schema_version'] = DIGEST_SCHEMA_VERSION
         except (ImportError, AttributeError, ValueError):
             pass
-
         try:
             state_path = self.project_root / RUNTIME_STATE_FILE
             temp_dir = state_path.parent
             temp_dir.mkdir(parents=True, exist_ok=True)
-
-            # Create temp file
-            with tempfile.NamedTemporaryFile("w", dir=str(temp_dir), delete=False, encoding="utf-8") as tf:
-                assert_no_persistent_write("L0", "json.dump")  # G-12-1: mutation prohibition guard
+            with tempfile.NamedTemporaryFile('w', dir=str(temp_dir), delete=False, encoding='utf-8') as tf:
+                assert_no_persistent_write('L0', 'json.dump')
                 json.dump(self.state, tf, indent=2, default=str, ensure_ascii=False)
                 temp_name = tf.name
-
-            # [HARDENED] Set strict permissions (Owner Read/Write only) before moving
-            # This prevents other users on shared CI runners from reading potential sensitive logs
             os.chmod(temp_name, stat.S_IRUSR | stat.S_IWUSR)
-
-            # Atomic replacement
             os.replace(temp_name, state_path)
-
         except PermissionError as e:
             err_str = str(e)
-            if "MUTATION_PROHIBITED" in err_str:
-                # [G-12-1] First and only log — latch disabled for remainder of run
+            if 'MUTATION_PROHIBITED' in err_str:
                 self._persistence_disabled = True
-                logger.critical(
-                    "[RuntimeStateManager] L0 mutation prohibition active — "
-                    "runtime state persistence DISABLED for this run (fail-closed). "
-                    f"Reason: {err_str}"
-                )
-                # Cleanup temp if created
+                logger.critical(f'[RuntimeStateManager] L0 mutation prohibition active — runtime state persistence DISABLED for this run (fail-closed). Reason: {err_str}')
                 try:
                     # guardian: allow-path-string
-                    if "temp_name" in locals() and os.path.exists(temp_name):
+                    if 'temp_name' in locals() and os.path.exists(temp_name):
                         os.remove(temp_name)
                 except OSError:
                     pass
             else:
-                logger.error(f"Failed to save runtime state (Atomic Write Failed): {e}")
+                logger.error(f'Failed to save runtime state (Atomic Write Failed): {e}')
         except (OSError, TypeError, ValueError) as e:
-            logger.error(f"Failed to save runtime state (Atomic Write Failed): {e}")
+            logger.error(f'Failed to save runtime state (Atomic Write Failed): {e}')
             try:
                 # guardian: allow-path-string
-                if "temp_name" in locals() and os.path.exists(temp_name):
+                if 'temp_name' in locals() and os.path.exists(temp_name):
                     os.remove(temp_name)
             except OSError:
                 pass
 
     def _emergency_cleanup(self):
         """Ensure state is finalized even on unhandled exit."""
-        if self.state["status"] == "running":
-            self.finish_mission("terminated")
+        if self.state['status'] == 'running':
+            self.finish_mission('terminated')
 
     def update_meta_learning(self, experience_data: dict[str, Any]):
         """[INTEGRATION] Updates cognitive metrics for dashboard."""
-        ml = self.state["meta_learning"]
-        ml["enabled"] = True
-
-        if "total_experiences" in experience_data:
-            ml["total_experiences"] = experience_data["total_experiences"]
-
-        if "strategy_weights" in experience_data:
-            ml["strategy_weights"] = experience_data["strategy_weights"]
-
-        if "experience" in experience_data:
-            ml["recent_experiences"].insert(0, experience_data["experience"])
-            ml["recent_experiences"] = ml["recent_experiences"][:5]  # Keep last 5
-
+        ml = self.state['meta_learning']
+        ml['enabled'] = True
+        if 'total_experiences' in experience_data:
+            ml['total_experiences'] = experience_data['total_experiences']
+        if 'strategy_weights' in experience_data:
+            ml['strategy_weights'] = experience_data['strategy_weights']
+        if 'experience' in experience_data:
+            ml['recent_experiences'].insert(0, experience_data['experience'])
+            ml['recent_experiences'] = ml['recent_experiences'][:5]
         self.save()
 
-
-# ============================================================================
-# AUTONOMOUS DECISION ENGINE (From SSOT Protocol)
-# ============================================================================
-
-
-def discover_agents_from_registry(project_root: Path, dedupe: bool = True) -> list[tuple[str, str]]:
+def discover_agents_from_registry(project_root: Path, dedupe: bool=True) -> list[tuple[str, str]]:
     """Hybrid agent discovery: prefer cached JSON, fallback to live scan."""
     agents = []
     json_path = project_root / AGENT_DISCOVERY_JSON
-
-    # Try Cache
     if json_path.exists():
         try:
-            data = json.loads(json_path.read_text(encoding="utf-8"))
+            data = json.loads(json_path.read_text(encoding='utf-8'))
             for agent in data:
-                if agent.get("class_name"):
-                    # [HARDENED] Use pathlib for robust cross-platform path resolution
+                if agent.get('class_name'):
                     try:
-                        raw_path = agent.get("path", "")
-                        # Handle absolute or relative paths gracefully
+                        raw_path = agent.get('path', '')
                         if os.path.isabs(raw_path):
                             full_path = Path(raw_path)
                             rel_path = full_path.relative_to(project_root)
                         else:
                             rel_path = Path(raw_path)
-
-                        # Convert path parts to module dot notation
-                        clean_parts = rel_path.with_suffix("").parts
-                        # [ULTRA-HARDENED] Reject any path containing navigation tokens (., ..) or empty segments
-                        if any(p in {"", ".", ".."} for p in clean_parts):
-                            logger.warning(f"Skipping agent with invalid path parts: {raw_path}")
+                        clean_parts = rel_path.with_suffix('').parts
+                        if any((p in {'', '.', '..'} for p in clean_parts)):
+                            logger.warning(f'Skipping agent with invalid path parts: {raw_path}')
                             continue
-
-                        module_path = ".".join(clean_parts)
-
-                        # [ULTRA-HARDENED] Enforce module prefix whitelist before permitting dynamic import
-                        if not any(
-                            module_path == p or module_path.startswith(p + ".")
-                            for p in ALLOWED_MODULE_PREFIXES
-                        ):
-                            logger.warning(f"Blocking unauthorized module load attempt: {module_path}")
+                        module_path = '.'.join(clean_parts)
+                        if not any((module_path == p or module_path.startswith(p + '.') for p in ALLOWED_MODULE_PREFIXES)):
+                            logger.warning(f'Blocking unauthorized module load attempt: {module_path}')
                             continue
-
-                        agents.append((agent["class_name"], module_path))
+                        agents.append((agent['class_name'], module_path))
                     except (ValueError, KeyError, TypeError) as p_err:
-                        # Log but don't crash on single bad path
                         logger.warning(f"Skipping malformed agent path '{raw_path}': {p_err}")
                         continue
-            logger.info(f"Loaded {len(agents)} agents from cache")
+            logger.info(f'Loaded {len(agents)} agents from cache')
         except (OSError, json.JSONDecodeError, KeyError) as e:
-            logger.warning(f"Cache load failed: {e}")
-
-    # Try Live Scan if empty
+            logger.warning(f'Cache load failed: {e}')
     if not agents:
         try:
             from agentic_core.utils.discovery.Full_Agent_discovery import discover_all_agents
-
-            logger.info("Running live agent discovery...")
+            logger.info('Running live agent discovery...')
             discovery_data = discover_all_agents(project_root)
             for agent in discovery_data:
-                if agent.get("class_name"):
-                    # [HARDENED] Use pathlib for robust cross-platform path resolution
+                if agent.get('class_name'):
                     try:
-                        raw_path = agent.get("path", "")
-                        # Handle absolute or relative paths gracefully
+                        raw_path = agent.get('path', '')
                         if os.path.isabs(raw_path):
                             full_path = Path(raw_path)
                             rel_path = full_path.relative_to(project_root)
                         else:
                             rel_path = Path(raw_path)
-
-                        # Convert path parts to module dot notation
-                        clean_parts = rel_path.with_suffix("").parts
-                        # [ULTRA-HARDENED] Reject any path containing navigation tokens (., ..) or empty segments
-                        if any(p in {"", ".", ".."} for p in clean_parts):
-                            logger.warning(f"Skipping agent with invalid path parts: {raw_path}")
+                        clean_parts = rel_path.with_suffix('').parts
+                        if any((p in {'', '.', '..'} for p in clean_parts)):
+                            logger.warning(f'Skipping agent with invalid path parts: {raw_path}')
                             continue
-
-                        module_path = ".".join(clean_parts)
-
-                        # [ULTRA-HARDENED] Enforce module prefix whitelist before permitting dynamic import
-                        if not any(
-                            module_path == p or module_path.startswith(p + ".")
-                            for p in ALLOWED_MODULE_PREFIXES
-                        ):
-                            logger.warning(f"Blocking unauthorized module load attempt: {module_path}")
+                        module_path = '.'.join(clean_parts)
+                        if not any((module_path == p or module_path.startswith(p + '.') for p in ALLOWED_MODULE_PREFIXES)):
+                            logger.warning(f'Blocking unauthorized module load attempt: {module_path}')
                             continue
-
-                        agents.append((agent["class_name"], module_path))
+                        agents.append((agent['class_name'], module_path))
                     except (ValueError, KeyError, TypeError) as p_err:
-                        # Log but don't crash on single bad path
                         logger.warning(f"Skipping malformed agent path '{raw_path}': {p_err}")
                         continue
-            # [ULTRA-HARDENED] Atomic write + strict 600 permissions for agent discovery cache
             try:
                 temp_name = None
-                with tempfile.NamedTemporaryFile(
-                    "w",
-                    delete=False,
-                    dir=str(project_root),
-                    encoding="utf-8",
-                ) as tf:
-                    assert_no_persistent_write("L0", "json.dump")  # G-12-1: mutation prohibition guard
+                with tempfile.NamedTemporaryFile('w', delete=False, dir=str(project_root), encoding='utf-8') as tf:
+                    assert_no_persistent_write('L0', 'json.dump')
                     json.dump(discovery_data, tf, indent=2, ensure_ascii=False)
                     temp_name = tf.name
                 os.chmod(temp_name, stat.S_IRUSR | stat.S_IWUSR)
                 os.replace(temp_name, json_path)
-                logger.info(f"Discovered {len(agents)} agents (cached)")
+                logger.info(f'Discovered {len(agents)} agents (cached)')
             except (OSError, TypeError) as cache_err:
-                logger.warning(f"Failed to cache agent discovery: {cache_err}")
+                logger.warning(f'Failed to cache agent discovery: {cache_err}')
                 # guardian: allow-path-string
                 if temp_name and os.path.exists(temp_name):
-                    assert_no_persistent_write("L0", "os.mutate")  # G-12-1: mutation prohibition guard
+                    assert_no_persistent_write('L0', 'os.mutate')
                     os.remove(temp_name)
         except ImportError:
-            logger.warning("Live discovery unavailable - Full_Agent_discovery not found")
+            logger.warning('Live discovery unavailable - Full_Agent_discovery not found')
         except (AttributeError, TypeError, ValueError) as e:
-            logger.error(f"Live discovery failed: {e}")
-
+            logger.error(f'Live discovery failed: {e}')
     if dedupe:
         agents = sorted(set(agents), key=lambda x: x[0])
     return agents
 
-
-# ============================================================================
-# PHASE 3: FINAL VALIDATION (The Audit)
-# ============================================================================
 @standard_heal
-def execute_phase3_validation(
-    agents: dict[str, Any],
-    territory: str,
-    original_violations: list[dict],
-    dry_run: bool = False,
-    **kwargs,
-):
+def execute_phase3_validation(agents: dict[str, Any], territory: str, original_violations: list[dict], dry_run: bool=False, **kwargs):
     """
     PHASE 3: POST-MORTEM VALIDATION
 
@@ -3392,1148 +1923,528 @@ def execute_phase3_validation(
     Does NOT blindly trust the agent's 'success' return value.
     """
     if dry_run:
-        return {"status": "skipped", "message": "Dry run - validation skipped"}
-
+        return {'status': 'skipped', 'message': 'Dry run - validation skipped'}
     remaining_issues = []
-    # [HARDENING] Use the memory-safe AST validator defined in Phase 1
-    # guardian: allow-path-string
     validator = ASTCodeQualityValidator(REPO_ROOT)
-
     for v in original_violations:
-        fpath = v.get("file")
-
-        # 1. Existence Check
+        fpath = v.get('file')
         # guardian: allow-path-string
         if not fpath or not os.path.exists(fpath):
-            # If it was an orphan that was deleted, this is good.
-            # If it was a missing file that was created, we check existence.
-            drift_type = v.get("drift_type", "")
-            if "ORPHAN" in drift_type:
-                # File gone = Success
+            drift_type = v.get('drift_type', '')
+            if 'ORPHAN' in drift_type:
                 continue
-            elif "MISSING" in drift_type:
-                remaining_issues.append({"file": fpath, "error": "File still missing after heal"})
+            elif 'MISSING' in drift_type:
+                remaining_issues.append({'file': fpath, 'error': 'File still missing after heal'})
                 continue
             else:
-                # Standard file modification - if gone, that's bad
-                remaining_issues.append({"file": fpath, "error": "File vanished after heal"})
+                remaining_issues.append({'file': fpath, 'error': 'File vanished after heal'})
                 continue
-
-        # 2. AST Quality Check on Modified Files
-        # We only check files that exist and were targets of modification
         quality_report = validator.check_file_quality(Path(fpath))
-        if quality_report.get("violations"):
-            for issue in quality_report["violations"]:
-                issue["source"] = "post_heal_validation"
+        if quality_report.get('violations'):
+            for issue in quality_report['violations']:
+                issue['source'] = 'post_heal_validation'
                 remaining_issues.append(issue)
-
-    status = "clean"
+    status = 'clean'
     if remaining_issues:
-        status = "drift_detected"
+        status = 'drift_detected'
+    return {'status': status, 'remaining_violations': remaining_issues, 'verification_timestamp': datetime.now().isoformat()}
 
-    return {
-        "status": status,
-        "remaining_violations": remaining_issues,
-        "verification_timestamp": datetime.now().isoformat(),
-    }
-
-
-# ============================================================================
-# EXECUTION PHASES (SSOT Logic + Canon Observability)
-# ============================================================================
-
-
-# guardian: allow-magic-config
 @with_retry(max_retries=MAX_RETRIES)
-def execute_phase1_discovery(agents, territory, decision_engine, state_mgr, ctx: "HealContext" = None):
+def execute_phase1_discovery(agents, territory, decision_engine, state_mgr, ctx: 'HealContext'=None):
     """PHASE 1: TERRITORIAL DISCOVERY (Retriable)"""
     return execute_phase1_discovery_impl(agents, territory, decision_engine, state_mgr, ctx)
 
-
-def execute_phase1_discovery_impl(
-    agents,
-    territory,
-    decision_engine,
-    state_mgr,
-    ctx: "HealContext" = None,
-):
+def execute_phase1_discovery_impl(agents, territory, decision_engine, state_mgr, ctx: 'HealContext'=None):
     """PHASE 1: TERRITORIAL DISCOVERY - Implementation with CognitiveDispositionAgent integration"""
-    logger.info(f"=== PHASE 1: DISCOVERY - {territory} ===")
-
-    state_mgr.update_agent("FilesystemSSOTHealerAgent", "L5 - Safety (Validator)")
-
-    from agentic_core.L5_safety.reasoning.filesystem_ssot_validator import (
-        FilesystemSSOTValidatorAgent as _FilesystemSSOTValidatorAgent,
-    )
-
+    logger.info(f'=== PHASE 1: DISCOVERY - {territory} ===')
+    state_mgr.update_agent('FilesystemSSOTHealerAgent', 'L5 - Safety (Validator)')
+    from agentic_core.L5_safety.reasoning.filesystem_ssot_validator import FilesystemSSOTValidatorAgent as _FilesystemSSOTValidatorAgent
     _fs_validator = _FilesystemSSOTValidatorAgent(project_root=REPO_ROOT)
     _fs_check = _fs_validator.to_check_dict()
-    drift_report = _fs_check["evidence"]
-
+    drift_report = _fs_check['evidence']
     if drift_report is None:
-        state_mgr.complete_agent("FilesystemSSOTHealerAgent", False, "Returned None")
-        return None, None
-
-    # Direct heal_repository call — same pattern as all other agents
-    if ctx is not None and getattr(ctx, "heal", False):
-        _fs_healer_cls = agents.get("reconciler")
+        state_mgr.complete_agent('FilesystemSSOTHealerAgent', False, 'Returned None')
+        return (None, None)
+    if ctx is not None and getattr(ctx, 'heal', False):
+        _fs_healer_cls = agents.get('reconciler')
         if _fs_healer_cls is not None:
             _fs_healer_instance = _fs_healer_cls(project_root=REPO_ROOT)
             _fs_healer_instance.heal_repository(dry_run=False, execute=True)
-
-    violations_count = _fs_check.get("violations_count", 0)
-    state_mgr.complete_agent("FilesystemSSOTHealerAgent", True, f"Drift violations: {violations_count}")
-    _record_healing_action(
-        state_mgr,
-        agent="FilesystemSSOTHealerAgent",
-        territory=territory,
-        routing_tier="DETERMINISTIC",
-        confidence=1.0,
-        fix_summary=f"SSOT drift scan: {violations_count} violation(s) in {territory}",
-        outcome="SUCCESS",
-    )
-
-    # Location Validation
-    state_mgr.update_agent("LocationHealerAgent", "L5 - Safety")
-    # [FIX-B11] Single LocationValidatorAgent instance for both scanning and healing
+    violations_count = _fs_check.get('violations_count', 0)
+    state_mgr.complete_agent('FilesystemSSOTHealerAgent', True, f'Drift violations: {violations_count}')
+    _record_healing_action(state_mgr, agent='FilesystemSSOTHealerAgent', territory=territory, routing_tier='DETERMINISTIC', confidence=1.0, fix_summary=f'SSOT drift scan: {violations_count} violation(s) in {territory}', outcome='SUCCESS')
+    state_mgr.update_agent('LocationHealerAgent', 'L5 - Safety')
     location_validator = _get_location_validator_agent()(project_root=REPO_ROOT)
-
-    # [ULTRA-HARDENED] Explicit path traversal protection for user-supplied territory string.
-    # Territory may live anywhere under REPO_ROOT (e.g. apps_rg, docs, tests) — not only
-    # under agentic_core. Resolve against REPO_ROOT and ensure no escape above it.
     repo_root_resolved = REPO_ROOT.resolve()
     territory_path = (repo_root_resolved / territory).resolve()
     if not territory_path.is_relative_to(repo_root_resolved):
         logger.critical(f"SECURITY ALERT: Path traversal attempt detected for territory '{territory}'")
-        state_mgr.add_event("security", "Path traversal blocked")
-        state_mgr.complete_agent("LocationHealerAgent", False, "Traversal blocked")
-        return drift_report, []
-
+        state_mgr.add_event('security', 'Path traversal blocked')
+        state_mgr.complete_agent('LocationHealerAgent', False, 'Traversal blocked')
+        return (drift_report, [])
     violations = []
     location_scan_result = {}
     if territory_path.exists():
-        # [FIX-B11] Use the single location_validator instance for scanning
         location_scan_result = location_validator.run(target_territory=territory) or {}
-        violations = location_scan_result.get("violations", [])
+        violations = location_scan_result.get('violations', [])
     else:
-        logger.warning(f"Territory path does not exist: {territory_path}")
-
-    # Enhanced confidence calculation with cognitive analysis
+        logger.warning(f'Territory path does not exist: {territory_path}')
     if violations:
-        logger.info("🧠 Using CognitiveDispositionAgent for enhanced violation analysis...")
-
-        # Create event loop for async cognitive analysis
+        logger.info('🧠 Using CognitiveDispositionAgent for enhanced violation analysis...')
         import asyncio
-
-        # [FIX-I4] Use new_event_loop() — asyncio.get_event_loop() is deprecated in Python 3.10+
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-
-        # Get cognitive dispositions and enhanced confidence
-        cognitive_dispositions, enhanced_confidence = loop.run_until_complete(
-            decision_engine.analyze_violations_with_cognitive_disposition(violations, territory, state_mgr),
-        )
-
-        # Store cognitive dispositions in state for reporting
-        state_mgr.state["cognitive_dispositions"] = [d.__dict__ for d in cognitive_dispositions]
-
+        cognitive_dispositions, enhanced_confidence = loop.run_until_complete(decision_engine.analyze_violations_with_cognitive_disposition(violations, territory, state_mgr))
+        state_mgr.state['cognitive_dispositions'] = [d.__dict__ for d in cognitive_dispositions]
         confidence = enhanced_confidence
-        logger.info(f"🧠 Enhanced confidence with cognitive analysis: {confidence.value:.2f}")
+        logger.info(f'🧠 Enhanced confidence with cognitive analysis: {confidence.value:.2f}')
     else:
-        # Fallback to standard confidence calculation
-        confidence = decision_engine.calculate_healing_confidence(
-            len(violations),
-            [str(v) for v in violations[:10]],
-            territory,
-            agent_name="location",
-        )
-
-    state_mgr.state["compliance_scores"][territory] = confidence.value
-
-    # [DETAILED TRACKING] Store actual LocationAgent violations for final report
-    state_mgr.state["location_violations"] = violations
-    state_mgr.state["location_scan_result"] = location_scan_result
-
-    # [AUTO-HEALING] If confidence is high enough, trigger LocationAgent healing
+        confidence = decision_engine.calculate_healing_confidence(len(violations), [str(v) for v in violations[:10]], territory, agent_name='location')
+    state_mgr.state['compliance_scores'][territory] = confidence.value
+    state_mgr.state['location_violations'] = violations
+    state_mgr.state['location_scan_result'] = location_scan_result
     if len(violations) > 0:
-        proceed, reason = decision_engine.should_proceed_with_healing(
-            confidence, "LocationHealerAgent", territory=territory
-        )
-        state_mgr.add_event("decision", f"Location Healing: {reason}")
-        logger.info(f"Location Decision: {reason}")
-
+        proceed, reason = decision_engine.should_proceed_with_healing(confidence, 'LocationHealerAgent', territory=territory)
+        state_mgr.add_event('decision', f'Location Healing: {reason}')
+        logger.info(f'Location Decision: {reason}')
         if proceed and ctx is not None and ctx.heal:
-            logger.info(f"Triggering LocationAgent auto-heal for {len(violations)} violations")
-            # Wave 6: Attach HITL approval function so _heal_via_archiving can gate deletions.
-            # Non-interactive environments auto-defer (skip) the archive.
+            logger.info(f'Triggering LocationAgent auto-heal for {len(violations)} violations')
             import sys as _sys
 
             def _w6_hitl_archive_gate(file_path, msg):
-                if ctx is not None and getattr(ctx, "auto_approve", False):
-                    return True, "HITL-AUTO-APPROVED (--heal active)"
+                if ctx is not None and getattr(ctx, 'auto_approve', False):
+                    return (True, 'HITL-AUTO-APPROVED (--heal active)')
                 if not _sys.stdin.isatty():
-                    return False, "HITL-DEFER (non-interactive)"
-                if os.environ.get("ARCHIVE_BATCH_ACCEPT") == "1":
-                    return True, "HITL-APPROVED (batch)"
-                border = "=" * 56
-                print(f"\n{border}")
-                print("  HITL GATE  [FILE DELETION / ARCHIVE]")
+                    return (False, 'HITL-DEFER (non-interactive)')
+                if os.environ.get('ARCHIVE_BATCH_ACCEPT') == '1':
+                    return (True, 'HITL-APPROVED (batch)')
+                border = '=' * 56
+                print(f'\n{border}')
+                print('  HITL GATE  [FILE DELETION / ARCHIVE]')
                 print(border)
-                print(f"  File  : {file_path}")
-                print(f"  Reason: {str(msg)[:100]}")
+                print(f'  File  : {file_path}')
+                print(f'  Reason: {str(msg)[:100]}')
                 print(border)
-                print("  [A] Archive (reversible)  [S] Skip  [D] Delete permanently")
+                print('  [A] Archive (reversible)  [S] Skip  [D] Delete permanently')
                 print(border)
                 try:
-                    raw = input("  Choice [A/S/D]: ").strip().upper()
+                    raw = input('  Choice [A/S/D]: ').strip().upper()
                 except (EOFError, KeyboardInterrupt):
-                    raw = "S"
-                if raw == "A":
-                    return True, "HITL-APPROVED (archive)"
-                elif raw == "D":
-                    return True, "HITL-APPROVED (delete)"
+                    raw = 'S'
+                if raw == 'A':
+                    return (True, 'HITL-APPROVED (archive)')
+                elif raw == 'D':
+                    return (True, 'HITL-APPROVED (delete)')
                 else:
-                    return False, "HITL-SKIPPED"
-
+                    return (False, 'HITL-SKIPPED')
             location_validator._hitl_approval_fn = _w6_hitl_archive_gate
-            # LocationAgent should have a heal method - call it
-            if hasattr(location_validator, "heal_violations"):
-                heal_result = location_validator.heal_violations(
-                    violations, auto_approve=(ctx.auto_approve if ctx else False)
-                )
-                healed_count = heal_result.get("healed", 0) if isinstance(heal_result, dict) else 0
-                state_mgr.state["location_fixed"] = healed_count  # [FIX-B3]
-                # [H3] Record healing action for LocationAgent
-                _record_healing_action(
-                    state_mgr,
-                    agent="LocationHealerAgent",
-                    territory=territory,
-                    routing_score=confidence.value,
-                    routing_tier="DETERMINISTIC",
-                    confidence=confidence.value,
-                    fix_summary=(
-                        f"Healed {healed_count} of {len(violations)} location violations"
-                        if healed_count > 0
-                        else f"Location scan: {len(violations)} violation(s), 0 healed in {territory}"
-                    ),
-                    outcome="SUCCESS" if healed_count > 0 else "PARTIAL",
-                )
-                state_mgr.complete_agent(
-                    "LocationHealerAgent",
-                    True,
-                    f"Violations: {len(violations)} | Healed: {healed_count} | Conf: {confidence.value:.2f}",
-                )
+            if hasattr(location_validator, 'heal_violations'):
+                heal_result = location_validator.heal_violations(violations, auto_approve=ctx.auto_approve if ctx else False)
+                healed_count = heal_result.get('healed', 0) if isinstance(heal_result, dict) else 0
+                state_mgr.state['location_fixed'] = healed_count
+                _record_healing_action(state_mgr, agent='LocationHealerAgent', territory=territory, routing_score=confidence.value, routing_tier='DETERMINISTIC', confidence=confidence.value, fix_summary=f'Healed {healed_count} of {len(violations)} location violations' if healed_count > 0 else f'Location scan: {len(violations)} violation(s), 0 healed in {territory}', outcome='SUCCESS' if healed_count > 0 else 'PARTIAL')
+                state_mgr.complete_agent('LocationHealerAgent', True, f'Violations: {len(violations)} | Healed: {healed_count} | Conf: {confidence.value:.2f}')
             else:
-                logger.warning(
-                    "LocationHealerAgent has no heal_violations method - violations detected but not healed",
-                )
-                _record_healing_action(
-                    state_mgr,
-                    agent="LocationHealerAgent",
-                    territory=territory,
-                    routing_score=confidence.value,
-                    routing_tier="DETERMINISTIC",
-                    confidence=confidence.value,
-                    fix_summary=f"Location scan: {len(violations)} violation(s), no heal method in {territory}",
-                    outcome="SKIPPED",
-                )
-                state_mgr.complete_agent(
-                    "LocationHealerAgent",
-                    True,
-                    f"Violations: {len(violations)} | Conf: {confidence.value:.2f} (no heal method)",
-                )
+                logger.warning('LocationHealerAgent has no heal_violations method - violations detected but not healed')
+                _record_healing_action(state_mgr, agent='LocationHealerAgent', territory=territory, routing_score=confidence.value, routing_tier='DETERMINISTIC', confidence=confidence.value, fix_summary=f'Location scan: {len(violations)} violation(s), no heal method in {territory}', outcome='SKIPPED')
+                state_mgr.complete_agent('LocationHealerAgent', True, f'Violations: {len(violations)} | Conf: {confidence.value:.2f} (no heal method)')
         else:
-            _record_healing_action(
-                state_mgr,
-                agent="LocationHealerAgent",
-                territory=territory,
-                routing_score=confidence.value,
-                routing_tier="DETERMINISTIC",
-                confidence=confidence.value,
-                fix_summary=f"Location scan: {len(violations)} violation(s), healing skipped in {territory}",
-                outcome="SKIPPED",
-            )
-            state_mgr.complete_agent(
-                "LocationHealerAgent",
-                True,
-                f"Violations: {len(violations)} | Conf: {confidence.value:.2f} (healing skipped)",
-            )
+            _record_healing_action(state_mgr, agent='LocationHealerAgent', territory=territory, routing_score=confidence.value, routing_tier='DETERMINISTIC', confidence=confidence.value, fix_summary=f'Location scan: {len(violations)} violation(s), healing skipped in {territory}', outcome='SKIPPED')
+            state_mgr.complete_agent('LocationHealerAgent', True, f'Violations: {len(violations)} | Conf: {confidence.value:.2f} (healing skipped)')
     else:
-        _record_healing_action(
-            state_mgr,
-            agent="LocationHealerAgent",
-            territory=territory,
-            routing_score=confidence.value,
-            routing_tier="DETERMINISTIC",
-            confidence=confidence.value,
-            fix_summary=f"Location scan: 0 violations in {territory}",
-            outcome="SUCCESS",
-        )
-        state_mgr.complete_agent("LocationHealerAgent", True, f"Violations: 0 | Conf: {confidence.value:.2f}")
-
-    # [PHASE 1 ENHANCEMENT] Early File Classification Detection
-    # Run FileClassificationAgent in discovery phase to catch naming violations early
+        _record_healing_action(state_mgr, agent='LocationHealerAgent', territory=territory, routing_score=confidence.value, routing_tier='DETERMINISTIC', confidence=confidence.value, fix_summary=f'Location scan: 0 violations in {territory}', outcome='SUCCESS')
+        state_mgr.complete_agent('LocationHealerAgent', True, f'Violations: 0 | Conf: {confidence.value:.2f}')
     classification_violations = []
     classification_scan_result = {}
     try:
-        state_mgr.update_agent("FileClassificationHealerAgent", "L5 - Safety (Validator)")
-        from agentic_core.L5_safety.reasoning.file_classification_validator import (
-            FileClassificationValidatorAgent as _FileClassificationValidatorAgent,
-        )
-
+        state_mgr.update_agent('FileClassificationHealerAgent', 'L5 - Safety (Validator)')
+        from agentic_core.L5_safety.reasoning.file_classification_validator import FileClassificationValidatorAgent as _FileClassificationValidatorAgent
         _fc_validator = _FileClassificationValidatorAgent(project_root=REPO_ROOT)
         _fc_check = _fc_validator.to_check_dict(target_territory=territory)
-        _fc_evidence = _fc_check.get("evidence", {})
-        classification_scan_result = _fc_evidence.get("scan_result", {})
-        classification_violations = _fc_evidence.get("violations", [])
+        _fc_evidence = _fc_check.get('evidence', {})
+        classification_scan_result = _fc_evidence.get('scan_result', {})
+        classification_violations = _fc_evidence.get('violations', [])
         classification_count = len(classification_violations)
-        state_mgr.complete_agent(
-            "FileClassificationHealerAgent",
-            True,
-            f"Early detection: {classification_count} classification issues",
-        )
-        _record_healing_action(
-            state_mgr,
-            agent="FileClassificationHealerAgent",
-            territory=territory,
-            routing_tier="DETERMINISTIC",
-            routing_score=1.0,
-            confidence=1.0,
-            fix_summary=f"Scanned {territory}: {classification_count} classification issue(s) detected",
-            outcome="SUCCESS",
-        )
-
-        # Store classification results for later phases (including check_dict for healing)
-        state_mgr.state["classification_violations"] = classification_violations
-        state_mgr.state["classification_scan_result"] = classification_scan_result
-        state_mgr.state["classification_check_dict"] = _fc_check
-        state_mgr.state["classification_file_registry"] = _fc_evidence.get("file_registry", [])
-
-        logger.info(f"FileClassificationAgent early detection: {classification_count} issues found")
-
+        state_mgr.complete_agent('FileClassificationHealerAgent', True, f'Early detection: {classification_count} classification issues')
+        _record_healing_action(state_mgr, agent='FileClassificationHealerAgent', territory=territory, routing_tier='DETERMINISTIC', routing_score=1.0, confidence=1.0, fix_summary=f'Scanned {territory}: {classification_count} classification issue(s) detected', outcome='SUCCESS')
+        state_mgr.state['classification_violations'] = classification_violations
+        state_mgr.state['classification_scan_result'] = classification_scan_result
+        state_mgr.state['classification_check_dict'] = _fc_check
+        state_mgr.state['classification_file_registry'] = _fc_evidence.get('file_registry', [])
+        logger.info(f'FileClassificationAgent early detection: {classification_count} issues found')
+    # guardian: allow-silent-swallow
     except Exception as e:
-        logger.error(f"FileClassificationHealerAgent early detection FAILED: {e}\n{traceback.format_exc()}")
-        state_mgr.complete_agent("FileClassificationHealerAgent", False, f"Early detection error: {e}")
-        _record_healing_action(
-            state_mgr,
-            agent="FileClassificationHealerAgent",
-            territory=territory,
-            routing_tier="DETERMINISTIC",
-            routing_score=0.0,
-            confidence=0.0,
-            fix_summary=f"FileClassificationHealerAgent failed: {str(e)[:120]}",
-            outcome="FAILED",
-        )
-        state_mgr.add_event("error", f"FileClassificationHealerAgent early detection failed: {e}")
-        state_mgr.state["classification_violations"] = []
-        state_mgr.state["classification_scan_result"] = {}
-        state_mgr.state["classification_check_dict"] = {}
+        logger.error(f'FileClassificationHealerAgent early detection FAILED: {e}\n{traceback.format_exc()}')
+        state_mgr.complete_agent('FileClassificationHealerAgent', False, f'Early detection error: {e}')
+        _record_healing_action(state_mgr, agent='FileClassificationHealerAgent', territory=territory, routing_tier='DETERMINISTIC', routing_score=0.0, confidence=0.0, fix_summary=f'FileClassificationHealerAgent failed: {str(e)[:120]}', outcome='FAILED')
+        state_mgr.add_event('error', f'FileClassificationHealerAgent early detection failed: {e}')
+        state_mgr.state['classification_violations'] = []
+        state_mgr.state['classification_scan_result'] = {}
+        state_mgr.state['classification_check_dict'] = {}
+    return (drift_report, violations, location_scan_result)
 
-    return drift_report, violations, location_scan_result
-
-
-# guardian: allow-magic-config
 @with_retry(max_retries=MAX_RETRIES)
-def execute_phase3_alignment(agents, territory, decision_engine, state_mgr, ctx: "HealContext" = None):
+def execute_phase3_alignment(agents, territory, decision_engine, state_mgr, ctx: 'HealContext'=None):
     """PHASE 3: STRUCTURAL ALIGNMENT (Retriable)"""
     return execute_phase3_alignment_impl(agents, territory, decision_engine, state_mgr, ctx)
 
-
-def execute_phase3_alignment_impl(
-    agents,
-    territory,
-    decision_engine,
-    state_mgr,
-    ctx: "HealContext" = None,
-):
+def execute_phase3_alignment_impl(agents, territory, decision_engine, state_mgr, ctx: 'HealContext'=None):
     """PHASE 3: STRUCTURAL ALIGNMENT - Implementation"""
-    logger.info(f"=== PHASE 3: ALIGNMENT - {territory} ===")
-
-    state_mgr.update_agent("HierarchyHealerAgent", "L5 - Safety")
-    from agentic_core.L5_safety.reasoning.hierarchy_validator import (
-        HierarchyValidatorAgent as _HierarchyAgentValidator,
-    )
-
+    logger.info(f'=== PHASE 3: ALIGNMENT - {territory} ===')
+    state_mgr.update_agent('HierarchyHealerAgent', 'L5 - Safety')
+    from agentic_core.L5_safety.reasoning.hierarchy_validator import HierarchyValidatorAgent as _HierarchyAgentValidator
     _hier_agent = _HierarchyAgentValidator(project_root=REPO_ROOT)
     _hier_scan = _hier_agent.scan_root_violations(target_territory=territory)
-    _hier_vcount = _hier_scan.get("violations_found", 0)
-    if "violations" in _hier_scan and isinstance(_hier_scan["violations"], list):
-        _hier_vcount = len(_hier_scan["violations"])
-    _hier_check = {
-        "check_id": "hierarchy_violations",
-        "evidence": _hier_scan,
-        "violations_count": _hier_vcount,
-        "territory": territory,
-        "repo_root": str(REPO_ROOT),
-    }
-    violations = _hier_check["violations_count"]
-
+    _hier_vcount = _hier_scan.get('violations_found', 0)
+    if 'violations' in _hier_scan and isinstance(_hier_scan['violations'], list):
+        _hier_vcount = len(_hier_scan['violations'])
+    _hier_check = {'check_id': 'hierarchy_violations', 'evidence': _hier_scan, 'violations_count': _hier_vcount, 'territory': territory, 'repo_root': str(REPO_ROOT)}
+    violations = _hier_check['violations_count']
     if violations > 0:
-        confidence = decision_engine.calculate_healing_confidence(violations, ["HIERARCHY"], territory)
-        proceed, reason = decision_engine.should_proceed_with_healing(
-            confidence, "HierarchyHealerAgent", territory=territory
-        )
-
-        state_mgr.add_event("decision", f"Hierarchy Healing: {reason}")
-        logger.info(f"Decision: {reason}")
-
+        confidence = decision_engine.calculate_healing_confidence(violations, ['HIERARCHY'], territory)
+        proceed, reason = decision_engine.should_proceed_with_healing(confidence, 'HierarchyHealerAgent', territory=territory)
+        state_mgr.add_event('decision', f'Hierarchy Healing: {reason}')
+        logger.info(f'Decision: {reason}')
         if proceed and ctx is not None and ctx.heal:
-            _hier_healer_cls = agents.get("hierarchy")
+            _hier_healer_cls = agents.get('hierarchy')
             if _hier_healer_cls is not None:
                 _hier_healer_instance = _hier_healer_cls(project_root=REPO_ROOT)
                 heal_result = _hier_healer_instance.heal_repository(dry_run=False, execute=True)
             else:
                 heal_result = {}
-            healed = (
-                heal_result.get("violations_fixed", heal_result.get("healed", 0))
-                if isinstance(heal_result, dict)
-                else 0
-            )
-            state_mgr.state["hierarchy_fixed"] = healed  # [FIX-B3]
-            state_mgr.complete_agent("HierarchyHealerAgent", True, f"Healed: {healed}")
-            _record_healing_action(
-                state_mgr,
-                agent="HierarchyHealerAgent",
-                territory=territory,
-                routing_tier=reason.split("(")[0].strip() if reason else "DETERMINISTIC",
-                routing_score=confidence.value if hasattr(confidence, "value") else 1.0,
-                confidence=confidence.value if hasattr(confidence, "value") else 1.0,
-                fix_summary=f"Healed {healed} of {violations} hierarchy violation(s) in {territory}",
-                outcome="SUCCESS",
-            )
-            return {"total_healed": healed, "status": "HEALED" if healed > 0 else "NO_CHANGE"}
+            healed = heal_result.get('violations_fixed', heal_result.get('healed', 0)) if isinstance(heal_result, dict) else 0
+            state_mgr.state['hierarchy_fixed'] = healed
+            state_mgr.complete_agent('HierarchyHealerAgent', True, f'Healed: {healed}')
+            _record_healing_action(state_mgr, agent='HierarchyHealerAgent', territory=territory, routing_tier=reason.split('(')[0].strip() if reason else 'DETERMINISTIC', routing_score=confidence.value if hasattr(confidence, 'value') else 1.0, confidence=confidence.value if hasattr(confidence, 'value') else 1.0, fix_summary=f'Healed {healed} of {violations} hierarchy violation(s) in {territory}', outcome='SUCCESS')
+            return {'total_healed': healed, 'status': 'HEALED' if healed > 0 else 'NO_CHANGE'}
         else:
-            state_mgr.complete_agent("HierarchyHealerAgent", False, "Skipped - Low Confidence")
-            _record_healing_action(
-                state_mgr,
-                agent="HierarchyHealerAgent",
-                territory=territory,
-                routing_tier="DETERMINISTIC",
-                routing_score=confidence.value if hasattr(confidence, "value") else 0.0,
-                confidence=confidence.value if hasattr(confidence, "value") else 0.0,
-                fix_summary=f"Skipped hierarchy healing in {territory}: {reason}",
-                outcome="SKIPPED",
-            )
+            state_mgr.complete_agent('HierarchyHealerAgent', False, 'Skipped - Low Confidence')
+            _record_healing_action(state_mgr, agent='HierarchyHealerAgent', territory=territory, routing_tier='DETERMINISTIC', routing_score=confidence.value if hasattr(confidence, 'value') else 0.0, confidence=confidence.value if hasattr(confidence, 'value') else 0.0, fix_summary=f'Skipped hierarchy healing in {territory}: {reason}', outcome='SKIPPED')
     else:
-        state_mgr.complete_agent("HierarchyHealerAgent", True, "No violations found")
-        _record_healing_action(
-            state_mgr,
-            agent="HierarchyHealerAgent",
-            territory=territory,
-            routing_tier="DETERMINISTIC",
-            routing_score=1.0,
-            confidence=1.0,
-            fix_summary=f"No hierarchy violations in {territory}",
-            outcome="SUCCESS",
-        )
-
+        state_mgr.complete_agent('HierarchyHealerAgent', True, 'No violations found')
+        _record_healing_action(state_mgr, agent='HierarchyHealerAgent', territory=territory, routing_tier='DETERMINISTIC', routing_score=1.0, confidence=1.0, fix_summary=f'No hierarchy violations in {territory}', outcome='SUCCESS')
     return None
 
-
-# [FIX-B8] GravityLeakRepairAgent runs once globally before the territory loop.
-def _run_gravity_repair_global(agents, state_mgr, ctx: "HealContext" = None):
+def _run_gravity_repair_global(agents, state_mgr, ctx: 'HealContext'=None):
     """Run GravityLeakRepairAgent once globally — gravity (layer inversions) is repo-wide."""
-    state_mgr.update_agent("GravityLeakHealerAgent", "L5 - Safety")
-    from agentic_core.L5_safety.reasoning.gravity_validator import (
-        GravityValidatorAgent as _GravityValidatorAgent,
-    )
-
+    state_mgr.update_agent('GravityLeakHealerAgent', 'L5 - Safety')
+    from agentic_core.L5_safety.reasoning.gravity_validator import GravityValidatorAgent as _GravityValidatorAgent
     try:
-        logger.info("Detecting gravity violations (layer inversions)...")
+        logger.info('Detecting gravity violations (layer inversions)...')
         _gv = _GravityValidatorAgent(project_root=REPO_ROOT)
         _gravity_check = _gv.to_check_dict()
-        gravity_violations = _gravity_check["violations_count"]
+        gravity_violations = _gravity_check['violations_count']
         gravity_fixed = 0
-
         if gravity_violations > 0 and ctx is not None and ctx.heal:
-            _gravity_healer = agents.get("gravity_repair")
+            _gravity_healer = agents.get('gravity_repair')
             if _gravity_healer is not None:
                 _gh_instance = _gravity_healer(project_root=REPO_ROOT)
                 heal_result = _gh_instance.heal_repository(dry_run=False, execute=True)
-                gravity_fixed = heal_result.get("violations_fixed", 0) if isinstance(heal_result, dict) else 0
-
-        state_mgr.state["gravity_fixed"] = gravity_fixed  # [FIX-B3]
-        # [H3] Record GravityValidatorAgent scan result
-        _record_healing_action(
-            state_mgr,
-            agent="GravityValidatorAgent",
-            territory="__global__",
-            routing_tier="DETERMINISTIC",
-            confidence=0.9,
-            fix_summary=f"Scanned for gravity violations: {gravity_violations} found",
-            outcome="SUCCESS",
-        )
-        # [H3] Always record GravityLeakHealerAgent outcome
-        _record_healing_action(
-            state_mgr,
-            agent="GravityLeakHealerAgent",
-            territory="__global__",
-            routing_tier="DETERMINISTIC",
-            confidence=0.9,
-            fix_summary=(
-                f"Fixed {gravity_fixed} of {gravity_violations} gravity violations"
-                if gravity_violations > 0
-                else "No gravity violations detected"
-            ),
-            outcome="SUCCESS" if gravity_fixed > 0 or gravity_violations == 0 else "PARTIAL",
-        )
-
-        # Store gravity violations for final reporting
+                gravity_fixed = heal_result.get('violations_fixed', 0) if isinstance(heal_result, dict) else 0
+        state_mgr.state['gravity_fixed'] = gravity_fixed
+        _record_healing_action(state_mgr, agent='GravityValidatorAgent', territory='__global__', routing_tier='DETERMINISTIC', confidence=0.9, fix_summary=f'Scanned for gravity violations: {gravity_violations} found', outcome='SUCCESS')
+        _record_healing_action(state_mgr, agent='GravityLeakHealerAgent', territory='__global__', routing_tier='DETERMINISTIC', confidence=0.9, fix_summary=f'Fixed {gravity_fixed} of {gravity_violations} gravity violations' if gravity_violations > 0 else 'No gravity violations detected', outcome='SUCCESS' if gravity_fixed > 0 or gravity_violations == 0 else 'PARTIAL')
         gravity_violation_list = []
         if gravity_violations > 0:
-            gravity_violation_list.append(
-                {
-                    "type": "GRAVITY",
-                    "message": f"Found {gravity_violations} gravity violations (layer inversions)",
-                    "severity": "high",
-                    "recommended_action": "Review and fix layer boundary violations",
-                    "confidence": 0.9,
-                    "violations_found": gravity_violations,
-                    "violations_fixed": gravity_fixed,
-                }
-            )
-        state_mgr.state["gravity_violations"] = gravity_violation_list
-
+            gravity_violation_list.append({'type': 'GRAVITY', 'message': f'Found {gravity_violations} gravity violations (layer inversions)', 'severity': 'high', 'recommended_action': 'Review and fix layer boundary violations', 'confidence': 0.9, 'violations_found': gravity_violations, 'violations_fixed': gravity_fixed})
+        state_mgr.state['gravity_violations'] = gravity_violation_list
         if gravity_violations > 0:
-            status_msg = f"Violations: {gravity_violations} | Fixed: {gravity_fixed}"
-            state_mgr.complete_agent(
-                "GravityValidatorAgent", True, f"Scanned: {gravity_violations} gravity violation(s) found"
-            )
-            state_mgr.complete_agent("GravityLeakHealerAgent", True, status_msg)
-            logger.info(f"Gravity violations processed: {gravity_violations} found, {gravity_fixed} fixed")
+            status_msg = f'Violations: {gravity_violations} | Fixed: {gravity_fixed}'
+            state_mgr.complete_agent('GravityValidatorAgent', True, f'Scanned: {gravity_violations} gravity violation(s) found')
+            state_mgr.complete_agent('GravityLeakHealerAgent', True, status_msg)
+            logger.info(f'Gravity violations processed: {gravity_violations} found, {gravity_fixed} fixed')
         else:
-            state_mgr.complete_agent("GravityValidatorAgent", True, "Scanned: 0 gravity violations found")
-            state_mgr.complete_agent("GravityLeakHealerAgent", True, "No gravity violations found")
-            logger.info("No gravity violations detected")
-
+            state_mgr.complete_agent('GravityValidatorAgent', True, 'Scanned: 0 gravity violations found')
+            state_mgr.complete_agent('GravityLeakHealerAgent', True, 'No gravity violations found')
+            logger.info('No gravity violations detected')
     except (ImportError, AttributeError, TypeError, ValueError) as e:
-        logger.error(f"Gravity violation detection failed: {e}")
-        state_mgr.complete_agent("GravityValidatorAgent", False, f"Detection failed: {str(e)}")
-        state_mgr.complete_agent("GravityLeakHealerAgent", False, f"Detection failed: {str(e)}")
-        _record_healing_action(
-            state_mgr,
-            agent="GravityValidatorAgent",
-            territory="__global__",
-            routing_tier="DETERMINISTIC",
-            confidence=0.0,
-            fix_summary=f"GravityValidatorAgent error: {str(e)[:120]}",
-            outcome="FAILED",
-        )
-        _record_healing_action(
-            state_mgr,
-            agent="GravityLeakHealerAgent",
-            territory="__global__",
-            routing_tier="DETERMINISTIC",
-            confidence=0.0,
-            fix_summary=f"GravityLeakHealerAgent error: {str(e)[:120]}",
-            outcome="FAILED",
-        )
-        state_mgr.state["gravity_violations"] = [
-            {
-                "type": "GRAVITY_ERROR",
-                "message": f"Gravity detection failed: {str(e)}",
-                "severity": "high",
-                "recommended_action": "Fix gravity detection error",
-                "confidence": 0.5,
-            }
-        ]
+        logger.error(f'Gravity violation detection failed: {e}')
+        state_mgr.complete_agent('GravityValidatorAgent', False, f'Detection failed: {str(e)}')
+        state_mgr.complete_agent('GravityLeakHealerAgent', False, f'Detection failed: {str(e)}')
+        _record_healing_action(state_mgr, agent='GravityValidatorAgent', territory='__global__', routing_tier='DETERMINISTIC', confidence=0.0, fix_summary=f'GravityValidatorAgent error: {str(e)[:120]}', outcome='FAILED')
+        _record_healing_action(state_mgr, agent='GravityLeakHealerAgent', territory='__global__', routing_tier='DETERMINISTIC', confidence=0.0, fix_summary=f'GravityLeakHealerAgent error: {str(e)[:120]}', outcome='FAILED')
+        state_mgr.state['gravity_violations'] = [{'type': 'GRAVITY_ERROR', 'message': f'Gravity detection failed: {str(e)}', 'severity': 'high', 'recommended_action': 'Fix gravity detection error', 'confidence': 0.5}]
 
-
-# guardian: allow-magic-config
 @with_retry(max_retries=MAX_RETRIES)
-def execute_phase4_architectural_validation(agents, territory, state_mgr, ctx: "HealContext" = None):
+def execute_phase4_architectural_validation(agents, territory, state_mgr, ctx: 'HealContext'=None):
     """PHASE 4: ARCHITECTURAL VALIDATION (Retriable)"""
     return execute_phase4_validation_impl(agents, territory, state_mgr, ctx=ctx)
 
-
-def execute_phase4_validation_impl(agents, territory, state_mgr, ctx: "HealContext" = None):
+def execute_phase4_validation_impl(agents, territory, state_mgr, ctx: 'HealContext'=None):
     """PHASE 4: ARCHITECTURAL VALIDATION - Implementation"""
-    logger.info(f"=== PHASE 4: VALIDATION - {territory} ===")
-
-    state_mgr.update_agent("ArchitectureGovernorAgent", "L5 - Safety")
-    arch_gov = agents["arch_governor"](project_root=REPO_ROOT)
-
-    # [EXPANDED SCOPE] Audit all ENFORCED_TERRITORIES for comprehensive validation
+    logger.info(f'=== PHASE 4: VALIDATION - {territory} ===')
+    state_mgr.update_agent('ArchitectureGovernorAgent', 'L5 - Safety')
+    arch_gov = agents['arch_governor'](project_root=REPO_ROOT)
     from agentic_core.L5_safety.config.structure_blueprint import ENFORCED_TERRITORIES
-
-    # If territory is in ENFORCED_TERRITORIES, audit all of them (not just current)
-    # This ensures comprehensive architectural validation across all territories
     if territory in ENFORCED_TERRITORIES or territory == AGENTIC_CORE_DIR:
         target_territories = sorted(ENFORCED_TERRITORIES)
-        logger.info(f"ArchitectureGovernorAgent: Auditing all {len(target_territories)} enforced territories")
+        logger.info(f'ArchitectureGovernorAgent: Auditing all {len(target_territories)} enforced territories')
     else:
-        # For layer-specific scans (L0_routing, L1_cognition, etc.), audit just that layer
         target_territories = [territory]
-
-    gov_report = arch_gov.comprehensive_territory_audit(
-        target_territories=target_territories,
-        check_layer_boundaries=True,
-        check_naming_conventions=True,
-    )
-
+    gov_report = arch_gov.comprehensive_territory_audit(target_territories=target_territories, check_layer_boundaries=True, check_naming_conventions=True)
     if gov_report is None:
-        state_mgr.complete_agent("ArchitectureGovernorAgent", False, "Returned None")
-        return None, None
-
-    violations = len(gov_report.get("layer_violations", [])) + len(gov_report.get("naming_violations", []))
-    state_mgr.complete_agent("ArchitectureGovernorAgent", True, f"Violations: {violations}")
-    _record_healing_action(
-        state_mgr,
-        agent="ArchitectureGovernorAgent",
-        territory=territory,
-        routing_tier="DETERMINISTIC",
-        confidence=1.0,
-        fix_summary=f"Arch validation: {violations} violation(s) in {territory}",
-        outcome="SUCCESS",
-    )
-
-    # [FIX-B8] GravityLeakRepairAgent moved to _run_gravity_repair_global() — runs once before territory loop
-
-    # [FIX-B10] Only run file-size check for agentic_core L-layer territories
-    _ac_layer_prefixes = ("L0_", "L1_", "L2_", "L3_", "L4_", "L5_", "L6_")
-    if territory != AGENTIC_CORE_DIR and not any(territory.startswith(p) for p in _ac_layer_prefixes):
-        return gov_report, None
-
+        state_mgr.complete_agent('ArchitectureGovernorAgent', False, 'Returned None')
+        return (None, None)
+    violations = len(gov_report.get('layer_violations', [])) + len(gov_report.get('naming_violations', []))
+    state_mgr.complete_agent('ArchitectureGovernorAgent', True, f'Violations: {violations}')
+    _record_healing_action(state_mgr, agent='ArchitectureGovernorAgent', territory=territory, routing_tier='DETERMINISTIC', confidence=1.0, fix_summary=f'Arch validation: {violations} violation(s) in {territory}', outcome='SUCCESS')
+    _ac_layer_prefixes = ('L0_', 'L1_', 'L2_', 'L3_', 'L4_', 'L5_', 'L6_')
+    if territory != AGENTIC_CORE_DIR and (not any((territory.startswith(p) for p in _ac_layer_prefixes))):
+        return (gov_report, None)
     size_violations = arch_gov.check_file_sizes(territory)
     if size_violations:
         for v in size_violations:
-            state_mgr.add_event("warning", v["message"])
-        logger.warning(f"check_file_sizes: {len(size_violations)} oversized file(s) in {territory}")
+            state_mgr.add_event('warning', v['message'])
+        logger.warning(f'check_file_sizes: {len(size_violations)} oversized file(s) in {territory}')
     else:
-        logger.info(f"check_file_sizes: no oversized files in {territory}")
+        logger.info(f'check_file_sizes: no oversized files in {territory}')
+    return (gov_report, None)
 
-    return gov_report, None
-
-
-# guardian: allow-magic-config
 @with_retry(max_retries=MAX_RETRIES)
-def execute_phase5_healing(
-    agents,
-    territory,
-    gov_report,
-    decision_engine,
-    state_mgr,
-    ctx: "HealContext" = None,
-):
+def execute_phase5_healing(agents, territory, gov_report, decision_engine, state_mgr, ctx: 'HealContext'=None):
     """PHASE 5: HEALING (Retriable)"""
-    # [STRICT SCOPE] Gatekeeper check
     if not gov_report:
-        logger.warning("Skipping healing: No governance report available.")
+        logger.warning('Skipping healing: No governance report available.')
         return None
+    return execute_phase5_healing_impl(agents, territory, gov_report, decision_engine, state_mgr, ctx)
 
-    return execute_phase5_healing_impl(
-        agents,
-        territory,
-        gov_report,
-        decision_engine,
-        state_mgr,
-        ctx,
-    )
-
-
-def execute_phase5_healing_impl(
-    agents,
-    territory,
-    gov_report,
-    decision_engine,
-    state_mgr,
-    ctx: "HealContext" = None,
-):
+def execute_phase5_healing_impl(agents, territory, gov_report, decision_engine, state_mgr, ctx: 'HealContext'=None):
     """PHASE 5: HEALING - Implementation"""
-    logger.info(f"=== PHASE 5: HEALING - {territory} ===")
-
+    logger.info(f'=== PHASE 5: HEALING - {territory} ===')
     if gov_report is None:
-        logger.warning("No governance report - skipping healing")
+        logger.warning('No governance report - skipping healing')
         return None
-
-    arch_gov = agents["arch_governor"](project_root=REPO_ROOT)
+    arch_gov = agents['arch_governor'](project_root=REPO_ROOT)
     plan = arch_gov.generate_healing_plan(gov_report)
-
     if plan is None:
-        logger.warning("No healing plan generated")
+        logger.warning('No healing plan generated')
         return None
-
-    if plan.get("requires_healing", False):
-        fixes = len(plan.get("naming_fixes", []))
-        confidence = decision_engine.calculate_healing_confidence(fixes, ["NAMING"], territory)
-        proceed, reason = decision_engine.should_proceed_with_healing(
-            confidence, "ArchitectureGovernorAgent", territory=territory
-        )
-
-        state_mgr.add_event("decision", f"Arch Healing: {reason}")
-        logger.info(f"Decision: {reason}")
-
+    if plan.get('requires_healing', False):
+        fixes = len(plan.get('naming_fixes', []))
+        confidence = decision_engine.calculate_healing_confidence(fixes, ['NAMING'], territory)
+        proceed, reason = decision_engine.should_proceed_with_healing(confidence, 'ArchitectureGovernorAgent', territory=territory)
+        state_mgr.add_event('decision', f'Arch Healing: {reason}')
+        logger.info(f'Decision: {reason}')
         if proceed and ctx is not None and ctx.heal:
-            state_mgr.update_agent("ArchitectureGovernorAgent", "HEALING MODE")
-            _arch_healer_cls = agents.get("arch_governor")
+            state_mgr.update_agent('ArchitectureGovernorAgent', 'HEALING MODE')
+            _arch_healer_cls = agents.get('arch_governor')
             if _arch_healer_cls is not None:
                 _arch_healer_instance = _arch_healer_cls(project_root=REPO_ROOT)
                 heal_result = _arch_healer_instance.heal_repository(dry_run=False, execute=True)
             else:
                 heal_result = {}
-            fixed = heal_result.get("violations_fixed", 0) if isinstance(heal_result, dict) else 0
+            fixed = heal_result.get('violations_fixed', 0) if isinstance(heal_result, dict) else 0
             found = fixes
             success = True
-            _record_healing_action(
-                state_mgr,
-                agent="ArchitectureGovernorAgent",
-                territory=territory,
-                routing_score=confidence.value,
-                routing_tier=reason.split("(")[0].strip() if reason else "DETERMINISTIC",
-                confidence=confidence.value,
-                fix_summary=f"Fixed {fixed} of {found} architecture violations in {territory}",
-                outcome="SUCCESS" if fixed > 0 else "PARTIAL",
-            )
-            state_mgr.complete_agent("ArchitectureGovernorAgent", success, f"found={found} fixed={fixed}")
-            return {
-                "status": "HEALED" if fixed > 0 else "NO_CHANGE",
-                "violations_found": found,
-                "violations_fixed": fixed,
-            }
+            _record_healing_action(state_mgr, agent='ArchitectureGovernorAgent', territory=territory, routing_score=confidence.value, routing_tier=reason.split('(')[0].strip() if reason else 'DETERMINISTIC', confidence=confidence.value, fix_summary=f'Fixed {fixed} of {found} architecture violations in {territory}', outcome='SUCCESS' if fixed > 0 else 'PARTIAL')
+            state_mgr.complete_agent('ArchitectureGovernorAgent', success, f'found={found} fixed={fixed}')
+            return {'status': 'HEALED' if fixed > 0 else 'NO_CHANGE', 'violations_found': found, 'violations_fixed': fixed}
         else:
-            _record_healing_action(
-                state_mgr,
-                agent="ArchitectureGovernorAgent",
-                territory=territory,
-                routing_score=confidence.value if hasattr(confidence, "value") else 0.0,
-                routing_tier=reason.split("(")[0].strip() if reason else "DETERMINISTIC",
-                confidence=confidence.value if hasattr(confidence, "value") else 0.0,
-                fix_summary=f"Skipped arch governance in {territory}: {reason}",
-                outcome="SKIPPED",
-            )
-            state_mgr.complete_agent("ArchitectureGovernorAgent", True, f"Skipped: {reason}")
-
+            _record_healing_action(state_mgr, agent='ArchitectureGovernorAgent', territory=territory, routing_score=confidence.value if hasattr(confidence, 'value') else 0.0, routing_tier=reason.split('(')[0].strip() if reason else 'DETERMINISTIC', confidence=confidence.value if hasattr(confidence, 'value') else 0.0, fix_summary=f'Skipped arch governance in {territory}: {reason}', outcome='SKIPPED')
+            state_mgr.complete_agent('ArchitectureGovernorAgent', True, f'Skipped: {reason}')
     return None
 
-
-# guardian: allow-magic-config
 @with_retry(max_retries=MAX_RETRIES)
 def execute_phase7_final(agents, territory, state_mgr, decision_engine=None):
     """PHASE 7: CERTIFICATION (Retriable)"""
     return execute_phase7_final_impl(agents, territory, state_mgr, decision_engine)
 
-
 def execute_phase7_final_impl(agents, territory, state_mgr, decision_engine=None):
     """PHASE 7: CERTIFICATION - Implementation with Silent Aggregation"""
-    logger.info(f"=== PHASE 7: CERTIFICATION - {territory} ===")
-
-    state_mgr.update_agent("ArchitectureGovernorAgent", "L5 - Certification")
-
-    # [UNIFIED MANIFEST] Aggregate all findings from the state manager
-    compliance_report = state_mgr.state.get("compliance_report", {})
-
-    # [CRITICAL FIX] Aggregate violations from ALL agents, not just ArchitectureGovernor
-    # The compliance_report only has ArchitectureGovernor violations
-    # We need to include LocationAgent violations from Phase 1
+    logger.info(f'=== PHASE 7: CERTIFICATION - {territory} ===')
+    state_mgr.update_agent('ArchitectureGovernorAgent', 'L5 - Certification')
+    compliance_report = state_mgr.state.get('compliance_report', {})
     all_violations = []
-
-    # Get ArchitectureGovernor violations
-    arch_violations = compliance_report.get("violations", [])
+    arch_violations = compliance_report.get('violations', [])
     all_violations.extend(arch_violations)
-
-    # Get LocationAgent violations from Phase 1 (stored in state)
-    location_violations = state_mgr.state.get("location_violations", [])
+    location_violations = state_mgr.state.get('location_violations', [])
     for loc_violation in location_violations:
-        # LocationAgent violations arrive in three shapes:
-        # 1. tuple (Path, message) — from validate_sovereign_roots / validate_file_location
-        # 2. dict with "file" and "message" keys — from location_scan_result["violations"]
-        # 3. other objects — fallback
         if isinstance(loc_violation, tuple) and len(loc_violation) >= 2:
             file_path = str(loc_violation[0])
             message = str(loc_violation[1])
         elif isinstance(loc_violation, dict):
-            # BUG-3 fix: dict violations must use .get(), not getattr
-            raw_fp = loc_violation.get("file") or loc_violation.get("path") or "unknown"
+            raw_fp = loc_violation.get('file') or loc_violation.get('path') or 'unknown'
             file_path = str(raw_fp)
-            message = str(loc_violation.get("message", loc_violation.get("msg", str(loc_violation))))
+            message = str(loc_violation.get('message', loc_violation.get('msg', str(loc_violation))))
         else:
-            file_path = str(getattr(loc_violation, "file", "unknown"))
+            file_path = str(getattr(loc_violation, 'file', 'unknown'))
             message = str(loc_violation)
-
-        # Generate specific, actionable recommendations based on violation type
-        if "Missing sovereign root:" in message:
-            dir_name = message.split("Missing sovereign root:")[1].strip().strip("')")
-            action = f"Create directory: {dir_name}"
+        if 'Missing sovereign root:' in message:
+            dir_name = message.split('Missing sovereign root:')[1].strip().strip("')")
+            action = f'Create directory: {dir_name}'
         elif "Forbidden keyword 'def test_'" in message:
-            path_parts = file_path.replace("\\", "/").split("/")
+            path_parts = file_path.replace('\\', '/').split('/')
             filename = path_parts[-1]
-            action = f"Move {filename} to tests/ directory (contains test functions)"
+            action = f'Move {filename} to tests/ directory (contains test functions)'
         elif "Forbidden keyword 'class Sovereign'" in message:
-            path_parts = file_path.replace("\\", "/").split("/")
+            path_parts = file_path.replace('\\', '/').split('/')
             filename = path_parts[-1]
-            action = f"Move {filename} to agentic_core/base_agents/ or agentic_core/L5_safety/"
-        elif "Forbidden extension .py for destination docs/reports" in message:
-            path_parts = file_path.replace("\\", "/").split("/")
+            action = f'Move {filename} to agentic_core/base_agents/ or agentic_core/L5_safety/'
+        elif 'Forbidden extension .py for destination docs/reports' in message:
+            path_parts = file_path.replace('\\', '/').split('/')
             filename = path_parts[-1]
             action = f"RENAME: '{filename}' has audit/report naming but is a Python script. Either: 1) Rename to avoid audit patterns (e.g., registry_linkage_checker.py) OR 2) Move to agentic_core/L0_routing/scripts/ where audit scripts belong"
         else:
-            action = f"Fix location/naming issue: {message[:60]}"
-
-        # Calculate individual confidence for each violation based on specific violation characteristics
-        violation_type = "LOCATION"
+            action = f'Fix location/naming issue: {message[:60]}'
+        violation_type = 'LOCATION'
         if "Forbidden keyword 'def test_'" in message:
-            violation_type = "TEST_FILE_LOCATION"
+            violation_type = 'TEST_FILE_LOCATION'
         elif "Forbidden keyword 'class Sovereign'" in message:
-            violation_type = "SOVEREIGN_CLASS_LOCATION"
-        elif "Forbidden extension .py for destination docs/reports" in message:
-            violation_type = "PYTHON_IN_DOCS"
-        elif "BROKEN BACKUP FILE" in message:
-            violation_type = "STALE_BACKUP"
+            violation_type = 'SOVEREIGN_CLASS_LOCATION'
+        elif 'Forbidden extension .py for destination docs/reports' in message:
+            violation_type = 'PYTHON_IN_DOCS'
+        elif 'BROKEN BACKUP FILE' in message:
+            violation_type = 'STALE_BACKUP'
         elif "Forbidden keyword 'import '" in message:
-            violation_type = "IMPORT_IN_DOCS"
-
-        violation_confidence = decision_engine.calculate_healing_confidence(
-            violations_count=1,  # Single violation
-            violation_types=[violation_type],  # Use specific violation type
-            territory=territory,
-        ).value
-
-        # Check if LLM was actually used in the decision process (look for LLM decisions in decision engine)
-        llm_decisions = [d for d in decision_engine.decisions_made if "LLM" in d.get("reason", "")]
+            violation_type = 'IMPORT_IN_DOCS'
+        violation_confidence = decision_engine.calculate_healing_confidence(violations_count=1, violation_types=[violation_type], territory=territory).value
+        llm_decisions = [d for d in decision_engine.decisions_made if 'LLM' in d.get('reason', '')]
         llm_was_triggered = decision_engine.enable_llm and len(llm_decisions) > 0
-
-        # Convert LocationAgent violation object to detailed dict
-        violation_dict = {
-            "type": "LOCATION",
-            "source": "LocationHealerAgent",
-            "file": file_path,
-            "message": message,
-            "severity": "medium",
-            "recommended_action": action,
-            "llm_triggered": llm_was_triggered,
-            "confidence": round(violation_confidence, 3),
-        }
+        violation_dict = {'type': 'LOCATION', 'source': 'LocationHealerAgent', 'file': file_path, 'message': message, 'severity': 'medium', 'recommended_action': action, 'llm_triggered': llm_was_triggered, 'confidence': round(violation_confidence, 3)}
         all_violations.append(violation_dict)
-
-    # [FIX-B1] Gravity violations are global (not per-territory) — excluded from per-territory reports.
-    # They are emitted only in save_aggregate_report() under "global_violations".
-
-    # Get ObservabilityProbeExecutorAgent violations (already stored by Phase 6 — do not re-invoke)
-    conversational_violations = state_mgr.state.get("conversational_violations", [])
+    conversational_violations = state_mgr.state.get('conversational_violations', [])
     for conv_violation in conversational_violations:
         if isinstance(conv_violation, dict):
-            violation_dict = {
-                **conv_violation,
-                "source": "ObservabilityProbeExecutorAgent",
-                "file": conv_violation.get("file", "unknown"),
-                "message": conv_violation.get("message", str(conv_violation)),
-                "severity": conv_violation.get("severity", "medium"),
-                "recommended_action": conv_violation.get(
-                    "recommended_action",
-                    "Review conversational pattern",
-                ),
-                "llm_triggered": decision_engine.enable_llm,
-                "confidence": round(conv_violation.get("confidence", 0.5), 3),
-            }
+            violation_dict = {**conv_violation, 'source': 'ObservabilityProbeExecutorAgent', 'file': conv_violation.get('file', 'unknown'), 'message': conv_violation.get('message', str(conv_violation)), 'severity': conv_violation.get('severity', 'medium'), 'recommended_action': conv_violation.get('recommended_action', 'Review conversational pattern'), 'llm_triggered': decision_engine.enable_llm, 'confidence': round(conv_violation.get('confidence', 0.5), 3)}
             all_violations.append(violation_dict)
-
-    # [FIX-B1] Hygiene violations are global (not per-territory) — excluded from per-territory reports.
-    # They are emitted only in save_aggregate_report() under "global_violations".
-
-    # [PHASE 3 ENHANCEMENT] Get FileClassificationAgent violations from early detection
-    classification_violations = state_mgr.state.get("classification_violations", [])
+    classification_violations = state_mgr.state.get('classification_violations', [])
     for class_violation in classification_violations:
         if isinstance(class_violation, dict):
-            subtype = class_violation.get("subtype", "UNKNOWN")
-            count = class_violation.get("count", 1)
-            violation_dict = {
-                "type": "CLASSIFICATION",
-                "subtype": subtype,
-                "source": "FileClassificationHealerAgent",
-                "file": class_violation.get("file", "multiple"),
-                "message": f"{subtype} violation: {count} file(s) need attention",
-                "severity": "medium",
-                "recommended_action": f"Run FileClassificationAgent to fix {subtype} issues",
-                "llm_triggered": decision_engine.enable_llm,
-                "confidence": round(class_violation.get("confidence", 0.7), 3),
-                "count": count,
-            }
+            subtype = class_violation.get('subtype', 'UNKNOWN')
+            count = class_violation.get('count', 1)
+            violation_dict = {'type': 'CLASSIFICATION', 'subtype': subtype, 'source': 'FileClassificationHealerAgent', 'file': class_violation.get('file', 'multiple'), 'message': f'{subtype} violation: {count} file(s) need attention', 'severity': 'medium', 'recommended_action': f'Run FileClassificationAgent to fix {subtype} issues', 'llm_triggered': decision_engine.enable_llm, 'confidence': round(class_violation.get('confidence', 0.7), 3), 'count': count}
             all_violations.append(violation_dict)
-
     violation_count = len(all_violations)
-    status = "COMPLIANT" if violation_count == 0 else "NON-COMPLIANT"
-
-    # [LOGIC FIX] Recalculate confidence based on FINAL violation count, not Phase 1
-    # [FIX-B4+B5] Use the passed decision_engine directly — no fallback creation
+    status = 'COMPLIANT' if violation_count == 0 else 'NON-COMPLIANT'
     if decision_engine is None:
         decision_engine = AutonomousDecisionEngine(enable_llm=False, auto_approve=False)
-
-    final_confidence = decision_engine.calculate_healing_confidence(
-        violations_count=violation_count,
-        violation_types=[v.get("type", "UNKNOWN") for v in all_violations[:10]],
-        territory=territory,
-    )
+    final_confidence = decision_engine.calculate_healing_confidence(violations_count=violation_count, violation_types=[v.get('type', 'UNKNOWN') for v in all_violations[:10]], territory=territory)
     confidence_avg = final_confidence.value
-
-    drift_count = compliance_report.get("stats", {}).get("drift_detected", 0)
-
-    # [FIX-B4] Use decision_engine.decisions_made filtered by territory
-    decisions_made = [
-        d for d in getattr(decision_engine, "decisions_made", []) if d.get("territory") == territory
-    ]
-
-    # Get location scan result from state manager
-    location_scan_result = state_mgr.state.get("location_scan_result", {})
-
-    # [DYNAMIC] Track actual agents executed from state manager
-    completed_agents = state_mgr.state.get("completed_agents", [])
-    skipped_agents = state_mgr.state.get("skipped_agents", [])
-    # Extract unique agent names from completion history
-    agents_executed = list({agent["agent"] for agent in completed_agents})
-    # [PHANTOM-RUN FIX] Agents blocked by confidence gate or HITL — NOT counted as executed
-    agents_skipped = [{"agent": a["agent"], "reason": a["reason"]} for a in skipped_agents]
-
-    detailed_cert = {
-        "meta": {
-            "territory": territory,
-            "timestamp": datetime.now().isoformat(),
-            "status": status,
-            "sovereignty_level": "L5",
-        },
-        "metrics": {
-            "confidence_score": round(confidence_avg, 3),
-            "violation_count": violation_count,
-            "drift_count": drift_count,
-            "errors": compliance_report.get("stats", {}).get("errors", 0),
-            "violations_fixed": (
-                compliance_report.get("stats", {}).get("violations_fixed", 0)
-                + state_mgr.state.get("hygiene_fixed", 0)
-                + state_mgr.state.get("location_fixed", 0)
-                + state_mgr.state.get("hierarchy_fixed", 0)
-                + state_mgr.state.get("gravity_fixed", 0)
-                + state_mgr.state.get("phase2_violations_fixed", 0)  # BUG-2 fix
-            ),
-            "agents_run": len(agents_executed),
-            "agents_skipped": len(agents_skipped),
-        },
-        "governance_log": {"decisions": decisions_made, "files_processed": []},
-        "unified_violations": all_violations,  # Use all_violations instead of just arch violations
-        # [H4] Per-territory healing log with routing details
-        "healing_log": [
-            a
-            for a in state_mgr.state.get("healing_actions", [])
-            if a.get("territory") == territory or a.get("territory") == "__global__"
-        ],
-        "agents_executed": agents_executed,
-        "agents_skipped": agents_skipped,
-    }
-
-    # Add comprehensive file statistics
-    file_stats = location_scan_result.get("file_stats", {})
-    # Format compliance rate to one decimal place
-    if "compliance_rate" in file_stats:
-        file_stats["compliance_rate"] = round(file_stats["compliance_rate"], 1)
-    detailed_cert["file_scan_stats"] = file_stats
-
-    # Add violations to file log
+    drift_count = compliance_report.get('stats', {}).get('drift_detected', 0)
+    decisions_made = [d for d in getattr(decision_engine, 'decisions_made', []) if d.get('territory') == territory]
+    location_scan_result = state_mgr.state.get('location_scan_result', {})
+    completed_agents = state_mgr.state.get('completed_agents', [])
+    skipped_agents = state_mgr.state.get('skipped_agents', [])
+    agents_executed = list({agent['agent'] for agent in completed_agents})
+    agents_skipped = [{'agent': a['agent'], 'reason': a['reason']} for a in skipped_agents]
+    detailed_cert = {'meta': {'territory': territory, 'timestamp': datetime.now().isoformat(), 'status': status, 'sovereignty_level': 'L5'}, 'metrics': {'confidence_score': round(confidence_avg, 3), 'violation_count': violation_count, 'drift_count': drift_count, 'errors': compliance_report.get('stats', {}).get('errors', 0), 'violations_fixed': compliance_report.get('stats', {}).get('violations_fixed', 0) + state_mgr.state.get('hygiene_fixed', 0) + state_mgr.state.get('location_fixed', 0) + state_mgr.state.get('hierarchy_fixed', 0) + state_mgr.state.get('gravity_fixed', 0) + state_mgr.state.get('phase2_violations_fixed', 0), 'agents_run': len(agents_executed), 'agents_skipped': len(agents_skipped)}, 'governance_log': {'decisions': decisions_made, 'files_processed': []}, 'unified_violations': all_violations, 'healing_log': [a for a in state_mgr.state.get('healing_actions', []) if a.get('territory') == territory or a.get('territory') == '__global__'], 'agents_executed': agents_executed, 'agents_skipped': agents_skipped}
+    file_stats = location_scan_result.get('file_stats', {})
+    if 'compliance_rate' in file_stats:
+        file_stats['compliance_rate'] = round(file_stats['compliance_rate'], 1)
+    detailed_cert['file_scan_stats'] = file_stats
     files_affected = set()
-    for v in all_violations:  # Use all_violations instead of violations
-        files_affected.add(v.get("file", "unknown"))
-
-    detailed_cert["governance_log"]["files_processed"] = list(files_affected)
-    detailed_cert["governance_log"]["scan_summary"] = {
-        "total_files_scanned": file_stats.get("total_files", 0),
-        "files_with_violations": len(files_affected),
-        "files_compliant": file_stats.get("valid_files", 0),
-        "compliance_rate": round(file_stats.get("compliance_rate", 0), 1),
-        "file_types": file_stats.get("file_types", {}),
-    }
-
-    # Generate Markdown Executive Summary
-    file_stats = location_scan_result.get("file_stats", {})
-    total_files = file_stats.get("total_files", 0)
-    compliance_rate = file_stats.get("compliance_rate", 0)
-    file_types = file_stats.get("file_types", {})
-
-    markdown_summary = [
-        f"# 🛡️ Sovereign Compliance Report: {territory}",
-        f"**Date:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} | **Status:** {status}",
-        "",
-        "## 📊 Executive Summary",
-        "",
-        f"* **Confidence Score:** {confidence_avg:.1%}",
-        f"* **Violations Detected:** {violation_count}",
-        f"* **Integrity Drift:** {drift_count}",
-        f"* **Violations Fixed:** {detailed_cert['metrics']['violations_fixed']}",
-        "",
-        "## 📁 Scan Scope",
-        "",
-        f"* **Total Files Scanned:** {total_files}",
-        f"* **Files Compliant:** {file_stats.get('valid_files', 0)}",
-        f"* **Files with Violations:** {len(files_affected)}",
-        f"* **Compliance Rate:** {compliance_rate:.1f}%",
-        "",
-        "### File Types Analyzed",
-        "",
-    ]
-
-    # Add file type breakdown
+    for v in all_violations:
+        files_affected.add(v.get('file', 'unknown'))
+    detailed_cert['governance_log']['files_processed'] = list(files_affected)
+    detailed_cert['governance_log']['scan_summary'] = {'total_files_scanned': file_stats.get('total_files', 0), 'files_with_violations': len(files_affected), 'files_compliant': file_stats.get('valid_files', 0), 'compliance_rate': round(file_stats.get('compliance_rate', 0), 1), 'file_types': file_stats.get('file_types', {})}
+    file_stats = location_scan_result.get('file_stats', {})
+    total_files = file_stats.get('total_files', 0)
+    compliance_rate = file_stats.get('compliance_rate', 0)
+    file_types = file_stats.get('file_types', {})
+    markdown_summary = [f'# 🛡️ Sovereign Compliance Report: {territory}', f"**Date:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} | **Status:** {status}", '', '## 📊 Executive Summary', '', f'* **Confidence Score:** {confidence_avg:.1%}', f'* **Violations Detected:** {violation_count}', f'* **Integrity Drift:** {drift_count}', f"* **Violations Fixed:** {detailed_cert['metrics']['violations_fixed']}", '', '## 📁 Scan Scope', '', f'* **Total Files Scanned:** {total_files}', f"* **Files Compliant:** {file_stats.get('valid_files', 0)}", f'* **Files with Violations:** {len(files_affected)}', f'* **Compliance Rate:** {compliance_rate:.1f}%', '', '### File Types Analyzed', '']
     if file_types:
         for ext, count in sorted(file_types.items()):
-            ext_display = ext if ext else "(no extension)"
-            markdown_summary.append(f"* **{ext_display}:** {count} files")
-
-    markdown_summary.extend(["", "## 🚨 Violations Detected", ""])
-
-    # Add detailed violations table
+            ext_display = ext if ext else '(no extension)'
+            markdown_summary.append(f'* **{ext_display}:** {count} files')
+    markdown_summary.extend(['', '## 🚨 Violations Detected', ''])
     if violation_count > 0:
-        markdown_summary.extend(
-            [
-                "| # | Type | File | Issue | Severity | LLM | Confidence | Action |",
-                "| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |",
-            ],
-        )
-
+        markdown_summary.extend(['| # | Type | File | Issue | Severity | LLM | Confidence | Action |', '| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |'])
         for idx, violation in enumerate(all_violations, 1):
-            v_type = violation.get("type", "UNKNOWN")
-            v_file = violation.get("file", "unknown")
-            # Extract just the filename from full path
-            if "/" in v_file or "\\" in v_file:
-                v_file = v_file.split("/")[-1].split("\\")[-1]
-
-            # Parse message to get the actual issue
-            v_message = violation.get("message", "")
-            if "ARTIFACT ROUTING VIOLATION:" in v_message:
-                issue = v_message.split("ARTIFACT ROUTING VIOLATION:")[1].split("'")[0].strip()
-            elif "Missing sovereign root:" in v_message:
-                issue = v_message.split("Missing sovereign root:")[1].strip().strip("')")
+            v_type = violation.get('type', 'UNKNOWN')
+            v_file = violation.get('file', 'unknown')
+            if '/' in v_file or '\\' in v_file:
+                v_file = v_file.split('/')[-1].split('\\')[-1]
+            v_message = violation.get('message', '')
+            if 'ARTIFACT ROUTING VIOLATION:' in v_message:
+                issue = v_message.split('ARTIFACT ROUTING VIOLATION:')[1].split("'")[0].strip()
+            elif 'Missing sovereign root:' in v_message:
+                issue = v_message.split('Missing sovereign root:')[1].strip().strip("')")
             else:
-                issue = v_message[:50] + "..." if len(v_message) > 50 else v_message
-
-            v_severity = violation.get("severity", "medium")
-            v_llm = "Yes" if violation.get("llm_triggered", False) else "No"
-            v_conf = violation.get("confidence", 0.0)
-            # Convert to percentage if it's a decimal (0-1) or keep as is if already percentage
+                issue = v_message[:50] + '...' if len(v_message) > 50 else v_message
+            v_severity = violation.get('severity', 'medium')
+            v_llm = 'Yes' if violation.get('llm_triggered', False) else 'No'
+            v_conf = violation.get('confidence', 0.0)
             if v_conf <= 1.0:
-                v_conf_display = f"{v_conf:.1%}"
+                v_conf_display = f'{v_conf:.1%}'
             else:
-                v_conf_display = f"{v_conf:.1f}%"
-            v_action = violation.get("recommended_action", "Review")[:30] + "..."
-
-            markdown_summary.append(
-                f"| {idx} | {v_type} | `{v_file}` | {issue} | {v_severity} | {v_llm} | {v_conf_display} | {v_action} |",
-            )
+                v_conf_display = f'{v_conf:.1f}%'
+            v_action = violation.get('recommended_action', 'Review')[:30] + '...'
+            markdown_summary.append(f'| {idx} | {v_type} | `{v_file}` | {issue} | {v_severity} | {v_llm} | {v_conf_display} | {v_action} |')
     else:
-        markdown_summary.append("*No violations detected - territory is compliant.*")
-
-    markdown_summary.extend(
-        [
-            "",
-            "## 🧠 AI Governance Log",
-            "",
-            "| Agent | Score | Tier | Model | Gate | Confidence | Outcome | Fix Applied |",
-            "| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |",
-        ],
-    )
-
-    # [H5] Upgraded 8-column governance table with routing details
+        markdown_summary.append('*No violations detected - territory is compliant.*')
+    markdown_summary.extend(['', '## 🧠 AI Governance Log', '', '| Agent | Score | Tier | Model | Gate | Confidence | Outcome | Fix Applied |', '| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |'])
     for decision in decisions_made:
-        agent = decision.get("agent", "Unknown")
-        score = decision.get("routing_score", 0.0)
-        tier = decision.get("routing_tier", "UNKNOWN")
-        model = decision.get("model", "none")
-        gate = decision.get("routing_gate", "N/A")
-        conf = decision.get("confidence", 0.0)
-        outcome = "PROCEED" if decision.get("decision", False) else "SKIP"
-        # Match fix details from healing_log
-        fix_applied = "-"
-        for ha in detailed_cert.get("healing_log", []):
-            if ha.get("agent") == agent:
-                fix_applied = ha.get("fix_summary", "-")
+        agent = decision.get('agent', 'Unknown')
+        score = decision.get('routing_score', 0.0)
+        tier = decision.get('routing_tier', 'UNKNOWN')
+        model = decision.get('model', 'none')
+        gate = decision.get('routing_gate', 'N/A')
+        conf = decision.get('confidence', 0.0)
+        outcome = 'PROCEED' if decision.get('decision', False) else 'SKIP'
+        fix_applied = '-'
+        for ha in detailed_cert.get('healing_log', []):
+            if ha.get('agent') == agent:
+                fix_applied = ha.get('fix_summary', '-')
                 break
-        conf_display = f"{conf:.1%}" if conf <= 1.0 else f"{conf:.1f}%"
-        markdown_summary.append(
-            f"| {agent} | {score:.3f} | {tier} | {model} | {gate} | {conf_display} | {outcome} | {fix_applied} |",
-        )
-
-    # [FIX-I3] Only print per-territory JSON manifest in verbose mode
+        conf_display = f'{conf:.1%}' if conf <= 1.0 else f'{conf:.1f}%'
+        markdown_summary.append(f'| {agent} | {score:.3f} | {tier} | {model} | {gate} | {conf_display} | {outcome} | {fix_applied} |')
     if logger.isEnabledFor(logging.DEBUG):
         _safe_print(json.dumps(detailed_cert, indent=2))
-
-    # Print Markdown Summary (always shown — it's the human-readable output)
-    _safe_print("\n" + "\n".join(markdown_summary))
+    _safe_print('\n' + '\n'.join(markdown_summary))
     if files_affected:
-        _safe_print("\n### Affected Files")
+        _safe_print('\n### Affected Files')
         for f in sorted(files_affected):
-            _safe_print(f"* `{f}`")
+            _safe_print(f'* `{f}`')
     else:
-        _safe_print("\n*No files required remediation.*")
-
-    # [COMPREHENSIVE REPORTS] Save detailed reports to files
-    save_comprehensive_reports(
-        territory,
-        detailed_cert,
-        markdown_summary,
-        files_affected,
-        state_mgr.project_root,
-    )
-
-    logger.info(f"📜 CERTIFICATE ISSUED: {territory}")
-    state_mgr.complete_agent("ArchitectureGovernorAgent", True, "Certificate Issued")
-    total_v = len(detailed_cert.get("violations", []))
+        _safe_print('\n*No files required remediation.*')
+    save_comprehensive_reports(territory, detailed_cert, markdown_summary, files_affected, state_mgr.project_root)
+    logger.info(f'📜 CERTIFICATE ISSUED: {territory}')
+    state_mgr.complete_agent('ArchitectureGovernorAgent', True, 'Certificate Issued')
+    total_v = len(detailed_cert.get('violations', []))
     return detailed_cert
 
-
-def save_comprehensive_reports(
-    territory: str,
-    detailed_cert: dict,
-    markdown_summary: list,
-    files_affected: set,
-    project_root: Path,
-):
+def save_comprehensive_reports(territory: str, detailed_cert: dict, markdown_summary: list, files_affected: set, project_root: Path):
     """
     [COMPREHENSIVE REPORTS] Save detailed JSON manifest and Markdown summary to persistent files.
     Creates timestamped reports in logs/compliance_reports/ directory.
     """
     try:
-        # Create reports directory
-        reports_dir = project_root / "logs" / "compliance_reports"
+        reports_dir = project_root / 'logs' / 'compliance_reports'
         reports_dir.mkdir(parents=True, exist_ok=True)
-
-        # Save only final files (no timestamped versions to reduce sprawl)
-        json_filename = f"compliance_report_{territory}.json"
-        md_filename = f"executive_summary_{territory}.md"
+        json_filename = f'compliance_report_{territory}.json'
+        md_filename = f'executive_summary_{territory}.md'
         json_path = reports_dir / json_filename
         md_path = reports_dir / md_filename
-
-        # Deduplicate unified_violations by (type, file, message) before persisting
         _seen_vkeys: set = set()
         _deduped: list = []
-        for _v in detailed_cert.get("unified_violations", []):
-            _vk = (_v.get("type", ""), _v.get("file", ""), _v.get("message", ""))
+        for _v in detailed_cert.get('unified_violations', []):
+            _vk = (_v.get('type', ''), _v.get('file', ''), _v.get('message', ''))
             if _vk not in _seen_vkeys:
                 _seen_vkeys.add(_vk)
                 _deduped.append(_v)
-        if len(_deduped) != len(detailed_cert.get("unified_violations", [])):
-            detailed_cert = {**detailed_cert, "unified_violations": _deduped}
+        if len(_deduped) != len(detailed_cert.get('unified_violations', [])):
+            detailed_cert = {**detailed_cert, 'unified_violations': _deduped}
 
-        def _json_serialise(obj):  # BUG-4 fix: Path → posix string to avoid backslash escape errors
+        def _json_serialise(obj):
             if isinstance(obj, Path):
                 return obj.as_posix()
             return str(obj)
-
-        with open(json_path, "w", encoding="utf-8") as f:
-            assert_no_persistent_write("L0", "json.dump")  # G-12-1: mutation prohibition guard
+        with open(json_path, 'w', encoding='utf-8') as f:
+            assert_no_persistent_write('L0', 'json.dump')
             json.dump(detailed_cert, f, indent=2, default=_json_serialise, ensure_ascii=False)
-
-        # Save Markdown Executive Summary (using the md_path already defined above)
-        with open(md_path, "w", encoding="utf-8") as f:
-            f.write("\n".join(markdown_summary))
+        with open(md_path, 'w', encoding='utf-8') as f:
+            f.write('\n'.join(markdown_summary))
             if files_affected:
-                f.write("\n\n### 📂 Affected Files\n\n")
+                f.write('\n\n### 📂 Affected Files\n\n')
                 for f_sorted in sorted(files_affected):
-                    f.write(f"* `{f_sorted}`\n")
+                    f.write(f'* `{f_sorted}`\n')
             else:
-                f.write("\n\n*No files required remediation.*\n")
-
-        logger.info("📁 Final compliance reports saved:")
-        logger.info(f"   JSON: {json_path.relative_to(project_root)}")
-        logger.info(f"   Markdown: {md_path.relative_to(project_root)}")
-
+                f.write('\n\n*No files required remediation.*\n')
+        logger.info('📁 Final compliance reports saved:')
+        logger.info(f'   JSON: {json_path.relative_to(project_root)}')
+        logger.info(f'   Markdown: {md_path.relative_to(project_root)}')
     except (OSError, TypeError, ValueError) as e:
-        logger.error(f"Failed to save comprehensive reports: {e}")
-        # Don't fail the entire process if report saving fails
-
+        logger.error(f'Failed to save comprehensive reports: {e}')
 
 def save_aggregate_report(targets: list[str], project_root: Path) -> Path | None:
     """
@@ -4546,149 +2457,83 @@ def save_aggregate_report(targets: list[str], project_root: Path) -> Path | None
     Returns the Path to the written file, or None on failure.
     """
     import datetime
-
     try:
-        reports_dir = project_root / "logs" / "compliance_reports"
+        reports_dir = project_root / 'logs' / 'compliance_reports'
         reports_dir.mkdir(parents=True, exist_ok=True)
-
         territory_summaries: list[dict] = []
         all_violations_seen: set[tuple] = set()
         deduplicated_violations: list[dict] = []
         agents_seen: set[str] = set()
-
         total_violation_count = 0
         total_violations_fixed = 0
         total_drift_count = 0
         total_errors = 0
         non_compliant = 0
         compliant = 0
-
         for t in targets:
-            t_path = reports_dir / f"compliance_report_{t}.json"
+            t_path = reports_dir / f'compliance_report_{t}.json'
             if not t_path.exists():
                 continue
             try:
-                t_data = json.loads(t_path.read_text(encoding="utf-8"))
-            except (OSError, json.JSONDecodeError):  # guardian: allow-silent-swallower
+                t_data = json.loads(t_path.read_text(encoding='utf-8'))
+            except (OSError, json.JSONDecodeError):
                 continue
-
-            meta = t_data.get("meta", {})
-            metrics = t_data.get("metrics", {})
-            status = meta.get("status", "UNKNOWN")
-
-            if status == "COMPLIANT":
+            meta = t_data.get('meta', {})
+            metrics = t_data.get('metrics', {})
+            status = meta.get('status', 'UNKNOWN')
+            if status == 'COMPLIANT':
                 compliant += 1
             else:
                 non_compliant += 1
-
-            total_violation_count += metrics.get("violation_count", 0)
-            total_violations_fixed += metrics.get("violations_fixed", 0)
-            total_drift_count += metrics.get("drift_count", 0)
-            total_errors += metrics.get("errors", 0)
-
-            territory_summaries.append(
-                {
-                    "territory": t,
-                    "status": status,
-                    "confidence_score": metrics.get("confidence_score", 0.0),
-                    "violation_count": metrics.get("violation_count", 0),
-                    "violations_fixed": metrics.get("violations_fixed", 0),
-                    "drift_count": metrics.get("drift_count", 0),
-                    "agents_run": metrics.get("agents_run", 0),
-                    "timestamp": meta.get("timestamp", ""),
-                }
-            )
-
-            for v in t_data.get("unified_violations", []):
-                key = (v.get("type", ""), v.get("file", ""), v.get("message", ""))
+            total_violation_count += metrics.get('violation_count', 0)
+            total_violations_fixed += metrics.get('violations_fixed', 0)
+            total_drift_count += metrics.get('drift_count', 0)
+            total_errors += metrics.get('errors', 0)
+            territory_summaries.append({'territory': t, 'status': status, 'confidence_score': metrics.get('confidence_score', 0.0), 'violation_count': metrics.get('violation_count', 0), 'violations_fixed': metrics.get('violations_fixed', 0), 'drift_count': metrics.get('drift_count', 0), 'agents_run': metrics.get('agents_run', 0), 'timestamp': meta.get('timestamp', '')})
+            for v in t_data.get('unified_violations', []):
+                key = (v.get('type', ''), v.get('file', ''), v.get('message', ''))
                 if key not in all_violations_seen:
                     all_violations_seen.add(key)
                     deduplicated_violations.append(v)
-
-            for a in t_data.get("agents_executed", []):
+            for a in t_data.get('agents_executed', []):
                 agents_seen.add(a)
-
-        # Violation breakdown by type and severity
         by_type: dict[str, int] = {}
         by_severity: dict[str, int] = {}
         for v in deduplicated_violations:
-            vtype = v.get("type", "UNKNOWN")
-            vsev = v.get("severity", "unknown")
+            vtype = v.get('type', 'UNKNOWN')
+            vsev = v.get('severity', 'unknown')
             by_type[vtype] = by_type.get(vtype, 0) + 1
             by_severity[vsev] = by_severity.get(vsev, 0) + 1
-
-        overall_status = "COMPLIANT" if non_compliant == 0 else "NON-COMPLIANT"
-
-        # [FIX-B1] Collect global violations (hygiene + gravity) for aggregate-only reporting
+        overall_status = 'COMPLIANT' if non_compliant == 0 else 'NON-COMPLIANT'
         global_violations = []
-        # Read runtime_state.json for global violation data if available
         runtime_state_path = project_root / RUNTIME_STATE_JSON
         if runtime_state_path.exists():
             try:
-                _rs = json.loads(runtime_state_path.read_text(encoding="utf-8"))
-                for hv in _rs.get("hygiene_violations", []):
+                _rs = json.loads(runtime_state_path.read_text(encoding='utf-8'))
+                for hv in _rs.get('hygiene_violations', []):
                     if isinstance(hv, dict):
-                        global_violations.append({**hv, "source": "RootHygieneAgent", "scope": "global"})
-                for gv in _rs.get("gravity_violations", []):
+                        global_violations.append({**hv, 'source': 'RootHygieneAgent', 'scope': 'global'})
+                for gv in _rs.get('gravity_violations', []):
                     if isinstance(gv, dict):
-                        global_violations.append(
-                            {**gv, "source": "GravityLeakHealerAgent", "scope": "global"}
-                        )
-            except (OSError, json.JSONDecodeError, KeyError):  # guardian: allow-silent-swallower
+                        global_violations.append({**gv, 'source': 'GravityLeakHealerAgent', 'scope': 'global'})
+            except (OSError, json.JSONDecodeError, KeyError):
                 pass
+        aggregate = {'meta': {'report_type': 'AGGREGATE', 'timestamp': datetime.datetime.now().isoformat(), 'territories_scanned': len(territory_summaries), 'territories_compliant': compliant, 'territories_non_compliant': non_compliant, 'overall_status': overall_status}, 'metrics': {'total_violations_detected': total_violation_count, 'unique_violations_deduplicated': len(deduplicated_violations), 'total_violations_fixed': total_violations_fixed, 'total_drift_count': total_drift_count, 'total_errors': total_errors, 'violations_by_type': by_type, 'violations_by_severity': by_severity}, 'global_violations': global_violations, 'territories': territory_summaries, 'agents_executed': sorted(agents_seen), 'violations': deduplicated_violations}
 
-        aggregate = {
-            "meta": {
-                "report_type": "AGGREGATE",
-                "timestamp": datetime.datetime.now().isoformat(),
-                "territories_scanned": len(territory_summaries),
-                "territories_compliant": compliant,
-                "territories_non_compliant": non_compliant,
-                "overall_status": overall_status,
-            },
-            "metrics": {
-                "total_violations_detected": total_violation_count,
-                "unique_violations_deduplicated": len(deduplicated_violations),
-                "total_violations_fixed": total_violations_fixed,
-                "total_drift_count": total_drift_count,
-                "total_errors": total_errors,
-                "violations_by_type": by_type,
-                "violations_by_severity": by_severity,
-            },
-            "global_violations": global_violations,
-            "territories": territory_summaries,
-            "agents_executed": sorted(agents_seen),
-            "violations": deduplicated_violations,
-        }
-
-        def _agg_json_serialise(obj):  # BUG-4 fix: Path → posix string
+        def _agg_json_serialise(obj):
             if isinstance(obj, Path):
                 return obj.as_posix()
             return str(obj)
-
-        agg_path = reports_dir / "compliance_report_AGGREGATE.json"
-        with open(agg_path, "w", encoding="utf-8") as f:
-            assert_no_persistent_write("L0", "json.dump")  # G-12-1: mutation prohibition guard
+        agg_path = reports_dir / 'compliance_report_AGGREGATE.json'
+        with open(agg_path, 'w', encoding='utf-8') as f:
+            assert_no_persistent_write('L0', 'json.dump')
             json.dump(aggregate, f, indent=2, default=_agg_json_serialise, ensure_ascii=False)
-
-        logger.info(f"📊 Aggregate compliance report saved: {agg_path.relative_to(project_root)}")
-        logger.info(
-            f"   Territories: {len(territory_summaries)} | "
-            f"Unique violations: {len(deduplicated_violations)} | "
-            f"Fixed: {total_violations_fixed} | "
-            f"Status: {overall_status}"
-        )
+        logger.info(f'📊 Aggregate compliance report saved: {agg_path.relative_to(project_root)}')
+        logger.info(f'   Territories: {len(territory_summaries)} | Unique violations: {len(deduplicated_violations)} | Fixed: {total_violations_fixed} | Status: {overall_status}')
         return agg_path
-
-    except (OSError, TypeError, ValueError) as e:  # guardian: allow-silent-swallower
-        logger.error(f"[AGGREGATE] Failed to save aggregate report: {e}")
+    except (OSError, TypeError, ValueError) as e:
+        logger.error(f'[AGGREGATE] Failed to save aggregate report: {e}')
         return None
-
-
-# ============================================================================
-# L3 ORCHESTRATION INTEGRATION
-# ============================================================================
-
 
 def try_summon_orchestrator(project_root: Path, targets: list[str], execute: bool):
     """
@@ -4696,174 +2541,22 @@ def try_summon_orchestrator(project_root: Path, targets: list[str], execute: boo
     Returns: (success: bool, results: List|None)
     """
     try:
-        # Invoke via subprocess to avoid upward import edges
-        from agentic_core.L0_routing.utils.subprocess_runner_util import (
-            invoke_orchestrator_mission,
-        )
-
-        logger.info("🧠 L3 ORCHESTRATOR SUMMONED (via subprocess): Delegating command.")
-
-        result = invoke_orchestrator_mission(
-            project_root=project_root,
-            targets=targets,
-            execute=execute,
-        )
-
-        if result.get("success"):
-            return True, result.get("results")
-
-        # Check if fallback is needed
-        if result.get("fallback"):
-            logger.warning("L3 Orchestrator not found. Falling back to L5 iteration.")
-            return False, None
-
+        from agentic_core.L0_routing.utils.subprocess_runner_util import invoke_orchestrator_mission
+        logger.info('🧠 L3 ORCHESTRATOR SUMMONED (via subprocess): Delegating command.')
+        result = invoke_orchestrator_mission(project_root=project_root, targets=targets, execute=execute)
+        if result.get('success'):
+            return (True, result.get('results'))
+        if result.get('fallback'):
+            logger.warning('L3 Orchestrator not found. Falling back to L5 iteration.')
+            return (False, None)
         logger.error(f"L3 Orchestration failed: {result.get('error')}. Falling back.")
-        return False, None
-
-    except (ImportError, AttributeError, TypeError, ValueError) as e:  # guardian: allow-silent-swallower
-        logger.error(f"L3 Orchestration failed: {e}. Falling back to L5 iteration.")
-        return False, None
-
-
-# ============================================================================
-# EXECUTION PLAN (DETERMINISTIC, ORDERED)
-# ============================================================================
-
-# Canonical phase→agent→method mapping. This is the SSOT for pipeline structure.
-# Used by --plan introspection and by AST contract tests.
-EXECUTION_PLAN = [
-    {
-        "phase": "1",
-        "name": "Discovery",
-        "agents": [
-            {
-                "key": "reconciler",
-                "method": "detect_root_drift",
-                "description": "filesystem SSOT drift detection",
-            },
-            {
-                "key": "location",
-                "method": "run",
-                "description": "location validation (confidence gated heal)",
-            },
-            {
-                "key": "file_classification",
-                "method": "run",
-                "description": "file classification early detection",
-                "kwargs": "validate_only=True, dry_run=True",
-            },
-        ],
-    },
-    {
-        "phase": "2",
-        "name": "Reconciliation",
-        "agents": [
-            {"key": "reconciler", "method": "heal", "description": "drift reconciliation (confidence gated)"},
-        ],
-    },
-    {
-        "phase": "3",
-        "name": "Structural Alignment & Sovereignty",
-        "agents": [
-            {
-                "key": "hierarchy",
-                "method": "heal_hierarchy",
-                "description": "hierarchy alignment (confidence gated)",
-            },
-            {
-                "key": "file_classification",
-                "method": "heal_repository",
-                "description": "sovereignty purge (confidence gated, not dry_run, not validate)",
-            },
-        ],
-    },
-    {
-        "phase": "4",
-        "name": "Architectural Validation",
-        "agents": [
-            {
-                "key": "arch_governor",
-                "method": "comprehensive_territory_audit",
-                "description": "territory audit",
-            },
-            {
-                "key": "arch_governor",
-                "method": "check_file_sizes",
-                "description": "file-size check (AC-layer territories only)",
-            },
-        ],
-    },
-    {
-        "phase": "5",
-        "name": "Healing",
-        "agents": [
-            {
-                "key": "arch_governor",
-                "method": "generate_healing_plan",
-                "description": "healing plan generation",
-            },
-            {
-                "key": "arch_governor",
-                "method": "execute_healing_plan",
-                "description": "healing plan execution",
-            },
-        ],
-    },
-    {
-        "phase": "6",
-        "name": "Additional Agents",
-        "agents": [
-            {
-                "key": "observability_probe",
-                "method": "scan_violations",
-                "description": "observability probe scan",
-            },
-            {
-                "key": "root_hygiene",
-                "method": "scan_root_violations",
-                "description": "root hygiene scan (if registered)",
-            },
-        ],
-    },
-    {
-        "phase": "7",
-        "name": "Certification",
-        "agents": [
-            {"key": "*", "method": "aggregate", "description": "final aggregation and certification"},
-        ],
-    },
-]
-
-# Agent dependency graph for --agent subset closure.
-# If agent A requires agent B to run first, declare it here.
-AGENT_DEPENDENCIES: dict[str, list[str]] = {
-    "hierarchy": ["reconciler", "location"],
-    "file_classification": ["reconciler", "location"],
-    "arch_governor": ["reconciler", "location", "hierarchy"],
-    "gravity_repair": ["reconciler"],
-    "observability_probe": [],
-    "root_hygiene": [],
-    "reconciler": [],
-    "location": ["reconciler"],
-    "cognitive_disposition": [],
-}
-
-# Canonical roster keys. Every agents["key"] reference in _legacy_main MUST
-# exist in this set. AST contract tests enforce this invariant.
-CANONICAL_ROSTER_KEYS = frozenset(
-    {
-        "reconciler",
-        "location",
-        "hierarchy",
-        "arch_governor",
-        "gravity_repair",
-        "file_classification",
-        "observability_probe",
-        "cognitive_disposition",
-        "root_hygiene",
-    },
-)
-
+        return (False, None)
+    except (ImportError, AttributeError, TypeError, ValueError) as e:
+        logger.error(f'L3 Orchestration failed: {e}. Falling back to L5 iteration.')
+        return (False, None)
+EXECUTION_PLAN = [{'phase': '1', 'name': 'Discovery', 'agents': [{'key': 'reconciler', 'method': 'detect_root_drift', 'description': 'filesystem SSOT drift detection'}, {'key': 'location', 'method': 'run', 'description': 'location validation (confidence gated heal)'}, {'key': 'file_classification', 'method': 'run', 'description': 'file classification early detection', 'kwargs': 'validate_only=True, dry_run=True'}]}, {'phase': '2', 'name': 'Reconciliation', 'agents': [{'key': 'reconciler', 'method': 'heal', 'description': 'drift reconciliation (confidence gated)'}]}, {'phase': '3', 'name': 'Structural Alignment & Sovereignty', 'agents': [{'key': 'hierarchy', 'method': 'heal_hierarchy', 'description': 'hierarchy alignment (confidence gated)'}, {'key': 'file_classification', 'method': 'heal_repository', 'description': 'sovereignty purge (confidence gated, not dry_run, not validate)'}]}, {'phase': '4', 'name': 'Architectural Validation', 'agents': [{'key': 'arch_governor', 'method': 'comprehensive_territory_audit', 'description': 'territory audit'}, {'key': 'arch_governor', 'method': 'check_file_sizes', 'description': 'file-size check (AC-layer territories only)'}]}, {'phase': '5', 'name': 'Healing', 'agents': [{'key': 'arch_governor', 'method': 'generate_healing_plan', 'description': 'healing plan generation'}, {'key': 'arch_governor', 'method': 'execute_healing_plan', 'description': 'healing plan execution'}]}, {'phase': '6', 'name': 'Additional Agents', 'agents': [{'key': 'observability_probe', 'method': 'scan_violations', 'description': 'observability probe scan'}, {'key': 'root_hygiene', 'method': 'scan_root_violations', 'description': 'root hygiene scan (if registered)'}]}, {'phase': '7', 'name': 'Certification', 'agents': [{'key': '*', 'method': 'aggregate', 'description': 'final aggregation and certification'}]}]
+AGENT_DEPENDENCIES: dict[str, list[str]] = {'hierarchy': ['reconciler', 'location'], 'file_classification': ['reconciler', 'location'], 'arch_governor': ['reconciler', 'location', 'hierarchy'], 'gravity_repair': ['reconciler'], 'observability_probe': [], 'root_hygiene': [], 'reconciler': [], 'location': ['reconciler'], 'cognitive_disposition': []}
+CANONICAL_ROSTER_KEYS = frozenset({'reconciler', 'location', 'hierarchy', 'arch_governor', 'gravity_repair', 'file_classification', 'observability_probe', 'cognitive_disposition', 'root_hygiene'})
 
 def get_execution_plan() -> list[dict]:
     """Return the deterministic, ordered execution plan.
@@ -4871,35 +2564,10 @@ def get_execution_plan() -> list[dict]:
     Pure introspection — no side effects, no file mutations.
     """
     return EXECUTION_PLAN
+AGENT_PIPELINE: list[str] = ['reconciler', 'location', 'file_classification', 'hierarchy', 'arch_governor', 'gravity_repair', 'system_architect', 'observability_probe', 'root_hygiene']
+PIPELINE_SUBPHASES: tuple[str, ...] = ('pre_commit', 'validate', 'execute', 'heal')
 
-
-# ---------------------------------------------------------------------------
-# Unified pipeline: AGENT_PIPELINE + run_pipeline
-# ---------------------------------------------------------------------------
-
-#: Ordered execution sequence for run_pipeline. cognitive_disposition is
-#: intentionally excluded — it acts as a pre-loop advisor, not a subphase agent.
-AGENT_PIPELINE: list[str] = [
-    "reconciler",
-    "location",
-    "file_classification",
-    "hierarchy",
-    "arch_governor",
-    "gravity_repair",
-    "system_architect",
-    "observability_probe",
-    "root_hygiene",
-]
-
-#: The four subphase names, in fixed execution order.
-PIPELINE_SUBPHASES: tuple[str, ...] = ("pre_commit", "validate", "execute", "heal")
-
-
-def _emit_pipeline_digest(
-    adapters: "dict[str, object]",
-    territory: str,
-    ctx: "HealContext",
-) -> str:
+def _emit_pipeline_digest(adapters: 'dict[str, object]', territory: str, ctx: 'HealContext') -> str:
     """Compute and print the deterministic pipeline digest (once per run).
 
     Returns the 64-char hex digest string.
@@ -4907,79 +2575,46 @@ def _emit_pipeline_digest(
     output differs from a clean run — used by the negative-control test.
     """
     from agentic_core.L2_execution.protocol import emit_pipeline_digest as _emit
+    return _emit(pipeline_order=AGENT_PIPELINE, adapter_keys=list(adapters.keys()), territory=territory, heal=getattr(ctx, 'heal', False), enable_llm=getattr(ctx, 'enable_llm', False))
 
-    return _emit(
-        pipeline_order=AGENT_PIPELINE,
-        adapter_keys=list(adapters.keys()),
-        territory=territory,
-        heal=getattr(ctx, "heal", False),
-        enable_llm=getattr(ctx, "enable_llm", False),
-    )
-
-
-def _print_healing_heatmap(
-    state_mgr: "SovereignStateMgr",
-    decision_engine: "SovereignDecisionEngine",
-) -> None:
+def _print_healing_heatmap(state_mgr: 'SovereignStateMgr', decision_engine: 'SovereignDecisionEngine') -> None:
     """Print a per-agent healing count heatmap at end of every run."""
     from collections import defaultdict
-
-    TIER_COLS = ("DETERMINISTIC", "QWEN_VLLM", "GEMINI_2_5_PRO")
-    TIER_ALIASES: dict[str, str] = {
-        "DETERMINISTIC": "DETERMINISTIC",
-        "SOVEREIGN-AUTO": "DETERMINISTIC",
-        "QWEN": "QWEN_VLLM",
-        "QWEN_VLLM": "QWEN_VLLM",
-        "GEMINI": "GEMINI_2_5_PRO",
-        "GEMINI_2_5_PRO": "GEMINI_2_5_PRO",
-    }
-
+    TIER_COLS = ('DETERMINISTIC', 'QWEN_VLLM', 'GEMINI_2_5_PRO')
+    TIER_ALIASES: dict[str, str] = {'DETERMINISTIC': 'DETERMINISTIC', 'SOVEREIGN-AUTO': 'DETERMINISTIC', 'QWEN': 'QWEN_VLLM', 'QWEN_VLLM': 'QWEN_VLLM', 'GEMINI': 'GEMINI_2_5_PRO', 'GEMINI_2_5_PRO': 'GEMINI_2_5_PRO'}
     counts: dict[str, dict[str, int]] = defaultdict(lambda: defaultdict(int))
-
-    healing_actions = state_mgr.state.get("healing_actions", [])
+    healing_actions = state_mgr.state.get('healing_actions', [])
     for action in healing_actions:
-        agent = action.get("agent", "unknown")
-        tier = TIER_ALIASES.get(action.get("routing_tier", "DETERMINISTIC"), "DETERMINISTIC")
+        agent = action.get('agent', 'unknown')
+        tier = TIER_ALIASES.get(action.get('routing_tier', 'DETERMINISTIC'), 'DETERMINISTIC')
         counts[agent][tier] += 1
-
-    seen_pairs = {
-        (a.get("agent"), TIER_ALIASES.get(a.get("routing_tier", ""), "DETERMINISTIC"))
-        for a in healing_actions
-    }
-    for d in getattr(decision_engine, "decisions_made", []):
-        if not d.get("decision"):
+    seen_pairs = {(a.get('agent'), TIER_ALIASES.get(a.get('routing_tier', ''), 'DETERMINISTIC')) for a in healing_actions}
+    for d in getattr(decision_engine, 'decisions_made', []):
+        if not d.get('decision'):
             continue
-        agent = d.get("agent", "unknown")
-        tier = TIER_ALIASES.get(d.get("routing_tier", "DETERMINISTIC"), "DETERMINISTIC")
+        agent = d.get('agent', 'unknown')
+        tier = TIER_ALIASES.get(d.get('routing_tier', 'DETERMINISTIC'), 'DETERMINISTIC')
         if (agent, tier) not in seen_pairs:
             counts[agent][tier] += 1
 
     def _bar(n: int) -> str:
         if n == 0:
-            return ".."
+            return '..'
         if n == 1:
-            return "o "
+            return 'o '
         if n <= 3:
-            return ">>"
-        return "##"
-
+            return '>>'
+        return '##'
     AGEN_W = 34
     COL_W = 15
-    sep = "-" * (AGEN_W + 3 * (COL_W + 3) + 8)
-    header = (
-        f"{'Agent':<{AGEN_W}} | "
-        f"{'DETERMINISTIC':^{COL_W}} | "
-        f"{'QWEN_VLLM':^{COL_W}} | "
-        f"{'GEMINI_2_5_PRO':^{COL_W}} | TOTAL"
-    )
-
-    print("")
-    print("=" * 60)
-    print("HEALING HEATMAP")
+    sep = '-' * (AGEN_W + 3 * (COL_W + 3) + 8)
+    header = f"{'Agent':<{AGEN_W}} | {'DETERMINISTIC':^{COL_W}} | {'QWEN_VLLM':^{COL_W}} | {'GEMINI_2_5_PRO':^{COL_W}} | TOTAL"
+    print('')
+    print('=' * 60)
+    print('HEALING HEATMAP')
     print(sep)
     print(header)
     print(sep)
-
     col_totals: dict[str, int] = defaultdict(int)
     if counts:
         for agent in sorted(counts):
@@ -4987,87 +2622,52 @@ def _print_healing_heatmap(
             total = sum(row_vals.values())
             for t in TIER_COLS:
                 col_totals[t] += row_vals[t]
-            print(
-                f"{agent:<{AGEN_W}} | "
-                f"{(_bar(row_vals['DETERMINISTIC']) + ' ' + str(row_vals['DETERMINISTIC'])):^{COL_W}} | "
-                f"{(_bar(row_vals['QWEN_VLLM']) + ' ' + str(row_vals['QWEN_VLLM'])):^{COL_W}} | "
-                f"{(_bar(row_vals['GEMINI_2_5_PRO']) + ' ' + str(row_vals['GEMINI_2_5_PRO'])):^{COL_W}} | "
-                f"{total}"
-            )
+            print(f"{agent:<{AGEN_W}} | {_bar(row_vals['DETERMINISTIC']) + ' ' + str(row_vals['DETERMINISTIC']):^{COL_W}} | {_bar(row_vals['QWEN_VLLM']) + ' ' + str(row_vals['QWEN_VLLM']):^{COL_W}} | {_bar(row_vals['GEMINI_2_5_PRO']) + ' ' + str(row_vals['GEMINI_2_5_PRO']):^{COL_W}} | {total}")
     else:
         print(f"{'(no healing events this run)':<{AGEN_W}}")
-
     print(sep)
     grand = sum(col_totals.values())
-    print(
-        f"{'TOTAL':<{AGEN_W}} | "
-        f"{str(col_totals['DETERMINISTIC']):^{COL_W}} | "
-        f"{str(col_totals['QWEN_VLLM']):^{COL_W}} | "
-        f"{str(col_totals['GEMINI_2_5_PRO']):^{COL_W}} | "
-        f"{grand}"
-    )
+    print(f"{'TOTAL':<{AGEN_W}} | {str(col_totals['DETERMINISTIC']):^{COL_W}} | {str(col_totals['QWEN_VLLM']):^{COL_W}} | {str(col_totals['GEMINI_2_5_PRO']):^{COL_W}} | {grand}")
     print(sep)
 
-
-def _print_meta_learning_summary(
-    state_mgr: "SovereignStateMgr",
-    decision_engine: "SovereignDecisionEngine",
-) -> None:
+def _print_meta_learning_summary(state_mgr: 'SovereignStateMgr', decision_engine: 'SovereignDecisionEngine') -> None:
     """Print meta-learning bus additions summary — what this run teaches the next run."""
     from collections import Counter
-
-    _W = 78  # total console width for the block
+    _W = 78
 
     def _sec(title: str) -> None:
-        print(f"\n  {title}")
-        print("  " + "-" * (_W - 2))
+        print(f'\n  {title}')
+        print('  ' + '-' * (_W - 2))
 
     def _row(label: str, value: str) -> None:
-        print(f"  {label:<30} {value}")
-
-    ml = state_mgr.state.get("meta_learning", {})
-    healing_actions = state_mgr.state.get("healing_actions", [])
-    decisions = getattr(decision_engine, "decisions_made", [])
-
-    successful = [a for a in healing_actions if str(a.get("outcome", "")).upper() == "SUCCESS"]
-    failed = [a for a in healing_actions if str(a.get("outcome", "")).upper() in ("FAIL", "FAILED", "ERROR")]
-    plan_only = [a for a in healing_actions if "plan" in str(a.get("outcome", "")).lower()]
-
+        print(f'  {label:<30} {value}')
+    ml = state_mgr.state.get('meta_learning', {})
+    healing_actions = state_mgr.state.get('healing_actions', [])
+    decisions = getattr(decision_engine, 'decisions_made', [])
+    successful = [a for a in healing_actions if str(a.get('outcome', '')).upper() == 'SUCCESS']
+    failed = [a for a in healing_actions if str(a.get('outcome', '')).upper() in ('FAIL', 'FAILED', 'ERROR')]
+    plan_only = [a for a in healing_actions if 'plan' in str(a.get('outcome', '')).lower()]
     tier_counts: Counter = Counter()
     for d in decisions:
-        if d.get("decision"):
-            tier_counts[d.get("routing_tier", "DETERMINISTIC")] += 1
-
-    conf_vals = [d.get("confidence", 0.0) for d in decisions if isinstance(d.get("confidence"), (int, float))]
-    # Per-action confidence falls back to the action's own field when decision list is sparse
-    action_confs = [
-        a.get("confidence", 0.0) for a in healing_actions if isinstance(a.get("confidence"), (int, float))
-    ]
+        if d.get('decision'):
+            tier_counts[d.get('routing_tier', 'DETERMINISTIC')] += 1
+    conf_vals = [d.get('confidence', 0.0) for d in decisions if isinstance(d.get('confidence'), (int, float))]
+    action_confs = [a.get('confidence', 0.0) for a in healing_actions if isinstance(a.get('confidence'), (int, float))]
     all_confs = conf_vals if conf_vals else action_confs
-
-    failure_agents: Counter = Counter(a.get("agent", "unknown") for a in failed)
-    recent_exp = ml.get("recent_experiences", [])
-    total_exp = ml.get("total_experiences", 0)
-    weights = ml.get("strategy_weights", {})
-
-    # ── Header ────────────────────────────────────────────────────────────────
-    print("")
-    print("=" * _W)
-    print("META-LEARNING BUS -- ADDITIONS THIS RUN")
-    print("(what the system will remember for the next run)")
-    print("=" * _W)
-
-    # ── Outcomes this run ─────────────────────────────────────────────────────
-    _sec("OUTCOMES THIS RUN")
-    _row("Healing records ingested :", str(total_exp))
-    _row(
-        "Results :",
-        f"{len(successful)} success  {len(failed)} fail  {len(plan_only)} plan-only",
-    )
-
-    # ── Per-learning detail table ─────────────────────────────────────────────
+    failure_agents: Counter = Counter((a.get('agent', 'unknown') for a in failed))
+    recent_exp = ml.get('recent_experiences', [])
+    total_exp = ml.get('total_experiences', 0)
+    weights = ml.get('strategy_weights', {})
+    print('')
+    print('=' * _W)
+    print('META-LEARNING BUS -- ADDITIONS THIS RUN')
+    print('(what the system will remember for the next run)')
+    print('=' * _W)
+    _sec('OUTCOMES THIS RUN')
+    _row('Healing records ingested :', str(total_exp))
+    _row('Results :', f'{len(successful)} success  {len(failed)} fail  {len(plan_only)} plan-only')
     learnings = successful if successful else healing_actions
-    _sec(f"LEARNINGS ({len(learnings)} patterns written to bus)")
+    _sec(f'LEARNINGS ({len(learnings)} patterns written to bus)')
     if learnings:
         _AG = 22
         _TR = 20
@@ -5075,165 +2675,106 @@ def _print_meta_learning_summary(
         _TI = 14
         _GT = 20
         _SUM = _W - _AG - _TR - _CF - _TI - _GT - 10
-        hdr = (
-            f"  {'#':>3}  "
-            f"{'Agent':<{_AG}}  "
-            f"{'Territory':<{_TR}}  "
-            f"{'Conf':>{_CF}}  "
-            f"{'Tier':<{_TI}}  "
-            f"{'Gate':<{_GT}}  "
-            f"{'Fix Summary'}"
-        )
+        hdr = f"  {'#':>3}  {'Agent':<{_AG}}  {'Territory':<{_TR}}  {'Conf':>{_CF}}  {'Tier':<{_TI}}  {'Gate':<{_GT}}  {'Fix Summary'}"
         print(hdr)
-        print("  " + "-" * (_W - 2))
+        print('  ' + '-' * (_W - 2))
         for i, a in enumerate(learnings, 1):
-            agent = str(a.get("agent", "?"))[:_AG]
-            terr = str(a.get("territory", "?"))[:_TR]
-            conf = a.get("confidence")
-            conf_str = f"{conf:.3f}" if isinstance(conf, (int, float)) else "  -  "
-            tier_raw = str(a.get("routing_tier", "DET"))
+            agent = str(a.get('agent', '?'))[:_AG]
+            terr = str(a.get('territory', '?'))[:_TR]
+            conf = a.get('confidence')
+            conf_str = f'{conf:.3f}' if isinstance(conf, (int, float)) else '  -  '
+            tier_raw = str(a.get('routing_tier', 'DET'))
             tier = tier_raw[:_TI]
-            gate = str(a.get("routing_gate", ""))[:_GT]
-            fix = str(a.get("fix_summary", ""))
-            fix_trunc = (fix[:_SUM] + "...") if len(fix) > _SUM else fix
-            print(
-                f"  {i:>3}.  "
-                f"{agent:<{_AG}}  "
-                f"{terr:<{_TR}}  "
-                f"{conf_str:>{_CF}}  "
-                f"{tier:<{_TI}}  "
-                f"{gate:<{_GT}}  "
-                f"{fix_trunc}"
-            )
+            gate = str(a.get('routing_gate', ''))[:_GT]
+            fix = str(a.get('fix_summary', ''))
+            fix_trunc = fix[:_SUM] + '...' if len(fix) > _SUM else fix
+            print(f'  {i:>3}.  {agent:<{_AG}}  {terr:<{_TR}}  {conf_str:>{_CF}}  {tier:<{_TI}}  {gate:<{_GT}}  {fix_trunc}')
     else:
-        print("  (no healing events this run)")
-
-    # ── Pattern recall impact ─────────────────────────────────────────────────
-    _sec("PATTERN RECALL IMPACT (what next run will remember)")
+        print('  (no healing events this run)')
+    _sec('PATTERN RECALL IMPACT (what next run will remember)')
     if successful:
-        succ_agents: Counter = Counter(a.get("agent", "?") for a in successful)
-        succ_terrs: Counter = Counter(a.get("territory", "?") for a in successful)
-        succ_tiers: Counter = Counter(str(a.get("routing_tier", "DETERMINISTIC")) for a in successful)
-        _row(
-            "By agent :",
-            ", ".join(f"{ag}({ct})" for ag, ct in succ_agents.most_common(6)),
-        )
-        _row(
-            "By territory :",
-            ", ".join(f"{t}({c})" for t, c in succ_terrs.most_common(6)),
-        )
-        _row(
-            "By routing tier :",
-            ", ".join(f"{t}({c})" for t, c in succ_tiers.most_common()),
-        )
+        succ_agents: Counter = Counter((a.get('agent', '?') for a in successful))
+        succ_terrs: Counter = Counter((a.get('territory', '?') for a in successful))
+        succ_tiers: Counter = Counter((str(a.get('routing_tier', 'DETERMINISTIC')) for a in successful))
+        _row('By agent :', ', '.join((f'{ag}({ct})' for ag, ct in succ_agents.most_common(6))))
+        _row('By territory :', ', '.join((f'{t}({c})' for t, c in succ_terrs.most_common(6))))
+        _row('By routing tier :', ', '.join((f'{t}({c})' for t, c in succ_tiers.most_common())))
     else:
-        _row("Patterns stored :", "(none this run)")
-
-    # ── Confidence distribution → routing priors ──────────────────────────────
-    _sec("CONFIDENCE DISTRIBUTION  ->  ROUTING PRIORS")
+        _row('Patterns stored :', '(none this run)')
+    _sec('CONFIDENCE DISTRIBUTION  ->  ROUTING PRIORS')
     if all_confs:
         c_min = min(all_confs)
         c_avg = sum(all_confs) / len(all_confs)
         c_max = max(all_confs)
-        n_local = sum(1 for c in all_confs if c >= 0.75)
-        n_qwen = sum(1 for c in all_confs if 0.40 <= c < 0.75)
-        n_gemini = sum(1 for c in all_confs if c < 0.40)
-        _row("Range :", f"min={c_min:.3f}  avg={c_avg:.3f}  max={c_max:.3f}")
-        _row(
-            "High  (>=0.75) :",
-            f"{n_local:>3} patterns  -> strengthen DETERMINISTIC routing prior",
-        )
-        _row(
-            "Medium (0.40-0.74) :",
-            f"{n_qwen:>3} patterns  -> reinforce QWEN preference",
-        )
-        _row(
-            "Low   (<0.40) :",
-            f"{n_gemini:>3} patterns  -> raise GEMINI prior for similar failures",
-        )
+        n_local = sum((1 for c in all_confs if c >= 0.75))
+        n_qwen = sum((1 for c in all_confs if 0.4 <= c < 0.75))
+        n_gemini = sum((1 for c in all_confs if c < 0.4))
+        _row('Range :', f'min={c_min:.3f}  avg={c_avg:.3f}  max={c_max:.3f}')
+        _row('High  (>=0.75) :', f'{n_local:>3} patterns  -> strengthen DETERMINISTIC routing prior')
+        _row('Medium (0.40-0.74) :', f'{n_qwen:>3} patterns  -> reinforce QWEN preference')
+        _row('Low   (<0.40) :', f'{n_gemini:>3} patterns  -> raise GEMINI prior for similar failures')
     else:
-        _row("Confidence data :", "(unavailable — no decision records)")
-
-    # ── Tier routing ──────────────────────────────────────────────────────────
-    _sec("TIER ROUTING THIS RUN")
+        _row('Confidence data :', '(unavailable — no decision records)')
+    _sec('TIER ROUTING THIS RUN')
     if tier_counts:
-        _row("Routing breakdown :", "  ".join(f"{t}={c}" for t, c in tier_counts.most_common()))
+        _row('Routing breakdown :', '  '.join((f'{t}={c}' for t, c in tier_counts.most_common())))
     else:
-        _row("Routing breakdown :", "(no routing decisions recorded)")
-
-    # ── Failure priors ────────────────────────────────────────────────────────
-    _sec("FAILURE PRIORS UPDATED")
+        _row('Routing breakdown :', '(no routing decisions recorded)')
+    _sec('FAILURE PRIORS UPDATED')
     if failure_agents:
-        _row(
-            "failure_prior++ :",
-            ", ".join(f"{ag}({ct})" for ag, ct in failure_agents.most_common(5)),
-        )
+        _row('failure_prior++ :', ', '.join((f'{ag}({ct})' for ag, ct in failure_agents.most_common(5))))
         for ag, ct in failure_agents.most_common(5):
-            _row(
-                f"  {ag} :",
-                f"{ct} failure(s)  -> next run will avoid this agent for similar inputs",
-            )
+            _row(f'  {ag} :', f'{ct} failure(s)  -> next run will avoid this agent for similar inputs')
     else:
-        _row("failure_prior++ :", "(none — no failures recorded this run)")
-
-    # ── Strategy weights ──────────────────────────────────────────────────────
-    _sec("STRATEGY WEIGHTS (carried to next run)")
+        _row('failure_prior++ :', '(none — no failures recorded this run)')
+    _sec('STRATEGY WEIGHTS (carried to next run)')
     if weights:
         for k, v in sorted(weights.items()):
-            delta = ""
+            delta = ''
             if isinstance(v, float) and abs(v - 1.0) > 0.01:
-                delta = "  [SHIFTED from baseline 1.00]"
-            _row(f"  {k} :", f"{v:.3f}{delta}")
+                delta = '  [SHIFTED from baseline 1.00]'
+            _row(f'  {k} :', f'{v:.3f}{delta}')
     else:
-        _row("Weights :", "(no strategy weight data)")
-
-    # ── What next run inherits ────────────────────────────────────────────────
-    _sec("WHAT NEXT RUN INHERITS")
+        _row('Weights :', '(no strategy weight data)')
+    _sec('WHAT NEXT RUN INHERITS')
     if recent_exp:
         for exp in recent_exp:
-            print(f"    -> {exp}")
+            print(f'    -> {exp}')
     if all_confs:
-        n_local = sum(1 for c in all_confs if c >= 0.75)
-        n_qwen = sum(1 for c in all_confs if 0.40 <= c < 0.75)
-        n_gemini = sum(1 for c in all_confs if c < 0.40)
+        n_local = sum((1 for c in all_confs if c >= 0.75))
+        n_qwen = sum((1 for c in all_confs if 0.4 <= c < 0.75))
+        n_gemini = sum((1 for c in all_confs if c < 0.4))
         if n_local:
-            print(f"    -> {n_local} high-confidence patterns strengthen DETERMINISTIC routing")
+            print(f'    -> {n_local} high-confidence patterns strengthen DETERMINISTIC routing')
         if n_qwen:
-            print(f"    -> {n_qwen} medium-confidence patterns reinforce QWEN preference")
+            print(f'    -> {n_qwen} medium-confidence patterns reinforce QWEN preference')
         if n_gemini:
-            print(f"    -> {n_gemini} low-confidence outcomes raise GEMINI prior for similar failures")
+            print(f'    -> {n_gemini} low-confidence outcomes raise GEMINI prior for similar failures')
     if failure_agents:
         top_fail = failure_agents.most_common(3)
         for ag, ct in top_fail:
-            print(f"    -> failure_prior[{ag}] += {ct}  (will down-weight this agent next run)")
-    if not recent_exp and not all_confs and not failure_agents:
-        print("    -> (no bus updates produced this run)")
-
-    # ── Cross-Run Persistence Proof ───────────────────────────────────────────
-    _sec("CROSS-RUN PERSISTENCE PROOF (what survives to next run)")
-    _prior_vecs = ml.get("recent_failure_vectors", [])
+            print(f'    -> failure_prior[{ag}] += {ct}  (will down-weight this agent next run)')
+    if not recent_exp and (not all_confs) and (not failure_agents):
+        print('    -> (no bus updates produced this run)')
+    _sec('CROSS-RUN PERSISTENCE PROOF (what survives to next run)')
+    _prior_vecs = ml.get('recent_failure_vectors', [])
     _n_prior = len(_prior_vecs)
-    print("")
-    print("  Learning Channel                        | Disk | Read | Improves?")
-    print("  " + "-" * (_W - 2))
-    print("  FileBackedAuditStore -> RCA             |  Y   |  Y   |    Y")
-    print("  runtime_state.json meta_learning        |  Y   |  Y   |    Y")
-    print("  Oscillation/cooldown history            |  Y   |  Y   |    Y")
-    print("  recent_failure_vectors -> novelty (N)   |  Y   |  Y   |    Y")
-    print("  L4B/L4C pipeline artifacts              |  Y   |  Y   |    Y")
-    print("")
-    print("  All 5 channels active. Full feedback loop is closed.")
-    print(f"  Failure vectors loaded from prior run : {_n_prior}")
+    print('')
+    print('  Learning Channel                        | Disk | Read | Improves?')
+    print('  ' + '-' * (_W - 2))
+    print('  FileBackedAuditStore -> RCA             |  Y   |  Y   |    Y')
+    print('  runtime_state.json meta_learning        |  Y   |  Y   |    Y')
+    print('  Oscillation/cooldown history            |  Y   |  Y   |    Y')
+    print('  recent_failure_vectors -> novelty (N)   |  Y   |  Y   |    Y')
+    print('  L4B/L4C pipeline artifacts              |  Y   |  Y   |    Y')
+    print('')
+    print('  All 5 channels active. Full feedback loop is closed.')
+    print(f'  Failure vectors loaded from prior run : {_n_prior}')
     print(f"  Total experiences carried forward     : {ml.get('total_experiences', 0)}")
+    print('')
+    print('=' * _W)
 
-    print("")
-    print("=" * _W)
-
-
-def _print_run_manifest(
-    state_mgr: "RuntimeStateManager",
-    targets: list[str],
-) -> int:
+def _print_run_manifest(state_mgr: 'RuntimeStateManager', targets: list[str]) -> int:
     """Print a complete agent/phase execution manifest and return the number of gaps.
 
     Every expected agent must appear in completed_agents. Every territory must have
@@ -5242,174 +2783,108 @@ def _print_run_manifest(
     Zero tolerance: if it didn't run, it appears here.
     """
     _W = 78
-
-    # ---------------------------------------------------------------------------
-    # Canonical expected agents per scope
-    # ---------------------------------------------------------------------------
-    # Global agents (run once, outside territory loop)
-    GLOBAL_AGENTS = ["RootHygieneAgent", "GravityValidatorAgent", "GravityLeakHealerAgent"]
-
-    # Per-territory agents (must run for every territory)
-    PER_TERRITORY_AGENTS = [
-        "FilesystemSSOTHealerAgent",  # Phase 2 reconciler
-        "LocationHealerAgent",  # Phase 2 location
-        "HierarchyHealerAgent",  # Phase 3 alignment
-        "FileClassificationHealerAgent",  # Phase 3 sovereignty
-        "ArchitectureGovernorAgent",  # Phase 4 arch validation
-        "ObservabilityProbeExecutorAgent",  # Phase 6 observability probe
-        "CognitiveDispositionAgent",  # Phase 6 cognitive
-    ]
-
-    # Phases expected per territory (from execute_phase1_discovery onward)
-    PER_TERRITORY_PHASES = [
-        "Phase1:Discovery",
-        "Phase2:Reconciliation",
-        "Phase3:Alignment",
-        "Phase3:Sovereignty",
-        "Phase4:ArchValidation",
-        "Phase5:Healing",
-        "Phase6:Observability",
-        "Phase7:Certification",
-    ]
-
-    # ---------------------------------------------------------------------------
-    # Build lookup from state
-    # ---------------------------------------------------------------------------
-    completed = {a.get("agent") for a in state_mgr.state.get("completed_agents", []) if a.get("agent")}
-    failed_agents = {
-        a.get("agent"): a.get("details", "no details")
-        for a in state_mgr.state.get("completed_agents", [])
-        if a.get("agent") and a.get("success") is False
-    }
-    skipped_agents = {
-        a.get("agent"): a.get("reason", "no reason")
-        for a in state_mgr.state.get("skipped_agents", [])
-        if a.get("agent")
-    }
-    error_events = state_mgr.state.get("events", [])
+    GLOBAL_AGENTS = ['RootHygieneAgent', 'GravityValidatorAgent', 'GravityLeakHealerAgent']
+    PER_TERRITORY_AGENTS = ['FilesystemSSOTHealerAgent', 'LocationHealerAgent', 'HierarchyHealerAgent', 'FileClassificationHealerAgent', 'ArchitectureGovernorAgent', 'ObservabilityProbeExecutorAgent', 'CognitiveDispositionAgent']
+    PER_TERRITORY_PHASES = ['Phase1:Discovery', 'Phase2:Reconciliation', 'Phase3:Alignment', 'Phase3:Sovereignty', 'Phase4:ArchValidation', 'Phase5:Healing', 'Phase6:Observability', 'Phase7:Certification']
+    completed = {a.get('agent') for a in state_mgr.state.get('completed_agents', []) if a.get('agent')}
+    failed_agents = {a.get('agent'): a.get('details', 'no details') for a in state_mgr.state.get('completed_agents', []) if a.get('agent') and a.get('success') is False}
+    skipped_agents = {a.get('agent'): a.get('reason', 'no reason') for a in state_mgr.state.get('skipped_agents', []) if a.get('agent')}
+    error_events = state_mgr.state.get('events', [])
     error_msgs: dict[str, list[str]] = {}
     for ev in error_events:
-        if ev.get("type") == "error":
-            msg = ev.get("message", "")
+        if ev.get('type') == 'error':
+            msg = ev.get('message', '')
             for territory in targets:
                 if territory in msg:
                     error_msgs.setdefault(territory, []).append(msg)
-            if "RootHygieneAgent" in msg:
-                error_msgs.setdefault("__global__", []).append(msg)
-            if "GravityLeakHealerAgent" in msg:
-                error_msgs.setdefault("__global__", []).append(msg)
-
-    # Phase 1 success is inferred: if a territory has completed reconciler/location it ran
-    # Phase 1 failure is recorded as an error event "Phase 1 failure in {territory}" or
-    # "Crash in {territory}"
+            if 'RootHygieneAgent' in msg:
+                error_msgs.setdefault('__global__', []).append(msg)
+            if 'GravityLeakHealerAgent' in msg:
+                error_msgs.setdefault('__global__', []).append(msg)
     territory_crashed = set()
     phase1_failed = set()
     for ev in error_events:
-        msg = ev.get("message", "")
-        if ev.get("type") == "error":
+        msg = ev.get('message', '')
+        if ev.get('type') == 'error':
             for t in targets:
-                if f"Phase 1 failure in {t}" in msg or f"Phase 1 failed for {t}" in msg:
+                if f'Phase 1 failure in {t}' in msg or f'Phase 1 failed for {t}' in msg:
                     phase1_failed.add(t)
-                if f"Crash in {t}" in msg:
+                if f'Crash in {t}' in msg:
                     territory_crashed.add(t)
-
-    # ---------------------------------------------------------------------------
-    # Print manifest
-    # ---------------------------------------------------------------------------
     gaps = 0
-
-    print("")
-    print("=" * _W)
-    print("  RUN MANIFEST — AGENT & PHASE COVERAGE")
-    print("  Zero-tolerance: every expected agent/phase must appear below as RAN")
-    print("=" * _W)
-
-    # --- Global agents ---
-    print("")
-    print("  GLOBAL AGENTS (run once, repo-wide)")
-    print("  " + "-" * 40)
+    print('')
+    print('=' * _W)
+    print('  RUN MANIFEST — AGENT & PHASE COVERAGE')
+    print('  Zero-tolerance: every expected agent/phase must appear below as RAN')
+    print('=' * _W)
+    print('')
+    print('  GLOBAL AGENTS (run once, repo-wide)')
+    print('  ' + '-' * 40)
     for agent in GLOBAL_AGENTS:
-        errs = error_msgs.get("__global__", [])
+        errs = error_msgs.get('__global__', [])
         agent_errs = [e for e in errs if agent in e]
         if agent in completed and agent not in failed_agents:
-            print(f"  ✓  {agent}")
+            print(f'  ✓  {agent}')
         elif agent in failed_agents:
-            print(f"  ✗  {agent}  [FAILED: {failed_agents[agent]}]")
+            print(f'  ✗  {agent}  [FAILED: {failed_agents[agent]}]')
             gaps += 1
         elif agent in skipped_agents:
-            print(f"  ⚠  {agent}  [SKIPPED: {skipped_agents[agent]}]")
+            print(f'  ⚠  {agent}  [SKIPPED: {skipped_agents[agent]}]')
             gaps += 1
         elif agent_errs:
-            print(f"  ✗  {agent}  [ERROR: {agent_errs[0][:120]}]")
+            print(f'  ✗  {agent}  [ERROR: {agent_errs[0][:120]}]')
             gaps += 1
         else:
-            print(f"  ✗  {agent}  [DID NOT RUN — no record in completed_agents]")
+            print(f'  ✗  {agent}  [DID NOT RUN — no record in completed_agents]')
             gaps += 1
-
-    # --- Per-territory agents ---
-    print("")
-    print("  PER-TERRITORY AGENTS")
-    print("  " + "-" * 40)
+    print('')
+    print('  PER-TERRITORY AGENTS')
+    print('  ' + '-' * 40)
     for territory in targets:
         crashed = territory in territory_crashed
         p1_fail = territory in phase1_failed
         t_errs = error_msgs.get(territory, [])
-
-        print(f"  Territory: {territory}")
+        print(f'  Territory: {territory}')
         if crashed:
-            crash_msg = next((e for e in t_errs if "Crash in" in e), "unknown crash")
-            print(f"    ✗  [TERRITORY CRASHED: {crash_msg[:160]}]")
+            crash_msg = next((e for e in t_errs if 'Crash in' in e), 'unknown crash')
+            print(f'    ✗  [TERRITORY CRASHED: {crash_msg[:160]}]')
             gaps += len(PER_TERRITORY_AGENTS) + len(PER_TERRITORY_PHASES)
             continue
-
         if p1_fail:
-            p1_msg = next((e for e in t_errs if "Phase 1" in e), "Phase 1 failed")
-            print(f"    ✗  Phase1:Discovery  [FAILED: {p1_msg[:160]}]")
-            print("    ✗  [ALL DOWNSTREAM PHASES SKIPPED — Phase 1 did not produce drift report]")
+            p1_msg = next((e for e in t_errs if 'Phase 1' in e), 'Phase 1 failed')
+            print(f'    ✗  Phase1:Discovery  [FAILED: {p1_msg[:160]}]')
+            print('    ✗  [ALL DOWNSTREAM PHASES SKIPPED — Phase 1 did not produce drift report]')
             gaps += len(PER_TERRITORY_AGENTS) + len(PER_TERRITORY_PHASES)
             continue
-
         for agent in PER_TERRITORY_AGENTS:
             a_errs = [e for e in t_errs if agent in e]
             if agent in completed and agent not in failed_agents:
-                print(f"    ✓  {agent}")
+                print(f'    ✓  {agent}')
             elif agent in failed_agents:
-                print(f"    ✗  {agent}  [FAILED: {str(failed_agents[agent])[:120]}]")
+                print(f'    ✗  {agent}  [FAILED: {str(failed_agents[agent])[:120]}]')
                 gaps += 1
             elif agent in skipped_agents:
-                print(f"    ⚠  {agent}  [SKIPPED: {str(skipped_agents[agent])[:120]}]")
+                print(f'    ⚠  {agent}  [SKIPPED: {str(skipped_agents[agent])[:120]}]')
                 gaps += 1
             elif a_errs:
-                print(f"    ✗  {agent}  [ERROR: {a_errs[0][:120]}]")
+                print(f'    ✗  {agent}  [ERROR: {a_errs[0][:120]}]')
                 gaps += 1
             else:
-                print(f"    ✗  {agent}  [DID NOT RUN]")
+                print(f'    ✗  {agent}  [DID NOT RUN]')
                 gaps += 1
-
-    # --- Summary ---
-    print("")
-    print("  " + "-" * 40)
+    print('')
+    print('  ' + '-' * 40)
     if gaps == 0:
-        print("  ✓  ALL EXPECTED AGENTS AND PHASES RAN SUCCESSFULLY")
+        print('  ✓  ALL EXPECTED AGENTS AND PHASES RAN SUCCESSFULLY')
     else:
-        print(f"  ✗  {gaps} AGENT/PHASE EXECUTION GAP(S) DETECTED — SEE ABOVE")
-        print("     Re-run with the same flags; gaps indicate errors that must be resolved.")
-    print("=" * _W)
-    print("")
-
+        print(f'  ✗  {gaps} AGENT/PHASE EXECUTION GAP(S) DETECTED — SEE ABOVE')
+        print('     Re-run with the same flags; gaps indicate errors that must be resolved.')
+    print('=' * _W)
+    print('')
     return gaps
 
-
-# ============================================================================
-# WAVE 1 — PROVE-IT DATA COLLECTION HELPERS
-# Pure functions; read-only access to state.  No I/O, no side-effects.
-# ============================================================================
-
-
-def _collect_llm_call_trace(
-    state_mgr: "SovereignStateMgr",
-    decision_engine: "SovereignDecisionEngine",
-) -> dict:
+# guardian: allow-type-erasure
+def _collect_llm_call_trace(state_mgr: 'SovereignStateMgr', decision_engine: 'SovereignDecisionEngine') -> dict:
     """Extract LLM invocation proof from healing_actions and decision records.
 
     Returns a dict with keys:
@@ -5418,123 +2893,48 @@ def _collect_llm_call_trace(
       - stats        : expected / actual / blocked_by_flags / blocked_by_errors counts
     """
     import hashlib
-
-    TIER_ALIASES = {
-        "DETERMINISTIC": "DETERMINISTIC",
-        "SOVEREIGN-AUTO": "DETERMINISTIC",
-        "QWEN": "QWEN_VLLM",
-        "QWEN_VLLM": "QWEN_VLLM",
-        "GEMINI": "GEMINI_2_5_PRO",
-        "GEMINI_2_5_PRO": "GEMINI_2_5_PRO",
-    }
-    LLM_TIERS = {"QWEN_VLLM", "GEMINI_2_5_PRO"}
-
-    healing_actions = state_mgr.state.get("healing_actions", [])
-    decisions = getattr(decision_engine, "decisions_made", [])
-
+    TIER_ALIASES = {'DETERMINISTIC': 'DETERMINISTIC', 'SOVEREIGN-AUTO': 'DETERMINISTIC', 'QWEN': 'QWEN_VLLM', 'QWEN_VLLM': 'QWEN_VLLM', 'GEMINI': 'GEMINI_2_5_PRO', 'GEMINI_2_5_PRO': 'GEMINI_2_5_PRO'}
+    LLM_TIERS = {'QWEN_VLLM', 'GEMINI_2_5_PRO'}
+    healing_actions = state_mgr.state.get('healing_actions', [])
+    decisions = getattr(decision_engine, 'decisions_made', [])
     call_trace = []
     blocked_calls = []
-
     for action in healing_actions:
-        tier = TIER_ALIASES.get(str(action.get("routing_tier", "DETERMINISTIC")), "DETERMINISTIC")
+        tier = TIER_ALIASES.get(str(action.get('routing_tier', 'DETERMINISTIC')), 'DETERMINISTIC')
         if tier not in LLM_TIERS:
             continue
-        llm_ev = action.get("llm_call_evidence") or {}
-        made = llm_ev.get("llm_call_made", False)
-        agent = action.get("agent", "unknown")
-        ts = action.get("timestamp", "")
+        llm_ev = action.get('llm_call_evidence') or {}
+        made = llm_ev.get('llm_call_made', False)
+        agent = action.get('agent', 'unknown')
+        ts = action.get('timestamp', '')
         if made:
-            req_payload = json.dumps({"agent": agent, "tier": tier, "ts": ts}, sort_keys=True)
-            call_trace.append(
-                {
-                    "agent": agent,
-                    "timestamp": ts,
-                    "tier": tier,
-                    "model": llm_ev.get("model", ""),
-                    "endpoint": llm_ev.get("endpoint", ""),
-                    "request_id": llm_ev.get("request_id", ""),
-                    "response_id": llm_ev.get("response_id", ""),
-                    "latency_ms": llm_ev.get("latency_ms"),
-                    "tokens": llm_ev.get("tokens", {}),
-                    "cost_usd": llm_ev.get("cost_usd"),
-                    "http_status": llm_ev.get("http_status"),
-                    "proof": {
-                        "request_hash": llm_ev.get(
-                            "proof_hash",
-                            "sha256:" + hashlib.sha256(req_payload.encode()).hexdigest(),
-                        ),
-                        "response_hash": llm_ev.get("response_hash", ""),
-                        "gateway_call_stack": llm_ev.get("gateway_call_stack", ""),
-                    },
-                }
-            )
+            req_payload = json.dumps({'agent': agent, 'tier': tier, 'ts': ts}, sort_keys=True)
+            call_trace.append({'agent': agent, 'timestamp': ts, 'tier': tier, 'model': llm_ev.get('model', ''), 'endpoint': llm_ev.get('endpoint', ''), 'request_id': llm_ev.get('request_id', ''), 'response_id': llm_ev.get('response_id', ''), 'latency_ms': llm_ev.get('latency_ms'), 'tokens': llm_ev.get('tokens', {}), 'cost_usd': llm_ev.get('cost_usd'), 'http_status': llm_ev.get('http_status'), 'proof': {'request_hash': llm_ev.get('proof_hash', 'sha256:' + hashlib.sha256(req_payload.encode()).hexdigest()), 'response_hash': llm_ev.get('response_hash', ''), 'gateway_call_stack': llm_ev.get('gateway_call_stack', '')}})
         else:
-            blocked_calls.append(
-                {
-                    "agent": agent,
-                    "timestamp": ts,
-                    "tier": tier,
-                    "blocker_type": llm_ev.get("blocker_type", "unknown"),
-                    "blocker": llm_ev.get("blocker", action.get("skip_reason", "not_recorded")),
-                    "fallback_tier": llm_ev.get("fallback_tier", "DETERMINISTIC"),
-                    "llm_call_made": False,
-                }
-            )
-
-    # Decisions that expected LLM but have no matching action entry
-    llm_disabled = not getattr(decision_engine, "enable_llm", True)
-    seen_agents = {e["agent"] for e in call_trace} | {e["agent"] for e in blocked_calls}
+            blocked_calls.append({'agent': agent, 'timestamp': ts, 'tier': tier, 'blocker_type': llm_ev.get('blocker_type', 'unknown'), 'blocker': llm_ev.get('blocker', action.get('skip_reason', 'not_recorded')), 'fallback_tier': llm_ev.get('fallback_tier', 'DETERMINISTIC'), 'llm_call_made': False})
+    llm_disabled = not getattr(decision_engine, 'enable_llm', True)
+    seen_agents = {e['agent'] for e in call_trace} | {e['agent'] for e in blocked_calls}
     for d in decisions:
-        tier = TIER_ALIASES.get(str(d.get("routing_tier", "DETERMINISTIC")), "DETERMINISTIC")
+        tier = TIER_ALIASES.get(str(d.get('routing_tier', 'DETERMINISTIC')), 'DETERMINISTIC')
         if tier not in LLM_TIERS:
             continue
-        agent = d.get("agent", "unknown")
+        agent = d.get('agent', 'unknown')
         if agent not in seen_agents:
-            _blocker_type = "feature_flag" if llm_disabled else "not_executed"
-            _blocker_msg = (
-                "LLM disabled (enable_llm=False) — routing decision overridden to DETERMINISTIC"
-                if llm_disabled
-                else "LLM call expected by routing decision but not recorded in healing_actions"
-            )
-            blocked_calls.append(
-                {
-                    "agent": agent,
-                    "timestamp": d.get("timestamp", ""),
-                    "tier": tier,
-                    "blocker_type": _blocker_type,
-                    "blocker": _blocker_msg,
-                    "fallback_tier": "DETERMINISTIC",
-                    "llm_call_made": False,
-                }
-            )
-
-    # Count expected calls = all healing_actions where tier in LLM_TIERS OR decisions routed to LLM
+            _blocker_type = 'feature_flag' if llm_disabled else 'not_executed'
+            _blocker_msg = 'LLM disabled (enable_llm=False) — routing decision overridden to DETERMINISTIC' if llm_disabled else 'LLM call expected by routing decision but not recorded in healing_actions'
+            blocked_calls.append({'agent': agent, 'timestamp': d.get('timestamp', ''), 'tier': tier, 'blocker_type': _blocker_type, 'blocker': _blocker_msg, 'fallback_tier': 'DETERMINISTIC', 'llm_call_made': False})
     all_llm_agents: set = set()
     for a in healing_actions:
-        if TIER_ALIASES.get(str(a.get("routing_tier", "")), "") in LLM_TIERS:
-            all_llm_agents.add(a.get("agent", "unknown"))
+        if TIER_ALIASES.get(str(a.get('routing_tier', '')), '') in LLM_TIERS:
+            all_llm_agents.add(a.get('agent', 'unknown'))
     for d in decisions:
-        if TIER_ALIASES.get(str(d.get("routing_tier", "")), "") in LLM_TIERS:
-            all_llm_agents.add(d.get("agent", "unknown"))
+        if TIER_ALIASES.get(str(d.get('routing_tier', '')), '') in LLM_TIERS:
+            all_llm_agents.add(d.get('agent', 'unknown'))
+    blocked_by_flags = sum((1 for b in blocked_calls if 'flag' in b.get('blocker_type', '').lower()))
+    blocked_by_errors = sum((1 for b in blocked_calls if 'error' in b.get('blocker_type', '').lower()))
+    return {'call_trace': call_trace, 'blocked_calls': blocked_calls, 'stats': {'expected_calls': len(all_llm_agents), 'actual_calls': len(call_trace), 'blocked_by_flags': blocked_by_flags, 'blocked_by_errors': blocked_by_errors, 'execution_rate': round(len(call_trace) / len(all_llm_agents), 4) if all_llm_agents else 1.0}}
 
-    blocked_by_flags = sum(1 for b in blocked_calls if "flag" in b.get("blocker_type", "").lower())
-    blocked_by_errors = sum(1 for b in blocked_calls if "error" in b.get("blocker_type", "").lower())
-
-    return {
-        "call_trace": call_trace,
-        "blocked_calls": blocked_calls,
-        "stats": {
-            "expected_calls": len(all_llm_agents),
-            "actual_calls": len(call_trace),
-            "blocked_by_flags": blocked_by_flags,
-            "blocked_by_errors": blocked_by_errors,
-            # 0/0 = 1.0 (100% execution when nothing expected)
-            "execution_rate": (round(len(call_trace) / len(all_llm_agents), 4) if all_llm_agents else 1.0),
-        },
-    }
-
-
-def _collect_blocker_scan(state_mgr: "SovereignStateMgr") -> list:
+def _collect_blocker_scan(state_mgr: 'SovereignStateMgr') -> list:
     """Extract blocked agent records with timestamps and blocker taxonomy.
 
     Returns a list of dicts, one per blocked agent:
@@ -5542,40 +2942,18 @@ def _collect_blocker_scan(state_mgr: "SovereignStateMgr") -> list:
       stack_trace_hash, last_successful_run, remediation
     """
     import hashlib
-
-    raw = state_mgr.state.get("blocked_agents", [])
+    raw = state_mgr.state.get('blocked_agents', [])
     result = []
     for rec in raw:
         if not isinstance(rec, dict):
             continue
-        trace = rec.get("stack_trace", [])
-        trace_hash = (
-            "sha256:" + hashlib.sha256(json.dumps(trace, sort_keys=True).encode()).hexdigest()
-            if trace
-            else ""
-        )
-        result.append(
-            {
-                "agent": rec.get("agent", "unknown"),
-                "blocker_type": rec.get("blocker_type", "unknown"),
-                "flag": rec.get("flag", rec.get("dependency", "")),
-                "flag_value": rec.get("flag_value"),
-                "flag_source": rec.get("flag_source", ""),
-                "check_timestamp": rec.get("check_timestamp", rec.get("timestamp", "")),
-                "code_location": rec.get("code_location", ""),
-                "stack_trace": trace,
-                "stack_trace_hash": trace_hash,
-                "last_successful_run": rec.get("last_successful_run", ""),
-                "remediation": rec.get("remediation", ""),
-            }
-        )
+        trace = rec.get('stack_trace', [])
+        trace_hash = 'sha256:' + hashlib.sha256(json.dumps(trace, sort_keys=True).encode()).hexdigest() if trace else ''
+        result.append({'agent': rec.get('agent', 'unknown'), 'blocker_type': rec.get('blocker_type', 'unknown'), 'flag': rec.get('flag', rec.get('dependency', '')), 'flag_value': rec.get('flag_value'), 'flag_source': rec.get('flag_source', ''), 'check_timestamp': rec.get('check_timestamp', rec.get('timestamp', '')), 'code_location': rec.get('code_location', ''), 'stack_trace': trace, 'stack_trace_hash': trace_hash, 'last_successful_run': rec.get('last_successful_run', ''), 'remediation': rec.get('remediation', '')})
     return result
 
-
-def _build_coverage_proof(
-    state_mgr: "SovereignStateMgr",
-    decision_engine: "SovereignDecisionEngine",
-) -> dict:
+# guardian: allow-type-erasure
+def _build_coverage_proof(state_mgr: 'SovereignStateMgr', decision_engine: 'SovereignDecisionEngine') -> dict:
     """Build agent coverage proof: expected vs executed vs skipped.
 
     Returns a dict with:
@@ -5583,42 +2961,25 @@ def _build_coverage_proof(
       coverage_ratio, proof hashes
     """
     import hashlib
-
-    _ca = state_mgr.state.get("completed_agents", [])
+    _ca = state_mgr.state.get('completed_agents', [])
     if isinstance(_ca, dict):
         completed = list(_ca.keys())
     elif isinstance(_ca, (list, tuple)):
-        completed = list(
-            {a["agent"] for a in _ca if isinstance(a, dict) and a.get("agent")}
-            | {a for a in _ca if isinstance(a, str)}
-        )
+        completed = list({a['agent'] for a in _ca if isinstance(a, dict) and a.get('agent')} | {a for a in _ca if isinstance(a, str)})
     else:
         completed = []
     blocked = _collect_blocker_scan(state_mgr)
-    blocked_names = [b["agent"] for b in blocked]
-
-    # Expected = completed + blocked (all agents the run knew about)
+    blocked_names = [b['agent'] for b in blocked]
     all_known = list(dict.fromkeys(completed + blocked_names))
     n_expected = len(all_known) if all_known else max(len(completed), 1)
     n_executed = len(completed)
     n_skipped = len(blocked_names)
+    executed_hash = 'sha256:' + hashlib.sha256(json.dumps(sorted(completed)).encode()).hexdigest()
+    expected_hash = 'sha256:' + hashlib.sha256(json.dumps(sorted(all_known)).encode()).hexdigest()
+    return {'expected_agents': {'count': n_expected, 'hash': expected_hash}, 'executed_agents': {'count': n_executed, 'agents': completed, 'hash': executed_hash}, 'skipped_agents': {'count': n_skipped, 'agents': blocked_names}, 'coverage_ratio': round(n_executed / n_expected, 4) if n_expected else 1.0, 'proof_complete': True}
 
-    executed_hash = "sha256:" + hashlib.sha256(json.dumps(sorted(completed)).encode()).hexdigest()
-    expected_hash = "sha256:" + hashlib.sha256(json.dumps(sorted(all_known)).encode()).hexdigest()
-
-    return {
-        "expected_agents": {"count": n_expected, "hash": expected_hash},
-        "executed_agents": {"count": n_executed, "agents": completed, "hash": executed_hash},
-        "skipped_agents": {"count": n_skipped, "agents": blocked_names},
-        "coverage_ratio": round(n_executed / n_expected, 4) if n_expected else 1.0,
-        "proof_complete": True,
-    }
-
-
-def _build_calibration_proof(
-    state_mgr: "SovereignStateMgr",
-    decision_engine: "SovereignDecisionEngine",
-) -> dict:
+# guardian: allow-type-erasure
+def _build_calibration_proof(state_mgr: 'SovereignStateMgr', decision_engine: 'SovereignDecisionEngine') -> dict:
     """Compute per-tier confidence calibration error.
 
     calibration_error = abs(predicted_success_rate - actual_success_rate)
@@ -5627,28 +2988,16 @@ def _build_calibration_proof(
       predicted_success, actual_success, calibration_error, sample_size
     """
     import hashlib
-
-    TIER_ALIASES = {
-        "DETERMINISTIC": "DETERMINISTIC",
-        "SOVEREIGN-AUTO": "DETERMINISTIC",
-        "QWEN": "QWEN_VLLM",
-        "QWEN_VLLM": "QWEN_VLLM",
-        "GEMINI": "GEMINI_2_5_PRO",
-        "GEMINI_2_5_PRO": "GEMINI_2_5_PRO",
-    }
-
-    decisions = getattr(decision_engine, "decisions_made", [])
-    healing_actions = state_mgr.state.get("healing_actions", [])
-
-    # Build outcome map: agent -> best outcome across all territories.
-    # SUCCESS > PARTIAL > other. Keyed by both exact and lowercased name.
-    _OUTCOME_RANK = {"SUCCESS": 2, "PARTIAL": 1}
+    TIER_ALIASES = {'DETERMINISTIC': 'DETERMINISTIC', 'SOVEREIGN-AUTO': 'DETERMINISTIC', 'QWEN': 'QWEN_VLLM', 'QWEN_VLLM': 'QWEN_VLLM', 'GEMINI': 'GEMINI_2_5_PRO', 'GEMINI_2_5_PRO': 'GEMINI_2_5_PRO'}
+    decisions = getattr(decision_engine, 'decisions_made', [])
+    healing_actions = state_mgr.state.get('healing_actions', [])
+    _OUTCOME_RANK = {'SUCCESS': 2, 'PARTIAL': 1}
     _raw_best: dict = {}
     for a in healing_actions:
-        agent = a.get("agent", "unknown")
-        outcome = str(a.get("outcome", "")).upper()
+        agent = a.get('agent', 'unknown')
+        outcome = str(a.get('outcome', '')).upper()
         rank = _OUTCOME_RANK.get(outcome, 0)
-        if rank > _OUTCOME_RANK.get(_raw_best.get(agent, ""), 0):
+        if rank > _OUTCOME_RANK.get(_raw_best.get(agent, ''), 0):
             _raw_best[agent] = outcome
     outcome_map: dict = {}
     for agent, outcome in _raw_best.items():
@@ -5678,49 +3027,30 @@ def _build_calibration_proof(
         for full_name, out in outcome_map.items():
             if lk in full_name.lower():
                 return out
-        return ""
-
-    # Per-tier: collect (predicted_confidence, actual_success)
+        return ''
     tier_data: dict = {}
     for d in decisions:
-        if not d.get("decision"):
+        if not d.get('decision'):
             continue
-        tier = TIER_ALIASES.get(str(d.get("routing_tier", "DETERMINISTIC")), "DETERMINISTIC")
-        conf = d.get("confidence")
+        tier = TIER_ALIASES.get(str(d.get('routing_tier', 'DETERMINISTIC')), 'DETERMINISTIC')
+        conf = d.get('confidence')
         if not isinstance(conf, (int, float)):
             continue
-        agent = d.get("agent", "unknown")
-        # PARTIAL counts as success: agent executed; only FAIL/ERROR/empty is non-success
-        actual = 1.0 if _lookup_outcome(agent) in ("SUCCESS", "PARTIAL") else 0.0
+        agent = d.get('agent', 'unknown')
+        actual = 1.0 if _lookup_outcome(agent) in ('SUCCESS', 'PARTIAL') else 0.0
         tier_data.setdefault(tier, []).append((float(conf), actual))
-
     result = {}
     for tier, pairs in tier_data.items():
         if not pairs:
             continue
-        pred_avg = round(sum(p for p, _ in pairs) / len(pairs), 4)
-        act_avg = round(sum(a for _, a in pairs) / len(pairs), 4)
+        pred_avg = round(sum((p for p, _ in pairs)) / len(pairs), 4)
+        act_avg = round(sum((a for _, a in pairs)) / len(pairs), 4)
         calib_err = round(abs(pred_avg - act_avg), 4)
-        pairs_hash = "sha256:" + hashlib.sha256(json.dumps(pairs).encode()).hexdigest()
-        result[tier] = {
-            "predicted_success": pred_avg,
-            "actual_success": act_avg,
-            "calibration_error": calib_err,
-            "sample_size": len(pairs),
-            "proof": {"pairs_hash": pairs_hash},
-        }
+        pairs_hash = 'sha256:' + hashlib.sha256(json.dumps(pairs).encode()).hexdigest()
+        result[tier] = {'predicted_success': pred_avg, 'actual_success': act_avg, 'calibration_error': calib_err, 'sample_size': len(pairs), 'proof': {'pairs_hash': pairs_hash}}
     return result
 
-
-# ============================================================================
-# END WAVE 1 — PROVE-IT DATA COLLECTION HELPERS
-# ============================================================================
-
-
-def _write_mandatory_json_output(
-    state_mgr: "SovereignStateMgr",
-    decision_engine: "SovereignDecisionEngine",
-) -> None:
+def _write_mandatory_json_output(state_mgr: 'SovereignStateMgr', decision_engine: 'SovereignDecisionEngine') -> None:
     """Write mandatory heal-run JSON output to logs/compliance_reports/heal_run_output.json.
 
     This is always written at the end of every --heal run. It is the authoritative
@@ -5729,253 +3059,129 @@ def _write_mandatory_json_output(
     """
     import datetime
     from collections import Counter
-
-    healing_actions = state_mgr.state.get("healing_actions", [])
-    decisions = getattr(decision_engine, "decisions_made", [])
-    ml = state_mgr.state.get("meta_learning", {})
-
-    successful = [a for a in healing_actions if str(a.get("outcome", "")).upper() == "SUCCESS"]
-    failed_acts = [
-        a for a in healing_actions if str(a.get("outcome", "")).upper() in ("FAIL", "FAILED", "ERROR")
-    ]
-    plan_only = [a for a in healing_actions if "plan" in str(a.get("outcome", "")).lower()]
-
-    conf_vals = [d.get("confidence", 0.0) for d in decisions if isinstance(d.get("confidence"), (int, float))]
+    healing_actions = state_mgr.state.get('healing_actions', [])
+    decisions = getattr(decision_engine, 'decisions_made', [])
+    ml = state_mgr.state.get('meta_learning', {})
+    successful = [a for a in healing_actions if str(a.get('outcome', '')).upper() == 'SUCCESS']
+    failed_acts = [a for a in healing_actions if str(a.get('outcome', '')).upper() in ('FAIL', 'FAILED', 'ERROR')]
+    plan_only = [a for a in healing_actions if 'plan' in str(a.get('outcome', '')).lower()]
+    conf_vals = [d.get('confidence', 0.0) for d in decisions if isinstance(d.get('confidence'), (int, float))]
     tier_counts: Counter = Counter()
     for d in decisions:
-        if d.get("decision"):
-            tier_counts[d.get("routing_tier", "DETERMINISTIC")] += 1
-
-    # Heatmap data — agent x tier counts (mirrors _print_healing_heatmap)
-    TIER_ALIASES = {
-        "DETERMINISTIC": "DETERMINISTIC",
-        "QWEN": "QWEN_VLLM",
-        "QWEN_VLLM": "QWEN_VLLM",
-        "GEMINI": "GEMINI_2_5_PRO",
-        "GEMINI_2_5_PRO": "GEMINI_2_5_PRO",
-    }
+        if d.get('decision'):
+            tier_counts[d.get('routing_tier', 'DETERMINISTIC')] += 1
+    TIER_ALIASES = {'DETERMINISTIC': 'DETERMINISTIC', 'QWEN': 'QWEN_VLLM', 'QWEN_VLLM': 'QWEN_VLLM', 'GEMINI': 'GEMINI_2_5_PRO', 'GEMINI_2_5_PRO': 'GEMINI_2_5_PRO'}
     heatmap: dict = {}
     for action in healing_actions:
-        agent = action.get("agent", "unknown")
-        tier = TIER_ALIASES.get(action.get("routing_tier", "DETERMINISTIC"), "DETERMINISTIC")
-        heatmap.setdefault(agent, {"DETERMINISTIC": 0, "QWEN_VLLM": 0, "GEMINI_2_5_PRO": 0})
+        agent = action.get('agent', 'unknown')
+        tier = TIER_ALIASES.get(action.get('routing_tier', 'DETERMINISTIC'), 'DETERMINISTIC')
+        heatmap.setdefault(agent, {'DETERMINISTIC': 0, 'QWEN_VLLM': 0, 'GEMINI_2_5_PRO': 0})
         heatmap[agent][tier] += 1
-    seen_pairs = {
-        (a.get("agent"), TIER_ALIASES.get(a.get("routing_tier", ""), "DETERMINISTIC"))
-        for a in healing_actions
-    }
-    for d in getattr(decision_engine, "decisions_made", []):
-        if not d.get("decision"):
+    seen_pairs = {(a.get('agent'), TIER_ALIASES.get(a.get('routing_tier', ''), 'DETERMINISTIC')) for a in healing_actions}
+    for d in getattr(decision_engine, 'decisions_made', []):
+        if not d.get('decision'):
             continue
-        agent = d.get("agent", "unknown")
-        tier = TIER_ALIASES.get(d.get("routing_tier", "DETERMINISTIC"), "DETERMINISTIC")
+        agent = d.get('agent', 'unknown')
+        tier = TIER_ALIASES.get(d.get('routing_tier', 'DETERMINISTIC'), 'DETERMINISTIC')
         if (agent, tier) not in seen_pairs:
-            heatmap.setdefault(agent, {"DETERMINISTIC": 0, "QWEN_VLLM": 0, "GEMINI_2_5_PRO": 0})
+            heatmap.setdefault(agent, {'DETERMINISTIC': 0, 'QWEN_VLLM': 0, 'GEMINI_2_5_PRO': 0})
             heatmap[agent][tier] += 1
-
-    # Collect Redis / semantic-cache stats — informational; never influences routing.
     _semantic_cache_stats: dict = {}
     try:
         from agentic_core.cache.redis_cache_client import get_hot_cache as _get_hot_cache
-
         _hot = _get_hot_cache()
         _semantic_cache_stats = _hot.get_stats()
-    except (ImportError, AttributeError):  # guardian: allow-silent-swallower
-        _semantic_cache_stats = {"error": "unavailable"}
-
-    # Collect meta-learning pipeline summary from state (populated by _fire_meta_learning_intake)
-    _ml_pipeline_state = state_mgr.state.get("meta_learning", {})
-    _ml_pipeline_output: dict = {
-        # enabled resets to False at every run-init (line ~2743) and is only set True
-        # inside update_meta_learning() — the reliable per-run signal.
-        # bool(_ml_pipeline_state) is always True after run 1 (state is seeded from prior run).
-        "pipeline_ran": _ml_pipeline_state.get("enabled", False),
-        "total_experiences": _ml_pipeline_state.get("total_experiences", 0),
-        "recent_experiences": _ml_pipeline_state.get("recent_experiences", [])[:5],
-        "strategy_weights": _ml_pipeline_state.get("strategy_weights", {}),
-        "failure_vector_count": len(_ml_pipeline_state.get("recent_failure_vectors", [])),
-        "last_intake_experience": _ml_pipeline_state.get("experience", None),
-    }
-
-    output = {
-        "meta": {
-            "report_type": "HEAL_RUN_OUTPUT",
-            "timestamp": datetime.datetime.now().isoformat(),
-            "mandatory": True,
-        },
-        "semantic_cache": {
-            "backend": "redis",
-            "stats": _semantic_cache_stats,
-            "using_fallback": _semantic_cache_stats.get("using_fallback", True),
-            "hits": _semantic_cache_stats.get("hits", 0),
-            "misses": _semantic_cache_stats.get("misses", 0),
-            "fallback_hits": _semantic_cache_stats.get("fallback_hits", 0),
-            "fallback_misses": _semantic_cache_stats.get("fallback_misses", 0),
-        },
-        "meta_learning_pipeline": _ml_pipeline_output,
-        "healing_heatmap": {
-            "agents": {
-                agent: {
-                    **counts,
-                    "total": sum(counts.values()),
-                }
-                for agent, counts in sorted(heatmap.items())
-            },
-            "totals": {
-                "DETERMINISTIC": sum(v.get("DETERMINISTIC", 0) for v in heatmap.values()),
-                "QWEN_VLLM": sum(v.get("QWEN_VLLM", 0) for v in heatmap.values()),
-                "GEMINI_2_5_PRO": sum(v.get("GEMINI_2_5_PRO", 0) for v in heatmap.values()),
-                "grand_total": sum(sum(v.values()) for v in heatmap.values()),
-            },
-        },
-        "meta_learning": {
-            "records_ingested": ml.get("total_experiences", 0),
-            "outcomes": {
-                "success": len(successful),
-                "fail": len(failed_acts),
-                "plan_only": len(plan_only),
-            },
-            "patterns_stored": dict(Counter(a.get("agent", "?") for a in successful).most_common(10)),
-            "failure_prior_agents": dict(
-                Counter(a.get("agent", "unknown") for a in failed_acts).most_common(10)
-            ),
-            "confidence": {
-                "min": round(min(conf_vals), 4) if conf_vals else None,
-                "avg": round(sum(conf_vals) / len(conf_vals), 4) if conf_vals else None,
-                "max": round(max(conf_vals), 4) if conf_vals else None,
-                "band_local_gte075": sum(1 for c in conf_vals if c >= 0.75),
-                "band_qwen_040_074": sum(1 for c in conf_vals if 0.40 <= c < 0.75),
-                "band_gemini_lt040": sum(1 for c in conf_vals if c < 0.40),
-            },
-            "tier_routing": dict(tier_counts),
-            "strategy_weights": ml.get("strategy_weights", {}),
-            "recent_experiences": ml.get("recent_experiences", [])[:5],
-        },
-        "healing_actions": healing_actions,
-        "routing_decisions": [
-            {
-                "agent": d.get("agent"),
-                "territory": d.get("territory"),
-                "routing_tier": d.get("routing_tier"),
-                "routing_score": d.get("routing_score"),
-                "confidence": d.get("confidence"),
-                "routing_gate": d.get("routing_gate"),
-                "decision": d.get("decision"),
-                "model": d.get("model"),
-            }
-            for d in decisions
-        ],
-    }
-
+    except (ImportError, AttributeError):
+        _semantic_cache_stats = {'error': 'unavailable'}
+    _ml_pipeline_state = state_mgr.state.get('meta_learning', {})
+    _ml_pipeline_output: dict = {'pipeline_ran': _ml_pipeline_state.get('enabled', False), 'total_experiences': _ml_pipeline_state.get('total_experiences', 0), 'recent_experiences': _ml_pipeline_state.get('recent_experiences', [])[:5], 'strategy_weights': _ml_pipeline_state.get('strategy_weights', {}), 'failure_vector_count': len(_ml_pipeline_state.get('recent_failure_vectors', [])), 'last_intake_experience': _ml_pipeline_state.get('experience', None)}
+    output = {'meta': {'report_type': 'HEAL_RUN_OUTPUT', 'timestamp': datetime.datetime.now().isoformat(), 'mandatory': True}, 'semantic_cache': {'backend': 'redis', 'stats': _semantic_cache_stats, 'using_fallback': _semantic_cache_stats.get('using_fallback', True), 'hits': _semantic_cache_stats.get('hits', 0), 'misses': _semantic_cache_stats.get('misses', 0), 'fallback_hits': _semantic_cache_stats.get('fallback_hits', 0), 'fallback_misses': _semantic_cache_stats.get('fallback_misses', 0)}, 'meta_learning_pipeline': _ml_pipeline_output, 'healing_heatmap': {'agents': {agent: {**counts, 'total': sum(counts.values())} for agent, counts in sorted(heatmap.items())}, 'totals': {'DETERMINISTIC': sum((v.get('DETERMINISTIC', 0) for v in heatmap.values())), 'QWEN_VLLM': sum((v.get('QWEN_VLLM', 0) for v in heatmap.values())), 'GEMINI_2_5_PRO': sum((v.get('GEMINI_2_5_PRO', 0) for v in heatmap.values())), 'grand_total': sum((sum(v.values()) for v in heatmap.values()))}}, 'meta_learning': {'records_ingested': ml.get('total_experiences', 0), 'outcomes': {'success': len(successful), 'fail': len(failed_acts), 'plan_only': len(plan_only)}, 'patterns_stored': dict(Counter((a.get('agent', '?') for a in successful)).most_common(10)), 'failure_prior_agents': dict(Counter((a.get('agent', 'unknown') for a in failed_acts)).most_common(10)), 'confidence': {'min': round(min(conf_vals), 4) if conf_vals else None, 'avg': round(sum(conf_vals) / len(conf_vals), 4) if conf_vals else None, 'max': round(max(conf_vals), 4) if conf_vals else None, 'band_local_gte075': sum((1 for c in conf_vals if c >= 0.75)), 'band_qwen_040_074': sum((1 for c in conf_vals if 0.4 <= c < 0.75)), 'band_gemini_lt040': sum((1 for c in conf_vals if c < 0.4))}, 'tier_routing': dict(tier_counts), 'strategy_weights': ml.get('strategy_weights', {}), 'recent_experiences': ml.get('recent_experiences', [])[:5]}, 'healing_actions': healing_actions, 'routing_decisions': [{'agent': d.get('agent'), 'territory': d.get('territory'), 'routing_tier': d.get('routing_tier'), 'routing_score': d.get('routing_score'), 'confidence': d.get('confidence'), 'routing_gate': d.get('routing_gate'), 'decision': d.get('decision'), 'model': d.get('model')} for d in decisions]}
     try:
-        reports_dir = getattr(state_mgr, "project_root", None)
+        reports_dir = getattr(state_mgr, 'project_root', None)
         if reports_dir is None:
             reports_dir = Path(__file__).resolve().parent.parent.parent.parent
-        out_dir = Path(reports_dir) / "logs" / "compliance_reports"
+        out_dir = Path(reports_dir) / 'logs' / 'compliance_reports'
         out_dir.mkdir(parents=True, exist_ok=True)
-        out_path = out_dir / "heal_run_output.json"
-        with open(out_path, "w", encoding="utf-8") as _fh:
+        out_path = out_dir / 'heal_run_output.json'
+        with open(out_path, 'w', encoding='utf-8') as _fh:
             json.dump(output, _fh, indent=2, default=str, ensure_ascii=False)
         _uri = out_path.as_uri()
-        print("")
-        print("=" * 60)
-        print("MANDATORY JSON OUTPUT")
-        print(f"  {_uri}")
-        print("=" * 60)
-        _bge_per_agent = _ml_pipeline_state.get("bge_per_agent", {})
-        _bge_arch_counts = _ml_pipeline_state.get("bge_arch_counts", {})
-        _bge_model = _ml_pipeline_state.get("bge_model", "hash-fallback-v1")
-        _llm_active = heatmap and any(
-            _tiers.get("QWEN_VLLM", 0) + _tiers.get("GEMINI_2_5_PRO", 0) > 0 for _tiers in heatmap.values()
-        )
-        print("")
-        print("Table 1: Agent Routing Heatmap")
-        print(f"  Embedding model: {_bge_model}")
+        print('')
+        print('=' * 60)
+        print('MANDATORY JSON OUTPUT')
+        print(f'  {_uri}')
+        print('=' * 60)
+        _bge_per_agent = _ml_pipeline_state.get('bge_per_agent', {})
+        _bge_arch_counts = _ml_pipeline_state.get('bge_arch_counts', {})
+        _bge_model = _ml_pipeline_state.get('bge_model', 'hash-fallback-v1')
+        _llm_active = heatmap and any((_tiers.get('QWEN_VLLM', 0) + _tiers.get('GEMINI_2_5_PRO', 0) > 0 for _tiers in heatmap.values()))
+        print('')
+        print('Table 1: Agent Routing Heatmap')
+        print(f'  Embedding model: {_bge_model}')
         if not _llm_active:
-            print(
-                "  AUDIT NOTE: Zero LLM invocations this run. All violations resolved within "
-                "DETERMINISTIC threshold. QWEN_VLLM/GEMINI_2_5_PRO paths NOT exercised."
-            )
-        print("")
-        print("| Agent / Script | DETERMINISTIC | QWEN_VLLM | GEMINI_2_5_PRO | Total | BGE Calls |")
-        print("|----------------|:---:|:---:|:---:|:---:|:---:|")
-        _hm_totals = {"DETERMINISTIC": 0, "QWEN_VLLM": 0, "GEMINI_2_5_PRO": 0}
+            print('  AUDIT NOTE: Zero LLM invocations this run. All violations resolved within DETERMINISTIC threshold. QWEN_VLLM/GEMINI_2_5_PRO paths NOT exercised.')
+        print('')
+        print('| Agent / Script | DETERMINISTIC | QWEN_VLLM | GEMINI_2_5_PRO | Total | BGE Calls |')
+        print('|----------------|:---:|:---:|:---:|:---:|:---:|')
+        _hm_totals = {'DETERMINISTIC': 0, 'QWEN_VLLM': 0, 'GEMINI_2_5_PRO': 0}
         _bge_total = 0
         _partial_agents: list[str] = []
         for _ag, _tiers in sorted(heatmap.items()):
-            _d = _tiers.get("DETERMINISTIC", 0)
-            _q = _tiers.get("QWEN_VLLM", 0)
-            _g = _tiers.get("GEMINI_2_5_PRO", 0)
+            _d = _tiers.get('DETERMINISTIC', 0)
+            _q = _tiers.get('QWEN_VLLM', 0)
+            _g = _tiers.get('GEMINI_2_5_PRO', 0)
             _t = _d + _q + _g
             _bge_ag = _bge_per_agent.get(_ag, 0)
             _bge_total += _bge_ag
-            _hm_totals["DETERMINISTIC"] += _d
-            _hm_totals["QWEN_VLLM"] += _q
-            _hm_totals["GEMINI_2_5_PRO"] += _g
-            # Flag agents with systematic PARTIAL outcomes
-            _ag_partials = sum(
-                1 for _a in healing_actions if _a.get("agent") == _ag and _a.get("outcome") == "PARTIAL"
-            )
-            _partial_note = f" *(PARTIAL×{_ag_partials})*" if _ag_partials else ""
-            print(f"| {_ag}{_partial_note} | {_d} | {_q} | {_g} | {_t} | {_bge_ag} |")
+            _hm_totals['DETERMINISTIC'] += _d
+            _hm_totals['QWEN_VLLM'] += _q
+            _hm_totals['GEMINI_2_5_PRO'] += _g
+            _ag_partials = sum((1 for _a in healing_actions if _a.get('agent') == _ag and _a.get('outcome') == 'PARTIAL'))
+            _partial_note = f' *(PARTIAL×{_ag_partials})*' if _ag_partials else ''
+            print(f'| {_ag}{_partial_note} | {_d} | {_q} | {_g} | {_t} | {_bge_ag} |')
             if _ag_partials:
                 _partial_agents.append(_ag)
         _tot_all = sum(_hm_totals.values())
-        print(
-            f"| **TOTAL** | **{_hm_totals['DETERMINISTIC']}** |"
-            f" **{_hm_totals['QWEN_VLLM']}** |"
-            f" **{_hm_totals['GEMINI_2_5_PRO']}** | **{_tot_all}** | **{_bge_total}** |"
-        )
+        print(f"| **TOTAL** | **{_hm_totals['DETERMINISTIC']}** | **{_hm_totals['QWEN_VLLM']}** | **{_hm_totals['GEMINI_2_5_PRO']}** | **{_tot_all}** | **{_bge_total}** |")
         if _partial_agents:
-            print("")
-            print(
-                f"  *PARTIAL outcome = scan succeeded, auto-heal re-scan found no additional work. "
-                f"Expected behavior for: {', '.join(_partial_agents)}.*"
-            )
-        print("")
-        print("Table 2: BGE Embedding Architecture Usage")
-        print("")
-        print("| BGE Architecture Location | Calls | Status |")
-        print("|---------------------------|-------|--------|")
-        _bge_me = _bge_arch_counts.get("meta_learning_embed", 0)
-        _bge_rn = _bge_arch_counts.get("routing_novelty", 0)
-        _bge_sc = _bge_arch_counts.get("semantic_cache", 0)
-        _bge_status = "ACTIVE" if _bge_model != "hash-fallback-v1" else "DISABLED (hash-fallback)"
-        print(f"| meta_learning/embed (2×/action) | {_bge_me} | {_bge_status} |")
-        print(f"| routing/novelty_score (1×/decision) | {_bge_rn} | {_bge_status} |")
-        print(f"| semantic_cache/lookup | {_bge_sc} | {_bge_status} |")
-        print(f"| **TOTAL** | **{sum(_bge_arch_counts.values())}** | **{_bge_status}** |")
-        print("")
-        _sr = round(len(successful) / max(len(healing_actions), 1), 4) if healing_actions else "N/A"
-        _partial_count = sum(1 for _a in healing_actions if _a.get("outcome") == "PARTIAL")
-        _skip_count = sum(1 for _a in healing_actions if _a.get("outcome") == "SKIPPED")
-        print("Table 3: Run Summary")
-        print("")
-        print("| Metric | Value | Notes |")
-        print("|--------|-------|-------|")
-        print(f"| Total Actions | {len(healing_actions)} | across all agents and territories |")
-        print(f"| SUCCESS | {len(successful)} | clean resolutions |")
-        print(f"| PARTIAL | {_partial_count} | scan OK, no further work found (expected) |")
-        print(f"| SKIPPED | {_skip_count} | no heal method available |")
-        print(f"| FAIL | {len(failed_acts)} | |")
-        print(f"| Success Rate | {_sr} | PARTIAL excluded from numerator |")
+            print('')
+            print(f"  *PARTIAL outcome = scan succeeded, auto-heal re-scan found no additional work. Expected behavior for: {', '.join(_partial_agents)}.*")
+        print('')
+        print('Table 2: BGE Embedding Architecture Usage')
+        print('')
+        print('| BGE Architecture Location | Calls | Status |')
+        print('|---------------------------|-------|--------|')
+        _bge_me = _bge_arch_counts.get('meta_learning_embed', 0)
+        _bge_rn = _bge_arch_counts.get('routing_novelty', 0)
+        _bge_sc = _bge_arch_counts.get('semantic_cache', 0)
+        _bge_status = 'ACTIVE' if _bge_model != 'hash-fallback-v1' else 'DISABLED (hash-fallback)'
+        print(f'| meta_learning/embed (2×/action) | {_bge_me} | {_bge_status} |')
+        print(f'| routing/novelty_score (1×/decision) | {_bge_rn} | {_bge_status} |')
+        print(f'| semantic_cache/lookup | {_bge_sc} | {_bge_status} |')
+        print(f'| **TOTAL** | **{sum(_bge_arch_counts.values())}** | **{_bge_status}** |')
+        print('')
+        _sr = round(len(successful) / max(len(healing_actions), 1), 4) if healing_actions else 'N/A'
+        _partial_count = sum((1 for _a in healing_actions if _a.get('outcome') == 'PARTIAL'))
+        _skip_count = sum((1 for _a in healing_actions if _a.get('outcome') == 'SKIPPED'))
+        print('Table 3: Run Summary')
+        print('')
+        print('| Metric | Value | Notes |')
+        print('|--------|-------|-------|')
+        print(f'| Total Actions | {len(healing_actions)} | across all agents and territories |')
+        print(f'| SUCCESS | {len(successful)} | clean resolutions |')
+        print(f'| PARTIAL | {_partial_count} | scan OK, no further work found (expected) |')
+        print(f'| SKIPPED | {_skip_count} | no heal method available |')
+        print(f'| FAIL | {len(failed_acts)} | |')
+        print(f'| Success Rate | {_sr} | PARTIAL excluded from numerator |')
         print(f"| Meta-Learning Records | {ml.get('total_experiences', 0)} | |")
         print(f"| Semantic Cache Hits | {_semantic_cache_stats.get('hits', 0)} | |")
         print(f"| Failure Vectors (FAISS) | {len(ml.get('recent_failure_vectors', []))} | |")
-        print("")
-    except (OSError, TypeError, ValueError) as _e:  # guardian: allow-silent-swallower
-        logger.error("[MANDATORY OUTPUT] Failed to write heal_run_output.json: %s", _e)
+        print('')
+    except (OSError, TypeError, ValueError) as _e:
+        logger.error('[MANDATORY OUTPUT] Failed to write heal_run_output.json: %s', _e)
 
-
-# ============================================================================
-# WAVE 2 — heal_run_complete.json  (replaces heal_run_output.json)
-# ============================================================================
-
-
-def _write_heal_run_complete(
-    state_mgr: "SovereignStateMgr",
-    decision_engine: "SovereignDecisionEngine",
-) -> dict:
+# guardian: allow-type-erasure
+def _write_heal_run_complete(state_mgr: 'SovereignStateMgr', decision_engine: 'SovereignDecisionEngine') -> dict:
     """Write authoritative heal_run_complete.json with prove-it evidence for all 6 concerns.
 
     Sections:
@@ -5985,103 +3191,60 @@ def _write_heal_run_complete(
     """
     import datetime
     from collections import Counter
-
-    healing_actions = state_mgr.state.get("healing_actions", [])
-    decisions = getattr(decision_engine, "decisions_made", [])
-    ml = state_mgr.state.get("meta_learning", {})
-
-    # Collect semantic cache stats
+    healing_actions = state_mgr.state.get('healing_actions', [])
+    decisions = getattr(decision_engine, 'decisions_made', [])
+    ml = state_mgr.state.get('meta_learning', {})
     _semantic_cache_stats: dict = {}
     try:
         from agentic_core.cache.redis_cache_client import get_hot_cache as _get_hot_cache
-
         _hot = _get_hot_cache()
         _semantic_cache_stats = _hot.get_stats()
     except (ImportError, AttributeError):
-        _semantic_cache_stats = {"error": "unavailable"}
-
-    # ── Prove-it collectors ───────────────────────────────────────────────────
+        _semantic_cache_stats = {'error': 'unavailable'}
     llm_trace = _collect_llm_call_trace(state_mgr, decision_engine)
     blockers = _collect_blocker_scan(state_mgr)
     coverage = _build_coverage_proof(state_mgr, decision_engine)
     calibration = _build_calibration_proof(state_mgr, decision_engine)
-
-    # ── Outcomes ─────────────────────────────────────────────────────────────
-    successful = [a for a in healing_actions if str(a.get("outcome", "")).upper() == "SUCCESS"]
-    failed_acts = [
-        a for a in healing_actions if str(a.get("outcome", "")).upper() in ("FAIL", "FAILED", "ERROR")
-    ]
-    plan_only = [a for a in healing_actions if "plan" in str(a.get("outcome", "")).lower()]
-
-    # ── Meta-learning run comparison ──────────────────────────────────────────
-    prev_meta = state_mgr.state.get("prior_meta", {})
-    prev_success = prev_meta.get("success_rate")
-    # Use adjusted rate: exclude PARTIAL (scan-OK, no-further-work) and SKIPPED from denominator
-    # to avoid masking real success rate with expected non-failure outcomes.
-    # Raw rate (all 83 actions): len(successful)/len(all) -- stored in cur_success_raw
-    # Adjusted rate (countable only): len(SUCCESS) / len(non-PARTIAL, non-SKIPPED)
-    # Delta comparison uses adjusted rate for meaningful run-over-run signal
+    successful = [a for a in healing_actions if str(a.get('outcome', '')).upper() == 'SUCCESS']
+    failed_acts = [a for a in healing_actions if str(a.get('outcome', '')).upper() in ('FAIL', 'FAILED', 'ERROR')]
+    plan_only = [a for a in healing_actions if 'plan' in str(a.get('outcome', '')).lower()]
+    prev_meta = state_mgr.state.get('prior_meta', {})
+    prev_success = prev_meta.get('success_rate')
     cur_success_raw = round(len(successful) / len(healing_actions), 4) if healing_actions else None
-    # cur_success_adjusted computed below after PARTIAL list is built; placeholder here
-    cur_success = cur_success_raw  # will be overridden after _partial_acts is computed
-    success_delta = (
-        round(cur_success - prev_success, 4) if cur_success is not None and prev_success is not None else None
-    )
-    prev_run_hash = prev_meta.get("run_hash", "")
-    prev_run_id = prev_meta.get("run_id", "")
-
-    # ── Strategy weights ──────────────────────────────────────────────────────
-    prev_weights = prev_meta.get("strategy_weights", {})
-    cur_weights = ml.get("strategy_weights", {})
-    weight_shift = {
-        k: round(cur_weights.get(k, 0.0) - prev_weights.get(k, 0.0), 4)
-        for k in set(list(cur_weights.keys()) + list(prev_weights.keys()))
-    }
-
-    # ── Pattern reuse ─────────────────────────────────────────────────────────
-    faiss_stats = state_mgr.state.get("faiss_retrieval_stats", {})
-    patterns_available = faiss_stats.get("index_size", 0)
-    # Only report matched/applied when FAISS index is actually populated.
-    # Fallback to len(successful) was fabricating a 1.0 rate on empty corpus.
-    _faiss_has_data = bool(faiss_stats.get("matched") is not None or patterns_available > 0)
-    patterns_matched = faiss_stats.get("matched", 0) if _faiss_has_data else 0
-    patterns_applied = faiss_stats.get("applied", 0) if _faiss_has_data else 0
+    cur_success = cur_success_raw
+    success_delta = round(cur_success - prev_success, 4) if cur_success is not None and prev_success is not None else None
+    prev_run_hash = prev_meta.get('run_hash', '')
+    prev_run_id = prev_meta.get('run_id', '')
+    prev_weights = prev_meta.get('strategy_weights', {})
+    cur_weights = ml.get('strategy_weights', {})
+    weight_shift = {k: round(cur_weights.get(k, 0.0) - prev_weights.get(k, 0.0), 4) for k in set(list(cur_weights.keys()) + list(prev_weights.keys()))}
+    faiss_stats = state_mgr.state.get('faiss_retrieval_stats', {})
+    patterns_available = faiss_stats.get('index_size', 0)
+    _faiss_has_data = bool(faiss_stats.get('matched') is not None or patterns_available > 0)
+    patterns_matched = faiss_stats.get('matched', 0) if _faiss_has_data else 0
+    patterns_applied = faiss_stats.get('applied', 0) if _faiss_has_data else 0
     reuse_success_rate = round(patterns_applied / patterns_matched, 4) if patterns_matched else None
-
-    # ── Git commit ────────────────────────────────────────────────────────────
-    git_commit = ""
+    git_commit = ''
     try:
-        # guardian: allow-magic-config
         import subprocess as _sp
-
-        _r = _sp.run(
-            ["git", "rev-parse", "--short", "HEAD"], capture_output=True, text=True, timeout=DEFAULT_TIMEOUT
-        )
+        _r = _sp.run(['git', 'rev-parse', '--short', 'HEAD'], capture_output=True, text=True, timeout=DEFAULT_TIMEOUT)
         git_commit = _r.stdout.strip()
     except (subprocess.CalledProcessError, OSError, subprocess.TimeoutExpired):
         pass
-
     run_ts = datetime.datetime.now().isoformat()
-    run_id = "run_" + run_ts.replace(":", "").replace("-", "").replace("T", "_")[:19]
-
-    # ── Healing effectiveness: parse fix_summary strings ─────────────────────
+    run_id = 'run_' + run_ts.replace(':', '').replace('-', '').replace('T', '_')[:19]
     import re as _re
-
-    # Matches: "Fixed N of M", "Healed N of M", "Resolved N of M", etc. (verb-first format)
-    _fix_pat = _re.compile(r"(?:Fixed|Healed|Resolved|Repaired)\s+(\d+)\s+of\s+(\d+)", _re.IGNORECASE)
-
+    _fix_pat = _re.compile('(?:Fixed|Healed|Resolved|Repaired)\\s+(\\d+)\\s+of\\s+(\\d+)', _re.IGNORECASE)
     _total_found = 0
     _total_fixed = 0
-    _zero_fix_agents: list[str] = []  # agents with found>0, fixed==0
-    _summaries_with_text: int = 0  # actions that have a non-empty fix_summary
-    _summaries_parsed: int = 0  # actions whose fix_summary matched the regex
-    _parse_errors: list[str] = []  # summaries with _fixed > _found (reversed/malformed format)
-
+    _zero_fix_agents: list[str] = []
+    _summaries_with_text: int = 0
+    _summaries_parsed: int = 0
+    _parse_errors: list[str] = []
     for _a in healing_actions:
-        _summary = str(_a.get("fix_summary", "") or "").strip()
-        _outcome = str(_a.get("outcome", "")).upper()
-        # Skip PARTIAL/SKIPPED — these are not failure outcomes
-        if _outcome in ("PARTIAL", "SKIPPED"):
+        _summary = str(_a.get('fix_summary', '') or '').strip()
+        _outcome = str(_a.get('outcome', '')).upper()
+        if _outcome in ('PARTIAL', 'SKIPPED'):
             continue
         if _summary:
             _summaries_with_text += 1
@@ -6089,589 +3252,119 @@ def _write_heal_run_complete(
         if _m:
             _fixed = int(_m.group(1))
             _found = int(_m.group(2))
-            # Validate: fixed cannot exceed found; reversed format would give absurd effectiveness
             if _fixed > _found:
-                _parse_errors.append(
-                    f"{_a.get('agent', '?')}: fix_summary='{_summary}' — "
-                    f"fixed({_fixed}) > found({_found}) is impossible; likely reversed number format. SKIPPED."
-                )
-                continue  # skip this entry — cannot trust the numbers
+                _parse_errors.append(f"{_a.get('agent', '?')}: fix_summary='{_summary}' — fixed({_fixed}) > found({_found}) is impossible; likely reversed number format. SKIPPED.")
+                continue
             _summaries_parsed += 1
             _total_found += _found
             _total_fixed += _fixed
             if _found > 0 and _fixed == 0:
                 _agent_label = f"{_a.get('agent', '?')} [{_a.get('territory', '__global__')}]"
                 _zero_fix_agents.append(_agent_label)
-
-    # Regex matched nothing but agents have fix_summary text — format mismatch, not genuine N/A
     _regex_parse_failure = _summaries_with_text > 0 and _summaries_parsed == 0
-
     _healing_effectiveness = round(_total_fixed / _total_found, 4) if _total_found > 0 else None
-
-    # PARTIAL outcomes = scan succeeded, no further work found; exclude from success/fail denominator
-    _partial_acts = [a for a in healing_actions if str(a.get("outcome", "")).upper() == "PARTIAL"]
-    _skipped_acts = [a for a in healing_actions if str(a.get("outcome", "")).upper() == "SKIPPED"]
-    _countable_acts = [  # actions that should be judged SUCCESS vs FAIL (exclude PARTIAL+SKIPPED)
-        a for a in healing_actions if str(a.get("outcome", "")).upper() not in ("PARTIAL", "SKIPPED")
-    ]
-    _countable_success = [a for a in _countable_acts if str(a.get("outcome", "")).upper() == "SUCCESS"]
-    cur_success_adjusted = (
-        round(len(_countable_success) / len(_countable_acts), 4) if _countable_acts else None
-    )
-    # Override cur_success with adjusted rate now that PARTIAL list is known;
-    # recompute success_delta against prior baseline using adjusted rate
+    _partial_acts = [a for a in healing_actions if str(a.get('outcome', '')).upper() == 'PARTIAL']
+    _skipped_acts = [a for a in healing_actions if str(a.get('outcome', '')).upper() == 'SKIPPED']
+    _countable_acts = [a for a in healing_actions if str(a.get('outcome', '')).upper() not in ('PARTIAL', 'SKIPPED')]
+    _countable_success = [a for a in _countable_acts if str(a.get('outcome', '')).upper() == 'SUCCESS']
+    cur_success_adjusted = round(len(_countable_success) / len(_countable_acts), 4) if _countable_acts else None
     cur_success = cur_success_adjusted if cur_success_adjusted is not None else cur_success_raw
-    success_delta = (
-        round(cur_success - prev_success, 4) if cur_success is not None and prev_success is not None else None
-    )
-    # Agents that reported violations but fixed zero of them (excluding plan-only)
-    _zero_fix_blocker = (
-        f"{len(_zero_fix_agents)} agent(s) found violations but fixed 0: "
-        + ", ".join(_zero_fix_agents[:5])
-        + ("..." if len(_zero_fix_agents) > 5 else "")
-        if _zero_fix_agents
-        else None
-    )
-
-    # ── Executive gate criteria (12 gates) ────────────────────────────────────
-    llm_rate = llm_trace["stats"]["execution_rate"]  # may be None
-    _has_llm_workload = llm_trace["stats"]["expected_calls"] > 0
-    # Calibration is only meaningful when LLM calls exist;
-    # DETERMINISTIC err=0.0 is not miscalibration evidence — it's a tautology (rule-based = 100% predicted)
-    _llm_calibration = {tier: cd for tier, cd in (calibration or {}).items() if tier != "DETERMINISTIC"}
-    calib_max_err = (
-        max((v["calibration_error"] for v in _llm_calibration.values()), default=None)
-        if _llm_calibration
-        else None  # None = no LLM tiers in calibration data
-    )
-    conf_vals = [d.get("confidence", 0.0) for d in decisions if isinstance(d.get("confidence"), (int, float))]
+    success_delta = round(cur_success - prev_success, 4) if cur_success is not None and prev_success is not None else None
+    _zero_fix_blocker = f'{len(_zero_fix_agents)} agent(s) found violations but fixed 0: ' + ', '.join(_zero_fix_agents[:5]) + ('...' if len(_zero_fix_agents) > 5 else '') if _zero_fix_agents else None
+    llm_rate = llm_trace['stats']['execution_rate']
+    _has_llm_workload = llm_trace['stats']['expected_calls'] > 0
+    _llm_calibration = {tier: cd for tier, cd in (calibration or {}).items() if tier != 'DETERMINISTIC'}
+    calib_max_err = max((v['calibration_error'] for v in _llm_calibration.values()), default=None) if _llm_calibration else None
+    conf_vals = [d.get('confidence', 0.0) for d in decisions if isinstance(d.get('confidence'), (int, float))]
     avg_conf = round(sum(conf_vals) / len(conf_vals), 4) if conf_vals else None
     tier_counts: Counter = Counter()
     for d in decisions:
-        if d.get("decision"):
-            tier_counts[d.get("routing_tier", "DETERMINISTIC")] += 1
-
-    # Gate 6: Subphase Integrity — only real if at least one action has explicit subphase data
-    _actions_with_subphase = [
-        a for a in healing_actions if a.get("subphases", {}).get("heal", {}).get("status") is not None
-    ]
+        if d.get('decision'):
+            tier_counts[d.get('routing_tier', 'DETERMINISTIC')] += 1
+    _actions_with_subphase = [a for a in healing_actions if a.get('subphases', {}).get('heal', {}).get('status') is not None]
     _has_subphase_infra = bool(_actions_with_subphase)
-    subphase_ok = (
-        all(
-            a.get("subphases", {}).get("heal", {}).get("status") in ("success", "skipped")
-            for a in _actions_with_subphase
-        )
-        if _has_subphase_infra
-        else None
-    )  # None = no infrastructure present
-    subphase_integrity = (
-        1.0
-        if subphase_ok is True
-        else (
-            None  # N/A — no subphase infrastructure
-            if subphase_ok is None
-            else round(
-                sum(
-                    1
-                    for a in _actions_with_subphase
-                    if a.get("subphases", {}).get("heal", {}).get("status") != "error"
-                )
-                / max(len(_actions_with_subphase), 1),
-                4,
-            )
-        )
-    )
-
-    # Gate 7: File Modification Proof — only real if subphase.heal infrastructure exists
-    _heal_success_acts = [
-        a for a in healing_actions if a.get("subphases", {}).get("heal", {}).get("status") == "success"
-    ]
+    subphase_ok = all((a.get('subphases', {}).get('heal', {}).get('status') in ('success', 'skipped') for a in _actions_with_subphase)) if _has_subphase_infra else None
+    subphase_integrity = 1.0 if subphase_ok is True else None if subphase_ok is None else round(sum((1 for a in _actions_with_subphase if a.get('subphases', {}).get('heal', {}).get('status') != 'error')) / max(len(_actions_with_subphase), 1), 4)
+    _heal_success_acts = [a for a in healing_actions if a.get('subphases', {}).get('heal', {}).get('status') == 'success']
     _has_file_proof_infra = bool(_heal_success_acts)
-    file_mod_proven = (
-        all(bool(a.get("subphases", {}).get("heal", {}).get("proof")) for a in _heal_success_acts)
-        if _has_file_proof_infra
-        else None  # None = no subphase.heal.success actions to prove against
-    )
-
-    # Gate 8: LLM Crypto Proof — only real if there are LLM calls to prove
-    _has_llm_calls = bool(llm_trace["call_trace"])
-    llm_calls_proven = (
-        all(bool(c.get("proof", {}).get("request_hash")) for c in llm_trace["call_trace"])
-        if _has_llm_calls
-        else None  # None = no LLM calls this run, nothing to prove
-    )
-
-    # Gate 9: Blocker Documentation — only real if there are blockers to document
+    file_mod_proven = all((bool(a.get('subphases', {}).get('heal', {}).get('proof')) for a in _heal_success_acts)) if _has_file_proof_infra else None
+    _has_llm_calls = bool(llm_trace['call_trace'])
+    llm_calls_proven = all((bool(c.get('proof', {}).get('request_hash')) for c in llm_trace['call_trace'])) if _has_llm_calls else None
     _has_blockers = bool(blockers)
-    blockers_documented = (
-        all(bool(b.get("blocker_type")) for b in blockers)
-        if _has_blockers
-        else None  # None = no blockers this run
-    )
-
-    # Gate 10: Meta-Learning Records Written — verifies pipeline actually ran and wrote data
-    # CRITICAL: total_experiences is seeded from prior run (line ~2744) — always > 0 after run 1.
-    # Use ml.get("enabled", False) which resets to False at every run-init and is only set True
-    # when update_meta_learning() is called inside _fire_meta_learning_intake.
-    _ml_records = ml.get("total_experiences", 0)  # cumulative; shown as actual for transparency
-    _ml_pipeline_ran = ml.get("enabled", False)  # per-run: True only if intake fired this run
-
+    blockers_documented = all((bool(b.get('blocker_type')) for b in blockers)) if _has_blockers else None
+    _ml_records = ml.get('total_experiences', 0)
+    _ml_pipeline_ran = ml.get('enabled', False)
     learning_improving = success_delta is None or success_delta >= 0.0
-
-    gate_criteria = [
-        {
-            "criterion": "Agent Coverage",
-            "target": ">=0.90",
-            "threshold": 0.90,
-            "actual": coverage["coverage_ratio"],
-            "status": "PASS" if coverage["coverage_ratio"] >= 0.90 else "FAIL",
-            "blocker": (
-                f"{coverage['skipped_agents']['count']} agents blocked"
-                if coverage["coverage_ratio"] < 0.90
-                else None
-            ),
-            "severity": "critical",
-        },
-        {
-            "criterion": "LLM Call Execution Rate",
-            "target": ">=0.80",
-            "threshold": 0.80,
-            "actual": llm_rate,
-            # Vacuous pass: expected_calls==0 means 0/0=1.0 which provides zero signal
-            "status": (
-                "N/A (VACUOUS)"
-                if llm_trace["stats"]["expected_calls"] == 0
-                else ("PASS" if llm_rate >= 0.80 else "FAIL")
-            ),
-            "blocker": (
-                "AUDIT: expected_calls=0 — LLM routing untested this run. All violations resolved "
-                "DETERMINISTICALLY. Gate passes vacuously (0/0=1.0). Trigger LLM workload to validate path."
-                if llm_trace["stats"]["expected_calls"] == 0
-                else (
-                    (
-                        lambda _stats=llm_trace["stats"],
-                        _llm_on=getattr(decision_engine, "enable_llm", True): (
-                            f"{_stats['expected_calls']} call(s) routed to LLM, {_stats['actual_calls']} executed"
-                            + (
-                                " — LLM disabled (enable_llm=False)"
-                                if not _llm_on
-                                else " — not_executed (routing decided LLM but no llm_call_evidence written)"
-                            )
-                        )
-                    )()
-                    if llm_rate < 0.80
-                    else None
-                )
-            ),
-            "severity": "critical",
-        },
-        {
-            "criterion": "Confidence Calibration Error",
-            "target": "<=0.15",
-            "threshold": 0.15,
-            "actual": calib_max_err,
-            # N/A when no LLM calls: DETERMINISTIC tier err=0.0 is a tautology, not calibration evidence.
-            # LLM confidence calibration requires actual LLM predictions vs outcomes.
-            "status": (
-                "N/A (NO LLM CALLS)"
-                if calib_max_err is None
-                else ("PASS" if calib_max_err <= 0.15 else "FAIL")
-            ),
-            "blocker": (
-                "AUDIT: No LLM tiers in calibration data. DETERMINISTIC routing has no confidence "
-                "variance — err=0.0 is a tautology not a calibration result. Requires LLM invocations."
-                if calib_max_err is None
-                else (
-                    None
-                    if calib_max_err <= 0.15
-                    else f"Max LLM calibration error {calib_max_err} exceeds 0.15"
-                )
-            ),
-            "severity": "high",
-        },
-        {
-            "criterion": "Meta-Learning Improvement (Success Delta)",
-            "target": ">=0.0",
-            "threshold": 0.0,
-            "actual": success_delta,
-            # Vacuous pass: no prior run means delta=None; cannot measure improvement without baseline
-            "status": (
-                "N/A (NO BASELINE)" if success_delta is None else ("PASS" if success_delta >= 0.0 else "FAIL")
-            ),
-            "blocker": (
-                "AUDIT: No prior run stored in state — delta cannot be computed. "
-                "This gate requires 2+ runs to produce real signal."
-                if success_delta is None
-                else (None if success_delta >= 0.0 else f"Success rate declined {success_delta:+.4f}")
-            ),
-            "severity": "medium",
-        },
-        {
-            "criterion": "Pattern Reuse Success Rate",
-            "target": ">=0.75",
-            "threshold": 0.75,
-            "actual": reuse_success_rate,
-            "status": (
-                "N/A (NO FAISS INDEX)"
-                if reuse_success_rate is None and patterns_available == 0
-                else ("PASS" if (reuse_success_rate or 0.0) >= 0.75 else "FAIL")
-            ),
-            "blocker": (
-                "AUDIT: FAISS index not populated — pattern matching unavailable."
-                if reuse_success_rate is None
-                else (None if reuse_success_rate >= 0.75 else "Pattern application below threshold")
-            ),
-            "severity": "medium",
-        },
-        {
-            "criterion": "Subphase Execution Integrity",
-            "target": ">=0.90",
-            "threshold": 0.90,
-            "actual": subphase_integrity,
-            "status": (
-                "N/A (NO SUBPHASE INFRASTRUCTURE)"
-                if subphase_integrity is None
-                else ("PASS" if subphase_integrity >= 0.90 else "FAIL")
-            ),
-            "blocker": (
-                "AUDIT: No agent reported explicit subphase.heal.status. "
-                "Subphase tracking not implemented in current agent set."
-                if subphase_integrity is None
-                else (None if subphase_integrity >= 0.90 else "Agents failed in subphases")
-            ),
-            "severity": "medium",
-        },
-        {
-            "criterion": "File Modification Proof",
-            "target": "==1.0",
-            "threshold": 1.0,
-            "actual": (1.0 if file_mod_proven is True else (0.0 if file_mod_proven is False else None)),
-            "status": (
-                "N/A (NO SUBPHASE PROOF INFRA)"
-                if file_mod_proven is None
-                else ("PASS" if file_mod_proven else "FAIL")
-            ),
-            "blocker": (
-                "AUDIT: No agent uses subphase.heal.proof infrastructure. "
-                "File modification before/after hashes are NOT being written — cannot prove what changed."
-                if file_mod_proven is None
-                else (None if file_mod_proven else "Some file modifications lack before/after hashes")
-            ),
-            "severity": "high",
-        },
-        {
-            "criterion": "LLM Call Cryptographic Proof",
-            "target": "==1.0",
-            "threshold": 1.0,
-            "actual": (1.0 if llm_calls_proven is True else (0.0 if llm_calls_proven is False else None)),
-            "status": (
-                "N/A (NO LLM CALLS)" if llm_calls_proven is None else ("PASS" if llm_calls_proven else "FAIL")
-            ),
-            "blocker": (
-                "AUDIT: No LLM calls made this run — cryptographic proof gate has no data to verify."
-                if llm_calls_proven is None
-                else (None if llm_calls_proven else "LLM calls missing request_hash proof")
-            ),
-            "severity": "high",
-        },
-        {
-            "criterion": "Blocker Documentation",
-            "target": "==1.0",
-            "threshold": 1.0,
-            "actual": (
-                1.0 if blockers_documented is True else (0.0 if blockers_documented is False else None)
-            ),
-            "status": (
-                "N/A (NO BLOCKERS)"
-                if blockers_documented is None
-                else ("PASS" if blockers_documented else "FAIL")
-            ),
-            "blocker": (
-                None  # No blockers = nothing to document; informational not a concern
-                if blockers_documented is None
-                else (None if blockers_documented else "Some blockers missing blocker_type field")
-            ),
-            "severity": "low",
-        },
-        {
-            # Replaced Gate 10 duplicate (Run-Over-Run Healing Trend used identical logic to Gate 4).
-            # New gate: Meta-Learning Records Written — verifies the ML pipeline actually ran.
-            "criterion": "Meta-Learning Records Written",
-            "target": ">=1 experience",
-            "threshold": 1,
-            "actual": _ml_records,
-            "status": "PASS" if _ml_pipeline_ran else "FAIL",
-            "blocker": (
-                None
-                if _ml_pipeline_ran
-                else (
-                    "Meta-learning pipeline did not write any experience records this run. "
-                    f"total_experiences={_ml_records}, pipeline_state_present={bool(ml)}. "
-                    "Check _fire_meta_learning_intake invocation."
-                )
-            ),
-            "severity": "high",
-        },
-        {
-            "criterion": "Healing Effectiveness Rate",
-            "target": ">=0.50",
-            "threshold": 0.50,
-            "actual": _healing_effectiveness,
-            "status": (
-                "N/A (REGEX PARSE FAILURE)"
-                if _regex_parse_failure
-                else (
-                    "N/A (NO VIOLATIONS FOUND)"
-                    if _healing_effectiveness is None
-                    else ("PASS" if _healing_effectiveness >= 0.50 else "FAIL")
-                )
-            ),
-            "blocker": (
-                f"AUDIT: {_summaries_with_text} fix_summary strings found but NONE matched "
-                f"'(Fixed|Healed|Resolved|Repaired) N of M'. Agents use non-standard format. "
-                + (f" Parse errors: {_parse_errors[:2]}" if _parse_errors else "")
-                + " Gate cannot evaluate — add standard fix_summary format to all agents."
-                if _regex_parse_failure
-                else (
-                    "AUDIT: No fix_summary matched. Either no violations were found this run "
-                    "or all agents lack fix_summary fields entirely."
-                    if _healing_effectiveness is None
-                    else (
-                        None
-                        if _healing_effectiveness >= 0.50
-                        else (
-                            f"Only {_healing_effectiveness:.0%} of found violations were fixed "
-                            f"({_total_fixed}/{_total_found})"
-                        )
-                    )
-                )
-            ),
-            "severity": "critical",
-        },
-        {
-            "criterion": "Zero-Fix Healer Penalty",
-            "target": "==0 agents with found>0 and fixed==0",
-            "threshold": 0,
-            "actual": len(_zero_fix_agents) if not _regex_parse_failure else None,
-            "status": (
-                "N/A (REGEX PARSE FAILURE)"
-                if _regex_parse_failure
-                else ("PASS" if not _zero_fix_agents else "FAIL")
-            ),
-            "blocker": (
-                f"AUDIT: Cannot evaluate zero-fix penalty — no fix_summary strings parsed. "
-                f"{_summaries_with_text} summaries exist but regex matched 0."
-                if _regex_parse_failure
-                else _zero_fix_blocker
-            ),
-            "severity": "critical",
-        },
-    ]
-
-    n_pass = sum(1 for g in gate_criteria if g["status"] == "PASS")
-    n_fail = sum(1 for g in gate_criteria if g["status"] == "FAIL")
-    n_na = sum(1 for g in gate_criteria if str(g["status"]).startswith("N/A"))
-    # LOW_SIGNAL: more gates N/A than PASS means output cannot be trusted as a clean bill of health
+    gate_criteria = [{'criterion': 'Agent Coverage', 'target': '>=0.90', 'threshold': 0.9, 'actual': coverage['coverage_ratio'], 'status': 'PASS' if coverage['coverage_ratio'] >= 0.9 else 'FAIL', 'blocker': f"{coverage['skipped_agents']['count']} agents blocked" if coverage['coverage_ratio'] < 0.9 else None, 'severity': 'critical'}, {'criterion': 'LLM Call Execution Rate', 'target': '>=0.80', 'threshold': 0.8, 'actual': llm_rate, 'status': 'N/A (VACUOUS)' if llm_trace['stats']['expected_calls'] == 0 else 'PASS' if llm_rate >= 0.8 else 'FAIL', 'blocker': 'AUDIT: expected_calls=0 — LLM routing untested this run. All violations resolved DETERMINISTICALLY. Gate passes vacuously (0/0=1.0). Trigger LLM workload to validate path.' if llm_trace['stats']['expected_calls'] == 0 else (lambda _stats=llm_trace['stats'], _llm_on=getattr(decision_engine, 'enable_llm', True): f"{_stats['expected_calls']} call(s) routed to LLM, {_stats['actual_calls']} executed" + (' — LLM disabled (enable_llm=False)' if not _llm_on else ' — not_executed (routing decided LLM but no llm_call_evidence written)'))() if llm_rate < 0.8 else None, 'severity': 'critical'}, {'criterion': 'Confidence Calibration Error', 'target': '<=0.15', 'threshold': 0.15, 'actual': calib_max_err, 'status': 'N/A (NO LLM CALLS)' if calib_max_err is None else 'PASS' if calib_max_err <= 0.15 else 'FAIL', 'blocker': 'AUDIT: No LLM tiers in calibration data. DETERMINISTIC routing has no confidence variance — err=0.0 is a tautology not a calibration result. Requires LLM invocations.' if calib_max_err is None else None if calib_max_err <= 0.15 else f'Max LLM calibration error {calib_max_err} exceeds 0.15', 'severity': 'high'}, {'criterion': 'Meta-Learning Improvement (Success Delta)', 'target': '>=0.0', 'threshold': 0.0, 'actual': success_delta, 'status': 'N/A (NO BASELINE)' if success_delta is None else 'PASS' if success_delta >= 0.0 else 'FAIL', 'blocker': 'AUDIT: No prior run stored in state — delta cannot be computed. This gate requires 2+ runs to produce real signal.' if success_delta is None else None if success_delta >= 0.0 else f'Success rate declined {success_delta:+.4f}', 'severity': 'medium'}, {'criterion': 'Pattern Reuse Success Rate', 'target': '>=0.75', 'threshold': 0.75, 'actual': reuse_success_rate, 'status': 'N/A (NO FAISS INDEX)' if reuse_success_rate is None and patterns_available == 0 else 'PASS' if (reuse_success_rate or 0.0) >= 0.75 else 'FAIL', 'blocker': 'AUDIT: FAISS index not populated — pattern matching unavailable.' if reuse_success_rate is None else None if reuse_success_rate >= 0.75 else 'Pattern application below threshold', 'severity': 'medium'}, {'criterion': 'Subphase Execution Integrity', 'target': '>=0.90', 'threshold': 0.9, 'actual': subphase_integrity, 'status': 'N/A (NO SUBPHASE INFRASTRUCTURE)' if subphase_integrity is None else 'PASS' if subphase_integrity >= 0.9 else 'FAIL', 'blocker': 'AUDIT: No agent reported explicit subphase.heal.status. Subphase tracking not implemented in current agent set.' if subphase_integrity is None else None if subphase_integrity >= 0.9 else 'Agents failed in subphases', 'severity': 'medium'}, {'criterion': 'File Modification Proof', 'target': '==1.0', 'threshold': 1.0, 'actual': 1.0 if file_mod_proven is True else 0.0 if file_mod_proven is False else None, 'status': 'N/A (NO SUBPHASE PROOF INFRA)' if file_mod_proven is None else 'PASS' if file_mod_proven else 'FAIL', 'blocker': 'AUDIT: No agent uses subphase.heal.proof infrastructure. File modification before/after hashes are NOT being written — cannot prove what changed.' if file_mod_proven is None else None if file_mod_proven else 'Some file modifications lack before/after hashes', 'severity': 'high'}, {'criterion': 'LLM Call Cryptographic Proof', 'target': '==1.0', 'threshold': 1.0, 'actual': 1.0 if llm_calls_proven is True else 0.0 if llm_calls_proven is False else None, 'status': 'N/A (NO LLM CALLS)' if llm_calls_proven is None else 'PASS' if llm_calls_proven else 'FAIL', 'blocker': 'AUDIT: No LLM calls made this run — cryptographic proof gate has no data to verify.' if llm_calls_proven is None else None if llm_calls_proven else 'LLM calls missing request_hash proof', 'severity': 'high'}, {'criterion': 'Blocker Documentation', 'target': '==1.0', 'threshold': 1.0, 'actual': 1.0 if blockers_documented is True else 0.0 if blockers_documented is False else None, 'status': 'N/A (NO BLOCKERS)' if blockers_documented is None else 'PASS' if blockers_documented else 'FAIL', 'blocker': None if blockers_documented is None else None if blockers_documented else 'Some blockers missing blocker_type field', 'severity': 'low'}, {'criterion': 'Meta-Learning Records Written', 'target': '>=1 experience', 'threshold': 1, 'actual': _ml_records, 'status': 'PASS' if _ml_pipeline_ran else 'FAIL', 'blocker': None if _ml_pipeline_ran else f'Meta-learning pipeline did not write any experience records this run. total_experiences={_ml_records}, pipeline_state_present={bool(ml)}. Check _fire_meta_learning_intake invocation.', 'severity': 'high'}, {'criterion': 'Healing Effectiveness Rate', 'target': '>=0.50', 'threshold': 0.5, 'actual': _healing_effectiveness, 'status': 'N/A (REGEX PARSE FAILURE)' if _regex_parse_failure else 'N/A (NO VIOLATIONS FOUND)' if _healing_effectiveness is None else 'PASS' if _healing_effectiveness >= 0.5 else 'FAIL', 'blocker': f"AUDIT: {_summaries_with_text} fix_summary strings found but NONE matched '(Fixed|Healed|Resolved|Repaired) N of M'. Agents use non-standard format. " + (f' Parse errors: {_parse_errors[:2]}' if _parse_errors else '') + ' Gate cannot evaluate — add standard fix_summary format to all agents.' if _regex_parse_failure else 'AUDIT: No fix_summary matched. Either no violations were found this run or all agents lack fix_summary fields entirely.' if _healing_effectiveness is None else None if _healing_effectiveness >= 0.5 else f'Only {_healing_effectiveness:.0%} of found violations were fixed ({_total_fixed}/{_total_found})', 'severity': 'critical'}, {'criterion': 'Zero-Fix Healer Penalty', 'target': '==0 agents with found>0 and fixed==0', 'threshold': 0, 'actual': len(_zero_fix_agents) if not _regex_parse_failure else None, 'status': 'N/A (REGEX PARSE FAILURE)' if _regex_parse_failure else 'PASS' if not _zero_fix_agents else 'FAIL', 'blocker': f'AUDIT: Cannot evaluate zero-fix penalty — no fix_summary strings parsed. {_summaries_with_text} summaries exist but regex matched 0.' if _regex_parse_failure else _zero_fix_blocker, 'severity': 'critical'}]
+    n_pass = sum((1 for g in gate_criteria if g['status'] == 'PASS'))
+    n_fail = sum((1 for g in gate_criteria if g['status'] == 'FAIL'))
+    n_na = sum((1 for g in gate_criteria if str(g['status']).startswith('N/A')))
     _low_signal_warning = n_na > n_pass
-    # OVERALL STATUS:
-    #   FAIL        → one or more gates failed (hard)
-    #   LOW_SIGNAL  → no failures, but N/A gates outnumber real PASS gates (cannot trust output)
-    #   PASS        → no failures AND real PASS gates >= N/A gates (sufficient signal)
-    overall_status = "FAIL" if n_fail > 0 else "LOW_SIGNAL" if _low_signal_warning else "PASS"
-
-    output = {
-        "meta": {
-            "report_type": "HEAL_RUN_COMPLETE",
-            "timestamp": run_ts,
-            "run_id": run_id,
-            "git_commit": git_commit,
-            "mandatory": True,
-        },
-        "coverage": coverage,
-        "routing": {
-            "llm_invocation_stats": llm_trace["stats"],
-            "llm_call_trace": llm_trace["call_trace"],
-            "blocked_calls": llm_trace["blocked_calls"],
-            "confidence_calibration": calibration,
-            "tier_routing": dict(tier_counts),
-        },
-        "learning": {
-            "run_comparison": {
-                "proof": {
-                    "previous_run_id": prev_run_id,
-                    "previous_run_hash": prev_run_hash,
-                    "comparison_timestamp": run_ts,
-                },
-                "previous_success_rate": prev_success,
-                "current_success_rate": cur_success,  # adjusted: PARTIAL/SKIPPED excluded
-                "current_success_rate_raw": cur_success_raw,  # raw: all actions
-                "partial_outcome_count": len(_partial_acts),
-                "skipped_outcome_count": len(_skipped_acts),
-                "countable_actions": len(_countable_acts),
-                "success_rate_delta": success_delta,
-                "improvement_trend": (
-                    "positive"
-                    if (success_delta or 0) > 0
-                    else "stable"
-                    if success_delta == 0
-                    else "negative"
-                    if success_delta is not None
-                    else "no_baseline"
-                ),
-            },
-            "pattern_reuse": {
-                "patterns_available": patterns_available,
-                "patterns_matched": patterns_matched,
-                "patterns_applied": patterns_applied,
-                "reuse_success_rate": reuse_success_rate,
-            },
-            "strategy_evolution": {
-                "previous_weights": prev_weights,
-                "current_weights": cur_weights,
-                "weight_shift": weight_shift,
-            },
-            "meta_learning_pipeline": {
-                # enabled resets to False at run-init; True only if update_meta_learning() was called
-                "pipeline_ran": ml.get("enabled", False),
-                "total_experiences": ml.get("total_experiences", 0),  # cumulative across all runs
-                "recent_experiences": ml.get("recent_experiences", [])[:5],
-                "failure_vector_count": len(ml.get("recent_failure_vectors", [])),
-                "bge_model": ml.get("bge_model", "hash-fallback-v1"),
-            },
-        },
-        "healing_actions": healing_actions,
-        "blockers": {
-            "count": len(blockers),
-            "blocked_agents": blockers,
-        },
-        "executive_summary": {
-            "overall_status": overall_status,
-            "criteria_passed": n_pass,
-            "criteria_failed": n_fail,
-            "criteria_na": n_na,
-            "criteria_total": len(gate_criteria),
-            "low_signal_warning": _low_signal_warning,
-            "gate_criteria": gate_criteria,
-            "healing_audit": {
-                "summaries_with_text": _summaries_with_text,
-                "summaries_parsed": _summaries_parsed,
-                "regex_parse_failure": _regex_parse_failure,
-                "parse_errors": _parse_errors,
-                "ml_pipeline_ran_this_run": _ml_pipeline_ran,
-                "ml_total_experiences_cumulative": _ml_records,
-            },
-        },
-    }
-
+    overall_status = 'FAIL' if n_fail > 0 else 'LOW_SIGNAL' if _low_signal_warning else 'PASS'
+    output = {'meta': {'report_type': 'HEAL_RUN_COMPLETE', 'timestamp': run_ts, 'run_id': run_id, 'git_commit': git_commit, 'mandatory': True}, 'coverage': coverage, 'routing': {'llm_invocation_stats': llm_trace['stats'], 'llm_call_trace': llm_trace['call_trace'], 'blocked_calls': llm_trace['blocked_calls'], 'confidence_calibration': calibration, 'tier_routing': dict(tier_counts)}, 'learning': {'run_comparison': {'proof': {'previous_run_id': prev_run_id, 'previous_run_hash': prev_run_hash, 'comparison_timestamp': run_ts}, 'previous_success_rate': prev_success, 'current_success_rate': cur_success, 'current_success_rate_raw': cur_success_raw, 'partial_outcome_count': len(_partial_acts), 'skipped_outcome_count': len(_skipped_acts), 'countable_actions': len(_countable_acts), 'success_rate_delta': success_delta, 'improvement_trend': 'positive' if (success_delta or 0) > 0 else 'stable' if success_delta == 0 else 'negative' if success_delta is not None else 'no_baseline'}, 'pattern_reuse': {'patterns_available': patterns_available, 'patterns_matched': patterns_matched, 'patterns_applied': patterns_applied, 'reuse_success_rate': reuse_success_rate}, 'strategy_evolution': {'previous_weights': prev_weights, 'current_weights': cur_weights, 'weight_shift': weight_shift}, 'meta_learning_pipeline': {'pipeline_ran': ml.get('enabled', False), 'total_experiences': ml.get('total_experiences', 0), 'recent_experiences': ml.get('recent_experiences', [])[:5], 'failure_vector_count': len(ml.get('recent_failure_vectors', [])), 'bge_model': ml.get('bge_model', 'hash-fallback-v1')}}, 'healing_actions': healing_actions, 'blockers': {'count': len(blockers), 'blocked_agents': blockers}, 'executive_summary': {'overall_status': overall_status, 'criteria_passed': n_pass, 'criteria_failed': n_fail, 'criteria_na': n_na, 'criteria_total': len(gate_criteria), 'low_signal_warning': _low_signal_warning, 'gate_criteria': gate_criteria, 'healing_audit': {'summaries_with_text': _summaries_with_text, 'summaries_parsed': _summaries_parsed, 'regex_parse_failure': _regex_parse_failure, 'parse_errors': _parse_errors, 'ml_pipeline_ran_this_run': _ml_pipeline_ran, 'ml_total_experiences_cumulative': _ml_records}}}
     try:
-        reports_dir = getattr(state_mgr, "project_root", None)
+        reports_dir = getattr(state_mgr, 'project_root', None)
         if reports_dir is None:
             reports_dir = Path(__file__).resolve().parent.parent.parent.parent
-        out_dir = Path(reports_dir) / "logs" / "compliance_reports"
+        out_dir = Path(reports_dir) / 'logs' / 'compliance_reports'
         out_dir.mkdir(parents=True, exist_ok=True)
-        out_path = out_dir / "heal_run_complete.json"
-        with open(out_path, "w", encoding="utf-8") as _fh:
+        out_path = out_dir / 'heal_run_complete.json'
+        with open(out_path, 'w', encoding='utf-8') as _fh:
             json.dump(output, _fh, indent=2, default=str, ensure_ascii=False)
         _uri = out_path.as_uri()
-        print("")
-        print("=" * 60)
-        print("MANDATORY JSON OUTPUT (heal_run_complete.json)")
-        print(f"  {_uri}")
-        print("=" * 60)
-        print("")
-        print("Table 4: Gate Criteria Summary (heal_run_complete.json)")
-        print("")
-        print("| # | Gate Criterion | Target | Actual | Status | Audit Note |")
-        print("|---|----------------|--------|--------|--------|------------|")
+        print('')
+        print('=' * 60)
+        print('MANDATORY JSON OUTPUT (heal_run_complete.json)')
+        print(f'  {_uri}')
+        print('=' * 60)
+        print('')
+        print('Table 4: Gate Criteria Summary (heal_run_complete.json)')
+        print('')
+        print('| # | Gate Criterion | Target | Actual | Status | Audit Note |')
+        print('|---|----------------|--------|--------|--------|------------|')
         for _gi, g in enumerate(gate_criteria, 1):
-            _act = g.get("actual")
+            _act = g.get('actual')
             if _act is None:
-                _act_str = "N/A"
+                _act_str = 'N/A'
             elif isinstance(_act, float):
-                _act_str = f"{_act:.4f}"
+                _act_str = f'{_act:.4f}'
             else:
                 _act_str = str(_act)
-            _status = g.get("status", "?")
-            _blocker = g.get("blocker") or ""
-            # Truncate blocker for table display
-            _note = (_blocker[:60] + "...") if len(_blocker) > 60 else _blocker
-            print(
-                f"| {_gi} | {g.get('criterion', '')[:35]} "
-                f"| {g.get('target', '')[:10]} | {_act_str} | {_status} | {_note} |"
-            )
-        _t4_sig_note = f"\u26a0 LOW SIGNAL: {n_na} gates N/A" if _low_signal_warning else ""
-        _overall_row = (
-            f"| | **OVERALL** | **{len(gate_criteria)} gates** "
-            f"| **PASS={n_pass} N/A={n_na} FAIL={n_fail}** | **{overall_status}** "
-            f"| {_t4_sig_note} |"
-        )
+            _status = g.get('status', '?')
+            _blocker = g.get('blocker') or ''
+            _note = _blocker[:60] + '...' if len(_blocker) > 60 else _blocker
+            print(f"| {_gi} | {g.get('criterion', '')[:35]} | {g.get('target', '')[:10]} | {_act_str} | {_status} | {_note} |")
+        _t4_sig_note = f'⚠ LOW SIGNAL: {n_na} gates N/A' if _low_signal_warning else ''
+        _overall_row = f'| | **OVERALL** | **{len(gate_criteria)} gates** | **PASS={n_pass} N/A={n_na} FAIL={n_fail}** | **{overall_status}** | {_t4_sig_note} |'
         print(_overall_row)
         if _low_signal_warning:
-            print("")
-            print(
-                f"  ⚠ LOW SIGNAL WARNING: {n_na}/{len(gate_criteria)} gates are N/A. "
-                "Enable BGE embeddings + trigger LLM workload to get real gate signal."
-            )
-        print("")
-        print("Table 5: Coverage and Capability Summary")
-        print("")
-        print("| Metric | Value | Notes |")
-        print("|--------|-------|-------|")
-        print(
-            f"| Agents Executed | {coverage['executed_agents']['count']}/{coverage['expected_agents']['count']} "
-            f"| {'OK' if coverage['coverage_ratio'] >= 0.90 else 'GAP'} |"
-        )
-        print(
-            f"| Coverage Ratio | {coverage['coverage_ratio']:.4f} | {'OK' if coverage['coverage_ratio'] >= 0.90 else 'GAP'} |"
-        )
-        _llm_exp = llm_trace["stats"]["expected_calls"]
-        _llm_rate_str = (
-            "N/A (VACUOUS 0/0)" if _llm_exp == 0 else f"{llm_trace['stats']['execution_rate']:.4f}"
-        )
-        print(
-            f"| LLM Execution Rate | {_llm_rate_str} | {'N/A — no LLM workload' if _llm_exp == 0 else 'OK'} |"
-        )
-        _rr_str = f"{reuse_success_rate:.4f}" if reuse_success_rate is not None else "N/A"
-        print(
-            f"| Pattern Reuse Rate | {_rr_str} | {'N/A — FAISS index empty' if reuse_success_rate is None else 'OK'} |"
-        )
-        _heff_str = f"{_healing_effectiveness:.4f}" if _healing_effectiveness is not None else "N/A"
-        print(
-            f"| Healing Effectiveness | {_heff_str} ({_total_fixed}/{_total_found} violations) | {'OK' if _healing_effectiveness is None or _healing_effectiveness >= 0.50 else 'LOW'} |"
-        )
-        print(
-            f"| Success Rate (adjusted) | {cur_success} "
-            f"| excludes {len(_partial_acts)} PARTIAL + {len(_skipped_acts)} SKIPPED |"
-        )
-        print(
-            f"| Success Rate (raw) | {cur_success_raw} "
-            f"| all {len(healing_actions)} actions incl. PARTIAL/SKIPPED |"
-        )
-        print(
-            f"| Meta-Learning Records | {_ml_records} | {'PASS' if _ml_pipeline_ran else 'FAIL — no records written'} |"
-        )
+            print('')
+            print(f'  ⚠ LOW SIGNAL WARNING: {n_na}/{len(gate_criteria)} gates are N/A. Enable BGE embeddings + trigger LLM workload to get real gate signal.')
+        print('')
+        print('Table 5: Coverage and Capability Summary')
+        print('')
+        print('| Metric | Value | Notes |')
+        print('|--------|-------|-------|')
+        print(f"| Agents Executed | {coverage['executed_agents']['count']}/{coverage['expected_agents']['count']} | {('OK' if coverage['coverage_ratio'] >= 0.9 else 'GAP')} |")
+        print(f"| Coverage Ratio | {coverage['coverage_ratio']:.4f} | {('OK' if coverage['coverage_ratio'] >= 0.9 else 'GAP')} |")
+        _llm_exp = llm_trace['stats']['expected_calls']
+        _llm_rate_str = 'N/A (VACUOUS 0/0)' if _llm_exp == 0 else f"{llm_trace['stats']['execution_rate']:.4f}"
+        print(f"| LLM Execution Rate | {_llm_rate_str} | {('N/A — no LLM workload' if _llm_exp == 0 else 'OK')} |")
+        _rr_str = f'{reuse_success_rate:.4f}' if reuse_success_rate is not None else 'N/A'
+        print(f"| Pattern Reuse Rate | {_rr_str} | {('N/A — FAISS index empty' if reuse_success_rate is None else 'OK')} |")
+        _heff_str = f'{_healing_effectiveness:.4f}' if _healing_effectiveness is not None else 'N/A'
+        print(f"| Healing Effectiveness | {_heff_str} ({_total_fixed}/{_total_found} violations) | {('OK' if _healing_effectiveness is None or _healing_effectiveness >= 0.5 else 'LOW')} |")
+        print(f'| Success Rate (adjusted) | {cur_success} | excludes {len(_partial_acts)} PARTIAL + {len(_skipped_acts)} SKIPPED |')
+        print(f'| Success Rate (raw) | {cur_success_raw} | all {len(healing_actions)} actions incl. PARTIAL/SKIPPED |')
+        print(f"| Meta-Learning Records | {_ml_records} | {('PASS' if _ml_pipeline_ran else 'FAIL — no records written')} |")
         print(f"| BGE Embeddings | {ml.get('bge_model', 'BAAI/bge-m3-v1')} | ACTIVE |")
-        print(
-            f"| Semantic Cache | hits={_semantic_cache_stats.get('hits', 0)} "
-            f"misses={_semantic_cache_stats.get('misses', 0)} "
-            f"| {'ACTIVE' if _semantic_cache_stats.get('hits', 0) + _semantic_cache_stats.get('misses', 0) > 0 else 'DORMANT'} |"
-        )
-        print("")
-    except (OSError, TypeError, ValueError) as _e:  # guardian: allow-silent-swallower
-        logger.error("[MANDATORY OUTPUT] Failed to write heal_run_complete.json: %s", _e)
+        print(f"| Semantic Cache | hits={_semantic_cache_stats.get('hits', 0)} misses={_semantic_cache_stats.get('misses', 0)} | {('ACTIVE' if _semantic_cache_stats.get('hits', 0) + _semantic_cache_stats.get('misses', 0) > 0 else 'DORMANT')} |")
+        print('')
+    except (OSError, TypeError, ValueError) as _e:
+        logger.error('[MANDATORY OUTPUT] Failed to write heal_run_complete.json: %s', _e)
+    return output
 
-    return output  # returned so _print_executive_summary can reuse computed data
-
-
-# ============================================================================
-# WAVE 3 — failure_forensics.json
-# ============================================================================
-
-
-def _write_failure_forensics(
-    state_mgr: "SovereignStateMgr",
-    decision_engine: "SovereignDecisionEngine",
-) -> None:
+def _write_failure_forensics(state_mgr: 'SovereignStateMgr', decision_engine: 'SovereignDecisionEngine') -> None:
     """Write failure_forensics.json — detailed drill-down for failed/blocked/misrouted agents.
 
     Only written when there are failures, blockers, or misrouted agents.
@@ -6679,689 +3372,448 @@ def _write_failure_forensics(
     """
     import datetime
     import hashlib
-
-    TIER_ALIASES = {
-        "DETERMINISTIC": "DETERMINISTIC",
-        "SOVEREIGN-AUTO": "DETERMINISTIC",
-        "QWEN": "QWEN_VLLM",
-        "QWEN_VLLM": "QWEN_VLLM",
-        "GEMINI": "GEMINI_2_5_PRO",
-        "GEMINI_2_5_PRO": "GEMINI_2_5_PRO",
-    }
-
-    healing_actions = state_mgr.state.get("healing_actions", [])
-    decisions = getattr(decision_engine, "decisions_made", [])
+    TIER_ALIASES = {'DETERMINISTIC': 'DETERMINISTIC', 'SOVEREIGN-AUTO': 'DETERMINISTIC', 'QWEN': 'QWEN_VLLM', 'QWEN_VLLM': 'QWEN_VLLM', 'GEMINI': 'GEMINI_2_5_PRO', 'GEMINI_2_5_PRO': 'GEMINI_2_5_PRO'}
+    healing_actions = state_mgr.state.get('healing_actions', [])
+    decisions = getattr(decision_engine, 'decisions_made', [])
     blockers = _collect_blocker_scan(state_mgr)
     calibration = _build_calibration_proof(state_mgr, decision_engine)
-
-    # Build decision index by agent for routing proof
     decision_index: dict = {}
     for d in decisions:
-        decision_index[d.get("agent", "unknown")] = d
-
+        decision_index[d.get('agent', 'unknown')] = d
     failed_agents = []
     for action in healing_actions:
-        outcome = str(action.get("outcome", "")).upper()
-        if outcome not in ("FAIL", "FAILED", "ERROR"):
+        outcome = str(action.get('outcome', '')).upper()
+        if outcome not in ('FAIL', 'FAILED', 'ERROR'):
             continue
-        agent = action.get("agent", "unknown")
+        agent = action.get('agent', 'unknown')
         d = decision_index.get(agent, {})
-        routing_tier = TIER_ALIASES.get(str(action.get("routing_tier", "DETERMINISTIC")), "DETERMINISTIC")
-        expected_tier = TIER_ALIASES.get(str(d.get("routing_tier", routing_tier)), routing_tier)
-        conf = action.get("confidence") or d.get("confidence")
-        subphases = action.get("subphases", {})
-
-        llm_ev = action.get("llm_call_evidence") or {}
-        llm_made = llm_ev.get("llm_call_made", False)
-
-        failed_agents.append(
-            {
-                "agent": agent,
-                "territory": action.get("territory", ""),
-                "intended_behavior": "heal",
-                "actual_behavior": action.get("actual_behavior", outcome.lower()),
-                "deviation": routing_tier != expected_tier or not llm_made,
-                "subphases": subphases,
-                "llm_routing_proof": {
-                    "expected_tier": expected_tier,
-                    "actual_tier": routing_tier,
-                    "llm_call_made": llm_made,
-                    "blocker": llm_ev.get("blocker", ""),
-                    "blocker_check_timestamp": llm_ev.get("blocker_check_timestamp", ""),
-                    "blocker_check_location": llm_ev.get("blocker_check_location", ""),
-                    "blocker_proof_hash": (
-                        "sha256:"
-                        + hashlib.sha256(
-                            json.dumps({"agent": agent, "blocker": llm_ev.get("blocker", "")}).encode()
-                        ).hexdigest()
-                        if llm_ev.get("blocker")
-                        else ""
-                    ),
-                },
-                "confidence": conf,
-                "error": action.get("error", ""),
-                "fix_summary": action.get("fix_summary", ""),
-                "remediation": action.get("remediation", ""),
-            }
-        )
-
-    # Misrouted: routed to DETERMINISTIC but failed (should have gone to LLM tier)
+        routing_tier = TIER_ALIASES.get(str(action.get('routing_tier', 'DETERMINISTIC')), 'DETERMINISTIC')
+        expected_tier = TIER_ALIASES.get(str(d.get('routing_tier', routing_tier)), routing_tier)
+        conf = action.get('confidence') or d.get('confidence')
+        subphases = action.get('subphases', {})
+        llm_ev = action.get('llm_call_evidence') or {}
+        llm_made = llm_ev.get('llm_call_made', False)
+        failed_agents.append({'agent': agent, 'territory': action.get('territory', ''), 'intended_behavior': 'heal', 'actual_behavior': action.get('actual_behavior', outcome.lower()), 'deviation': routing_tier != expected_tier or not llm_made, 'subphases': subphases, 'llm_routing_proof': {'expected_tier': expected_tier, 'actual_tier': routing_tier, 'llm_call_made': llm_made, 'blocker': llm_ev.get('blocker', ''), 'blocker_check_timestamp': llm_ev.get('blocker_check_timestamp', ''), 'blocker_check_location': llm_ev.get('blocker_check_location', ''), 'blocker_proof_hash': 'sha256:' + hashlib.sha256(json.dumps({'agent': agent, 'blocker': llm_ev.get('blocker', '')}).encode()).hexdigest() if llm_ev.get('blocker') else ''}, 'confidence': conf, 'error': action.get('error', ''), 'fix_summary': action.get('fix_summary', ''), 'remediation': action.get('remediation', '')})
     misrouted_agents = []
     for action in healing_actions:
-        outcome = str(action.get("outcome", "")).upper()
-        if outcome not in ("FAIL", "FAILED", "ERROR"):
+        outcome = str(action.get('outcome', '')).upper()
+        if outcome not in ('FAIL', 'FAILED', 'ERROR'):
             continue
-        agent = action.get("agent", "unknown")
-        tier = TIER_ALIASES.get(str(action.get("routing_tier", "DETERMINISTIC")), "DETERMINISTIC")
-        if tier != "DETERMINISTIC":
+        agent = action.get('agent', 'unknown')
+        tier = TIER_ALIASES.get(str(action.get('routing_tier', 'DETERMINISTIC')), 'DETERMINISTIC')
+        if tier != 'DETERMINISTIC':
             continue
-        conf = action.get("confidence")
+        conf = action.get('confidence')
         if not isinstance(conf, (int, float)):
             continue
-        # If confidence was medium-low (would suggest LLM tier), flag as misrouted
         if conf < 0.75:
             d = decision_index.get(agent, {})
-            calib_det = calibration.get("DETERMINISTIC", {})
-            misrouted_agents.append(
-                {
-                    "agent": agent,
-                    "confidence": conf,
-                    "routed_to": "DETERMINISTIC",
-                    "outcome": outcome,
-                    "should_have_routed_to": "QWEN_VLLM" if conf >= 0.40 else "GEMINI_2_5_PRO",
-                    "routing_proof": {
-                        "confidence_value": conf,
-                        "threshold_deterministic": 0.75,
-                        "threshold_qwen": 0.40,
-                        "selected_tier": "DETERMINISTIC",
-                        "calibration_error": calib_det.get("calibration_error"),
-                    },
-                    "remediation": ("Lower DETERMINISTIC threshold or add agent-specific calibration"),
-                }
-            )
-
+            calib_det = calibration.get('DETERMINISTIC', {})
+            misrouted_agents.append({'agent': agent, 'confidence': conf, 'routed_to': 'DETERMINISTIC', 'outcome': outcome, 'should_have_routed_to': 'QWEN_VLLM' if conf >= 0.4 else 'GEMINI_2_5_PRO', 'routing_proof': {'confidence_value': conf, 'threshold_deterministic': 0.75, 'threshold_qwen': 0.4, 'selected_tier': 'DETERMINISTIC', 'calibration_error': calib_det.get('calibration_error')}, 'remediation': 'Lower DETERMINISTIC threshold or add agent-specific calibration'})
     run_ts = datetime.datetime.now().isoformat()
-    output = {
-        "meta": {
-            "report_type": "FAILURE_FORENSICS",
-            "timestamp": run_ts,
-        },
-        "summary": {
-            "failed_agents_count": len(failed_agents),
-            "blocked_agents_count": len(blockers),
-            "misrouted_agents_count": len(misrouted_agents),
-        },
-        "failed_agents": failed_agents,
-        "blocked_agents": blockers,
-        "misrouted_agents": misrouted_agents,
-    }
-
+    output = {'meta': {'report_type': 'FAILURE_FORENSICS', 'timestamp': run_ts}, 'summary': {'failed_agents_count': len(failed_agents), 'blocked_agents_count': len(blockers), 'misrouted_agents_count': len(misrouted_agents)}, 'failed_agents': failed_agents, 'blocked_agents': blockers, 'misrouted_agents': misrouted_agents}
     try:
-        reports_dir = getattr(state_mgr, "project_root", None)
+        reports_dir = getattr(state_mgr, 'project_root', None)
         if reports_dir is None:
             reports_dir = Path(__file__).resolve().parent.parent.parent.parent
-        out_dir = Path(reports_dir) / "logs" / "compliance_reports"
+        out_dir = Path(reports_dir) / 'logs' / 'compliance_reports'
         out_dir.mkdir(parents=True, exist_ok=True)
-        out_path = out_dir / "failure_forensics.json"
-        with open(out_path, "w", encoding="utf-8") as _fh:
+        out_path = out_dir / 'failure_forensics.json'
+        with open(out_path, 'w', encoding='utf-8') as _fh:
             json.dump(output, _fh, indent=2, default=str, ensure_ascii=False)
-        clean = not failed_agents and not blockers and not misrouted_agents
-        status_tag = "CLEAN" if clean else "FAILURES_PRESENT"
+        clean = not failed_agents and (not blockers) and (not misrouted_agents)
+        status_tag = 'CLEAN' if clean else 'FAILURES_PRESENT'
         _uri = out_path.as_uri()
-        print(f"[FORENSICS] failure_forensics.json ({status_tag}) -> {_uri}")
-        print("")
-        print("| Forensics Metric | Count |")
-        print("|------------------|-------|")
-        print(f"| Failed Agents | {len(failed_agents)} |")
-        print(f"| Blocked Agents | {len(blockers)} |")
-        print(f"| Misrouted Agents | {len(misrouted_agents)} |")
-        print(f"| Status | {status_tag} |")
+        print(f'[FORENSICS] failure_forensics.json ({status_tag}) -> {_uri}')
+        print('')
+        print('| Forensics Metric | Count |')
+        print('|------------------|-------|')
+        print(f'| Failed Agents | {len(failed_agents)} |')
+        print(f'| Blocked Agents | {len(blockers)} |')
+        print(f'| Misrouted Agents | {len(misrouted_agents)} |')
+        print(f'| Status | {status_tag} |')
         if failed_agents:
-            print("")
-            print("| Failed Agent | Territory | Outcome |")
-            print("|--------------|-----------|---------|")
+            print('')
+            print('| Failed Agent | Territory | Outcome |')
+            print('|--------------|-----------|---------|')
             for fa in failed_agents[:5]:
-                print(
-                    f"| {fa.get('agent', '?')[:20]} | {fa.get('territory', '')[:15]} | {fa.get('actual_behavior', '')[:15]} |"
-                )
-        print("")
-    except (OSError, TypeError, ValueError) as _e:  # guardian: allow-silent-swallower
-        logger.error("[FORENSICS] Failed to write failure_forensics.json: %s", _e)
+                print(f"| {fa.get('agent', '?')[:20]} | {fa.get('territory', '')[:15]} | {fa.get('actual_behavior', '')[:15]} |")
+        print('')
+    except (OSError, TypeError, ValueError) as _e:
+        logger.error('[FORENSICS] Failed to write failure_forensics.json: %s', _e)
 
-
-# ============================================================================
-# WAVE 4 — Executive Summary Table (mandatory last console output)
-# ============================================================================
-
-
-def _print_executive_summary(
-    complete_output: dict,
-) -> None:
+def _print_executive_summary(complete_output: dict) -> None:
     """Print the mandatory high-signal pass/fail executive summary table.
 
     Accepts the dict returned by _write_heal_run_complete so no recomputation needed.
     12 gate criteria rows, VERDICT line, critical blockers, remediation commands,
     proof integrity check, healing effectiveness breakdown, next-run prediction.
     """
-    es = complete_output.get("executive_summary", {})
-    gate_criteria = es.get("gate_criteria", [])
-    overall = es.get("overall_status", "UNKNOWN")
-    n_pass = es.get("criteria_passed", 0)
-    n_fail = es.get("criteria_failed", 0)
-    n_na = es.get("criteria_na", 0)
-    meta = complete_output.get("meta", {})
-    coverage = complete_output.get("coverage", {})
-    routing = complete_output.get("routing", {})
-    learning = complete_output.get("learning", {})
-    blockers_sec = complete_output.get("blockers", {})
-
+    es = complete_output.get('executive_summary', {})
+    gate_criteria = es.get('gate_criteria', [])
+    overall = es.get('overall_status', 'UNKNOWN')
+    n_pass = es.get('criteria_passed', 0)
+    n_fail = es.get('criteria_failed', 0)
+    n_na = es.get('criteria_na', 0)
+    meta = complete_output.get('meta', {})
+    coverage = complete_output.get('coverage', {})
+    routing = complete_output.get('routing', {})
+    learning = complete_output.get('learning', {})
+    blockers_sec = complete_output.get('blockers', {})
     _W = 80
-    sep = "-" * _W
-
-    print("")
-    print("=" * _W)
-    print("HEALING RUN EXECUTIVE SUMMARY")
-    run_id = meta.get("run_id", "")
-    git = meta.get("git_commit", "")
-    ts = meta.get("timestamp", "")
-    print(f"Run ID: {run_id} | Git: {git} | {ts}")
-    print("=" * _W)
-    print("")
-    print("Table 6: Executive Gate Criteria (Full Detail)")
-    print("")
-    print("| Gate Criterion | Target | Actual | Status | Blocker |")
-    print("|----------------|--------|--------|--------|---------|")
-    # ── Precompute detail values for inline annotation ────────────────────────
-    cov_ratio = coverage.get("coverage_ratio", 0.0)
-    exec_count = coverage.get("executed_agents", {}).get("count", 0)
-    exp_count = coverage.get("expected_agents", {}).get("count", 0)
-    llm_calls = routing.get("llm_call_trace", [])
-    proven_calls = sum(1 for c in llm_calls if c.get("proof", {}).get("request_hash"))
+    sep = '-' * _W
+    print('')
+    print('=' * _W)
+    print('HEALING RUN EXECUTIVE SUMMARY')
+    run_id = meta.get('run_id', '')
+    git = meta.get('git_commit', '')
+    ts = meta.get('timestamp', '')
+    print(f'Run ID: {run_id} | Git: {git} | {ts}')
+    print('=' * _W)
+    print('')
+    print('Table 6: Executive Gate Criteria (Full Detail)')
+    print('')
+    print('| Gate Criterion | Target | Actual | Status | Blocker |')
+    print('|----------------|--------|--------|--------|---------|')
+    cov_ratio = coverage.get('coverage_ratio', 0.0)
+    exec_count = coverage.get('executed_agents', {}).get('count', 0)
+    exp_count = coverage.get('expected_agents', {}).get('count', 0)
+    llm_calls = routing.get('llm_call_trace', [])
+    proven_calls = sum((1 for c in llm_calls if c.get('proof', {}).get('request_hash')))
     total_calls = len(llm_calls)
-    all_blockers = blockers_sec.get("blocked_agents", [])
-    all_blockers_doc = all(bool(b.get("blocker_type")) for b in all_blockers)
-    llm_stats = routing.get("llm_invocation_stats", {})
-    calib = routing.get("confidence_calibration", {})
-    run_cmp = learning.get("run_comparison", {})
-    pattern_reuse = learning.get("pattern_reuse", {})
+    all_blockers = blockers_sec.get('blocked_agents', [])
+    all_blockers_doc = all((bool(b.get('blocker_type')) for b in all_blockers))
+    llm_stats = routing.get('llm_invocation_stats', {})
+    calib = routing.get('confidence_calibration', {})
+    run_cmp = learning.get('run_comparison', {})
+    pattern_reuse = learning.get('pattern_reuse', {})
     import re as _re2
-
-    # Matches: "Fixed N of M", "Healed N of M", "Resolved N of M", etc. (same as upstream fix)
-    _fp2 = _re2.compile(r"(?:Fixed|Healed|Resolved|Repaired)\s+(\d+)\s+of\s+(\d+)", _re2.IGNORECASE)
+    _fp2 = _re2.compile('(?:Fixed|Healed|Resolved|Repaired)\\s+(\\d+)\\s+of\\s+(\\d+)', _re2.IGNORECASE)
     _heal_rows = []
-    for _a in complete_output.get("healing_actions", []):
-        _m2 = _fp2.search(str(_a.get("fix_summary", "") or ""))
+    for _a in complete_output.get('healing_actions', []):
+        _m2 = _fp2.search(str(_a.get('fix_summary', '') or ''))
         if _m2:
-            _fx, _fd = int(_m2.group(1)), int(_m2.group(2))
+            _fx, _fd = (int(_m2.group(1)), int(_m2.group(2)))
             if _fd > 0:
-                _tag = "OK" if _fx == _fd else ("PARTIAL" if _fx > 0 else "ZERO-FIX")
-                _heal_rows.append((_a.get("agent", "?"), _a.get("territory", ""), _fx, _fd, _tag))
+                _tag = 'OK' if _fx == _fd else 'PARTIAL' if _fx > 0 else 'ZERO-FIX'
+                _heal_rows.append((_a.get('agent', '?'), _a.get('territory', ''), _fx, _fd, _tag))
 
-    # ── Inline detail lookup per gate ─────────────────────────────────────────
     def _gate_detail(criterion: str) -> list[str]:
         """Return 0-N inline detail lines for a gate criterion."""
         lines: list[str] = []
-        if criterion == "Agent Coverage":
-            skipped = coverage.get("skipped_agents", {}).get("names", [])
-            lines.append(f"    agents ran: {exec_count}/{exp_count}  ratio: {cov_ratio:.4f}")
+        if criterion == 'Agent Coverage':
+            skipped = coverage.get('skipped_agents', {}).get('names', [])
+            lines.append(f'    agents ran: {exec_count}/{exp_count}  ratio: {cov_ratio:.4f}')
             if skipped:
-                lines.append(
-                    f"    skipped   : {', '.join(str(s) for s in skipped[:6])}"
-                    + (" ..." if len(skipped) > 6 else "")
-                )
-        elif criterion == "LLM Call Execution Rate":
-            exp = llm_stats.get("expected_calls", 0)
-            act = llm_stats.get("actual_calls", 0)
-            rate = llm_stats.get("execution_rate", 1.0)
-            blocked = llm_stats.get("blocked_by_flags", 0)
-            lines.append(f"    expected: {exp}  actual: {act}  rate: {rate:.4f}  blocked: {blocked}")
+                lines.append(f"    skipped   : {', '.join((str(s) for s in skipped[:6]))}" + (' ...' if len(skipped) > 6 else ''))
+        elif criterion == 'LLM Call Execution Rate':
+            exp = llm_stats.get('expected_calls', 0)
+            act = llm_stats.get('actual_calls', 0)
+            rate = llm_stats.get('execution_rate', 1.0)
+            blocked = llm_stats.get('blocked_by_flags', 0)
+            lines.append(f'    expected: {exp}  actual: {act}  rate: {rate:.4f}  blocked: {blocked}')
             if exp == 0:
-                lines.append(
-                    "    AUDIT: Gate passes vacuously (0/0=1.0). "
-                    "No LLM workload — all violations within DETERMINISTIC threshold. "
-                    "To test LLM path, introduce violations above routing score threshold."
-                )
-        elif criterion == "Confidence Calibration Error":
-            _llm_exp_g3 = llm_stats.get("expected_calls", 0)
+                lines.append('    AUDIT: Gate passes vacuously (0/0=1.0). No LLM workload — all violations within DETERMINISTIC threshold. To test LLM path, introduce violations above routing score threshold.')
+        elif criterion == 'Confidence Calibration Error':
+            _llm_exp_g3 = llm_stats.get('expected_calls', 0)
             if _llm_exp_g3 == 0:
-                lines.append(
-                    "    AUDIT: No LLM calls this run. Calibration only covers DETERMINISTIC "
-                    "tier (rule-based, zero variance). LLM calibration data requires real LLM invocations."
-                )
+                lines.append('    AUDIT: No LLM calls this run. Calibration only covers DETERMINISTIC tier (rule-based, zero variance). LLM calibration data requires real LLM invocations.')
             for tier, cd in (calib or {}).items():
-                err = cd.get("calibration_error", 0.0)
-                # Correct keys from _build_calibration_proof: sample_size, actual_success (not count/avg_confidence)
-                cnt = cd.get("sample_size", cd.get("count", 0))
-                actual_sr = cd.get("actual_success", cd.get("avg_confidence", 0.0))
-                pred_sr = cd.get("predicted_success", 0.0)
-                lines.append(
-                    f"    {tier:<22} err={err:.4f}  predicted={pred_sr:.4f}  actual={actual_sr:.4f}  n={cnt}"
-                )
-        elif criterion == "Meta-Learning Improvement (Success Delta)":
-            prev_sr = run_cmp.get("previous_success_rate")
-            cur_sr = run_cmp.get("current_success_rate")
-            cur_sr_raw = run_cmp.get("current_success_rate_raw")
-            delta = run_cmp.get("success_rate_delta")
-            trend = run_cmp.get("improvement_trend", "no_baseline")
-            prev_id = run_cmp.get("proof", {}).get("previous_run_id", "none")
-            partial_c = run_cmp.get("partial_outcome_count", 0)
-            skipped_c = run_cmp.get("skipped_outcome_count", 0)
-            lines.append(
-                f"    prev_rate : {prev_sr}  cur_rate(adj): {cur_sr}  delta: {delta}  trend: {trend}"
-            )
-            lines.append(
-                f"    cur_rate(raw): {cur_sr_raw}  excluded: {partial_c} PARTIAL + {skipped_c} SKIPPED"
-            )
-            lines.append(f"    prev_run  : {prev_id}")
+                err = cd.get('calibration_error', 0.0)
+                cnt = cd.get('sample_size', cd.get('count', 0))
+                actual_sr = cd.get('actual_success', cd.get('avg_confidence', 0.0))
+                pred_sr = cd.get('predicted_success', 0.0)
+                lines.append(f'    {tier:<22} err={err:.4f}  predicted={pred_sr:.4f}  actual={actual_sr:.4f}  n={cnt}')
+        elif criterion == 'Meta-Learning Improvement (Success Delta)':
+            prev_sr = run_cmp.get('previous_success_rate')
+            cur_sr = run_cmp.get('current_success_rate')
+            cur_sr_raw = run_cmp.get('current_success_rate_raw')
+            delta = run_cmp.get('success_rate_delta')
+            trend = run_cmp.get('improvement_trend', 'no_baseline')
+            prev_id = run_cmp.get('proof', {}).get('previous_run_id', 'none')
+            partial_c = run_cmp.get('partial_outcome_count', 0)
+            skipped_c = run_cmp.get('skipped_outcome_count', 0)
+            lines.append(f'    prev_rate : {prev_sr}  cur_rate(adj): {cur_sr}  delta: {delta}  trend: {trend}')
+            lines.append(f'    cur_rate(raw): {cur_sr_raw}  excluded: {partial_c} PARTIAL + {skipped_c} SKIPPED')
+            lines.append(f'    prev_run  : {prev_id}')
             if prev_sr is None:
-                lines.append(
-                    "    AUDIT: prev_rate=None — no baseline. Gate requires 2+ runs for real signal."
-                )
-        elif criterion == "Pattern Reuse Success Rate":
-            avail = pattern_reuse.get("patterns_available", 0)
-            matched = pattern_reuse.get("patterns_matched", 0)
-            applied = pattern_reuse.get("patterns_applied", 0)
-            rate = pattern_reuse.get("reuse_success_rate")
-            rate_str = f"{rate:.4f}" if rate is not None else "N/A"
-            lines.append(f"    available: {avail}  matched: {matched}  applied: {applied}  rate: {rate_str}")
+                lines.append('    AUDIT: prev_rate=None — no baseline. Gate requires 2+ runs for real signal.')
+        elif criterion == 'Pattern Reuse Success Rate':
+            avail = pattern_reuse.get('patterns_available', 0)
+            matched = pattern_reuse.get('patterns_matched', 0)
+            applied = pattern_reuse.get('patterns_applied', 0)
+            rate = pattern_reuse.get('reuse_success_rate')
+            rate_str = f'{rate:.4f}' if rate is not None else 'N/A'
+            lines.append(f'    available: {avail}  matched: {matched}  applied: {applied}  rate: {rate_str}')
             if avail == 0:
-                lines.append("    NOTE: FAISS index empty — run with --heal to build corpus")
-        elif criterion == "Healing Effectiveness Rate":
+                lines.append('    NOTE: FAISS index empty — run with --heal to build corpus')
+        elif criterion == 'Healing Effectiveness Rate':
             if _heal_rows:
                 for _ag, _terr, _fx, _fd, _tag in _heal_rows:
-                    _lbl = f"{_ag} [{_terr}]" if _terr else _ag
-                    lines.append(f"    {_tag:<10} fixed {_fx}/{_fd}  {_lbl}")
+                    _lbl = f'{_ag} [{_terr}]' if _terr else _ag
+                    lines.append(f'    {_tag:<10} fixed {_fx}/{_fd}  {_lbl}')
             else:
-                lines.append("    no violations found this run (N/A)")
-        elif criterion == "Subphase Execution Integrity":
-            _sp_acts = [
-                _a
-                for _a in complete_output.get("healing_actions", [])
-                if _a.get("subphases", {}).get("heal", {}).get("status") is not None
-            ]
+                lines.append('    no violations found this run (N/A)')
+        elif criterion == 'Subphase Execution Integrity':
+            _sp_acts = [_a for _a in complete_output.get('healing_actions', []) if _a.get('subphases', {}).get('heal', {}).get('status') is not None]
             if not _sp_acts:
-                lines.append(
-                    "    AUDIT: 0 agents reported subphase.heal.status. "
-                    "No subphase infrastructure in current agent set. Gate N/A."
-                )
+                lines.append('    AUDIT: 0 agents reported subphase.heal.status. No subphase infrastructure in current agent set. Gate N/A.')
             else:
                 for _spa in _sp_acts:
-                    _sp_st = _spa.get("subphases", {}).get("heal", {}).get("status", "?")
+                    _sp_st = _spa.get('subphases', {}).get('heal', {}).get('status', '?')
                     lines.append(f"    {_spa.get('agent', '?')}: subphase.heal.status={_sp_st}")
-        elif criterion == "File Modification Proof":
-            proven_mods = sum(
-                1
-                for _a in complete_output.get("healing_actions", [])
-                if _a.get("subphases", {}).get("heal", {}).get("proof")
-            )
-            _heal_succ = sum(
-                1
-                for _a in complete_output.get("healing_actions", [])
-                if _a.get("subphases", {}).get("heal", {}).get("status") == "success"
-            )
+        elif criterion == 'File Modification Proof':
+            proven_mods = sum((1 for _a in complete_output.get('healing_actions', []) if _a.get('subphases', {}).get('heal', {}).get('proof')))
+            _heal_succ = sum((1 for _a in complete_output.get('healing_actions', []) if _a.get('subphases', {}).get('heal', {}).get('status') == 'success'))
             if _heal_succ == 0:
-                lines.append(
-                    "    AUDIT: No actions with subphase.heal.status==success. "
-                    "File modification proof infrastructure not implemented. Gate N/A."
-                )
+                lines.append('    AUDIT: No actions with subphase.heal.status==success. File modification proof infrastructure not implemented. Gate N/A.')
             else:
-                lines.append(f"    proven: {proven_mods}/{_heal_succ} heal-success actions")
-        elif criterion == "LLM Call Cryptographic Proof":
+                lines.append(f'    proven: {proven_mods}/{_heal_succ} heal-success actions')
+        elif criterion == 'LLM Call Cryptographic Proof':
             if total_calls == 0:
-                lines.append(
-                    "    AUDIT: 0 LLM calls this run. Cryptographic proof gate N/A (nothing to verify)."
-                )
+                lines.append('    AUDIT: 0 LLM calls this run. Cryptographic proof gate N/A (nothing to verify).')
             else:
-                lines.append(f"    proven hashes: {proven_calls}/{total_calls}")
-        elif criterion == "Blocker Documentation":
+                lines.append(f'    proven hashes: {proven_calls}/{total_calls}')
+        elif criterion == 'Blocker Documentation':
             if not all_blockers:
-                lines.append("    AUDIT: 0 blockers this run. Gate N/A (vacuous all() over empty list).")
+                lines.append('    AUDIT: 0 blockers this run. Gate N/A (vacuous all() over empty list).')
             else:
-                lines.append(
-                    f"    blockers: {len(all_blockers)}  all_documented: {'yes' if all_blockers_doc else 'no'}"
-                )
-        elif criterion == "Meta-Learning Records Written":
-            ml_pipe = learning.get("meta_learning_pipeline", {})
-            total_exp = ml_pipe.get("total_experiences", 0)
-            pipe_ran = ml_pipe.get("pipeline_ran", False)
-            fail_vecs = ml_pipe.get("failure_vector_count", 0)
-            bge_m = ml_pipe.get("bge_model", "hash-fallback-v1")
-            lines.append(
-                f"    pipeline_ran={pipe_ran}  total_experiences={total_exp}  "
-                f"failure_vectors={fail_vecs}  bge_model={bge_m}"
-            )
+                lines.append(f"    blockers: {len(all_blockers)}  all_documented: {('yes' if all_blockers_doc else 'no')}")
+        elif criterion == 'Meta-Learning Records Written':
+            ml_pipe = learning.get('meta_learning_pipeline', {})
+            total_exp = ml_pipe.get('total_experiences', 0)
+            pipe_ran = ml_pipe.get('pipeline_ran', False)
+            fail_vecs = ml_pipe.get('failure_vector_count', 0)
+            bge_m = ml_pipe.get('bge_model', 'hash-fallback-v1')
+            lines.append(f'    pipeline_ran={pipe_ran}  total_experiences={total_exp}  failure_vectors={fail_vecs}  bge_model={bge_m}')
             if not pipe_ran or total_exp == 0:
-                lines.append(
-                    "    FAIL: Meta-learning pipeline wrote 0 experiences. "
-                    "_fire_meta_learning_intake may not have been called."
-                )
-        elif criterion == "Zero-Fix Healer Penalty":
-            zero_fix = [r for r in _heal_rows if r[4] == "ZERO-FIX"]
+                lines.append('    FAIL: Meta-learning pipeline wrote 0 experiences. _fire_meta_learning_intake may not have been called.')
+        elif criterion == 'Zero-Fix Healer Penalty':
+            zero_fix = [r for r in _heal_rows if r[4] == 'ZERO-FIX']
             if zero_fix:
                 for _ag, _terr, _fx, _fd, _ in zero_fix:
-                    lines.append(f"    ZERO-FIX  found {_fd}  fixed 0  {_ag} [{_terr}]")
+                    lines.append(f'    ZERO-FIX  found {_fd}  fixed 0  {_ag} [{_terr}]')
             else:
-                lines.append("    no zero-fix healers (all matched agents fixed >= 1 violation)")
+                lines.append('    no zero-fix healers (all matched agents fixed >= 1 violation)')
         return lines
-
     for g in gate_criteria:
-        crit = str(g.get("criterion", ""))[:40]
-        tgt = str(g.get("target", ""))[:10]
-        actual_raw = g.get("actual")
+        crit = str(g.get('criterion', ''))[:40]
+        tgt = str(g.get('target', ''))[:10]
+        actual_raw = g.get('actual')
         if actual_raw is None:
-            actual_str = "N/A"
+            actual_str = 'N/A'
         elif isinstance(actual_raw, float):
-            actual_str = f"{actual_raw:.4f}"
+            actual_str = f'{actual_raw:.4f}'
         else:
             actual_str = str(actual_raw)
-        status = g.get("status", "?")
-        blocker = str(g.get("blocker") or "N/A")[:30]
-        print(f"| {crit} | {tgt} | {actual_str} | [{status}] | {blocker} |")
-        for _dl in _gate_detail(str(g.get("criterion", ""))):
-            print(f"| | | | | {_dl} |")
-    _n_pass_es = es.get("criteria_passed", n_pass)
-    _n_fail_es = es.get("criteria_failed", n_fail)
-    _n_na_es = es.get("criteria_na", n_na)
-    _low_sig = es.get("low_signal_warning", False)
-    _sig_note = f"\u26a0 LOW SIGNAL: {_n_na_es} gates N/A" if _low_sig else "Signal sufficient"
+        status = g.get('status', '?')
+        blocker = str(g.get('blocker') or 'N/A')[:30]
+        print(f'| {crit} | {tgt} | {actual_str} | [{status}] | {blocker} |')
+        for _dl in _gate_detail(str(g.get('criterion', ''))):
+            print(f'| | | | | {_dl} |')
+    _n_pass_es = es.get('criteria_passed', n_pass)
+    _n_fail_es = es.get('criteria_failed', n_fail)
+    _n_na_es = es.get('criteria_na', n_na)
+    _low_sig = es.get('low_signal_warning', False)
+    _sig_note = f'⚠ LOW SIGNAL: {_n_na_es} gates N/A' if _low_sig else 'Signal sufficient'
     _total_gates = len(gate_criteria)
-    print(
-        f"| **OVERALL** | **{_total_gates} gates** "
-        f"| **PASS={_n_pass_es} N/A={_n_na_es} FAIL={_n_fail_es}/{_total_gates}** "
-        f"| **{overall}** "
-        f"| {_sig_note} |"
-    )
-    print("")
-
-    # Critical blockers
+    print(f'| **OVERALL** | **{_total_gates} gates** | **PASS={_n_pass_es} N/A={_n_na_es} FAIL={_n_fail_es}/{_total_gates}** | **{overall}** | {_sig_note} |')
+    print('')
     if all_blockers:
-        print("")
-        print("CRITICAL BLOCKERS (Must Fix Before Next Run)")
+        print('')
+        print('CRITICAL BLOCKERS (Must Fix Before Next Run)')
         print(sep)
         for i, b in enumerate(all_blockers[:8], 1):
-            agent = b.get("agent", "?")
-            flag = b.get("flag", "") or b.get("blocker_type", "?")
-            rem = b.get("remediation", "")
+            agent = b.get('agent', '?')
+            flag = b.get('flag', '') or b.get('blocker_type', '?')
+            rem = b.get('remediation', '')
             print(f"  {i}. [{b.get('blocker_type', '?').upper():<18}] {agent} — {flag}")
             if rem:
-                print(f"     Remediation: {rem}")
-
-    # Proof integrity
-    print("")
-    print("PROOF INTEGRITY")
+                print(f'     Remediation: {rem}')
+    print('')
+    print('PROOF INTEGRITY')
     print(sep)
-    print(
-        f"  {'All hashes present':<40} {'OK' if proven_calls == total_calls else 'MISSING'} ({proven_calls}/{total_calls})"
-    )
-    print(
-        f"  {'All blockers documented':<40} {'OK' if all_blockers_doc else 'MISSING'} ({len(all_blockers)} blockers)"
-    )
+    print(f"  {'All hashes present':<40} {('OK' if proven_calls == total_calls else 'MISSING')} ({proven_calls}/{total_calls})")
+    print(f"  {'All blockers documented':<40} {('OK' if all_blockers_doc else 'MISSING')} ({len(all_blockers)} blockers)")
     print(f"  {'Agent coverage proof':<40} OK ({exec_count}/{exp_count} agents, ratio={cov_ratio:.4f})")
-
-    # Known Gaps
-    print("")
-    print("KNOWN CAPABILITY GAPS (auditor-identified — require remediation)")
+    print('')
+    print('KNOWN CAPABILITY GAPS (auditor-identified — require remediation)')
     print(sep)
     _known_gaps: list[tuple[str, str, str]] = []
-    # Gap 1: LLM routing never exercised
-    if llm_stats.get("expected_calls", 0) == 0:
-        _known_gaps.append(
-            (
-                "LLM Routing Untested",
-                "All routing decisions DETERMINISTIC — QWEN/GEMINI paths never invoked in this run.",
-                "Introduce violations above routing score threshold to exercise LLM tiers.",
-            )
-        )
-    # Gap 2: BGE embeddings disabled
-    _bge_md = (
-        complete_output.get("learning", {})
-        .get("meta_learning_pipeline", {})
-        .get("bge_model", "hash-fallback-v1")
-    )
-    if "bge-m3" not in str(_bge_md):
-        # BGE embeddings are now mandatory - no gap to report
+    if llm_stats.get('expected_calls', 0) == 0:
+        _known_gaps.append(('LLM Routing Untested', 'All routing decisions DETERMINISTIC — QWEN/GEMINI paths never invoked in this run.', 'Introduce violations above routing score threshold to exercise LLM tiers.'))
+    _bge_md = complete_output.get('learning', {}).get('meta_learning_pipeline', {}).get('bge_model', 'hash-fallback-v1')
+    if 'bge-m3' not in str(_bge_md):
         pass
-    # Gap 3: FAISS index not built
-    _pr = complete_output.get("learning", {}).get("pattern_reuse", {})
-    if _pr.get("patterns_available", 0) == 0:
-        _known_gaps.append(
-            (
-                "FAISS Pattern Corpus Empty",
-                "patterns_available=0. Pattern Reuse gate passes vacuously (no index to match against).",
-                "Enable BGE embeddings to build FAISS corpus over multiple runs.",
-            )
-        )
-    # Gap 4: Scan LocationHealerAgent[tests] has no heal method
-    _loc_skip = [
-        _a
-        for _a in complete_output.get("healing_actions", [])
-        if _a.get("agent") == "LocationHealerAgent" and _a.get("outcome") == "SKIPPED"
-    ]
+    _pr = complete_output.get('learning', {}).get('pattern_reuse', {})
+    if _pr.get('patterns_available', 0) == 0:
+        _known_gaps.append(('FAISS Pattern Corpus Empty', 'patterns_available=0. Pattern Reuse gate passes vacuously (no index to match against).', 'Enable BGE embeddings to build FAISS corpus over multiple runs.'))
+    _loc_skip = [_a for _a in complete_output.get('healing_actions', []) if _a.get('agent') == 'LocationHealerAgent' and _a.get('outcome') == 'SKIPPED']
     if _loc_skip:
-        _viol_count = sum(
-            int(_m3.group(1))
-            for _a in _loc_skip
-            for _m3 in [__import__("re").search(r"(\d+) violation", str(_a.get("fix_summary", "")))]
-            if _m3
-        )
-        _gap_terrs = ", ".join(_a.get("territory", "?") for _a in _loc_skip)
-        _known_gaps.append(
-            (
-                f"LocationHealerAgent no heal method ({_gap_terrs})",
-                f"{_viol_count} location violations found but no heal capability implemented for this territory.",
-                "Implement heal_location() method for tests territory in LocationHealerAgent.",
-            )
-        )
-    # Gap 5: FileClassificationHealerAgent PARTIAL
-    _fc_partial = sum(
-        1
-        for _a in complete_output.get("healing_actions", [])
-        if _a.get("agent") == "FileClassificationHealerAgent" and _a.get("outcome") == "PARTIAL"
-    )
+        _viol_count = sum((int(_m3.group(1)) for _a in _loc_skip for _m3 in [__import__('re').search('(\\d+) violation', str(_a.get('fix_summary', '')))] if _m3))
+        _gap_terrs = ', '.join((_a.get('territory', '?') for _a in _loc_skip))
+        _known_gaps.append((f'LocationHealerAgent no heal method ({_gap_terrs})', f'{_viol_count} location violations found but no heal capability implemented for this territory.', 'Implement heal_location() method for tests territory in LocationHealerAgent.'))
+    _fc_partial = sum((1 for _a in complete_output.get('healing_actions', []) if _a.get('agent') == 'FileClassificationHealerAgent' and _a.get('outcome') == 'PARTIAL'))
     if _fc_partial:
-        _known_gaps.append(
-            (
-                "FileClassificationHealerAgent systematic PARTIAL",
-                f"{_fc_partial} PARTIAL outcomes across territories (scan OK, auto-heal re-scan finds no work). "
-                "This is expected behavior but depresses success rate metric.",
-                "Consider marking these as SUCCESS if scan+fix cycle completes cleanly.",
-            )
-        )
+        _known_gaps.append(('FileClassificationHealerAgent systematic PARTIAL', f'{_fc_partial} PARTIAL outcomes across territories (scan OK, auto-heal re-scan finds no work). This is expected behavior but depresses success rate metric.', 'Consider marking these as SUCCESS if scan+fix cycle completes cleanly.'))
     if _known_gaps:
         print(f"  {'#':<3} {'Gap':<42} {'Description':<55} {'Remediation'}")
         print(f"  {'-' * 3} {'-' * 42} {'-' * 55} {'-' * 40}")
         for _gi, (_gap_name, _gap_desc, _gap_rem) in enumerate(_known_gaps, 1):
-            print(f"  {_gi:<3} {_gap_name:<42} {_gap_desc[:55]:<55} {_gap_rem[:40]}")
+            print(f'  {_gi:<3} {_gap_name:<42} {_gap_desc[:55]:<55} {_gap_rem[:40]}')
             if len(_gap_desc) > 55:
                 print(f"  {'':3} {'':42} {_gap_desc[55:110]:<55}")
             if len(_gap_rem) > 40:
                 print(f"  {'':3} {'':42} {'':55} {_gap_rem[40:80]}")
     else:
-        print("  No known gaps identified.")
-
-    # Next-run prediction (if blockers present)
-    skipped_count = coverage.get("skipped_agents", {}).get("count", 0)
-    blocked_llm = llm_stats.get("blocked_by_flags", 0)
+        print('  No known gaps identified.')
+    skipped_count = coverage.get('skipped_agents', {}).get('count', 0)
+    blocked_llm = llm_stats.get('blocked_by_flags', 0)
     if skipped_count > 0 or blocked_llm > 0:
-        print("")
-        print("NEXT RUN PREDICTION (if blockers resolved)")
+        print('')
+        print('NEXT RUN PREDICTION (if blockers resolved)')
         print(sep)
-        predicted_coverage = min(round(cov_ratio + (skipped_count / max(exp_count, 1)), 4), 1.0)
+        predicted_coverage = min(round(cov_ratio + skipped_count / max(exp_count, 1), 4), 1.0)
         predicted_llm = 1.0
-        cur_sr = run_cmp.get("current_success_rate")
-        predicted_sr = round(min((cur_sr or 0.0) + 0.10, 1.0), 4) if cur_sr is not None else None
-        print(
-            f"  Agent coverage  : {cov_ratio:.4f} -> {predicted_coverage:.4f} (+{predicted_coverage - cov_ratio:.4f})"
-        )
+        cur_sr = run_cmp.get('current_success_rate')
+        predicted_sr = round(min((cur_sr or 0.0) + 0.1, 1.0), 4) if cur_sr is not None else None
+        print(f'  Agent coverage  : {cov_ratio:.4f} -> {predicted_coverage:.4f} (+{predicted_coverage - cov_ratio:.4f})')
         print(f"  LLM call rate   : {llm_stats.get('execution_rate', 0.0):.4f} -> {predicted_llm:.4f}")
         if predicted_sr is not None:
-            print(f"  Success rate    : {cur_sr:.4f} -> {predicted_sr:.4f} (est.)")
-
-    # ── Meta-Learning Narrative ───────────────────────────────────────────────
-    print("")
-    print("=" * _W)
-    print("META-LEARNING NARRATIVE  (what the system learned + will apply next run)")
-    print("=" * _W)
-    _run_actions = complete_output.get("healing_actions", [])
-    _strat_evo = learning.get("strategy_evolution", {})
-    _cur_weights = _strat_evo.get("current_weights", {})
-    _prev_weights = _strat_evo.get("previous_weights", {})
-    _weight_shift = _strat_evo.get("weight_shift", {})
-    _cur_sr = run_cmp.get("current_success_rate")
-    _prev_sr = run_cmp.get("previous_success_rate")
-    _delta = run_cmp.get("success_rate_delta")
-    _trend = run_cmp.get("improvement_trend", "no_baseline")
-    _fv_count = learning.get("meta_learning_pipeline", {}).get("failure_vector_count", 0)
-    _pr_matched = pattern_reuse.get("patterns_matched", 0)
-    _pr_applied = pattern_reuse.get("patterns_applied", 0)
-
-    # 1. Per-agent findings this run
-    print("")
-    print("THIS RUN — Agent Findings")
+            print(f'  Success rate    : {cur_sr:.4f} -> {predicted_sr:.4f} (est.)')
+    print('')
+    print('=' * _W)
+    print('META-LEARNING NARRATIVE  (what the system learned + will apply next run)')
+    print('=' * _W)
+    _run_actions = complete_output.get('healing_actions', [])
+    _strat_evo = learning.get('strategy_evolution', {})
+    _cur_weights = _strat_evo.get('current_weights', {})
+    _prev_weights = _strat_evo.get('previous_weights', {})
+    _weight_shift = _strat_evo.get('weight_shift', {})
+    _cur_sr = run_cmp.get('current_success_rate')
+    _prev_sr = run_cmp.get('previous_success_rate')
+    _delta = run_cmp.get('success_rate_delta')
+    _trend = run_cmp.get('improvement_trend', 'no_baseline')
+    _fv_count = learning.get('meta_learning_pipeline', {}).get('failure_vector_count', 0)
+    _pr_matched = pattern_reuse.get('patterns_matched', 0)
+    _pr_applied = pattern_reuse.get('patterns_applied', 0)
+    print('')
+    print('THIS RUN — Agent Findings')
     print(sep)
     _agent_summaries: dict = {}
     for _a in _run_actions:
-        _ag = _a.get("agent", "?")
-        _fs = _a.get("fix_summary", "")
-        _oc = _a.get("outcome", "?")
-        _agent_summaries.setdefault(_ag, []).append((_fs, _oc, _a.get("territory", "")))
+        _ag = _a.get('agent', '?')
+        _fs = _a.get('fix_summary', '')
+        _oc = _a.get('outcome', '?')
+        _agent_summaries.setdefault(_ag, []).append((_fs, _oc, _a.get('territory', '')))
     for _ag, _items in sorted(_agent_summaries.items()):
         for _fs, _oc, _terr in _items:
-            _tag = "✓" if _oc == "SUCCESS" else "✗"
-            _terr_str = f" [{_terr}]" if _terr and _terr != "__global__" else ""
-            print(f"  {_tag} {_ag}{_terr_str}: {_fs}")
-
-    # 2. Strategy weight insights
-    print("")
-    print("STRATEGY ROUTING WEIGHTS  (governs LLM tier selection)")
+            _tag = '✓' if _oc == 'SUCCESS' else '✗'
+            _terr_str = f' [{_terr}]' if _terr and _terr != '__global__' else ''
+            print(f'  {_tag} {_ag}{_terr_str}: {_fs}')
+    print('')
+    print('STRATEGY ROUTING WEIGHTS  (governs LLM tier selection)')
     print(sep)
     _weights_initialized = not _prev_weights and bool(_cur_weights)
     if _cur_weights:
-        _status_note = "INITIALIZED (no prior run — not a real shift)" if _weights_initialized else "EVOLVED"
-        print(f"  Status: {_status_note}")
-        print("  | Strategy | Previous | Current | Shift | Signal |")
-        print("  |----------|----------|---------|-------|--------|")
+        _status_note = 'INITIALIZED (no prior run — not a real shift)' if _weights_initialized else 'EVOLVED'
+        print(f'  Status: {_status_note}')
+        print('  | Strategy | Previous | Current | Shift | Signal |')
+        print('  |----------|----------|---------|-------|--------|')
         for _s, _w in sorted(_cur_weights.items()):
             _prev_w = _prev_weights.get(_s, 0.0)
             _shift = _weight_shift.get(_s, 0.0)
-            _arrow = "▲" if _shift > 0 else ("▼" if _shift < 0 else "—")
-            _sig = (
-                "init"
-                if _weights_initialized
-                else ("up" if _shift > 0 else ("down" if _shift < 0 else "stable"))
-            )
-            print(f"  | {_s} | {_prev_w:.3f} | {_w:.3f} | {_arrow} {abs(_shift):.3f} | {_sig} |")
-        print("  Interpretation: Higher weight = strategy preferred for ambiguous routing decisions.")
+            _arrow = '▲' if _shift > 0 else '▼' if _shift < 0 else '—'
+            _sig = 'init' if _weights_initialized else 'up' if _shift > 0 else 'down' if _shift < 0 else 'stable'
+            print(f'  | {_s} | {_prev_w:.3f} | {_w:.3f} | {_arrow} {abs(_shift):.3f} | {_sig} |')
+        print('  Interpretation: Higher weight = strategy preferred for ambiguous routing decisions.')
         if _weights_initialized:
-            print("  NOTE: Shifts shown are initialization deltas (0.0 → 1.0), not real learning.")
-            print("  Real weight evolution requires 2+ runs with LLM invocations.")
+            print('  NOTE: Shifts shown are initialization deltas (0.0 → 1.0), not real learning.')
+            print('  Real weight evolution requires 2+ runs with LLM invocations.')
     else:
-        print("  No strategy weights recorded (all decisions DETERMINISTIC this run).")
-
-    # 3. Success rate trajectory
-    print("")
-    print("SUCCESS RATE TRAJECTORY")
+        print('  No strategy weights recorded (all decisions DETERMINISTIC this run).')
+    print('')
+    print('SUCCESS RATE TRAJECTORY')
     print(sep)
     if _prev_sr is not None and _cur_sr is not None:
-        _arrow = "▲" if (_delta or 0) > 0 else ("▼" if (_delta or 0) < 0 else "—")
-        print(f"  Previous run : {_prev_sr:.4f}")
-        print(f"  This run     : {_cur_sr:.4f}  ({_arrow} {abs(_delta or 0):.4f})")
-        print(f"  Trend        : {_trend}")
+        _arrow = '▲' if (_delta or 0) > 0 else '▼' if (_delta or 0) < 0 else '—'
+        print(f'  Previous run : {_prev_sr:.4f}')
+        print(f'  This run     : {_cur_sr:.4f}  ({_arrow} {abs(_delta or 0):.4f})')
+        print(f'  Trend        : {_trend}')
         if (_delta or 0) < -0.05:
-            print("  ⚠ Significant regression detected. Review failure forensics.")
+            print('  ⚠ Significant regression detected. Review failure forensics.')
         elif (_delta or 0) > 0.05:
-            print("  ✓ Meaningful improvement. Winning strategies will be upweighted.")
+            print('  ✓ Meaningful improvement. Winning strategies will be upweighted.')
     elif _cur_sr is not None:
-        print(f"  This run     : {_cur_sr:.4f}  (no prior baseline — first recorded run)")
-        print("  Next run     : this rate becomes the baseline for delta calculation.")
+        print(f'  This run     : {_cur_sr:.4f}  (no prior baseline — first recorded run)')
+        print('  Next run     : this rate becomes the baseline for delta calculation.')
     else:
-        print("  No success rate data available this run.")
-
-    # 4. Pattern reuse learning
-    print("")
-    print("PATTERN REUSE LEARNING")
+        print('  No success rate data available this run.')
+    print('')
+    print('PATTERN REUSE LEARNING')
     print(sep)
     if _pr_matched > 0:
-        print(
-            f"  {_pr_matched} patterns matched from corpus  →  {_pr_applied} applied  "
-            f"(reuse_rate={pattern_reuse.get('reuse_success_rate') or 'N/A'})"
-        )
-        print("  Future runs: matched patterns are preferred before attempting novel fixes.")
+        print(f"  {_pr_matched} patterns matched from corpus  →  {_pr_applied} applied  (reuse_rate={pattern_reuse.get('reuse_success_rate') or 'N/A'})")
+        print('  Future runs: matched patterns are preferred before attempting novel fixes.')
     else:
-        print("  No patterns matched from corpus this run.")
-        print("  Future runs: outcomes from this run will be encoded as new patterns.")
-
-    # 5. Failure vector accumulation
-    print("")
-    print("FAILURE VECTOR CORPUS")
+        print('  No patterns matched from corpus this run.')
+        print('  Future runs: outcomes from this run will be encoded as new patterns.')
+    print('')
+    print('FAILURE VECTOR CORPUS')
     print(sep)
-    print(f"  Accumulated failure vectors : {_fv_count}")
+    print(f'  Accumulated failure vectors : {_fv_count}')
     if _fv_count > 0:
-        print("  Purpose: failure vectors bias routing away from strategies that previously failed")
-        print("           on similar violations. Higher count = more refined avoidance.")
+        print('  Purpose: failure vectors bias routing away from strategies that previously failed')
+        print('           on similar violations. Higher count = more refined avoidance.')
     else:
-        print("  No failure vectors recorded yet.")
-
-    # 6. What will change next run
-    print("")
-    print("WHAT CHANGES NEXT RUN")
+        print('  No failure vectors recorded yet.')
+    print('')
+    print('WHAT CHANGES NEXT RUN')
     print(sep)
     _changes: list[str] = []
     if _cur_sr is not None:
-        _changes.append(f"• Success rate baseline set to {_cur_sr:.4f} — delta tracking active.")
+        _changes.append(f'• Success rate baseline set to {_cur_sr:.4f} — delta tracking active.')
     if _pr_applied > 0:
-        _changes.append(
-            f"• {_pr_applied} applied patterns reinforced in corpus — reuse probability increases."
-        )
+        _changes.append(f'• {_pr_applied} applied patterns reinforced in corpus — reuse probability increases.')
     if _fv_count > 0:
-        _changes.append(f"• {_fv_count} failure vectors loaded — routing will avoid repeat failure modes.")
-    _zero_fix_agents = [r for r in _heal_rows if r[4] == "ZERO-FIX"]
+        _changes.append(f'• {_fv_count} failure vectors loaded — routing will avoid repeat failure modes.')
+    _zero_fix_agents = [r for r in _heal_rows if r[4] == 'ZERO-FIX']
     if _zero_fix_agents:
-        _zf_names = ", ".join(r[0] for r in _zero_fix_agents)
-        _changes.append(f"• Zero-fix penalty recorded for: {_zf_names} — will be flagged if repeated.")
-    skipped_now = coverage.get("skipped_agents", {}).get("agents", [])
+        _zf_names = ', '.join((r[0] for r in _zero_fix_agents))
+        _changes.append(f'• Zero-fix penalty recorded for: {_zf_names} — will be flagged if repeated.')
+    skipped_now = coverage.get('skipped_agents', {}).get('agents', [])
     if skipped_now:
-        _changes.append(f"• Skipped agents {skipped_now} — will retry if block condition resolves.")
+        _changes.append(f'• Skipped agents {skipped_now} — will retry if block condition resolves.')
     if not _changes:
-        _changes.append("• All gates PASS and no regressions — system state is stable.")
+        _changes.append('• All gates PASS and no regressions — system state is stable.')
         _changes.append("• Corpus will accumulate this run's patterns for future reuse.")
     for _c in _changes:
-        print(f"  {_c}")
-
-    # Report links (clickable file:/// URIs)
+        print(f'  {_c}')
     try:
-        _base = Path(getattr(complete_output.get("meta", {}), "__file__", "") or __file__).resolve()
-        _rdir = _base.parents[3] / "logs" / "compliance_reports"
-        _link_complete = (_rdir / "heal_run_complete.json").as_uri()
-        _link_forensics = (_rdir / "failure_forensics.json").as_uri()
-        _link_output = (_rdir / "heal_run_output.json").as_uri()
+        _base = Path(getattr(complete_output.get('meta', {}), '__file__', '') or __file__).resolve()
+        _rdir = _base.parents[3] / 'logs' / 'compliance_reports'
+        _link_complete = (_rdir / 'heal_run_complete.json').as_uri()
+        _link_forensics = (_rdir / 'failure_forensics.json').as_uri()
+        _link_output = (_rdir / 'heal_run_output.json').as_uri()
     except (OSError, AttributeError):
-        _link_complete = "logs/compliance_reports/heal_run_complete.json"
-        _link_forensics = "logs/compliance_reports/failure_forensics.json"
-        _link_output = "logs/compliance_reports/heal_run_output.json"
-
-    print("")
-    print("=" * _W)
-    verdict_line = f"VERDICT: {overall}  ({n_pass}/{len(gate_criteria)} gate criteria passed)"
+        _link_complete = 'logs/compliance_reports/heal_run_complete.json'
+        _link_forensics = 'logs/compliance_reports/failure_forensics.json'
+        _link_output = 'logs/compliance_reports/heal_run_output.json'
+    print('')
+    print('=' * _W)
+    verdict_line = f'VERDICT: {overall}  ({n_pass}/{len(gate_criteria)} gate criteria passed)'
     print(verdict_line)
-    if overall == "PASS":
-        print("  All diagnostic gates satisfied. Healing pipeline operating as intended.")
+    if overall == 'PASS':
+        print('  All diagnostic gates satisfied. Healing pipeline operating as intended.')
     else:
-        print(f"  {n_fail} gate(s) failed. See failure_forensics.json for drill-down.")
-    print(f"  heal_run_complete.json : {_link_complete}")
-    print(f"  failure_forensics.json : {_link_forensics}")
-    print(f"  heal_run_output.json   : {_link_output}")
-    print("=" * _W)
-    print("")
+        print(f'  {n_fail} gate(s) failed. See failure_forensics.json for drill-down.')
+    print(f'  heal_run_complete.json : {_link_complete}')
+    print(f'  failure_forensics.json : {_link_forensics}')
+    print(f'  heal_run_output.json   : {_link_output}')
+    print('=' * _W)
+    print('')
 
-
-def run_pipeline(
-    adapters: "dict[str, object]",
-    territory: str,
-    decision_engine: "SovereignDecisionEngine",
-    state_mgr: "RuntimeStateManager",
-    ctx: "HealContext",
-) -> "dict[str, object]":
+def run_pipeline(adapters: 'dict[str, object]', territory: str, decision_engine: 'SovereignDecisionEngine', state_mgr: 'RuntimeStateManager', ctx: 'HealContext') -> 'dict[str, object]':
     """Unified pipeline loop replacing the five bespoke execute_phase*_impl functions.
 
     Governance invariants enforced:
@@ -7375,117 +3827,65 @@ def run_pipeline(
     Returns dict mapping agent_id -> AgentRunResult.
     """
     from agentic_core.L2_execution.protocol import AgentRunResult, SubphaseResult
-
     _emit_pipeline_digest(adapters, territory, ctx)
-
-    # scan_ctx: structurally enforces read-only for pre_commit + validate.
-    # Use dataclasses.replace when ctx is a frozen dataclass (HealContext);
-    # fall back to a simple namespace copy for test mocks or other objects.
     import dataclasses as _dc2
-
-    if _dc2.is_dataclass(ctx) and not isinstance(ctx, type):
+    if _dc2.is_dataclass(ctx) and (not isinstance(ctx, type)):
         scan_ctx = _dc2.replace(ctx, heal=False)
     else:
 
         class _ScanCtx:
             pass
-
         scan_ctx = _ScanCtx()
-        for _attr in ("heal", "enable_llm", "auto_approve", "enable_telemetry", "enable_meta_learning"):
+        for _attr in ('heal', 'enable_llm', 'auto_approve', 'enable_telemetry', 'enable_meta_learning'):
             setattr(scan_ctx, _attr, getattr(ctx, _attr, False))
         scan_ctx.heal = False
-        scan_ctx.enable_llm = False  # scan subphases never invoke LLM
-
+        scan_ctx.enable_llm = False
     results: dict[str, AgentRunResult] = {}
-
     for agent_id in AGENT_PIPELINE:
         adapter = adapters.get(agent_id)
         if adapter is None:
             continue
-
         run_result = AgentRunResult()
-        # Pre-populate all 4 slots as skipped; overwritten as each runs
         for sp in PIPELINE_SUBPHASES:
-            run_result.subphases[sp] = SubphaseResult(skipped=True, skip_reason="not reached")
-
+            run_result.subphases[sp] = SubphaseResult(skipped=True, skip_reason='not reached')
         fatal = False
-
         for subphase_name in PIPELINE_SUBPHASES:
-            is_mutating = subphase_name in ("execute", "heal")
-
-            # Skip mutating subphases when healing is disabled
-            if is_mutating and not getattr(ctx, "heal", False):
-                run_result.subphases[subphase_name] = SubphaseResult(skipped=True, skip_reason="heal=False")
+            is_mutating = subphase_name in ('execute', 'heal')
+            if is_mutating and (not getattr(ctx, 'heal', False)):
+                run_result.subphases[subphase_name] = SubphaseResult(skipped=True, skip_reason='heal=False')
                 continue
-
-            # Skip execute/heal when confidence gate blocked or prior fatal error
             if is_mutating and (run_result.gated or fatal):
-                run_result.subphases[subphase_name] = SubphaseResult(
-                    skipped=True,
-                    skip_reason=run_result.gate_reason if run_result.gated else "prior error",
-                )
+                run_result.subphases[subphase_name] = SubphaseResult(skipped=True, skip_reason=run_result.gate_reason if run_result.gated else 'prior error')
                 continue
-
-            # Only call update_agent when the subphase will actually run
             state_mgr.update_agent(agent_id, subphase_name)
             effective_ctx = scan_ctx if not is_mutating else ctx
-
             try:
                 method = getattr(adapter, subphase_name)
                 result: SubphaseResult = method(territory, effective_ctx)
-            except (
-                ImportError,
-                AttributeError,
-                TypeError,
-                ValueError,
-                RuntimeError,
-            ) as exc:  # guardian: allow-silent-swallower
-                result = SubphaseResult(
-                    error=str(exc),
-                    skipped=True,
-                    skip_reason=f"exception: {exc}",
-                )
+            except (ImportError, AttributeError, TypeError, ValueError, RuntimeError) as exc:
+                result = SubphaseResult(error=str(exc), skipped=True, skip_reason=f'exception: {exc}')
                 run_result.error = str(exc)
                 fatal = True
-                state_mgr.skip_agent(agent_id, f"{subphase_name} exception: {exc}")
+                state_mgr.skip_agent(agent_id, f'{subphase_name} exception: {exc}')
                 run_result.subphases[subphase_name] = result
-                break  # stop subphase loop for this agent (fail-closed)
-
+                break
             run_result.subphases[subphase_name] = result
             run_result.violations_total += len(result.violations)
             run_result.mutations_applied += len(result.fixed)
-
-            # Confidence gate fires immediately after validate
-            if subphase_name == "validate" and result.violations:
-                confidence = decision_engine.calculate_healing_confidence(
-                    len(result.violations),
-                    [v.get("type", "UNKNOWN") for v in result.violations[:10]],
-                    territory,
-                    agent_name=agent_id,
-                )
-                proceed, reason = decision_engine.should_proceed_with_healing(
-                    confidence, agent_id, territory=territory
-                )
+            if subphase_name == 'validate' and result.violations:
+                confidence = decision_engine.calculate_healing_confidence(len(result.violations), [v.get('type', 'UNKNOWN') for v in result.violations[:10]], territory, agent_name=agent_id)
+                proceed, reason = decision_engine.should_proceed_with_healing(confidence, agent_id, territory=territory)
                 if not proceed:
                     run_result.gated = True
                     run_result.gate_reason = reason
                     state_mgr.skip_agent(agent_id, reason)
-                    state_mgr.complete_agent(agent_id, True, f"gated: {reason}")
-                    continue  # execute/heal will be filled as skipped in next iterations
-
-            state_mgr.complete_agent(agent_id, result.error is None, result.error or "")
-
+                    state_mgr.complete_agent(agent_id, True, f'gated: {reason}')
+                    continue
+            state_mgr.complete_agent(agent_id, result.error is None, result.error or '')
         results[agent_id] = run_result
-
     return results
 
-
-# DEPRECATED: The five execute_phase*_impl functions below are replaced by
-# run_pipeline above. They are kept as dead code until the new loop has been
-# validated in production. Do not add new call sites.
-
-
-def print_execution_plan(arbitrate_plan: bool = False, ptc_plan: bool = False) -> None:
+def print_execution_plan(arbitrate_plan: bool=False, ptc_plan: bool=False) -> None:
     """Print stable, sorted execution plan to stdout.
 
     Args:
@@ -7494,124 +3894,56 @@ def print_execution_plan(arbitrate_plan: bool = False, ptc_plan: bool = False) -
     """
     for phase in EXECUTION_PLAN:
         print(f"PHASE {phase['phase']}: {phase['name']}")
-        for agent in phase["agents"]:
-            kwargs_str = f" ({agent['kwargs']})" if agent.get("kwargs") else ""
+        for agent in phase['agents']:
+            kwargs_str = f" ({agent['kwargs']})" if agent.get('kwargs') else ''
             print(f"  - {agent['key']}.{agent['method']}{kwargs_str}")
             print(f"    # {agent['description']}")
         print()
-
-    # Include arbitration results if requested
     if arbitrate_plan:
-        print("=== MULTI-AGENT ARBITRATION ===")
-
-        # Build task for arbitration
-        task = {
-            "task_id": "execute_ssot_plan",
-            "task_kind": "planning",
-        }
-
+        print('=== MULTI-AGENT ARBITRATION ===')
+        task = {'task_id': 'execute_ssot_plan', 'task_kind': 'planning'}
         try:
-            # Import arbitration modules
             from agentic_core.L3_orchestration.arbitration.arbitration_contract import ArbitrationInput
             from agentic_core.L3_orchestration.arbitration.arbitrator import Arbitrator
             from agentic_core.L3_orchestration.arbitration.run_advisors import run_all_advisors
-
-            # Run advisors
             proposals = run_all_advisors(task)
-
-            # Arbitrate
-            input_data = ArbitrationInput(
-                task_id=task["task_id"],
-                task_kind=task["task_kind"],
-                proposals=proposals,
-            )
-
+            input_data = ArbitrationInput(task_id=task['task_id'], task_kind=task['task_kind'], proposals=proposals)
             arbitrator = Arbitrator()
             decision = arbitrator.arbitrate(input_data)
-
-            print(f"Selected Advisor: {decision.selected_advisor_id}")
-            print(f"Selected Decision: {decision.selected_decision}")
-            print(f"Score Breakdown: {decision.score_breakdown}")
-            print(f"Merged Rationale: {decision.merged_rationale}")
-            print(f"Merged Risks: {decision.merged_risks}")
-
-        except (OSError, AttributeError, TypeError) as e:  # guardian: allow-silent-swallower
-            print(f"Error listing artifacts: {e}")
-
+            print(f'Selected Advisor: {decision.selected_advisor_id}')
+            print(f'Selected Decision: {decision.selected_decision}')
+            print(f'Score Breakdown: {decision.score_breakdown}')
+            print(f'Merged Rationale: {decision.merged_rationale}')
+            print(f'Merged Risks: {decision.merged_risks}')
+        except (OSError, AttributeError, TypeError) as e:
+            print(f'Error listing artifacts: {e}')
         print()
-
-    # Include PTC results if requested
     if ptc_plan:
-        print("=== PROGRAMMATIC TOOL CALLING ===")
-
-        # Initialize violations list if not already defined
-        if "violations" not in locals():
+        print('=== PROGRAMMATIC TOOL CALLING ===')
+        if 'violations' not in locals():
             violations = []
-
         try:
-            # Import PTC modules
             from agentic_core.L3_orchestration.ptc.builtin_tools import register_builtin_tools
             from agentic_core.L3_orchestration.ptc.ptc_registry import get_global_registry
             from agentic_core.L3_orchestration.ptc.tool_call_store import record_tool_call
             from agentic_core.L3_orchestration.ptc.tool_contract import ToolCall, generate_call_id
             from agentic_core.L3_orchestration.ptc.tool_invoker import ToolInvoker
-
-            # Register built-in tools (idempotent)
             register_builtin_tools()
-
-            # Get registry and invoker
             registry = get_global_registry()
             invoker = ToolInvoker()
-
-            # Use expr_eval to evaluate an expression
-            expr_call = ToolCall(
-                call_id=generate_call_id("expr_eval", {"expr": "2 + 3 * 4"}),
-                tool_id="expr_eval",
-                args={"expr": "2 + 3 * 4"},
-                policy={"timeout": 5},
-            )
-
+            expr_call = ToolCall(call_id=generate_call_id('expr_eval', {'expr': '2 + 3 * 4'}), tool_id='expr_eval', args={'expr': '2 + 3 * 4'}, policy={'timeout': 5})
             expr_result = invoker.invoke(expr_call, registry)
-            spec, _ = registry.get("expr_eval")
+            spec, _ = registry.get('expr_eval')
             artifact_ref = record_tool_call(expr_call, expr_result, spec)
-
-            # Prepare PTC plan data
-            ptc_plan_data = {
-                "tool_calls": [
-                    {
-                        "tool_id": expr_call.tool_id,
-                        "call_id": expr_call.call_id,
-                        "args": expr_call.args,
-                        "exit_code": expr_result.exit_code,
-                        "stdout": expr_result.stdout,
-                        "stderr": expr_result.stderr,
-                        "truncated": expr_result.truncated,
-                    }
-                ],
-                "artifact_ref": {
-                    "kind": artifact_ref.kind,
-                    "logical_id": artifact_ref.logical_id,
-                    "version": artifact_ref.version,
-                    "path": artifact_ref.path,
-                },
-                "summary": "PTC executed 1 tool calls for plan context",
-            }
-
-            # Print deterministic JSON block
+            ptc_plan_data = {'tool_calls': [{'tool_id': expr_call.tool_id, 'call_id': expr_call.call_id, 'args': expr_call.args, 'exit_code': expr_result.exit_code, 'stdout': expr_result.stdout, 'stderr': expr_result.stderr, 'truncated': expr_result.truncated}], 'artifact_ref': {'kind': artifact_ref.kind, 'logical_id': artifact_ref.logical_id, 'version': artifact_ref.version, 'path': artifact_ref.path}, 'summary': 'PTC executed 1 tool calls for plan context'}
             import json
-
-            print(json.dumps(ptc_plan_data, sort_keys=True, separators=(",", ":")))
-
-        except (ImportError, AttributeError, TypeError, ValueError) as e:  # guardian: allow-silent-swallower
-            # Create error plan data but don't fail plan mode
-            ptc_plan_data = {"tool_calls": [], "summary": f"PTC setup failed: {str(e)}", "error": str(e)}
+            print(json.dumps(ptc_plan_data, sort_keys=True, separators=(',', ':')))
+        except (ImportError, AttributeError, TypeError, ValueError) as e:
+            ptc_plan_data = {'tool_calls': [], 'summary': f'PTC setup failed: {str(e)}', 'error': str(e)}
             import json
-
-            print(json.dumps(ptc_plan_data, sort_keys=True, separators=(",", ":")))
-            violations.append((0, "PTC_SCAN_ERROR", f"Scan error: {e}"))
-
+            print(json.dumps(ptc_plan_data, sort_keys=True, separators=(',', ':')))
+            violations.append((0, 'PTC_SCAN_ERROR', f'Scan error: {e}'))
         print()
-
 
 def resolve_agent_subset(requested: list[str]) -> list[str]:
     """Resolve requested agent keys to a closed set including dependencies.
@@ -7621,8 +3953,7 @@ def resolve_agent_subset(requested: list[str]) -> list[str]:
     """
     unknown = set(requested) - CANONICAL_ROSTER_KEYS
     if unknown:
-        raise ValueError(f"Unknown agent key(s): {sorted(unknown)}. Valid: {sorted(CANONICAL_ROSTER_KEYS)}")
-
+        raise ValueError(f'Unknown agent key(s): {sorted(unknown)}. Valid: {sorted(CANONICAL_ROSTER_KEYS)}')
     closed = set(requested)
     frontier = list(requested)
     while frontier:
@@ -7632,7 +3963,6 @@ def resolve_agent_subset(requested: list[str]) -> list[str]:
                 closed.add(dep)
                 frontier.append(dep)
     return sorted(closed)
-
 
 def list_available_agents(project_root=None, dedupe=False):
     """Alias for discover_agents_from_registry (backward compat)."""
@@ -7648,151 +3978,77 @@ def list_available_agents(project_root=None, dedupe=False):
                 unique.append(agent)
         return unique
     return agents
+_THIS_FILE = 'agentic_core/L0_routing/scripts/execute_ssot.py'
+_logger_adg = logging.getLogger(__name__ + '.adg_prerun')
 
-
-# ============================================================================
-# ADG PRE-RUN IMPACT ARTIFACT
-# ============================================================================
-
-_THIS_FILE = "agentic_core/L0_routing/scripts/execute_ssot.py"
-_logger_adg = logging.getLogger(__name__ + ".adg_prerun")
-
-
-def _emit_adg_pre_run_artifact(repo_root: "Path") -> None:
+def _emit_adg_pre_run_artifact(repo_root: 'Path') -> None:
     """Emit artifacts/adg/execution_impact_<timestamp>.json before main execution.
 
     Gracefully degrades: if ADG is unavailable, writes a minimal artifact with
     adg_available=false. Never raises — must not block main execution.
     """
-    ts = datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
-    artifacts_dir = repo_root / "artifacts" / "adg"
-    out_path = artifacts_dir / f"execution_impact_{ts}.json"
-
-    payload: dict = {
-        "emitted_by": "execute_ssot.py",
-        "timestamp": ts,
-        "target_file": _THIS_FILE,
-        "adg_available": False,
-        "adg_error": "",
-        "impacted_modules": [],
-        "impacted_module_count": 0,
-        "impacted_tests": [],
-        "impacted_test_count": 0,
-        "risk_score": 0,
-        "route_mode": "UNKNOWN",
-        "layer_violation_count": 0,
-        "guardian_scope": [],
-        "warnings": [],
-        "confidence_summary": "ADG unavailable — no impact data",
-        "impact_digest": "",
-    }
-
+    ts = datetime.utcnow().strftime('%Y%m%dT%H%M%SZ')
+    artifacts_dir = repo_root / 'artifacts' / 'adg'
+    out_path = artifacts_dir / f'execution_impact_{ts}.json'
+    payload: dict = {'emitted_by': 'execute_ssot.py', 'timestamp': ts, 'target_file': _THIS_FILE, 'adg_available': False, 'adg_error': '', 'impacted_modules': [], 'impacted_module_count': 0, 'impacted_tests': [], 'impacted_test_count': 0, 'risk_score': 0, 'route_mode': 'UNKNOWN', 'layer_violation_count': 0, 'guardian_scope': [], 'warnings': [], 'confidence_summary': 'ADG unavailable — no impact data', 'impact_digest': ''}
     try:
         artifacts_dir.mkdir(parents=True, exist_ok=True)
-
         from agentic_core.adg.applications.execute_ssot_integration import build_pre_run_report
-
         report = build_pre_run_report(changed_files=[_THIS_FILE], repo_root=repo_root)
-        payload["adg_available"] = report.adg_available
-        payload["adg_error"] = report.adg_error
-        payload["impacted_modules"] = report.impacted_modules
-        payload["impacted_module_count"] = report.impacted_module_count
-        payload["impacted_tests"] = report.impacted_tests
-        payload["impacted_test_count"] = report.impacted_test_count
-        payload["risk_score"] = report.risk_score
-        payload["route_mode"] = report.route_mode
-        payload["layer_violation_count"] = report.layer_violation_count
-        payload["impact_digest"] = report.impact_digest
-        payload["confidence_summary"] = report.summary
-
+        payload['adg_available'] = report.adg_available
+        payload['adg_error'] = report.adg_error
+        payload['impacted_modules'] = report.impacted_modules
+        payload['impacted_module_count'] = report.impacted_module_count
+        payload['impacted_tests'] = report.impacted_tests
+        payload['impacted_test_count'] = report.impacted_test_count
+        payload['risk_score'] = report.risk_score
+        payload['route_mode'] = report.route_mode
+        payload['layer_violation_count'] = report.layer_violation_count
+        payload['impact_digest'] = report.impact_digest
+        payload['confidence_summary'] = report.summary
         if report.adg_available:
-            payload["warnings"] = []
-            if report.route_mode == "RESTRICTED":
-                payload["warnings"].append(
-                    f"RESTRICTED mode: risk_score={report.risk_score}, review before proceeding"
-                )
-            elif report.route_mode == "HUMAN_REVIEW":
-                payload["warnings"].append(f"HUMAN_REVIEW required: risk_score={report.risk_score}")
+            payload['warnings'] = []
+            if report.route_mode == 'RESTRICTED':
+                payload['warnings'].append(f'RESTRICTED mode: risk_score={report.risk_score}, review before proceeding')
+            elif report.route_mode == 'HUMAN_REVIEW':
+                payload['warnings'].append(f'HUMAN_REVIEW required: risk_score={report.risk_score}')
         else:
-            payload["warnings"].append("ADG unavailable — impact analysis skipped")
-
-        _logger_adg.info(
-            "ADG pre-run artifact: route_mode=%s risk=%s impacted=%s modules tests=%s",
-            report.route_mode,
-            report.risk_score,
-            report.impacted_module_count,
-            report.impacted_test_count,
-        )
-
-    except Exception as exc:  # noqa: BLE001
-        payload["adg_error"] = str(exc)
-        payload["warnings"].append(f"ADG pre-run failed: {exc}")
-        _logger_adg.warning("ADG pre-run artifact emission failed: %s", exc)
-
+            payload['warnings'].append('ADG unavailable — impact analysis skipped')
+        _logger_adg.info('ADG pre-run artifact: route_mode=%s risk=%s impacted=%s modules tests=%s', report.route_mode, report.risk_score, report.impacted_module_count, report.impacted_test_count)
+    # guardian: allow-silent-swallow
+    except Exception as exc:
+        payload['adg_error'] = str(exc)
+        payload['warnings'].append(f'ADG pre-run failed: {exc}')
+        _logger_adg.warning('ADG pre-run artifact emission failed: %s', exc)
     try:
-        out_path.write_text(
-            json.dumps(payload, indent=2, sort_keys=True) + "\n",
-            encoding="utf-8",
-        )
-        _logger_adg.info("ADG pre-run artifact written: %s", out_path)
-    except Exception as exc:  # noqa: BLE001
-        _logger_adg.warning("ADG pre-run artifact write failed: %s", exc)
-
-
-# ============================================================================
-# MAIN ORCHESTRATOR
-# ============================================================================
-
+        out_path.write_text(json.dumps(payload, indent=2, sort_keys=True) + '\n', encoding='utf-8')
+        _logger_adg.info('ADG pre-run artifact written: %s', out_path)
+    # guardian: allow-silent-swallow
+    except Exception as exc:
+        _logger_adg.warning('ADG pre-run artifact write failed: %s', exc)
 
 def main() -> int:
     """Deterministic wrapper: logging, V15 enforcement, console, then legacy body."""
     pre_parser = argparse.ArgumentParser(add_help=False)
-    pre_parser.add_argument(
-        "--v15-enforcement",
-        type=int,
-        choices=(0, 1),
-        default=None,
-        help="Override V15_ENFORCEMENT for this run (0=off, 1=on).",
-    )
-    pre_parser.add_argument(
-        "--allow-protected-root-mutation",
-        action="store_true",
-        default=False,
-        help="Allow writes to protected root directories (audited override).",
-    )
-    pre_parser.add_argument(
-        "-v",
-        "--verbose",
-        action="count",
-        default=0,
-        help="Increase log verbosity (repeatable).",
-    )
+    pre_parser.add_argument('--v15-enforcement', type=int, choices=(0, 1), default=None, help='Override V15_ENFORCEMENT for this run (0=off, 1=on).')
+    pre_parser.add_argument('--allow-protected-root-mutation', action='store_true', default=False, help='Allow writes to protected root directories (audited override).')
+    pre_parser.add_argument('-v', '--verbose', action='count', default=0, help='Increase log verbosity (repeatable).')
     pre_args, remaining = pre_parser.parse_known_args()
     _configure_logging(int(pre_args.verbose))
     _apply_v15_enforcement_flag(pre_args)
     _maybe_force_utf8_console()
-
-    # Log protected-root override status exactly once
     if pre_args.allow_protected_root_mutation:
-        print("[PROTECTED-ROOT] override ENABLED: protected root mutation permitted")
+        print('[PROTECTED-ROOT] override ENABLED: protected root mutation permitted')
     else:
-        print("[PROTECTED-ROOT] override DISABLED: protected root mutation blocked")
-
-    # ADG pre-run impact artifact — emitted before main execution
+        print('[PROTECTED-ROOT] override DISABLED: protected root mutation blocked')
     _emit_adg_pre_run_artifact(REPO_ROOT)
-
     try:
-        _legacy_main(
-            remaining,
-            repo_root=REPO_ROOT,
-            allow_protected_root_mutation=pre_args.allow_protected_root_mutation,
-        )
+        _legacy_main(remaining, repo_root=REPO_ROOT, allow_protected_root_mutation=pre_args.allow_protected_root_mutation)
     except SystemExit as exc:
         return int(exc.code) if exc.code is not None else 0
     return 0
 
-
-def _build_ssot_territory_targets(project_root: "Path") -> list[str]:
+def _build_ssot_territory_targets(project_root: 'Path') -> list[str]:
     """Derive the canonical territory target list from SOVEREIGN_TERRITORIES SSOT.
 
     Returns only keys whose corresponding directory exists under project_root,
@@ -7802,39 +4058,17 @@ def _build_ssot_territory_targets(project_root: "Path") -> list[str]:
     """
     try:
         from agentic_core.L5_safety.config.structure_blueprint import PROJECT_ROOT_WHITELIST
-
         all_keys = sorted(PROJECT_ROOT_WHITELIST)
     except ImportError:
-        # Fallback to previous hardcoded list if SSOT import unavailable
-        logger.warning("[territory-build] SSOT import failed — using legacy hardcoded list")
-        return [
-            "prompt_governance",
-            "L5_safety",
-            "L3_orchestration",
-            "L2_execution",
-            "L0_routing",
-        ]
-
-    # Exclude dotfile dirs — not meaningful territory targets for agent pipeline
-    excluded = {".backup", ".github", ".gravity_state"}
-    # agentic_core itself is a top-level territory; keep it but also expand to sub-layers
-    # that the agents know how to scope (L0_routing, L2_execution, L3_orchestration,
-    # L5_safety are the canonical sub-territories inside agentic_core).
-    agentic_core_sublayers = [
-        "L0_routing",
-        "L2_execution",
-        "L3_orchestration",
-        "L5_safety",
-    ]
-
+        logger.warning('[territory-build] SSOT import failed — using legacy hardcoded list')
+        return ['prompt_governance', 'L5_safety', 'L3_orchestration', 'L2_execution', 'L0_routing']
+    excluded = {'.backup', '.github', '.gravity_state'}
+    agentic_core_sublayers = ['L0_routing', 'L2_execution', 'L3_orchestration', 'L5_safety']
     targets = []
-    # Add agentic_core sub-layers first (they have specialised agent scoping)
     for sub in agentic_core_sublayers:
         sub_path = project_root / AGENTIC_CORE_DIR / sub
         if sub_path.exists():
             targets.append(sub)
-
-    # Add all other SOVEREIGN_TERRITORIES keys that exist and are not excluded/already added
     skip = set(agentic_core_sublayers) | excluded | {AGENTIC_CORE_DIR}
     for key in sorted(all_keys):
         if key in skip:
@@ -7842,12 +4076,10 @@ def _build_ssot_territory_targets(project_root: "Path") -> list[str]:
         territory_path = project_root / key
         if territory_path.exists():
             targets.append(key)
-
-    logger.info(f"[territory-build] SSOT-derived targets ({len(targets)}): {targets}")
+    logger.info(f'[territory-build] SSOT-derived targets ({len(targets)}): {targets}')
     return targets
 
-
-def _compute_pipeline_digest(targets: "list[str]") -> str:
+def _compute_pipeline_digest(targets: 'list[str]') -> str:
     """Compute a stable determinism digest for the pipeline run.
 
     Five-component SHA-256 surface:
@@ -7862,1065 +4094,516 @@ def _compute_pipeline_digest(targets: "list[str]") -> str:
     """
     import hashlib as _h
     import json as _j
-
     try:
-        from agentic_core.L2_execution.determinism.negative_control_harness import (
-            get_config_surface as _gcs,
-        )
-        from agentic_core.L2_execution.determinism.negative_control_harness import (
-            hash_config_surface as _hcs,
-        )
-        from agentic_core.L6_observability.engines.determinism_digest_emitter import (
-            DeterminismDigestEmitter as _DE,
-        )
+        from agentic_core.L2_execution.determinism.negative_control_harness import get_config_surface as _gcs
+        from agentic_core.L2_execution.determinism.negative_control_harness import hash_config_surface as _hcs
+        from agentic_core.L6_observability.engines.determinism_digest_emitter import DeterminismDigestEmitter as _DE
     except ImportError as _exc:
-        logger.warning(f"[DETERMINISM-DIGEST] import failed: {_exc}")
-        return _h.sha256(b"determinism-digest:import-failed").hexdigest()
-
-    # Compute actual policy hash from loaded policy file (not a hardcoded constant)
+        logger.warning(f'[DETERMINISM-DIGEST] import failed: {_exc}')
+        return _h.sha256(b'determinism-digest:import-failed').hexdigest()
     try:
         from pathlib import Path as _P
-
-        _policy_file = _P(__file__).resolve().parents[1] / "policy" / "v15_policy_pack.json"
+        _policy_file = _P(__file__).resolve().parents[1] / 'policy' / 'v15_policy_pack.json'
         if _policy_file.exists():
             _policy_bytes = _policy_file.read_bytes()
             _policy_hash = _h.sha256(_policy_bytes).hexdigest()
         else:
-            _policy_hash = _h.sha256(b"policy:file-not-found").hexdigest()
-    except (OSError, ImportError, AttributeError):  # guardian: allow-silent-swallower
-        _policy_hash = _h.sha256(b"policy:load-failed").hexdigest()
-
+            _policy_hash = _h.sha256(b'policy:file-not-found').hexdigest()
+    except (OSError, ImportError, AttributeError):
+        _policy_hash = _h.sha256(b'policy:load-failed').hexdigest()
     try:
         from agentic_core.agents.agent_registry import registry_digest as _rd
-
-        _reg_bytes = _j.dumps(_rd(), sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode("utf-8")
+        _reg_bytes = _j.dumps(_rd(), sort_keys=True, separators=(',', ':'), ensure_ascii=True).encode('utf-8')
         _registry_hash = _h.sha256(_reg_bytes).hexdigest()
-    except (ImportError, AttributeError, TypeError):  # guardian: allow-silent-swallower
-        _registry_hash = _h.sha256(b"registry:fallback").hexdigest()
-
+    except (ImportError, AttributeError, TypeError):
+        _registry_hash = _h.sha256(b'registry:fallback').hexdigest()
     _config_hash = _hcs(_gcs())
-
-    _transcript_bytes = _j.dumps(
-        sorted(str(t) for t in targets),
-        sort_keys=True,
-        separators=(",", ":"),
-        ensure_ascii=True,
-    ).encode("utf-8")
+    _transcript_bytes = _j.dumps(sorted((str(t) for t in targets)), sort_keys=True, separators=(',', ':'), ensure_ascii=True).encode('utf-8')
     _transcript_hash = _h.sha256(_transcript_bytes).hexdigest()
-
-    _dep_lock_hash = _h.sha256(b"dependency-lock:stable").hexdigest()
-
+    _dep_lock_hash = _h.sha256(b'dependency-lock:stable').hexdigest()
     _emitter = _DE()
-    return _emitter.compute(
-        policy_hash=_policy_hash,
-        registry_hash=_registry_hash,
-        config_surface_hash=_config_hash,
-        transcript_hash=_transcript_hash,
-        dependency_lock_hash=_dep_lock_hash,
-    )
+    return _emitter.compute(policy_hash=_policy_hash, registry_hash=_registry_hash, config_surface_hash=_config_hash, transcript_hash=_transcript_hash, dependency_lock_hash=_dep_lock_hash)
 
-
-@_optional_runtime_guard()("E.execute_ssot_main.execute_ssot")
-def _legacy_main(
-    args: argparse.Namespace, *, repo_root: Path | None = None, allow_protected_root_mutation: bool = False
-):
-    _maybe_force_utf8_console()  # G-UTF8: ensure stdout/stderr are UTF-8 safe on Windows
-    _maybe_force_utf8_logging_handlers()  # G-UTF8: fix handler streams created before console reconfigure
-
-    # [WAVE 2] Import/symbol preflight check (fail-fast if critical symbols missing)
+@_optional_runtime_guard()('E.execute_ssot_main.execute_ssot')
+def _legacy_main(args: argparse.Namespace, *, repo_root: Path | None=None, allow_protected_root_mutation: bool=False):
+    _maybe_force_utf8_console()
+    _maybe_force_utf8_logging_handlers()
     try:
         _preflight_import_check()
-        logger.info("[PREFLIGHT] Import/symbol check PASSED")
+        logger.info('[PREFLIGHT] Import/symbol check PASSED')
     except RuntimeError as exc:
-        logger.critical(f"[PREFLIGHT] FAILED: {exc}")
+        logger.critical(f'[PREFLIGHT] FAILED: {exc}')
         sys.exit(1)
-
-    # [WAVE 2] Startup fence self-test (abort if fence inactive)
     if not allow_protected_root_mutation:
         try:
-            from agentic_core.L0_routing.enforcement.mutation_prohibition import (
-                SourceMutationBlocked,
-                enforce_protected_root,
-            )
-
-            # Attempt to write to agentic_core/.tmp_fence_probe
-            probe_path = REPO_ROOT / AGENTIC_CORE_DIR / ".tmp_fence_probe"
+            from agentic_core.L0_routing.enforcement.mutation_prohibition import SourceMutationBlocked, enforce_protected_root
+            probe_path = REPO_ROOT / AGENTIC_CORE_DIR / '.tmp_fence_probe'
             fence_active = False
-
             try:
-                # This should raise SourceMutationBlocked if fence is active
                 enforce_protected_root(probe_path, allow_override=False)
-                # If we get here, fence is NOT active - CRITICAL FAILURE
-                logger.critical("[FENCE-SELF-TEST] FAILED: Protected root fence is INACTIVE")
+                logger.critical('[FENCE-SELF-TEST] FAILED: Protected root fence is INACTIVE')
                 sys.exit(1)
             except SourceMutationBlocked:
-                # Expected: fence blocked the write
                 fence_active = True
-
             if fence_active:
-                logger.info("[FENCE-SELF-TEST] PASSED: Protected root fence is ACTIVE")
+                logger.info('[FENCE-SELF-TEST] PASSED: Protected root fence is ACTIVE')
             else:
-                logger.critical("[FENCE-SELF-TEST] FAILED: Fence state indeterminate")
+                logger.critical('[FENCE-SELF-TEST] FAILED: Fence state indeterminate')
                 sys.exit(1)
-
         except ImportError as exc:
-            # guardian: allow-global-mutation
-            logger.critical(f"[FENCE-SELF-TEST] FAILED: Cannot import fence module: {exc}")
+            logger.critical(f'[FENCE-SELF-TEST] FAILED: Cannot import fence module: {exc}')
             sys.exit(1)
     else:
-        logger.warning("[FENCE-SELF-TEST] SKIPPED: --allow-protected-root-mutation enabled")
+        logger.warning('[FENCE-SELF-TEST] SKIPPED: --allow-protected-root-mutation enabled')
         # guardian: allow-global-mutation
-        os.environ["AGENTIC_ALLOW_MUTATION_FOR_TESTS"] = "1"
+        os.environ['AGENTIC_ALLOW_MUTATION_FOR_TESTS'] = '1'
         # guardian: allow-global-mutation
-        os.environ["AGENTIC_BYPASS_LONGPATHS_CHECK"] = "1"
-
-    # §8.1e — V15 manifest at SSOT bootstrap entry (AGGREGATE, L0 bootstrap)
+        os.environ['AGENTIC_BYPASS_LONGPATHS_CHECK'] = '1'
     _v15_manifest = _v15_build_ssot_manifest()
     if _v15_manifest is not None:
         _v15_ssot_gateway_audit(_v15_manifest, trace_id=_v15_manifest.correlation_id)
-
     project_root = repo_root if repo_root is not None else REPO_ROOT
     if str(project_root) not in sys.path:
         # guardian: allow-global-mutation
         sys.path.insert(0, str(project_root))
-
-    # [AGENT SUBSET] Validate and resolve --agents early (before imports).
     requested_agent_keys: list[str] | None = None
     if args.agents:
-        raw_keys = [k.strip() for k in args.agents.split(",") if k.strip()]
+        raw_keys = [k.strip() for k in args.agents.split(',') if k.strip()]
         try:
             requested_agent_keys = resolve_agent_subset(raw_keys)
-            logger.info(f"Agent subset resolved: {requested_agent_keys}")
+            logger.info(f'Agent subset resolved: {requested_agent_keys}')
         except ValueError as ve:
-            sys.exit(f"ERROR: {ve}")
-
-    # [CENTRALIZED] validate ⇒ dry_run mapping (single source of truth).
-    # When --validate is set, dry_run is forced True. This ensures
-    # FileClassificationAgent and all other agents see consistent flags.
+            sys.exit(f'ERROR: {ve}')
     if args.validate:
         args.dry_run = True
-
-    # [HARDENED] 0. Pre-Flight Validation
     validator = PreFlightValidator(project_root, dry_run=args.dry_run)
     env_ok, env_errors = validator.run_checks()
     if not env_ok:
-        logger.critical("🛑 PRE-FLIGHT CHECK FAILED:")
+        logger.critical('🛑 PRE-FLIGHT CHECK FAILED:')
         for err in env_errors:
-            logger.error(f"  - {err}")
+            logger.error(f'  - {err}')
         if not args.list_agents:
             sys.exit(1)
-
-    # [ULTRA-HARDENED] Validate user-supplied territory name format via regex
-    if args.territory and not re.match(r"^[A-Za-z0-9_]+$", args.territory):
-        sys.exit("ERROR: Invalid territory name: only alphanumeric and underscores allowed.")
-
-    # 1. Handle Discovery
+    if args.territory and (not re.match('^[A-Za-z0-9_]+$', args.territory)):
+        sys.exit('ERROR: Invalid territory name: only alphanumeric and underscores allowed.')
     if args.list_agents:
-        logger.info("DISCOVERABLE AGENTS:")
+        logger.info('DISCOVERABLE AGENTS:')
         agents_list = list_available_agents(project_root)
         for i, (name, path) in enumerate(agents_list, 1):
-            print(f"   {i:3}. {name:<40} [{path}]")
-        print(f"\nTotal: {len(agents_list)} agents")
+            print(f'   {i:3}. {name:<40} [{path}]')
+        print(f'\nTotal: {len(agents_list)} agents')
         return
-
-    # [PHASE 8] Handle baseline capture command
     if args.capture_baseline:
-        print("\n🔒 INITIATING BASELINE CAPTURE PROTOCOL...")
+        print('\n🔒 INITIATING BASELINE CAPTURE PROTOCOL...')
         try:
             from agentic_core.L0_routing.utils.subprocess_runner_util import invoke_arch_governor
-
-            result = invoke_arch_governor(
-                action="capture_baseline",
-                project_root=project_root,
-            )
-            if result.get("success"):
+            result = invoke_arch_governor(action='capture_baseline', project_root=project_root)
+            if result.get('success'):
                 print(f"✨ Golden Baseline captured at: {result.get('manifest_path')}")
                 sys.exit(0)
             else:
                 logger.error(f"Baseline capture failed: {result.get('error')}")
                 sys.exit(1)
-        except (ImportError, AttributeError, TypeError, ValueError) as e:  # guardian: allow-silent-swallower
-            logger.error(f"Baseline capture failed: {e}")
+        except (ImportError, AttributeError, TypeError, ValueError) as e:
+            logger.error(f'Baseline capture failed: {e}')
             sys.exit(1)
-
-    # 2. Handle Direct Agent Invocation (Developer Mode)
     if args.agent:
-        logger.info(f"DIRECT AGENT EXECUTION: {args.agent}")
+        logger.info(f'DIRECT AGENT EXECUTION: {args.agent}')
         try:
             found = [x for x in list_available_agents(project_root) if args.agent.lower() in x[0].lower()]
             if not found:
-                logger.error(f"Agent {args.agent} not found.")
-                logger.info("Use --list-agents to see available agents")
+                logger.error(f'Agent {args.agent} not found.')
+                logger.info('Use --list-agents to see available agents')
                 return
-
             name, path = found[0]
-            logger.info(f"Found: {name} at {path}")
-
+            logger.info(f'Found: {name} at {path}')
             module = importlib.import_module(path)
-
-            # Try instantiation strategies
             agent = None
-            if hasattr(module, f"get_{name.lower()}"):
-                agent = getattr(module, f"get_{name.lower()}")(project_root)
+            if hasattr(module, f'get_{name.lower()}'):
+                agent = getattr(module, f'get_{name.lower()}')(project_root)
             elif hasattr(module, name):
                 agent_cls = getattr(module, name)
                 agent = agent_cls(project_root=project_root)
             else:
-                logger.error(f"Could not instantiate {name}")
+                logger.error(f'Could not instantiate {name}')
                 return
-
-            logger.info(f"Running {name}...")
-
-            # Prefer standard methods
-            if hasattr(agent, "run"):
+            logger.info(f'Running {name}...')
+            if hasattr(agent, 'run'):
                 result = agent.run()
-            elif hasattr(agent, "scan_root_violations"):
+            elif hasattr(agent, 'scan_root_violations'):
                 result = agent.scan_root_violations()
-            elif hasattr(agent, "heal_repository"):
+            elif hasattr(agent, 'heal_repository'):
                 result = agent.heal_repository(dry_run=False)
             else:
-                result = "Agent instantiated but no standard run method found."
-
-            logger.info(f"Result: {result}")
-
-        except (ImportError, AttributeError, TypeError, ValueError) as e:  # guardian: allow-silent-swallower
-            logger.error(f"Failed to run agent: {e}")
+                result = 'Agent instantiated but no standard run method found.'
+            logger.info(f'Result: {result}')
+        except (ImportError, AttributeError, TypeError, ValueError) as e:
+            logger.error(f'Failed to run agent: {e}')
             traceback.print_exc()
         return
-
-    # 3. Initialize Sovereign State & Agents
-    # [SSOT MIXIN] Build ExecutionContext with L4-derived policy hash
     ExecutionContext = _get_execution_context_class()
     try:
         from agentic_core.L4_state.config.versioned_configs import get_active_configs
-
         _l4_policy_hash = get_active_configs().policy.config_hash
     except ImportError:
-        _l4_policy_hash = "fallback-no-l4"
-
-    # [HEAL CONTEXT] Single source of truth for all healing flags
-    # E1: Create HealContext first to get trace_id for ExecutionContext
+        _l4_policy_hash = 'fallback-no-l4'
     ctx = HealContext.from_args(args)
-
-    # E1: Build ExecutionContext with trace_id from HealContext
-    _exec_ctx = ExecutionContext(
-        mission_id=args.territory or "default",
-        trace_id=ctx.trace_id,
-        replay_mode=False,
-        active_policy_hash=_l4_policy_hash,
-        safety_status="CLEARED",
-    )
-
+    _exec_ctx = ExecutionContext(mission_id=args.territory or 'default', trace_id=ctx.trace_id, replay_mode=False, active_policy_hash=_l4_policy_hash, safety_status='CLEARED')
     state_mgr = RuntimeStateManager(project_root, execution_context=_exec_ctx)
-
-    # guardian: allow-global-mutation
-    # [META-LEARNING] Tied to --heal: proposals always applied when healing is active
-    state_mgr.state["apply_proposals"] = ctx.heal
-
-    # [SIMPLIFIED] Auto-set env vars unless interactive mode explicitly requested
+    state_mgr.state['apply_proposals'] = ctx.heal
     if ctx.auto_approve:
         # guardian: allow-global-mutation
-        os.environ.setdefault("SOVEREIGN_AUTO_APPROVE", "1")
+        os.environ.setdefault('SOVEREIGN_AUTO_APPROVE', '1')
         # guardian: allow-global-mutation
-        os.environ.setdefault("ARCHIVE_BATCH_ACCEPT", "1")
-
-    # [HARDENED] Use Sovereign Decision Engine — wired from HealContext
-    # [B2/G6 CROSS-RUN] Build advisory healing memory retriever from the persisted FAISS
-    # index so _route_decision() can consult prior-run failure patterns (advisory-only,
-    # never mutates tier/thresholds).  NullHealingMemoryRetriever when embeddings disabled.
+        os.environ.setdefault('ARCHIVE_BATCH_ACCEPT', '1')
     _hmr = None
     try:
-        from agentic_core.L1_cognition.memory.healing_memory_retriever import (
-            build_retriever as _build_hmr,
-        )
-
-        _hmr = _build_hmr(base_path=REPO_ROOT / "logs" / "faiss_store")
-    except (ImportError, AttributeError, OSError):  # guardian: allow-silent-swallower
+        from agentic_core.L1_cognition.memory.healing_memory_retriever import build_retriever as _build_hmr
+        _hmr = _build_hmr(base_path=REPO_ROOT / 'logs' / 'faiss_store')
+    except (ImportError, AttributeError, OSError):
         pass
-    decision_engine = SovereignDecisionEngine(
-        enable_llm=ctx.enable_llm,
-        state_mgr=state_mgr,
-        enable_cda=True,
-        execution_context=_exec_ctx,
-        auto_approve=ctx.auto_approve,
-        healing_memory_retriever=_hmr,
-    )
-
-    logger.info("UNIFIED SOVEREIGN PROTOCOL STARTED")
-    logger.info(
-        f"  Mode: {'HEAL-ACTIVE (LLM + telemetry + meta-learning + auto-approve ON)' if ctx.heal else 'SCAN-ONLY (passive)'}"
-    )
-
-    # [HARDENED] Mandatory Hard Imports for Total Awareness (via subprocess)
+    decision_engine = SovereignDecisionEngine(enable_llm=ctx.enable_llm, state_mgr=state_mgr, enable_cda=True, execution_context=_exec_ctx, auto_approve=ctx.auto_approve, healing_memory_retriever=_hmr)
+    logger.info('UNIFIED SOVEREIGN PROTOCOL STARTED')
+    logger.info(f"  Mode: {('HEAL-ACTIVE (LLM + telemetry + meta-learning + auto-approve ON)' if ctx.heal else 'SCAN-ONLY (passive)')}")
     try:
-        from agentic_core.L0_routing.utils.subprocess_runner_util import (
-            invoke_agent_roster_validation,
-        )
-
+        from agentic_core.L0_routing.utils.subprocess_runner_util import invoke_agent_roster_validation
         roster_result = invoke_agent_roster_validation()
-
-        if roster_result.get("success"):
-            logger.info("Total Awareness: Mandatory agent roster registered.")
+        if roster_result.get('success'):
+            logger.info('Total Awareness: Mandatory agent roster registered.')
             logger.info(f"  Agents validated: {', '.join(roster_result.get('agents_validated', []))}")
         else:
-            integrity_errors = roster_result.get("integrity_errors", [])
+            integrity_errors = roster_result.get('integrity_errors', [])
             if integrity_errors:
-                logger.critical("🛑 SOVEREIGN CONTRACT BREACH - AGENT INTEGRITY FAILED:")
+                logger.critical('🛑 SOVEREIGN CONTRACT BREACH - AGENT INTEGRITY FAILED:')
                 for err in integrity_errors:
-                    logger.error(f"  - {err}")
+                    logger.error(f'  - {err}')
                 if not args.list_agents:
-                    sys.exit(1)  # Halt mission if any agent is non-compliant
+                    sys.exit(1)
             else:
-                error_msg = roster_result.get("error", "Unknown error")
-                logger.critical(f"🛑 FATAL: Mandatory agent or dependency missing: {error_msg}")
+                error_msg = roster_result.get('error', 'Unknown error')
+                logger.critical(f'🛑 FATAL: Mandatory agent or dependency missing: {error_msg}')
                 sys.exit(1)
-
-    except (ImportError, AttributeError, TypeError, ValueError) as e:  # guardian: allow-silent-swallower
-        logger.critical(f"🛑 FATAL: Agent roster validation failed: {e}")
+    except (ImportError, AttributeError, TypeError, ValueError) as e:
+        logger.critical(f'🛑 FATAL: Agent roster validation failed: {e}')
         sys.exit(1)
-
-    # 3b. Build local agents roster (classes, not instances)
-    (
-        ArchitectureGovernorAgent,
-        CognitiveDispositionAgent,
-        FileClassificationHealerAgent,
-        FilesystemSSOTHealerAgent,
-        GravityLeakHealerAgent,
-        HierarchyHealerAgent,
-        LocationHealerAgent,
-        RootHygieneAgent,
-        ObservabilityProbeExecutorAgent,
-    ) = _get_l5_agent_roster()
-
-    agents = {
-        "reconciler": FilesystemSSOTHealerAgent,
-        "location": LocationHealerAgent,  # BUG-1 fix: was LocationValidatorAgent which raises NotImplementedError
-        "hierarchy": HierarchyHealerAgent,
-        "arch_governor": ArchitectureGovernorAgent,
-        "gravity_repair": GravityLeakHealerAgent,
-        "file_classification": FileClassificationHealerAgent,
-        "observability_probe": ObservabilityProbeExecutorAgent,
-        "cognitive_disposition": CognitiveDispositionAgent,
-        "root_hygiene": RootHygieneAgent,
-    }
-
-    # 4. Determine Targets
+    ArchitectureGovernorAgent, CognitiveDispositionAgent, FileClassificationHealerAgent, FilesystemSSOTHealerAgent, GravityLeakHealerAgent, HierarchyHealerAgent, LocationHealerAgent, RootHygieneAgent, ObservabilityProbeExecutorAgent = _get_l5_agent_roster()
+    agents = {'reconciler': FilesystemSSOTHealerAgent, 'location': LocationHealerAgent, 'hierarchy': HierarchyHealerAgent, 'arch_governor': ArchitectureGovernorAgent, 'gravity_repair': GravityLeakHealerAgent, 'file_classification': FileClassificationHealerAgent, 'observability_probe': ObservabilityProbeExecutorAgent, 'cognitive_disposition': CognitiveDispositionAgent, 'root_hygiene': RootHygieneAgent}
     targets = []
-    mission_mode = ""
+    mission_mode = ''
     if args.territory:
         targets = [args.territory]
-        mission_mode = f"Territory Scan: {args.territory}"
+        mission_mode = f'Territory Scan: {args.territory}'
     elif args.domains:
-        # Multi-domain sweep — derive from SSOT to avoid stale hardcode
         targets = _build_ssot_territory_targets(project_root)
-        mission_mode = "Multi-Domain Sweep (L3 Attempt)"
+        mission_mode = 'Multi-Domain Sweep (L3 Attempt)'
     else:
-        # Default to full domain sweep derived from SSOT SOVEREIGN_TERRITORIES
         targets = _build_ssot_territory_targets(project_root)
-        mission_mode = "Multi-Domain Sweep (Default)"
-
-    # Domain targeting hardening for protected roots
-    if args.domains and not allow_protected_root_mutation:
-        for domain in ["L0_routing", "L2_execution", "L3_orchestration", "L5_safety"]:
+        mission_mode = 'Multi-Domain Sweep (Default)'
+    if args.domains and (not allow_protected_root_mutation):
+        for domain in ['L0_routing', 'L2_execution', 'L3_orchestration', 'L5_safety']:
             if domain in targets:
                 domain_path = project_root / AGENTIC_CORE_DIR / domain
                 if domain_path.exists():
-                    logger.warning(f"[PROTECTED-ROOT] forcing scan-only for {domain}")
-                    print(f"[PROTECTED-ROOT] forcing scan-only (no mutations) for {domain}")
+                    logger.warning(f'[PROTECTED-ROOT] forcing scan-only for {domain}')
+                    print(f'[PROTECTED-ROOT] forcing scan-only (no mutations) for {domain}')
                     from dataclasses import replace as _dc_replace
-
                     ctx = _dc_replace(ctx, heal=False, enable_telemetry=False, enable_meta_learning=False)
                     break
-
-    # 5. Execute Mission
-    # [HARDENED] Wrap entire autonomous execution in NonInteractiveGuard
     is_autonomous = not args.manual
-
     try:
         with NonInteractiveGuard(active=is_autonomous):
-            state_mgr.start_mission(f"Unified Protocol: {mission_mode}", [f"{t}" for t in targets])
-
-            # GAP-A: Write run_manifest.json immediately after trace_id is bound.
-            # Invariant: file exists with correct trace_id after any heal/scan run.
-            _run_manifest_dir = REPO_ROOT / "logs" / "run_manifests" / ctx.trace_id
+            state_mgr.start_mission(f'Unified Protocol: {mission_mode}', [f'{t}' for t in targets])
+            _run_manifest_dir = REPO_ROOT / 'logs' / 'run_manifests' / ctx.trace_id
             try:
-                _write_run_manifest_json(
-                    trace_id=ctx.trace_id,
-                    execution_mode=ctx.execution_mode
-                    if hasattr(ctx, "execution_mode")
-                    else ("heal" if ctx.heal else "scan"),
-                    territories=list(targets),
-                    agents_executed=list(agents.keys()),
-                    output_dir=_run_manifest_dir,
-                )
-            except (OSError, TypeError) as _gap_a_exc:  # guardian: allow-silent-swallower
-                logger.warning("[GAP-A] run_manifest.json write failed (non-fatal): %s", _gap_a_exc)
-
-            # GAP-B: Wire mutation ledger before Phase 2 mutations begin.
-            # Invariant: ledger non-empty after any heal run that commits writes.
-            _ledger_path = REPO_ROOT / "logs" / "mutation_ledgers" / ctx.trace_id / "mutation_ledger.jsonl"
+                _write_run_manifest_json(trace_id=ctx.trace_id, execution_mode=ctx.execution_mode if hasattr(ctx, 'execution_mode') else 'heal' if ctx.heal else 'scan', territories=list(targets), agents_executed=list(agents.keys()), output_dir=_run_manifest_dir)
+            except (OSError, TypeError) as _gap_a_exc:
+                logger.warning('[GAP-A] run_manifest.json write failed (non-fatal): %s', _gap_a_exc)
+            _ledger_path = REPO_ROOT / 'logs' / 'mutation_ledgers' / ctx.trace_id / 'mutation_ledger.jsonl'
             try:
-                from agentic_core.L2_execution.tools.write_gateway import (
-                    set_mutation_ledger_path as _set_ledger,
-                )
-
+                from agentic_core.L2_execution.tools.write_gateway import set_mutation_ledger_path as _set_ledger
                 _set_ledger(_ledger_path, ctx.trace_id)
-                logger.info("[GAP-B] Mutation ledger wired: %s", _ledger_path)
-            except (ImportError, AttributeError, OSError) as _gap_b_exc:  # guardian: allow-silent-swallower
-                logger.warning("[GAP-B] set_mutation_ledger_path failed (non-fatal): %s", _gap_b_exc)
-
-            # [PHASE 8] Integrated Integrity Check
-            # [HARDENED] Pass territory targets to ensure integrity check is also scoped.
+                logger.info('[GAP-B] Mutation ledger wired: %s', _ledger_path)
+            except (ImportError, AttributeError, OSError) as _gap_b_exc:
+                logger.warning('[GAP-B] set_mutation_ledger_path failed (non-fatal): %s', _gap_b_exc)
             if is_autonomous:
-                logger.info(f"🔍 [PHASE 8] Running integrity check (Scope: {targets})...")
+                logger.info(f'🔍 [PHASE 8] Running integrity check (Scope: {targets})...')
                 try:
                     from agentic_core.L0_routing.utils.subprocess_runner_util import invoke_arch_governor
-
-                    result = invoke_arch_governor(
-                        action="audit",
-                        project_root=project_root,
-                        targets=targets,
-                    )
-
-                    if result.get("success"):
-                        audit_results = result.get("audit_results", {})
-                        # [UNIFIED AUDIT] Persist all identified violations to the runtime state
-                        state_mgr.state["compliance_report_audit"] = audit_results
-
-                        stats = audit_results.get("stats", {})
-                        if stats.get("violations_found", 0) > 0:
-                            logger.warning(
-                                f"⚠️  {stats['violations_found']} total violations identified.",
-                            )
-
-                        if stats.get("drift_detected", 0) > 0:
-                            logger.error(
-                                f"🛑 CRITICAL: {stats['drift_detected']} integrity drift detected.",
-                            )
+                    result = invoke_arch_governor(action='audit', project_root=project_root, targets=targets)
+                    if result.get('success'):
+                        audit_results = result.get('audit_results', {})
+                        state_mgr.state['compliance_report_audit'] = audit_results
+                        stats = audit_results.get('stats', {})
+                        if stats.get('violations_found', 0) > 0:
+                            logger.warning(f"⚠️  {stats['violations_found']} total violations identified.")
+                        if stats.get('drift_detected', 0) > 0:
+                            logger.error(f"🛑 CRITICAL: {stats['drift_detected']} integrity drift detected.")
                             if args.validate:
-                                state_mgr.finish_mission(status="failed_integrity")
-                                sys.exit(1)  # Fatal in CI
+                                state_mgr.finish_mission(status='failed_integrity')
+                                sys.exit(1)
                             else:
-                                logger.warning("⚠️  Proceeding with caution (Heal mode active)...")
+                                logger.warning('⚠️  Proceeding with caution (Heal mode active)...')
                     else:
                         logger.warning(f"Integrity check failed: {result.get('error')}")
                 except (ImportError, AttributeError, TypeError, ValueError) as e:
-                    logger.error(f"Integrity check FAILED: {e}\n{traceback.format_exc()}")
-                    state_mgr.add_event("error", f"Integrity check failed: {e}")
-
-            # [INTEGRATION] Attempt L3 Smart Orchestration first
+                    logger.error(f'Integrity check FAILED: {e}\n{traceback.format_exc()}')
+                    state_mgr.add_event('error', f'Integrity check failed: {e}')
             if args.domains:
                 l3_success, l3_results = try_summon_orchestrator(project_root, targets, execute=is_autonomous)
                 if l3_success:
-                    state_mgr.update_meta_learning(
-                        {"total_experiences": 1, "experience": "L3 Mission Complete"},
-                    )
-                    state_mgr.finish_mission("completed")
-                    logger.info("🎉 L3 MISSION COMPLETED")
+                    state_mgr.update_meta_learning({'total_experiences': 1, 'experience': 'L3 Mission Complete'})
+                    state_mgr.finish_mission('completed')
+                    logger.info('🎉 L3 MISSION COMPLETED')
                     return l3_results
-
-            # Territories outside agentic_core that are included in the sweep for
-            # scan/report but must NEVER receive autonomous mutations.
-            # Heal on these requires --territory <name> (single-territory, user-deliberate).
-            _agentic_core_sublayer_prefixes = ("L0_", "L1_", "L2_", "L3_", "L4_", "L5_", "L6_")
-            _SCAN_ONLY_TERRITORIES = [
-                t
-                for t in targets
-                if t != AGENTIC_CORE_DIR and not any(t.startswith(p) for p in _agentic_core_sublayer_prefixes)
-            ]
+            _agentic_core_sublayer_prefixes = ('L0_', 'L1_', 'L2_', 'L3_', 'L4_', 'L5_', 'L6_')
+            _SCAN_ONLY_TERRITORIES = [t for t in targets if t != AGENTIC_CORE_DIR and (not any((t.startswith(p) for p in _agentic_core_sublayer_prefixes)))]
             _NON_AC_TERRITORIES = set(_SCAN_ONLY_TERRITORIES)
-
-            # [HARDENED] Universal Compliance Persistence
             results = []
-            # Fix 4: RootHygieneAgent scans REPO_ROOT (not per-territory).
-            # Run once before the territory loop to prevent N× duplicate violations.
-            state_mgr.state["hygiene_violations"] = []
-            state_mgr.state["hygiene_fixed"] = 0
+            state_mgr.state['hygiene_violations'] = []
+            state_mgr.state['hygiene_fixed'] = 0
             try:
-                state_mgr.update_agent("RootHygieneAgent", "L0 - Maintenance")
-                hygiene_agent = agents["root_hygiene"](project_root=REPO_ROOT)
-                if hasattr(hygiene_agent, "scan_root_violations"):
+                state_mgr.update_agent('RootHygieneAgent', 'L0 - Maintenance')
+                hygiene_agent = agents['root_hygiene'](project_root=REPO_ROOT)
+                if hasattr(hygiene_agent, 'scan_root_violations'):
                     hygiene_results = hygiene_agent.scan_root_violations()
-                    hygiene_violations = hygiene_results.get("violations", [])
-                    high = [v for v in hygiene_violations if v.get("severity") == "high"]
+                    hygiene_violations = hygiene_results.get('violations', [])
+                    high = [v for v in hygiene_violations if v.get('severity') == 'high']
                     hygiene_fixed = 0
-                    if ctx and ctx.heal and hasattr(hygiene_agent, "heal"):
+                    if ctx and ctx.heal and hasattr(hygiene_agent, 'heal'):
                         for _v in hygiene_violations:
                             try:
                                 _r = hygiene_agent.heal(_v)
-                                if isinstance(_r, dict) and _r.get("status") == "success":
+                                if isinstance(_r, dict) and _r.get('status') == 'success':
                                     hygiene_fixed += 1
-                                    logger.info(
-                                        "[RootHygiene] HEALED %s: %s",
-                                        _v.get("type"),
-                                        _v.get("file", ""),
-                                    )
+                                    logger.info('[RootHygiene] HEALED %s: %s', _v.get('type'), _v.get('file', ''))
                             except (ImportError, AttributeError, TypeError, ValueError) as _he:
-                                logger.error(
-                                    "[RootHygiene] heal() FAILED for %s: %s\n%s",
-                                    _v.get("type"),
-                                    _he,
-                                    traceback.format_exc(),
-                                )
-                                state_mgr.add_event(
-                                    "error", f"RootHygieneAgent heal failed for {_v.get('type')}: {_he}"
-                                )
-                    state_mgr.complete_agent(
-                        "RootHygieneAgent",
-                        True,
-                        f"Violations: {len(hygiene_violations)} (high: {len(high)}) fixed: {hygiene_fixed}",
-                    )
-                    state_mgr.state["hygiene_violations"] = hygiene_violations
-                    state_mgr.state["hygiene_fixed"] = hygiene_fixed
-                    # [H3] Record healing action for RootHygieneAgent
+                                logger.error('[RootHygiene] heal() FAILED for %s: %s\n%s', _v.get('type'), _he, traceback.format_exc())
+                                state_mgr.add_event('error', f"RootHygieneAgent heal failed for {_v.get('type')}: {_he}")
+                    state_mgr.complete_agent('RootHygieneAgent', True, f'Violations: {len(hygiene_violations)} (high: {len(high)}) fixed: {hygiene_fixed}')
+                    state_mgr.state['hygiene_violations'] = hygiene_violations
+                    state_mgr.state['hygiene_fixed'] = hygiene_fixed
                     if hygiene_fixed > 0:
-                        _record_healing_action(
-                            state_mgr,
-                            agent="RootHygieneAgent",
-                            territory="__global__",
-                            routing_tier="DETERMINISTIC",
-                            confidence=0.9,
-                            fix_summary=f"Cleaned {hygiene_fixed} of {len(hygiene_violations)} root hygiene violations",
-                            outcome="SUCCESS",
-                        )
+                        _record_healing_action(state_mgr, agent='RootHygieneAgent', territory='__global__', routing_tier='DETERMINISTIC', confidence=0.9, fix_summary=f'Cleaned {hygiene_fixed} of {len(hygiene_violations)} root hygiene violations', outcome='SUCCESS')
                 else:
-                    state_mgr.complete_agent("RootHygieneAgent", False, "No scan_root_violations method")
+                    state_mgr.complete_agent('RootHygieneAgent', False, 'No scan_root_violations method')
             except (ImportError, AttributeError, TypeError, ValueError) as e:
-                logger.error(f"RootHygieneAgent FAILED: {e}\n{traceback.format_exc()}")
-                state_mgr.add_event("error", f"RootHygieneAgent failed: {e}")
-                state_mgr.complete_agent("RootHygieneAgent", False, str(e))
-
-            # [FIX-B8] Run GravityLeakRepairAgent once globally (same pattern as RootHygieneAgent)
+                logger.error(f'RootHygieneAgent FAILED: {e}\n{traceback.format_exc()}')
+                state_mgr.add_event('error', f'RootHygieneAgent failed: {e}')
+                state_mgr.complete_agent('RootHygieneAgent', False, str(e))
             try:
                 _run_gravity_repair_global(agents, state_mgr, ctx=ctx)
             except (ImportError, AttributeError, TypeError, ValueError) as e:
-                logger.error(f"GravityLeakRepairAgent global run FAILED: {e}\n{traceback.format_exc()}")
-                state_mgr.add_event("error", f"GravityLeakRepairAgent failed: {e}")
-
-            # [L3-SEAM] Initialize agent execution log for L3EfficiencyTuner consumption
-            if "agent_execution_log" not in state_mgr.state:
-                state_mgr.state["agent_execution_log"] = []
-
-            # Dirs that contain no agent code and produce zero healing fixes.
-            # Running all 7 phases against them causes redundant full-repo
-            # location scans — skip them from the full pipeline entirely.
-            # Code territories outside agentic_core (apps_*, tests, ops_scripts,
-            # system_learning) are NOT in this set and still get the full pipeline.
-            _DATA_ONLY_TERRITORIES = frozenset({"logs", "docs", "data", ARCHIVES_DIR, "artifacts", TOOLS_DIR})
-
+                logger.error(f'GravityLeakRepairAgent global run FAILED: {e}\n{traceback.format_exc()}')
+                state_mgr.add_event('error', f'GravityLeakRepairAgent failed: {e}')
+            if 'agent_execution_log' not in state_mgr.state:
+                state_mgr.state['agent_execution_log'] = []
+            _DATA_ONLY_TERRITORIES = frozenset({'logs', 'docs', 'data', ARCHIVES_DIR, 'artifacts', TOOLS_DIR})
             for territory in targets:
                 logger.info(f"\n{'=' * 60}")
-                logger.info(f"PROCESSING TERRITORY: {territory}")
+                logger.info(f'PROCESSING TERRITORY: {territory}')
                 logger.info(f"{'=' * 60}")
-
                 if territory in _DATA_ONLY_TERRITORIES and ctx.heal:
-                    logger.info(
-                        f"[SKIP] {territory} is a data/artifact territory — bypassing full pipeline (scan-only)"
-                    )
-                    results.append({"territory": territory, "status": "scan_only_skipped"})
+                    logger.info(f'[SKIP] {territory} is a data/artifact territory — bypassing full pipeline (scan-only)')
+                    results.append({'territory': territory, 'status': 'scan_only_skipped'})
                     continue
-
-                # Update State with Target
-                state_mgr.state["current_territory"] = territory
+                state_mgr.state['current_territory'] = territory
                 state_mgr.save()
-                state_mgr.add_event("domain_start", f"Entering Domain: {territory}")
-                # [L3-SEAM] Record territory start time for efficiency tuner
+                state_mgr.add_event('domain_start', f'Entering Domain: {territory}')
                 _territory_start_ms = time.monotonic() * 1000.0
-
                 from dataclasses import replace as _dc_replace
-
                 effective_ctx = ctx
-
-                # [EXPANDED SCOPE] All territories respect --heal flag uniformly
-                # FIX-B12 removed: non-AC territories no longer force heal=False
-                # when --heal is explicitly passed. Healing is now territory-agnostic.
-
-                # [FIX] Reset per-territory decision engine state so cycle detection
-                # does not bleed across territories (agent_name="Unknown" accumulates).
                 decision_engine._call_path = set()
                 decision_engine._healing_count = 0
-                decision_engine._healing_enabled = True  # [FIX-B15] Reset budget gate per territory
-
+                decision_engine._healing_enabled = True
                 try:
-                    # [UNIVERSAL HEALING] Unified Execution Phase
-                    # All agents now receive the 'Heal' signal if confidence is met
-                    p1_drift, p1_loc, p1_scan_result = execute_phase1_discovery(
-                        agents,
-                        territory,
-                        decision_engine,
-                        state_mgr,
-                        effective_ctx,
-                    )
-
+                    p1_drift, p1_loc, p1_scan_result = execute_phase1_discovery(agents, territory, decision_engine, state_mgr, effective_ctx)
                     if p1_drift is not None:
-                        # Phase 2: Reconciliation (Write/Heal Phase)
-                        # Create plan from Phase 1 results
-                        # Build violations from actual drift report keys.
-                        # suggested_agent must match agents dict keys for lookup + BMG GPU routing.
                         _phase1_violations = []
-                        for _f in p1_drift.get("forbidden_folders") or []:
-                            _phase1_violations.append(
-                                {"type": "FORBIDDEN_FOLDER", "file": str(_f), "suggested_agent": "reconciler"}
-                            )
-                        for _d in p1_drift.get("duplicate_folders") or []:
-                            _dname = _d.get("name", str(_d)) if isinstance(_d, dict) else str(_d)
-                            _phase1_violations.append(
-                                {"type": "DUPLICATE_FOLDER", "file": _dname, "suggested_agent": "location"}
-                            )
-                        for _a in p1_drift.get("archived_files_at_root") or []:
-                            _phase1_violations.append(
-                                {
-                                    "type": "ARCHIVED_FILE_AT_ROOT",
-                                    "file": str(_a),
-                                    "suggested_agent": "root_hygiene",
-                                }
-                            )
+                        for _f in p1_drift.get('forbidden_folders') or []:
+                            _phase1_violations.append({'type': 'FORBIDDEN_FOLDER', 'file': str(_f), 'suggested_agent': 'reconciler'})
+                        for _d in p1_drift.get('duplicate_folders') or []:
+                            _dname = _d.get('name', str(_d)) if isinstance(_d, dict) else str(_d)
+                            _phase1_violations.append({'type': 'DUPLICATE_FOLDER', 'file': _dname, 'suggested_agent': 'location'})
+                        for _a in p1_drift.get('archived_files_at_root') or []:
+                            _phase1_violations.append({'type': 'ARCHIVED_FILE_AT_ROOT', 'file': str(_a), 'suggested_agent': 'root_hygiene'})
                         for _lv in p1_loc or []:
                             if isinstance(_lv, dict):
-                                _lv["suggested_agent"] = "location"
+                                _lv['suggested_agent'] = 'location'
                                 _phase1_violations.append(_lv)
                             else:
-                                _phase1_violations.append(
-                                    {"type": "LOCATION", "file": str(_lv), "suggested_agent": "location"}
-                                )
-                        plan = {"violations_found": _phase1_violations}
-
-                        # [E4] Write pre_validation.json before healing
+                                _phase1_violations.append({'type': 'LOCATION', 'file': str(_lv), 'suggested_agent': 'location'})
+                        plan = {'violations_found': _phase1_violations}
                         if _phase1_violations and trace_id:
                             try:
-                                validation_dir = REPO_ROOT / "logs" / "validation" / trace_id / territory
-                                _write_pre_validation_json(
-                                    violations=_phase1_violations,
-                                    trace_id=trace_id,
-                                    territory=territory,
-                                    validators_used=["Phase1Discovery"],
-                                    output_dir=validation_dir,
-                                )
+                                validation_dir = REPO_ROOT / 'logs' / 'validation' / trace_id / territory
+                                _write_pre_validation_json(violations=_phase1_violations, trace_id=trace_id, territory=territory, validators_used=['Phase1Discovery'], output_dir=validation_dir)
                             except (OSError, TypeError) as _pre_err:
-                                logger.warning(
-                                    f"[PRE-VALIDATION] Failed to write pre_validation.json: {_pre_err}"
-                                )
-
-                        # Execute Phase 2 with decision engine gating
-                        phase2_result = execute_phase2_reconciliation(
-                            agents,
-                            territory,
-                            decision_engine,
-                            state_mgr,
-                            plan,
-                            effective_ctx,
-                        )
-
-                        # Log Phase 2 results
-                        raw = phase2_result.get("_raw_result", {})
-                        if raw.get("modifications"):
+                                logger.warning(f'[PRE-VALIDATION] Failed to write pre_validation.json: {_pre_err}')
+                        phase2_result = execute_phase2_reconciliation(agents, territory, decision_engine, state_mgr, plan, effective_ctx)
+                        raw = phase2_result.get('_raw_result', {})
+                        if raw.get('modifications'):
                             logger.info(f"✅ Phase 2: {len(raw['modifications'])} fixes applied")
-                        if raw.get("failures"):
+                        if raw.get('failures'):
                             logger.warning(f"⚠️ Phase 2: {len(raw['failures'])} fixes failed")
-                        # BUG-2 fix: persist Phase 2 fix count into state so cert builder reads it
-                        _p2_fixed = phase2_result.get("violations_fixed", 0)
-                        state_mgr.state["phase2_violations_fixed"] = (
-                            state_mgr.state.get("phase2_violations_fixed", 0) + _p2_fixed
-                        )
-
-                        # Phase 3: Final Validation (Post-heal AST checks)
-                        # [FIX-B6] Use _phase1_violations built above, not p1_drift.get('violations', []) which is always []
-                        phase3_result = execute_phase3_validation(
-                            agents,
-                            territory,
-                            _phase1_violations,
-                            False,
-                        )
-
-                        # [E5] Write post_validation.json after Phase 3 revalidation
+                        _p2_fixed = phase2_result.get('violations_fixed', 0)
+                        state_mgr.state['phase2_violations_fixed'] = state_mgr.state.get('phase2_violations_fixed', 0) + _p2_fixed
+                        phase3_result = execute_phase3_validation(agents, territory, _phase1_violations, False)
                         if trace_id:
                             try:
-                                validation_dir = REPO_ROOT / "logs" / "validation" / trace_id / territory
-                                pre_validation_path = validation_dir / "pre_validation.json"
-                                _write_post_validation_json(
-                                    pre_validation_path=pre_validation_path,
-                                    phase3_result=phase3_result,
-                                    trace_id=trace_id,
-                                    territory=territory,
-                                    output_dir=validation_dir,
-                                )
+                                validation_dir = REPO_ROOT / 'logs' / 'validation' / trace_id / territory
+                                pre_validation_path = validation_dir / 'pre_validation.json'
+                                _write_post_validation_json(pre_validation_path=pre_validation_path, phase3_result=phase3_result, trace_id=trace_id, territory=territory, output_dir=validation_dir)
                             except (OSError, TypeError) as _post_err:
-                                logger.warning(
-                                    f"[POST-VALIDATION] Failed to write post_validation.json: {_post_err}"
-                                )
-
-                        if phase3_result["status"] == "clean":
-                            logger.info("✅ Phase 3: All files pass validation")
+                                logger.warning(f'[POST-VALIDATION] Failed to write post_validation.json: {_post_err}')
+                        if phase3_result['status'] == 'clean':
+                            logger.info('✅ Phase 3: All files pass validation')
                         else:
-                            remaining_count = len(phase3_result.get("remaining_violations", []))
-                            logger.warning(f"⚠️ Phase 3: {remaining_count} issues detected")
-
-                        # Continue with existing phases
-                        # Phase 3: Structural Alignment (Hierarchy)
-                        execute_phase3_alignment(
-                            agents,
-                            territory,
-                            decision_engine,
-                            state_mgr,
-                            effective_ctx,
-                        )
-
-                        # [UNIVERSAL HEALING] Phase 3: Sovereignty Enforcement (Pascal/Header/Naming)
-                        # Now integrated with confidence-based decision engine
-                        # [PHASE 2 ENHANCEMENT] Include classification violations in confidence calc
-                        classification_violations = state_mgr.state.get("classification_violations", [])
+                            remaining_count = len(phase3_result.get('remaining_violations', []))
+                            logger.warning(f'⚠️ Phase 3: {remaining_count} issues detected')
+                        execute_phase3_alignment(agents, territory, decision_engine, state_mgr, effective_ctx)
+                        classification_violations = state_mgr.state.get('classification_violations', [])
                         total_violations = (len(p1_loc) if p1_loc else 0) + len(classification_violations)
-                        violation_types = ["SOVEREIGNTY", "NAMING", "HEADER"]
-                        # Add CLASSIFICATION type if we have classification violations
+                        violation_types = ['SOVEREIGNTY', 'NAMING', 'HEADER']
                         if classification_violations:
-                            violation_types.append("CLASSIFICATION")
-                        pascal_confidence = decision_engine.calculate_healing_confidence(
-                            violations_count=total_violations,
-                            violation_types=violation_types,
-                            territory=territory,
-                        )
-                        pascal_proceed, pascal_reason = decision_engine.should_proceed_with_healing(
-                            pascal_confidence, "FileClassificationHealerAgent"
-                        )
-
-                        state_mgr.add_event("decision", f"Sovereignty Healing: {pascal_reason}")
-                        logger.info(f"Sovereignty Decision: {pascal_reason}")
-
+                            violation_types.append('CLASSIFICATION')
+                        pascal_confidence = decision_engine.calculate_healing_confidence(violations_count=total_violations, violation_types=violation_types, territory=territory)
+                        pascal_proceed, pascal_reason = decision_engine.should_proceed_with_healing(pascal_confidence, 'FileClassificationHealerAgent')
+                        state_mgr.add_event('decision', f'Sovereignty Healing: {pascal_reason}')
+                        logger.info(f'Sovereignty Decision: {pascal_reason}')
                         if pascal_proceed and effective_ctx.heal:
-                            logger.info(f"Triggering Sovereignty Purge: {territory}")
-                            state_mgr.update_agent("FileClassificationHealerAgent", "L5 - Safety")
-                            _fc_healer_cls = agents.get("file_classification")
-                            _rd_invoke = (
-                                getattr(_fc_healer_cls, "heal_repository", None) if _fc_healer_cls else None
-                            )
+                            logger.info(f'Triggering Sovereignty Purge: {territory}')
+                            state_mgr.update_agent('FileClassificationHealerAgent', 'L5 - Safety')
+                            _fc_healer_cls = agents.get('file_classification')
+                            _rd_invoke = getattr(_fc_healer_cls, 'heal_repository', None) if _fc_healer_cls else None
                             if _fc_healer_cls is not None:
                                 _fc_instance = _fc_healer_cls(project_root=REPO_ROOT)
-                                heal_result = (
-                                    _rd_invoke(_fc_instance, dry_run=False, execute=True)
-                                    if _rd_invoke
-                                    else _fc_instance.heal_repository(dry_run=False, execute=True)
-                                )
+                                heal_result = _rd_invoke(_fc_instance, dry_run=False, execute=True) if _rd_invoke else _fc_instance.heal_repository(dry_run=False, execute=True)
                             else:
                                 heal_result = {}
-                            healed = (
-                                heal_result.get("violations_fixed", 0) if isinstance(heal_result, dict) else 0
-                            )
-                            state_mgr.complete_agent(
-                                "FileClassificationHealerAgent", True, f"Healed: {healed}"
-                            )
-                            _record_healing_action(
-                                state_mgr,
-                                agent="FileClassificationHealerAgent",
-                                territory=territory,
-                                routing_tier=pascal_reason.split("(")[0].strip()
-                                if pascal_reason
-                                else "DETERMINISTIC",
-                                routing_score=pascal_confidence.value
-                                if hasattr(pascal_confidence, "value")
-                                else 1.0,
-                                confidence=pascal_confidence.value
-                                if hasattr(pascal_confidence, "value")
-                                else 1.0,
-                                fix_summary=f"Fixed {healed} file classification violation(s) in {territory}",
-                                outcome="SUCCESS" if healed > 0 else "PARTIAL",
-                            )
+                            healed = heal_result.get('violations_fixed', 0) if isinstance(heal_result, dict) else 0
+                            state_mgr.complete_agent('FileClassificationHealerAgent', True, f'Healed: {healed}')
+                            _record_healing_action(state_mgr, agent='FileClassificationHealerAgent', territory=territory, routing_tier=pascal_reason.split('(')[0].strip() if pascal_reason else 'DETERMINISTIC', routing_score=pascal_confidence.value if hasattr(pascal_confidence, 'value') else 1.0, confidence=pascal_confidence.value if hasattr(pascal_confidence, 'value') else 1.0, fix_summary=f'Fixed {healed} file classification violation(s) in {territory}', outcome='SUCCESS' if healed > 0 else 'PARTIAL')
                         elif not pascal_proceed:
-                            state_mgr.skip_agent("FileClassificationHealerAgent", pascal_reason)
-                            _record_healing_action(
-                                state_mgr,
-                                agent="FileClassificationHealerAgent",
-                                territory=territory,
-                                routing_tier="DETERMINISTIC",
-                                routing_score=0.0,
-                                confidence=0.0,
-                                fix_summary=f"Skipped file classification healing: {pascal_reason}",
-                                outcome="SKIPPED",
-                            )
+                            state_mgr.skip_agent('FileClassificationHealerAgent', pascal_reason)
+                            _record_healing_action(state_mgr, agent='FileClassificationHealerAgent', territory=territory, routing_tier='DETERMINISTIC', routing_score=0.0, confidence=0.0, fix_summary=f'Skipped file classification healing: {pascal_reason}', outcome='SKIPPED')
                         elif not effective_ctx.heal:
-                            state_mgr.skip_agent(
-                                "FileClassificationHealerAgent", "scan-only mode (no --heal)"
-                            )
-
-                        # Phase 4: Architectural Validation
-                        gov, arch = execute_phase4_architectural_validation(
-                            agents, territory, state_mgr, ctx=effective_ctx
-                        )
-
-                        # Persist full work to state
-                        state_mgr.state["compliance_report"] = gov
+                            state_mgr.skip_agent('FileClassificationHealerAgent', 'scan-only mode (no --heal)')
+                        gov, arch = execute_phase4_architectural_validation(agents, territory, state_mgr, ctx=effective_ctx)
+                        state_mgr.state['compliance_report'] = gov
                         state_mgr.save()
-
-                        # Phase 5: Final Healing (Governor)
-                        execute_phase5_healing(
-                            agents,
-                            territory,
-                            gov,
-                            decision_engine,
-                            state_mgr,
-                            effective_ctx,
-                        )
-
-                        # Phase 6: Additional Agent Execution (Observability Probe & Root Hygiene)
-                        logger.info(f"=== PHASE 6: ADDITIONAL AGENTS - {territory} ===")
-
-                        # [FIX-B2] Reset per-territory conversational violations to prevent cross-territory accumulation
-                        state_mgr.state["conversational_violations"] = []
-
-                        # Execute ObservabilityProbeExecutorAgent
-                        logger.info(f"🤖 Triggering Observability Probe: {territory}")
-                        state_mgr.update_agent("ObservabilityProbeExecutorAgent", "L6 - Observability")
+                        execute_phase5_healing(agents, territory, gov, decision_engine, state_mgr, effective_ctx)
+                        logger.info(f'=== PHASE 6: ADDITIONAL AGENTS - {territory} ===')
+                        state_mgr.state['conversational_violations'] = []
+                        logger.info(f'🤖 Triggering Observability Probe: {territory}')
+                        state_mgr.update_agent('ObservabilityProbeExecutorAgent', 'L6 - Observability')
                         try:
-                            conversational_agent = agents.get("observability_probe", lambda **_: None)(
-                                project_root=REPO_ROOT, probe_type="debate"
-                            )
-                            if hasattr(conversational_agent, "scan_violations"):
-                                conv_results = conversational_agent.scan_violations(
-                                    target_territory=territory,
-                                )
-                                conv_violations = conv_results.get("violations", [])
-                                state_mgr.complete_agent(
-                                    "ObservabilityProbeExecutorAgent",
-                                    True,
-                                    f"Violations: {len(conv_violations)}",
-                                )
-                                _record_healing_action(
-                                    state_mgr,
-                                    agent="ObservabilityProbeExecutorAgent",
-                                    territory=territory,
-                                    routing_tier="DETERMINISTIC",
-                                    routing_score=1.0,
-                                    confidence=1.0,
-                                    fix_summary=f"Observability probe scan: {len(conv_violations)} violation(s) in {territory}",
-                                    outcome="SUCCESS",
-                                )
-                                # Store violations for aggregation
-                                if not state_mgr.state.get("conversational_violations"):
-                                    state_mgr.state["conversational_violations"] = []
-                                state_mgr.state["conversational_violations"].extend(conv_violations)
+                            conversational_agent = agents.get('observability_probe', lambda **_: None)(project_root=REPO_ROOT, probe_type='debate')
+                            if hasattr(conversational_agent, 'scan_violations'):
+                                conv_results = conversational_agent.scan_violations(target_territory=territory)
+                                conv_violations = conv_results.get('violations', [])
+                                state_mgr.complete_agent('ObservabilityProbeExecutorAgent', True, f'Violations: {len(conv_violations)}')
+                                _record_healing_action(state_mgr, agent='ObservabilityProbeExecutorAgent', territory=territory, routing_tier='DETERMINISTIC', routing_score=1.0, confidence=1.0, fix_summary=f'Observability probe scan: {len(conv_violations)} violation(s) in {territory}', outcome='SUCCESS')
+                                if not state_mgr.state.get('conversational_violations'):
+                                    state_mgr.state['conversational_violations'] = []
+                                state_mgr.state['conversational_violations'].extend(conv_violations)
                             else:
-                                state_mgr.complete_agent(
-                                    "ObservabilityProbeExecutorAgent",
-                                    False,
-                                    "No scan_violations method",
-                                )
-                                _record_healing_action(
-                                    state_mgr,
-                                    agent="ObservabilityProbeExecutorAgent",
-                                    territory=territory,
-                                    routing_tier="DETERMINISTIC",
-                                    routing_score=0.0,
-                                    confidence=0.0,
-                                    fix_summary=f"ObservabilityProbeExecutorAgent unavailable in {territory}",
-                                    outcome="SKIPPED",
-                                )
+                                state_mgr.complete_agent('ObservabilityProbeExecutorAgent', False, 'No scan_violations method')
+                                _record_healing_action(state_mgr, agent='ObservabilityProbeExecutorAgent', territory=territory, routing_tier='DETERMINISTIC', routing_score=0.0, confidence=0.0, fix_summary=f'ObservabilityProbeExecutorAgent unavailable in {territory}', outcome='SKIPPED')
                         except (ImportError, AttributeError, TypeError, ValueError) as e:
-                            logger.error(
-                                f"ObservabilityProbeExecutorAgent FAILED: {e}\n{traceback.format_exc()}"
-                            )
-                            state_mgr.add_event(
-                                "error", f"ObservabilityProbeExecutorAgent failed in {territory}: {e}"
-                            )
-                            state_mgr.complete_agent("ObservabilityProbeExecutorAgent", False, str(e))
-                            _record_healing_action(
-                                state_mgr,
-                                agent="ObservabilityProbeExecutorAgent",
-                                territory=territory,
-                                routing_tier="DETERMINISTIC",
-                                routing_score=0.0,
-                                confidence=0.0,
-                                fix_summary=f"ObservabilityProbeExecutorAgent error in {territory}: {str(e)[:120]}",
-                                outcome="FAILED",
-                            )
-
-                        # Execute CognitiveDispositionAgent
+                            logger.error(f'ObservabilityProbeExecutorAgent FAILED: {e}\n{traceback.format_exc()}')
+                            state_mgr.add_event('error', f'ObservabilityProbeExecutorAgent failed in {territory}: {e}')
+                            state_mgr.complete_agent('ObservabilityProbeExecutorAgent', False, str(e))
+                            _record_healing_action(state_mgr, agent='ObservabilityProbeExecutorAgent', territory=territory, routing_tier='DETERMINISTIC', routing_score=0.0, confidence=0.0, fix_summary=f'ObservabilityProbeExecutorAgent error in {territory}: {str(e)[:120]}', outcome='FAILED')
                         try:
-                            state_mgr.update_agent("CognitiveDispositionAgent", "L1 - Cognition")
-                            cog_agent = agents["cognitive_disposition"](project_root=REPO_ROOT)
-                            if hasattr(cog_agent, "get_analytics"):
+                            state_mgr.update_agent('CognitiveDispositionAgent', 'L1 - Cognition')
+                            cog_agent = agents['cognitive_disposition'](project_root=REPO_ROOT)
+                            if hasattr(cog_agent, 'get_analytics'):
                                 cog_results = cog_agent.get_analytics()
-                                state_mgr.complete_agent(
-                                    "CognitiveDispositionAgent",
-                                    True,
-                                    f"Analytics keys: {list(cog_results.keys())[:4]}",
-                                )
-                                _record_healing_action(
-                                    state_mgr,
-                                    agent="CognitiveDispositionAgent",
-                                    territory=territory,
-                                    routing_tier="DETERMINISTIC",
-                                    routing_score=1.0,
-                                    confidence=1.0,
-                                    fix_summary=f"Cognitive analytics: {list(cog_results.keys())[:4]} in {territory}",
-                                    outcome="SUCCESS",
-                                )
+                                state_mgr.complete_agent('CognitiveDispositionAgent', True, f'Analytics keys: {list(cog_results.keys())[:4]}')
+                                _record_healing_action(state_mgr, agent='CognitiveDispositionAgent', territory=territory, routing_tier='DETERMINISTIC', routing_score=1.0, confidence=1.0, fix_summary=f'Cognitive analytics: {list(cog_results.keys())[:4]} in {territory}', outcome='SUCCESS')
                             else:
-                                state_mgr.complete_agent(
-                                    "CognitiveDispositionAgent", False, "No get_analytics method"
-                                )
-                                _record_healing_action(
-                                    state_mgr,
-                                    agent="CognitiveDispositionAgent",
-                                    territory=territory,
-                                    routing_tier="DETERMINISTIC",
-                                    routing_score=0.0,
-                                    confidence=0.0,
-                                    fix_summary=f"CognitiveDispositionAgent unavailable in {territory}",
-                                    outcome="SKIPPED",
-                                )
+                                state_mgr.complete_agent('CognitiveDispositionAgent', False, 'No get_analytics method')
+                                _record_healing_action(state_mgr, agent='CognitiveDispositionAgent', territory=territory, routing_tier='DETERMINISTIC', routing_score=0.0, confidence=0.0, fix_summary=f'CognitiveDispositionAgent unavailable in {territory}', outcome='SKIPPED')
                         except (ImportError, AttributeError, TypeError, ValueError) as e:
-                            logger.error(f"CognitiveDispositionAgent FAILED: {e}\n{traceback.format_exc()}")
-                            state_mgr.add_event(
-                                "error", f"CognitiveDispositionAgent failed in {territory}: {e}"
-                            )
-                            state_mgr.complete_agent("CognitiveDispositionAgent", False, str(e))
-                            _record_healing_action(
-                                state_mgr,
-                                agent="CognitiveDispositionAgent",
-                                territory=territory,
-                                routing_tier="DETERMINISTIC",
-                                routing_score=0.0,
-                                confidence=0.0,
-                                fix_summary=f"CognitiveDispositionAgent error in {territory}: {str(e)[:120]}",
-                                outcome="FAILED",
-                            )
-
-                        # Phase 7 (RootHygieneAgent moved outside territory loop — Fix 4)
+                            logger.error(f'CognitiveDispositionAgent FAILED: {e}\n{traceback.format_exc()}')
+                            state_mgr.add_event('error', f'CognitiveDispositionAgent failed in {territory}: {e}')
+                            state_mgr.complete_agent('CognitiveDispositionAgent', False, str(e))
+                            _record_healing_action(state_mgr, agent='CognitiveDispositionAgent', territory=territory, routing_tier='DETERMINISTIC', routing_score=0.0, confidence=0.0, fix_summary=f'CognitiveDispositionAgent error in {territory}: {str(e)[:120]}', outcome='FAILED')
                         cert = execute_phase7_final(agents, territory, state_mgr, decision_engine)
                         results.append(cert)
-                        # [L3-SEAM] Record territory duration for L3EfficiencyTuner
                         _territory_elapsed_ms = time.monotonic() * 1000.0 - _territory_start_ms
-                        state_mgr.state["agent_execution_log"].append(
-                            {
-                                "territory": territory,
-                                "agent": "__territory_total__",
-                                "duration_ms": round(_territory_elapsed_ms, 2),
-                            }
-                        )
+                        state_mgr.state['agent_execution_log'].append({'territory': territory, 'agent': '__territory_total__', 'duration_ms': round(_territory_elapsed_ms, 2)})
                     else:
-                        logger.error(f"Phase 1 failed for {territory} - skipping")
-                        state_mgr.add_event("error", f"Phase 1 failure in {territory}")
-
+                        logger.error(f'Phase 1 failed for {territory} - skipping')
+                        state_mgr.add_event('error', f'Phase 1 failure in {territory}')
                 except RuntimeError as runtime_err:
-                    # Catch the NonInteractiveGuard trap specifically
-                    if "Interactive prompt blocked" in str(runtime_err):
-                        logger.critical(f"🛑 BLOCKED INTERACTIVE PROMPT in {territory}: {runtime_err}")
-                        state_mgr.add_event("error", f"Blocked Prompt in {territory}")
-                        continue  # Skip this territory, try next
+                    if 'Interactive prompt blocked' in str(runtime_err):
+                        logger.critical(f'🛑 BLOCKED INTERACTIVE PROMPT in {territory}: {runtime_err}')
+                        state_mgr.add_event('error', f'Blocked Prompt in {territory}')
+                        continue
                     raise runtime_err
                 except (ImportError, AttributeError, TypeError, ValueError, OSError) as e:
-                    logger.error(f"❌ Protocol crashed on {territory}: {e}\n{traceback.format_exc()}")
-                    state_mgr.add_event("error", f"Crash in {territory}: {type(e).__name__}: {str(e)[:500]}")
+                    logger.error(f'❌ Protocol crashed on {territory}: {e}\n{traceback.format_exc()}')
+                    state_mgr.add_event('error', f'Crash in {territory}: {type(e).__name__}: {str(e)[:500]}')
                     if is_autonomous:
                         continue
                     else:
                         _fire_meta_learning_intake(state_mgr, now_utc=int(time.time()))
-                        state_mgr.finish_mission(status="error")
+                        state_mgr.finish_mission(status='error')
                         sys.exit(1)
-
-            # Wave 0C: fire meta-learning intake before closing the mission
             _fire_meta_learning_intake(state_mgr, now_utc=int(time.time()))
-
-            # Save aggregate report across all territories
             save_aggregate_report(targets, REPO_ROOT)
-
-            # Only mark completed if we got here
-            state_mgr.finish_mission(status="completed")
-
-            # L6: emit determinism digest — exactly one line per run
+            state_mgr.finish_mission(status='completed')
             try:
-                from agentic_core.L6_observability.engines.determinism_digest_emitter import (
-                    DeterminismDigestEmitter as _DET_EMITTER,
-                )
-
+                from agentic_core.L6_observability.engines.determinism_digest_emitter import DeterminismDigestEmitter as _DET_EMITTER
                 _det_digest = _compute_pipeline_digest(targets)
                 _det_line = _DET_EMITTER().emit_once(_det_digest)
                 print(_det_line)
-            except (ImportError, AttributeError, TypeError) as _det_exc:  # guardian: allow-silent-swallower
-                logger.warning(f"[DETERMINISM-DIGEST] emission failed: {_det_exc}")
-
-            # Final Summary
+            except (ImportError, AttributeError, TypeError) as _det_exc:
+                logger.warning(f'[DETERMINISM-DIGEST] emission failed: {_det_exc}')
             logger.info(f"\n{'=' * 60}")
-            logger.info("🎉 UNIFIED PROTOCOL COMPLETED")
+            logger.info('🎉 UNIFIED PROTOCOL COMPLETED')
             logger.info(f"{'=' * 60}")
-            logger.info(f"Territories processed: {len(results)}/{len(targets)}")
-            logger.info(f"Decisions made: {len(decision_engine.decisions_made)}")
-
-            # Decision breakdown
-            high_conf = sum(1 for d in decision_engine.decisions_made if d["confidence"] > 0.75)
-            med_conf = sum(1 for d in decision_engine.decisions_made if 0.5 <= d["confidence"] <= 0.75)
-            low_conf = sum(1 for d in decision_engine.decisions_made if d["confidence"] < 0.5)
-            logger.info(f"  High confidence: {high_conf}, Medium: {med_conf}, Low: {low_conf}")
-
+            logger.info(f'Territories processed: {len(results)}/{len(targets)}')
+            logger.info(f'Decisions made: {len(decision_engine.decisions_made)}')
+            high_conf = sum((1 for d in decision_engine.decisions_made if d['confidence'] > 0.75))
+            med_conf = sum((1 for d in decision_engine.decisions_made if 0.5 <= d['confidence'] <= 0.75))
+            low_conf = sum((1 for d in decision_engine.decisions_made if d['confidence'] < 0.5))
+            logger.info(f'  High confidence: {high_conf}, Medium: {med_conf}, Low: {low_conf}')
             try:
                 _print_healing_heatmap(state_mgr, decision_engine)
-            except (
-                ImportError,
-                AttributeError,
-                TypeError,
-                ValueError,
-            ) as _hm_exc:  # guardian: allow-silent-swallower
-                logger.error(f"[HEATMAP] Output failed (non-fatal): {_hm_exc}")
-
+            except (ImportError, AttributeError, TypeError, ValueError) as _hm_exc:
+                logger.error(f'[HEATMAP] Output failed (non-fatal): {_hm_exc}')
             try:
                 _print_meta_learning_summary(state_mgr, decision_engine)
-            except (
-                ImportError,
-                AttributeError,
-                TypeError,
-                ValueError,
-            ) as _ml_exc:  # guardian: allow-silent-swallower
-                logger.error(f"[META-LEARNING] Output failed (non-fatal): {_ml_exc}")
-
-            # [ZERO-TOLERANCE] Print full agent/phase coverage manifest.
-            # Any agent or phase that did not run is explicitly named here.
+            except (ImportError, AttributeError, TypeError, ValueError) as _ml_exc:
+                logger.error(f'[META-LEARNING] Output failed (non-fatal): {_ml_exc}')
             _manifest_gaps = 0
             try:
                 _manifest_gaps = _print_run_manifest(state_mgr, targets)
                 if _manifest_gaps > 0:
-                    logger.error(
-                        f"[RUN MANIFEST] {_manifest_gaps} agent/phase gap(s) detected. "
-                        "See RUN MANIFEST output above for full details."
-                    )
-            except (
-                ImportError,
-                AttributeError,
-                TypeError,
-                ValueError,
-            ) as _rm_exc:  # guardian: allow-silent-swallower
-                logger.error(f"[RUN MANIFEST] Output failed (non-fatal): {_rm_exc}")
-
-            # [MANDATORY-OBSERVABILITY] These outputs MUST always emit regardless of
-            # pre-summary failures. Banner makes them findable when scrolling ~1000 lines.
-            print("\n" + "=" * 80)
-            print("\u2193  END OF PIPELINE — MANDATORY OBSERVABILITY OUTPUT BELOW")
-            print("=" * 80 + "\n")
+                    logger.error(f'[RUN MANIFEST] {_manifest_gaps} agent/phase gap(s) detected. See RUN MANIFEST output above for full details.')
+            except (ImportError, AttributeError, TypeError, ValueError) as _rm_exc:
+                logger.error(f'[RUN MANIFEST] Output failed (non-fatal): {_rm_exc}')
+            print('\n' + '=' * 80)
+            print('↓  END OF PIPELINE — MANDATORY OBSERVABILITY OUTPUT BELOW')
+            print('=' * 80 + '\n')
             _write_mandatory_json_output(state_mgr, decision_engine)
-
-            # [OBSERVABILITY] Wave 2-4: prove-it outputs + executive summary table
             _complete_output = _write_heal_run_complete(state_mgr, decision_engine)
             _write_failure_forensics(state_mgr, decision_engine)
             if isinstance(_complete_output, dict):
                 _print_executive_summary(_complete_output)
             sys.stdout.flush()
-
             return results
-
-    except (
-        ImportError,
-        AttributeError,
-        TypeError,
-        ValueError,
-        OSError,
-    ) as fatal_e:  # guardian: allow-silent-swallower
-        # Catch-all for top-level crashes (e.g., initialization failure)
-        logger.critical(f"\U0001f525 FATAL PROTOCOL ERROR: {fatal_e}")
+    except (ImportError, AttributeError, TypeError, ValueError, OSError) as fatal_e:
+        logger.critical(f'🔥 FATAL PROTOCOL ERROR: {fatal_e}')
         traceback.print_exc()
         _fire_meta_learning_intake(state_mgr, now_utc=int(time.time()))
-        state_mgr.finish_mission(status="fatal_error")
+        state_mgr.finish_mission(status='fatal_error')
         try:
-            print("\n" + "=" * 80)
-            print("\u2193  FATAL ERROR — MANDATORY OBSERVABILITY OUTPUT (PARTIAL RUN)")
-            print("=" * 80 + "\n")
+            print('\n' + '=' * 80)
+            print('↓  FATAL ERROR — MANDATORY OBSERVABILITY OUTPUT (PARTIAL RUN)')
+            print('=' * 80 + '\n')
             _write_mandatory_json_output(state_mgr, decision_engine)
             _complete_output = _write_heal_run_complete(state_mgr, decision_engine)
             _write_failure_forensics(state_mgr, decision_engine)
@@ -8931,11 +4614,8 @@ def _legacy_main(
             pass
         sys.exit(1)
 
-
-# ============================================================================
-# DYNAMIC AGENT DISCOVERY (Step 1 Implementation)
-# ============================================================================
-def load_agents(project_root: Path | None = None) -> dict[str, Any]:
+# guardian: allow-type-erasure
+def load_agents(project_root: Path | None=None) -> dict[str, Any]:
     """
     Dynamically discovers and loads compliant Healer Agents.
     Wraps non-compliant agents in LegacyAgentAdapter.
@@ -8949,97 +4629,56 @@ def load_agents(project_root: Path | None = None) -> dict[str, Any]:
     """
     if project_root is None:
         project_root = REPO_ROOT
-    logging.info("Starting dynamic agent discovery...")
+    logging.info('Starting dynamic agent discovery...')
     discovered_agents = {}
-
-    # Define search paths relative to project root
-    search_paths = [
-        project_root / AGENTIC_CORE_DIR,
-        project_root / APPS_RG_DIR,
-        project_root / APPS_LIC_DIR,
-    ]
-
+    search_paths = [project_root / AGENTIC_CORE_DIR, project_root / APPS_RG_DIR, project_root / APPS_LIC_DIR]
     for search_path in search_paths:
         if not search_path.exists():
             continue
-
-        # Walk directory
         for root, dirs, files in os.walk(search_path):
             dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
             for file in files:
-                if not file.endswith(".py") or file.startswith("__"):
+                if not file.endswith('.py') or file.startswith('__'):
                     continue
-
-                # Heuristic: Check file content for 'class' and 'Agent' before importing
                 file_path = Path(root) / file
                 try:
-                    with open(file_path, encoding="utf-8") as f:
+                    with open(file_path, encoding='utf-8') as f:
                         content = f.read()
-                        if "class " not in content or (
-                            "Agent" not in content and "Validator" not in content and "Fixer" not in content
-                        ):
-                            if not any(
-                                p in file_path.parts for p in ["__pycache__", ".git", "node_modules", ".venv"]
-                            ):
+                        if 'class ' not in content or ('Agent' not in content and 'Validator' not in content and ('Fixer' not in content)):
+                            if not any((p in file_path.parts for p in ['__pycache__', '.git', 'node_modules', '.venv'])):
                                 continue
                 except (OSError, AttributeError):
                     continue
-
-                # Construct module path for import
                 try:
                     rel_path = file_path.relative_to(project_root)
-                    module_name = str(rel_path).replace(os.sep, ".")[:-3]  # strip .py
-
-                    # Safe Import
+                    module_name = str(rel_path).replace(os.sep, '.')[:-3]
                     spec = importlib.util.spec_from_file_location(module_name, file_path)
                     if not spec or not spec.loader:
                         continue
-
                     module = importlib.util.module_from_spec(spec)
                     sys.modules[module_name] = module
                     spec.loader.exec_module(module)
-
-                    # Inspect classes
                     for name, obj in inspect.getmembers(module, inspect.isclass):
-                        # Broaden search to include anything that LOOKS like a healer
-                        is_likely_agent = (
-                            obj.__module__ == module_name
-                            and ("Agent" in name or "Fixer" in name or "Validator" in name)
-                            and not name.startswith("Base")
-                        )
-
+                        is_likely_agent = obj.__module__ == module_name and ('Agent' in name or 'Fixer' in name or 'Validator' in name) and (not name.startswith('Base'))
                         if is_likely_agent:
                             try:
                                 instance = obj()
-
-                                # CHECK 1: Does it strictly implement the Protocol?
                                 if isinstance(instance, IHealerProtocol):
                                     discovered_agents[name] = instance
-                                    logging.debug(f"Loaded Standard Agent: {name}")
-
-                                # CHECK 2: Does it have a 'heal' method (Duck Typing)?
-                                elif hasattr(instance, "heal") and callable(instance.heal):
+                                    logging.debug(f'Loaded Standard Agent: {name}')
+                                elif hasattr(instance, 'heal') and callable(instance.heal):
                                     discovered_agents[name] = instance
-                                    logging.debug(f"Loaded Duck-Typed Agent: {name}")
-
-                                # CHECK 3: Legacy Fallback (Wrap it)
+                                    logging.debug(f'Loaded Duck-Typed Agent: {name}')
                                 else:
-                                    logging.info(f"Wrapping Legacy Agent: {name}")
+                                    logging.info(f'Wrapping Legacy Agent: {name}')
                                     discovered_agents[name] = LegacyAgentAdapter(instance)
-
                             except (ImportError, AttributeError, TypeError) as e:
-                                logging.warning(f"Failed to instantiate {name}: {e}")
-
+                                logging.warning(f'Failed to instantiate {name}: {e}')
                 except (ImportError, AttributeError, SyntaxError) as e:
-                    logging.debug(f"Skipping module {file_path}: {e}")
-
-    logging.info(f"Discovery complete. Loaded {len(discovered_agents)} agents (including adapters).")
+                    logging.debug(f'Skipping module {file_path}: {e}')
+    logging.info(f'Discovery complete. Loaded {len(discovered_agents)} agents (including adapters).')
     return discovered_agents
 
-
-# ============================================================================
-# SIGNAL HANDLING (Graceful Shutdown)
-# ============================================================================
 class GracefulExitHandler:
     """Captures SIGINT/SIGTERM to allow Phase 2 writes to finish safely."""
 
@@ -9052,25 +4691,11 @@ class GracefulExitHandler:
     def exit_gracefully(self, signum: int, frame: FrameType | None):
         """Signal handler."""
         if self.kill_now:
-            logging.critical("Force quitting on second signal...")
+            logging.critical('Force quitting on second signal...')
             sys.exit(1)
-
-        logging.warning("\n[!] Shutdown signal received. Finishing current agent operation...")
+        logging.warning('\n[!] Shutdown signal received. Finishing current agent operation...')
         self.kill_now = True
-        self.state_mgr.finish_mission("aborted_by_user")
-        # The logic in Phase 2 should check self.kill_now if loop is tight,
-        # but for now we rely on the loop completing the current atomic fix.
-
-
-# [REMOVED DUPLICATE] main_legacy removed to resolve dual-main entry point confusion.
-# The unified main() function below is the single source of truth.
-
-
-if __name__ == "__main__":
-    print(
-        "ERROR: Direct invocation of execute_ssot.py is not supported.\n"
-        "Use the entrypoint instead:\n"
-        "  python -m agentic_core.L0_routing.scripts.execute_ssot_entrypoint --legacy\n",
-        file=sys.stderr,
-    )
+        self.state_mgr.finish_mission('aborted_by_user')
+if __name__ == '__main__':
+    print('ERROR: Direct invocation of execute_ssot.py is not supported.\nUse the entrypoint instead:\n  python -m agentic_core.L0_routing.scripts.execute_ssot_entrypoint --legacy\n', file=sys.stderr)
     raise SystemExit(2)

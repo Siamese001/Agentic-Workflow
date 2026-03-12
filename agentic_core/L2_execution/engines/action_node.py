@@ -1,27 +1,9 @@
 from __future__ import annotations
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-"""
-Action Node - Sub-atomic Execution & Output Generation
-
-Handles tool selection, execution, and output formatting.
-Isolated from perception and reasoning logic.
-"""
-
-
+'\nAction Node - Sub-atomic Execution & Output Generation\n\nHandles tool selection, execution, and output formatting.\nIsolated from perception and reasoning logic.\n'
 import asyncio
 import time
 from typing import Any
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 class ActionNode:
     """
@@ -52,27 +34,12 @@ class ActionNode:
         """
         start_time = time.time()
         self.actions_executed += 1
-
-        # Select tools based on plan
-        tools = self._select_tools(reasoning["plan"])
-
-        # Execute tools
+        tools = self._select_tools(reasoning['plan'])
         results = self._execute_tools(tools, reasoning)
-
-        # Format output
         output = self._format_output(results, reasoning)
-
         execution_time = time.time() - start_time
         self.total_execution_time += execution_time
-
-        action_result = {
-            "output": output,
-            "tools_used": [t["name"] for t in tools],
-            "tool_count": len(tools),
-            "execution_time": execution_time,
-            "success": True,
-        }
-
+        action_result = {'output': output, 'tools_used': [t['name'] for t in tools], 'tool_count': len(tools), 'execution_time': execution_time, 'success': True}
         return action_result
 
     async def act_async(self, reasoning: dict[str, Any]) -> dict[str, Any]:
@@ -87,27 +54,12 @@ class ActionNode:
         """
         start_time = time.time()
         self.actions_executed += 1
-
-        # Select tools (fast)
-        tools = self._select_tools(reasoning["plan"])
-
-        # Execute tools asynchronously
+        tools = self._select_tools(reasoning['plan'])
         results = await asyncio.to_thread(self._execute_tools, tools, reasoning)
-
-        # Format output
         output = await asyncio.to_thread(self._format_output, results, reasoning)
-
         execution_time = time.time() - start_time
         self.total_execution_time += execution_time
-
-        action_result = {
-            "output": output,
-            "tools_used": [t["name"] for t in tools],
-            "tool_count": len(tools),
-            "execution_time": execution_time,
-            "success": True,
-        }
-
+        action_result = {'output': output, 'tools_used': [t['name'] for t in tools], 'tool_count': len(tools), 'execution_time': execution_time, 'success': True}
         return action_result
 
     def act_simple(self, perceived: dict[str, Any]) -> dict[str, Any]:
@@ -122,21 +74,10 @@ class ActionNode:
         """
         start_time = time.time()
         self.actions_executed += 1
-
-        # Direct response without heavy reasoning
         output = f"Responding to: {perceived['query'][:50]}..."
-
         execution_time = time.time() - start_time
         self.total_execution_time += execution_time
-
-        return {
-            "output": output,
-            "tools_used": [],
-            "tool_count": 0,
-            "execution_time": execution_time,
-            "success": True,
-            "simple": True,
-        }
+        return {'output': output, 'tools_used': [], 'tool_count': 0, 'execution_time': execution_time, 'success': True, 'simple': True}
 
     def _select_tools(self, plan: dict[str, Any]) -> list[dict[str, Any]]:
         """
@@ -149,20 +90,13 @@ class ActionNode:
             List of selected tools
         """
         tools = []
-
-        # Simple tool selection based on plan steps
-        step_count = len(plan.get("steps", []))
-
+        step_count = len(plan.get('steps', []))
         if step_count > 0:
-            # Primary tool
-            tools.append({"name": "primary_executor", "type": "execution", "priority": 1})
+            tools.append({'name': 'primary_executor', 'type': 'execution', 'priority': 1})
             self.tools_used += 1
-
         if step_count > 2:
-            # Secondary tool for complex plans
-            tools.append({"name": "secondary_executor", "type": "support", "priority": 2})
+            tools.append({'name': 'secondary_executor', 'type': 'support', 'priority': 2})
             self.tools_used += 1
-
         return tools
 
     def _execute_tools(self, tools: list[dict[str, Any]], reasoning: dict[str, Any]) -> list[dict[str, Any]]:
@@ -177,19 +111,9 @@ class ActionNode:
             Tool execution results
         """
         results = []
-
         for tool in tools:
-            result = {
-                "tool": tool["name"],
-                "status": "success",
-                "output": f"Executed {tool['name']}",
-                "metadata": {
-                    "type": tool.get("type", "unknown"),
-                    "priority": tool.get("priority", 0),
-                },
-            }
+            result = {'tool': tool['name'], 'status': 'success', 'output': f"Executed {tool['name']}", 'metadata': {'type': tool.get('type', 'unknown'), 'priority': tool.get('priority', 0)}}
             results.append(result)
-
         return results
 
     def _format_output(self, results: list[dict[str, Any]], reasoning: dict[str, Any]) -> str:
@@ -204,31 +128,17 @@ class ActionNode:
             Formatted output string
         """
         if not results:
-            return "No tools executed"
-
-        # Build output from results
+            return 'No tools executed'
         output_parts = []
-
         for result in results:
-            if result.get("status") == "success":
-                output_parts.append(result.get("output", ""))
-
-        # Add reasoning summary
-        thoughts = reasoning.get("thoughts", [])
+            if result.get('status') == 'success':
+                output_parts.append(result.get('output', ''))
+        thoughts = reasoning.get('thoughts', [])
         if thoughts:
-            output_parts.append(f"Based on {len(thoughts)} thoughts")
-
-        return " | ".join(output_parts) if output_parts else "Execution completed"
+            output_parts.append(f'Based on {len(thoughts)} thoughts')
+        return ' | '.join(output_parts) if output_parts else 'Execution completed'
 
     def get_statistics(self) -> dict[str, Any]:
         """Get action statistics."""
-        avg_execution_time = (
-            self.total_execution_time / self.actions_executed if self.actions_executed > 0 else 0.0
-        )
-
-        return {
-            "actions_executed": self.actions_executed,
-            "tools_used": self.tools_used,
-            "total_execution_time": self.total_execution_time,
-            "avg_execution_time": avg_execution_time,
-        }
+        avg_execution_time = self.total_execution_time / self.actions_executed if self.actions_executed > 0 else 0.0
+        return {'actions_executed': self.actions_executed, 'tools_used': self.tools_used, 'total_execution_time': self.total_execution_time, 'avg_execution_time': avg_execution_time}

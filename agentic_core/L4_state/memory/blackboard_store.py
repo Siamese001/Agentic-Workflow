@@ -3,30 +3,16 @@
 Phase 1 Wave 1.2 implementation. Implements IBlackboardLeaseVerifier protocol.
 Provides atomic KV operations, lease semantics, and tick monotonicity.
 """
-
 from __future__ import annotations
-
 from dataclasses import dataclass
 from typing import Any, Literal
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-# Phase 1: Inline minimal types to avoid broken import chain
 @dataclass(frozen=True)
 class LeaseResult:
     success: bool
     expiry_tick: int
     reason: str
-
 
 @dataclass(frozen=True)
 class SecurityEvent:
@@ -36,33 +22,20 @@ class SecurityEvent:
     details: str
     timestamp: int
     severity: str
-
-
-SecurityEventType = Literal[
-    "LEASE_VIOLATION",
-    "UNAUTHORIZED_ACCESS",
-    "SUSPICIOUS_ACTIVITY",
-]
-
+SecurityEventType = Literal['LEASE_VIOLATION', 'UNAUTHORIZED_ACCESS', 'SUSPICIOUS_ACTIVITY']
 
 def blackboard_lease_verifier(cls):
     """Minimal decorator for Phase 1 compliance."""
     return cls
 
-
 @dataclass(frozen=True)
 class LeaseEntry:
     """Lease metadata for a Blackboard key."""
-
     agent_id: str
     expiry_tick: int
     commit_tick: int
-
-
-# Phase 1 scope: in-memory only. No persistence, no external deps.
-_store: dict[str, Any] = {}  # key -> value
-_leases: dict[str, LeaseEntry] = {}  # key -> LeaseEntry
-
+_store: dict[str, Any] = {}
+_leases: dict[str, LeaseEntry] = {}
 
 @blackboard_lease_verifier
 class BlackboardStore:
@@ -85,9 +58,6 @@ class BlackboardStore:
             commit_tick: Current commit tick (monotonic)
         """
         _store[key] = value
-        # Note: set() does NOT require a lease (baseline allows writes)
-        # But we record the write for audit/debug
-        # In future phases, this could emit a security event
 
     def lease(self, key: str, agent_id: str, ttl_ticks: int, commit_tick: int) -> LeaseResult:
         """Acquire an exclusive lease on a key.
@@ -102,26 +72,15 @@ class BlackboardStore:
             LeaseResult with success status and expiry tick
         """
         if ttl_ticks <= 0:
-            return LeaseResult(success=False, expiry_tick=0, reason="TTL must be positive")
-
+            return LeaseResult(success=False, expiry_tick=0, reason='TTL must be positive')
         current = _leases.get(key)
         now = commit_tick
-
-        # Check if existing lease is still valid
         if current and current.expiry_tick > now:
-            # Same agent can renew; different agent cannot
             if current.agent_id != agent_id:
-                return LeaseResult(
-                    success=False,
-                    expiry_tick=current.expiry_tick,
-                    reason=f"Lease held by {current.agent_id} until tick {current.expiry_tick}",
-                )
-            # Same agent: continue to grant new lease
-
-        # Grant new lease
+                return LeaseResult(success=False, expiry_tick=current.expiry_tick, reason=f'Lease held by {current.agent_id} until tick {current.expiry_tick}')
         expiry = now + ttl_ticks
         _leases[key] = LeaseEntry(agent_id=agent_id, expiry_tick=expiry, commit_tick=now)
-        return LeaseResult(success=True, expiry_tick=expiry, reason="Lease granted")
+        return LeaseResult(success=True, expiry_tick=expiry, reason='Lease granted')
 
     def get(self, key: str) -> Any:
         """Get the value for a key.
@@ -154,19 +113,11 @@ class BlackboardStore:
         current = _leases.get(key)
         if not current or current.agent_id != agent_id or current.expiry_tick <= commit_tick:
             return False
-
-        # Delete both value and lease
         del _store[key]
         del _leases[key]
         return True
 
-    def verify_healing_lease(
-        self,
-        resource_path: str,
-        agent_id: str,
-        commit_tick: int,
-        operation: str,
-    ) -> LeaseResult:
+    def verify_healing_lease(self, resource_path: str, agent_id: str, commit_tick: int, operation: str) -> LeaseResult:
         """Verify lease for healing operations.
 
         Implements IBlackboardLeaseVerifier.verify_healing_lease.
@@ -179,10 +130,8 @@ class BlackboardStore:
         Implements IBlackboardLeaseVerifier.log_security_event.
         Phase 1: No-op (stub for interface compliance).
         """
-        # Phase 1 scope: no persistence. In later phases, this writes to L4 logs.
         pass
 
-    # Helper methods for testing
     def _get_lease(self, key: str) -> LeaseEntry | None:
         """Get current lease entry for a key (tests only)."""
         return _leases.get(key)

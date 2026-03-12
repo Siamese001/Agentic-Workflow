@@ -10,44 +10,20 @@ Contracts:
 - MUST NOT modify routing thresholds or tiers.
 - MUST NOT fail dispatch if bus enqueue fails (log and continue).
 """
-
 from __future__ import annotations
-
 import logging
 from typing import TYPE_CHECKING, Protocol
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 if TYPE_CHECKING:
     from agentic_core.L0_routing.meta_control.meta_learning_bus import MetaLearningBus
     from agentic_core.L2_execution.healers.healing_tier_dispatcher import InvocationRecord
-    from agentic_core.L2_execution.healers.healing_tier_types import (
-        HealingDecision,
-        HealingInput,
-    )
-
+    from agentic_core.L2_execution.healers.healing_tier_types import HealingDecision, HealingInput
 logger = logging.getLogger(__name__)
-
 
 class MetaOutcomeBusHook(Protocol):
     """Synchronous seam for publishing healing outcomes to MetaLearningBus."""
 
-    def publish_outcome(
-        self,
-        *,
-        healing_input: HealingInput,
-        decision: HealingDecision,
-        record: InvocationRecord | None,
-        success: bool,
-    ) -> None:
+    def publish_outcome(self, *, healing_input: HealingInput, decision: HealingDecision, record: InvocationRecord | None, success: bool) -> None:
         """Publish a healing outcome as a MetaLearningChangePackage.
 
         Parameters
@@ -63,13 +39,11 @@ class MetaOutcomeBusHook(Protocol):
         """
         ...
 
-
 class NullMetaOutcomeBusHook:
     """No-op hook (default when no bus is configured)."""
 
     def publish_outcome(self, **kwargs) -> None:
         pass
-
 
 class DefaultMetaOutcomeBusHook:
     """Default hook: enqueues outcomes on injected MetaLearningBus.
@@ -77,55 +51,17 @@ class DefaultMetaOutcomeBusHook:
     Always sets proposal_only=True and never fails the dispatch path.
     """
 
-    def __init__(self, bus: MetaLearningBus | None = None) -> None:
+    def __init__(self, bus: MetaLearningBus | None=None) -> None:
         self._bus = bus
 
-    def publish_outcome(
-        self,
-        *,
-        healing_input,
-        decision,
-        record,
-        success: bool,
-    ) -> None:
+    def publish_outcome(self, *, healing_input, decision, record, success: bool) -> None:
         if self._bus is None:
             return
-
         try:
-            from agentic_core.L0_routing.meta_control.meta_learning_bus import (
-                MetaLearningChangePackage,
-            )
-
-            package = MetaLearningChangePackage.create(
-                trace_id=healing_input.trace_id,
-                kind="healing_outcome",
-                payload={
-                    "error_signature": healing_input.error_signature,
-                    "tier": decision.tier.value,
-                    "heal_confidence": decision.heal_confidence,
-                    "success": success,
-                    "trace_id": healing_input.trace_id,
-                    "retry_count": healing_input.retry_count,
-                    "reason_codes": list(decision.reason_codes),
-                    "proposal_only": True,  # Enforced: always advisory
-                },
-            )
-
+            from agentic_core.L0_routing.meta_control.meta_learning_bus import MetaLearningChangePackage
+            package = MetaLearningChangePackage.create(trace_id=healing_input.trace_id, kind='healing_outcome', payload={'error_signature': healing_input.error_signature, 'tier': decision.tier.value, 'heal_confidence': decision.heal_confidence, 'success': success, 'trace_id': healing_input.trace_id, 'retry_count': healing_input.retry_count, 'reason_codes': list(decision.reason_codes), 'proposal_only': True})
             self._bus.enqueue(package)
-        except Exception as exc:  # guardian: allow-silent-swallower
-            logger.warning(
-                "meta_outcome_bus_enqueue_failed",
-                extra={
-                    "error_signature": healing_input.error_signature,
-                    "exception": str(exc),
-                    "trace_id": healing_input.trace_id,
-                },
-            )
-            # Continue dispatch; bus failures must not interrupt healing
-
-
-__all__ = [
-    "MetaOutcomeBusHook",
-    "NullMetaOutcomeBusHook",
-    "DefaultMetaOutcomeBusHook",
-]
+        # guardian: allow-silent-swallow
+        except Exception as exc:
+            logger.warning('meta_outcome_bus_enqueue_failed', extra={'error_signature': healing_input.error_signature, 'exception': str(exc), 'trace_id': healing_input.trace_id})
+__all__ = ['MetaOutcomeBusHook', 'NullMetaOutcomeBusHook', 'DefaultMetaOutcomeBusHook']

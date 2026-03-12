@@ -6,69 +6,31 @@ Covers OpenAI, BGE, HuggingFace, local, and vLLM embedding classes.
 
 Exit code 1 on any violation.
 """
-
 from __future__ import annotations
-
 import ast
 import sys
 from pathlib import Path
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 REPO_ROOT = Path(__file__).resolve().parents[2]
-
-# Constructor names that are only permitted inside the factory seam
-BLOCKED_CONSTRUCTORS = {
-    "OpenAIEmbedder",
-    "OpenAIEmbeddingClient",
-    "LocalFAISSStore",
-    "FAISSStore",
-    "SentenceTransformerEmbedder",
-    "BGEEmbedder",
-    "LocalEmbedder",
-    "HuggingFaceEmbedder",
-    "VLLMEmbedder",
-}
-
-# Sole allowed seam — only this file may instantiate embedding constructors
-ALLOWED_PATHS = {
-    "system_learning/engines/embedding_service_factory.py",
-    # Core embedding factory seam — permitted to instantiate embedding constructors
-    "agentic_core/embeddings/embedding_factory.py",
-    # Pre-existing baseline — direct LocalFAISSStore use; waived pending factory refactor
-    "system_learning/engines/historical_ingestion_orchestrator.py",
-}
-
+BLOCKED_CONSTRUCTORS = {'OpenAIEmbedder', 'OpenAIEmbeddingClient', 'LocalFAISSStore', 'FAISSStore', 'SentenceTransformerEmbedder', 'BGEEmbedder', 'LocalEmbedder', 'HuggingFaceEmbedder', 'VLLMEmbedder'}
+ALLOWED_PATHS = {'system_learning/engines/embedding_service_factory.py', 'agentic_core/embeddings/embedding_factory.py', 'system_learning/engines/historical_ingestion_orchestrator.py'}
 SCAN_ROOTS = [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR, SYSTEM_LEARNING_DIR]
-
 
 def _find_violations(path: Path, rel: str) -> list[str]:
     """Return list of violation strings for blocked constructor calls in path."""
     try:
-        source = path.read_text(encoding="utf-8", errors="replace")
+        source = path.read_text(encoding='utf-8', errors='replace')
         tree = ast.parse(source, filename=str(path))
     except SyntaxError:
         return []
-
     violations: list[str] = []
     for node in ast.walk(tree):
         if isinstance(node, ast.Call):
-            # Direct call: OpenAIEmbedder(...)
             if isinstance(node.func, ast.Name) and node.func.id in BLOCKED_CONSTRUCTORS:
                 violations.append(f"{rel}:{node.lineno}: blocked constructor call '{node.func.id}(...)'")
-            # Attribute call: module.OpenAIEmbedder(...)
             elif isinstance(node.func, ast.Attribute) and node.func.attr in BLOCKED_CONSTRUCTORS:
                 violations.append(f"{rel}:{node.lineno}: blocked constructor call '...{node.func.attr}(...)'")
     return violations
-
 
 def main() -> int:
     violations: list[str] = []
@@ -76,20 +38,17 @@ def main() -> int:
         scan_dir = REPO_ROOT / root
         if not scan_dir.exists():
             continue
-        for path in scan_dir.rglob("*.py"):
+        for path in scan_dir.rglob('*.py'):
             rel = path.relative_to(REPO_ROOT).as_posix()
             if rel in ALLOWED_PATHS:
                 continue
             violations.extend(_find_violations(path, rel))
-
     if violations:
-        print(f"FAIL: {len(violations)} embedding instantiation violation(s):")
+        print(f'FAIL: {len(violations)} embedding instantiation violation(s):')
         for v in violations:
-            print(f"  {v}")
+            print(f'  {v}')
         return 1
-    print("OK: no forbidden embedding instantiations outside factory seam")
+    print('OK: no forbidden embedding instantiations outside factory seam')
     return 0
-
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     sys.exit(main())

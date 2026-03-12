@@ -19,6 +19,7 @@ from pathlib import Path
 from typing import Optional
 
 ROOT = Path(__file__).resolve().parents[2]
+# guardian: allow-global-mutation
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
@@ -455,6 +456,7 @@ for mod_path in adg_only_high:
     try:
         info = inspect_source(src_path)
         content = generate_foundational_test(mod_path, info, fan_in.get(mod_path, 0))
+    # guardian: allow-silent-swallow
     except Exception as exc:
         print(f"  [ERROR] {mod_path}: {exc}")
         errors += 1

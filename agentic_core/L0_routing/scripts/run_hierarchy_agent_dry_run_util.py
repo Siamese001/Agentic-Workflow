@@ -4,58 +4,30 @@ This consolidates both HierarchyEnforcerAgent and HierarchyHealerAgent functiona
 
 Location: Uses the NEW unified agent at agentic_core/L5_safety/enforcement/HierarchyAgent.py
 """
-
-# SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
-# File appears to be a sovereign component but missing canon high-signal keywords.
-# Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, state, workflow
-# This boosts alignment detection — review and integrate appropriately
-
 import sys
 from pathlib import Path
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-# Add project root to Python path
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 project_root = Path(__file__).resolve().parents[1]
 # guardian: allow-global-mutation
 sys.path.insert(0, str(project_root))
-
 from agentic_core.L0_routing.utils.subprocess_runner_util import invoke_hierarchy_agent
 
-
 def main():
-    print("=" * 80)
-    print("UNIFIED HIERARCHY AGENT - DRY RUN MODE")
-    print("=" * 80)
-    print("Using: agentic_core/L5_safety/enforcement/HierarchyAgent.py")
-    print("Validating hierarchy (no changes will be made)...\n")
-
+    print('=' * 80)
+    print('UNIFIED HIERARCHY AGENT - DRY RUN MODE')
+    print('=' * 80)
+    print('Using: agentic_core/L5_safety/enforcement/HierarchyAgent.py')
+    print('Validating hierarchy (no changes will be made)...\n')
     project_root = Path.cwd()
-
-    # Invoke via subprocess to avoid upward import edge
-    result = invoke_hierarchy_agent(action="dry_run", project_root=project_root)
-
-    if result.get("success"):
+    result = invoke_hierarchy_agent(action='dry_run', project_root=project_root)
+    if result.get('success'):
         print(f"\n{result.get('message', 'Dry run complete')}")
     else:
         print(f"\n❌ Error: {result.get('error')}")
-
-    print("\n" + "=" * 80)
-    print("DRY RUN COMPLETE - No changes were made")
-    print("=" * 80)
-    print("\nTo apply these changes, run with healing_enabled=True")
-    print(
-        "Note: There is an older HierarchyAgent in validators/ - this uses the new unified version in guardrails/",
-    )
-
-
-if __name__ == "__main__":
+    print('\n' + '=' * 80)
+    print('DRY RUN COMPLETE - No changes were made')
+    print('=' * 80)
+    print('\nTo apply these changes, run with healing_enabled=True')
+    print('Note: There is an older HierarchyAgent in validators/ - this uses the new unified version in guardrails/')
+if __name__ == '__main__':
     main()

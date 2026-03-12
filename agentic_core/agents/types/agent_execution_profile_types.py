@@ -2,58 +2,40 @@
 
 Defines the 2×2 execution policy for agent classification and enforcement.
 """
-
 import hashlib
 import json
 from dataclasses import dataclass
 from enum import Enum
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 class ReasoningIntensity(Enum):
     """Agent reasoning intensity classification."""
-    LOW = "LOW"
-    MEDIUM = "MEDIUM"  # Added for apps_* agents
-    HIGH = "HIGH"
-
+    LOW = 'LOW'
+    MEDIUM = 'MEDIUM'
+    HIGH = 'HIGH'
 
 class ExecutionMode(Enum):
     """Agent execution mode classification."""
-    DETERMINISTIC = "DETERMINISTIC"
-    LLM_API = "LLM_API"
-
+    DETERMINISTIC = 'DETERMINISTIC'
+    LLM_API = 'LLM_API'
 
 @dataclass(frozen=True)
 class AgentExecutionProfile:
     """Immutable agent execution profile defining 2×2 policy."""
-    agent_id: str  # stable key
+    agent_id: str
     reasoning_intensity: ReasoningIntensity
     execution_mode: ExecutionMode
-    allowed_models: tuple[str, ...]  # empty for deterministic agents
-    notes: str | None = None  # non-functional documentation
+    allowed_models: tuple[str, ...]
+    notes: str | None = None
 
     def __post_init__(self):
         """Validate profile constraints."""
-        # Deterministic agents must have no allowed models
         if self.execution_mode == ExecutionMode.DETERMINISTIC and self.allowed_models:
-            raise ValueError(f"Deterministic agent {self.agent_id} cannot have allowed_models")
-
-        # LLM_API agents must have at least one allowed model
-        if self.execution_mode == ExecutionMode.LLM_API and not self.allowed_models:
-            raise ValueError(f"LLM_API agent {self.agent_id} must have allowed_models")
-
-        # Agent ID must be stable (non-empty string)
+            raise ValueError(f'Deterministic agent {self.agent_id} cannot have allowed_models')
+        if self.execution_mode == ExecutionMode.LLM_API and (not self.allowed_models):
+            raise ValueError(f'LLM_API agent {self.agent_id} must have allowed_models')
         if not self.agent_id or not isinstance(self.agent_id, str):
-            raise ValueError("agent_id must be a non-empty string")
+            raise ValueError('agent_id must be a non-empty string')
 
     def is_llm_allowed(self) -> bool:
         """Check if agent is allowed to use LLM API."""
@@ -65,49 +47,20 @@ class AgentExecutionProfile:
 
     def to_dict(self) -> dict:
         """Convert to dictionary for JSON serialization."""
-        return {
-            "agent_id": self.agent_id,
-            "reasoning_intensity": self.reasoning_intensity.value,
-            "execution_mode": self.execution_mode.value,
-            "allowed_models": list(self.allowed_models),
-            "notes": self.notes
-        }
+        return {'agent_id': self.agent_id, 'reasoning_intensity': self.reasoning_intensity.value, 'execution_mode': self.execution_mode.value, 'allowed_models': list(self.allowed_models), 'notes': self.notes}
 
     @classmethod
-    def from_dict(cls, data: dict) -> "AgentExecutionProfile":
+    def from_dict(cls, data: dict) -> 'AgentExecutionProfile':
         """Create from dictionary for JSON deserialization."""
-        return cls(
-            agent_id=data["agent_id"],
-            reasoning_intensity=ReasoningIntensity(data["reasoning_intensity"]),
-            execution_mode=ExecutionMode(data["execution_mode"]),
-            allowed_models=tuple(data["allowed_models"]),
-            notes=data.get("notes")
-        )
-
+        return cls(agent_id=data['agent_id'], reasoning_intensity=ReasoningIntensity(data['reasoning_intensity']), execution_mode=ExecutionMode(data['execution_mode']), allowed_models=tuple(data['allowed_models']), notes=data.get('notes'))
 
 def compute_registry_digest(registry_data: dict) -> str:
     """Compute SHA256 digest over canonical JSON of sorted registry."""
-    # Canonical JSON: sorted keys, compact separators, ASCII
-    canonical_json = json.dumps(
-        registry_data,
-        sort_keys=True,
-        separators=(",", ":"),
-        ensure_ascii=True
-    )
+    canonical_json = json.dumps(registry_data, sort_keys=True, separators=(',', ':'), ensure_ascii=True)
     return hashlib.sha256(canonical_json.encode()).hexdigest()
-
-
-if __name__ == "__main__":
-    # Example usage and validation
-    example_profile = AgentExecutionProfile(
-        agent_id="example_agent",
-        reasoning_intensity=ReasoningIntensity.HIGH,
-        execution_mode=ExecutionMode.LLM_API,
-        allowed_models=("gpt-4", "gpt-3.5-turbo"),
-        notes="Example high-reasoning LLM agent"
-    )
-
-    print(f"Profile: {example_profile}")
-    print(f"Is LLM allowed: {example_profile.is_llm_allowed()}")
+if __name__ == '__main__':
+    example_profile = AgentExecutionProfile(agent_id='example_agent', reasoning_intensity=ReasoningIntensity.HIGH, execution_mode=ExecutionMode.LLM_API, allowed_models=('gpt-4', 'gpt-3.5-turbo'), notes='Example high-reasoning LLM agent')
+    print(f'Profile: {example_profile}')
+    print(f'Is LLM allowed: {example_profile.is_llm_allowed()}')
     print(f"Can use gpt-4: {example_profile.can_use_model('gpt-4')}")
-    print(f"Dict representation: {example_profile.to_dict()}")
+    print(f'Dict representation: {example_profile.to_dict()}')

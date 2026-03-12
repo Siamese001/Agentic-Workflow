@@ -4,61 +4,37 @@ Tool Registry Definitions - Phase 21.1 Restoration
 Provides Pydantic models for tool argument validation.
 These are used by the tool_registry to validate tool calls.
 """
-
 from pydantic import BaseModel, Field
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 class ReadFileArgs(BaseModel):
     """Arguments for reading a file."""
-
-    path: str = Field(..., description="Path to the file to read")
-
+    path: str = Field(..., description='Path to the file to read')
 
 class WriteFileArgs(BaseModel):
     """Arguments for writing to a file."""
-
-    path: str = Field(..., description="Path to the file to write")
-    content: str = Field(..., description="Content to write to the file")
-
+    path: str = Field(..., description='Path to the file to write')
+    content: str = Field(..., description='Content to write to the file')
 
 class ListFilesArgs(BaseModel):
     """Arguments for listing files in a directory."""
-
-    directory: str = Field(..., description="Directory to list files from")
-    pattern: str | None = Field(None, description="Optional glob pattern to filter files")
-
+    directory: str = Field(..., description='Directory to list files from')
+    pattern: str | None = Field(None, description='Optional glob pattern to filter files')
 
 class MoveFileArgs(BaseModel):
     """Arguments for moving/renaming a file."""
-
-    source: str = Field(..., description="Source file path")
-    destination: str = Field(..., description="Destination file path")
-
+    source: str = Field(..., description='Source file path')
+    destination: str = Field(..., description='Destination file path')
 
 class DeleteFileArgs(BaseModel):
     """Arguments for deleting a file."""
-
-    path: str = Field(..., description="Path to the file to delete")
-
+    path: str = Field(..., description='Path to the file to delete')
 
 class CreateDirectoryArgs(BaseModel):
     """Arguments for creating a directory."""
-
-    path: str = Field(..., description="Path to the directory to create")
-
+    path: str = Field(..., description='Path to the directory to create')
 
 class ExecuteCommandArgs(BaseModel):
     """Arguments for executing a shell command."""
-
-    command: str = Field(..., description="Shell command to execute")
-    cwd: str | None = Field(None, description="Working directory for the command")
+    command: str = Field(..., description='Shell command to execute')
+    cwd: str | None = Field(None, description='Working directory for the command')

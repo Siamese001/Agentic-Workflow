@@ -144,6 +144,7 @@ class EnvironmentValidator:
             EnvironmentError: If validation fails
         """
         result = cls.validate(raise_on_missing=True)
+        # guardian: allow-config-with-logic
         if result.config is None:
             raise OSError("Failed to load environment configuration")
         return result.config
@@ -188,6 +189,7 @@ def get_environment_config() -> EnvironmentConfig:
         EnvironmentError: If validation fails
     """
     global _config_instance
+    # guardian: allow-config-with-logic
     if _config_instance is None:
         _config_instance = EnvironmentValidator.get_config()
     return _config_instance

@@ -8,26 +8,12 @@ Invariants:
   - Stable rounding: round-half-up to 4 decimal places via QUANTIZE
   - Proposal is container-only; no config/routing/L4 writes
 """
-
 from __future__ import annotations
-
 import decimal
 from dataclasses import dataclass, field
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-# Stable rounding context: round-half-up to 4 decimal places.
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 _ROUND_CTX = decimal.Context(rounding=decimal.ROUND_HALF_UP)
-_QUANT = decimal.Decimal("0.0001")
-
+_QUANT = decimal.Decimal('0.0001')
 
 def _stable_rate(numerator: int, denominator: int) -> float:
     """Compute rate with stable round-half-up to 4 decimal places.
@@ -39,12 +25,6 @@ def _stable_rate(numerator: int, denominator: int) -> float:
     raw = decimal.Decimal(numerator) / decimal.Decimal(denominator)
     rounded = raw.quantize(_QUANT, context=_ROUND_CTX)
     return float(rounded)
-
-
-# =============================================================================
-# HealingOutcomeEvent — single invocation outcome
-# =============================================================================
-
 
 @dataclass(frozen=True, slots=True)
 class HealingOutcomeEvent:
@@ -85,7 +65,6 @@ class HealingOutcomeEvent:
         Relative paths of files modified by this healing invocation.
         Empty by default; populated by healers that track file mutations.
     """
-
     healer_id: str
     tier: str
     failure_type: str
@@ -102,17 +81,11 @@ class HealingOutcomeEvent:
 
     def __post_init__(self) -> None:
         if not self.healer_id:
-            raise ValueError("healer_id must not be empty")
+            raise ValueError('healer_id must not be empty')
         if not self.tier:
-            raise ValueError("tier must not be empty")
+            raise ValueError('tier must not be empty')
         if not self.failure_type:
-            raise ValueError("failure_type must not be empty")
-
-
-# =============================================================================
-# HealingOutcomeStats — aggregated counters per (healer_id, tier, failure_type)
-# =============================================================================
-
+            raise ValueError('failure_type must not be empty')
 
 @dataclass(frozen=True, slots=True)
 class HealingOutcomeStats:
@@ -137,7 +110,6 @@ class HealingOutcomeStats:
     success_rate : float
         success_count / total_count, rounded half-up to 4 decimals.
     """
-
     healer_id: str
     tier: str
     failure_type: str
@@ -147,30 +119,10 @@ class HealingOutcomeStats:
     success_rate: float
 
     @staticmethod
-    def from_counts(
-        healer_id: str,
-        tier: str,
-        failure_type: str,
-        success_count: int,
-        failure_count: int,
-    ) -> HealingOutcomeStats:
+    def from_counts(healer_id: str, tier: str, failure_type: str, success_count: int, failure_count: int) -> HealingOutcomeStats:
         """Build stats from raw counts with stable rounding."""
         total = success_count + failure_count
-        return HealingOutcomeStats(
-            healer_id=healer_id,
-            tier=tier,
-            failure_type=failure_type,
-            total_count=total,
-            success_count=success_count,
-            failure_count=failure_count,
-            success_rate=_stable_rate(success_count, total),
-        )
-
-
-# =============================================================================
-# HealingOutcomeProposal — proposal-only container (Phase 1: no-op)
-# =============================================================================
-
+        return HealingOutcomeStats(healer_id=healer_id, tier=tier, failure_type=failure_type, total_count=total, success_count=success_count, failure_count=failure_count, success_rate=_stable_rate(success_count, total))
 
 @dataclass(frozen=True, slots=True)
 class HealingOutcomeProposal:
@@ -187,13 +139,6 @@ class HealingOutcomeProposal:
     recommended_actions : tuple[str, ...]
         Human-readable action descriptions (empty in Phase 1).
     """
-
     stats: tuple[HealingOutcomeStats, ...] = field(default_factory=tuple)
     recommended_actions: tuple[str, ...] = field(default_factory=tuple)
-
-
-__all__ = [
-    "HealingOutcomeEvent",
-    "HealingOutcomeProposal",
-    "HealingOutcomeStats",
-]
+__all__ = ['HealingOutcomeEvent', 'HealingOutcomeProposal', 'HealingOutcomeStats']

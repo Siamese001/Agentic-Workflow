@@ -3,44 +3,29 @@ from __future__ import annotations
 import logging
 from dataclasses import dataclass, field
 from typing import Any
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 Logger: Any = logging.getLogger(__name__)
-
 
 @dataclass
 class ProvenancePattern:
     """TODO: Add docstring."""
-
     format_type: BulletFormat
     verb_count: int
     tech_count: int
     soft_count: int
 
     def __str__(self) -> str:
-        return f"{self.verb_count}V-{self.tech_count}T-{self.soft_count}S"
-
+        return f'{self.verb_count}V-{self.tech_count}T-{self.soft_count}S'
 
 @dataclass
 class BulletProvenanceLog:
     """Docstring."""
-
     bullet_text: str
     word_count: int
     provenance_items: dict[ProvenanceType, list[str]]
     pattern_match: bool
     expected_pattern: str
     actual_pattern: str
-
 
 @dataclass
 class BulletSynthesizerConfig:
@@ -49,7 +34,6 @@ class BulletSynthesizerConfig:
     Controls the synthesis parameters including tone, length,
     and formatting options for achievement bullets.
     """
-
     format_type: BulletFormat = BulletFormat.UNIFY
     TEMPERATURE: float = 0.6
     max_attempts: int = 3
@@ -77,11 +61,9 @@ class BulletSynthesizerConfig:
         else:
             return ProvenancePattern(BulletFormat.IBM, verb_count=2, tech_count=3, soft_count=1)
 
-
 @dataclass
 class BulletSynthesizerResult:
     """Docstring."""
-
     bullets: list[str]
     provenance_logs: list[BulletProvenanceLog]
     qa_report: dict[str, Any]

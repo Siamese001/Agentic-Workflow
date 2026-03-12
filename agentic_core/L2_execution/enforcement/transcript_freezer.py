@@ -1,27 +1,15 @@
 from __future__ import annotations
-
 from typing import Any, MutableSequence
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 class TranscriptMutationViolation(Exception):
     """Raised when an attempt is made to mutate a frozen execution transcript."""
-
 
 class FrozenTranscript(MutableSequence[Any]):
     """A read-only wrapper around a transcript that raises an error on mutation."""
 
     def __init__(self, transcript_data: list[Any]):
-        self._data = tuple(transcript_data)  # Store as an immutable tuple
+        self._data = tuple(transcript_data)
 
     def __getitem__(self, index: int) -> Any:
         return self._data[index]
@@ -30,11 +18,7 @@ class FrozenTranscript(MutableSequence[Any]):
         return len(self._data)
 
     def _raise_violation(self, *args: Any, **kwargs: Any) -> None:
-        raise TranscriptMutationViolation(
-            "Cannot mutate a frozen transcript. It has been sealed for digest computation."
-        )
-
-    # Override all mutating methods to raise an error
+        raise TranscriptMutationViolation('Cannot mutate a frozen transcript. It has been sealed for digest computation.')
     __setitem__ = _raise_violation
     __delitem__ = _raise_violation
     insert = _raise_violation
@@ -44,7 +28,6 @@ class FrozenTranscript(MutableSequence[Any]):
     remove = _raise_violation
     clear = _raise_violation
     reverse = _raise_violation
-
 
 def freeze_transcript(transcript: list[Any]) -> FrozenTranscript:
     """

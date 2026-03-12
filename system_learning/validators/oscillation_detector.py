@@ -8,25 +8,9 @@ Invariants:
   - No wall-clock access (now_utc injected)
   - Fail-closed on oscillation detection
 """
-
 from __future__ import annotations
-
 from dataclasses import dataclass
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-# =============================================================================
-# Data Types
-# =============================================================================
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 @dataclass(frozen=True, slots=True)
 class OscillationPolicy:
@@ -41,11 +25,9 @@ class OscillationPolicy:
     freeze_seconds : int
         Duration to freeze optimization if oscillation detected.
     """
-
     window: int
     epsilon: float
     freeze_seconds: int
-
 
 @dataclass(frozen=True, slots=True)
 class FreezeDecision:
@@ -58,15 +40,8 @@ class FreezeDecision:
     freeze_until_utc : int | None
         Unix timestamp when freeze expires (None if not frozen).
     """
-
     should_freeze: bool
     freeze_until_utc: int | None
-
-
-# =============================================================================
-# Oscillation Detection
-# =============================================================================
-
 
 def detect_oscillation(values: tuple[float, ...], policy: OscillationPolicy) -> bool:
     """Detect oscillation pattern in recent values.
@@ -95,46 +70,27 @@ def detect_oscillation(values: tuple[float, ...], policy: OscillationPolicy) -> 
     False
     """
     if len(values) < policy.window:
-        # Not enough data to detect oscillation
         return False
+    recent = values[-policy.window:]
 
-    # Take last N values
-    recent = values[-policy.window :]
-
-    # Check if values alternate between two distinct values
-    # Pattern: A, B, A, B, A (or B, A, B, A, B)
     def values_equal(a: float, b: float) -> bool:
         return abs(a - b) <= policy.epsilon
-
-    # Find first two distinct values
     val_a = recent[0]
     val_b = None
     for v in recent[1:]:
         if not values_equal(v, val_a):
             val_b = v
             break
-
     if val_b is None:
-        # All values are the same (no oscillation)
         return False
-
-    # Check if all values alternate between val_a and val_b
     expected_pattern = [val_a, val_b] * (policy.window // 2 + 1)
-    expected_pattern = expected_pattern[: policy.window]
-
+    expected_pattern = expected_pattern[:policy.window]
     for i, v in enumerate(recent):
         if not values_equal(v, expected_pattern[i]):
             return False
-
     return True
 
-
-def compute_freeze_decision(
-    values: tuple[float, ...],
-    last_update_utc: int,
-    now_utc: int,
-    policy: OscillationPolicy,
-) -> FreezeDecision:
+def compute_freeze_decision(values: tuple[float, ...], last_update_utc: int, now_utc: int, policy: OscillationPolicy) -> FreezeDecision:
     """Compute freeze decision based on oscillation detection.
 
     Parameters
@@ -164,9 +120,7 @@ def compute_freeze_decision(
     1700007200
     """
     oscillation_detected = detect_oscillation(values, policy)
-
     if oscillation_detected:
         freeze_until_utc = now_utc + policy.freeze_seconds
         return FreezeDecision(should_freeze=True, freeze_until_utc=freeze_until_utc)
-
     return FreezeDecision(should_freeze=False, freeze_until_utc=None)

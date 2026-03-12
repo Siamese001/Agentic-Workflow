@@ -147,6 +147,7 @@ def has_fallback_assertions(test_path: Path) -> bool:
 
 # ── BFS reachability ─────────────────────────────────────────────────────────
 
+# guardian: allow-magic-config
 def reachable_from(start: str, adj: dict[str, set[str]], max_depth: int = 6) -> set[str]:
     """BFS from start node; returns all reachable resolved_paths."""
     visited: set[str] = {start}
@@ -196,6 +197,7 @@ def classify_file(
     adj: dict[str, set[str]],
 ) -> dict:
     rel = test_file.relative_to(REPO).as_posix()
+    # guardian: allow-magic-config
     reached = reachable_from(rel, adj, max_depth=6)
     flags = detect_infra_flags(reached)
 

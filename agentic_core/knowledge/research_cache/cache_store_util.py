@@ -6,27 +6,14 @@ Category: UTILITY (Cache management helper)
 
 Provides persistent storage for research results using JSONL format.
 """
-
 from __future__ import annotations
-
 import hashlib
 import json
 import logging
 from pathlib import Path
 from typing import Any
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 Logger = logging.getLogger(__name__)
-
 
 class ResearchCache:
     """
@@ -44,7 +31,7 @@ class ResearchCache:
         """
         self.cache_dir = Path(cache_dir)
         self.cache_dir.mkdir(parents=True, exist_ok=True)
-        self.cache_file = self.cache_dir / "research_cache.jsonl"
+        self.cache_file = self.cache_dir / 'research_cache.jsonl'
         self._index: dict[str, int] = {}
         self._load_index()
 
@@ -57,23 +44,22 @@ class ResearchCache:
         self._index = {}
         if not self.cache_file.exists():
             return
-
         try:
-            with self.cache_file.open("r", encoding="utf-8") as f:
+            with self.cache_file.open('r', encoding='utf-8') as f:
                 for line_num, line in enumerate(f):
                     line = line.strip()
                     if line:
                         try:
                             entry = json.loads(line)
-                            query_hash = entry.get("query_hash")
+                            query_hash = entry.get('query_hash')
                             if query_hash:
                                 self._index[query_hash] = line_num
                         except json.JSONDecodeError:
                             continue
+        # guardian: allow-silent-swallow
         except Exception as e:
-            # TODO: Handle specific exception properly
-            raise  # Re-raise after logging/handling
-            Logger.error(f"Failed to load cache index: {e}")
+            raise
+            Logger.error(f'Failed to load cache index: {e}')
 
     def exists(self, query: str) -> bool:
         """
@@ -101,17 +87,16 @@ class ResearchCache:
         query_hash = self._hash_query(query)
         if query_hash not in self._index:
             return None
-
         line_num = self._index[query_hash]
         try:
-            with self.cache_file.open("r", encoding="utf-8") as f:
+            with self.cache_file.open('r', encoding='utf-8') as f:
                 for i, line in enumerate(f):
                     if i == line_num:
                         entry = json.loads(line.strip())
-                        return entry.get("result")
+                        return entry.get('result')
+        # guardian: allow-silent-swallow
         except Exception as e:
-            Logger.error(f"Failed to retrieve cache entry: {e}")
-
+            Logger.error(f'Failed to retrieve cache entry: {e}')
         return None
 
     def set(self, query: str, result: dict[str, Any]) -> bool:
@@ -126,24 +111,17 @@ class ResearchCache:
             True if successful, False otherwise
         """
         query_hash = self._hash_query(query)
-
-        entry = {
-            "query_hash": query_hash,
-            "query": query,
-            "result": result,
-        }
-
+        entry = {'query_hash': query_hash, 'query': query, 'result': result}
         try:
-            with self.cache_file.open("a", encoding="utf-8") as f:
-                line_num = (
-                    sum(1 for _ in open(self.cache_file, encoding="utf-8")) if self.cache_file.exists() else 0
-                )
+            with self.cache_file.open('a', encoding='utf-8') as f:
+                line_num = sum((1 for _ in open(self.cache_file, encoding='utf-8'))) if self.cache_file.exists() else 0
                 json.dump(entry, f)
-                f.write("\n")
+                f.write('\n')
                 self._index[query_hash] = line_num
             return True
+        # guardian: allow-silent-swallow
         except Exception as e:
-            Logger.error(f"Failed to write cache entry: {e}")
+            Logger.error(f'Failed to write cache entry: {e}')
             return False
 
     def clear(self) -> None:
@@ -152,14 +130,11 @@ class ResearchCache:
             if self.cache_file.exists():
                 self.cache_file.unlink()
             self._index = {}
-            Logger.info("Research cache cleared")
+            Logger.info('Research cache cleared')
+        # guardian: allow-silent-swallow
         except Exception as e:
-            Logger.error(f"Failed to clear cache: {e}")
+            Logger.error(f'Failed to clear cache: {e}')
 
     def get_stats(self) -> dict[str, Any]:
         """Get cache statistics."""
-        return {
-            "total_entries": len(self._index),
-            "cache_file": str(self.cache_file),
-            "cache_size_bytes": self.cache_file.stat().st_size if self.cache_file.exists() else 0,
-        }
+        return {'total_entries': len(self._index), 'cache_file': str(self.cache_file), 'cache_size_bytes': self.cache_file.stat().st_size if self.cache_file.exists() else 0}

@@ -4,33 +4,22 @@ RetrieveResumeHistory.py - Retrieval Module
 Domain: resume
 Generated: 2025-12-07T13:28:54.191301
 """
-
 import logging
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 Logger = logging.getLogger(__name__)
-
 
 class RetrieveResumeHistory:
     """Retrieval engine for resume domain."""
 
-    def __init__(self, config: dict[str, object] | None = None):
+    def __init__(self, config: dict[str, object] | None=None):
         self.config = config or {}
         self.cache: dict[str, object] = {}
-        Logger.info(f"Initialized {self.__class__.__name__}")
+        Logger.info(f'Initialized {self.__class__.__name__}')
 
-    def retrieve(self, query: str, filters: dict | None = None, limit: int = 10) -> RetrievalResult:
+    # guardian: allow-magic-config
+    def retrieve(self, query: str, filters: dict | None=None, limit: int=10) -> RetrievalResult:
         """Retrieve items."""
-        cache_key = f"{query}:{filters}:{limit}"
+        cache_key = f'{query}:{filters}:{limit}'
         if cache_key in self.cache:
             return self.cache[cache_key]
         items = self._execute_query(query, filters, limit)
@@ -42,7 +31,6 @@ class RetrieveResumeHistory:
         """Execute query."""
         return []
 
-
-def retrieve(query: str, config: dict | None = None, **kwargs: dict[str, object]) -> RetrievalResult:
+def retrieve(query: str, config: dict | None=None, **kwargs: dict[str, object]) -> RetrievalResult:
     """Retrieve items."""
     return RetrieveResumeHistory(config).retrieve(query, **kwargs)

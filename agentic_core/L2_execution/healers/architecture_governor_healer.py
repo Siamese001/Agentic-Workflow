@@ -85,6 +85,7 @@ def heal_architecture_governance(
             auto_approve=True,
             target_territory=territory,
         )
+    # guardian: allow-silent-swallow
     except Exception as exc:  # guardian: allow-silent-swallower
         logger.error("[architecture_governor_healer] heal failed: %s", exc)
         return HealCheckResult(

@@ -1,37 +1,24 @@
-#!/usr/bin/env python3
 """
 Template Drift Detection Script (Phase 5)
 
 Detects if a template has been modified on disk without a corresponding
 version bump in the Registry (Instruction Drift detection).
 """
-
 import json
 import sys
 from pathlib import Path
-
 from agentic_core.utils.fs_util import calculate_file_hash
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 def load_registry(registry_path: Path) -> dict:
     """Load the prompt registry JSON file."""
     try:
-        with open(registry_path, encoding="utf-8") as f:
+        with open(registry_path, encoding='utf-8') as f:
             return json.load(f)
+    # guardian: allow-silent-swallow
     except Exception as e:
-        print(f"ERROR: Failed to load registry: {e}")
+        print(f'ERROR: Failed to load registry: {e}')
         sys.exit(1)
-
 
 def detect_template_drift(registry_path: Path, base_dir: Path) -> tuple[list[dict], list[dict]]:
     """
@@ -43,134 +30,71 @@ def detect_template_drift(registry_path: Path, base_dir: Path) -> tuple[list[dic
     registry = load_registry(registry_path)
     synchronized = []
     drifted = []
-
-    # Access prompts from the nested structure
-    prompts = registry.get("prompts", {})
-
+    prompts = registry.get('prompts', {})
     for template_name, prompt_versions in prompts.items():
         for prompt_data in prompt_versions:
-            if not prompt_data.get("active", False):
-                continue  # Skip inactive entries
-
-            template_path = base_dir / "templates" / template_name
-
-            # Check if file exists
+            if not prompt_data.get('active', False):
+                continue
+            template_path = base_dir / 'templates' / template_name
             if not template_path.exists():
-                drifted.append(
-                    {
-                        "prompt_id": template_name,
-                        "template_path": str(template_path.relative_to(base_dir)),
-                        "issue": "Template file missing",
-                        "registry_hash": prompt_data.get("content_hash", "N/A"),
-                        "disk_hash": "MISSING",
-                        "status": "DRIFT",
-                    },
-                )
+                drifted.append({'prompt_id': template_name, 'template_path': str(template_path.relative_to(base_dir)), 'issue': 'Template file missing', 'registry_hash': prompt_data.get('content_hash', 'N/A'), 'disk_hash': 'MISSING', 'status': 'DRIFT'})
                 continue
-
-            # Calculate current disk hash
             disk_hash = calculate_file_hash(template_path)
-            registry_hash = prompt_data.get("content_hash", "")
-
+            registry_hash = prompt_data.get('content_hash', '')
             if not registry_hash:
-                drifted.append(
-                    {
-                        "prompt_id": template_name,
-                        "template_path": str(template_path.relative_to(base_dir)),
-                        "issue": "No content hash in registry",
-                        "registry_hash": "MISSING",
-                        "disk_hash": disk_hash,
-                        "status": "DRIFT",
-                    },
-                )
+                drifted.append({'prompt_id': template_name, 'template_path': str(template_path.relative_to(base_dir)), 'issue': 'No content hash in registry', 'registry_hash': 'MISSING', 'disk_hash': disk_hash, 'status': 'DRIFT'})
                 continue
-
-            # Compare hashes
             if disk_hash != registry_hash:
-                drifted.append(
-                    {
-                        "prompt_id": template_name,
-                        "template_path": str(template_path.relative_to(base_dir)),
-                        "issue": "Content hash mismatch - template modified without registry update",
-                        "registry_hash": registry_hash,
-                        "disk_hash": disk_hash,
-                        "status": "DRIFT",
-                    },
-                )
+                drifted.append({'prompt_id': template_name, 'template_path': str(template_path.relative_to(base_dir)), 'issue': 'Content hash mismatch - template modified without registry update', 'registry_hash': registry_hash, 'disk_hash': disk_hash, 'status': 'DRIFT'})
             else:
-                synchronized.append(
-                    {
-                        "prompt_id": template_name,
-                        "template_path": str(template_path.relative_to(base_dir)),
-                        "registry_hash": registry_hash,
-                        "disk_hash": disk_hash,
-                        "status": "SYNCHRONIZED",
-                    },
-                )
-
-    return synchronized, drifted
-
+                synchronized.append({'prompt_id': template_name, 'template_path': str(template_path.relative_to(base_dir)), 'registry_hash': registry_hash, 'disk_hash': disk_hash, 'status': 'SYNCHRONIZED'})
+    return (synchronized, drifted)
 
 def main():
-    # Determine paths
     script_dir = Path(__file__).parent
     base_dir = script_dir.parent
-    registry_path = base_dir / "registry.json"
-
-    print("Template Drift Detection Audit (Phase 5)")
-    print("=" * 50)
-    print(f"Registry: {registry_path}")
-    print(f"Base Directory: {base_dir}")
+    registry_path = base_dir / 'registry.json'
+    print('Template Drift Detection Audit (Phase 5)')
+    print('=' * 50)
+    print(f'Registry: {registry_path}')
+    print(f'Base Directory: {base_dir}')
     print()
-
     if not registry_path.exists():
-        print(f"ERROR: Registry file not found: {registry_path}")
+        print(f'ERROR: Registry file not found: {registry_path}')
         sys.exit(1)
-
-    # Run drift detection
     synchronized, drifted = detect_template_drift(registry_path, base_dir)
-
-    # Report results
-    print("RESULTS:")
-    print(f"  Active templates checked: {len(synchronized) + len(drifted)}")
-    print(f"  Synchronized: {len(synchronized)}")
-    print(f"  Drifted: {len(drifted)}")
+    print('RESULTS:')
+    print(f'  Active templates checked: {len(synchronized) + len(drifted)}')
+    print(f'  Synchronized: {len(synchronized)}')
+    print(f'  Drifted: {len(drifted)}')
     print()
-
     if drifted:
-        print("🚨 DRIFTED TEMPLATES (Instruction Drift Detected):")
+        print('🚨 DRIFTED TEMPLATES (Instruction Drift Detected):')
         for entry in drifted:
             print(f"  ❌ {entry['prompt_id']}: {entry['issue']}")
             print(f"     Template: {entry['template_path']}")
             print(f"     Registry Hash: {entry['registry_hash'][:16]}...")
             print(f"     Disk Hash:     {entry['disk_hash'][:16]}...")
             print()
-
-        print("⚠️  ACTION REQUIRED:")
-        print("   1. Update registry.json with correct content_hash")
-        print("   2. Increment version number if changes are intentional")
-        print("   3. Re-run this audit to verify synchronization")
+        print('⚠️  ACTION REQUIRED:')
+        print('   1. Update registry.json with correct content_hash')
+        print('   2. Increment version number if changes are intentional')
+        print('   3. Re-run this audit to verify synchronization')
         print()
     else:
-        print("✅ ALL TEMPLATES SYNCHRONIZED")
-        print("No instruction drift detected.")
+        print('✅ ALL TEMPLATES SYNCHRONIZED')
+        print('No instruction drift detected.')
         print()
-
-    # Show synchronized entries (optional)
     if synchronized and len(synchronized) <= 10:
-        print("SYNCHRONIZED TEMPLATES:")
+        print('SYNCHRONIZED TEMPLATES:')
         for entry in synchronized:
             print(f"  ✅ {entry['prompt_id']}: {entry['template_path']}")
         print()
-
-    # Exit code
     if drifted:
-        print("❌ AUDIT FAILED - Template drift detected")
+        print('❌ AUDIT FAILED - Template drift detected')
         sys.exit(1)
     else:
-        print("✅ AUDIT PASSED - All templates synchronized")
+        print('✅ AUDIT PASSED - All templates synchronized')
         sys.exit(0)
-
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

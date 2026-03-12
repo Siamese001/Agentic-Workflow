@@ -7,41 +7,25 @@ Aligned with LIC ImmutableStagingBuffer pattern.
 HARDENING: Implements deepcopy on boundaries to prevent reference leakage.
 Adds StateTransaction for audit trails.
 """
-
 from __future__ import annotations
-
 import copy
 import logging
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any, TypeVar
-
 from apps_rg.utils.mixins import HealerMixin, MCPHardenedMixin
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 Logger = logging.getLogger(__name__)
-T = TypeVar("T")
-
+T = TypeVar('T')
 
 @dataclass(frozen=True)
 class StateTransaction:
     """Immutable record of a state change."""
-
     key: str
     timestamp: float
     source_agent: str
     value_hash: int
     cycle_id: str
-
 
 @dataclass
 class ImmutableStagingBuffer(MCPHardenedMixin, HealerMixin):
@@ -60,25 +44,22 @@ class ImmutableStagingBuffer(MCPHardenedMixin, HealerMixin):
     - hop6_refinement: Refined content
     - hop7_qa_report: Final QA report
     """
-
     _buffer: dict[str, Any] = field(default_factory=dict)
     _locked_keys: set[str] = field(default_factory=set)
     _history: list[StateTransaction] = field(default_factory=list)
-    _cycle_id: str = "INIT"
+    _cycle_id: str = 'INIT'
 
     def __post_init__(self) -> None:
         """Initialize mixins."""
-        # Initialize MCP and Healer mixins
         MCPHardenedMixin.__init__(self)
         HealerMixin.__init__(self)
 
-    def _mcp_audit(self, action: str, details: dict = None) -> None:
+    def _mcp_audit(self, action: str, details: dict=None) -> None:
         """Safe MCP audit call - falls back to no-op if mixin not fully initialized."""
-        if hasattr(super(), "_mcp_audit"):
+        if hasattr(super(), '_mcp_audit'):
             super()._mcp_audit(action, details or {})
-        # Silent no-op if mixin not available
 
-    def write(self, key: str, value: Any, source_agent: str = "SYSTEM") -> None:
+    def write(self, key: str, value: Any, source_agent: str='SYSTEM') -> None:
         """
         Commit data to the buffer.
         CRITICAL: Stores a deep copy to prevent external mutation.
@@ -92,45 +73,26 @@ class ImmutableStagingBuffer(MCPHardenedMixin, HealerMixin):
             PermissionError: If the key has already been written to.
         """
         if key in self._locked_keys:
-            self._mcp_audit("write_violation", {"key": key, "agent": source_agent})
+            self._mcp_audit('write_violation', {'key': key, 'agent': source_agent})
             raise PermissionError(f"Key '{key}' is LOCKED. Immutable violation by {source_agent}.")
-
-        # Deep Copy Hardening: Prevent reference storage
         try:
             snapshot = copy.deepcopy(value)
         except TypeError:
-            # Fallback for non-pickleable objects (e.g., connections), store as-is but warn
             Logger.warning(f"[{source_agent}] Object for '{key}' is not deep-copyable. Storing reference.")
             snapshot = value
-
         self._buffer[key] = snapshot
         self._locked_keys.add(key)
-
-        # Transaction Log
-        self._history.append(
-            StateTransaction(
-                key=key,
-                timestamp=datetime.utcnow().timestamp(),
-                source_agent=source_agent,
-                value_hash=hash(str(snapshot))
-                if isinstance(snapshot, str | int | float | tuple | frozenset)
-                else hash(str(snapshot))
-                if isinstance(snapshot, dict)
-                else 0,
-                cycle_id=self._cycle_id,
-            ),
-        )
-
-        self._mcp_audit("buffer_write", {"key": key, "agent": source_agent})
+        self._history.append(StateTransaction(key=key, timestamp=datetime.utcnow().timestamp(), source_agent=source_agent, value_hash=hash(str(snapshot)) if isinstance(snapshot, str | int | float | tuple | frozenset) else hash(str(snapshot)) if isinstance(snapshot, dict) else 0, cycle_id=self._cycle_id))
+        self._mcp_audit('buffer_write', {'key': key, 'agent': source_agent})
 
     def write_once(self, key: str, value: Any) -> None:
         """
         Legacy API: Writes a value to the buffer if the key is not locked.
         Delegates to write() with default source_agent.
         """
-        self.write(key, value, source_agent="LEGACY")
+        self.write(key, value, source_agent='LEGACY')
 
-    def read(self, key: str, default: Any = None) -> Any:
+    def read(self, key: str, default: Any=None) -> Any:
         """
         Retrieve data from the buffer.
         CRITICAL: Returns a deep copy to prevent downstream mutation of state.
@@ -144,7 +106,6 @@ class ImmutableStagingBuffer(MCPHardenedMixin, HealerMixin):
         """
         if key not in self._buffer:
             return default
-
         data = self._buffer[key]
         try:
             return copy.deepcopy(data)

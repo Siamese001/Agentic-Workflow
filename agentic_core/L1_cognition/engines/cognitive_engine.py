@@ -1,49 +1,23 @@
 from __future__ import annotations
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-"""
-Refactored Cognitive Node - Coordinator Pattern
-
-Orchestrates PerceptionNode, ReasoningNode, and ActionNode with:
-- Parallel/async execution
-- Lazy evaluation for simple intents
-- Output caching
-- Per-node performance monitoring
-"""
-
-
+'\nRefactored Cognitive Node - Coordinator Pattern\n\nOrchestrates PerceptionNode, ReasoningNode, and ActionNode with:\n- Parallel/async execution\n- Lazy evaluation for simple intents\n- Output caching\n- Per-node performance monitoring\n'
 import asyncio
 import hashlib
 import time
 from typing import Any
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 def _get_ActionNode():
     """Lazy load ActionNode to avoid upward import."""
     from agentic_core.interfaces.orchestration import ActionRouter
-    # For now, return ActionRouter as placeholder until ActionNode is exposed through interface
     return ActionRouter
-
-
 try:
     from .PerceptionNode import PerceptionNode
 except ImportError:
-    PerceptionNode = None  # type: ignore[misc,assignment]
-
+    PerceptionNode = None
 try:
     from .ReasoningNode import ReasoningNode
 except ImportError:
-    ReasoningNode = None  # type: ignore[misc,assignment]
-
+    ReasoningNode = None
 
 class CognitiveNodeRefactored:
     """
@@ -66,13 +40,8 @@ class CognitiveNodeRefactored:
         self.perception = PerceptionNode()
         self.reasoning = ReasoningNode()
         self.action = ActionNode()
-
         self.cache: dict[str, dict[str, Any]] = {}
-        self.node_metrics = {
-            "perception": {"calls": 0, "total_time": 0.0},
-            "reasoning": {"calls": 0, "total_time": 0.0},
-            "action": {"calls": 0, "total_time": 0.0},
-        }
+        self.node_metrics = {'perception': {'calls': 0, 'total_time': 0.0}, 'reasoning': {'calls': 0, 'total_time': 0.0}, 'action': {'calls': 0, 'total_time': 0.0}}
         self.total_processes = 0
         self.lazy_evaluations = 0
 
@@ -88,36 +57,25 @@ class CognitiveNodeRefactored:
             Final output
         """
         self.total_processes += 1
-
-        # Check cache
         cache_key = self._make_cache_key(raw_input, context)
         if cache_key in self.cache:
             return self.cache[cache_key].copy()
-
-        # Sequential pipeline
         start = time.time()
         perceived = self.perception.process(raw_input, context)
-        self._record_metric("perception", time.time() - start)
-
-        # Lazy evaluation: Simple intent → skip heavy reasoning
+        self._record_metric('perception', time.time() - start)
         if self._is_simple_intent(perceived):
             self.lazy_evaluations += 1
             start = time.time()
             output = self.action.act_simple(perceived)
-            self._record_metric("action", time.time() - start)
+            self._record_metric('action', time.time() - start)
         else:
-            # Full reasoning pipeline
             start = time.time()
             reasoned = self.reasoning.reason(perceived)
-            self._record_metric("reasoning", time.time() - start)
-
+            self._record_metric('reasoning', time.time() - start)
             start = time.time()
             output = self.action.act(reasoned)
-            self._record_metric("action", time.time() - start)
-
-        # cache result
+            self._record_metric('action', time.time() - start)
         self.cache[cache_key] = output.copy()
-
         return output
 
     async def process_async(self, raw_input: dict[str, Any], context: dict[str, Any]) -> dict[str, Any]:
@@ -137,41 +95,29 @@ class CognitiveNodeRefactored:
             Final output
         """
         self.total_processes += 1
-
-        # Check cache
         cache_key = self._make_cache_key(raw_input, context)
         if cache_key in self.cache:
             return self.cache[cache_key].copy()
-
-        # Parallel perception + memory prefetch
         start = time.time()
         perception_task = asyncio.create_task(self.perception.process_async(raw_input, context))
         memory_task = asyncio.create_task(self._lazy_memory_prefetch(context))
-
         perceived = await perception_task
         memory = await memory_task
-        perceived["memory"] = memory
-        self._record_metric("perception", time.time() - start)
-
-        # Lazy evaluation: Simple intent → skip heavy reasoning
+        perceived['memory'] = memory
+        self._record_metric('perception', time.time() - start)
         if self._is_simple_intent(perceived):
             self.lazy_evaluations += 1
             start = time.time()
             output = await asyncio.to_thread(self.action.act_simple, perceived)
-            self._record_metric("action", time.time() - start)
+            self._record_metric('action', time.time() - start)
         else:
-            # Full async reasoning pipeline
             start = time.time()
             reasoned = await self.reasoning.reason_async(perceived)
-            self._record_metric("reasoning", time.time() - start)
-
+            self._record_metric('reasoning', time.time() - start)
             start = time.time()
             output = await self.action.act_async(reasoned)
-            self._record_metric("action", time.time() - start)
-
-        # cache result
+            self._record_metric('action', time.time() - start)
         self.cache[cache_key] = output.copy()
-
         return output
 
     def _make_cache_key(self, raw_input: dict[str, Any], context: dict[str, Any]) -> str:
@@ -187,7 +133,7 @@ class CognitiveNodeRefactored:
         """
         input_str = str(sorted(raw_input.items()))
         context_str = str(sorted(context.items()))
-        key_input = f"{input_str}|{context_str}"
+        key_input = f'{input_str}|{context_str}'
         return hashlib.sha256(key_input.encode()).hexdigest()
 
     def _is_simple_intent(self, perceived: dict[str, Any]) -> bool:
@@ -200,12 +146,10 @@ class CognitiveNodeRefactored:
         Returns:
             True if simple intent
         """
-        # Heuristic: Short query + high confidence + known intent
-        query_len = len(perceived.get("query", ""))
-        confidence = perceived.get("confidence", 0.0)
-        intent = perceived.get("intent", "")
-
-        return query_len < 50 and confidence > 0.8 and intent in ["action", "memory"]
+        query_len = len(perceived.get('query', ''))
+        confidence = perceived.get('confidence', 0.0)
+        intent = perceived.get('intent', '')
+        return query_len < 50 and confidence > 0.8 and (intent in ['action', 'memory'])
 
     async def _lazy_memory_prefetch(self, context: dict[str, Any]) -> list[dict[str, Any]]:
         """
@@ -217,9 +161,8 @@ class CognitiveNodeRefactored:
         Returns:
             Prefetched memory items
         """
-        # Simulate async memory retrieval
-        await asyncio.sleep(DEFAULT_SLEEP)  # Placeholder
-        return context.get("memory", [])
+        await asyncio.sleep(DEFAULT_SLEEP)
+        return context.get('memory', [])
 
     def _record_metric(self, node_name: str, duration: float) -> None:
         """
@@ -230,44 +173,23 @@ class CognitiveNodeRefactored:
             duration: Execution duration
         """
         if node_name in self.node_metrics:
-            self.node_metrics[node_name]["calls"] += 1
-            self.node_metrics[node_name]["total_time"] += duration
+            self.node_metrics[node_name]['calls'] += 1
+            self.node_metrics[node_name]['total_time'] += duration
 
     def get_statistics(self) -> dict[str, Any]:
         """Get cognitive node statistics."""
-        stats = {
-            "total_processes": self.total_processes,
-            "lazy_evaluations": self.lazy_evaluations,
-            "lazy_rate": (self.lazy_evaluations / self.total_processes * 100)
-            if self.total_processes > 0
-            else 0,
-            "cache_size": len(self.cache),
-            "nodes": {},
-        }
-
-        # Per-node statistics
+        stats = {'total_processes': self.total_processes, 'lazy_evaluations': self.lazy_evaluations, 'lazy_rate': self.lazy_evaluations / self.total_processes * 100 if self.total_processes > 0 else 0, 'cache_size': len(self.cache), 'nodes': {}}
         for node_name, metrics in self.node_metrics.items():
-            calls = metrics["calls"]
-            total_time = metrics["total_time"]
+            calls = metrics['calls']
+            total_time = metrics['total_time']
             avg_time = total_time / calls if calls > 0 else 0.0
-
-            stats["nodes"][node_name] = {
-                "calls": calls,
-                "total_time": total_time,
-                "avg_time": avg_time,
-            }
-
-        # Sub-node statistics
-        stats["perception_stats"] = self.perception.get_statistics()
-        stats["reasoning_stats"] = self.reasoning.get_statistics()
-        stats["action_stats"] = self.action.get_statistics()
-
+            stats['nodes'][node_name] = {'calls': calls, 'total_time': total_time, 'avg_time': avg_time}
+        stats['perception_stats'] = self.perception.get_statistics()
+        stats['reasoning_stats'] = self.reasoning.get_statistics()
+        stats['action_stats'] = self.action.get_statistics()
         return stats
 
     def clear_cache(self) -> None:
         """Clear output cache."""
         self.cache.clear()
-
-
-# Global instance
 cognitive_node_refactored = CognitiveNodeRefactored()

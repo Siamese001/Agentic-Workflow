@@ -2,26 +2,12 @@
 Quality Inspector Engine - Deep inspection
 Refactored from InspectResumeQuality.py
 """
-
 from __future__ import annotations
-
 import logging
 from typing import Any
-
 from apps_rg.engines.base_rg_engine import BaseRGEngine
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 Logger = logging.getLogger(__name__)
-
 
 class QualityInspectorEngine(BaseRGEngine):
     """
@@ -29,44 +15,24 @@ class QualityInspectorEngine(BaseRGEngine):
     """
 
     def __init__(self, ctx: Any) -> None:
-        super().__init__(ctx, node_id="QUALITY.INSPECTOR")
+        super().__init__(ctx, node_id='QUALITY.INSPECTOR')
 
     async def execute(self, resume_data: dict[str, Any]) -> dict[str, Any]:
         """
         Perform deep quality inspection.
         """
-        self._mcp_audit("inspection_start")
-
-        inspection_results = {
-            "grammar_issues": [],
-            "formatting_issues": [],
-            "content_issues": [],
-            "overall_quality": "pass",
-        }
-
-        # Check grammar patterns
+        self._mcp_audit('inspection_start')
+        inspection_results = {'grammar_issues': [], 'formatting_issues': [], 'content_issues': [], 'overall_quality': 'pass'}
         for section in resume_data.values():
             text = str(section)
-
-            # Check for double spaces
-            if "  " in text:
-                inspection_results["formatting_issues"].append("Double spaces detected")
-
-            # Check for inconsistent capitalization
+            if '  ' in text:
+                inspection_results['formatting_issues'].append('Double spaces detected')
             if text and text[0].islower():
-                inspection_results["formatting_issues"].append("Section starts with lowercase")
-
-        # Determine overall quality
-        total_issues = (
-            len(inspection_results["grammar_issues"])
-            + len(inspection_results["formatting_issues"])
-            + len(inspection_results["content_issues"])
-        )
-
+                inspection_results['formatting_issues'].append('Section starts with lowercase')
+        total_issues = len(inspection_results['grammar_issues']) + len(inspection_results['formatting_issues']) + len(inspection_results['content_issues'])
         if total_issues > 5:
-            inspection_results["overall_quality"] = "fail"
-            self.record_fail(f"Quality inspection failed: {total_issues} issues", data=inspection_results)
+            inspection_results['overall_quality'] = 'fail'
+            self.record_fail(f'Quality inspection failed: {total_issues} issues', data=inspection_results)
         else:
-            self.record_pass(f"Quality inspection passed: {total_issues} minor issues")
-
+            self.record_pass(f'Quality inspection passed: {total_issues} minor issues')
         return inspection_results

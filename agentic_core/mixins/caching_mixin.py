@@ -8,9 +8,7 @@ Provides:
 - Thread-safe cache operations
 - @cached decorator for method-level caching
 """
-
 from __future__ import annotations
-
 import functools
 import logging
 import threading
@@ -19,24 +17,12 @@ from collections import OrderedDict
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import Any
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 Logger = logging.getLogger(__name__)
-
 
 @dataclass
 class CacheEntry:
     """Represents a cached value with metadata."""
-
     value: Any
     created_at: float = field(default_factory=time.time)
     ttl_seconds: float = 300.0
@@ -46,15 +32,12 @@ class CacheEntry:
         """Check if cache entry has expired."""
         return time.time() - self.created_at > self.ttl_seconds
 
-
 @dataclass
 class CacheConfig:
     """Configuration for caching."""
-
     enabled: bool = True
     max_size: int = 1000
     default_ttl: float = 300.0
-
 
 class CachingMixin:
     """
@@ -72,26 +55,18 @@ class CachingMixin:
     def __init__(self, **kwargs: Any) -> None:
         """Initialize caching state."""
         super().__init__(**kwargs)
-
         self._cache_config = CacheConfig()
         self._cache_store: OrderedDict[str, CacheEntry] = OrderedDict()
         self._cache_lock = threading.RLock()
         self._caching_initialized = True
+        Logger.debug(f'[CACHE] {self.__class__.__name__} caching initialized')
 
-        Logger.debug(f"[CACHE] {self.__class__.__name__} caching initialized")
-
-    def configure_cache(
-        self,
-        enabled: bool | None = None,
-        max_size: int | None = None,
-        default_ttl: float | None = None,
-    ) -> None:
+    def configure_cache(self, enabled: bool | None=None, max_size: int | None=None, default_ttl: float | None=None) -> None:
         """Configure caching settings."""
         if max_size is not None and max_size <= 0:
-            raise ValueError("max_size must be positive")
+            raise ValueError('max_size must be positive')
         if default_ttl is not None and default_ttl <= 0:
-            raise ValueError("default_ttl must be positive")
-
+            raise ValueError('default_ttl must be positive')
         with self._cache_lock:
             if enabled is not None:
                 self._cache_config.enabled = enabled
@@ -103,34 +78,26 @@ class CachingMixin:
     def cache_get(self, key: str) -> tuple[bool, Any]:
         """Get value from cache. Returns (hit, value)."""
         if not self._cache_config.enabled:
-            return False, None
-
+            return (False, None)
         with self._cache_lock:
             entry = self._cache_store.get(key)
             if entry is None:
-                return False, None
-
+                return (False, None)
             if entry.is_expired():
                 del self._cache_store[key]
-                return False, None
-
-            self._cache_store.move_to_end(key)  # LRU update
+                return (False, None)
+            self._cache_store.move_to_end(key)
             entry.hits += 1
-            return True, entry.value
+            return (True, entry.value)
 
-    def cache_set(self, key: str, value: Any, ttl: float | None = None) -> None:
+    def cache_set(self, key: str, value: Any, ttl: float | None=None) -> None:
         """Set value in cache."""
         if not self._cache_config.enabled:
             return
-
         with self._cache_lock:
             while len(self._cache_store) >= self._cache_config.max_size:
                 self._cache_store.popitem(last=False)
-
-            self._cache_store[key] = CacheEntry(
-                value=value,
-                ttl_seconds=ttl or self._cache_config.default_ttl,
-            )
+            self._cache_store[key] = CacheEntry(value=value, ttl_seconds=ttl or self._cache_config.default_ttl)
 
     def cache_invalidate(self, key: str) -> bool:
         """Invalidate a cache entry. Returns True if entry was found."""
@@ -150,19 +117,12 @@ class CachingMixin:
     def cache_stats(self) -> dict[str, Any]:
         """Get cache statistics."""
         with self._cache_lock:
-            total_hits = sum(e.hits for e in self._cache_store.values())
-            expired = sum(1 for e in self._cache_store.values() if e.is_expired())
-
-            return {
-                "size": len(self._cache_store),
-                "max_size": self._cache_config.max_size,
-                "total_hits": total_hits,
-                "expired_entries": expired,
-                "enabled": self._cache_config.enabled,
-            }
+            total_hits = sum((e.hits for e in self._cache_store.values()))
+            expired = sum((1 for e in self._cache_store.values() if e.is_expired()))
+            return {'size': len(self._cache_store), 'max_size': self._cache_config.max_size, 'total_hits': total_hits, 'expired_entries': expired, 'enabled': self._cache_config.enabled}
 
     @staticmethod
-    def cached(ttl: float = 300.0, key_func: Callable | None = None):
+    def cached(ttl: float=300.0, key_func: Callable | None=None):
         """
         Decorator to cache method results.
 
@@ -172,27 +132,21 @@ class CachingMixin:
         """
 
         def decorator(func: Callable) -> Callable:
+
             @functools.wraps(func)
             def wrapper(self, *args, **kwargs):
                 if not isinstance(self, CachingMixin):
                     return func(self, *args, **kwargs)
-
                 if key_func:
                     cache_key = key_func(*args, **kwargs)
                 else:
-                    cache_key = f"{func.__name__}:{args}:{sorted(kwargs.items())}"
-
+                    cache_key = f'{func.__name__}:{args}:{sorted(kwargs.items())}'
                 hit, value = self.cache_get(cache_key)
                 if hit:
                     return value
-
                 result = func(self, *args, **kwargs)
                 self.cache_set(cache_key, result, ttl)
                 return result
-
             return wrapper
-
         return decorator
-
-
-__all__ = ["CachingMixin", "CacheConfig", "CacheEntry"]
+__all__ = ['CachingMixin', 'CacheConfig', 'CacheEntry']

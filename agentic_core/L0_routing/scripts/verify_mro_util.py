@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 MRO Verification Script
 
@@ -7,195 +6,126 @@ the infrastructure_mixin consolidation.
 
 Opportunity #4: Mixin Inheritance Complexity - Phase 4 Verification
 """
-
 import sys
 from pathlib import Path
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 # guardian: allow-global-mutation
 sys.path.insert(0, str(PROJECT_ROOT))
 
-
 def print_mro(agent_class, agent_name: str):
     """Print the MRO for an agent class."""
     print(f"\n{'=' * 80}")
-    print(f"MRO for {agent_name}")
+    print(f'MRO for {agent_name}')
     print(f"{'=' * 80}")
-
     mro = agent_class.__mro__
     for i, cls in enumerate(mro):
-        indent = "  " * i
-        print(f"{indent}{i}. {cls.__module__}.{cls.__name__}")
-
-    print(f"\nTotal classes in MRO: {len(mro)}")
-
-    # Check for infrastructure_mixin
-    has_infra = any("infrastructure_mixin" in cls.__name__ for cls in mro)
-    has_healer = any("HealerMixin" in cls.__name__ for cls in mro)
-    has_mcp = any("MCPHardened" in cls.__name__ for cls in mro)
-    has_testing = any("SubatomicTesting" in cls.__name__ for cls in mro)
-
-    print("\nInfrastructure Components:")
-    print(f"  infrastructure_mixin: {'✅' if has_infra else '❌'}")
-    print(f"  HealerMixin: {'✅' if has_healer else '❌'}")
-    print(f"  MCPHardenedMixin: {'✅' if has_mcp else '❌'}")
-    print(f"  SubatomicTestingMixin: {'✅' if has_testing else '❌'}")
-
-    return {
-        "has_infra": has_infra,
-        "has_healer": has_healer,
-        "has_mcp": has_mcp,
-        "has_testing": has_testing,
-        "mro_length": len(mro),
-    }
-
+        indent = '  ' * i
+        print(f'{indent}{i}. {cls.__module__}.{cls.__name__}')
+    print(f'\nTotal classes in MRO: {len(mro)}')
+    has_infra = any(('infrastructure_mixin' in cls.__name__ for cls in mro))
+    has_healer = any(('HealerMixin' in cls.__name__ for cls in mro))
+    has_mcp = any(('MCPHardened' in cls.__name__ for cls in mro))
+    has_testing = any(('SubatomicTesting' in cls.__name__ for cls in mro))
+    print('\nInfrastructure Components:')
+    print(f"  infrastructure_mixin: {('✅' if has_infra else '❌')}")
+    print(f"  HealerMixin: {('✅' if has_healer else '❌')}")
+    print(f"  MCPHardenedMixin: {('✅' if has_mcp else '❌')}")
+    print(f"  SubatomicTestingMixin: {('✅' if has_testing else '❌')}")
+    return {'has_infra': has_infra, 'has_healer': has_healer, 'has_mcp': has_mcp, 'has_testing': has_testing, 'mro_length': len(mro)}
 
 def verify_sovereign_base_agent():
     """Verify SovereignBaseAgent MRO."""
     try:
         from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-
-        return print_mro(SovereignBaseAgent, "SovereignBaseAgent")
+        return print_mro(SovereignBaseAgent, 'SovereignBaseAgent')
     except ImportError as e:
-        print(f"❌ Failed to import SovereignBaseAgent: {e}")
+        print(f'❌ Failed to import SovereignBaseAgent: {e}')
         return None
-
 
 def verify_meta_learning_agent():
     """Verify MetaLearningAgent MRO (complex case)."""
     try:
-        from agentic_core.L0_routing.seams.observability_seam import (
-            load_meta_learning_agent,
-        )
-
+        from agentic_core.L0_routing.seams.observability_seam import load_meta_learning_agent
         MetaLearningAgent = load_meta_learning_agent()
-        return print_mro(MetaLearningAgent, "MetaLearningAgent")
+        return print_mro(MetaLearningAgent, 'MetaLearningAgent')
     except ImportError as e:
-        print(f"❌ Failed to import MetaLearningAgent: {e}")
+        print(f'❌ Failed to import MetaLearningAgent: {e}')
         return None
-
 
 def verify_location_validator_agent():
     """Verify LocationValidatorAgent MRO."""
     try:
-        from agentic_core.L0_routing.seams.safety_reasoning_seam import (
-            load_location_validator_agent,
-        )
-
+        from agentic_core.L0_routing.seams.safety_reasoning_seam import load_location_validator_agent
         LocationValidatorAgent = load_location_validator_agent()
-        return print_mro(LocationValidatorAgent, "LocationValidatorAgent")
+        return print_mro(LocationValidatorAgent, 'LocationValidatorAgent')
     except ImportError as e:
-        print(f"❌ Failed to import LocationValidatorAgent: {e}")
+        print(f'❌ Failed to import LocationValidatorAgent: {e}')
         return None
-
 
 def verify_hierarchy_agent():
     """Verify HierarchyAgent MRO via subprocess."""
     try:
         from agentic_core.L0_routing.utils.subprocess_runner_util import invoke_hierarchy_agent
-
-        result = invoke_hierarchy_agent(action="verify_mro")
-
-        if result.get("success"):
-            mro = result.get("mro", [])
+        result = invoke_hierarchy_agent(action='verify_mro')
+        if result.get('success'):
+            mro = result.get('mro', [])
             print(f"\n{'=' * 80}")
-            print("MRO for HierarchyAgent (via subprocess)")
+            print('MRO for HierarchyAgent (via subprocess)')
             print(f"{'=' * 80}")
-
             for i, cls_name in enumerate(mro):
-                indent = "  " * i
-                print(f"{indent}{i}. {cls_name}")
-
-            print(f"\nTotal classes in MRO: {len(mro)}")
-
-            # Check for infrastructure components
-            has_infra = any("infrastructure_mixin" in cls for cls in mro)
-            has_healer = any("HealerMixin" in cls for cls in mro)
-            has_mcp = any("MCPHardened" in cls for cls in mro)
-            has_testing = any("SubatomicTesting" in cls for cls in mro)
-
-            print("\nInfrastructure Components:")
-            print(f"  infrastructure_mixin: {'✅' if has_infra else '❌'}")
-            print(f"  HealerMixin: {'✅' if has_healer else '❌'}")
-            print(f"  MCPHardenedMixin: {'✅' if has_mcp else '❌'}")
-            print(f"  SubatomicTestingMixin: {'✅' if has_testing else '❌'}")
-
-            return {
-                "has_infra": has_infra,
-                "has_healer": has_healer,
-                "has_mcp": has_mcp,
-                "has_testing": has_testing,
-                "mro_length": len(mro),
-            }
+                indent = '  ' * i
+                print(f'{indent}{i}. {cls_name}')
+            print(f'\nTotal classes in MRO: {len(mro)}')
+            has_infra = any(('infrastructure_mixin' in cls for cls in mro))
+            has_healer = any(('HealerMixin' in cls for cls in mro))
+            has_mcp = any(('MCPHardened' in cls for cls in mro))
+            has_testing = any(('SubatomicTesting' in cls for cls in mro))
+            print('\nInfrastructure Components:')
+            print(f"  infrastructure_mixin: {('✅' if has_infra else '❌')}")
+            print(f"  HealerMixin: {('✅' if has_healer else '❌')}")
+            print(f"  MCPHardenedMixin: {('✅' if has_mcp else '❌')}")
+            print(f"  SubatomicTestingMixin: {('✅' if has_testing else '❌')}")
+            return {'has_infra': has_infra, 'has_healer': has_healer, 'has_mcp': has_mcp, 'has_testing': has_testing, 'mro_length': len(mro)}
         else:
             print(f"❌ Failed to verify HierarchyAgent MRO: {result.get('error')}")
             return None
-    # guardian: allow-silent-swallow
     except Exception as e:
-        print(f"❌ Failed to verify HierarchyAgent: {e}")
+        print(f'❌ Failed to verify HierarchyAgent: {e}')
         return None
-
 
 def main():
     """Run MRO verification for multiple agents."""
-    print("=" * 80)
-    print("MRO VERIFICATION - Opportunity #4: Mixin Inheritance Complexity")
-    print("=" * 80)
-
+    print('=' * 80)
+    print('MRO VERIFICATION - Opportunity #4: Mixin Inheritance Complexity')
+    print('=' * 80)
     results = {}
-
-    # Test 1: SovereignBaseAgent (root)
-    print("\n[Test 1] SovereignBaseAgent (Root)")
-    results["sovereign"] = verify_sovereign_base_agent()
-
-    # Test 2: MetaLearningAgent (complex case)
-    print("\n[Test 2] MetaLearningAgent (Complex Case)")
-    results["meta_learning"] = verify_meta_learning_agent()
-
-    # Test 3: LocationValidatorAgent (L5 agent)
-    print("\n[Test 3] LocationValidatorAgent (L5 Agent)")
-    results["location_validator"] = verify_location_validator_agent()
-
-    # Test 4: HierarchyAgent (L5 agent)
-    print("\n[Test 4] HierarchyAgent (L5 Agent)")
-    results["hierarchy"] = verify_hierarchy_agent()
-
-    # Summary
-    print("\n" + "=" * 80)
-    print("VERIFICATION SUMMARY")
-    print("=" * 80)
-
-    success_count = sum(1 for r in results.values() if r is not None and r.get("has_infra"))
+    print('\n[Test 1] SovereignBaseAgent (Root)')
+    results['sovereign'] = verify_sovereign_base_agent()
+    print('\n[Test 2] MetaLearningAgent (Complex Case)')
+    results['meta_learning'] = verify_meta_learning_agent()
+    print('\n[Test 3] LocationValidatorAgent (L5 Agent)')
+    results['location_validator'] = verify_location_validator_agent()
+    print('\n[Test 4] HierarchyAgent (L5 Agent)')
+    results['hierarchy'] = verify_hierarchy_agent()
+    print('\n' + '=' * 80)
+    print('VERIFICATION SUMMARY')
+    print('=' * 80)
+    success_count = sum((1 for r in results.values() if r is not None and r.get('has_infra')))
     total_count = len(results)
-
-    print(f"\nAgents with infrastructure_mixin: {success_count}/{total_count}")
-
+    print(f'\nAgents with infrastructure_mixin: {success_count}/{total_count}')
     for agent_name, result in results.items():
         if result is None:
-            print(f"  ❌ {agent_name}: Failed to import")
-        elif result.get("has_infra"):
+            print(f'  ❌ {agent_name}: Failed to import')
+        elif result.get('has_infra'):
             print(f"  ✅ {agent_name}: infrastructure_mixin present (MRO length: {result['mro_length']})")
         else:
             print(f"  ⚠️  {agent_name}: infrastructure_mixin missing (MRO length: {result['mro_length']})")
-
-    # Validation
     if success_count == total_count:
-        print("\n✅ ALL AGENTS VERIFIED: infrastructure_mixin consolidation successful")
+        print('\n✅ ALL AGENTS VERIFIED: infrastructure_mixin consolidation successful')
         return 0
     else:
-        print(f"\n❌ VERIFICATION FAILED: {total_count - success_count} agents missing infrastructure_mixin")
+        print(f'\n❌ VERIFICATION FAILED: {total_count - success_count} agents missing infrastructure_mixin')
         return 1
-
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     sys.exit(main())

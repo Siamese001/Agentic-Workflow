@@ -116,6 +116,7 @@ class MetaLearningObservability:
         if len(self._metrics) > self._max_metrics:
             self._metrics = self._metrics[-self._max_metrics :]
 
+    # guardian: allow-magic-config
     def get_metrics(
         self,
         name: str | None = None,

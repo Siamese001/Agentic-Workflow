@@ -3,60 +3,36 @@
 No pydantic. No runtime imports beyond stdlib. No behavior methods.
 All dataclasses are frozen (immutable).
 """
-
 from __future__ import annotations
-
 from dataclasses import dataclass
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 @dataclass(frozen=True)
 class SlotS0:
     """SYSTEM / STATE slot — ABSOLUTE authority. Hard-coded constitutions + invariants."""
-
     content: str
-
 
 @dataclass(frozen=True)
 class SlotD0:
     """INJECTIONS slot — BINDING authority. Role fences, tool constraints, scope boundaries."""
-
     content: str
     authority: str
-
 
 @dataclass(frozen=True)
 class SlotI0:
     """INSTRUCTIONAL slot — GOVERNED authority. Identity and mixin capability definitions."""
-
     content: str
-
 
 @dataclass(frozen=True)
 class SlotC0:
     """DEPENDENCY slot — INFORMATIONAL authority. Validated context payload (RAG/citations)."""
-
     content: dict
-
 
 @dataclass(frozen=True)
 class SlotU0:
     """USER PROMPT slot — ZERO authority. Raw intent from L1; must pass Airlock before L0."""
-
     content: str
-
-
-SLOT_ORDER: tuple[str, ...] = ("S0", "D0", "I0", "C0", "U0")
-
+SLOT_ORDER: tuple[str, ...] = ('S0', 'D0', 'I0', 'C0', 'U0')
 
 class SlotOrderViolation(Exception):
     """Raised when assembled prompt slot tags violate the canonical SLOT_ORDER.
@@ -65,7 +41,6 @@ class SlotOrderViolation(Exception):
     rejected at assembly time.  Fail-closed: missing or misordered slots
     abort prompt assembly.
     """
-
 
 def validate_slot_order(prompt_text: str) -> None:
     """Enforce canonical SLOT_ORDER in an assembled prompt.
@@ -79,21 +54,16 @@ def validate_slot_order(prompt_text: str) -> None:
     """
     positions: list[tuple[str, int]] = []
     for slot_key in SLOT_ORDER:
-        tag = f"<SLOT_{slot_key}>"
+        tag = f'<SLOT_{slot_key}>'
         idx = prompt_text.find(tag)
         if idx == -1:
-            raise SlotOrderViolation(f"SLOT_MISSING: <SLOT_{slot_key}> not found in assembled prompt")
+            raise SlotOrderViolation(f'SLOT_MISSING: <SLOT_{slot_key}> not found in assembled prompt')
         positions.append((slot_key, idx))
-
     for i in range(1, len(positions)):
         prev_key, prev_pos = positions[i - 1]
         curr_key, curr_pos = positions[i]
         if curr_pos <= prev_pos:
-            raise SlotOrderViolation(
-                f"SLOT_ORDER_VIOLATED: <SLOT_{curr_key}> (pos {curr_pos}) "
-                f"must appear after <SLOT_{prev_key}> (pos {prev_pos})"
-            )
-
+            raise SlotOrderViolation(f'SLOT_ORDER_VIOLATED: <SLOT_{curr_key}> (pos {curr_pos}) must appear after <SLOT_{prev_key}> (pos {prev_pos})')
 
 class AirlockViolationError(Exception):
     """Raised when a user prompt (U0) attempts to bypass the L1→L0 Airlock gate."""

@@ -24,31 +24,18 @@ Usage:
     ctx.store_healing_pattern(violation, result, agent="GravityLeakRepairAgent")
     pattern = ctx.recall_healing_pattern(violation, agent="StructuralEngineerAgent")
 """
-
 from __future__ import annotations
-
 import hashlib
 import json
 import time
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 @dataclass
 class CacheEntry:
     """Represents a cached analysis result."""
-
     key: str
     value: Any
     timestamp: float
@@ -59,18 +46,15 @@ class CacheEntry:
         """Check if cache entry has expired."""
         return time.time() - self.timestamp > self.ttl
 
-
 @dataclass
 class HealingPattern:
     """Represents a successful healing pattern."""
-
     violation_signature: str
     healing_strategy: str
     success_count: int
     last_used: float
     agent: str
     metadata: dict[str, Any]
-
 
 class L4ContextManager:
     """
@@ -79,14 +63,12 @@ class L4ContextManager:
     Singleton pattern ensures all agents share the same context.
     Enables cross-agent learning and eliminates redundant state.
     """
-
     _instance: L4ContextManager | None = None
     _lock: bool = False
 
     def __init__(self, project_root: Path):
         if L4ContextManager._instance is not None:
-            raise RuntimeError("Use get_context_manager() to get singleton instance")
-
+            raise RuntimeError('Use get_context_manager() to get singleton instance')
         self.project_root = project_root
         self._cache: dict[str, CacheEntry] = {}
         self._patterns: dict[str, HealingPattern] = {}
@@ -120,14 +102,12 @@ class L4ContextManager:
         entry = self._cache.get(key)
         if entry is None:
             return None
-
         if entry.is_expired():
             del self._cache[key]
             return None
-
         return entry.value
 
-    def cache_set(self, key: str, value: Any, agent: str, ttl: int = 3600):
+    def cache_set(self, key: str, value: Any, agent: str, ttl: int=3600):
         """
         Store value in cache.
 
@@ -137,15 +117,9 @@ class L4ContextManager:
             agent: Agent storing the value
             ttl: Time-to-live in seconds (default 1 hour)
         """
-        self._cache[key] = CacheEntry(
-            key=key,
-            value=value,
-            timestamp=time.time(),
-            ttl=ttl,
-            agent=agent,
-        )
+        self._cache[key] = CacheEntry(key=key, value=value, timestamp=time.time(), ttl=ttl, agent=agent)
 
-    def cache_clear(self, agent: str | None = None):
+    def cache_clear(self, agent: str | None=None):
         """
         Clear cache entries.
 
@@ -173,18 +147,10 @@ class L4ContextManager:
         """
         signature = self._compute_violation_signature(violation)
         pattern = self._patterns.get(signature)
-
         if pattern is None:
             return None
-
         pattern.last_used = time.time()
-
-        return {
-            "healing_strategy": pattern.healing_strategy,
-            "success_count": pattern.success_count,
-            "discovered_by": pattern.agent,
-            "metadata": pattern.metadata,
-        }
+        return {'healing_strategy': pattern.healing_strategy, 'success_count': pattern.success_count, 'discovered_by': pattern.agent, 'metadata': pattern.metadata}
 
     def store_healing_pattern(self, violation: dict[str, Any], result: dict[str, Any], agent: str):
         """
@@ -196,19 +162,11 @@ class L4ContextManager:
             agent: Agent that performed the healing
         """
         signature = self._compute_violation_signature(violation)
-
         if signature in self._patterns:
             self._patterns[signature].success_count += 1
             self._patterns[signature].last_used = time.time()
         else:
-            self._patterns[signature] = HealingPattern(
-                violation_signature=signature,
-                healing_strategy=result.get("strategy", result.get("fix_type", "unknown")),
-                success_count=1,
-                last_used=time.time(),
-                agent=agent,
-                metadata=result,
-            )
+            self._patterns[signature] = HealingPattern(violation_signature=signature, healing_strategy=result.get('strategy', result.get('fix_type', 'unknown')), success_count=1, last_used=time.time(), agent=agent, metadata=result)
 
     def _compute_violation_signature(self, violation: dict[str, Any]) -> str:
         """
@@ -216,12 +174,7 @@ class L4ContextManager:
 
         Similar violations should have the same signature to enable pattern reuse.
         """
-        characteristics = {
-            "type": violation.get("type", ""),
-            "layer": violation.get("file_layer", violation.get("layer", "")),
-            "target_layer": violation.get("import_layer", violation.get("target_layer", "")),
-        }
-
+        characteristics = {'type': violation.get('type', ''), 'layer': violation.get('file_layer', violation.get('layer', '')), 'target_layer': violation.get('import_layer', violation.get('target_layer', ''))}
         signature_str = json.dumps(characteristics, sort_keys=True)
         return hashlib.sha256(signature_str.encode()).hexdigest()[:16]
 
@@ -236,15 +189,12 @@ class L4ContextManager:
         Returns:
             Cached analysis or None
         """
-        cache_key = f"{file_path}:{analysis_type}"
-
+        cache_key = f'{file_path}:{analysis_type}'
         if cache_key in self._file_cache:
-            cached_mtime = self._file_cache[cache_key].get("mtime", 0)
+            cached_mtime = self._file_cache[cache_key].get('mtime', 0)
             current_mtime = file_path.stat().st_mtime if file_path.exists() else 0
-
             if current_mtime <= cached_mtime:
-                return self._file_cache[cache_key].get("result")
-
+                return self._file_cache[cache_key].get('result')
         return None
 
     def set_file_analysis(self, file_path: Path, analysis_type: str, result: dict[str, Any]):
@@ -256,13 +206,11 @@ class L4ContextManager:
             analysis_type: Type of analysis
             result: Analysis result
         """
-        cache_key = f"{file_path}:{analysis_type}"
-        self._file_cache[cache_key] = {
-            "result": result,
-            "mtime": file_path.stat().st_mtime if file_path.exists() else 0,
-        }
+        cache_key = f'{file_path}:{analysis_type}'
+        self._file_cache[cache_key] = {'result': result, 'mtime': file_path.stat().st_mtime if file_path.exists() else 0}
 
-    def get_python_files(self, max_age: int = 300) -> list[Path]:
+    # guardian: allow-magic-config
+    def get_python_files(self, max_age: int=300) -> list[Path]:
         """
         Get list of Python files in project.
 
@@ -275,13 +223,10 @@ class L4ContextManager:
             List of Python file paths
         """
         current_time = time.time()
-
         if self._python_files is None or current_time - self._python_files_timestamp > max_age:
             from agentic_core.utils.ssot_discovery_validator import get_python_files
-
             self._python_files = get_python_files(self.project_root)
             self._python_files_timestamp = current_time
-
         return self._python_files
 
     def invalidate_python_files_cache(self):
@@ -291,13 +236,7 @@ class L4ContextManager:
 
     def get_stats(self) -> dict[str, Any]:
         """Get statistics about context manager usage."""
-        return {
-            "cache_entries": len(self._cache),
-            "healing_patterns": len(self._patterns),
-            "file_analyses": len(self._file_cache),
-            "python_files_cached": self._python_files is not None,
-        }
-
+        return {'cache_entries': len(self._cache), 'healing_patterns': len(self._patterns), 'file_analyses': len(self._file_cache), 'python_files_cached': self._python_files is not None}
 
 def get_context_manager(project_root: Path | str) -> L4ContextManager:
     """
@@ -311,5 +250,4 @@ def get_context_manager(project_root: Path | str) -> L4ContextManager:
     """
     if isinstance(project_root, str):
         project_root = Path(project_root)
-
     return L4ContextManager.get_instance(project_root)

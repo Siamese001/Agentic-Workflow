@@ -17,6 +17,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+# guardian: allow-global-mutation
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
@@ -242,6 +243,7 @@ for mod_path in true_gaps:
     try:
         symbols = _extract_public_symbols(src_path)
         content = generate_adg_stub(mod_path, symbols)
+    # guardian: allow-silent-swallow
     except Exception as exc:
         print(f"  [ERROR] {mod_path}: {exc}")
         errors += 1

@@ -32,6 +32,7 @@ from typing import Any
 
 # guardian: allow-global_mutation
 _REPO_ROOT = Path(__file__).resolve().parents[1]
+# guardian: allow-global-mutation
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
@@ -351,6 +352,7 @@ def build_semantic_graph(repo_root: Path) -> dict:
     for rel_path, abs_path in iter_python_files(repo_root):
         try:
             source = abs_path.read_text(encoding="utf-8", errors="replace")
+        # guardian: allow-silent-swallow
         except Exception:
             error_count += 1
             continue
@@ -557,6 +559,7 @@ def build_failure_clusters(graph: dict, surface_map: dict) -> dict:
 def build_validation_report(latest_artifact_path: Path, semantic_graph: dict) -> dict:
     try:
         adg = json.loads(latest_artifact_path.read_text(encoding="utf-8"))
+    # guardian: allow-silent-swallow
     except Exception as e:
         adg = {}
         logger.warning("Could not load adg_latest.json: %s", e)

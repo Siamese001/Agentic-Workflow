@@ -4,34 +4,20 @@ json_exporter.py - Exporter Module
 Domain: tracing
 Generated: 2025-12-07T12:07:59.856505
 """
-
 import json
 import logging
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 logger = logging.getLogger(__name__)
-
 
 @dataclass
 class ExportResult:
     """Result of export operation."""
-
     success: bool
     items_exported: int
     destination: str
     errors: list[str] = None
-
 
 class BaseExporter(ABC):
     """foundation class for exporters."""
@@ -41,43 +27,30 @@ class BaseExporter(ABC):
         """Export data."""
         ...
 
-
 class JsonExporter(BaseExporter):
     """Exporter for tracing domain."""
 
-    def __init__(self, config: dict[str, object] | None = None):
+    def __init__(self, config: dict[str, object] | None=None):
         self.config = config or {}
-        self.destination = self.config.get("destination", "stdout")
-        logger.info(f"Initialized {self.__class__.__name__}")
+        self.destination = self.config.get('destination', 'stdout')
+        logger.info(f'Initialized {self.__class__.__name__}')
 
     def export(self, data: object) -> ExportResult:
         """Export data to destination."""
         try:
             items = data if isinstance(data, list) else [data]
-
-            if self.destination == "stdout":
+            if self.destination == 'stdout':
                 for item in items:
                     logger.debug(json.dumps(item, default=str, indent=2))
-            elif self.destination == "file":
-                filepath = self.config.get("filepath", "export.json")
-                with open(filepath, "w") as f:
+            elif self.destination == 'file':
+                filepath = self.config.get('filepath', 'export.json')
+                with open(filepath, 'w') as f:
                     json.dump(items, f, default=str, indent=2)
-
-            return ExportResult(
-                success=True,
-                items_exported=len(items),
-                destination=self.destination,
-            )
+            return ExportResult(success=True, items_exported=len(items), destination=self.destination)
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
-            logger.error(f"Export failed: {e}")
-            return ExportResult(
-                success=False,
-                items_exported=0,
-                destination=self.destination,
-                errors=[str(e)],
-            )
+            logger.error(f'Export failed: {e}')
+            return ExportResult(success=False, items_exported=0, destination=self.destination, errors=[str(e)])
 
-
-def export_data(data: object, config: dict | None = None) -> ExportResult:
+def export_data(data: object, config: dict | None=None) -> ExportResult:
     """Convenience function for export."""
     return JsonExporter(config).export(data)

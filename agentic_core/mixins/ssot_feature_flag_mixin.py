@@ -9,24 +9,11 @@ Provides feature flags that:
 Layer: L2 Execution Aid
 Authority: Flag reading only. No L4 mutation. No routing influence.
 """
-
 from __future__ import annotations
-
 import logging
 from typing import Any
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-_logger = logging.getLogger("SSOTFeatureFlags")
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+_logger = logging.getLogger('SSOTFeatureFlags')
 
 class SSOTFeatureFlagMixin:
     """L4-sourced feature flags with replay snapshot lock.
@@ -39,9 +26,9 @@ class SSOTFeatureFlagMixin:
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self._ssot_flags: dict[str, bool] = self._load_flags_from_l4()
-        self._ssot_flags_frozen: bool = getattr(self, "is_replay_mode", False)
+        self._ssot_flags_frozen: bool = getattr(self, 'is_replay_mode', False)
 
-    def flag_enabled(self, flag_name: str, default: bool = False) -> bool:
+    def flag_enabled(self, flag_name: str, default: bool=False) -> bool:
         """Check if a feature flag is enabled.
 
         Parameters
@@ -74,15 +61,10 @@ class SSOTFeatureFlagMixin:
             True if flag was set, False if rejected (replay mode).
         """
         if self._ssot_flags_frozen:
-            _logger.warning(
-                "[SSOTFlags] Flag change rejected (frozen): %s=%s",
-                flag_name,
-                value,
-            )
+            _logger.warning('[SSOTFlags] Flag change rejected (frozen): %s=%s', flag_name, value)
             return False
-
         self._ssot_flags[flag_name] = value
-        _logger.debug("[SSOTFlags] %s = %s", flag_name, value)
+        _logger.debug('[SSOTFlags] %s = %s', flag_name, value)
         return True
 
     @property
@@ -103,31 +85,9 @@ class SSOTFeatureFlagMixin:
         Never reads from environment variables.
         """
         try:
-            from agentic_core.L4_state.config.versioned_configs import (
-                get_active_configs,
-            )
-
+            from agentic_core.L4_state.config.versioned_configs import get_active_configs
             configs = get_active_configs()
-            return {
-                "enable_llm_healing": True,
-                "enable_meta_learning": True,
-                "enable_circuit_breaker": True,
-                "enable_rate_limiting": True,
-                "enable_tracing": True,
-                "enable_audit_trail": True,
-                "enable_adaptive_execution": False,
-                "enable_hallucination_detection": True,
-                "l4_config_version": configs.policy.version == "1.0.0",
-            }
+            return {'enable_llm_healing': True, 'enable_meta_learning': True, 'enable_circuit_breaker': True, 'enable_rate_limiting': True, 'enable_tracing': True, 'enable_audit_trail': True, 'enable_adaptive_execution': False, 'enable_hallucination_detection': True, 'l4_config_version': configs.policy.version == '1.0.0'}
         except ImportError:
-            _logger.warning("[SSOTFlags] L4 config unavailable; using defaults")
-            return {
-                "enable_llm_healing": True,
-                "enable_meta_learning": True,
-                "enable_circuit_breaker": True,
-                "enable_rate_limiting": True,
-                "enable_tracing": True,
-                "enable_audit_trail": True,
-                "enable_adaptive_execution": False,
-                "enable_hallucination_detection": True,
-            }
+            _logger.warning('[SSOTFlags] L4 config unavailable; using defaults')
+            return {'enable_llm_healing': True, 'enable_meta_learning': True, 'enable_circuit_breaker': True, 'enable_rate_limiting': True, 'enable_tracing': True, 'enable_audit_trail': True, 'enable_adaptive_execution': False, 'enable_hallucination_detection': True}

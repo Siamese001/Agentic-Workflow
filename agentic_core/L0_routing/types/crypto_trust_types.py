@@ -7,41 +7,21 @@ dataclasses with strict field validation enforced at construction time.
 
 Artifact version: 1.0.0
 """
-
 from __future__ import annotations
-
 import hashlib
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from enum import Enum
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-# =============================================================================
-# §7.4.2 — Key Material / Trust Root
-# =============================================================================
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 class KeyStatus(Enum):
     """Status of a key in the trust root."""
-
-    ACTIVE = "active"
-    REVOKED = "revoked"
-
+    ACTIVE = 'active'
+    REVOKED = 'revoked'
 
 class SigningAlgorithm(Enum):
     """Supported signing algorithms."""
-
-    HMAC_SHA256 = "hmac-sha256"
-
+    HMAC_SHA256 = 'hmac-sha256'
 
 @dataclass(frozen=True)
 class KeyRecord:
@@ -49,7 +29,6 @@ class KeyRecord:
 
     Fields: key_id, public_key, created_tick, status, algorithm.
     """
-
     key_id: str
     public_key: bytes
     created_tick: int
@@ -58,22 +37,15 @@ class KeyRecord:
 
     def __post_init__(self) -> None:
         if not self.key_id:
-            raise ValueError("KeyRecord: key_id must be non-empty")
+            raise ValueError('KeyRecord: key_id must be non-empty')
         if not self.public_key:
-            raise ValueError("KeyRecord: public_key must be non-empty")
+            raise ValueError('KeyRecord: public_key must be non-empty')
         if self.created_tick < 0:
-            raise ValueError(
-                f"KeyRecord: created_tick must be >= 0, got {self.created_tick}",
-            )
+            raise ValueError(f'KeyRecord: created_tick must be >= 0, got {self.created_tick}')
         if not isinstance(self.status, KeyStatus):
-            raise TypeError(
-                f"KeyRecord: status must be KeyStatus, got {type(self.status).__name__}",
-            )
+            raise TypeError(f'KeyRecord: status must be KeyStatus, got {type(self.status).__name__}')
         if not isinstance(self.algorithm, SigningAlgorithm):
-            raise TypeError(
-                f"KeyRecord: algorithm must be SigningAlgorithm, got {type(self.algorithm).__name__}",
-            )
-
+            raise TypeError(f'KeyRecord: algorithm must be SigningAlgorithm, got {type(self.algorithm).__name__}')
 
 @dataclass(frozen=True)
 class TrustRoot:
@@ -81,16 +53,14 @@ class TrustRoot:
 
     Immutable once constructed. Keys are looked up by key_id.
     """
-
     keys: tuple[KeyRecord, ...]
 
     def __post_init__(self) -> None:
         if not isinstance(self.keys, tuple):
-            raise TypeError("TrustRoot: keys must be a tuple")
-        # Verify no duplicate key_ids
+            raise TypeError('TrustRoot: keys must be a tuple')
         ids = [k.key_id for k in self.keys]
         if len(ids) != len(set(ids)):
-            raise ValueError("TrustRoot: duplicate key_id detected")
+            raise ValueError('TrustRoot: duplicate key_id detected')
 
     def get_key(self, key_id: str) -> KeyRecord | None:
         """Look up a key by ID. Returns None if not found."""
@@ -99,12 +69,6 @@ class TrustRoot:
                 return k
         return None
 
-
-# =============================================================================
-# §7.4 / §7.2.1 — Signature Envelope
-# =============================================================================
-
-
 @dataclass(frozen=True)
 class SignatureEnvelope:
     """§7.4 / §7.2.1 — Cryptographic signature wrapping any artifact.
@@ -112,7 +76,6 @@ class SignatureEnvelope:
     Fields: trace_id, artifact_hash, key_id, signature, algorithm,
     semantic_clock_tick.
     """
-
     trace_id: str
     artifact_hash: str
     key_id: str
@@ -122,27 +85,17 @@ class SignatureEnvelope:
 
     def __post_init__(self) -> None:
         if not self.trace_id:
-            raise ValueError("SignatureEnvelope: trace_id must be non-empty")
+            raise ValueError('SignatureEnvelope: trace_id must be non-empty')
         if not self.artifact_hash:
-            raise ValueError("SignatureEnvelope: artifact_hash must be non-empty")
+            raise ValueError('SignatureEnvelope: artifact_hash must be non-empty')
         if not self.key_id:
-            raise ValueError("SignatureEnvelope: key_id must be non-empty")
+            raise ValueError('SignatureEnvelope: key_id must be non-empty')
         if not self.signature:
-            raise ValueError("SignatureEnvelope: signature must be non-empty")
+            raise ValueError('SignatureEnvelope: signature must be non-empty')
         if not isinstance(self.algorithm, SigningAlgorithm):
-            raise TypeError(
-                f"SignatureEnvelope: algorithm must be SigningAlgorithm, got {type(self.algorithm).__name__}",
-            )
+            raise TypeError(f'SignatureEnvelope: algorithm must be SigningAlgorithm, got {type(self.algorithm).__name__}')
         if self.semantic_clock_tick < 0:
-            raise ValueError(
-                f"SignatureEnvelope: semantic_clock_tick must be >= 0, got {self.semantic_clock_tick}",
-            )
-
-
-# =============================================================================
-# §7.2.1 — Signed Guardian Artifact
-# =============================================================================
-
+            raise ValueError(f'SignatureEnvelope: semantic_clock_tick must be >= 0, got {self.semantic_clock_tick}')
 
 @dataclass(frozen=True)
 class SignedGuardianArtifact:
@@ -151,7 +104,6 @@ class SignedGuardianArtifact:
     Required per spec: trace_id, signature, prestaged_perms,
     environment_metadata, commit_hash, pass_fail.
     """
-
     trace_id: str
     signature: str
     prestaged_perms: tuple[str, ...]
@@ -161,35 +113,21 @@ class SignedGuardianArtifact:
 
     def __post_init__(self) -> None:
         if not self.trace_id:
-            raise ValueError("SignedGuardianArtifact: trace_id must be non-empty")
+            raise ValueError('SignedGuardianArtifact: trace_id must be non-empty')
         if not self.signature:
-            raise ValueError("SignedGuardianArtifact: signature must be non-empty")
+            raise ValueError('SignedGuardianArtifact: signature must be non-empty')
         if not isinstance(self.prestaged_perms, tuple):
-            raise TypeError(
-                "SignedGuardianArtifact: prestaged_perms must be a tuple",
-            )
+            raise TypeError('SignedGuardianArtifact: prestaged_perms must be a tuple')
         if not isinstance(self.environment_metadata, dict):
-            raise TypeError(
-                "SignedGuardianArtifact: environment_metadata must be a dict",
-            )
+            raise TypeError('SignedGuardianArtifact: environment_metadata must be a dict')
         if not self.commit_hash:
-            raise ValueError(
-                "SignedGuardianArtifact: commit_hash must be non-empty",
-            )
-
-
-# =============================================================================
-# §1.7 / §2.7.1 — SignedModify Artifact
-# =============================================================================
-
+            raise ValueError('SignedGuardianArtifact: commit_hash must be non-empty')
 
 class HumanResolution(Enum):
     """§2.7 — Ternary resolution from human review."""
-
-    APPROVE = "APPROVE"
-    REJECT = "REJECT"
-    MODIFY = "MODIFY"
-
+    APPROVE = 'APPROVE'
+    REJECT = 'REJECT'
+    MODIFY = 'MODIFY'
 
 @dataclass(frozen=True)
 class SignedModify:
@@ -198,7 +136,6 @@ class SignedModify:
     Required fields: trace_id, human_reviewer_id, resolution,
     modified_manifest, signature.
     """
-
     trace_id: str
     human_reviewer_id: str
     resolution: HumanResolution
@@ -207,23 +144,15 @@ class SignedModify:
 
     def __post_init__(self) -> None:
         if not self.trace_id:
-            raise ValueError("SignedModify: trace_id must be non-empty")
+            raise ValueError('SignedModify: trace_id must be non-empty')
         if not self.human_reviewer_id:
-            raise ValueError("SignedModify: human_reviewer_id must be non-empty")
+            raise ValueError('SignedModify: human_reviewer_id must be non-empty')
         if not isinstance(self.resolution, HumanResolution):
-            raise TypeError(
-                f"SignedModify: resolution must be HumanResolution, got {type(self.resolution).__name__}",
-            )
+            raise TypeError(f'SignedModify: resolution must be HumanResolution, got {type(self.resolution).__name__}')
         if not self.modified_manifest:
-            raise ValueError("SignedModify: modified_manifest must be non-empty")
+            raise ValueError('SignedModify: modified_manifest must be non-empty')
         if not self.signature:
-            raise ValueError("SignedModify: signature must be non-empty")
-
-
-# =============================================================================
-# §7.2 — Replay Guard Record
-# =============================================================================
-
+            raise ValueError('SignedModify: signature must be non-empty')
 
 @dataclass
 class ReplayGuardRecord:
@@ -231,28 +160,17 @@ class ReplayGuardRecord:
 
     Not frozen: seen_count is mutable for tracking.
     """
-
     artifact_hash: str
     first_seen_tick: int
     seen_count: int = 1
 
     def __post_init__(self) -> None:
         if not self.artifact_hash:
-            raise ValueError("ReplayGuardRecord: artifact_hash must be non-empty")
+            raise ValueError('ReplayGuardRecord: artifact_hash must be non-empty')
         if self.first_seen_tick < 0:
-            raise ValueError(
-                f"ReplayGuardRecord: first_seen_tick must be >= 0, got {self.first_seen_tick}",
-            )
+            raise ValueError(f'ReplayGuardRecord: first_seen_tick must be >= 0, got {self.first_seen_tick}')
         if self.seen_count < 1:
-            raise ValueError(
-                f"ReplayGuardRecord: seen_count must be >= 1, got {self.seen_count}",
-            )
-
-
-# =============================================================================
-# §2.6 — Hash Mismatch Escalation Tracker
-# =============================================================================
-
+            raise ValueError(f'ReplayGuardRecord: seen_count must be >= 1, got {self.seen_count}')
 
 @dataclass
 class HashMismatchTracker:
@@ -260,7 +178,6 @@ class HashMismatchTracker:
 
     ≥2 mismatches in a single wave forces human escalation.
     """
-
     wave_id: str
     mismatch_count: int = 0
     escalation_threshold: int = 2
@@ -268,7 +185,7 @@ class HashMismatchTracker:
 
     def __post_init__(self) -> None:
         if not self.wave_id:
-            raise ValueError("HashMismatchTracker: wave_id must be non-empty")
+            raise ValueError('HashMismatchTracker: wave_id must be non-empty')
 
     def record_mismatch(self) -> bool:
         """Record a mismatch. Returns True if escalation is now required."""
@@ -276,12 +193,6 @@ class HashMismatchTracker:
         if self.mismatch_count >= self.escalation_threshold:
             self.escalated = True
         return self.escalated
-
-
-# =============================================================================
-# §7.4.1 — Signature Enclave Interface (ABC)
-# =============================================================================
-
 
 class SignatureEnclave(ABC):
     """§7.4.1 — Abstract interface for the signing enclave.
@@ -302,7 +213,6 @@ class SignatureEnclave(ABC):
     def get_key_record(self, key_id: str) -> KeyRecord | None:
         """Retrieve a key record from the enclave's trust root."""
 
-
 class DeterministicTestEnclave(SignatureEnclave):
     """§7.4.1 — Deterministic test enclave using HMAC-SHA256 with fixed keys.
 
@@ -315,51 +225,24 @@ class DeterministicTestEnclave(SignatureEnclave):
     def sign(self, artifact_bytes: bytes, key_id: str) -> str:
         """HMAC-SHA256 sign using the key's public_key as the HMAC secret."""
         import hmac
-
         key_record = self._trust_root.get_key(key_id)
         if key_record is None:
             raise KeyError(f"SignatureEnclave: unknown key_id '{key_id}'")
         if key_record.status == KeyStatus.REVOKED:
-            raise PermissionError(
-                f"SignatureEnclave: key '{key_id}' is REVOKED",
-            )
-        return hmac.new(
-            key_record.public_key,
-            artifact_bytes,
-            hashlib.sha256,
-        ).hexdigest()
+            raise PermissionError(f"SignatureEnclave: key '{key_id}' is REVOKED")
+        return hmac.new(key_record.public_key, artifact_bytes, hashlib.sha256).hexdigest()
 
     def verify(self, artifact_bytes: bytes, signature: str, key_id: str) -> bool:
         """Verify HMAC-SHA256 signature."""
         import hmac as hmac_mod
-
         key_record = self._trust_root.get_key(key_id)
         if key_record is None:
             return False
         if key_record.status == KeyStatus.REVOKED:
             return False
-        expected = hmac_mod.new(
-            key_record.public_key,
-            artifact_bytes,
-            hashlib.sha256,
-        ).hexdigest()
+        expected = hmac_mod.new(key_record.public_key, artifact_bytes, hashlib.sha256).hexdigest()
         return hmac_mod.compare_digest(expected, signature)
 
     def get_key_record(self, key_id: str) -> KeyRecord | None:
         return self._trust_root.get_key(key_id)
-
-
-__all__ = [
-    "DeterministicTestEnclave",
-    "HashMismatchTracker",
-    "HumanResolution",
-    "KeyRecord",
-    "KeyStatus",
-    "ReplayGuardRecord",
-    "SignatureEnclave",
-    "SignatureEnvelope",
-    "SignedGuardianArtifact",
-    "SignedModify",
-    "SigningAlgorithm",
-    "TrustRoot",
-]
+__all__ = ['DeterministicTestEnclave', 'HashMismatchTracker', 'HumanResolution', 'KeyRecord', 'KeyStatus', 'ReplayGuardRecord', 'SignatureEnclave', 'SignatureEnvelope', 'SignedGuardianArtifact', 'SignedModify', 'SigningAlgorithm', 'TrustRoot']

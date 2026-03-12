@@ -6,26 +6,12 @@ Enforces strict stage ordering:
 
 Rule: Only S9 outputs may modify L0 routing or L1 weights.
 """
-
 from __future__ import annotations
-
 import logging
 from enum import IntEnum
-
 from agentic_core.L5_safety.types.hardening_errors import RuntimePolicyMutationViolation
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 logger = logging.getLogger(__name__)
-
 
 class MetaLearningStage(IntEnum):
     S1_AUDIT = 1
@@ -37,20 +23,7 @@ class MetaLearningStage(IntEnum):
     S7_VALIDATE = 7
     S8_INTAKE = 8
     S9_COMMIT = 9
-
-
-_STAGE_NAMES = {
-    MetaLearningStage.S1_AUDIT: "audit",
-    MetaLearningStage.S2_TELEMETRY: "telemetry",
-    MetaLearningStage.S3_CONFIG: "config",
-    MetaLearningStage.S4_SNAPSHOT: "snapshot",
-    MetaLearningStage.S5_RCA: "RCA",
-    MetaLearningStage.S6_PROPOSE: "propose",
-    MetaLearningStage.S7_VALIDATE: "validate",
-    MetaLearningStage.S8_INTAKE: "intake",
-    MetaLearningStage.S9_COMMIT: "commit",
-}
-
+_STAGE_NAMES = {MetaLearningStage.S1_AUDIT: 'audit', MetaLearningStage.S2_TELEMETRY: 'telemetry', MetaLearningStage.S3_CONFIG: 'config', MetaLearningStage.S4_SNAPSHOT: 'snapshot', MetaLearningStage.S5_RCA: 'RCA', MetaLearningStage.S6_PROPOSE: 'propose', MetaLearningStage.S7_VALIDATE: 'validate', MetaLearningStage.S8_INTAKE: 'intake', MetaLearningStage.S9_COMMIT: 'commit'}
 
 class StageBarrierEnforcer:
     """Tracks current meta-learning stage and enforces ordering invariants.
@@ -73,31 +46,18 @@ class StageBarrierEnforcer:
     def advance_to(self, stage: MetaLearningStage) -> None:
         """Advance to the next stage. Raises if attempting to go backwards."""
         if stage <= self._current:
-            raise RuntimePolicyMutationViolation(
-                f"Stage barrier violated: cannot move from S{self._current} to S{stage.value}. "
-                "Stages must advance strictly forward."
-            )
-        logger.debug(
-            "MetaLearning stage: S%d → S%d (%s)",
-            self._current,
-            stage.value,
-            _STAGE_NAMES.get(stage, "unknown"),
-        )
+            raise RuntimePolicyMutationViolation(f'Stage barrier violated: cannot move from S{self._current} to S{stage.value}. Stages must advance strictly forward.')
+        logger.debug('MetaLearning stage: S%d → S%d (%s)', self._current, stage.value, _STAGE_NAMES.get(stage, 'unknown'))
         self._current = stage.value
 
     def assert_config_mutation_allowed(self) -> None:
         """Raise unless we are at S9 commit — only S9 may modify L0/L1."""
         if self._current < MetaLearningStage.S9_COMMIT:
-            raise RuntimePolicyMutationViolation(
-                f"Config mutation blocked: current stage is S{self._current}. "
-                "Only S9 (commit) may modify L0 routing or L1 weights."
-            )
+            raise RuntimePolicyMutationViolation(f'Config mutation blocked: current stage is S{self._current}. Only S9 (commit) may modify L0 routing or L1 weights.')
 
     def is_commit_stage(self) -> bool:
         return self._current >= MetaLearningStage.S9_COMMIT
 
     def reset(self) -> None:
         self._current = 0
-
-
-__all__ = ["StageBarrierEnforcer", "MetaLearningStage"]
+__all__ = ['StageBarrierEnforcer', 'MetaLearningStage']

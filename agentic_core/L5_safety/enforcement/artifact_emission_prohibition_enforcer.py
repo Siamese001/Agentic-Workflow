@@ -8,41 +8,14 @@ Violation raises PermissionError with deterministic message containing:
   - artifact type
   - trace_id (if available)
 """
-
 from __future__ import annotations
-
 import logging
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 logger = logging.getLogger(__name__)
+FORBIDDEN_EMISSION_LAYERS: frozenset[str] = frozenset({'L0', 'L5', 'L6'})
+FORBIDDEN_ARTIFACT_KINDS: frozenset[str] = frozenset({'RESULT', 'HEALING_PLAN'})
 
-# =============================================================================
-# Constants
-# =============================================================================
-
-FORBIDDEN_EMISSION_LAYERS: frozenset[str] = frozenset({"L0", "L5", "L6"})
-FORBIDDEN_ARTIFACT_KINDS: frozenset[str] = frozenset({"RESULT", "HEALING_PLAN"})
-
-
-# =============================================================================
-# Core guard
-# =============================================================================
-
-
-def assert_layer_may_emit(
-    artifact_kind: str,
-    layer: str,
-    trace_id: str | None = None,
-) -> None:
+def assert_layer_may_emit(artifact_kind: str, layer: str, trace_id: str | None=None) -> None:
     """Fail-closed guard: raises PermissionError if layer may not emit this artifact.
 
     Args:
@@ -58,25 +31,10 @@ def assert_layer_may_emit(
         return
     if artifact_kind not in FORBIDDEN_ARTIFACT_KINDS:
         return
-
-    msg_parts = [
-        f"ARTIFACT_EMISSION_PROHIBITED:layer={layer}",
-        f"artifact_kind={artifact_kind}",
-    ]
+    msg_parts = [f'ARTIFACT_EMISSION_PROHIBITED:layer={layer}', f'artifact_kind={artifact_kind}']
     if trace_id is not None:
-        msg_parts.append(f"trace_id={trace_id}")
-
-    msg = "|".join(msg_parts)
-    logger.error("ARTIFACT_EMISSION_PROHIBITION DENY: %s", msg)
+        msg_parts.append(f'trace_id={trace_id}')
+    msg = '|'.join(msg_parts)
+    logger.error('ARTIFACT_EMISSION_PROHIBITION DENY: %s', msg)
     raise PermissionError(msg)
-
-
-# =============================================================================
-# Exports
-# =============================================================================
-
-__all__ = [
-    "FORBIDDEN_ARTIFACT_KINDS",
-    "FORBIDDEN_EMISSION_LAYERS",
-    "assert_layer_may_emit",
-]
+__all__ = ['FORBIDDEN_ARTIFACT_KINDS', 'FORBIDDEN_EMISSION_LAYERS', 'assert_layer_may_emit']

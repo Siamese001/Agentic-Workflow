@@ -1,42 +1,24 @@
 from __future__ import annotations
-
 import threading
 import time
 from dataclasses import dataclass
 from typing import NamedTuple, Sequence
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 class MemoryDeadlockViolation(Exception):
     """Raised when a deadlock is detected during lock acquisition."""
 
-
 class LockAcquisitionResult(NamedTuple):
     """The result of a lock acquisition attempt."""
-
     success: bool
     locks_acquired: list[str]
     violation: MemoryDeadlockViolation | None = None
 
-
 @dataclass(frozen=True)
 class LockPolicy:
     """Defines the policy for lock acquisition."""
-
-    # A predefined, global hierarchy of lock names to prevent deadlocks.
-    # Locks must always be acquired in this order.
     lock_hierarchy: list[str]
     timeout_seconds: float = 5.0
-
 
 class MemoryCollisionDetector:
     """
@@ -63,35 +45,25 @@ class MemoryCollisionDetector:
         Returns:
             A LockAcquisitionResult indicating the outcome.
         """
-        # 1. Sort the required locks according to the global hierarchy.
         try:
             sorted_locks = sorted(required_locks, key=lambda name: self._lock_order[name])
         except KeyError as e:
             violation = MemoryDeadlockViolation(f"Lock '{e.args[0]}' is not defined in the global hierarchy.")
             return LockAcquisitionResult(success=False, locks_acquired=[], violation=violation)
-
         acquired_locks: list[str] = []
         start_time = time.monotonic()
-
-        # 2. Acquire locks one by one in the defined order.
         for lock_name in sorted_locks:
             lock = self._locks[lock_name]
             timeout = self.policy.timeout_seconds - (time.monotonic() - start_time)
             if timeout <= 0:
-                violation = MemoryDeadlockViolation("Timeout exceeded during lock acquisition.")
+                violation = MemoryDeadlockViolation('Timeout exceeded during lock acquisition.')
                 self._release_locks(acquired_locks)
                 return LockAcquisitionResult(success=False, locks_acquired=[], violation=violation)
-
             if not lock.acquire(timeout=timeout):
-                # This indicates a deadlock or a long-running process holding the lock.
-                violation = MemoryDeadlockViolation(
-                    f"Failed to acquire lock '{lock_name}' within the timeout."
-                )
+                violation = MemoryDeadlockViolation(f"Failed to acquire lock '{lock_name}' within the timeout.")
                 self._release_locks(acquired_locks)
                 return LockAcquisitionResult(success=False, locks_acquired=[], violation=violation)
-
             acquired_locks.append(lock_name)
-
         return LockAcquisitionResult(success=True, locks_acquired=acquired_locks)
 
     def _release_locks(self, locks_to_release: list[str]) -> None:
@@ -101,6 +73,5 @@ class MemoryCollisionDetector:
 
     def release_locks(self, acquired_locks: list[str]) -> None:
         """Public method to release locks after an operation is complete."""
-        # Locks must be released in the reverse order of acquisition.
         for lock_name in sorted(acquired_locks, key=lambda name: self._lock_order[name], reverse=True):
             self._locks[lock_name].release()

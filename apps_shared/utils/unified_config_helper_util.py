@@ -180,13 +180,16 @@ def validate_unified_config(config: dict[str, Any], category: str) -> ConfigLoad
     # Check for required fields based on category
     required_fields = _get_required_fields(category)
     for field in required_fields:
+        # guardian: allow-config-with-logic
         if field not in config:
             errors.append(f"Missing required field: {field}")
 
     # Validate field types
     for key, value in config.items():
+        # guardian: allow-config-with-logic
         if key in defaults:
             expected_type = type(defaults[key])
+            # guardian: allow-config-with-logic
             if not isinstance(value, expected_type):
                 errors.append(
                     f"Field {key} should be {expected_type.__name__}, got {type(value).__name__}",

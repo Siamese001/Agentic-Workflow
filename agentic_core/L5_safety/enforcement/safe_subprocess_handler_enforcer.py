@@ -13,40 +13,16 @@ OPERATIONAL SAFETY (Feb 2026):
 - Automatic PID registration ensures cleanup on exit
 - Output sanitization prevents context pollution
 """
-
 import logging
 import subprocess
 from typing import Any
-
 from agentic_core.L4_state.utils.telemetry_sanitizer_util import sanitize_tool_output
 from agentic_core.L5_safety.enforcement.process_guardrail import ProcessGuard
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 logger = logging.getLogger(__name__)
 
-
-def safe_run(
-    command: list[str],
-    *,
-    capture_output: bool = True,
-    text: bool = True,
-    timeout: float | None = 60.0,
-    cwd: str | None = None,
-    env: dict[str, str] | None = None,
-    sanitize_output: bool = True,
-    max_output_chars: int = 2000,
-    check: bool = False,
-    **kwargs: Any,
-) -> subprocess.CompletedProcess | subprocess.Popen:
+# guardian: allow-magic-config
+def safe_run(command: list[str], *, capture_output: bool=True, text: bool=True, timeout: float | None=60.0, cwd: str | None=None, env: dict[str, str] | None=None, sanitize_output: bool=True, max_output_chars: int=2000, check: bool=False, **kwargs: Any) -> subprocess.CompletedProcess | subprocess.Popen:
     """
     Safely run a subprocess with security validation and lifecycle tracking.
 
@@ -71,49 +47,22 @@ def safe_run(
         subprocess.CalledProcessError: If check=True and command fails.
     """
     guard = ProcessGuard.get_instance()
-
-    # Step 1: Validate command against firewall
     guard.validate_command(command)
-
-    logger.debug(f"safe_run: Executing command: {command}")
-
-    # Step 2: Run the command
+    logger.debug(f'safe_run: Executing command: {command}')
     try:
-        result = subprocess.run(
-            command,
-            capture_output=capture_output,
-            text=text,
-            timeout=timeout,
-            cwd=cwd,
-            env=env,
-            check=check,
-            **kwargs,
-        )
-
-        # Step 3: Sanitize output if requested
+        result = subprocess.run(command, capture_output=capture_output, text=text, timeout=timeout, cwd=cwd, env=env, check=check, **kwargs)
         if sanitize_output and capture_output:
             if result.stdout:
                 result.stdout = sanitize_tool_output(result.stdout, max_chars=max_output_chars)
             if result.stderr:
                 result.stderr = sanitize_tool_output(result.stderr, max_chars=max_output_chars)
-
-        logger.debug(f"safe_run: Command completed with return code {result.returncode}")
+        logger.debug(f'safe_run: Command completed with return code {result.returncode}')
         return result
-
     except subprocess.TimeoutExpired:
-        logger.warning(f"safe_run: Command timed out after {timeout}s: {command}")
+        logger.warning(f'safe_run: Command timed out after {timeout}s: {command}')
         raise
 
-
-def safe_popen(
-    command: list[str],
-    *,
-    stdout: int | None = subprocess.PIPE,
-    stderr: int | None = subprocess.PIPE,
-    cwd: str | None = None,
-    env: dict[str, str] | None = None,
-    **kwargs: Any,
-) -> subprocess.Popen:
+def safe_popen(command: list[str], *, stdout: int | None=subprocess.PIPE, stderr: int | None=subprocess.PIPE, cwd: str | None=None, env: dict[str, str] | None=None, **kwargs: Any) -> subprocess.Popen:
     """
     Safely spawn a subprocess with security validation and PID tracking.
 
@@ -135,37 +84,15 @@ def safe_popen(
         SecurityViolation: If command is blocked by the firewall.
     """
     guard = ProcessGuard.get_instance()
-
-    # Step 1: Validate command against firewall
     guard.validate_command(command)
-
-    logger.debug(f"safe_popen: Spawning command: {command}")
-
-    # Step 2: Spawn the process
-    process = subprocess.Popen(
-        command,
-        stdout=stdout,
-        stderr=stderr,
-        cwd=cwd,
-        env=env,
-        **kwargs,
-    )
-
-    # Step 3: Register PID for lifecycle tracking
+    logger.debug(f'safe_popen: Spawning command: {command}')
+    process = subprocess.Popen(command, stdout=stdout, stderr=stderr, cwd=cwd, env=env, **kwargs)
     guard.register_pid(process.pid)
-
-    logger.debug(f"safe_popen: Spawned PID {process.pid}")
-
+    logger.debug(f'safe_popen: Spawned PID {process.pid}')
     return process
 
-
-def safe_communicate(
-    process: subprocess.Popen,
-    input_data: str | bytes | None = None,
-    timeout: float | None = 60.0,
-    sanitize_output: bool = True,
-    max_output_chars: int = 2000,
-) -> tuple[str | bytes | None, str | bytes | None]:
+# guardian: allow-magic-config
+def safe_communicate(process: subprocess.Popen, input_data: str | bytes | None=None, timeout: float | None=60.0, sanitize_output: bool=True, max_output_chars: int=2000) -> tuple[str | bytes | None, str | bytes | None]:
     """
     Safely communicate with a Popen process and unregister on completion.
 
@@ -180,22 +107,14 @@ def safe_communicate(
         Tuple of (stdout, stderr).
     """
     guard = ProcessGuard.get_instance()
-
     try:
         stdout, stderr = process.communicate(input=input_data, timeout=timeout)
-
-        # Sanitize output if requested
         if sanitize_output:
             if stdout and isinstance(stdout, str):
                 stdout = sanitize_tool_output(stdout, max_chars=max_output_chars)
             if stderr and isinstance(stderr, str):
                 stderr = sanitize_tool_output(stderr, max_chars=max_output_chars)
-
-        return stdout, stderr
-
+        return (stdout, stderr)
     finally:
-        # Unregister PID since process has completed
         guard.unregister_pid(process.pid)
-
-
-__all__ = ["safe_run", "safe_popen", "safe_communicate"]
+__all__ = ['safe_run', 'safe_popen', 'safe_communicate']

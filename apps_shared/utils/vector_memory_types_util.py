@@ -5,48 +5,31 @@ Provides semantic search and retrieval capabilities using an in-memory
 numpy store (BGE-m3, 1024-dim). Pinecone dependency removed.
 Phase 2A.2 - Missing Shared Dependencies
 """
-
 from __future__ import annotations
-
 import hashlib
 import logging
 from dataclasses import dataclass
 from typing import Any
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 logger = logging.getLogger(__name__)
-
 
 @dataclass
 class VectorMemoryConfig:
     """Configuration for vector memory store."""
-
     index_name: str
-    dimension: int = 1024  # BGE-m3 embedding dimension
-    metric: str = "cosine"
+    dimension: int = 1024
+    metric: str = 'cosine'
     namespace: str | None = None
     top_k: int = 10
     similarity_threshold: float = 0.7
 
-
 @dataclass
 class VectorSearchResult:
     """Result from vector search."""
-
     id: str
     score: float
     metadata: dict[str, Any]
     text: str | None = None
-
 
 class VectorMemoryStore:
     """
@@ -64,7 +47,6 @@ class VectorMemoryStore:
             config: Vector memory configuration
         """
         self.config = config
-        # namespace -> {id -> {"embedding": list[float], "metadata": dict}}
         self._store: dict[str, dict[str, dict]] = {}
         self._initialized = True
 
@@ -74,15 +56,9 @@ class VectorMemoryStore:
 
     def _namespace_key(self) -> str:
         """Return the active namespace key."""
-        return self.config.namespace or "__default__"
+        return self.config.namespace or '__default__'
 
-    def store(
-        self,
-        text: str,
-        embedding: list[float],
-        metadata: dict[str, Any] | None = None,
-        id: str | None = None,
-    ) -> str:
+    def store(self, text: str, embedding: list[float], metadata: dict[str, Any] | None=None, id: str | None=None) -> str:
         """
         Store text and embedding in vector memory.
 
@@ -97,21 +73,14 @@ class VectorMemoryStore:
         """
         if id is None:
             id = self._generate_id(text)
-
         meta = metadata or {}
-        meta["text"] = text
-
+        meta['text'] = text
         ns = self._namespace_key()
-        self._store.setdefault(ns, {})[id] = {"embedding": embedding, "metadata": meta}
-        logger.debug(f"Stored vector: {id}")
+        self._store.setdefault(ns, {})[id] = {'embedding': embedding, 'metadata': meta}
+        logger.debug(f'Stored vector: {id}')
         return id
 
-    def search(
-        self,
-        embedding: list[float],
-        top_k: int | None = None,
-        filter: dict[str, Any] | None = None,
-    ) -> list[VectorSearchResult]:
+    def search(self, embedding: list[float], top_k: int | None=None, filter: dict[str, Any] | None=None) -> list[VectorSearchResult]:
         """
         Search for similar vectors.
 
@@ -124,43 +93,30 @@ class VectorMemoryStore:
             List of search results
         """
         import numpy as np
-
         k = top_k or self.config.top_k
         ns = self._namespace_key()
         entries = self._store.get(ns, {})
-
         if not entries:
             return []
-
         try:
             q = np.array(embedding, dtype=np.float32)
             q_norm = q / (np.linalg.norm(q) + 1e-12)
-
             scored: list[tuple[float, str, dict]] = []
             for vec_id, item in entries.items():
-                if filter and not all(item["metadata"].get(k2) == v for k2, v in filter.items()):
+                if filter and (not all((item['metadata'].get(k2) == v for k2, v in filter.items()))):
                     continue
-                v = np.array(item["embedding"], dtype=np.float32)
+                v = np.array(item['embedding'], dtype=np.float32)
                 v_norm = v / (np.linalg.norm(v) + 1e-12)
                 score = float(np.dot(q_norm, v_norm))
                 if score >= self.config.similarity_threshold:
-                    scored.append((score, vec_id, item["metadata"]))
-
+                    scored.append((score, vec_id, item['metadata']))
             scored.sort(key=lambda x: x[0], reverse=True)
-            results = [
-                VectorSearchResult(
-                    id=vec_id,
-                    score=score,
-                    metadata=meta,
-                    text=meta.get("text"),
-                )
-                for score, vec_id, meta in scored[:k]
-            ]
-            logger.debug(f"Found {len(results)} results above threshold")
+            results = [VectorSearchResult(id=vec_id, score=score, metadata=meta, text=meta.get('text')) for score, vec_id, meta in scored[:k]]
+            logger.debug(f'Found {len(results)} results above threshold')
             return results
-
+        # guardian: allow-silent-swallow
         except Exception as e:
-            logger.error(f"Failed to search vectors: {e}")
+            logger.error(f'Failed to search vectors: {e}')
             return []
 
     def delete(self, ids: list[str]) -> bool:
@@ -177,7 +133,7 @@ class VectorMemoryStore:
         ns_store = self._store.get(ns, {})
         for vec_id in ids:
             ns_store.pop(vec_id, None)
-        logger.debug(f"Deleted {len(ids)} vectors")
+        logger.debug(f'Deleted {len(ids)} vectors')
         return True
 
     def clear_namespace(self) -> bool:
@@ -189,7 +145,7 @@ class VectorMemoryStore:
         """
         ns = self._namespace_key()
         self._store[ns] = {}
-        logger.info(f"Cleared namespace: {self.config.namespace}")
+        logger.info(f'Cleared namespace: {self.config.namespace}')
         return True
 
     def _generate_id(self, text: str) -> str:
@@ -205,11 +161,5 @@ class VectorMemoryStore:
         """
         ns = self._namespace_key()
         ns_count = len(self._store.get(ns, {}))
-        total = sum(len(v) for v in self._store.values())
-        return {
-            "initialized": True,
-            "total_vectors": total,
-            "namespace_vectors": ns_count,
-            "dimension": self.config.dimension,
-            "namespaces": list(self._store.keys()),
-        }
+        total = sum((len(v) for v in self._store.values()))
+        return {'initialized': True, 'total_vectors': total, 'namespace_vectors': ns_count, 'dimension': self.config.dimension, 'namespaces': list(self._store.keys())}

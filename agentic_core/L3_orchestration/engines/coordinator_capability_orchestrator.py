@@ -1,40 +1,19 @@
 from __future__ import annotations
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-"""
-Base Coordinator Class
-
-Provides the base interface and common functionality for all specialized coordinators.
-Each coordinator owns a specific orchestration domain with clear responsibilities.
-"""
-
-
+'\nBase Coordinator Class\n\nProvides the base interface and common functionality for all specialized coordinators.\nEach coordinator owns a specific orchestration domain with clear responsibilities.\n'
 import time
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Any
-
 from .execution import ExecutionStatus, WorkflowContext, WorkflowResult
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 @dataclass
 class CoordinatorCapability:
     """Describes a coordinator capability."""
-
     name: str
     description: str
     workflow_types: list[str]
     priority: int = 0
-
 
 class WorkflowCoordinator(ABC):
     """
@@ -104,38 +83,23 @@ class WorkflowCoordinator(ABC):
         """
         start_time = time.time()
         self.coordinations += 1
-
         try:
             result = await self.coordinate(context)
-
             if result.status == ExecutionStatus.COMPLETED:
                 self.successes += 1
             else:
                 self.failures += 1
-
             return result
+        # guardian: allow-silent-swallow
         except Exception as e:
             self.failures += 1
-            return WorkflowResult(
-                workflow_id=context.workflow_id,
-                status=ExecutionStatus.FAILED,
-                error=f"Coordinator {self.name} failed: {str(e)}",
-            )
+            return WorkflowResult(workflow_id=context.workflow_id, status=ExecutionStatus.FAILED, error=f'Coordinator {self.name} failed: {str(e)}')
         finally:
             self.total_time += time.time() - start_time
 
     def get_statistics(self) -> dict[str, Any]:
         """Get coordinator statistics."""
-        return {
-            "name": self.name,
-            "enabled": self.enabled,
-            "coordinations": self.coordinations,
-            "successes": self.successes,
-            "failures": self.failures,
-            "success_rate": (self.successes / self.coordinations * 100) if self.coordinations > 0 else 0,
-            "total_time": self.total_time,
-            "avg_time": (self.total_time / self.coordinations) if self.coordinations > 0 else 0,
-        }
+        return {'name': self.name, 'enabled': self.enabled, 'coordinations': self.coordinations, 'successes': self.successes, 'failures': self.failures, 'success_rate': self.successes / self.coordinations * 100 if self.coordinations > 0 else 0, 'total_time': self.total_time, 'avg_time': self.total_time / self.coordinations if self.coordinations > 0 else 0}
 
     def enable(self) -> None:
         """Enable coordinator."""
@@ -144,7 +108,6 @@ class WorkflowCoordinator(ABC):
     def disable(self) -> None:
         """Disable coordinator."""
         self.enabled = False
-
 
 class CoordinatorRegistry:
     """Registry for workflow coordinators."""
@@ -183,12 +146,5 @@ class CoordinatorRegistry:
 
     def get_statistics(self) -> dict[str, Any]:
         """Get registry statistics."""
-        return {
-            "total_coordinators": len(self.coordinators),
-            "enabled_coordinators": len([c for c in self.coordinators.values() if c.enabled]),
-            "coordinators": {name: c.get_statistics() for name, c in self.coordinators.items()},
-        }
-
-
-# Global registry
+        return {'total_coordinators': len(self.coordinators), 'enabled_coordinators': len([c for c in self.coordinators.values() if c.enabled]), 'coordinators': {name: c.get_statistics() for name, c in self.coordinators.items()}}
 coordinator_registry = CoordinatorRegistry()

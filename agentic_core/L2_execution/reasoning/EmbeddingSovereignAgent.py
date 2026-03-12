@@ -8,58 +8,38 @@ EmbeddingSovereignAgent - Unified Embedding Gateway
 - Batch processing
 - Redis caching integration (via mixin)
 """
-
 from __future__ import annotations
-
 import hashlib
 import logging
 import os
 import time
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, Literal
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 if TYPE_CHECKING:
     pass
-
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.config.core.sovereign_config import get_sovereign_config
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
-from data.sdks_mcps.client_wrappers import (
-    create_vertex_client,
-)
-
+from data.sdks_mcps.client_wrappers import create_vertex_client
 Logger = logging.getLogger(__name__)
-
-# Import mixins for functionality
 try:
-    from agentic_core.mixins.redis_cache_mixin import redis_cache_mixin  # noqa: F401
-    from agentic_core.mixins.subatomic_testing_mixin import subatomic_testing_mixin  # noqa: F401
+    from agentic_core.mixins.redis_cache_mixin import redis_cache_mixin
+    from agentic_core.mixins.subatomic_testing_mixin import subatomic_testing_mixin
 except ImportError:
-    # Fallback stubs if mixins are not available
+
     class SubatomicTestingMixin:
         pass
 
     class RedisCacheMixin:
+
         def cache_get(self, key):
             return None
 
         def cache_set(self, key, value, ttl=None):
             pass
-
-
-EmbeddingProvider = Literal["gemini", "openai", "bge-m3"]
-
+EmbeddingProvider = Literal['gemini', 'openai', 'bge-m3']
 
 @dataclass
 class EmbeddingSovereignAgent(RedisCacheMixin, SovereignBaseAgent):
@@ -73,32 +53,17 @@ class EmbeddingSovereignAgent(RedisCacheMixin, SovereignBaseAgent):
 
     [PHASE 8] NOT an agent - utility singleton to avoid circular imports.
     """
-
     _instance: EmbeddingSovereignAgent | None = None
-
-    # [PHASE 6] configuration now managed by SovereignConfigManager
-
-    _cache_prefix: str = "emb"
-    _default_ttl: int = 86400  # 24 hours
-
-    operation_stats: dict[str, int] = field(
-        default_factory=lambda: {
-            "gemini": 0,
-            "openai": 0,
-            "bge-m3": 0,
-            "cache_hits": 0,
-            "cache_misses": 0,
-            "total": 0,
-        },
-    )
-
+    _cache_prefix: str = 'emb'
+    _default_ttl: int = 86400
+    operation_stats: dict[str, int] = field(default_factory=lambda: {'gemini': 0, 'openai': 0, 'bge-m3': 0, 'cache_hits': 0, 'cache_misses': 0, 'total': 0})
     audit_log: list[dict[str, Any]] = field(default_factory=list)
 
     def __post_init__(self) -> None:
         """Initialize the EmbeddingSovereignAgent."""
-        if hasattr(super(), "__post_init__"):
+        if hasattr(super(), '__post_init__'):
             super().__post_init__()
-        self._bge_m3_model = None  # lazy-loaded local model
+        self._bge_m3_model = None
 
     def __new__(cls, *args, **kwargs):
         """Singleton constructor."""
@@ -119,39 +84,23 @@ class EmbeddingSovereignAgent(RedisCacheMixin, SovereignBaseAgent):
     @property
     def EXPECTED_DIMENSIONS(self) -> dict[str, int]:
         """[PHASE 6] Dynamic dimensions from config."""
-        return {
-            "gemini": self.config.EMBEDDING_DIM_GEMINI,
-            "openai": self.config.EMBEDDING_DIM_OPENAI,
-            "bge-m3": 1024,
-        }
+        return {'gemini': self.config.EMBEDDING_DIM_GEMINI, 'openai': self.config.EMBEDDING_DIM_OPENAI, 'bge-m3': 1024}
 
     def _audit(self, provider: str, success: bool, cached: bool, latency_ms: float) -> None:
         """
         [PHASE 4] Record embedding operation.
         Includes FIFO rotation to prevent memory leaks.
         """
-        # [PHASE 6] Dynamic limit from config
         limit = self.config.max_audit_log_size
-
         if len(self.audit_log) >= limit:
-            # Prune 10% when full
             prune_count = max(1, int(limit * 0.1))
             self.audit_log = self.audit_log[prune_count:]
-
-        self.audit_log.append(
-            {
-                "provider": provider,
-                "success": success,
-                "cached": cached,
-                "latency_ms": latency_ms,
-                "ts": time.time(),
-            },
-        )
-        self.operation_stats["total"] += 1
+        self.audit_log.append({'provider': provider, 'success': success, 'cached': cached, 'latency_ms': latency_ms, 'ts': time.time()})
+        self.operation_stats['total'] += 1
         if cached:
-            self.operation_stats["cache_hits"] += 1
+            self.operation_stats['cache_hits'] += 1
         else:
-            self.operation_stats["cache_misses"] += 1
+            self.operation_stats['cache_misses'] += 1
             if success:
                 self.operation_stats[provider] = self.operation_stats.get(provider, 0) + 1
 
@@ -159,22 +108,14 @@ class EmbeddingSovereignAgent(RedisCacheMixin, SovereignBaseAgent):
         """Generate deterministic hash for caching."""
         return hashlib.sha256(content.encode()).hexdigest()[:16]
 
-    async def get_embedding(
-        self,
-        content: str,
-        provider: EmbeddingProvider = "bge-m3",
-        use_cache: bool = True,
-    ) -> list[float]:
+    async def get_embedding(self, content: str, provider: EmbeddingProvider='bge-m3', use_cache: bool=True) -> list[float]:
         """
         Get embedding vector with optional caching.
 
         [PHASE 4] Unified interface for all embedding providers.
         """
         start = time.time()
-
-        # Check cache first
-        cache_key = f"{self._cache_prefix}:{provider}:{self._content_hash(content)}"
-
+        cache_key = f'{self._cache_prefix}:{provider}:{self._content_hash(content)}'
         if use_cache:
             try:
                 cached = await self.cache_get(cache_key)
@@ -183,55 +124,40 @@ class EmbeddingSovereignAgent(RedisCacheMixin, SovereignBaseAgent):
                     self._audit(provider, True, True, latency)
                     return cached
             except (ConnectionError, TimeoutError, RuntimeError, OSError) as e:
-                Logger.warning(f"Redis cache lookup failed: {e}")
-
-        # Generate embedding
+                Logger.warning(f'Redis cache lookup failed: {e}')
         try:
-            if provider == "gemini":
+            if provider == 'gemini':
                 embedding = await self._get_gemini_embedding(content)
-            elif provider == "openai":
+            elif provider == 'openai':
                 embedding = await self._get_openai_embedding(content)
-            elif provider == "bge-m3":
+            elif provider == 'bge-m3':
                 embedding = await self._get_bge_m3_embedding(content)
             else:
-                raise ValueError(f"Unknown provider: {provider}")
-
-            # Validate dimension
+                raise ValueError(f'Unknown provider: {provider}')
             expected_dim = self.EXPECTED_DIMENSIONS.get(provider)
             if expected_dim and len(embedding) != expected_dim:
-                Logger.warning(f"Dimension mismatch: got {len(embedding)}, expected {expected_dim}")
-
-            # cache result
+                Logger.warning(f'Dimension mismatch: got {len(embedding)}, expected {expected_dim}')
             if use_cache:
                 try:
                     await self.cache_set(cache_key, embedding, ttl=self._default_ttl)
                 except (ConnectionError, TimeoutError, RuntimeError, OSError) as e:
-                    Logger.warning(f"Redis cache set failed: {e}")
-
+                    Logger.warning(f'Redis cache set failed: {e}')
             latency = (time.time() - start) * 1000
             self._audit(provider, True, False, latency)
             return embedding
-
         except Exception as e:
             latency = (time.time() - start) * 1000
             self._audit(provider, False, False, latency)
-            Logger.error(f"Embedding failed: {e}")
+            Logger.error(f'Embedding failed: {e}')
             raise
 
-    async def get_embeddings_batch(
-        self,
-        contents: list[str],
-        provider: EmbeddingProvider = "bge-m3",
-        use_cache: bool = True,
-    ) -> list[list[float]]:
+    async def get_embeddings_batch(self, contents: list[str], provider: EmbeddingProvider='bge-m3', use_cache: bool=True) -> list[list[float]]:
         """
         Get embeddings for multiple contents.
         [PHASE 4] Batch processing with caching.
         """
         results = []
         for content in contents:
-            # Sequential processing to ensure consistent caching logic and error handling
-            # Future optimization: Use provider batch APIs where available
             embedding = await self.get_embedding(content, provider, use_cache)
             results.append(embedding)
         return results
@@ -239,32 +165,23 @@ class EmbeddingSovereignAgent(RedisCacheMixin, SovereignBaseAgent):
     async def _get_gemini_embedding(self, content: str) -> list[float]:
         """Get embedding from Gemini."""
         client = create_vertex_client()
-
-        # 'retrieval_document' is generally preferred for storage
-        result = client.embed_content(
-            model="models/text-embedding-004",
-            content=content,
-            task_type="retrieval_document",
-        )
-        return result["embedding"]
+        result = client.embed_content(model='models/text-embedding-004', content=content, task_type='retrieval_document')
+        return result['embedding']
 
     async def _get_openai_embedding(self, content: str) -> list[float]:
         """Get embedding from OpenAI via factory seam."""
         from agentic_core.embeddings.embedding_factory import create_embedding_client
         from agentic_core.embeddings.embedding_input_guard import EmbeddingInputGuard
-
-        client = create_embedding_client("openai", "text-embedding-3-small")
-        guarded = EmbeddingInputGuard.guard(content, "u0_user_prompt")
+        client = create_embedding_client('openai', 'text-embedding-3-small')
+        guarded = EmbeddingInputGuard.guard(content, 'u0_user_prompt')
         return await client.get_embedding(guarded)
 
     async def _get_bge_m3_embedding(self, content: str) -> list[float]:
         """Get embedding from local BGE-M3 model via SentenceTransformer."""
         import asyncio
-
         from sentence_transformers import SentenceTransformer
-
         if self._bge_m3_model is None:
-            self._bge_m3_model = SentenceTransformer("BAAI/bge-m3")
+            self._bge_m3_model = SentenceTransformer('BAAI/bge-m3')
         model = self._bge_m3_model
         loop = asyncio.get_event_loop()
         embedding = await loop.run_in_executor(None, lambda: model.encode(content, normalize_embeddings=True))
@@ -272,14 +189,7 @@ class EmbeddingSovereignAgent(RedisCacheMixin, SovereignBaseAgent):
 
     @timeout(300)
     @standard_heal
-    def heal_repository(
-        self,
-        dry_run: bool = True,
-        execute: bool = False,
-        depth: int = 0,
-        max_depth: int | None = None,
-        _call_path: set | None = None,
-    ) -> dict[str, int]:
+    def heal_repository(self, dry_run: bool=True, execute: bool=False, depth: int=0, max_depth: int | None=None, _call_path: set | None=None) -> dict[str, int]:
         """
         L2 Execution Agent - Embedding Gateway Healing.
 
@@ -290,74 +200,53 @@ class EmbeddingSovereignAgent(RedisCacheMixin, SovereignBaseAgent):
         """
         if _call_path is None:
             _call_path = set()
-
         if max_depth is None:
             max_depth = self.config.max_healing_attempts
-
         agent_name = self.__class__.__name__
         if agent_name in _call_path:
-            return {"errors": 1, "cycle_detected": True}
+            return {'errors': 1, 'cycle_detected': True}
         if depth > max_depth:
-            return {"errors": 1, "depth_limited": True}
-
+            return {'errors': 1, 'depth_limited': True}
         _call_path.add(agent_name)
-        metrics = {"violations": 0, "fixed": 0, "errors": 0, "skipped": 0}
-
+        metrics = {'violations': 0, 'fixed': 0, 'errors': 0, 'skipped': 0}
         try:
-            # Validate embedding providers
-            if not os.getenv("GOOGLE_API_KEY"):
-                metrics["violations"] += 1
-                Logger.warning("GOOGLE_API_KEY missing for Gemini embeddings")
-
-            if not os.getenv("OPENAI_API_KEY"):
-                metrics["violations"] += 1
-                Logger.warning("OPENAI_API_KEY missing for OpenAI embeddings")
-
-            # Test Redis cache connectivity
+            if not os.getenv('GOOGLE_API_KEY'):
+                metrics['violations'] += 1
+                Logger.warning('GOOGLE_API_KEY missing for Gemini embeddings')
+            if not os.getenv('OPENAI_API_KEY'):
+                metrics['violations'] += 1
+                Logger.warning('OPENAI_API_KEY missing for OpenAI embeddings')
             try:
-                test_key = f"{self._cache_prefix}:test"
-                if hasattr(self, "cache_set") and hasattr(self, "cache_get"):
-                    self.cache_set(test_key, "test_value", ttl=60)
+                test_key = f'{self._cache_prefix}:test'
+                if hasattr(self, 'cache_set') and hasattr(self, 'cache_get'):
+                    self.cache_set(test_key, 'test_value', ttl=60)
                     cached = self.cache_get(test_key)
-                    if cached != "test_value":
-                        metrics["violations"] += 1
-                        Logger.warning("Redis cache test failed")
+                    if cached != 'test_value':
+                        metrics['violations'] += 1
+                        Logger.warning('Redis cache test failed')
                 else:
-                    metrics["violations"] += 1
-                    Logger.warning("Redis cache methods not available")
+                    metrics['violations'] += 1
+                    Logger.warning('Redis cache methods not available')
             except (ConnectionError, TimeoutError, RuntimeError, OSError) as e:
-                metrics["violations"] += 1
-                Logger.warning(f"Redis cache connectivity test failed: {e}")
-
-            # Validate expected dimensions
+                metrics['violations'] += 1
+                Logger.warning(f'Redis cache connectivity test failed: {e}')
             try:
                 expected_dims = self.EXPECTED_DIMENSIONS
                 if not expected_dims or not isinstance(expected_dims, dict):
-                    metrics["violations"] += 1
-                    Logger.warning("Expected dimensions configuration invalid")
+                    metrics['violations'] += 1
+                    Logger.warning('Expected dimensions configuration invalid')
             except (AttributeError, TypeError, ValueError, RuntimeError) as e:
-                metrics["violations"] += 1
-                Logger.warning(f"Dimensions validation failed: {e}")
-
-            if metrics["violations"] == 0:
-                metrics["fixed"] = 1
-                Logger.info("EmbeddingSovereignAgent validation passed")
-
-        except (
-            AttributeError,
-            TypeError,
-            ValueError,
-            RuntimeError,
-            ConnectionError,
-            TimeoutError,
-            OSError,
-        ) as e:
-            Logger.error(f"EmbeddingSovereignAgent healing failed: {e}")
-            metrics["errors"] += 1
+                metrics['violations'] += 1
+                Logger.warning(f'Dimensions validation failed: {e}')
+            if metrics['violations'] == 0:
+                metrics['fixed'] = 1
+                Logger.info('EmbeddingSovereignAgent validation passed')
+        except (AttributeError, TypeError, ValueError, RuntimeError, ConnectionError, TimeoutError, OSError) as e:
+            Logger.error(f'EmbeddingSovereignAgent healing failed: {e}')
+            metrics['errors'] += 1
             return metrics
         finally:
             _call_path.discard(agent_name)
-
         return metrics
 
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
@@ -377,27 +266,13 @@ class EmbeddingSovereignAgent(RedisCacheMixin, SovereignBaseAgent):
                 - artifacts: List of modified files
                 - errors: List of error messages
         """
-        violation.get("file") or violation.get("file_path")
-        violation_type = violation.get("type", "unknown")
-
-        # Default implementation - EmbeddingSovereignAgent handles embeddings
+        violation.get('file') or violation.get('file_path')
+        violation_type = violation.get('type', 'unknown')
         try:
-            return {
-                "status": "skipped",
-                "details": f"EmbeddingSovereignAgent heal() not yet implemented for {violation_type} - embedding violations require manual review",
-                "artifacts": [],
-                "errors": [],
-            }
+            return {'status': 'skipped', 'details': f'EmbeddingSovereignAgent heal() not yet implemented for {violation_type} - embedding violations require manual review', 'artifacts': [], 'errors': []}
         except Exception as e:
-            return {
-                "status": "failed",
-                "details": f"EmbeddingSovereignAgent heal() failed: {str(e)}",
-                "artifacts": [],
-                "errors": [str(e)],
-            }
+            return {'status': 'failed', 'details': f'EmbeddingSovereignAgent heal() failed: {str(e)}', 'artifacts': [], 'errors': [str(e)]}
 
-
-# Singleton accessor
 def get_embedding_gateway() -> EmbeddingSovereignAgent:
     """Get or create the global embedding gateway."""
     return EmbeddingSovereignAgent()

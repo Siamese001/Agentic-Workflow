@@ -8,56 +8,29 @@ meta-learning bus.
 
 All logic is pure and deterministic — no wall-clock reads, no randomness.
 """
-
 from __future__ import annotations
-
 import json
 import logging
 from dataclasses import dataclass
 from typing import Any
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 logger = logging.getLogger(__name__)
-
-
-# ---------------------------------------------------------------------------
-# Data Types
-# ---------------------------------------------------------------------------
-
 
 @dataclass(frozen=True, slots=True)
 class L1TelemetryEvent:
     """A telemetry event extracted from L1 meta-learning data."""
-
     timestamp_utc: int
     event_type: str
     payload_bytes: bytes
 
-
 @dataclass(frozen=True, slots=True)
 class L1DriftSignal:
     """A drift signal from L1 model calibration changes."""
-
     surface_name: str
     drift_magnitude: float
-    direction: str  # "increase" or "decrease"
+    direction: str
     observation_count: int
     snapshot_id: str
-
-
-# ---------------------------------------------------------------------------
-# Adapter
-# ---------------------------------------------------------------------------
-
 
 class L1MetaAdapter:
     """Bridges L1 MetaLearningClient data into the central pipeline.
@@ -69,12 +42,7 @@ class L1MetaAdapter:
         drift = adapter.detect_drift(l1_state, snapshot_id="snap")
     """
 
-    def extract_telemetry(
-        self,
-        l1_state: dict[str, Any],
-        *,
-        now_utc: int,
-    ) -> list[L1TelemetryEvent]:
+    def extract_telemetry(self, l1_state: dict[str, Any], *, now_utc: int) -> list[L1TelemetryEvent]:
         """Extract telemetry events from L1 meta-learning state.
 
         Parameters
@@ -92,61 +60,25 @@ class L1MetaAdapter:
             ``TelemetryStore``.
         """
         events: list[L1TelemetryEvent] = []
-
-        # Extract recall outcomes
-        for outcome in l1_state.get("recall_outcomes", []):
+        for outcome in l1_state.get('recall_outcomes', []):
             if not isinstance(outcome, dict):
                 continue
-            ts = outcome.get("timestamp_utc", now_utc)
-            payload = json.dumps(
-                {"source": "l1_recall", "outcome": outcome},
-                separators=(",", ":"),
-                sort_keys=True,
-            ).encode("utf-8")
-            events.append(L1TelemetryEvent(
-                timestamp_utc=ts,
-                event_type="l1_recall_outcome",
-                payload_bytes=payload,
-            ))
-
-        # Extract learn outcomes
-        for outcome in l1_state.get("learn_outcomes", []):
+            ts = outcome.get('timestamp_utc', now_utc)
+            payload = json.dumps({'source': 'l1_recall', 'outcome': outcome}, separators=(',', ':'), sort_keys=True).encode('utf-8')
+            events.append(L1TelemetryEvent(timestamp_utc=ts, event_type='l1_recall_outcome', payload_bytes=payload))
+        for outcome in l1_state.get('learn_outcomes', []):
             if not isinstance(outcome, dict):
                 continue
-            ts = outcome.get("timestamp_utc", now_utc)
-            payload = json.dumps(
-                {"source": "l1_learn", "outcome": outcome},
-                separators=(",", ":"),
-                sort_keys=True,
-            ).encode("utf-8")
-            events.append(L1TelemetryEvent(
-                timestamp_utc=ts,
-                event_type="l1_learn_outcome",
-                payload_bytes=payload,
-            ))
-
-        # Extract cache statistics
-        cache_stats = l1_state.get("cache_stats")
+            ts = outcome.get('timestamp_utc', now_utc)
+            payload = json.dumps({'source': 'l1_learn', 'outcome': outcome}, separators=(',', ':'), sort_keys=True).encode('utf-8')
+            events.append(L1TelemetryEvent(timestamp_utc=ts, event_type='l1_learn_outcome', payload_bytes=payload))
+        cache_stats = l1_state.get('cache_stats')
         if isinstance(cache_stats, dict):
-            payload = json.dumps(
-                {"source": "l1_cache", "stats": cache_stats},
-                separators=(",", ":"),
-                sort_keys=True,
-            ).encode("utf-8")
-            events.append(L1TelemetryEvent(
-                timestamp_utc=now_utc,
-                event_type="l1_cache_stats",
-                payload_bytes=payload,
-            ))
-
+            payload = json.dumps({'source': 'l1_cache', 'stats': cache_stats}, separators=(',', ':'), sort_keys=True).encode('utf-8')
+            events.append(L1TelemetryEvent(timestamp_utc=now_utc, event_type='l1_cache_stats', payload_bytes=payload))
         return events
 
-    def detect_drift(
-        self,
-        l1_state: dict[str, Any],
-        *,
-        snapshot_id: str,
-    ) -> L1DriftSignal | None:
+    def detect_drift(self, l1_state: dict[str, Any], *, snapshot_id: str) -> L1DriftSignal | None:
         """Detect model calibration drift from L1 state.
 
         Parameters
@@ -162,38 +94,20 @@ class L1MetaAdapter:
         L1DriftSignal | None
             Drift signal if significant drift detected, None otherwise.
         """
-        history = l1_state.get("confidence_history", [])
+        history = l1_state.get('confidence_history', [])
         if not isinstance(history, list) or len(history) < 2:
             return None
-
-        # Compute simple drift: compare mean of recent half vs older half
         try:
             floats = [float(v) for v in history]
         except (TypeError, ValueError):
             return None
-
         mid = len(floats) // 2
         if mid == 0:
             return None
-
         old_mean = sum(floats[:mid]) / mid
         new_mean = sum(floats[mid:]) / (len(floats) - mid)
         drift = new_mean - old_mean
-
-        if abs(drift) < 0.05:  # Below noise threshold
+        if abs(drift) < 0.05:
             return None
-
-        return L1DriftSignal(
-            surface_name="l1_model_confidence",
-            drift_magnitude=round(abs(drift), 4),
-            direction="increase" if drift > 0 else "decrease",
-            observation_count=len(floats),
-            snapshot_id=snapshot_id,
-        )
-
-
-__all__ = [
-    "L1MetaAdapter",
-    "L1TelemetryEvent",
-    "L1DriftSignal",
-]
+        return L1DriftSignal(surface_name='l1_model_confidence', drift_magnitude=round(abs(drift), 4), direction='increase' if drift > 0 else 'decrease', observation_count=len(floats), snapshot_id=snapshot_id)
+__all__ = ['L1MetaAdapter', 'L1TelemetryEvent', 'L1DriftSignal']

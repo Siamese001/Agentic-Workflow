@@ -17,53 +17,25 @@ PHASE 2.1 META-LEARNING CLIENT (Feb 2026):
 - Pattern storage and retrieval with semantic search
 - Healing pattern memory with domain isolation
 """
-
 from __future__ import annotations
-
 import logging
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Final
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-# CORE SOCKETING: Align with Phase 2A Unified Base Class
 from apps_shared.utils.AppBase import AppBase
-
-from agentic_core.interfaces.meta_learning import (
-    HealingPattern,
-    MetaLearningGuardrails,
-    get_guardrails,
-)
-from agentic_core.interfaces.meta_learning import (
-    SovereignMetaLearningClient as MetaLearningClient,
-)
-from agentic_core.interfaces.meta_learning import (
-    get_sovereign_meta_client as get_meta_learning_client,
-)
-from agentic_core.L0_routing.config import (
-    APPS_RG_DIR,
-)
+from agentic_core.interfaces.meta_learning import HealingPattern, MetaLearningGuardrails, get_guardrails
+from agentic_core.interfaces.meta_learning import SovereignMetaLearningClient as MetaLearningClient
+from agentic_core.interfaces.meta_learning import get_sovereign_meta_client as get_meta_learning_client
+from agentic_core.L0_routing.config import APPS_RG_DIR
 from agentic_core.L0_routing.config.path_constants import APPS_RG_DIR
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 Logger = logging.getLogger(__name__)
-
-
 try:
     from agentic_core.mixins.semantic_cache_mixin import SemanticCacheMixin
 except ImportError:
 
     class SemanticCacheMixin:
         pass
-
 
 @dataclass
 class RGAgentBase(SemanticCacheMixin, AppBase):
@@ -78,67 +50,39 @@ class RGAgentBase(SemanticCacheMixin, AppBase):
     - Healing depth tracking to prevent infinite loops
     - Domain isolation enforcement for apps_rg
     """
-
-    # Domain-specific RG configuration
     domain_root: Path = field(default_factory=lambda: Path(APPS_RG_DIR))
-    _rg_version: Final[str] = "2.5.0"
-
-    # [PHASE 25] Infrastructure Config
+    _rg_version: Final[str] = '2.5.0'
     _namespace: str = field(default=APPS_RG_DIR, init=False)
     _similarity_threshold: float = field(default=0.85, init=False)
-    _resource_prefix: str = field(default="rg", init=False)
-
-    # [PHASE 1.1] Guardrails Integration
+    _resource_prefix: str = field(default='rg', init=False)
     _guardrails: MetaLearningGuardrails = field(default=None, init=False)
-    _rg_ttl: int = field(default=3600, init=False)  # 1 hour for RG domain
-
-    # [PHASE 2.1] MetaLearningClient Integration
+    _rg_ttl: int = field(default=3600, init=False)
     _meta_client: MetaLearningClient = field(default=None, init=False)
 
     def __post_init__(self) -> None:
         """
         Initialize RG-specific capabilities after Core hardening.
         """
-        # CRITICAL: Trigger Core Security Validation via AppBase
         super().__post_init__()
-
-        # RG Domain Validation
         if not self.domain_root.exists():
-            # Create if missing to ensure domain integrity
             self.domain_root.mkdir(parents=True, exist_ok=True)
-
-        # [PHASE 1.1] Initialize Guardrails with RG-specific configuration
         self._initialize_guardrails()
-
-        # [PHASE 2.1] Initialize MetaLearningClient
         self._initialize_meta_client()
-
-        Logger.debug(
-            f"[{self.__class__.__name__}] RG Meta-Learning activated with guardrails and MetaLearningClient",
-        )
+        Logger.debug(f'[{self.__class__.__name__}] RG Meta-Learning activated with guardrails and MetaLearningClient')
 
     def _initialize_guardrails(self) -> None:
         """Initialize guardrails with RG-specific configuration."""
         self._guardrails = get_guardrails()
-        # Configure RG-specific thresholds
         self._guardrails.guardrails.default_similarity_threshold = self._similarity_threshold
         self._guardrails.guardrails.default_ttl = self._rg_ttl
-        Logger.debug(
-            f"[{self.__class__.__name__}] Guardrails initialized (threshold={self._similarity_threshold})",
-        )
+        Logger.debug(f'[{self.__class__.__name__}] Guardrails initialized (threshold={self._similarity_threshold})')
 
     def _initialize_meta_client(self) -> None:
         """Initialize MetaLearningClient with RG-specific configuration."""
         self._meta_client = get_meta_learning_client()
-        Logger.debug(f"[{self.__class__.__name__}] MetaLearningClient initialized")
+        Logger.debug(f'[{self.__class__.__name__}] MetaLearningClient initialized')
 
-    # ==================== PHASE 2.1: META-LEARNING CLIENT METHODS ====================
-
-    def store_healing_pattern(
-        self,
-        violation: dict[str, Any],
-        healing_result: dict[str, Any],
-    ) -> str | None:
+    def store_healing_pattern(self, violation: dict[str, Any], healing_result: dict[str, Any]) -> str | None:
         """
         Store a successful healing pattern for future recall.
 
@@ -151,18 +95,11 @@ class RGAgentBase(SemanticCacheMixin, AppBase):
         """
         if self._meta_client is None:
             self._initialize_meta_client()
-
-        # Validate with guardrails
-        if not self.validate_domain_pattern({"domain": APPS_RG_DIR, **violation}):
+        if not self.validate_domain_pattern({'domain': APPS_RG_DIR, **violation}):
             return None
-
         return self._meta_client.store_healing_pattern(violation, healing_result, domain=APPS_RG_DIR)
 
-    def retrieve_healing_patterns(
-        self,
-        violation: dict[str, Any],
-        top_k: int = 3,
-    ) -> list[HealingPattern]:
+    def retrieve_healing_patterns(self, violation: dict[str, Any], top_k: int=3) -> list[HealingPattern]:
         """
         Retrieve similar healing patterns for a violation.
 
@@ -175,13 +112,7 @@ class RGAgentBase(SemanticCacheMixin, AppBase):
         """
         if self._meta_client is None:
             self._initialize_meta_client()
-
-        return self._meta_client.retrieve_healing_patterns(
-            violation,
-            domain=APPS_RG_DIR,
-            top_k=top_k,
-            min_similarity=self._similarity_threshold,
-        )
+        return self._meta_client.retrieve_healing_patterns(violation, domain=APPS_RG_DIR, top_k=top_k, min_similarity=self._similarity_threshold)
 
     def ml_check_healing_depth(self, violation_id: str) -> bool:
         """
@@ -195,7 +126,6 @@ class RGAgentBase(SemanticCacheMixin, AppBase):
         """
         if self._meta_client is None:
             self._initialize_meta_client()
-
         return self._meta_client.check_healing_depth(self.__class__.__name__, violation_id)
 
     def ml_increment_healing_depth(self, violation_id: str) -> int:
@@ -210,7 +140,6 @@ class RGAgentBase(SemanticCacheMixin, AppBase):
         """
         if self._meta_client is None:
             self._initialize_meta_client()
-
         return self._meta_client.increment_healing_depth(self.__class__.__name__, violation_id)
 
     def ml_reset_healing_depth(self, violation_id: str) -> None:
@@ -222,7 +151,6 @@ class RGAgentBase(SemanticCacheMixin, AppBase):
         """
         if self._meta_client is None:
             self._initialize_meta_client()
-
         self._meta_client.reset_healing_depth(self.__class__.__name__, violation_id)
 
     def get_meta_learning_stats(self) -> dict[str, Any]:
@@ -234,27 +162,13 @@ class RGAgentBase(SemanticCacheMixin, AppBase):
         """
         if self._meta_client is None:
             self._initialize_meta_client()
-
         return self._meta_client.get_stats()
 
     def get_rg_context(self) -> dict[str, Any]:
         """Return RG-specific context wrapper."""
-        return {
-            "domain": "apps_rg",
-            "version": self._rg_version,
-            "capabilities": self.get_sovereign_capabilities(),
-            "meta_learning_domain": self._ml_domain,
-        }
+        return {'domain': 'apps_rg', 'version': self._rg_version, 'capabilities': self.get_sovereign_capabilities(), 'meta_learning_domain': self._ml_domain}
 
-    # ==================== PHASE 2.2: ENHANCED PATTERN CACHING ====================
-
-    def cache_pattern_with_metadata(
-        self,
-        pattern_type: str,
-        pattern_id: str,
-        pattern_data: dict[str, Any],
-        success_count: int = 0,
-    ) -> bool:
+    def cache_pattern_with_metadata(self, pattern_type: str, pattern_id: str, pattern_data: dict[str, Any], success_count: int=0) -> bool:
         """
         Cache a pattern with full metadata for enhanced learning.
 
@@ -268,48 +182,24 @@ class RGAgentBase(SemanticCacheMixin, AppBase):
             True if cached successfully
         """
         import time
-
-        # Check rate limit and capacity
-        if not self.check_and_enforce_rate_limit("pattern"):
+        if not self.check_and_enforce_rate_limit('pattern'):
             return False
         if not self.check_cache_capacity():
             return False
-
-        # Build enhanced metadata
-        enhanced_data = {
-            **pattern_data,
-            "_metadata": {
-                "pattern_type": pattern_type,
-                "domain": "apps_rg",
-                "created_at": time.time(),
-                "success_count": success_count,
-                "similarity_threshold": self._similarity_threshold,
-            },
-        }
-
-        # Use isolated cache operation
-        success, namespaced_key = self.isolate_cache_operation(
-            "set",
-            f"{pattern_type}:{pattern_id}",
-            enhanced_data,
-        )
+        enhanced_data = {**pattern_data, '_metadata': {'pattern_type': pattern_type, 'domain': 'apps_rg', 'created_at': time.time(), 'success_count': success_count, 'similarity_threshold': self._similarity_threshold}}
+        success, namespaced_key = self.isolate_cache_operation('set', f'{pattern_type}:{pattern_id}', enhanced_data)
         if not success:
             return False
-
         try:
             result = self.ml_cache_set(namespaced_key, enhanced_data)
             if result:
                 self.update_cache_metrics(1)
             return result
         except Exception as e:
-            Logger.error(f"[{self.__class__.__name__}] Enhanced cache failed: {e}")
+            Logger.error(f'[{self.__class__.__name__}] Enhanced cache failed: {e}')
             return False
 
-    def retrieve_pattern_with_metadata(
-        self,
-        pattern_type: str,
-        pattern_id: str,
-    ) -> dict[str, Any] | None:
+    def retrieve_pattern_with_metadata(self, pattern_type: str, pattern_id: str) -> dict[str, Any] | None:
         """
         Retrieve a pattern with its metadata.
 
@@ -320,21 +210,16 @@ class RGAgentBase(SemanticCacheMixin, AppBase):
         Returns:
             Pattern data with metadata or None
         """
-        if not self.check_and_enforce_rate_limit("request"):
+        if not self.check_and_enforce_rate_limit('request'):
             return None
-
-        namespaced_key = self.get_namespaced_cache_key(f"{pattern_type}:{pattern_id}")
+        namespaced_key = self.get_namespaced_cache_key(f'{pattern_type}:{pattern_id}')
         try:
             return self.ml_cache_get(namespaced_key)
         except Exception as e:
-            Logger.error(f"[{self.__class__.__name__}] Pattern retrieval failed: {e}")
+            Logger.error(f'[{self.__class__.__name__}] Pattern retrieval failed: {e}')
             return None
 
-    def increment_pattern_success(
-        self,
-        pattern_type: str,
-        pattern_id: str,
-    ) -> bool:
+    def increment_pattern_success(self, pattern_type: str, pattern_id: str) -> bool:
         """
         Increment success count for a pattern (learning signal).
 
@@ -348,20 +233,12 @@ class RGAgentBase(SemanticCacheMixin, AppBase):
         pattern = self.retrieve_pattern_with_metadata(pattern_type, pattern_id)
         if pattern is None:
             return False
+        metadata = pattern.get('_metadata', {})
+        metadata['success_count'] = metadata.get('success_count', 0) + 1
+        pattern['_metadata'] = metadata
+        return self.cache_pattern_with_metadata(pattern_type, pattern_id, pattern, metadata['success_count'])
 
-        metadata = pattern.get("_metadata", {})
-        metadata["success_count"] = metadata.get("success_count", 0) + 1
-        pattern["_metadata"] = metadata
-
-        return self.cache_pattern_with_metadata(pattern_type, pattern_id, pattern, metadata["success_count"])
-
-    # ==================== RG-SPECIFIC META-LEARNING ====================
-
-    def ml_cache_resume_quality_pattern(
-        self,
-        pattern_id: str,
-        pattern_data: dict[str, Any],
-    ) -> bool:
+    def ml_cache_resume_quality_pattern(self, pattern_id: str, pattern_data: dict[str, Any]) -> bool:
         """
         Cache a successful resume quality pattern for future recall.
 
@@ -372,7 +249,7 @@ class RGAgentBase(SemanticCacheMixin, AppBase):
         Returns:
             True if cached successfully
         """
-        cache_key = f"resume_quality:{pattern_id}"
+        cache_key = f'resume_quality:{pattern_id}'
         return self.ml_cache_set(cache_key, pattern_data)
 
     def ml_recall_resume_quality_pattern(self, pattern_id: str) -> dict[str, Any] | None:
@@ -385,14 +262,10 @@ class RGAgentBase(SemanticCacheMixin, AppBase):
         Returns:
             Cached pattern data or None
         """
-        cache_key = f"resume_quality:{pattern_id}"
+        cache_key = f'resume_quality:{pattern_id}'
         return self.ml_cache_get(cache_key)
 
-    def ml_cache_ats_compatibility(
-        self,
-        ats_system: str,
-        compatibility_data: dict[str, Any],
-    ) -> bool:
+    def ml_cache_ats_compatibility(self, ats_system: str, compatibility_data: dict[str, Any]) -> bool:
         """
         Cache ATS compatibility requirements for future reference.
 
@@ -403,7 +276,7 @@ class RGAgentBase(SemanticCacheMixin, AppBase):
         Returns:
             True if cached successfully
         """
-        cache_key = f"ats_compat:{ats_system}"
+        cache_key = f'ats_compat:{ats_system}'
         return self.ml_cache_set(cache_key, compatibility_data)
 
     def ml_recall_ats_compatibility(self, ats_system: str) -> dict[str, Any] | None:
@@ -416,14 +289,10 @@ class RGAgentBase(SemanticCacheMixin, AppBase):
         Returns:
             Cached compatibility data or None
         """
-        cache_key = f"ats_compat:{ats_system}"
+        cache_key = f'ats_compat:{ats_system}'
         return self.ml_cache_get(cache_key)
 
-    def ml_cache_section_balance(
-        self,
-        job_type: str,
-        balance_data: dict[str, Any],
-    ) -> bool:
+    def ml_cache_section_balance(self, job_type: str, balance_data: dict[str, Any]) -> bool:
         """
         Cache optimal section balance for a job type.
 
@@ -434,7 +303,7 @@ class RGAgentBase(SemanticCacheMixin, AppBase):
         Returns:
             True if cached successfully
         """
-        cache_key = f"section_balance:{job_type}"
+        cache_key = f'section_balance:{job_type}'
         return self.ml_cache_set(cache_key, balance_data)
 
     def ml_recall_section_balance(self, job_type: str) -> dict[str, Any] | None:
@@ -447,10 +316,8 @@ class RGAgentBase(SemanticCacheMixin, AppBase):
         Returns:
             Cached balance data or None
         """
-        cache_key = f"section_balance:{job_type}"
+        cache_key = f'section_balance:{job_type}'
         return self.ml_cache_get(cache_key)
-
-    # ==================== PHASE 1.2: DOMAIN ISOLATION ====================
 
     def get_namespaced_cache_key(self, key: str) -> str:
         """
@@ -462,7 +329,7 @@ class RGAgentBase(SemanticCacheMixin, AppBase):
         Returns:
             Namespaced key with apps_rg prefix
         """
-        return f"apps_rg:{self._resource_prefix}:{key}"
+        return f'apps_rg:{self._resource_prefix}:{key}'
 
     def validate_domain_pattern(self, pattern: dict[str, Any]) -> bool:
         """
@@ -474,20 +341,14 @@ class RGAgentBase(SemanticCacheMixin, AppBase):
         Returns:
             True if pattern is valid for RG domain
         """
-        # Check domain field if present (both "domain" and "_domain" metadata)
-        domain_value = pattern.get("domain") or pattern.get("_domain")
+        domain_value = pattern.get('domain') or pattern.get('_domain')
         if domain_value:
             if domain_value != APPS_RG_DIR:
-                Logger.warning(f"[{self.__class__.__name__}] Rejected cross-domain pattern: {domain_value}")
+                Logger.warning(f'[{self.__class__.__name__}] Rejected cross-domain pattern: {domain_value}')
                 return False
         return True
 
-    def isolate_cache_operation(
-        self,
-        operation: str,
-        key: str,
-        value: Any = None,
-    ) -> tuple[bool, Any]:
+    def isolate_cache_operation(self, operation: str, key: str, value: Any=None) -> tuple[bool, Any]:
         """
         Perform a cache operation with domain isolation.
 
@@ -500,26 +361,17 @@ class RGAgentBase(SemanticCacheMixin, AppBase):
             Tuple of (success, result)
         """
         namespaced_key = self.get_namespaced_cache_key(key)
-
-        # Validate key
         if not self.guardrails_validate_cache_key(namespaced_key):
             return (False, None)
-
-        # For set operations, validate value
-        if operation == "set" and value is not None:
+        if operation == 'set' and value is not None:
             if not self.guardrails_validate_cache_value(value):
                 return (False, None)
-
-            # Add domain metadata
             if isinstance(value, dict):
-                value["_domain"] = APPS_RG_DIR
-                value["_namespace"] = self._namespace
-
+                value['_domain'] = APPS_RG_DIR
+                value['_namespace'] = self._namespace
         return (True, namespaced_key)
 
-    # ==================== PHASE 1.3: RATE LIMITING & CACHE MANAGEMENT ====================
-
-    def check_and_enforce_rate_limit(self, operation: str = "request") -> bool:
+    def check_and_enforce_rate_limit(self, operation: str='request') -> bool:
         """
         Check and enforce rate limits for cache operations.
 
@@ -531,10 +383,9 @@ class RGAgentBase(SemanticCacheMixin, AppBase):
         """
         if self._guardrails is None:
             self._initialize_guardrails()
-
         allowed = self._guardrails.check_rate_limit(APPS_RG_DIR, operation)
         if not allowed:
-            Logger.warning(f"[{self.__class__.__name__}] Rate limit exceeded for {operation}")
+            Logger.warning(f'[{self.__class__.__name__}] Rate limit exceeded for {operation}')
         return allowed
 
     def check_cache_capacity(self) -> bool:
@@ -546,10 +397,9 @@ class RGAgentBase(SemanticCacheMixin, AppBase):
         """
         if self._guardrails is None:
             self._initialize_guardrails()
-
         return self._guardrails.check_cache_size_limit(APPS_RG_DIR)
 
-    def update_cache_metrics(self, delta: int = 1) -> None:
+    def update_cache_metrics(self, delta: int=1) -> None:
         """
         Update cache size metrics after cache operations.
 
@@ -558,15 +408,9 @@ class RGAgentBase(SemanticCacheMixin, AppBase):
         """
         if self._guardrails is None:
             self._initialize_guardrails()
-
         self._guardrails.update_cache_size(APPS_RG_DIR, delta)
 
-    def safe_cache_set(
-        self,
-        key: str,
-        value: Any,
-        validate_rate: bool = True,
-    ) -> bool:
+    def safe_cache_set(self, key: str, value: Any, validate_rate: bool=True) -> bool:
         """
         Safely set a cache value with rate limiting and size checks.
 
@@ -578,31 +422,24 @@ class RGAgentBase(SemanticCacheMixin, AppBase):
         Returns:
             True if cached successfully, False otherwise
         """
-        # Check rate limit
-        if validate_rate and not self.check_and_enforce_rate_limit("request"):
+        if validate_rate and (not self.check_and_enforce_rate_limit('request')):
             return False
-
-        # Check cache capacity
         if not self.check_cache_capacity():
-            Logger.warning(f"[{self.__class__.__name__}] Cache at capacity")
+            Logger.warning(f'[{self.__class__.__name__}] Cache at capacity')
             return False
-
-        # Validate and isolate
-        success, namespaced_key = self.isolate_cache_operation("set", key, value)
+        success, namespaced_key = self.isolate_cache_operation('set', key, value)
         if not success:
             return False
-
-        # Perform the actual cache operation (delegate to parent)
         try:
             result = self.ml_cache_set(namespaced_key, value)
             if result:
                 self.update_cache_metrics(1)
             return result
         except Exception as e:
-            Logger.error(f"[{self.__class__.__name__}] Cache set failed: {e}")
+            Logger.error(f'[{self.__class__.__name__}] Cache set failed: {e}')
             return False
 
-    def safe_cache_get(self, key: str, validate_rate: bool = True) -> Any:
+    def safe_cache_get(self, key: str, validate_rate: bool=True) -> Any:
         """
         Safely get a cache value with rate limiting.
 
@@ -613,16 +450,13 @@ class RGAgentBase(SemanticCacheMixin, AppBase):
         Returns:
             Cached value or None
         """
-        # Check rate limit
-        if validate_rate and not self.check_and_enforce_rate_limit("request"):
+        if validate_rate and (not self.check_and_enforce_rate_limit('request')):
             return None
-
         namespaced_key = self.get_namespaced_cache_key(key)
-
         try:
             return self.ml_cache_get(namespaced_key)
         except Exception as e:
-            Logger.error(f"[{self.__class__.__name__}] Cache get failed: {e}")
+            Logger.error(f'[{self.__class__.__name__}] Cache get failed: {e}')
             return None
 
     def get_cache_health(self) -> dict[str, Any]:
@@ -634,18 +468,8 @@ class RGAgentBase(SemanticCacheMixin, AppBase):
         """
         if self._guardrails is None:
             self._initialize_guardrails()
-
         stats = self._guardrails.get_stats()
-        return {
-            "domain": "apps_rg",
-            "cache_size": stats.get("cache_sizes", {}).get("apps_rg", 0),
-            "request_rate": stats.get("request_rates", {}).get("apps_rg", 0),
-            "pattern_rate": stats.get("pattern_rates", {}).get("apps_rg", 0),
-            "active_healing_cycles": len(stats.get("depth_trackers", {}).get(self.__class__.__name__, {})),
-            "healthy": True,
-        }
-
-    # ==================== PHASE 1.1: GUARDRAILS METHODS ====================
+        return {'domain': 'apps_rg', 'cache_size': stats.get('cache_sizes', {}).get('apps_rg', 0), 'request_rate': stats.get('request_rates', {}).get('apps_rg', 0), 'pattern_rate': stats.get('pattern_rates', {}).get('apps_rg', 0), 'active_healing_cycles': len(stats.get('depth_trackers', {}).get(self.__class__.__name__, {})), 'healthy': True}
 
     def guardrails_validate_cache_key(self, key: str) -> bool:
         """
@@ -742,7 +566,7 @@ class RGAgentBase(SemanticCacheMixin, AppBase):
             self._initialize_guardrails()
         return self._guardrails.sanitize_violation_data(violation)
 
-    def guardrails_check_rate_limit(self, operation: str = "request") -> bool:
+    def guardrails_check_rate_limit(self, operation: str='request') -> bool:
         """
         Check rate limits for operations.
 

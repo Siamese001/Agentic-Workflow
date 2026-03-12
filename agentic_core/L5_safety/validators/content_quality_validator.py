@@ -12,29 +12,16 @@ Deterministic Operations:
 - Resume text processing and normalization
 - Quantified achievements analysis
 """
-
 from __future__ import annotations
-
 import json
 import re
 from dataclasses import dataclass
 from typing import Any
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 @dataclass
 class QualityValidationResult:
     """Result of content quality validation."""
-
     passed: bool
     issues: list[str]
     score: float | None = None
@@ -46,7 +33,6 @@ class QualityValidationResult:
             self.suggestions = []
         if self.metadata is None:
             self.metadata = {}
-
 
 class ContentQualityValidator:
     """
@@ -63,27 +49,12 @@ class ContentQualityValidator:
         Args:
             config: Configuration dictionary containing validation rules
         """
-        self.placeholder_patterns = config.get(
-            "placeholder_patterns",
-            [r"\[.*?\]", r"\{.*?\}", r"<.*?>", r"\$.*?\$"],
-        )
-        self.quantified_patterns = config.get(
-            "quantified_patterns",
-            [
-                r"\d+\s*(?:%|percent|percentages?)",
-                r"\$\d+(?:,\d{3})*(?:\.\d{2})?",
-                r"\d+\s*(?:years?|months?|days?)",
-                r"\d+\s*(?:projects?|tasks?|items?)",
-            ],
-        )
-        self.skill_keywords = config.get("skill_keywords", [])
-        self.min_skill_matches = config.get("min_skill_matches", 3)
+        self.placeholder_patterns = config.get('placeholder_patterns', ['\\[.*?\\]', '\\{.*?\\}', '<.*?>', '\\$.*?\\$'])
+        self.quantified_patterns = config.get('quantified_patterns', ['\\d+\\s*(?:%|percent|percentages?)', '\\$\\d+(?:,\\d{3})*(?:\\.\\d{2})?', '\\d+\\s*(?:years?|months?|days?)', '\\d+\\s*(?:projects?|tasks?|items?)'])
+        self.skill_keywords = config.get('skill_keywords', [])
+        self.min_skill_matches = config.get('min_skill_matches', 3)
 
-    def validate_content_quality(
-        self,
-        resume: dict[str, Any],
-        job_desc: str | None = None,
-    ) -> QualityValidationResult:
+    def validate_content_quality(self, resume: dict[str, Any], job_desc: str | None=None) -> QualityValidationResult:
         """
         Validate content quality using purely deterministic logic.
 
@@ -96,30 +67,15 @@ class ContentQualityValidator:
         """
         issues: list[str] = []
         suggestions: list[str] = []
-
-        # Check for placeholders (deterministic regex matching)
         placeholder_issues = self._check_placeholders(resume)
         issues.extend(placeholder_issues)
-
-        # Check quantified achievements (deterministic pattern matching)
         quantified_issues = self._check_quantified_achievements(resume)
         issues.extend(quantified_issues)
-
-        # Validate skills with deterministic logic
         skill_issues, skill_suggestions = self._validate_skills(resume, job_desc)
         issues.extend(skill_issues)
         suggestions.extend(skill_suggestions)
-
-        # Calculate overall quality score
         score = self._calculate_quality_score(issues, resume)
-
-        return QualityValidationResult(
-            passed=len(issues) == 0,
-            issues=issues,
-            suggestions=suggestions,
-            score=score,
-            metadata={"validation_type": "deterministic"},
-        )
+        return QualityValidationResult(passed=len(issues) == 0, issues=issues, suggestions=suggestions, score=score, metadata={'validation_type': 'deterministic'})
 
     def _check_placeholders(self, resume: dict[str, Any]) -> list[str]:
         """
@@ -129,12 +85,10 @@ class ContentQualityValidator:
         """
         issues: list[str] = []
         resume_text = json.dumps(resume, ensure_ascii=False)
-
         for pattern in self.placeholder_patterns:
             matches = re.findall(pattern, resume_text, re.IGNORECASE)
             if matches:
-                issues.append(f"Found {len(matches)} placeholder(s): {pattern}")
-
+                issues.append(f'Found {len(matches)} placeholder(s): {pattern}')
         return issues
 
     def _check_quantified_achievements(self, resume: dict[str, Any]) -> list[str]:
@@ -145,22 +99,15 @@ class ContentQualityValidator:
         """
         issues: list[str] = []
         resume_text = json.dumps(resume, ensure_ascii=False)
-
         quantified_count = 0
         for pattern in self.quantified_patterns:
             matches = re.findall(pattern, resume_text, re.IGNORECASE)
             quantified_count += len(matches)
-
         if quantified_count < 3:
-            issues.append(f"Insufficient quantified achievements ({quantified_count} found)")
-
+            issues.append(f'Insufficient quantified achievements ({quantified_count} found)')
         return issues
 
-    def _validate_skills(
-        self,
-        resume: dict[str, Any],
-        job_desc: str | None = None,
-    ) -> tuple[list[str], list[str]]:
+    def _validate_skills(self, resume: dict[str, Any], job_desc: str | None=None) -> tuple[list[str], list[str]]:
         """
         Validate skills using deterministic rule-based logic.
 
@@ -168,28 +115,20 @@ class ContentQualityValidator:
         """
         issues: list[str] = []
         suggestions: list[str] = []
-
         resume_text = json.dumps(resume).lower()
-
-        # Count skill matches (deterministic string matching)
         skill_matches = 0
         matched_skills: set[str] = set()
-
         for skill in self.skill_keywords:
             if skill.lower() in resume_text:
                 skill_matches += 1
                 matched_skills.add(skill)
-
         if skill_matches < self.min_skill_matches:
-            issues.append(f"Insufficient skill matches ({skill_matches} found)")
-
-        # If job description provided, check alignment
+            issues.append(f'Insufficient skill matches ({skill_matches} found)')
         if job_desc:
             alignment_score = self._calculate_skill_alignment(matched_skills, job_desc)
             if alignment_score < 0.5:
-                suggestions.append("Improve skill alignment with job description")
-
-        return issues, suggestions
+                suggestions.append('Improve skill alignment with job description')
+        return (issues, suggestions)
 
     def _calculate_skill_alignment(self, skills: set[str], job_desc: str) -> float:
         """
@@ -199,14 +138,11 @@ class ContentQualityValidator:
         """
         if not skills:
             return 0.0
-
         job_desc_lower = job_desc.lower()
         aligned_skills = 0
-
         for skill in skills:
             if skill.lower() in job_desc_lower:
                 aligned_skills += 1
-
         return aligned_skills / len(skills)
 
     def _calculate_quality_score(self, issues: list[str], resume: dict[str, Any]) -> float:
@@ -216,23 +152,14 @@ class ContentQualityValidator:
         Moved to Deterministic: Pure mathematical scoring
         """
         base_score = 1.0
-
-        # Deduct points for each issue
         base_score -= len(issues) * 0.1
-
-        # Bonus points for comprehensive content
-        resume_sections = len([k for k in resume.keys() if not k.startswith("_")])
+        resume_sections = len([k for k in resume.keys() if not k.startswith('_')])
         if resume_sections >= 5:
             base_score += 0.1
-
-        # Bonus points for quantified achievements
         resume_text = json.dumps(resume, ensure_ascii=False)
-        quantified_count = sum(
-            len(re.findall(pattern, resume_text, re.IGNORECASE)) for pattern in self.quantified_patterns
-        )
+        quantified_count = sum((len(re.findall(pattern, resume_text, re.IGNORECASE)) for pattern in self.quantified_patterns))
         if quantified_count >= 5:
             base_score += 0.1
-
         return max(0.0, min(1.0, base_score))
 
     def extract_resume_text(self, resume: dict[str, Any]) -> str:
@@ -241,15 +168,9 @@ class ContentQualityValidator:
 
         Moved to Deterministic: Pure text extraction and normalization
         """
-        # Convert resume to JSON and normalize
         text = json.dumps(resume, ensure_ascii=False)
-
-        # Remove JSON structure characters
-        text = re.sub(r'[{}"\[\],:]', " ", text)
-
-        # Normalize whitespace
-        text = re.sub(r"\s+", " ", text).strip()
-
+        text = re.sub('[{}"\\[\\],:]', ' ', text)
+        text = re.sub('\\s+', ' ', text).strip()
         return text
 
     def detect_formatting_issues(self, text: str) -> list[str]:
@@ -259,19 +180,12 @@ class ContentQualityValidator:
         Moved to Deterministic: Pure formatting validation
         """
         issues: list[str] = []
-
-        # Check for excessive capitalization
-        if re.search(r"[A-Z]{4,}", text):
-            issues.append("Excessive capitalization detected")
-
-        # Check for repeated characters
-        if re.search(r"(.)\1{3,}", text):
-            issues.append("Repeated characters detected")
-
-        # Check for very short sentences
-        sentences = re.split(r"[.!?]+", text)
+        if re.search('[A-Z]{4,}', text):
+            issues.append('Excessive capitalization detected')
+        if re.search('(.)\\1{3,}', text):
+            issues.append('Repeated characters detected')
+        sentences = re.split('[.!?]+', text)
         short_sentences = [s for s in sentences if len(s.strip()) < 5 and s.strip()]
         if len(short_sentences) > 3:
-            issues.append("Too many very short sentences")
-
+            issues.append('Too many very short sentences')
         return issues

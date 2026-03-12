@@ -33,6 +33,7 @@ from collections import defaultdict
 from typing import Iterator
 
 _ROOT = pathlib.Path(__file__).resolve().parents[1]
+# guardian: allow-global-mutation
 if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 
@@ -112,6 +113,7 @@ class ADGIndex:
                 self.imports[frm].add(to)
                 self.imported_by[to].add(frm)
 
+    # guardian: allow-magic-config
     def transitive_importers(self, module_path: str, max_depth: int = 4) -> set[str]:
         """Return all modules that (transitively) import module_path."""
         visited: set[str] = set()

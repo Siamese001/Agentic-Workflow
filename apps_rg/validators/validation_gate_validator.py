@@ -3,23 +3,12 @@
 Implements the 'Gate Signature' pattern from v61.27.10.
 Ensures no content flows downstream without cryptographic proof of validation.
 """
-
 import hashlib
 import hmac
 import json
 import os
 from typing import Any
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 class ValidationGate:
     """
@@ -28,16 +17,13 @@ class ValidationGate:
 
     def __init__(self, gate_id: str):
         self.gate_id = gate_id
-        # In production, rotate this secret via SecretsManager
-        self._secret = os.getenv("RG_VALIDATION_SECRET", "dev_secret_key").encode()
+        self._secret = os.getenv('RG_VALIDATION_SECRET', 'dev_secret_key').encode()
 
     def sign_payload(self, payload: dict[str, Any]) -> str:
         """
         Generates an HMAC-SHA256 signature for the given payload.
         """
-        # Include gate_id in the signature to ensure gate isolation
-        signing_data = {"gate_id": self.gate_id, "payload": payload}
-        # Canonicalize payload to ensure consistent signing
+        signing_data = {'gate_id': self.gate_id, 'payload': payload}
         serialized = json.dumps(signing_data, sort_keys=True).encode()
         signature = hmac.new(self._secret, serialized, hashlib.sha256).hexdigest()
         return signature

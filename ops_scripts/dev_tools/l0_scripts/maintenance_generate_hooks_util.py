@@ -5,43 +5,21 @@ DEPRECATED: Redirects to the unified 'generate_hooks.py' script.
 This file is retained as a stub to prevent breaking existing automation
 that calls this specific path.
 """
-
 from __future__ import annotations
-
 import sys
 from pathlib import Path
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-# Redirect execution to the SSOT generator
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 project_root = Path(__file__).resolve().parent.parent.parent
 # guardian: allow-global-mutation
 sys.path.insert(0, str(project_root))
-
-from agentic_core.L0_routing.scripts.generate_hooks import (
-    generate_sovereign_list,
-    sync_pre_commit,
-)
-
-if __name__ == "__main__":
+from agentic_core.L0_routing.scripts.generate_hooks import generate_sovereign_list, sync_pre_commit
+if __name__ == '__main__':
     import argparse
-
-    parser = argparse.ArgumentParser(description="Sync pre-commit config with SSOT (Redirect)")
-    parser.add_argument("--dry-run", action="store_true", help="Show changes without applying")
-    parser.add_argument("--list", action="store_true", help="List current sovereign roots")
-
+    parser = argparse.ArgumentParser(description='Sync pre-commit config with SSOT (Redirect)')
+    parser.add_argument('--dry-run', action='store_true', help='Show changes without applying')
+    parser.add_argument('--list', action='store_true', help='List current sovereign roots')
     args = parser.parse_args()
-
-    print("[*] maintenance_generate_hooks_util.py is DEPRECATED. Redirecting to generate_hooks.py...")
-
+    print('[*] maintenance_generate_hooks_util.py is DEPRECATED. Redirecting to generate_hooks.py...')
     if args.list:
         generate_sovereign_list()
     else:

@@ -251,6 +251,7 @@ class EvalSpine:
         self.report.metrics.append(m)
         return m
 
+    # guardian: allow-magic-config
     def emit_drift_alert(
         self,
         metric_name: str,

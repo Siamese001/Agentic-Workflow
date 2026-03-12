@@ -1,22 +1,10 @@
 """Revert file moves from cognitive_checkpoint.json that were made without Gemini LLM reasoning."""
-
 import json
 import shutil
 from pathlib import Path
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-PROJECT_ROOT = Path("C:/Git/Agentic-Workflow")
-CHECKPOINT_FILE = PROJECT_ROOT / "archives/gatekeeper/2026-01-21/cognitive_checkpoint.json"
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+PROJECT_ROOT = Path('C:/Git/Agentic-Workflow')
+CHECKPOINT_FILE = PROJECT_ROOT / 'archives/gatekeeper/2026-01-21/cognitive_checkpoint.json'
 
 def main():
     """TODO: Add documentation for main."""
@@ -26,13 +14,13 @@ def main():
     skipped = 0
     errors = 0
     for original_path_str, decision in checkpoint.items():
-        if decision.get("action") != "MOVE":
+        if decision.get('action') != 'MOVE':
             continue
-        target_path_rel = decision.get("target_path", "")
+        target_path_rel = decision.get('target_path', '')
         if not target_path_rel:
             continue
-        original_path = Path(original_path_str.replace("\\", "/"))
-        if not target_path_rel.startswith("C:"):
+        original_path = Path(original_path_str.replace('\\', '/'))
+        if not target_path_rel.startswith('C:'):
             target_path = PROJECT_ROOT / target_path_rel
         else:
             target_path = Path(target_path_rel)
@@ -44,10 +32,8 @@ def main():
                     original_path.parent.mkdir(parents=True, exist_ok=True)
                     shutil.move(str(target_path), str(original_path))
                     reverted += 1
-                # guardian: allow-silent-swallow
                 except Exception:
-                    # TODO: Handle specific exception properly
-                    raise  # Re-raise after logging/handling
+                    raise
                     errors += 1
             else:
                 skipped += 1
@@ -57,7 +43,5 @@ def main():
             skipped += 1
     if reverted > 0:
         pass
-
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

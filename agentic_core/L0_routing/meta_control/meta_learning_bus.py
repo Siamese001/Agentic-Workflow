@@ -4,35 +4,23 @@ Meta-Learning Bus - Queue-backed deterministic change conduit.
 Implements FIFO queue for meta-learning changes with deterministic hashing.
 No wall-clock usage, no randomness, no direct L4 mutation.
 """
-
 import hashlib
 import json
 from collections import deque
 from dataclasses import dataclass
 from typing import Any
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 @dataclass(frozen=True)
 class MetaLearningChangePackage:
     """Immutable change package for meta-learning operations."""
-
     trace_id: str
     kind: str
     payload: dict[str, Any]
     package_hash: str
 
     @classmethod
-    def create(cls, trace_id: str, kind: str, payload: dict[str, Any]) -> "MetaLearningChangePackage":
+    def create(cls, trace_id: str, kind: str, payload: dict[str, Any]) -> 'MetaLearningChangePackage':
         """
         Create a new MetaLearningChangePackage with deterministic hash.
 
@@ -44,13 +32,10 @@ class MetaLearningChangePackage:
         Returns:
             New MetaLearningChangePackage with computed hash
         """
-        # Compute deterministic hash from canonical JSON
-        canonical_data = {"kind": kind, "payload": payload}
-        canonical_json = json.dumps(canonical_data, sort_keys=True, separators=(",", ":"))
-        package_hash = hashlib.sha256(canonical_json.encode("utf-8")).hexdigest()
-
+        canonical_data = {'kind': kind, 'payload': payload}
+        canonical_json = json.dumps(canonical_data, sort_keys=True, separators=(',', ':'))
+        package_hash = hashlib.sha256(canonical_json.encode('utf-8')).hexdigest()
         return cls(trace_id=trace_id, kind=kind, payload=payload, package_hash=package_hash)
-
 
 class MetaLearningBus:
     """
@@ -109,6 +94,5 @@ class MetaLearningBus:
         pkg = self.dequeue()
         if pkg is None:
             return None
-
         result = apply_fn(pkg)
         return (pkg, result)

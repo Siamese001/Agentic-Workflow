@@ -39,11 +39,17 @@ class DefaultDeterministicResourcePredictor:
 
     # Deterministic baseline envelopes by failure type
     _BASELINE_ENVELOPES: dict[str, ResourceEnvelope] = {
+        # guardian: allow-magic-config
         "timeout": ResourceEnvelope(cpu_cores=2, memory_mb=1024, timeout_s=300),
+        # guardian: allow-magic-config
         "memory_error": ResourceEnvelope(cpu_cores=1, memory_mb=2048, timeout_s=180),
+        # guardian: allow-magic-config
         "cpu_error": ResourceEnvelope(cpu_cores=4, memory_mb=512, timeout_s=240),
+        # guardian: allow-magic-config
         "io_error": ResourceEnvelope(cpu_cores=2, memory_mb=1536, timeout_s=600),
+        # guardian: allow-magic-config
         "network_error": ResourceEnvelope(cpu_cores=1, memory_mb=768, timeout_s=120),
+        # guardian: allow-magic-config
         "unknown": ResourceEnvelope(cpu_cores=2, memory_mb=1024, timeout_s=300),
     }
 

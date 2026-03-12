@@ -30,44 +30,24 @@ Functions:
 - decide_heal_escalation: Score-based escalation, always proceed=True
 - decide_reasoning_tier: DEPRECATED legacy function, always proceed=True
 """
-
 import os
 from dataclasses import dataclass
 from enum import Enum
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-# Score thresholds matching compute_routing_decision in execute_ssot.py
-SCORE_THRESHOLD_DET: int = 13   # S <= 13 → DETERMINISTIC (agent-native)
-SCORE_THRESHOLD_QWEN: int = 26  # S <= 26 → QWEN; S > 26 → GEMINI
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+SCORE_THRESHOLD_DET: int = 13
+SCORE_THRESHOLD_QWEN: int = 26
 
 class ReasoningTier(Enum):
     """LLM reasoning tier for agent healing escalation."""
-
-    LOW = "LOW"   # Qwen 2.5 14B — medium-complexity routing
-    HIGH = "HIGH" # Gemini 2.5 Pro — high-complexity routing
-
+    LOW = 'LOW'
+    HIGH = 'HIGH'
 
 class ScoreBand(Enum):
     """Score band classification (replaces ConfidenceLevel)."""
-
-    DETERMINISTIC = "DETERMINISTIC"  # S <= 13: agent-native, no LLM
-    QWEN = "QWEN"                    # 14 <= S <= 26: Qwen 2.5 advises
-    GEMINI = "GEMINI"                # S > 26: Gemini 2.5 Pro
-
-
-# Backward-compat alias — old code referencing ConfidenceLevel still works
+    DETERMINISTIC = 'DETERMINISTIC'
+    QWEN = 'QWEN'
+    GEMINI = 'GEMINI'
 ConfidenceLevel = ScoreBand
-
 
 @dataclass(frozen=True)
 class HealEscalationInputs:
@@ -83,28 +63,24 @@ class HealEscalationInputs:
         safety_risk: DEPRECATED — kept for backward compat only.
         prior_failures: DEPRECATED — kept for backward compat only.
     """
-
-    score: int = 0              # canonical routing score S
+    score: int = 0
     enable_llm: bool = False
-    confidence_value: float = 0.75  # kept for backward compat, not used for gating
-    task_complexity: int = 5    # kept for backward compat
+    confidence_value: float = 0.75
+    task_complexity: int = 5
     cost_budget: int = 100
     latency_budget_ms: int = 5000
-    safety_risk: int = 0        # kept for backward compat
-    prior_failures: int = 0     # kept for backward compat
-
+    safety_risk: int = 0
+    prior_failures: int = 0
 
 @dataclass(frozen=True)
 class LegacyHealEscalationInputs:
     """Legacy inputs for heal escalation decision (backward compat)."""
-
-    task_complexity: int  # 0..10
-    confidence: float  # 0.0..1.0
-    safety_risk: int  # 0..10
-    retry_count: int  # >=0
+    task_complexity: int
+    confidence: float
+    safety_risk: int
+    retry_count: int
     cost_budget: int | None = None
     latency_budget: int | None = None
-
 
 @dataclass(frozen=True)
 class HealEscalationDecision:
@@ -116,12 +92,10 @@ class HealEscalationDecision:
         rationale: Human-readable explanation
         threshold_used: Short deterministic token for debugging
     """
-
     proceed: bool
     tier: ReasoningTier | None
     rationale: str
-    threshold_used: str  # Short, deterministic token
-
+    threshold_used: str
 
 def classify_score(score: int) -> ScoreBand:
     """Classify routing score S into score band.
@@ -139,7 +113,6 @@ def classify_score(score: int) -> ScoreBand:
     else:
         return ScoreBand.GEMINI
 
-
 def classify_confidence(confidence: float) -> ScoreBand:
     """DEPRECATED: approximate mapping from confidence float to ScoreBand.
 
@@ -148,11 +121,10 @@ def classify_confidence(confidence: float) -> ScoreBand:
     """
     if confidence > 0.75:
         return ScoreBand.DETERMINISTIC
-    elif confidence >= 0.50:
+    elif confidence >= 0.5:
         return ScoreBand.QWEN
     else:
         return ScoreBand.GEMINI
-
 
 def decide_heal_escalation(inputs: HealEscalationInputs) -> HealEscalationDecision:
     """Score-based escalation decision. Healing always proceeds (proceed=True).
@@ -170,29 +142,12 @@ def decide_heal_escalation(inputs: HealEscalationInputs) -> HealEscalationDecisi
     """
     score = inputs.score
     band = classify_score(score)
-
     if band == ScoreBand.DETERMINISTIC:
-        return HealEscalationDecision(
-            proceed=True,
-            tier=None,
-            rationale=f"Score S={score} <= {SCORE_THRESHOLD_DET}: agent-native logic governs, no LLM needed",
-            threshold_used="SCORE_DET",
-        )
+        return HealEscalationDecision(proceed=True, tier=None, rationale=f'Score S={score} <= {SCORE_THRESHOLD_DET}: agent-native logic governs, no LLM needed', threshold_used='SCORE_DET')
     elif band == ScoreBand.QWEN:
-        return HealEscalationDecision(
-            proceed=True,
-            tier=ReasoningTier.LOW,
-            rationale=f"Score S={score} in [{SCORE_THRESHOLD_DET + 1},{SCORE_THRESHOLD_QWEN}]: Qwen 2.5 14B advises healing plan",
-            threshold_used="SCORE_QWEN",
-        )
+        return HealEscalationDecision(proceed=True, tier=ReasoningTier.LOW, rationale=f'Score S={score} in [{SCORE_THRESHOLD_DET + 1},{SCORE_THRESHOLD_QWEN}]: Qwen 2.5 14B advises healing plan', threshold_used='SCORE_QWEN')
     else:
-        return HealEscalationDecision(
-            proceed=True,
-            tier=ReasoningTier.HIGH,
-            rationale=f"Score S={score} > {SCORE_THRESHOLD_QWEN}: Gemini 2.5 Pro handles complex reasoning",
-            threshold_used="SCORE_GEMINI",
-        )
-
+        return HealEscalationDecision(proceed=True, tier=ReasoningTier.HIGH, rationale=f'Score S={score} > {SCORE_THRESHOLD_QWEN}: Gemini 2.5 Pro handles complex reasoning', threshold_used='SCORE_GEMINI')
 
 def decide_reasoning_tier(inputs: LegacyHealEscalationInputs) -> HealEscalationDecision:
     """DEPRECATED legacy function. Always proceeds; routes by complexity.
@@ -200,31 +155,13 @@ def decide_reasoning_tier(inputs: LegacyHealEscalationInputs) -> HealEscalationD
     Use decide_heal_escalation() with score for new code.
     """
     if not 0 <= inputs.task_complexity <= 10:
-        raise ValueError(f"task_complexity must be in 0..10, got {inputs.task_complexity}")
+        raise ValueError(f'task_complexity must be in 0..10, got {inputs.task_complexity}')
     if not 0 <= inputs.safety_risk <= 10:
-        raise ValueError(f"safety_risk must be in 0..10, got {inputs.safety_risk}")
+        raise ValueError(f'safety_risk must be in 0..10, got {inputs.safety_risk}')
     if inputs.retry_count < 0:
-        raise ValueError(f"retry_count must be >= 0, got {inputs.retry_count}")
-
-    if inputs.task_complexity < 3 and inputs.safety_risk < 7 and inputs.retry_count <= 2:
-        return HealEscalationDecision(
-            proceed=True,
-            tier=ReasoningTier.LOW,
-            rationale="Task is trivial: low complexity, low safety risk, few retries",
-            threshold_used="TRIVIAL",
-        )
-
+        raise ValueError(f'retry_count must be >= 0, got {inputs.retry_count}')
+    if inputs.task_complexity < 3 and inputs.safety_risk < 7 and (inputs.retry_count <= 2):
+        return HealEscalationDecision(proceed=True, tier=ReasoningTier.LOW, rationale='Task is trivial: low complexity, low safety risk, few retries', threshold_used='TRIVIAL')
     if inputs.task_complexity >= 8 or inputs.safety_risk >= 7 or inputs.retry_count > 2:
-        return HealEscalationDecision(
-            proceed=True,
-            tier=ReasoningTier.HIGH,
-            rationale="High complexity/risk/retries: Gemini escalation",
-            threshold_used="LEGACY_HIGH",
-        )
-
-    return HealEscalationDecision(
-        proceed=True,
-        tier=ReasoningTier.LOW,
-        rationale="No escalation triggers met; default to Qwen tier",
-        threshold_used="LEGACY_LOW",
-    )
+        return HealEscalationDecision(proceed=True, tier=ReasoningTier.HIGH, rationale='High complexity/risk/retries: Gemini escalation', threshold_used='LEGACY_HIGH')
+    return HealEscalationDecision(proceed=True, tier=ReasoningTier.LOW, rationale='No escalation triggers met; default to Qwen tier', threshold_used='LEGACY_LOW')

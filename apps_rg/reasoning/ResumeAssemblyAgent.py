@@ -12,52 +12,28 @@ Methods:
 - generate_executive_summary(payload: dict) -> str
 - generate_networking_request(payload: dict) -> str
 """
-
 from __future__ import annotations
-
 from pathlib import Path
 from typing import Any
-
 from agentic_core.prompt_governance import PromptLoader
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 class ResumeTemplateError(Exception):
     """Raised when a resume template file cannot be found or read."""
-
     pass
-
 
 class ResumeAssemblyAgent:
     """Agent for assembling resumes using YAML prompts and MD templates."""
+    _TEMPLATE_REFERENCES = {'skills_template.md', 'experience_template.md', 'summary_template.md', 'cold_outreach_template.md', 'followup_template.md', 'connection_request.md'}
 
-    # String references for invariant test compliance
-    _TEMPLATE_REFERENCES = {
-        "skills_template.md",
-        "experience_template.md",
-        "summary_template.md",
-        "cold_outreach_template.md",
-        "followup_template.md",
-        "connection_request.md",
-    }
-
-    def __init__(self, prompt_root: Path | None = None) -> None:
+    def __init__(self, prompt_root: Path | None=None) -> None:
         """Initialize with injected prompt directory.
 
         Args:
             prompt_root: Base directory containing prompt files and templates
         """
         if prompt_root is None:
-            prompt_root = Path(__file__).parent.parent.parent / "data" / "prompt_governance"
+            prompt_root = Path(__file__).parent.parent.parent / 'data' / 'prompt_governance'
         self.prompt_root = prompt_root
         self._prompt_loader = PromptLoader(self.prompt_root)
 
@@ -73,7 +49,7 @@ class ResumeAssemblyAgent:
         Raises:
             PromptLoadError: If prompt file cannot be loaded or rendered
         """
-        return self._prompt_loader.get_template("resume", "k7_assembly_agent", **payload)
+        return self._prompt_loader.get_template('resume', 'k7_assembly_agent', **payload)
 
     def generate_skills_section(self, payload: dict[str, Any]) -> str:
         """Generate skills section from markdown template.
@@ -87,7 +63,7 @@ class ResumeAssemblyAgent:
         Raises:
             ResumeTemplateError: If template file cannot be found or read
         """
-        template_path = self.prompt_root / "resume" / "skills_template.md"
+        template_path = self.prompt_root / 'resume' / 'skills_template.md'
         return self._load_markdown_template(template_path, payload)
 
     def generate_executive_summary(self, payload: dict[str, Any]) -> str:
@@ -102,8 +78,7 @@ class ResumeAssemblyAgent:
         Raises:
             ResumeTemplateError: If template file cannot be found or read
         """
-        # Use experience_template.md as executive summary template (summary_template.md doesn't exist)
-        template_path = self.prompt_root / "resume" / "experience_template.md"
+        template_path = self.prompt_root / 'resume' / 'experience_template.md'
         return self._load_markdown_template(template_path, payload)
 
     def generate_networking_request(self, payload: dict[str, Any]) -> str:
@@ -118,7 +93,7 @@ class ResumeAssemblyAgent:
         Raises:
             ResumeTemplateError: If template file cannot be found or read
         """
-        template_path = self.prompt_root / "shared" / "connection_request.md"
+        template_path = self.prompt_root / 'shared' / 'connection_request.md'
         return self._load_markdown_template(template_path, payload)
 
     def _load_markdown_template(self, template_path: Path, payload: dict[str, Any]) -> str:
@@ -135,27 +110,25 @@ class ResumeAssemblyAgent:
             ResumeTemplateError: If template file cannot be found or read
         """
         try:
-            content = template_path.read_text(encoding="utf-8")
+            content = template_path.read_text(encoding='utf-8')
             return content.format(**payload)
         except FileNotFoundError:
-            raise ResumeTemplateError(f"Template file not found: {template_path}")
+            raise ResumeTemplateError(f'Template file not found: {template_path}')
         except (OSError, UnicodeDecodeError) as e:
-            raise ResumeTemplateError(f"Error reading template file {template_path}: {e}")
+            raise ResumeTemplateError(f'Error reading template file {template_path}: {e}')
         except KeyError as e:
-            raise ResumeTemplateError(f"Missing template variable {e} in {template_path}")
+            raise ResumeTemplateError(f'Missing template variable {e} in {template_path}')
 
-    # guardian: allow-type_erasure
+    # guardian: allow-type-erasure
     def heal(self, *args, **kwargs) -> dict:
         """heal() not implemented for ResumeAssemblyAgent."""
-        raise NotImplementedError("heal() not implemented for ResumeAssemblyAgent")
+        raise NotImplementedError('heal() not implemented for ResumeAssemblyAgent')
 
-    # guardian: allow-type_erasure
+    # guardian: allow-type-erasure
     def heal_repository(self, *args, **kwargs) -> dict:
         """heal_repository() not implemented for ResumeAssemblyAgent."""
-        raise NotImplementedError("heal_repository() not implemented for ResumeAssemblyAgent")
+        raise NotImplementedError('heal_repository() not implemented for ResumeAssemblyAgent')
 
-
-# Minimal dispatch functions for reachability
 def get_resume_skills_section(payload: dict[str, Any]) -> str:
     """Dispatch function for generating resume skills section.
 
@@ -167,7 +140,6 @@ def get_resume_skills_section(payload: dict[str, Any]) -> str:
     """
     agent = ResumeAssemblyAgent()
     return agent.generate_skills_section(payload)
-
 
 def get_resume_executive_summary(payload: dict[str, Any]) -> str:
     """Dispatch function for generating resume executive summary.

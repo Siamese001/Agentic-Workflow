@@ -1,41 +1,21 @@
 from __future__ import annotations
-
 from dataclasses import dataclass
 from typing import Any
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-# Placeholders for complex external types
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 VersionStore = Any
 ApprovalGate = Any
-
 
 class ActivationBypassViolation(Exception):
     """Raised when an attempt is made to activate meta-learning without dual injection."""
 
-
 @dataclass(frozen=True)
 class MetaLearningActivationDecision:
     """The result of the dual-injection gate's decision."""
-
     is_active: bool
     proposal_only: bool
     reason_code: str
 
-
-def decide_activation_mode(
-    requested_proposal_only: bool,
-    version_store: VersionStore | None,
-    approval_gate: ApprovalGate | None,
-) -> MetaLearningActivationDecision:
+def decide_activation_mode(requested_proposal_only: bool, version_store: VersionStore | None, approval_gate: ApprovalGate | None) -> MetaLearningActivationDecision:
     """
     Enforces the dual-injection requirement for meta-learning activation.
 
@@ -52,25 +32,8 @@ def decide_activation_mode(
     Returns:
         A decision indicating the actual, enforced operational mode.
     """
-    # 1. If either dependency is missing, fall back to proposal-only mode.
     if not version_store or not approval_gate:
-        return MetaLearningActivationDecision(
-            is_active=False,
-            proposal_only=True,
-            reason_code="FALLBACK_PROPOSAL_ONLY_MISSING_DEPENDENCY",
-        )
-
-    # 2. Dual injection satisfied — mandatory application mode.
-    #    Caller's proposal_only request is respected only if explicitly True.
+        return MetaLearningActivationDecision(is_active=False, proposal_only=True, reason_code='FALLBACK_PROPOSAL_ONLY_MISSING_DEPENDENCY')
     if requested_proposal_only:
-        return MetaLearningActivationDecision(
-            is_active=False,
-            proposal_only=True,
-            reason_code="PROPOSAL_ONLY_BY_EXPLICIT_REQUEST",
-        )
-
-    return MetaLearningActivationDecision(
-        is_active=True,
-        proposal_only=False,
-        reason_code="ACTIVATION_GRANTED_MANDATORY_APPLICATION",
-    )
+        return MetaLearningActivationDecision(is_active=False, proposal_only=True, reason_code='PROPOSAL_ONLY_BY_EXPLICIT_REQUEST')
+    return MetaLearningActivationDecision(is_active=True, proposal_only=False, reason_code='ACTIVATION_GRANTED_MANDATORY_APPLICATION')

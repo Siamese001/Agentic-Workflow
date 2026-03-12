@@ -5,29 +5,16 @@ Tests new retrieval configurations against production without affecting
 live traffic.  Runs candidate config in parallel with baseline and
 emits monitoring snapshots for both.
 """
-
 from __future__ import annotations
-
 from datetime import datetime
 from typing import Any
-
 from ..runners.offline_eval_runner import OfflineEvaluationRunner
 from ..runners.replay_eval_runner import ReplayEvaluationRunner, SystemConfig
 from ..schemas.evaluation_dataset_schema import EvaluationDataset
 from ..schemas.evaluation_result_schema import DeltaReport, EvaluationReport
 from .drift_monitor import AnswerQualityMonitor, RetrievalDriftMonitor
 from .snapshots import RetrievalDriftSnapshot
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 class ShadowEvaluationRunner:
     """Runs a candidate config in shadow mode against the current baseline.
@@ -42,15 +29,7 @@ class ShadowEvaluationRunner:
         # shadow_result.candidate_alerts contains drift alerts if candidate degrades
     """
 
-    def __init__(
-        self,
-        baseline_config: SystemConfig,
-        candidate_config: SystemConfig,
-        metrics: list | None = None,
-        retrieval_monitor: RetrievalDriftMonitor | None = None,
-        answer_monitor: AnswerQualityMonitor | None = None,
-        l4_store: Any | None = None,
-    ):
+    def __init__(self, baseline_config: SystemConfig, candidate_config: SystemConfig, metrics: list | None=None, retrieval_monitor: RetrievalDriftMonitor | None=None, answer_monitor: AnswerQualityMonitor | None=None, l4_store: Any | None=None):
         self.baseline_config = baseline_config
         self.candidate_config = candidate_config
         self.metrics = metrics
@@ -67,80 +46,30 @@ class ShadowEvaluationRunner:
         Returns:
             ShadowEvaluationResult with delta report and monitoring snapshots
         """
-        replay_runner = ReplayEvaluationRunner(
-            metrics=self.metrics,
-            l4_store=self.l4_store,
-        )
-        delta_report = replay_runner.run(
-            dataset=dataset,
-            config_a=self.baseline_config,
-            config_b=self.candidate_config,
-        )
-
+        replay_runner = ReplayEvaluationRunner(metrics=self.metrics, l4_store=self.l4_store)
+        delta_report = replay_runner.run(dataset=dataset, config_a=self.baseline_config, config_b=self.candidate_config)
         baseline_report = self._run_single(self.baseline_config, dataset)
         candidate_report = self._run_single(self.candidate_config, dataset)
-
-        baseline_retrieval_snapshot = self._build_retrieval_snapshot(
-            baseline_report, version=self.baseline_config.version
-        )
-        candidate_retrieval_snapshot = self._build_retrieval_snapshot(
-            candidate_report, version=self.candidate_config.version
-        )
-
+        baseline_retrieval_snapshot = self._build_retrieval_snapshot(baseline_report, version=self.baseline_config.version)
+        candidate_retrieval_snapshot = self._build_retrieval_snapshot(candidate_report, version=self.candidate_config.version)
         candidate_alerts = []
         if self.retrieval_monitor is not None:
-            candidate_alerts.extend(
-                self.retrieval_monitor.check_alerts(candidate_retrieval_snapshot)
-            )
+            candidate_alerts.extend(self.retrieval_monitor.check_alerts(candidate_retrieval_snapshot))
+        return ShadowEvaluationResult(delta_report=delta_report, baseline_report=baseline_report, candidate_report=candidate_report, baseline_retrieval_snapshot=baseline_retrieval_snapshot, candidate_retrieval_snapshot=candidate_retrieval_snapshot, candidate_alerts=candidate_alerts)
 
-        return ShadowEvaluationResult(
-            delta_report=delta_report,
-            baseline_report=baseline_report,
-            candidate_report=candidate_report,
-            baseline_retrieval_snapshot=baseline_retrieval_snapshot,
-            candidate_retrieval_snapshot=candidate_retrieval_snapshot,
-            candidate_alerts=candidate_alerts,
-        )
-
-    def _run_single(
-        self, config: SystemConfig, dataset: EvaluationDataset
-    ) -> EvaluationReport:
-        runner = OfflineEvaluationRunner(
-            metrics=self.metrics,
-            retrieval_fn=config.retrieval_fn,
-            generation_fn=config.generation_fn,
-            system_version=config.version,
-        )
+    def _run_single(self, config: SystemConfig, dataset: EvaluationDataset) -> EvaluationReport:
+        runner = OfflineEvaluationRunner(metrics=self.metrics, retrieval_fn=config.retrieval_fn, generation_fn=config.generation_fn, system_version=config.version)
         return runner.run(dataset)
 
-    def _build_retrieval_snapshot(
-        self, report: EvaluationReport, version: str
-    ) -> RetrievalDriftSnapshot:
+    def _build_retrieval_snapshot(self, report: EvaluationReport, version: str) -> RetrievalDriftSnapshot:
         """Build a lightweight retrieval snapshot from an eval report."""
         scores = report.aggregate_scores
-        return RetrievalDriftSnapshot(
-            timestamp=datetime.utcnow().isoformat() + "Z",
-            system_version=version,
-            retrieval_hit_rate=scores.get("recall@10", 0.0),
-            score_distribution_mean=scores.get("precision@5", 0.0),
-            score_distribution_std=0.0,
-            top_k_stability=scores.get("MRR", 0.0),
-            sample_size=len(report.per_example_results),
-        )
-
+        return RetrievalDriftSnapshot(timestamp=datetime.utcnow().isoformat() + 'Z', system_version=version, retrieval_hit_rate=scores.get('recall@10', 0.0), score_distribution_mean=scores.get('precision@5', 0.0), score_distribution_std=0.0, top_k_stability=scores.get('MRR', 0.0), sample_size=len(report.per_example_results))
 
 class ShadowEvaluationResult:
     """Result of a shadow evaluation run."""
 
-    def __init__(
-        self,
-        delta_report: DeltaReport,
-        baseline_report: EvaluationReport,
-        candidate_report: EvaluationReport,
-        baseline_retrieval_snapshot: RetrievalDriftSnapshot,
-        candidate_retrieval_snapshot: RetrievalDriftSnapshot,
-        candidate_alerts: list,
-    ):
+    def __init__(self, delta_report: DeltaReport, baseline_report: EvaluationReport, candidate_report: EvaluationReport, baseline_retrieval_snapshot: RetrievalDriftSnapshot, candidate_retrieval_snapshot: RetrievalDriftSnapshot, candidate_alerts: list):
         self.delta_report = delta_report
         self.baseline_report = baseline_report
         self.candidate_report = candidate_report
@@ -154,17 +83,5 @@ class ShadowEvaluationResult:
         return sum(self.delta_report.metric_deltas.values()) > 0
 
     def to_dict(self) -> dict[str, Any]:
-        return {
-            "delta_report": self.delta_report.to_dict(),
-            "baseline_scores": self.baseline_report.aggregate_scores,
-            "candidate_scores": self.candidate_report.aggregate_scores,
-            "is_improvement": self.is_improvement,
-            "candidate_alert_count": len(self.candidate_alerts),
-            "candidate_alerts": [a.to_dict() for a in self.candidate_alerts],
-        }
-
-
-__all__ = [
-    "ShadowEvaluationRunner",
-    "ShadowEvaluationResult",
-]
+        return {'delta_report': self.delta_report.to_dict(), 'baseline_scores': self.baseline_report.aggregate_scores, 'candidate_scores': self.candidate_report.aggregate_scores, 'is_improvement': self.is_improvement, 'candidate_alert_count': len(self.candidate_alerts), 'candidate_alerts': [a.to_dict() for a in self.candidate_alerts]}
+__all__ = ['ShadowEvaluationRunner', 'ShadowEvaluationResult']

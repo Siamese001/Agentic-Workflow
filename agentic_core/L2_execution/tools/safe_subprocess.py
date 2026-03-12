@@ -1,34 +1,13 @@
 """
 Safe subprocess wrapper that enforces mutation fence protection.
 """
-
 import subprocess
 from pathlib import Path
 from typing import Any
-
 from agentic_core.L0_routing.enforcement.mutation_prohibition import enforce_protected_root
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-def safe_subprocess_run(
-    argv: list[str],
-    *,
-    cwd: str | Path | None = None,
-    capture_output: bool = False,
-    text: bool = False,
-    check: bool = False,
-    allow_protected_root_mutation: bool = False,
-    **kwargs: Any,
-) -> subprocess.CompletedProcess:
+def safe_subprocess_run(argv: list[str], *, cwd: str | Path | None=None, capture_output: bool=False, text: bool=False, check: bool=False, allow_protected_root_mutation: bool=False, **kwargs: Any) -> subprocess.CompletedProcess:
     """
     Safe subprocess.run wrapper with mutation fence protection.
 
@@ -47,148 +26,40 @@ def safe_subprocess_run(
     Raises:
         RuntimeError: If command attempts protected root mutation without override
     """
-    # Check for potentially dangerous commands
-    dangerous_commands = {
-        "git",
-        "rm",
-        "mv",
-        "cp",
-        "chmod",
-        "chown",
-        "touch",
-        "mkdir",
-        "rmdir",
-        "find",
-        "sed",
-        "awk",
-        "perl",
-        "python",
-        "pip",
-        "npm",
-        "yarn",
-    }
-
+    dangerous_commands = {'git', 'rm', 'mv', 'cp', 'chmod', 'chown', 'touch', 'mkdir', 'rmdir', 'find', 'sed', 'awk', 'perl', 'python', 'pip', 'npm', 'yarn'}
     if argv and argv[0] in dangerous_commands:
         if not allow_protected_root_mutation:
-            # Check if command might affect protected roots
             if cwd:
                 cwd_path = Path(cwd).resolve()
-                if enforce_protected_root(cwd_path, operation="check"):
-                    raise RuntimeError(
-                        f"Command '{argv[0]}' may affect protected root {cwd_path}. "
-                        f"Use allow_protected_root_mutation=True if intentional."
-                    )
-
-    # Ensure argv is a list (no shell injection)
+                if enforce_protected_root(cwd_path, operation='check'):
+                    raise RuntimeError(f"Command '{argv[0]}' may affect protected root {cwd_path}. Use allow_protected_root_mutation=True if intentional.")
     if not isinstance(argv, list):
-        raise TypeError("argv must be a list of strings")
+        raise TypeError('argv must be a list of strings')
+    return subprocess.run(argv, cwd=cwd, capture_output=capture_output, text=text, check=check, **kwargs)
 
-    # Execute with subprocess.run
-    return subprocess.run(
-        argv,
-        cwd=cwd,
-        capture_output=capture_output,
-        text=text,
-        check=check,
-        **kwargs,
-    )
-
-
-def safe_subprocess_call(
-    argv: list[str],
-    *,
-    cwd: str | Path | None = None,
-    allow_protected_root_mutation: bool = False,
-    **kwargs: Any,
-) -> int:
+def safe_subprocess_call(argv: list[str], *, cwd: str | Path | None=None, allow_protected_root_mutation: bool=False, **kwargs: Any) -> int:
     """Safe subprocess.call wrapper."""
-    result = safe_subprocess_run(
-        argv,
-        cwd=cwd,
-        allow_protected_root_mutation=allow_protected_root_mutation,
-        **kwargs,
-    )
+    result = safe_subprocess_run(argv, cwd=cwd, allow_protected_root_mutation=allow_protected_root_mutation, **kwargs)
     return result.returncode
 
-
-def safe_subprocess_check_call(
-    argv: list[str],
-    *,
-    cwd: str | Path | None = None,
-    allow_protected_root_mutation: bool = False,
-    **kwargs: Any,
-) -> None:
+def safe_subprocess_check_call(argv: list[str], *, cwd: str | Path | None=None, allow_protected_root_mutation: bool=False, **kwargs: Any) -> None:
     """Safe subprocess.check_call wrapper."""
-    safe_subprocess_run(
-        argv,
-        cwd=cwd,
-        check=True,
-        allow_protected_root_mutation=allow_protected_root_mutation,
-        **kwargs,
-    )
+    safe_subprocess_run(argv, cwd=cwd, check=True, allow_protected_root_mutation=allow_protected_root_mutation, **kwargs)
 
-
-def safe_subprocess_check_output(
-    argv: list[str],
-    *,
-    cwd: str | Path | None = None,
-    text: bool = True,
-    allow_protected_root_mutation: bool = False,
-    **kwargs: Any,
-) -> str | bytes:
+def safe_subprocess_check_output(argv: list[str], *, cwd: str | Path | None=None, text: bool=True, allow_protected_root_mutation: bool=False, **kwargs: Any) -> str | bytes:
     """Safe subprocess.check_output wrapper."""
-    result = safe_subprocess_run(
-        argv,
-        cwd=cwd,
-        capture_output=True,
-        text=text,
-        allow_protected_root_mutation=allow_protected_root_mutation,
-        **kwargs,
-    )
+    result = safe_subprocess_run(argv, cwd=cwd, capture_output=True, text=text, allow_protected_root_mutation=allow_protected_root_mutation, **kwargs)
     return result.stdout
 
-
-def safe_subprocess_popen(
-    argv: list[str],
-    *,
-    cwd: str | Path | None = None,
-    allow_protected_root_mutation: bool = False,
-    **kwargs: Any,
-) -> subprocess.Popen:
+def safe_subprocess_popen(argv: list[str], *, cwd: str | Path | None=None, allow_protected_root_mutation: bool=False, **kwargs: Any) -> subprocess.Popen:
     """Safe subprocess.Popen wrapper."""
-    # Check for dangerous commands
-    dangerous_commands = {
-        "git",
-        "rm",
-        "mv",
-        "cp",
-        "chmod",
-        "chown",
-        "touch",
-        "mkdir",
-        "rmdir",
-        "find",
-        "sed",
-        "awk",
-        "perl",
-        "python",
-        "pip",
-        "npm",
-        "yarn",
-    }
-
+    dangerous_commands = {'git', 'rm', 'mv', 'cp', 'chmod', 'chown', 'touch', 'mkdir', 'rmdir', 'find', 'sed', 'awk', 'perl', 'python', 'pip', 'npm', 'yarn'}
     if argv and argv[0] in dangerous_commands:
         if not allow_protected_root_mutation:
             if cwd:
                 cwd_path = Path(cwd).resolve()
-                if enforce_protected_root(cwd_path, operation="check"):
-                    raise RuntimeError(
-                        f"Command '{argv[0]}' may affect protected root {cwd_path}. "
-                        f"Use allow_protected_root_mutation=True if intentional."
-                    )
-
-    # Ensure argv is a list
+                if enforce_protected_root(cwd_path, operation='check'):
+                    raise RuntimeError(f"Command '{argv[0]}' may affect protected root {cwd_path}. Use allow_protected_root_mutation=True if intentional.")
     if not isinstance(argv, list):
-        raise TypeError("argv must be a list of strings")
-
+        raise TypeError('argv must be a list of strings')
     return subprocess.Popen(argv, cwd=cwd, **kwargs)

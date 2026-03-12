@@ -5,38 +5,19 @@ summaries that the pipeline uses for pattern analysis and drift monitoring.
 
 All logic is pure and deterministic — no wall-clock reads, no randomness.
 """
-
 from __future__ import annotations
-
 import hashlib
 import json
 import logging
 from collections import defaultdict
 from dataclasses import dataclass
 from typing import Any
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 logger = logging.getLogger(__name__)
-
-
-# ---------------------------------------------------------------------------
-# Data Types
-# ---------------------------------------------------------------------------
-
 
 @dataclass(frozen=True, slots=True)
 class SignalGroup:
     """A cluster of similar detection signals."""
-
     group_key: str
     signal_type: str
     component: str
@@ -46,52 +27,27 @@ class SignalGroup:
     sample_payloads: tuple[bytes, ...]
 
     def canonical_bytes(self) -> bytes:
-        data = {
-            "group_key": self.group_key,
-            "signal_type": self.signal_type,
-            "component": self.component,
-            "count": self.count,
-            "earliest_utc": self.earliest_utc,
-            "latest_utc": self.latest_utc,
-            "sample_count": len(self.sample_payloads),
-        }
-        return json.dumps(data, separators=(",", ":"), sort_keys=True).encode("utf-8")
+        data = {'group_key': self.group_key, 'signal_type': self.signal_type, 'component': self.component, 'count': self.count, 'earliest_utc': self.earliest_utc, 'latest_utc': self.latest_utc, 'sample_count': len(self.sample_payloads)}
+        return json.dumps(data, separators=(',', ':'), sort_keys=True).encode('utf-8')
 
     def content_hash(self) -> str:
         return hashlib.sha256(self.canonical_bytes()).hexdigest()
 
-
 @dataclass(frozen=True, slots=True)
 class SignalGroupingReport:
     """Report of grouped detection signals."""
-
     snapshot_id: str
     groups: tuple[SignalGroup, ...]
     total_signals: int
     total_groups: int
 
     def canonical_bytes(self) -> bytes:
-        data = {
-            "snapshot_id": self.snapshot_id,
-            "total_signals": self.total_signals,
-            "total_groups": self.total_groups,
-            "groups": [
-                json.loads(g.canonical_bytes().decode("utf-8"))
-                for g in self.groups
-            ],
-        }
-        return json.dumps(data, separators=(",", ":"), sort_keys=True).encode("utf-8")
+        data = {'snapshot_id': self.snapshot_id, 'total_signals': self.total_signals, 'total_groups': self.total_groups, 'groups': [json.loads(g.canonical_bytes().decode('utf-8')) for g in self.groups]}
+        return json.dumps(data, separators=(',', ':'), sort_keys=True).encode('utf-8')
 
     def content_hash(self) -> str:
         return hashlib.sha256(self.canonical_bytes()).hexdigest()
-
-
-# ---------------------------------------------------------------------------
-# Engine
-# ---------------------------------------------------------------------------
-
 _MAX_SAMPLE_PAYLOADS = 3
-
 
 class SignalGroupingEngine:
     """Groups detection signals by (signal_type, component) pairs.
@@ -102,15 +58,10 @@ class SignalGroupingEngine:
         Maximum number of sample payloads to keep per group.
     """
 
-    def __init__(self, max_samples: int = _MAX_SAMPLE_PAYLOADS) -> None:
+    def __init__(self, max_samples: int=_MAX_SAMPLE_PAYLOADS) -> None:
         self._max_samples = max_samples
 
-    def group_signals(
-        self,
-        *,
-        snapshot_id: str,
-        signals: list[dict[str, Any]],
-    ) -> SignalGroupingReport:
+    def group_signals(self, *, snapshot_id: str, signals: list[dict[str, Any]]) -> SignalGroupingReport:
         """Group detection signals by type and component.
 
         Parameters
@@ -127,57 +78,26 @@ class SignalGroupingEngine:
         SignalGroupingReport
         """
         buckets: dict[str, list[dict[str, Any]]] = defaultdict(list)
-
         for sig in signals:
-            sig_type = sig.get("signal_type", "unknown")
-            component = sig.get("component", "unknown")
-            key = f"{sig_type}::{component}"
+            sig_type = sig.get('signal_type', 'unknown')
+            component = sig.get('component', 'unknown')
+            key = f'{sig_type}::{component}'
             buckets[key].append(sig)
-
         groups: list[SignalGroup] = []
         for key in sorted(buckets.keys()):
             items = buckets[key]
-            sig_type, component = key.split("::", 1)
-
-            timestamps = [
-                item.get("created_utc", 0)
-                for item in items
-                if isinstance(item.get("created_utc"), int)
-            ]
+            sig_type, component = key.split('::', 1)
+            timestamps = [item.get('created_utc', 0) for item in items if isinstance(item.get('created_utc'), int)]
             earliest = min(timestamps) if timestamps else 0
             latest = max(timestamps) if timestamps else 0
-
             samples: list[bytes] = []
-            for item in items[: self._max_samples]:
-                payload_hex = item.get("payload_hex", "")
+            for item in items[:self._max_samples]:
+                payload_hex = item.get('payload_hex', '')
                 if payload_hex:
                     try:
                         samples.append(bytes.fromhex(payload_hex))
                     except ValueError:
                         pass
-
-            groups.append(
-                SignalGroup(
-                    group_key=key,
-                    signal_type=sig_type,
-                    component=component,
-                    count=len(items),
-                    earliest_utc=earliest,
-                    latest_utc=latest,
-                    sample_payloads=tuple(samples),
-                )
-            )
-
-        return SignalGroupingReport(
-            snapshot_id=snapshot_id,
-            groups=tuple(groups),
-            total_signals=len(signals),
-            total_groups=len(groups),
-        )
-
-
-__all__ = [
-    "SignalGroupingEngine",
-    "SignalGroup",
-    "SignalGroupingReport",
-]
+            groups.append(SignalGroup(group_key=key, signal_type=sig_type, component=component, count=len(items), earliest_utc=earliest, latest_utc=latest, sample_payloads=tuple(samples)))
+        return SignalGroupingReport(snapshot_id=snapshot_id, groups=tuple(groups), total_signals=len(signals), total_groups=len(groups))
+__all__ = ['SignalGroupingEngine', 'SignalGroup', 'SignalGroupingReport']

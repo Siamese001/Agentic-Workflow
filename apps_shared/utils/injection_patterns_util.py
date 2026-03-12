@@ -5,32 +5,18 @@ This module provides the core implementation for InjectionPatterns, handling
 standardized execution flows, error management, and context propagation
 within the shared application layer.
 """
-
 import logging
 from dataclasses import dataclass, field
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 logger = logging.getLogger(__name__)
-
 
 @dataclass
 class ExecutionResult:
     """Standardized operation result container."""
-
     success: bool
     data: str | int | float | bool | list | dict | None = None
     metadata: dict[str, str | int | float | bool | list | dict] = field(default_factory=dict)
     error_message: str | None = None
-
 
 class InjectionPatterns:
     """
@@ -40,15 +26,11 @@ class InjectionPatterns:
     across the sovereign domain.
     """
 
-    def __init__(self, config: dict[str, str | int | float | bool | list | dict] | None = None):
+    def __init__(self, config: dict[str, str | int | float | bool | list | dict] | None=None):
         self.config = config or {}
-        self._logger = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
+        self._logger = logging.getLogger(f'{__name__}.{self.__class__.__name__}')
 
-    def process(
-        self,
-        payload: str | int | float | bool | list | dict,
-        context: dict | None = None,
-    ) -> ExecutionResult:
+    def process(self, payload: str | int | float | bool | list | dict, context: dict | None=None) -> ExecutionResult:
         """
         Execute the primary logic for this module.
 
@@ -60,24 +42,19 @@ class InjectionPatterns:
             ExecutionResult indicating success or failure
         """
         try:
-            self._logger.info("Starting processing execution")
+            self._logger.info('Starting processing execution')
             result = self._execute_logic(payload, context)
             return ExecutionResult(success=True, data=result)
         except (ValueError, TypeError, KeyError) as e:
-            self._logger.error(f"Validation error during processing: {e}")
+            self._logger.error(f'Validation error during processing: {e}')
             return ExecutionResult(success=False, error_message=str(e))
         except Exception as e:
-            self._logger.error(f"Unexpected system error: {e}", exc_info=True)
-            return ExecutionResult(success=False, error_message="Internal System Error")
+            self._logger.error(f'Unexpected system error: {e}', exc_info=True)
+            return ExecutionResult(success=False, error_message='Internal System Error')
 
-    def _execute_logic(
-        self,
-        data: str | int | float | bool | list | dict,
-        context: dict | None,
-    ) -> str | int | float | bool | list | dict:
+    def _execute_logic(self, data: str | int | float | bool | list | dict, context: dict | None) -> str | int | float | bool | list | dict:
         """Internal execution executor to be implemented or extended."""
         return data
-
 
 def run_process(data: str | int | float | bool | list | dict) -> ExecutionResult:
     """Module-level entry point."""

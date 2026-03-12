@@ -4,7 +4,6 @@ This module implements the Circuit Breaker pattern to detect failures,
 "Open" the circuit (stop calling failing services), and automatically
 attempt recovery after a timeout.
 """
-
 import asyncio
 import logging
 import threading
@@ -13,51 +12,32 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum
 from typing import Any
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 logger = logging.getLogger(__name__)
-
 
 class CircuitState(Enum):
     """Circuit breaker states."""
-
-    CLOSED = "CLOSED"  # Normal operation
-    OPEN = "OPEN"  # Failing, requests blocked
-    HALF_OPEN = "HALF_OPEN"  # Testing recovery
-
+    CLOSED = 'CLOSED'
+    OPEN = 'OPEN'
+    HALF_OPEN = 'HALF_OPEN'
 
 class CircuitOpenError(Exception):
     """Raised when circuit is open and requests are blocked."""
-
     pass
-
 
 class CriticalServiceFailure(Exception):
     """Raised when a critical service fails and no fallback is available."""
-
     pass
-
 
 @dataclass
 class CircuitBreakerConfig:
     """configuration for circuit breaker behavior."""
-
     failure_threshold: int = 3
-    recovery_timeout: float = 60.0  # seconds
+    recovery_timeout: float = 60.0
     expected_exception: type = Exception
-    timeout: float = 30.0  # seconds for individual calls
-    success_threshold: int = 2  # successes needed to close from HALF_OPEN
+    timeout: float = 30.0
+    success_threshold: int = 2
     monitor_timeout: bool = True
-
 
 class CircuitBreaker:
     """Stateful circuit breaker implementation.
@@ -65,7 +45,7 @@ class CircuitBreaker:
     Tracks failures and automatically opens/closes based on configuration.
     """
 
-    def __init__(self, name: str, config: CircuitBreakerConfig | None = None):
+    def __init__(self, name: str, config: CircuitBreakerConfig | None=None):
         """Initialize the circuit breaker.
 
         Args:
@@ -74,26 +54,12 @@ class CircuitBreaker:
         """
         self.name = name
         self.config = config or CircuitBreakerConfig()
-
-        # State tracking
         self.failure_count = 0
         self.success_count = 0
         self.last_failure_time = 0.0
         self.state = CircuitState.CLOSED
-
-        # Statistics
-        self.stats = {
-            "total_calls": 0,
-            "successful_calls": 0,
-            "failed_calls": 0,
-            "timeout_calls": 0,
-            "circuit_opens": 0,
-            "circuit_closes": 0,
-        }
-
-        logger.info(
-            f"Initialized CircuitBreaker '{name}' with threshold {self.config.failure_threshold}",
-        )
+        self.stats = {'total_calls': 0, 'successful_calls': 0, 'failed_calls': 0, 'timeout_calls': 0, 'circuit_opens': 0, 'circuit_closes': 0}
+        logger.info(f"Initialized CircuitBreaker '{name}' with threshold {self.config.failure_threshold}")
 
     async def call(self, func: Callable, *args, **kwargs) -> Any:
         """Execute a function through the circuit breaker.
@@ -111,41 +77,31 @@ class CircuitBreaker:
             CriticalServiceFailure: If service fails and circuit is open
             The original exception if call fails and circuit is not open
         """
-        self.stats["total_calls"] += 1
-
-        # Check circuit state
+        self.stats['total_calls'] += 1
         if self.state == CircuitState.OPEN:
             if self._should_attempt_reset():
                 self.state = CircuitState.HALF_OPEN
                 logger.info(f"Circuit '{self.name}' entering HALF_OPEN state")
             else:
-                self.stats["circuit_opens"] += 1
+                self.stats['circuit_opens'] += 1
                 raise CircuitOpenError(f"Circuit '{self.name}' is OPEN")
-
-        # Execute the function with timeout if enabled
         try:
             if self.config.monitor_timeout:
                 result = await asyncio.wait_for(func(*args, **kwargs), timeout=self.config.timeout)
             else:
                 result = await func(*args, **kwargs)
-
-            # Success path
             self._on_success()
             return result
-
         except asyncio.TimeoutError as e:
-            self.stats["timeout_calls"] += 1
+            self.stats['timeout_calls'] += 1
             self._on_failure()
             logger.warning(f"Timeout in circuit '{self.name}': {e}")
             raise
-
         except self.config.expected_exception as e:
             self._on_failure()
             logger.error(f"Expected exception in circuit '{self.name}': {e}")
             raise
-
         except Exception as e:
-            # Unexpected exception - still count as failure
             self._on_failure()
             logger.error(f"Unexpected exception in circuit '{self.name}': {e}")
             raise
@@ -156,34 +112,30 @@ class CircuitBreaker:
 
     def _on_success(self) -> None:
         """Handle a successful call."""
-        self.stats["successful_calls"] += 1
-
+        self.stats['successful_calls'] += 1
         if self.state == CircuitState.HALF_OPEN:
             self.success_count += 1
             if self.success_count >= self.config.success_threshold:
                 self._close_circuit()
         elif self.state == CircuitState.CLOSED:
-            # Reset failure count on success in CLOSED state
             self.failure_count = 0
 
     def _on_failure(self) -> None:
         """Handle a failed call."""
-        self.stats["failed_calls"] += 1
+        self.stats['failed_calls'] += 1
         self.failure_count += 1
         self.last_failure_time = time.time()
-
         if self.state == CircuitState.CLOSED:
             if self.failure_count >= self.config.failure_threshold:
                 self._open_circuit()
         elif self.state == CircuitState.HALF_OPEN:
-            # Any failure in HALF_OPEN immediately opens the circuit
             self._open_circuit()
 
     def _open_circuit(self) -> None:
         """Open the circuit to block further calls."""
         self.state = CircuitState.OPEN
         self.success_count = 0
-        self.stats["circuit_opens"] += 1
+        self.stats['circuit_opens'] += 1
         logger.warning(f"Circuit '{self.name}' OPENED after {self.failure_count} failures")
 
     def _close_circuit(self) -> None:
@@ -191,7 +143,7 @@ class CircuitBreaker:
         self.state = CircuitState.CLOSED
         self.failure_count = 0
         self.success_count = 0
-        self.stats["circuit_closes"] += 1
+        self.stats['circuit_closes'] += 1
         logger.info(f"Circuit '{self.name}' CLOSED after successful recovery")
 
     def get_state(self) -> CircuitState:
@@ -200,14 +152,7 @@ class CircuitBreaker:
 
     def get_stats(self) -> dict[str, Any]:
         """Get circuit breaker statistics."""
-        return {
-            "name": self.name,
-            "state": self.state.value,
-            "failure_count": self.failure_count,
-            "success_count": self.success_count,
-            "last_failure_time": self.last_failure_time,
-            **self.stats,
-        }
+        return {'name': self.name, 'state': self.state.value, 'failure_count': self.failure_count, 'success_count': self.success_count, 'last_failure_time': self.last_failure_time, **self.stats}
 
     def reset(self) -> None:
         """Manually reset the circuit to CLOSED state."""
@@ -217,7 +162,6 @@ class CircuitBreaker:
         self.last_failure_time = 0.0
         logger.info(f"Circuit '{self.name}' manually reset to CLOSED state")
 
-
 class CircuitBreakerFactory:
     """Factory for managing named circuit breakers with thread safety.
 
@@ -225,11 +169,10 @@ class CircuitBreakerFactory:
     that failures in one service don't affect others. Thread-safe
     implementation prevents race conditions in concurrent environments.
     """
-
     _instance = None
     _lock = threading.Lock()
     _breakers: dict[str, CircuitBreaker] = {}
-    _breakers_lock = threading.RLock()  # Reentrant lock for nested operations
+    _breakers_lock = threading.RLock()
 
     def __new__(cls):
         """Thread-safe singleton pattern implementation."""
@@ -244,16 +187,14 @@ class CircuitBreakerFactory:
         """Initialize the factory with thread safety."""
         if self._initialized:
             return
-
         with self._lock:
             if self._initialized:
                 return
-
             self._initialized = True
-            logger.info("Initialized CircuitBreakerFactory with thread safety")
+            logger.info('Initialized CircuitBreakerFactory with thread safety')
 
     @classmethod
-    def get(cls, name: str, config: CircuitBreakerConfig | None = None) -> CircuitBreaker:
+    def get(cls, name: str, config: CircuitBreakerConfig | None=None) -> CircuitBreaker:
         """Get or create a circuit breaker by name with thread safety.
 
         Args:
@@ -264,14 +205,11 @@ class CircuitBreakerFactory:
             CircuitBreaker instance
         """
         factory = cls()
-
-        # Double-checked locking pattern
         if name not in factory._breakers:
             with factory._breakers_lock:
                 if name not in factory._breakers:
                     factory._breakers[name] = CircuitBreaker(name, config)
-                    logger.debug(f"Created new CircuitBreaker: {name}")
-
+                    logger.debug(f'Created new CircuitBreaker: {name}')
         return factory._breakers[name]
 
     @classmethod
@@ -292,7 +230,7 @@ class CircuitBreakerFactory:
         with factory._breakers_lock:
             for breaker in factory._breakers.values():
                 breaker.reset()
-        logger.info("All circuit breakers reset to CLOSED state")
+        logger.info('All circuit breakers reset to CLOSED state')
 
     @classmethod
     def reset(cls, name: str) -> None:
@@ -333,11 +271,9 @@ class CircuitBreakerFactory:
         factory = cls()
         with factory._breakers_lock:
             factory._breakers.clear()
-        logger.info("All circuit breakers cleared from factory")
+        logger.info('All circuit breakers cleared from factory')
 
-
-# Convenience functions for direct access
-def get_circuit_breaker(name: str, config: CircuitBreakerConfig | None = None) -> CircuitBreaker:
+def get_circuit_breaker(name: str, config: CircuitBreakerConfig | None=None) -> CircuitBreaker:
     """Get a circuit breaker by name.
 
     Args:
@@ -349,8 +285,7 @@ def get_circuit_breaker(name: str, config: CircuitBreakerConfig | None = None) -
     """
     return CircuitBreakerFactory.get(name, config)
 
-
-def with_circuit_breaker(breaker_name: str, config: CircuitBreakerConfig | None = None):
+def with_circuit_breaker(breaker_name: str, config: CircuitBreakerConfig | None=None):
     """Decorator to wrap functions with circuit breaker protection.
 
     Args:
@@ -362,10 +297,9 @@ def with_circuit_breaker(breaker_name: str, config: CircuitBreakerConfig | None 
     """
 
     def decorator(func):
+
         async def wrapper(*args, **kwargs):
             breaker = get_circuit_breaker(breaker_name, config)
             return await breaker.call(func, *args, **kwargs)
-
         return wrapper
-
     return decorator

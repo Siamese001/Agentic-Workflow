@@ -9,21 +9,9 @@ workflows, pipelines, or multi-agent coordination.
 
 Also includes IHealable and ITieredAgent protocols (merged from L5_safety/types/).
 """
-
 from __future__ import annotations
-
 from typing import Any, Protocol, runtime_checkable
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 @runtime_checkable
 class IOrchestratorProtocol(Protocol):
@@ -35,12 +23,7 @@ class IOrchestratorProtocol(Protocol):
     - dispatch(): Dispatch work to sub-components
     """
 
-    async def orchestrate(
-        self,
-        task: str,
-        context: dict[str, Any] | None = None,
-        **kwargs,
-    ) -> dict[str, Any]:
+    async def orchestrate(self, task: str, context: dict[str, Any] | None=None, **kwargs) -> dict[str, Any]:
         """
         Orchestrate a task across multiple components.
 
@@ -54,13 +37,7 @@ class IOrchestratorProtocol(Protocol):
         """
         ...
 
-    async def dispatch(
-        self,
-        action: str,
-        target: str,
-        payload: dict[str, Any] | None = None,
-        **kwargs,
-    ) -> dict[str, Any]:
+    async def dispatch(self, action: str, target: str, payload: dict[str, Any] | None=None, **kwargs) -> dict[str, Any]:
         """
         Dispatch an action to a specific target component.
 
@@ -75,7 +52,6 @@ class IOrchestratorProtocol(Protocol):
         """
         ...
 
-
 @runtime_checkable
 class IHealable(Protocol):
     """
@@ -85,7 +61,7 @@ class IHealable(Protocol):
     healing agents must implement.
     """
 
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs: Any) -> dict[str, Any]:
+    def heal_repository(self, dry_run: bool=True, execute: bool=False, **kwargs: Any) -> dict[str, Any]:
         """
         Heal repository issues within this agent's domain.
 
@@ -102,7 +78,6 @@ class IHealable(Protocol):
                 - errors (int): Number of errors encountered
         """
         ...
-
 
 @runtime_checkable
 class ITieredAgent(Protocol):
@@ -135,10 +110,4 @@ class ITieredAgent(Protocol):
             False if agent should be skipped
         """
         ...
-
-
-__all__ = [
-    "IOrchestratorProtocol",
-    "IHealable",
-    "ITieredAgent",
-]
+__all__ = ['IOrchestratorProtocol', 'IHealable', 'ITieredAgent']

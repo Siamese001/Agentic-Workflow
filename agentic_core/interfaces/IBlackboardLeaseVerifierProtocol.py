@@ -1,87 +1,43 @@
 from __future__ import annotations
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-"""
-Secure Filesystem Operations - Sandboxed File I/O with Blackboard Integration
-Prevents path traversal, protects critical directories, and integrates with HealingLease.
-
-DELEGATION NOTICE (2026-01-21):
-- move_file() and delete_file() now delegate to ArchivalGatekeeper
-- This ensures all destructive operations go through the governance layer
-- Direct shutil/os operations have been removed for security
-"""
+'\nSecure Filesystem Operations - Sandboxed File I/O with Blackboard Integration\nPrevents path traversal, protects critical directories, and integrates with HealingLease.\n\nDELEGATION NOTICE (2026-01-21):\n- move_file() and delete_file() now delegate to ArchivalGatekeeper\n- This ensures all destructive operations go through the governance layer\n- Direct shutil/os operations have been removed for security\n'
 import os
 import warnings
 from functools import wraps
 from pathlib import Path
 from typing import Any, Protocol
-
-from agentic_core.L0_routing.config import (
-    AGENTIC_CORE_DIR,
-)
-
-# [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L2_execution.types.tool_args_types import (
-    CreateDirectoryArgs,
-    DeleteFileArgs,
-    ListFilesArgs,
-    MoveFileArgs,
-    ReadFileArgs,
-    WriteFileArgs,
-)
+from agentic_core.L0_routing.config import AGENTIC_CORE_DIR
+from agentic_core.L2_execution.types.tool_args_types import CreateDirectoryArgs, DeleteFileArgs, ListFilesArgs, MoveFileArgs, ReadFileArgs, WriteFileArgs
 from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
 from agentic_core.L5_safety.enforcement.archival_gatekeeper_gate import ArchivalGatekeeper
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
-
-# Define a Protocol for the Blackboard interface required by this module
-# NAMING FIXED: BlackboardLeaseVerifier → IBlackboardLeaseVerifier
 class IBlackboardLeaseVerifier(Protocol):
     """
     Protocol defining the methods expected from a blackboard-like object
     for HealingLease verification and security event logging.
     """
 
-    def verify_healing_lease(self, agent_id: str, file_path: str) -> bool: ...
-    def log_security_event(
-        self,
-        agent_id: str,
-        event_type: str,
-        file_path: str,
-        details: dict[str, Any],
-    ) -> None: ...
+    def verify_healing_lease(self, agent_id: str, file_path: str) -> bool:
+        ...
 
-
+    def log_security_event(self, agent_id: str, event_type: str, file_path: str, details: dict[str, Any]) -> None:
+        ...
 EXCLUDED_DIRS: frozenset[str] = SOVEREIGN_EXCLUDED_FOLDERS
 
-
-# NAMING FIXED: SandboxViolationError → SandboxViolationError
 class SandboxViolationError(Exception):
     """Raised when a file operation violates sandbox constraints."""
 
-
-# NAMING FIXED: HealingLeaseError → HealingLeaseError
 class HealingLeaseError(Exception):
     """Raised when an agent attempts to write without holding the HealingLease."""
-
 
 def get_project_root() -> Path:
     """Get the project root directory."""
     current = Path(__file__).resolve()
     while current.parent != current:
-        if (current / AGENTIC_CORE_DIR).exists() or (current / ".git").exists():
+        if (current / AGENTIC_CORE_DIR).exists() or (current / '.git').exists():
             return current
         current = current.parent
     return Path.cwd()
-
 
 def validate_sandbox(path: str) -> Path:
     """
@@ -97,27 +53,21 @@ def validate_sandbox(path: str) -> Path:
         SandboxViolationError: If path violates sandbox constraints
     """
     project_root = get_project_root()
-
     try:
         resolved = (project_root / path).resolve()
+    # guardian: allow-silent-swallow
     except Exception as e:
-        raise SandboxViolationError(f"Invalid path: {e}")
-
+        raise SandboxViolationError(f'Invalid path: {e}')
     if not str(resolved).startswith(str(project_root)):
-        raise SandboxViolationError(f"Path traversal detected: {path} resolves outside project root")
-
+        raise SandboxViolationError(f'Path traversal detected: {path} resolves outside project root')
     path_parts = resolved.relative_to(project_root).parts
     for part in path_parts:
         if part in EXCLUDED_DIRS:
-            raise SandboxViolationError(f"Access denied: {part} is in excluded directories")
-
+            raise SandboxViolationError(f'Access denied: {part} is in excluded directories')
     return resolved
 
-
-# NAMING FIXED: PreservationViolationError → PreservationViolationError
 class PreservationViolationError(Exception):
     """Raised when a write operation would delete too much content."""
-
 
 def require_healing_lease(func):
     """
@@ -127,21 +77,15 @@ def require_healing_lease(func):
 
     @wraps(func)
     def wrapper(*args, **kwargs):
-        blackboard = kwargs.get("blackboard")
-        agent_id = kwargs.get("agent_id")
-        file_path = kwargs.get("path") or (args[0].path if args else None)
-
+        blackboard = kwargs.get('blackboard')
+        agent_id = kwargs.get('agent_id')
+        file_path = kwargs.get('path') or (args[0].path if args else None)
         if blackboard and agent_id and file_path:
-            # Removed direct import of AtomicBlackboard to avoid architectural Violation.
-            # Instead, check if the provided blackboard object has the required method (duck typing).
-            if hasattr(blackboard, "verify_healing_lease") and callable(blackboard.verify_healing_lease):
+            if hasattr(blackboard, 'verify_healing_lease') and callable(blackboard.verify_healing_lease):
                 if not blackboard.verify_healing_lease(agent_id, file_path):
-                    raise HealingLeaseError(f"Agent {agent_id} does not hold HealingLease for {file_path}")
-
+                    raise HealingLeaseError(f'Agent {agent_id} does not hold HealingLease for {file_path}')
         return func(*args, **kwargs)
-
     return wrapper
-
 
 def read_file(args: ReadFileArgs) -> str:
     """
@@ -158,24 +102,15 @@ def read_file(args: ReadFileArgs) -> str:
         FileNotFoundError: If file doesn't exist
     """
     resolved_path = validate_sandbox(args.path)
-
     if not resolved_path.exists():
-        raise FileNotFoundError(f"File not found: {args.path}")
-
+        raise FileNotFoundError(f'File not found: {args.path}')
     if not resolved_path.is_file():
-        raise ValueError(f"Not a file: {args.path}")
-
-    with open(resolved_path, encoding="utf-8") as f:
+        raise ValueError(f'Not a file: {args.path}')
+    with open(resolved_path, encoding='utf-8') as f:
         return f.read()
 
-
 @require_healing_lease
-def write_file(
-    args: WriteFileArgs,
-    blackboard=None,
-    agent_id: str | None = None,
-    override_preservation: bool = False,
-) -> None:
+def write_file(args: WriteFileArgs, blackboard=None, agent_id: str | None=None, override_preservation: bool=False) -> None:
     """
     Write content to file with sandbox validation, HealingLease verification, and preservation enforcement.
 
@@ -194,57 +129,29 @@ def write_file(
         PreservationViolationError: If write would delete too much content
     """
     resolved_path = validate_sandbox(args.path)
-
-    # Preservation enforcement: Check line count if file exists
-    if resolved_path.exists() and not override_preservation:
+    if resolved_path.exists() and (not override_preservation):
         try:
-            with open(resolved_path, encoding="utf-8") as f:
+            with open(resolved_path, encoding='utf-8') as f:
                 original_lines = len(f.readlines())
-
             new_lines = len(args.content.splitlines())
-
-            # Require at least 90% of original line count
             min_lines = int(original_lines * 0.9)
-
             if new_lines < min_lines:
-                # Log to AtomicBlackboard if available and has the method
                 if blackboard:
-                    if hasattr(blackboard, "log_security_event") and callable(blackboard.log_security_event):
+                    if hasattr(blackboard, 'log_security_event') and callable(blackboard.log_security_event):
                         try:
-                            blackboard.log_security_event(
-                                agent_id=agent_id or "unknown",
-                                event_type="PRESERVATION_VIOLATION",
-                                file_path=args.path,
-                                details={
-                                    "original_lines": original_lines,
-                                    "new_lines": new_lines,
-                                    "threshold": min_lines,
-                                    "deletion_percentage": round((1 - new_lines / original_lines) * 100, 2),
-                                },
-                            )
+                            blackboard.log_security_event(agent_id=agent_id or 'unknown', event_type='PRESERVATION_VIOLATION', file_path=args.path, details={'original_lines': original_lines, 'new_lines': new_lines, 'threshold': min_lines, 'deletion_percentage': round((1 - new_lines / original_lines) * 100, 2)})
+                        # guardian: allow-silent-swallow
                         except Exception:
-                            # Catch any errors during logging itself
                             pass
-
-                raise PreservationViolationError(
-                    f"Preservation Violation: New content ({new_lines} lines) is less than 90% "
-                    f"of original ({original_lines} lines). Minimum required: {min_lines} lines. "
-                    f"This would delete {round((1 - new_lines / original_lines) * 100, 2)}% of the file. "
-                    f"Set override_preservation=True if this is intentional (SystemArchitect only).",
-                )
+                raise PreservationViolationError(f'Preservation Violation: New content ({new_lines} lines) is less than 90% of original ({original_lines} lines). Minimum required: {min_lines} lines. This would delete {round((1 - new_lines / original_lines) * 100, 2)}% of the file. Set override_preservation=True if this is intentional (SystemArchitect only).')
         except (OSError, UnicodeDecodeError):
-            # If we can't read the file, allow the write
             pass
-
-    # Create parent directories if needed
     resolved_path.parent.mkdir(parents=True, exist_ok=True)
-
-    with open(resolved_path, "w", encoding="utf-8") as f:
+    with open(resolved_path, 'w', encoding='utf-8') as f:
         f.write(args.content)
 
-
 @require_healing_lease
-def move_file(args: MoveFileArgs, blackboard=None, agent_id: str | None = None) -> None:
+def move_file(args: MoveFileArgs, blackboard=None, agent_id: str | None=None) -> None:
     """
     Move or rename a file with sandbox validation and HealingLease verification.
 
@@ -263,38 +170,21 @@ def move_file(args: MoveFileArgs, blackboard=None, agent_id: str | None = None) 
         FileExistsError: If destination exists
         PermissionError: If user denies approval
     """
-    warnings.warn(
-        "filesystem.move_file() is deprecated. Use ArchivalGatekeeper.safe_move() directly.",
-        DeprecationWarning,
-        stacklevel=2,
-    )
-
+    warnings.warn('filesystem.move_file() is deprecated. Use ArchivalGatekeeper.safe_move() directly.', DeprecationWarning, stacklevel=2)
     source_path = validate_sandbox(args.source)
     dest_path = validate_sandbox(args.destination)
-
     if not source_path.exists():
-        raise FileNotFoundError(f"Source not found: {args.source}")
-
+        raise FileNotFoundError(f'Source not found: {args.source}')
     if dest_path.exists():
-        raise FileExistsError(f"Destination exists: {args.destination}. Use manual deletion first.")
-
-    # DELEGATION: Use ArchivalGatekeeper for safe move (handles approval internally)
+        raise FileExistsError(f'Destination exists: {args.destination}. Use manual deletion first.')
     gatekeeper = ArchivalGatekeeper.get_instance(get_project_root())
-    result = gatekeeper.safe_move(
-        source_path,
-        dest_path,
-        agent_id or "filesystem.move_file",
-        "Filesystem move operation",
-        overwrite=False,
-    )
-
+    result = gatekeeper.safe_move(source_path, dest_path, agent_id or 'filesystem.move_file', 'Filesystem move operation', overwrite=False)
     if not result.success:
-        if result.approval_status == "DENIED":
-            raise PermissionError("Move declined by user")
-        raise OSError(f"Move failed: {result.error}")
+        if result.approval_status == 'DENIED':
+            raise PermissionError('Move declined by user')
+        raise OSError(f'Move failed: {result.error}')
 
-
-def list_files(args: ListFilesArgs, recursive: bool = False) -> list[str]:
+def list_files(args: ListFilesArgs, recursive: bool=False) -> list[str]:
     """
     List files in a directory with sandbox validation.
 
@@ -309,27 +199,20 @@ def list_files(args: ListFilesArgs, recursive: bool = False) -> list[str]:
         NotADirectoryError: If path is not a directory
     """
     resolved_path = validate_sandbox(args.directory)
-
     if not resolved_path.exists():
-        raise FileNotFoundError(f"Directory not found: {args.directory}")
-
+        raise FileNotFoundError(f'Directory not found: {args.directory}')
     if not resolved_path.is_dir():
-        raise NotADirectoryError(f"Not a directory: {args.directory}")
-
+        raise NotADirectoryError(f'Not a directory: {args.directory}')
     project_root = get_project_root()
     files = []
-
     if recursive:
         for root, dirs, filenames in os.walk(resolved_path):
             dirs[:] = [d for d in dirs if d not in EXCLUDED_DIRS]
-
             for filename in filenames:
                 file_path = Path(root) / filename
-
                 if args.pattern:
                     if not file_path.match(args.pattern):
                         continue
-
                 rel_path = file_path.relative_to(project_root)
                 files.append(str(rel_path))
     else:
@@ -338,15 +221,12 @@ def list_files(args: ListFilesArgs, recursive: bool = False) -> list[str]:
                 if args.pattern:
                     if not item.match(args.pattern):
                         continue
-
                 rel_path = item.relative_to(project_root)
                 files.append(str(rel_path))
-
     return sorted(files)
 
-
 @require_healing_lease
-def delete_file(args: DeleteFileArgs, blackboard=None, agent_id: str | None = None) -> None:
+def delete_file(args: DeleteFileArgs, blackboard=None, agent_id: str | None=None) -> None:
     """
     Delete a file with sandbox validation and HealingLease verification.
 
@@ -364,35 +244,20 @@ def delete_file(args: DeleteFileArgs, blackboard=None, agent_id: str | None = No
         FileNotFoundError: If file doesn't exist
         PermissionError: If user denies approval
     """
-    warnings.warn(
-        "filesystem.delete_file() is deprecated. Use ArchivalGatekeeper.safe_delete() directly.",
-        DeprecationWarning,
-        stacklevel=2,
-    )
-
+    warnings.warn('filesystem.delete_file() is deprecated. Use ArchivalGatekeeper.safe_delete() directly.', DeprecationWarning, stacklevel=2)
     resolved_path = validate_sandbox(args.path)
-
     if not resolved_path.exists():
-        raise FileNotFoundError(f"File not found: {args.path}")
-
+        raise FileNotFoundError(f'File not found: {args.path}')
     if resolved_path.is_dir():
-        raise IsADirectoryError(f"Cannot delete directory with delete_file: {args.path}")
-
-    # DELEGATION: Use ArchivalGatekeeper for safe delete (soft delete to archive)
+        raise IsADirectoryError(f'Cannot delete directory with delete_file: {args.path}')
     gatekeeper = ArchivalGatekeeper.get_instance(get_project_root())
-    result = gatekeeper.safe_delete(
-        resolved_path,
-        agent_id or "filesystem.delete_file",
-        "Filesystem delete operation",
-    )
-
+    result = gatekeeper.safe_delete(resolved_path, agent_id or 'filesystem.delete_file', 'Filesystem delete operation')
     if not result.success:
-        if result.approval_status == "DENIED":
-            raise PermissionError("Delete declined by user")
-        raise OSError(f"Delete failed: {result.error}")
+        if result.approval_status == 'DENIED':
+            raise PermissionError('Delete declined by user')
+        raise OSError(f'Delete failed: {result.error}')
 
-
-def create_directory(args: CreateDirectoryArgs, parents: bool = True) -> None:
+def create_directory(args: CreateDirectoryArgs, parents: bool=True) -> None:
     """
     Create a directory with sandbox validation.
 

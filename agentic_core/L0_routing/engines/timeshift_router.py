@@ -10,54 +10,32 @@ Architecture:
     3. If prior signal anomaly_score >= threshold → route to compliance_mode.
     4. Emit new signal AFTER routing decision is finalized (no feedback loop).
 """
-
 from __future__ import annotations
-
 from dataclasses import dataclass
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 def _get_routing_config_and_active():
     from agentic_core.L4_state.config.versioned_configs import RoutingConfig, get_active_configs
-
-    return RoutingConfig, get_active_configs
-
+    return (RoutingConfig, get_active_configs)
 
 def _get_prior_detection_signal():
     from agentic_core.L4_state.types.detection_signal_store_types import get_prior_detection_signal
-
     return get_prior_detection_signal
 
-
 class RoutingMode:
-    STANDARD = "standard"
-    COMPLIANCE = "compliance_mode"
-
+    STANDARD = 'standard'
+    COMPLIANCE = 'compliance_mode'
 
 @dataclass
 class TimeshiftRoutingDecision:
     """Result of a time-shifted routing evaluation."""
-
     mode: str
     prior_signal_hash: str | None
     prior_anomaly_score: float | None
     threshold_used: float
     same_cycle_influence: bool = False
 
-
-def evaluate_timeshift_routing(
-    execution_start_tick: int,
-    routing_config: object | None = None,
-) -> TimeshiftRoutingDecision:
+def evaluate_timeshift_routing(execution_start_tick: int, routing_config: object | None=None) -> TimeshiftRoutingDecision:
     """
     Evaluate routing mode using ONLY prior committed signals.
 
@@ -75,20 +53,10 @@ def evaluate_timeshift_routing(
     if routing_config is None:
         _, get_active_configs = _get_routing_config_and_active()
         routing_config = get_active_configs().routing
-
     threshold = routing_config.anomaly_routing_threshold
-
     prior = _get_prior_detection_signal()(execution_start_tick)
-
     if prior is not None and prior.anomaly_score >= threshold:
         mode = RoutingMode.COMPLIANCE
     else:
         mode = RoutingMode.STANDARD
-
-    return TimeshiftRoutingDecision(
-        mode=mode,
-        prior_signal_hash=prior.signal_hash if prior else None,
-        prior_anomaly_score=prior.anomaly_score if prior else None,
-        threshold_used=threshold,
-        same_cycle_influence=False,
-    )
+    return TimeshiftRoutingDecision(mode=mode, prior_signal_hash=prior.signal_hash if prior else None, prior_anomaly_score=prior.anomaly_score if prior else None, threshold_used=threshold, same_cycle_influence=False)

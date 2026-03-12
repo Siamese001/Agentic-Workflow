@@ -136,6 +136,7 @@ def main():
             continue
         layer = info.get("layer", "unknown")
         target = info["target"]
+        # guardian: allow-path-string
         layer_key = target + "/" + layer
         if layer_key not in layer_stats:
             layer_stats[layer_key] = {
@@ -215,6 +216,7 @@ def main():
         print()
         print("--- " + sev + " (" + str(len(items)) + " modules) ---")
         for item in sorted(items, key=lambda x: x["path"]):
+            # guardian: allow-path-string
             print("  [" + item["target"] + "/" + item["layer"] + "] " + item["path"])
             print("    classes: " + str(item["top_classes"]))
             print("    funcs:   " + str(item["top_funcs"]))

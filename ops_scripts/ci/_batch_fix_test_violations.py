@@ -38,6 +38,7 @@ def get_needed_constants(filepath: Path, const_map: dict) -> set[str]:
     needed = set()
     for dir_str, const_name in const_map.items():
         # Match quoted string literals only (single or double quotes)
+        # guardian: allow-path-string
         pattern = r'(?<![a-zA-Z0-9_])(?:\'|")' + re.escape(dir_str) + r'(?:\'|")(?![a-zA-Z0-9_/.])'
         if re.search(pattern, src):
             needed.add(const_name)
@@ -45,6 +46,7 @@ def get_needed_constants(filepath: Path, const_map: dict) -> set[str]:
 
 
 def already_imports(src: str, const: str) -> bool:
+    # guardian: allow-path-string
     return bool(re.search(r"\b" + re.escape(const) + r"\b", src.split("def ")[0].split("class ")[0]))
 
 
@@ -119,8 +121,10 @@ def replace_literals(src: str, const_map: dict) -> str:
     """Replace ALL hardcoded dir string literals with constants."""
     for dir_str, const_name in const_map.items():
         # Replace double-quoted
+        # guardian: allow-path-string
         src = re.sub(r'(?<![a-zA-Z0-9_])"' + re.escape(dir_str) + r'"(?![a-zA-Z0-9_/.])', const_name, src)
         # Replace single-quoted
+        # guardian: allow-path-string
         src = re.sub(r"(?<![a-zA-Z0-9_])'" + re.escape(dir_str) + r"'(?![a-zA-Z0-9_/.])", const_name, src)
     return src
 

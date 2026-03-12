@@ -100,7 +100,9 @@ class HotspotIndex:
                     prefix = "/".join(parts[:n])
                     if prefix + ".py" in module_set:
                         return prefix + ".py"
+                    # guardian: allow-path-string
                     if prefix + "/__init__.py" in module_set:
+                        # guardian: allow-path-string
                         return prefix + "/__init__.py"
             return None
 

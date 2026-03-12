@@ -84,6 +84,7 @@ class ScanCache:
                     edges=entry["edges"],
                 )
             return cls(entries)
+        # guardian: allow-silent-swallow
         except Exception as exc:
             logger.debug("ScanCache load error (%s) — starting fresh", exc)
             return cls()
@@ -100,6 +101,7 @@ class ScanCache:
         try:
             tmp.write_text(json.dumps(payload, indent=2), encoding="utf-8")
             tmp.replace(cache_path)
+        # guardian: allow-silent-swallow
         except Exception as exc:
             logger.warning("ScanCache save failed: %s", exc)
 

@@ -6,49 +6,25 @@ data and produces threshold adjustment proposals based on preference signals.
 
 All logic is pure and deterministic — no wall-clock reads, no randomness.
 """
-
 from __future__ import annotations
-
 import hashlib
 import json
 import logging
 from dataclasses import dataclass
 from typing import Any
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 logger = logging.getLogger(__name__)
-
-# ---------------------------------------------------------------------------
-# Constants
-# ---------------------------------------------------------------------------
-
-_PREFERENCE_SIGNAL_THRESHOLD = 0.60  # Strong preference needed to propose
+_PREFERENCE_SIGNAL_THRESHOLD = 0.6
 _MAX_DELTA = 0.05
 _DEFAULT_DELTA = 0.02
 _MIN_PAIRS = 3
 
-
-# ---------------------------------------------------------------------------
-# Change Package
-# ---------------------------------------------------------------------------
-
-
 @dataclass(frozen=True, slots=True)
 class RLHFChangePackage:
     """Immutable RLHF-driven threshold change proposal."""
-
     surface_name: str
     parameter: str
-    direction: str  # "increase" or "decrease"
+    direction: str
     delta: float
     justification: str
     snapshot_id: str
@@ -56,26 +32,11 @@ class RLHFChangePackage:
     preference_strength: float
 
     def canonical_bytes(self) -> bytes:
-        data = {
-            "surface_name": self.surface_name,
-            "parameter": self.parameter,
-            "direction": self.direction,
-            "delta": self.delta,
-            "justification": self.justification,
-            "snapshot_id": self.snapshot_id,
-            "pair_count": self.pair_count,
-            "preference_strength": self.preference_strength,
-        }
-        return json.dumps(data, separators=(",", ":"), sort_keys=True).encode("utf-8")
+        data = {'surface_name': self.surface_name, 'parameter': self.parameter, 'direction': self.direction, 'delta': self.delta, 'justification': self.justification, 'snapshot_id': self.snapshot_id, 'pair_count': self.pair_count, 'preference_strength': self.preference_strength}
+        return json.dumps(data, separators=(',', ':'), sort_keys=True).encode('utf-8')
 
     def content_hash(self) -> str:
         return hashlib.sha256(self.canonical_bytes()).hexdigest()
-
-
-# ---------------------------------------------------------------------------
-# Optimizer
-# ---------------------------------------------------------------------------
-
 
 class DefaultRLHFOptimizer:
     """Concrete RLHF optimizer conforming to the RLHFOptimizer Protocol.
@@ -84,11 +45,7 @@ class DefaultRLHFOptimizer:
     a systematic direction for threshold adjustments.
     """
 
-    def propose_from_dpo(
-        self,
-        dpo_batch_bytes: bytes,
-        snapshot_id: str = "unknown",
-    ) -> RLHFChangePackage | None:
+    def propose_from_dpo(self, dpo_batch_bytes: bytes, snapshot_id: str='unknown') -> RLHFChangePackage | None:
         """Propose threshold changes from DPO preference pairs.
 
         Parameters
@@ -111,81 +68,50 @@ class DefaultRLHFOptimizer:
             Proposal or None if preferences are weak/insufficient.
         """
         try:
-            batch = json.loads(dpo_batch_bytes.decode("utf-8"))
+            batch = json.loads(dpo_batch_bytes.decode('utf-8'))
         except (json.JSONDecodeError, UnicodeDecodeError):
-            logger.debug("Failed to decode DPO batch bytes")
+            logger.debug('Failed to decode DPO batch bytes')
             return None
-
-        pairs = batch.get("pairs", [])
+        pairs = batch.get('pairs', [])
         if len(pairs) < _MIN_PAIRS:
             return None
-
-        # Tally directional preferences per surface
         surface_votes: dict[str, list[str]] = {}
         for pair in pairs:
-            surface = pair.get("surface", "unknown")
-            chosen = pair.get("chosen", {})
-            rejected = pair.get("rejected", {})
-
-            chosen_val = chosen.get("threshold", 0.0)
-            rejected_val = rejected.get("threshold", 0.0)
-
+            surface = pair.get('surface', 'unknown')
+            chosen = pair.get('chosen', {})
+            rejected = pair.get('rejected', {})
+            chosen_val = chosen.get('threshold', 0.0)
+            rejected_val = rejected.get('threshold', 0.0)
             if chosen_val > rejected_val:
-                direction = "increase"
+                direction = 'increase'
             elif chosen_val < rejected_val:
-                direction = "decrease"
+                direction = 'decrease'
             else:
                 continue
-
             if surface not in surface_votes:
                 surface_votes[surface] = []
             surface_votes[surface].append(direction)
-
-        # Find strongest consensus
         best_surface = None
         best_strength = 0.0
-        best_direction = "increase"
-
+        best_direction = 'increase'
         for surface, votes in surface_votes.items():
             if not votes:
                 continue
-            increase_count = sum(1 for v in votes if v == "increase")
+            increase_count = sum((1 for v in votes if v == 'increase'))
             decrease_count = len(votes) - increase_count
             total = len(votes)
-
             if increase_count >= decrease_count:
                 strength = increase_count / total
-                direction = "increase"
+                direction = 'increase'
             else:
                 strength = decrease_count / total
-                direction = "decrease"
-
+                direction = 'decrease'
             if strength > best_strength and total >= _MIN_PAIRS:
                 best_strength = strength
                 best_direction = direction
                 best_surface = surface
-
         if best_surface is None or best_strength < _PREFERENCE_SIGNAL_THRESHOLD:
             return None
-
         delta = min(_DEFAULT_DELTA, _MAX_DELTA)
-
-        return RLHFChangePackage(
-            surface_name=best_surface,
-            parameter="threshold",
-            direction=best_direction,
-            delta=delta,
-            justification=(
-                f"DPO analysis of {len(pairs)} pairs shows {best_strength:.1%} "
-                f"preference to {best_direction} '{best_surface}' threshold"
-            ),
-            snapshot_id=snapshot_id,
-            pair_count=len(pairs),
-            preference_strength=round(best_strength, 4),
-        )
-
-
-__all__ = [
-    "DefaultRLHFOptimizer",
-    "RLHFChangePackage",
-]
+        return RLHFChangePackage(surface_name=best_surface, parameter='threshold', direction=best_direction, delta=delta, justification=f"DPO analysis of {len(pairs)} pairs shows {best_strength:.1%} preference to {best_direction} '{best_surface}' threshold", snapshot_id=snapshot_id, pair_count=len(pairs), preference_strength=round(best_strength, 4))
+__all__ = ['DefaultRLHFOptimizer', 'RLHFChangePackage']

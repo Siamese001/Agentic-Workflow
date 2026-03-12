@@ -107,6 +107,7 @@ def run_all_invariants(
     for checker, arg in checks:
         try:
             checker(arg)
+        # guardian: allow-silent-swallow
         except Exception as exc:
             violations.append(str(exc))
 

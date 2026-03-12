@@ -10,45 +10,23 @@ Design constraints:
 - Deterministic record format (no wall-clock timestamps in keys).
 - ASCII-only output (evidence file byte-scan invariant §2).
 """
-
 from __future__ import annotations
-
 import os
 import threading
 from pathlib import Path
 from typing import Any
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 _lock = threading.Lock()
 _decision_counter: int = 0
-
-_DEFAULT_EVIDENCE_PATH = Path("docs/reports/evidence/wave6_evidence.md")
-
+_DEFAULT_EVIDENCE_PATH = Path('docs/reports/evidence/wave6_evidence.md')
 
 def _get_evidence_path() -> Path:
-    env_val = os.environ.get("HITL_EVIDENCE_FILE")
+    env_val = os.environ.get('HITL_EVIDENCE_FILE')
     if env_val:
         return Path(env_val)
     return _DEFAULT_EVIDENCE_PATH
 
-
-def log_hitl_decision(
-    agent: str,
-    file_path: str,
-    violation: str,
-    proposed: str,
-    decision: str,
-    extra: dict[str, Any] | None = None,
-) -> int:
+def log_hitl_decision(agent: str, file_path: str, violation: str, proposed: str, decision: str, extra: dict[str, Any] | None=None) -> int:
     """Append one HITL decision record to the evidence file.
 
     Args:
@@ -64,41 +42,29 @@ def log_hitl_decision(
     """
     global _decision_counter
     evidence_path = _get_evidence_path()
-
     with _lock:
         _decision_counter += 1
         n = _decision_counter
-
-        lines = [
-            f"\nHITL_DECISION_{n}: Agent={agent} | File={file_path}",
-            f"  Violation={violation} | Proposed={proposed} | Decision={decision}",
-        ]
+        lines = [f'\nHITL_DECISION_{n}: Agent={agent} | File={file_path}', f'  Violation={violation} | Proposed={proposed} | Decision={decision}']
         if extra:
             for k, v in extra.items():
-                safe_k = str(k).replace("\n", " ")
-                safe_v = str(v).replace("\n", " ")
-                lines.append(f"  {safe_k}={safe_v}")
-
-        record = "\n".join(lines) + "\n"
-
-        # Byte-scan: replace any non-ASCII byte with '?'
-        safe_record = record.encode("ascii", errors="replace").decode("ascii")
-
+                safe_k = str(k).replace('\n', ' ')
+                safe_v = str(v).replace('\n', ' ')
+                lines.append(f'  {safe_k}={safe_v}')
+        record = '\n'.join(lines) + '\n'
+        safe_record = record.encode('ascii', errors='replace').decode('ascii')
         try:
             evidence_path.parent.mkdir(parents=True, exist_ok=True)
-            with open(evidence_path, "a", encoding="ascii", errors="replace") as fh:
+            with open(evidence_path, 'a', encoding='ascii', errors='replace') as fh:
                 fh.write(safe_record)
         except OSError:
             pass
-
         return n
-
 
 def get_decision_count() -> int:
     """Return number of decisions logged in this process lifetime."""
     with _lock:
         return _decision_counter
-
 
 def reset_for_testing() -> None:
     """Reset counter — test use only."""

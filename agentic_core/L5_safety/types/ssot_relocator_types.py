@@ -1,70 +1,34 @@
 from __future__ import annotations
-
 from agentic_core.L2_execution.tools import write_gateway as _wg
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-"""
-SSOT Relocator - Automated Violation Remediation
-
-Replaces 4 manual relocation scripts with a single, reusable library:
-- phase2_gravity_relocation.py
-- phase4_final_gravity_relocation.py
-- phase4_final_observability_relocation.py
-- phase4_perfection_absolute.py
-
-Provides automated remediation for:
-1. Drift violations (orphaned folders → archives)
-2. Hierarchy violations (excessive depth → flattening)
-3. Gravity violations (wrong layer → correct layer)
-"""
-
-
+'\nSSOT Relocator - Automated Violation Remediation\n\nReplaces 4 manual relocation scripts with a single, reusable library:\n- phase2_gravity_relocation.py\n- phase4_final_gravity_relocation.py\n- phase4_final_observability_relocation.py\n- phase4_perfection_absolute.py\n\nProvides automated remediation for:\n1. Drift violations (orphaned folders → archives)\n2. Hierarchy violations (excessive depth → flattening)\n3. Gravity violations (wrong layer → correct layer)\n'
 import logging
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 from typing import Any
-
-from agentic_core.L5_safety.config.structure_blueprint import (
-    AGENTIC_CORE_DIR,
-    ARCHIVES_DIR,
-)
+from agentic_core.L5_safety.config.structure_blueprint import AGENTIC_CORE_DIR, ARCHIVES_DIR
 from agentic_core.L5_safety.enforcement.archival_gatekeeper_gate import ArchivalGatekeeper
-
-# Configure logging
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
 
 @dataclass
 class RelocationResult:
     """Result of a single relocation operation."""
-
     source: str
     target: str
     success: bool
-    action: str  # 'MOVED', 'ARCHIVED', 'FLATTENED', 'SKIPPED'
+    action: str
     error: str | None = None
-    timestamp: str = ""
+    timestamp: str = ''
 
     def __post_init__(self):
         if not self.timestamp:
             self.timestamp = datetime.now().isoformat()
 
-
 @dataclass
 class EnforcementReport:
     """Summary of enforcement operations."""
-
     total_operations: int = 0
     successful: int = 0
     failed: int = 0
@@ -80,8 +44,7 @@ class EnforcementReport:
         """Calculate success rate percentage."""
         if self.total_operations == 0:
             return 100.0
-        return (self.successful / self.total_operations) * 100
-
+        return self.successful / self.total_operations * 100
 
 class SSOTRelocator:
     """
@@ -93,7 +56,7 @@ class SSOTRelocator:
     - relocate_agents(): Move agents to correct layers
     """
 
-    def __init__(self, project_root: Path, dry_run: bool = True, log_file: Path | None = None):
+    def __init__(self, project_root: Path, dry_run: bool=True, log_file: Path | None=None):
         """
         Initialize SSOT relocator.
 
@@ -104,27 +67,18 @@ class SSOTRelocator:
         """
         self.project_root = project_root.resolve()
         self.dry_run = dry_run
-
-        # Setup logging
         if log_file is None:
-            log_dir = project_root / AGENTIC_CORE_DIR / "L0_routing" / "logs"
+            log_dir = project_root / AGENTIC_CORE_DIR / 'L0_routing' / 'logs'
             _wg.ensure_dir(log_dir)
-            log_file = log_dir / "enforcement_history.log"
-
+            log_file = log_dir / 'enforcement_history.log'
         self.log_file = log_file
-
-        # Setup file handler for enforcement logging (UTF-8 encoding for Windows)
-        file_handler = logging.FileHandler(self.log_file, encoding="utf-8")
+        file_handler = logging.FileHandler(self.log_file, encoding='utf-8')
         file_handler.setLevel(logging.INFO)
-        file_handler.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - %(message)s"))
+        file_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
         logger.addHandler(file_handler)
-
-        # Archive root
-        self.archive_root = project_root / ARCHIVES_DIR / "unmapped_drift"
+        self.archive_root = project_root / ARCHIVES_DIR / 'unmapped_drift'
         if not dry_run:
             _wg.ensure_dir(self.archive_root)
-
-        # Initialize ArchivalGatekeeper for safe file operations
         self.gatekeeper = ArchivalGatekeeper.get_instance(self.project_root)
 
     def relocate_orphans(self, drift_violations: list[Any]) -> EnforcementReport:
@@ -138,31 +92,22 @@ class SSOTRelocator:
             EnforcementReport with operation results
         """
         report = EnforcementReport()
-
-        logger.info(f"{'[DRY-RUN] ' if self.dry_run else ''}Starting orphan relocation")
-        logger.info(f"Target violations: {len(drift_violations)}")
-
+        logger.info(f"{('[DRY-RUN] ' if self.dry_run else '')}Starting orphan relocation")
+        logger.info(f'Target violations: {len(drift_violations)}')
         for violation in drift_violations:
             source = self.project_root / violation.folder_path
-
-            # Create timestamped archive path
-            timestamp = datetime.now().strftime("%Y%m%d")
+            timestamp = datetime.now().strftime('%Y%m%d')
             archive_path = self.archive_root / timestamp / violation.folder_path
-
-            result = self._relocate_folder(source=source, target=archive_path, action="ARCHIVED")
-
+            result = self._relocate_folder(source=source, target=archive_path, action='ARCHIVED')
             report.results.append(result)
             report.total_operations += 1
-
             if result.success:
                 report.successful += 1
-            elif result.action == "SKIPPED":
+            elif result.action == 'SKIPPED':
                 report.skipped += 1
             else:
                 report.failed += 1
-
-        logger.info(f"Orphan relocation complete: {report.successful}/{report.total_operations} successful")
-
+        logger.info(f'Orphan relocation complete: {report.successful}/{report.total_operations} successful')
         return report
 
     def enforce_hierarchy(self, hierarchy_violations: list[Any]) -> EnforcementReport:
@@ -178,48 +123,29 @@ class SSOTRelocator:
             EnforcementReport with operation results
         """
         report = EnforcementReport()
-
-        logger.info(f"{'[DRY-RUN] ' if self.dry_run else ''}Starting hierarchy enforcement")
-        logger.info(f"Target violations: {len(hierarchy_violations)}")
-
+        logger.info(f"{('[DRY-RUN] ' if self.dry_run else '')}Starting hierarchy enforcement")
+        logger.info(f'Target violations: {len(hierarchy_violations)}')
         for violation in hierarchy_violations:
             source = self.project_root / violation.folder_path
-
             if not source.exists():
-                result = RelocationResult(
-                    source=str(source),
-                    target="N/A",
-                    success=False,
-                    action="SKIPPED",
-                    error="Source does not exist",
-                )
+                result = RelocationResult(source=str(source), target='N/A', success=False, action='SKIPPED', error='Source does not exist')
                 report.results.append(result)
                 report.total_operations += 1
                 report.skipped += 1
                 continue
-
-            # Calculate target path (flatten to max depth)
             parts = Path(violation.folder_path).parts
-            target_parts = parts[: violation.max_depth + 1]  # +1 for root folder
+            target_parts = parts[:violation.max_depth + 1]
             target = self.project_root / Path(*target_parts)
-
-            # Move contents to flattened location
             result = self._flatten_folder(source=source, target=target, max_depth=violation.max_depth)
-
             report.results.append(result)
             report.total_operations += 1
-
             if result.success:
                 report.successful += 1
-            elif result.action == "SKIPPED":
+            elif result.action == 'SKIPPED':
                 report.skipped += 1
             else:
                 report.failed += 1
-
-        logger.info(
-            f"Hierarchy enforcement complete: {report.successful}/{report.total_operations} successful",
-        )
-
+        logger.info(f'Hierarchy enforcement complete: {report.successful}/{report.total_operations} successful')
         return report
 
     def relocate_agents(self, gravity_violations: list[Any]) -> EnforcementReport:
@@ -233,37 +159,25 @@ class SSOTRelocator:
             EnforcementReport with operation results
         """
         report = EnforcementReport()
-
-        logger.info(f"{'[DRY-RUN] ' if self.dry_run else ''}Starting agent relocation")
-        logger.info(f"Target violations: {len(gravity_violations)}")
-
+        logger.info(f"{('[DRY-RUN] ' if self.dry_run else '')}Starting agent relocation")
+        logger.info(f'Target violations: {len(gravity_violations)}')
         for violation in gravity_violations:
             source = self.project_root / violation.file_path
-
-            # Calculate target path (replace actual layer with assigned layer)
-            target_path = violation.file_path.replace(
-                f"/{violation.actual_layer}/",
-                f"/{violation.assigned_layer}/",
-            )
+            target_path = violation.file_path.replace(f'/{violation.actual_layer}/', f'/{violation.assigned_layer}/')
             target = self.project_root / target_path
-
-            result = self._relocate_file(source=source, target=target, action="MOVED")
-
+            result = self._relocate_file(source=source, target=target, action='MOVED')
             report.results.append(result)
             report.total_operations += 1
-
             if result.success:
                 report.successful += 1
-            elif result.action == "SKIPPED":
+            elif result.action == 'SKIPPED':
                 report.skipped += 1
             else:
                 report.failed += 1
-
-        logger.info(f"Agent relocation complete: {report.successful}/{report.total_operations} successful")
-
+        logger.info(f'Agent relocation complete: {report.successful}/{report.total_operations} successful')
         return report
 
-    def _relocate_file(self, source: Path, target: Path, action: str = "MOVED") -> RelocationResult:
+    def _relocate_file(self, source: Path, target: Path, action: str='MOVED') -> RelocationResult:
         """
         Relocate a single file with safety checks.
 
@@ -275,59 +189,40 @@ class SSOTRelocator:
         Returns:
             RelocationResult with operation details
         """
-        result = RelocationResult(
-            source=str(source.relative_to(self.project_root)),
-            target=str(target.relative_to(self.project_root)),
-            success=False,
-            action=action,
-        )
-
-        # Safety checks
+        result = RelocationResult(source=str(source.relative_to(self.project_root)), target=str(target.relative_to(self.project_root)), success=False, action=action)
         if not source.exists():
-            result.error = "Source file does not exist"
-            result.action = "SKIPPED"
+            result.error = 'Source file does not exist'
+            result.action = 'SKIPPED'
             return result
-
         if target.exists():
-            result.error = "Target file already exists"
-            result.action = "SKIPPED"
+            result.error = 'Target file already exists'
+            result.action = 'SKIPPED'
             return result
-
-        # Execute or preview
         if self.dry_run:
             result.success = True
-            result.action = f"{action} (DRY-RUN)"
-            logger.info(f"[DRY-RUN] Would {action.lower()}: {result.source} → {result.target}")
+            result.action = f'{action} (DRY-RUN)'
+            logger.info(f'[DRY-RUN] Would {action.lower()}: {result.source} → {result.target}')
         else:
             try:
-                # DELEGATION: Use ArchivalGatekeeper for safe move (handles approval internally)
-                gk_result = self.gatekeeper.safe_move(
-                    source,
-                    target,
-                    "SSOTRelocator",
-                    f"SSOT Reconciliation: {action}",
-                )
-
+                gk_result = self.gatekeeper.safe_move(source, target, 'SSOTRelocator', f'SSOT Reconciliation: {action}')
                 if gk_result.success:
                     result.success = True
-                    logger.info(f"{action}: {result.source} → {result.target}")
-                    # Clean up empty parent directories
+                    logger.info(f'{action}: {result.source} → {result.target}')
                     self._cleanup_empty_dirs(source.parent)
-                elif gk_result.approval_status == "DENIED":
-                    result.action = "SKIPPED"
-                    result.error = "User declined move"
-                    logger.info(f"Skipped {action.lower()} of {result.source} - user declined")
+                elif gk_result.approval_status == 'DENIED':
+                    result.action = 'SKIPPED'
+                    result.error = 'User declined move'
+                    logger.info(f'Skipped {action.lower()} of {result.source} - user declined')
                 else:
                     result.error = gk_result.error
-                    logger.error(f"Failed to {action.lower()} {result.source}: {gk_result.error}")
+                    logger.error(f'Failed to {action.lower()} {result.source}: {gk_result.error}')
             # guardian: allow-silent-swallow
             except Exception as e:
                 result.error = str(e)
-                logger.error(f"Failed to {action.lower()} {result.source}: {e}")
-
+                logger.error(f'Failed to {action.lower()} {result.source}: {e}')
         return result
 
-    def _relocate_folder(self, source: Path, target: Path, action: str = "MOVED") -> RelocationResult:
+    def _relocate_folder(self, source: Path, target: Path, action: str='MOVED') -> RelocationResult:
         """
         Relocate an entire folder with safety checks.
 
@@ -339,54 +234,36 @@ class SSOTRelocator:
         Returns:
             RelocationResult with operation details
         """
-        result = RelocationResult(
-            source=str(source.relative_to(self.project_root)),
-            target=str(target.relative_to(self.project_root)),
-            success=False,
-            action=action,
-        )
-
-        # Safety checks
+        result = RelocationResult(source=str(source.relative_to(self.project_root)), target=str(target.relative_to(self.project_root)), success=False, action=action)
         if not source.exists():
-            result.error = "Source folder does not exist"
-            result.action = "SKIPPED"
+            result.error = 'Source folder does not exist'
+            result.action = 'SKIPPED'
             return result
-
         if target.exists():
-            result.error = "Target folder already exists"
-            result.action = "SKIPPED"
+            result.error = 'Target folder already exists'
+            result.action = 'SKIPPED'
             return result
-
-        # Execute or preview
         if self.dry_run:
             result.success = True
-            result.action = f"{action} (DRY-RUN)"
-            logger.info(f"[DRY-RUN] Would {action.lower()}: {result.source} → {result.target}")
+            result.action = f'{action} (DRY-RUN)'
+            logger.info(f'[DRY-RUN] Would {action.lower()}: {result.source} → {result.target}')
         else:
             try:
-                # DELEGATION: Use ArchivalGatekeeper for safe move (handles approval internally)
-                gk_result = self.gatekeeper.safe_move(
-                    source,
-                    target,
-                    "SSOTRelocator",
-                    f"SSOT Reconciliation: {action} folder",
-                )
-
+                gk_result = self.gatekeeper.safe_move(source, target, 'SSOTRelocator', f'SSOT Reconciliation: {action} folder')
                 if gk_result.success:
                     result.success = True
-                    logger.info(f"{action}: {result.source} → {result.target}")
-                elif gk_result.approval_status == "DENIED":
-                    result.action = "SKIPPED"
-                    result.error = "User declined move"
-                    logger.info(f"Skipped {action.lower()} of {result.source} - user declined")
+                    logger.info(f'{action}: {result.source} → {result.target}')
+                elif gk_result.approval_status == 'DENIED':
+                    result.action = 'SKIPPED'
+                    result.error = 'User declined move'
+                    logger.info(f'Skipped {action.lower()} of {result.source} - user declined')
                 else:
                     result.error = gk_result.error
-                    logger.error(f"Failed to {action.lower()} {result.source}: {gk_result.error}")
+                    logger.error(f'Failed to {action.lower()} {result.source}: {gk_result.error}')
             # guardian: allow-silent-swallow
             except Exception as e:
                 result.error = str(e)
-                logger.error(f"Failed to {action.lower()} {result.source}: {e}")
-
+                logger.error(f'Failed to {action.lower()} {result.source}: {e}')
         return result
 
     def _flatten_folder(self, source: Path, target: Path, max_depth: int) -> RelocationResult:
@@ -401,66 +278,40 @@ class SSOTRelocator:
         Returns:
             RelocationResult with operation details
         """
-        result = RelocationResult(
-            source=str(source.relative_to(self.project_root)),
-            target=str(target.relative_to(self.project_root)),
-            success=False,
-            action="FLATTENED",
-        )
-
+        result = RelocationResult(source=str(source.relative_to(self.project_root)), target=str(target.relative_to(self.project_root)), success=False, action='FLATTENED')
         if not source.exists():
-            result.error = "Source folder does not exist"
-            result.action = "SKIPPED"
+            result.error = 'Source folder does not exist'
+            result.action = 'SKIPPED'
             return result
-
-        # Execute or preview
         if self.dry_run:
             result.success = True
-            result.action = "FLATTENED (DRY-RUN)"
-            logger.info(f"[DRY-RUN] Would flatten: {result.source} -> {result.target}")
+            result.action = 'FLATTENED (DRY-RUN)'
+            logger.info(f'[DRY-RUN] Would flatten: {result.source} -> {result.target}')
         else:
             try:
                 _wg.ensure_dir(target)
-
-                # Move all files from source to target
-                # Final True 20: Use ssot_discovery instead of rglob
-                from agentic_core.utils.ssot_discovery_validator import (
-                    get_data_files,
-                    get_python_files,
-                )
-
+                from agentic_core.utils.ssot_discovery_validator import get_data_files, get_python_files
                 all_items = list(get_python_files(source)) + list(get_data_files(source))
                 for item in all_items:
                     if item.is_file():
                         rel_path = item.relative_to(source)
-                        target_file = target / rel_path.name  # Flatten structure
-
+                        target_file = target / rel_path.name
                         if not target_file.exists():
                             _wg.ensure_dir(target_file.parent)
-                            # DELEGATION: Use ArchivalGatekeeper for safe move
-                            gk_result = self.gatekeeper.safe_move(
-                                item,
-                                target_file,
-                                "SSOTRelocator",
-                                "SSOT Reconciliation: Flatten folder",
-                            )
-                            if not gk_result.success and gk_result.approval_status == "DENIED":
-                                result.action = "SKIPPED"
-                                result.error = "User declined move"
-                                logger.info(f"Skipped flatten of {result.source} - user declined")
+                            gk_result = self.gatekeeper.safe_move(item, target_file, 'SSOTRelocator', 'SSOT Reconciliation: Flatten folder')
+                            if not gk_result.success and gk_result.approval_status == 'DENIED':
+                                result.action = 'SKIPPED'
+                                result.error = 'User declined move'
+                                logger.info(f'Skipped flatten of {result.source} - user declined')
                                 return result
-
-                # Remove empty source folder
-                if source.exists() and not any(source.iterdir()):
+                if source.exists() and (not any(source.iterdir())):
                     _wg.remove_dir(source)
-
                 result.success = True
-                logger.info(f"FLATTENED: {result.source} -> {result.target}")
+                logger.info(f'FLATTENED: {result.source} -> {result.target}')
             # guardian: allow-silent-swallow
             except Exception as e:
                 result.error = str(e)
-                logger.error(f"Failed to flatten {result.source}: {e}")
-
+                logger.error(f'Failed to flatten {result.source}: {e}')
         return result
 
     def _cleanup_empty_dirs(self, directory: Path) -> None:
@@ -472,15 +323,10 @@ class SSOTRelocator:
         """
         if not directory.exists() or not directory.is_dir():
             return
-
         try:
-            # Check if directory is empty
             if not any(directory.iterdir()):
                 _wg.remove_dir(directory)
-                logger.info(f"Cleaned up empty directory: {directory}")
-
-                # Recursively clean parent
+                logger.info(f'Cleaned up empty directory: {directory}')
                 self._cleanup_empty_dirs(directory.parent)
         except (OSError, PermissionError):
-            # Directory not empty or permission denied
             pass

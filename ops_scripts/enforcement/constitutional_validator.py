@@ -3,32 +3,19 @@ ConstitutionalValidator - Deterministic enforcement of constitutional rules.
 
 Pure deterministic logic only. No side effects, no dynamic imports, no filesystem writes.
 """
-
 from dataclasses import dataclass
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 @dataclass(frozen=True)
 class ValidationResult:
     """Immutable validation result with deterministic representation."""
-
     is_valid: bool
     violations: list[str]
 
     def __repr__(self) -> str:
         """Deterministic repr without timestamps or UUIDs."""
-        violations_str = ", ".join(f"'{v}'" for v in self.violations)
-        return f"ValidationResult(is_valid={self.is_valid}, violations=[{violations_str}])"
-
+        violations_str = ', '.join((f"'{v}'" for v in self.violations))
+        return f'ValidationResult(is_valid={self.is_valid}, violations=[{violations_str}])'
 
 class ConstitutionalValidator:
     """Deterministic validator for constitutional compliance."""
@@ -46,24 +33,17 @@ class ConstitutionalValidator:
         - All required keys must be present
         """
         violations = []
-
-        # Check required keys
-        required_keys = ["phase_id", "evidence_files"]
+        required_keys = ['phase_id', 'evidence_files']
         for key in required_keys:
             if key not in phase_data:
-                violations.append(f"Missing required key: {key}")
-
-        # If missing required keys, return early
+                violations.append(f'Missing required key: {key}')
         if violations:
             return ValidationResult(is_valid=False, violations=violations)
-
-        # Validate evidence_files count
-        evidence_files = phase_data["evidence_files"]
+        evidence_files = phase_data['evidence_files']
         if not isinstance(evidence_files, list):
-            violations.append("evidence_files must be a list")
+            violations.append('evidence_files must be a list')
         elif len(evidence_files) != 1:
-            violations.append(f"Exactly 1 evidence file required, found {len(evidence_files)}")
-
+            violations.append(f'Exactly 1 evidence file required, found {len(evidence_files)}')
         return ValidationResult(is_valid=len(violations) == 0, violations=violations)
 
     def validate_stop_at_criteria(self, execution_result: dict) -> ValidationResult:
@@ -79,33 +59,20 @@ class ConstitutionalValidator:
         - All required keys must be present
         """
         violations = []
-
-        # Check required keys
-        required_keys = ["acceptance_met", "continued_execution"]
+        required_keys = ['acceptance_met', 'continued_execution']
         for key in required_keys:
             if key not in execution_result:
-                violations.append(f"Missing required key: {key}")
-
-        # If missing required keys, return early
+                violations.append(f'Missing required key: {key}')
         if violations:
             return ValidationResult(is_valid=False, violations=violations)
-
-        # Validate types
-        acceptance_met = execution_result["acceptance_met"]
-        continued_execution = execution_result["continued_execution"]
-
+        acceptance_met = execution_result['acceptance_met']
+        continued_execution = execution_result['continued_execution']
         if not isinstance(acceptance_met, bool):
-            violations.append("acceptance_met must be a bool")
-
+            violations.append('acceptance_met must be a bool')
         if not isinstance(continued_execution, bool):
-            violations.append("continued_execution must be a bool")
-
-        # If type violations, return early
-        if any("must be a bool" in v for v in violations):
+            violations.append('continued_execution must be a bool')
+        if any(('must be a bool' in v for v in violations)):
             return ValidationResult(is_valid=False, violations=violations)
-
-        # Validate stop-at-acceptance rule
         if acceptance_met and continued_execution:
-            violations.append("Execution continued after acceptance met")
-
+            violations.append('Execution continued after acceptance met')
         return ValidationResult(is_valid=len(violations) == 0, violations=violations)

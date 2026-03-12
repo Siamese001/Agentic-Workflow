@@ -1,18 +1,7 @@
 from __future__ import annotations
-
 from collections import defaultdict
 from dataclasses import dataclass
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 class ToolBudgetExceededError(Exception):
     """Raised when a tool execution exceeds its deterministic step budget."""
@@ -20,18 +9,13 @@ class ToolBudgetExceededError(Exception):
     def __init__(self, tool_name: str, budget: int):
         self.tool_name = tool_name
         self.budget = budget
-        self.reason_code = "TOOL_BUDGET_EXCEEDED"
-        super().__init__(
-            f"[{self.reason_code}] Tool '{tool_name}' exceeded execution step budget of {budget}."
-        )
-
+        self.reason_code = 'TOOL_BUDGET_EXCEEDED'
+        super().__init__(f"[{self.reason_code}] Tool '{tool_name}' exceeded execution step budget of {budget}.")
 
 @dataclass(frozen=True)
 class ToolBudget:
     """Defines the deterministic execution budget for a tool."""
-
     max_steps: int
-
 
 class DeterministicLoopDetector:
     """
@@ -45,7 +29,6 @@ class DeterministicLoopDetector:
     """
 
     def __init__(self):
-        # The counters are stored per trace_id to isolate execution contexts.
         self._counters: defaultdict[str, defaultdict[str, int]] = defaultdict(lambda: defaultdict(int))
 
     def increment_and_check(self, trace_id: str, tool_name: str, budget: ToolBudget) -> None:
@@ -63,10 +46,8 @@ class DeterministicLoopDetector:
             ToolBudgetExceededError: If the counter exceeds the tool's max_steps.
         """
         counter = self._counters[trace_id][tool_name]
-
         if counter >= budget.max_steps:
             raise ToolBudgetExceededError(tool_name=tool_name, budget=budget.max_steps)
-
         self._counters[trace_id][tool_name] += 1
 
     def get_current_step_count(self, trace_id: str, tool_name: str) -> int:

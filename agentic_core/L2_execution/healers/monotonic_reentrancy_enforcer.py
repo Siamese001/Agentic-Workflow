@@ -1,19 +1,8 @@
 from __future__ import annotations
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 class NonMonotonicRetryViolation(Exception):
     """Raised when a retry count is not incremented monotonically."""
-
 
 class MonotonicReentrancyEnforcer:
     """
@@ -26,8 +15,6 @@ class MonotonicReentrancyEnforcer:
     """
 
     def __init__(self):
-        # This is a placeholder for a persistent L4 state store.
-        # The key would be the trace_id of the original failure.
         self._persistent_retry_counts: dict[str, int] = {}
 
     def get_and_increment_retry_count(self, trace_id: str) -> int:
@@ -45,10 +32,7 @@ class MonotonicReentrancyEnforcer:
         """
         current_count = self._persistent_retry_counts.get(trace_id, 0)
         new_count = current_count + 1
-
-        # In a real system, this write would be an atomic operation in the L4 DB.
         self._persistent_retry_counts[trace_id] = new_count
-
         return new_count
 
     def validate_monotonicity(self, trace_id: str, proposed_count: int) -> None:
@@ -66,11 +50,6 @@ class MonotonicReentrancyEnforcer:
             NonMonotonicRetryViolation: If the proposed count is not exactly one
                                         greater than the persisted count.
         """
-        # We check against the *next* expected count.
         expected_next_count = self._persistent_retry_counts.get(trace_id, 0)
-
-        # The proposed_count should be what we have stored. The next will be +1.
         if proposed_count != expected_next_count:
-            raise NonMonotonicRetryViolation(
-                f"Invalid retry count for trace '{trace_id}'. Expected {expected_next_count}, got {proposed_count}."
-            )
+            raise NonMonotonicRetryViolation(f"Invalid retry count for trace '{trace_id}'. Expected {expected_next_count}, got {proposed_count}.")

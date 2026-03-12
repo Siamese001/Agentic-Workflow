@@ -1,23 +1,8 @@
 from __future__ import annotations
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-"""
-Validation Protocol - Dependency Inversion for L1 → L4
-Defines the interface L1 needs without depending on L4 implementation.
-"""
+'\nValidation Protocol - Dependency Inversion for L1 → L4\nDefines the interface L1 needs without depending on L4 implementation.\n'
 from typing import Any, Protocol
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
-
-# NAMING FIXED: IValidationProtocol → IValidationProtocol
 class IValidationProtocol(Protocol):
     """Protocol defining the validation context interface needed by L1.
 
@@ -33,7 +18,7 @@ class IValidationProtocol(Protocol):
         """Get the project root path."""
         ...
 
-    def add_violation(self, key: int, message: str, Severity: str = "error") -> None:
+    def add_violation(self, key: int, message: str, Severity: str='error') -> None:
         """Add a validation Violation."""
         ...
 
@@ -60,6 +45,3 @@ class IValidationProtocol(Protocol):
     def set_metadata(self, key: str, value: Any) -> None:
         """Set metadata value."""
         ...
-
-
-# [NAMING ALIAS] PascalCase alias for backward compatibility

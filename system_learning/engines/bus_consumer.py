@@ -9,30 +9,15 @@ Contracts:
 - Returns exact count of processed packages.
 - MUST NOT import agentic_core modules directly (layer boundary).
 """
-
 from __future__ import annotations
-
 import logging
 from typing import TYPE_CHECKING
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 if TYPE_CHECKING:
     from agentic_core.L0_routing.meta_control.meta_learning_bus import MetaLearningBus
     from system_learning.engines.healing_success_rate_store import HealingSuccessRateStore
-
 logger = logging.getLogger(__name__)
-
-_KIND_HEALING_OUTCOME = "healing_outcome"
-
+_KIND_HEALING_OUTCOME = 'healing_outcome'
 
 def drain_and_apply(bus: MetaLearningBus, store: HealingSuccessRateStore) -> int:
     """Drain all packages from *bus* and apply healing outcomes to *store*.
@@ -56,34 +41,15 @@ def drain_and_apply(bus: MetaLearningBus, store: HealingSuccessRateStore) -> int
             break
         processed += 1
         if pkg.kind != _KIND_HEALING_OUTCOME:
-            logger.debug(
-                "bus_consumer: skipping unknown kind",
-                extra={"kind": pkg.kind, "trace_id": pkg.trace_id},
-            )
+            logger.debug('bus_consumer: skipping unknown kind', extra={'kind': pkg.kind, 'trace_id': pkg.trace_id})
             continue
-
         payload = pkg.payload
-        error_signature = payload.get("error_signature", "")
-        success = bool(payload.get("success", False))
-
+        error_signature = payload.get('error_signature', '')
+        success = bool(payload.get('success', False))
         if not error_signature:
-            logger.warning(
-                "bus_consumer: missing error_signature in payload",
-                extra={"trace_id": pkg.trace_id},
-            )
+            logger.warning('bus_consumer: missing error_signature in payload', extra={'trace_id': pkg.trace_id})
             continue
-
         store.record_outcome(error_signature, success)
-        logger.debug(
-            "bus_consumer: applied outcome",
-            extra={
-                "error_signature": error_signature,
-                "success": success,
-                "trace_id": pkg.trace_id,
-            },
-        )
-
+        logger.debug('bus_consumer: applied outcome', extra={'error_signature': error_signature, 'success': success, 'trace_id': pkg.trace_id})
     return processed
-
-
-__all__ = ["drain_and_apply"]
+__all__ = ['drain_and_apply']

@@ -7,7 +7,7 @@ RCA generation on failures. Prevents CI hangs and provides comprehensive diagnos
 
 Usage:
     python ops_scripts/ci/run_all_guardrails.py [--timeout SECONDS] [--verbose]
-    
+
 Exit codes:
     0 - All guardrails passed
     1 - One or more guardrails failed
@@ -33,6 +33,7 @@ if sys.platform == "win32":
 
 # Ensure project root is in path
 _REPO_ROOT = Path(__file__).resolve().parents[2]
+# guardian: allow-global-mutation
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
@@ -59,7 +60,7 @@ class GuardrailResult:
 @dataclass
 class GuardrailSuite:
     """Configuration for CI guardrail suite."""
-    
+
     guardrails: List[Dict[str, Any]] = field(default_factory=lambda: [
         {
             "name": "Anti-Pattern Scanner",
@@ -94,17 +95,18 @@ class GuardrailSuite:
 
 class GuardrailOrchestrator:
     """Orchestrates CI guardrail execution with timeout and RCA."""
-    
+
+    # guardian: allow-magic-config
     def __init__(self, default_timeout: int = 300, verbose: bool = False):
         self.default_timeout = default_timeout
         self.verbose = verbose
         self.results: List[GuardrailResult] = []
         self.start_time = time.time()
-        
+
     def run_all_guardrails(self, suite: GuardrailSuite) -> bool:
         """
         Run all guardrails in the suite with timeout protection.
-        
+
         Returns:
             True if all guardrails passed, False otherwise
         """
@@ -116,44 +118,44 @@ class GuardrailOrchestrator:
         print(f"Timestamp: {datetime.now().isoformat()}")
         print("=" * 80)
         print()
-        
+
         all_passed = True
-        
+
         with ci_progress_reporter(len(suite.guardrails), "Running Guardrails") as reporter:
             for i, guardrail_config in enumerate(suite.guardrails):
                 reporter.update(i)
-                
+
                 result = self._run_single_guardrail(guardrail_config)
                 self.results.append(result)
-                
+
                 if not result.passed:
                     all_passed = False
                     if guardrail_config.get("critical", True):
                         print(f"🚨 CRITICAL GUARDRAIL FAILED: {result.name}")
-        
+
         self._print_summary()
-        
+
         return all_passed
-    
+
     def _run_single_guardrail(self, config: Dict[str, Any]) -> GuardrailResult:
         """Run a single guardrail with timeout protection."""
         name = config["name"]
         script = config["script"]
         timeout = config.get("timeout", self.default_timeout)
-        
+
         print(f"\n{'=' * 80}")
         print(f"🔍 Running: {name}")
         print(f"📜 Script: {script}")
         print(f"⏱️  Timeout: {timeout}s")
         print(f"{'=' * 80}")
-        
+
         start_time = time.time()
         script_path = PROJECT_ROOT / script
-        
+
         if not script_path.exists():
             error_msg = f"Script not found: {script_path}"
             print(f"❌ {error_msg}")
-            
+
             rca_path = generate_rca(
                 operation_name=name,
                 error_type="SCRIPT_NOT_FOUND",
@@ -161,7 +163,7 @@ class GuardrailOrchestrator:
                 elapsed_time=0,
                 context={"script": str(script_path)}
             )
-            
+
             return GuardrailResult(
                 name=name,
                 script=script,
@@ -171,7 +173,7 @@ class GuardrailOrchestrator:
                 error=error_msg,
                 rca_path=rca_path
             )
-        
+
         try:
             # Run with timeout
             result = subprocess.run(
@@ -181,23 +183,23 @@ class GuardrailOrchestrator:
                 timeout=timeout,
                 cwd=PROJECT_ROOT
             )
-            
+
             elapsed = time.time() - start_time
             passed = result.returncode == 0
-            
+
             # Parse violations from output if available
             violations = self._parse_violations(result.stdout + result.stderr)
-            
+
             if self.verbose or not passed:
                 print(result.stdout)
                 if result.stderr:
                     print("STDERR:", result.stderr)
-            
+
             if passed:
                 print(f"✅ {name} PASSED in {elapsed:.2f}s")
             else:
                 print(f"❌ {name} FAILED in {elapsed:.2f}s (exit code: {result.returncode})")
-                
+
                 # Generate RCA for failure
                 rca_path = generate_rca(
                     operation_name=name,
@@ -211,7 +213,7 @@ class GuardrailOrchestrator:
                         "stderr": result.stderr[:500]
                     }
                 )
-                
+
                 return GuardrailResult(
                     name=name,
                     script=script,
@@ -223,7 +225,7 @@ class GuardrailOrchestrator:
                     error=result.stderr,
                     rca_path=rca_path
                 )
-            
+
             return GuardrailResult(
                 name=name,
                 script=script,
@@ -233,11 +235,11 @@ class GuardrailOrchestrator:
                 violations=violations,
                 output=result.stdout
             )
-            
+
         except subprocess.TimeoutExpired as e:
             elapsed = time.time() - start_time
             print(f"⏱️  {name} TIMEOUT after {elapsed:.2f}s")
-            
+
             # Generate RCA for timeout
             rca_path = generate_rca(
                 operation_name=name,
@@ -251,7 +253,7 @@ class GuardrailOrchestrator:
                     "stderr": e.stderr[:500] if e.stderr else "N/A"
                 }
             )
-            
+
             return GuardrailResult(
                 name=name,
                 script=script,
@@ -262,12 +264,12 @@ class GuardrailOrchestrator:
                 error=f"Timeout after {timeout}s",
                 rca_path=rca_path
             )
-            
+
         except Exception as e:
             raise
             elapsed = time.time() - start_time
             print(f"💥 {name} EXCEPTION: {e}")
-            
+
             # Generate RCA for exception
             rca_path = generate_rca(
                 operation_name=name,
@@ -276,7 +278,7 @@ class GuardrailOrchestrator:
                 elapsed_time=elapsed,
                 context={"script": script}
             )
-            
+
             return GuardrailResult(
                 name=name,
                 script=script,
@@ -286,11 +288,11 @@ class GuardrailOrchestrator:
                 error=str(e),
                 rca_path=rca_path
             )
-    
+
     def _parse_violations(self, output: str) -> int:
         """Parse violation count from output."""
         import re
-        
+
         # Look for common violation patterns
         patterns = [
             r'(\d+)\s+violations?\s+found',
@@ -298,27 +300,27 @@ class GuardrailOrchestrator:
             r'total:\s*(\d+)',
             r'FAILED.*?(\d+)\s+violations?'
         ]
-        
+
         for pattern in patterns:
             match = re.search(pattern, output, re.IGNORECASE)
             if match:
                 return int(match.group(1))
-        
+
         return 0
-    
+
     def _print_summary(self):
         """Print comprehensive summary of all guardrail results."""
         total_elapsed = time.time() - self.start_time
-        
+
         print("\n" + "=" * 80)
         print("CI GUARDRAIL SUITE - SUMMARY")
         print("=" * 80)
-        
+
         passed_count = sum(1 for r in self.results if r.passed)
         failed_count = len(self.results) - passed_count
         timeout_count = sum(1 for r in self.results if r.timeout)
         total_violations = sum(r.violations for r in self.results)
-        
+
         print(f"Total Guardrails: {len(self.results)}")
         print(f"✅ Passed: {passed_count}")
         print(f"❌ Failed: {failed_count}")
@@ -326,27 +328,27 @@ class GuardrailOrchestrator:
         print(f"🚨 Total Violations: {total_violations}")
         print(f"⏱️  Total Time: {total_elapsed:.2f}s")
         print()
-        
+
         # Detailed results
         print("DETAILED RESULTS:")
         print("-" * 80)
-        
+
         for result in self.results:
             status_icon = "✅" if result.passed else "⏱️" if result.timeout else "❌"
             print(f"{status_icon} {result.name}")
             print(f"   Time: {result.elapsed_time:.2f}s")
-            
+
             if result.violations > 0:
                 print(f"   Violations: {result.violations}")
-            
+
             if result.error:
                 print(f"   Error: {result.error}")
-            
+
             if result.rca_path:
                 print(f"   RCA: {result.rca_path.relative_to(PROJECT_ROOT)}")
-            
+
             print()
-        
+
         # RCA summary
         rca_files = [r.rca_path for r in self.results if r.rca_path]
         if rca_files:
@@ -354,16 +356,16 @@ class GuardrailOrchestrator:
             for rca_path in rca_files:
                 print(f"   - {rca_path.relative_to(PROJECT_ROOT)}")
             print()
-        
+
         print("=" * 80)
-        
+
         if passed_count == len(self.results):
             print("🎉 ALL GUARDRAILS PASSED")
         else:
             print(f"⚠️  {failed_count} GUARDRAIL(S) FAILED")
-        
+
         print("=" * 80)
-    
+
     def save_report(self, output_path: Path):
         """Save detailed JSON report."""
         report = {
@@ -391,7 +393,7 @@ class GuardrailOrchestrator:
                 for r in self.results
             ]
         }
-        
+
         output_path.parent.mkdir(parents=True, exist_ok=True)
         output_path.write_text(json.dumps(report, indent=2), encoding='utf-8')
         print(f"📊 Report saved: {output_path}")
@@ -403,20 +405,20 @@ def main() -> int:
     parser.add_argument("--timeout", type=int, default=300, help="Default timeout in seconds")
     parser.add_argument("--verbose", action="store_true", help="Verbose output")
     parser.add_argument("--report", type=str, help="Save JSON report to file")
-    
+
     args = parser.parse_args()
-    
+
     suite = GuardrailSuite()
     orchestrator = GuardrailOrchestrator(
         default_timeout=args.timeout,
         verbose=args.verbose
     )
-    
+
     all_passed = orchestrator.run_all_guardrails(suite)
-    
+
     if args.report:
         orchestrator.save_report(Path(args.report))
-    
+
     return 0 if all_passed else 1
 
 

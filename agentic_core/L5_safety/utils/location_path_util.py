@@ -7,29 +7,16 @@ Contains:
 - is_path_compliant(): L5 Sovereign Structural SSOT — Supreme Court for path validity
 - get_location_agent(): Redirect shim for backward compatibility (→ LocationHealerAgent)
 """
-
 from __future__ import annotations
-
 import re
 from pathlib import Path
 from typing import TYPE_CHECKING
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 if TYPE_CHECKING:
     from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
 
-
-def is_path_compliant(file_path: str | Path, project_root: Path | None = None) -> bool:
-    r"""
+def is_path_compliant(file_path: str | Path, project_root: Path | None=None) -> bool:
+    """
     L5 Sovereign Structural SSOT - Hard-enforcement of path validity.
 
     This is the Supreme Court for structural compliance. All L3 and L2 agents
@@ -41,7 +28,7 @@ def is_path_compliant(file_path: str | Path, project_root: Path | None = None) -
     2. Root folder must be in SOVEREIGN_TERRITORIES (whitelist)
     3. Depth must not exceed MAX_ALLOWED_DEPTH per root
     4. No forbidden root folders (legacy_*, old_*)
-    5. No numbered folder prefixes (^\d+_)
+    5. No numbered folder prefixes (^\\d+_)
 
     Args:
         file_path: Path to validate (str or Path)
@@ -58,51 +45,33 @@ def is_path_compliant(file_path: str | Path, project_root: Path | None = None) -
         >>> is_path_compliant('agentic_core/L1/L2/L3/L4/L5/deep.py')  # Too deep
         False
     """
-    from agentic_core.L5_safety.config.structure_blueprint import (
-        DEPTH_RULES,
-        PROJECT_ROOT_WHITELIST,
-        get_validated_project_root,
-    )
-
+    from agentic_core.L5_safety.config.structure_blueprint import DEPTH_RULES, PROJECT_ROOT_WHITELIST, get_validated_project_root
     if project_root is None:
         project_root = get_validated_project_root()
-
     path = Path(file_path)
-
     try:
         if not path.is_absolute():
             path = project_root / path
         rel_path = path.relative_to(project_root)
     except (ValueError, RuntimeError):
         return False
-
     parts = rel_path.parts
     if not parts:
         return False
-
     root_folder = parts[0]
-
     if root_folder not in PROJECT_ROOT_WHITELIST:
         return False
-
     max_depth = DEPTH_RULES.get(root_folder, 3)
     if len(parts) > max_depth:
         return False
-
-    if root_folder.startswith(("legacy_", "old_")):
+    if root_folder.startswith(('legacy_', 'old_')):
         return False
-
-    forbidden_pattern = re.compile(r"^\d+_")
+    forbidden_pattern = re.compile('^\\d+_')
     for part in parts:
         if forbidden_pattern.match(part):
             return False
-
     return True
-
-
-# Singleton shim for backward compatibility
 _healer_instance: LocationHealerAgent | None = None
-
 
 def get_location_agent(project_root: Path) -> LocationHealerAgent:
     """Get or create LocationHealerAgent singleton.
@@ -114,6 +83,5 @@ def get_location_agent(project_root: Path) -> LocationHealerAgent:
     global _healer_instance
     if _healer_instance is None:
         from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
-
         _healer_instance = LocationHealerAgent(project_root=project_root)
     return _healer_instance

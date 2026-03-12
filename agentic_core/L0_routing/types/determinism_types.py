@@ -6,43 +6,18 @@ that are gated by P2 (Determinism & Replayability).
 
 Contract version: 1.0.0
 """
-
 from __future__ import annotations
-
 import hashlib
 import re
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-# =============================================================================
-# GROUP A — Core Deterministic Inputs
-# =============================================================================
-
-# §1.3 — FixConstraint enum
-# =============================================================================
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 class FixConstraint(str, Enum):
     """§1.3 — Fix constraint for SurgicalManifest."""
-
-    STRICT = "STRICT"
-    RELAXED = "RELAXED"
-
-
-# §1.1 / §1.3 — SurgicalManifest (10 required fields)
-# =============================================================================
-
+    STRICT = 'STRICT'
+    RELAXED = 'RELAXED'
 
 @dataclass(frozen=True)
 class SurgicalManifest:
@@ -53,7 +28,6 @@ class SurgicalManifest:
       ast_snippet, serialization_canon, fix_constraint,
       manifest_hash, change_history, provenance_chain
     """
-
     schema_version: str
     correlation_id: str
     node_id: str
@@ -66,67 +40,28 @@ class SurgicalManifest:
     provenance_chain: tuple[str, ...]
 
     def __post_init__(self) -> None:
-        if not re.match(r"^\d+\.\d+\.\d+$", self.schema_version):
-            raise ValueError(
-                f"SurgicalManifest: schema_version '{self.schema_version}' is not semver",
-            )
-        if self.target_layer not in {"L0", "L1", "L2", "L3", "L4", "L5", "L6"}:
-            raise ValueError(
-                f"SurgicalManifest: target_layer '{self.target_layer}' not in L0-L6",
-            )
+        if not re.match('^\\d+\\.\\d+\\.\\d+$', self.schema_version):
+            raise ValueError(f"SurgicalManifest: schema_version '{self.schema_version}' is not semver")
+        if self.target_layer not in {'L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'L6'}:
+            raise ValueError(f"SurgicalManifest: target_layer '{self.target_layer}' not in L0-L6")
 
     def verify_hash(self) -> bool:
         """§1.6 — manifest_hash must match SHA-256 of ast_snippet bytes."""
-        expected = hashlib.sha256(self.ast_snippet.encode("utf-8")).hexdigest()
+        expected = hashlib.sha256(self.ast_snippet.encode('utf-8')).hexdigest()
         return self.manifest_hash == expected
-
-
-# §1.2 — Forbidden execution input types
-# =============================================================================
-
-FORBIDDEN_INPUT_PATTERNS: frozenset[str] = frozenset(
-    {
-        "raw_file_path",
-        "line_number",
-        "regex_operation",
-        "unified_diff",
-        "free_form_text",
-        "non_ssot_logic",
-        "direct_tool_access",
-        "unsigned_human_edit",
-    },
-)
-
-
-# =============================================================================
-# GROUP B — Deterministic Serialization + Hashing
-# =============================================================================
-
-# §1.4 — Deterministic AST serialization result
-# =============================================================================
-
+FORBIDDEN_INPUT_PATTERNS: frozenset[str] = frozenset({'raw_file_path', 'line_number', 'regex_operation', 'unified_diff', 'free_form_text', 'non_ssot_logic', 'direct_tool_access', 'unsigned_human_edit'})
 
 @dataclass(frozen=True)
 class CanonicalASTResult:
     """§1.4 — Result of deterministic AST serialization."""
-
     source_path: str
     canonical_form: str
     canonical_hash: str
 
     def verify(self) -> bool:
         """Hash must match canonical_form bytes."""
-        expected = hashlib.sha256(self.canonical_form.encode("utf-8")).hexdigest()
+        expected = hashlib.sha256(self.canonical_form.encode('utf-8')).hexdigest()
         return self.canonical_hash == expected
-
-
-# =============================================================================
-# GROUP C — Semantic Clock
-# =============================================================================
-
-# §13.1 — Semantic Clock (Step ID + Vector Clock)
-# =============================================================================
-
 
 @dataclass
 class SemanticClock:
@@ -134,7 +69,6 @@ class SemanticClock:
 
     No wall-clock time. Tick advances only on valid StateCommit (§13.1.1).
     """
-
     step_id: int = 0
     vector_clock: dict[str, int] = field(default_factory=dict)
     _committed: bool = field(default=False, repr=False, init=False)
@@ -148,9 +82,7 @@ class SemanticClock:
     def tick(self, layer: str, state_commit_valid: bool) -> int:
         """§13.1.1 — Advance only on valid StateCommit. Fail-closed otherwise."""
         if not state_commit_valid:
-            raise StateCommitInvalid(
-                f"SemanticClock: tick rejected — invalid StateCommit for {layer}",
-            )
+            raise StateCommitInvalid(f'SemanticClock: tick rejected — invalid StateCommit for {layer}')
         self.step_id += 1
         self.vector_clock[layer] = self.vector_clock.get(layer, 0) + 1
         self._committed = True
@@ -160,10 +92,8 @@ class SemanticClock:
     def current_tick(self) -> int:
         return self.step_id
 
-
 class StateCommitInvalid(Exception):
     """§13.1.1 — StateCommit validation failed; clock must not advance."""
-
 
 @dataclass(frozen=True)
 class SemanticClockSnapshot:
@@ -171,67 +101,30 @@ class SemanticClockSnapshot:
 
     Serializes as {"tick": <int>, "vector_clock": {<layer>: <int>, ...}}.
     """
-
     tick: int
     vector_clock: tuple[tuple[str, int], ...] = ()
 
     def __post_init__(self) -> None:
         if self.tick < 0:
-            raise ValueError(
-                f"SemanticClockSnapshot: tick must be >= 0, got {self.tick}",
-            )
+            raise ValueError(f'SemanticClockSnapshot: tick must be >= 0, got {self.tick}')
 
     def to_dict(self) -> dict[str, object]:
         """Deterministic serialization: sorted vector_clock keys."""
-        return {
-            "tick": self.tick,
-            "vector_clock": dict(sorted(self.vector_clock)),
-        }
+        return {'tick': self.tick, 'vector_clock': dict(sorted(self.vector_clock))}
 
     @classmethod
     def from_clock(cls, clock: SemanticClock) -> SemanticClockSnapshot:
         """Capture a snapshot from a live SemanticClock."""
-        return cls(
-            tick=clock.step_id,
-            vector_clock=tuple(sorted(clock.vector_clock.items())),
-        )
+        return cls(tick=clock.step_id, vector_clock=tuple(sorted(clock.vector_clock.items())))
 
-
-def validate_semantic_clock(
-    semantic_clock: SemanticClockSnapshot | None,
-    context: str = "",
-) -> SemanticClockSnapshot:
+def validate_semantic_clock(semantic_clock: SemanticClockSnapshot | None, context: str='') -> SemanticClockSnapshot:
     """§Phase3.2 — Hard-fail if semantic_clock is None at a determinism chokepoint."""
     if semantic_clock is None:
-        raise ValueError("semantic_clock is required")
+        raise ValueError('semantic_clock is required')
     if not isinstance(semantic_clock, SemanticClockSnapshot):
-        raise TypeError(
-            f"semantic_clock must be SemanticClockSnapshot, got {type(semantic_clock).__name__}",
-        )
+        raise TypeError(f'semantic_clock must be SemanticClockSnapshot, got {type(semantic_clock).__name__}')
     return semantic_clock
-
-
-# §13.2 — Wall-clock guard types
-# =============================================================================
-
-WALL_CLOCK_FORBIDDEN_CALLABLES: frozenset[str] = frozenset(
-    {
-        "datetime.utcnow",
-        "datetime.now",
-        "time.time",
-        "time.monotonic",
-        "time.perf_counter",
-    },
-)
-
-
-# =============================================================================
-# GROUP D — Rollback Determinism Primitives
-# =============================================================================
-
-# §10.2 — BoundarySnapshotArtifact
-# =============================================================================
-
+WALL_CLOCK_FORBIDDEN_CALLABLES: frozenset[str] = frozenset({'datetime.utcnow', 'datetime.now', 'time.time', 'time.monotonic', 'time.perf_counter'})
 
 @dataclass(frozen=True)
 class BoundarySnapshotArtifact:
@@ -240,21 +133,11 @@ class BoundarySnapshotArtifact:
     Required fields: trace_id, filesystem_hash, git_state_hash,
                      agent_memory_hash, semantic_clock_tick
     """
-
     trace_id: str
     filesystem_hash: str
     git_state_hash: str
     agent_memory_hash: str
     semantic_clock_tick: int
-
-
-# =============================================================================
-# GROUP E — Cognitive Memory Determinism
-# =============================================================================
-
-# §6.1 — Episodic memory query result (must precede planning)
-# =============================================================================
-
 
 @dataclass(frozen=True)
 class EpisodicMemoryQueryResult:
@@ -262,21 +145,14 @@ class EpisodicMemoryQueryResult:
 
     Planning functions must accept this as a required input.
     """
-
     trace_id: str
     query_hash: str
     results: tuple[str, ...]
     confidence_scores: tuple[float, ...]
 
-
-# §6.2 — Trajectory reuse constraint
-# =============================================================================
-
-
 @dataclass(frozen=True)
 class TrajectoryReuseConstraint:
     """§6.2 — Trajectory reuse requires similarity AND exact failure_reason match."""
-
     trace_id: str
     similarity_score: float
     similarity_threshold: float
@@ -285,22 +161,12 @@ class TrajectoryReuseConstraint:
 
     @property
     def reusable(self) -> bool:
-        return (
-            self.similarity_score >= self.similarity_threshold
-            and self.failure_reason == self.candidate_failure_reason
-        )
-
-
-# §6.6 — Knowledge Supervisor
-# =============================================================================
-
+        return self.similarity_score >= self.similarity_threshold and self.failure_reason == self.candidate_failure_reason
 MEMORY_CONFIDENCE_THRESHOLD: float = 0.7
-
 
 @dataclass
 class KnowledgeSupervisorResult:
     """§6.6 — Knowledge Supervisor audit result for low-confidence retrievals."""
-
     trace_id: str
     confidence_score: float
     threshold: float = MEMORY_CONFIDENCE_THRESHOLD
@@ -309,44 +175,22 @@ class KnowledgeSupervisorResult:
     def __post_init__(self) -> None:
         self.requires_retraining = self.confidence_score < self.threshold
 
-
-# §6.8 — Memory Hypostates (Extended Trace)
-# =============================================================================
-
-
 @dataclass(frozen=True)
 class MemoryHypostate:
     """§6.8 — Extended Trace Hypostate linked to the Semantic Clock."""
-
     trace_id: str
     semantic_clock_tick: int
     memory_snapshot_hash: str
     state_commit_id: str
 
-
-# §6.10 — Episodic ↔ Semantic Linking
-# =============================================================================
-
-
 @dataclass(frozen=True)
 class EpisodicSemanticLink:
     """§6.10 — Episodic memory records outcome links used in reasoning."""
-
     trace_id: str
     episodic_memory_id: str
     semantic_outcome_id: str
     reasoning_context_hash: str
-
-
-# =============================================================================
-# GROUP F — Forensic Trace
-# =============================================================================
-
-# §15.3 — Forensic Trace Buffer
-# =============================================================================
-
 TRACE_BUFFER_VELOCITY_THRESHOLD: int = 10
-
 
 @dataclass
 class ForensicTraceBuffer:
@@ -355,7 +199,6 @@ class ForensicTraceBuffer:
     Signals >= TRACE_BUFFER_VELOCITY_THRESHOLD per semantic clock tick
     must be captured here before persistence.
     """
-
     trace_id: str
     semantic_clock_tick: int
     velocity_threshold: int = TRACE_BUFFER_VELOCITY_THRESHOLD
@@ -379,12 +222,6 @@ class ForensicTraceBuffer:
         self._buffer.clear()
         return contents
 
-
-# =============================================================================
-# GROUP H — Semantic Clock Advancement (Wave 19)
-# =============================================================================
-
-
 @dataclass(frozen=True)
 class SemanticClockAdvancementArtifact:
     """Wave 19: Semantic clock advancement artifact for replay verification.
@@ -392,7 +229,6 @@ class SemanticClockAdvancementArtifact:
     Captures semantic clock advancement events with L4 version binding
     and provider identification for deterministic replay.
     """
-
     advancement_id: str
     previous_tick: int
     new_tick: int
@@ -400,49 +236,13 @@ class SemanticClockAdvancementArtifact:
     l4_version_binding: str
     provider_id: str
     timestamp: float
-    artifact_hash: str = ""
+    artifact_hash: str = ''
 
     def __post_init__(self):
         if not self.artifact_hash:
-            # Compute hash from advancement data
-            advancement_data = {
-                "advancement_id": self.advancement_id,
-                "previous_tick": self.previous_tick,
-                "new_tick": self.new_tick,
-                "advancement_reason": self.advancement_reason,
-                "l4_version_binding": self.l4_version_binding,
-                "provider_id": self.provider_id,
-                "timestamp": self.timestamp,
-            }
+            advancement_data = {'advancement_id': self.advancement_id, 'previous_tick': self.previous_tick, 'new_tick': self.new_tick, 'advancement_reason': self.advancement_reason, 'l4_version_binding': self.l4_version_binding, 'provider_id': self.provider_id, 'timestamp': self.timestamp}
             import json
-
             advancement_json = json.dumps(advancement_data, sort_keys=True)
             artifact_hash = hashlib.sha256(advancement_json.encode()).hexdigest()
-            object.__setattr__(self, "artifact_hash", artifact_hash)
-
-
-# =============================================================================
-# Exports
-# =============================================================================
-
-__all__ = [
-    "BoundarySnapshotArtifact",
-    "CanonicalASTResult",
-    "EpisodicMemoryQueryResult",
-    "EpisodicSemanticLink",
-    "FORBIDDEN_INPUT_PATTERNS",
-    "FixConstraint",
-    "ForensicTraceBuffer",
-    "KnowledgeSupervisorResult",
-    "MEMORY_CONFIDENCE_THRESHOLD",
-    "MemoryHypostate",
-    "SemanticClock",
-    "SemanticClockSnapshot",
-    "SemanticClockAdvancementArtifact",
-    "StateCommitInvalid",
-    "SurgicalManifest",
-    "validate_semantic_clock",
-    "TRACE_BUFFER_VELOCITY_THRESHOLD",
-    "TrajectoryReuseConstraint",
-    "WALL_CLOCK_FORBIDDEN_CALLABLES",
-]
+            object.__setattr__(self, 'artifact_hash', artifact_hash)
+__all__ = ['BoundarySnapshotArtifact', 'CanonicalASTResult', 'EpisodicMemoryQueryResult', 'EpisodicSemanticLink', 'FORBIDDEN_INPUT_PATTERNS', 'FixConstraint', 'ForensicTraceBuffer', 'KnowledgeSupervisorResult', 'MEMORY_CONFIDENCE_THRESHOLD', 'MemoryHypostate', 'SemanticClock', 'SemanticClockSnapshot', 'SemanticClockAdvancementArtifact', 'StateCommitInvalid', 'SurgicalManifest', 'validate_semantic_clock', 'TRACE_BUFFER_VELOCITY_THRESHOLD', 'TrajectoryReuseConstraint', 'WALL_CLOCK_FORBIDDEN_CALLABLES']

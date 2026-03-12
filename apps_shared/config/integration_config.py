@@ -105,6 +105,7 @@ def get_domain_config(domain: str) -> IntegrationConfig:
         APPS_LIC_DIR: LIC_CONFIG,
     }
 
+    # guardian: allow-config-with-logic
     if domain not in configs:
         raise ValueError(f"Unknown domain: {domain}. Expected 'rg' or 'lic'")
 

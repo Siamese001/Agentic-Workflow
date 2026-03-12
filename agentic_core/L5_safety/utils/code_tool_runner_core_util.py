@@ -17,25 +17,12 @@ compose it via multiple inheritance:
 [REFACTORED 2026-02-08] Removed SovereignBaseAgent inheritance to fix
 Diamond Problem risk. See critique in validation_report.md §1.
 """
-
 from __future__ import annotations
-
 from pathlib import Path
 from typing import Any
-
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 class CodeToolRunnerCapability:
     """Pure capability mixin for L5 code-tool-runner agents.
@@ -59,14 +46,7 @@ class CodeToolRunnerCapability:
     @timeout(300)
     @standard_heal
     # guardian: allow-magic-config
-    def heal_repository(
-        self,
-        dry_run: bool = True,
-        execute: bool = False,
-        depth: int = 0,
-        max_depth: int = 3,
-        _call_path: set[str] | None = None,
-    ) -> dict[str, int]:
+    def heal_repository(self, dry_run: bool=True, execute: bool=False, depth: int=0, max_depth: int=3, _call_path: set[str] | None=None) -> dict[str, int]:
         """Execute L5 safety healing operations.
 
         This is an operational agent - no repository healing required.
@@ -86,13 +66,13 @@ class CodeToolRunnerCapability:
             _call_path = set()
         agent_name = self.__class__.__name__
         if agent_name in _call_path:
-            return {"errors": 1, "cycle_detected": True}
+            return {'errors': 1, 'cycle_detected': True}
         if depth > max_depth:
-            return {"errors": 1, "depth_limited": True}
+            return {'errors': 1, 'depth_limited': True}
         _call_path.add(agent_name)
         try:
-            print(f"[{agent_name}] L5 safety - operational only")
-            return {"skipped": 1}
+            print(f'[{agent_name}] L5 safety - operational only')
+            return {'skipped': 1}
         finally:
             _call_path.discard(agent_name)
 
@@ -109,28 +89,16 @@ class CodeToolRunnerCapability:
         Returns:
             Dictionary with healing results following standard_heal format.
         """
-        path = violation.get("path", "")
-
+        path = violation.get('path', '')
         try:
             if path:
                 file_path = Path(path)
                 if file_path.exists():
                     import asyncio
-
-                    result = asyncio.get_event_loop().run_until_complete(
-                        self.execute(str(file_path)),
-                    )
-                    return {
-                        "violations_fixed": 1 if result.get("healed") else 0,
-                        "violations_found": 1,
-                        "errors": 0,
-                        "skipped": 0,
-                    }
-            return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}
+                    result = asyncio.get_event_loop().run_until_complete(self.execute(str(file_path)))
+                    return {'violations_fixed': 1 if result.get('healed') else 0, 'violations_found': 1, 'errors': 0, 'skipped': 0}
+            return {'violations_fixed': 0, 'violations_found': 1, 'errors': 0, 'skipped': 1}
         # guardian: allow-silent-swallow
         except Exception:
-            return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
-
-
-# Backward-compat alias for existing imports
+            return {'violations_fixed': 0, 'violations_found': 1, 'errors': 1, 'skipped': 0}
 CodeToolRunnerMixin = CodeToolRunnerCapability

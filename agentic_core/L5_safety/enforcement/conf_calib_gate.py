@@ -4,37 +4,22 @@ L5 CONF_CALIB Risk Gate - Structured Risk Decision Engine
 Implements deterministic risk evaluation with structured RiskDecision output.
 No ML, no wall-clock usage, pure deterministic rules.
 """
-
 from dataclasses import dataclass
 from enum import Enum
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 class RiskLevel(Enum):
     """Risk level enumeration for structured decision making."""
-
-    LOW = "LOW"
-    MEDIUM = "MEDIUM"
-    HIGH = "HIGH"
-
+    LOW = 'LOW'
+    MEDIUM = 'MEDIUM'
+    HIGH = 'HIGH'
 
 @dataclass(frozen=True)
 class RiskDecision:
     """Structured risk decision with deterministic reasons."""
-
     allow: bool
     level: RiskLevel
-    reasons: tuple[str, ...]  # deterministic sorted tuple
-
+    reasons: tuple[str, ...]
 
 class ConfCalibRiskGate:
     """
@@ -62,29 +47,19 @@ class ConfCalibRiskGate:
         Returns:
             Structured RiskDecision with deterministic reasons
         """
-        # Start with LOW risk, allow execution
         current_level = RiskLevel.LOW
         allow_execution = True
         reasons = []
-
-        # Check for sanitized input
-        if getattr(payload_like, "sanitized", False):
+        if getattr(payload_like, 'sanitized', False):
             current_level = RiskLevel.MEDIUM
-            reasons.append("SANITIZED_INPUT")
-
-        # Check for many check_ids
-        check_ids = getattr(payload_like, "check_ids", ())
+            reasons.append('SANITIZED_INPUT')
+        check_ids = getattr(payload_like, 'check_ids', ())
         if len(check_ids) >= 5:
             current_level = RiskLevel.MEDIUM
-            reasons.append("MANY_CHECK_IDS")
-
-        # Check for explicit deny in D0 injections
-        if "DENY_EXECUTION" in d0_injections:
+            reasons.append('MANY_CHECK_IDS')
+        if 'DENY_EXECUTION' in d0_injections:
             current_level = RiskLevel.HIGH
             allow_execution = False
-            reasons.append("D0_DENY_EXECUTION")
-
-        # Sort reasons lexicographically for deterministic output
+            reasons.append('D0_DENY_EXECUTION')
         sorted_reasons = tuple(sorted(reasons))
-
         return RiskDecision(allow=allow_execution, level=current_level, reasons=sorted_reasons)

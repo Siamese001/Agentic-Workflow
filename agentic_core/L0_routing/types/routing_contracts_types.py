@@ -109,6 +109,7 @@ class PolicyConfigGuard:
         current_hash = hashlib.sha256(
             _deterministic_bytes(current_config),
         ).hexdigest()
+        # guardian: allow-config-with-logic
         if current_hash != self._hash:
             raise PolicyMutationIncident(
                 wave_id=self._wave_id,

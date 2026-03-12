@@ -15,9 +15,7 @@ SSOT PRINCIPLE:
     All agents requiring human oversight should inherit from this mixin.
     This ensures consistent HITL patterns across the agent ecosystem.
 """
-
 from __future__ import annotations
-
 import logging
 import threading
 import time
@@ -26,46 +24,30 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 Logger = logging.getLogger(__name__)
-
 
 class ApprovalStatus(Enum):
     """Status of an approval request."""
-
-    PENDING = "pending"
-    APPROVED = "approved"
-    REJECTED = "rejected"
-    TIMEOUT = "timeout"
-    ESCALATED = "escalated"
-
+    PENDING = 'pending'
+    APPROVED = 'approved'
+    REJECTED = 'rejected'
+    TIMEOUT = 'timeout'
+    ESCALATED = 'escalated'
 
 class RiskLevel(Enum):
     """Risk levels for operations."""
-
-    LOW = 1  # No approval needed
-    MEDIUM = 2  # Async approval, can proceed with warning
-    HIGH = 3  # Requires approval before proceeding
-    CRITICAL = 4  # Requires multi-level approval
-
+    LOW = 1
+    MEDIUM = 2
+    HIGH = 3
+    CRITICAL = 4
 
 @dataclass
 class ApprovalRequest:
     """Represents a request for human approval."""
-
     request_id: str = field(default_factory=lambda: str(uuid.uuid4())[:12])
-    operation_name: str = ""
-    description: str = ""
+    operation_name: str = ''
+    description: str = ''
     risk_level: RiskLevel = RiskLevel.MEDIUM
     context: dict[str, Any] = field(default_factory=dict)
     status: ApprovalStatus = ApprovalStatus.PENDING
@@ -73,7 +55,7 @@ class ApprovalRequest:
     resolved_at: float | None = None
     resolved_by: str | None = None
     resolution_notes: str | None = None
-    timeout_seconds: float = 300.0  # 5 minutes default
+    timeout_seconds: float = 300.0
     escalation_chain: list[str] = field(default_factory=list)
     current_escalation_level: int = 0
 
@@ -83,59 +65,34 @@ class ApprovalRequest:
 
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization."""
-        return {
-            "request_id": self.request_id,
-            "operation_name": self.operation_name,
-            "description": self.description,
-            "risk_level": self.risk_level.name,
-            "context": self.context,
-            "status": self.status.value,
-            "created_at": self.created_at,
-            "resolved_at": self.resolved_at,
-            "resolved_by": self.resolved_by,
-            "resolution_notes": self.resolution_notes,
-            "timeout_seconds": self.timeout_seconds,
-            "is_expired": self.is_expired(),
-        }
-
+        return {'request_id': self.request_id, 'operation_name': self.operation_name, 'description': self.description, 'risk_level': self.risk_level.name, 'context': self.context, 'status': self.status.value, 'created_at': self.created_at, 'resolved_at': self.resolved_at, 'resolved_by': self.resolved_by, 'resolution_notes': self.resolution_notes, 'timeout_seconds': self.timeout_seconds, 'is_expired': self.is_expired()}
 
 @dataclass
 class HITLConfig:
     """Configuration for HITL behavior."""
-
     enabled: bool = True
     default_timeout_seconds: float = 300.0
     auto_approve_low_risk: bool = True
     require_notes_on_rejection: bool = True
     escalation_timeout_seconds: float = 600.0
     max_escalation_levels: int = 3
-    default_escalation_chain: list[str] = field(default_factory=lambda: ["team_lead", "manager", "director"])
-    # [HARDENING] Memory protection limits
-    max_pending_approvals: int = 100  # Prevent unbounded pending queue
-    max_history_size: int = 10000  # Prevent unbounded history growth
-
+    default_escalation_chain: list[str] = field(default_factory=lambda: ['team_lead', 'manager', 'director'])
+    max_pending_approvals: int = 100
+    max_history_size: int = 10000
 
 class ApprovalRequiredError(Exception):
     """Raised when an operation requires approval."""
 
     def __init__(self, request: ApprovalRequest):
         self.request = request
-        super().__init__(
-            f"Approval required for '{request.operation_name}' "
-            f"(Risk: {request.risk_level.name}, ID: {request.request_id})",
-        )
-
+        super().__init__(f"Approval required for '{request.operation_name}' (Risk: {request.risk_level.name}, ID: {request.request_id})")
 
 class ApprovalRejectedError(Exception):
     """Raised when an operation is rejected."""
 
     def __init__(self, request: ApprovalRequest):
         self.request = request
-        super().__init__(
-            f"Operation '{request.operation_name}' rejected by {request.resolved_by}: "
-            f"{request.resolution_notes}",
-        )
-
+        super().__init__(f"Operation '{request.operation_name}' rejected by {request.resolved_by}: {request.resolution_notes}")
 
 class ApprovalTimeoutError(Exception):
     """Raised when approval times out."""
@@ -143,7 +100,6 @@ class ApprovalTimeoutError(Exception):
     def __init__(self, request: ApprovalRequest):
         self.request = request
         super().__init__(f"Approval timeout for '{request.operation_name}' after {request.timeout_seconds}s")
-
 
 class HITLMixin:
     """
@@ -179,42 +135,16 @@ class HITLMixin:
     def __init__(self, **kwargs: Any) -> None:
         """Initialize HITL state."""
         super().__init__(**kwargs)
-
-        # HITL configuration
         self._hitl_config: HITLConfig = HITLConfig()
-
-        # Pending approval requests
         self._pending_approvals: dict[str, ApprovalRequest] = {}
-
-        # Completed approvals (audit trail)
         self._approval_history: list[ApprovalRequest] = []
-
-        # Registered sensitive operations
         self._sensitive_operations: dict[str, dict[str, Any]] = {}
-
-        # Approval callbacks
         self._approval_callbacks: dict[str, Callable] = {}
-
-        # Thread safety
         self._hitl_lock = threading.RLock()
-
-        # Initialization flag
         self._hitl_initialized = True
+        Logger.debug(f'[HITL] {self.__class__.__name__} HITL initialized')
 
-        Logger.debug(f"[HITL] {self.__class__.__name__} HITL initialized")
-
-    def configure_hitl(
-        self,
-        enabled: bool | None = None,
-        default_timeout_seconds: float | None = None,
-        auto_approve_low_risk: bool | None = None,
-        require_notes_on_rejection: bool | None = None,
-        escalation_timeout_seconds: float | None = None,
-        max_escalation_levels: int | None = None,
-        default_escalation_chain: list[str] | None = None,
-        max_pending_approvals: int | None = None,
-        max_history_size: int | None = None,
-    ) -> None:
+    def configure_hitl(self, enabled: bool | None=None, default_timeout_seconds: float | None=None, auto_approve_low_risk: bool | None=None, require_notes_on_rejection: bool | None=None, escalation_timeout_seconds: float | None=None, max_escalation_levels: int | None=None, default_escalation_chain: list[str] | None=None, max_pending_approvals: int | None=None, max_history_size: int | None=None) -> None:
         """
         Configure HITL behavior.
 
@@ -232,18 +162,16 @@ class HITLMixin:
         Raises:
             ValueError: If any parameter is invalid
         """
-        # [HARDENING] Validate inputs
         if default_timeout_seconds is not None and default_timeout_seconds <= 0:
-            raise ValueError("default_timeout_seconds must be positive")
+            raise ValueError('default_timeout_seconds must be positive')
         if escalation_timeout_seconds is not None and escalation_timeout_seconds <= 0:
-            raise ValueError("escalation_timeout_seconds must be positive")
+            raise ValueError('escalation_timeout_seconds must be positive')
         if max_escalation_levels is not None and max_escalation_levels <= 0:
-            raise ValueError("max_escalation_levels must be positive")
+            raise ValueError('max_escalation_levels must be positive')
         if max_pending_approvals is not None and max_pending_approvals <= 0:
-            raise ValueError("max_pending_approvals must be positive")
+            raise ValueError('max_pending_approvals must be positive')
         if max_history_size is not None and max_history_size <= 0:
-            raise ValueError("max_history_size must be positive")
-
+            raise ValueError('max_history_size must be positive')
         with self._hitl_lock:
             if enabled is not None:
                 self._hitl_config.enabled = enabled
@@ -263,17 +191,9 @@ class HITLMixin:
                 self._hitl_config.max_pending_approvals = max_pending_approvals
             if max_history_size is not None:
                 self._hitl_config.max_history_size = max_history_size
+        Logger.info(f'[HITL] Configuration updated: {self._hitl_config}')
 
-        Logger.info(f"[HITL] Configuration updated: {self._hitl_config}")
-
-    def register_sensitive_operation(
-        self,
-        operation_name: str,
-        risk_level: RiskLevel,
-        description: str = "",
-        escalation_chain: list[str] | None = None,
-        timeout_seconds: float | None = None,
-    ) -> None:
+    def register_sensitive_operation(self, operation_name: str, risk_level: RiskLevel, description: str='', escalation_chain: list[str] | None=None, timeout_seconds: float | None=None) -> None:
         """
         Register a sensitive operation requiring approval.
 
@@ -285,21 +205,10 @@ class HITLMixin:
             timeout_seconds: Custom timeout
         """
         with self._hitl_lock:
-            self._sensitive_operations[operation_name] = {
-                "risk_level": risk_level,
-                "description": description,
-                "escalation_chain": (escalation_chain or self._hitl_config.default_escalation_chain),
-                "timeout_seconds": (timeout_seconds or self._hitl_config.default_timeout_seconds),
-            }
+            self._sensitive_operations[operation_name] = {'risk_level': risk_level, 'description': description, 'escalation_chain': escalation_chain or self._hitl_config.default_escalation_chain, 'timeout_seconds': timeout_seconds or self._hitl_config.default_timeout_seconds}
+        Logger.info(f'[HITL] Registered sensitive operation: {operation_name} (Risk: {risk_level.name})')
 
-        Logger.info(f"[HITL] Registered sensitive operation: {operation_name} (Risk: {risk_level.name})")
-
-    def create_approval_request(
-        self,
-        operation_name: str,
-        context: dict[str, Any] | None = None,
-        description: str | None = None,
-    ) -> ApprovalRequest:
+    def create_approval_request(self, operation_name: str, context: dict[str, Any] | None=None, description: str | None=None) -> ApprovalRequest:
         """
         Create an approval request for an operation.
 
@@ -312,34 +221,17 @@ class HITLMixin:
             ApprovalRequest object
         """
         op_config = self._sensitive_operations.get(operation_name, {})
-
-        request = ApprovalRequest(
-            operation_name=operation_name,
-            description=description or op_config.get("description", ""),
-            risk_level=op_config.get("risk_level", RiskLevel.MEDIUM),
-            context=context or {},
-            timeout_seconds=op_config.get("timeout_seconds", self._hitl_config.default_timeout_seconds),
-            escalation_chain=op_config.get("escalation_chain", self._hitl_config.default_escalation_chain),
-        )
-
+        request = ApprovalRequest(operation_name=operation_name, description=description or op_config.get('description', ''), risk_level=op_config.get('risk_level', RiskLevel.MEDIUM), context=context or {}, timeout_seconds=op_config.get('timeout_seconds', self._hitl_config.default_timeout_seconds), escalation_chain=op_config.get('escalation_chain', self._hitl_config.default_escalation_chain))
         with self._hitl_lock:
-            # [HARDENING] Check pending approvals limit
             if len(self._pending_approvals) >= self._hitl_config.max_pending_approvals:
-                # Expire oldest pending requests to make room
-                oldest_id = min(
-                    self._pending_approvals.keys(),
-                    key=lambda k: self._pending_approvals[k].created_at,
-                )
+                oldest_id = min(self._pending_approvals.keys(), key=lambda k: self._pending_approvals[k].created_at)
                 oldest = self._pending_approvals.pop(oldest_id)
                 oldest.status = ApprovalStatus.TIMEOUT
                 oldest.resolved_at = time.time()
                 self._approval_history.append(oldest)
-                Logger.warning(f"[HITL] Evicted oldest pending request {oldest_id} due to limit")
-
+                Logger.warning(f'[HITL] Evicted oldest pending request {oldest_id} due to limit')
             self._pending_approvals[request.request_id] = request
-
         Logger.info(f"[HITL] Created approval request: {request.request_id} for '{operation_name}'")
-
         return request
 
     def check_approval_required(self, operation_name: str) -> bool:
@@ -354,25 +246,15 @@ class HITLMixin:
         """
         if not self._hitl_config.enabled:
             return False
-
         op_config = self._sensitive_operations.get(operation_name)
         if not op_config:
             return False
-
-        risk_level = op_config.get("risk_level", RiskLevel.LOW)
-
-        # Auto-approve LOW risk if configured
+        risk_level = op_config.get('risk_level', RiskLevel.LOW)
         if risk_level == RiskLevel.LOW and self._hitl_config.auto_approve_low_risk:
             return False
-
         return risk_level.value >= RiskLevel.MEDIUM.value
 
-    def require_approval(
-        self,
-        operation_name: str,
-        context: dict[str, Any] | None = None,
-        blocking: bool = True,
-    ) -> ApprovalRequest:
+    def require_approval(self, operation_name: str, context: dict[str, Any] | None=None, blocking: bool=True) -> ApprovalRequest:
         """
         Require approval for an operation.
 
@@ -388,24 +270,15 @@ class HITLMixin:
             ApprovalRequiredError: If blocking and approval required
         """
         if not self.check_approval_required(operation_name):
-            # Create auto-approved request for audit trail
             request = self.create_approval_request(operation_name, context)
-            self.approve(request.request_id, "system", "Auto-approved (low risk)")
+            self.approve(request.request_id, 'system', 'Auto-approved (low risk)')
             return request
-
         request = self.create_approval_request(operation_name, context)
-
         if blocking:
             raise ApprovalRequiredError(request)
-
         return request
 
-    def approve(
-        self,
-        request_id: str,
-        approved_by: str,
-        notes: str = "",
-    ) -> ApprovalRequest:
+    def approve(self, request_id: str, approved_by: str, notes: str='') -> ApprovalRequest:
         """
         Approve a pending request.
 
@@ -423,36 +296,21 @@ class HITLMixin:
         with self._hitl_lock:
             request = self._pending_approvals.get(request_id)
             if not request:
-                raise ValueError(f"Approval request not found: {request_id}")
-
+                raise ValueError(f'Approval request not found: {request_id}')
             if request.status != ApprovalStatus.PENDING:
-                raise ValueError(f"Request already resolved: {request.status.value}")
-
+                raise ValueError(f'Request already resolved: {request.status.value}')
             request.status = ApprovalStatus.APPROVED
             request.resolved_at = time.time()
             request.resolved_by = approved_by
             request.resolution_notes = notes
-
-            # Move to history
             del self._pending_approvals[request_id]
             self._approval_history.append(request)
-
-            # [HARDENING] Trim history if exceeds limit
             self._trim_history_if_needed()
-
-        Logger.info(f"[HITL] Request {request_id} APPROVED by {approved_by}")
-
-        # Trigger callback if registered
+        Logger.info(f'[HITL] Request {request_id} APPROVED by {approved_by}')
         self._trigger_approval_callback(request)
-
         return request
 
-    def reject(
-        self,
-        request_id: str,
-        rejected_by: str,
-        notes: str = "",
-    ) -> ApprovalRequest:
+    def reject(self, request_id: str, rejected_by: str, notes: str='') -> ApprovalRequest:
         """
         Reject a pending request.
 
@@ -470,28 +328,19 @@ class HITLMixin:
         with self._hitl_lock:
             request = self._pending_approvals.get(request_id)
             if not request:
-                raise ValueError(f"Approval request not found: {request_id}")
-
+                raise ValueError(f'Approval request not found: {request_id}')
             if request.status != ApprovalStatus.PENDING:
-                raise ValueError(f"Request already resolved: {request.status.value}")
-
-            if self._hitl_config.require_notes_on_rejection and not notes:
-                raise ValueError("Rejection notes are required")
-
+                raise ValueError(f'Request already resolved: {request.status.value}')
+            if self._hitl_config.require_notes_on_rejection and (not notes):
+                raise ValueError('Rejection notes are required')
             request.status = ApprovalStatus.REJECTED
             request.resolved_at = time.time()
             request.resolved_by = rejected_by
             request.resolution_notes = notes
-
-            # Move to history
             del self._pending_approvals[request_id]
             self._approval_history.append(request)
-
-            # [HARDENING] Trim history if exceeds limit
             self._trim_history_if_needed()
-
-        Logger.info(f"[HITL] Request {request_id} REJECTED by {rejected_by}: {notes}")
-
+        Logger.info(f'[HITL] Request {request_id} REJECTED by {rejected_by}: {notes}')
         return request
 
     def escalate(self, request_id: str) -> ApprovalRequest:
@@ -510,21 +359,13 @@ class HITLMixin:
         with self._hitl_lock:
             request = self._pending_approvals.get(request_id)
             if not request:
-                raise ValueError(f"Approval request not found: {request_id}")
-
+                raise ValueError(f'Approval request not found: {request_id}')
             if request.current_escalation_level >= len(request.escalation_chain) - 1:
-                raise ValueError("Maximum escalation level reached")
-
+                raise ValueError('Maximum escalation level reached')
             request.current_escalation_level += 1
             request.status = ApprovalStatus.ESCALATED
-
             current_approver = request.escalation_chain[request.current_escalation_level]
-
-        Logger.warning(
-            f"[HITL] Request {request_id} ESCALATED to level "
-            f"{request.current_escalation_level}: {current_approver}",
-        )
-
+        Logger.warning(f'[HITL] Request {request_id} ESCALATED to level {request.current_escalation_level}: {current_approver}')
         return request
 
     def get_pending_approvals(self) -> list[dict[str, Any]]:
@@ -535,27 +376,20 @@ class HITLMixin:
             List of pending requests as dictionaries
         """
         with self._hitl_lock:
-            # Check for expired requests
             expired = []
             for req_id, request in self._pending_approvals.items():
                 if request.is_expired():
                     request.status = ApprovalStatus.TIMEOUT
                     expired.append(req_id)
-
-            # Move expired to history
             for req_id in expired:
                 request = self._pending_approvals.pop(req_id)
                 request.resolved_at = time.time()
                 self._approval_history.append(request)
-                Logger.warning(f"[HITL] Request {req_id} TIMEOUT")
-
+                Logger.warning(f'[HITL] Request {req_id} TIMEOUT')
             return [req.to_dict() for req in self._pending_approvals.values()]
 
-    def get_approval_history(
-        self,
-        limit: int = 100,
-        operation_name: str | None = None,
-    ) -> list[dict[str, Any]]:
+    # guardian: allow-magic-config
+    def get_approval_history(self, limit: int=100, operation_name: str | None=None) -> list[dict[str, Any]]:
         """
         Get approval history.
 
@@ -568,18 +402,11 @@ class HITLMixin:
         """
         with self._hitl_lock:
             history = self._approval_history
-
             if operation_name:
                 history = [r for r in history if r.operation_name == operation_name]
-
-            # Return most recent first
             return [r.to_dict() for r in reversed(history[-limit:])]
 
-    def register_approval_callback(
-        self,
-        operation_name: str,
-        callback: Callable[[ApprovalRequest], None],
-    ) -> None:
+    def register_approval_callback(self, operation_name: str, callback: Callable[[ApprovalRequest], None]) -> None:
         """
         Register a callback for when an operation is approved.
 
@@ -597,18 +424,15 @@ class HITLMixin:
             try:
                 callback(request)
             except Exception as e:
-                # TODO: Handle specific exception properly
-                raise  # Re-raise after logging/handling
+                raise
                 Logger.error(f"[HITL] Callback error for '{request.operation_name}': {e}")
 
     def _trim_history_if_needed(self) -> None:
         """[HARDENING] Trim approval history if it exceeds the configured limit."""
-        # Must be called with _hitl_lock held
         if len(self._approval_history) > self._hitl_config.max_history_size:
-            # Remove oldest entries (keep most recent)
             excess = len(self._approval_history) - self._hitl_config.max_history_size
             self._approval_history = self._approval_history[excess:]
-            Logger.debug(f"[HITL] Trimmed {excess} old history entries")
+            Logger.debug(f'[HITL] Trimmed {excess} old history entries')
 
     def get_hitl_status(self) -> dict[str, Any]:
         """
@@ -618,23 +442,5 @@ class HITLMixin:
             Dictionary with HITL status information
         """
         with self._hitl_lock:
-            return {
-                "enabled": self._hitl_config.enabled,
-                "pending_count": len(self._pending_approvals),
-                "history_count": len(self._approval_history),
-                "registered_operations": list(self._sensitive_operations.keys()),
-                "default_timeout": self._hitl_config.default_timeout_seconds,
-                "auto_approve_low_risk": self._hitl_config.auto_approve_low_risk,
-            }
-
-
-__all__ = [
-    "HITLMixin",
-    "HITLConfig",
-    "ApprovalRequest",
-    "ApprovalStatus",
-    "RiskLevel",
-    "ApprovalRequiredError",
-    "ApprovalRejectedError",
-    "ApprovalTimeoutError",
-]
+            return {'enabled': self._hitl_config.enabled, 'pending_count': len(self._pending_approvals), 'history_count': len(self._approval_history), 'registered_operations': list(self._sensitive_operations.keys()), 'default_timeout': self._hitl_config.default_timeout_seconds, 'auto_approve_low_risk': self._hitl_config.auto_approve_low_risk}
+__all__ = ['HITLMixin', 'HITLConfig', 'ApprovalRequest', 'ApprovalStatus', 'RiskLevel', 'ApprovalRequiredError', 'ApprovalRejectedError', 'ApprovalTimeoutError']

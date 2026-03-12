@@ -1,32 +1,15 @@
-#!/usr/bin/env python3
 """Find the remaining agents missing heal_repository."""
-
 import json
 import sys
 from pathlib import Path
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-# Add project root to path for imports
+# guardian: allow-global-mutation
 sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 from agentic_core.utils.project_root_util import get_project_root
-
-# Load agent discovery
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 project_root = get_project_root()
-with open(project_root / "agent_discovery_full.json", encoding="utf-8") as f:
+with open(project_root / 'agent_discovery_full.json', encoding='utf-8') as f:
     data = json.load(f)
-
-# Find agents missing heal_repository
-missing = [a for a in data if not a.get("has_healing")]
-print(f"Agents missing healing: {len(missing)}")
-
+missing = [a for a in data if not a.get('has_healing')]
+print(f'Agents missing healing: {len(missing)}')
 for agent in missing:
     print(f"  {agent['path']}")

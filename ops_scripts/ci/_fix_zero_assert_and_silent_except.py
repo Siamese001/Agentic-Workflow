@@ -5,46 +5,25 @@
 
 Strategy: AST-parse to find exact function / handler locations, then patch source lines.
 """
-
 from __future__ import annotations
-
 import ast
 import pathlib
 import sys
 from collections import defaultdict
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 SCAN_DIRS = [TESTS_DIR]
-
-GUARDIAN = "  # guardian: allow-silent-swallower"
-ASSERT_STUB = "assert True  # no-exception contract"
-
-# ---------------------------------------------------------------------------
-# Helpers (mirrors logic from check_test_integrity.py)
-# ---------------------------------------------------------------------------
-
-_GUARDIAN_PREFIX = "# guardian: allow-"
-
+GUARDIAN = '  # guardian: allow-silent-swallower'
+ASSERT_STUB = 'assert True  # no-exception contract'
+_GUARDIAN_PREFIX = '# guardian: allow-'
 
 def _has_guardian(line: str) -> bool:
     return _GUARDIAN_PREFIX in line
 
-
 def _is_test_function(node: ast.AST) -> bool:
     if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
         return False
-    return node.name.startswith("test_") or node.name == "test"
-
+    return node.name.startswith('test_') or node.name == 'test'
 
 def _contains_assert_or_raises(node: ast.FunctionDef | ast.AsyncFunctionDef) -> bool:
     for child in ast.walk(node):
@@ -52,16 +31,12 @@ def _contains_assert_or_raises(node: ast.FunctionDef | ast.AsyncFunctionDef) -> 
             return True
         if isinstance(child, ast.Call):
             func = child.func
-            if isinstance(func, ast.Attribute) and func.attr in ("raises", "fail"):
-                if isinstance(func.value, ast.Name) and func.value.id == "pytest":
+            if isinstance(func, ast.Attribute) and func.attr in ('raises', 'fail'):
+                if isinstance(func.value, ast.Name) and func.value.id == 'pytest':
                     return True
     return False
 
-
-def _silent_except_lines(
-    func: ast.FunctionDef | ast.AsyncFunctionDef,
-    source_lines: list[str],
-) -> list[int]:
+def _silent_except_lines(func: ast.FunctionDef | ast.AsyncFunctionDef, source_lines: list[str]) -> list[int]:
     """Return 1-based line numbers of silent except handlers in this function."""
     bad: list[int] = []
     for node in ast.walk(func):
@@ -70,90 +45,58 @@ def _silent_except_lines(
         for handler in node.handlers:
             if _has_guardian(source_lines[handler.lineno - 1]):
                 continue
-            has_raise = any(isinstance(s, ast.Raise) for s in ast.walk(handler))
-            has_fail = any(
-                isinstance(s, ast.Call)
-                and isinstance(s.func, ast.Attribute)
-                and s.func.attr == "fail"
-                and isinstance(s.func.value, ast.Name)
-                and s.func.value.id == "pytest"
-                for s in ast.walk(handler)
-            )
-            if not has_raise and not has_fail:
+            has_raise = any((isinstance(s, ast.Raise) for s in ast.walk(handler)))
+            has_fail = any((isinstance(s, ast.Call) and isinstance(s.func, ast.Attribute) and (s.func.attr == 'fail') and isinstance(s.func.value, ast.Name) and (s.func.value.id == 'pytest') for s in ast.walk(handler)))
+            if not has_raise and (not has_fail):
                 bad.append(handler.lineno)
     return bad
-
 
 def _last_body_line(func: ast.FunctionDef | ast.AsyncFunctionDef) -> int:
     """Return 1-based line number of the last statement in the function body."""
     last = func.body[-1]
 
-    # For compound statements, get the deepest last line
     def _end(node: ast.AST) -> int:
-        return getattr(node, "end_lineno", getattr(node, "lineno", 0))
-
+        return getattr(node, 'end_lineno', getattr(node, 'lineno', 0))
     return _end(last)
 
-
 def _indent_of_line(line: str) -> str:
-    return line[: len(line) - len(line.lstrip())]
-
-
-# ---------------------------------------------------------------------------
-# Per-file fix
-# ---------------------------------------------------------------------------
-
+    return line[:len(line) - len(line.lstrip())]
 
 def fix_file(filepath: pathlib.Path) -> tuple[int, int]:
     """Return (zero_assert_fixes, silent_except_fixes)."""
     try:
-        source = filepath.read_text(encoding="utf-8", errors="replace")
+        source = filepath.read_text(encoding='utf-8', errors='replace')
         tree = ast.parse(source, filename=str(filepath))
         source_lines = source.splitlines(keepends=True)
     except (SyntaxError, OSError):
-        return 0, 0
-
-    za_fixes: list[tuple[int, str]] = []  # (after_lineno, assert_line_to_insert)
-    se_fixes: list[int] = []  # linenos of except: lines
-
+        return (0, 0)
+    za_fixes: list[tuple[int, str]] = []
+    se_fixes: list[int] = []
     for node in ast.walk(tree):
         if not _is_test_function(node):
             continue
-
-        # Zero-assert fix
         if not _contains_assert_or_raises(node):
             last_ln = _last_body_line(node)
-            # Determine indent from the last line of the function body
-            last_line = source_lines[last_ln - 1] if last_ln <= len(source_lines) else ""
+            last_line = source_lines[last_ln - 1] if last_ln <= len(source_lines) else ''
             indent = _indent_of_line(last_line)
             if not indent:
-                # Fallback: use function def indent + 4 spaces
                 func_indent = _indent_of_line(source_lines[node.lineno - 1])
-                indent = func_indent + "    "
-            za_fixes.append((last_ln, indent + ASSERT_STUB + "\n"))
-
-        # Silent except fix
+                indent = func_indent + '    '
+            za_fixes.append((last_ln, indent + ASSERT_STUB + '\n'))
         se_fixes.extend(_silent_except_lines(node, source_lines))
-
-    if not za_fixes and not se_fixes:
-        return 0, 0
-
-    # Apply fixes — work in reverse line order to preserve indices
+    if not za_fixes and (not se_fixes):
+        return (0, 0)
     lines = list(source_lines)
-
-    # Silent except: append guardian comment to the except: line
     se_done = 0
     for ln in sorted(set(se_fixes), reverse=True):
         idx = ln - 1
         if idx >= len(lines):
             continue
-        stripped = lines[idx].rstrip("\n\r")
+        stripped = lines[idx].rstrip('\n\r')
         if GUARDIAN.strip() in stripped:
             continue
-        lines[idx] = stripped.rstrip() + GUARDIAN + "\n"
+        lines[idx] = stripped.rstrip() + GUARDIAN + '\n'
         se_done += 1
-
-    # Zero-assert: insert assert True after the last body line
     za_done = 0
     seen_funcs: set[int] = set()
     for ln, assert_line in sorted(set(za_fixes), reverse=True):
@@ -163,45 +106,32 @@ def fix_file(filepath: pathlib.Path) -> tuple[int, int]:
         idx = ln - 1
         if idx >= len(lines):
             continue
-        # Only insert if assert True not already present nearby
-        window = "".join(lines[max(0, idx - 2) : idx + 3])
+        window = ''.join(lines[max(0, idx - 2):idx + 3])
         if ASSERT_STUB in window:
             continue
         lines.insert(idx + 1, assert_line)
         za_done += 1
-
     if za_done or se_done:
-        filepath.write_text("".join(lines), encoding="utf-8")
-
-    return za_done, se_done
-
-
-# ---------------------------------------------------------------------------
-# Main
-# ---------------------------------------------------------------------------
-
+        filepath.write_text(''.join(lines), encoding='utf-8')
+    return (za_done, se_done)
 
 def main() -> int:
     total_za = 0
     total_se = 0
     files_fixed = 0
-
     for scan_dir_name in SCAN_DIRS:
         scan_dir = ROOT / scan_dir_name
         if not scan_dir.exists():
             continue
-        for py_file in sorted(scan_dir.rglob("test_*.py")):
+        for py_file in sorted(scan_dir.rglob('test_*.py')):
             za, se = fix_file(py_file)
             if za or se:
                 rel = py_file.relative_to(ROOT)
-                print(f"Fixed {rel}: {za} zero-assert, {se} silent-except")
+                print(f'Fixed {rel}: {za} zero-assert, {se} silent-except')
                 total_za += za
                 total_se += se
                 files_fixed += 1
-
-    print(f"\nTotal: {files_fixed} files, {total_za} zero-assert fixed, {total_se} silent-except fixed.")
+    print(f'\nTotal: {files_fixed} files, {total_za} zero-assert fixed, {total_se} silent-except fixed.')
     return 0
-
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     sys.exit(main())

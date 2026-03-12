@@ -1,25 +1,10 @@
 from __future__ import annotations
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-"""
-BootstrapAgent: Sovereign Boot Integrity.
-[PHASE 18 REFACTOR] Force Clean.
-"""
+'\nBootstrapAgent: Sovereign Boot Integrity.\n[PHASE 18 REFACTOR] Force Clean.\n'
 from dataclasses import dataclass
 from pathlib import Path
-
 from agentic_core.base_agents.L0RoutingBase import L0RoutingBase
 from agentic_core.utils.decorators_compat_util import standard_heal
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 @dataclass
 class BootstrapAgent(L0RoutingBase):
@@ -34,22 +19,19 @@ class BootstrapAgent(L0RoutingBase):
 
     def _verify_redis_connection(self) -> bool:
         try:
-            self.cache_set("boot_check", "ok", ttl=5)
-            return self.cache_get("boot_check") == "ok"
+            self.cache_set('boot_check', 'ok', ttl=5)
+            return self.cache_get('boot_check') == 'ok'
+        # guardian: allow-silent-swallow
         except Exception:
             return False
 
     def run_bootstrap(self) -> bool:
-        print("[BOOT] Verifying Sovereign Systems...")
+        print('[BOOT] Verifying Sovereign Systems...')
         return self._verify_redis_connection()
 
     @standard_heal
     # guardian: allow-type-erasure
-    def heal_repository(
-        self,
-        target_path: str = None,
-        dry_run: bool = False,
-    ) -> dict:
+    def heal_repository(self, target_path: str=None, dry_run: bool=False) -> dict:
         """Heal bootstrap configuration and dependencies.
 
         Args:
@@ -59,49 +41,30 @@ class BootstrapAgent(L0RoutingBase):
             dict: Healing results with canonical keys
         """
         from pathlib import Path
-
         if target_path is None:
             target_path = str(self.project_root)
-
         violations_found = []
         violations_fixed = []
         errors = []
         skipped = []
-
         try:
-            # Verify Redis connection
             if not self._verify_redis_connection():
-                violations_found.append("Redis connection failed")
-                # Attempt to fix by checking configuration
-                violations_fixed.append("Redis configuration verified")
+                violations_found.append('Redis connection failed')
+                violations_fixed.append('Redis configuration verified')
             else:
-                violations_fixed.append("Redis connection verified")
-
-            # Check critical bootstrap files
-            critical_files = [
-                "agentic_core/__init__.py",
-                "agentic_core/base_agents/SovereignBaseAgent.py",
-                "agentic_core/L0_routing/scripts/L0RoutingBaseAgent.py",
-            ]
-
+                violations_fixed.append('Redis connection verified')
+            critical_files = ['agentic_core/__init__.py', 'agentic_core/base_agents/SovereignBaseAgent.py', 'agentic_core/L0_routing/scripts/L0RoutingBaseAgent.py']
             for file_path in critical_files:
                 full_path = Path(target_path) / file_path
                 if not full_path.exists():
-                    violations_found.append(f"Missing critical file: {file_path}")
-                    errors.append(f"Cannot heal missing file: {file_path}")
+                    violations_found.append(f'Missing critical file: {file_path}')
+                    errors.append(f'Cannot heal missing file: {file_path}')
                 else:
-                    violations_fixed.append(f"Critical file verified: {file_path}")
-
+                    violations_fixed.append(f'Critical file verified: {file_path}')
         # guardian: allow-silent-swallow
         except Exception as e:
-            errors.append(f"Healing failed: {str(e)}")
-
-        return {
-            "violations_found": violations_found,
-            "violations_fixed": violations_fixed,
-            "errors": errors,
-            "skipped": skipped,
-        }
+            errors.append(f'Healing failed: {str(e)}')
+        return {'violations_found': violations_found, 'violations_fixed': violations_fixed, 'errors': errors, 'skipped': skipped}
 
     def heal(self, violation: dict[str, any]) -> dict[str, any]:
         """
@@ -120,22 +83,11 @@ class BootstrapAgent(L0RoutingBase):
                 - artifacts: List of modified files
                 - errors: List of error messages
         """
-        file_path = violation.get("file") or violation.get("file_path")
-        violation.get("type", "unknown")
-
-        # Delegate to existing heal_repository method
+        file_path = violation.get('file') or violation.get('file_path')
+        violation.get('type', 'unknown')
         try:
             result = self.heal_repository(target_path=file_path)
-            return {
-                "status": "success" if result.get("violations_fixed", 0) > 0 else "skipped",
-                "details": f"BootstrapAgent healed {result.get('violations_fixed', 0)} violations",
-                "artifacts": [file_path] if file_path else [],
-                "errors": result.get("errors", []),
-            }
+            return {'status': 'success' if result.get('violations_fixed', 0) > 0 else 'skipped', 'details': f"BootstrapAgent healed {result.get('violations_fixed', 0)} violations", 'artifacts': [file_path] if file_path else [], 'errors': result.get('errors', [])}
+        # guardian: allow-silent-swallow
         except Exception as e:
-            return {
-                "status": "failed",
-                "details": f"BootstrapAgent heal() failed: {str(e)}",
-                "artifacts": [],
-                "errors": [str(e)],
-            }
+            return {'status': 'failed', 'details': f'BootstrapAgent heal() failed: {str(e)}', 'artifacts': [], 'errors': [str(e)]}

@@ -3,34 +3,22 @@ Base classes for L2 Execution tool_registry.
 
 Provides foundational classes for tool registration and execution.
 """
-
 import logging
 from typing import Any
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 logger = logging.getLogger(__name__)
-
 
 class BaseTool:
     """Base class for all tools in the registry."""
 
-    def __init__(self, name: str, description: str = ""):
+    def __init__(self, name: str, description: str=''):
         self.name = name
         self.description = description
         self._enabled = True
 
     def execute(self, *args, **kwargs) -> Any:
         """Execute the tool. Override in subclasses."""
-        raise NotImplementedError("Subclasses must implement execute()")
+        raise NotImplementedError('Subclasses must implement execute()')
 
     def is_enabled(self) -> bool:
         """Check if tool is enabled."""
@@ -44,7 +32,6 @@ class BaseTool:
         """Disable the tool."""
         self._enabled = False
 
-
 class tool_registry:
     """Registry for managing tools."""
 
@@ -54,13 +41,13 @@ class tool_registry:
     def register(self, tool: BaseTool) -> None:
         """Register a tool."""
         self._tools[tool.name] = tool
-        logger.debug(f"Registered tool: {tool.name}")
+        logger.debug(f'Registered tool: {tool.name}')
 
     def unregister(self, name: str) -> None:
         """Unregister a tool by name."""
         if name in self._tools:
             del self._tools[name]
-            logger.debug(f"Unregistered tool: {name}")
+            logger.debug(f'Unregistered tool: {name}')
 
     def get(self, name: str) -> BaseTool | None:
         """Get a tool by name."""
@@ -74,22 +61,10 @@ class tool_registry:
         """Execute a tool by name."""
         tool = self.get(name)
         if tool is None:
-            raise ValueError(f"Tool not found: {name}")
+            raise ValueError(f'Tool not found: {name}')
         if not tool.is_enabled():
-            raise ValueError(f"Tool is disabled: {name}")
+            raise ValueError(f'Tool is disabled: {name}')
         return tool.execute(*args, **kwargs)
-
-
-# REMOVED: SubAtomicAgent duplicate class
-# Use SubAtomicAgent from agentic_core.L3_orchestration.reasoning instead
-
-
-# REMOVED: BaseAgent duplicate class
-# Use SovereignBaseAgent from agentic_core.base_agents instead
-
-
-# Aliases for backwards compatibility
 Tool = BaseTool
 Registry = tool_registry
-
-__all__ = ["BaseTool", "tool_registry", "Tool", "Registry"]
+__all__ = ['BaseTool', 'tool_registry', 'Tool', 'Registry']

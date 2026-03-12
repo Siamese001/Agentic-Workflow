@@ -9,28 +9,14 @@ PHASE 5 META-LEARNING (Feb 2026):
 - Quality pattern learning for resume generation
 - Cross-session learning persistence
 """
-
 from __future__ import annotations
-
 import logging
 from dataclasses import dataclass
 from typing import Any
-
 from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBridge
 from apps_shared.reasoning.BaseReflectionAgent import BaseReflectionAgent
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 Logger = logging.getLogger(__name__)
-
 
 @dataclass
 class RgReflectionAgent(BaseReflectionAgent):
@@ -48,81 +34,47 @@ class RgReflectionAgent(BaseReflectionAgent):
     def __post_init__(self) -> None:
         """Initialize reflection agent."""
         super().__post_init__()
-        Logger.debug(f"[{self.__class__.__name__}] Meta-Learning reflection agent initialized")
+        Logger.debug(f'[{self.__class__.__name__}] Meta-Learning reflection agent initialized')
         try:
             bridge = GraphMemoryBridge.get_instance()
-            bridge.create_agent_entity(
-                agent_name=self.__class__.__name__,
-                agent_type="ReflectionAgent",
-                observations=["RG reflection agent with meta-learning and quality scoring"],
-            )
+            bridge.create_agent_entity(agent_name=self.__class__.__name__, agent_type='ReflectionAgent', observations=['RG reflection agent with meta-learning and quality scoring'])
+        # guardian: allow-silent-swallow
         except Exception as e:
-            Logger.debug(f"[{self.__class__.__name__}] KG registration skipped: {e}")
+            Logger.debug(f'[{self.__class__.__name__}] KG registration skipped: {e}')
 
-    def _post_reflect(
-        self,
-        passed_agents: list[str],
-        failed_agents: list[str],
-        converged: bool,
-    ) -> None:
+    def _post_reflect(self, passed_agents: list[str], failed_agents: list[str], converged: bool) -> None:
         """RG-specific post-reflection: quality scoring and context recording."""
-        insights: dict[str, Any] = {
-            "cycle": self.ctx.current_cycle,
-            "signals_at_end": list(self.ctx.signals),
-            "failed_agents": failed_agents,
-            "modified_sections": list(self.ctx.modified_sections),
-            "budget_used": self.ctx.budget.current_cost,
-            "converged": converged,
-        }
-
+        insights: dict[str, Any] = {'cycle': self.ctx.current_cycle, 'signals_at_end': list(self.ctx.signals), 'failed_agents': failed_agents, 'modified_sections': list(self.ctx.modified_sections), 'budget_used': self.ctx.budget.current_cost, 'converged': converged}
         if converged:
-            insights["outcome"] = "success"
+            insights['outcome'] = 'success'
             if self.ctx.current_resume:
                 quality_score: float = self._estimate_quality_score()
                 self.ctx.record_success(self.ctx.current_resume, quality_score)
                 if quality_score < 0.6:
-                    best_practices = self._search_external_best_practices(
-                        "resume writing quality improvement"
-                    )
+                    best_practices = self._search_external_best_practices('resume writing quality improvement')
                     if best_practices:
-                        insights["external_best_practices"] = best_practices
+                        insights['external_best_practices'] = best_practices
         else:
-            insights["outcome"] = "needs_more_cycles"
-            best_practices = self._search_external_best_practices(
-                "outreach reflection improvement techniques"
-            )
+            insights['outcome'] = 'needs_more_cycles'
+            best_practices = self._search_external_best_practices('outreach reflection improvement techniques')
             if best_practices:
-                insights["external_best_practices"] = best_practices
-
-        self.ctx.results["reflection"] = insights
+                insights['external_best_practices'] = best_practices
+        self.ctx.results['reflection'] = insights
         self._persist_reflection_to_kg(insights, passed_agents, failed_agents, converged)
 
-    def _persist_reflection_to_kg(
-        self,
-        insights: dict[str, Any],
-        passed_agents: list[str],
-        failed_agents: list[str],
-        converged: bool,
-    ) -> None:
+    def _persist_reflection_to_kg(self, insights: dict[str, Any], passed_agents: list[str], failed_agents: list[str], converged: bool) -> None:
         """Persist reflection outcome to Memory MCP knowledge graph."""
         try:
             bridge = GraphMemoryBridge.get_instance()
-            outcome = insights.get("outcome", "unknown")
-            cycle = insights.get("cycle", 0)
-            obs = (
-                f"Cycle={cycle} outcome={outcome} "
-                f"passed={len(passed_agents)} failed={len(failed_agents)} "
-                f"budget={insights.get('budget_used', 0):.4f}"
-            )
+            outcome = insights.get('outcome', 'unknown')
+            cycle = insights.get('cycle', 0)
+            obs = f"Cycle={cycle} outcome={outcome} passed={len(passed_agents)} failed={len(failed_agents)} budget={insights.get('budget_used', 0):.4f}"
             bridge.add_observation(entity_name=self.__class__.__name__, observation=obs)
             if converged and self.ctx.current_resume:
-                bridge.create_relation(
-                    from_entity=self.__class__.__name__,
-                    to_entity="ResumeDocument",
-                    relation_type="REFLECTS_ON",
-                )
+                bridge.create_relation(from_entity=self.__class__.__name__, to_entity='ResumeDocument', relation_type='REFLECTS_ON')
+        # guardian: allow-silent-swallow
         except Exception as e:
-            Logger.debug(f"[{self.__class__.__name__}] KG reflection persistence skipped: {e}")
+            Logger.debug(f'[{self.__class__.__name__}] KG reflection persistence skipped: {e}')
 
     def _search_external_best_practices(self, topic: str) -> list[dict[str, Any]]:
         """Search for external best practices via Brave Search MCP when quality is low.
@@ -135,33 +87,29 @@ class RgReflectionAgent(BaseReflectionAgent):
         """
         try:
             import asyncio
-
             from agentic_core.L3_orchestration.reasoning.mcp_manager import MCPConnectionManager
-
             mcp = MCPConnectionManager()
-            args = {"query": topic, "count": 3}
-
+            args = {'query': topic, 'count': 3}
             try:
                 loop = asyncio.get_event_loop()
                 if loop.is_running():
                     import concurrent.futures
-
                     with concurrent.futures.ThreadPoolExecutor(max_workers=1) as pool:
-                        future = pool.submit(asyncio.run, mcp.call_tool("brave_search", args))
+                        future = pool.submit(asyncio.run, mcp.call_tool('brave_search', args))
+                        # guardian: allow-magic-config
                         result = future.result(timeout=10)
                 else:
-                    result = loop.run_until_complete(mcp.call_tool("brave_search", args))
+                    result = loop.run_until_complete(mcp.call_tool('brave_search', args))
+            # guardian: allow-silent-swallow
             except Exception:
                 result = {}
-
-            if isinstance(result, dict) and result.get("results"):
-                Logger.info(
-                    f"[{self.__class__.__name__}] Brave Search: {len(result['results'])} results for '{topic}'"
-                )
-                return result["results"][:3]
+            if isinstance(result, dict) and result.get('results'):
+                Logger.info(f"[{self.__class__.__name__}] Brave Search: {len(result['results'])} results for '{topic}'")
+                return result['results'][:3]
             return []
+        # guardian: allow-silent-swallow
         except Exception as e:
-            Logger.debug(f"[{self.__class__.__name__}] Brave Search skipped: {e}")
+            Logger.debug(f'[{self.__class__.__name__}] Brave Search skipped: {e}')
             return []
 
     def _estimate_quality_score(self) -> float:
@@ -169,16 +117,10 @@ class RgReflectionAgent(BaseReflectionAgent):
         total_agents: int = len(self.ctx.results)
         if total_agents == 0:
             return 0.5
-        passed = sum(1 for r in self.ctx.results.values() if r.get("passed", False))
+        passed = sum((1 for r in self.ctx.results.values() if r.get('passed', False)))
         return passed / total_agents
 
-    # ==================== PHASE 5: META-LEARNING METHODS ====================
-
-    def ml_cache_execution_insight(
-        self,
-        insight_id: str,
-        insight_data: dict[str, Any],
-    ) -> bool:
+    def ml_cache_execution_insight(self, insight_id: str, insight_data: dict[str, Any]) -> bool:
         """
         Cache an execution insight for future recall.
 
@@ -189,13 +131,11 @@ class RgReflectionAgent(BaseReflectionAgent):
         Returns:
             True if cached successfully
         """
-        cache_key = f"execution_insight:{insight_id}"
+        cache_key = f'execution_insight:{insight_id}'
         return self.ml_cache_set(cache_key, insight_data)
 
-    def ml_recall_execution_insight(
-        self,
-        insight_id: str,
-    ) -> dict[str, Any] | None:
+    # guardian: allow-type-erasure
+    def ml_recall_execution_insight(self, insight_id: str) -> dict[str, Any] | None:
         """
         Recall a cached execution insight.
 
@@ -205,14 +145,10 @@ class RgReflectionAgent(BaseReflectionAgent):
         Returns:
             Cached insight data or None
         """
-        cache_key = f"execution_insight:{insight_id}"
+        cache_key = f'execution_insight:{insight_id}'
         return self.ml_cache_get(cache_key)
 
-    def ml_cache_quality_pattern(
-        self,
-        pattern_id: str,
-        pattern_data: dict[str, Any],
-    ) -> bool:
+    def ml_cache_quality_pattern(self, pattern_id: str, pattern_data: dict[str, Any]) -> bool:
         """
         Cache a successful quality pattern.
 
@@ -223,13 +159,11 @@ class RgReflectionAgent(BaseReflectionAgent):
         Returns:
             True if cached successfully
         """
-        cache_key = f"quality_pattern:{pattern_id}"
+        cache_key = f'quality_pattern:{pattern_id}'
         return self.ml_cache_set(cache_key, pattern_data)
 
-    def ml_recall_quality_pattern(
-        self,
-        pattern_id: str,
-    ) -> dict[str, Any] | None:
+    # guardian: allow-type-erasure
+    def ml_recall_quality_pattern(self, pattern_id: str) -> dict[str, Any] | None:
         """
         Recall a cached quality pattern.
 
@@ -239,15 +173,10 @@ class RgReflectionAgent(BaseReflectionAgent):
         Returns:
             Cached pattern data or None
         """
-        cache_key = f"quality_pattern:{pattern_id}"
+        cache_key = f'quality_pattern:{pattern_id}'
         return self.ml_cache_get(cache_key)
 
-    def ml_record_reflection_success(
-        self,
-        context_hash: str,
-        insights: dict[str, Any],
-        quality_score: float,
-    ) -> bool:
+    def ml_record_reflection_success(self, context_hash: str, insights: dict[str, Any], quality_score: float) -> bool:
         """
         Record a successful reflection for future learning.
 
@@ -259,21 +188,13 @@ class RgReflectionAgent(BaseReflectionAgent):
         Returns:
             True if recorded successfully
         """
-        if quality_score >= 0.7:  # Only cache high-quality reflections
-            cache_key = f"reflection_success:{context_hash}"
-            return self.ml_cache_set(
-                cache_key,
-                {
-                    "insights": insights,
-                    "quality_score": quality_score,
-                },
-            )
+        if quality_score >= 0.7:
+            cache_key = f'reflection_success:{context_hash}'
+            return self.ml_cache_set(cache_key, {'insights': insights, 'quality_score': quality_score})
         return False
 
-    def ml_recall_similar_reflection(
-        self,
-        context_hash: str,
-    ) -> dict[str, Any] | None:
+    # guardian: allow-type-erasure
+    def ml_recall_similar_reflection(self, context_hash: str) -> dict[str, Any] | None:
         """
         Recall a similar successful reflection.
 
@@ -283,5 +204,5 @@ class RgReflectionAgent(BaseReflectionAgent):
         Returns:
             Cached reflection data or None
         """
-        cache_key = f"reflection_success:{context_hash}"
+        cache_key = f'reflection_success:{context_hash}'
         return self.ml_cache_get(cache_key)

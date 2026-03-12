@@ -6,21 +6,9 @@ production code changed.
 
 REQ-036 / Phase 3 SOV-DELTA additive helper.
 """
-
 from __future__ import annotations
-
 import json
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 def canonical_bytes(obj) -> bytes:
     """Return deterministic canonical bytes for *obj*.
@@ -29,5 +17,5 @@ def canonical_bytes(obj) -> bytes:
     *obj* itself for plain dict/list/primitive values.  ``sort_keys=True``
     ensures key insertion order does not affect the output.
     """
-    data = obj.__dict__ if hasattr(obj, "__dict__") else obj
-    return json.dumps(data or obj, sort_keys=True, separators=(",", ":")).encode()
+    data = obj.__dict__ if hasattr(obj, '__dict__') else obj
+    return json.dumps(data or obj, sort_keys=True, separators=(',', ':')).encode()

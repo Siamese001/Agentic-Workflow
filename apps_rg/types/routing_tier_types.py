@@ -3,35 +3,21 @@
 This module contains the configuration and type definitions
 for the hardened router system.
 """
-
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 class RoutingTier(Enum):
     """Routing tiers for different provider priorities."""
-
-    PRIMARY = "primary"
-    SECONDARY = "secondary"
-    TERTIARY = "tertiary"
-
+    PRIMARY = 'primary'
+    SECONDARY = 'secondary'
+    TERTIARY = 'tertiary'
 
 class ProviderType(Enum):
-    OPENAI = "openai"
-    ANTHROPIC = "anthropic"
-    AZURE = "azure"
-
+    OPENAI = 'openai'
+    ANTHROPIC = 'anthropic'
+    AZURE = 'azure'
 
 @dataclass
 class RouterConfig:
@@ -40,7 +26,6 @@ class RouterConfig:
     timeout_seconds: int = 30
     retry_attempts: int = 3
 
-
 @dataclass
 class RouteResult:
     provider_used: ProviderType
@@ -48,11 +33,9 @@ class RouteResult:
     latency_ms: float
     metadata: dict[str, Any] = field(default_factory=dict)
 
-
 @dataclass
 class RouteConfig:
     """Configuration for a specific routing tier."""
-
     provider: str
     model: str
     temperature: float = 0.7
@@ -60,26 +43,5 @@ class RouteConfig:
     timeout_seconds: int = 30
     retry_attempts: int = 3
     enabled: bool = True
-
-
-# Default routing configurations
-DEFAULT_ROUTING_CONFIGS = {
-    RoutingTier.PRIMARY: RouteConfig(
-        provider="openai",
-        model="gpt-4",
-        temperature=0.7,
-        max_tokens=2048,
-    ),
-    RoutingTier.SECONDARY: RouteConfig(
-        provider="anthropic",
-        model="claude-3-sonnet",
-        temperature=0.7,
-        max_tokens=2048,
-    ),
-    RoutingTier.TERTIARY: RouteConfig(
-        provider="google",
-        model="gemini-pro",
-        temperature=0.7,
-        max_tokens=2048,
-    ),
-}
+# guardian: allow-magic-config
+DEFAULT_ROUTING_CONFIGS = {RoutingTier.PRIMARY: RouteConfig(provider='openai', model='gpt-4', temperature=0.7, max_tokens=2048), RoutingTier.SECONDARY: RouteConfig(provider='anthropic', model='claude-3-sonnet', temperature=0.7, max_tokens=2048), RoutingTier.TERTIARY: RouteConfig(provider='google', model='gemini-pro', temperature=0.7, max_tokens=2048)}

@@ -8,36 +8,14 @@ re-verified under any in-rotation authority version.
 
 Phase 0.2: Mathematically-Sealed Sovereignty Hardening
 """
-
 from __future__ import annotations
-
 import hashlib
 import hmac
 from typing import Final
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-# ---------------------------------------------------------------------------
-# Version constants — bump _CURRENT_KEY_VERSION on rotation
-# ---------------------------------------------------------------------------
-
-_CURRENT_KEY_VERSION: Final[str] = "1"
-_KDF_SALT: Final[bytes] = b"sovereignty_boundary_kdf_v1"
-_KDF_INFO_PREFIX: Final[str] = "sovereignty_boundary_v"
-
-
-# ---------------------------------------------------------------------------
-# Public API
-# ---------------------------------------------------------------------------
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+_CURRENT_KEY_VERSION: Final[str] = '1'
+_KDF_SALT: Final[bytes] = b'sovereignty_boundary_kdf_v1'
+_KDF_INFO_PREFIX: Final[str] = 'sovereignty_boundary_v'
 
 def derive_hmac_key(master_secret: bytes) -> tuple[bytes, str, str]:
     """Derive an HMAC key using HKDF with version tracking.
@@ -48,36 +26,21 @@ def derive_hmac_key(master_secret: bytes) -> tuple[bytes, str, str]:
     Returns:
         Tuple of (derived_key_bytes, key_version_str, kdf_salt_hash_hex).
     """
-    # HKDF extract — PRK = HMAC-SHA256(salt, IKM)
     prk = hmac.new(_KDF_SALT, master_secret, hashlib.sha256).digest()
-
-    # HKDF expand — OKM = HMAC-SHA256(PRK, info || 0x01)
-    info = f"{_KDF_INFO_PREFIX}{_CURRENT_KEY_VERSION}".encode()
-    okm = hmac.new(prk, info + b"\x01", hashlib.sha256).digest()
-
+    info = f'{_KDF_INFO_PREFIX}{_CURRENT_KEY_VERSION}'.encode()
+    okm = hmac.new(prk, info + b'\x01', hashlib.sha256).digest()
     kdf_salt_hash = hashlib.sha256(_KDF_SALT).hexdigest()
-
-    return okm, _CURRENT_KEY_VERSION, kdf_salt_hash
-
+    return (okm, _CURRENT_KEY_VERSION, kdf_salt_hash)
 
 def get_key_version() -> str:
     """Return current authority key version string."""
     return _CURRENT_KEY_VERSION
 
-
 def verify_key_version(packet_key_version: str) -> bool:
     """Return True if *packet_key_version* matches the current version."""
     return packet_key_version == _CURRENT_KEY_VERSION
 
-
 def get_kdf_salt_hash() -> str:
     """Return hex digest of the KDF salt (for embedding in packets)."""
     return hashlib.sha256(_KDF_SALT).hexdigest()
-
-
-__all__ = [
-    "derive_hmac_key",
-    "get_key_version",
-    "get_kdf_salt_hash",
-    "verify_key_version",
-]
+__all__ = ['derive_hmac_key', 'get_key_version', 'get_kdf_salt_hash', 'verify_key_version']

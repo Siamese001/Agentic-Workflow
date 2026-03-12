@@ -4,27 +4,14 @@ L5 D0 Injection Engine - Deterministic Role Fence Rendering
 Implements deterministic D0 injection with RoleFence ordering and rendering.
 No wall-clock usage, no randomness, pure deterministic behavior.
 """
-
 from dataclasses import dataclass
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 @dataclass(frozen=True)
 class RoleFence:
     """Immutable role fence for D0 injection."""
-
     fence_id: str
     text: str
-
 
 class D0InjectionEngine:
     """
@@ -39,7 +26,11 @@ class D0InjectionEngine:
 
         Deterministic rendering:
         - Sort fences by fence_id
-        - Join as: "<D0>\n[fence_id] text\n...\n</D0>\n"
+        - Join as: "<D0>
+[fence_id] text
+...
+</D0>
+"
 
         Args:
             fences: Tuple of RoleFence objects
@@ -47,16 +38,12 @@ class D0InjectionEngine:
         Returns:
             Rendered D0 string
         """
-        # Sort fences by fence_id for deterministic output
         sorted_fences = sorted(fences, key=lambda f: f.fence_id)
-
-        # Build D0 string
-        lines = ["<D0>"]
+        lines = ['<D0>']
         for fence in sorted_fences:
-            lines.append(f"[{fence.fence_id}] {fence.text}")
-        lines.append("</D0>")
-
-        return "\n".join(lines) + "\n"
+            lines.append(f'[{fence.fence_id}] {fence.text}')
+        lines.append('</D0>')
+        return '\n'.join(lines) + '\n'
 
     def inject(self, *, payload_like: object, fences: tuple[RoleFence, ...]) -> str:
         """
@@ -73,5 +60,4 @@ class D0InjectionEngine:
         Returns:
             Rendered D0 string
         """
-        # Simply render D0 - no mutation of payload_like
         return self.render_d0(fences=fences)

@@ -1,44 +1,22 @@
-# File: GeminiLLMClient.py
-# Description: Gemini LLM client — delegates ALL calls through SovereignLLMGateway
-
-__version__ = "13.0"
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+__version__ = '13.0'
 import asyncio
-
 from agentic_core.interfaces.gateway import GenerationRequest, SovereignLLMGateway
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
 
 class GeminiLLMClient:
     """Gateway-delegating client for Gemini.  No direct SDK access."""
-
-    _AGENT_ID = "GeminiLLMClient"
+    _AGENT_ID = 'GeminiLLMClient'
     try:
         from agentic_core.L2_execution.healers.healing_tier_config import HealingTierConfig as _HTC
-
         _MODEL: str = _HTC().model_gemini_2_5_pro_id
     except (ImportError, AttributeError):
-        _MODEL = "gemini-2.5-pro"
+        _MODEL = 'gemini-2.5-pro'
 
     def __init__(self, circuit_breaker=None):
         self._gateway = SovereignLLMGateway()
-        self.circuit_breaker = circuit_breaker  # kept for API compat; unused internally
+        self.circuit_breaker = circuit_breaker
 
     def generate(self, prompt: str) -> str:
-        request = GenerationRequest(
-            agent_id=self._AGENT_ID,
-            provider="google",
-            model=self._MODEL,
-            prompt=prompt,
-        )
+        request = GenerationRequest(agent_id=self._AGENT_ID, provider='google', model=self._MODEL, prompt=prompt)
         response = asyncio.get_event_loop().run_until_complete(self._gateway.route_generation(request))
         return response.content

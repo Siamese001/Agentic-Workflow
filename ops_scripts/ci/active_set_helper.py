@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Shared Active Set Helper — Single Import Point.
 
 Provides a canonical function to enumerate the ACTIVE agent set using
@@ -13,42 +12,27 @@ Usage:
     result = get_active_set(project_root)
     print(result.count, result.fingerprint)
 """
-
 from __future__ import annotations
-
 import hashlib
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 @dataclass(frozen=True)
 class ActiveSetResult:
     """Immutable result of active set enumeration."""
-
     agents: tuple[dict[str, Any], ...]
     agent_ids: tuple[str, ...]
     count: int
     fingerprint: str
     stats: dict[str, int] = field(default_factory=dict)
 
-
 def _compute_fingerprint(sorted_ids: tuple[str, ...]) -> str:
     """SHA-256 of newline-joined sorted agent IDs."""
-    payload = "\n".join(sorted_ids).encode("utf-8")
+    payload = '\n'.join(sorted_ids).encode('utf-8')
     return hashlib.sha256(payload).hexdigest()
-
 
 def get_active_set(project_root: Path) -> ActiveSetResult:
     """Return the canonical ACTIVE agent set.
@@ -59,26 +43,10 @@ def get_active_set(project_root: Path) -> ActiveSetResult:
     if str(project_root) not in sys.path:
         # guardian: allow-global-mutation
         sys.path.insert(0, str(project_root))
-
-    from agentic_core.L0_routing.scripts.full_agent_discovery import (
-        perform_deep_integrity_scan,
-    )
-    from agentic_core.L0_routing.utils.ssot_discovery_util import (
-        load_agent_discovery,
-    )
-
+    from agentic_core.L0_routing.scripts.full_agent_discovery import perform_deep_integrity_scan
+    from agentic_core.L0_routing.utils.ssot_discovery_util import load_agent_discovery
     raw = load_agent_discovery(project_root, force_reload=True)
     verified, stats = perform_deep_integrity_scan(raw, project_root)
-
-    agent_ids = tuple(
-        sorted(a.get("canonical_class", "") or a.get("class_name", "") for a in verified),
-    )
+    agent_ids = tuple(sorted((a.get('canonical_class', '') or a.get('class_name', '') for a in verified)))
     fingerprint = _compute_fingerprint(agent_ids)
-
-    return ActiveSetResult(
-        agents=tuple(verified),
-        agent_ids=agent_ids,
-        count=len(verified),
-        fingerprint=fingerprint,
-        stats=stats,
-    )
+    return ActiveSetResult(agents=tuple(verified), agent_ids=agent_ids, count=len(verified), fingerprint=fingerprint, stats=stats)

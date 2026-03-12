@@ -3,31 +3,16 @@
 Caches parsed agent_discovery_full.json to eliminate repeated file I/O and JSON parsing.
 Keyed by file content hash for automatic invalidation on updates.
 """
-
 from __future__ import annotations
-
 import hashlib
 import logging
 from pathlib import Path
 from typing import Any
-
 from agentic_core.cache.cache_key_builders import _require_hash_segment
 from agentic_core.cache.redis_cache_client import DeterministicRedisCache, get_hot_cache
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 logger = logging.getLogger(__name__)
-
-_DEFAULT_DISCOVERY_TTL = 3600 * 24  # 24 hours
-
+_DEFAULT_DISCOVERY_TTL = 3600 * 24
 
 class AgentDiscoveryCache:
     """Cache for agent discovery JSON parsing.
@@ -36,21 +21,11 @@ class AgentDiscoveryCache:
     Automatically invalidates when file content changes via content hash keying.
     """
 
-    def __init__(
-        self,
-        cache: DeterministicRedisCache | None = None,
-        ttl_seconds: int = _DEFAULT_DISCOVERY_TTL,
-    ):
+    def __init__(self, cache: DeterministicRedisCache | None=None, ttl_seconds: int=_DEFAULT_DISCOVERY_TTL):
         self._cache = cache or get_hot_cache()
         self._ttl = ttl_seconds
 
-    def get_or_fetch(
-        self,
-        discovery_path: Path,
-        fetch_from_disk: Any,
-        *,
-        replay_mode: bool = False,
-    ) -> list[dict[str, Any]]:
+    def get_or_fetch(self, discovery_path: Path, fetch_from_disk: Any, *, replay_mode: bool=False) -> list[dict[str, Any]]:
         """Read-through helper: return cached parsed agents or call *fetch_from_disk*.
 
         *fetch_from_disk* is a zero-argument callable that reads and parses the
@@ -68,52 +43,43 @@ class AgentDiscoveryCache:
             FileNotFoundError: If discovery_path does not exist
         """
         if not replay_mode:
-            # Compute file content hash for cache key
             try:
                 content_hash = self._compute_file_hash(discovery_path)
-                cache_key = f"agent_discovery:{content_hash}"
+                cache_key = f'agent_discovery:{content_hash}'
             except FileNotFoundError:
-                raise  # Propagate file not found
+                raise
             except (OSError, ValueError) as e:
-                logger.warning(f"[Discovery cache] Hash computation failed: {e}")
-                # Fall through to fetch without cache
+                logger.warning(f'[Discovery cache] Hash computation failed: {e}')
             else:
-                # Hash computed successfully, try cache read
                 try:
                     cached = self._cache.get_json(cache_key)
                     if cached is not None:
-                        logger.debug("[Discovery cache] HIT")
+                        logger.debug('[Discovery cache] HIT')
                         return cached
                 # guardian: allow-silent-swallow
                 except Exception as e:
-                    # Intentional cache resilience: log and continue
-                    logger.warning(f"[Discovery cache] Cache read failed: {e}")
-                    # Fall through to fetch
-
-        logger.debug("[Discovery cache] MISS — fetching from disk")
+                    logger.warning(f'[Discovery cache] Cache read failed: {e}')
+        logger.debug('[Discovery cache] MISS — fetching from disk')
         result = fetch_from_disk()
-
         if not replay_mode:
             try:
                 content_hash = self._compute_file_hash(discovery_path)
-                cache_key = f"agent_discovery:{content_hash}"
+                cache_key = f'agent_discovery:{content_hash}'
                 self._cache.set_json(cache_key, result, ttl_seconds=self._ttl)
             except FileNotFoundError:
-                pass  # File may have been deleted after fetch
+                pass
             # guardian: allow-silent-swallow
             except Exception as e:
-                logger.warning(f"[Discovery cache] Cache write failed: {e}")
-                # Cache write failure is non-fatal
-
+                logger.warning(f'[Discovery cache] Cache write failed: {e}')
         return result
 
     def _compute_file_hash(self, path: Path) -> str:
         """Compute SHA-256 hash of file contents for cache key."""
         if not path.exists():
-            raise FileNotFoundError(f"Discovery file not found: {path}")
+            raise FileNotFoundError(f'Discovery file not found: {path}')
         content = path.read_bytes()
         file_hash = hashlib.sha256(content).hexdigest()
-        _require_hash_segment("file_content_hash", file_hash)
+        _require_hash_segment('file_content_hash', file_hash)
         return file_hash
 
     def invalidate_all(self) -> None:
@@ -122,8 +88,7 @@ class AgentDiscoveryCache:
         Note: This is a no-op since cache keys are content-addressed.
         File changes automatically invalidate via different hash.
         """
-        logger.debug("[Discovery cache] invalidate_all called (no-op for content-addressed cache)")
-
+        logger.debug('[Discovery cache] invalidate_all called (no-op for content-addressed cache)')
 
 def get_agent_discovery_cache() -> AgentDiscoveryCache:
     """Get the singleton agent discovery cache instance."""

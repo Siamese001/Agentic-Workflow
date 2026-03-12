@@ -6,70 +6,29 @@ enforcing 120-140 word count and 3-5 sentence structure with 1st-person blocking
 Sub-Atomic Agent Name: Strategist_BioWriter
 Legacy K-Node: K.1
 """
-
 import logging
 from dataclasses import dataclass
 from typing import Any
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-# Previous: from runtime.config import ReasoningConfig
 from agentic_core.runtime.types.reasoning_config import ReasoningConfig
-
-# [Diff Start: Fix Inheritance and Config]
-# Previous: from agent_core.agent import Agent
 from apps_rg.utils.RGAgentBase import RGAgentBase
-
-# [Diff End]
-
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 logger = logging.getLogger(__name__)
-
 
 @dataclass
 class ExecutiveSummaryOutput:
     """Strategist BioWriter output."""
-
     summary: str
     word_count: int
     sentence_count: int
     first_person_violations: list[str]
     third_person_compliant: bool
     metadata: dict[str, Any]
-
-
-# First-person patterns that MUST be blocked
-FIRST_PERSON_PATTERNS = [
-    r"\bI\b",
-    r"\bI\'m\b",
-    r"\bI\'ve\b",
-    r"\bI\'ll\b",
-    r"\bI\'d\b",
-    r"\bmy\b",
-    r"\bmine\b",
-    r"\bme\b",
-    r"\bmyself\b",
-    r"\bwe\b",
-    r"\bwe\'re\b",
-    r"\bwe\'ve\b",
-    r"\bour\b",
-    r"\bours\b",
-]
-
+FIRST_PERSON_PATTERNS = ['\\bI\\b', "\\bI\\'m\\b", "\\bI\\'ve\\b", "\\bI\\'ll\\b", "\\bI\\'d\\b", '\\bmy\\b', '\\bmine\\b', '\\bme\\b', '\\bmyself\\b', '\\bwe\\b', "\\bwe\\'re\\b", "\\bwe\\'ve\\b", '\\bour\\b', '\\bours\\b']
 
 @dataclass
 class BioWriterConfig:
-    tone: str = "professional"
+    tone: str = 'professional'
     length_limit: int = 500
-
 
 class StrategistBioWriter(RGAgentBase):
     """
@@ -82,5 +41,4 @@ class StrategistBioWriter(RGAgentBase):
         self.reasoning = reasoning
 
     async def run(self, input_data: dict) -> dict:
-        # Logic implementation
-        return {"bio": "Draft content..."}
+        return {'bio': 'Draft content...'}

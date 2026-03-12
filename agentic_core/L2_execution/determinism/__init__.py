@@ -6,29 +6,14 @@ public API so that existing `from agentic_core.L2_execution.determinism import .
 calls continue to work.
 """
 from __future__ import annotations
-
 import importlib.util
 from pathlib import Path
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-_STANDALONE = Path(__file__).resolve().parent.parent / "determinism.py"
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+_STANDALONE = Path(__file__).resolve().parent.parent / 'determinism.py'
 if _STANDALONE.exists():
-    _spec = importlib.util.spec_from_file_location(
-        "agentic_core.L2_execution._determinism_standalone", _STANDALONE
-    )
-    _mod = importlib.util.module_from_spec(_spec)  # type: ignore[arg-type]
-    _spec.loader.exec_module(_mod)  # type: ignore[union-attr]
-
+    _spec = importlib.util.spec_from_file_location('agentic_core.L2_execution._determinism_standalone', _STANDALONE)
+    _mod = importlib.util.module_from_spec(_spec)
+    _spec.loader.exec_module(_mod)
     build_agent_2x2_inventory = _mod.build_agent_2x2_inventory
     compute_p5_determinism_digest = _mod.compute_p5_determinism_digest
     compute_w6_determinism_digest = _mod.compute_w6_determinism_digest

@@ -1,36 +1,9 @@
 from __future__ import annotations
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-# NOT_AN_AGENT - This is a foundational CLASS, not a runtime agent
-"""
-L4StateBase - Consolidated Base for L4 State Agents
-
-Layer: L4 - State
-Responsibilities:
-- Validation context management
-- State ledger operations
-- Memory persistence
-- Context synchronization
-
-MRO HARDENING:
-- Inheritance order: SovereignBaseAgent (root)
-- All L4 agents inherit from this base for consistent state management
-"""
-
+'\nL4StateBase - Consolidated Base for L4 State Agents\n\nLayer: L4 - State\nResponsibilities:\n- Validation context management\n- State ledger operations\n- Memory persistence\n- Context synchronization\n\nMRO HARDENING:\n- Inheritance order: SovereignBaseAgent (root)\n- All L4 agents inherit from this base for consistent state management\n'
 from dataclasses import dataclass
 from typing import Any
-
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 @dataclass
 class L4StateBase(SovereignBaseAgent):
@@ -45,14 +18,14 @@ class L4StateBase(SovereignBaseAgent):
 
     MRO: L4StateBase -> SovereignBaseAgent -> object
     """
-
-    name: str = "L4StateBase"
-    layer: str = "L4"
+    name: str = 'L4StateBase'
+    layer: str = 'L4'
 
     def __post_init__(self) -> None:
         """Cooperative MRO initialization."""
         super().__post_init__()
 
+    # guardian: allow-type-erasure
     def get_state(self, key: str) -> Any:
         """
         Retrieve state by key.
@@ -69,10 +42,11 @@ class L4StateBase(SovereignBaseAgent):
         """
         return False
 
+    # guardian: allow-type-erasure
     def validate_state(self, state: dict[str, Any]) -> dict[str, Any]:
         """
         Validate state consistency.
 
         Override in subclasses for specialized state validation.
         """
-        return {"valid": True, "errors": []}
+        return {'valid': True, 'errors': []}

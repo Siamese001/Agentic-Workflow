@@ -2,36 +2,16 @@
 
 Converts APPROVE/REJECT decisions into DPO pairs with stable hashing.
 """
-
 from __future__ import annotations
-
 import hashlib
 from typing import Protocol
-
 from agentic_core.L6_observability.types.dpo_types import DPOExampleId, DPOPair
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 class DPOPairGenerator(Protocol):
     """Protocol for generating DPO pairs from human feedback."""
 
-    def generate(
-        self,
-        *,
-        control_output_bytes: bytes,
-        candidate_output_bytes: bytes,
-        human_decision: str,
-        reason_codes: tuple[str, ...],
-    ) -> DPOPair:
+    def generate(self, *, control_output_bytes: bytes, candidate_output_bytes: bytes, human_decision: str, reason_codes: tuple[str, ...]) -> DPOPair:
         """Generate a DPO pair from human feedback.
 
         Parameters:
@@ -45,21 +25,13 @@ class DPOPairGenerator(Protocol):
         """
         ...
 
-
 class DefaultDeterministicDPOPairGenerator:
     """Default deterministic DPO pair generator.
 
     Generates stable DPO pairs with SHA-256 hashing and no side effects.
     """
 
-    def generate(
-        self,
-        *,
-        control_output_bytes: bytes,
-        candidate_output_bytes: bytes,
-        human_decision: str,
-        reason_codes: tuple[str, ...],
-    ) -> DPOPair:
+    def generate(self, *, control_output_bytes: bytes, candidate_output_bytes: bytes, human_decision: str, reason_codes: tuple[str, ...]) -> DPOPair:
         """Generate a DPO pair with deterministic behavior.
 
         Args:
@@ -74,27 +46,10 @@ class DefaultDeterministicDPOPairGenerator:
         Raises:
             ValueError: If human_decision is not "APPROVE" or "REJECT".
         """
-        # Validate human decision
-        if human_decision not in {"APPROVE", "REJECT"}:
+        if human_decision not in {'APPROVE', 'REJECT'}:
             raise ValueError(f"human_decision must be 'APPROVE' or 'REJECT', got: {human_decision}")
-
-        # Generate deterministic hashes
         control_hash = hashlib.sha256(control_output_bytes).hexdigest()
         candidate_hash = hashlib.sha256(candidate_output_bytes).hexdigest()
-
-        # Create example ID from hashes
-        example_id = DPOExampleId(
-            control_hash=control_hash,
-            candidate_hash=candidate_hash,
-        )
-
-        # Create DPO pair
-        pair = DPOPair(
-            example_id=example_id,
-            control_output_hash=control_hash,
-            candidate_output_hash=candidate_hash,
-            human_decision=human_decision,
-            reasons=reason_codes,
-        )
-
+        example_id = DPOExampleId(control_hash=control_hash, candidate_hash=candidate_hash)
+        pair = DPOPair(example_id=example_id, control_output_hash=control_hash, candidate_output_hash=candidate_hash, human_decision=human_decision, reasons=reason_codes)
         return pair

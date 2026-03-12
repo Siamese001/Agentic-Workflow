@@ -21,24 +21,11 @@ If the validation *rules* change, update the Agents.
 
 [CREATED 2026-02-08] Cluster 5 extraction per Unified Architectural Directive.
 """
-
 from __future__ import annotations
-
 import logging
 from typing import ClassVar
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 Logger = logging.getLogger(__name__)
-
 
 class LICEngineValidationCapability:
     """Pure execution harness for LIC engine validation agents.
@@ -51,9 +38,8 @@ class LICEngineValidationCapability:
     Subclasses inherit:
         - run_validation(): the complete scaffold (log → validate → score)
     """
-
-    SIGNAL_NAME: ClassVar[str] = ""
-    VALIDATION_LABEL: ClassVar[str] = ""
+    SIGNAL_NAME: ClassVar[str] = ''
+    VALIDATION_LABEL: ClassVar[str] = ''
 
     def _validate(self) -> list[str]:
         """Execute domain-specific validation checks.
@@ -64,9 +50,7 @@ class LICEngineValidationCapability:
         Raises:
             NotImplementedError: if subclass does not override.
         """
-        raise NotImplementedError(
-            f"{self.__class__.__name__} must implement _validate()",
-        )
+        raise NotImplementedError(f'{self.__class__.__name__} must implement _validate()')
 
     def run_validation(self) -> list[str]:
         """Execute the full validation scaffold.
@@ -79,30 +63,18 @@ class LICEngineValidationCapability:
         Returns:
             The list of issues (empty on pass).
         """
-        agent_name = getattr(self, "name", self.__class__.__name__)
-
+        agent_name = getattr(self, 'name', self.__class__.__name__)
         if not self.SIGNAL_NAME:
-            raise ValueError(
-                f"{self.__class__.__name__} must set SIGNAL_NAME",
-            )
+            raise ValueError(f'{self.__class__.__name__} must set SIGNAL_NAME')
         if not self.VALIDATION_LABEL:
-            raise ValueError(
-                f"{self.__class__.__name__} must set VALIDATION_LABEL",
-            )
-
-        print(f"   [{agent_name}] Checking {self.VALIDATION_LABEL}...")
-
+            raise ValueError(f'{self.__class__.__name__} must set VALIDATION_LABEL')
+        print(f'   [{agent_name}] Checking {self.VALIDATION_LABEL}...')
         issues = self._validate()
-
         if issues:
-            self.add_signal(self.SIGNAL_NAME)  # type: ignore[attr-defined]
-            self.record_result(  # type: ignore[attr-defined]
-                False,
-                f"{self.VALIDATION_LABEL} issues: {len(issues)}",
-            )
-            print(f"   [{agent_name}] \u274c {self.VALIDATION_LABEL} issues: {len(issues)}")
+            self.add_signal(self.SIGNAL_NAME)
+            self.record_result(False, f'{self.VALIDATION_LABEL} issues: {len(issues)}')
+            print(f'   [{agent_name}] ❌ {self.VALIDATION_LABEL} issues: {len(issues)}')
         else:
-            self.record_result(True, self.VALIDATION_LABEL)  # type: ignore[attr-defined]
-            print(f"   [{agent_name}] \u2705 {self.VALIDATION_LABEL}")
-
+            self.record_result(True, self.VALIDATION_LABEL)
+            print(f'   [{agent_name}] ✅ {self.VALIDATION_LABEL}')
         return issues

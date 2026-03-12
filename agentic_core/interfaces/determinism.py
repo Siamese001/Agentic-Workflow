@@ -17,34 +17,11 @@ USAGE (apps_*):
         DETERMINISM_EXCLUDED_FIELDS,
     )
 """
-
 from __future__ import annotations
-
 import hashlib
 from typing import Any
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-DETERMINISM_EXCLUDED_FIELDS: frozenset[str] = frozenset(
-    {
-        "duration_ms",
-        "timestamp",
-        "trace_id",
-        "cycle_counter",
-        "telemetry",
-        "created_at",
-        "updated_at",
-    }
-)
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+DETERMINISM_EXCLUDED_FIELDS: frozenset[str] = frozenset({'duration_ms', 'timestamp', 'trace_id', 'cycle_counter', 'telemetry', 'created_at', 'updated_at'})
 
 def canonical_bytes(data: dict[str, Any]) -> bytes:
     """
@@ -53,12 +30,8 @@ def canonical_bytes(data: dict[str, Any]) -> bytes:
     Centralizes canonicalization — no local logic duplication.
     Prevents replay integrity breaks across layers.
     """
-    from agentic_core.L0_routing.engines.assembly_stage import (
-        canonical_bytes as _l0_canonical_bytes,
-    )
-
+    from agentic_core.L0_routing.engines.assembly_stage import canonical_bytes as _l0_canonical_bytes
     return _l0_canonical_bytes(data)
-
 
 def canonical_hash(data: dict[str, Any]) -> str:
     """
@@ -68,11 +41,7 @@ def canonical_hash(data: dict[str, Any]) -> str:
     """
     return hashlib.sha256(canonical_bytes(data)).hexdigest()
 
-
-def strip_nondeterministic(
-    data: dict[str, Any],
-    excluded_fields: frozenset[str] | None = None,
-) -> dict[str, Any]:
+def strip_nondeterministic(data: dict[str, Any], excluded_fields: frozenset[str] | None=None) -> dict[str, Any]:
     """
     Return a copy of data with nondeterministic fields removed.
 
@@ -80,11 +49,4 @@ def strip_nondeterministic(
     """
     excluded = excluded_fields if excluded_fields is not None else DETERMINISM_EXCLUDED_FIELDS
     return {k: v for k, v in data.items() if k not in excluded}
-
-
-__all__ = [
-    "canonical_bytes",
-    "canonical_hash",
-    "strip_nondeterministic",
-    "DETERMINISM_EXCLUDED_FIELDS",
-]
+__all__ = ['canonical_bytes', 'canonical_hash', 'strip_nondeterministic', 'DETERMINISM_EXCLUDED_FIELDS']

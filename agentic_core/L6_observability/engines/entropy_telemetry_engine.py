@@ -5,34 +5,19 @@ Collects and analyzes entropy metrics including:
 - Flip rate in tier selections
 - Path D frequency (human-in-the-loop interventions)
 """
-
 from __future__ import annotations
-
 import logging
 import time
 from collections import defaultdict, deque
 from dataclasses import dataclass
 from typing import Dict, List, Optional, Set
-
 from agentic_core.L2_execution.healers.healing_tier_types import HealingTier
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 logger = logging.getLogger(__name__)
-
 
 @dataclass(frozen=True, slots=True)
 class TierMetrics:
     """Metrics for a specific healing tier."""
-
     tier: HealingTier
     total_decisions: int
     successful_heals: int
@@ -40,26 +25,21 @@ class TierMetrics:
     average_confidence: float
     last_used: int
 
-
 @dataclass(frozen=True, slots=True)
 class FlipMetrics:
     """Metrics tracking tier selection flips."""
-
     total_flips: int
     flip_rate: float
     most_common_flip: tuple[HealingTier, HealingTier]
     flip_frequency: Dict[tuple[HealingTier, HealingTier], int]
 
-
 @dataclass(frozen=True, slots=True)
 class PathDMetrics:
     """Metrics for Path D (human-in-the-loop) interventions."""
-
     total_interventions: int
     intervention_rate: float
     average_resolution_time: float
     intervention_reasons: Dict[str, int]
-
 
 class EntropyTelemetryEngine:
     """Tracks and analyzes entropy metrics across the system.
@@ -68,31 +48,23 @@ class EntropyTelemetryEngine:
     in healing tier selections, flips, and human interventions.
     """
 
-    def __init__(self, window_size: int = 1000) -> None:
+    def __init__(self, window_size: int=1000) -> None:
         """Initialize the entropy telemetry engine.
 
         Args:
             window_size: Size of the rolling window for metrics.
         """
         self.window_size = window_size
-
-        # Tier decision tracking
         self._tier_decisions: deque[tuple[HealingTier, float, int]] = deque(maxlen=window_size)
         self._tier_outcomes: deque[tuple[HealingTier, bool, int]] = deque(maxlen=window_size)
-
-        # Flip tracking
         self._previous_tier: Optional[HealingTier] = None
         self._flip_history: deque[tuple[HealingTier, HealingTier, int]] = deque(maxlen=window_size)
-
-        # Path D tracking
-        self._path_d_events: deque[tuple[str, int, int]] = deque(maxlen=window_size)  # (reason, start, end)
-
-        # Metrics cache
+        self._path_d_events: deque[tuple[str, int, int]] = deque(maxlen=window_size)
         self._cached_tier_metrics: Optional[Dict[HealingTier, TierMetrics]] = None
         self._cached_flip_metrics: Optional[FlipMetrics] = None
         self._cached_path_d_metrics: Optional[PathDMetrics] = None
         self._last_cache_update: int = 0
-        self._cache_ttl: int = 60  # Cache for 60 seconds
+        self._cache_ttl: int = 60
 
     def record_tier_decision(self, tier: HealingTier, confidence: float) -> None:
         """Record a healing tier decision.
@@ -103,11 +75,8 @@ class EntropyTelemetryEngine:
         """
         timestamp = int(time.time())
         self._tier_decisions.append((tier, confidence, timestamp))
-
-        # Track flips
         if self._previous_tier is not None and self._previous_tier != tier:
             self._flip_history.append((self._previous_tier, tier, timestamp))
-
         self._previous_tier = tier
         self._invalidate_cache()
 
@@ -168,18 +137,12 @@ class EntropyTelemetryEngine:
         """
         if not self._tier_decisions:
             return 0.0
-
-        # Count tier frequencies
         tier_counts = defaultdict(int)
         for tier, _, _ in self._tier_decisions:
             tier_counts[tier] += 1
-
         total = len(self._tier_decisions)
-        # Calculate variance using normalized frequencies
         expected = 1.0 / len(HealingTier)
-        variance = sum((count / total - expected) ** 2 for count in tier_counts.values())
-
-        # Normalize to [0, 1]
+        variance = sum(((count / total - expected) ** 2 for count in tier_counts.values()))
         max_variance = len(HealingTier) * expected * (1 - expected)
         return variance / max_variance if max_variance > 0 else 0.0
 
@@ -192,24 +155,7 @@ class EntropyTelemetryEngine:
         tier_metrics = self.get_tier_metrics()
         flip_metrics = self.get_flip_metrics()
         path_d_metrics = self.get_path_d_metrics()
-
-        return {
-            "tier_variance": self.get_tier_variance(),
-            "total_decisions": len(self._tier_decisions),
-            "total_flips": flip_metrics.total_flips,
-            "flip_rate": flip_metrics.flip_rate,
-            "path_d_interventions": path_d_metrics.total_interventions,
-            "intervention_rate": path_d_metrics.intervention_rate,
-            "tier_metrics": {
-                tier.name: {
-                    "total_decisions": metrics.total_decisions,
-                    "success_rate": metrics.successful_heals / max(1, metrics.total_decisions),
-                    "average_confidence": metrics.average_confidence,
-                }
-                for tier, metrics in tier_metrics.items()
-            },
-            "last_updated": int(time.time()),
-        }
+        return {'tier_variance': self.get_tier_variance(), 'total_decisions': len(self._tier_decisions), 'total_flips': flip_metrics.total_flips, 'flip_rate': flip_metrics.flip_rate, 'path_d_interventions': path_d_metrics.total_interventions, 'intervention_rate': path_d_metrics.intervention_rate, 'tier_metrics': {tier.name: {'total_decisions': metrics.total_decisions, 'success_rate': metrics.successful_heals / max(1, metrics.total_decisions), 'average_confidence': metrics.average_confidence} for tier, metrics in tier_metrics.items()}, 'last_updated': int(time.time())}
 
     def _update_cache_if_needed(self) -> None:
         """Update cached metrics if they are stale."""
@@ -220,69 +166,38 @@ class EntropyTelemetryEngine:
 
     def _compute_metrics(self) -> None:
         """Compute all metrics from raw data."""
-        # Compute tier metrics
-        tier_stats = defaultdict(lambda: {"decisions": 0, "successes": 0, "failures": 0, "confidence_sum": 0.0, "last_used": 0})
-
+        tier_stats = defaultdict(lambda: {'decisions': 0, 'successes': 0, 'failures': 0, 'confidence_sum': 0.0, 'last_used': 0})
         for tier, confidence, timestamp in self._tier_decisions:
             stats = tier_stats[tier]
-            stats["decisions"] += 1
-            stats["confidence_sum"] += confidence
-            stats["last_used"] = max(stats["last_used"], timestamp)
-
+            stats['decisions'] += 1
+            stats['confidence_sum'] += confidence
+            stats['last_used'] = max(stats['last_used'], timestamp)
         for tier, success, _ in self._tier_outcomes:
             if success:
-                tier_stats[tier]["successes"] += 1
+                tier_stats[tier]['successes'] += 1
             else:
-                tier_stats[tier]["failures"] += 1
-
+                tier_stats[tier]['failures'] += 1
         self._cached_tier_metrics = {}
         for tier, stats in tier_stats.items():
-            self._cached_tier_metrics[tier] = TierMetrics(
-                tier=tier,
-                total_decisions=stats["decisions"],
-                successful_heals=stats["successes"],
-                failed_heals=stats["failures"],
-                average_confidence=stats["confidence_sum"] / max(1, stats["decisions"]),
-                last_used=stats["last_used"],
-            )
-
-        # Compute flip metrics
+            self._cached_tier_metrics[tier] = TierMetrics(tier=tier, total_decisions=stats['decisions'], successful_heals=stats['successes'], failed_heals=stats['failures'], average_confidence=stats['confidence_sum'] / max(1, stats['decisions']), last_used=stats['last_used'])
         flip_counts = defaultdict(int)
         for from_tier, to_tier, _ in self._flip_history:
-            flip_counts[(from_tier, to_tier)] += 1
-
+            flip_counts[from_tier, to_tier] += 1
         total_flips = len(self._flip_history)
         total_decisions = len(self._tier_decisions)
-        flip_rate = total_flips / max(1, total_decisions - 1)  # -1 because first decision can't be a flip
-
+        flip_rate = total_flips / max(1, total_decisions - 1)
         most_common_flip = max(flip_counts.items(), key=lambda x: x[1]) if flip_counts else (HealingTier.LOCAL_AGENT, HealingTier.LOCAL_AGENT)
-
-        self._cached_flip_metrics = FlipMetrics(
-            total_flips=total_flips,
-            flip_rate=flip_rate,
-            most_common_flip=most_common_flip,
-            flip_frequency=dict(flip_counts),
-        )
-
-        # Compute Path D metrics
+        self._cached_flip_metrics = FlipMetrics(total_flips=total_flips, flip_rate=flip_rate, most_common_flip=most_common_flip, flip_frequency=dict(flip_counts))
         intervention_reasons = defaultdict(int)
         resolution_times = []
-
         for reason, start, end in self._path_d_events:
             intervention_reasons[reason] += 1
             resolution_times.append(end - start)
-
         total_interventions = len(self._path_d_events)
         total_healing_attempts = len(self._tier_outcomes)
         intervention_rate = total_interventions / max(1, total_healing_attempts)
         avg_resolution_time = sum(resolution_times) / max(1, len(resolution_times))
-
-        self._cached_path_d_metrics = PathDMetrics(
-            total_interventions=total_interventions,
-            intervention_rate=intervention_rate,
-            average_resolution_time=avg_resolution_time,
-            intervention_reasons=dict(intervention_reasons),
-        )
+        self._cached_path_d_metrics = PathDMetrics(total_interventions=total_interventions, intervention_rate=intervention_rate, average_resolution_time=avg_resolution_time, intervention_reasons=dict(intervention_reasons))
 
     def _invalidate_cache(self) -> None:
         """Invalidate the metrics cache."""
@@ -299,11 +214,7 @@ class EntropyTelemetryEngine:
         self._path_d_events.clear()
         self._previous_tier = None
         self._invalidate_cache()
-
-
-# Global instance for system-wide entropy telemetry
 _entropy_telemetry_engine: Optional[EntropyTelemetryEngine] = None
-
 
 def get_entropy_telemetry_engine() -> EntropyTelemetryEngine:
     """Get the global entropy telemetry engine instance.
@@ -315,7 +226,6 @@ def get_entropy_telemetry_engine() -> EntropyTelemetryEngine:
     if _entropy_telemetry_engine is None:
         _entropy_telemetry_engine = EntropyTelemetryEngine()
     return _entropy_telemetry_engine
-
 
 def reset_entropy_telemetry_engine() -> None:
     """Reset the global entropy telemetry engine (for testing)."""

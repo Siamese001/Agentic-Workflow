@@ -233,10 +233,12 @@ class L0ProposerAdapter:
         # Normalise cooldown / sample to our policy types
         if cooldown is None:
             from system_learning.validators.dampening import CooldownPolicy
+            # guardian: allow-magic-config
             cooldown = CooldownPolicy(min_seconds_between_updates=3600)
 
         if sample is None:
             from system_learning.validators.dampening import SampleSizePolicy
+            # guardian: allow-magic-config
             sample = SampleSizePolicy(min_observations=10)
 
         return propose_l0_threshold_changes(

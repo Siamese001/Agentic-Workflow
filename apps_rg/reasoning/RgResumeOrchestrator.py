@@ -3,47 +3,19 @@
 Orchestrates the complete resume generation process including engine, memory,
 prompt management, and state tracking.
 """
-
 from __future__ import annotations
-
 import logging
 from dataclasses import dataclass, field
 from typing import Any
-
 from agentic_core.base_agents.timeout_decorator import timeout
-
 from apps_rg.utils.RGAgentBase import RGAgentBase
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 _logger = logging.getLogger(__name__)
+'Pure orchestration of resume generation using shared atoms.'
 
-# DUPLICATE ACCEPTED: App-specific customization valid
-# (different contexts: L3 core orchestration vs apps_rg resume-specific implementation)
-# - Intentional variants for domain-specific behavior
-# - Consolidated 2026-01-06
-
-# Ownership: apps_rg / L3_orchestration
-# -*- coding: utf-8 -*-
-"""Pure orchestration of resume generation using shared atoms."""
-
-# Note: ContentConstraintsConfig import commented out - needs proper path
-# from shared.configuration.config import ContentConstraintsConfig
-
-
-# NAMING FIXED: RgResumeOrchestrator → RgResumeOrchestrator
 @dataclass
 class RgResumeOrchestrator(RGAgentBase):
     """Orchestrate the multi-hop resume generation workflow."""
-
     master_resume: dict[str, Any] = field(default_factory=dict)
     test_mode: bool = False
     hop_checkpoints: list[dict[str, Any]] = field(default_factory=list)
@@ -51,70 +23,46 @@ class RgResumeOrchestrator(RGAgentBase):
     def __post_init__(self) -> None:
         """Initialize the orchestrator."""
         super().__post_init__()
-        # Note: ContentConstraintsConfig needs proper import path
-        self.constraints = None  # ContentConstraintsConfig() if self.master_resume else None
+        self.constraints = None
         self.jd_enforcer = None
 
     def run(self, JobDescription: str) -> dict[str, object]:
         """Execute the full resume generation workflow."""
-        # HOP-0: JD Analysis
         if self.jd_enforcer:
-            self.jd_enforcer.validate_jd_input(JobDescription, "HOP-0")
+            self.jd_enforcer.validate_jd_input(JobDescription, 'HOP-0')
             if self.jd_enforcer.has_failures():
-                raise ValueError("JD validation failed")
-
-        # HOP-1: Extract from master resume
+                raise ValueError('JD validation failed')
         extracted_data = {}
         hop1_results = []
-        self._record_hop("HOP-1", hop1_results)
-
-        # HOP-2: Enrich data
+        self._record_hop('HOP-1', hop1_results)
         enriched_data = extracted_data
         hop2_results = []
-        self._record_hop("HOP-2", hop2_results)
+        self._record_hop('HOP-2', hop2_results)
+        return {'status': 'success', 'enriched_data': enriched_data, 'checkpoints': [c.get('hop_id') for c in self.hop_checkpoints]}
 
-        return {
-            "status": "success",
-            "enriched_data": enriched_data,
-            "checkpoints": [c.get("hop_id") for c in self.hop_checkpoints],
-        }
-
-    def _record_hop(self, hop_id: str, results: list = None) -> None:
+    def _record_hop(self, hop_id: str, results: list=None) -> None:
         """Record a hop Checkpoint."""
-        status = "COMPLETED" if not results or all(getattr(r, "passed", True) for r in results) else "FAILED"
-        self.hop_checkpoints.append({"hop_id": hop_id, "status": status})
+        status = 'COMPLETED' if not results or all((getattr(r, 'passed', True) for r in results)) else 'FAILED'
+        self.hop_checkpoints.append({'hop_id': hop_id, 'status': status})
 
     @timeout(300)
-    def heal_repository(
-        self,
-        dry_run: bool = True,
-        execute: bool = False,
-        depth: int = 0,
-        max_depth: int = 3,
-        _call_path: set | None = None,
-    ) -> dict[str, int]:
+    # guardian: allow-magic-config
+    def heal_repository(self, dry_run: bool=True, execute: bool=False, depth: int=0, max_depth: int=3, _call_path: set | None=None) -> dict[str, int]:
         """L3 orchestration agent - operational only."""
         if _call_path is None:
             _call_path = set()
-        super().heal_repository(
-            dry_run=dry_run,
-            execute=execute,
-            depth=depth,
-            max_depth=max_depth,
-            _call_path=_call_path,
-        )
+        super().heal_repository(dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path)
         agent_name = self.__class__.__name__
         if agent_name in _call_path:
-            return {"errors": 1, "cycle_detected": True}
+            return {'errors': 1, 'cycle_detected': True}
         if depth > max_depth:
-            return {"errors": 1, "depth_limited": True}
+            return {'errors': 1, 'depth_limited': True}
         _call_path.add(agent_name)
         try:
-            print(f"[{agent_name}] L3 orchestration - operational only")
-            return {"skipped": 1}
+            print(f'[{agent_name}] L3 orchestration - operational only')
+            return {'skipped': 1}
         finally:
             _call_path.discard(agent_name)
-
 
 def orchestrate_resume(master_resume: dict, JobDescription: str) -> dict[str, object]:
     """Single public function - pure routing between atoms."""

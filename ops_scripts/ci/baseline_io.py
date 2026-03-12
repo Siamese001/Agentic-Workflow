@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Baseline I/O Helper — Atomic JSON Read/Write with CI Safety Guard.
 
 Provides safe JSON baseline file operations:
@@ -9,47 +8,31 @@ Provides safe JSON baseline file operations:
 
 All baseline/snapshot writers must use this module.
 """
-
 from __future__ import annotations
-
 import json
 import os
 import sys
 import tempfile
 from pathlib import Path
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 class CIWriteBlockedError(RuntimeError):
     """Raised when a write is attempted in CI without explicit override."""
-
 
 def read_json(path: Path | str) -> dict | list:
     """Read and parse a JSON file."""
     p = Path(path)
     if not p.is_file():
-        raise FileNotFoundError(f"Baseline not found: {p}")
-    return json.loads(p.read_text(encoding="utf-8"))
-
+        raise FileNotFoundError(f'Baseline not found: {p}')
+    return json.loads(p.read_text(encoding='utf-8'))
 
 def _is_ci() -> bool:
     """Return True if running in CI environment."""
-    return os.environ.get("CI") == "true" or os.environ.get("GITHUB_ACTIONS") == "true"
-
+    return os.environ.get('CI') == 'true' or os.environ.get('GITHUB_ACTIONS') == 'true'
 
 def _ci_writes_allowed() -> bool:
     """Return True if CI writes are explicitly allowed."""
-    return os.environ.get("ALLOW_BASELINE_WRITES_IN_CI") == "1"
-
+    return os.environ.get('ALLOW_BASELINE_WRITES_IN_CI') == '1'
 
 def write_json_atomic(path: Path | str, data: dict | list) -> None:
     """Write JSON atomically (temp file + rename). Blocked in CI by default.
@@ -57,31 +40,17 @@ def write_json_atomic(path: Path | str, data: dict | list) -> None:
     Raises CIWriteBlockedError if in CI without ALLOW_BASELINE_WRITES_IN_CI=1.
     """
     p = Path(path)
-
-    if _is_ci() and not _ci_writes_allowed():
-        raise CIWriteBlockedError(
-            f"Refusing to write {p.name} in CI. "
-            "Baseline changes must be committed locally. "
-            "Set ALLOW_BASELINE_WRITES_IN_CI=1 to override (not recommended).",
-        )
-
-    content = json.dumps(data, indent=2, sort_keys=True) + "\n"
-
-    # Write to temp in same directory, then atomic rename
-    fd, tmp_path = tempfile.mkstemp(
-        dir=str(p.parent),
-        prefix=f".{p.stem}_",
-        suffix=".tmp",
-    )
+    if _is_ci() and (not _ci_writes_allowed()):
+        raise CIWriteBlockedError(f'Refusing to write {p.name} in CI. Baseline changes must be committed locally. Set ALLOW_BASELINE_WRITES_IN_CI=1 to override (not recommended).')
+    content = json.dumps(data, indent=2, sort_keys=True) + '\n'
+    fd, tmp_path = tempfile.mkstemp(dir=str(p.parent), prefix=f'.{p.stem}_', suffix='.tmp')
     try:
-        os.write(fd, content.encode("utf-8"))
+        os.write(fd, content.encode('utf-8'))
         os.close(fd)
-        # Atomic replace (on Windows, need to remove target first)
-        if sys.platform == "win32" and p.exists():
+        if sys.platform == 'win32' and p.exists():
             p.unlink()
         Path(tmp_path).replace(p)
     except BaseException:
-        # Clean up temp on failure
         try:
             os.close(fd)
         except OSError:

@@ -11,28 +11,13 @@ This adapter:
 
 Dispatching is fire-and-forget: any failure is logged and swallowed.
 """
-
 from __future__ import annotations
-
 import logging
 from collections import deque
 from typing import Any
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 logger = logging.getLogger(__name__)
-
-# Module-level event queue — bounded, in-memory, non-persistent
 _EVENT_QUEUE: deque = deque(maxlen=256)
-
 
 def _drain_event_queue() -> list:
     """Return and clear the current event queue (for testing)."""
@@ -40,14 +25,9 @@ def _drain_event_queue() -> list:
     _EVENT_QUEUE.clear()
     return events
 
-
 def _build_real_dispatcher():
-    from agentic_core.L6_observability.engines.vigilance_dispatcher import (
-        VigilanceDispatcher,
-        VigilanceEventArtifact,
-    )
-    return VigilanceDispatcher, VigilanceEventArtifact
-
+    from agentic_core.L6_observability.engines.vigilance_dispatcher import VigilanceDispatcher, VigilanceEventArtifact
+    return (VigilanceDispatcher, VigilanceEventArtifact)
 
 class VigilanceDispatcherAdapter:
     """
@@ -63,7 +43,7 @@ class VigilanceDispatcherAdapter:
             self._dispatcher = VigilanceDispatcher()
             self._real = True
         except ImportError:
-            logger.warning("VigilanceDispatcher unavailable; using null fallback")
+            logger.warning('VigilanceDispatcher unavailable; using null fallback')
             self._dispatcher = None
             self._ArtifactCls = None
             self._real = False
@@ -82,24 +62,18 @@ class VigilanceDispatcherAdapter:
         """
         if not self._real:
             return
-
         try:
-            trace_id: str = str(kwargs.get("trace_id", "unknown"))
-            raw_signals = kwargs.get("signals", ())
+            trace_id: str = str(kwargs.get('trace_id', 'unknown'))
+            raw_signals = kwargs.get('signals', ())
             if isinstance(raw_signals, str):
                 raw_signals = (raw_signals,)
             signals: tuple[str, ...] = tuple(raw_signals)
-            summary: str = str(kwargs.get("summary", "spine-execution"))
-
-            event = self._ArtifactCls.create(
-                trace_id=trace_id,
-                signals=signals,
-                summary=summary,
-            )
+            summary: str = str(kwargs.get('summary', 'spine-execution'))
+            event = self._ArtifactCls.create(trace_id=trace_id, signals=signals, summary=summary)
             self._dispatcher.dispatch(event=event, enqueue_fn=_EVENT_QUEUE.append)
+        # guardian: allow-silent-swallow
         except Exception as exc:
-            # Never block execution on observability failure
-            logger.debug("VigilanceDispatcherAdapter.dispatch swallowed: %s", exc)
+            logger.debug('VigilanceDispatcherAdapter.dispatch swallowed: %s', exc)
 
     @property
     def is_real(self) -> bool:

@@ -1,86 +1,47 @@
-#!/usr/bin/env python3
 """
 Run all 6-batch test suites and validate 100% pass rate
 """
-
 import subprocess
 import sys
 from pathlib import Path
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-# Add apps_rg to path
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+# guardian: allow-global-mutation
 sys.path.insert(0, str(Path(__file__).parent.parent))
-
 
 def run_test_suite(test_file: str) -> tuple[bool, str]:
     """Run a single test suite and return success status."""
     print(f"\n{'=' * 60}")
-    print(f"Running: {test_file}")
-    print("=" * 60)
-
-    result = subprocess.run(
-        [sys.executable, "-m", "pytest", test_file, "-v", "--tb=short"],
-        capture_output=True,
-        text=True,
-        cwd=Path(__file__).parent.parent,
-    )
-
-    return result.returncode == 0, result.stdout + result.stderr
-
+    print(f'Running: {test_file}')
+    print('=' * 60)
+    result = subprocess.run([sys.executable, '-m', 'pytest', test_file, '-v', '--tb=short'], capture_output=True, text=True, cwd=Path(__file__).parent.parent)
+    return (result.returncode == 0, result.stdout + result.stderr)
 
 def main():
     """Run all batch tests."""
-    test_suites = [
-        "tests/apps_rg/test_batch_1_foundation.py",
-        "tests/apps_rg/test_batch_2_hops.py",
-        "tests/apps_rg/test_batch_3_generation.py",
-        "tests/apps_rg/test_batch_4_refinement_part1.py",
-        "tests/apps_rg/test_batch_5_refinement_part2.py",
-        "tests/apps_rg/test_batch_6_safety.py",
-    ]
-
+    test_suites = ['tests/apps_rg/test_batch_1_foundation.py', 'tests/apps_rg/test_batch_2_hops.py', 'tests/apps_rg/test_batch_3_generation.py', 'tests/apps_rg/test_batch_4_refinement_part1.py', 'tests/apps_rg/test_batch_5_refinement_part2.py', 'tests/apps_rg/test_batch_6_safety.py']
     results = {}
-
     for test_suite in test_suites:
         success, output = run_test_suite(test_suite)
         results[test_suite] = success
-
         if not success:
-            print(f"\n❌ FAILED: {test_suite}")
-            print(output[-1000:])  # Last 1000 chars
+            print(f'\n❌ FAILED: {test_suite}')
+            print(output[-1000:])
         else:
-            print(f"\n✅ PASSED: {test_suite}")
-
-    # Summary
-    print("\n" + "=" * 60)
-    print("FINAL SUMMARY")
-    print("=" * 60)
-
-    passed = sum(1 for v in results.values() if v)
+            print(f'\n✅ PASSED: {test_suite}')
+    print('\n' + '=' * 60)
+    print('FINAL SUMMARY')
+    print('=' * 60)
+    passed = sum((1 for v in results.values() if v))
     total = len(results)
-
     for suite, success in results.items():
-        status = "✅ PASS" if success else "❌ FAIL"
-        print(f"{status} - {Path(suite).name}")
-
-    print(f"\nTotal: {passed}/{total} passed ({100 * passed / total:.0f}%)")
-
+        status = '✅ PASS' if success else '❌ FAIL'
+        print(f'{status} - {Path(suite).name}')
+    print(f'\nTotal: {passed}/{total} passed ({100 * passed / total:.0f}%)')
     if passed == total:
-        print("\n🎉 ALL BATCH TESTS PASSED!")
+        print('\n🎉 ALL BATCH TESTS PASSED!')
         return 0
     else:
-        print(f"\n⚠️ {total - passed} test suites failed.")
+        print(f'\n⚠️ {total - passed} test suites failed.')
         return 1
-
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     sys.exit(main())

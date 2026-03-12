@@ -1,18 +1,7 @@
 """In-memory implementation of HealingOutcomeIntakeStore for testing."""
-
 from system_learning.ports.healing_outcome_intake_store import HealingOutcomeIntakeStore
 from system_learning.types.healing_outcome_intake_types import HealingOutcomeIntakeRecord
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 class InMemoryHealingOutcomeIntakeStore(HealingOutcomeIntakeStore):
     """In-memory store implementation for testing and development.

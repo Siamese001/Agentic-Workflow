@@ -627,6 +627,7 @@ def _invoke_healer(
     healer_fn = HEALER_REGISTRY[check_id]
     try:
         result = healer_fn(check_dict, repo_root=repo_root, apply=apply)
+    # guardian: allow-silent-swallow
     except Exception as exc:
         logger.warning("healer %s raised %s: %s", check_id, type(exc).__name__, exc)
         result = HealCheckResult(

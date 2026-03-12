@@ -3,25 +3,11 @@
 Phase 1 Wave 1.1 implementation. Provides SHA-256-based immutability,
 atomic commits, and read-only access to versioned prompts.
 """
-
 from __future__ import annotations
-
 import hashlib
 from typing import Literal
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-# Phase 1 scope: in-memory dict only. No persistence, no external deps.
-_versions: dict[str, str] = {}  # version_id -> content
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+_versions: dict[str, str] = {}
 
 class PromptVersionStore:
     """Immutable versioned storage for S0/I0 prompts.
@@ -31,7 +17,7 @@ class PromptVersionStore:
     - Versions are write-once; no delete, no overwrite
     """
 
-    def commit_version(self, prompt_type: Literal["S0", "I0"], content: str) -> str:
+    def commit_version(self, prompt_type: Literal['S0', 'I0'], content: str) -> str:
         """Commit a prompt version and return its SHA-256 version ID.
 
         Args:
@@ -44,11 +30,9 @@ class PromptVersionStore:
         Raises:
             ValueError: If prompt_type is not "S0" or "I0"
         """
-        if prompt_type not in ("S0", "I0"):
+        if prompt_type not in ('S0', 'I0'):
             raise ValueError(f"prompt_type must be 'S0' or 'I0', got {prompt_type!r}")
-
-        version_id = hashlib.sha256(content.encode("utf-8")).hexdigest()
-        # Store only if not already present (deduplication)
+        version_id = hashlib.sha256(content.encode('utf-8')).hexdigest()
         _versions.setdefault(version_id, content)
         return version_id
 

@@ -3,23 +3,10 @@ Immutable Staging Buffer.
 
 A write-once data structure that prevents state mutation bugs in multi-hop workflows.
 """
-
 from __future__ import annotations
-
 from dataclasses import dataclass, field
 from typing import Any
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-# Import mixins with fallbacks
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 try:
     from agentic_core.mixins.mcp_hardened_mixin import mcp_hardened_mixin
 
@@ -29,8 +16,6 @@ except ImportError:
 
     class MCPHardenedMixin:
         pass
-
-
 try:
     from agentic_core.interfaces.mixins import HealerMixin
 except ImportError:
@@ -38,14 +23,12 @@ except ImportError:
     class HealerMixin:
         pass
 
-
 @dataclass
 class ImmutableStagingBuffer(MCPHardenedMixin, HealerMixin):
     """
     A hardened buffer that enforces write-once semantics per key.
     Once a key is written, it is locked forever.
     """
-
     _buffer: dict[str, Any] = field(default_factory=dict)
     _locked_keys: set[str] = field(default_factory=set)
 
@@ -66,7 +49,6 @@ class ImmutableStagingBuffer(MCPHardenedMixin, HealerMixin):
         """
         if key in self._locked_keys:
             raise ValueError(f"Key '{key}' is immutable - already written.")
-
         self._buffer[key] = value
         self._locked_keys.add(key)
 

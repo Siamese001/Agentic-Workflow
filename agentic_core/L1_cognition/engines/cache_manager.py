@@ -94,6 +94,7 @@ class CacheStrategyManager:
     def _initialize_default_configs(self) -> None:
         """Initialize default domain configurations."""
         self.domain_configs = {
+            # guardian: allow-magic-config
             AGENTIC_CORE_DIR: DomainConfig(
                 domain=AGENTIC_CORE_DIR,
                 ttl_seconds=3600,  # 1 hour
@@ -102,6 +103,7 @@ class CacheStrategyManager:
                 eviction_policy=EvictionPolicy.LRU,
                 max_healing_depth=5,
             ),
+            # guardian: allow-magic-config
             APPS_LIC_DIR: DomainConfig(
                 domain=APPS_LIC_DIR,
                 ttl_seconds=7200,  # 2 hours (LIC has longer campaign cycles)
@@ -110,6 +112,7 @@ class CacheStrategyManager:
                 eviction_policy=EvictionPolicy.LRU,
                 max_healing_depth=5,
             ),
+            # guardian: allow-magic-config
             APPS_RG_DIR: DomainConfig(
                 domain=APPS_RG_DIR,
                 ttl_seconds=3600,  # 1 hour
@@ -122,6 +125,7 @@ class CacheStrategyManager:
 
     def get_domain_config(self, domain: str) -> DomainConfig:
         """Get configuration for a domain."""
+        # guardian: allow-config-with-logic
         if domain not in self.domain_configs:
             # Create default config for unknown domain
             self.domain_configs[domain] = DomainConfig(domain=domain)

@@ -5,27 +5,13 @@ Following Batch 3 specifications
 
 HARDENING: Updates to use SovereignContext and TraceRegistry for cost tracking.
 """
-
 from __future__ import annotations
-
 import logging
 import time
 from typing import Any
-
 from apps_rg.engines.base_rg_engine import BaseRGEngine
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 Logger = logging.getLogger(__name__)
-
 
 class ServiceInvokerEngine(BaseRGEngine):
     """
@@ -34,31 +20,15 @@ class ServiceInvokerEngine(BaseRGEngine):
     """
 
     def __init__(self, ctx: Any) -> None:
-        super().__init__(ctx, node_id="SERVICE.INVOKER")
+        super().__init__(ctx, node_id='SERVICE.INVOKER')
 
-    async def execute(self, prompt: str, model: str = "default") -> str:
+    async def execute(self, prompt: str, model: str='default') -> str:
         """
         Execute LLM call with full observability.
         """
-        # In a real implementation, this would call the actual LLM API.
-        # Here we mock it but ensure the Telemetry is real.
-
         start = time.time()
-
-        # Simulate network latency
-        # await asyncio.sleep(0.1)
-
-        # Mock Response
-        response = "Sovereign Generated Content"
-
-        # Telemetry
+        response = 'Sovereign Generated Content'
         time.time() - start
         tokens = len(prompt) // 4 + len(response) // 4
-
-        # Update Trace Registry via Context
-        # (Note: BaseRGEngine.run already starts a span, but we can add metadata)
-        # self.ctx.trace.add_metadata("model", model)
-        # self.ctx.trace.add_metadata("tokens", tokens)
-
-        self.record_pass("LLM Call Successful", data={"tokens": tokens, "model": model})
+        self.record_pass('LLM Call Successful', data={'tokens': tokens, 'model': model})
         return response

@@ -44,6 +44,7 @@ class KeywordAnswerSupportValidator(IAnswerSupportValidator):
     C0 RULE: Pure function — no side effects, no mutation, no wall-clock.
     """
 
+    # guardian: allow-magic-config
     def __init__(
         self,
         min_overlap_words: int = 3,

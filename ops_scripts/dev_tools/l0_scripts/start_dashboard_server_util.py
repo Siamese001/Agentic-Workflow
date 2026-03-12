@@ -1,69 +1,44 @@
-# Smart dashboard server launcher
-# Checks if port 8000 is in use; starts server if not
-# Run from project root or add as Windsurf task
-
 import os
 import signal
 import socket
 import sys
 from pathlib import Path
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-# Import SSOT for dashboard directory - NO HARDCODING
 from agentic_core.L5_safety.config.structure_blueprint import DASHBOARD_DIR
 from agentic_core.utils.security_util import safe_popen
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 REPORTS_DIR = Path(__file__).parent.parent / DASHBOARD_DIR
 PORT = 8000
-
-# Global process reference for signal handlers
 server_process = None
-
 
 def is_port_in_use(port: int) -> bool:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        return s.connect_ex(("127.0.0.1", port)) == 0
-
+        return s.connect_ex(('127.0.0.1', port)) == 0
 
 def signal_handler(signum, frame):
     """Handle shutdown signals gracefully."""
     global server_process
     signal_name = signal.Signals(signum).name
-    print(f"\n\n⚠️  Received {signal_name} signal - shutting down server...")
+    print(f'\n\n⚠️  Received {signal_name} signal - shutting down server...')
     if server_process:
         server_process.terminate()
-        # guardian: allow-magic-config
         server_process.wait(timeout=DEFAULT_TIMEOUT)
-    print("✅ Server stopped gracefully.")
+    print('✅ Server stopped gracefully.')
     sys.exit(0)
-
-
-# Register signal handlers
-signal.signal(signal.SIGINT, signal_handler)  # Ctrl+C
-signal.signal(signal.SIGTERM, signal_handler)  # Termination signal
-
+signal.signal(signal.SIGINT, signal_handler)
+signal.signal(signal.SIGTERM, signal_handler)
 if is_port_in_use(PORT):
-    print(f"Dashboard already running → http://localhost:{PORT}/autonomy_dashboard.html")
+    print(f'Dashboard already running → http://localhost:{PORT}/autonomy_dashboard.html')
 else:
-    print(f"Starting dashboard server on port {PORT}...")
-    print("Press Ctrl+C to stop the server")
+    print(f'Starting dashboard server on port {PORT}...')
+    print('Press Ctrl+C to stop the server')
     # guardian: allow-path-string
     os.chdir(REPORTS_DIR)
     try:
-        server_process = safe_popen([sys.executable, "-m", "http.server", str(PORT)])
+        server_process = safe_popen([sys.executable, '-m', 'http.server', str(PORT)])
         server_process.wait()
     except KeyboardInterrupt:
-        print("\n\n✅ Server stopped gracefully.")
+        print('\n\n✅ Server stopped gracefully.')
     finally:
         if server_process:
             server_process.terminate()
-        print("🔒 Cleanup complete.")
+        print('🔒 Cleanup complete.')

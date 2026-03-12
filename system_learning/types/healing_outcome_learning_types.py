@@ -3,24 +3,12 @@
 Immutable, frozen dataclasses for deterministic healing outcome aggregation.
 All types are frozen with slots for deterministic behavior.
 """
-
 from __future__ import annotations
-
 import hashlib
 import json
 from dataclasses import dataclass, field
 from typing import Tuple
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 @dataclass(frozen=True, slots=True)
 class HealingOutcomeAggregateKey:
@@ -42,12 +30,11 @@ class HealingOutcomeAggregateKey:
     def __post_init__(self) -> None:
         """Validate invariants."""
         if not self.healer_name:
-            raise ValueError("healer_name must not be empty")
+            raise ValueError('healer_name must not be empty')
         if not self.tier:
-            raise ValueError("tier must not be empty")
+            raise ValueError('tier must not be empty')
         if not self.failure_type:
-            raise ValueError("failure_type must not be empty")
-
+            raise ValueError('failure_type must not be empty')
 
 @dataclass(frozen=True, slots=True)
 class HealingOutcomeAggregate:
@@ -69,37 +56,29 @@ class HealingOutcomeAggregate:
     def __post_init__(self) -> None:
         """Validate invariants."""
         if self.success_count < 0:
-            raise ValueError("success_count must be non-negative")
+            raise ValueError('success_count must be non-negative')
         if self.failure_count < 0:
-            raise ValueError("failure_count must be non-negative")
+            raise ValueError('failure_count must be non-negative')
         if self.total_count != self.success_count + self.failure_count:
-            raise ValueError("total_count must equal success_count + failure_count")
+            raise ValueError('total_count must equal success_count + failure_count')
 
     @property
     def success_rate(self) -> float:
         """Compute success rate with deterministic rounding."""
         if self.total_count == 0:
             return 0.0
-        # Round to 4 decimal places using round-half-up
         raw_rate = self.success_count / self.total_count
-        return round(raw_rate + 1e-10, 4)  # Small epsilon for round-half-up
+        return round(raw_rate + 1e-10, 4)
 
     def canonical_bytes(self) -> bytes:
         """Generate canonical byte representation for hashing."""
-        # Sort keys for deterministic ordering
-        data = {
-            "success_count": self.success_count,
-            "failure_count": self.failure_count,
-            "total_count": self.total_count,
-        }
-        # Use separators for compact JSON
-        json_str = json.dumps(data, separators=(",", ":"), sort_keys=True)
+        data = {'success_count': self.success_count, 'failure_count': self.failure_count, 'total_count': self.total_count}
+        json_str = json.dumps(data, separators=(',', ':'), sort_keys=True)
         return json_str.encode('utf-8')
 
     def content_hash(self) -> str:
         """Generate SHA-256 hash of canonical bytes."""
         return hashlib.sha256(self.canonical_bytes()).hexdigest()
-
 
 @dataclass(frozen=True, slots=True)
 class HealingOutcomeAggregateSnapshot:
@@ -121,41 +100,24 @@ class HealingOutcomeAggregateSnapshot:
     def __post_init__(self) -> None:
         """Validate invariants."""
         if not self.version_id:
-            raise ValueError("version_id must not be empty")
+            raise ValueError('version_id must not be empty')
         if self.created_utc < 0:
-            raise ValueError("created_utc must be non-negative")
-        # Verify aggregates are sorted
+            raise ValueError('created_utc must be non-negative')
         if self.aggregates:
             keys = [key for key, _ in self.aggregates]
             sorted_keys = sorted(keys, key=lambda k: (k.healer_name, k.tier, k.failure_type))
             if keys != sorted_keys:
-                raise ValueError("aggregates must be sorted by (healer_name, tier, failure_type)")
+                raise ValueError('aggregates must be sorted by (healer_name, tier, failure_type)')
 
     def canonical_bytes(self) -> bytes:
         """Generate canonical byte representation for hashing."""
-        # Convert aggregates to sorted list for deterministic serialization
         aggregates_data = []
         for key, aggregate in self.aggregates:
-            key_data = {
-                "healer_name": key.healer_name,
-                "tier": key.tier,
-                "failure_type": key.failure_type,
-            }
-            aggregate_data = {
-                "success_count": aggregate.success_count,
-                "failure_count": aggregate.failure_count,
-                "total_count": aggregate.total_count,
-            }
-            aggregates_data.append({"key": key_data, "aggregate": aggregate_data})
-
-        data = {
-            "version_id": self.version_id,
-            "created_utc": self.created_utc,
-            "aggregates": aggregates_data,
-        }
-
-        # Use separators for compact JSON
-        json_str = json.dumps(data, separators=(",", ":"), sort_keys=True)
+            key_data = {'healer_name': key.healer_name, 'tier': key.tier, 'failure_type': key.failure_type}
+            aggregate_data = {'success_count': aggregate.success_count, 'failure_count': aggregate.failure_count, 'total_count': aggregate.total_count}
+            aggregates_data.append({'key': key_data, 'aggregate': aggregate_data})
+        data = {'version_id': self.version_id, 'created_utc': self.created_utc, 'aggregates': aggregates_data}
+        json_str = json.dumps(data, separators=(',', ':'), sort_keys=True)
         return json_str.encode('utf-8')
 
     def content_hash(self) -> str:
@@ -165,15 +127,7 @@ class HealingOutcomeAggregateSnapshot:
     def get_success_rate(self, key: HealingOutcomeAggregateKey) -> float:
         """Get success rate for a specific key."""
         for k, aggregate in self.aggregates:
-            if (k.healer_name == key.healer_name and
-                k.tier == key.tier and
-                k.failure_type == key.failure_type):
+            if k.healer_name == key.healer_name and k.tier == key.tier and (k.failure_type == key.failure_type):
                 return aggregate.success_rate
         return 0.0
-
-
-__all__ = [
-    "HealingOutcomeAggregateKey",
-    "HealingOutcomeAggregate",
-    "HealingOutcomeAggregateSnapshot",
-]
+__all__ = ['HealingOutcomeAggregateKey', 'HealingOutcomeAggregate', 'HealingOutcomeAggregateSnapshot']

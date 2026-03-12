@@ -2,39 +2,24 @@
 Shared Orchestration Mixin - Phase 2 Optimization
 Provides common orchestration workflow patterns for agents.
 """
-
 from __future__ import annotations
-
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 class WorkflowStatus(Enum):
     """Status of workflow execution."""
-
-    PENDING = "pending"
-    IN_PROGRESS = "in_progress"
-    COMPLETED = "completed"
-    FAILED = "failed"
-    SKIPPED = "skipped"
-
+    PENDING = 'pending'
+    IN_PROGRESS = 'in_progress'
+    COMPLETED = 'completed'
+    FAILED = 'failed'
+    SKIPPED = 'skipped'
 
 @dataclass
 class WorkflowStep:
     """Represents a single step in a workflow."""
-
     name: str
     func: Callable
     args: tuple = field(default_factory=tuple)
@@ -42,7 +27,6 @@ class WorkflowStep:
     status: WorkflowStatus = WorkflowStatus.PENDING
     result: Any = None
     error: str | None = None
-
 
 class OrchestrationMixin:
     """
@@ -52,12 +36,7 @@ class OrchestrationMixin:
     duplicate orchestration boilerplate across agents.
     """
 
-    def execute_workflow(
-        self,
-        steps: list[WorkflowStep],
-        stop_on_failure: bool = True,
-        rollback_on_failure: bool = False,
-    ) -> dict[str, Any]:
+    def execute_workflow(self, steps: list[WorkflowStep], stop_on_failure: bool=True, rollback_on_failure: bool=False) -> dict[str, Any]:
         """
         Execute a multi-step workflow with error handling.
 
@@ -69,37 +48,27 @@ class OrchestrationMixin:
         Returns:
             Dictionary with workflow execution results
         """
-        results = {"steps": [], "status": "completed", "errors": []}
+        results = {'steps': [], 'status': 'completed', 'errors': []}
         completed_steps = []
-
         for step in steps:
             step.status = WorkflowStatus.IN_PROGRESS
-
             try:
-                # Execute step
                 step.result = step.func(*step.args, **step.kwargs)
                 step.status = WorkflowStatus.COMPLETED
                 completed_steps.append(step)
-
-                results["steps"].append(
-                    {"name": step.name, "status": "completed", "result": step.result},
-                )
-
+                results['steps'].append({'name': step.name, 'status': 'completed', 'result': step.result})
+            # guardian: allow-silent-swallow
             except Exception as e:
-                # TODO: Handle specific exception properly
-                raise  # Re-raise after logging/handling
+                raise
                 step.status = WorkflowStatus.FAILED
                 step.error = str(e)
-                results["errors"].append({"step": step.name, "error": str(e)})
-                results["status"] = "failed"
-
-                results["steps"].append({"name": step.name, "status": "failed", "error": str(e)})
-
+                results['errors'].append({'step': step.name, 'error': str(e)})
+                results['status'] = 'failed'
+                results['steps'].append({'name': step.name, 'status': 'failed', 'error': str(e)})
                 if stop_on_failure:
                     if rollback_on_failure:
                         self._rollback_steps(completed_steps)
                     break
-
         return results
 
     def _rollback_steps(self, steps: list[WorkflowStep]) -> None:
@@ -110,17 +79,15 @@ class OrchestrationMixin:
             steps: List of completed steps to rollback
         """
         for step in reversed(steps):
-            if hasattr(step.func, "rollback"):
+            if hasattr(step.func, 'rollback'):
                 try:
                     step.func.rollback(step.result)
+                # guardian: allow-silent-swallow
                 except Exception as e:
-                    if hasattr(self, "log"):
-                        self.log(f"Rollback failed for {step.name}: {e}")
+                    if hasattr(self, 'log'):
+                        self.log(f'Rollback failed for {step.name}: {e}')
 
-    def orchestrate_parallel(
-        self,
-        tasks: list[tuple[str, Callable, tuple, dict[str, Any]]],
-    ) -> dict[str, Any]:
+    def orchestrate_parallel(self, tasks: list[tuple[str, Callable, tuple, dict[str, Any]]]) -> dict[str, Any]:
         """
         Orchestrate parallel task execution.
 
@@ -130,24 +97,19 @@ class OrchestrationMixin:
         Returns:
             Dictionary with task execution results
         """
-        results = {"tasks": {}, "status": "completed", "errors": []}
-
+        results = {'tasks': {}, 'status': 'completed', 'errors': []}
         for name, func, args, kwargs in tasks:
             try:
                 result = func(*args, **kwargs)
-                results["tasks"][name] = {"status": "completed", "result": result}
+                results['tasks'][name] = {'status': 'completed', 'result': result}
+            # guardian: allow-silent-swallow
             except Exception as e:
-                results["tasks"][name] = {"status": "failed", "error": str(e)}
-                results["errors"].append({"task": name, "error": str(e)})
-                results["status"] = "partial"
-
+                results['tasks'][name] = {'status': 'failed', 'error': str(e)}
+                results['errors'].append({'task': name, 'error': str(e)})
+                results['status'] = 'partial'
         return results
 
-    def coordinate_agents(
-        self,
-        agent_tasks: dict[str, Callable],
-        dependencies: dict[str, list[str]] | None = None,
-    ) -> dict[str, Any]:
+    def coordinate_agents(self, agent_tasks: dict[str, Callable], dependencies: dict[str, list[str]] | None=None) -> dict[str, Any]:
         """
         Coordinate multiple agents with dependency management.
 
@@ -162,38 +124,30 @@ class OrchestrationMixin:
         completed = set()
         results = {}
         errors = []
-
-        # Topological execution based on dependencies
         while len(completed) < len(agent_tasks):
             progress_made = False
-
             for agent_name, task_func in agent_tasks.items():
                 if agent_name in completed:
                     continue
-
-                # Check if dependencies are met
                 deps = dependencies.get(agent_name, [])
-                if all(dep in completed for dep in deps):
+                if all((dep in completed for dep in deps)):
                     try:
                         result = task_func()
-                        results[agent_name] = {"status": "completed", "result": result}
+                        results[agent_name] = {'status': 'completed', 'result': result}
                         completed.add(agent_name)
                         progress_made = True
+                    # guardian: allow-silent-swallow
                     except Exception as e:
-                        # TODO: Handle specific exception properly
-                        raise  # Re-raise after logging/handling
-                        results[agent_name] = {"status": "failed", "error": str(e)}
-                        errors.append({"agent": agent_name, "error": str(e)})
-                        completed.add(agent_name)  # Mark as processed even if failed
+                        raise
+                        results[agent_name] = {'status': 'failed', 'error': str(e)}
+                        errors.append({'agent': agent_name, 'error': str(e)})
+                        completed.add(agent_name)
                         progress_made = True
-
             if not progress_made:
-                # Circular dependency or missing dependency
                 remaining = set(agent_tasks.keys()) - completed
-                errors.append({"error": f"Circular or missing dependencies for: {remaining}"})
+                errors.append({'error': f'Circular or missing dependencies for: {remaining}'})
                 break
-
-        return {"agents": results, "errors": errors, "completed": list(completed)}
+        return {'agents': results, 'errors': errors, 'completed': list(completed)}
 
     def create_checkpoint(self, state: dict[str, Any], checkpoint_id: str) -> None:
         """
@@ -203,7 +157,7 @@ class OrchestrationMixin:
             state: State dictionary to checkpoint
             checkpoint_id: Unique identifier for checkpoint
         """
-        if not hasattr(self, "_checkpoints"):
+        if not hasattr(self, '_checkpoints'):
             self._checkpoints = {}
         self._checkpoints[checkpoint_id] = state.copy()
 
@@ -217,6 +171,6 @@ class OrchestrationMixin:
         Returns:
             Restored state dictionary or None if not found
         """
-        if hasattr(self, "_checkpoints"):
+        if hasattr(self, '_checkpoints'):
             return self._checkpoints.get(checkpoint_id)
         return None

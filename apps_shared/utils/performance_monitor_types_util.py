@@ -5,9 +5,7 @@ Provides timing decorators, metrics collection, and performance analysis
 for apps_lic and apps_rg.
 Phase 4B - Advanced Testing and Performance
 """
-
 from __future__ import annotations
-
 import functools
 import logging
 import statistics
@@ -15,36 +13,21 @@ import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import Any, TypeVar
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 logger = logging.getLogger(__name__)
-
-F = TypeVar("F", bound=Callable[..., Any])
-
+F = TypeVar('F', bound=Callable[..., Any])
 
 @dataclass
 class TimingMetric:
     """A single timing measurement."""
-
     name: str
     duration_ms: float
     timestamp: float = field(default_factory=time.time)
     metadata: dict[str, Any] = field(default_factory=dict)
 
-
 @dataclass
 class MetricsSummary:
     """Summary of collected metrics."""
-
     name: str
     count: int
     min_ms: float
@@ -55,11 +38,10 @@ class MetricsSummary:
     p95_ms: float
     p99_ms: float
 
-
 class MetricsCollector:
     """Collects and aggregates performance metrics."""
 
-    def __init__(self, name: str = "default"):
+    def __init__(self, name: str='default'):
         self.name = name
         self._metrics: dict[str, list[TimingMetric]] = {}
         self._start_times: dict[str, float] = {}
@@ -68,44 +50,22 @@ class MetricsCollector:
         """Start a timer for an operation."""
         self._start_times[operation] = time.perf_counter()
 
-    def stop_timer(
-        self,
-        operation: str,
-        metadata: dict[str, Any] | None = None,
-    ) -> float:
+    def stop_timer(self, operation: str, metadata: dict[str, Any] | None=None) -> float:
         """Stop a timer and record the metric."""
         if operation not in self._start_times:
-            logger.warning(f"Timer not started for: {operation}")
+            logger.warning(f'Timer not started for: {operation}')
             return 0.0
-
         start = self._start_times.pop(operation)
         duration_ms = (time.perf_counter() - start) * 1000
-
-        metric = TimingMetric(
-            name=operation,
-            duration_ms=duration_ms,
-            metadata=metadata or {},
-        )
-
+        metric = TimingMetric(name=operation, duration_ms=duration_ms, metadata=metadata or {})
         if operation not in self._metrics:
             self._metrics[operation] = []
         self._metrics[operation].append(metric)
-
         return duration_ms
 
-    def record_metric(
-        self,
-        operation: str,
-        duration_ms: float,
-        metadata: dict[str, Any] | None = None,
-    ) -> None:
+    def record_metric(self, operation: str, duration_ms: float, metadata: dict[str, Any] | None=None) -> None:
         """Record a metric directly."""
-        metric = TimingMetric(
-            name=operation,
-            duration_ms=duration_ms,
-            metadata=metadata or {},
-        )
-
+        metric = TimingMetric(name=operation, duration_ms=duration_ms, metadata=metadata or {})
         if operation not in self._metrics:
             self._metrics[operation] = []
         self._metrics[operation].append(metric)
@@ -114,27 +74,15 @@ class MetricsCollector:
         """Get summary statistics for an operation."""
         if operation not in self._metrics or not self._metrics[operation]:
             return None
-
         durations = [m.duration_ms for m in self._metrics[operation]]
         sorted_durations = sorted(durations)
-
-        return MetricsSummary(
-            name=operation,
-            count=len(durations),
-            min_ms=min(durations),
-            max_ms=max(durations),
-            mean_ms=statistics.mean(durations),
-            median_ms=statistics.median(durations),
-            std_dev_ms=statistics.stdev(durations) if len(durations) > 1 else 0.0,
-            p95_ms=self._percentile(sorted_durations, 95),
-            p99_ms=self._percentile(sorted_durations, 99),
-        )
+        return MetricsSummary(name=operation, count=len(durations), min_ms=min(durations), max_ms=max(durations), mean_ms=statistics.mean(durations), median_ms=statistics.median(durations), std_dev_ms=statistics.stdev(durations) if len(durations) > 1 else 0.0, p95_ms=self._percentile(sorted_durations, 95), p99_ms=self._percentile(sorted_durations, 99))
 
     def get_all_summaries(self) -> dict[str, MetricsSummary]:
         """Get summaries for all operations."""
         return {op: summary for op in self._metrics if (summary := self.get_summary(op)) is not None}
 
-    def clear(self, operation: str | None = None) -> None:
+    def clear(self, operation: str | None=None) -> None:
         """Clear collected metrics."""
         if operation:
             self._metrics.pop(operation, None)
@@ -153,11 +101,7 @@ class MetricsCollector:
         weight = index - lower
         return sorted_values[lower] * (1 - weight) + sorted_values[upper] * weight
 
-
-def timed(
-    collector: MetricsCollector | None = None,
-    operation_name: str | None = None,
-) -> Callable[[F], F]:
+def timed(collector: MetricsCollector | None=None, operation_name: str | None=None) -> Callable[[F], F]:
     """
     Decorator to time function execution.
 
@@ -167,41 +111,33 @@ def timed(
     """
 
     def decorator(func: F) -> F:
+
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
             name = operation_name or func.__name__
             start = time.perf_counter()
-
             try:
                 result = func(*args, **kwargs)
                 duration_ms = (time.perf_counter() - start) * 1000
-
                 if collector:
-                    collector.record_metric(name, duration_ms, {"success": True})
-
-                logger.debug(f"{name} completed in {duration_ms:.2f}ms")
+                    collector.record_metric(name, duration_ms, {'success': True})
+                logger.debug(f'{name} completed in {duration_ms:.2f}ms')
                 return result
-
             except Exception as e:
-                # TODO: Handle specific exception properly
-                raise  # Re-raise after logging/handling
-                duration_ms = (time.perf_counter() - start) * 1000
-
-                if collector:
-                    collector.record_metric(name, duration_ms, {"success": False, "error": str(e)})
-
                 raise
-
-        return wrapper  # type: ignore
-
+                duration_ms = (time.perf_counter() - start) * 1000
+                if collector:
+                    collector.record_metric(name, duration_ms, {'success': False, 'error': str(e)})
+                raise
+        return wrapper
     return decorator
-
 
 class PerformanceThresholds:
     """Defines performance thresholds for operations."""
 
     def __init__(self):
         self._thresholds: dict[str, float] = {}
+        # guardian: allow-magic-config
         self._default_threshold_ms = 1000.0
 
     def set_threshold(self, operation: str, max_duration_ms: float) -> None:
@@ -217,21 +153,15 @@ class PerformanceThresholds:
         threshold = self.get_threshold(operation)
         return duration_ms <= threshold
 
-    def get_violations(
-        self,
-        collector: MetricsCollector,
-    ) -> list[tuple[str, float, float]]:
+    def get_violations(self, collector: MetricsCollector) -> list[tuple[str, float, float]]:
         """Get list of threshold violations."""
         violations = []
-
         for operation, metrics in collector._metrics.items():
             threshold = self.get_threshold(operation)
             for metric in metrics:
                 if metric.duration_ms > threshold:
                     violations.append((operation, metric.duration_ms, threshold))
-
         return violations
-
 
 class PerformanceMonitor:
     """
@@ -240,7 +170,7 @@ class PerformanceMonitor:
     Combines metrics collection, thresholds, and reporting.
     """
 
-    def __init__(self, name: str = "app"):
+    def __init__(self, name: str='app'):
         self.name = name
         self.collector = MetricsCollector(name)
         self.thresholds = PerformanceThresholds()
@@ -249,12 +179,7 @@ class PerformanceMonitor:
         """Create a context manager for timing an operation."""
         return OperationTimer(self, operation)
 
-    def record(
-        self,
-        operation: str,
-        duration_ms: float,
-        metadata: dict[str, Any] | None = None,
-    ) -> None:
+    def record(self, operation: str, duration_ms: float, metadata: dict[str, Any] | None=None) -> None:
         """Record a timing metric."""
         self.collector.record_metric(operation, duration_ms, metadata)
 
@@ -262,29 +187,11 @@ class PerformanceMonitor:
         """Generate a performance report."""
         summaries = self.collector.get_all_summaries()
         violations = self.thresholds.get_violations(self.collector)
-
-        return {
-            "monitor_name": self.name,
-            "operations": {
-                name: {
-                    "count": s.count,
-                    "min_ms": round(s.min_ms, 2),
-                    "max_ms": round(s.max_ms, 2),
-                    "mean_ms": round(s.mean_ms, 2),
-                    "median_ms": round(s.median_ms, 2),
-                    "p95_ms": round(s.p95_ms, 2),
-                    "p99_ms": round(s.p99_ms, 2),
-                }
-                for name, s in summaries.items()
-            },
-            "violations": [{"operation": op, "duration_ms": d, "threshold_ms": t} for op, d, t in violations],
-            "total_operations": sum(s.count for s in summaries.values()),
-        }
+        return {'monitor_name': self.name, 'operations': {name: {'count': s.count, 'min_ms': round(s.min_ms, 2), 'max_ms': round(s.max_ms, 2), 'mean_ms': round(s.mean_ms, 2), 'median_ms': round(s.median_ms, 2), 'p95_ms': round(s.p95_ms, 2), 'p99_ms': round(s.p99_ms, 2)} for name, s in summaries.items()}, 'violations': [{'operation': op, 'duration_ms': d, 'threshold_ms': t} for op, d, t in violations], 'total_operations': sum((s.count for s in summaries.values()))}
 
     def reset(self) -> None:
         """Reset all collected metrics."""
         self.collector.clear()
-
 
 class OperationTimer:
     """Context manager for timing operations."""
@@ -301,20 +208,12 @@ class OperationTimer:
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         self.duration_ms = (time.perf_counter() - self.start_time) * 1000
-        self.monitor.record(
-            self.operation,
-            self.duration_ms,
-            {"success": exc_type is None},
-        )
-
-
-# Global monitor instance
+        self.monitor.record(self.operation, self.duration_ms, {'success': exc_type is None})
 _global_monitor: PerformanceMonitor | None = None
-
 
 def get_performance_monitor() -> PerformanceMonitor:
     """Get the global performance monitor."""
     global _global_monitor
     if _global_monitor is None:
-        _global_monitor = PerformanceMonitor("global")
+        _global_monitor = PerformanceMonitor('global')
     return _global_monitor

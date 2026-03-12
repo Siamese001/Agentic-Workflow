@@ -12,43 +12,19 @@ Contracts:
 - MUST always execute (no retry-count short-circuit).
   Forced escalation applies to routing only, not write-back.
 """
-
 from __future__ import annotations
-
 import logging
 from typing import TYPE_CHECKING, Protocol
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 if TYPE_CHECKING:
     from agentic_core.L2_execution.healers.healing_tier_dispatcher import InvocationRecord
-    from agentic_core.L2_execution.healers.healing_tier_types import (
-        HealingDecision,
-        HealingInput,
-    )
-
+    from agentic_core.L2_execution.healers.healing_tier_types import HealingDecision, HealingInput
 logger = logging.getLogger(__name__)
-
 
 class OutcomeWriteBackHook(Protocol):
     """Synchronous write-back seam called after each heal invocation."""
 
-    def on_outcome(
-        self,
-        *,
-        healing_input: HealingInput,
-        decision: HealingDecision,
-        record: InvocationRecord | None,
-        success: bool,
-    ) -> None:
+    def on_outcome(self, *, healing_input: HealingInput, decision: HealingDecision, record: InvocationRecord | None, success: bool) -> None:
         """Handle a completed healing outcome.
 
         Parameters
@@ -64,13 +40,11 @@ class OutcomeWriteBackHook(Protocol):
         """
         ...
 
-
 class NullOutcomeWriteBackHook:
     """No-op hook (default when no store is configured)."""
 
     def on_outcome(self, **kwargs) -> None:
         pass
-
 
 class DefaultOutcomeWriteBackHook:
     """Default hook: writes to HealingSuccessRateStore + Qwen prior update.
@@ -82,54 +56,21 @@ class DefaultOutcomeWriteBackHook:
     def __init__(self, store=None) -> None:
         if store is None:
             from system_learning.engines.healing_success_rate_store import get_default_store
-
             store = get_default_store()
         self._store = store
 
-    def on_outcome(
-        self,
-        *,
-        healing_input,
-        decision,
-        record,
-        success: bool,
-    ) -> None:
-        # Always record outcome (no retry-count short-circuit)
+    def on_outcome(self, *, healing_input, decision, record, success: bool) -> None:
         try:
             self._store.record_outcome(healing_input.error_signature, success)
-        except Exception as exc:  # guardian: allow-silent-swallower
-            logger.warning(
-                "write_back_store_failed",
-                extra={
-                    "error_signature": healing_input.error_signature,
-                    "exception": str(exc),
-                    "trace_id": healing_input.trace_id,
-                },
-            )
-
-        # Qwen-specific prior update (per qwen_meta_learning contract)
+        # guardian: allow-silent-swallow
+        except Exception as exc:
+            logger.warning('write_back_store_failed', extra={'error_signature': healing_input.error_signature, 'exception': str(exc), 'trace_id': healing_input.trace_id})
         from agentic_core.L2_execution.healers.healing_tier_types import HealingTier
-
         if decision.tier == HealingTier.QWEN_VLLM:
             try:
-                from agentic_core.L2_execution.healers.qwen_meta_learning import (
-                    update_qwen_confidence_prior,
-                )
-
+                from agentic_core.L2_execution.healers.qwen_meta_learning import update_qwen_confidence_prior
                 update_qwen_confidence_prior(healing_input.error_signature, success)
-            except Exception as exc:  # guardian: allow-silent-swallower
-                logger.warning(
-                    "write_back_qwen_prior_failed",
-                    extra={
-                        "error_signature": healing_input.error_signature,
-                        "exception": str(exc),
-                        "trace_id": healing_input.trace_id,
-                    },
-                )
-
-
-__all__ = [
-    "OutcomeWriteBackHook",
-    "NullOutcomeWriteBackHook",
-    "DefaultOutcomeWriteBackHook",
-]
+            # guardian: allow-silent-swallow
+            except Exception as exc:
+                logger.warning('write_back_qwen_prior_failed', extra={'error_signature': healing_input.error_signature, 'exception': str(exc), 'trace_id': healing_input.trace_id})
+__all__ = ['OutcomeWriteBackHook', 'NullOutcomeWriteBackHook', 'DefaultOutcomeWriteBackHook']

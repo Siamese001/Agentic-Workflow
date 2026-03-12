@@ -1,38 +1,17 @@
 from __future__ import annotations
-
 from agentic_core.interfaces.write_gateway import get_write_gateway
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 def _get_write_gateway():
     """Get UWG instance - L4 may only use, not import tools."""
     return get_write_gateway()
-
-
-"""
-Storage adapters for different backend types.
-
-Provides atomic storage operations with hot-swappable backends.
-Supports local disk (for development) and S3 (for production).
-"""
+'\nStorage adapters for different backend types.\n\nProvides atomic storage operations with hot-swappable backends.\nSupports local disk (for development) and S3 (for production).\n'
 import json
 import logging
 from pathlib import Path
 from typing import Any, Protocol
-
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
-
 Logger: Any = logging.getLogger(__name__)
-
 
 class IBlobStorageProviderProtocol(Protocol):
     """
@@ -52,7 +31,6 @@ class IBlobStorageProviderProtocol(Protocol):
         """Checks if key exists."""
         ...
 
-
 class LocalDiskAdapter:
     """
     Mimics cloud storage on local disk.
@@ -71,7 +49,7 @@ class LocalDiskAdapter:
         """
         self.base_path = Path(base_path)
         _get_write_gateway().ensure_dir(self.base_path)
-        LOGGER.info(f"Local disk adapter initialized at: {self.base_path}")
+        LOGGER.info(f'Local disk adapter initialized at: {self.base_path}')
 
     def _get_path(self: Any, key: str) -> Path:
         """
@@ -83,12 +61,12 @@ class LocalDiskAdapter:
         Returns:
             Safe path within base directory
         """
-        key = key.replace("\\", "/")
-        parts = [p for p in key.split("/") if p and p != ".."]
+        key = key.replace('\\', '/')
+        parts = [p for p in key.split('/') if p and p != '..']
         safe_key = Path(*parts)
         full_path = self.base_path / safe_key
         if not str(full_path).startswith(str(self.base_path)):
-            raise ValueError(f"Invalid key: {key} (directory traversal attempt)")
+            raise ValueError(f'Invalid key: {key} (directory traversal attempt)')
         return full_path
 
     async def write_blob(self: Any, key: str, data: bytes, metadata: dict[str, str] | None) -> str:
@@ -104,17 +82,17 @@ class LocalDiskAdapter:
             MD5 checksum of the data
         """
         target_path: Any = self._get_path(key)
-        temp_path: Any = target_path.with_suffix(".tmp")
+        temp_path: Any = target_path.with_suffix('.tmp')
         _get_write_gateway().ensure_dir(target_path.parent)
         _get_write_gateway().open_write(temp_path, data)
         if metadata:
-            meta_path: Any = target_path.with_suffix(".meta.json")
-            assert_no_persistent_write("L4", "json.dump")  # G-12-1: mutation prohibition guard
+            meta_path: Any = target_path.with_suffix('.meta.json')
+            assert_no_persistent_write('L4', 'json.dump')
             _get_write_gateway().write_json(meta_path, metadata)
-        assert_no_persistent_write("L4", "shutil.mutate")  # G-12-1: mutation prohibition guard
+        assert_no_persistent_write('L4', 'shutil.mutate')
         _get_write_gateway().move_path(str(temp_path), str(target_path))
         checksum: Any = hashlib.md5(data).hexdigest()
-        LOGGER.debug(f"Wrote blob: {key} (checksum={checksum})")
+        LOGGER.debug(f'Wrote blob: {key} (checksum={checksum})')
         return checksum
 
     async def read_blob(self: Any, key: str) -> bytes:
@@ -132,10 +110,10 @@ class LocalDiskAdapter:
         """
         target_path: Any = self._get_path(key)
         if not target_path.exists():
-            raise FileNotFoundError(f"Key {key} not found in storage.")
-        with open(target_path, "rb") as f:
+            raise FileNotFoundError(f'Key {key} not found in storage.')
+        with open(target_path, 'rb') as f:
             data: Any = f.read()
-        LOGGER.debug(f"Read blob: {key} ({len(data)} bytes)")
+        LOGGER.debug(f'Read blob: {key} ({len(data)} bytes)')
         return data
 
     async def exists(self: Any, key: str) -> bool:
@@ -163,10 +141,10 @@ class LocalDiskAdapter:
         target_path: Any = self._get_path(key)
         if target_path.exists():
             _get_write_gateway().remove_file(target_path)
-            meta_path: Any = target_path.with_suffix(".meta.json")
+            meta_path: Any = target_path.with_suffix('.meta.json')
             if meta_path.exists():
                 _get_write_gateway().remove_file(meta_path)
-            LOGGER.debug(f"Deleted blob: {key}")
+            LOGGER.debug(f'Deleted blob: {key}')
             return True
         return False
 
@@ -182,16 +160,14 @@ class LocalDiskAdapter:
         """
         blobs: Any = []
         from agentic_core.utils.ssot_discovery_validator import get_data_files, get_python_files
-
         all_files = list(get_python_files(self.base_path)) + list(get_data_files(self.base_path))
         for path in all_files:
-            if path.is_file() and (path.suffix not in [".tmp", ".meta.json"]):
+            if path.is_file() and path.suffix not in ['.tmp', '.meta.json']:
                 relative: Any = path.relative_to(self.base_path)
                 key: Any = str(relative)
                 if not prefix or key.startswith(prefix):
                     blobs.append(key)
         return blobs
-
 
 class S3Adapter:
     """
@@ -210,12 +186,11 @@ class S3Adapter:
         """
         try:
             import boto3
-
-            self.s3 = boto3.client("s3", region_name=region)
+            self.s3 = boto3.client('s3', region_name=region)
             self.bucket = bucket_name
-            LOGGER.info(f"S3 adapter initialized (bucket={bucket_name}, region={region})")
+            LOGGER.info(f'S3 adapter initialized (bucket={bucket_name}, region={region})')
         except ImportError:
-            raise ImportError("boto3 not installed. Run: pip install boto3")
+            raise ImportError('boto3 not installed. Run: pip install boto3')
 
     async def write_blob(self: Any, key: str, data: bytes, metadata: dict[str, str] | None) -> str:
         """
@@ -230,8 +205,8 @@ class S3Adapter:
             ETag from S3
         """
         response: Any = self.s3.put_object(Bucket=self.bucket, Key=key, Body=data, Metadata=metadata or {})
-        etag: Any = response["ETag"].replace('"', "")
-        LOGGER.debug(f"Wrote S3 blob: {key} (etag={etag})")
+        etag: Any = response['ETag'].replace('"', '')
+        LOGGER.debug(f'Wrote S3 blob: {key} (etag={etag})')
         return etag
 
     async def read_blob(self: Any, key: str) -> bytes:
@@ -245,8 +220,8 @@ class S3Adapter:
             Binary data
         """
         response: Any = self.s3.get_object(Bucket=self.bucket, Key=key)
-        data: Any = response["Body"].read()
-        LOGGER.debug(f"Read S3 blob: {key} ({len(data)} bytes)")
+        data: Any = response['Body'].read()
+        LOGGER.debug(f'Read S3 blob: {key} ({len(data)} bytes)')
         return data
 
     async def exists(self: Any, key: str) -> bool:
@@ -277,10 +252,10 @@ class S3Adapter:
         """
         try:
             self.s3.delete_object(Bucket=self.bucket, Key=key)
-            LOGGER.debug(f"Deleted S3 blob: {key}")
+            LOGGER.debug(f'Deleted S3 blob: {key}')
             return True
         except Exception as e:
-            LOGGER.error(f"Failed to delete S3 blob {key}: {e}")
+            LOGGER.error(f'Failed to delete S3 blob {key}: {e}')
             return False
 
     async def list_blobs(self: Any, prefix: str) -> list:
@@ -294,14 +269,13 @@ class S3Adapter:
             List of blob keys
         """
         blobs: Any = []
-        paginator: Any = self.s3.get_paginator("list_objects_v2")
+        paginator: Any = self.s3.get_paginator('list_objects_v2')
         for page in paginator.paginate(Bucket=self.bucket, Prefix=prefix):
-            if "Contents" in page:
-                blobs.extend([obj["Key"] for obj in page["Contents"]])
+            if 'Contents' in page:
+                blobs.extend([obj['Key'] for obj in page['Contents']])
         return blobs
 
-
-def create_storage_adapter(adapter_type: str = "local", **kwargs) -> IBlobStorageProviderProtocol:
+def create_storage_adapter(adapter_type: str='local', **kwargs) -> IBlobStorageProviderProtocol:
     """
     Factory function to create storage adapters.
 
@@ -312,64 +286,42 @@ def create_storage_adapter(adapter_type: str = "local", **kwargs) -> IBlobStorag
     Returns:
         Storage adapter instance
     """
-    if adapter_type == "local":
-        base_path: Any = kwargs.get("base_path", "./agent_data_store")
+    if adapter_type == 'local':
+        base_path: Any = kwargs.get('base_path', './agent_data_store')
         return LocalDiskAdapter(base_path=base_path)
-    elif adapter_type == "s3":
-        bucket_name: Any = kwargs.get("bucket_name")
+    elif adapter_type == 's3':
+        bucket_name: Any = kwargs.get('bucket_name')
         if not bucket_name:
-            raise ValueError("bucket_name required for S3 adapter")
-        region: Any = kwargs.get("region", "us-east-1")
+            raise ValueError('bucket_name required for S3 adapter')
+        region: Any = kwargs.get('region', 'us-east-1')
         return S3Adapter(bucket_name=bucket_name, region=region)
     else:
-        raise ValueError(f"Unknown adapter type: {adapter_type}")
-
-
+        raise ValueError(f'Unknown adapter type: {adapter_type}')
 from agentic_core.L0_routing.config import TESTS_DIR
-
-# ---------------------------------------------------------------------------
-# TOMBSTONED SHADOW REDIS CLASSES
-#
-# RedisDistributedLock, RedisHotCache, and HotBrainCache have been removed.
-# L4 must not own its own Redis connection — all caching and coordination
-# must go through agentic_core.cache (get_hot_cache / get_coordination_cache).
-# Zero external callers were found at tombstone time.
-#
-# For distributed locks use: agentic_core.cache.get_coordination_cache()
-#   with acquire_lease() / release_lease().
-# For hot caching use: agentic_core.cache.get_hot_cache()
-# ---------------------------------------------------------------------------
-
 
 class _TombstonedRedisDistributedLock:
     """Tombstoned — see module comment above."""
 
     def __init__(self, *args, **kwargs):
-        raise RuntimeError(
-            "RedisDistributedLock is tombstoned. "
-            "Use agentic_core.cache.get_coordination_cache() for coordination."
-        )
-
+        raise RuntimeError('RedisDistributedLock is tombstoned. Use agentic_core.cache.get_coordination_cache() for coordination.')
 
 def _run_self_tests(self) -> dict:
     """Run internal self-tests."""
-    results = {"passed": 0, "failed": 0, TESTS_DIR: []}
+    results = {'passed': 0, 'failed': 0, TESTS_DIR: []}
     try:
         assert self is not None
-        results["passed"] += 1
-        results[TESTS_DIR].append({"name": "test_instantiation", "status": "passed"})
+        results['passed'] += 1
+        results[TESTS_DIR].append({'name': 'test_instantiation', 'status': 'passed'})
     except AssertionError as e:
-        results["failed"] += 1
-        results[TESTS_DIR].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
+        results['failed'] += 1
+        results[TESTS_DIR].append({'name': 'test_instantiation', 'status': 'failed', 'error': str(e)})
     return results
-
 
 class _TombstonedRedisHotCache:
     """Tombstoned — see module comment above."""
 
     def __init__(self, *args, **kwargs):
-        raise RuntimeError("RedisHotCache is tombstoned. Use agentic_core.cache.get_hot_cache() instead.")
-
+        raise RuntimeError('RedisHotCache is tombstoned. Use agentic_core.cache.get_hot_cache() instead.')
 
 class SignalLedger:
     """
@@ -386,7 +338,7 @@ class SignalLedger:
         """
         self.storage = storage_adapter
         self.session_id = session_id
-        self.ledger_key = f"signal_ledger_{session_id}.jsonl"
+        self.ledger_key = f'signal_ledger_{session_id}.jsonl'
 
     async def append_result(self, result: Any) -> None:
         """
@@ -396,26 +348,21 @@ class SignalLedger:
             result: ExecutionResult to log
         """
         from datetime import datetime
-
-        if hasattr(result, "__dict__"):
+        if hasattr(result, '__dict__'):
             result_dict: Any = result.__dict__
         else:
             result_dict: Any = result
-        result_dict["timestamp"] = datetime.utcnow().isoformat()
-        result_dict["session_id"] = self.session_id
-        json_line: Any = json.dumps(result_dict) + "\n"
+        result_dict['timestamp'] = datetime.utcnow().isoformat()
+        result_dict['session_id'] = self.session_id
+        json_line: Any = json.dumps(result_dict) + '\n'
         try:
             existing_data: Any = await self.storage.read_blob(self.ledger_key)
-            existing_lines: Any = existing_data.decode("utf-8")
+            existing_lines: Any = existing_data.decode('utf-8')
         except FileNotFoundError:
-            existing_lines: Any = ""
+            existing_lines: Any = ''
         updated_data: Any = existing_lines + json_line
-        await self.storage.write_blob(
-            self.ledger_key,
-            updated_data.encode("utf-8"),
-            metadata={"type": "SignalLedger", "session_id": self.session_id},
-        )
-        LOGGER.debug(f"Appended result to signal ledger: {self.ledger_key}")
+        await self.storage.write_blob(self.ledger_key, updated_data.encode('utf-8'), metadata={'type': 'SignalLedger', 'session_id': self.session_id})
+        LOGGER.debug(f'Appended result to signal ledger: {self.ledger_key}')
 
     async def get_results(self) -> list:
         """
@@ -426,7 +373,7 @@ class SignalLedger:
         """
         try:
             data: Any = await self.storage.read_blob(self.ledger_key)
-            lines: Any = data.decode("utf-8").strip().split("\n")
+            lines: Any = data.decode('utf-8').strip().split('\n')
             results: Any = []
             for line in lines:
                 if line.strip():
@@ -435,7 +382,7 @@ class SignalLedger:
         except FileNotFoundError:
             return []
 
-    async def get_phase_summary(self, phase_name: str | None = None) -> dict[str, Any]:
+    async def get_phase_summary(self, phase_name: str | None=None) -> dict[str, Any]:
         """
         Get a summary of signals from a specific phase or the most recent phase.
 
@@ -449,58 +396,34 @@ class SignalLedger:
         if not results:
             return {}
         if phase_name:
-            phase_results: Any = [r for r in results if r.get("phase") == phase_name]
+            phase_results: Any = [r for r in results if r.get('phase') == phase_name]
         else:
             phase_results: Any = []
             if results:
-                latest_result: Any = max(results, key=lambda x: x.get("timestamp", ""))
-                latest_phase: Any = latest_result.get("phase")
+                latest_result: Any = max(results, key=lambda x: x.get('timestamp', ''))
+                latest_phase: Any = latest_result.get('phase')
                 if latest_phase:
-                    phase_results: Any = [r for r in results if r.get("phase") == latest_phase]
+                    phase_results: Any = [r for r in results if r.get('phase') == latest_phase]
         if not phase_results:
             return {}
-        summary: Any = {
-            "phase": phase_results[0].get("phase", "unknown"),
-            "timestamp": phase_results[0].get("timestamp"),
-            "total_results": len(phase_results),
-            "passed_count": sum(1 for r in phase_results if r.get("passed", False)),
-            "failed_count": sum(1 for r in phase_results if not r.get("passed", False)),
-            "signals": [],
-            "failed_agents": [],
-            "recommendations": [],
-        }
+        summary: Any = {'phase': phase_results[0].get('phase', 'unknown'), 'timestamp': phase_results[0].get('timestamp'), 'total_results': len(phase_results), 'passed_count': sum((1 for r in phase_results if r.get('passed', False))), 'failed_count': sum((1 for r in phase_results if not r.get('passed', False))), 'signals': [], 'failed_agents': [], 'recommendations': []}
         for result in phase_results:
-            if "result" in result and isinstance(result["result"], dict):
-                signals: Any = result["result"].get("signals", [])
+            if 'result' in result and isinstance(result['result'], dict):
+                signals: Any = result['result'].get('signals', [])
                 if signals:
-                    summary["signals"].extend(signals)
-            if not result.get("passed", False):
-                agent_name: Any = result.get("agent", "unknown")
-                summary["failed_agents"].append(
-                    {
-                        "agent": agent_name,
-                        "error": result.get("error", "Unknown error"),
-                        "details": result.get("details", ""),
-                    },
-                )
-        if summary["failed_count"] > 0:
-            summary["recommendations"].append(
-                f"Phase {summary['phase']} had {summary['failed_count']} failures",
-            )
-            summary["recommendations"].append("Consider re-running failed agents before proceeding")
-        if summary["phase"] == "integrity_seq" and summary["failed_count"] > 0:
-            summary["recommendations"].append(
-                "CRITICAL: Integrity failures must be resolved before continuing",
-            )
+                    summary['signals'].extend(signals)
+            if not result.get('passed', False):
+                agent_name: Any = result.get('agent', 'unknown')
+                summary['failed_agents'].append({'agent': agent_name, 'error': result.get('error', 'Unknown error'), 'details': result.get('details', '')})
+        if summary['failed_count'] > 0:
+            summary['recommendations'].append(f"Phase {summary['phase']} had {summary['failed_count']} failures")
+            summary['recommendations'].append('Consider re-running failed agents before proceeding')
+        if summary['phase'] == 'integrity_seq' and summary['failed_count'] > 0:
+            summary['recommendations'].append('CRITICAL: Integrity failures must be resolved before continuing')
         return summary
-
 
 class _TombstonedHotBrainCache:
     """Tombstoned — see module comment above."""
 
     def __init__(self, *args, **kwargs):
-        raise RuntimeError(
-            "HotBrainCache is tombstoned. "
-            "Use agentic_core.cache.get_coordination_cache() for coordination, "
-            "or agentic_core.cache.get_hot_cache() for hot caching."
-        )
+        raise RuntimeError('HotBrainCache is tombstoned. Use agentic_core.cache.get_coordination_cache() for coordination, or agentic_core.cache.get_hot_cache() for hot caching.')

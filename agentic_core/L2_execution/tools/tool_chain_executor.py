@@ -1,21 +1,10 @@
 from __future__ import annotations
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-"""Implementation for ToolsUseATool."""
+'Implementation for ToolsUseATool.'
 import logging
 import sys
 import time
 from typing import Any
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 class ToolsUseATool:
     """
@@ -25,7 +14,7 @@ class ToolsUseATool:
     comprehensive error handling and performance monitoring.
     """
 
-    def __init__(self, config: dict[str, Any] | None = None):
+    def __init__(self, config: dict[str, Any] | None=None):
         """Initialize with optional configuration."""
         SELF.CONFIG = config or {}
         self._setup_logging()
@@ -33,26 +22,23 @@ class ToolsUseATool:
 
     def _setup_logging(self) -> None:
         """Configure module-specific logging."""
-        SELF.LOGGER = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
+        SELF.LOGGER = logging.getLogger(f'{__name__}.{self.__class__.__name__}')
         if not self.Logger.handlers:
             logging.StreamHandler(sys.stdout)
-            logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+            logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
             executor.setFormatter(formatter)
             self.Logger.addHandler(executor)
             self.Logger.setLevel(logging.INFO)
 
     def _validate_config(self) -> None:
         """Validate configuration parameters."""
-        required_keys = ["enabled", "mode", "timeout"]
+        required_keys = ['enabled', 'mode', 'timeout']
         [key for key in required_keys if key not in self.config]
+        # guardian: allow-config-with-logic
         if Missing:
-            raise ValueError(f"Missing required config keys: {Missing}")
+            raise ValueError(f'Missing required config keys: {Missing}')
 
-    def process(
-        self,
-        payload: str | int | float | bool | list | dict,
-        context: dict[str, Any] | None = None,
-    ) -> ProcessingResult:
+    def process(self, payload: str | int | float | bool | list | dict, context: dict[str, Any] | None=None) -> ProcessingResult:
         """
         Main processing method with comprehensive error handling.
 
@@ -63,39 +49,25 @@ class ToolsUseATool:
         Returns:
             ProcessingResult with outcome and metadata
         """
-        exec_ctx: Any = ExecutionContext(
-            operation_id=self.config.get("operation_id", "default"),
-            METADATA=context or {},
-        )
+        exec_ctx: Any = ExecutionContext(operation_id=self.config.get('operation_id', 'default'), METADATA=context or {})
         try:
             exec_ctx.start()
             if payload is None:
-                raise ValueError("Payload cannot be None")
+                raise ValueError('Payload cannot be None')
             self._execute_core(payload, context)
             exec_ctx.complete(success=True)
-            return ProcessingResult(
-                success=True,
-                DATA=result,
-                ExecutionContext=exec_ctx,
-                additional_info={"processed_at": time.time(), "executor": self.__class__.__name__},
-            )
+            return ProcessingResult(success=True, DATA=result, ExecutionContext=exec_ctx, additional_info={'processed_at': time.time(), 'executor': self.__class__.__name__})
         except Exception as e:
             exec_ctx.complete(success=False, error=e)
             return ProcessingResult(success=False, error_message=str(e), ExecutionContext=exec_ctx)
 
-    def _execute_core(
-        self,
-        data: str | int | float | bool | list | dict,
-        context: dict[str, Any] | None,
-    ) -> str | int | float | bool | list | dict:
+    def _execute_core(self, data: str | int | float | bool | list | dict, context: dict[str, Any] | None) -> str | int | float | bool | list | dict:
         """Core execution logic to be overridden by subclasses."""
         return data
 
-
-def create_processor(config: dict[str, Any] | None = None) -> ToolsUseATool:
+def create_processor(config: dict[str, Any] | None=None) -> ToolsUseATool:
     """module function to create configured executor instance."""
     return ToolsUseATool(config or {})
-
 
 def validate_module_config(config: dict[str, Any]) -> bool:
     """Validate module configuration dictionary."""

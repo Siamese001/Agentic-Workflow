@@ -14,27 +14,13 @@ When replay_mode is True:
   - Exposes properties consumed by downstream mixins to disable TTL,
     adaptive switching, breaker mutation, and ML writes.
 """
-
 from __future__ import annotations
-
 import logging
 from typing import TYPE_CHECKING, Any
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 if TYPE_CHECKING:
     from agentic_core.L0_routing.scripts.execution_context import ExecutionContext
-
 _logger = logging.getLogger(__name__)
-
 
 class ReplayGuardMixin:
     """Base mixin providing replay-mode awareness and policy-hash scoping.
@@ -49,41 +35,23 @@ class ReplayGuardMixin:
         If None, defaults to non-replay mode with L4-derived policy hash.
     """
 
-    def __init__(
-        self,
-        execution_context: ExecutionContext | None = None,
-        **kwargs: Any,
-    ) -> None:
+    def __init__(self, execution_context: ExecutionContext | None=None, **kwargs: Any) -> None:
         super().__init__(**kwargs)
-
-        # --- Resolve execution context ---
         if execution_context is not None:
             self._replay_mode: bool = bool(execution_context.replay_mode)
-            self._trace_id: str = execution_context.trace_id or "no-trace"
-            self._active_policy_hash: str = (
-                execution_context.active_policy_hash or self._load_policy_hash_from_l4()
-            )
+            self._trace_id: str = execution_context.trace_id or 'no-trace'
+            self._active_policy_hash: str = execution_context.active_policy_hash or self._load_policy_hash_from_l4()
             self._safety_status: str = execution_context.safety_status
             self._initial_policy_hash: str = self._active_policy_hash
         else:
             self._replay_mode = False
-            self._trace_id = "no-trace"
+            self._trace_id = 'no-trace'
             self._active_policy_hash = self._load_policy_hash_from_l4()
-            self._safety_status = "PENDING"
+            self._safety_status = 'PENDING'
             self._initial_policy_hash = self._active_policy_hash
-
-        # --- Install deterministic providers when in replay mode ---
         if self._replay_mode:
             self._install_deterministic_providers()
-            _logger.info(
-                "[ReplayGuard] Replay mode ACTIVE | trace_id=%s | policy_hash=%s",
-                self._trace_id,
-                self._active_policy_hash[:12] + "...",
-            )
-
-    # ------------------------------------------------------------------
-    # Public properties consumed by downstream mixins
-    # ------------------------------------------------------------------
+            _logger.info('[ReplayGuard] Replay mode ACTIVE | trace_id=%s | policy_hash=%s', self._trace_id, self._active_policy_hash[:12] + '...')
 
     @property
     def is_replay_mode(self) -> bool:
@@ -114,42 +82,24 @@ class ReplayGuardMixin:
         """Return True if active_policy_hash differs from initial snapshot."""
         return self._active_policy_hash != self._initial_policy_hash
 
-    # ------------------------------------------------------------------
-    # Internal helpers
-    # ------------------------------------------------------------------
-
     @staticmethod
     def _load_policy_hash_from_l4() -> str:
         """Load active policy hash from L4 versioned config SSOT."""
         try:
-            from agentic_core.L4_state.config.versioned_configs import (
-                get_active_configs,
-            )
-
+            from agentic_core.L4_state.config.versioned_configs import get_active_configs
             return get_active_configs().policy.config_hash
         except ImportError:
-            _logger.warning("[ReplayGuard] L4 versioned_configs unavailable; using fallback policy hash.")
-            return "fallback-no-l4"
+            _logger.warning('[ReplayGuard] L4 versioned_configs unavailable; using fallback policy hash.')
+            return 'fallback-no-l4'
 
     def _install_deterministic_providers(self) -> None:
         """Activate deterministic time/random/uuid for replay mode."""
         try:
-            from agentic_core.L2_execution.deterministic_providers import (
-                patch_deterministic,
-            )
-
+            from agentic_core.L2_execution.deterministic_providers import patch_deterministic
             providers = patch_deterministic(self._trace_id)
-            _logger.debug(
-                "[ReplayGuard] Deterministic providers installed: %s",
-                list(providers.keys()),
-            )
+            _logger.debug('[ReplayGuard] Deterministic providers installed: %s', list(providers.keys()))
         except ImportError:
-            _logger.error(
-                "[ReplayGuard] deterministic_providers module not found; replay determinism NOT enforced."
-            )
+            _logger.error('[ReplayGuard] deterministic_providers module not found; replay determinism NOT enforced.')
         except Exception as exc:
-            _logger.error(
-                "[ReplayGuard] Failed to install deterministic providers: %s",
-                exc,
-            )
+            _logger.error('[ReplayGuard] Failed to install deterministic providers: %s', exc)
             raise

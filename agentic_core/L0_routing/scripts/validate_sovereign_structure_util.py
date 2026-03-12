@@ -1,94 +1,59 @@
 from __future__ import annotations
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-"""
-SOVEREIGN STRUCTURE VALIDATOR
-Enforces the 3-level depth law for agentic architecture.
-"""
+'\nSOVEREIGN STRUCTURE VALIDATOR\nEnforces the 3-level depth law for agentic architecture.\n'
 import os
 import sys
 from typing import Any
-
-from agentic_core.L0_routing.config import (
-    AGENTIC_CORE_DIR,
-    APPS_LIC_DIR,
-    APPS_RG_DIR,
-    APPS_SHARED_DIR,
-)
+from agentic_core.L0_routing.config import AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR
 from agentic_core.L0_routing.config.path_constants import TESTS_DIR
-from agentic_core.L0_routing.config.path_constants import (
-    CORE_SUBFOLDER_MAP,
-    APPS_LIC_SUBFOLDER_MAP,
-    APPS_RG_SUBFOLDER_MAP,
-    APPS_SHARED_SUBFOLDER_MAP,
-)
-TESTS_L2_SUBFOLDER_MAP = {
-    "unit": ["test_agents", "test_utils", "test_core"],
-    "integration": ["test_workflows", "test_pipelines"],
-}
-
+from agentic_core.L0_routing.config.path_constants import CORE_SUBFOLDER_MAP, APPS_LIC_SUBFOLDER_MAP, APPS_RG_SUBFOLDER_MAP, APPS_SHARED_SUBFOLDER_MAP
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+from pathlib import Path
+TESTS_L2_SUBFOLDER_MAP = {'unit': ['test_agents', 'test_utils', 'test_core'], 'integration': ['test_workflows', 'test_pipelines']}
 
 def check_sovereign_law(root_path: Any) -> Any:
     """Brief description of functionality and purpose."""
     violations: Any = []
-    # guardian: allow-path-string
-    core_path: Any = os.path.join(root_path, AGENTIC_CORE_DIR)
+    core_path: Any = Path(root_path) / AGENTIC_CORE_DIR
     for l1, l2_list in CORE_SUBFOLDER_MAP.items():
         for l2 in l2_list:
-            # guardian: allow-path-string
-            path: Any = os.path.join(core_path, l1, l2)
+            path: Any = Path(core_path) / l1 / l2
             # guardian: allow-path-string
             if not os.path.exists(path):
-                violations.append(f"MISSING CORE DEPTH: agentic_core/{l1}/{l2}")
+                violations.append(f'MISSING CORE DEPTH: agentic_core/{l1}/{l2}')
     for l1, l2_list in APPS_RG_SUBFOLDER_MAP.items():
         for l2 in l2_list:
-            # guardian: allow-path-string
-            path: Any = os.path.join(root_path, APPS_RG_DIR, l1, l2)
+            path: Any = Path(root_path) / APPS_RG_DIR / l1 / l2
             # guardian: allow-path-string
             if not os.path.exists(path):
-                violations.append(f"MISSING APP DEPTH: apps_rg/{l1}/{l2}")
+                violations.append(f'MISSING APP DEPTH: apps_rg/{l1}/{l2}')
     for l1, l2_list in APPS_LIC_SUBFOLDER_MAP.items():
         for l2 in l2_list:
-            # guardian: allow-path-string
-            path: Any = os.path.join(root_path, APPS_LIC_DIR, l1, l2)
+            path: Any = Path(root_path) / APPS_LIC_DIR / l1 / l2
             # guardian: allow-path-string
             if not os.path.exists(path):
-                violations.append(f"MISSING APP DEPTH: apps_lic/{l1}/{l2}")
+                violations.append(f'MISSING APP DEPTH: apps_lic/{l1}/{l2}')
     for l1, l2_list in APPS_SHARED_SUBFOLDER_MAP.items():
         for l2 in l2_list:
-            # guardian: allow-path-string
-            path: Any = os.path.join(root_path, APPS_SHARED_DIR, l1, l2)
+            path: Any = Path(root_path) / APPS_SHARED_DIR / l1 / l2
             # guardian: allow-path-string
             if not os.path.exists(path):
-                violations.append(f"MISSING APP DEPTH: apps_shared/{l1}/{l2}")
+                violations.append(f'MISSING APP DEPTH: apps_shared/{l1}/{l2}')
     for l1, l2_list in TESTS_L2_SUBFOLDER_MAP.items():
         for l2 in l2_list:
-            # guardian: allow-path-string
-            path: Any = os.path.join(root_path, TESTS_DIR, l1, l2)
+            path: Any = Path(root_path) / TESTS_DIR / l1 / l2
             # guardian: allow-path-string
             if not os.path.exists(path):
-                violations.append(f"MISSING TEST DEPTH: tests/{l1}/{l2}")
+                violations.append(f'MISSING TEST DEPTH: tests/{l1}/{l2}')
     if not violations:
-        print("\n✅ SOVEREIGN LAW ENFORCED: Your structure is perfect.")
+        print('\n✅ SOVEREIGN LAW ENFORCED: Your structure is perfect.')
         return 0
     else:
-        print(f"\n❌ SOVEREIGN VIOLATIONS FOUND ({len(violations)}):")
+        print(f'\n❌ SOVEREIGN VIOLATIONS FOUND ({len(violations)}):')
         for v in violations:
-            print(f"  - {v}")
+            print(f'  - {v}')
         return 1
-
-
-if __name__ == "__main__":
-    PROJECT_ROOT: Any = "C:/Git/Agentic-Workflow"
-    print(f"--- Auditing Sovereign Structure for {PROJECT_ROOT} ---")
+if __name__ == '__main__':
+    PROJECT_ROOT: Any = 'C:/Git/Agentic-Workflow'
+    print(f'--- Auditing Sovereign Structure for {PROJECT_ROOT} ---')
     exit_code: Any = check_sovereign_law(PROJECT_ROOT)
     sys.exit(exit_code)

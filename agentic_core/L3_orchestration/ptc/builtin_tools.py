@@ -4,26 +4,13 @@ Programmatic Tool Calling (PTC) - Built-in Tools
 Minimal safe built-in tools for PTC system.
 Implements repo search and Python evaluation tools.
 """
-
 from __future__ import annotations
-
 import ast
 import re
 from pathlib import Path
 from typing import Any
-
 from .tool_contract import ToolArg, ToolSpec
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 def repo_rg_handler(args: dict[str, Any]) -> str:
     """Search repository using Python (no external rg dependency).
@@ -34,87 +21,37 @@ def repo_rg_handler(args: dict[str, Any]) -> str:
     Returns:
         JSON string with search results
     """
-    pattern = args["pattern"]
-    root = Path(args.get("root", "."))
-
-    # Compile regex pattern
+    pattern = args['pattern']
+    root = Path(args.get('root', '.'))
     try:
         regex = re.compile(pattern, re.MULTILINE | re.DOTALL)
     except re.error as e:
         return f'{{"error": "Invalid regex: {e}"}}'
-
-    # Search files
     results = []
-
-    # Walk directory
-    for file_path in root.rglob("*"):
-        # Skip directories and common non-text files
+    for file_path in root.rglob('*'):
         if file_path.is_dir():
             continue
-
-        # Skip binary files and common non-text extensions
-        skip_extensions = {
-            ".pyc",
-            ".pyo",
-            ".pyd",
-            ".so",
-            ".dll",
-            ".exe",
-            ".bin",
-            ".jpg",
-            ".jpeg",
-            ".png",
-            ".gif",
-            ".bmp",
-            ".ico",
-            ".zip",
-            ".tar",
-            ".gz",
-            ".rar",
-            ".7z",
-        }
+        skip_extensions = {'.pyc', '.pyo', '.pyd', '.so', '.dll', '.exe', '.bin', '.jpg', '.jpeg', '.png', '.gif', '.bmp', '.ico', '.zip', '.tar', '.gz', '.rar', '.7z'}
         if file_path.suffix.lower() in skip_extensions:
             continue
-
-        # Skip hidden files and directories
-        if any(part.startswith(".") for part in file_path.parts):
+        if any((part.startswith('.') for part in file_path.parts)):
             continue
-
         try:
-            # Read file content
-            with open(file_path, encoding="utf-8", errors="ignore") as f:
+            with open(file_path, encoding='utf-8', errors='ignore') as f:
                 content = f.read()
-
-            # Search for pattern
             for match in regex.finditer(content):
-                line_num = content[: match.start()].count("\n") + 1
-                line_start = content.rfind("\n", 0, match.start()) + 1
-                line_end = content.find("\n", match.end())
+                line_num = content[:match.start()].count('\n') + 1
+                line_start = content.rfind('\n', 0, match.start()) + 1
+                line_end = content.find('\n', match.end())
                 if line_end == -1:
                     line_end = len(content)
-
                 line_content = content[line_start:line_end].strip()
-
-                results.append(
-                    {
-                        "file": str(file_path.relative_to(root)),
-                        "line": line_num,
-                        "content": line_content,
-                        "match": match.group(),
-                    }
-                )
+                results.append({'file': str(file_path.relative_to(root)), 'line': line_num, 'content': line_content, 'match': match.group()})
         except (UnicodeDecodeError, PermissionError):
-            # Skip files that can't be read
             continue
-
-    # Sort results deterministically
-    results.sort(key=lambda r: (r["file"], r["line"]))
-
-    # Return JSON
+    results.sort(key=lambda r: (r['file'], r['line']))
     import json
-
-    return json.dumps({"results": results}, sort_keys=True, separators=(",", ":"))
-
+    return json.dumps({'results': results}, sort_keys=True, separators=(',', ':'))
 
 def expr_eval_handler(args: dict[str, Any]) -> str:
     """Evaluate simple arithmetic expressions without Python eval.
@@ -125,63 +62,19 @@ def expr_eval_handler(args: dict[str, Any]) -> str:
     Returns:
         String result of evaluation
     """
-    expr = args["expr"]
-
-    # Only allow safe expressions
-    # Disallow imports, function definitions, etc.
-    unsafe_patterns = [
-        r"import\s+",
-        r"from\s+.*\s+import",
-        r"exec\s*\(",
-        r"eval\s*\(",
-        r"open\s*\(",
-        r"file\s*\(",
-        r"__import__",
-        r"globals\s*\(",
-        r"locals\s*\(",
-        r"vars\s*\(",
-        r"dir\s*\(",
-        r"getattr\s*\(",
-        r"setattr\s*\(",
-        r"delattr\s*\(",
-        r"hasattr\s*\(",
-        r"callable\s*\(",
-        r"isinstance\s*\(",
-        r"issubclass\s*\(",
-        r"type\s*\(",
-        r"super\s*\(",
-        r"lambda\s+",
-        r"def\s+",
-        r"class\s+",
-        r"@\w+",
-        r"return\s+",
-        r"yield\s+",
-        r"raise\s+",
-        r"try\s*:",
-        r"except\s+",
-        r"finally\s*:",
-        r"with\s+",
-        r"async\s+",
-        r"await\s+",
-    ]
-
+    expr = args['expr']
+    unsafe_patterns = ['import\\s+', 'from\\s+.*\\s+import', 'exec\\s*\\(', 'eval\\s*\\(', 'open\\s*\\(', 'file\\s*\\(', '__import__', 'globals\\s*\\(', 'locals\\s*\\(', 'vars\\s*\\(', 'dir\\s*\\(', 'getattr\\s*\\(', 'setattr\\s*\\(', 'delattr\\s*\\(', 'hasattr\\s*\\(', 'callable\\s*\\(', 'isinstance\\s*\\(', 'issubclass\\s*\\(', 'type\\s*\\(', 'super\\s*\\(', 'lambda\\s+', 'def\\s+', 'class\\s+', '@\\w+', 'return\\s+', 'yield\\s+', 'raise\\s+', 'try\\s*:', 'except\\s+', 'finally\\s*:', 'with\\s+', 'async\\s+', 'await\\s+']
     for pattern in unsafe_patterns:
         if re.search(pattern, expr):
-            raise ValueError("Expression contains unsafe operations")
-
+            raise ValueError('Expression contains unsafe operations')
     try:
-        # Parse to ensure it's a valid expression
-        ast.parse(expr, mode="eval")
-
-        # Evaluate using our simple deterministic parser
+        ast.parse(expr, mode='eval')
         result = _evaluate_expression(expr)
         return str(result)
-
     except SyntaxError as e:
-        raise ValueError(f"Invalid syntax: {e}")
-    except Exception as e:  # guardian: allow-silent-swallower
+        raise ValueError(f'Invalid syntax: {e}')
+    except Exception as e:
         raise ValueError(str(e))
-
 
 def _evaluate_expression(expr: str) -> Any:
     """Evaluate a simple arithmetic expression safely.
@@ -193,44 +86,15 @@ def _evaluate_expression(expr: str) -> Any:
         Evaluated result
     """
     import operator
+    ops = {ast.Add: operator.add, ast.Sub: operator.sub, ast.Mult: operator.mul, ast.Div: operator.truediv, ast.FloorDiv: operator.floordiv, ast.Mod: operator.mod, ast.Pow: operator.pow, ast.LShift: operator.lshift, ast.RShift: operator.rshift, ast.BitOr: operator.or_, ast.BitXor: operator.xor, ast.BitAnd: operator.and_, ast.Eq: operator.eq, ast.NotEq: operator.ne, ast.Lt: operator.lt, ast.LtE: operator.le, ast.Gt: operator.gt, ast.GtE: operator.ge, ast.And: lambda a, b: a and b, ast.Or: lambda a, b: a or b, ast.Not: operator.not_, ast.USub: operator.neg, ast.UAdd: operator.pos}
+    tree = ast.parse(expr, mode='eval')
 
-    # Define safe operators
-    ops = {
-        ast.Add: operator.add,
-        ast.Sub: operator.sub,
-        ast.Mult: operator.mul,
-        ast.Div: operator.truediv,
-        ast.FloorDiv: operator.floordiv,
-        ast.Mod: operator.mod,
-        ast.Pow: operator.pow,
-        ast.LShift: operator.lshift,
-        ast.RShift: operator.rshift,
-        ast.BitOr: operator.or_,
-        ast.BitXor: operator.xor,
-        ast.BitAnd: operator.and_,
-        ast.Eq: operator.eq,
-        ast.NotEq: operator.ne,
-        ast.Lt: operator.lt,
-        ast.LtE: operator.le,
-        ast.Gt: operator.gt,
-        ast.GtE: operator.ge,
-        ast.And: lambda a, b: a and b,
-        ast.Or: lambda a, b: a or b,
-        ast.Not: operator.not_,
-        ast.USub: operator.neg,
-        ast.UAdd: operator.pos,
-    }
-
-    # Parse the expression
-    tree = ast.parse(expr, mode="eval")
-
-    # Evaluate recursively
     def _eval(node):
-        if isinstance(node, ast.Num):  # Python < 3.8
+        if isinstance(node, ast.Num):
             return node.n
-        elif isinstance(node, ast.Constant):  # Python >= 3.8
+        elif isinstance(node, ast.Constant):
             return node.value
-        elif isinstance(node, ast.Str):  # Python < 3.8
+        elif isinstance(node, ast.Str):
             return node.s
         elif isinstance(node, ast.NameConstant):
             return node.value
@@ -251,114 +115,43 @@ def _evaluate_expression(expr: str) -> Any:
                 left = _eval(right)
             return True
         elif isinstance(node, ast.Call):
-            # Allow specific safe built-in functions
             if isinstance(node.func, ast.Name):
                 func_name = node.func.id
                 args = [_eval(arg) for arg in node.args]
-
-                # Safe built-ins
-                safe_funcs = {
-                    "abs": abs,
-                    "all": all,
-                    "any": any,
-                    "bin": bin,
-                    "bool": bool,
-                    "chr": chr,
-                    "dict": dict,
-                    "divmod": divmod,
-                    "enumerate": enumerate,
-                    "filter": filter,
-                    "float": float,
-                    "hex": hex,
-                    "int": int,
-                    "len": len,
-                    "list": list,
-                    "map": map,
-                    "max": max,
-                    "min": min,
-                    "oct": oct,
-                    "ord": ord,
-                    "pow": pow,
-                    "range": range,
-                    "repr": repr,
-                    "reversed": reversed,
-                    "round": round,
-                    "set": set,
-                    "slice": slice,
-                    "sorted": sorted,
-                    "str": str,
-                    "sum": sum,
-                    "tuple": tuple,
-                    "type": type,
-                    "zip": zip,
-                }
-
+                safe_funcs = {'abs': abs, 'all': all, 'any': any, 'bin': bin, 'bool': bool, 'chr': chr, 'dict': dict, 'divmod': divmod, 'enumerate': enumerate, 'filter': filter, 'float': float, 'hex': hex, 'int': int, 'len': len, 'list': list, 'map': map, 'max': max, 'min': min, 'oct': oct, 'ord': ord, 'pow': pow, 'range': range, 'repr': repr, 'reversed': reversed, 'round': round, 'set': set, 'slice': slice, 'sorted': sorted, 'str': str, 'sum': sum, 'tuple': tuple, 'type': type, 'zip': zip}
                 if func_name in safe_funcs:
                     return safe_funcs[func_name](*args)
-
-            raise ValueError(f"Unsafe function call: {ast.dump(node)}")
+            raise ValueError(f'Unsafe function call: {ast.dump(node)}')
         elif isinstance(node, ast.List):
             return [_eval(e) for e in node.elts]
         elif isinstance(node, ast.Tuple):
-            return tuple(_eval(e) for e in node.elts)
+            return tuple((_eval(e) for e in node.elts))
         elif isinstance(node, ast.Dict):
             return {_eval(k): _eval(v) for k, v in zip(node.keys, node.values)}
         else:
-            raise ValueError(f"Unsupported expression: {ast.dump(node)}")
-
+            raise ValueError(f'Unsupported expression: {ast.dump(node)}')
     return _eval(tree.body)
 
-
-# Register built-in tools
 def register_builtin_tools():
     """Register all built-in PTC tools. Idempotent."""
     from .ptc_registry import get_global_registry, register_tool
-
     registry = get_global_registry()
-
-    # repo_rg tool
-    repo_rg_spec = ToolSpec(
-        tool_id="repo_rg",
-        description="Search repository using Python regex",
-        side_effect_class="READONLY",
-        args=(
-            ToolArg("pattern", "str", True),
-            ToolArg("root", "str", False, default="."),
-        ),
-        output_kind="JSON",
-        version=1,
-    )
-
-    # Check if already registered with identical spec
-    if registry.has("repo_rg"):
-        existing_spec, _ = registry.get("repo_rg")
+    repo_rg_spec = ToolSpec(tool_id='repo_rg', description='Search repository using Python regex', side_effect_class='READONLY', args=(ToolArg('pattern', 'str', True), ToolArg('root', 'str', False, default='.')), output_kind='JSON', version=1)
+    if registry.has('repo_rg'):
+        existing_spec, _ = registry.get('repo_rg')
         if existing_spec.version == repo_rg_spec.version and existing_spec.args == repo_rg_spec.args:
-            pass  # Already registered, skip
+            pass
         else:
             raise ValueError("Tool 'repo_rg' already registered with different spec")
     else:
         register_tool(repo_rg_spec, repo_rg_handler)
-
-    # expr_eval tool
-    expr_eval_spec = ToolSpec(
-        tool_id="expr_eval",
-        description="Evaluate safe arithmetic expressions",
-        side_effect_class="PURE",
-        args=(ToolArg("expr", "str", True),),
-        output_kind="TEXT",
-        version=1,
-    )
-
-    # Check if already registered with identical spec
-    if registry.has("expr_eval"):
-        existing_spec, _ = registry.get("expr_eval")
+    expr_eval_spec = ToolSpec(tool_id='expr_eval', description='Evaluate safe arithmetic expressions', side_effect_class='PURE', args=(ToolArg('expr', 'str', True),), output_kind='TEXT', version=1)
+    if registry.has('expr_eval'):
+        existing_spec, _ = registry.get('expr_eval')
         if existing_spec.version == expr_eval_spec.version and existing_spec.args == expr_eval_spec.args:
-            pass  # Already registered, skip
+            pass
         else:
             raise ValueError("Tool 'expr_eval' already registered with different spec")
     else:
         register_tool(expr_eval_spec, expr_eval_handler)
-
-
-# Auto-register when module is imported
 register_builtin_tools()

@@ -16,26 +16,13 @@ Preservation policy:
   drop(L1) = under pressure only
   never drop(L2+)
 """
-
 from __future__ import annotations
-
 import enum
 from dataclasses import dataclass
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 class LearningTier(enum.IntEnum):
     """Canonical learning tier enumeration."""
-
     L0 = 0
     L1 = 1
     L2 = 2
@@ -44,26 +31,12 @@ class LearningTier(enum.IntEnum):
     L5 = 5
     L6 = 6
 
-
 class DropPolicy(enum.Enum):
     """Backpressure drop policy per tier."""
-
-    SAFE = "safe"
-    UNDER_PRESSURE = "under_pressure"
-    NEVER = "never"
-
-
-# Tier → drop policy mapping
-_DROP_POLICY: dict[LearningTier, DropPolicy] = {
-    LearningTier.L0: DropPolicy.SAFE,
-    LearningTier.L1: DropPolicy.UNDER_PRESSURE,
-    LearningTier.L2: DropPolicy.NEVER,
-    LearningTier.L3: DropPolicy.NEVER,
-    LearningTier.L4: DropPolicy.NEVER,
-    LearningTier.L5: DropPolicy.NEVER,
-    LearningTier.L6: DropPolicy.NEVER,
-}
-
+    SAFE = 'safe'
+    UNDER_PRESSURE = 'under_pressure'
+    NEVER = 'never'
+_DROP_POLICY: dict[LearningTier, DropPolicy] = {LearningTier.L0: DropPolicy.SAFE, LearningTier.L1: DropPolicy.UNDER_PRESSURE, LearningTier.L2: DropPolicy.NEVER, LearningTier.L3: DropPolicy.NEVER, LearningTier.L4: DropPolicy.NEVER, LearningTier.L5: DropPolicy.NEVER, LearningTier.L6: DropPolicy.NEVER}
 
 @dataclass(frozen=True)
 class TierLattice:
@@ -85,11 +58,7 @@ class TierLattice:
         """Return the backpressure drop policy for a tier."""
         return _DROP_POLICY[tier]
 
-    def can_drop(
-        self,
-        tier: LearningTier,
-        under_pressure: bool = False,
-    ) -> bool:
+    def can_drop(self, tier: LearningTier, under_pressure: bool=False) -> bool:
         """Whether a signal at this tier may be dropped."""
         policy = self.drop_policy(tier)
         if policy is DropPolicy.SAFE:
@@ -98,25 +67,16 @@ class TierLattice:
             return under_pressure
         return False
 
-
 @dataclass
 class BackpressurePolicy:
     """Policy engine that references TierLattice for drops."""
-
     lattice: TierLattice
 
-    def should_drop(
-        self,
-        tier: LearningTier,
-        under_pressure: bool = False,
-    ) -> bool:
+    def should_drop(self, tier: LearningTier, under_pressure: bool=False) -> bool:
         """Decide whether to drop a signal at this tier."""
         return self.lattice.can_drop(tier, under_pressure=under_pressure)
 
-
-def validate_escalation_sequence(
-    sequence: list[LearningTier],
-) -> bool:
+def validate_escalation_sequence(sequence: list[LearningTier]) -> bool:
     """Validate that a rollout sequence is monotonically
     non-decreasing (escalation monotonicity).
 

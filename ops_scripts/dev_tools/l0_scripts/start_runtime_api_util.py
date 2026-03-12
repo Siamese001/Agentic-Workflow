@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Start the Runtime API server for the Live Runtime Dashboard.
 
@@ -27,84 +26,59 @@ API Endpoints:
     GET /api/metrics/latency            - API latency metrics
     POST /api/meta-learning/experience  - Record new experience
 """
-
 import argparse
 import sys
 from pathlib import Path
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-# Add project root to path
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 project_root = Path(__file__).parent.parent
 # guardian: allow-global-mutation
 sys.path.insert(0, str(project_root))
 
-
 def main():
     """Start the Runtime API server."""
-    parser = argparse.ArgumentParser(description="Start Runtime API Server")
-    parser.add_argument("--host", default="0.0.0.0", help="Host to bind to (default: 0.0.0.0)")
-    parser.add_argument("--port", type=int, default=8081, help="Port to listen on (default: 8081)")
-    parser.add_argument("--reload", action="store_true", help="Enable auto-reload for development")
-    parser.add_argument("--workers", type=int, default=1, help="Number of worker processes (default: 1)")
+    parser = argparse.ArgumentParser(description='Start Runtime API Server')
+    parser.add_argument('--host', default='0.0.0.0', help='Host to bind to (default: 0.0.0.0)')
+    parser.add_argument('--port', type=int, default=8081, help='Port to listen on (default: 8081)')
+    parser.add_argument('--reload', action='store_true', help='Enable auto-reload for development')
+    parser.add_argument('--workers', type=int, default=1, help='Number of worker processes (default: 1)')
     args = parser.parse_args()
-
-    print("=" * 70)
-    print("RUNTIME API SERVER")
-    print("=" * 70)
-    print(f"Host: {args.host}")
-    print(f"Port: {args.port}")
-    print(f"Reload: {args.reload}")
-    print(f"Workers: {args.workers}")
-    print("=" * 70)
+    print('=' * 70)
+    print('RUNTIME API SERVER')
+    print('=' * 70)
+    print(f'Host: {args.host}')
+    print(f'Port: {args.port}')
+    print(f'Reload: {args.reload}')
+    print(f'Workers: {args.workers}')
+    print('=' * 70)
     print()
-    print("API Endpoints:")
-    print(f"  Health:              http://localhost:{args.port}/api/health")
-    print(f"  Runtime State:       http://localhost:{args.port}/api/runtime/state")
-    print(f"  Meta-Learning Stats: http://localhost:{args.port}/api/meta-learning/statistics")
-    print(f"  Redis Stats:         http://localhost:{args.port}/api/redis/stats")
-    print(f"  Pinecone Stats:      http://localhost:{args.port}/api/pinecone/stats")
-    print(f"  Execution Timeline:  http://localhost:{args.port}/api/execution/timeline")
+    print('API Endpoints:')
+    print(f'  Health:              http://localhost:{args.port}/api/health')
+    print(f'  Runtime State:       http://localhost:{args.port}/api/runtime/state')
+    print(f'  Meta-Learning Stats: http://localhost:{args.port}/api/meta-learning/statistics')
+    print(f'  Redis Stats:         http://localhost:{args.port}/api/redis/stats')
+    print(f'  Pinecone Stats:      http://localhost:{args.port}/api/pinecone/stats')
+    print(f'  Execution Timeline:  http://localhost:{args.port}/api/execution/timeline')
     print()
-    print("Dashboard URL:")
-    print("  http://localhost:8765/autonomy_dashboard.html#runtime")
+    print('Dashboard URL:')
+    print('  http://localhost:8765/autonomy_dashboard.html#runtime')
     print()
-    print("Press Ctrl+C to stop the server")
-    print("=" * 70)
-
+    print('Press Ctrl+C to stop the server')
+    print('=' * 70)
     try:
         import uvicorn
-        from agentic_core.L6_observability.api.runtime_api import app  # noqa: F401
-
-        uvicorn.run(
-            "agentic_core.L6_observability.api.runtime_api:app",
-            host=args.host,
-            port=args.port,
-            reload=args.reload,
-            workers=args.workers if not args.reload else 1,
-            log_level="info",
-        )
+        from agentic_core.L6_observability.api.runtime_api import app
+        uvicorn.run('agentic_core.L6_observability.api.runtime_api:app', host=args.host, port=args.port, reload=args.reload, workers=args.workers if not args.reload else 1, log_level='info')
     except ImportError as e:
-        print(f"\n❌ Error: Missing dependency - {e}")
-        print("\nInstall required packages:")
-        print("  pip install fastapi uvicorn")
+        print(f'\n❌ Error: Missing dependency - {e}')
+        print('\nInstall required packages:')
+        print('  pip install fastapi uvicorn')
         sys.exit(1)
     except KeyboardInterrupt:
-        print("\n\n✅ Server stopped")
+        print('\n\n✅ Server stopped')
         sys.exit(0)
     # guardian: allow-silent-swallow
     except Exception as e:
-        print(f"\n❌ Error starting server: {e}")
+        print(f'\n❌ Error starting server: {e}')
         sys.exit(1)
-
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

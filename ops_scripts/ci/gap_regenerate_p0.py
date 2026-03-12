@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 V15 P0 Gap Regeneration — Strict Evidence-to-Status Compiler.
 
@@ -22,9 +21,7 @@ Evidence checks (P0 scope — boundary-level, not symbol-exists):
     7.4    Guardian fail-closed      — ensure_v15_signed raises V15EnforcementError
     8.1    Adapter prohibition       — AST scanner exit-code 0, no active imports
 """
-
 from __future__ import annotations
-
 import ast
 import copy
 import hashlib
@@ -32,58 +29,21 @@ import json
 import subprocess
 import sys
 from pathlib import Path
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-# ---------------------------------------------------------------------------
-# Constants
-# ---------------------------------------------------------------------------
 from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, get_validated_project_root
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 SCRIPT_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = get_validated_project_root()
-BASELINE_GAP_JSON = PROJECT_ROOT / "docs" / REPORTS_DIR / "plans" / "v15_gap_analysis.json"
-
-# Canonical layer keys — must match the schema contract
-CANONICAL_LAYER_KEYS = frozenset(
-    {
-        "A_TYPES_DEFINED",
-        "B_CONTRACT_ENFORCER",
-        "C_TEST_COVERAGE",
-        "D_RUNTIME_WIRED",
-        "E_CI_ENFORCED",
-    },
-)
-
-# P0-scoped sub-capability IDs
-P0_SCOPE_IDS = frozenset({"7.2.1", "7.4", "8.1"})
-
-# Configuration constants
-# guardian: allow-magic-config
+BASELINE_GAP_JSON = PROJECT_ROOT / 'docs' / REPORTS_DIR / 'plans' / 'v15_gap_analysis.json'
+CANONICAL_LAYER_KEYS = frozenset({'A_TYPES_DEFINED', 'B_CONTRACT_ENFORCER', 'C_TEST_COVERAGE', 'D_RUNTIME_WIRED', 'E_CI_ENFORCED'})
+P0_SCOPE_IDS = frozenset({'7.2.1', '7.4', '8.1'})
 ADAPTER_SCANNER_TIMEOUT_SECONDS = 30
-
-
-# ---------------------------------------------------------------------------
-# AST helpers — boundary-level verification (not mere symbol existence)
-# ---------------------------------------------------------------------------
-
-_GUARDIAN_CONTRACT = PROJECT_ROOT / AGENTIC_CORE_DIR / "L0_routing" / "types" / "guardian_contract.py"
-
+_GUARDIAN_CONTRACT = PROJECT_ROOT / AGENTIC_CORE_DIR / 'L0_routing' / 'types' / 'guardian_contract.py'
 
 def _parse_file(filepath: Path) -> ast.Module | None:
     try:
-        return ast.parse(filepath.read_text(encoding="utf-8"), filename=str(filepath))
+        return ast.parse(filepath.read_text(encoding='utf-8'), filename=str(filepath))
     except (OSError, SyntaxError):
         return None
-
 
 def _find_class(tree: ast.Module, name: str) -> ast.ClassDef | None:
     for node in ast.walk(tree):
@@ -91,27 +51,18 @@ def _find_class(tree: ast.Module, name: str) -> ast.ClassDef | None:
             return node
     return None
 
-
 def _find_method(cls: ast.ClassDef, name: str) -> ast.FunctionDef | None:
     for item in cls.body:
         if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)) and item.name == name:
             return item
     return None
 
-
 def _method_calls_self(method: ast.FunctionDef, callee: str) -> bool:
     """Does `method` contain a call to `self.<callee>()`?"""
     for node in ast.walk(method):
-        if (
-            isinstance(node, ast.Call)
-            and isinstance(node.func, ast.Attribute)
-            and node.func.attr == callee
-            and isinstance(node.func.value, ast.Name)
-            and node.func.value.id == "self"
-        ):
+        if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute) and (node.func.attr == callee) and isinstance(node.func.value, ast.Name) and (node.func.value.id == 'self'):
             return True
     return False
-
 
 def _method_raises(method: ast.FunctionDef, exc_name: str) -> bool:
     """Does `method` contain a `raise <exc_name>(...)` statement?"""
@@ -130,12 +81,6 @@ def _method_raises(method: ast.FunctionDef, exc_name: str) -> bool:
                 return True
     return False
 
-
-# ---------------------------------------------------------------------------
-# Evidence checkers — boundary-level enforcement, NOT symbol existence
-# ---------------------------------------------------------------------------
-
-
 def check_7_2_1() -> tuple[bool, str]:
     """7.2.1: ensure_v15_signed() is CALLED inside the serialization boundary.
 
@@ -145,17 +90,16 @@ def check_7_2_1() -> tuple[bool, str]:
     """
     tree = _parse_file(_GUARDIAN_CONTRACT)
     if tree is None:
-        return False, "guardian_contract.py: parse failed"
-    cls = _find_class(tree, "GuardianResult")
+        return (False, 'guardian_contract.py: parse failed')
+    cls = _find_class(tree, 'GuardianResult')
     if cls is None:
-        return False, "GuardianResult class not found"
-    to_json = _find_method(cls, "to_json")
+        return (False, 'GuardianResult class not found')
+    to_json = _find_method(cls, 'to_json')
     if to_json is None:
-        return False, "to_json() method not found on GuardianResult"
-    calls_ensure = _method_calls_self(to_json, "ensure_v15_signed")
-    detail = f"to_json calls self.ensure_v15_signed()={calls_ensure}"
-    return calls_ensure, detail
-
+        return (False, 'to_json() method not found on GuardianResult')
+    calls_ensure = _method_calls_self(to_json, 'ensure_v15_signed')
+    detail = f'to_json calls self.ensure_v15_signed()={calls_ensure}'
+    return (calls_ensure, detail)
 
 def check_7_4() -> tuple[bool, str]:
     """7.4: fail-closed enforcement — unsigned artifacts cannot cross boundary.
@@ -167,28 +111,21 @@ def check_7_4() -> tuple[bool, str]:
     """
     tree = _parse_file(_GUARDIAN_CONTRACT)
     if tree is None:
-        return False, "guardian_contract.py: parse failed"
-    cls = _find_class(tree, "GuardianResult")
+        return (False, 'guardian_contract.py: parse failed')
+    cls = _find_class(tree, 'GuardianResult')
     if cls is None:
-        return False, "GuardianResult class not found"
-
-    ensure = _find_method(cls, "ensure_v15_signed")
+        return (False, 'GuardianResult class not found')
+    ensure = _find_method(cls, 'ensure_v15_signed')
     if ensure is None:
-        return False, "ensure_v15_signed() not found"
-    raises_err = _method_raises(ensure, "V15EnforcementError")
-
-    to_json = _find_method(cls, "to_json")
+        return (False, 'ensure_v15_signed() not found')
+    raises_err = _method_raises(ensure, 'V15EnforcementError')
+    to_json = _find_method(cls, 'to_json')
     if to_json is None:
-        return False, "to_json() not found"
-    boundary_sealed = _method_calls_self(to_json, "ensure_v15_signed")
-
+        return (False, 'to_json() not found')
+    boundary_sealed = _method_calls_self(to_json, 'ensure_v15_signed')
     passed = raises_err and boundary_sealed
-    detail = (
-        f"ensure_v15_signed raises V15EnforcementError={raises_err}, "
-        f"to_json calls ensure_v15_signed={boundary_sealed}"
-    )
-    return passed, detail
-
+    detail = f'ensure_v15_signed raises V15EnforcementError={raises_err}, to_json calls ensure_v15_signed={boundary_sealed}'
+    return (passed, detail)
 
 def check_8_1() -> tuple[bool, str]:
     """8.1: Adapter patterns PROHIBITED — AST scanner must pass.
@@ -196,45 +133,24 @@ def check_8_1() -> tuple[bool, str]:
     Evidence: check_adapter_prohibition.py exits 0 (no active AdapterBase imports).
     No layer flags are inferred from this result.
     """
-    scanner = SCRIPT_DIR / "check_adapter_prohibition.py"
+    scanner = SCRIPT_DIR / 'check_adapter_prohibition.py'
     if not scanner.exists():
-        return False, "scanner not found"
+        return (False, 'scanner not found')
     try:
-        result = subprocess.run(
-            [sys.executable, str(scanner)],
-            capture_output=True,
-            text=True,
-            cwd=str(PROJECT_ROOT),
-            timeout=ADAPTER_SCANNER_TIMEOUT_SECONDS,
-        )
+        result = subprocess.run([sys.executable, str(scanner)], capture_output=True, text=True, cwd=str(PROJECT_ROOT), timeout=ADAPTER_SCANNER_TIMEOUT_SECONDS)
         passed = result.returncode == 0
-        detail = result.stdout.strip().split("\n")[-1] if result.stdout else "no output"
-    # We need to catch any subprocess exception and report it as evidence failure
-    # guardian: allow-silent-swallow
+        detail = result.stdout.strip().split('\n')[-1] if result.stdout else 'no output'
     except Exception as e:
         raise
         passed = False
         detail = str(e)
-    return passed, detail
-
-
-# Map sub-capability ID → checker function
-EVIDENCE_CHECKS: dict[str, callable] = {
-    "7.2.1": check_7_2_1,
-    "7.4": check_7_4,
-    "8.1": check_8_1,
-}
-
-
-# ---------------------------------------------------------------------------
-# Regeneration logic
-# ---------------------------------------------------------------------------
-
+    return (passed, detail)
+EVIDENCE_CHECKS: dict[str, callable] = {'7.2.1': check_7_2_1, '7.4': check_7_4, '8.1': check_8_1}
 
 def validate_layers_schema(sub: dict) -> list[str]:
     """Validate that a sub-capability has the canonical layers schema."""
     errors: list[str] = []
-    layers = sub.get("layers")
+    layers = sub.get('layers')
     if layers is None:
         errors.append(f"{sub.get('id', '?')}: missing 'layers' key")
         return errors
@@ -247,35 +163,22 @@ def validate_layers_schema(sub: dict) -> list[str]:
         errors.append(f"{sub.get('id', '?')}: unexpected layer keys: {sorted(extra)}")
     return errors
 
-
 class LayerMutationError(RuntimeError):
     """Raised if regeneration attempts to mutate layer flags."""
 
-
 def _assert_layers_unchanged(before: dict, after: dict, sub_id: str) -> None:
     """Hard guard: no layer flag may differ between before and after."""
-    before_layers = before.get("layers", {})
-    after_layers = after.get("layers", {})
+    before_layers = before.get('layers', {})
+    after_layers = after.get('layers', {})
     for key in CANONICAL_LAYER_KEYS:
         if before_layers.get(key) != after_layers.get(key):
-            raise LayerMutationError(
-                f"FATAL: regeneration attempted to mutate layer '{key}' "
-                f"on sub-capability {sub_id} "
-                f"(before={before_layers.get(key)}, after={after_layers.get(key)}). "
-                "Phase-0 regeneration MUST NOT mutate layer flags.",
-            )
-
+            raise LayerMutationError(f"FATAL: regeneration attempted to mutate layer '{key}' on sub-capability {sub_id} (before={before_layers.get(key)}, after={after_layers.get(key)}). Phase-0 regeneration MUST NOT mutate layer flags.")
 
 def baseline_sha256(raw_bytes: bytes) -> str:
     """Compute SHA-256 hex digest of baseline content."""
     return hashlib.sha256(raw_bytes).hexdigest()
 
-
-def regenerate(
-    baseline: dict,
-    *,
-    baseline_hash: str = "",
-) -> tuple[dict, list[dict]]:
+def regenerate(baseline: dict, *, baseline_hash: str='') -> tuple[dict, list[dict]]:
     """Regenerate gap JSON from untrusted baseline + boundary evidence.
 
     GUARANTEES:
@@ -289,144 +192,80 @@ def regenerate(
     """
     data = copy.deepcopy(baseline)
     evidence_log: list[dict] = []
-
-    # Annotate provenance
-    data["_p0_meta"] = {
-        "derived_from_untrusted_baseline": True,
-        "baseline_sha256": baseline_hash,
-        "generator": "gap_regenerate_p0.py",
-        "layer_flags_mutated": False,
-    }
-
-    for cap in data.get("capabilities", []):
-        for sub in cap.get("sub_capabilities", []):
-            sub_id = sub.get("id", "")
-
+    data['_p0_meta'] = {'derived_from_untrusted_baseline': True, 'baseline_sha256': baseline_hash, 'generator': 'gap_regenerate_p0.py', 'layer_flags_mutated': False}
+    for cap in data.get('capabilities', []):
+        for sub in cap.get('sub_capabilities', []):
+            sub_id = sub.get('id', '')
             if sub_id not in P0_SCOPE_IDS:
-                # Non-P0: pass through unchanged, annotate provenance
-                sub.setdefault("_p0_provenance", "baseline_inherited")
+                sub.setdefault('_p0_provenance', 'baseline_inherited')
                 continue
-
             checker = EVIDENCE_CHECKS.get(sub_id)
             if checker is None:
-                sub.setdefault("_p0_provenance", "baseline_inherited")
+                sub.setdefault('_p0_provenance', 'baseline_inherited')
                 continue
-
-            # Snapshot layers BEFORE evidence evaluation
-            layers_snapshot = copy.deepcopy(sub.get("layers", {}))
-
+            layers_snapshot = copy.deepcopy(sub.get('layers', {}))
             passed, detail = checker()
-            original_status = sub.get("status", "UNKNOWN")
-
+            original_status = sub.get('status', 'UNKNOWN')
             if passed:
-                new_status = "PARTIAL"
+                new_status = 'PARTIAL'
             else:
-                new_status = "FAIL"
-
-            sub["status"] = new_status
-            sub["_p0_provenance"] = "evidence_derived"
-            sub.setdefault("evidence", {})["p0_boundary_evidence"] = detail
-            sub["evidence"]["p0_evidence_passed"] = passed
-
-            # HARD GUARD: verify no layer flag was mutated
-            _assert_layers_unchanged(
-                {"layers": layers_snapshot},
-                sub,
-                sub_id,
-            )
-
-            evidence_log.append(
-                {
-                    "id": sub_id,
-                    "original_status": original_status,
-                    "evidence_passed": passed,
-                    "new_status": new_status,
-                    "detail": detail,
-                },
-            )
-
-    # Compute evidence-only P0 metrics (the ONLY source for P0 gating)
+                new_status = 'FAIL'
+            sub['status'] = new_status
+            sub['_p0_provenance'] = 'evidence_derived'
+            sub.setdefault('evidence', {})['p0_boundary_evidence'] = detail
+            sub['evidence']['p0_evidence_passed'] = passed
+            _assert_layers_unchanged({'layers': layers_snapshot}, sub, sub_id)
+            evidence_log.append({'id': sub_id, 'original_status': original_status, 'evidence_passed': passed, 'new_status': new_status, 'detail': detail})
     evidence_status_by_id: dict[str, str] = {}
     evidence_fail_count = 0
     for entry in evidence_log:
-        evidence_status_by_id[entry["id"]] = entry["new_status"]
-        if entry["new_status"] == "FAIL":
+        evidence_status_by_id[entry['id']] = entry['new_status']
+        if entry['new_status'] == 'FAIL':
             evidence_fail_count += 1
-
-    data["_p0_meta"]["evaluated_ids"] = sorted(P0_SCOPE_IDS)
-    data["_p0_meta"]["evidence_fail_count"] = evidence_fail_count
-    data["_p0_meta"]["evidence_status_by_id"] = evidence_status_by_id
-
-    return data, evidence_log
-
-
-# ---------------------------------------------------------------------------
-# CLI
-# ---------------------------------------------------------------------------
-
+    data['_p0_meta']['evaluated_ids'] = sorted(P0_SCOPE_IDS)
+    data['_p0_meta']['evidence_fail_count'] = evidence_fail_count
+    data['_p0_meta']['evidence_status_by_id'] = evidence_status_by_id
+    return (data, evidence_log)
 
 def main() -> int:
     import argparse
-
-    parser = argparse.ArgumentParser(description="V15 P0 Gap Regeneration")
-    parser.add_argument("--out", type=Path, default=None, help="Output path (default: stdout)")
-    parser.add_argument("--baseline", type=Path, default=None, help="Baseline gap JSON")
-    parser.add_argument("--evidence-log", action="store_true", help="Print evidence log to stderr")
+    parser = argparse.ArgumentParser(description='V15 P0 Gap Regeneration')
+    parser.add_argument('--out', type=Path, default=None, help='Output path (default: stdout)')
+    parser.add_argument('--baseline', type=Path, default=None, help='Baseline gap JSON')
+    parser.add_argument('--evidence-log', action='store_true', help='Print evidence log to stderr')
     args = parser.parse_args()
-
     baseline_path = args.baseline or BASELINE_GAP_JSON
     if not baseline_path.exists():
-        print(f"ERROR: Baseline not found: {baseline_path}", file=sys.stderr)
+        print(f'ERROR: Baseline not found: {baseline_path}', file=sys.stderr)
         return 1
-
     raw_bytes = baseline_path.read_bytes()
     b_hash = baseline_sha256(raw_bytes)
-    baseline = json.loads(raw_bytes.decode("utf-8"))
-
-    print(f"Baseline SHA-256: {b_hash}", file=sys.stderr)
+    baseline = json.loads(raw_bytes.decode('utf-8'))
+    print(f'Baseline SHA-256: {b_hash}', file=sys.stderr)
     regenerated, evidence_log = regenerate(baseline, baseline_hash=b_hash)
-
-    # Schema validation
     schema_errors: list[str] = []
-    for cap in regenerated.get("capabilities", []):
-        for sub in cap.get("sub_capabilities", []):
+    for cap in regenerated.get('capabilities', []):
+        for sub in cap.get('sub_capabilities', []):
             schema_errors.extend(validate_layers_schema(sub))
     if schema_errors:
-        print("ERROR: Schema validation failures:", file=sys.stderr)
+        print('ERROR: Schema validation failures:', file=sys.stderr)
         for e in schema_errors:
-            print(f"  {e}", file=sys.stderr)
+            print(f'  {e}', file=sys.stderr)
         return 1
-
     output = json.dumps(regenerated, indent=2, ensure_ascii=False)
-
     if args.out:
         args.out.parent.mkdir(parents=True, exist_ok=True)
-        args.out.write_text(output, encoding="utf-8")
-        print(f"Regenerated artifact written to: {args.out}", file=sys.stderr)
+        args.out.write_text(output, encoding='utf-8')
+        print(f'Regenerated artifact written to: {args.out}', file=sys.stderr)
     else:
         print(output)
-
     if args.evidence_log:
-        print("\n--- Evidence Log ---", file=sys.stderr)
+        print('\n--- Evidence Log ---', file=sys.stderr)
         for entry in evidence_log:
-            status = "PASS" if entry["evidence_passed"] else "FAIL"
-            print(
-                f"  {entry['id']}: {status} ({entry['detail']}) "
-                f"[{entry['original_status']} -> {entry['new_status']}]",
-                file=sys.stderr,
-            )
-
-    # Report FAIL count in regenerated artifact
-    fail_count = sum(
-        1
-        for cap in regenerated.get("capabilities", [])
-        for sub in cap.get("sub_capabilities", [])
-        if sub.get("status") == "FAIL"
-    )
-    print(f"Regenerated FAIL count: {fail_count}", file=sys.stderr)
-
+            status = 'PASS' if entry['evidence_passed'] else 'FAIL'
+            print(f"  {entry['id']}: {status} ({entry['detail']}) [{entry['original_status']} -> {entry['new_status']}]", file=sys.stderr)
+    fail_count = sum((1 for cap in regenerated.get('capabilities', []) for sub in cap.get('sub_capabilities', []) if sub.get('status') == 'FAIL'))
+    print(f'Regenerated FAIL count: {fail_count}', file=sys.stderr)
     return 0
-
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     sys.exit(main())

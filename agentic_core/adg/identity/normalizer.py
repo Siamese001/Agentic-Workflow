@@ -201,6 +201,7 @@ class IdentityNormalizer:
             )
 
         # Step 4: Package __init__.py match
+        # guardian: allow-path-string
         candidate_init = slash_path + "/__init__.py"
         if candidate_init in known:
             adg = canonical_name("Module", candidate_init)

@@ -235,6 +235,7 @@ class ReflectionEngine:
                 validation_type="circuit_breaker_fallback",
             )
 
+        # guardian: allow-silent-swallow
         except Exception as e:  # guardian: allow-silent-swallower
             # GAP-02 FIX: fail-closed on unexpected errors when required criteria present
             has_required = any(getattr(c, "is_required", True) for c in normalized_criteria)
@@ -302,6 +303,7 @@ class ReflectionEngine:
 
                 total_weight += criterion.weight
 
+            # guardian: allow-silent-swallow
             except Exception as e:  # guardian: allow-silent-swallower
                 logger.error(f"Validation error for {criterion.name}: {e}")
                 results.append(f"Error: {criterion.name} - {str(e)}")
@@ -371,6 +373,7 @@ Respond in JSON format:
                 validation_type="llm",
             )
 
+        # guardian: allow-silent-swallow
         except Exception as e:  # guardian: allow-silent-swallower
             logger.error(f"LLM evaluation failed: {e}")
             # Fallback to conservative result

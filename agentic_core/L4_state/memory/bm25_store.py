@@ -4,32 +4,15 @@ In-memory BM25 retrieval engine for hybrid search operations.
 Zero-Ambiguity Standard: Renamed from Bm25Store.py to bm25_store.py
 Moved from semantic_memory/store to L4_state/memory/semantic
 """
-
 from __future__ import annotations
-
 from typing import Any
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 try:
     from rank_bm25 import BM25Okapi
 except ImportError as _err:
-    raise ImportError(
-        "rank-bm25 is required for this module. Install with: pip install -e '.[infra]'",
-    ) from _err
-
+    raise ImportError("rank-bm25 is required for this module. Install with: pip install -e '.[infra]'") from _err
 from agentic_core.L2_execution.config.hybrid_retriever_config import ASTAwareTokenizer
-
 _tokenizer = ASTAwareTokenizer()
-
 
 class Bm25Store:
     """In-memory BM25 index for fast keyword retrieval."""
@@ -48,10 +31,10 @@ class Bm25Store:
         if not self.documents:
             self.bm25 = None
             return
-        tokenized = [_tokenizer.tokenize_code(doc["text"]) for doc in self.documents]
+        tokenized = [_tokenizer.tokenize_code(doc['text']) for doc in self.documents]
         self.bm25 = BM25Okapi(tokenized)
 
-    def query(self, query: str, top_k: int = 5) -> list[dict]:
+    def query(self, query: str, top_k: int=5) -> list[dict]:
         """BM25 keyword search."""
         if not self.bm25 or not self.documents:
             return []
@@ -63,20 +46,9 @@ class Bm25Store:
             if score == 0:
                 continue
             doc: Any = self.documents[idx]
-            results.append(
-                {
-                    "source": "bm25",
-                    "content": doc["text"],
-                    "score": float(score),
-                    "id": doc["id"],
-                    "metadata": doc.get("metadata", {}),
-                },
-            )
+            results.append({'source': 'bm25', 'content': doc['text'], 'score': float(score), 'id': doc['id'], 'metadata': doc.get('metadata', {})})
         return results
-
-
 _bm25_store: Any = Bm25Store()
-
 
 def get_bm25_store() -> Bm25Store:
     """Get the singleton BM25 store instance for hybrid search operations."""

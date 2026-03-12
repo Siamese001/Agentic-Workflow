@@ -1,149 +1,79 @@
-#!/usr/bin/env python3
 """
 Phase 2 Consolidated Evidence Runner (v2)
 
 Generates consolidated evidence for Phase 2 LIC+RG spine adapters.
 Updated to use Evidence Contract v2 helper for scope isolation and self-verification.
 """
-
 import sys
 from pathlib import Path
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-# Add the tools/evidence directory to the path for imports
+# guardian: allow-global-mutation
 sys.path.insert(0, str(Path(__file__).parent))
-
 from evidence_contract_v2 import EvidenceContractV2
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 def main():
     """Generate Phase 2 consolidated evidence using Contract v2."""
-    args = EvidenceContractV2.parse_args("Generate Phase 2 consolidated evidence")
-
+    args = EvidenceContractV2.parse_args('Generate Phase 2 consolidated evidence')
     code_commit = args.code_commit
     evidence_commit = args.evidence_commit
-
     repo_root = Path(__file__).parent.parent.parent
-    evidence_file = repo_root / "docs" / REPORTS_DIR / "plans" / "phase_02_consolidated.md"
-
-    print(f"Generating Phase 2 consolidated evidence: {evidence_file}")
-    print(f"CODE_COMMIT: {code_commit}")
+    evidence_file = repo_root / 'docs' / REPORTS_DIR / 'plans' / 'phase_02_consolidated.md'
+    print(f'Generating Phase 2 consolidated evidence: {evidence_file}')
+    print(f'CODE_COMMIT: {code_commit}')
     if evidence_commit:
-        print(f"EVIDENCE_COMMIT: {evidence_commit}")
-
-    # Initialize contract helper with allowed prefixes for Phase 2
-    allowed_prefixes = {
-        "apps_shared/",
-        "apps_lic/",
-        "apps_rg/",
-        "agentic_core/",
-        "ops_scripts/",
-        "tools/evidence/",
-        "tests/",
-        "docs/reports/plans/",
-        ".github/workflows/",
-        "pytest.ini",
-        "docs/rules/",
-    }
-
+        print(f'EVIDENCE_COMMIT: {evidence_commit}')
+    allowed_prefixes = {'apps_shared/', 'apps_lic/', 'apps_rg/', 'agentic_core/', 'ops_scripts/', 'tools/evidence/', 'tests/', 'docs/reports/plans/', '.github/workflows/', 'pytest.ini', 'docs/rules/'}
     contract = EvidenceContractV2(repo_root, allowed_prefixes)
-
-    # Validate evidence contract structure
     require_evidence_commit = evidence_commit is not None
     contract.validate_evidence_contract_structure(code_commit, evidence_commit, require_evidence_commit)
-
-    # Start building evidence content
     evidence_lines = []
-    evidence_lines.append("# Phase 2: LIC+RG Spine Adapters (Consolidated)")
-    evidence_lines.append("")
-    evidence_lines.append("## Scope")
-    evidence_lines.append("Phase 2: LIC+RG Spine Adapters Implementation")
-    evidence_lines.append("")
-
-    # Build evidence sections using contract helper
-    inspected = [
-        "apps_lic/engines/lic_spine_adapter.py",
-        "apps_rg/engines/rg_spine_adapter.py",
-        "tools/evidence/phase02_consolidated_evidence_runner.py",
-    ]
-
+    evidence_lines.append('# Phase 2: LIC+RG Spine Adapters (Consolidated)')
+    evidence_lines.append('')
+    evidence_lines.append('## Scope')
+    evidence_lines.append('Phase 2: LIC+RG Spine Adapters Implementation')
+    evidence_lines.append('')
+    inspected = ['apps_lic/engines/lic_spine_adapter.py', 'apps_rg/engines/rg_spine_adapter.py', 'tools/evidence/phase02_consolidated_evidence_runner.py']
     sections = contract.build_evidence_sections(code_commit, evidence_commit, inspected)
-
-    # Add formatted sections
     evidence_lines.extend(contract.format_evidence_sections(sections))
-
-    # Command outputs
-    commands = [
-        (
-            [sys.executable, "-m", "pytest", "-q", "tests/unit_min_deps/test_apps_lic_spine_adapter.py"],
-            "LIC Spine Adapter Tests",
-        ),
-        (
-            [sys.executable, "-m", "pytest", "-q", "tests/unit_min_deps/test_apps_rg_spine_adapter.py"],
-            "RG Spine Adapter Tests",
-        ),
-    ]
-
+    commands = [([sys.executable, '-m', 'pytest', '-q', 'tests/unit_min_deps/test_apps_lic_spine_adapter.py'], 'LIC Spine Adapter Tests'), ([sys.executable, '-m', 'pytest', '-q', 'tests/unit_min_deps/test_apps_rg_spine_adapter.py'], 'RG Spine Adapter Tests')]
     for cmd, title in commands:
-        evidence_lines.append(f"## {title}")
-        evidence_lines.append("```")
+        evidence_lines.append(f'## {title}')
+        evidence_lines.append('```')
         evidence_lines.append(f"$ {' '.join(cmd)}")
-
         rc, out, err = contract.run_cmd(cmd)
         evidence_lines.append(out)
         if err:
-            evidence_lines.append(f"STDERR: {err}")
+            evidence_lines.append(f'STDERR: {err}')
         if rc != 0:
-            evidence_lines.append(f"EXIT CODE: {rc}")
-
-        evidence_lines.append("```")
-        evidence_lines.append("")
-
-    # Embed full contents of inspected files
-    evidence_lines.append("## INSPECTED_FILE_CONTENTS")
-    evidence_lines.append("")
-
-    for filepath in sections["INSPECTED_FILES"]:
+            evidence_lines.append(f'EXIT CODE: {rc}')
+        evidence_lines.append('```')
+        evidence_lines.append('')
+    evidence_lines.append('## INSPECTED_FILE_CONTENTS')
+    evidence_lines.append('')
+    for filepath in sections['INSPECTED_FILES']:
         full_path = repo_root / filepath
-        evidence_lines.append(f"### {filepath}")
-        evidence_lines.append("```")
+        evidence_lines.append(f'### {filepath}')
+        evidence_lines.append('```')
         content = EvidenceContractV2.read_file_content(full_path)
         evidence_lines.append(content)
-        evidence_lines.append("```")
-        evidence_lines.append("")
-
-    # Write evidence file with LF line endings and no trailing whitespace
-    evidence_content = "\n".join(line.rstrip() for line in evidence_lines)
+        evidence_lines.append('```')
+        evidence_lines.append('')
+    evidence_content = '\n'.join((line.rstrip() for line in evidence_lines))
     evidence_file.parent.mkdir(parents=True, exist_ok=True)
-    evidence_file.write_text(evidence_content, encoding="utf-8", newline="\n")
-
-    # Sanity check: evidence file should not start with Python code
-    content_start = evidence_file.read_text(encoding="utf-8")[:200]
-    if content_start.strip().startswith("#!/usr/bin/env python") or "def main()" in content_start[:200]:
-        print("ERROR: Evidence file appears to contain Python code instead of markdown")
-        print("This indicates the runner content was written to the evidence file.")
+    evidence_file.write_text(evidence_content, encoding='utf-8', newline='\n')
+    content_start = evidence_file.read_text(encoding='utf-8')[:200]
+    if content_start.strip().startswith('#!/usr/bin/env python') or 'def main()' in content_start[:200]:
+        print('ERROR: Evidence file appears to contain Python code instead of markdown')
+        print('This indicates the runner content was written to the evidence file.')
         sys.exit(1)
-
-    print(f"Evidence generated successfully: {evidence_file}")
-    print(f"CODE_COMMIT: {code_commit}")
+    print(f'Evidence generated successfully: {evidence_file}')
+    print(f'CODE_COMMIT: {code_commit}')
     print(f"EVIDENCE_COMMIT: {sections['EVIDENCE_COMMIT']}")
-    print(f"Current HEAD: {contract.get_current_head()}")
-
+    print(f'Current HEAD: {contract.get_current_head()}')
     if not evidence_commit:
-        print("\nTo complete the evidence contract:")
-        print("1. Commit this evidence file")
-        print("2. Re-run with --evidence-commit <new_commit_hash>")
-        print("3. The runner will update the sealed evidence file")
-
-
-if __name__ == "__main__":
+        print('\nTo complete the evidence contract:')
+        print('1. Commit this evidence file')
+        print('2. Re-run with --evidence-commit <new_commit_hash>')
+        print('3. The runner will update the sealed evidence file')
+if __name__ == '__main__':
     main()

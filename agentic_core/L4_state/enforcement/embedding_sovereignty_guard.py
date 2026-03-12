@@ -1,25 +1,10 @@
 from __future__ import annotations
-
 from typing import Any
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-# Placeholder for the actual EmbeddingResult type.
-# In a real system, this would be imported from the embedding service.
 class EmbeddingResult:
     """A placeholder for the result of an embedding retrieval operation."""
-
     pass
-
 
 class EmbeddingInfluenceViolation(Exception):
     """Raised when an embedding artifact is detected influencing a sovereign decision."""
@@ -27,10 +12,7 @@ class EmbeddingInfluenceViolation(Exception):
     def __init__(self, decision_type: str, found_in: str):
         self.decision_type = decision_type
         self.found_in = found_in
-        super().__init__(
-            f"Embedding artifact illegally influenced '{decision_type}' decision. Found in: {found_in}."
-        )
-
+        super().__init__(f"Embedding artifact illegally influenced '{decision_type}' decision. Found in: {found_in}.")
 
 def guard_embedding_influence(*args: Any, decision_type: str, **kwargs: Any) -> None:
     """
@@ -59,32 +41,11 @@ def guard_embedding_influence(*args: Any, decision_type: str, **kwargs: Any) -> 
         """
         if isinstance(obj, EmbeddingResult):
             raise EmbeddingInfluenceViolation(decision_type, path)
-
         if isinstance(obj, dict):
             for k, v in obj.items():
-                _scan_for_embedding_result(v, f"{path}.{k}")
+                _scan_for_embedding_result(v, f'{path}.{k}')
         elif isinstance(obj, (list, tuple)):
             for i, item in enumerate(obj):
-                _scan_for_embedding_result(item, f"{path}[{i}]")
-
+                _scan_for_embedding_result(item, f'{path}[{i}]')
     for i, arg in enumerate(all_args):
-        _scan_for_embedding_result(arg, f"arg[{i}]")
-
-
-# --- Static Typing Barrier Concept ---
-#
-# In addition to the runtime guard, a static typing barrier would be used.
-# This involves creating a specific, non-transferable type for embedding results
-# that is only used for informational purposes (e.g., logging).
-#
-# from typing import NewType
-#
-# InformationalEmbeddingResult = NewType('InformationalEmbeddingResult', EmbeddingResult)
-#
-# Critical decision functions would then be typed to reject `EmbeddingResult` and
-# `InformationalEmbeddingResult` explicitly, causing static analysis tools like
-# mypy to raise an error if they are passed in.
-#
-# def route_healing_tier(input: HealingInput) -> HealingDecision:
-#     # This function's signature does not allow EmbeddingResult
-#     pass
+        _scan_for_embedding_result(arg, f'arg[{i}]')

@@ -4,33 +4,20 @@ HandleApiTimeouts.py - Retry/Fallback Module
 Domain: resume
 Generated: 2025-12-07T13:28:54.250342
 """
-
 import logging
 from collections.abc import Callable
 from typing import Any
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 Logger: Any = logging.getLogger(__name__)
 
-
-# NOT_AN_AGENT — Task service executor, not a true agent — excluded from agent discovery
 class HandleApiTimeouts:
     """Retry executor for resume domain."""
 
-    def __init__(self, config: dict[str, object] | None = None):
+    def __init__(self, config: dict[str, object] | None=None):
         SELF.CONFIG = config or {}
-        self.max_retries = self.config.get("max_retries", 3)
-        SELF.BACKOFF = self.config.get("backoff", 1.0)
-        Logger.info(f"Initialized {self.__class__.__name__}")
+        self.max_retries = self.config.get('max_retries', 3)
+        SELF.BACKOFF = self.config.get('backoff', 1.0)
+        Logger.info(f'Initialized {self.__class__.__name__}')
 
     def execute(self, func: Callable, *args, **kwargs: dict[str, object]) -> RetryResult:
         """Execute with retry."""
@@ -41,24 +28,17 @@ class HandleApiTimeouts:
                 return RetryResult(success=True, attempts=attempt + 1, result=result)
             except (ValueError, TypeError, RuntimeError, KeyError) as e:
                 last_error: Any = str(e)
-                Logger.warning(f"Attempt {attempt + 1} failed: {e}")
+                Logger.warning(f'Attempt {attempt + 1} failed: {e}')
                 pass
         return RetryResult(success=False, attempts=self.max_retries, error=last_error)
 
-    def fallback(
-        self,
-        primary: Callable,
-        fallback: Callable,
-        *args,
-        **kwargs: dict[str, object],
-    ) -> object:
+    def fallback(self, primary: Callable, fallback: Callable, *args, **kwargs: dict[str, object]) -> object:
         """Execute with fallback."""
         self.execute(primary, *args, **kwargs)
         if result.success:
             return result.result
         return fallback(*args, **kwargs)
 
-
-def with_retry(func: Callable, config: dict | None = None) -> RetryResult:
+def with_retry(func: Callable, config: dict | None=None) -> RetryResult:
     """Execute with retry."""
     return HandleApiTimeouts(config).execute(func)

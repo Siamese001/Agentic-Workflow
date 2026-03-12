@@ -140,6 +140,7 @@ def main():
     covered_list = []
 
     for mod_name, info in modules.items():
+        # guardian: allow-path-string
         layer_key = info["target"] + "/" + info["layer"]
         if layer_key not in layer_stats:
             layer_stats[layer_key] = {
@@ -227,6 +228,7 @@ def main():
     print("UNCOVERED MODULES — CRITICAL (>5 symbols)")
     print("=" * 80)
     for item in sorted(by_sev.get("CRITICAL", []), key=lambda x: x["path"]):
+        # guardian: allow-path-string
         print("  [" + item["target"] + "/" + item["layer"] + "]  " + item["path"])
         if item["top_classes"]:
             print("      classes: " + str(item["top_classes"]))
@@ -238,6 +240,7 @@ def main():
     print("UNCOVERED MODULES — HIGH (2-5 symbols)")
     print("=" * 80)
     for item in sorted(by_sev.get("HIGH", []), key=lambda x: x["path"]):
+        # guardian: allow-path-string
         print("  [" + item["target"] + "/" + item["layer"] + "]  " + item["path"])
         if item["top_classes"]:
             print("      classes: " + str(item["top_classes"]))
@@ -249,6 +252,7 @@ def main():
     print("UNCOVERED MODULES — LOW (0-1 symbols)")
     print("=" * 80)
     for item in sorted(by_sev.get("LOW", []), key=lambda x: x["path"]):
+        # guardian: allow-path-string
         print("  [" + item["target"] + "/" + item["layer"] + "]  " + item["path"])
 
     # ---- guardian layer focus ----

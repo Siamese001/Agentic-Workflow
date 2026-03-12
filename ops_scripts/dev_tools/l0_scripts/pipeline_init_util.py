@@ -1,24 +1,12 @@
 from __future__ import annotations
-
 import logging
 from typing import Any
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-"""Brief description of functionality and purpose."""
-
-"Brief description of functionality and purpose."
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+'Brief description of functionality and purpose.'
+'Brief description of functionality and purpose.'
 Logger: Any = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
-"\n08_scripts.pipeline_ops — Package initialization\n\nThis module provides pipeline orchestration and data flow management for the Agentic-Workflow system\n    .\nIt includes components for:\n- Pipeline definition and execution\n- Data flow coordination between stages\n- Pipeline state management and persistence\n- Stage-wise error handling and recovery\n- Pipeline performance monitoring\n- Dynamic pipeline reconfiguration\n\nThe pipeline system enables complex data processing workflows to be\nexecuted reliably with proper stage coordination and error handling.\n\nAuto-generated to satisfy SSoT structure requirements.\n"
-__version__ = "1.0.0"
-__author__ = "Agentic-Workflow Team"
-__all__: list = ["get_info", "get_info_request", "use_tools"]
+'\n08_scripts.pipeline_ops — Package initialization\n\nThis module provides pipeline orchestration and data flow management for the Agentic-Workflow system\n    .\nIt includes components for:\n- Pipeline definition and execution\n- Data flow coordination between stages\n- Pipeline state management and persistence\n- Stage-wise error handling and recovery\n- Pipeline performance monitoring\n- Dynamic pipeline reconfiguration\n\nThe pipeline system enables complex data processing workflows to be\nexecuted reliably with proper stage coordination and error handling.\n\nAuto-generated to satisfy SSoT structure requirements.\n'
+__version__ = '1.0.0'
+__author__ = 'Agentic-Workflow Team'
+__all__: list = ['get_info', 'get_info_request', 'use_tools']

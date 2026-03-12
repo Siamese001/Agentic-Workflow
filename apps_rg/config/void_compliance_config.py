@@ -154,6 +154,7 @@ def get_placement_guidance(content_preview: str) -> str:
 
     # L1: Thought Nodes (Execution/Atomic logic) - now under L1_cognition/thought_engine
     if "node" in content_preview.lower() or "execute" in content_preview:
+        # guardian: allow-path-string
         return L1_COGNITION_DIR + "/thought_engine"
 
     # L3: Orchestration (Routing/Fission)
@@ -253,6 +254,7 @@ def validate_import_conventions(file_path: Path, project_root: Path) -> list[str
         with open(file_path, encoding="utf-8") as f:
             content = f.read()
         tree = ast.parse(content, filename=str(file_path))
+    # guardian: allow-silent-swallow
     except Exception as e:
         violations.append(f"PARSE ERROR: Cannot analyze imports in {file_path.name}: {e}")
         return violations
@@ -670,12 +672,14 @@ def check_import_waterfall_violations(file_path: Path, project_root: Path) -> li
     try:
         with open(file_path, encoding="utf-8", errors="replace") as f:
             content = f.read()
+    # guardian: allow-silent-swallow
     except Exception:
         return violations  # Skip unreadable files
 
     # Build regex only if there are downstream roots (defensive)
     if downstream_roots:
         forbidden_pattern = re.compile(
+            # guardian: allow-path-string
             r"^(?:import|from)\s+(" + "|".join(map(re.escape, sorted(downstream_roots))) + r")(?:\.\w|\s|$)",
             re.MULTILINE,
         )

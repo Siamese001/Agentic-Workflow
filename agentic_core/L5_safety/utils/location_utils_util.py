@@ -1,29 +1,10 @@
 from __future__ import annotations
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-"""
-Shared utility functions for location-based operations.
-
-Extracted from LocationAgent.py during SRP fission.
-All location-related agents should import from this module.
-"""
-
-
+'\nShared utility functions for location-based operations.\n\nExtracted from LocationAgent.py during SRP fission.\nAll location-related agents should import from this module.\n'
 import os
 from pathlib import Path
-
 from agentic_core.L5_safety.config.structure_blueprint import DEPTH_RULES, SOVEREIGN_EXCLUDED_FOLDERS
 from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 def normalize_location_path(path: str) -> str:
     """
@@ -36,8 +17,7 @@ def normalize_location_path(path: str) -> str:
         Normalized path with forward slashes
     """
     # guardian: allow-path-string
-    return os.path.normpath(path).replace("\\", "/")
-
+    return os.path.normpath(path).replace('\\', '/')
 
 def get_agent_files(root_dir: str) -> list[str]:
     """
@@ -53,14 +33,11 @@ def get_agent_files(root_dir: str) -> list[str]:
     for root, dirs, files in os.walk(root_dir):
         dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
         for file in files:
-            # guardian: allow-path-string
-            if file.endswith(".py") and not file.startswith("__"):
-                # guardian: allow-path-string
-                agent_files.append(os.path.join(root, file))
+            if file.endswith('.py') and (not file.startswith('__')):
+                agent_files.append(Path(root) / file)
     return agent_files
 
-
-def compute_module_path(file_path: Path, project_root: Path | None = None) -> str:
+def compute_module_path(file_path: Path, project_root: Path | None=None) -> str:
     """
     Compute Python module path from file path.
 
@@ -72,23 +49,17 @@ def compute_module_path(file_path: Path, project_root: Path | None = None) -> st
         Module path string (e.g., 'agentic_core.L5_safety.reasoning.LocationAgent')
     """
     if project_root is None:
-        from agentic_core.L5_safety.config.structure_blueprint import (
-            get_validated_project_root,
-        )
-
+        from agentic_core.L5_safety.config.structure_blueprint import get_validated_project_root
         project_root = get_validated_project_root()
-
     try:
         rel_path = file_path.relative_to(project_root)
         module_parts = list(rel_path.parts[:-1]) + [rel_path.stem]
-        return ".".join(module_parts)
+        return '.'.join(module_parts)
     except ValueError:
-        # File not within project root
         return file_path.stem
 
-
-def is_path_compliant(file_path: str | Path, project_root: Path | None = None) -> bool:
-    r"""
+def is_path_compliant(file_path: str | Path, project_root: Path | None=None) -> bool:
+    """
     L5 Sovereign Structural SSOT - Hard-enforcement of path validity.
 
     This is the Supreme Court for structural compliance. All L3 and L2 agents
@@ -100,7 +71,7 @@ def is_path_compliant(file_path: str | Path, project_root: Path | None = None) -
     2. Root folder must be in SOVEREIGN_TERRITORIES (whitelist)
     3. Depth must not exceed MAX_ALLOWED_DEPTH per root
     4. No forbidden root folders (legacy_*, old_*)
-    5. No numbered folder prefixes (^\d+_)
+    5. No numbered folder prefixes (^\\d+_)
 
     Args:
         file_path: Path to validate (str or Path)
@@ -117,67 +88,39 @@ def is_path_compliant(file_path: str | Path, project_root: Path | None = None) -
         >>> is_path_compliant('agentic_core/L1/L2/L3/L4/L5/deep.py')  # Too deep
         False
     """
-    from agentic_core.L5_safety.config.structure_blueprint import (
-        FORBIDDEN_FOLDER_PATTERN,
-        FORBIDDEN_ROOT_FOLDERS,
-        ROOT_WHITELIST,
-        get_validated_project_root,
-    )
-
-    # Auto-detect project root if not provided
+    from agentic_core.L5_safety.config.structure_blueprint import FORBIDDEN_FOLDER_PATTERN, FORBIDDEN_ROOT_FOLDERS, ROOT_WHITELIST, get_validated_project_root
     if project_root is None:
         project_root = get_validated_project_root()
-
-    # Convert to Path object
     if isinstance(file_path, str):
         file_path = Path(file_path)
-
-    # Ensure absolute path
     if not file_path.is_absolute():
         file_path = project_root / file_path
-
-    # Check if path is within project
     try:
         rel_path = file_path.relative_to(project_root)
     except ValueError:
-        return False  # Path not within project
-
+        return False
     parts = rel_path.parts
     if not parts:
-        return False  # Empty path
-
+        return False
     root_folder = parts[0]
-
-    # Check 1: Root must be in whitelist
     if root_folder not in ROOT_WHITELIST:
         return False
-
-    # Check 2: No forbidden folders at any depth
     for part in parts:
         if part in FORBIDDEN_ROOT_FOLDERS:
             return False
-        if hasattr(FORBIDDEN_FOLDER_PATTERN, "match"):
+        if hasattr(FORBIDDEN_FOLDER_PATTERN, 'match'):
             if FORBIDDEN_FOLDER_PATTERN.match(part):
                 return False
-
-    # Check 3: Numbered root folders forbidden
-    if len(root_folder) >= 3 and root_folder[:2].isdigit() and root_folder[2:3] == "_":
+    if len(root_folder) >= 3 and root_folder[:2].isdigit() and (root_folder[2:3] == '_'):
         return False
-
-    # Check 4: Depth requirements
     expected_depth = DEPTH_RULES.get(root_folder)
     if expected_depth is not None:
         actual_depth = len(parts) - 1
         if actual_depth != expected_depth:
-            # Allow variable depth for certain subfolders
-            from agentic_core.L5_safety.config.structure_blueprint import (
-                VARIABLE_DEPTH_SUBFOLDERS,
-            )
-
+            from agentic_core.L5_safety.config.structure_blueprint import VARIABLE_DEPTH_SUBFOLDERS
             if root_folder == AGENTIC_CORE_DIR and len(parts) > 1:
                 subfolder = parts[1]
                 if subfolder in VARIABLE_DEPTH_SUBFOLDERS and actual_depth >= 2:
-                    return True  # Variable depth allowed
-            return False  # Depth violation
-
+                    return True
+            return False
     return True

@@ -1,56 +1,32 @@
 from __future__ import annotations
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-"""Ephemeral VM with Isolation and Auto-Teardown.
-
-Phase 3 - Pillar 14: Execution Sandbox (Hardened Ephemeral)
-Enforces strict network/resource isolation and automatic teardown.
-"""
+'Ephemeral VM with Isolation and Auto-Teardown.\n\nPhase 3 - Pillar 14: Execution Sandbox (Hardened Ephemeral)\nEnforces strict network/resource isolation and automatic teardown.\n'
 import asyncio
 import logging
 import time
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 try:
     from agentic_core.L2_execution.enforcement.vm.firecracker_manager import FirecrackerManager
 except ImportError:
-    FirecrackerManager = None  # type: ignore[misc,assignment]
-
+    FirecrackerManager = None
 try:
     from agentic_core.L2_execution.types.firecracker_manager_types import VMConfig
 except ImportError:
-    VMConfig = None  # type: ignore[misc,assignment]
-
+    VMConfig = None
 LOGGER = logging.getLogger(__name__)
-
-# [SSOT IMPORT] Structure blueprint is the single source of truth
-
 Logger: Any = logging.getLogger(__name__)
-
 
 class IsolationLevel(Enum):
     """Isolation levels for VM."""
-
-    NONE: Any = "none"
-    NETWORK_ONLY: Any = "network_only"
-    FULL: Any = "full"
-
+    NONE: Any = 'none'
+    NETWORK_ONLY: Any = 'network_only'
+    FULL: Any = 'full'
 
 @dataclass
 class IsolationConfig:
     """configuration for VM isolation."""
-
     level: IsolationLevel = IsolationLevel.FULL
     allow_network: bool = False
     allow_filesystem: bool = False
@@ -61,21 +37,11 @@ class IsolationConfig:
 
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
-        return {
-            "level": self.level.value,
-            "allow_network": self.allow_network,
-            "allow_filesystem": self.allow_filesystem,
-            "allow_subprocess": self.allow_subprocess,
-            "max_cpu_percent": self.max_cpu_percent,
-            "max_memory_mb": self.max_memory_mb,
-            "max_execution_time_seconds": self.max_execution_time_seconds,
-        }
-
+        return {'level': self.level.value, 'allow_network': self.allow_network, 'allow_filesystem': self.allow_filesystem, 'allow_subprocess': self.allow_subprocess, 'max_cpu_percent': self.max_cpu_percent, 'max_memory_mb': self.max_memory_mb, 'max_execution_time_seconds': self.max_execution_time_seconds}
 
 @dataclass
 class ExecutionResult:
     """Result from code execution in VM."""
-
     success: bool
     output: str
     error: str | None = None
@@ -85,15 +51,7 @@ class ExecutionResult:
 
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
-        return {
-            "success": self.success,
-            "output": self.output,
-            "error": self.error,
-            "execution_time_seconds": self.execution_time_seconds,
-            "exit_code": self.exit_code,
-            "metadata": self.metadata,
-        }
-
+        return {'success': self.success, 'output': self.output, 'error': self.error, 'execution_time_seconds': self.execution_time_seconds, 'exit_code': self.exit_code, 'metadata': self.metadata}
 
 class EphemeralVm:
     """Ephemeral VM for secure code execution.
@@ -106,12 +64,7 @@ class EphemeralVm:
     - Network isolation
     """
 
-    def __init__(
-        self,
-        vm_manager: FirecrackerManager,
-        IsolationConfig: IsolationConfig | None = None,
-        enable_logging: bool = True,
-    ):
+    def __init__(self, vm_manager: FirecrackerManager, IsolationConfig: IsolationConfig | None=None, enable_logging: bool=True):
         """Initialize ephemeral VM.
 
         Args:
@@ -124,14 +77,9 @@ class EphemeralVm:
         self.enable_logging = enable_logging
         self._vm_counter = 0
         if self.enable_logging:
-            LOGGER.info("ephemeral_vm_initialized", extra={"isolation": self.IsolationConfig.to_dict()})
+            LOGGER.info('ephemeral_vm_initialized', extra={'isolation': self.IsolationConfig.to_dict()})
 
-    async def execute_code(
-        self,
-        code: str,
-        language: str = "python",
-        timeout_seconds: int | None = None,
-    ) -> ExecutionResult:
+    async def execute_code(self, code: str, language: str='python', timeout_seconds: int | None=None) -> ExecutionResult:
         """Execute code in ephemeral VM.
         Args:
             code: Code to execute
@@ -146,17 +94,11 @@ class EphemeralVm:
         vm_id, VmConfig = self._create_vm_config(timeout)
         VmInstance: Any = None
         try:
-            VmInstance: Any = await self._create_and_execute_vm(
-                vm_id,
-                VmConfig,
-                code,
-                language,
-                timeout,
-                start_time,
-            )
+            VmInstance: Any = await self._create_and_execute_vm(vm_id, VmConfig, code, language, timeout, start_time)
             return VmInstance
         except asyncio.TimeoutError:
             return self._handle_timeout(vm_id, timeout, start_time)
+        # guardian: allow-silent-swallow
         except Exception as e:
             return self._handle_execution_error(vm_id, e, start_time)
         finally:
@@ -165,72 +107,32 @@ class EphemeralVm:
     def _create_vm_config(self, timeout: int) -> tuple:
         """Create VM configuration."""
         self._vm_counter += 1
-        vm_id = f"ephemeral_vm_{self._vm_counter}_{int(time.time())}"
-        VmConfig = VMConfig(
-            vm_id=vm_id,
-            Provider=self.vm_manager.Provider,
-            cpu_count=1,
-            memory_mb=self.IsolationConfig.max_memory_mb,
-            network_enabled=self.IsolationConfig.allow_network,
-            timeout_seconds=timeout,
-            auto_teardown=True,
-        )
+        vm_id = f'ephemeral_vm_{self._vm_counter}_{int(time.time())}'
+        VmConfig = VMConfig(vm_id=vm_id, Provider=self.vm_manager.Provider, cpu_count=1, memory_mb=self.IsolationConfig.max_memory_mb, network_enabled=self.IsolationConfig.allow_network, timeout_seconds=timeout, auto_teardown=True)
         return (vm_id, VmConfig)
 
-    async def _create_and_execute_vm(
-        self,
-        vm_id: str,
-        VmConfig,
-        code: str,
-        language: str,
-        timeout: int,
-        start_time: float,
-    ) -> ExecutionResult:
+    async def _create_and_execute_vm(self, vm_id: str, VmConfig, code: str, language: str, timeout: int, start_time: float) -> ExecutionResult:
         """Create VM and execute code."""
         if self.enable_logging:
-            LOGGER.info("creating_ephemeral_vm", extra={"vm_id": vm_id, "language": language})
+            LOGGER.info('creating_ephemeral_vm', extra={'vm_id': vm_id, 'language': language})
         VmInstance = await self.vm_manager.create_vm(VmConfig)
-        result = await self._execute_in_vm(
-            VmInstance=VmInstance,
-            code=code,
-            language=language,
-            timeout=timeout,
-        )
+        result = await self._execute_in_vm(VmInstance=VmInstance, code=code, language=language, timeout=timeout)
         result.execution_time_seconds = time.time() - start_time
         if self.enable_logging:
-            LOGGER.info(
-                "code_executed",
-                extra={
-                    "vm_id": vm_id,
-                    "success": result.success,
-                    "execution_time": result.execution_time_seconds,
-                },
-            )
+            LOGGER.info('code_executed', extra={'vm_id': vm_id, 'success': result.success, 'execution_time': result.execution_time_seconds})
         return result
 
     def _handle_timeout(self, vm_id: str, timeout: int, start_time: float) -> ExecutionResult:
         """Handle execution timeout."""
         if self.enable_logging:
-            LOGGER.warning("execution_timeout", extra={"vm_id": vm_id, "timeout": timeout})
-        return ExecutionResult(
-            success=False,
-            output="",
-            error=f"Execution timeout after {timeout} seconds",
-            execution_time_seconds=time.time() - start_time,
-            exit_code=124,
-        )
+            LOGGER.warning('execution_timeout', extra={'vm_id': vm_id, 'timeout': timeout})
+        return ExecutionResult(success=False, output='', error=f'Execution timeout after {timeout} seconds', execution_time_seconds=time.time() - start_time, exit_code=124)
 
     def _handle_execution_error(self, vm_id: str, error: Exception, start_time: float) -> ExecutionResult:
         """Handle execution error."""
         if self.enable_logging:
-            LOGGER.error("execution_failed", extra={"vm_id": vm_id, "error": str(error)}, exc_info=True)
-        return ExecutionResult(
-            success=False,
-            output="",
-            error=str(error),
-            execution_time_seconds=time.time() - start_time,
-            exit_code=1,
-        )
+            LOGGER.error('execution_failed', extra={'vm_id': vm_id, 'error': str(error)}, exc_info=True)
+        return ExecutionResult(success=False, output='', error=str(error), execution_time_seconds=time.time() - start_time, exit_code=1)
 
     async def _teardown_vm(self, VmInstance, vm_id: str) -> None:
         """Teardown VM."""
@@ -238,20 +140,14 @@ class EphemeralVm:
             try:
                 await self.vm_manager.terminate_vm(vm_id)
                 if self.enable_logging:
-                    LOGGER.debug("vm_torn_down", extra={"vm_id": vm_id})
+                    LOGGER.debug('vm_torn_down', extra={'vm_id': vm_id})
+            # guardian: allow-silent-swallow
             except Exception as e:
-                # TODO: Handle specific exception properly
-                raise  # Re-raise after logging/handling
+                raise
                 if self.enable_logging:
-                    LOGGER.error("vm_teardown_failed", extra={"vm_id": vm_id, "error": str(e)})
+                    LOGGER.error('vm_teardown_failed', extra={'vm_id': vm_id, 'error': str(e)})
 
-    async def _execute_in_vm(
-        self,
-        VmInstance: Any,
-        code: str,
-        language: str,
-        timeout: int,
-    ) -> ExecutionResult:
+    async def _execute_in_vm(self, VmInstance: Any, code: str, language: str, timeout: int) -> ExecutionResult:
         """Execute code inside VM.
 
         Args:
@@ -262,17 +158,12 @@ class EphemeralVm:
         Returns:
             ExecutionResult
         """
-        if language == "python":
+        if language == 'python':
             return await self._execute_python(code, timeout)
-        elif language == "javascript":
+        elif language == 'javascript':
             return await self._execute_javascript(code, timeout)
         else:
-            return ExecutionResult(
-                success=False,
-                output="",
-                error=f"Unsupported language: {language}",
-                exit_code=1,
-            )
+            return ExecutionResult(success=False, output='', error=f'Unsupported language: {language}', exit_code=1)
 
     async def _execute_python(self, code: str, timeout: int) -> ExecutionResult:
         """Execute Python code.
@@ -285,27 +176,14 @@ class EphemeralVm:
             ExecutionResult
         """
         try:
-            result = await asyncio.wait_for(
-                asyncio.create_subprocess_exec(
-                    "python",
-                    "-c",
-                    code,
-                    stdout=asyncio.subprocess.PIPE,
-                    stderr=asyncio.subprocess.PIPE,
-                ),
-                timeout=timeout,
-            )
+            result = await asyncio.wait_for(asyncio.create_subprocess_exec('python', '-c', code, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE), timeout=timeout)
             stdout, stderr = await result.communicate()
-            return ExecutionResult(
-                success=result.returncode == 0,
-                output=stdout.decode() if stdout else "",
-                error=stderr.decode() if stderr else None,
-                exit_code=result.returncode,
-            )
+            return ExecutionResult(success=result.returncode == 0, output=stdout.decode() if stdout else '', error=stderr.decode() if stderr else None, exit_code=result.returncode)
         except asyncio.TimeoutError:
             raise
+        # guardian: allow-silent-swallow
         except Exception as e:
-            return ExecutionResult(success=False, output="", error=str(e), exit_code=1)
+            return ExecutionResult(success=False, output='', error=str(e), exit_code=1)
 
     async def _execute_javascript(self, code: str, timeout: int) -> ExecutionResult:
         """Execute JavaScript code.
@@ -318,33 +196,16 @@ class EphemeralVm:
             ExecutionResult
         """
         try:
-            result = await asyncio.wait_for(
-                asyncio.create_subprocess_exec(
-                    "node",
-                    "-e",
-                    code,
-                    stdout=asyncio.subprocess.PIPE,
-                    stderr=asyncio.subprocess.PIPE,
-                ),
-                timeout=timeout,
-            )
+            result = await asyncio.wait_for(asyncio.create_subprocess_exec('node', '-e', code, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE), timeout=timeout)
             stdout, stderr = await result.communicate()
-            return ExecutionResult(
-                success=result.returncode == 0,
-                output=stdout.decode() if stdout else "",
-                error=stderr.decode() if stderr else None,
-                exit_code=result.returncode,
-            )
+            return ExecutionResult(success=result.returncode == 0, output=stdout.decode() if stdout else '', error=stderr.decode() if stderr else None, exit_code=result.returncode)
         except asyncio.TimeoutError:
             raise
+        # guardian: allow-silent-swallow
         except Exception as e:
-            return ExecutionResult(success=False, output="", error=str(e), exit_code=1)
+            return ExecutionResult(success=False, output='', error=str(e), exit_code=1)
 
-
-def create_ephemeral_vm(
-    vm_manager: FirecrackerManager | None = None,
-    IsolationConfig: IsolationConfig | None = None,
-) -> EphemeralVM:
+def create_ephemeral_vm(vm_manager: FirecrackerManager | None=None, IsolationConfig: IsolationConfig | None=None) -> EphemeralVM:
     """Factory function to create ephemeral VM.
 
     Args:

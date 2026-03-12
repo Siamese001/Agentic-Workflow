@@ -6,25 +6,12 @@ Aborts execution if an undeclared write is attempted.
 
 Lives in L2 (execution enforcement) per gravity rules.
 """
-
 from __future__ import annotations
-
 from dataclasses import dataclass, field
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 class WriteSetViolation(RuntimeError):
     """Raised when an undeclared write is attempted."""
-
 
 @dataclass
 class WriteSetEnforcer:
@@ -38,7 +25,6 @@ class WriteSetEnforcer:
         enforcer.record_write("key_a")   # ok
         enforcer.record_write("key_c")   # raises
     """
-
     declared_write_set: frozenset[str]
     _actual_writes: set[str] = field(default_factory=set, init=False, repr=False)
     _aborted: bool = field(default=False, init=False, repr=False)
@@ -50,12 +36,10 @@ class WriteSetEnforcer:
         declared write set.
         """
         if self._aborted:
-            raise WriteSetViolation("Execution aborted due to prior write-set violation.")
+            raise WriteSetViolation('Execution aborted due to prior write-set violation.')
         if key not in self.declared_write_set:
             self._aborted = True
-            raise WriteSetViolation(
-                f"Undeclared write to '{key}'. Declared set: {sorted(self.declared_write_set)}"
-            )
+            raise WriteSetViolation(f"Undeclared write to '{key}'. Declared set: {sorted(self.declared_write_set)}")
         self._actual_writes.add(key)
 
     @property

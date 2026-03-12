@@ -7,25 +7,10 @@ class under the old name to preserve 89+ existing import sites.
 
 Canonical location: agentic_core.mixins.mcp_operation_mixin.MCPOperationMixin
 """
-
 from agentic_core.mixins.mcp_operation_mixin import MCPOperationMixin
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 class MCPHardenedMixin(MCPOperationMixin):
     """Backwards-compat alias. Use MCPOperationMixin directly for new code."""
-
     pass
-
-
-# snake_case alias used by some import sites
 mcp_hardened_mixin = MCPHardenedMixin

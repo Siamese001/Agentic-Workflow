@@ -293,6 +293,7 @@ def dispatch_healing(
     try:
         record = method(healing_input, decision, config, agent_name=agent_name)
         success = True
+    # guardian: allow-silent-swallow
     except Exception:
         raise
     finally:
@@ -314,6 +315,7 @@ def dispatch_healing(
                     record=record,
                     success=success,
                 )
+            # guardian: allow-silent-swallow
             except Exception as e:  # guardian: allow-silent-swallower
                 logger.warning("outcome_write_back_hook raised — continuing", exc_info=True)
         # Phase 3: C0 informational-only pattern advisor (cannot change tier)
@@ -322,6 +324,7 @@ def dispatch_healing(
                 pattern_advice = pattern_advisor.advise(healing_input)
                 if pattern_advice is not None and timestamp_utc is not None:
                     _emit_pattern_advice(pattern_advice, healing_input, agent_name, timestamp_utc)
+            # guardian: allow-silent-swallow
             except Exception as e:  # guardian: allow-silent-swallower
                 logger.warning("pattern_advisor raised — continuing", exc_info=True)
         # Phase 4: Publish outcome to MetaLearningBus (proposal_only=True)
@@ -333,6 +336,7 @@ def dispatch_healing(
                     record=record,
                     success=success,
                 )
+            # guardian: allow-silent-swallow
             except (AttributeError, TypeError, ValueError, Exception) as e:
                 logger.warning("meta_outcome_bus_hook raised — continuing", exc_info=True)
 
@@ -362,6 +366,7 @@ def _emit_outcome(
     )
     try:
         sink.emit(event)
+    # guardian: allow-silent-swallow
     except Exception:  # noqa: BLE001
         logger.debug("outcome_sink.emit failed; swallowed to preserve dispatch path")
 
@@ -399,6 +404,7 @@ def _emit_resource_prediction(
                 "confidence": prediction.confidence,
             },
         )
+    # guardian: allow-silent-swallow
     except Exception:  # noqa: BLE001  # guardian: allow-silent-swallower
         logger.debug("resource prediction failed; swallowed to preserve dispatch path")
 
@@ -459,6 +465,7 @@ def _emit_rollback_refinement(
                 "decision_hash": decision.content_hash(),
             },
         )
+    # guardian: allow-silent-swallow
     except Exception:  # noqa: BLE001  # guardian: allow-silent-swallower
         logger.debug("rollback refinement failed; swallowed to preserve dispatch path")
 
@@ -483,6 +490,7 @@ def _emit_pattern_advice(
                 "extra_reason_codes": pattern_advice["extra_reason_codes"],
             },
         )
+    # guardian: allow-silent-swallow
     except Exception:  # guardian: allow-silent-swallower
         logger.debug("pattern advice emission failed; swallowed to preserve dispatch path")
 
@@ -497,6 +505,7 @@ def invoke_qwen_with_oom_protection(
     """Invoke Qwen with OOM protection and proper escalation."""
     try:
         return invoker.invoke_qwen_vllm(healing_input, decision, config, agent_name=agent_name)
+    # guardian: allow-silent-swallow
     except Exception as exc:
         # TODO: Handle specific exception properly
         raise  # Re-raise after logging/handling

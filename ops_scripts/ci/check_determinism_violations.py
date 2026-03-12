@@ -4,155 +4,84 @@ Scans L0-L5 non-mixin files for:
 - uuid.uuid4() usage (REQ-111)
 - datetime.now(), time.time(), time.sleep() usage (REQ-114)
 """
-
 from __future__ import annotations
-
 import ast
 import sys
 from pathlib import Path
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 REPO_ROOT = Path(__file__).resolve().parents[2]
-
-# Files to scan (L0-L5 core files, excluding mixins)
-SCAN_ROOTS = [
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-]
-
-# Exclude mixins and test files
-EXCLUDE_PATTERNS = [
-    "mixin.py",
-    "test_",
-    "_test.py",
-    "tests/",
-]
-
-# Forbidden patterns
-UUID4_PATTERNS = {
-    "uuid.uuid4",
-    "uuid4()",  # if imported directly
-}
-
-WALLCLOCK_PATTERNS = {
-    "time.time",
-    "time.sleep",
-    "datetime.now",
-    "datetime.utcnow",
-    "time.monotonic",  # also wall-clock dependent
-}
-
+SCAN_ROOTS = [L0_MAINTENANCE_DIR, L1_COGNITION_DIR, L2_EXECUTION_DIR, L3_ORCHESTRATION_DIR, L4_STATE_DIR, L5_SAFETY_DIR]
+EXCLUDE_PATTERNS = ['mixin.py', 'test_', '_test.py', 'tests/']
+UUID4_PATTERNS = {'uuid.uuid4', 'uuid4()'}
+WALLCLOCK_PATTERNS = {'time.time', 'time.sleep', 'datetime.now', 'datetime.utcnow', 'time.monotonic'}
 
 def should_exclude_file(path: Path) -> bool:
     """Check if file should be excluded from scanning."""
     rel_path = path.relative_to(REPO_ROOT).as_posix()
-
     for pattern in EXCLUDE_PATTERNS:
         if pattern in rel_path:
             return True
     return False
-
 
 def check_uuid4_usage(tree: ast.AST, file_path: str) -> list[str]:
     """Check for uuid4 usage in AST."""
     violations = []
 
     class Uuid4Visitor(ast.NodeVisitor):
+
         def visit_Call(self, node: ast.Call) -> None:
-            # Check for uuid.uuid4()
             if isinstance(node.func, ast.Attribute):
-                if (
-                    isinstance(node.func.value, ast.Name)
-                    and node.func.value.id == "uuid"
-                    and node.func.attr == "uuid4"
-                ):
-                    violations.append(f"{file_path}:{node.lineno}: uuid.uuid4() call")
-
-            # Check for direct uuid4() if imported
-            elif isinstance(node.func, ast.Name) and node.func.id == "uuid4":
-                violations.append(f"{file_path}:{node.lineno}: uuid4() call")
-
+                if isinstance(node.func.value, ast.Name) and node.func.value.id == 'uuid' and (node.func.attr == 'uuid4'):
+                    violations.append(f'{file_path}:{node.lineno}: uuid.uuid4() call')
+            elif isinstance(node.func, ast.Name) and node.func.id == 'uuid4':
+                violations.append(f'{file_path}:{node.lineno}: uuid4() call')
             self.generic_visit(node)
-
     Uuid4Visitor().visit(tree)
     return violations
-
 
 def check_wallclock_usage(tree: ast.AST, file_path: str) -> list[str]:
     """Check for wall-clock usage in AST."""
     violations = []
 
     class WallclockVisitor(ast.NodeVisitor):
+
         def visit_Call(self, node: ast.Call) -> None:
-            # Check for time.time(), time.sleep(), datetime.now(), etc.
             if isinstance(node.func, ast.Attribute):
                 if isinstance(node.func.value, ast.Name):
                     obj_name = node.func.value.id
                     func_name = node.func.attr
-
-                    # Check time module functions
-                    if obj_name == "time" and func_name in {"time", "sleep", "monotonic"}:
-                        violations.append(f"{file_path}:{node.lineno}: time.{func_name}() call")
-
-                    # Check datetime functions
-                    elif obj_name == "datetime" and func_name in {"now", "utcnow"}:
-                        violations.append(f"{file_path}:{node.lineno}: datetime.{func_name}() call")
-
+                    if obj_name == 'time' and func_name in {'time', 'sleep', 'monotonic'}:
+                        violations.append(f'{file_path}:{node.lineno}: time.{func_name}() call')
+                    elif obj_name == 'datetime' and func_name in {'now', 'utcnow'}:
+                        violations.append(f'{file_path}:{node.lineno}: datetime.{func_name}() call')
             self.generic_visit(node)
-
     WallclockVisitor().visit(tree)
     return violations
-
 
 def main() -> int:
     """Main entry point."""
     violations: list[str] = []
-
     for root in SCAN_ROOTS:
         root_path = REPO_ROOT / root
         if not root_path.exists():
             continue
-
-        for py_file in root_path.rglob("*.py"):
+        for py_file in root_path.rglob('*.py'):
             if should_exclude_file(py_file):
                 continue
-
             try:
-                content = py_file.read_text(encoding="utf-8", errors="replace")
+                content = py_file.read_text(encoding='utf-8', errors='replace')
                 tree = ast.parse(content)
             except SyntaxError:
                 continue
-
             rel_path = py_file.relative_to(REPO_ROOT).as_posix()
-
-            # Check for uuid4 usage
             violations.extend(check_uuid4_usage(tree, rel_path))
-
-            # Check for wall-clock usage
             violations.extend(check_wallclock_usage(tree, rel_path))
-
     if violations:
-        print(f"FAIL: {len(violations)} determinism violation(s) found:")
+        print(f'FAIL: {len(violations)} determinism violation(s) found:')
         for violation in violations:
-            print(f"  {violation}")
+            print(f'  {violation}')
         return 1
-
-    print("OK: no determinism violations found")
+    print('OK: no determinism violations found')
     return 0
-
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     sys.exit(main())

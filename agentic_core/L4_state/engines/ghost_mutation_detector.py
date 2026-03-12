@@ -1,20 +1,7 @@
 from __future__ import annotations
-
 from typing import Any, NamedTuple
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-# Placeholder for a more complex execution transcript object
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 ExecutionTranscript = list[dict[str, Any]]
-
 
 class GhostMutationViolation(Exception):
     """Raised when a state mutation is detected that was not recorded in the transcript."""
@@ -22,39 +9,31 @@ class GhostMutationViolation(Exception):
     def __init__(self, message: str, diff: list[str]):
         self.message = message
         self.diff = diff
-        super().__init__(f"{message} Diff: {diff}")
-
+        super().__init__(f'{message} Diff: {diff}')
 
 class ReconciliationResult(NamedTuple):
     """The result of a state reconciliation operation."""
-
     is_consistent: bool
     violation: GhostMutationViolation | None = None
 
-
-def _deep_diff(before: Any, after: Any, path: str = "") -> list[str]:
+def _deep_diff(before: Any, after: Any, path: str='') -> list[str]:
     """Recursively diffs two dictionaries and returns a list of differences."""
     diffs = []
     if isinstance(before, dict) and isinstance(after, dict):
         all_keys = set(before.keys()) | set(after.keys())
         for key in sorted(all_keys):
-            new_path = f"{path}.{key}" if path else key
+            new_path = f'{path}.{key}' if path else key
             if key not in before:
-                diffs.append(f"Key added: {new_path}")
+                diffs.append(f'Key added: {new_path}')
             elif key not in after:
-                diffs.append(f"Key removed: {new_path}")
+                diffs.append(f'Key removed: {new_path}')
             elif before[key] != after[key]:
                 diffs.extend(_deep_diff(before[key], after[key], new_path))
     elif before != after:
         diffs.append(f"Value changed at {path}: from '{before}' to '{after}'")
     return diffs
 
-
-def detect_ghost_mutations(
-    state_before: dict[str, Any],
-    state_after: dict[str, Any],
-    transcript: ExecutionTranscript,
-) -> ReconciliationResult:
+def detect_ghost_mutations(state_before: dict[str, Any], state_after: dict[str, Any], transcript: ExecutionTranscript) -> ReconciliationResult:
     """
     Detects hidden state mutations by comparing before/after snapshots against a transcript.
 
@@ -70,25 +49,15 @@ def detect_ghost_mutations(
     Returns:
         A ReconciliationResult indicating if the state is consistent.
     """
-    # 1. Reconstruct the expected state from the 'before' state and the transcript.
-    #    This is a simplified simulation. A real system would need to apply the
-    #    operations in the transcript to the 'state_before' in a deterministic way.
     expected_state_after = state_before.copy()
     for mutation in transcript:
-        if mutation.get("operation") == "set_value":
-            key = mutation.get("key")
-            value = mutation.get("value")
+        if mutation.get('operation') == 'set_value':
+            key = mutation.get('key')
+            value = mutation.get('value')
             if key:
                 expected_state_after[key] = value
-
-    # 2. Perform a deep diff between the actual state and the expected state.
     diff = _deep_diff(expected_state_after, state_after)
-
     if diff:
-        violation = GhostMutationViolation(
-            "Ghost mutation detected: State changed in ways not recorded in the transcript.",
-            diff=diff,
-        )
+        violation = GhostMutationViolation('Ghost mutation detected: State changed in ways not recorded in the transcript.', diff=diff)
         return ReconciliationResult(is_consistent=False, violation=violation)
-
     return ReconciliationResult(is_consistent=True)

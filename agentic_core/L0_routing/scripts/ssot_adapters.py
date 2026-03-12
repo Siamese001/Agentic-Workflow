@@ -12,73 +12,43 @@ Rules enforced here:
 - ArchGovAdapter stores _plan between execute and heal subphases; it is reset
   to None after heal completes to prevent state leakage across pipeline runs.
 """
-
 from __future__ import annotations
-
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 if TYPE_CHECKING:
     from agentic_core.L2_execution.protocol import SubphaseResult
 
-# ---------------------------------------------------------------------------
-# Helper: convert arbitrary agent return value to SubphaseResult
-# ---------------------------------------------------------------------------
-
-
-def _to_result(raw: Any, *, fixed: list[dict] | None = None) -> SubphaseResult:
+def _to_result(raw: Any, *, fixed: list[dict] | None=None) -> SubphaseResult:
     """Normalise an agent return dict into SubphaseResult.
 
     Agents return a variety of dict shapes. We extract violations where
     possible; anything else maps to an empty-violations clean result.
     """
-    from agentic_core.L2_execution.protocol import SubphaseResult  # noqa: PLC0415
+    from agentic_core.L2_execution.protocol import SubphaseResult
     if isinstance(raw, SubphaseResult):
         return raw
-
     violations: list[dict] = []
     mutations: list[dict] = []
-
     if isinstance(raw, dict):
-        # Common violation keys used across agents
-        for key in ("violations", "violations_found", "issues", "errors"):
+        for key in ('violations', 'violations_found', 'issues', 'errors'):
             val = raw.get(key)
             if isinstance(val, list):
-                violations = [v if isinstance(v, dict) else {"raw": v} for v in val]
+                violations = [v if isinstance(v, dict) else {'raw': v} for v in val]
                 break
-        # Mutation tracking
-        for key in ("fixed", "actions_taken", "healed", "changes"):
+        for key in ('fixed', 'actions_taken', 'healed', 'changes'):
             val = raw.get(key)
             if isinstance(val, list):
-                mutations = [v if isinstance(v, dict) else {"raw": v} for v in val]
+                mutations = [v if isinstance(v, dict) else {'raw': v} for v in val]
                 break
-
     if fixed is not None:
         mutations = fixed
-
     return SubphaseResult(violations=violations, fixed=mutations)
-
 
 def _noop() -> SubphaseResult:
     """Return a clean no-op result (for agents that don't support a subphase)."""
-    from agentic_core.L2_execution.protocol import SubphaseResult  # noqa: PLC0415
+    from agentic_core.L2_execution.protocol import SubphaseResult
     return SubphaseResult()
-
-
-# ---------------------------------------------------------------------------
-# 1. ReconcilerAdapter  (FilesystemSSOTReconcilerAgent)
-# ---------------------------------------------------------------------------
-
 
 class ReconcilerAdapter:
     """Adapter for FilesystemSSOTReconcilerAgent (roster key: 'reconciler')."""
@@ -93,24 +63,18 @@ class ReconcilerAdapter:
     def validate(self, territory: str, ctx: Any) -> SubphaseResult:
         ok, raw = self._agent.run_ci_verification_sync()
         result = _to_result(raw)
-        if not ok and not result.violations:
-            result.violations = [{"type": "ci_verification_failed", "detail": str(raw)}]
+        if not ok and (not result.violations):
+            result.violations = [{'type': 'ci_verification_failed', 'detail': str(raw)}]
         return result
 
     def execute(self, territory: str, ctx: Any) -> SubphaseResult:
-        dry_run = not getattr(ctx, "heal", False)
+        dry_run = not getattr(ctx, 'heal', False)
         raw = self._agent.heal_repository(dry_run=dry_run)
         return _to_result(raw)
 
     def heal(self, territory: str, ctx: Any) -> SubphaseResult:
         raw = self._agent.heal_repository(dry_run=False, execute=True)
         return _to_result(raw)
-
-
-# ---------------------------------------------------------------------------
-# 2. LocationAdapter  (LocationAgent → LocationHealerAgent)
-# ---------------------------------------------------------------------------
-
 
 class LocationAdapter:
     """Adapter for LocationAgent (roster key: 'location')."""
@@ -126,24 +90,18 @@ class LocationAdapter:
         return result
 
     def validate(self, territory: str, ctx: Any) -> SubphaseResult:
-        from agentic_core.L2_execution.protocol import SubphaseResult  # noqa: PLC0415
+        from agentic_core.L2_execution.protocol import SubphaseResult
         return SubphaseResult(violations=list(self._scan_violations))
 
     def execute(self, territory: str, ctx: Any) -> SubphaseResult:
-        auto_approve = getattr(ctx, "auto_approve", True)
+        auto_approve = getattr(ctx, 'auto_approve', True)
         raw = self._agent.heal_violations(self._scan_violations, auto_approve=auto_approve)
         return _to_result(raw)
 
     def heal(self, territory: str, ctx: Any) -> SubphaseResult:
-        auto_approve = getattr(ctx, "auto_approve", True)
+        auto_approve = getattr(ctx, 'auto_approve', True)
         raw = self._agent.heal_violations(self._scan_violations, auto_approve=auto_approve)
         return _to_result(raw)
-
-
-# ---------------------------------------------------------------------------
-# 3. FileClassAdapter  (FileClassificationAgent)
-# ---------------------------------------------------------------------------
-
 
 class FileClassAdapter:
     """Adapter for FileClassificationAgent (roster key: 'file_classification')."""
@@ -160,19 +118,13 @@ class FileClassAdapter:
         return _to_result(raw)
 
     def execute(self, territory: str, ctx: Any) -> SubphaseResult:
-        dry_run = not getattr(ctx, "heal", False)
+        dry_run = not getattr(ctx, 'heal', False)
         raw = self._agent.heal_repository(dry_run=dry_run)
         return _to_result(raw)
 
     def heal(self, territory: str, ctx: Any) -> SubphaseResult:
         raw = self._agent.heal_repository(dry_run=False, execute=True)
         return _to_result(raw)
-
-
-# ---------------------------------------------------------------------------
-# 4. HierarchyAdapter  (HierarchyAgent)
-# ---------------------------------------------------------------------------
-
 
 class HierarchyAdapter:
     """Adapter for HierarchyAgent (roster key: 'hierarchy')."""
@@ -189,25 +141,13 @@ class HierarchyAdapter:
         return _to_result(raw)
 
     def execute(self, territory: str, ctx: Any) -> SubphaseResult:
-        dry_run = not getattr(ctx, "heal", False)
-        raw = self._agent.heal_hierarchy(
-            dry_run=dry_run,
-            target_territory=territory,
-        )
+        dry_run = not getattr(ctx, 'heal', False)
+        raw = self._agent.heal_hierarchy(dry_run=dry_run, target_territory=territory)
         return _to_result(raw)
 
     def heal(self, territory: str, ctx: Any) -> SubphaseResult:
-        raw = self._agent.heal_hierarchy(
-            dry_run=False,
-            target_territory=territory,
-        )
+        raw = self._agent.heal_hierarchy(dry_run=False, target_territory=territory)
         return _to_result(raw)
-
-
-# ---------------------------------------------------------------------------
-# 5. ArchGovAdapter  (ArchitectureGovernorAgent)
-# ---------------------------------------------------------------------------
-
 
 class ArchGovAdapter:
     """Adapter for ArchitectureGovernorAgent (roster key: 'arch_governor').
@@ -228,30 +168,21 @@ class ArchGovAdapter:
         return _to_result(raw)
 
     def validate(self, territory: str, ctx: Any) -> SubphaseResult:
-        raw = self._agent.comprehensive_territory_audit(
-            target_territories=[territory],
-            check_layer_boundaries=True,
-        )
+        raw = self._agent.comprehensive_territory_audit(target_territories=[territory], check_layer_boundaries=True)
         self._audit_report = raw if isinstance(raw, dict) else {}
         return _to_result(raw)
 
     def execute(self, territory: str, ctx: Any) -> SubphaseResult:
         report = self._audit_report or {}
         self._plan = self._agent.generate_healing_plan(report)
-        dry_run = not getattr(ctx, "heal", False)
+        dry_run = not getattr(ctx, 'heal', False)
         raw = self._agent.heal_repository(dry_run=dry_run)
         return _to_result(raw)
 
     def heal(self, territory: str, ctx: Any) -> SubphaseResult:
         raw = self._agent.heal_repository(dry_run=False, execute=True)
-        self._plan = None  # reset after consumption
+        self._plan = None
         return _to_result(raw)
-
-
-# ---------------------------------------------------------------------------
-# 6. GravityAdapter  (GravityLeakRepairAgent)
-# ---------------------------------------------------------------------------
-
 
 class GravityAdapter:
     """Adapter for GravityLeakRepairAgent (roster key: 'gravity_repair')."""
@@ -268,19 +199,13 @@ class GravityAdapter:
         return _to_result(raw)
 
     def execute(self, territory: str, ctx: Any) -> SubphaseResult:
-        dry_run = not getattr(ctx, "heal", False)
+        dry_run = not getattr(ctx, 'heal', False)
         raw = self._agent.heal_repository(dry_run=dry_run)
         return _to_result(raw)
 
     def heal(self, territory: str, ctx: Any) -> SubphaseResult:
         raw = self._agent.heal_repository(dry_run=False, execute=True)
         return _to_result(raw)
-
-
-# ---------------------------------------------------------------------------
-# 7. SysArchAdapter  (SystemArchitectAgent)
-# ---------------------------------------------------------------------------
-
 
 class SysArchAdapter:
     """Adapter for SystemArchitectAgent (roster key: 'system_architect').
@@ -293,11 +218,11 @@ class SysArchAdapter:
         self._agent = agent
 
     def pre_commit(self, territory: str, ctx: Any) -> SubphaseResult:
-        raw = self._agent.validate_core_architecture(f"agentic_core/{territory}")
+        raw = self._agent.validate_core_architecture(f'agentic_core/{territory}')
         return _to_result(raw)
 
     def validate(self, territory: str, ctx: Any) -> SubphaseResult:
-        raw = self._agent.validate_core_architecture(f"agentic_core/{territory}")
+        raw = self._agent.validate_core_architecture(f'agentic_core/{territory}')
         return _to_result(raw)
 
     def execute(self, territory: str, ctx: Any) -> SubphaseResult:
@@ -305,12 +230,6 @@ class SysArchAdapter:
 
     def heal(self, territory: str, ctx: Any) -> SubphaseResult:
         return _noop()
-
-
-# ---------------------------------------------------------------------------
-# 8. ObsProbeAdapter  (ObservabilityProbeExecutorAgent, roster key: 'observability_probe')
-# ---------------------------------------------------------------------------
-
 
 class ObsProbeAdapter:
     """Adapter for ObservabilityProbeExecutorAgent (roster key: 'observability_probe').
@@ -335,12 +254,6 @@ class ObsProbeAdapter:
     def heal(self, territory: str, ctx: Any) -> SubphaseResult:
         return _noop()
 
-
-# ---------------------------------------------------------------------------
-# 9. RootHygieneAdapter  (RootHygieneAgent)
-# ---------------------------------------------------------------------------
-
-
 class RootHygieneAdapter:
     """Adapter for RootHygieneAgent (roster key: 'root_hygiene').
 
@@ -360,37 +273,16 @@ class RootHygieneAdapter:
         return _to_result(raw)
 
     def execute(self, territory: str, ctx: Any) -> SubphaseResult:
-        dry_run = not getattr(ctx, "heal", False)
+        dry_run = not getattr(ctx, 'heal', False)
         raw = self._agent.heal_repository(dry_run=dry_run)
         return _to_result(raw)
 
     def heal(self, territory: str, ctx: Any) -> SubphaseResult:
         raw = self._agent.heal_repository(dry_run=False, execute=True)
         return _to_result(raw)
+ADAPTER_REGISTRY: dict[str, type] = {'reconciler': ReconcilerAdapter, 'location': LocationAdapter, 'file_classification': FileClassAdapter, 'hierarchy': HierarchyAdapter, 'arch_governor': ArchGovAdapter, 'gravity_repair': GravityAdapter, 'system_architect': SysArchAdapter, 'observability_probe': ObsProbeAdapter, 'root_hygiene': RootHygieneAdapter}
 
-
-# ---------------------------------------------------------------------------
-# Factory: build adapter registry from agents dict
-# ---------------------------------------------------------------------------
-
-#: Maps roster key -> adapter class
-ADAPTER_REGISTRY: dict[str, type] = {
-    "reconciler": ReconcilerAdapter,
-    "location": LocationAdapter,
-    "file_classification": FileClassAdapter,
-    "hierarchy": HierarchyAdapter,
-    "arch_governor": ArchGovAdapter,
-    "gravity_repair": GravityAdapter,
-    "system_architect": SysArchAdapter,
-    "observability_probe": ObsProbeAdapter,
-    "root_hygiene": RootHygieneAdapter,
-}
-
-
-def build_adapters(
-    agents: dict[str, Any],
-    project_root: Path,
-) -> dict[str, Any]:
+def build_adapters(agents: dict[str, Any], project_root: Path) -> dict[str, Any]:
     """Instantiate agents and wrap each in the appropriate adapter.
 
     Args:
@@ -402,10 +294,7 @@ def build_adapters(
     """
     adapters: dict[str, Any] = {}
     for key, adapter_cls in ADAPTER_REGISTRY.items():
-        # Support both old key 'conversational_repair' and new 'observability_probe'
-        agent_cls = agents.get(key) or agents.get(
-            "conversational_repair" if key == "observability_probe" else key
-        )
+        agent_cls = agents.get(key) or agents.get('conversational_repair' if key == 'observability_probe' else key)
         if agent_cls is None:
             continue
         try:
@@ -413,7 +302,8 @@ def build_adapters(
         except TypeError:
             try:
                 agent_instance = agent_cls()
-            except Exception:  # guardian: allow-silent-swallower
+            # guardian: allow-silent-swallow
+            except Exception:
                 continue
         adapters[key] = adapter_cls(agent_instance)
     return adapters

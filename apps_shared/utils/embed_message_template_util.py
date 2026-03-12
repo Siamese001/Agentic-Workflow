@@ -1,40 +1,18 @@
 import logging
 from typing import Any
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-"""Brief description of functionality and purpose."""
-
-"""Brief description of functionality and purpose."""
-
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+'Brief description of functionality and purpose.'
+'Brief description of functionality and purpose.'
 _logger = logging.getLogger(__name__)
-# Ownership: apps_lic / L1_cognition
-# -*- coding: utf-8 -*-
-"""Embed Message Template - atomic implementation."""
+'Embed Message Template - atomic implementation.'
 
-
-# [SSOT IMPORT] Structure blueprint is the single source of truth
-
-
-# NAMING FIXED: EmbedMessageTemplate → EmbedMessageTemplate
 class EmbedMessageTemplate:
     """EmbedMessageTemplate implementation."""
-
 
 def __init__(self: Any) -> None:
     """Initialize the component with default configuration."""
     self.data: dict[str, object] = {}
 
-
 def process(self: Any, data: dict[str, object]) -> dict[str, object]:
     """Process input data through the transformation pipeline."""
-    return {"status": "processed", "input_keys": list(data.keys())}
+    return {'status': 'processed', 'input_keys': list(data.keys())}

@@ -1,23 +1,7 @@
 import logging
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-"""Brief description of functionality and purpose."""
-
-
-Logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
-
-
-# from archives.legacy_root_folders.runtime.runtime_utils import Ranking  # DEPRECATED: Archive i...
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+'Brief description of functionality and purpose.'
+Logger = logging.getLogger(__name__)
 
 def bm25(items: list[dict[str, object]]) -> list[dict[str, object]]:
     """
@@ -26,11 +10,8 @@ def bm25(items: list[dict[str, object]]) -> list[dict[str, object]]:
     Delegates scoring to runtime_utils.Ranking.bm25_rank.
     """
 
-    # Assuming _Ranking is defined elsewhere or needs to be imported.
-    # For the purpose of syntax correction, we'll assume it exists.
-    # If it's meant to be an internal helper, it might need to be defined.
-    # As a placeholder to make the code runnable for syntax check:
     class _Ranking:
+
         @staticmethod
         def bm25_rank(items):
             return items
@@ -42,9 +23,7 @@ def bm25(items: list[dict[str, object]]) -> list[dict[str, object]]:
         @staticmethod
         def hybrid_rank(items):
             return items
-
     return _Ranking.bm25_rank(items)
-
 
 def dense(items: list[dict[str, object]]) -> list[dict[str, object]]:
     """
@@ -52,6 +31,7 @@ def dense(items: list[dict[str, object]]) -> list[dict[str, object]]:
     """
 
     class _Ranking:
+
         @staticmethod
         def bm25_rank(items):
             return items
@@ -63,9 +43,7 @@ def dense(items: list[dict[str, object]]) -> list[dict[str, object]]:
         @staticmethod
         def hybrid_rank(items):
             return items
-
     return _Ranking.dense_rank(items)
-
 
 def hybrid(items: list[dict[str, object]]) -> list[dict[str, object]]:
     """
@@ -73,6 +51,7 @@ def hybrid(items: list[dict[str, object]]) -> list[dict[str, object]]:
     """
 
     class _Ranking:
+
         @staticmethod
         def bm25_rank(items):
             return items
@@ -84,14 +63,9 @@ def hybrid(items: list[dict[str, object]]) -> list[dict[str, object]]:
         @staticmethod
         def hybrid_rank(items):
             return items
-
     return _Ranking.hybrid_rank(items)
 
-
-def apply_strategy(
-    items: list[dict[str, object]],
-    STRATEGY: str = "hybrid",
-) -> list[dict[str, object]]:
+def apply_strategy(items: list[dict[str, object]], STRATEGY: str='hybrid') -> list[dict[str, object]]:
     """
     Apply a ranking strategy:
 
@@ -104,24 +78,19 @@ def apply_strategy(
 
     This function never mutates the caller’s list.
     """
-    s = (STRATEGY or "hybrid").lower().strip()
-
-    if s == "bm25":
+    s = (STRATEGY or 'hybrid').lower().strip()
+    if s == 'bm25':
         RANKED = bm25(items)
-    elif s == "dense":
+    elif s == 'dense':
         RANKED = dense(items)
     else:
         RANKED = hybrid(items)
-
-    # Assign integer rank (1-based)
     out: list[dict[str, object]] = []
     for idx, item in enumerate(RANKED):
         new_item = dict(item)
-        new_item["rank"] = idx + 1
+        new_item['rank'] = idx + 1
         out.append(new_item)
-
     return out
-
 
 def fuse_ranked_groups(groups: list[list[dict[str, object]]]) -> list[dict[str, object]]:
     """
@@ -138,32 +107,18 @@ def fuse_ranked_groups(groups: list[list[dict[str, object]]]) -> list[dict[str, 
     """
     flattened: list[dict[str, object]] = []
     SEEN: set[tuple[str, str]] = set()
-
     for group in groups or []:
         for item in group or []:
-            KEY = (str(item.get("query", "")), str(item.get("evidence", "")))
+            KEY = (str(item.get('query', '')), str(item.get('evidence', '')))
             if KEY not in SEEN:
                 SEEN.add(KEY)
                 flattened.append(dict(item))
-
-    flattened.sort(
-        key=lambda x: (
-            int(x.get("rank", 9_999_999)),
-            str(x.get("evidence", "")).lower(),
-        ),
-    )
-
-    # Reassign clean ranks
+    flattened.sort(key=lambda x: (int(x.get('rank', 9999999)), str(x.get('evidence', '')).lower()))
     for idx, item in enumerate(flattened):
-        item["rank"] = idx + 1  # Corrected variable name to 'item'
-
+        item['rank'] = idx + 1
     return flattened
 
-
-def rank_documents(
-    items: list[dict[str, object]],
-    STRATEGY: str = "hybrid",
-) -> list[dict[str, object]]:
+def rank_documents(items: list[dict[str, object]], STRATEGY: str='hybrid') -> list[dict[str, object]]:
     """
     Top-level ranking function used by RAGExecutor:
 
@@ -177,14 +132,6 @@ def rank_documents(
     """
     if not items:
         return []
-
     RANKED = apply_strategy(items, strategy=STRATEGY)
-
-    # Final stability sort
-    RANKED.sort(  # Corrected variable name to 'RANKED'
-        key=lambda x: (
-            int(x.get("rank", 9_999_999)),
-            x.get("evidence", ""),
-        ),
-    )
+    RANKED.sort(key=lambda x: (int(x.get('rank', 9999999)), x.get('evidence', '')))
     return RANKED

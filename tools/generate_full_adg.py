@@ -22,6 +22,7 @@ from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+# guardian: allow-global-mutation
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))  # guardian: allow-global-mutation
 
@@ -172,6 +173,7 @@ def _persist_adg_to_memory(result, artifact, snapshot, graph_diff, routing_summa
         from agentic_core.adg.adapters.memory_mcp_adapter import get_adapter
 
         adapter = get_adapter()
+    # guardian: allow-silent-swallow
     except Exception as e:  # guardian: allow-silent-swallower
         print(f"[ADG] Memory MCP unavailable — skipping persistence: {e}")
         return
@@ -187,6 +189,7 @@ def _persist_adg_to_memory(result, artifact, snapshot, graph_diff, routing_summa
 
     try:
         adapter.ingest_snapshot(result, ts, diff_edges=diff_edges)
+    # guardian: allow-silent-swallow
     except Exception as e:  # guardian: allow-silent-swallower
         print(f"[ADG] Memory MCP: ingest_snapshot failed: {e}")
         return

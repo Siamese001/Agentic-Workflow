@@ -11,46 +11,11 @@ Extracted from:
 
 All implementations were identical - this consolidates them.
 """
-
 from __future__ import annotations
-
 from pathlib import Path
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-# Layer hierarchy - lower index = higher authority (can be imported by higher layers)
-# L0 is the "lowest" layer and can only import from itself
-# L6 is the "highest" layer and can import from all lower layers
-LAYER_ORDER: dict[str, int] = {
-    "L0": 0,
-    "L1": 1,
-    "L2": 2,
-    "L3": 3,
-    "L4": 4,
-    "L5": 5,
-    "L6": 6,
-}
-
-# Gravity rules: L(N) can only import from L(0..N)
-# This prevents "upward imports" where lower layers depend on higher layers
-GRAVITY_RULES: dict[str, set[str]] = {
-    "L0": {"L0"},
-    "L1": {"L0", "L1"},
-    "L2": {"L0", "L1", "L2"},
-    "L3": {"L0", "L1", "L2", "L3"},
-    "L4": {"L0", "L1", "L2", "L3", "L4"},
-    "L5": {"L0", "L1", "L2", "L3", "L4", "L5"},
-    "L6": {"L0", "L1", "L2", "L3", "L4", "L5", "L6"},
-}
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+LAYER_ORDER: dict[str, int] = {'L0': 0, 'L1': 1, 'L2': 2, 'L3': 3, 'L4': 4, 'L5': 5, 'L6': 6}
+GRAVITY_RULES: dict[str, set[str]] = {'L0': {'L0'}, 'L1': {'L0', 'L1'}, 'L2': {'L0', 'L1', 'L2'}, 'L3': {'L0', 'L1', 'L2', 'L3'}, 'L4': {'L0', 'L1', 'L2', 'L3', 'L4'}, 'L5': {'L0', 'L1', 'L2', 'L3', 'L4', 'L5'}, 'L6': {'L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'L6'}}
 
 def extract_layer_from_path(path: Path | str) -> str | None:
     """
@@ -70,10 +35,9 @@ def extract_layer_from_path(path: Path | str) -> str | None:
     """
     path_str = str(path)
     for layer in LAYER_ORDER.keys():
-        if f"/{layer}_" in path_str or f"\\{layer}_" in path_str:
+        if f'/{layer}_' in path_str or f'\\{layer}_' in path_str:
             return layer
     return None
-
 
 def extract_layer_from_module(module: str) -> str | None:
     """
@@ -92,10 +56,9 @@ def extract_layer_from_module(module: str) -> str | None:
         None
     """
     for layer in LAYER_ORDER.keys():
-        if f".{layer}_" in module or module.startswith(f"{layer}_") or f"_{layer}_" in module:
+        if f'.{layer}_' in module or module.startswith(f'{layer}_') or f'_{layer}_' in module:
             return layer
     return None
-
 
 def is_gravity_violation(source_layer: str, target_layer: str) -> bool:
     """
@@ -121,7 +84,6 @@ def is_gravity_violation(source_layer: str, target_layer: str) -> bool:
     allowed = GRAVITY_RULES.get(source_layer, set())
     return target_layer not in allowed
 
-
 def get_allowed_layers(source_layer: str) -> set[str]:
     """
     Get the set of layers that a source layer is allowed to import from.
@@ -137,7 +99,6 @@ def get_allowed_layers(source_layer: str) -> set[str]:
         {'L0', 'L1', 'L2', 'L3'}
     """
     return GRAVITY_RULES.get(source_layer, set())
-
 
 def get_layer_order(layer: str) -> int:
     """

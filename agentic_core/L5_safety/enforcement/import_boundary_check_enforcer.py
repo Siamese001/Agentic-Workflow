@@ -10,37 +10,18 @@ Uses AST parsing — no regex.
 import ast
 from pathlib import Path
 from typing import List
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 _AGENTIC_CORE_ROOT = Path(__file__).parent.parent
-
-FORBIDDEN_IMPORT_PREFIXES = frozenset(
-    {
-        APPS_LIC_DIR,
-        APPS_RG_DIR,
-        APPS_SHARED_DIR,
-    }
-)
-
+FORBIDDEN_IMPORT_PREFIXES = frozenset({APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR})
 
 class _ImportBoundaryVisitor(ast.NodeVisitor):
+
     def __init__(self) -> None:
         self.violations: List[str] = []
 
     def _check(self, module: str, lineno: int) -> None:
-        if any(module.startswith(p) for p in FORBIDDEN_IMPORT_PREFIXES):
-            self.violations.append(
-                f"Line {lineno}: Forbidden import '{module}'"
-            )
+        if any((module.startswith(p) for p in FORBIDDEN_IMPORT_PREFIXES)):
+            self.violations.append(f"Line {lineno}: Forbidden import '{module}'")
 
     def visit_Import(self, node: ast.Import) -> None:
         for alias in node.names:
@@ -52,17 +33,15 @@ class _ImportBoundaryVisitor(ast.NodeVisitor):
             self._check(node.module, node.lineno)
         self.generic_visit(node)
 
-
 def check_file_import_boundaries(file_path: Path) -> List[str]:
     """Return list of violation strings for a single file (empty = clean)."""
     try:
-        tree = ast.parse(file_path.read_text(encoding="utf-8"))
+        tree = ast.parse(file_path.read_text(encoding='utf-8'))
     except SyntaxError as exc:
-        return [f"SyntaxError: {exc}"]
+        return [f'SyntaxError: {exc}']
     visitor = _ImportBoundaryVisitor()
     visitor.visit(tree)
     return visitor.violations
-
 
 def check_agentic_core_boundaries() -> bool:
     """Check all agentic_core files for import boundary compliance.
@@ -70,25 +49,18 @@ def check_agentic_core_boundaries() -> bool:
     Prints violations and returns False if any found, True if clean.
     """
     all_violations: List[str] = []
-    for py_file in _AGENTIC_CORE_ROOT.rglob("*.py"):
+    for py_file in _AGENTIC_CORE_ROOT.rglob('*.py'):
         file_violations = check_file_import_boundaries(py_file)
         if file_violations:
             for v in file_violations:
-                all_violations.append(
-                    f"{py_file.relative_to(_AGENTIC_CORE_ROOT)}: {v}"
-                )
-
+                all_violations.append(f'{py_file.relative_to(_AGENTIC_CORE_ROOT)}: {v}')
     if all_violations:
-        print("agentic_core import boundary violations found:")
+        print('agentic_core import boundary violations found:')
         for v in all_violations:
-            print(f"  {v}")
+            print(f'  {v}')
         return False
-
-    print("OK: All agentic_core files comply with import boundaries")
+    print('OK: All agentic_core files comply with import boundaries')
     return True
-
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     import sys
-
     sys.exit(0 if check_agentic_core_boundaries() else 1)

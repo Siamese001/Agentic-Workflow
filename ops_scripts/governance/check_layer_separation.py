@@ -7,89 +7,50 @@ Validates that the Sovereign Root (Layer 0) does not import:
 
 This prevents the 'God Object' Anti-Pattern.
 """
-
 import ast
 import sys
 from pathlib import Path
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-# SSOT: The Root file that must remain pure
-TARGET_FILE = Path("agentic_core/base_agents/SovereignBaseAgent.py")
-
-# FORBIDDEN: Keywords that imply domain bleeding
-FORBIDDEN_IMPORTS = [
-    "CanonBaseAgent",
-    "SovereignObservabilityAgent",
-    "NamingAgent",
-    "StructuralEngineerAgent",
-    "agentic_core.canon",
-    "agentic_core.L6_observability",
-    "archives.void_violations",
-]
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+TARGET_FILE = Path('agentic_core/base_agents/SovereignBaseAgent.py')
+FORBIDDEN_IMPORTS = ['CanonBaseAgent', 'SovereignObservabilityAgent', 'NamingAgent', 'StructuralEngineerAgent', 'agentic_core.canon', 'agentic_core.L6_observability', 'archives.void_violations']
 
 def check_imports(file_path: Path) -> list[str]:
     if not file_path.exists():
-        return [f"CRITICAL: Target file {file_path} not found."]
-
+        return [f'CRITICAL: Target file {file_path} not found.']
     try:
-        tree = ast.parse(file_path.read_text(encoding="utf-8"))
+        tree = ast.parse(file_path.read_text(encoding='utf-8'))
     except SyntaxError as e:
-        return [f"Syntax Error in {file_path}: {e}"]
-
+        return [f'Syntax Error in {file_path}: {e}']
     violations = []
-
     for node in ast.walk(tree):
-        # Check 'import X'
         if isinstance(node, ast.Import):
             for alias in node.names:
                 for forbidden in FORBIDDEN_IMPORTS:
                     if forbidden in alias.name:
                         violations.append(f"Line {node.lineno}: Forbidden import '{alias.name}'")
-
-        # Check 'from X import Y'
         elif isinstance(node, ast.ImportFrom):
-            module = node.module or ""
+            module = node.module or ''
             for forbidden in FORBIDDEN_IMPORTS:
                 if forbidden in module:
                     violations.append(f"Line {node.lineno}: Forbidden import source '{module}'")
-
-            # Check the specific names being imported
             for alias in node.names:
                 for forbidden in FORBIDDEN_IMPORTS:
                     if forbidden in alias.name:
-                        violations.append(
-                            f"Line {node.lineno}: Forbidden import '{alias.name}' from '{module}'",
-                        )
-
+                        violations.append(f"Line {node.lineno}: Forbidden import '{alias.name}' from '{module}'")
     return violations
 
-
 def main():
-    print(f"Checking Layer Separation for: {TARGET_FILE}")
+    print(f'Checking Layer Separation for: {TARGET_FILE}')
     violations = check_imports(TARGET_FILE)
-
     if violations:
-        print("\n[!] ARCHITECTURE VIOLATION DETECTED")
-        print("    SovereignBaseAgent must NOT depend on downstream layers.")
-        print("-" * 50)
+        print('\n[!] ARCHITECTURE VIOLATION DETECTED')
+        print('    SovereignBaseAgent must NOT depend on downstream layers.')
+        print('-' * 50)
         for v in violations:
-            print(f"    - {v}")
-        print("-" * 50)
+            print(f'    - {v}')
+        print('-' * 50)
         sys.exit(1)
-
-    print("[OK] Layer Separation Verified. SovereignBaseAgent is pure.")
+    print('[OK] Layer Separation Verified. SovereignBaseAgent is pure.')
     sys.exit(0)
-
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

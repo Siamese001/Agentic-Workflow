@@ -1,18 +1,5 @@
-# from archives.legacy_root_folders.core.models.models import ReasoningMode  # DEPRECATED: Archive import removed to protect archives from validation edits
-
-
 from pydantic import BaseModel, Field
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 class LLMProfile(BaseModel):
     """LLM configuration profile used by execution profiles.
@@ -21,11 +8,7 @@ class LLMProfile(BaseModel):
     present in ExecutionProfileSpec: reasoning_mode, ModelTier,
     max_cost_usd, max_latency_ms.
     """
-
     reasoning_mode: ReasoningMode = ReasoningMode.COT
-    ModelTier: str = Field(
-        default="balanced",
-        description="Model tier hint, e.g. 'cheap', 'balanced', 'premium'.",
-    )
-    max_cost_usd: float = Field(default=0.10, ge=0.0)
+    ModelTier: str = Field(default='balanced', description="Model tier hint, e.g. 'cheap', 'balanced', 'premium'.")
+    max_cost_usd: float = Field(default=0.1, ge=0.0)
     max_latency_ms: int = Field(default=3000, ge=0)

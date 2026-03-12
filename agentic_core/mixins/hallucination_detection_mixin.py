@@ -9,24 +9,12 @@ References:
 - AST-based target validation
 - Epistemic Cascade prevention (Landmine #2)
 """
-
 import ast
 import logging
 from pathlib import Path
 from typing import Any
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 logger = logging.getLogger(__name__)
-
 
 class HallucinationDetectionMixin:
     """
@@ -41,15 +29,9 @@ class HallucinationDetectionMixin:
         class MyAgent(HallucinationDetectionMixin, SovereignBaseAgent):
             pass
     """
-
     _hallucination_cache: dict[str, bool] = {}
 
-    def verify_target_exists(
-        self,
-        file_path: Path,
-        target_type: str,
-        target_name: str,
-    ) -> bool:
+    def verify_target_exists(self, file_path: Path, target_type: str, target_name: str) -> bool:
         """
         Verify that a target node exists in the file.
 
@@ -62,48 +44,35 @@ class HallucinationDetectionMixin:
             True if target exists, False if hallucinated
         """
         if not file_path.exists():
-            logger.warning(f"Hallucination check: file does not exist: {file_path}")
+            logger.warning(f'Hallucination check: file does not exist: {file_path}')
             return False
-
-        cache_key = f"{file_path}:{target_type}:{target_name}"
+        cache_key = f'{file_path}:{target_type}:{target_name}'
         if cache_key in self._hallucination_cache:
             return self._hallucination_cache[cache_key]
-
         try:
-            content = file_path.read_text(encoding="utf-8")
+            content = file_path.read_text(encoding='utf-8')
             tree = ast.parse(content)
             result = self._find_target_in_ast(tree, target_type, target_name)
-
             self._hallucination_cache[cache_key] = result
             if not result:
-                logger.warning(
-                    f"Hallucination detected: {target_type} '{target_name}' not found in {file_path}",
-                )
+                logger.warning(f"Hallucination detected: {target_type} '{target_name}' not found in {file_path}")
             return result
-
         except (SyntaxError, UnicodeDecodeError) as e:
-            logger.warning(f"Cannot parse {file_path} for hallucination check: {e}")
+            logger.warning(f'Cannot parse {file_path} for hallucination check: {e}')
             return False
 
-    def _find_target_in_ast(
-        self,
-        tree: ast.AST,
-        target_type: str,
-        target_name: str,
-    ) -> bool:
+    def _find_target_in_ast(self, tree: ast.AST, target_type: str, target_name: str) -> bool:
         """Find target in AST based on type."""
         for node in ast.walk(tree):
-            if target_type == "function":
+            if target_type == 'function':
                 if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
                     if node.name == target_name:
                         return True
-
-            elif target_type == "class":
+            elif target_type == 'class':
                 if isinstance(node, ast.ClassDef):
                     if node.name == target_name:
                         return True
-
-            elif target_type == "import":
+            elif target_type == 'import':
                 if isinstance(node, ast.Import):
                     for alias in node.names:
                         if alias.name == target_name or (alias.asname and alias.asname == target_name):
@@ -112,13 +81,11 @@ class HallucinationDetectionMixin:
                     for alias in node.names:
                         if alias.name == target_name or (alias.asname and alias.asname == target_name):
                             return True
-
-            elif target_type == "variable":
+            elif target_type == 'variable':
                 if isinstance(node, ast.Assign):
                     for target in node.targets:
                         if isinstance(target, ast.Name) and target.id == target_name:
                             return True
-
         return False
 
     def clear_hallucination_cache(self) -> None:
@@ -127,7 +94,4 @@ class HallucinationDetectionMixin:
 
     def get_hallucination_stats(self) -> dict[str, Any]:
         """Get statistics about hallucination detection."""
-        return {
-            "cache_size": len(self._hallucination_cache),
-            "cached_targets": list(self._hallucination_cache.keys())[:10],
-        }
+        return {'cache_size': len(self._hallucination_cache), 'cached_targets': list(self._hallucination_cache.keys())[:10]}

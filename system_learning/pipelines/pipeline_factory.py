@@ -40,6 +40,7 @@ def build_pipeline_config(*, proposal_only: bool = True) -> Any:
     return PipelineConfig(
         engine_version="0.1.0",
         config_surface_version="0.1.0",
+        # guardian: allow-magic-config
         shadow_thresholds=ShadowThresholds(
             max_p95_latency_regression_pct=10.0,
             max_error_rate_regression_abs=0.05,
@@ -47,7 +48,9 @@ def build_pipeline_config(*, proposal_only: bool = True) -> Any:
             max_mem_regression_pct=15.0,
             forbid_any_safety_violation_increase=True,
         ),
+        # guardian: allow-magic-config
         cooldown_policy=CooldownPolicy(min_seconds_between_updates=3600),
+        # guardian: allow-magic-config
         sample_policy=SampleSizePolicy(min_observations=10),  # guardian: allow-magic-config
         oscillation_policy=OscillationPolicy(
             window=5,

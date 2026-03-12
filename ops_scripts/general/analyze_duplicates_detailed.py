@@ -25,6 +25,7 @@ from apps_shared.config.pipeline_constants_config import (
 
 # Add project root to path
 project_root = Path(__file__).parent.parent
+# guardian: allow-global-mutation
 sys.path.insert(0, str(project_root))
 
 

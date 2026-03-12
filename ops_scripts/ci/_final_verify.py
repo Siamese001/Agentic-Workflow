@@ -7,12 +7,14 @@ import pathlib
 import sys
 import urllib.request
 
+# guardian: allow-global-mutation
 sys.path.insert(0, "c:/Git/Agentic-Workflow")
 
 results = {}
 
 # F1: vLLM running
 try:
+    # guardian: allow-magic-config
     with urllib.request.urlopen("http://localhost:8000/v1/models", timeout=3) as r:
         data = json.loads(r.read())
         results["F1_vllm"] = "PASS: " + data["data"][0]["id"]

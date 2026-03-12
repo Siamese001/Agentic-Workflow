@@ -6,51 +6,25 @@ in-memory registry of chunk manifests and parent-child links.
 
 C0 RULE: Informational only. Does not authorize execution.
 """
-
 from __future__ import annotations
-
 from dataclasses import dataclass, field
 from typing import Any
-
 from agentic_core.evaluation.retrieval.completeness import GroundedDocument, IParentChildExpander
 from agentic_core.evaluation.retrieval.interfaces import Document
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-# ---------------------------------------------------------------------------
-# Registry Entry Types (mirror of L4 contracts — in-memory for L1 use)
-# ---------------------------------------------------------------------------
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 @dataclass(frozen=True)
 class ChunkEntry:
     """Minimal chunk metadata for parent-child expansion."""
-
     chunk_id: str
     parent_section_id: str
     sibling_ids: tuple[str, ...]
     content: str
     heading_path: tuple[str, ...]
-    source_doc_id: str = ""
+    source_doc_id: str = ''
 
     def to_dict(self) -> dict[str, Any]:
-        return {
-            "chunk_id": self.chunk_id,
-            "parent_section_id": self.parent_section_id,
-            "sibling_ids": list(self.sibling_ids),
-            "content": self.content,
-            "heading_path": list(self.heading_path),
-            "source_doc_id": self.source_doc_id,
-        }
-
+        return {'chunk_id': self.chunk_id, 'parent_section_id': self.parent_section_id, 'sibling_ids': list(self.sibling_ids), 'content': self.content, 'heading_path': list(self.heading_path), 'source_doc_id': self.source_doc_id}
 
 @dataclass
 class ParentChildRegistry:
@@ -59,11 +33,10 @@ class ParentChildRegistry:
     Populated at index build time from the ChunkManifestRegistry (L4D).
     Read-only at retrieval time.
     """
-
     _chunks: dict[str, ChunkEntry] = field(default_factory=dict)
     _parent_content: dict[str, str] = field(default_factory=dict)
 
-    def register_chunk(self, entry: ChunkEntry, parent_content: str = "") -> None:
+    def register_chunk(self, entry: ChunkEntry, parent_content: str='') -> None:
         """Register a chunk entry and its parent section content."""
         self._chunks[entry.chunk_id] = entry
         if entry.parent_section_id and parent_content:
@@ -73,19 +46,13 @@ class ParentChildRegistry:
         return self._chunks.get(chunk_id)
 
     def get_parent_content(self, parent_section_id: str) -> str:
-        return self._parent_content.get(parent_section_id, "")
+        return self._parent_content.get(parent_section_id, '')
 
     def chunk_count(self) -> int:
         return len(self._chunks)
 
     def parent_count(self) -> int:
         return len(self._parent_content)
-
-
-# ---------------------------------------------------------------------------
-# Concrete ParentChildExpander
-# ---------------------------------------------------------------------------
-
 
 class ParentChildExpander(IParentChildExpander):
     """Expands a child chunk to its parent section and neighbor siblings.
@@ -100,42 +67,14 @@ class ParentChildExpander(IParentChildExpander):
     def __init__(self, registry: ParentChildRegistry) -> None:
         self._registry = registry
 
-    def expand(
-        self,
-        child: Document,
-        neighbor_window: int = 1,
-    ) -> GroundedDocument:
+    def expand(self, child: Document, neighbor_window: int=1) -> GroundedDocument:
         """Expand child chunk to include parent section and sibling context."""
         entry = self._registry.get_chunk(child.doc_id)
-
         if entry is None:
-            return GroundedDocument(
-                doc_id=child.doc_id,
-                content=child.content,
-                score=child.score,
-                metadata=dict(child.metadata),
-                parent_section_id="",
-                parent_content="",
-                sibling_ids=[],
-                heading_path=[],
-                expanded=False,
-            )
-
+            return GroundedDocument(doc_id=child.doc_id, content=child.content, score=child.score, metadata=dict(child.metadata), parent_section_id='', parent_content='', sibling_ids=[], heading_path=[], expanded=False)
         parent_content = self._registry.get_parent_content(entry.parent_section_id)
-
         neighbor_ids = self._resolve_neighbors(entry, neighbor_window)
-
-        return GroundedDocument(
-            doc_id=child.doc_id,
-            content=child.content,
-            score=child.score,
-            metadata=dict(child.metadata),
-            parent_section_id=entry.parent_section_id,
-            parent_content=parent_content,
-            sibling_ids=neighbor_ids,
-            heading_path=list(entry.heading_path),
-            expanded=True,
-        )
+        return GroundedDocument(doc_id=child.doc_id, content=child.content, score=child.score, metadata=dict(child.metadata), parent_section_id=entry.parent_section_id, parent_content=parent_content, sibling_ids=neighbor_ids, heading_path=list(entry.heading_path), expanded=True)
 
     def get_parent_section_id(self, chunk_id: str) -> str | None:
         entry = self._registry.get_chunk(chunk_id)
@@ -149,10 +88,6 @@ class ParentChildExpander(IParentChildExpander):
             return []
         return list(entry.heading_path)
 
-    # ------------------------------------------------------------------
-    # Internal helpers
-    # ------------------------------------------------------------------
-
     def _resolve_neighbors(self, entry: ChunkEntry, window: int) -> list[str]:
         """Return neighbor chunk IDs within the sibling list, bounded by window."""
         siblings = list(entry.sibling_ids)
@@ -165,10 +100,4 @@ class ParentChildExpander(IParentChildExpander):
         lo = max(0, idx - window)
         hi = min(len(siblings), idx + window + 1)
         return [s for s in siblings[lo:hi] if s != entry.chunk_id]
-
-
-__all__ = [
-    "ChunkEntry",
-    "ParentChildRegistry",
-    "ParentChildExpander",
-]
+__all__ = ['ChunkEntry', 'ParentChildRegistry', 'ParentChildExpander']

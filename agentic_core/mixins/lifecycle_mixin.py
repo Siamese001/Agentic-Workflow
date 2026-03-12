@@ -1,70 +1,26 @@
 from __future__ import annotations
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-"""
-[PHASE 23] LifecycleMixin - Async Resource Management Protocol.
-
-Enforces async startup/shutdown protocols for proper resource management.
-Replaces logic often wrongly placed in __init__ that requires async operations.
-
-This is the foundation for the Lifecycle-Aware Component System, replacing
-the "Uber-Mixin" inheritance approach with explicit lifecycle management.
-
-Key Principles:
-1. __init__ is for synchronous, non-blocking setup only
-2. startup() is for async resource initialization (Redis, DB, MCP connections)
-3. shutdown() is for cleanup, connection closing, and graceful termination
-4. Lifecycle state is tracked to prevent double-init or use-before-ready
-
-Usage:
-    class MyAgent(LifecycleMixin, SovereignBaseAgent):
-        async def startup(self):
-            await super().startup()
-            self.redis = await self._connect_redis()
-
-        async def shutdown(self):
-            await self.redis.close()
-            await super().shutdown()
-
-[SSOT] Foundation for all lifecycle-aware mixins.
-"""
-
-
+'\n[PHASE 23] LifecycleMixin - Async Resource Management Protocol.\n\nEnforces async startup/shutdown protocols for proper resource management.\nReplaces logic often wrongly placed in __init__ that requires async operations.\n\nThis is the foundation for the Lifecycle-Aware Component System, replacing\nthe "Uber-Mixin" inheritance approach with explicit lifecycle management.\n\nKey Principles:\n1. __init__ is for synchronous, non-blocking setup only\n2. startup() is for async resource initialization (Redis, DB, MCP connections)\n3. shutdown() is for cleanup, connection closing, and graceful termination\n4. Lifecycle state is tracked to prevent double-init or use-before-ready\n\nUsage:\n    class MyAgent(LifecycleMixin, SovereignBaseAgent):\n        async def startup(self):\n            await super().startup()\n            self.redis = await self._connect_redis()\n\n        async def shutdown(self):\n            await self.redis.close()\n            await super().shutdown()\n\n[SSOT] Foundation for all lifecycle-aware mixins.\n'
 import asyncio
 import logging
 import time
 from abc import ABC
 from enum import Enum
 from typing import Any
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 Logger = logging.getLogger(__name__)
-
 
 class LifecycleState(Enum):
     """Lifecycle states for component tracking."""
-
-    CREATED = "created"  # __init__ completed
-    STARTING = "starting"  # startup() in progress
-    READY = "ready"  # startup() completed, ready for use
-    STOPPING = "stopping"  # shutdown() in progress
-    STOPPED = "stopped"  # shutdown() completed
-    FAILED = "failed"  # startup() or shutdown() failed
-
+    CREATED = 'created'
+    STARTING = 'starting'
+    READY = 'ready'
+    STOPPING = 'stopping'
+    STOPPED = 'stopped'
+    FAILED = 'failed'
 
 class LifecycleError(Exception):
     """Raised when lifecycle protocol is violated."""
-
     pass
-
 
 class LifecycleMixin(ABC):
     """
@@ -90,7 +46,6 @@ class LifecycleMixin(ABC):
         _startup_time: Timestamp when startup() completed
         _shutdown_time: Timestamp when shutdown() completed
     """
-
     _lifecycle_state: LifecycleState = LifecycleState.CREATED
     _lifecycle_error: Exception | None = None
     _startup_time: float | None = None
@@ -112,7 +67,7 @@ class LifecycleMixin(ABC):
         self._lifecycle_error = None
         self._startup_time = None
         self._shutdown_time = None
-        self._lifecycle_lock = None  # Created lazily in async context
+        self._lifecycle_lock = None
 
     def _get_lifecycle_lock(self) -> asyncio.Lock:
         """Get or create the lifecycle lock (must be called in async context)."""
@@ -143,11 +98,7 @@ class LifecycleMixin(ABC):
             LifecycleError: If component is not in READY state
         """
         if self._lifecycle_state != LifecycleState.READY:
-            raise LifecycleError(
-                f"{self.__class__.__name__} is not ready. "
-                f"Current state: {self._lifecycle_state.value}. "
-                f"Call startup() first.",
-            )
+            raise LifecycleError(f'{self.__class__.__name__} is not ready. Current state: {self._lifecycle_state.value}. Call startup() first.')
 
     async def startup(self) -> None:
         """
@@ -161,27 +112,23 @@ class LifecycleMixin(ABC):
         """
         async with self._get_lifecycle_lock():
             if self._lifecycle_state == LifecycleState.READY:
-                Logger.debug(f"[{self.__class__.__name__}] Already started, skipping")
+                Logger.debug(f'[{self.__class__.__name__}] Already started, skipping')
                 return
-
             if self._lifecycle_state == LifecycleState.STARTING:
-                raise LifecycleError(f"{self.__class__.__name__} startup already in progress")
-
+                raise LifecycleError(f'{self.__class__.__name__} startup already in progress')
             if self._lifecycle_state == LifecycleState.STOPPED:
-                raise LifecycleError(f"{self.__class__.__name__} has been stopped and cannot be restarted")
-
+                raise LifecycleError(f'{self.__class__.__name__} has been stopped and cannot be restarted')
             self._lifecycle_state = LifecycleState.STARTING
-            Logger.debug(f"[{self.__class__.__name__}] Starting...")
-
+            Logger.debug(f'[{self.__class__.__name__}] Starting...')
             try:
                 await self._do_startup()
                 self._lifecycle_state = LifecycleState.READY
                 self._startup_time = time.time()
-                Logger.info(f"[{self.__class__.__name__}] Started successfully")
+                Logger.info(f'[{self.__class__.__name__}] Started successfully')
             except Exception as e:
                 self._lifecycle_state = LifecycleState.FAILED
                 self._lifecycle_error = e
-                Logger.error(f"[{self.__class__.__name__}] Startup failed: {e}")
+                Logger.error(f'[{self.__class__.__name__}] Startup failed: {e}')
                 raise
 
     async def _do_startup(self) -> None:
@@ -205,29 +152,24 @@ class LifecycleMixin(ABC):
         """
         async with self._get_lifecycle_lock():
             if self._lifecycle_state == LifecycleState.STOPPED:
-                Logger.debug(f"[{self.__class__.__name__}] Already stopped, skipping")
+                Logger.debug(f'[{self.__class__.__name__}] Already stopped, skipping')
                 return
-
             if self._lifecycle_state == LifecycleState.STOPPING:
-                raise LifecycleError(f"{self.__class__.__name__} shutdown already in progress")
-
+                raise LifecycleError(f'{self.__class__.__name__} shutdown already in progress')
             if self._lifecycle_state == LifecycleState.CREATED:
-                # Never started, just mark as stopped
                 self._lifecycle_state = LifecycleState.STOPPED
                 return
-
             self._lifecycle_state = LifecycleState.STOPPING
-            Logger.debug(f"[{self.__class__.__name__}] Stopping...")
-
+            Logger.debug(f'[{self.__class__.__name__}] Stopping...')
             try:
                 await self._do_shutdown()
                 self._lifecycle_state = LifecycleState.STOPPED
                 self._shutdown_time = time.time()
-                Logger.info(f"[{self.__class__.__name__}] Stopped successfully")
+                Logger.info(f'[{self.__class__.__name__}] Stopped successfully')
             except Exception as e:
                 self._lifecycle_state = LifecycleState.FAILED
                 self._lifecycle_error = e
-                Logger.error(f"[{self.__class__.__name__}] Shutdown failed: {e}")
+                Logger.error(f'[{self.__class__.__name__}] Shutdown failed: {e}')
                 raise
 
     async def _do_shutdown(self) -> None:
@@ -241,17 +183,7 @@ class LifecycleMixin(ABC):
 
     def get_lifecycle_stats(self) -> dict[str, Any]:
         """Get lifecycle statistics."""
-        return {
-            "state": self._lifecycle_state.value,
-            "startup_time": self._startup_time,
-            "shutdown_time": self._shutdown_time,
-            "uptime_seconds": (
-                time.time() - self._startup_time
-                if self._startup_time and self._lifecycle_state == LifecycleState.READY
-                else None
-            ),
-            "error": str(self._lifecycle_error) if self._lifecycle_error else None,
-        }
+        return {'state': self._lifecycle_state.value, 'startup_time': self._startup_time, 'shutdown_time': self._shutdown_time, 'uptime_seconds': time.time() - self._startup_time if self._startup_time and self._lifecycle_state == LifecycleState.READY else None, 'error': str(self._lifecycle_error) if self._lifecycle_error else None}
 
     async def __aenter__(self):
         """Async context manager entry - calls startup()."""
@@ -261,4 +193,4 @@ class LifecycleMixin(ABC):
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         """Async context manager exit - calls shutdown()."""
         await self.shutdown()
-        return False  # Don't suppress exceptions
+        return False

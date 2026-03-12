@@ -1,38 +1,12 @@
 from __future__ import annotations
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-"""
-SafetyStrategy - Consolidated Safety Orchestration Strategy
-
-This module consolidates logic from:
-- ComplianceOrchestratorAgent
-- GuardianOrchestratorAgent
-- HealingOrchestratorAgent
-
-SSOT PRINCIPLE:
-    All safety-related orchestration flows through this strategy,
-    which is injected into Orchestrator.
-"""
-
-
+'\nSafetyStrategy - Consolidated Safety Orchestration Strategy\n\nThis module consolidates logic from:\n- ComplianceOrchestratorAgent\n- GuardianOrchestratorAgent\n- HealingOrchestratorAgent\n\nSSOT PRINCIPLE:\n    All safety-related orchestration flows through this strategy,\n    which is injected into Orchestrator.\n'
 import logging
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
-
 from agentic_core.seams.contracts.safety_agents import SafetyAgentFactory
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 Logger = logging.getLogger(__name__)
-
 
 @dataclass
 class SafetyStrategy:
@@ -49,7 +23,6 @@ class SafetyStrategy:
         orchestrator = Orchestrator(strategy=strategy)
         result = orchestrator.run_mission({"dry_run": True})
     """
-
     project_root: Path = field(default_factory=Path.cwd)
     _agent_factory: SafetyAgentFactory | None = field(default=None, repr=False)
 
@@ -60,7 +33,7 @@ class SafetyStrategy:
     @property
     def name(self) -> str:
         """Return the strategy name."""
-        return "SafetyStrategy"
+        return 'SafetyStrategy'
 
     def get_tiers(self) -> dict[str, list[str]]:
         """
@@ -69,22 +42,7 @@ class SafetyStrategy:
         Returns:
             Dictionary mapping tier names to lists of agent names.
         """
-        return {
-            "Tier 0: Pre-Flight": [
-                "CodeValidatorAgent",
-            ],
-            "Tier 1: Compliance": [
-                "HygieneGuardianAgent",
-                "NamingAgent",
-            ],
-            "Tier 2: Safety": [
-                "LocationAgent",
-                "StructureEnforcerAgent",
-            ],
-            "Tier 3: Healing": [
-                "StructuralHealerAgent",
-            ],
-        }
+        return {'Tier 0: Pre-Flight': ['CodeValidatorAgent'], 'Tier 1: Compliance': ['HygieneGuardianAgent', 'NamingAgent'], 'Tier 2: Safety': ['LocationAgent', 'StructureEnforcerAgent'], 'Tier 3: Healing': ['StructuralHealerAgent']}
 
     def _get_agent(self, agent_name: str) -> Any | None:
         """
@@ -96,46 +54,33 @@ class SafetyStrategy:
         Returns:
             Agent instance or None if not available
         """
-        if agent_name == "CodeValidatorAgent":
+        if agent_name == 'CodeValidatorAgent':
             try:
-                from agentic_core.L0_routing.utils.subprocess_runner_util import (
-                    invoke_code_validator,
-                )
+                from agentic_core.L0_routing.utils.subprocess_runner_util import invoke_code_validator
 
                 class CodeValidatorAgentProxy:
+
                     def __init__(self, project_root):
                         self.project_root = project_root
                         self._invoke = invoke_code_validator
 
                     def validate_repository(self, **kwargs):
-                        return self._invoke(action="validate", project_root=self.project_root)
+                        return self._invoke(action='validate', project_root=self.project_root)
 
                     def heal_repository(self, directory=None, **kwargs):
                         if directory:
-                            return self._invoke(
-                                action="validate_directory",
-                                project_root=self.project_root,
-                                directory=str(directory),
-                            )
+                            return self._invoke(action='validate_directory', project_root=self.project_root, directory=str(directory))
                         return self.validate_repository(**kwargs)
-
                 return CodeValidatorAgentProxy(project_root=self.project_root)
             except ImportError as e:
-                Logger.warning(f"[SafetyStrategy] Failed to import CodeValidatorAgent: {e}")
+                Logger.warning(f'[SafetyStrategy] Failed to import CodeValidatorAgent: {e}')
                 return None
         agent = self._agent_factory.get(agent_name) if self._agent_factory else None
         if agent is None:
-            Logger.warning(f"[SafetyStrategy] Unknown or unavailable agent: {agent_name}")
+            Logger.warning(f'[SafetyStrategy] Unknown or unavailable agent: {agent_name}')
         return agent
 
-    def execute_agent(
-        self,
-        agent: Any,
-        agent_name: str,
-        dry_run: bool = True,
-        execute: bool = False,
-        **kwargs: Any,
-    ) -> dict[str, Any]:
+    def execute_agent(self, agent: Any, agent_name: str, dry_run: bool=True, execute: bool=False, **kwargs: Any) -> dict[str, Any]:
         """
         Execute a single agent and return results.
 
@@ -150,38 +95,17 @@ class SafetyStrategy:
             Dictionary with execution results
         """
         import time
-
         start_time = time.time()
-
         try:
-            if hasattr(agent, "heal_repository"):
+            if hasattr(agent, 'heal_repository'):
                 result = agent.heal_repository(dry_run=dry_run, execute=execute)
                 execution_time_ms = (time.time() - start_time) * 1000
-
-                return {
-                    "status": "PASS" if result.get("errors", 0) == 0 else "FAIL",
-                    "violations_found": result.get("violations", 0),
-                    "violations_fixed": result.get("fixed", 0),
-                    "execution_time_ms": execution_time_ms,
-                    "error_message": None,
-                }
+                return {'status': 'PASS' if result.get('errors', 0) == 0 else 'FAIL', 'violations_found': result.get('violations', 0), 'violations_fixed': result.get('fixed', 0), 'execution_time_ms': execution_time_ms, 'error_message': None}
             else:
-                return {
-                    "status": "ERROR",
-                    "violations_found": 0,
-                    "violations_fixed": 0,
-                    "execution_time_ms": 0,
-                    "error_message": f"{agent_name} has no heal_repository method",
-                }
+                return {'status': 'ERROR', 'violations_found': 0, 'violations_fixed': 0, 'execution_time_ms': 0, 'error_message': f'{agent_name} has no heal_repository method'}
         except Exception as e:
             execution_time_ms = (time.time() - start_time) * 1000
-            return {
-                "status": "ERROR",
-                "violations_found": 0,
-                "violations_fixed": 0,
-                "execution_time_ms": execution_time_ms,
-                "error_message": str(e),
-            }
+            return {'status': 'ERROR', 'violations_found': 0, 'violations_fixed': 0, 'execution_time_ms': execution_time_ms, 'error_message': str(e)}
 
     def should_abort_tier(self, tier_name: str, tier_results: list[dict[str, Any]], execute: bool) -> bool:
         """
@@ -195,10 +119,8 @@ class SafetyStrategy:
         Returns:
             True if execution should abort, False to continue
         """
-        # Abort on Tier 0 (Pre-Flight) failures
-        if "Tier 0" in tier_name:
+        if 'Tier 0' in tier_name:
             for result in tier_results:
-                if result.get("status") == "FAIL":
+                if result.get('status') == 'FAIL':
                     return True
-
         return False

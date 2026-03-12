@@ -10,35 +10,9 @@ This validator checks for AST-level patterns that indicate writes.
 import ast
 from pathlib import Path
 from typing import List
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 _SL_ROOT = Path(__file__).parent.parent
-
-_WRITE_INDICATORS = frozenset(
-    {
-        "write",
-        "save",
-        "persist",
-        "commit",
-        "update",
-        "mutate",
-        "set_",
-        "put",
-        "insert",
-        "delete",
-        "remove",
-    }
-)
-
+_WRITE_INDICATORS = frozenset({'write', 'save', 'persist', 'commit', 'update', 'mutate', 'set_', 'put', 'insert', 'delete', 'remove'})
 
 class _ReadOnlyVisitor(ast.NodeVisitor):
     """Detects assignment to agentic_core attributes (write patterns)."""
@@ -49,59 +23,44 @@ class _ReadOnlyVisitor(ast.NodeVisitor):
     def visit_Assign(self, node: ast.Assign) -> None:
         for target in node.targets:
             if isinstance(target, ast.Attribute):
-                val = ast.unparse(target.value) if hasattr(ast, "unparse") else ""
+                val = ast.unparse(target.value) if hasattr(ast, 'unparse') else ''
                 if AGENTIC_CORE_DIR in val:
-                    self.violations.append(
-                        f"Line {node.lineno}: Write to agentic_core attribute '{ast.unparse(target)}'"
-                        if hasattr(ast, "unparse")
-                        else f"Line {node.lineno}: Write to agentic_core attribute"
-                    )
+                    self.violations.append(f"Line {node.lineno}: Write to agentic_core attribute '{ast.unparse(target)}'" if hasattr(ast, 'unparse') else f'Line {node.lineno}: Write to agentic_core attribute')
         self.generic_visit(node)
 
     def visit_Call(self, node: ast.Call) -> None:
         if isinstance(node.func, ast.Attribute):
-            val = ast.unparse(node.func.value) if hasattr(ast, "unparse") else ""
+            val = ast.unparse(node.func.value) if hasattr(ast, 'unparse') else ''
             method = node.func.attr.lower()
-            if AGENTIC_CORE_DIR in val and any(
-                method.startswith(w) for w in _WRITE_INDICATORS
-            ):
-                self.violations.append(
-                    f"Line {node.lineno}: Potential write call '{node.func.attr}' on agentic_core object"
-                )
+            if AGENTIC_CORE_DIR in val and any((method.startswith(w) for w in _WRITE_INDICATORS)):
+                self.violations.append(f"Line {node.lineno}: Potential write call '{node.func.attr}' on agentic_core object")
         self.generic_visit(node)
-
 
 def check_file_readonly(file_path: Path) -> List[str]:
     """Return list of write-pattern violations for a single file."""
     try:
-        tree = ast.parse(file_path.read_text(encoding="utf-8"))
+        tree = ast.parse(file_path.read_text(encoding='utf-8'))
     except SyntaxError as exc:
-        return [f"SyntaxError: {exc}"]
+        return [f'SyntaxError: {exc}']
     visitor = _ReadOnlyVisitor()
     visitor.visit(tree)
     return visitor.violations
 
-
 def check_system_learning_readonly() -> bool:
     """Check all system_learning files for read-only access compliance."""
     all_violations: List[str] = []
-    for py_file in _SL_ROOT.rglob("*.py"):
+    for py_file in _SL_ROOT.rglob('*.py'):
         file_violations = check_file_readonly(py_file)
         if file_violations:
             for v in file_violations:
-                all_violations.append(f"{py_file.relative_to(_SL_ROOT)}: {v}")
-
+                all_violations.append(f'{py_file.relative_to(_SL_ROOT)}: {v}')
     if all_violations:
-        print("system_learning read-only access violations found:")
+        print('system_learning read-only access violations found:')
         for v in all_violations:
-            print(f"  {v}")
+            print(f'  {v}')
         return False
-
-    print("OK: system_learning maintains read-only access to agentic_core")
+    print('OK: system_learning maintains read-only access to agentic_core')
     return True
-
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     import sys
-
     sys.exit(0 if check_system_learning_readonly() else 1)

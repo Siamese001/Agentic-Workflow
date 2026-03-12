@@ -1,28 +1,11 @@
 from __future__ import annotations
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-"""
-StructuredEngineAgent - Intent to Plan Converter
-
-[PHASE 8 REFACTOR] Uses SovereignLLMGateway.
-"""
+'\nStructuredEngineAgent - Intent to Plan Converter\n\n[PHASE 8 REFACTOR] Uses SovereignLLMGateway.\n'
 import logging
 import os
 from typing import Any
-
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 Logger = logging.getLogger(__name__)
-
 
 class AgentPlan:
     """Simple plan structure for structured output."""
@@ -32,8 +15,7 @@ class AgentPlan:
         self.tool_calls = tool_calls
 
     def heal(self, violation, **kwargs):
-        return {"status": "skipped", "reason": "data_structure", "handler": "AgentPlan"}
-
+        return {'status': 'skipped', 'reason': 'data_structure', 'handler': 'AgentPlan'}
 
 class StructuredEngineAgent(SovereignBaseAgent):
     """
@@ -41,26 +23,15 @@ class StructuredEngineAgent(SovereignBaseAgent):
     """
 
     async def generate_plan(self, task: str, context: str) -> AgentPlan:
-        self.log_info(f"Planning Task via Gateway: {task[:50]}")
-
-        prompt = f"TASK: {task}\nCONTEXT: {context}\nGenerate execution plan JSON."
-
+        self.log_info(f'Planning Task via Gateway: {task[:50]}')
+        prompt = f'TASK: {task}\nCONTEXT: {context}\nGenerate execution plan JSON.'
         try:
-            # Use Google Gemini by default for planning (fast/long context)
-            await self.llm_generate(
-                prompt,
-                provider="google",
-                model=os.getenv("GEMINI_MODEL", "gemini-3-flash-preview"),
-            )
-
-            return AgentPlan(
-                reasoning=f"Planned via {os.getenv('GEMINI_MODEL', 'gemini-3-flash-preview')}",
-                tool_calls=[{"name": "example_tool", "args": {}}],
-            )
+            await self.llm_generate(prompt, provider='google', model=os.getenv('GEMINI_MODEL', 'gemini-3-flash-preview'))
+            return AgentPlan(reasoning=f"Planned via {os.getenv('GEMINI_MODEL', 'gemini-3-flash-preview')}", tool_calls=[{'name': 'example_tool', 'args': {}}])
         # guardian: allow-silent-swallow
         except Exception as e:
-            self.log_error(f"Planning failed: {e}")
-            return AgentPlan(reasoning="Failure fallback", tool_calls=[])
+            self.log_error(f'Planning failed: {e}')
+            return AgentPlan(reasoning='Failure fallback', tool_calls=[])
 
     def heal(self, violation, **kwargs):
         return super().heal(violation, **kwargs)
@@ -68,7 +39,5 @@ class StructuredEngineAgent(SovereignBaseAgent):
     # guardian: allow-type-erasure
     def heal_repository(self, *args, **kwargs) -> dict:
         """heal_repository() not implemented for StructuredEngineAgent."""
-        raise NotImplementedError("heal_repository() not implemented for StructuredEngineAgent")
-
-
-__all__ = ["StructuredEngineAgent", "AgentPlan"]
+        raise NotImplementedError('heal_repository() not implemented for StructuredEngineAgent')
+__all__ = ['StructuredEngineAgent', 'AgentPlan']

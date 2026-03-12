@@ -9,38 +9,20 @@ This module replaces the 4 competing backup patterns identified in the SSOT audi
 
 All agents should use BackupManager for backup operations.
 """
-
 import shutil
 from datetime import datetime
 from pathlib import Path
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 class BackupManager:
     """
     Centralized backup directory management.
     SSOT Location: archives/healing_backups/<category>/
     """
-
-    # SSOT Constant for backup root
-    BACKUP_ROOT = Path("archives/healing_backups")
+    BACKUP_ROOT = Path('archives/healing_backups')
 
     @classmethod
-    def get_backup_dir(
-        cls,
-        category: str,
-        project_root: str | Path | None = None,
-        timestamped: bool = True,
-    ) -> Path:
+    def get_backup_dir(cls, category: str, project_root: str | Path | None=None, timestamped: bool=True) -> Path:
         """
         Get a standardized backup directory path.
 
@@ -54,23 +36,16 @@ class BackupManager:
         """
         root = Path(project_root) if project_root else Path.cwd()
         base_path = root / cls.BACKUP_ROOT / category
-
         if timestamped:
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
             final_path = base_path / timestamp
         else:
             final_path = base_path
-
         final_path.mkdir(parents=True, exist_ok=True)
         return final_path
 
     @classmethod
-    def cleanup_old_backups(
-        cls,
-        category: str,
-        keep_last_n: int = 10,
-        project_root: str | Path | None = None,
-    ) -> int:
+    def cleanup_old_backups(cls, category: str, keep_last_n: int=10, project_root: str | Path | None=None) -> int:
         """
         Remove old backups for a specific category, keeping only the N most recent.
 
@@ -79,17 +54,9 @@ class BackupManager:
         """
         root = Path(project_root) if project_root else Path.cwd()
         category_dir = root / cls.BACKUP_ROOT / category
-
         if not category_dir.exists():
             return 0
-
-        # List all subdirectories, sort by name (timestamp guarantees chronological order)
-        backups = sorted(
-            [d for d in category_dir.iterdir() if d.is_dir()],
-            key=lambda x: x.name,
-            reverse=True,
-        )
-
+        backups = sorted([d for d in category_dir.iterdir() if d.is_dir()], key=lambda x: x.name, reverse=True)
         removed_count = 0
         if len(backups) > keep_last_n:
             to_remove = backups[keep_last_n:]
@@ -98,17 +65,11 @@ class BackupManager:
                     shutil.rmtree(backup)
                     removed_count += 1
                 except OSError as e:
-                    print(f"Error cleaning up backup {backup}: {e}")
-
+                    print(f'Error cleaning up backup {backup}: {e}')
         return removed_count
 
     @classmethod
-    def backup_file(
-        cls,
-        target_file: str | Path,
-        category: str = "misc",
-        project_root: str | Path | None = None,
-    ) -> Path | None:
+    def backup_file(cls, target_file: str | Path, category: str='misc', project_root: str | Path | None=None) -> Path | None:
         """
         Quickly backup a single file to a timestamped location.
 
@@ -123,14 +84,13 @@ class BackupManager:
         src = Path(target_file)
         if not src.exists():
             return None
-
         dest_dir = cls.get_backup_dir(category, project_root, timestamped=True)
         dest_file = dest_dir / src.name
         shutil.copy2(src, dest_file)
         return dest_file
 
     @classmethod
-    def list_backups(cls, category: str, project_root: str | Path | None = None) -> list[Path]:
+    def list_backups(cls, category: str, project_root: str | Path | None=None) -> list[Path]:
         """
         List all backup directories for a category.
 
@@ -143,23 +103,12 @@ class BackupManager:
         """
         root = Path(project_root) if project_root else Path.cwd()
         category_dir = root / cls.BACKUP_ROOT / category
-
         if not category_dir.exists():
             return []
-
-        return sorted(
-            [d for d in category_dir.iterdir() if d.is_dir()],
-            key=lambda x: x.name,
-            reverse=True,
-        )
+        return sorted([d for d in category_dir.iterdir() if d.is_dir()], key=lambda x: x.name, reverse=True)
 
     @classmethod
-    def restore_backup(
-        cls,
-        backup_path: str | Path,
-        target_path: str | Path,
-        overwrite: bool = False,
-    ) -> bool:
+    def restore_backup(cls, backup_path: str | Path, target_path: str | Path, overwrite: bool=False) -> bool:
         """
         Restore files from a backup directory to a target location.
 
@@ -173,21 +122,18 @@ class BackupManager:
         """
         backup = Path(backup_path)
         target = Path(target_path)
-
         if not backup.exists():
             return False
-
         try:
             if backup.is_file():
-                if target.exists() and not overwrite:
+                if target.exists() and (not overwrite):
                     return False
                 target.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy2(backup, target)
             else:
-                # Restore directory contents
                 for item in backup.iterdir():
                     dest = target / item.name
-                    if dest.exists() and not overwrite:
+                    if dest.exists() and (not overwrite):
                         continue
                     if item.is_file():
                         dest.parent.mkdir(parents=True, exist_ok=True)
@@ -196,11 +142,11 @@ class BackupManager:
                         shutil.copytree(item, dest, dirs_exist_ok=overwrite)
             return True
         except Exception as e:
-            print(f"Error restoring backup: {e}")
+            print(f'Error restoring backup: {e}')
             return False
 
     @classmethod
-    def decommission_legacy_backups(cls, project_root: str | Path | None = None) -> int:
+    def decommission_legacy_backups(cls, project_root: str | Path | None=None) -> int:
         """
         Final cleanup of deprecated backup directories.
 
@@ -215,23 +161,21 @@ class BackupManager:
             int: Number of legacy directories removed
         """
         root = Path(project_root) if project_root else Path.cwd()
-        legacy_dirs = [".sovereign_healing_backup", ".governance_healer_backups"]
+        legacy_dirs = ['.sovereign_healing_backup', '.governance_healer_backups']
         removed_count = 0
-
         for legacy_name in legacy_dirs:
             legacy_path = root / legacy_name
             if legacy_path.exists() and legacy_path.is_dir():
                 try:
                     shutil.rmtree(legacy_path)
                     removed_count += 1
-                    print(f"Removed legacy backup directory: {legacy_path}")
+                    print(f'Removed legacy backup directory: {legacy_path}')
                 except OSError as e:
-                    print(f"Error removing legacy backup {legacy_path}: {e}")
-
+                    print(f'Error removing legacy backup {legacy_path}: {e}')
         return removed_count
 
     @classmethod
-    def get_legacy_backup_dirs(cls, project_root: str | Path | None = None) -> list[Path]:
+    def get_legacy_backup_dirs(cls, project_root: str | Path | None=None) -> list[Path]:
         """
         List any legacy backup directories that still exist.
 
@@ -242,12 +186,10 @@ class BackupManager:
             List of legacy backup directory paths that exist
         """
         root = Path(project_root) if project_root else Path.cwd()
-        legacy_dirs = [".sovereign_healing_backup", ".governance_healer_backups"]
-
+        legacy_dirs = ['.sovereign_healing_backup', '.governance_healer_backups']
         existing = []
         for legacy_name in legacy_dirs:
             legacy_path = root / legacy_name
             if legacy_path.exists() and legacy_path.is_dir():
                 existing.append(legacy_path)
-
         return existing

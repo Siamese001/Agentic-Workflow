@@ -50,6 +50,7 @@ from pathlib import Path
 # Path bootstrap: allow direct invocation as `python tools/adg_cli.py`
 # guardian: allow-global_mutation
 _REPO_ROOT = Path(__file__).resolve().parents[1]
+# guardian: allow-global-mutation
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 

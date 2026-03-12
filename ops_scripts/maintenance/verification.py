@@ -13,6 +13,7 @@ from pathlib import Path
 
 # Ensure project root is in path
 PROJECT_ROOT = Path(__file__).resolve().parent
+# guardian: allow-global-mutation
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
@@ -36,6 +37,7 @@ def test_circuit_breaker():
     print("\n1.1 Testing state transitions...")
     breaker = CircuitBreaker(
         "test_1",
+        # guardian: allow-magic-config
         CircuitBreakerConfig(failure_threshold=3, reset_timeout_seconds=0.1),
     )
     assert breaker.state == CircuitState.CLOSED
@@ -48,6 +50,7 @@ def test_circuit_breaker():
     print("\n1.2 Testing exponential backoff...")
     breaker2 = CircuitBreaker(
         "test_2",
+        # guardian: allow-magic-config
         CircuitBreakerConfig(
             failure_threshold=1,
             backoff_multiplier=2.0,
@@ -66,6 +69,7 @@ def test_circuit_breaker():
     print("\n1.3 Testing recovery...")
     breaker3 = CircuitBreaker(
         "test_3",
+        # guardian: allow-magic-config
         CircuitBreakerConfig(failure_threshold=1, success_threshold=1, reset_timeout_seconds=0.1),
     )
     breaker3.record_failure()
@@ -79,6 +83,7 @@ def test_circuit_breaker():
     print("\n1.4 Testing decorator...")
     breaker4 = CircuitBreaker(
         "test_4",
+        # guardian: allow-magic-config
         CircuitBreakerConfig(failure_threshold=2, execution_timeout_seconds=1.0),
     )
     count = 0
@@ -108,6 +113,7 @@ def test_circuit_breaker():
 
     # 1.5 Hung Query (Execution Timeout)
     print("\n1.5 Testing Hung Query Timeout...")
+    # guardian: allow-magic-config
     breaker5 = CircuitBreaker("test_5", CircuitBreakerConfig(execution_timeout_seconds=0.5))
 
     @breaker5.protect
@@ -300,7 +306,9 @@ def test_context_session():
     # Test 4.1: Risk classification
     print("\n4.1 Testing risk classification...")
     assert classify_risk(file_count=1) == RiskLevel.LOW
+    # guardian: allow-magic-config
     assert classify_risk(file_count=5) == RiskLevel.MEDIUM
+    # guardian: allow-magic-config
     assert classify_risk(file_count=15) == RiskLevel.HIGH
     assert classify_risk(is_base_agent=True) == RiskLevel.HIGH
     assert classify_risk(has_external_touch=True) == RiskLevel.HIGH

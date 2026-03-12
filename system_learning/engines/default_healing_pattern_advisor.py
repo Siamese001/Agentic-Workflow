@@ -63,6 +63,7 @@ class DefaultHealingPatternAdvisor:
             patterns = self._ml_client.retrieve_healing_patterns(
                 error_signature=healing_input.error_signature
             )
+        # guardian: allow-silent-swallow
         except Exception as exc:  # guardian: allow-silent-swallower
             logger.warning(
                 "pattern_advisor_query_failed",

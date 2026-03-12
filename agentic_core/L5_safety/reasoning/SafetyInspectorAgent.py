@@ -1,95 +1,31 @@
 from __future__ import annotations
-
 from agentic_core.L2_execution.tools import write_gateway as _wg
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-"""Constitutional Overseer for validating ActionRequests.
-
-This module provides safety validation for action requests, including:
-- ConstitutionalOverseer: Validates actions against forbidden commands
-- SafetyInspectorAgent: Scans files for security violations with Socratic Judge
-
-Typical usage:
-    overseer = create_overseer()
-    result = await overseer.validate_action(request)
-
-    inspector = create_safety_inspector()
-    violations = await inspector.scan_file("path/to/file.py")
-"""
-
-# SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
-# File appears to be a sovereign component but missing canon high-signal keywords.
-# Suggested keywords to add in docstring/code: guardrail
-# This boosts alignment detection — review and integrate appropriately
-
-
-# SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
-# File appears to be a sovereign component but missing canon high-signal keywords.
-# Suggested keywords to add in docstring/code: engine, memory, orchestrator, state, validator, workflow
-# This boosts alignment detection — review and integrate appropriately
-
+'Constitutional Overseer for validating ActionRequests.\n\nThis module provides safety validation for action requests, including:\n- ConstitutionalOverseer: Validates actions against forbidden commands\n- SafetyInspectorAgent: Scans files for security violations with Socratic Judge\n\nTypical usage:\n    overseer = create_overseer()\n    result = await overseer.validate_action(request)\n\n    inspector = create_safety_inspector()\n    violations = await inspector.scan_file("path/to/file.py")\n'
 import logging
 import re
 from dataclasses import dataclass
 from typing import Any
-
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L0_routing.config import (
-    AGENTIC_CORE_DIR,
-    APPS_LIC_DIR,
-    APPS_RG_DIR,
-    APPS_SHARED_DIR,
-)
+from agentic_core.L0_routing.config import AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR
 from agentic_core.L1_cognition.types.action_request_types import ActionRequest
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 Logger: logging.Logger = logging.getLogger(__name__)
-
 
 class ViolationCheck:
     """Result of a safety Violation check."""
 
-    def __init__(self, is_violation: bool, reason: str = "") -> None:
+    def __init__(self, is_violation: bool, reason: str='') -> None:
         self.is_violation = is_violation
         self.reason = reason
-
 
 class ConstitutionalOverseer:
     """Overseer that validates ActionRequests against safety rules."""
 
     def __init__(self) -> None:
         """Initialize the overseer with default safety rules."""
-        self._forbidden_commands = [
-            "rm\\s+-rf\\s+/",
-            "rm\\s+-rf\\s+\\.",
-            "dd\\s+if=/dev/zero",
-            "mkfs\\.",
-            "curl\\s+https?://(?!localhost|127\\.0\\.0\\.1)",
-            "wget\\s+https?://(?!localhost|127\\.0\\.0\\.1)",
-            "nc\\s+-l",
-            "telnet\\s+\\d",
-            "sudo\\s+su",
-            "chmod\\s+777",
-            "chown\\s+root",
-            "apt-get\\s+install",
-            "pip\\s+install\\s+--force",
-            "yum\\s+install",
-            "eval\\s+\\$",
-            "exec\\s+\\$",
-            "sh\\s+-c",
-        ]
+        self._forbidden_commands = ['rm\\s+-rf\\s+/', 'rm\\s+-rf\\s+\\.', 'dd\\s+if=/dev/zero', 'mkfs\\.', 'curl\\s+https?://(?!localhost|127\\.0\\.0\\.1)', 'wget\\s+https?://(?!localhost|127\\.0\\.0\\.1)', 'nc\\s+-l', 'telnet\\s+\\d', 'sudo\\s+su', 'chmod\\s+777', 'chown\\s+root', 'apt-get\\s+install', 'pip\\s+install\\s+--force', 'yum\\s+install', 'eval\\s+\\$', 'exec\\s+\\$', 'sh\\s+-c']
         self._compiled_patterns = [re.compile(pattern, re.IGNORECASE) for pattern in self._forbidden_commands]
-        Logger.info(
-            f"Constitutional Overseer initialized with {len(self._forbidden_commands)} forbidden patterns",
-        )
+        Logger.info(f'Constitutional Overseer initialized with {len(self._forbidden_commands)} forbidden patterns')
 
     async def validate_action(self, request: ActionRequest) -> ViolationCheck:
         """Validate an ActionRequest against safety rules.
@@ -100,19 +36,19 @@ class ConstitutionalOverseer:
         Returns:
             ViolationCheck with validation result
         """
-        if request.action_type == "tool_execution":
+        if request.action_type == 'tool_execution':
             return await self._validate_tool_execution(request)
-        elif request.action_type == "file_operations":
+        elif request.action_type == 'file_operations':
             return await self._validate_file_operations(request)
-        elif request.action_type == "diagnostic_tool_creation":
-            return ViolationCheck(False, "Diagnostic tool creation is allowed")
+        elif request.action_type == 'diagnostic_tool_creation':
+            return ViolationCheck(False, 'Diagnostic tool creation is allowed')
         else:
-            return ViolationCheck(True, f"Unknown action type: {request.action_type}")
+            return ViolationCheck(True, f'Unknown action type: {request.action_type}')
 
     async def _validate_tool_execution(self, request: ActionRequest) -> ViolationCheck:
         """Validate tool execution requests."""
-        tool_path = request.parameters.get("tool_path", "")
-        args = request.parameters.get("args", [])
+        tool_path = request.parameters.get('tool_path', '')
+        args = request.parameters.get('args', [])
         if tool_path:
             Violation = self._check_forbidden_patterns(tool_path)
             if Violation:
@@ -121,34 +57,26 @@ class ConstitutionalOverseer:
             Violation = self._check_forbidden_patterns(str(arg))
             if Violation:
                 return Violation
-        if "shell" in request.parameters.get("execution_mode", ""):
-            shell_cmd = request.parameters.get("shell_command", "")
+        if 'shell' in request.parameters.get('execution_mode', ''):
+            shell_cmd = request.parameters.get('shell_command', '')
             Violation = self._check_forbidden_patterns(shell_cmd)
             if Violation:
                 return Violation
-        return ViolationCheck(False, "Action validated - SAFE")
+        return ViolationCheck(False, 'Action validated - SAFE')
 
     async def _validate_file_operations(self, request: ActionRequest) -> ViolationCheck:
         """Validate file operation requests."""
-        operation = request.parameters.get("operation", "")
-        file_path = request.parameters.get("file_path", "")
-        dangerous_paths = [
-            "/etc/passwd",
-            "/etc/shadow",
-            "/etc/sudoers",
-            "/root/",
-            "/sys/",
-            "/proc/",
-            "/dev/",
-        ]
+        operation = request.parameters.get('operation', '')
+        file_path = request.parameters.get('file_path', '')
+        dangerous_paths = ['/etc/passwd', '/etc/shadow', '/etc/sudoers', '/root/', '/sys/', '/proc/', '/dev/']
         for path in dangerous_paths:
             if path in file_path:
-                return ViolationCheck(True, f"Access to sensitive path forbidden: {path}")
-        if operation == "delete":
-            critical_extensions = [".py", ".sh", ".bat", ".cmd", ".ps1"]
-            if any(file_path.endswith(ext) for ext in critical_extensions):
-                return ViolationCheck(True, "Deletion of executable files is forbidden")
-        return ViolationCheck(False, "File operation validated - SAFE")
+                return ViolationCheck(True, f'Access to sensitive path forbidden: {path}')
+        if operation == 'delete':
+            critical_extensions = ['.py', '.sh', '.bat', '.cmd', '.ps1']
+            if any((file_path.endswith(ext) for ext in critical_extensions)):
+                return ViolationCheck(True, 'Deletion of executable files is forbidden')
+        return ViolationCheck(False, 'File operation validated - SAFE')
 
     def _check_forbidden_patterns(self, text: str) -> ViolationCheck:
         """Check text against forbidden command patterns.
@@ -161,9 +89,10 @@ class ConstitutionalOverseer:
         """
         for pattern in self._compiled_patterns:
             if pattern.search(text):
-                return ViolationCheck(True, f"Forbidden command pattern detected: {pattern.pattern}")
+                return ViolationCheck(True, f'Forbidden command pattern detected: {pattern.pattern}')
         return None
 
+    # guardian: allow-type-erasure
     def add_forbidden_pattern(self, pattern: str) -> Any:
         """Add a new forbidden pattern.
 
@@ -174,9 +103,9 @@ class ConstitutionalOverseer:
             compiled: Any = re.compile(pattern, re.IGNORECASE)
             self._compiled_patterns.append(compiled)
             self._forbidden_commands.append(pattern)
-            Logger.info(f"Added forbidden pattern: {pattern}")
+            Logger.info(f'Added forbidden pattern: {pattern}')
         except re.error as e:
-            Logger.error(f"Invalid regex pattern: {e}")
+            Logger.error(f'Invalid regex pattern: {e}')
 
     def get_forbidden_patterns(self) -> list[str]:
         """Get list of forbidden patterns.
@@ -185,7 +114,6 @@ class ConstitutionalOverseer:
             List of forbidden command patterns
         """
         return self._forbidden_commands.copy()
-
 
 @dataclass
 class SafetyInspectorAgent(SovereignBaseAgent):
@@ -196,9 +124,8 @@ class SafetyInspectorAgent(SovereignBaseAgent):
     ROLE: Security Compliance with intelligent Violation verification.
     """
 
-    def __init__(
-        self, enable_socratic_judge: bool = True, max_socratic_calls: int = 10
-    ) -> None:  # guardian: allow-magic-configuration
+    # guardian: allow-magic-config
+    def __init__(self, enable_socratic_judge: bool=True, max_socratic_calls: int=10) -> None:
         """
         Initialize the SafetyInspectorAgent.
 
@@ -211,29 +138,12 @@ class SafetyInspectorAgent(SovereignBaseAgent):
         self._max_socratic_calls = max_socratic_calls
         self._socratic_call_count = 0
         self._socratic_audit_log: list[dict] = []
-        self.secret_patterns = [
-            "api[_-]?key\\s*=\\s*[\"\\'][^\"\\']+[\"\\']",
-            "secret[_-]?key\\s*=\\s*[\"\\'][^\"\\']+[\"\\']",
-            "password\\s*=\\s*[\"\\'][^\"\\']+[\"\\']",
-            "token\\s*=\\s*[\"\\'][^\"\\']+[\"\\']",
-            "aws[_-]?access[_-]?key\\s*=\\s*[\"\\'][^\"\\']+[\"\\']",
-            "aws[_-]?secret[_-]?key\\s*=\\s*[\"\\'][^\"\\']+[\"\\']",
-            "private[_-]?key\\s*=\\s*[\"\\'][^\"\\']+[\"\\']",
-            "auth[_-]?token\\s*=\\s*[\"\\'][^\"\\']+[\"\\']",
-            "client[_-]?secret\\s*=\\s*[\"\\'][^\"\\']+[\"\\']",
-            "database[_-]?url\\s*=\\s*[\"\\'][^\"\\']+[\"\\']",
-        ]
-        self.todo_patterns = ["#\\s*TODO", "#\\s*FIXME", "#\\s*HACK", "#\\s*XXX"]
-        self.print_patterns = ["print\\s*\\(", "sys\\.stdout\\.write"]
-        self.debugger_patterns = [
-            "import pdb",
-            "pdb\\.set_trace",
-            "import ipdb",
-            "ipdb\\.set_trace",
-            "breakpoint\\(\\)",
-        ]
-        self.eval_patterns = ["eval\\s*\\(", "exec\\s*\\(", "__import__\\s*\\(", "compile\\s*\\("]
-        Logger.info(f"SafetyInspectorAgent initialized (Socratic Judge: {enable_socratic_judge})")
+        self.secret_patterns = ['api[_-]?key\\s*=\\s*["\\\'][^"\\\']+["\\\']', 'secret[_-]?key\\s*=\\s*["\\\'][^"\\\']+["\\\']', 'password\\s*=\\s*["\\\'][^"\\\']+["\\\']', 'token\\s*=\\s*["\\\'][^"\\\']+["\\\']', 'aws[_-]?access[_-]?key\\s*=\\s*["\\\'][^"\\\']+["\\\']', 'aws[_-]?secret[_-]?key\\s*=\\s*["\\\'][^"\\\']+["\\\']', 'private[_-]?key\\s*=\\s*["\\\'][^"\\\']+["\\\']', 'auth[_-]?token\\s*=\\s*["\\\'][^"\\\']+["\\\']', 'client[_-]?secret\\s*=\\s*["\\\'][^"\\\']+["\\\']', 'database[_-]?url\\s*=\\s*["\\\'][^"\\\']+["\\\']']
+        self.todo_patterns = ['#\\s*TODO', '#\\s*FIXME', '#\\s*HACK', '#\\s*XXX']
+        self.print_patterns = ['print\\s*\\(', 'sys\\.stdout\\.write']
+        self.debugger_patterns = ['import pdb', 'pdb\\.set_trace', 'import ipdb', 'ipdb\\.set_trace', 'breakpoint\\(\\)']
+        self.eval_patterns = ['eval\\s*\\(', 'exec\\s*\\(', '__import__\\s*\\(', 'compile\\s*\\(']
+        Logger.info(f'SafetyInspectorAgent initialized (Socratic Judge: {enable_socratic_judge})')
 
     async def scan_file(self, file_path: str) -> dict[str, list[str]]:
         """
@@ -245,70 +155,55 @@ class SafetyInspectorAgent(SovereignBaseAgent):
         Returns:
             Dictionary mapping Violation types to list of violations
         """
-        violations: Any = {
-            "secrets": [],
-            "todos": [],
-            "prints": [],
-            "debuggers": [],
-            "empty_except": [],
-            "bare_except": [],
-            "evals": [],
-        }
+        violations: Any = {'secrets': [], 'todos': [], 'prints': [], 'debuggers': [], 'empty_except': [], 'bare_except': [], 'evals': []}
         try:
-            with open(file_path, encoding="utf-8") as f:
+            with open(file_path, encoding='utf-8') as f:
                 content: Any = f.read()
                 lines: Any = content.split()
             for pattern in self.secret_patterns:
                 if re.search(pattern, content, re.IGNORECASE):
                     if self.enable_socratic_judge and file_path not in self._false_positive_cache:
-                        verification: Any = await self._socratic_verify(
-                            file_path,
-                            f"Potential secret matching pattern: {pattern}",
-                            "Is this actually a hardcoded secret or a false positive (test data, example, placeholder)?",
-                        )
-                        if verification == "YES":
-                            violations["secrets"].append(f"Line with potential secret: {pattern}")
+                        verification: Any = await self._socratic_verify(file_path, f'Potential secret matching pattern: {pattern}', 'Is this actually a hardcoded secret or a false positive (test data, example, placeholder)?')
+                        if verification == 'YES':
+                            violations['secrets'].append(f'Line with potential secret: {pattern}')
                         else:
                             self._false_positive_cache.add(file_path)
-                            Logger.info(f"Socratic Judge marked as false positive: {file_path}")
+                            Logger.info(f'Socratic Judge marked as false positive: {file_path}')
                     else:
-                        violations["secrets"].append(f"Line with potential secret: {pattern}")
+                        violations['secrets'].append(f'Line with potential secret: {pattern}')
                     break
             for i, line in enumerate(lines, 1):
                 for pattern in self.todo_patterns:
                     if re.search(pattern, line, re.IGNORECASE):
-                        violations["todos"].append(f"Line {i}: {line.strip()}")
+                        violations['todos'].append(f'Line {i}: {line.strip()}')
             for i, line in enumerate(lines, 1):
                 for pattern in self.print_patterns:
                     if re.search(pattern, line):
-                        violations["prints"].append(f"Line {i}: {line.strip()}")
+                        violations['prints'].append(f'Line {i}: {line.strip()}')
             for i, line in enumerate(lines, 1):
                 for pattern in self.debugger_patterns:
                     if re.search(pattern, line):
-                        violations["debuggers"].append(f"Line {i}: {line.strip()}")
+                        violations['debuggers'].append(f'Line {i}: {line.strip()}')
             for i, line in enumerate(lines, 1):
-                if re.search("except\\s*:", line):
-                    violations["bare_except"].append(f"Line {i}: {line.strip()}")
-                elif re.search("except\\s+pass\\s*:", line) or re.search("except\\s*\\n\\s*pass", content):
-                    violations["empty_except"].append(f"Line {i}: {line.strip()}")
+                if re.search('except\\s*:', line):
+                    violations['bare_except'].append(f'Line {i}: {line.strip()}')
+                elif re.search('except\\s+pass\\s*:', line) or re.search('except\\s*\\n\\s*pass', content):
+                    violations['empty_except'].append(f'Line {i}: {line.strip()}')
             for i, line in enumerate(lines, 1):
                 for pattern in self.eval_patterns:
                     if re.search(pattern, line):
                         if self.enable_socratic_judge and file_path not in self._false_positive_cache:
-                            verification: Any = await self._socratic_verify(
-                                file_path,
-                                f"Dangerous eval/exec usage: {line.strip()}",
-                                "Is this actually dangerous dynamic execution or a safe usage (e.g., JSON parsing, AST manipulation)?",
-                            )
-                            if verification == "YES":
-                                violations["evals"].append(f"Line {i}: {line.strip()}")
+                            verification: Any = await self._socratic_verify(file_path, f'Dangerous eval/exec usage: {line.strip()}', 'Is this actually dangerous dynamic execution or a safe usage (e.g., JSON parsing, AST manipulation)?')
+                            if verification == 'YES':
+                                violations['evals'].append(f'Line {i}: {line.strip()}')
                             else:
                                 self._false_positive_cache.add(file_path)
-                                Logger.info(f"Socratic Judge marked eval as false positive: {file_path}")
+                                Logger.info(f'Socratic Judge marked eval as false positive: {file_path}')
                         else:
-                            violations["evals"].append(f"Line {i}: {line.strip()}")
-        except Exception as e:  # guardian: allow-silent-swallower
-            Logger.error(f"Error scanning file {file_path}: {e}")
+                            violations['evals'].append(f'Line {i}: {line.strip()}')
+        # guardian: allow-silent-swallow
+        except Exception as e:
+            Logger.error(f'Error scanning file {file_path}: {e}')
         return violations
 
     async def _socratic_verify(self, file_path: str, issue: str, question: str) -> str:
@@ -332,115 +227,67 @@ class SafetyInspectorAgent(SovereignBaseAgent):
         """
         import asyncio
         import time
-
         call_ts = time.time()
-
-        # Rate limit guard (fail-closed above limit)
         if self._socratic_call_count >= self._max_socratic_calls:
-            Logger.warning(
-                f"Socratic Judge rate limit ({self._max_socratic_calls}) reached. "
-                f"Defaulting to YES for: {file_path}"
-            )
-            self._socratic_audit_log.append(
-                {
-                    "ts": call_ts,
-                    "file": file_path,
-                    "issue": issue,
-                    "verdict": "YES",
-                    "reason": "rate_limit",
-                }
-            )
-            return "YES"
-
+            Logger.warning(f'Socratic Judge rate limit ({self._max_socratic_calls}) reached. Defaulting to YES for: {file_path}')
+            self._socratic_audit_log.append({'ts': call_ts, 'file': file_path, 'issue': issue, 'verdict': 'YES', 'reason': 'rate_limit'})
+            return 'YES'
         self._socratic_call_count += 1
-        verdict = "YES"
-        reason = "unknown"
-
+        verdict = 'YES'
+        reason = 'unknown'
         try:
             from agentic_core.L2_execution.enforcement.llm_router_mcp_client import get_llm_router_client
-
             llm_router = get_llm_router_client()
-
-            # Sanitize snippet: strip credential-looking lines, cap at 500 chars
             try:
-                with open(file_path, encoding="utf-8") as f:
+                with open(file_path, encoding='utf-8') as f:
                     raw = f.read()
-                safe_lines = [
-                    ln
-                    for ln in raw.splitlines()
-                    if not any(
-                        kw in ln.lower() for kw in ("password", "secret", "api_key", "token", "private_key")
-                    )
-                ]
-                code_snippet = "\n".join(safe_lines)[:500]
-            except Exception:  # guardian: allow-silent-swallower
-                code_snippet = "<unreadable>"
-
-            prompt = (
-                f"Role: Socratic Judge - Expert Code Security Reviewer\n\n"
-                f"Context: {file_path}\nIssue: {issue}\nQuestion: {question}\n\n"
-                f"Code Snippet (sanitized, 500 chars):\n{code_snippet}\n\n"
-                f"Answer ONLY 'YES' (real violation) or 'NO' (false positive)."
-            )
-
-            result_dict = await asyncio.wait_for(
-                llm_router.validate_content(prompt=prompt),
-                timeout=DEFAULT_TIMEOUT,  # guardian: allow-magic-configuration
-            )
+                safe_lines = [ln for ln in raw.splitlines() if not any((kw in ln.lower() for kw in ('password', 'secret', 'api_key', 'token', 'private_key')))]
+                code_snippet = '\n'.join(safe_lines)[:500]
+            # guardian: allow-silent-swallow
+            except Exception:
+                code_snippet = '<unreadable>'
+            prompt = f"Role: Socratic Judge - Expert Code Security Reviewer\n\nContext: {file_path}\nIssue: {issue}\nQuestion: {question}\n\nCode Snippet (sanitized, 500 chars):\n{code_snippet}\n\nAnswer ONLY 'YES' (real violation) or 'NO' (false positive)."
+            result_dict = await asyncio.wait_for(llm_router.validate_content(prompt=prompt), timeout=DEFAULT_TIMEOUT)
             if isinstance(result_dict, dict):
-                response_text = result_dict.get("response", result_dict.get("reason", ""))
+                response_text = result_dict.get('response', result_dict.get('reason', ''))
             else:
                 response_text = str(result_dict)
             result = response_text.strip().upper()
-            if "YES" in result[:10]:
-                verdict = "YES"
-                reason = "llm_confirmed"
-                Logger.info(f"Socratic Judge (MCP): REAL Violation in {file_path}")
-            elif "NO" in result[:10]:
-                verdict = "NO"
-                reason = "llm_false_positive"
-                Logger.info(f"Socratic Judge (MCP): False positive in {file_path}")
+            if 'YES' in result[:10]:
+                verdict = 'YES'
+                reason = 'llm_confirmed'
+                Logger.info(f'Socratic Judge (MCP): REAL Violation in {file_path}')
+            elif 'NO' in result[:10]:
+                verdict = 'NO'
+                reason = 'llm_false_positive'
+                Logger.info(f'Socratic Judge (MCP): False positive in {file_path}')
             else:
-                verdict = "YES"
-                reason = "llm_ambiguous"
-                Logger.warning(f"Socratic Judge ambiguous response: {result}")
-
+                verdict = 'YES'
+                reason = 'llm_ambiguous'
+                Logger.warning(f'Socratic Judge ambiguous response: {result}')
         except asyncio.TimeoutError:
-            verdict = "YES"
-            reason = "timeout"
-            Logger.error(f"Socratic Judge timed out (5s) for: {file_path}")
-        except Exception as e:  # guardian: allow-silent-swallower
-            verdict = "YES"
-            reason = f"error: {e}"
-            Logger.error(f"Socratic Judge (MCP) error: {e}")
+            verdict = 'YES'
+            reason = 'timeout'
+            Logger.error(f'Socratic Judge timed out (5s) for: {file_path}')
+        # guardian: allow-silent-swallow
+        except Exception as e:
+            verdict = 'YES'
+            reason = f'error: {e}'
+            Logger.error(f'Socratic Judge (MCP) error: {e}')
         finally:
-            self._socratic_audit_log.append(
-                {
-                    "ts": call_ts,
-                    "file": file_path,
-                    "issue": issue,
-                    "verdict": verdict,
-                    "reason": reason,
-                    "call_index": self._socratic_call_count,
-                }
-            )
-
+            self._socratic_audit_log.append({'ts': call_ts, 'file': file_path, 'issue': issue, 'verdict': verdict, 'reason': reason, 'call_index': self._socratic_call_count})
         return verdict
 
-    def clear_false_positive_cache(self) -> Any:  # guardian: allow-type-erasure
+    # guardian: allow-type-erasure
+    def clear_false_positive_cache(self) -> Any:
         """Clear the false positive cache."""
         self._false_positive_cache.clear()
-        Logger.info("False positive cache cleared")
+        Logger.info('False positive cache cleared')
 
-    def heal_repository(
-        self,
-        dry_run: bool = True,
-        execute: bool = False,
-        depth: int = 0,
-        max_depth: int = 3,  # guardian: allow-magic-configuration
-        _call_path: set[str] | None = None,
-        **kwargs,
-    ) -> dict[str, Any]:
+    # guardian: allow-magic-config
+    # guardian: allow-type-erasure
+    # guardian: allow-magic-config
+    def heal_repository(self, dry_run: bool=True, execute: bool=False, depth: int=0, max_depth: int=3, _call_path: set[str] | None=None, **kwargs) -> dict[str, Any]:
         """Scan repository for security violations and report findings.
 
         Scans Python files for hardcoded secrets, debug statements, eval/exec
@@ -458,112 +305,55 @@ class SafetyInspectorAgent(SovereignBaseAgent):
             Dictionary with violations_found, violations_fixed, errors, skipped.
         """
         super().heal_repository(dry_run=dry_run, **kwargs)
-
         if _call_path is None:
             _call_path = set()
         agent_name = self.__class__.__name__
         if agent_name in _call_path:
-            return {
-                "violations_found": 0,
-                "violations_fixed": 0,
-                "errors": 1,
-                "skipped": 0,
-                "cycle_detected": True,
-            }
+            return {'violations_found': 0, 'violations_fixed': 0, 'errors': 1, 'skipped': 0, 'cycle_detected': True}
         if depth > max_depth:
-            return {
-                "violations_found": 0,
-                "violations_fixed": 0,
-                "errors": 0,
-                "skipped": 1,
-                "depth_limited": True,
-            }
+            return {'violations_found': 0, 'violations_fixed': 0, 'errors': 0, 'skipped': 1, 'depth_limited': True}
         _call_path.add(agent_name)
-
         violations_found = 0
         violations_fixed = 0
         errors = 0
         skipped = 0
-
         try:
-            Logger.info(f"[{agent_name}] Scanning repository for security violations...")
-
-            # Scan source directories
-            source_dirs = [
-                Path(self.project_root) / AGENTIC_CORE_DIR,
-                Path(self.project_root) / APPS_LIC_DIR,
-                Path(self.project_root) / APPS_RG_DIR,
-                Path(self.project_root) / APPS_SHARED_DIR,
-            ]
-
+            Logger.info(f'[{agent_name}] Scanning repository for security violations...')
+            source_dirs = [Path(self.project_root) / AGENTIC_CORE_DIR, Path(self.project_root) / APPS_LIC_DIR, Path(self.project_root) / APPS_RG_DIR, Path(self.project_root) / APPS_SHARED_DIR]
             all_violations = []
-
             for source_dir in source_dirs:
                 if not source_dir.exists():
                     continue
-
-                for py_file in source_dir.rglob("*.py"):
-                    # Skip __pycache__ and test files
-                    if "__pycache__" in str(py_file):
+                for py_file in source_dir.rglob('*.py'):
+                    if '__pycache__' in str(py_file):
                         skipped += 1
                         continue
-
                     try:
                         file_violations = self.scan_file(py_file)
                         if file_violations:
                             violations_found += len(file_violations)
                             all_violations.extend(file_violations)
-                    except Exception as e:  # guardian: allow-silent-swallower
-                        Logger.error(f"  Error scanning {py_file}: {e}")
+                    # guardian: allow-silent-swallow
+                    except Exception as e:
+                        Logger.error(f'  Error scanning {py_file}: {e}')
                         errors += 1
-
             if violations_found > 0:
-                Logger.warning(f"  Found {violations_found} security violations")
-
-                if execute and not dry_run:
-                    # Generate a security report (we don't auto-fix security issues)
-
-                    report_path = Path(self.project_root) / "logs" / "security_scan_report.json"
+                Logger.warning(f'  Found {violations_found} security violations')
+                if execute and (not dry_run):
+                    report_path = Path(self.project_root) / 'logs' / 'security_scan_report.json'
                     _wg.ensure_dir(report_path.parent)
-
-                    report = {
-                        "scan_date": str(Path(__file__).stat().st_mtime),
-                        "total_violations": violations_found,
-                        "violations": [
-                            {
-                                "file": str(v.get("file", "")),
-                                "type": v.get("type", ""),
-                                "line": v.get("line", 0),
-                            }
-                            for v in all_violations[:100]  # Limit to 100 for report size
-                        ],
-                        "note": "Security violations require manual review",
-                    }
-
+                    report = {'scan_date': str(Path(__file__).stat().st_mtime), 'total_violations': violations_found, 'violations': [{'file': str(v.get('file', '')), 'type': v.get('type', ''), 'line': v.get('line', 0)} for v in all_violations[:100]], 'note': 'Security violations require manual review'}
                     _wg.write_json(report_path, report, indent=2)
-
-                    Logger.info(f"  Generated security report: {report_path}")
-                    # Note: violations_fixed stays 0 because security issues need manual review
-
+                    Logger.info(f'  Generated security report: {report_path}')
             else:
-                Logger.info("  No security violations found")
-
-            Logger.info(f"[{agent_name}] Complete: {violations_found} violations (manual review required)")
-
-            return {
-                "violations_found": violations_found,
-                "violations_fixed": violations_fixed,
-                "errors": errors,
-                "skipped": skipped,
-                "agent": agent_name,
-                "dry_run": dry_run,
-                "note": "Security violations require manual review",
-            }
-
+                Logger.info('  No security violations found')
+            Logger.info(f'[{agent_name}] Complete: {violations_found} violations (manual review required)')
+            return {'violations_found': violations_found, 'violations_fixed': violations_fixed, 'errors': errors, 'skipped': skipped, 'agent': agent_name, 'dry_run': dry_run, 'note': 'Security violations require manual review'}
         finally:
             _call_path.discard(agent_name)
 
-    def heal(self, violation: dict) -> dict:  # guardian: allow-type-erasure
+    # guardian: allow-type-erasure
+    def heal(self, violation: dict) -> dict:
         """Heal safety inspection violations using standard_heal decorator pattern.
 
         Args:
@@ -579,26 +369,15 @@ class SafetyInspectorAgent(SovereignBaseAgent):
                 - errors: Number of errors encountered
                 - skipped: Number of violations skipped
         """
-        violation_type = violation.get("type", "")
-        path = violation.get("path", "")
-
-        Logger.info(f"[SAFETY_INSPECTOR] Inspecting {violation_type} at {path}")
-
-        # Safety inspections require manual review
-        return {
-            "violations_fixed": 0,
-            "violations_found": 1,
-            "errors": 0,
-            "skipped": 1,
-            "reason": "Safety violations require manual review",
-        }
-
+        violation_type = violation.get('type', '')
+        path = violation.get('path', '')
+        Logger.info(f'[SAFETY_INSPECTOR] Inspecting {violation_type} at {path}')
+        return {'violations_fixed': 0, 'violations_found': 1, 'errors': 0, 'skipped': 1, 'reason': 'Safety violations require manual review'}
 
 def create_overseer() -> ConstitutionalOverseer:
     """Factory function to create overseer instance."""
     return ConstitutionalOverseer()
 
-
-def create_safety_inspector(enable_socratic_judge: bool = True) -> SafetyInspectorAgent:
+def create_safety_inspector(enable_socratic_judge: bool=True) -> SafetyInspectorAgent:
     """Factory function to create SafetyInspectorAgent instance."""
     return SafetyInspectorAgent(enable_socratic_judge)

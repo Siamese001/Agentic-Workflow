@@ -8,25 +8,12 @@ boundaries to detect and fail-fast on illegal cross-layer imports
 that slipped through static analysis.
 """
 from __future__ import annotations
-
 import sys
 from pathlib import Path
 from typing import Optional
-
 from agentic_core.runtime.sovereignty_exceptions import SovereigntyViolationError
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 _FORBIDDEN_IN_AGENTIC_CORE = frozenset({APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR})
-
 
 def assert_no_apps_imports(caller_module: str) -> None:
     """Raise SovereigntyViolationError if caller_module imports any apps_* package.
@@ -36,20 +23,10 @@ def assert_no_apps_imports(caller_module: str) -> None:
     """
     loaded = set(sys.modules.keys())
     for forbidden in _FORBIDDEN_IN_AGENTIC_CORE:
-        if any(m == forbidden or m.startswith(forbidden + ".") for m in loaded):
-            raise SovereigntyViolationError(
-                f"Module '{caller_module}' loaded while forbidden package "
-                f"'{forbidden}' is present in sys.modules. "
-                f"agentic_core must not depend on apps_* packages."
-            )
+        if any((m == forbidden or m.startswith(forbidden + '.') for m in loaded)):
+            raise SovereigntyViolationError(f"Module '{caller_module}' loaded while forbidden package '{forbidden}' is present in sys.modules. agentic_core must not depend on apps_* packages.")
 
-
-def validate_layer_direction(
-    source_module: str,
-    target_module: str,
-    source_layer: Optional[int] = None,
-    target_layer: Optional[int] = None,
-) -> None:
+def validate_layer_direction(source_module: str, target_module: str, source_layer: Optional[int]=None, target_layer: Optional[int]=None) -> None:
     """Raise SovereigntyViolationError if import direction violates layer gravity.
 
     Higher numeric layer (e.g. L5=5) may import from lower (e.g. L0=0).
@@ -58,34 +35,19 @@ def validate_layer_direction(
     if source_layer is None or target_layer is None:
         return
     if source_layer < target_layer:
-        raise SovereigntyViolationError(
-            f"Layer gravity violation: '{source_module}' (L{source_layer}) "
-            f"imports '{target_module}' (L{target_layer}). "
-            f"Lower layers must not import from higher layers."
-        )
-
+        raise SovereigntyViolationError(f"Layer gravity violation: '{source_module}' (L{source_layer}) imports '{target_module}' (L{target_layer}). Lower layers must not import from higher layers.")
 
 def check_runtime_boundaries() -> bool:
     """Scan sys.modules for any agentic_core module that co-loaded apps_* packages.
 
     Returns True if clean, False (and prints report) if violations found.
     """
-    agentic_modules = [
-        m for m in sys.modules if m.startswith("agentic_core")
-    ]
-    forbidden_loaded = [
-        m
-        for m in sys.modules
-        if any(
-            m == f or m.startswith(f + ".") for f in _FORBIDDEN_IN_AGENTIC_CORE
-        )
-    ]
-
+    agentic_modules = [m for m in sys.modules if m.startswith('agentic_core')]
+    forbidden_loaded = [m for m in sys.modules if any((m == f or m.startswith(f + '.') for f in _FORBIDDEN_IN_AGENTIC_CORE))]
     if agentic_modules and forbidden_loaded:
-        print("Runtime boundary violations detected:")
-        print(f"  agentic_core modules loaded: {len(agentic_modules)}")
-        print(f"  Forbidden packages also loaded: {forbidden_loaded}")
+        print('Runtime boundary violations detected:')
+        print(f'  agentic_core modules loaded: {len(agentic_modules)}')
+        print(f'  Forbidden packages also loaded: {forbidden_loaded}')
         return False
-
-    print("OK: No runtime boundary violations detected")
+    print('OK: No runtime boundary violations detected')
     return True

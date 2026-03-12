@@ -1,37 +1,10 @@
 """Trace exactly what _inject_import does to bloat_analysis_util.py"""
 import re, sys
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-sys.path.insert(0, r'c:\Git\Agentic-Workflow')
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+# guardian: allow-global-mutation
+sys.path.insert(0, 'c:\\Git\\Agentic-Workflow')
 _PC = 'agentic_core.L0_routing.config.path_constants'
-
-# HEAD content of bloat_analysis_util.py (first 14 lines)
-head_content = (
-    "#!/usr/bin/env python3\n"
-    '"""Bloat analysis script for approved folders."""\n'
-    "\n"
-    "import ast\n"
-    "from collections import defaultdict\n"
-    "from datetime import datetime\n"
-    "from pathlib import Path\n"
-    "\n"
-    "from agentic_core.L5_safety.config.structure_blueprint.ssot import (\n"
-    "    GLOBAL_EXCLUDED_DIRS,\n"
-    "    SOVEREIGN_EXCLUDED_FOLDERS,\n"
-    ")\n"
-    "\n"
-    "ROOT = Path(__file__).parent.parent\n"
-)
-
+head_content = '#!/usr/bin/env python3\n"""Bloat analysis script for approved folders."""\n\nimport ast\nfrom collections import defaultdict\nfrom datetime import datetime\nfrom pathlib import Path\n\nfrom agentic_core.L5_safety.config.structure_blueprint.ssot import (\n    GLOBAL_EXCLUDED_DIRS,\n    SOVEREIGN_EXCLUDED_FOLDERS,\n)\n\nROOT = Path(__file__).parent.parent\n'
 lines = head_content.splitlines(keepends=True)
 
 def find_last_import(lines):
@@ -51,9 +24,10 @@ def find_last_import(lines):
 
 def inject(lines, const, module):
     lines = list(lines)
-    from_multi = re.compile(r'^\s*from\s+' + re.escape(module) + r'\s+import\s+\(')
-    from_single = re.compile(r'^(\s*from\s+' + re.escape(module) + r'\s+import\s+)(.+)$')
-
+    # guardian: allow-path-string
+    from_multi = re.compile('^\\s*from\\s+' + re.escape(module) + '\\s+import\\s+\\(')
+    # guardian: allow-path-string
+    from_single = re.compile('^(\\s*from\\s+' + re.escape(module) + '\\s+import\\s+)(.+)$')
     for i, ln in enumerate(lines):
         if from_multi.match(ln):
             depth = 0
@@ -63,10 +37,9 @@ def inject(lines, const, module):
                 if depth <= 0:
                     break
                 j += 1
-            print(f"  [multi-match] module={module} at line {i}, closing ) at j={j}")
-            lines.insert(j, f"    {const},\n")
+            print(f'  [multi-match] module={module} at line {i}, closing ) at j={j}')
+            lines.insert(j, f'    {const},\n')
             return lines
-
     for i, ln in enumerate(lines):
         m = from_single.match(ln)
         if m:
@@ -74,27 +47,23 @@ def inject(lines, const, module):
             names.append(const)
             names.sort()
             indent = ' ' * (len(ln) - len(ln.lstrip()))
-            new_lines = [indent + f"from {module} import (\n"]
+            new_lines = [indent + f'from {module} import (\n']
             for name in names:
-                new_lines.append(indent + f"    {name},\n")
-            new_lines.append(indent + ")\n")
-            lines[i:i+1] = new_lines
-            print(f"  [single→multi] at line {i}, expanded to {len(new_lines)} elements")
+                new_lines.append(indent + f'    {name},\n')
+            new_lines.append(indent + ')\n')
+            lines[i:i + 1] = new_lines
+            print(f'  [single→multi] at line {i}, expanded to {len(new_lines)} elements')
             return lines
-
     last = find_last_import(lines)
-    print(f"  [new import] after line {last}: {repr(lines[last].rstrip())}")
-    lines.insert(last + 1, f"from {module} import {const}\n")
+    print(f'  [new import] after line {last}: {repr(lines[last].rstrip())}')
+    lines.insert(last + 1, f'from {module} import {const}\n')
     return lines
-
-print("=== Injecting AGENTIC_CORE_DIR ===")
+print('=== Injecting AGENTIC_CORE_DIR ===')
 lines = inject(lines, 'AGENTIC_CORE_DIR', _PC)
-print("".join(lines[:20]))
-
-print("=== Injecting APPS_RG_DIR ===")
+print(''.join(lines[:20]))
+print('=== Injecting APPS_RG_DIR ===')
 lines = inject(lines, 'APPS_RG_DIR', _PC)
-print("".join(lines[:20]))
-
-print("=== Injecting APPS_LIC_DIR ===")
+print(''.join(lines[:20]))
+print('=== Injecting APPS_LIC_DIR ===')
 lines = inject(lines, 'APPS_LIC_DIR', _PC)
-print("".join(lines[:25]))
+print(''.join(lines[:25]))

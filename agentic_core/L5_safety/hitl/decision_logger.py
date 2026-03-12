@@ -6,97 +6,57 @@ Format (no timestamps in key fields):
 
 Rule: No wall-clock timestamps in key fields (determinism requirement).
 """
-
 from __future__ import annotations
-
 import json
 import logging
 import threading
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 logger = logging.getLogger(__name__)
-
-_DEFAULT_LOG_PATH = Path("artifacts/hitl/decisions.jsonl")
+_DEFAULT_LOG_PATH = Path('artifacts/hitl/decisions.jsonl')
 _LOCK = threading.Lock()
-
 
 @dataclass
 class HITLDecision:
     """Single HITL decision record. No timestamps in key fields."""
-
     decision_number: int
     agent: str
     file: str
     violation: str
     proposed: str
     decision: str
-    reviewer_signature: str = ""
+    reviewer_signature: str = ''
     metadata: dict[str, Any] = field(default_factory=dict)
 
     def to_log_line(self) -> str:
         """Format as the canonical HITL_DECISION_N line."""
-        return (
-            f"HITL_DECISION_{self.decision_number}: "
-            f"Agent={self.agent} | File={self.file} | "
-            f"Violation={self.violation} | Proposed={self.proposed} | "
-            f"Decision={self.decision}"
-        )
+        return f'HITL_DECISION_{self.decision_number}: Agent={self.agent} | File={self.file} | Violation={self.violation} | Proposed={self.proposed} | Decision={self.decision}'
 
     def to_jsonl(self) -> str:
         return json.dumps(asdict(self), ensure_ascii=True)
 
-
 class HITLDecisionLogger:
     """Logger for HITL decisions using deterministic format."""
 
-    def __init__(self, log_path: Path | None = None) -> None:
+    def __init__(self, log_path: Path | None=None) -> None:
         self._path = log_path or _DEFAULT_LOG_PATH
         self._path.parent.mkdir(parents=True, exist_ok=True)
         self._counter = 0
         self._records: list[HITLDecision] = []
 
-    def log(
-        self,
-        agent: str,
-        file: str,
-        violation: str,
-        proposed: str,
-        decision: str,
-        reviewer_signature: str = "",
-        metadata: dict[str, Any] | None = None,
-    ) -> HITLDecision:
+    def log(self, agent: str, file: str, violation: str, proposed: str, decision: str, reviewer_signature: str='', metadata: dict[str, Any] | None=None) -> HITLDecision:
         """Log a HITL decision. Returns the created record."""
         with _LOCK:
             self._counter += 1
-            record = HITLDecision(
-                decision_number=self._counter,
-                agent=agent,
-                file=file,
-                violation=violation,
-                proposed=proposed,
-                decision=decision,
-                reviewer_signature=reviewer_signature,
-                metadata=metadata or {},
-            )
+            record = HITLDecision(decision_number=self._counter, agent=agent, file=file, violation=violation, proposed=proposed, decision=decision, reviewer_signature=reviewer_signature, metadata=metadata or {})
             try:
-                with open(self._path, "a", encoding="utf-8") as f:
-                    f.write(record.to_jsonl() + "\n")
-            except OSError as exc:  # guardian: allow-silent-swallower
-                logger.warning("HITLDecisionLogger: write failed: %s", exc)
+                with open(self._path, 'a', encoding='utf-8') as f:
+                    f.write(record.to_jsonl() + '\n')
+            except OSError as exc:
+                logger.warning('HITLDecisionLogger: write failed: %s', exc)
             self._records.append(record)
-
         logger.info(record.to_log_line())
         return record
 
@@ -107,16 +67,11 @@ class HITLDecisionLogger:
     def count(self) -> int:
         with _LOCK:
             return self._counter
+_DEFAULT_LOGGER: HITLDecisionLogger | None = None
 
-
-_DEFAULT_LOGGER: HITLDecisionLogger | None = None  # guardian: allow-global-mutation
-
-
-def get_decision_logger(path: Path | None = None) -> HITLDecisionLogger:
-    global _DEFAULT_LOGGER  # guardian: allow-global-mutation
+def get_decision_logger(path: Path | None=None) -> HITLDecisionLogger:
+    global _DEFAULT_LOGGER
     if _DEFAULT_LOGGER is None:
         _DEFAULT_LOGGER = HITLDecisionLogger(log_path=path)
     return _DEFAULT_LOGGER
-
-
-__all__ = ["HITLDecision", "HITLDecisionLogger", "get_decision_logger"]
+__all__ = ['HITLDecision', 'HITLDecisionLogger', 'get_decision_logger']

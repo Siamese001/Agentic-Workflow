@@ -6,43 +6,22 @@ one runtime (except ENFORCEMENT_CLASS=STRUCTURAL which requires >=1 CI/AST layer
 CI MUST read ENFORCEMENT_LAYERS and ENFORCEMENT_CLASS metadata per requirement
 and fail if audit conditions unmet.
 """
-
 from __future__ import annotations
-
 import logging
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal
 from agentic_core.L5_safety.config.structure_blueprint.ssot import REPORTS_DIR
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 Logger = logging.getLogger(__name__)
-
-# Enforcement layer types
-EnforcementLayer = Literal["AST", "Runtime", "CI", "Schema", "Signature", "Replay"]
-
-# Enforcement classes
-EnforcementClass = Literal["STRUCTURAL", "EXECUTION_PATH"]  # guardian: allow-magic-configuration
-
-# Minimum enforcement layers required
-# guardian: allow-magic-configuration
-MIN_ENFORCEMENT_LAYERS = 2  # Minimum enforcement layers for CRITICAL requirements
+EnforcementLayer = Literal['AST', 'Runtime', 'CI', 'Schema', 'Signature', 'Replay']
+EnforcementClass = Literal['STRUCTURAL', 'EXECUTION_PATH']
+MIN_ENFORCEMENT_LAYERS = 2
 MIN_STRUCTURAL_LAYERS = 1
-
 
 @dataclass(frozen=True)
 class RequirementMetadata:
     """Metadata for a requirement from the requirements document."""
-
     req_id: str
     domain: str
     requirement: str
@@ -51,31 +30,21 @@ class RequirementMetadata:
     enforcement_layers: list[EnforcementLayer]
     enforcement_class: EnforcementClass
 
-
 class DualEnforcementViolation(Exception):
     """Raised when dual enforcement guarantee is violated."""
-
     pass
-
 
 class CriticalDualEnforcementAuditor:
     """Audits CRITICAL requirements for dual enforcement compliance (REQ-416)."""
 
-    def __init__(self, requirements_path: Path | None = None):
+    def __init__(self, requirements_path: Path | None=None):
         """Initialize the auditor.
 
         Args:
             requirements_path: Path to requirements document
         """
         if requirements_path is None:
-            # Calculate path from agentic_core/L5_safety/enforcement/ to docs/reports/plans/
-            self.requirements_path = (
-                Path(__file__).resolve().parents[3]
-                / "docs"
-                / REPORTS_DIR
-                / "plans"
-                / "Agentic Master Requirements.md"
-            )
+            self.requirements_path = Path(__file__).resolve().parents[3] / 'docs' / REPORTS_DIR / 'plans' / 'Agentic Master Requirements.md'
         else:
             self.requirements_path = requirements_path
 
@@ -86,37 +55,22 @@ class CriticalDualEnforcementAuditor:
             Dictionary mapping REQ-ID to RequirementMetadata
         """
         requirements = {}
-
         try:
-            content = self.requirements_path.read_text(encoding="utf-8")
-            lines = content.split("\n")
-
-            # Find the requirements table
+            content = self.requirements_path.read_text(encoding='utf-8')
+            lines = content.split('\n')
             in_table = False
             for i, line in enumerate(lines):
-                # Look for table header
-                if (
-                    "| Req ID | Domain | Requirement | Enforcement | Severity | ENFORCEMENT_LAYERS | ENFORCEMENT_CLASS |"
-                    in line
-                ):
+                if '| Req ID | Domain | Requirement | Enforcement | Severity | ENFORCEMENT_LAYERS | ENFORCEMENT_CLASS |' in line:
                     in_table = True
                     continue
-
                 if not in_table:
                     continue
-
-                # Skip table header separator
-                if "|--------" in line:
+                if '|--------' in line:
                     continue
-
-                # Skip empty lines
                 if not line.strip():
                     continue
-
-                # Parse requirement row
-                if line.startswith("| REQ-"):
-                    parts = [p.strip() for p in line.split("|")[1:-1]]  # Remove empty first/last
-
+                if line.startswith('| REQ-'):
+                    parts = [p.strip() for p in line.split('|')[1:-1]]
                     if len(parts) >= 7:
                         req_id = parts[0]
                         domain = parts[1]
@@ -125,35 +79,20 @@ class CriticalDualEnforcementAuditor:
                         severity = parts[4]
                         layers_str = parts[5]
                         class_str = parts[6]
-
-                        # Parse enforcement layers
                         enforcement_layers = []
                         if layers_str:
-                            layers = [l.strip() for l in layers_str.split(",")]
+                            layers = [l.strip() for l in layers_str.split(',')]
                             for layer in layers:
                                 layer = layer.strip()
-                                if layer in ["AST", "Runtime", "CI", "Schema", "Signature", "Replay"]:
+                                if layer in ['AST', 'Runtime', 'CI', 'Schema', 'Signature', 'Replay']:
                                     enforcement_layers.append(layer)
-
-                        # Parse enforcement class
-                        enforcement_class = "EXECUTION_PATH"  # Default
-                        if "STRUCTURAL" in class_str:
-                            enforcement_class = "STRUCTURAL"
-
-                        requirements[req_id] = RequirementMetadata(
-                            req_id=req_id,
-                            domain=domain,
-                            requirement=requirement,
-                            enforcement=enforcement,
-                            severity=severity,
-                            enforcement_layers=enforcement_layers,
-                            enforcement_class=enforcement_class,
-                        )
-
+                        enforcement_class = 'EXECUTION_PATH'
+                        if 'STRUCTURAL' in class_str:
+                            enforcement_class = 'STRUCTURAL'
+                        requirements[req_id] = RequirementMetadata(req_id=req_id, domain=domain, requirement=requirement, enforcement=enforcement, severity=severity, enforcement_layers=enforcement_layers, enforcement_class=enforcement_class)
         except Exception as e:
-            Logger.error(f"Failed to parse requirements: {e}")
+            Logger.error(f'Failed to parse requirements: {e}')
             raise
-
         return requirements
 
     def audit_critical_requirements(self) -> dict[str, list[str]]:
@@ -165,43 +104,23 @@ class CriticalDualEnforcementAuditor:
         requirements = self.parse_requirements_metadata()
         violations = []
         warnings = []
-
         for req_id, metadata in requirements.items():
-            if metadata.severity != "CRITICAL":
+            if metadata.severity != 'CRITICAL':
                 continue
-
-            # Check enforcement layers count
             layer_count = len(metadata.enforcement_layers)
-
-            if metadata.enforcement_class == "STRUCTURAL":
-                # STRUCTURAL requirements need at least 1 CI/AST layer
-                has_ci_or_ast = any(layer in ["CI", "AST"] for layer in metadata.enforcement_layers)
+            if metadata.enforcement_class == 'STRUCTURAL':
+                has_ci_or_ast = any((layer in ['CI', 'AST'] for layer in metadata.enforcement_layers))
                 if not has_ci_or_ast:
-                    violations.append(
-                        f"{req_id}: STRUCTURAL class requires at least 1 CI or AST layer, "
-                        f"found: {metadata.enforcement_layers}"
-                    )
+                    violations.append(f'{req_id}: STRUCTURAL class requires at least 1 CI or AST layer, found: {metadata.enforcement_layers}')
                 elif layer_count < MIN_STRUCTURAL_LAYERS:
-                    warnings.append(
-                        f"{req_id}: STRUCTURAL class has only {layer_count} enforcement layer(s), "
-                        f"recommended minimum: {MIN_STRUCTURAL_LAYERS}"
-                    )
+                    warnings.append(f'{req_id}: STRUCTURAL class has only {layer_count} enforcement layer(s), recommended minimum: {MIN_STRUCTURAL_LAYERS}')
             else:
-                # EXECUTION_PATH requirements need at least 2 layers with 1 runtime
-                has_runtime = "Runtime" in metadata.enforcement_layers
-
+                has_runtime = 'Runtime' in metadata.enforcement_layers
                 if layer_count < MIN_ENFORCEMENT_LAYERS:
-                    violations.append(
-                        f"{req_id}: CRITICAL requires >=2 enforcement layers, "
-                        f"found {layer_count}: {metadata.enforcement_layers}"
-                    )
+                    violations.append(f'{req_id}: CRITICAL requires >=2 enforcement layers, found {layer_count}: {metadata.enforcement_layers}')
                 elif not has_runtime:
-                    violations.append(
-                        f"{req_id}: CRITICAL requires at least 1 Runtime enforcement layer, "
-                        f"found: {metadata.enforcement_layers}"
-                    )
-
-        return {"violations": violations, "warnings": warnings}
+                    violations.append(f'{req_id}: CRITICAL requires at least 1 Runtime enforcement layer, found: {metadata.enforcement_layers}')
+        return {'violations': violations, 'warnings': warnings}
 
     def generate_audit_report(self) -> str:
         """Generate a comprehensive audit report.
@@ -210,55 +129,47 @@ class CriticalDualEnforcementAuditor:
             Formatted audit report as string
         """
         audit_results = self.audit_critical_requirements()
-
         report = []
-        report.append("# CRITICAL Dual Enforcement Audit Report (REQ-416)")
-        report.append("")
-        report.append(f"Requirements file: {self.requirements_path}")
-        report.append("")
-
-        if audit_results["violations"]:
-            report.append("## VIOLATIONS")
-            report.append("")
-            for violation in audit_results["violations"]:
-                report.append(f"- **VIOLATION**: {violation}")
-            report.append("")
+        report.append('# CRITICAL Dual Enforcement Audit Report (REQ-416)')
+        report.append('')
+        report.append(f'Requirements file: {self.requirements_path}')
+        report.append('')
+        if audit_results['violations']:
+            report.append('## VIOLATIONS')
+            report.append('')
+            for violation in audit_results['violations']:
+                report.append(f'- **VIOLATION**: {violation}')
+            report.append('')
         else:
-            report.append("## VIOLATIONS")
-            report.append("")
-            report.append("✅ No violations found.")
-            report.append("")
-
-        if audit_results["warnings"]:
-            report.append("## WARNINGS")
-            report.append("")
-            for warning in audit_results["warnings"]:
-                report.append(f"- **WARNING**: {warning}")
-            report.append("")
+            report.append('## VIOLATIONS')
+            report.append('')
+            report.append('✅ No violations found.')
+            report.append('')
+        if audit_results['warnings']:
+            report.append('## WARNINGS')
+            report.append('')
+            for warning in audit_results['warnings']:
+                report.append(f'- **WARNING**: {warning}')
+            report.append('')
         else:
-            report.append("## WARNINGS")
-            report.append("")
-            report.append("✅ No warnings found.")
-            report.append("")
-
-        # Summary
+            report.append('## WARNINGS')
+            report.append('')
+            report.append('✅ No warnings found.')
+            report.append('')
         requirements = self.parse_requirements_metadata()
-        critical_count = sum(1 for r in requirements.values() if r.severity == "CRITICAL")
-
-        report.append("## SUMMARY")
-        report.append("")
-        report.append(f"- Total requirements: {len(requirements)}")
-        report.append(f"- CRITICAL requirements: {critical_count}")
+        critical_count = sum((1 for r in requirements.values() if r.severity == 'CRITICAL'))
+        report.append('## SUMMARY')
+        report.append('')
+        report.append(f'- Total requirements: {len(requirements)}')
+        report.append(f'- CRITICAL requirements: {critical_count}')
         report.append(f"- Violations: {len(audit_results['violations'])}")
         report.append(f"- Warnings: {len(audit_results['warnings'])}")
-        report.append("")
-
-        if not audit_results["violations"]:
-            report.append("✅ All CRITICAL requirements satisfy dual enforcement guarantee (REQ-416).")
+        report.append('')
+        if not audit_results['violations']:
+            report.append('✅ All CRITICAL requirements satisfy dual enforcement guarantee (REQ-416).')
         else:
-            report.append("❌ Dual enforcement guarantee violations detected (REQ-416).")
-
-        return "\n".join(report)
+            report.append('❌ Dual enforcement guarantee violations detected (REQ-416).')
+        return '\n'.join(report)
 
     def save_audit_report(self, output_path: Path) -> Path:
         """Save audit report to file.
@@ -271,8 +182,8 @@ class CriticalDualEnforcementAuditor:
         """
         report = self.generate_audit_report()
         output_path.parent.mkdir(parents=True, exist_ok=True)
-        output_path.write_text(report, encoding="utf-8")
-        Logger.info(f"Dual enforcement audit report saved to {output_path}")
+        output_path.write_text(report, encoding='utf-8')
+        Logger.info(f'Dual enforcement audit report saved to {output_path}')
         return output_path
 
     def run_ci_audit(self) -> int:
@@ -282,22 +193,17 @@ class CriticalDualEnforcementAuditor:
             0 if no violations, 1 if violations found
         """
         audit_results = self.audit_critical_requirements()
-
-        if audit_results["violations"]:
-            Logger.error("CRITICAL Dual Enforcement violations detected (REQ-416):")
-            for violation in audit_results["violations"]:
-                Logger.error(f"  - {violation}")
+        if audit_results['violations']:
+            Logger.error('CRITICAL Dual Enforcement violations detected (REQ-416):')
+            for violation in audit_results['violations']:
+                Logger.error(f'  - {violation}')
             return 1
-
-        Logger.info("✅ All CRITICAL requirements satisfy dual enforcement guarantee (REQ-416)")
-
-        if audit_results["warnings"]:
-            Logger.warning("Dual enforcement warnings:")
-            for warning in audit_results["warnings"]:
-                Logger.warning(f"  - {warning}")
-
+        Logger.info('✅ All CRITICAL requirements satisfy dual enforcement guarantee (REQ-416)')
+        if audit_results['warnings']:
+            Logger.warning('Dual enforcement warnings:')
+            for warning in audit_results['warnings']:
+                Logger.warning(f'  - {warning}')
         return 0
-
 
 def run_dual_enforcement_audit() -> int:
     """Run the dual enforcement audit as a CLI command.
@@ -308,7 +214,6 @@ def run_dual_enforcement_audit() -> int:
     auditor = CriticalDualEnforcementAuditor()
     return auditor.run_ci_audit()
 
-
 def test_dual_enforcement_audit() -> bool:
     """Test the dual enforcement auditor.
 
@@ -318,24 +223,15 @@ def test_dual_enforcement_audit() -> bool:
     try:
         auditor = CriticalDualEnforcementAuditor()
         requirements = auditor.parse_requirements_metadata()
-
-        # Check that we parsed some requirements
         if not requirements:
-            Logger.error("No requirements parsed")
+            Logger.error('No requirements parsed')
             return False
-
-        # Check that we have CRITICAL requirements
-        critical_count = sum(1 for r in requirements.values() if r.severity == "CRITICAL")
+        critical_count = sum((1 for r in requirements.values() if r.severity == 'CRITICAL'))
         if critical_count == 0:
-            Logger.error("No CRITICAL requirements found")
+            Logger.error('No CRITICAL requirements found')
             return False
-
-        # Run audit
         auditor.audit_critical_requirements()
-
-        # Audit should complete without errors
         return True
-
     except Exception as e:
-        Logger.error(f"Dual enforcement audit test failed: {e}")
+        Logger.error(f'Dual enforcement audit test failed: {e}')
         return False

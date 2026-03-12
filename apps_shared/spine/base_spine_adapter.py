@@ -5,24 +5,11 @@ Provides deterministic CID derivation, call-order invariants, and
 mutation discipline enforcement. All app-specific adapters must
 subclass this base to ensure cross-app consistency.
 """
-
 from __future__ import annotations
-
 from typing import Any
-
 from agentic_core.interfaces.execution import CIDRegistry, ExecutionCycle
 from apps_shared.utils.determinism_util import canonical_hash, strip_nondeterministic
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 class BaseSpineAdapter:
     """
@@ -38,18 +25,9 @@ class BaseSpineAdapter:
     - prefix (e.g., "lic-", "rg-")
     - orchestrator dependency wiring
     """
-
-    # Fixed hash body length for CID shape invariance
     _HASH_BODY_LENGTH: int = 16
 
-    def __init__(
-        self,
-        cid_registry: CIDRegistry,
-        orchestrator: Any,
-        *,
-        prefix: str,
-        max_reentry_attempts: int = 3,
-    ) -> None:
+    def __init__(self, cid_registry: CIDRegistry, orchestrator: Any, *, prefix: str, max_reentry_attempts: int=3) -> None:
         """Initialize base adapter with dependencies and prefix.
 
         Args:
@@ -69,12 +47,12 @@ class BaseSpineAdapter:
 
     def _validate_prefix(self, prefix: str) -> None:
         """Validate prefix format according to contract requirements."""
-        if not prefix.endswith("-"):
+        if not prefix.endswith('-'):
             raise ValueError(f"Prefix must end with '-': {prefix}")
         if prefix.lower() != prefix:
-            raise ValueError(f"Prefix must be lowercase: {prefix}")
+            raise ValueError(f'Prefix must be lowercase: {prefix}')
         if len(prefix) < 2:
-            raise ValueError(f"Prefix too short: {prefix}")
+            raise ValueError(f'Prefix too short: {prefix}')
 
     def _derive_cid(self, intent_input: dict[str, Any]) -> str:
         """
@@ -83,27 +61,19 @@ class BaseSpineAdapter:
         CID format: {prefix}{hash_body}
         where hash_body is fixed-length hash of canonicalized payload.
         """
-        # Strip nondeterministic fields for consistent hashing
         stripped = strip_nondeterministic(intent_input)
+        hash_body = canonical_hash(stripped)[:self._HASH_BODY_LENGTH]
+        return f'{self._prefix}{hash_body}'
 
-        # Derive hash body using existing canonical hash function
-        hash_body = canonical_hash(stripped)[: self._HASH_BODY_LENGTH]
-
-        # Combine prefix with hash body
-        return f"{self._prefix}{hash_body}"
-
-    def _enrich_intent_input(
-        self, intent_input: dict[str, Any], cid: str, cycle_attempt: int
-    ) -> dict[str, Any]:
+    def _enrich_intent_input(self, intent_input: dict[str, Any], cid: str, cycle_attempt: int) -> dict[str, Any]:
         """
         Create enriched intent input without mutating caller's dict.
 
         Enforces mutation discipline by creating a fresh dict.
         """
-        # Create fresh dict - never mutate caller's input
         enriched = dict(intent_input)
-        enriched["_cid"] = cid
-        enriched["_cycle_attempt"] = cycle_attempt
+        enriched['_cid'] = cid
+        enriched['_cycle_attempt'] = cycle_attempt
         return enriched
 
     def execute(self, intent_input: dict[str, Any]) -> dict[str, Any]:
@@ -123,21 +93,12 @@ class BaseSpineAdapter:
         Returns:
             Result dict from orchestrator augmented with CID
         """
-        # Step 1: Derive deterministic CID
         cid = self._derive_cid(intent_input)
-
-        # Step 2: Register CID before orchestrator execution (call order invariant)
         cycle: ExecutionCycle = self._cid_registry.new_cycle(cid)
-
-        # Step 3: Create enriched intent input (mutation discipline)
         enriched = self._enrich_intent_input(intent_input, cid, cycle.attempt)
-
-        # Step 4: Delegate to orchestrator
         result = self._orchestrator.execute(enriched)
-
-        # Step 5: Return result with CID (ensure fresh dict)
         final_result = dict(result)
-        final_result["cid"] = cid
+        final_result['cid'] = cid
         return final_result
 
     @property

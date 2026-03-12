@@ -8,26 +8,10 @@ Invariants:
   - Findings sorted deterministically
   - report_id = report_hash
 """
-
 from __future__ import annotations
-
 import hashlib
 from dataclasses import dataclass
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-# =============================================================================
-# RCA Types
-# =============================================================================
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 @dataclass(frozen=True, slots=True)
 class RCAFinding:
@@ -44,12 +28,10 @@ class RCAFinding:
     evidence_hash : str
         SHA-256 hash of canonical normalized evidence for this signature.
     """
-
     category: str
     signature: str
     count: int
     evidence_hash: str
-
 
 @dataclass(frozen=True, slots=True)
 class RCAReport:
@@ -70,19 +52,12 @@ class RCAReport:
     report_hash : str
         SHA-256 hash of canonical bytes (same as report_id).
     """
-
     report_id: str
     snapshot_id: str
     window_start_utc: int
     window_end_utc: int
     findings: tuple[RCAFinding, ...]
     report_hash: str
-
-
-# =============================================================================
-# Canonical Serialization
-# =============================================================================
-
 
 def canonical_bytes(report: RCAReport) -> bytes:
     """Return deterministic canonical byte representation of RCA report.
@@ -102,28 +77,12 @@ def canonical_bytes(report: RCAReport) -> bytes:
     bytes
         Canonical byte representation.
     """
-    # Sort findings by (category, signature) for determinism
     sorted_findings = sorted(report.findings, key=lambda f: (f.category, f.signature))
-
-    # Build canonical representation
-    parts = [
-        report.snapshot_id.encode("utf-8"),
-        str(report.window_start_utc).encode("utf-8"),
-        str(report.window_end_utc).encode("utf-8"),
-    ]
-
-    # Add each finding
+    parts = [report.snapshot_id.encode('utf-8'), str(report.window_start_utc).encode('utf-8'), str(report.window_end_utc).encode('utf-8')]
     for finding in sorted_findings:
-        finding_parts = [
-            finding.category.encode("utf-8"),
-            finding.signature.encode("utf-8"),
-            str(finding.count).encode("utf-8"),
-            finding.evidence_hash.encode("utf-8"),
-        ]
-        parts.append(b"\x1e".join(finding_parts))
-
-    return b"\x1f".join(parts)
-
+        finding_parts = [finding.category.encode('utf-8'), finding.signature.encode('utf-8'), str(finding.count).encode('utf-8'), finding.evidence_hash.encode('utf-8')]
+        parts.append(b'\x1e'.join(finding_parts))
+    return b'\x1f'.join(parts)
 
 def compute_report_hash(report: RCAReport) -> str:
     """Compute SHA-256 hash of canonical bytes.
@@ -140,13 +99,7 @@ def compute_report_hash(report: RCAReport) -> str:
     """
     return hashlib.sha256(canonical_bytes(report)).hexdigest()
 
-
-def create_rca_report(
-    snapshot_id: str,
-    window_start_utc: int,
-    window_end_utc: int,
-    findings: tuple[RCAFinding, ...],
-) -> RCAReport:
+def create_rca_report(snapshot_id: str, window_start_utc: int, window_end_utc: int, findings: tuple[RCAFinding, ...]) -> RCAReport:
     """Create an RCA report with content-addressed ID.
 
     Parameters
@@ -165,25 +118,6 @@ def create_rca_report(
     RCAReport
         RCA report with report_id = report_hash.
     """
-    # Create temporary report to compute hash
-    temp_report = RCAReport(
-        report_id="",
-        snapshot_id=snapshot_id,
-        window_start_utc=window_start_utc,
-        window_end_utc=window_end_utc,
-        findings=findings,
-        report_hash="",
-    )
-
-    # Compute hash
+    temp_report = RCAReport(report_id='', snapshot_id=snapshot_id, window_start_utc=window_start_utc, window_end_utc=window_end_utc, findings=findings, report_hash='')
     report_hash = compute_report_hash(temp_report)
-
-    # Create final report with hash
-    return RCAReport(
-        report_id=report_hash,
-        snapshot_id=snapshot_id,
-        window_start_utc=window_start_utc,
-        window_end_utc=window_end_utc,
-        findings=findings,
-        report_hash=report_hash,
-    )
+    return RCAReport(report_id=report_hash, snapshot_id=snapshot_id, window_start_utc=window_start_utc, window_end_utc=window_end_utc, findings=findings, report_hash=report_hash)

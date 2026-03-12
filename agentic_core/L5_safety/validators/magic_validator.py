@@ -126,17 +126,26 @@ class MagicConfigDetector(AntiPatternDetector):
         """Check function parameter defaults for magic values."""
         violations = []
 
-        # Check for whitelist comment
+        # Check for whitelist comment (look back up to 5 lines)
         if node.lineno > 1 and node.lineno <= len(source_lines):
-            prev_line = source_lines[node.lineno - 2].strip()
-            if self.WHITELIST_COMMENT in prev_line:
-                return []
+            for lookback in range(1, 6):
+                check_idx = node.lineno - 1 - lookback
+                if check_idx < 0:
+                    break
+                line = source_lines[check_idx].strip()
+                if self.WHITELIST_COMMENT in line:
+                    return []
+                if line and not line.startswith('#'):
+                    break
 
         # Check each argument with a default value
         defaults = node.args.defaults
         args = node.args.args[-len(defaults) :] if defaults else []
 
         for arg, default in zip(args, defaults, strict=False):
+            # Skip ALL_CAPS parameter names - these are legitimate SSOT constants
+            if arg.arg == arg.arg.upper() and arg.arg.isidentifier():
+                continue
             param_name = arg.arg.lower()
 
             # Check if parameter name suggests configuration
@@ -192,12 +201,19 @@ class MagicConfigDetector(AntiPatternDetector):
 
         target = node.targets[0]
         var_name = ""
+        original_var_name = ""
         if isinstance(target, ast.Name):
+            original_var_name = target.id
             var_name = target.id.lower()
         elif isinstance(target, ast.Attribute):
+            original_var_name = target.attr
             var_name = target.attr.lower()
 
         if not var_name:
+            return []
+
+        # Skip ALL_CAPS names - these are legitimate SSOT constants, not magic config
+        if original_var_name == original_var_name.upper() and original_var_name.isidentifier():
             return []
 
         # Check if variable name suggests configuration

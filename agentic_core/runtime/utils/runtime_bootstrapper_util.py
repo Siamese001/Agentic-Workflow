@@ -1,46 +1,24 @@
 from __future__ import annotations
-
 import logging
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-"""Brief description of functionality and purpose."""
-
-"Brief description of functionality and purpose."
+'Brief description of functionality and purpose.'
+'Brief description of functionality and purpose.'
 from typing import Any
-
 from agentic_core.L0_routing.utils.TelemetryRecorder import TelemetryRecorder
 from agentic_core.L1_cognition.boundaries.semantic_gatekeeper_validator import semantic_gatekeeper
 from agentic_core.L1_cognition.reasoning.StructuredEngineAgent import StructuredEngineAgent
 from agentic_core.L2_execution.action_handlers.sandbox import DockerSandbox
 from agentic_core.L2_execution.reasoning.mcp_manager import MCPConnectionManager
-
-# ARCHIVED IMPORT REMOVED - dependency no longer available
 from agentic_core.L3_orchestration.reasoning.SupremeCourt import SupremeCourt
 from agentic_core.L4_state.audit_trails.genealogy import GenealogyRegistry
 from agentic_core.L4_state.session_manager.disk_adapter import LocalDiskAdapter
 from agentic_core.L5_safety.enforcement.airlock import AirlockProtocol
 from agentic_core.L5_safety.enforcement.pii_vault_enforcer import PIIVault
-from agentic_core.L5_safety.validators.constitutional_overseer_validator import (
-    ConstitutionalOverseer,
-)
+from agentic_core.L5_safety.validators.constitutional_overseer_validator import ConstitutionalOverseer
 from agentic_core.L5_safety.validators.cost_governor_validator import CostGovernor
 from agentic_core.runtime.P1_core.SubatomicHop import SubatomicHop
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 LOGGER = logging.getLogger(__name__)
-
-# [SSOT IMPORT] Structure blueprint is the single source of truth
-
 Logger: Any = logging.getLogger(__name__)
-
 
 class runtime_bootstrapper:
     """
@@ -54,24 +32,8 @@ class runtime_bootstrapper:
 
     def assemble_hop(self, role: str) -> SubatomicHop:
         """Assembles a 100% Gravity-Compliant Hop with all 13 injected tools."""
-        LOGGER.info(f"Bootstrapper: Assembling Sovereign Hop for role -> {role}")
-        return SubatomicHop(
-            role=role,
-            config=self.config,
-            telemetry=self._get_tool("telemetry", lambda: TelemetryRecorder(self.config)),
-            StructuredEngineAgent=self._get_tool("engine", lambda: StructuredEngineAgent(self.config)),
-            gatekeeper=self._get_tool("gatekeeper", lambda: semantic_gatekeeper(self.config)),
-            sandbox=self._get_tool("sandbox", lambda: DockerSandbox(self.config)),
-            mcp_manager=self._get_tool("mcp", lambda: MCPConnectionManager(self.config)),
-            SupremeCourt=self._get_tool("court", lambda: SupremeCourt(self.config)),
-            storage=self._get_tool("storage", lambda: LocalDiskAdapter(self.config)),
-            genealogy=self._get_tool("genealogy", lambda: GenealogyRegistry(self.config)),
-            PiiVault=self._get_tool("pii", lambda: PIIVault(self.config)),
-            membrane=self._get_tool("membrane", lambda: InputMembrane(self.config)),
-            airlock=self._get_tool("airlock", lambda: AirlockProtocol(self.config)),
-            CostGovernor=self._get_tool("governor", lambda: CostGovernor(self.config)),
-            overseer=self._get_tool("overseer", lambda: ConstitutionalOverseer(self.config)),
-        )
+        LOGGER.info(f'Bootstrapper: Assembling Sovereign Hop for role -> {role}')
+        return SubatomicHop(role=role, config=self.config, telemetry=self._get_tool('telemetry', lambda: TelemetryRecorder(self.config)), StructuredEngineAgent=self._get_tool('engine', lambda: StructuredEngineAgent(self.config)), gatekeeper=self._get_tool('gatekeeper', lambda: semantic_gatekeeper(self.config)), sandbox=self._get_tool('sandbox', lambda: DockerSandbox(self.config)), mcp_manager=self._get_tool('mcp', lambda: MCPConnectionManager(self.config)), SupremeCourt=self._get_tool('court', lambda: SupremeCourt(self.config)), storage=self._get_tool('storage', lambda: LocalDiskAdapter(self.config)), genealogy=self._get_tool('genealogy', lambda: GenealogyRegistry(self.config)), PiiVault=self._get_tool('pii', lambda: PIIVault(self.config)), membrane=self._get_tool('membrane', lambda: InputMembrane(self.config)), airlock=self._get_tool('airlock', lambda: AirlockProtocol(self.config)), CostGovernor=self._get_tool('governor', lambda: CostGovernor(self.config)), overseer=self._get_tool('overseer', lambda: ConstitutionalOverseer(self.config)))
 
     def _get_tool(self, key: str, constructor_func) -> Any:
         if key not in self._registry:

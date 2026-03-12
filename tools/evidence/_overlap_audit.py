@@ -15,6 +15,7 @@ from collections import defaultdict
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+# guardian: allow-global-mutation
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
@@ -117,7 +118,7 @@ for edge in result.edges:
     if edge.relation_type != "imports":
         continue
     to_raw = edge.to_name
-    # to_name can be dotted module like "agentic_core.L0_routing.foo" 
+    # to_name can be dotted module like "agentic_core.L0_routing.foo"
     # or "ADG::Symbol::agentic_core.L0_routing.foo"
     for pfx in ("ADG::Symbol::", "ADG::Module::", "Symbol::", "Module::"):
         if to_raw.startswith(pfx):

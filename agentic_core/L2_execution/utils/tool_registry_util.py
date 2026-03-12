@@ -4,27 +4,14 @@ Tool Registry - Centralized SSOT for all tools.
 Ensures tools reside in Sovereign Territory before registration.
 Integrates with SovereignIndex for safety validation.
 """
-
 import logging
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any, Optional
-
 from agentic_core.L0_routing.config import GLOBAL_EXCLUDED_DIRS
 from agentic_core.L0_routing.utils.path_util import is_path_allowed
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 Logger = logging.getLogger(__name__)
-
 
 class ToolRegistry:
     """
@@ -36,18 +23,17 @@ class ToolRegistry:
     - Integration with SovereignIndex for tool discovery
     - Logging of registration attempts
     """
-
-    _instance: Optional["ToolRegistry"] = None
+    _instance: Optional['ToolRegistry'] = None
     _tools: dict[str, dict[str, Any]] = {}
 
-    def __new__(cls) -> "ToolRegistry":
+    def __new__(cls) -> 'ToolRegistry':
         if cls._instance is None:
             cls._instance = super().__new__(cls)
             cls._instance._tools = {}
         return cls._instance
 
     @classmethod
-    def get_instance(cls) -> "ToolRegistry":
+    def get_instance(cls) -> 'ToolRegistry':
         """Get the singleton instance of ToolRegistry."""
         if cls._instance is None:
             cls._instance = cls()
@@ -59,13 +45,7 @@ class ToolRegistry:
         cls._instance = None
         cls._tools = {}
 
-    def register_tool(
-        self,
-        tool_name: str,
-        tool_path: str,
-        tool_func: Callable[..., Any],
-        description: str = "",
-    ) -> bool:
+    def register_tool(self, tool_name: str, tool_path: str, tool_func: Callable[..., Any], description: str='') -> bool:
         """
         Registers a tool only after verifying its location is sovereign.
 
@@ -81,44 +61,23 @@ class ToolRegistry:
         try:
             path = Path(tool_path)
             if path.is_absolute():
-                # Convert to relative path from cwd
                 try:
                     rel_path = path.relative_to(Path.cwd())
                 except ValueError:
-                    # Path is not under cwd
-                    Logger.error(
-                        f"[REGISTRY] REJECTED: Tool '{tool_name}' at {tool_path} is outside project root.",
-                    )
+                    Logger.error(f"[REGISTRY] REJECTED: Tool '{tool_name}' at {tool_path} is outside project root.")
                     return False
             else:
                 rel_path = path
-
-            # Check if path is in globally excluded directories
             path_parts = rel_path.parts
-            if any(excl in path_parts for excl in GLOBAL_EXCLUDED_DIRS):
-                Logger.error(
-                    f"[REGISTRY] REJECTED: Tool '{tool_name}' at {tool_path} "
-                    "is in a globally excluded directory.",
-                )
+            if any((excl in path_parts for excl in GLOBAL_EXCLUDED_DIRS)):
+                Logger.error(f"[REGISTRY] REJECTED: Tool '{tool_name}' at {tool_path} is in a globally excluded directory.")
                 return False
-
-            # Validate path is in Sovereign Territory
             if not is_path_allowed(str(rel_path)):
-                Logger.error(
-                    f"[REGISTRY] REJECTED: Tool '{tool_name}' at {tool_path} is outside Sovereign Territory.",
-                )
+                Logger.error(f"[REGISTRY] REJECTED: Tool '{tool_name}' at {tool_path} is outside Sovereign Territory.")
                 return False
-
-            # Register the tool
-            self._tools[tool_name] = {
-                "path": str(tool_path),
-                "func": tool_func,
-                "verified": True,
-                "description": description,
-            }
+            self._tools[tool_name] = {'path': str(tool_path), 'func': tool_func, 'verified': True, 'description': description}
             Logger.info(f"[REGISTRY] SUCCESS: Tool '{tool_name}' registered and verified.")
             return True
-
         except Exception as e:
             Logger.error(f"[REGISTRY] ERROR: Failed to register tool '{tool_name}': {e}")
             return False
@@ -162,7 +121,7 @@ class ToolRegistry:
             The tool's callable function or None
         """
         tool = self._tools.get(tool_name)
-        return tool["func"] if tool else None
+        return tool['func'] if tool else None
 
     def list_tools(self) -> list[str]:
         """Returns list of all registered tool names."""
@@ -172,7 +131,7 @@ class ToolRegistry:
         """Returns the complete tool registry."""
         return self._tools.copy()
 
-    def discover_tools(self, pattern: str = "*_tool.py", project_root: Path | None = None) -> list[Path]:
+    def discover_tools(self, pattern: str='*_tool.py', project_root: Path | None=None) -> list[Path]:
         """
         Uses SovereignIndex to discover tool files matching a pattern.
 
@@ -188,11 +147,7 @@ class ToolRegistry:
         idx = SovereignIndex.get_instance(project_root)
         return idx.get_files(pattern)
 
-    def auto_register_from_pattern(
-        self,
-        pattern: str = "*_tool.py",
-        tool_loader: Callable[[Path], tuple] | None = None,
-    ) -> int:
+    def auto_register_from_pattern(self, pattern: str='*_tool.py', tool_loader: Callable[[Path], tuple] | None=None) -> int:
         """
         Auto-discovers and registers tools matching a pattern.
 
@@ -206,7 +161,6 @@ class ToolRegistry:
         """
         discovered = self.discover_tools(pattern)
         registered = 0
-
         for tool_path in discovered:
             if tool_loader:
                 try:
@@ -214,18 +168,13 @@ class ToolRegistry:
                     if self.register_tool(tool_name, str(tool_path), tool_func, description):
                         registered += 1
                 except Exception as e:
-                    # TODO: Handle specific exception properly
-                    raise  # Re-raise after logging/handling
-                    Logger.warning(f"[REGISTRY] Failed to load tool from {tool_path}: {e}")
+                    raise
+                    Logger.warning(f'[REGISTRY] Failed to load tool from {tool_path}: {e}')
             else:
-                # Default: use filename as tool name, placeholder func
                 tool_name = tool_path.stem
-                if self.register_tool(tool_name, str(tool_path), lambda: None, f"Tool from {tool_path.name}"):
+                if self.register_tool(tool_name, str(tool_path), lambda: None, f'Tool from {tool_path.name}'):
                     registered += 1
-
-        Logger.info(
-            f"[REGISTRY] Auto-registered {registered}/{len(discovered)} tools from pattern '{pattern}'",
-        )
+        Logger.info(f"[REGISTRY] Auto-registered {registered}/{len(discovered)} tools from pattern '{pattern}'")
         return registered
 
     def __len__(self) -> int:
@@ -233,7 +182,4 @@ class ToolRegistry:
 
     def __contains__(self, tool_name: str) -> bool:
         return tool_name in self._tools
-
-
-# Backward compatibility alias
 tool_registry = ToolRegistry

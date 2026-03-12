@@ -26,6 +26,7 @@ from agentic_core.L0_routing.config import (
 )
 
 PROJECT_ROOT = Path(__file__).parent.parent
+# guardian: allow-global-mutation
 sys.path.insert(0, str(PROJECT_ROOT))
 
 

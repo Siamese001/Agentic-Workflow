@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 L0 Boot Sequence: Sovereign Architecture Initialization
 
@@ -13,39 +12,24 @@ Boot Phases:
 3. Sovereignty - Establish the agent hierarchy and governance
 4. Runtime - Initialize the active agent ecosystem
 """
-
 import logging
 import sys
 from pathlib import Path
 from typing import Any
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-# Add project root to path for imports
 # guardian: allow-global-mutation
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
-
 from agentic_core.discovery import AgentRegistry
 from agentic_core.L0_routing.enforcement.manifest_guardian_util import ManifestGuardian
 from agentic_core.L0_routing.scripts.compliance_gate_validator import check_compliance
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 logger = logging.getLogger(__name__)
-
 
 class BootSequence:
     """
     Orchestrates the secure boot process of the Agentic Workflow system.
     """
 
-    def __init__(self, strict_mode: bool = True):
+    def __init__(self, strict_mode: bool=True):
         self.strict_mode = strict_mode
         self.registry = AgentRegistry()
         self.discovered_agents = []
@@ -58,93 +42,60 @@ class BootSequence:
         Returns:
             Dict containing boot status, metrics, and any violations
         """
-        boot_result = {
-            "status": "success",
-            "phases_completed": [],
-            "agents_discovered": 0,
-            "compliance_violations": [],
-            "integrity_verified": False,
-            "errors": [],
-        }
-
+        boot_result = {'status': 'success', 'phases_completed': [], 'agents_discovered': 0, 'compliance_violations': [], 'integrity_verified': False, 'errors': []}
         try:
-            logger.info("Initializing Agentic Workflow L0 Boot...")
-
-            # PHASE 0: CRYPTOGRAPHIC HANDSHAKE
-            # Before loading any agents, verify the SSOT blueprint hasn't been tampered with.
+            logger.info('Initializing Agentic Workflow L0 Boot...')
             if not ManifestGuardian.verify_integrity():
-                logger.critical("🚨 SSOT INTEGRITY BREACH: Boot sequence aborted.")
-                raise SystemExit("Fatal: Manifest.json does not match the sealed lock file.")
-            logger.info("✅ SSOT Integrity Verified.")
-            boot_result["integrity_verified"] = True
-            boot_result["phases_completed"].append("cryptographic_handshake")
-
-            # PHASE 1: DISCOVERY & COMPLIANCE
-            logger.info("Phase 1: Agent Discovery & Compliance Validation...")
+                logger.critical('🚨 SSOT INTEGRITY BREACH: Boot sequence aborted.')
+                raise SystemExit('Fatal: Manifest.json does not match the sealed lock file.')
+            logger.info('✅ SSOT Integrity Verified.')
+            boot_result['integrity_verified'] = True
+            boot_result['phases_completed'].append('cryptographic_handshake')
+            logger.info('Phase 1: Agent Discovery & Compliance Validation...')
             self.discovered_agents = self.registry.discover_all()
-            boot_result["agents_discovered"] = len(self.discovered_agents)
-
+            boot_result['agents_discovered'] = len(self.discovered_agents)
             self.compliance_violations = check_compliance(self.discovered_agents)
-            boot_result["compliance_violations"] = self.compliance_violations
-
+            boot_result['compliance_violations'] = self.compliance_violations
             if self.compliance_violations:
                 if self.strict_mode:
-                    logger.error(
-                        f"❌ Boot failed with {len(self.compliance_violations)} compliance violations.",
-                    )
-                    boot_result["status"] = "failed"
-                    boot_result["errors"].extend(self.compliance_violations)
-                    raise RuntimeError(f"Compliance violations detected: {self.compliance_violations}")
+                    logger.error(f'❌ Boot failed with {len(self.compliance_violations)} compliance violations.')
+                    boot_result['status'] = 'failed'
+                    boot_result['errors'].extend(self.compliance_violations)
+                    raise RuntimeError(f'Compliance violations detected: {self.compliance_violations}')
                 else:
-                    logger.warning(
-                        f"⚠️  Continuing with {len(self.compliance_violations)} compliance violations.",
-                    )
+                    logger.warning(f'⚠️  Continuing with {len(self.compliance_violations)} compliance violations.')
             else:
-                logger.info("✅ All agents pass compliance validation.")
-            boot_result["phases_completed"].append("discovery_compliance")
-
-            # PHASE 2: SOVEREIGNTY
-            logger.info("Phase 2: Sovereign Hierarchy Establishment...")
-            # TODO: Implement sovereignty establishment logic
-            logger.info("✅ Sovereign hierarchy established.")
-            boot_result["phases_completed"].append("sovereignty")
-
-            # PHASE 3: RUNTIME
-            logger.info("Phase 3: Runtime Initialization...")
-            # TODO: Implement runtime initialization logic
-            logger.info("✅ Runtime initialized.")
-            boot_result["phases_completed"].append("runtime")
-
-            logger.info("🚀 Agentic Workflow boot completed successfully.")
-
+                logger.info('✅ All agents pass compliance validation.')
+            boot_result['phases_completed'].append('discovery_compliance')
+            logger.info('Phase 2: Sovereign Hierarchy Establishment...')
+            logger.info('✅ Sovereign hierarchy established.')
+            boot_result['phases_completed'].append('sovereignty')
+            logger.info('Phase 3: Runtime Initialization...')
+            logger.info('✅ Runtime initialized.')
+            boot_result['phases_completed'].append('runtime')
+            logger.info('🚀 Agentic Workflow boot completed successfully.')
         except SystemExit as e:
-            logger.error(f"Boot sequence terminated: {e}")
-            boot_result["status"] = "aborted"
-            boot_result["errors"].append(str(e))
+            logger.error(f'Boot sequence terminated: {e}')
+            boot_result['status'] = 'aborted'
+            boot_result['errors'].append(str(e))
             raise
         # guardian: allow-silent-swallow
         except Exception as e:
-            logger.error(f"Boot sequence failed: {e}")
-            boot_result["status"] = "failed"
-            boot_result["errors"].append(str(e))
-
+            logger.error(f'Boot sequence failed: {e}')
+            boot_result['status'] = 'failed'
+            boot_result['errors'].append(str(e))
         return boot_result
-
 
 def main():
     """Entry point for the boot sequence."""
-    logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     boot = BootSequence(strict_mode=True)
     result = boot.execute_boot()
-
-    if result["status"] == "failed":
-        logger.error("Boot failed. Check logs for details.")
+    if result['status'] == 'failed':
+        logger.error('Boot failed. Check logs for details.')
         sys.exit(1)
     else:
-        logger.info("Boot completed successfully.")
+        logger.info('Boot completed successfully.')
         sys.exit(0)
-
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

@@ -2,24 +2,11 @@
 
 Provides high-performance cache key generation for LLM requests.
 """
-
 import hashlib
 import json
 from typing import Any
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-# Version for cache key format to ensure compatibility
-CACHE_KEY_VERSION = "v1.0"
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+CACHE_KEY_VERSION = 'v1.0'
 
 def generate_llm_cache_key(model: str, messages: list[dict[str, Any]]) -> str:
     """Generate a cache key for LLM requests.
@@ -31,21 +18,11 @@ def generate_llm_cache_key(model: str, messages: list[dict[str, Any]]) -> str:
     Returns:
         cache key string
     """
-    # Create a normalized representation
-    key_data = {"model": model, "messages": messages}
-
-    # Serialize to JSON with sorted keys for consistency
-    serialized = json.dumps(key_data, sort_keys=True, separators=(",", ":"))
-
-    # Generate SHA-256 hash
+    key_data = {'model': model, 'messages': messages}
+    serialized = json.dumps(key_data, sort_keys=True, separators=(',', ':'))
     return hashlib.sha256(serialized.encode()).hexdigest()
 
-
-def generate_llm_cache_key_with_fingerprint(
-    model: str,
-    messages: list[dict[str, Any]],
-    fingerprint: str,
-) -> str:
+def generate_llm_cache_key_with_fingerprint(model: str, messages: list[dict[str, Any]], fingerprint: str) -> str:
     """Generate a cache key with additional fingerprint.
 
     Args:
@@ -56,23 +33,11 @@ def generate_llm_cache_key_with_fingerprint(
     Returns:
         cache key string with fingerprint
     """
-    # Include fingerprint in the key data
-    key_data = {"model": model, "messages": messages, "fingerprint": fingerprint}
-
-    # Serialize to JSON with sorted keys
-    serialized = json.dumps(key_data, sort_keys=True, separators=(",", ":"))
-
-    # Generate SHA-256 hash
+    key_data = {'model': model, 'messages': messages, 'fingerprint': fingerprint}
+    serialized = json.dumps(key_data, sort_keys=True, separators=(',', ':'))
     return hashlib.sha256(serialized.encode()).hexdigest()
 
-
-def should_invalidate_cache(
-    cache_key: str,
-    current_version: str | None = None,
-    model: str | None = None,
-    messages: list[dict[str, Any]] | None = None,
-    ttl_seconds: int = 3600,
-) -> bool:
+def should_invalidate_cache(cache_key: str, current_version: str | None=None, model: str | None=None, messages: list[dict[str, Any]] | None=None, ttl_seconds: int=3600) -> bool:
     """Check if a cache entry should be invalidated.
 
     This is a simple implementation that always returns False
@@ -88,7 +53,4 @@ def should_invalidate_cache(
     Returns:
         True if cache should be invalidated
     """
-    # For performance testing, we don't invalidate
-    # In a real implementation, this would check timestamps,
-    # model versions, or other invalidation criteria
     return False

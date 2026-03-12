@@ -6,38 +6,20 @@ After execution, verify:
 
 Violation: Mismatch → raise MutationReplayIntegrityViolation, HARD FAIL.
 """
-
 from __future__ import annotations
-
 import hashlib
 import json
 import logging
 from typing import Any
-
 from agentic_core.L5_safety.types.hardening_errors import MutationReplayIntegrityViolation
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 logger = logging.getLogger(__name__)
-
 
 def _snapshot_hash(snapshot: dict[str, Any]) -> str:
     raw = json.dumps(snapshot, sort_keys=True, ensure_ascii=True, default=str)
     return hashlib.sha256(raw.encode()).hexdigest()
 
-
-def compute_boundary_diff(
-    snapshot_pre: dict[str, Any],
-    snapshot_post: dict[str, Any],
-) -> dict[str, Any]:
+def compute_boundary_diff(snapshot_pre: dict[str, Any], snapshot_post: dict[str, Any]) -> dict[str, Any]:
     """Compute a deterministic diff between two boundary snapshots.
 
     Returns a dict mapping changed keys to (pre_value, post_value) tuples.
@@ -49,20 +31,14 @@ def compute_boundary_diff(
         pre_val = snapshot_pre.get(key)
         post_val = snapshot_post.get(key)
         if pre_val != post_val:
-            diff[key] = {"pre": pre_val, "post": post_val}
+            diff[key] = {'pre': pre_val, 'post': post_val}
     return diff
-
 
 def _diff_hash(diff: dict[str, Any]) -> str:
     raw = json.dumps(diff, sort_keys=True, ensure_ascii=True, default=str)
     return hashlib.sha256(raw.encode()).hexdigest()
 
-
-def verify_mutation_replay_integrity(
-    snapshot_pre: dict[str, Any],
-    snapshot_post: dict[str, Any],
-    uwg_state_diff: dict[str, Any],
-) -> None:
+def verify_mutation_replay_integrity(snapshot_pre: dict[str, Any], snapshot_post: dict[str, Any], uwg_state_diff: dict[str, Any]) -> None:
     """Verify that the observed boundary diff matches the UWG-recorded state_diff.
 
     Raises MutationReplayIntegrityViolation on mismatch.
@@ -72,23 +48,8 @@ def verify_mutation_replay_integrity(
     computed = compute_boundary_diff(snapshot_pre, snapshot_post)
     computed_h = _diff_hash(computed)
     uwg_h = _diff_hash(uwg_state_diff)
-
     if computed_h != uwg_h:
-        logger.error(
-            "MutationReplayIntegrityViolation: computed_diff_hash=%s uwg_diff_hash=%s",
-            computed_h[:16],
-            uwg_h[:16],
-        )
-        raise MutationReplayIntegrityViolation(
-            f"Boundary diff hash mismatch: "
-            f"computed={computed_h[:16]}... uwg={uwg_h[:16]}... "
-            "Execution transcript does not match recorded mutations."
-        )
-
-    logger.debug("Mutation replay integrity OK: diff_hash=%s", computed_h[:16])
-
-
-__all__ = [
-    "compute_boundary_diff",
-    "verify_mutation_replay_integrity",
-]
+        logger.error('MutationReplayIntegrityViolation: computed_diff_hash=%s uwg_diff_hash=%s', computed_h[:16], uwg_h[:16])
+        raise MutationReplayIntegrityViolation(f'Boundary diff hash mismatch: computed={computed_h[:16]}... uwg={uwg_h[:16]}... Execution transcript does not match recorded mutations.')
+    logger.debug('Mutation replay integrity OK: diff_hash=%s', computed_h[:16])
+__all__ = ['compute_boundary_diff', 'verify_mutation_replay_integrity']

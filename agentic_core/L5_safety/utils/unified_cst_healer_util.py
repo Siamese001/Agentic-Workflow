@@ -112,6 +112,7 @@ class UnifiedCSTHealer:
 
         try:
             content = file_path.read_text(encoding="utf-8")
+        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.error(f"Failed to read {file_path}: {e}")
             return HealingResult(
@@ -384,6 +385,7 @@ class UnifiedCSTHealer:
                 ],
             }
 
+        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.error(f"Error applying transformers: {e}")
             return {

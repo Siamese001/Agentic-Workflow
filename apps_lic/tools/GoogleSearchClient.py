@@ -1,20 +1,6 @@
-# File: retrieval_clients.py
-# Description: Centralized retrieval client for all Google Search API calls
-
-__version__ = "12.0"
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+__version__ = '12.0'
 import os
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
 
 class GoogleSearchClient:
     """
@@ -22,19 +8,19 @@ class GoogleSearchClient:
     """
 
     def __init__(self, circuit_breaker: CircuitBreaker):
-        self.api_key = os.environ.get("GOOGLE_API_KEY")
-        self.cse_id = os.environ.get("GOOGLE_CSE_ID")
+        self.api_key = os.environ.get('GOOGLE_API_KEY')
+        self.cse_id = os.environ.get('GOOGLE_CSE_ID')
         if not (self.api_key and self.cse_id):
-            raise ValueError("GOOGLE_API_KEY or GOOGLE_CSE_ID not found in environment")
-        self.service = build("customsearch", "v1", developerKey=self.api_key)
+            raise ValueError('GOOGLE_API_KEY or GOOGLE_CSE_ID not found in environment')
+        self.service = build('customsearch', 'v1', developerKey=self.api_key)
         self.circuit_breaker = circuit_breaker
 
-    def _execute_search_call(self, query: str, num_results: int = 5) -> list:
+    def _execute_search_call(self, query: str, num_results: int=5) -> list:
         """Execute the actual search API call"""
         res = self.service.cse().list(q=query, cx=self.cse_id, num=num_results).execute()
-        return res.get("items", [])
+        return res.get('items', [])
 
-    def search(self, query: str, num_results: int = 5) -> list:
+    def search(self, query: str, num_results: int=5) -> list:
         """
         Execute search with circuit breaker protection
 
@@ -52,4 +38,4 @@ class GoogleSearchClient:
         try:
             return self.circuit_breaker.call(self._execute_search_call, query, num_results=num_results)
         except Exception as e:
-            raise Exception(f"Google Search API call failed: {e}")
+            raise Exception(f'Google Search API call failed: {e}')

@@ -15,51 +15,34 @@ SSOT PRINCIPLE:
     All agents requiring cost control should inherit from this mixin.
     This ensures consistent cost tracking across the agent ecosystem.
 """
-
 from __future__ import annotations
-
 import logging
 import threading
 import time
 from dataclasses import dataclass, field
 from typing import Any
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 Logger = logging.getLogger(__name__)
-
 
 @dataclass
 class TokenUsage:
     """Tracks token usage for a single operation."""
-
     prompt_tokens: int = 0
     completion_tokens: int = 0
     total_tokens: int = 0
     estimated_cost_usd: float = 0.0
-    model: str = "unknown"
+    model: str = 'unknown'
     timestamp: float = field(default_factory=time.time)
-
 
 @dataclass
 class BudgetConfig:
     """Configuration for budget limits."""
-
     max_tokens_per_request: int = 8000
     max_tokens_per_session: int = 100000
     max_cost_per_session_usd: float = 10.0
     max_recursive_depth: int = 10
     max_loop_iterations: int = 50
-    alert_threshold_pct: float = 0.8  # Alert at 80% of budget
-
+    alert_threshold_pct: float = 0.8
 
 class BudgetExceededError(Exception):
     """Raised when budget limits are exceeded."""
@@ -68,8 +51,7 @@ class BudgetExceededError(Exception):
         self.limit_type = limit_type
         self.current = current
         self.limit = limit
-        super().__init__(f"Budget exceeded: {limit_type} - Current: {current}, Limit: {limit}")
-
+        super().__init__(f'Budget exceeded: {limit_type} - Current: {current}, Limit: {limit}')
 
 class RecursionLimitError(Exception):
     """Raised when recursive depth or loop iterations exceed limits."""
@@ -78,21 +60,8 @@ class RecursionLimitError(Exception):
         self.limit_type = limit_type
         self.current = current
         self.limit = limit
-        super().__init__(f"Recursion limit exceeded: {limit_type} - Current: {current}, Limit: {limit}")
-
-
-# Model pricing per 1K tokens (as of Jan 2026)
-MODEL_PRICING: dict[str, dict[str, float]] = {
-    "gpt-4o": {"input": 0.0025, "output": 0.01},
-    "gpt-4o-mini": {"input": 0.00015, "output": 0.0006},
-    "gpt-4-turbo": {"input": 0.01, "output": 0.03},
-    "gpt-3.5-turbo": {"input": 0.0005, "output": 0.0015},
-    "claude-3-opus": {"input": 0.015, "output": 0.075},
-    "claude-3-sonnet": {"input": 0.003, "output": 0.015},
-    "claude-3-haiku": {"input": 0.00025, "output": 0.00125},
-    "default": {"input": 0.001, "output": 0.002},
-}
-
+        super().__init__(f'Recursion limit exceeded: {limit_type} - Current: {current}, Limit: {limit}')
+MODEL_PRICING: dict[str, dict[str, float]] = {'gpt-4o': {'input': 0.0025, 'output': 0.01}, 'gpt-4o-mini': {'input': 0.00015, 'output': 0.0006}, 'gpt-4-turbo': {'input': 0.01, 'output': 0.03}, 'gpt-3.5-turbo': {'input': 0.0005, 'output': 0.0015}, 'claude-3-opus': {'input': 0.015, 'output': 0.075}, 'claude-3-sonnet': {'input': 0.003, 'output': 0.015}, 'claude-3-haiku': {'input': 0.00025, 'output': 0.00125}, 'default': {'input': 0.001, 'output': 0.002}}
 
 class CostGuardrailMixin:
     """
@@ -124,40 +93,19 @@ class CostGuardrailMixin:
     def __init__(self, **kwargs: Any) -> None:
         """Initialize cost guardrail state."""
         super().__init__(**kwargs)
-
-        # Budget configuration
         self._budget_config: BudgetConfig = BudgetConfig()
-
-        # Session tracking
         self._session_token_usage: list[TokenUsage] = []
         self._session_start_time: float = time.time()
         self._total_session_tokens: int = 0
         self._total_session_cost: float = 0.0
-
-        # Recursion tracking
         self._call_stack: list[str] = []
         self._loop_counters: dict[str, int] = {}
-
-        # Thread safety
         self._cost_lock = threading.RLock()
-
-        # Alert state
         self._budget_alerts_sent: set[str] = set()
-
-        # Initialization flag
         self._cost_guardrail_initialized = True
+        Logger.debug(f'[COST] {self.__class__.__name__} cost guardrails initialized')
 
-        Logger.debug(f"[COST] {self.__class__.__name__} cost guardrails initialized")
-
-    def configure_budget(
-        self,
-        max_tokens_per_request: int | None = None,
-        max_tokens_per_session: int | None = None,
-        max_cost_per_session_usd: float | None = None,
-        max_recursive_depth: int | None = None,
-        max_loop_iterations: int | None = None,
-        alert_threshold_pct: float | None = None,
-    ) -> None:
+    def configure_budget(self, max_tokens_per_request: int | None=None, max_tokens_per_session: int | None=None, max_cost_per_session_usd: float | None=None, max_recursive_depth: int | None=None, max_loop_iterations: int | None=None, alert_threshold_pct: float | None=None) -> None:
         """
         Configure budget limits for this agent.
 
@@ -172,20 +120,18 @@ class CostGuardrailMixin:
         Raises:
             ValueError: If any parameter is invalid (negative or out of range)
         """
-        # [HARDENING] Validate all inputs before applying
         if max_tokens_per_request is not None and max_tokens_per_request <= 0:
-            raise ValueError("max_tokens_per_request must be positive")
+            raise ValueError('max_tokens_per_request must be positive')
         if max_tokens_per_session is not None and max_tokens_per_session <= 0:
-            raise ValueError("max_tokens_per_session must be positive")
+            raise ValueError('max_tokens_per_session must be positive')
         if max_cost_per_session_usd is not None and max_cost_per_session_usd <= 0:
-            raise ValueError("max_cost_per_session_usd must be positive")
+            raise ValueError('max_cost_per_session_usd must be positive')
         if max_recursive_depth is not None and max_recursive_depth <= 0:
-            raise ValueError("max_recursive_depth must be positive")
+            raise ValueError('max_recursive_depth must be positive')
         if max_loop_iterations is not None and max_loop_iterations <= 0:
-            raise ValueError("max_loop_iterations must be positive")
-        if alert_threshold_pct is not None and not (0.0 < alert_threshold_pct <= 1.0):
-            raise ValueError("alert_threshold_pct must be between 0.0 and 1.0")
-
+            raise ValueError('max_loop_iterations must be positive')
+        if alert_threshold_pct is not None and (not 0.0 < alert_threshold_pct <= 1.0):
+            raise ValueError('alert_threshold_pct must be between 0.0 and 1.0')
         with self._cost_lock:
             if max_tokens_per_request is not None:
                 self._budget_config.max_tokens_per_request = max_tokens_per_request
@@ -199,10 +145,9 @@ class CostGuardrailMixin:
                 self._budget_config.max_loop_iterations = max_loop_iterations
             if alert_threshold_pct is not None:
                 self._budget_config.alert_threshold_pct = alert_threshold_pct
+        Logger.info(f'[COST] Budget configured: {self._budget_config}')
 
-        Logger.info(f"[COST] Budget configured: {self._budget_config}")
-
-    def estimate_cost(self, prompt_tokens: int, completion_tokens: int, model: str = "default") -> float:
+    def estimate_cost(self, prompt_tokens: int, completion_tokens: int, model: str='default') -> float:
         """
         Estimate cost for a given token usage.
 
@@ -214,17 +159,12 @@ class CostGuardrailMixin:
         Returns:
             Estimated cost in USD
         """
-        pricing = MODEL_PRICING.get(model, MODEL_PRICING["default"])
-        input_cost = (prompt_tokens / 1000) * pricing["input"]
-        output_cost = (completion_tokens / 1000) * pricing["output"]
+        pricing = MODEL_PRICING.get(model, MODEL_PRICING['default'])
+        input_cost = prompt_tokens / 1000 * pricing['input']
+        output_cost = completion_tokens / 1000 * pricing['output']
         return input_cost + output_cost
 
-    def record_token_usage(
-        self,
-        prompt_tokens: int,
-        completion_tokens: int,
-        model: str = "unknown",
-    ) -> TokenUsage:
+    def record_token_usage(self, prompt_tokens: int, completion_tokens: int, model: str='unknown') -> TokenUsage:
         """
         Record token usage for an operation.
 
@@ -241,77 +181,34 @@ class CostGuardrailMixin:
         """
         total_tokens = prompt_tokens + completion_tokens
         estimated_cost = self.estimate_cost(prompt_tokens, completion_tokens, model)
-
         with self._cost_lock:
-            # Check per-request limit
             if total_tokens > self._budget_config.max_tokens_per_request:
-                raise BudgetExceededError(
-                    "tokens_per_request",
-                    total_tokens,
-                    self._budget_config.max_tokens_per_request,
-                )
-
-            # Check session token limit
+                raise BudgetExceededError('tokens_per_request', total_tokens, self._budget_config.max_tokens_per_request)
             new_session_total = self._total_session_tokens + total_tokens
             if new_session_total > self._budget_config.max_tokens_per_session:
-                raise BudgetExceededError(
-                    "tokens_per_session",
-                    new_session_total,
-                    self._budget_config.max_tokens_per_session,
-                )
-
-            # Check session cost limit
+                raise BudgetExceededError('tokens_per_session', new_session_total, self._budget_config.max_tokens_per_session)
             new_session_cost = self._total_session_cost + estimated_cost
             if new_session_cost > self._budget_config.max_cost_per_session_usd:
-                raise BudgetExceededError(
-                    "cost_per_session",
-                    new_session_cost,
-                    self._budget_config.max_cost_per_session_usd,
-                )
-
-            # Record usage
-            usage = TokenUsage(
-                prompt_tokens=prompt_tokens,
-                completion_tokens=completion_tokens,
-                total_tokens=total_tokens,
-                estimated_cost_usd=estimated_cost,
-                model=model,
-            )
+                raise BudgetExceededError('cost_per_session', new_session_cost, self._budget_config.max_cost_per_session_usd)
+            usage = TokenUsage(prompt_tokens=prompt_tokens, completion_tokens=completion_tokens, total_tokens=total_tokens, estimated_cost_usd=estimated_cost, model=model)
             self._session_token_usage.append(usage)
             self._total_session_tokens = new_session_total
             self._total_session_cost = new_session_cost
-
-            # Check for budget alerts
             self._check_budget_alerts()
-
-        Logger.debug(
-            f"[COST] Recorded: {total_tokens} tokens, ${estimated_cost:.4f} "
-            f"(Session: {self._total_session_tokens} tokens, ${self._total_session_cost:.4f})",
-        )
-
+        Logger.debug(f'[COST] Recorded: {total_tokens} tokens, ${estimated_cost:.4f} (Session: {self._total_session_tokens} tokens, ${self._total_session_cost:.4f})')
         return usage
 
     def _check_budget_alerts(self) -> None:
         """Check and emit budget alerts if thresholds are exceeded."""
         threshold = self._budget_config.alert_threshold_pct
-
-        # Token threshold alert
         token_pct = self._total_session_tokens / self._budget_config.max_tokens_per_session
-        if token_pct >= threshold and "token_threshold" not in self._budget_alerts_sent:
-            self._budget_alerts_sent.add("token_threshold")
-            Logger.warning(
-                f"[COST ALERT] Token usage at {token_pct:.0%} of session limit "
-                f"({self._total_session_tokens}/{self._budget_config.max_tokens_per_session})",
-            )
-
-        # Cost threshold alert
+        if token_pct >= threshold and 'token_threshold' not in self._budget_alerts_sent:
+            self._budget_alerts_sent.add('token_threshold')
+            Logger.warning(f'[COST ALERT] Token usage at {token_pct:.0%} of session limit ({self._total_session_tokens}/{self._budget_config.max_tokens_per_session})')
         cost_pct = self._total_session_cost / self._budget_config.max_cost_per_session_usd
-        if cost_pct >= threshold and "cost_threshold" not in self._budget_alerts_sent:
-            self._budget_alerts_sent.add("cost_threshold")
-            Logger.warning(
-                f"[COST ALERT] Cost at {cost_pct:.0%} of session limit "
-                f"(${self._total_session_cost:.4f}/${self._budget_config.max_cost_per_session_usd})",
-            )
+        if cost_pct >= threshold and 'cost_threshold' not in self._budget_alerts_sent:
+            self._budget_alerts_sent.add('cost_threshold')
+            Logger.warning(f'[COST ALERT] Cost at {cost_pct:.0%} of session limit (${self._total_session_cost:.4f}/${self._budget_config.max_cost_per_session_usd})')
 
     def check_recursion_limit(self, operation_id: str) -> None:
         """
@@ -326,11 +223,7 @@ class CostGuardrailMixin:
         with self._cost_lock:
             current_depth = self._call_stack.count(operation_id)
             if current_depth >= self._budget_config.max_recursive_depth:
-                raise RecursionLimitError(
-                    "recursive_depth",
-                    current_depth,
-                    self._budget_config.max_recursive_depth,
-                )
+                raise RecursionLimitError('recursive_depth', current_depth, self._budget_config.max_recursive_depth)
             self._call_stack.append(operation_id)
 
     def exit_recursion(self, operation_id: str) -> None:
@@ -360,11 +253,7 @@ class CostGuardrailMixin:
         with self._cost_lock:
             current_count = self._loop_counters.get(loop_id, 0) + 1
             if current_count > self._budget_config.max_loop_iterations:
-                raise RecursionLimitError(
-                    "loop_iterations",
-                    current_count,
-                    self._budget_config.max_loop_iterations,
-                )
+                raise RecursionLimitError('loop_iterations', current_count, self._budget_config.max_loop_iterations)
             self._loop_counters[loop_id] = current_count
             return current_count
 
@@ -386,18 +275,7 @@ class CostGuardrailMixin:
             Dictionary with budget status information
         """
         with self._cost_lock:
-            return {
-                "session_tokens": self._total_session_tokens,
-                "session_cost_usd": self._total_session_cost,
-                "max_tokens_per_session": self._budget_config.max_tokens_per_session,
-                "max_cost_per_session_usd": self._budget_config.max_cost_per_session_usd,
-                "token_usage_pct": (self._total_session_tokens / self._budget_config.max_tokens_per_session),
-                "cost_usage_pct": (self._total_session_cost / self._budget_config.max_cost_per_session_usd),
-                "operations_count": len(self._session_token_usage),
-                "current_recursion_depth": len(self._call_stack),
-                "active_loops": len(self._loop_counters),
-                "alerts_sent": list(self._budget_alerts_sent),
-            }
+            return {'session_tokens': self._total_session_tokens, 'session_cost_usd': self._total_session_cost, 'max_tokens_per_session': self._budget_config.max_tokens_per_session, 'max_cost_per_session_usd': self._budget_config.max_cost_per_session_usd, 'token_usage_pct': self._total_session_tokens / self._budget_config.max_tokens_per_session, 'cost_usage_pct': self._total_session_cost / self._budget_config.max_cost_per_session_usd, 'operations_count': len(self._session_token_usage), 'current_recursion_depth': len(self._call_stack), 'active_loops': len(self._loop_counters), 'alerts_sent': list(self._budget_alerts_sent)}
 
     def reset_session(self) -> dict[str, Any]:
         """
@@ -407,13 +285,7 @@ class CostGuardrailMixin:
             Summary of the reset session
         """
         with self._cost_lock:
-            summary = {
-                "total_tokens": self._total_session_tokens,
-                "total_cost_usd": self._total_session_cost,
-                "operations_count": len(self._session_token_usage),
-                "duration_seconds": time.time() - self._session_start_time,
-            }
-
+            summary = {'total_tokens': self._total_session_tokens, 'total_cost_usd': self._total_session_cost, 'operations_count': len(self._session_token_usage), 'duration_seconds': time.time() - self._session_start_time}
             self._session_token_usage = []
             self._total_session_tokens = 0
             self._total_session_cost = 0.0
@@ -421,16 +293,6 @@ class CostGuardrailMixin:
             self._call_stack = []
             self._loop_counters = {}
             self._budget_alerts_sent = set()
-
-        Logger.info(f"[COST] Session reset. Previous session: {summary}")
+        Logger.info(f'[COST] Session reset. Previous session: {summary}')
         return summary
-
-
-__all__ = [
-    "CostGuardrailMixin",
-    "BudgetConfig",
-    "TokenUsage",
-    "BudgetExceededError",
-    "RecursionLimitError",
-    "MODEL_PRICING",
-]
+__all__ = ['CostGuardrailMixin', 'BudgetConfig', 'TokenUsage', 'BudgetExceededError', 'RecursionLimitError', 'MODEL_PRICING']

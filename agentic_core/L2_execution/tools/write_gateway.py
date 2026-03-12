@@ -7,9 +7,7 @@ functions instead of using direct mutation primitives.
 
 Tool ID Prefix: ACT-010
 """
-
 from __future__ import annotations
-
 import csv
 import hashlib
 import json
@@ -20,43 +18,15 @@ import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Sequence
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-Logger: Any = logging.getLogger("L2.WriteGateway")
-
-# Mutation ledger state (thread-local would be better, but global for now)
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+Logger: Any = logging.getLogger('L2.WriteGateway')
 _MUTATION_LEDGER_PATH: Path | None = None
 _MUTATION_SEQUENCE: int = 0
 _TRACE_ID: str | None = None
-
-# Import protected-root enforcement
-from agentic_core.L0_routing.enforcement.mutation_prohibition import (
-    enforce_protected_root,
-)
-from agentic_core.L0_routing.config.path_constants import (
-    AGENTIC_CORE_DIR,
-    APPS_SHARED_DIR,
-    OPS_SCRIPTS_DIR,
-    TESTS_DIR,
-)
-
-# =============================================================================
-# Write Amplification + Size Cap Guards (RCA Phase 5)
-# =============================================================================
-
-MAX_WRITE_BYTES = 10 * 1024 * 1024  # 10 MB hard ceiling
-# guardian: allow-magic-configuration
-MAX_GROWTH_RATIO = 2.0  # Maximum file growth ratio
-
+from agentic_core.L0_routing.enforcement.mutation_prohibition import enforce_protected_root
+from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, APPS_SHARED_DIR, OPS_SCRIPTS_DIR, TESTS_DIR
+MAX_WRITE_BYTES = 10 * 1024 * 1024
+MAX_GROWTH_RATIO = 2.0
 
 class WriteSizeCapError(RuntimeError):
     """Raised when proposed write exceeds MAX_WRITE_BYTES."""
@@ -65,8 +35,7 @@ class WriteSizeCapError(RuntimeError):
         self.path = path
         self.proposed_bytes = proposed_bytes
         self.max_bytes = max_bytes
-        super().__init__(f"WRITE_SIZE_CAP_EXCEEDED: path={path} proposed={proposed_bytes} max={max_bytes}")
-
+        super().__init__(f'WRITE_SIZE_CAP_EXCEEDED: path={path} proposed={proposed_bytes} max={max_bytes}')
 
 class WriteAmplificationError(RuntimeError):
     """Raised when proposed write exceeds MAX_GROWTH_RATIO."""
@@ -76,12 +45,7 @@ class WriteAmplificationError(RuntimeError):
         self.original_bytes = original_bytes
         self.proposed_bytes = proposed_bytes
         self.growth_ratio = growth_ratio
-        super().__init__(
-            f"WRITE_AMPLIFICATION_DETECTED: path={path} "
-            f"original={original_bytes} proposed={proposed_bytes} "
-            f"growth_ratio={growth_ratio:.2f}x max={MAX_GROWTH_RATIO}x"
-        )
-
+        super().__init__(f'WRITE_AMPLIFICATION_DETECTED: path={path} original={original_bytes} proposed={proposed_bytes} growth_ratio={growth_ratio:.2f}x max={MAX_GROWTH_RATIO}x')
 
 class MutationEntropyError(RuntimeError):
     """Raised when substitution count exceeds expected maximum."""
@@ -90,44 +54,28 @@ class MutationEntropyError(RuntimeError):
         self.path = path
         self.substitution_count = substitution_count
         self.expected_max = expected_max
-        super().__init__(
-            f"MUTATION_ENTROPY_EXCEEDED: path={path} "
-            f"substitutions={substitution_count} expected_max={expected_max}"
-        )
+        super().__init__(f'MUTATION_ENTROPY_EXCEEDED: path={path} substitutions={substitution_count} expected_max={expected_max}')
 
-
-def _check_write_amplification(path: Path, content: str, encoding: str = "utf-8") -> None:
+def _check_write_amplification(path: Path, content: str, encoding: str='utf-8') -> None:
     """Enforce write amplification and size cap guards.
 
     Raises:
         WriteSizeCapError: If proposed content exceeds MAX_WRITE_BYTES
         WriteAmplificationError: If growth ratio exceeds MAX_GROWTH_RATIO
     """
-    proposed_bytes = len(content.encode(encoding, errors="strict"))
-
-    # Guard 1: Absolute size cap
+    proposed_bytes = len(content.encode(encoding, errors='strict'))
     if proposed_bytes > MAX_WRITE_BYTES:
         raise WriteSizeCapError(path, proposed_bytes, MAX_WRITE_BYTES)
-
-    # Guard 2: Growth ratio (only if file exists)
     if path.exists():
         try:
             original_content = path.read_text(encoding=encoding)
-            original_bytes = len(original_content.encode(encoding, errors="strict"))
+            original_bytes = len(original_content.encode(encoding, errors='strict'))
             growth_ratio = proposed_bytes / max(original_bytes, 1)
             if growth_ratio > MAX_GROWTH_RATIO:
                 raise WriteAmplificationError(path, original_bytes, proposed_bytes, growth_ratio)
         except (OSError, UnicodeDecodeError):
-            # If we can't read the original, skip growth check but keep size cap
             pass
-
-
-# =============================================================================
-# Prohibition-Loop Signal Aggregator (RCA Phase 5)
-# =============================================================================
-
 _prohibition_hits: dict[tuple[str, str, str], int] = {}
-
 
 def record_prohibition_hit(layer: str, op: str, path: str) -> None:
     """Record a mutation prohibition hit; emit warning on second occurrence.
@@ -142,20 +90,12 @@ def record_prohibition_hit(layer: str, op: str, path: str) -> None:
     key = (layer, op, path)
     _prohibition_hits[key] = _prohibition_hits.get(key, 0) + 1
     if _prohibition_hits[key] == 2:
-        Logger.warning(f"MUTATION_PROHIBITION_LOOP: layer={layer} op={op} path={path} count=2")
-
+        Logger.warning(f'MUTATION_PROHIBITION_LOOP: layer={layer} op={op} path={path} count=2')
 
 def get_prohibition_hit_count(layer: str, op: str, path: str) -> int:
     """Get the number of prohibition hits for a given key (for testing)."""
     return _prohibition_hits.get((layer, op, path), 0)
-
-
-# =============================================================================
-# Source Root Fence — Prevent self-mutation during SSOT heal runs
-# =============================================================================
-
 _REPO_ROOT: Path | None = None
-
 
 def _get_repo_root() -> Path:
     """Lazily resolve repo root (parent of agentic_core)."""
@@ -163,28 +103,10 @@ def _get_repo_root() -> Path:
     if _REPO_ROOT is None:
         _REPO_ROOT = Path(__file__).resolve().parents[3]
     return _REPO_ROOT
+_SOURCE_ROOTS_RELATIVE: frozenset[str] = frozenset({AGENTIC_CORE_DIR, 'prompt_governance', TESTS_DIR, OPS_SCRIPTS_DIR, APPS_SHARED_DIR})
+_SAFE_OUTPUT_PREFIXES: tuple[str, ...] = ('docs/evidence', 'docs/reports', 'archives/healing_backups', 'runtime_state.json', '.backup')
 
-
-_SOURCE_ROOTS_RELATIVE: frozenset[str] = frozenset(
-    {
-        AGENTIC_CORE_DIR,
-        "prompt_governance",
-        TESTS_DIR,
-        OPS_SCRIPTS_DIR,
-        APPS_SHARED_DIR,
-    }
-)
-
-_SAFE_OUTPUT_PREFIXES: tuple[str, ...] = (
-    "docs/evidence",
-    "docs/reports",
-    "archives/healing_backups",
-    "runtime_state.json",
-    ".backup",
-)
-
-
-def _deny_writes_into_source_roots(path: Path, verb: str = "write") -> None:
+def _deny_writes_into_source_roots(path: Path, verb: str='write') -> None:
     """Raise RuntimeError if path is under a tracked source root.
 
     NOTE: This is a legacy defense-in-depth check. Primary protection is via
@@ -192,24 +114,22 @@ def _deny_writes_into_source_roots(path: Path, verb: str = "write") -> None:
     This function remains active for non-protected source roots.
     """
     import os as _os
-
-    if _os.environ.get("AGENTIC_ALLOW_MUTATION_FOR_TESTS") == "1":
+    if _os.environ.get('AGENTIC_ALLOW_MUTATION_FOR_TESTS') == '1':
         return
     repo_root = _get_repo_root()
     try:
         rel = path.resolve().relative_to(repo_root)
-        rel_str = str(rel).replace("\\", "/")
+        rel_str = str(rel).replace('\\', '/')
     except ValueError:
         return
     for safe_prefix in _SAFE_OUTPUT_PREFIXES:
         if rel_str.startswith(safe_prefix):
             return
-    top_dir = rel.parts[0] if rel.parts else ""
+    top_dir = rel.parts[0] if rel.parts else ''
     if top_dir in _SOURCE_ROOTS_RELATIVE:
-        raise RuntimeError(f"SOURCE_MUTATION_BLOCKED: {verb} {rel_str}")
+        raise RuntimeError(f'SOURCE_MUTATION_BLOCKED: {verb} {rel_str}')
 
-
-def set_mutation_ledger_path(ledger_path: str | Path, trace_id: str | None = None) -> None:
+def set_mutation_ledger_path(ledger_path: str | Path, trace_id: str | None=None) -> None:
     """Configure mutation ledger output path and trace_id for this run.
 
     Must be called before any writes to enable ledger recording.
@@ -219,22 +139,11 @@ def set_mutation_ledger_path(ledger_path: str | Path, trace_id: str | None = Non
     _MUTATION_LEDGER_PATH = Path(ledger_path)
     _MUTATION_SEQUENCE = 0
     _TRACE_ID = trace_id
-    # Ensure parent dir exists
     _MUTATION_LEDGER_PATH.parent.mkdir(parents=True, exist_ok=True)
-    # Clear any existing ledger from prior run
     if _MUTATION_LEDGER_PATH.exists():
         _MUTATION_LEDGER_PATH.unlink()
 
-
-def _append_ledger_entry(
-    operation: str,
-    path: Path,
-    before_hash: str | None,
-    after_hash: str | None,
-    gateway_approved: bool,
-    result: str,
-    error: str | None = None,
-) -> None:
+def _append_ledger_entry(operation: str, path: Path, before_hash: str | None, after_hash: str | None, gateway_approved: bool, result: str, error: str | None=None) -> None:
     """Append a JSONL entry to the mutation ledger.
 
     Per hostile audit Section C3: one line per attempted mutation.
@@ -242,38 +151,13 @@ def _append_ledger_entry(
     """
     global _MUTATION_SEQUENCE
     if _MUTATION_LEDGER_PATH is None:
-        # Ledger not configured - skip (scan-only mode or legacy invocation)
         return
-
     _MUTATION_SEQUENCE += 1
-    entry = {
-        "seq": _MUTATION_SEQUENCE,
-        "trace_id": _TRACE_ID or "UNKNOWN",
-        "timestamp_utc": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
-        "operation": operation,
-        "path": str(path.resolve()).replace("\\", "/"),
-        "before_hash": before_hash,
-        "after_hash": after_hash,
-        "gateway": "L2.WriteGateway",
-        "gateway_approved": gateway_approved,
-        "result": result,
-        "error": error,
-    }
+    entry = {'seq': _MUTATION_SEQUENCE, 'trace_id': _TRACE_ID or 'UNKNOWN', 'timestamp_utc': datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z'), 'operation': operation, 'path': str(path.resolve()).replace('\\', '/'), 'before_hash': before_hash, 'after_hash': after_hash, 'gateway': 'L2.WriteGateway', 'gateway_approved': gateway_approved, 'result': result, 'error': error}
+    with open(_MUTATION_LEDGER_PATH, 'a', encoding='utf-8') as f:
+        f.write(json.dumps(entry, separators=(',', ':'), ensure_ascii=True) + '\n')
 
-    # Append as JSONL (one JSON object per line)
-    with open(_MUTATION_LEDGER_PATH, "a", encoding="utf-8") as f:
-        f.write(json.dumps(entry, separators=(",", ":"), ensure_ascii=True) + "\n")
-
-
-def write_text(
-    path: str | Path,
-    content: str,
-    encoding: str = "utf-8",
-    *,
-    allow_override: bool = False,
-    substitution_count: int | None = None,
-    expected_max_substitutions: int | None = None,
-) -> str:
+def write_text(path: str | Path, content: str, encoding: str='utf-8', *, allow_override: bool=False, substitution_count: int | None=None, expected_max_substitutions: int | None=None) -> str:
     """Write text content to a file, creating parent dirs as needed.
 
     Args:
@@ -290,298 +174,191 @@ def write_text(
         MutationEntropyError: If substitution_count > expected_max_substitutions
     """
     p = Path(path)
-
-    # Capture before_hash (if file exists)
     before_hash: str | None = None
     if p.exists():
         try:
             before_hash = hashlib.sha256(p.read_bytes()).hexdigest()
         except (OSError, UnicodeDecodeError):
-            before_hash = "READ_ERROR"
-
-    # Guard 1: Mutation entropy cap (before any I/O)
+            before_hash = 'READ_ERROR'
     if substitution_count is not None:
         expected_max = expected_max_substitutions if expected_max_substitutions is not None else 1
         if substitution_count > expected_max:
             raise MutationEntropyError(p, substitution_count, expected_max)
-
-    # Guard 2: Write amplification + size cap (before any I/O)
     _check_write_amplification(p, content, encoding)
-
-    # Guard 3: Protected root enforcement
     gateway_approved = True
     try:
         enforce_protected_root(p, allow_override=allow_override)
     except Exception as e:
-        # TODO: Handle specific exception properly
-        raise  # Re-raise after logging/handling
-        gateway_approved = False
-        _append_ledger_entry(
-            operation="write_text",
-            path=p,
-            before_hash=before_hash,
-            after_hash=None,
-            gateway_approved=False,
-            result="BLOCKED",
-            error=str(e),
-        )
         raise
-
-    # Guard 4: Source root fence (legacy defense-in-depth)
-    _deny_writes_into_source_roots(p, "write")
-
-    # Execute write
+        gateway_approved = False
+        _append_ledger_entry(operation='write_text', path=p, before_hash=before_hash, after_hash=None, gateway_approved=False, result='BLOCKED', error=str(e))
+        raise
+    _deny_writes_into_source_roots(p, 'write')
     try:
         p.parent.mkdir(parents=True, exist_ok=True)
         p.write_text(content, encoding=encoding)
-
-        # Capture after_hash
         after_hash = hashlib.sha256(p.read_bytes()).hexdigest()
-
-        # Record successful mutation
-        _append_ledger_entry(
-            operation="write_text",
-            path=p,
-            before_hash=before_hash,
-            after_hash=after_hash,
-            gateway_approved=gateway_approved,
-            result="SUCCESS",
-            error=None,
-        )
-
-        Logger.debug(f"[WriteGateway] write_text: {p}")
+        _append_ledger_entry(operation='write_text', path=p, before_hash=before_hash, after_hash=after_hash, gateway_approved=gateway_approved, result='SUCCESS', error=None)
+        Logger.debug(f'[WriteGateway] write_text: {p}')
         return str(p)
     except Exception as e:
-        # TODO: Handle specific exception properly
-        raise  # Re-raise after logging/handling
-        # Record failed mutation
-        _append_ledger_entry(
-            operation="write_text",
-            path=p,
-            before_hash=before_hash,
-            after_hash=None,
-            gateway_approved=gateway_approved,
-            result="FAILED",
-            error=str(e),
-        )
+        raise
+        _append_ledger_entry(operation='write_text', path=p, before_hash=before_hash, after_hash=None, gateway_approved=gateway_approved, result='FAILED', error=str(e))
         raise
 
-
-def write_bytes(path: str | Path, data: bytes, *, allow_override: bool = False) -> str:
+def write_bytes(path: str | Path, data: bytes, *, allow_override: bool=False) -> str:
     """Write binary content to a file, creating parent dirs as needed."""
     p = Path(path)
-
-    # Capture before_hash (if file exists)
     before_hash: str | None = None
     if p.exists():
         try:
             before_hash = hashlib.sha256(p.read_bytes()).hexdigest()
         except OSError:
-            before_hash = "READ_ERROR"
-
-    # Protected root enforcement
+            before_hash = 'READ_ERROR'
     gateway_approved = True
     try:
         enforce_protected_root(p, allow_override=allow_override)
     except Exception as e:
-        # TODO: Handle specific exception properly
-        raise  # Re-raise after logging/handling
-        gateway_approved = False
-        _append_ledger_entry(
-            operation="write_bytes",
-            path=p,
-            before_hash=before_hash,
-            after_hash=None,
-            gateway_approved=False,
-            result="BLOCKED",
-            error=str(e),
-        )
         raise
-
-    _deny_writes_into_source_roots(p, "write")
-
-    # Execute write
+        gateway_approved = False
+        _append_ledger_entry(operation='write_bytes', path=p, before_hash=before_hash, after_hash=None, gateway_approved=False, result='BLOCKED', error=str(e))
+        raise
+    _deny_writes_into_source_roots(p, 'write')
     try:
         p.parent.mkdir(parents=True, exist_ok=True)
         p.write_bytes(data)
-
-        # Capture after_hash
         after_hash = hashlib.sha256(p.read_bytes()).hexdigest()
-
-        # Record successful mutation
-        _append_ledger_entry(
-            operation="write_bytes",
-            path=p,
-            before_hash=before_hash,
-            after_hash=after_hash,
-            gateway_approved=gateway_approved,
-            result="SUCCESS",
-            error=None,
-        )
-
-        Logger.debug(f"[WriteGateway] write_bytes: {p}")
+        _append_ledger_entry(operation='write_bytes', path=p, before_hash=before_hash, after_hash=after_hash, gateway_approved=gateway_approved, result='SUCCESS', error=None)
+        Logger.debug(f'[WriteGateway] write_bytes: {p}')
         return str(p)
     except Exception as e:
-        # TODO: Handle specific exception properly
-        raise  # Re-raise after logging/handling
-        # Record failed mutation
-        _append_ledger_entry(
-            operation="write_bytes",
-            path=p,
-            before_hash=before_hash,
-            after_hash=None,
-            gateway_approved=gateway_approved,
-            result="FAILED",
-            error=str(e),
-        )
+        raise
+        _append_ledger_entry(operation='write_bytes', path=p, before_hash=before_hash, after_hash=None, gateway_approved=gateway_approved, result='FAILED', error=str(e))
         raise
 
-
-def write_json(path: str | Path, obj: Any, indent: int = 2) -> str:
+def write_json(path: str | Path, obj: Any, indent: int=2) -> str:
     """Serialize obj as JSON and write to file."""
     p = Path(path)
-    _deny_writes_into_source_roots(p, "write")
+    _deny_writes_into_source_roots(p, 'write')
     p.parent.mkdir(parents=True, exist_ok=True)
-    with open(p, "w", encoding="utf-8") as f:
+    with open(p, 'w', encoding='utf-8') as f:
         json.dump(obj, f, indent=indent)
-    Logger.debug(f"[WriteGateway] write_json: {p}")
+    Logger.debug(f'[WriteGateway] write_json: {p}')
     return str(p)
 
-
-def append_text(path: str | Path, content: str, encoding: str = "utf-8") -> str:
+def append_text(path: str | Path, content: str, encoding: str='utf-8') -> str:
     """Append text to a file, creating parent dirs as needed."""
     p = Path(path)
-    _deny_writes_into_source_roots(p, "append")
+    _deny_writes_into_source_roots(p, 'append')
     p.parent.mkdir(parents=True, exist_ok=True)
-    with open(p, "a", encoding=encoding) as f:
+    with open(p, 'a', encoding=encoding) as f:
         f.write(content)
-    Logger.debug(f"[WriteGateway] append_text: {p}")
+    Logger.debug(f'[WriteGateway] append_text: {p}')
     return str(p)
 
-
-def open_write(path: str | Path, content: str, encoding: str = "utf-8") -> str:
+def open_write(path: str | Path, content: str, encoding: str='utf-8') -> str:
     """Open file in write mode and write content."""
     p = Path(path)
-    _deny_writes_into_source_roots(p, "write")
+    _deny_writes_into_source_roots(p, 'write')
     p.parent.mkdir(parents=True, exist_ok=True)
-    with open(p, "w", encoding=encoding) as f:
+    with open(p, 'w', encoding=encoding) as f:
         f.write(content)
-    Logger.debug(f"[WriteGateway] open_write: {p}")
+    Logger.debug(f'[WriteGateway] open_write: {p}')
     return str(p)
-
 
 def ensure_dir(path: str | Path) -> Path:
     """Create directory (and parents) if it does not exist."""
     p = Path(path)
-    _deny_writes_into_source_roots(p, "mkdir")
+    _deny_writes_into_source_roots(p, 'mkdir')
     p.mkdir(parents=True, exist_ok=True)
-    Logger.debug(f"[WriteGateway] ensure_dir: {p}")
+    Logger.debug(f'[WriteGateway] ensure_dir: {p}')
     return p
 
-
-def remove_file(path: str | Path, missing_ok: bool = True) -> None:
+def remove_file(path: str | Path, missing_ok: bool=True) -> None:
     """Remove a file."""
     p = Path(path)
-    _deny_writes_into_source_roots(p, "delete")
-    if missing_ok and not p.exists():
+    _deny_writes_into_source_roots(p, 'delete')
+    if missing_ok and (not p.exists()):
         return
     p.unlink(missing_ok=missing_ok)
-    Logger.debug(f"[WriteGateway] remove_file: {p}")
-
+    Logger.debug(f'[WriteGateway] remove_file: {p}')
 
 def remove_dir(path: str | Path) -> None:
     """Remove an empty directory."""
     p = Path(path)
-    _deny_writes_into_source_roots(p, "delete")
+    _deny_writes_into_source_roots(p, 'delete')
     if p.exists():
         p.rmdir()
-    Logger.debug(f"[WriteGateway] remove_dir: {p}")
-
+    Logger.debug(f'[WriteGateway] remove_dir: {p}')
 
 def remove_tree(path: str | Path) -> None:
     """Recursively remove a directory tree."""
     p = Path(path)
-    _deny_writes_into_source_roots(p, "delete")
+    _deny_writes_into_source_roots(p, 'delete')
     if p.exists():
         shutil.rmtree(p)
-    Logger.debug(f"[WriteGateway] remove_tree: {p}")
-
+    Logger.debug(f'[WriteGateway] remove_tree: {p}')
 
 def copy_file(src: str | Path, dst: str | Path) -> str:
     """Copy a file preserving metadata."""
-    s, d = Path(src), Path(dst)
-    _deny_writes_into_source_roots(d, "copy")
+    s, d = (Path(src), Path(dst))
+    _deny_writes_into_source_roots(d, 'copy')
     d.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(s, d)
-    Logger.debug(f"[WriteGateway] copy_file: {s} -> {d}")
+    Logger.debug(f'[WriteGateway] copy_file: {s} -> {d}')
     return str(d)
-
 
 def move_path(src: str | Path, dst: str | Path) -> str:
     """Move/rename a file or directory."""
-    s, d = Path(src), Path(dst)
-    _deny_writes_into_source_roots(d, "move")
+    s, d = (Path(src), Path(dst))
+    _deny_writes_into_source_roots(d, 'move')
     d.parent.mkdir(parents=True, exist_ok=True)
     shutil.move(str(s), str(d))
-    Logger.debug(f"[WriteGateway] move_path: {s} -> {d}")
+    Logger.debug(f'[WriteGateway] move_path: {s} -> {d}')
     return str(d)
-
 
 def rename_path(src: str | Path, dst: str | Path) -> Path:
     """Rename a file or directory."""
-    s, d = Path(src), Path(dst)
-    _deny_writes_into_source_roots(d, "rename")
+    s, d = (Path(src), Path(dst))
+    _deny_writes_into_source_roots(d, 'rename')
     s.rename(d)
-    Logger.debug(f"[WriteGateway] rename_path: {s} -> {d}")
+    Logger.debug(f'[WriteGateway] rename_path: {s} -> {d}')
     return d
-
 
 def touch_file(path: str | Path) -> Path:
     """Create an empty file or update its timestamp."""
     p = Path(path)
-    _deny_writes_into_source_roots(p, "touch")
+    _deny_writes_into_source_roots(p, 'touch')
     p.parent.mkdir(parents=True, exist_ok=True)
     p.touch()
-    Logger.debug(f"[WriteGateway] touch_file: {p}")
+    Logger.debug(f'[WriteGateway] touch_file: {p}')
     return p
-
 
 def copy_tree(src: str | Path, dst: str | Path) -> str:
     """Recursively copy a directory tree."""
-    s, d = Path(src), Path(dst)
-    _deny_writes_into_source_roots(d, "copy")
+    s, d = (Path(src), Path(dst))
+    _deny_writes_into_source_roots(d, 'copy')
     shutil.copytree(str(s), str(d), dirs_exist_ok=True)
-    Logger.debug(f"[WriteGateway] copy_tree: {s} -> {d}")
+    Logger.debug(f'[WriteGateway] copy_tree: {s} -> {d}')
     return str(d)
 
-
-def makedirs(path: str | Path, exist_ok: bool = True) -> str:
+def makedirs(path: str | Path, exist_ok: bool=True) -> str:
     """Create directories (os.makedirs equivalent)."""
-    _deny_writes_into_source_roots(Path(path), "mkdir")
+    _deny_writes_into_source_roots(Path(path), 'mkdir')
     os.makedirs(str(path), exist_ok=exist_ok)
-    Logger.debug(f"[WriteGateway] makedirs: {path}")
+    Logger.debug(f'[WriteGateway] makedirs: {path}')
     return str(path)
 
-
-def write_json_atomic(
-    path: str | Path,
-    obj: Any,
-    indent: int = 2,
-) -> str:
+def write_json_atomic(path: str | Path, obj: Any, indent: int=2) -> str:
     """Serialize obj as JSON via temp file + atomic rename."""
     p = Path(path)
-    _deny_writes_into_source_roots(p, "write")
+    _deny_writes_into_source_roots(p, 'write')
     p.parent.mkdir(parents=True, exist_ok=True)
-    fd, tmp = tempfile.mkstemp(
-        dir=str(p.parent),
-        suffix=".tmp",
-        prefix=f".{p.stem}_",
-    )
+    fd, tmp = tempfile.mkstemp(dir=str(p.parent), suffix='.tmp', prefix=f'.{p.stem}_')
     try:
-        with os.fdopen(fd, "w", encoding="utf-8") as f:
+        with os.fdopen(fd, 'w', encoding='utf-8') as f:
             json.dump(obj, f, indent=indent)
-        # Atomic replace (Windows needs target removed first)
-        if os.name == "nt" and p.exists():
+        if os.name == 'nt' and p.exists():
             p.unlink()
         Path(tmp).replace(p)
     except BaseException:
@@ -590,62 +367,25 @@ def write_json_atomic(
         except OSError:
             pass
         raise
-    Logger.debug(f"[WriteGateway] write_json_atomic: {p}")
+    Logger.debug(f'[WriteGateway] write_json_atomic: {p}')
     return str(p)
 
-
-def init_csv(
-    path: str | Path,
-    header: Sequence[str],
-) -> str:
+def init_csv(path: str | Path, header: Sequence[str]) -> str:
     """Create a CSV file with a header row, creating parent dirs."""
     p = Path(path)
-    _deny_writes_into_source_roots(p, "write")
+    _deny_writes_into_source_roots(p, 'write')
     p.parent.mkdir(parents=True, exist_ok=True)
-    with open(p, "w", newline="", encoding="utf-8") as f:
+    with open(p, 'w', newline='', encoding='utf-8') as f:
         csv.writer(f).writerow(header)
-    Logger.debug(f"[WriteGateway] init_csv: {p}")
+    Logger.debug(f'[WriteGateway] init_csv: {p}')
     return str(p)
 
-
-def append_csv_row(
-    path: str | Path,
-    row: Sequence[str],
-) -> str:
+def append_csv_row(path: str | Path, row: Sequence[str]) -> str:
     """Append a single row to an existing CSV file."""
     p = Path(path)
-    _deny_writes_into_source_roots(p, "append")
-    with open(p, "a", newline="", encoding="utf-8") as f:
+    _deny_writes_into_source_roots(p, 'append')
+    with open(p, 'a', newline='', encoding='utf-8') as f:
         csv.writer(f).writerow(row)
-    Logger.debug(f"[WriteGateway] append_csv_row: {p}")
+    Logger.debug(f'[WriteGateway] append_csv_row: {p}')
     return str(p)
-
-
-__all__ = [
-    "write_text",
-    "write_bytes",
-    "write_json",
-    "append_text",
-    "open_write",
-    "ensure_dir",
-    "remove_file",
-    "remove_dir",
-    "remove_tree",
-    "copy_file",
-    "move_path",
-    "rename_path",
-    "touch_file",
-    "copy_tree",
-    "makedirs",
-    "write_json_atomic",
-    "init_csv",
-    "append_csv_row",
-    "WriteSizeCapError",
-    "WriteAmplificationError",
-    "MutationEntropyError",
-    "record_prohibition_hit",
-    "get_prohibition_hit_count",
-    "set_mutation_ledger_path",
-    "MAX_WRITE_BYTES",
-    "MAX_GROWTH_RATIO",
-]
+__all__ = ['write_text', 'write_bytes', 'write_json', 'append_text', 'open_write', 'ensure_dir', 'remove_file', 'remove_dir', 'remove_tree', 'copy_file', 'move_path', 'rename_path', 'touch_file', 'copy_tree', 'makedirs', 'write_json_atomic', 'init_csv', 'append_csv_row', 'WriteSizeCapError', 'WriteAmplificationError', 'MutationEntropyError', 'record_prohibition_hit', 'get_prohibition_hit_count', 'set_mutation_ledger_path', 'MAX_WRITE_BYTES', 'MAX_GROWTH_RATIO']

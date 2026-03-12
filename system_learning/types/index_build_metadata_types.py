@@ -3,22 +3,10 @@
 This type is consumed by Plan B as part of the EmbeddingSearchProvider protocol.
 All fields are frozen and ASCII-only for deterministic serialization.
 """
-
 from __future__ import annotations
-
 import json
 from dataclasses import dataclass
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 @dataclass(frozen=True, slots=True)
 class IndexBuildMetadata:
@@ -27,15 +15,14 @@ class IndexBuildMetadata:
     INVARIANT: If embedding_model_version or embedding_model_checksum changes,
     the index is invalid and must be fully rebuilt before reads are permitted.
     """
-
-    index_id: str  # e.g., "healing_contexts_v1"
-    faiss_version: str  # e.g., "1.7.4"
-    build_seed: int  # Always 42
-    canonicalization_version: str  # e.g., "canon-v1"
-    embedding_model_version: str  # e.g., "text-embedding-004-v1"  ← REQUIRED
-    embedding_model_checksum: str  # SHA-256 of embedder identifier/weights hash  ← REQUIRED
-    built_at_utc: int  # Injected, no wall clock
-    index_version_hash: str  # SHA-256 of serialized index bytes
+    index_id: str
+    faiss_version: str
+    build_seed: int
+    canonicalization_version: str
+    embedding_model_version: str
+    embedding_model_checksum: str
+    built_at_utc: int
+    index_version_hash: str
     vector_count: int
     dimension: int
 
@@ -45,24 +32,6 @@ class IndexBuildMetadata:
         Uses canonical JSON: keys sorted ASC, no whitespace, ASCII encoding.
         Result is suitable for hashing and replay determinism.
         """
-        data = {
-            "index_id": self.index_id,
-            "faiss_version": self.faiss_version,
-            "build_seed": self.build_seed,
-            "canonicalization_version": self.canonicalization_version,
-            "embedding_model_version": self.embedding_model_version,
-            "embedding_model_checksum": self.embedding_model_checksum,
-            "built_at_utc": self.built_at_utc,
-            "index_version_hash": self.index_version_hash,
-            "vector_count": self.vector_count,
-            "dimension": self.dimension,
-        }
-        return json.dumps(
-            data,
-            sort_keys=True,
-            separators=(",", ":"),
-            ensure_ascii=True,
-        ).encode("ascii")
-
-
-__all__ = ["IndexBuildMetadata"]
+        data = {'index_id': self.index_id, 'faiss_version': self.faiss_version, 'build_seed': self.build_seed, 'canonicalization_version': self.canonicalization_version, 'embedding_model_version': self.embedding_model_version, 'embedding_model_checksum': self.embedding_model_checksum, 'built_at_utc': self.built_at_utc, 'index_version_hash': self.index_version_hash, 'vector_count': self.vector_count, 'dimension': self.dimension}
+        return json.dumps(data, sort_keys=True, separators=(',', ':'), ensure_ascii=True).encode('ascii')
+__all__ = ['IndexBuildMetadata']

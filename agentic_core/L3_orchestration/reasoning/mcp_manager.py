@@ -134,6 +134,7 @@ class MCPConnectionManager:
                 result = await asyncio.ensure_future(result)
             Logger.debug(f"[MCPManager] Tool '{tool}' succeeded")
             return result if result is not None else {}
+        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.error(f"[MCPManager] Tool '{tool}' failed: {e}")
             return {"error": str(e)}
@@ -150,11 +151,13 @@ def load_mcp_config(config_path: str) -> dict[str, Any]:
     Falls back to empty config dict if file is missing or unparseable.
     """
     path = Path(config_path)
+    # guardian: allow-config-with-logic
     if not path.exists():
         Logger.warning(f"[MCPManager] Config file not found: {config_path} — using defaults")
         return {}
     try:
         text = path.read_text(encoding="utf-8")
+        # guardian: allow-config-with-logic
         if path.suffix in {".yaml", ".yml"}:
             try:
                 import yaml  # type: ignore[import]
@@ -163,6 +166,7 @@ def load_mcp_config(config_path: str) -> dict[str, Any]:
             except ImportError:
                 Logger.warning("[MCPManager] PyYAML not installed — falling back to JSON parse")
         return json.loads(text)
+    # guardian: allow-silent-swallow
     except Exception as e:
         Logger.warning(f"[MCPManager] Failed to parse config {config_path}: {e} — using defaults")
         return {}

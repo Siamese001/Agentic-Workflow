@@ -3,72 +3,21 @@ Script to fix problematic agent names like pii, ddd, ssot, hop.
 
 Replaces with proper naming: pii_sanitizer, ddd_alignment, ssot_reconciler, hop
 """
-
 import re
 from pathlib import Path
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 def find_files_to_fix() -> list[Path]:
     """Find all Python files that need fixing."""
-    patterns = [
-        "agentic_core/**/*.py",
-        "apps_lic/**/*.py",
-        "apps_rg/**/*.py",
-        "apps_shared/**/*.py",
-        "tests/**/*.py",
-        "scripts/**/*.py",
-    ]
-
+    patterns = ['agentic_core/**/*.py', 'apps_lic/**/*.py', 'apps_rg/**/*.py', 'apps_shared/**/*.py', 'tests/**/*.py', 'scripts/**/*.py']
     files = []
     for pattern in patterns:
-        files.extend(Path(".").glob(pattern))
-
+        files.extend(Path('.').glob(pattern))
     return files
-
 
 def get_replacements() -> list[tuple[str, str]]:
     """Get all replacement patterns."""
-    return [
-        # PII_Sanitizer -> PII_Sanitizer
-        (r"PII_Sanitizer", "PII_Sanitizer"),
-        # pii -> pii
-        (r"pii", "pii"),
-        (r"PII", "PII"),
-        (r"pii_sanitizer", "pii_sanitizer"),
-        (r"PII_Sanitizer", "PII_Sanitizer"),
-        # DDD_Alignment -> DDD_Alignment
-        (r"DDD_Alignment", "DDD_Alignment"),
-        (r"DDDAlignmentAgent", "DDDAlignmentAgent"),
-        # ddd -> ddd
-        (r"ddd", "ddd"),
-        (r"DDD", "DDD"),
-        (r"ddd_alignment", "ddd_alignment"),
-        (r"DDD_Alignment", "DDD_Alignment"),
-        # SSOTReconciler -> SSOT_Reconciler
-        (r"FilesystemSSOTReconcilerAgent", "FilesystemSSOTReconcilerAgent"),
-        (r"SSOTReconcilerAgent", "SSOTReconcilerAgent"),
-        # ssot -> ssot
-        (r"ssot", "ssot"),
-        (r"SSOT", "SSOT"),
-        (r"filesystem_ssot", "filesystem_ssot"),
-        (r"Filesystem_SSOT", "Filesystem_SSOT"),
-        # HOP agents - keep as HOP1, HOP2, etc but fix hop patterns
-        (r"hop", "hop"),
-        (r"HOP", "HOP"),
-        (r"HOP(\d+)", r"HOP\1"),
-        (r"hop(\d+)", r"hop\1"),
-    ]
-
+    return [('PII_Sanitizer', 'PII_Sanitizer'), ('pii', 'pii'), ('PII', 'PII'), ('pii_sanitizer', 'pii_sanitizer'), ('PII_Sanitizer', 'PII_Sanitizer'), ('DDD_Alignment', 'DDD_Alignment'), ('DDDAlignmentAgent', 'DDDAlignmentAgent'), ('ddd', 'ddd'), ('DDD', 'DDD'), ('ddd_alignment', 'ddd_alignment'), ('DDD_Alignment', 'DDD_Alignment'), ('FilesystemSSOTReconcilerAgent', 'FilesystemSSOTReconcilerAgent'), ('SSOTReconcilerAgent', 'SSOTReconcilerAgent'), ('ssot', 'ssot'), ('SSOT', 'SSOT'), ('filesystem_ssot', 'filesystem_ssot'), ('Filesystem_SSOT', 'Filesystem_SSOT'), ('hop', 'hop'), ('HOP', 'HOP'), ('HOP(\\d+)', 'HOP\\1'), ('hop(\\d+)', 'hop\\1')]
 
 def fix_file_content(content: str) -> str:
     """Apply all replacements to file content."""
@@ -76,96 +25,37 @@ def fix_file_content(content: str) -> str:
         content = re.sub(pattern, replacement, content)
     return content
 
-
 def rename_files_and_directories():
     """Rename files and directories with problematic names."""
-    renames = [
-        # Test files
-        (
-            "tests/unit/agentic_core/L5_safety/validators/test_ddd_alignment_agent.py",
-            "tests/unit/agentic_core/L5_safety/validators/test_ddd_alignment_agent.py",
-        ),
-        (
-            "tests/unit/agentic_core/L5_safety/validators/test_filesystem_ssot_reconciler_agent.py",
-            "tests/unit/agentic_core/L5_safety/validators/test_filesystem_ssot_reconciler_agent.py",
-        ),
-        # HOP test files
-        (
-            "tests/unit/apps_lic/engines/test_hop1_profile_analysis_agent.py",
-            "tests/unit/apps_lic/engines/test_hop1_profile_analysis_agent.py",
-        ),
-        (
-            "tests/unit/apps_lic/engines/test_hop2_research_agent.py",
-            "tests/unit/apps_lic/engines/test_hop2_research_agent.py",
-        ),
-        (
-            "tests/unit/apps_lic/engines/test_hop3_sender_grounding_agent.py",
-            "tests/unit/apps_lic/engines/test_hop3_sender_grounding_agent.py",
-        ),
-        (
-            "tests/unit/apps_lic/engines/test_hop4_routing_agent.py",
-            "tests/unit/apps_lic/engines/test_hop4_routing_agent.py",
-        ),
-        (
-            "tests/unit/apps_lic/engines/test_hop5_generation_agent.py",
-            "tests/unit/apps_lic/engines/test_hop5_generation_agent.py",
-        ),
-        (
-            "tests/unit/apps_lic/engines/test_hop6_validation_agent.py",
-            "tests/unit/apps_lic/engines/test_hop6_validation_agent.py",
-        ),
-        (
-            "tests/unit/apps_lic/engines/test_hop7_gate_decision_agent.py",
-            "tests/unit/apps_lic/engines/test_hop7_gate_decision_agent.py",
-        ),
-        (
-            "tests/unit/apps_lic/engines/test_hop8_q_a_report_agent.py",
-            "tests/unit/apps_lic/engines/test_hop8_qa_report_agent.py",
-        ),
-        (
-            "tests/unit/apps_lic/engines/test_hop9_integration_agent.py",
-            "tests/unit/apps_lic/engines/test_hop9_integration_agent.py",
-        ),
-    ]
-
+    renames = [('tests/unit/agentic_core/L5_safety/validators/test_ddd_alignment_agent.py', 'tests/unit/agentic_core/L5_safety/validators/test_ddd_alignment_agent.py'), ('tests/unit/agentic_core/L5_safety/validators/test_filesystem_ssot_reconciler_agent.py', 'tests/unit/agentic_core/L5_safety/validators/test_filesystem_ssot_reconciler_agent.py'), ('tests/unit/apps_lic/engines/test_hop1_profile_analysis_agent.py', 'tests/unit/apps_lic/engines/test_hop1_profile_analysis_agent.py'), ('tests/unit/apps_lic/engines/test_hop2_research_agent.py', 'tests/unit/apps_lic/engines/test_hop2_research_agent.py'), ('tests/unit/apps_lic/engines/test_hop3_sender_grounding_agent.py', 'tests/unit/apps_lic/engines/test_hop3_sender_grounding_agent.py'), ('tests/unit/apps_lic/engines/test_hop4_routing_agent.py', 'tests/unit/apps_lic/engines/test_hop4_routing_agent.py'), ('tests/unit/apps_lic/engines/test_hop5_generation_agent.py', 'tests/unit/apps_lic/engines/test_hop5_generation_agent.py'), ('tests/unit/apps_lic/engines/test_hop6_validation_agent.py', 'tests/unit/apps_lic/engines/test_hop6_validation_agent.py'), ('tests/unit/apps_lic/engines/test_hop7_gate_decision_agent.py', 'tests/unit/apps_lic/engines/test_hop7_gate_decision_agent.py'), ('tests/unit/apps_lic/engines/test_hop8_q_a_report_agent.py', 'tests/unit/apps_lic/engines/test_hop8_qa_report_agent.py'), ('tests/unit/apps_lic/engines/test_hop9_integration_agent.py', 'tests/unit/apps_lic/engines/test_hop9_integration_agent.py')]
     for old_path, new_path in renames:
         old = Path(old_path)
         new = Path(new_path)
-        if old.exists() and not new.exists():
-            print(f"Renaming: {old} -> {new}")
+        if old.exists() and (not new.exists()):
+            print(f'Renaming: {old} -> {new}')
             old.rename(new)
-
 
 def main():
     """Main function to fix all naming issues."""
-    print("Fixing naming issues...")
-
-    # First rename files
-    print("\n1. Renaming files...")
+    print('Fixing naming issues...')
+    print('\n1. Renaming files...')
     rename_files_and_directories()
-
-    # Then fix content
-    print("\n2. Fixing file contents...")
+    print('\n2. Fixing file contents...')
     files = find_files_to_fix()
-
     fixed_count = 0
     for file_path in files:
         if not file_path.exists():
             continue
-
         try:
-            content = file_path.read_text(encoding="utf-8")
+            content = file_path.read_text(encoding='utf-8')
             fixed_content = fix_file_content(content)
-
             if content != fixed_content:
-                file_path.write_text(fixed_content, encoding="utf-8")
-                print(f"Fixed: {file_path}")
+                file_path.write_text(fixed_content, encoding='utf-8')
+                print(f'Fixed: {file_path}')
                 fixed_count += 1
+        # guardian: allow-silent-swallow
         except Exception as e:
-            print(f"Error fixing {file_path}: {e}")
-
-    print(f"\nFixed {fixed_count} files")
-
-
-if __name__ == "__main__":
+            print(f'Error fixing {file_path}: {e}')
+    print(f'\nFixed {fixed_count} files')
+if __name__ == '__main__':
     main()

@@ -4,22 +4,10 @@ Seam for canonical truth utilities - approved L0→L5 interface.
 This seam provides a controlled interface for L0 utilities to access
 L5 canonical truth functions without direct L5 imports.
 """
-
 from __future__ import annotations
-
 from pathlib import Path
 from typing import Protocol
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 class CanonicalTruthProvider(Protocol):
     """Protocol for canonical truth operations."""
@@ -28,15 +16,9 @@ class CanonicalTruthProvider(Protocol):
         """Get the canonical layer for a file path."""
         ...
 
-    def categorize_agent(
-        self,
-        class_name: str,
-        base_classes: list[str],
-        docstring: str | None,
-    ) -> str:
+    def categorize_agent(self, class_name: str, base_classes: list[str], docstring: str | None) -> str:
         """Categorize an agent based on its characteristics."""
         ...
-
 
 def get_canonical_truth_provider() -> CanonicalTruthProvider:
     """Get the canonical truth provider implementation.
@@ -45,25 +27,18 @@ def get_canonical_truth_provider() -> CanonicalTruthProvider:
     while providing runtime access to L5 canonical truth logic.
     """
     import importlib
-
     try:
-        module = importlib.import_module("agentic_core.L5_safety.utils.canonical_truth_util")
-        return module  # type: ignore
+        module = importlib.import_module('agentic_core.L5_safety.utils.canonical_truth_util')
+        return module
     except ImportError as e:
-        raise RuntimeError(f"Failed to load canonical truth provider: {e}")
-
+        raise RuntimeError(f'Failed to load canonical truth provider: {e}')
 
 def get_canonical_layer(file_path: Path) -> int:
     """Get the canonical layer for a file path."""
     provider = get_canonical_truth_provider()
     return provider.get_layer(file_path)
 
-
-def categorize_agent(
-    class_name: str,
-    base_classes: list[str],
-    docstring: str | None,
-) -> str:
+def categorize_agent(class_name: str, base_classes: list[str], docstring: str | None) -> str:
     """Categorize an agent based on its characteristics."""
     provider = get_canonical_truth_provider()
     return provider.categorize_agent(class_name, base_classes, docstring)

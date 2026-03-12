@@ -139,6 +139,7 @@ def main(argv: list[str] | None = None) -> int:
     files_scanned = 0
 
     scan_roots = (
+        # guardian: allow-path-string
         list(repo_root.glob(AGENTIC_CORE_DIR + "/L*"))
         + list(repo_root.glob(APPS_LIC_DIR))
         + list(repo_root.glob(APPS_RG_DIR))

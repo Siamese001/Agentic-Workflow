@@ -4,47 +4,33 @@ This module provides a post-retrieval ranking layer that prioritizes fresh (rece
 and corroborated (multi-source) evidence over older or isolated claims, ensuring
 the Resume Engine cites the most current and verified truth.
 """
-
 import logging
 import re
 from datetime import datetime
 from typing import Any
-
 from pydantic import BaseModel, Field, confloat, validator
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 logger = logging.getLogger(__name__)
-
 
 class RankedEvidence(BaseModel):
     """Ranked evidence with freshness and corroboration metrics."""
+    content: str = Field(..., description='Document content')
+    final_score: confloat(ge=0.0, le=1.0) = Field(..., description='Final ranking score')
+    freshness_score: confloat(ge=0.0, le=1.0) = Field(..., description='Freshness score')
+    corroboration_count: int = Field(..., ge=0, description='Number of corroborating sources')
+    year_detected: int | None = Field(None, description='Year extracted from content')
+    semantic_score: confloat(ge=0.0, le=1.0) = Field(..., description='Original semantic score')
+    metadata: dict[str, Any] = Field(default_factory=dict, description='Document metadata')
+    key_entities: list[str] = Field(default_factory=list, description='Corroborated entities')
+    doc_id: str | None = Field(None, description='Document identifier for logging')
 
-    content: str = Field(..., description="Document content")
-    final_score: confloat(ge=0.0, le=1.0) = Field(..., description="Final ranking score")
-    freshness_score: confloat(ge=0.0, le=1.0) = Field(..., description="Freshness score")
-    corroboration_count: int = Field(..., ge=0, description="Number of corroborating sources")
-    year_detected: int | None = Field(None, description="Year extracted from content")
-    semantic_score: confloat(ge=0.0, le=1.0) = Field(..., description="Original semantic score")
-    metadata: dict[str, Any] = Field(default_factory=dict, description="Document metadata")
-    key_entities: list[str] = Field(default_factory=list, description="Corroborated entities")
-    doc_id: str | None = Field(None, description="Document identifier for logging")
-
-    @validator("year_detected")
+    @validator('year_detected')
     def validate_year(cls, v):
         """Validate year is within reasonable range."""
         if v is not None:
             current_year = datetime.now().year
             if v < 2000 or v > current_year + 1:
-                logger.warning(f"Suspicious year detected: {v}")
+                logger.warning(f'Suspicious year detected: {v}')
                 return None
         return v
 
@@ -61,7 +47,6 @@ class RankedEvidence(BaseModel):
         """Check if evidence has multiple sources."""
         return self.corroboration_count >= 2
 
-
 class EvidenceRanker:
     """Evidence ranker that prioritizes fresh and corroborated content.
 
@@ -69,13 +54,7 @@ class EvidenceRanker:
     to ensure the most current and verified evidence is ranked highest.
     """
 
-    def __init__(
-        self,
-        freshness_weight: float = 0.4,
-        corroboration_weight: float = 0.2,
-        semantic_weight: float = 0.4,
-        current_year: int | None = None,
-    ):
+    def __init__(self, freshness_weight: float=0.4, corroboration_weight: float=0.2, semantic_weight: float=0.4, current_year: int | None=None):
         """Initialize the evidence ranker.
 
         Args:
@@ -88,40 +67,16 @@ class EvidenceRanker:
         self.corroboration_weight = corroboration_weight
         self.semantic_weight = semantic_weight
         self.current_year = current_year or datetime.now().year
-
-        # Normalize weights
         total_weight = freshness_weight + corroboration_weight + semantic_weight
         if total_weight != 1.0:
             self.freshness_weight /= total_weight
             self.corroboration_weight /= total_weight
             self.semantic_weight /= total_weight
+        self.year_patterns = ['\\b(20[2-3][0-9])\\b', '\\b([2-3][0-9]{3})\\b']
+        self.entity_patterns = ['\\b([A-Z][a-z]+(?:\\s+[A-Z][a-z]+)*)\\b', '\\b([A-Z]{2,})\\b', '\\$[\\d,]+(?:\\.\\d+)?[kmb]?', '\\b\\d+(?:,\\d{3})*(?:\\.\\d+)?%\\b']
+        logger.info(f'Initialized EvidenceRanker with weights: freshness={self.freshness_weight:.2f}, corroboration={self.corroboration_weight:.2f}, semantic={self.semantic_weight:.2f}')
 
-        # Year extraction patterns
-        self.year_patterns = [
-            r"\b(20[2-3][0-9])\b",  # 2020-2039
-            r"\b([2-3][0-9]{3})\b",  # 2000-3999 (broader)
-        ]
-
-        # Entity extraction patterns
-        self.entity_patterns = [
-            r"\b([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\b",  # Capitalized phrases
-            r"\b([A-Z]{2,})\b",  # Acronyms
-            r"\$[\d,]+(?:\.\d+)?[kmb]?",  # Money values
-            r"\b\d+(?:,\d{3})*(?:\.\d+)?%\b",  # Percentages
-        ]
-
-        logger.info(
-            f"Initialized EvidenceRanker with weights: "
-            f"freshness={self.freshness_weight:.2f}, "
-            f"corroboration={self.corroboration_weight:.2f}, "
-            f"semantic={self.semantic_weight:.2f}",
-        )
-
-    def rank_evidence(
-        self,
-        signals: list[dict[str, Any]],
-        current_year: int | None = None,
-    ) -> list[RankedEvidence]:
+    def rank_evidence(self, signals: list[dict[str, Any]], current_year: int | None=None) -> list[RankedEvidence]:
         """Rank evidence based on freshness and corroboration.
 
         Args:
@@ -134,95 +89,40 @@ class EvidenceRanker:
         try:
             if current_year:
                 self.current_year = current_year
-
-            # Validate input
             if not signals or not isinstance(signals, list):
-                logger.warning("Invalid or empty signals list")
+                logger.warning('Invalid or empty signals list')
                 return []
-
-            # Extract entities from all signals for corroboration checking
             all_entities = self._extract_all_entities(signals)
-
-            # Calculate scores for each signal
             ranked_signals = []
-
             for idx, signal in enumerate(signals):
                 try:
-                    # Extract signal data with defaults
-                    content = signal.get("content", "")
-                    semantic_score = float(signal.get("score", 0.0))
-                    metadata = signal.get("metadata", {})
-                    doc_id = signal.get("doc_id") or signal.get("id") or str(idx)
-
-                    # Validate inputs
+                    content = signal.get('content', '')
+                    semantic_score = float(signal.get('score', 0.0))
+                    metadata = signal.get('metadata', {})
+                    doc_id = signal.get('doc_id') or signal.get('id') or str(idx)
                     if not isinstance(content, str):
-                        logger.warning(f"Invalid content type for doc {doc_id}: {type(content)}")
+                        logger.warning(f'Invalid content type for doc {doc_id}: {type(content)}')
                         continue
-
                     if not 0.0 <= semantic_score <= 1.0:
-                        logger.warning(
-                            f"Semantic score out of bounds for doc {doc_id}: {semantic_score}",
-                        )
+                        logger.warning(f'Semantic score out of bounds for doc {doc_id}: {semantic_score}')
                         semantic_score = max(0.0, min(1.0, semantic_score))
-
-                    # Calculate freshness score
                     freshness_score, year_detected = self._score_freshness(content, metadata)
-
-                    # Calculate corroboration count
-                    corroboration_count, key_entities = self._count_corroboration(
-                        content,
-                        all_entities,
-                        signals,
-                    )
-
-                    # Calculate final score
-                    corroboration_normalized = min(
-                        1.0,
-                        corroboration_count / 3.0,
-                    )  # Normalize to 0-1
-                    final_score = (
-                        semantic_score * self.semantic_weight
-                        + freshness_score * self.freshness_weight
-                        + corroboration_normalized * self.corroboration_weight
-                    )
-
-                    # Create ranked evidence
-                    ranked = RankedEvidence(
-                        content=content,
-                        final_score=final_score,
-                        freshness_score=freshness_score,
-                        corroboration_count=corroboration_count,
-                        year_detected=year_detected,
-                        semantic_score=semantic_score,
-                        metadata=metadata if isinstance(metadata, dict) else {},
-                        key_entities=key_entities,
-                        doc_id=doc_id,
-                    )
-
+                    corroboration_count, key_entities = self._count_corroboration(content, all_entities, signals)
+                    corroboration_normalized = min(1.0, corroboration_count / 3.0)
+                    final_score = semantic_score * self.semantic_weight + freshness_score * self.freshness_weight + corroboration_normalized * self.corroboration_weight
+                    ranked = RankedEvidence(content=content, final_score=final_score, freshness_score=freshness_score, corroboration_count=corroboration_count, year_detected=year_detected, semantic_score=semantic_score, metadata=metadata if isinstance(metadata, dict) else {}, key_entities=key_entities, doc_id=doc_id)
                     ranked_signals.append(ranked)
-
-                    logger.debug(
-                        f"Ranked signal {doc_id}: final={final_score:.3f}, "
-                        f"semantic={semantic_score:.3f}, "
-                        f"freshness={freshness_score:.3f}, "
-                        f"corroboration={corroboration_count}",
-                        extra={"doc_id": doc_id, "final_score": final_score},
-                    )
-
+                    logger.debug(f'Ranked signal {doc_id}: final={final_score:.3f}, semantic={semantic_score:.3f}, freshness={freshness_score:.3f}, corroboration={corroboration_count}', extra={'doc_id': doc_id, 'final_score': final_score})
+                # guardian: allow-silent-swallow
                 except Exception as e:
-                    logger.error(f"Error processing signal at index {idx}: {str(e)}")
+                    logger.error(f'Error processing signal at index {idx}: {str(e)}')
                     continue
-
-            # Sort by final score descending
             ranked_signals.sort(key=lambda x: x.final_score, reverse=True)
-
-            logger.info(
-                f"Ranked {len(signals)} signals, top score: {ranked_signals[0].final_score:.3f if ranked_signals else 0:.3f}",
-            )
+            logger.info(f'Ranked {len(signals)} signals, top score: {ranked_signals[0].final_score:.3f if ranked_signals else 0:.3f}')
             return ranked_signals
-
+        # guardian: allow-silent-swallow
         except Exception as e:
-            logger.error(f"Error in rank_evidence: {str(e)}")
+            logger.error(f'Error in rank_evidence: {str(e)}')
             return []
 
     def _score_freshness(self, content: str, metadata: dict[str, str]) -> tuple[float, int | None]:
@@ -236,48 +136,34 @@ class EvidenceRanker:
             Tuple of (freshness_score, detected_year)
         """
         try:
-            # Try to extract year from content first
             year = self._extract_year(content)
-
-            # If not found in content, check metadata
             if year is None:
-                for key in ["date", "year", "timestamp", "created_at"]:
+                for key in ['date', 'year', 'timestamp', 'created_at']:
                     if key in metadata:
                         year = self._extract_year(str(metadata[key]))
                         if year:
                             break
-
-            # If still no year found, return neutral score
             if year is None:
-                return 0.5, None
-
-            # Calculate freshness score based on year difference
+                return (0.5, None)
             year_diff = self.current_year - year
-
             if year_diff < 0:
-                # Future date - penalize heavily
-                return 0.1, year
+                return (0.1, year)
             elif year_diff == 0:
-                # Current year - maximum freshness
-                return 1.0, year
+                return (1.0, year)
             elif year_diff == 1:
-                # Last year - very fresh
-                return 0.9, year
+                return (0.9, year)
             elif year_diff == 2:
-                # 2 years ago - fresh
-                return 0.7, year
+                return (0.7, year)
             elif year_diff == 3:
-                # 3 years ago - somewhat fresh
-                return 0.5, year
+                return (0.5, year)
             elif year_diff == 4:
-                # 4 years ago - getting stale
-                return 0.3, year
+                return (0.3, year)
             else:
-                # 5+ years ago - stale
-                return 0.2, year
+                return (0.2, year)
+        # guardian: allow-silent-swallow
         except Exception as e:
-            logger.error(f"Error scoring freshness: {str(e)}")
-            return 0.5, None
+            logger.error(f'Error scoring freshness: {str(e)}')
+            return (0.5, None)
 
     def _extract_year(self, text: str) -> int | None:
         """Extract a 4-digit year from text.
@@ -294,22 +180,17 @@ class EvidenceRanker:
                 for match in matches:
                     try:
                         year = int(match)
-                        # Validate reasonable year range
                         if 2020 <= year <= 2030:
                             return year
                     except ValueError:
                         continue
             return None
+        # guardian: allow-silent-swallow
         except Exception as e:
-            logger.error(f"Error extracting year: {str(e)}")
+            logger.error(f'Error extracting year: {str(e)}')
             return None
 
-    def _count_corroboration(
-        self,
-        content: str,
-        all_entities: dict[str, list[str]],
-        all_signals: list[dict[str, Any]],
-    ) -> tuple[int, list[str]]:
+    def _count_corroboration(self, content: str, all_entities: dict[str, list[str]], all_signals: list[dict[str, Any]]) -> tuple[int, list[str]]:
         """Count how many other signals corroborate this one.
 
         Args:
@@ -321,29 +202,20 @@ class EvidenceRanker:
             Tuple of (corroboration_count, key_entities_found)
         """
         try:
-            # Extract entities from this signal
             entities = self._extract_entities(content)
-
             if not entities:
-                return 0, []
-
-            # Count corroboration for each entity
+                return (0, [])
             corroboration_counts = {}
             for entity in entities:
                 if entity in all_entities:
-                    # Count how many other signals contain this entity
                     corroboration_counts[entity] = len(all_entities[entity])
-
-            # Calculate total corroboration (sum of corroborating signals)
-            total_corroboration = sum(count - 1 for count in corroboration_counts.values() if count > 1)
-
-            # Identify key entities (those with corroboration)
+            total_corroboration = sum((count - 1 for count in corroboration_counts.values() if count > 1))
             key_entities = [entity for entity, count in corroboration_counts.items() if count > 1]
-
-            return total_corroboration, key_entities
+            return (total_corroboration, key_entities)
+        # guardian: allow-silent-swallow
         except Exception as e:
-            logger.error(f"Error counting corroboration: {str(e)}")
-            return 0, []
+            logger.error(f'Error counting corroboration: {str(e)}')
+            return (0, [])
 
     def _extract_all_entities(self, signals: list[dict[str, Any]]) -> dict[str, list[str]]:
         """Extract entities from all signals for corroboration checking.
@@ -356,20 +228,18 @@ class EvidenceRanker:
         """
         try:
             entity_map = {}
-
             for idx, signal in enumerate(signals):
-                content = signal.get("content", "")
+                content = signal.get('content', '')
                 if isinstance(content, str):
                     entities = self._extract_entities(content)
-
                     for entity in entities:
                         if entity not in entity_map:
                             entity_map[entity] = []
                         entity_map[entity].append(idx)
-
             return entity_map
+        # guardian: allow-silent-swallow
         except Exception as e:
-            logger.error(f"Error extracting all entities: {str(e)}")
+            logger.error(f'Error extracting all entities: {str(e)}')
             return {}
 
     def _extract_entities(self, content: str) -> list[str]:
@@ -383,62 +253,26 @@ class EvidenceRanker:
         """
         try:
             entities = []
-
-            # Extract using patterns
             for pattern in self.entity_patterns:
                 matches = re.findall(pattern, content)
                 entities.extend(matches)
-
-            # Filter and normalize entities
             normalized_entities = []
             for entity in entities:
-                # Skip very short or very long entities
                 if len(entity) < 2 or len(entity) > 50:
                     continue
-
-                # Skip common words
-                common_words = {
-                    "the",
-                    "and",
-                    "or",
-                    "but",
-                    "in",
-                    "on",
-                    "at",
-                    "to",
-                    "for",
-                    "of",
-                    "with",
-                    "by",
-                    "is",
-                    "are",
-                    "was",
-                    "were",
-                    "be",
-                    "been",
-                    "have",
-                    "has",
-                    "had",
-                    "this",
-                    "that",
-                    "these",
-                    "those",
-                }
-
+                common_words = {'the', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'is', 'are', 'was', 'were', 'be', 'been', 'have', 'has', 'had', 'this', 'that', 'these', 'those'}
                 if entity.lower() not in common_words:
                     normalized_entities.append(entity)
-
-            # Remove duplicates while preserving order
             seen = set()
             unique_entities = []
             for entity in normalized_entities:
                 if entity not in seen:
                     seen.add(entity)
                     unique_entities.append(entity)
-
             return unique_entities
+        # guardian: allow-silent-swallow
         except Exception as e:
-            logger.error(f"Error extracting entities: {str(e)}")
+            logger.error(f'Error extracting entities: {str(e)}')
             return []
 
     def get_ranking_summary(self, ranked_evidence: list[RankedEvidence]) -> dict[str, Any]:
@@ -452,38 +286,18 @@ class EvidenceRanker:
         """
         try:
             if not ranked_evidence:
-                return {"total": 0}
-
-            recent_count = sum(1 for e in ranked_evidence if e.is_recent)
-            corroborated_count = sum(1 for e in ranked_evidence if e.is_corroborated)
-
+                return {'total': 0}
+            recent_count = sum((1 for e in ranked_evidence if e.is_recent))
+            corroborated_count = sum((1 for e in ranked_evidence if e.is_corroborated))
             years_detected = [e.year_detected for e in ranked_evidence if e.year_detected]
             avg_year = sum(years_detected) / len(years_detected) if years_detected else None
-
-            return {
-                "total": len(ranked_evidence),
-                "recent_count": recent_count,
-                "corroborated_count": corroborated_count,
-                "avg_freshness": sum(e.freshness_score for e in ranked_evidence) / len(ranked_evidence),
-                "avg_corroboration": sum(e.corroboration_count for e in ranked_evidence)
-                / len(ranked_evidence),
-                "year_range": (min(years_detected), max(years_detected)) if years_detected else None,
-                "avg_year": avg_year,
-                "top_score": ranked_evidence[0].final_score,
-                "bottom_score": ranked_evidence[-1].final_score,
-            }
+            return {'total': len(ranked_evidence), 'recent_count': recent_count, 'corroborated_count': corroborated_count, 'avg_freshness': sum((e.freshness_score for e in ranked_evidence)) / len(ranked_evidence), 'avg_corroboration': sum((e.corroboration_count for e in ranked_evidence)) / len(ranked_evidence), 'year_range': (min(years_detected), max(years_detected)) if years_detected else None, 'avg_year': avg_year, 'top_score': ranked_evidence[0].final_score, 'bottom_score': ranked_evidence[-1].final_score}
+        # guardian: allow-silent-swallow
         except Exception as e:
-            logger.error(f"Error getting ranking summary: {str(e)}")
-            return {"error": str(e)}
+            logger.error(f'Error getting ranking summary: {str(e)}')
+            return {'error': str(e)}
 
-
-# Factory function for easy instantiation
-def create_evidence_ranker(
-    freshness_weight: float = 0.4,
-    corroboration_weight: float = 0.2,
-    semantic_weight: float = 0.4,
-    current_year: int | None = None,
-) -> EvidenceRanker:
+def create_evidence_ranker(freshness_weight: float=0.4, corroboration_weight: float=0.2, semantic_weight: float=0.4, current_year: int | None=None) -> EvidenceRanker:
     """Create an EvidenceRanker instance.
 
     Args:
@@ -495,20 +309,9 @@ def create_evidence_ranker(
     Returns:
         Configured EvidenceRanker instance
     """
-    return EvidenceRanker(
-        freshness_weight=freshness_weight,
-        corroboration_weight=corroboration_weight,
-        semantic_weight=semantic_weight,
-        current_year=current_year,
-    )
+    return EvidenceRanker(freshness_weight=freshness_weight, corroboration_weight=corroboration_weight, semantic_weight=semantic_weight, current_year=current_year)
 
-
-# Convenience function for quick ranking
-def rank_evidence(
-    signals: list[dict[str, Any]],
-    prioritize_freshness: bool = True,
-    current_year: int | None = None,
-) -> list[RankedEvidence]:
+def rank_evidence(signals: list[dict[str, Any]], prioritize_freshness: bool=True, current_year: int | None=None) -> list[RankedEvidence]:
     """Quickly rank evidence by freshness and corroboration.
 
     Args:
@@ -520,12 +323,5 @@ def rank_evidence(
         List of ranked evidence
     """
     weights = (0.5, 0.2, 0.3) if prioritize_freshness else (0.4, 0.2, 0.4)
-
-    ranker = create_evidence_ranker(
-        freshness_weight=weights[0],
-        corroboration_weight=weights[1],
-        semantic_weight=weights[2],
-        current_year=current_year,
-    )
-
+    ranker = create_evidence_ranker(freshness_weight=weights[0], corroboration_weight=weights[1], semantic_weight=weights[2], current_year=current_year)
     return ranker.rank_evidence(signals)

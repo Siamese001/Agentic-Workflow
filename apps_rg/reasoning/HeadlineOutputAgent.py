@@ -6,71 +6,26 @@ enforcing 8-13 word total count and ≤90 character limit with technology keywor
 Sub-Atomic Agent Name: Executive_Title_Composer
 Legacy K-Node: K.4
 """
-
 import logging
 from dataclasses import dataclass
 from typing import Any
-
 from apps_rg.utils.RGAgentBase import RGAgentBase as Agent
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 logger = logging.getLogger(__name__)
-
 
 @dataclass
 class HeadlineOutput:
     """Executive title composer output."""
-
     headline: str
-    segment_1: str  # Industry/Domain
-    segment_2: str  # Leadership/Role
-    segment_3: str  # Value Proposition
+    segment_1: str
+    segment_2: str
+    segment_3: str
     word_count: int
     char_count: int
     industry_first_compliant: bool
     technology_keywords_in_segment_1: list[str]
     metadata: dict[str, Any]
-
-
-# Technology keywords that MUST NOT appear in Segment 1 (Industry-First violation)
-TECHNOLOGY_KEYWORDS = [
-    "AI",
-    "ML",
-    "Python",
-    "Java",
-    "AWS",
-    "Azure",
-    "GCP",
-    "Kubernetes",
-    "Docker",
-    "React",
-    "Angular",
-    "Node.js",
-    "TensorFlow",
-    "PyTorch",
-    "SQL",
-    "NoSQL",
-    "MongoDB",
-    "PostgreSQL",
-    "Redis",
-    "Kafka",
-    "Microservices",
-    "API",
-    "REST",
-    "GraphQL",
-    "DevOps",
-    "CI/CD",
-]
-
+TECHNOLOGY_KEYWORDS = ['AI', 'ML', 'Python', 'Java', 'AWS', 'Azure', 'GCP', 'Kubernetes', 'Docker', 'React', 'Angular', 'Node.js', 'TensorFlow', 'PyTorch', 'SQL', 'NoSQL', 'MongoDB', 'PostgreSQL', 'Redis', 'Kafka', 'Microservices', 'API', 'REST', 'GraphQL', 'DevOps', 'CI/CD']
 
 class Executive_Title_Composer(Agent):
     """Executive Title Composer agent for Industry-First headline generation.
@@ -87,13 +42,8 @@ class Executive_Title_Composer(Agent):
     - VG_INDUSTRY_FIRST_COMPLIANCE (no tech in Segment 1)
     """
 
-    def __init__(
-        self,
-        config: Any,
-        word_count_min: int = 8,
-        word_count_max: int = 13,
-        char_limit: int = 90,
-    ):
+    # guardian: allow-magic-config
+    def __init__(self, config: Any, word_count_min: int=8, word_count_max: int=13, char_limit: int=90):
         """Initialize Executive Title Composer.
 
         Args:
@@ -102,16 +52,11 @@ class Executive_Title_Composer(Agent):
             word_count_max: Maximum word count (default 13)
             char_limit: Character limit (default 90)
         """
-        super().__init__(config, k_node_id="K.4", element="Executive Title (Industry-First)")
-
+        super().__init__(config, k_node_id='K.4', element='Executive Title (Industry-First)')
         self.word_count_min = word_count_min
         self.word_count_max = word_count_max
         self.char_limit = char_limit
-
-        logger.info(
-            f"Executive_Title_Composer initialized: "
-            f"words={word_count_min}-{word_count_max}, chars≤{char_limit}",
-        )
+        logger.info(f'Executive_Title_Composer initialized: words={word_count_min}-{word_count_max}, chars≤{char_limit}')
 
     async def execute(self, context: dict[str, Any]) -> HeadlineOutput:
         """Execute headline generation with Industry-First positioning.
@@ -127,78 +72,30 @@ class Executive_Title_Composer(Agent):
         Returns:
             HeadlineOutput with 3-segment headline
         """
-        logger.info("Executing Executive_Title_Composer (Industry-First)")
-
-        # Extract context
-        target_industry = context.get("target_industry", "Technology")
-        target_role = context.get("target_role", "Engineering Leader")
-        value_propositions = context.get("value_propositions", [])
-        job_description = context.get("job_description", "")
-        regeneration_feedback = context.get("regeneration_feedback")
-
-        # Build prompt
+        logger.info('Executing Executive_Title_Composer (Industry-First)')
+        target_industry = context.get('target_industry', 'Technology')
+        target_role = context.get('target_role', 'Engineering Leader')
+        value_propositions = context.get('value_propositions', [])
+        job_description = context.get('job_description', '')
+        regeneration_feedback = context.get('regeneration_feedback')
         if regeneration_feedback:
             prompt = self._build_regeneration_prompt(context, regeneration_feedback)
         else:
-            prompt = self._build_initial_prompt(
-                target_industry,
-                target_role,
-                value_propositions,
-                job_description,
-            )
-
-        # Generate headline
+            prompt = self._build_initial_prompt(target_industry, target_role, value_propositions, job_description)
         response = await self._call_llm(prompt)
         headline = response.strip()
-
-        # Parse segments
         segments = self._parse_segments(headline)
-
-        # Validate Industry-First compliance
         tech_keywords_in_seg1 = self._check_technology_keywords(segments[0])
         industry_first_compliant = len(tech_keywords_in_seg1) == 0
-
-        # Calculate metrics
         word_count = len(headline.split())
         char_count = len(headline)
-
-        # Build output
-        output = HeadlineOutput(
-            headline=headline,
-            segment_1=segments[0],
-            segment_2=segments[1],
-            segment_3=segments[2],
-            word_count=word_count,
-            char_count=char_count,
-            industry_first_compliant=industry_first_compliant,
-            technology_keywords_in_segment_1=tech_keywords_in_seg1,
-            metadata={
-                "k_node_id": self.k_node_id,
-                "temperature": self.config.temperature,
-                "word_count_range": f"{self.word_count_min}-{self.word_count_max}",
-                "char_limit": self.char_limit,
-            },
-        )
-
-        logger.info(
-            f"Executive_Title_Composer complete: {word_count} words, {char_count} chars, "
-            f"Industry-First={industry_first_compliant}",
-        )
-
+        output = HeadlineOutput(headline=headline, segment_1=segments[0], segment_2=segments[1], segment_3=segments[2], word_count=word_count, char_count=char_count, industry_first_compliant=industry_first_compliant, technology_keywords_in_segment_1=tech_keywords_in_seg1, metadata={'k_node_id': self.k_node_id, 'temperature': self.config.temperature, 'word_count_range': f'{self.word_count_min}-{self.word_count_max}', 'char_limit': self.char_limit})
+        logger.info(f'Executive_Title_Composer complete: {word_count} words, {char_count} chars, Industry-First={industry_first_compliant}')
         if not industry_first_compliant:
-            logger.error(
-                f"INDUSTRY-FIRST VIOLATION: Technology keywords in Segment 1: {tech_keywords_in_seg1}",
-            )
-
+            logger.error(f'INDUSTRY-FIRST VIOLATION: Technology keywords in Segment 1: {tech_keywords_in_seg1}')
         return output
 
-    def _build_initial_prompt(
-        self,
-        target_industry: str,
-        target_role: str,
-        value_propositions: list[str],
-        job_description: str,
-    ) -> str:
+    def _build_initial_prompt(self, target_industry: str, target_role: str, value_propositions: list[str], job_description: str) -> str:
         """Build initial generation prompt with Industry-First enforcement.
 
         Args:
@@ -210,54 +107,10 @@ class Executive_Title_Composer(Agent):
         Returns:
             Formatted prompt
         """
-        prompt = f"""Generate a professional resume headline with STRICT Industry-First positioning.
-
-CRITICAL CONSTRAINTS (ZERO TOLERANCE):
-1. Total word count: {self.word_count_min}-{self.word_count_max} words (STRICT)
-2. Character limit: ≤{self.char_limit} characters (STRICT)
-3. 3-segment structure: Domain | Leadership | Value Proposition
-4. INDUSTRY-FIRST POSITIONING: Segment 1 MUST NOT contain technology keywords
-
-INDUSTRY-FIRST RULE (BLOCKING):
-- Segment 1 must lead with INDUSTRY/DOMAIN
-  (e.g., "Healthcare", "Financial Services", "Enterprise SaaS")
-- Segment 1 MUST NOT contain: AI, ML, Python, AWS, Kubernetes, Docker, etc.
-- Technology keywords belong in Segment 3 (Value Proposition)
-
-TARGET INDUSTRY: {target_industry}
-TARGET ROLE: {target_role}
-
-VALUE PROPOSITIONS (use for Segment 3):
-{chr(10).join(f"- {vp}" for vp in value_propositions[:3])}
-
-JOB DESCRIPTION CONTEXT:
-{job_description[:300]}...
-
-STRUCTURE:
-Segment 1: {target_industry} [Industry/Domain - NO TECHNOLOGY KEYWORDS]
-Segment 2: {target_role} [Leadership/Role]
-Segment 3: [Value Proposition - technology keywords allowed here]
-
-EXAMPLES (Industry-First Compliant):
-✅ "Healthcare Technology Leader | AI/ML Innovation | Enterprise Scale"
-✅ "Financial Services Executive | Cloud Architecture | Digital Transformation"
-✅ "Enterprise SaaS Leader | Engineering Excellence | Scalable Solutions"
-
-EXAMPLES (Industry-First VIOLATIONS - DO NOT USE):
-❌ "AI/ML Leader | Healthcare Technology | Innovation" (tech in Segment 1)
-❌ "Python Engineer | Cloud Architecture | SaaS" (tech in Segment 1)
-
-Generate the headline now (
-{self.word_count_min}-{self.word_count_max} words, ≤{self.char_limit} chars):
-"""
-
+        prompt = f"""Generate a professional resume headline with STRICT Industry-First positioning.\n\nCRITICAL CONSTRAINTS (ZERO TOLERANCE):\n1. Total word count: {self.word_count_min}-{self.word_count_max} words (STRICT)\n2. Character limit: ≤{self.char_limit} characters (STRICT)\n3. 3-segment structure: Domain | Leadership | Value Proposition\n4. INDUSTRY-FIRST POSITIONING: Segment 1 MUST NOT contain technology keywords\n\nINDUSTRY-FIRST RULE (BLOCKING):\n- Segment 1 must lead with INDUSTRY/DOMAIN\n  (e.g., "Healthcare", "Financial Services", "Enterprise SaaS")\n- Segment 1 MUST NOT contain: AI, ML, Python, AWS, Kubernetes, Docker, etc.\n- Technology keywords belong in Segment 3 (Value Proposition)\n\nTARGET INDUSTRY: {target_industry}\nTARGET ROLE: {target_role}\n\nVALUE PROPOSITIONS (use for Segment 3):\n{chr(10).join((f'- {vp}' for vp in value_propositions[:3]))}\n\nJOB DESCRIPTION CONTEXT:\n{job_description[:300]}...\n\nSTRUCTURE:\nSegment 1: {target_industry} [Industry/Domain - NO TECHNOLOGY KEYWORDS]\nSegment 2: {target_role} [Leadership/Role]\nSegment 3: [Value Proposition - technology keywords allowed here]\n\nEXAMPLES (Industry-First Compliant):\n✅ "Healthcare Technology Leader | AI/ML Innovation | Enterprise Scale"\n✅ "Financial Services Executive | Cloud Architecture | Digital Transformation"\n✅ "Enterprise SaaS Leader | Engineering Excellence | Scalable Solutions"\n\nEXAMPLES (Industry-First VIOLATIONS - DO NOT USE):\n❌ "AI/ML Leader | Healthcare Technology | Innovation" (tech in Segment 1)\n❌ "Python Engineer | Cloud Architecture | SaaS" (tech in Segment 1)\n\nGenerate the headline now (\n{self.word_count_min}-{self.word_count_max} words, ≤{self.char_limit} chars):\n"""
         return prompt
 
-    def _build_regeneration_prompt(
-        self,
-        context: dict[str, Any],
-        feedback: str,
-    ) -> str:
+    def _build_regeneration_prompt(self, context: dict[str, Any], feedback: str) -> str:
         """Build regeneration prompt with validation feedback.
 
         Args:
@@ -267,27 +120,8 @@ Generate the headline now (
         Returns:
             Regeneration prompt
         """
-        previous_headline = context.get("previous_headline", "")
-
-        prompt = f"""REGENERATION REQUIRED
-
-{feedback}
-
-PREVIOUS HEADLINE:
-{previous_headline}
-
-CONSTRAINTS (ZERO TOLERANCE):
-- Word count: {self.word_count_min}-{self.word_count_max} words
-- Character limit: ≤{self.char_limit} characters
-- INDUSTRY-FIRST: NO technology keywords in Segment 1
-
-INSTRUCTIONS:
-Fix the specific violations listed in feedback.
-Maintain Industry-First positioning.
-
-Generate the corrected headline:
-"""
-
+        previous_headline = context.get('previous_headline', '')
+        prompt = f'REGENERATION REQUIRED\n\n{feedback}\n\nPREVIOUS HEADLINE:\n{previous_headline}\n\nCONSTRAINTS (ZERO TOLERANCE):\n- Word count: {self.word_count_min}-{self.word_count_max} words\n- Character limit: ≤{self.char_limit} characters\n- INDUSTRY-FIRST: NO technology keywords in Segment 1\n\nINSTRUCTIONS:\nFix the specific violations listed in feedback.\nMaintain Industry-First positioning.\n\nGenerate the corrected headline:\n'
         return prompt
 
     def _parse_segments(self, headline: str) -> list[str]:
@@ -299,13 +133,9 @@ Generate the corrected headline:
         Returns:
             List of 3 segments [Domain, Leadership, Value Prop]
         """
-        # Split by pipe delimiter
-        segments = [s.strip() for s in headline.split("|")]
-
-        # Ensure exactly 3 segments
+        segments = [s.strip() for s in headline.split('|')]
         while len(segments) < 3:
-            segments.append("")
-
+            segments.append('')
         return segments[:3]
 
     def _check_technology_keywords(self, segment: str) -> list[str]:
@@ -319,9 +149,7 @@ Generate the corrected headline:
         """
         segment_upper = segment.upper()
         found_keywords = []
-
         for keyword in TECHNOLOGY_KEYWORDS:
             if keyword.upper() in segment_upper:
                 found_keywords.append(keyword)
-
         return found_keywords

@@ -1,45 +1,29 @@
 from pathlib import Path
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-"""Comprehensive check of ALL agents that might have been archived in entire chat history."""
+'Comprehensive check of ALL agents that might have been archived in entire chat history.'
 import os
-
-from agentic_core.L0_routing.config import (
-    ARCHIVES_DIR,
-)
+from agentic_core.L0_routing.config import ARCHIVES_DIR
 from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
-
-PROJECT_ROOT = Path("C:/Git/Agentic-Workflow")
-l4_active = PROJECT_ROOT / "agentic_core/L4_state/memory/L4Agent.py"
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+PROJECT_ROOT = Path('C:/Git/Agentic-Workflow')
+l4_active = PROJECT_ROOT / 'agentic_core/L4_state/memory/L4Agent.py'
 archives_path = PROJECT_ROOT / ARCHIVES_DIR
 l4_archived = []
 if archives_path.exists():
     for root, dirs, files in os.walk(archives_path):
         dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
-        if "L4Agent.py" in files:
-            # guardian: allow-path-string
-            l4_archived.append(os.path.join(root, "L4Agent.py"))
+        if 'L4Agent.py' in files:
+            l4_archived.append(Path(root) / 'L4Agent.py')
 for _path in l4_archived:
     pass
 archived_agents = []
 if archives_path.exists():
     for root, dirs, files in os.walk(archives_path):
         dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
-        if "identity_duplicates" in root:
+        if 'identity_duplicates' in root:
             continue
         for file in files:
-            if file.endswith("Agent.py"):
-                # guardian: allow-path-string
-                rel_path = os.path.relpath(os.path.join(root, file), archives_path)
+            if file.endswith('Agent.py'):
+                rel_path = os.path.relpath(Path(root) / file, archives_path)
                 archived_agents.append(rel_path)
 by_subdir = {}
 for agent in archived_agents:

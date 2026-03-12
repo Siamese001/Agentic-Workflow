@@ -1,20 +1,8 @@
 """Healing Outcome Intake Types - Immutable contract for meta-learning intake."""
-
 import json
 from dataclasses import dataclass
-
 from system_learning.types.healing_outcome_types import HealingOutcomeProposal, HealingOutcomeStats
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 @dataclass(frozen=True, slots=True)
 class HealingOutcomeIntakeRecord:
@@ -23,27 +11,25 @@ class HealingOutcomeIntakeRecord:
     This is a persist-only artifact - no configuration or routing mutations.
     The snapshot is stored deterministically as a sorted tuple.
     """
-
     schema_version: int
-    created_utc: int  # Explicit timestamp, no wall-clock reads in core logic
+    created_utc: int
     window_size: int
-    snapshot: tuple[HealingOutcomeStats, ...]  # Sorted deterministically
+    snapshot: tuple[HealingOutcomeStats, ...]
     proposal: HealingOutcomeProposal
-    source: str  # e.g., "L2.3-healing"
+    source: str
     run_id: str | None = None
     trace_id: str | None = None
 
     def __post_init__(self) -> None:
         """Validate invariants."""
         if self.schema_version < 1:
-            raise ValueError("schema_version must be >= 1")
+            raise ValueError('schema_version must be >= 1')
         if self.window_size <= 0:
-            raise ValueError("window_size must be positive")
+            raise ValueError('window_size must be positive')
         if not self.snapshot:
-            raise ValueError("snapshot cannot be empty")
-        # Ensure snapshot is deterministically sorted
+            raise ValueError('snapshot cannot be empty')
         if list(self.snapshot) != sorted(self.snapshot, key=lambda s: (s.healer_id, s.tier, s.failure_type)):
-            raise ValueError("snapshot must be sorted by (healer_id, tier, failure_type)")
+            raise ValueError('snapshot must be sorted by (healer_id, tier, failure_type)')
 
     def canonical_bytes(self) -> bytes:
         """Deterministic canonical byte representation for content-addressed identity.
@@ -53,21 +39,5 @@ class HealingOutcomeIntakeRecord:
         Non-semantic fields (run_id, trace_id) are excluded from the hash
         so that re-runs of the same data do not create duplicate entries.
         """
-        payload = {
-            "schema_version": self.schema_version,
-            "created_utc": self.created_utc,
-            "window_size": self.window_size,
-            "source": self.source,
-            "snapshot": [
-                {
-                    "healer_id": s.healer_id,
-                    "tier": s.tier,
-                    "failure_type": s.failure_type,
-                    "total_count": s.total_count,
-                    "success_count": s.success_count,
-                    "failure_count": s.failure_count,
-                }
-                for s in self.snapshot
-            ],
-        }
-        return json.dumps(payload, separators=(",", ":"), sort_keys=True).encode("utf-8")
+        payload = {'schema_version': self.schema_version, 'created_utc': self.created_utc, 'window_size': self.window_size, 'source': self.source, 'snapshot': [{'healer_id': s.healer_id, 'tier': s.tier, 'failure_type': s.failure_type, 'total_count': s.total_count, 'success_count': s.success_count, 'failure_count': s.failure_count} for s in self.snapshot]}
+        return json.dumps(payload, separators=(',', ':'), sort_keys=True).encode('utf-8')

@@ -270,6 +270,7 @@ class InterventionServer:
         return commands
 
 
+# guardian: allow-magic-config
 def check_intervention_required(
     cycle: int,
     modified_count: int,

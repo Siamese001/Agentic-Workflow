@@ -9,25 +9,12 @@ Exit codes:
 - 0: All validations passed
 - 1: Validation failures detected
 """
-
 import sys
 from pathlib import Path
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-# Add project root to path
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 project_root = Path(__file__).parent.parent.parent
 # guardian: allow-global-mutation
 sys.path.insert(0, str(project_root))
-
 
 def run_code_deduplication_check() -> tuple[bool, str]:
     """
@@ -37,40 +24,28 @@ def run_code_deduplication_check() -> tuple[bool, str]:
         Tuple of (success, message)
     """
     try:
-        from agentic_core.L0_routing.seams.safety_enforcement_seam import (
-            load_code_deduplication_agent,
-        )
-
+        from agentic_core.L0_routing.seams.safety_enforcement_seam import load_code_deduplication_agent
         CodeDeduplicationAgent = load_code_deduplication_agent()
-
-        print("\n" + "=" * 70)
-        print("AGENT VALIDATION: Code Deduplication")
-        print("=" * 70)
-
+        print('\n' + '=' * 70)
+        print('AGENT VALIDATION: Code Deduplication')
+        print('=' * 70)
         agent = CodeDeduplicationAgent()
-
-        # Scan for duplicates
-        python_files = list(project_root.rglob("*.py"))
-        python_files = [f for f in python_files if "__pycache__" not in str(f)]
-
+        python_files = list(project_root.rglob('*.py'))
+        python_files = [f for f in python_files if '__pycache__' not in str(f)]
         agent.scan_filename_duplicates(python_files, project_root)
-
         if agent.filename_duplicates:
-            print(f"\n❌ Found {len(agent.filename_duplicates)} duplicate filename groups:")
+            print(f'\n❌ Found {len(agent.filename_duplicates)} duplicate filename groups:')
             for basename, entries in agent.filename_duplicates.items():
-                print(f"\n  Duplicate: {basename}")
+                print(f'\n  Duplicate: {basename}')
                 for path, hash_val in entries:
                     rel = path.relative_to(project_root)
-                    print(f"    - {rel} (hash: {hash_val[:8]}...)")
-            return False, f"Found {len(agent.filename_duplicates)} duplicate filename groups"
-
-        print("\n✅ No duplicate filenames detected")
-        return True, "Code deduplication check passed"
-
+                    print(f'    - {rel} (hash: {hash_val[:8]}...)')
+            return (False, f'Found {len(agent.filename_duplicates)} duplicate filename groups')
+        print('\n✅ No duplicate filenames detected')
+        return (True, 'Code deduplication check passed')
     # guardian: allow-silent-swallow
     except Exception as e:
-        return False, f"Code deduplication check failed: {e}"
-
+        return (False, f'Code deduplication check failed: {e}')
 
 def run_architecture_governance_check() -> tuple[bool, str]:
     """
@@ -81,35 +56,23 @@ def run_architecture_governance_check() -> tuple[bool, str]:
     """
     try:
         from agentic_core.L0_routing.utils.subprocess_runner_util import invoke_arch_governor
-
-        print("\n" + "=" * 70)
-        print("AGENT VALIDATION: Architecture Governance")
-        print("=" * 70)
-
-        # Invoke via subprocess to avoid upward import edge
-        result = invoke_arch_governor(
-            action="verify",
-            project_root=project_root,
-            auto_approve=True,
-        )
-
-        is_compliant = result.get("success", False)
-        violations_found = result.get("violations_found", 0)
-        roots_scanned = result.get("roots_scanned", [])
-
+        print('\n' + '=' * 70)
+        print('AGENT VALIDATION: Architecture Governance')
+        print('=' * 70)
+        result = invoke_arch_governor(action='verify', project_root=project_root, auto_approve=True)
+        is_compliant = result.get('success', False)
+        violations_found = result.get('violations_found', 0)
+        roots_scanned = result.get('roots_scanned', [])
         if not is_compliant:
-            print(f"\n❌ Found {violations_found} architecture violations")
+            print(f'\n❌ Found {violations_found} architecture violations')
             print(f"   Roots scanned: {', '.join(roots_scanned)}")
-            return False, f"Found {violations_found} architecture violations"
-
-        print("\n✅ Architecture validation passed")
+            return (False, f'Found {violations_found} architecture violations')
+        print('\n✅ Architecture validation passed')
         print(f"   Roots scanned: {', '.join(roots_scanned)}")
-        return True, "Architecture governance check passed"
-
+        return (True, 'Architecture governance check passed')
     # guardian: allow-silent-swallow
     except Exception as e:
-        return False, f"Architecture governance check failed: {e}"
-
+        return (False, f'Architecture governance check failed: {e}')
 
 def main() -> int:
     """
@@ -118,44 +81,32 @@ def main() -> int:
     Returns:
         Exit code (0 for success, 1 for failure)
     """
-    print("\n" + "=" * 70)
-    print("CI/CD AGENT VALIDATION SUITE")
-    print("=" * 70)
-    print("Replacing removed pre-commit hooks with agent-based validation")
-    print("=" * 70)
-
+    print('\n' + '=' * 70)
+    print('CI/CD AGENT VALIDATION SUITE')
+    print('=' * 70)
+    print('Replacing removed pre-commit hooks with agent-based validation')
+    print('=' * 70)
     results = []
-
-    # Run code deduplication check
     success, message = run_code_deduplication_check()
-    results.append((success, "Code Deduplication", message))
-
-    # Run architecture governance check
+    results.append((success, 'Code Deduplication', message))
     success, message = run_architecture_governance_check()
-    results.append((success, "Architecture Governance", message))
-
-    # Summary
-    print("\n" + "=" * 70)
-    print("VALIDATION SUMMARY")
-    print("=" * 70)
-
+    results.append((success, 'Architecture Governance', message))
+    print('\n' + '=' * 70)
+    print('VALIDATION SUMMARY')
+    print('=' * 70)
     all_passed = True
     for success, check_name, message in results:
-        status = "✅ PASS" if success else "❌ FAIL"
-        print(f"{status}: {check_name}")
+        status = '✅ PASS' if success else '❌ FAIL'
+        print(f'{status}: {check_name}')
         if not success:
-            print(f"       {message}")
+            print(f'       {message}')
             all_passed = False
-
-    print("=" * 70)
-
+    print('=' * 70)
     if all_passed:
-        print("\n✅ All agent validations passed")
+        print('\n✅ All agent validations passed')
         return 0
     else:
-        print("\n❌ Some agent validations failed")
+        print('\n❌ Some agent validations failed')
         return 1
-
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     sys.exit(main())

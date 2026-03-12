@@ -1,19 +1,8 @@
 """Healing Outcome Intake Adapter - persist-only adapter for meta-learning intake."""
-
 from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
 from system_learning.ports.healing_outcome_intake_store import HealingOutcomeIntakeStore
 from system_learning.types.healing_outcome_intake_types import HealingOutcomeIntakeRecord
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 class HealingOutcomeIntakeAdapter:
     """Adapter that converts HealingOutcomeAggregator outputs to intake records.
@@ -30,9 +19,7 @@ class HealingOutcomeIntakeAdapter:
         """
         self._store = store
 
-    def build_record(
-        self, aggregator: HealingOutcomeAggregator, created_utc: int, source: str = "L2.3-healing"
-    ) -> HealingOutcomeIntakeRecord:
+    def build_record(self, aggregator: HealingOutcomeAggregator, created_utc: int, source: str='L2.3-healing') -> HealingOutcomeIntakeRecord:
         """Build an intake record from aggregator state.
 
         Args:
@@ -43,21 +30,10 @@ class HealingOutcomeIntakeAdapter:
         Returns:
             Immutable intake record with deterministically sorted snapshot
         """
-        # Get snapshot and proposal from aggregator
         snapshot_tuple = aggregator.snapshot()
         proposal = aggregator.build_proposal()
-
-        # Ensure deterministic sorting of snapshot
         sorted_snapshot = tuple(sorted(snapshot_tuple, key=lambda s: (s.healer_id, s.tier, s.failure_type)))
-
-        return HealingOutcomeIntakeRecord(
-            schema_version=1,
-            created_utc=created_utc,
-            window_size=len(sorted_snapshot),
-            snapshot=sorted_snapshot,
-            proposal=proposal,
-            source=source,
-        )
+        return HealingOutcomeIntakeRecord(schema_version=1, created_utc=created_utc, window_size=len(sorted_snapshot), snapshot=sorted_snapshot, proposal=proposal, source=source)
 
     def persist_record(self, record: HealingOutcomeIntakeRecord) -> None:
         """Persist an intake record via the store.
@@ -67,9 +43,7 @@ class HealingOutcomeIntakeAdapter:
         """
         self._store.write(record)
 
-    def get_recent_records(
-        self, window_start_utc: int, window_end_utc: int
-    ) -> list[HealingOutcomeIntakeRecord]:
+    def get_recent_records(self, window_start_utc: int, window_end_utc: int) -> list[HealingOutcomeIntakeRecord]:
         """Return records whose created_utc falls within [window_start_utc, window_end_utc].
 
         Args:

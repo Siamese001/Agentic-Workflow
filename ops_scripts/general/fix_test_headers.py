@@ -2,47 +2,28 @@
 Fix test file headers that are causing parsing errors.
 The generated test files have problematic headers with Windows paths.
 """
-
 from pathlib import Path
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 def fix_test_headers(project_root: Path):
     """Remove problematic headers from generated test files."""
-    test_dir = project_root / TESTS_DIR / "unit"
+    test_dir = project_root / TESTS_DIR / 'unit'
     fixed_count = 0
-
-    for test_file in test_dir.rglob("*.py"):
-        if test_file.name in ("__init__.py", "conftest.py"):
+    for test_file in test_dir.rglob('*.py'):
+        if test_file.name in ('__init__.py', 'conftest.py'):
             continue
-
         try:
-            content = test_file.read_text(encoding="utf-8")
-
-            # Check if file has problematic header
-            if "Source: C:\\Git\\Agentic-Workflow" in content:
-                # Remove first 7 lines (problematic header)
-                lines = content.split("\n")
-                if len(lines) > 7 and "Source:" in lines[4]:
-                    content = "\n".join(lines[7:])
-                    test_file.write_text(content, encoding="utf-8")
+            content = test_file.read_text(encoding='utf-8')
+            if 'Source: C:\\Git\\Agentic-Workflow' in content:
+                lines = content.split('\n')
+                if len(lines) > 7 and 'Source:' in lines[4]:
+                    content = '\n'.join(lines[7:])
+                    test_file.write_text(content, encoding='utf-8')
                     fixed_count += 1
-                    print(f"Fixed: {test_file.relative_to(project_root)}")
+                    print(f'Fixed: {test_file.relative_to(project_root)}')
         except (UnicodeDecodeError, OSError):
             continue
-
-    print(f"\nTotal files fixed: {fixed_count}")
-
-
-if __name__ == "__main__":
+    print(f'\nTotal files fixed: {fixed_count}')
+if __name__ == '__main__':
     project_root = Path(__file__).parent.parent.parent
     fix_test_headers(project_root)

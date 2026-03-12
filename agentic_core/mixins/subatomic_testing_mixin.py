@@ -1,57 +1,25 @@
 from __future__ import annotations
-
-import importlib  # AUTO-INJECTED BY GRAVITY HEALER
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-"""
-SubatomicTestingMixin - Phase 1 Canonical Self-Testing for L2 Agents
-
-Provides automatic self-testing capabilities for all L2 execution-layer agents.
-This mixin enforces the sovereign requirement that L2-L4 agents must be "Self" testing.
-
-Location: agentic_core/L2_execution/reasoning/subatomic_testing_mixin.py
-Purpose: Shared testing infrastructure for SubAtomicAgent-derived classes
-"""
+import importlib
+'\nSubatomicTestingMixin - Phase 1 Canonical Self-Testing for L2 Agents\n\nProvides automatic self-testing capabilities for all L2 execution-layer agents.\nThis mixin enforces the sovereign requirement that L2-L4 agents must be "Self" testing.\n\nLocation: agentic_core/L2_execution/reasoning/subatomic_testing_mixin.py\nPurpose: Shared testing infrastructure for SubAtomicAgent-derived classes\n'
 import logging
-
-# GRAVITY FIXED: Use correct L2 location for MCPHardenedMixin
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 try:
-    _mod = importlib.import_module("agentic_core.L2_execution.enforcement.MCPHardenedMixin")
+    _mod = importlib.import_module('agentic_core.L2_execution.enforcement.MCPHardenedMixin')
     MCPHardenedMixin = _mod.MCPHardenedMixin
 except (ImportError, AttributeError):
-    # Fallback: create stub if module not available during healing
+
     class MCPHardenedMixin:
         """Stub MCPHardenedMixin for healing resilience."""
-
         pass
-
-
 from agentic_core.runtime.config.anomaly_report_config import AnomalyReport, AnomalySeverity
-
-# Import instructional injection patterns from canonical mixin location
 try:
-    from agentic_core.mixins.instructional_injection_mixin import (
-        InstructionalInjectionMixin,
-    )
+    from agentic_core.mixins.instructional_injection_mixin import InstructionalInjectionMixin
 except ImportError:
 
     class InstructionalInjectionMixin:
         """Stub for healing resilience."""
-
         pass
-
-
 Logger = logging.getLogger(__name__)
-
 
 class SubatomicTestingMixin(InstructionalInjectionMixin):
     """
@@ -67,11 +35,7 @@ class SubatomicTestingMixin(InstructionalInjectionMixin):
 
     Subclasses should override _run_self_tests() to add specific tests.
     """
-
-    # Class-level flag to enable/disable self-testing (for performance tuning)
     _self_testing_enabled: bool = True
-
-    # Track if tests have already run (avoid duplicate runs in MRO)
     _self_tests_completed: bool = False
 
     def _run_self_tests(self) -> bool:
@@ -86,61 +50,36 @@ class SubatomicTestingMixin(InstructionalInjectionMixin):
         """
         if not self._self_testing_enabled:
             return True
-
         class_name = self.__class__.__name__
-
         try:
-            # Basic capability check
-            if hasattr(self, "can_run"):
+            if hasattr(self, 'can_run'):
                 can_run_result = self.can_run()
                 if can_run_result is not True:
-                    Logger.debug(f"[SELF-TEST] {class_name}.can_run() returned {can_run_result}")
-                    # Don't fail - some agents legitimately can't run in isolation
+                    Logger.debug(f'[SELF-TEST] {class_name}.can_run() returned {can_run_result}')
         except AssertionError as e:
-            # Proactive healing: create anomaly and attempt heal
-            anomaly = AnomalyReport(
-                type="self_test_failure",
-                severity=AnomalySeverity.MEDIUM,
-                description=f"Self-test assertion failed: {e}",
-                source=class_name,
-                details={"failed_assert": str(e)},
-            )
-            if hasattr(self, "_mcp_audit"):
-                self._mcp_audit("proactive_anomaly_detected", payload=anomaly.to_dict())
-            if hasattr(self, "heal"):
-                if self.heal({}, anomaly):  # Attempt proactive heal
-                    Logger.info(f"[SELF-TEST] {class_name} healed via proactive repair")
-                    return True  # Healed - pass implicitly
-            raise  # Unhealable - escalate
-
-        # If tools present, test registration structure
-        if hasattr(self, "tools") and self.tools is not None:
-            assert isinstance(self.tools, dict | list), (
-                f"{class_name}: Tools must be dict or list, got {type(self.tools)}"
-            )
-
-        # If memory/state dict exists, test basic operations
-        if hasattr(self, "state") and isinstance(self.state, dict):
-            test_key = "_self_test_marker"
-            test_value = f"ok_{class_name}"
+            anomaly = AnomalyReport(type='self_test_failure', severity=AnomalySeverity.MEDIUM, description=f'Self-test assertion failed: {e}', source=class_name, details={'failed_assert': str(e)})
+            if hasattr(self, '_mcp_audit'):
+                self._mcp_audit('proactive_anomaly_detected', payload=anomaly.to_dict())
+            if hasattr(self, 'heal'):
+                if self.heal({}, anomaly):
+                    Logger.info(f'[SELF-TEST] {class_name} healed via proactive repair')
+                    return True
+            raise
+        if hasattr(self, 'tools') and self.tools is not None:
+            assert isinstance(self.tools, dict | list), f'{class_name}: Tools must be dict or list, got {type(self.tools)}'
+        if hasattr(self, 'state') and isinstance(self.state, dict):
+            test_key = '_self_test_marker'
+            test_value = f'ok_{class_name}'
             original_value = self.state.get(test_key)
-
-            # Write test
             self.state[test_key] = test_value
-            assert self.state.get(test_key) == test_value, f"{class_name}: State write/read corruption"
-
-            # Cleanup
+            assert self.state.get(test_key) == test_value, f'{class_name}: State write/read corruption'
             if original_value is None:
                 del self.state[test_key]
             else:
                 self.state[test_key] = original_value
-
-        # If memory object exists, test interface
-        if hasattr(self, "memory") and self.memory is not None:
-            # Just verify it's accessible - specific tests in subclasses
-            assert self.memory is not None, f"{class_name}: Memory object is None"
-
-        Logger.debug(f"[SELF-TEST] {class_name} passed basic smoke tests")
+        if hasattr(self, 'memory') and self.memory is not None:
+            assert self.memory is not None, f'{class_name}: Memory object is None'
+        Logger.debug(f'[SELF-TEST] {class_name} passed basic smoke tests')
         return True
 
     def _run_self_tests_safe(self) -> bool:
@@ -154,10 +93,10 @@ class SubatomicTestingMixin(InstructionalInjectionMixin):
         try:
             return self._run_self_tests()
         except AssertionError as e:
-            Logger.warning(f"[SELF-TEST FAILED] {self.__class__.__name__}: {e}")
+            Logger.warning(f'[SELF-TEST FAILED] {self.__class__.__name__}: {e}')
             return False
         except Exception as e:
-            Logger.error(f"[SELF-TEST ERROR] {self.__class__.__name__}: {e}")
+            Logger.error(f'[SELF-TEST ERROR] {self.__class__.__name__}: {e}')
             return False
 
     @classmethod
@@ -170,7 +109,7 @@ class SubatomicTestingMixin(InstructionalInjectionMixin):
         """Re-enable self-testing."""
         cls._self_testing_enabled = True
 
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict:
+    def heal_repository(self, dry_run: bool=True, execute: bool=False, **kwargs) -> dict:
         """MRO chain stub for heal_repository.
 
         This stub exists to support the MRO chain when agents inherit from
@@ -187,7 +126,6 @@ class SubatomicTestingMixin(InstructionalInjectionMixin):
         """
         return {}
 
-
 class L2SelfTestingMixin(SubatomicTestingMixin, MCPHardenedMixin):
     """
     Alias for SubatomicTestingMixin - use in L2 agents.
@@ -195,11 +133,5 @@ class L2SelfTestingMixin(SubatomicTestingMixin, MCPHardenedMixin):
 
     NOTE: _healing_enabled = False - Pure testing utility, no repair context.
     """
-
     pass
-
-
-__all__ = [
-    "SubatomicTestingMixin",
-    "L2SelfTestingMixin",
-]
+__all__ = ['SubatomicTestingMixin', 'L2SelfTestingMixin']

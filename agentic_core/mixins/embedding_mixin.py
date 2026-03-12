@@ -3,26 +3,9 @@ EmbeddingMixin - Unified Embedding Access for Agents
 
 [PHASE 4 MIGRATION] Provides single interface to embedding operations.
 """
-
 from typing import Any, Literal
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-# from agentic_core.L2_execution.reasoning.EmbeddingSovereignAgent import (
-#     get_embedding_gateway,
-#     EmbeddingSovereignAgent,
-# )
-
-EmbeddingProvider = Literal["gemini", "openai", "bge-m3"]
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+EmbeddingProvider = Literal['gemini', 'openai', 'bge-m3']
 
 class EmbeddingMixin:
     """
@@ -36,7 +19,6 @@ class EmbeddingMixin:
                 embedding = await self.get_embedding(text)
                 return embedding
     """
-
     _embedding_gateway: Any | None = None
 
     @property
@@ -44,32 +26,16 @@ class EmbeddingMixin:
         """Lazy-load embedding gateway singleton."""
         if self._embedding_gateway is None:
             try:
-                from agentic_core.L2_execution.reasoning.EmbeddingSovereignAgent import (
-                    get_embedding_gateway,
-                )
-
+                from agentic_core.L2_execution.reasoning.EmbeddingSovereignAgent import get_embedding_gateway
                 self._embedding_gateway = get_embedding_gateway()
             except ImportError:
-                raise NotImplementedError(
-                    "EmbeddingMixin: Embedding gateway is not available. "
-                    "Install the required dependencies or configure "
-                    "agentic_core.L2_execution.reasoning.EmbeddingSovereignAgent.",
-                )
+                raise NotImplementedError('EmbeddingMixin: Embedding gateway is not available. Install the required dependencies or configure agentic_core.L2_execution.reasoning.EmbeddingSovereignAgent.')
         return self._embedding_gateway
 
-    async def get_embedding(
-        self,
-        content: str,
-        provider: EmbeddingProvider = "bge-m3",
-        use_cache: bool = True,
-    ) -> list[float]:
+    async def get_embedding(self, content: str, provider: EmbeddingProvider='bge-m3', use_cache: bool=True) -> list[float]:
         """Get embedding through gateway."""
         return await self.embedding_gateway.get_embedding(content, provider, use_cache)
 
-    async def get_embeddings_batch(
-        self,
-        contents: list[str],
-        provider: EmbeddingProvider = "bge-m3",
-    ) -> list[list[float]]:
+    async def get_embeddings_batch(self, contents: list[str], provider: EmbeddingProvider='bge-m3') -> list[list[float]]:
         """Get batch embeddings through gateway."""
         return await self.embedding_gateway.get_embeddings_batch(contents, provider)

@@ -9,25 +9,12 @@ Provides self-diagnosis that:
 Layer: L6 Observer
 Authority: Read L4 state, write local health. No L4 mutation. No routing.
 """
-
 from __future__ import annotations
-
 import logging
 import time
 from typing import Any
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-_logger = logging.getLogger("SSOTSelfDiagnosis")
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+_logger = logging.getLogger('SSOTSelfDiagnosis')
 
 class SSOTSelfDiagnosisMixin:
     """Local health assessment based on L4 aggregate state.
@@ -39,9 +26,9 @@ class SSOTSelfDiagnosisMixin:
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self._ssot_health_checks: list[dict[str, Any]] = []
-        self._ssot_health_status: str = "HEALTHY"
+        self._ssot_health_status: str = 'HEALTHY'
 
-    def run_health_check(self, check_name: str, passed: bool, details: str = "") -> dict[str, Any]:
+    def run_health_check(self, check_name: str, passed: bool, details: str='') -> dict[str, Any]:
         """Record a health check result.
 
         Parameters
@@ -58,22 +45,13 @@ class SSOTSelfDiagnosisMixin:
         dict
             The health check record.
         """
-        record = {
-            "check_name": check_name,
-            "passed": passed,
-            "details": details,
-            "timestamp": time.time(),
-            "policy_hash": getattr(self, "active_policy_hash", "unknown"),
-            "replay_mode": getattr(self, "is_replay_mode", False),
-        }
+        record = {'check_name': check_name, 'passed': passed, 'details': details, 'timestamp': time.time(), 'policy_hash': getattr(self, 'active_policy_hash', 'unknown'), 'replay_mode': getattr(self, 'is_replay_mode', False)}
         self._ssot_health_checks.append(record)
-
         if not passed:
-            self._ssot_health_status = "DEGRADED"
-            _logger.warning("[SSOTHealth] DEGRADED: %s — %s", check_name, details)
+            self._ssot_health_status = 'DEGRADED'
+            _logger.warning('[SSOTHealth] DEGRADED: %s — %s', check_name, details)
         else:
-            _logger.debug("[SSOTHealth] OK: %s", check_name)
-
+            _logger.debug('[SSOTHealth] OK: %s', check_name)
         return record
 
     @property
@@ -89,9 +67,9 @@ class SSOTSelfDiagnosisMixin:
     @property
     def failed_checks(self) -> list[dict[str, Any]]:
         """Health checks that failed."""
-        return [c for c in self._ssot_health_checks if not c["passed"]]
+        return [c for c in self._ssot_health_checks if not c['passed']]
 
     def reset_health(self) -> None:
         """Reset health status to HEALTHY and clear checks."""
-        self._ssot_health_status = "HEALTHY"
+        self._ssot_health_status = 'HEALTHY'
         self._ssot_health_checks.clear()

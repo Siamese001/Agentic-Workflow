@@ -5,40 +5,16 @@ This module provides clean subprocess invocation to L5 runners,
 avoiding upward import edges while enabling L0 scripts to
 trigger L5 agent functionality.
 """
-
 from __future__ import annotations
-
 import json
 import subprocess
 import sys
 from pathlib import Path
 from typing import Any
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+__all__ = ['invoke_arch_governor', 'invoke_orchestrator_mission', 'invoke_agent_roster_validation', 'invoke_hierarchy_agent', 'invoke_code_validator']
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-__all__ = [
-    "invoke_arch_governor",
-    "invoke_orchestrator_mission",
-    "invoke_agent_roster_validation",
-    "invoke_hierarchy_agent",
-    "invoke_code_validator",
-]
-
-
-def invoke_arch_governor(
-    action: str,
-    project_root: Path | None = None,
-    targets: list[str] | None = None,
-    auto_approve: bool = True,
-) -> dict[str, Any]:
+def invoke_arch_governor(action: str, project_root: Path | None=None, targets: list[str] | None=None, auto_approve: bool=True) -> dict[str, Any]:
     """
     Invoke ArchitectureGovernorAgent via subprocess.
 
@@ -51,49 +27,26 @@ def invoke_arch_governor(
     Returns:
         Dict with 'success' key and action-specific results
     """
-    cmd = [
-        sys.executable,
-        "-m",
-        "agentic_core.L5_safety.runners.arch_governor_runner",
-        f"--action={action}",
-    ]
-
+    cmd = [sys.executable, '-m', 'agentic_core.L5_safety.runners.arch_governor_runner', f'--action={action}']
     if project_root:
-        cmd.append(f"--project-root={project_root}")
-
+        cmd.append(f'--project-root={project_root}')
     if targets:
         cmd.append(f"--targets={','.join(targets)}")
-
     if auto_approve:
-        cmd.append("--auto-approve")
-
+        cmd.append('--auto-approve')
     try:
-        result = subprocess.run(
-            cmd,
-            capture_output=True,
-            text=True,
-            timeout=DEFAULT_TIMEOUT,  # 5 minute timeout
-        )
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=DEFAULT_TIMEOUT)
         if result.stdout.strip():
             return json.loads(result.stdout.strip())
-        return {
-            "success": result.returncode == 0,
-            "error": result.stderr if result.returncode != 0 else None,
-        }
-    # guardian: allow-silent-swallow
+        return {'success': result.returncode == 0, 'error': result.stderr if result.returncode != 0 else None}
     except subprocess.TimeoutExpired:
-        return {"success": False, "error": "Subprocess timed out after 300 seconds"}
+        return {'success': False, 'error': 'Subprocess timed out after 300 seconds'}
     except json.JSONDecodeError as e:
-        return {"success": False, "error": f"Failed to parse runner output: {e}"}
+        return {'success': False, 'error': f'Failed to parse runner output: {e}'}
     except Exception as e:
-        return {"success": False, "error": str(e)}
+        return {'success': False, 'error': str(e)}
 
-
-def invoke_orchestrator_mission(
-    project_root: Path | None = None,
-    targets: list[str] | None = None,
-    execute: bool = False,
-) -> dict[str, Any]:
+def invoke_orchestrator_mission(project_root: Path | None=None, targets: list[str] | None=None, execute: bool=False) -> dict[str, Any]:
     """
     Invoke orchestrator mission via subprocess.
 
@@ -106,43 +59,23 @@ def invoke_orchestrator_mission(
         Dict with 'success' key and mission results
     """
     if not targets:
-        return {"success": False, "error": "No targets specified"}
-
-    cmd = [
-        sys.executable,
-        "-m",
-        "agentic_core.L5_safety.runners.orchestrator_runner",
-        "--action=mission",
-        f"--targets={','.join(targets)}",
-    ]
-
+        return {'success': False, 'error': 'No targets specified'}
+    cmd = [sys.executable, '-m', 'agentic_core.L5_safety.runners.orchestrator_runner', '--action=mission', f"--targets={','.join(targets)}"]
     if project_root:
-        cmd.append(f"--project-root={project_root}")
-
+        cmd.append(f'--project-root={project_root}')
     if execute:
-        cmd.append("--execute")
-
+        cmd.append('--execute')
     try:
-        result = subprocess.run(
-            cmd,
-            capture_output=True,
-            text=True,
-            timeout=DEFAULT_TIMEOUT,  # 10 minute timeout for missions
-        )
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=DEFAULT_TIMEOUT)
         if result.stdout.strip():
             return json.loads(result.stdout.strip())
-        return {
-            "success": result.returncode == 0,
-            "error": result.stderr if result.returncode != 0 else None,
-        }
-    # guardian: allow-silent-swallow
+        return {'success': result.returncode == 0, 'error': result.stderr if result.returncode != 0 else None}
     except subprocess.TimeoutExpired:
-        return {"success": False, "error": "Subprocess timed out after 600 seconds"}
+        return {'success': False, 'error': 'Subprocess timed out after 600 seconds'}
     except json.JSONDecodeError as e:
-        return {"success": False, "error": f"Failed to parse runner output: {e}"}
+        return {'success': False, 'error': f'Failed to parse runner output: {e}'}
     except Exception as e:
-        return {"success": False, "error": str(e)}
-
+        return {'success': False, 'error': str(e)}
 
 def invoke_agent_roster_validation() -> dict[str, Any]:
     """
@@ -151,39 +84,20 @@ def invoke_agent_roster_validation() -> dict[str, Any]:
     Returns:
         Dict with 'success', 'agents_validated', and 'integrity_errors' keys
     """
-    cmd = [
-        sys.executable,
-        "-m",
-        "agentic_core.L5_safety.runners.agent_roster_runner",
-        "--action=validate",
-    ]
-
+    cmd = [sys.executable, '-m', 'agentic_core.L5_safety.runners.agent_roster_runner', '--action=validate']
     try:
-        result = subprocess.run(
-            cmd,
-            capture_output=True,
-            text=True,
-            timeout=DEFAULT_TIMEOUT,  # 2 minute timeout
-        )
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=DEFAULT_TIMEOUT)
         if result.stdout.strip():
             return json.loads(result.stdout.strip())
-        return {
-            "success": result.returncode == 0,
-            "error": result.stderr if result.returncode != 0 else None,
-        }
-    # guardian: allow-silent-swallow
+        return {'success': result.returncode == 0, 'error': result.stderr if result.returncode != 0 else None}
     except subprocess.TimeoutExpired:
-        return {"success": False, "error": "Subprocess timed out after 120 seconds"}
+        return {'success': False, 'error': 'Subprocess timed out after 120 seconds'}
     except json.JSONDecodeError as e:
-        return {"success": False, "error": f"Failed to parse runner output: {e}"}
+        return {'success': False, 'error': f'Failed to parse runner output: {e}'}
     except Exception as e:
-        return {"success": False, "error": str(e)}
+        return {'success': False, 'error': str(e)}
 
-
-def invoke_hierarchy_agent(
-    action: str,
-    project_root: Path | None = None,
-) -> dict[str, Any]:
+def invoke_hierarchy_agent(action: str, project_root: Path | None=None) -> dict[str, Any]:
     """
     Invoke HierarchyAgent via subprocess.
 
@@ -194,43 +108,22 @@ def invoke_hierarchy_agent(
     Returns:
         Dict with 'success' key and action-specific results
     """
-    cmd = [
-        sys.executable,
-        "-m",
-        "agentic_core.L5_safety.runners.hierarchy_runner",
-        f"--action={action}",
-    ]
-
+    cmd = [sys.executable, '-m', 'agentic_core.L5_safety.runners.hierarchy_runner', f'--action={action}']
     if project_root:
-        cmd.append(f"--project-root={project_root}")
-
+        cmd.append(f'--project-root={project_root}')
     try:
-        result = subprocess.run(
-            cmd,
-            capture_output=True,
-            text=True,
-            timeout=DEFAULT_TIMEOUT,  # 5 minute timeout
-        )
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=DEFAULT_TIMEOUT)
         if result.stdout.strip():
             return json.loads(result.stdout.strip())
-        return {
-            "success": result.returncode == 0,
-            "error": result.stderr if result.returncode != 0 else None,
-        }
-    # guardian: allow-silent-swallow
+        return {'success': result.returncode == 0, 'error': result.stderr if result.returncode != 0 else None}
     except subprocess.TimeoutExpired:
-        return {"success": False, "error": "Subprocess timed out after 300 seconds"}
+        return {'success': False, 'error': 'Subprocess timed out after 300 seconds'}
     except json.JSONDecodeError as e:
-        return {"success": False, "error": f"Failed to parse runner output: {e}"}
+        return {'success': False, 'error': f'Failed to parse runner output: {e}'}
     except Exception as e:
-        return {"success": False, "error": str(e)}
+        return {'success': False, 'error': str(e)}
 
-
-def invoke_code_validator(
-    action: str,
-    project_root: Path | None = None,
-    directory: str | None = None,
-) -> dict[str, Any]:
+def invoke_code_validator(action: str, project_root: Path | None=None, directory: str | None=None) -> dict[str, Any]:
     """
     Invoke CodeValidatorAgent via subprocess.
 
@@ -242,36 +135,19 @@ def invoke_code_validator(
     Returns:
         Dict with 'success' key and action-specific results
     """
-    cmd = [
-        sys.executable,
-        "-m",
-        "agentic_core.L5_safety.runners.code_validator_runner",
-        f"--action={action}",
-    ]
-
+    cmd = [sys.executable, '-m', 'agentic_core.L5_safety.runners.code_validator_runner', f'--action={action}']
     if directory:
-        cmd.append(f"--directory={directory}")
-
+        cmd.append(f'--directory={directory}')
     if project_root:
-        cmd.append(f"--project-root={project_root}")
-
+        cmd.append(f'--project-root={project_root}')
     try:
-        result = subprocess.run(
-            cmd,
-            capture_output=True,
-            text=True,
-            timeout=DEFAULT_TIMEOUT,  # 5 minute timeout
-        )
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=DEFAULT_TIMEOUT)
         if result.stdout.strip():
             return json.loads(result.stdout.strip())
-        return {
-            "success": result.returncode == 0,
-            "error": result.stderr if result.returncode != 0 else None,
-        }
-    # guardian: allow-silent-swallow
+        return {'success': result.returncode == 0, 'error': result.stderr if result.returncode != 0 else None}
     except subprocess.TimeoutExpired:
-        return {"success": False, "error": "Subprocess timed out after 300 seconds"}
+        return {'success': False, 'error': 'Subprocess timed out after 300 seconds'}
     except json.JSONDecodeError as e:
-        return {"success": False, "error": f"Failed to parse runner output: {e}"}
+        return {'success': False, 'error': f'Failed to parse runner output: {e}'}
     except Exception as e:
-        return {"success": False, "error": str(e)}
+        return {'success': False, 'error': str(e)}

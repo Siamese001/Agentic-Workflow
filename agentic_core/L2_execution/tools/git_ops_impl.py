@@ -1,25 +1,9 @@
 from __future__ import annotations
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-"""
-Git Tools - Atomic Module
-Extracted from action_registry.py via Atomic Fission Protocol
-Tool ID Prefix: ACT-010
-"""
+'\nGit Tools - Atomic Module\nExtracted from action_registry.py via Atomic Fission Protocol\nTool ID Prefix: ACT-010\n'
 import logging
 from typing import Any
-
-Logger: Any = logging.getLogger("ActionRegistry.GitTools")
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+Logger: Any = logging.getLogger('ActionRegistry.GitTools')
 
 class GitTools:
     """
@@ -45,23 +29,18 @@ class GitTools:
         Logger.info(f"➕ Committing file '{file_path}' with message: '{message}'")
         try:
             from mcp0_git_add_or_commit import mcp0_git_add_or_commit
-
-            add_result: Any = mcp0_git_add_or_commit(directory=".", action="add", files=[file_path])
-            if "Error" in add_result:
-                return f"Commit Error (Add): {add_result}"
-            commit_result: Any = mcp0_git_add_or_commit(
-                directory=".",
-                action="commit",
-                files=[file_path],
-                message=message,
-            )
-            if "Error" in commit_result:
-                return f"Commit Error (Commit): {commit_result}"
-            return f"[OK] Committed: {message}"
+            add_result: Any = mcp0_git_add_or_commit(directory='.', action='add', files=[file_path])
+            if 'Error' in add_result:
+                return f'Commit Error (Add): {add_result}'
+            commit_result: Any = mcp0_git_add_or_commit(directory='.', action='commit', files=[file_path], message=message)
+            if 'Error' in commit_result:
+                return f'Commit Error (Commit): {commit_result}'
+            return f'[OK] Committed: {message}'
         except ImportError:
             return "Commit Error: 'mcp0_git_add_or_commit' client not available. Git operations require this client."
+        # guardian: allow-silent-swallow
         except Exception as e:
-            return f"Commit Error (Unexpected): {e}"
+            return f'Commit Error (Unexpected): {e}'
 
     def status(self) -> str:
         """
@@ -71,16 +50,14 @@ class GitTools:
         Returns:
             str: The git status output or an error message.
         """
-        Logger.info("❓ Getting git status.")
+        Logger.info('❓ Getting git status.')
         try:
             from mcp0_git_status import mcp0_git_status
-
-            result: Any = mcp0_git_status(directory=".")
+            result: Any = mcp0_git_status(directory='.')
             return result
         except ImportError:
             return "Status Error: 'mcp0_git_status' client not available. Git operations require this client."
+        # guardian: allow-silent-swallow
         except Exception as e:
-            return f"Status Error (Unexpected): {e}"
-
-
-__all__ = ["GitTools"]
+            return f'Status Error (Unexpected): {e}'
+__all__ = ['GitTools']

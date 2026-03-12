@@ -1,52 +1,13 @@
 from __future__ import annotations
-
 from agentic_core.L2_execution.tools import write_gateway as _wg
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-"""
-Namespace Medic - Standalone Utility for Fast Import Healing
-Scans all Python files and injects Missing standard library imports.
-Run this BEFORE CanonValidatorAgent to fix import starvation issues.
-"""
+'\nNamespace Medic - Standalone Utility for Fast Import Healing\nScans all Python files and injects Missing standard library imports.\nRun this BEFORE CanonValidatorAgent to fix import starvation issues.\n'
 import ast
 import sys
 from pathlib import Path
 from typing import Any
-
-from agentic_core.L5_safety.config.structure_blueprint import (
-    AGENTIC_CORE_DIR,
-)
-
-import_patterns: Any = [
-    ("logging.", "import logging", "simple"),
-    ("Logger.", "import logging", "simple"),
-    ("Any", "from typing import Any, Optional, Protocol, Dict, List", "typing"),
-    ("Optional", "from typing import Any, Optional, Protocol, Dict, List", "typing"),
-    ("Protocol", "from typing import Any, Optional, Protocol, Dict, List", "typing"),
-    ("Dict[", "from typing import Any, Optional, Protocol, Dict, List", "typing"),
-    ("List[", "from typing import Any, Optional, Protocol, Dict, List", "typing"),
-    ("@dataclass", "from dataclasses import dataclass, field", "dataclass"),
-    ("dataclass(", "from dataclasses import dataclass, field", "dataclass"),
-    ("Enum", "from enum import Enum, auto", "enum"),
-    ("Path(", "from pathlib import Path", "simple"),
-    ("json.", "import json", "simple"),
-    ("os.path", "import os", "simple"),
-    ("sys.", "import sys", "simple"),
-    ("re.", "import re", "simple"),
-    ("datetime.", "import datetime", "simple"),
-    ("time.", "import time", "simple"),
-    ("asyncio.", "import asyncio", "simple"),
-]
-
+from agentic_core.L5_safety.config.structure_blueprint import AGENTIC_CORE_DIR
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+import_patterns: Any = [('logging.', 'import logging', 'simple'), ('Logger.', 'import logging', 'simple'), ('Any', 'from typing import Any, Optional, Protocol, Dict, List', 'typing'), ('Optional', 'from typing import Any, Optional, Protocol, Dict, List', 'typing'), ('Protocol', 'from typing import Any, Optional, Protocol, Dict, List', 'typing'), ('Dict[', 'from typing import Any, Optional, Protocol, Dict, List', 'typing'), ('List[', 'from typing import Any, Optional, Protocol, Dict, List', 'typing'), ('@dataclass', 'from dataclasses import dataclass, field', 'dataclass'), ('dataclass(', 'from dataclasses import dataclass, field', 'dataclass'), ('Enum', 'from enum import Enum, auto', 'enum'), ('Path(', 'from pathlib import Path', 'simple'), ('json.', 'import json', 'simple'), ('os.path', 'import os', 'simple'), ('sys.', 'import sys', 'simple'), ('re.', 'import re', 'simple'), ('datetime.', 'import datetime', 'simple'), ('time.', 'import time', 'simple'), ('asyncio.', 'import asyncio', 'simple')]
 
 def find_missing_imports(content: str) -> list[str]:
     """Detect which standard library imports are Missing from the file."""
@@ -57,23 +18,22 @@ def find_missing_imports(content: str) -> list[str]:
             continue
         if import_stmt in content:
             continue
-        if import_type == "typing" and "typing" in seen_import_types:
+        if import_type == 'typing' and 'typing' in seen_import_types:
             continue
         if import_stmt not in Missing:
             Missing.append(import_stmt)
             seen_import_types.add(import_type)
     return Missing
 
-
 def inject_imports(content: str, imports: list[str]) -> str:
     """Inject Missing imports at the top of the file (after docstring)."""
-    lines: Any = content.split("\n")
+    lines: Any = content.split('\n')
     insert_idx: Any = 0
     in_docstring: Any = False
     docstring_char: Any = None
     for i, line in enumerate(lines):
         stripped: Any = line.strip()
-        if stripped.startswith("#"):
+        if stripped.startswith('#'):
             insert_idx: Any = i + 1
             continue
         if not in_docstring and (stripped.startswith('"""') or stripped.startswith("'''")):
@@ -87,20 +47,19 @@ def inject_imports(content: str, imports: list[str]) -> str:
             in_docstring: Any = False
             insert_idx: Any = i + 1
             continue
-        if not in_docstring and stripped and (not stripped.startswith("#")):
+        if not in_docstring and stripped and (not stripped.startswith('#')):
             break
-    import_lines: Any = imports + [""]
+    import_lines: Any = imports + ['']
     lines[insert_idx:insert_idx] = import_lines
-    return "\n".join(lines)
+    return '\n'.join(lines)
 
-
-def heal_file(file_path: Path, dry_run: bool = False) -> tuple[bool, int]:
+def heal_file(file_path: Path, dry_run: bool=False) -> tuple[bool, int]:
     """
     Heal a single file by injecting Missing imports.
     Returns (was_healed, num_imports_added)
     """
     try:
-        with open(file_path, encoding="utf-8", errors="replace") as f:
+        with open(file_path, encoding='utf-8', errors='replace') as f:
             content: Any = f.read()
         Missing: Any = find_missing_imports(content)
         if not Missing:
@@ -109,47 +68,38 @@ def heal_file(file_path: Path, dry_run: bool = False) -> tuple[bool, int]:
         try:
             ast.parse(healed_content)
         except SyntaxError as e:
-            print(f"   [!] Syntax error after healing {file_path.name}: {e}")
+            print(f'   [!] Syntax error after healing {file_path.name}: {e}')
             return (False, 0)
         if not dry_run:
             _wg.open_write(file_path, healed_content)
         return (True, len(Missing))
+    # guardian: allow-silent-swallow
     except Exception as e:
-        print(f"   [!] Failed to heal {file_path.name}: {e}")
+        print(f'   [!] Failed to heal {file_path.name}: {e}')
         return (False, 0)
-
 
 def main() -> Any:
     """Main entry point for namespace healing."""
     import argparse
-
-    parser: Any = argparse.ArgumentParser(
-        description="Namespace Medic - Fix Missing standard library imports",
-    )
-    parser.add_argument("--target", default=AGENTIC_CORE_DIR, help="Target directory to scan")
-    parser.add_argument(
-        "--dry-run",
-        action="store_true",
-        help="Show what would be fixed without modifying files",
-    )
-    parser.add_argument("--verbose", "-v", action="store_true", help="Show detailed output")
+    parser: Any = argparse.ArgumentParser(description='Namespace Medic - Fix Missing standard library imports')
+    parser.add_argument('--target', default=AGENTIC_CORE_DIR, help='Target directory to scan')
+    parser.add_argument('--dry-run', action='store_true', help='Show what would be fixed without modifying files')
+    parser.add_argument('--verbose', '-v', action='store_true', help='Show detailed output')
     args: Any = parser.parse_args()
     project_root: Any = Path(__file__).parent
     target_path: Any = (project_root / args.target).resolve()
     if not target_path.exists():
-        print(f"[!] Target path does not exist: {target_path}")
+        print(f'[!] Target path does not exist: {target_path}')
         sys.exit(1)
     print(f"{'=' * 70}")
-    print("NAMESPACE MEDIC - Standard Library Import Healer")
+    print('NAMESPACE MEDIC - Standard Library Import Healer')
     print(f"{'=' * 70}")
-    print(f"Target: {target_path}")
+    print(f'Target: {target_path}')
     print(f"Mode: {('DRY RUN' if args.dry_run else 'LIVE HEALING')}")
     print(f"{'=' * 70}\n")
-    # Operation Zero: Use ssot_discovery instead of rglob
     from agentic_core.utils.ssot_discovery_validator import get_python_files
-
     python_files: Any = list(get_python_files(target_path))
-    print(f"[SCAN] Found {len(python_files)} Python files\n")
+    print(f'[SCAN] Found {len(python_files)} Python files\n')
     healed_count: Any = 0
     total_imports: Any = 0
     for file_path in python_files:
@@ -157,26 +107,24 @@ def main() -> Any:
         if was_healed:
             healed_count += 1
             total_imports += num_imports
-            status: Any = "[DRY-RUN]" if args.dry_run else "[HEALED]"
-            print(f"{status} {file_path.name} (+{num_imports} imports)")
+            status: Any = '[DRY-RUN]' if args.dry_run else '[HEALED]'
+            print(f'{status} {file_path.name} (+{num_imports} imports)')
             if args.verbose:
-                with open(file_path, encoding="utf-8", errors="replace") as f:
+                with open(file_path, encoding='utf-8', errors='replace') as f:
                     content: Any = f.read()
                 Missing: Any = find_missing_imports(content) if args.dry_run else []
                 for imp in Missing:
-                    print(f"         + {imp}")
+                    print(f'         + {imp}')
     print(f"\n{'=' * 70}")
-    print("SUMMARY")
+    print('SUMMARY')
     print(f"{'=' * 70}")
-    print(f"Files scanned: {len(python_files)}")
-    print(f"Files healed: {healed_count}")
-    print(f"Total imports added: {total_imports}")
+    print(f'Files scanned: {len(python_files)}')
+    print(f'Files healed: {healed_count}')
+    print(f'Total imports added: {total_imports}')
     if args.dry_run:
-        print("\n[INFO] This was a dry run. Run without --dry-run to apply changes.")
+        print('\n[INFO] This was a dry run. Run without --dry-run to apply changes.')
     else:
-        print("\n[SUCCESS] Namespace healing complete!")
+        print('\n[SUCCESS] Namespace healing complete!')
     print(f"{'=' * 70}\n")
-
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

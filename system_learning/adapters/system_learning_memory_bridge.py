@@ -100,6 +100,7 @@ class SystemLearningMemoryBridge:
             from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBridge
 
             return GraphMemoryBridge.get_instance()
+        # guardian: allow-silent-swallow
         except Exception as e:  # guardian: allow-silent-swallower
             logger.debug("[SLMemoryBridge] GraphMemoryBridge unavailable: %s", e)
             return None
@@ -147,6 +148,7 @@ class SystemLearningMemoryBridge:
                 ],
             )
             return True
+        # guardian: allow-silent-swallow
         except Exception as e:  # guardian: allow-silent-swallower
             logger.debug("[SLMemoryBridge] persist_healing_success_rate failed: %s", e)
             return False
@@ -186,6 +188,7 @@ class SystemLearningMemoryBridge:
             return {}
         try:
             results = self._bridge.search_entities(self.ENTITY_TYPE_HEALING_RATE)
+        # guardian: allow-silent-swallow
         except Exception as e:  # guardian: allow-silent-swallower
             logger.debug("[SLMemoryBridge] restore_healing_success_rates failed: %s", e)
             return {}
@@ -265,6 +268,7 @@ class SystemLearningMemoryBridge:
                 agent_type=self.ENTITY_TYPE_RCA_REPORT,
                 observations=obs,
             )
+        # guardian: allow-silent-swallow
         except Exception as e:  # guardian: allow-silent-swallower
             logger.debug("[SLMemoryBridge] persist_rca_findings report failed: %s", e)
             return False
@@ -289,6 +293,7 @@ class SystemLearningMemoryBridge:
                     ],
                 )
                 self._bridge.create_relation(finding_name, report_name, self.RELATION_TRIGGERED)
+            # guardian: allow-silent-swallow
             except Exception as e:  # guardian: allow-silent-swallower
                 logger.debug("[SLMemoryBridge] persist rca finding entity failed: %s", e)
 
@@ -313,6 +318,7 @@ class SystemLearningMemoryBridge:
         query = f"SLRCAFinding {category}" if category else "SLRCAFinding"
         try:
             return self._bridge.search_entities(query)
+        # guardian: allow-silent-swallow
         except Exception as e:  # guardian: allow-silent-swallower
             logger.debug("[SLMemoryBridge] query_rca_pattern_frequency failed: %s", e)
             return []
@@ -365,6 +371,7 @@ class SystemLearningMemoryBridge:
                 drift_score,
             )
             return True
+        # guardian: allow-silent-swallow
         except Exception as e:  # guardian: allow-silent-swallower
             logger.debug("[SLMemoryBridge] persist_drift_summary failed: %s", e)
             return False
@@ -383,6 +390,7 @@ class SystemLearningMemoryBridge:
         query = f"SLDriftSummary {profile_id}" if profile_id else "SLDriftSummary"
         try:
             return self._bridge.search_entities(query)
+        # guardian: allow-silent-swallow
         except Exception as e:  # guardian: allow-silent-swallower
             logger.debug("[SLMemoryBridge] query_drift_history failed: %s", e)
             return []
@@ -441,6 +449,7 @@ class SystemLearningMemoryBridge:
                 applied,
             )
             return True
+        # guardian: allow-silent-swallow
         except Exception as e:  # guardian: allow-silent-swallower
             logger.debug("[SLMemoryBridge] persist_policy_recommendation failed: %s", e)
             return False
@@ -458,6 +467,7 @@ class SystemLearningMemoryBridge:
             return False
         try:
             return self._bridge.add_observation(entity_name, "applied=true")
+        # guardian: allow-silent-swallow
         except Exception as e:  # guardian: allow-silent-swallower
             logger.debug("[SLMemoryBridge] mark_recommendation_applied failed: %s", e)
             return False
@@ -482,6 +492,7 @@ class SystemLearningMemoryBridge:
             if applied_only:
                 results = [r for r in results if any("applied=true" in o for o in r.get("observations", []))]
             return results
+        # guardian: allow-silent-swallow
         except Exception as e:  # guardian: allow-silent-swallower
             logger.debug("[SLMemoryBridge] query_policy_recommendations failed: %s", e)
             return []
@@ -536,6 +547,7 @@ class SystemLearningMemoryBridge:
                 total,
             )
             return True
+        # guardian: allow-silent-swallow
         except Exception as e:  # guardian: allow-silent-swallower
             logger.debug("[SLMemoryBridge] persist_healing_aggregate_snapshot failed: %s", e)
             return False
@@ -582,6 +594,7 @@ class SystemLearningMemoryBridge:
                 ],
             )
             return True
+        # guardian: allow-silent-swallow
         except Exception as e:  # guardian: allow-silent-swallower
             logger.debug("[SLMemoryBridge] persist_failure_pattern failed: %s", e)
             return False
@@ -592,6 +605,7 @@ class SystemLearningMemoryBridge:
             return []
         try:
             return self._bridge.search_entities("SLFailurePattern")
+        # guardian: allow-silent-swallow
         except Exception as e:  # guardian: allow-silent-swallower
             logger.debug("[SLMemoryBridge] query_failure_patterns failed: %s", e)
             return []

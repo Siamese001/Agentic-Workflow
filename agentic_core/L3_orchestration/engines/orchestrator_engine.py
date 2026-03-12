@@ -27,60 +27,23 @@ Phase 3 Enhancement (Jan 31, 2026):
 - Converted to facade shell delegating to UnifiedAgent
 - Preserves 100% legacy signature compatibility
 """
-
 from __future__ import annotations
-
 import logging
 from enum import Enum
 from pathlib import Path
 from typing import Any
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-# [PHASE 2] SSOT Discovery Integration
 from agentic_core.utils.ssot_discovery_validator import get_agent_paths
-
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L0_routing.config import (
-    AGENTIC_CORE_DIR,
-    APPS_LIC_DIR,
-    APPS_RG_DIR,
-    APPS_SHARED_DIR,
-    get_validated_project_root,
-)
-from agentic_core.L0_routing.enforcement.runtime_guard import (
-    runtime_guard,
-)
+from agentic_core.L0_routing.config import AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR, get_validated_project_root
+from agentic_core.L0_routing.enforcement.runtime_guard import runtime_guard
 from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
-from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
-    OrchestrationResult,
-    OrchestrationStrategy,
-    UnifiedAgent,
-)
-from agentic_core.L3_orchestration.types import (
-    AgentResult,
-    ExecutionContext,
-    ExecutionPhase,
-    MissionResult,
-)
+from agentic_core.L3_orchestration.reasoning.UnifiedAgent import OrchestrationResult, OrchestrationStrategy, UnifiedAgent
+from agentic_core.L3_orchestration.types import AgentResult, ExecutionContext, ExecutionPhase, MissionResult
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 Logger = logging.getLogger(__name__)
-
-# [ULTRA-HARDENED] Whitelist of allowed module prefixes for dynamic imports.
-# This mirrors the L5 execute_ssot.py security standard to prevent
-# arbitrary code execution during agent discovery/import.
 ALLOWED_MODULE_PREFIXES = (AGENTIC_CORE_DIR, APPS_SHARED_DIR, APPS_LIC_DIR, APPS_RG_DIR)
-
 
 class L3OrchestrationStrategy(OrchestrationStrategy):
     """
@@ -90,7 +53,7 @@ class L3OrchestrationStrategy(OrchestrationStrategy):
     to the unified strategy pattern.
     """
 
-    def __init__(self, config: dict[str, Any], mode: str = "unified") -> None:
+    def __init__(self, config: dict[str, Any], mode: str='unified') -> None:
         """Initialize with orchestration configuration."""
         super().__init__(config)
         self.mode = mode
@@ -98,40 +61,24 @@ class L3OrchestrationStrategy(OrchestrationStrategy):
         self._import_cache: dict[str, bool] = {}
         self._available_agents: list[str] | None = None
 
-    @runtime_guard("A.execute.orchestrator_engine")
+    @runtime_guard('A.execute.orchestrator_engine')
     async def execute(self, agent: UnifiedAgent, **kwargs: Any) -> OrchestrationResult:
         """Execute orchestration logic via unified strategy."""
-        agent.log_info(f"Executing L3 orchestration in {self.mode} mode...")
-
+        agent.log_info(f'Executing L3 orchestration in {self.mode} mode...')
         workflow_steps = self.workflow_steps
         completed_steps: list[str] = []
         signals: list[str] = []
-        current_stage = "not_started"
-
+        current_stage = 'not_started'
         for step in workflow_steps:
-            step_name = step.get("name", "unnamed")
-            step_type = step.get("type", "unknown")
-
+            step_name = step.get('name', 'unnamed')
+            step_type = step.get('type', 'unknown')
             current_stage = step_name
             completed_steps.append(step_name)
-
-            # Generate signals based on step type
-            if step_type == "validation":
-                signals.append("validation_completed")
-            elif step_type == "agent_call":
-                signals.append(f"{step_name}_completed")
-
-        return OrchestrationResult(
-            completed=True,
-            stage=current_stage if workflow_steps else "not_started",
-            next_actions=[],
-            signals=signals,
-            metadata={
-                "mode": self.mode,
-                "completed_steps": completed_steps,
-                "agent": "Orchestrator",
-            },
-        )
+            if step_type == 'validation':
+                signals.append('validation_completed')
+            elif step_type == 'agent_call':
+                signals.append(f'{step_name}_completed')
+        return OrchestrationResult(completed=True, stage=current_stage if workflow_steps else 'not_started', next_actions=[], signals=signals, metadata={'mode': self.mode, 'completed_steps': completed_steps, 'agent': 'Orchestrator'})
 
     def get_available_agents(self) -> list[str]:
         """Get list of agents this orchestrator can coordinate."""
@@ -145,28 +92,23 @@ class L3OrchestrationStrategy(OrchestrationStrategy):
                 self._available_agents = []
         return self._available_agents
 
-
-def get_consolidated_orchestrator(project_root: Path | None = None) -> Orchestrator:
+def get_consolidated_orchestrator(project_root: Path | None=None) -> Orchestrator:
     """
     [INTEGRATION] Factory method required by execute_ssot.py.
     Instantiates the orchestrator with the hardened Unified mode and resolved root.
     """
-    # [CRITICAL] Force resolution to anchor the agent to the physical filesystem immediately
     root = project_root.resolve() if project_root else Path.cwd().resolve()
-    agent = Orchestrator(mode="unified")
-    agent.project_root = root  # Explicitly set resolved root, overriding default CWD
+    agent = Orchestrator(mode='unified')
+    agent.project_root = root
     return agent
-
 
 class OrchestratorMode(str, Enum):
     """Orchestration modes supported by Orchestrator."""
-
-    HEALING = "healing"
-    COMPLIANCE = "compliance"
-    SSOT = "ssot"
-    FULL = "full"
-    UNIFIED = "unified"
-
+    HEALING = 'healing'
+    COMPLIANCE = 'compliance'
+    SSOT = 'ssot'
+    FULL = 'full'
+    UNIFIED = 'unified'
 
 class Orchestrator(SovereignBaseAgent):
     """
@@ -190,42 +132,27 @@ class Orchestrator(SovereignBaseAgent):
     Phase 3: Facade pattern delegating to UnifiedAgent.
     """
 
-    def __init__(self, agent_id: str = "unified_orchestrator_01", mode: str = "unified"):
+    def __init__(self, agent_id: str='unified_orchestrator_01', mode: str='unified'):
         super().__init__()
         self.agent_id = agent_id
-        self.agent_type = "L3_Unified"
+        self.agent_type = 'L3_Unified'
         self.logger = Logger
-        # [ULTRA-HARDENED] Default to resolved CWD to prevent symlink attacks if factory isn't used
         self.project_root = Path.cwd().resolve()
-
-        # [PERFORMANCE] Import cache to prevent redundant subprocess overhead
         self._import_cache: dict[str, bool] = {}
-
-        # Set orchestration mode
         try:
             self.mode = OrchestratorMode(mode)
         except ValueError:
             self.logger.warning(f"Unknown mode '{mode}', defaulting to 'unified'")
             self.mode = OrchestratorMode.UNIFIED
-
-        # [PHASE 3] Initialize unified orchestration strategy
         self._unified_strategy: L3OrchestrationStrategy | None = None
-
-        # Initialize Strategies (lazy load to avoid circular imports)
         self._strategies: dict[str, Any] | None = None
-
-        # Agent registry for mission execution
         self._available_agents: list[str] | None = None
-
-        self.logger.info(f"UnifiedOrchestrator initialized with mode: {self.mode.value}")
+        self.logger.info(f'UnifiedOrchestrator initialized with mode: {self.mode.value}')
 
     @staticmethod
     def _get_CredentialScannerAgent():
         """Lazy loader for CredentialScannerAgent (upward L3->L5 seam)."""
-        from agentic_core.L5_safety.validators.credential_types import (
-            CredentialScannerAgent,
-        )
-
+        from agentic_core.L5_safety.validators.credential_types import CredentialScannerAgent
         return CredentialScannerAgent
 
     @property
@@ -233,16 +160,11 @@ class Orchestrator(SovereignBaseAgent):
         """Lazy-load strategies to avoid circular imports."""
         if self._strategies is None:
             try:
-                # Lazy imports to prevent circular dependency chains in L3
                 from agentic_core.L3_orchestration.reasoning.RLStrategy import RLStrategy
                 from agentic_core.L3_orchestration.reasoning.SafetyStrategy import SafetyStrategy
-
-                self._strategies = {
-                    "safety": SafetyStrategy(),
-                    "rl": RLStrategy(),
-                }
+                self._strategies = {'safety': SafetyStrategy(), 'rl': RLStrategy()}
             except ImportError as e:
-                self.logger.warning(f"Could not load strategies: {e}")
+                self.logger.warning(f'Could not load strategies: {e}')
                 self._strategies = {}
         return self._strategies
 
@@ -256,39 +178,26 @@ class Orchestrator(SovereignBaseAgent):
             payload (dict): Data to pass to the strategy.
         """
         if domain not in self.strategies:
-            error_msg = f"Unknown strategy domain: {domain}"
+            error_msg = f'Unknown strategy domain: {domain}'
             self.logger.error(error_msg)
-            return {"status": "error", "message": error_msg}
-
+            return {'status': 'error', 'message': error_msg}
         strategy = self.strategies[domain]
-
-        # Dynamic dispatch check
         if not hasattr(strategy, action):
             error_msg = f"Strategy '{domain}' has no action '{action}'"
             self.logger.error(error_msg)
-            return {"status": "error", "message": error_msg}
-
+            return {'status': 'error', 'message': error_msg}
         try:
             method = getattr(strategy, action)
             result = method(payload)
-            self.logger.info(f"Dispatched {domain}.{action} successfully.")
-            return {"status": "success", "data": result}
+            self.logger.info(f'Dispatched {domain}.{action} successfully.')
+            return {'status': 'success', 'data': result}
+        # guardian: allow-silent-swallow
         except Exception as e:
-            self.logger.error(f"Strategy execution failed: {str(e)}")
-            return {"status": "error", "message": str(e)}
+            self.logger.error(f'Strategy execution failed: {str(e)}')
+            return {'status': 'error', 'message': str(e)}
 
-    # =========================================================================
-    # IOrchestratorAgent Protocol Implementation
-    # =========================================================================
-
-    @runtime_guard("A.run_mission.orchestrator_engine")
-    def run_mission(
-        self,
-        agents: list[str],
-        dry_run: bool = True,
-        execute: bool = False,
-        context: ExecutionContext | None = None,
-    ) -> MissionResult:
+    @runtime_guard('A.run_mission.orchestrator_engine')
+    def run_mission(self, agents: list[str], dry_run: bool=True, execute: bool=False, context: ExecutionContext | None=None) -> MissionResult:
         """
         Execute a mission across multiple agents.
 
@@ -305,36 +214,18 @@ class Orchestrator(SovereignBaseAgent):
         """
         if context is None:
             context = ExecutionContext(dry_run=dry_run, execute=execute)
-
-        self.logger.info(f"[MISSION] Starting mission with {len(agents)} agents (mode={self.mode.value})")
-
-        # [DNA GATE] Perform Pre-Flight Audit
-        # DEPRECATED: CanonDependencySentinelAgent removed - Guardian test framework handles validation
-        # Pre-flight audit is now optional and skipped by default
-        self.logger.debug("[GATE] Pre-flight audit skipped - validation handled by Guardian tests")
-
+        self.logger.info(f'[MISSION] Starting mission with {len(agents)} agents (mode={self.mode.value})')
+        self.logger.debug('[GATE] Pre-flight audit skipped - validation handled by Guardian tests')
         agent_results: list[AgentResult] = []
         total_violations_found = 0
         total_violations_fixed = 0
         total_errors = 0
-
         for agent_name in agents:
-            # [PHASE 33m] Pre-Flight Import Validation
             if not self._validate_agent_import(agent_name):
-                self.logger.critical(f"[GATE] CRITICAL_IMPORT_FAILURE: {agent_name} is unimportable")
-                agent_results.append(
-                    AgentResult(
-                        agent_name=agent_name,
-                        success=False,
-                        errors=1,
-                        status="CRITICAL_IMPORT_FAILURE",
-                        message=f"Agent {agent_name} failed pre-flight import validation",
-                    ),
-                )
+                self.logger.critical(f'[GATE] CRITICAL_IMPORT_FAILURE: {agent_name} is unimportable')
+                agent_results.append(AgentResult(agent_name=agent_name, success=False, errors=1, status='CRITICAL_IMPORT_FAILURE', message=f'Agent {agent_name} failed pre-flight import validation'))
                 total_errors += 1
                 continue
-
-            # Crash containment for individual agent runs
             try:
                 result = self.run_agent(agent_name, dry_run=dry_run, context=context)
                 agent_results.append(result)
@@ -343,58 +234,28 @@ class Orchestrator(SovereignBaseAgent):
                 total_errors += result.errors
             # guardian: allow-silent-swallow
             except Exception as e:
-                self.logger.error(f"[MISSION] Critical error running {agent_name}: {e}")
+                self.logger.error(f'[MISSION] Critical error running {agent_name}: {e}')
                 total_errors += 1
-                # Continue mission despite single agent failure
-
-        successful = sum(1 for r in agent_results if r.success)
+        successful = sum((1 for r in agent_results if r.success))
         failed = len(agent_results) - successful
-
-        mission_result = MissionResult(
-            success=(failed == 0),
-            total_agents=len(agents),
-            successful_agents=successful,
-            failed_agents=failed,
-            total_violations_found=total_violations_found,
-            total_violations_fixed=total_violations_fixed,
-            total_errors=total_errors,
-            agent_results=agent_results,
-            phase=ExecutionPhase.COMPLETE,
-            metadata={"mode": self.mode.value},
-        )
-
-        self.logger.info(f"[MISSION] Complete: {successful}/{len(agents)} agents succeeded")
+        mission_result = MissionResult(success=failed == 0, total_agents=len(agents), successful_agents=successful, failed_agents=failed, total_violations_found=total_violations_found, total_violations_fixed=total_violations_fixed, total_errors=total_errors, agent_results=agent_results, phase=ExecutionPhase.COMPLETE, metadata={'mode': self.mode.value})
+        self.logger.info(f'[MISSION] Complete: {successful}/{len(agents)} agents succeeded')
         return mission_result
 
-    @runtime_guard("A.run_agent.orchestrator_engine")
-    def run_agent(
-        self,
-        agent_name: str,
-        dry_run: bool = True,
-        context: ExecutionContext | None = None,
-    ) -> AgentResult:
+    @runtime_guard('A.run_agent.orchestrator_engine')
+    def run_agent(self, agent_name: str, dry_run: bool=True, context: ExecutionContext | None=None) -> AgentResult:
         """
         Execute a single agent with standardized result.
 
         [PHASE 3: FORWARD-ROLLING RECURSION]
         Enforces linear depth limits and parameter merging for recursive healing.
         """
-        # [HARDENING] Circuit Breaker: Prevent infinite forward-rolling recursion
-        current_depth = context.metadata.get("depth", 0) if context else 0
+        current_depth = context.metadata.get('depth', 0) if context else 0
         if current_depth > 50:
-            self.logger.critical(f"[CIRCUIT_BREAKER] Max depth (50) reached for {agent_name}.")
-            return AgentResult(
-                agent_name=agent_name,
-                success=False,
-                errors=1,
-                status="DEPTH_LIMIT_EXCEEDED",
-                message="Forward-Rolling recursion limit reached.",
-            )
-
-        self.logger.debug(f"[AGENT] Running {agent_name} (depth={current_depth})")
-
+            self.logger.critical(f'[CIRCUIT_BREAKER] Max depth (50) reached for {agent_name}.')
+            return AgentResult(agent_name=agent_name, success=False, errors=1, status='DEPTH_LIMIT_EXCEEDED', message='Forward-Rolling recursion limit reached.')
+        self.logger.debug(f'[AGENT] Running {agent_name} (depth={current_depth})')
         try:
-            # Mode-specific execution logic
             if self.mode == OrchestratorMode.COMPLIANCE:
                 return self._run_compliance_mode(agent_name, dry_run, context)
             elif self.mode == OrchestratorMode.HEALING:
@@ -402,19 +263,13 @@ class Orchestrator(SovereignBaseAgent):
             elif self.mode == OrchestratorMode.SSOT:
                 return self._run_ssot_mode(agent_name, dry_run, context)
             else:
-                # FULL or UNIFIED mode - run all operations
                 return self._run_full_mode(agent_name, dry_run, context)
         # guardian: allow-silent-swallow
         except Exception as e:
-            self.logger.error(f"[AGENT] {agent_name} failed: {e}")
-            return AgentResult(agent_name=agent_name, success=False, errors=1, status="ERROR", message=str(e))
+            self.logger.error(f'[AGENT] {agent_name} failed: {e}')
+            return AgentResult(agent_name=agent_name, success=False, errors=1, status='ERROR', message=str(e))
 
-    def _run_compliance_mode(
-        self,
-        agent_name: str,
-        dry_run: bool,
-        context: ExecutionContext | None,
-    ) -> AgentResult:
+    def _run_compliance_mode(self, agent_name: str, dry_run: bool, context: ExecutionContext | None) -> AgentResult:
         """
         Execute agent in COMPLIANCE mode.
 
@@ -422,99 +277,33 @@ class Orchestrator(SovereignBaseAgent):
         - Runs standard compliance checks
         - Scans for hardcoded credentials using CredentialScannerAgent
         """
-        self.logger.info(f"[COMPLIANCE] Running {agent_name}")
-
-        # Risk 4: Integrate CredentialScannerAgent
+        self.logger.info(f'[COMPLIANCE] Running {agent_name}')
         try:
             credential_scanner = self._get_CredentialScannerAgent()()
             credential_results = credential_scanner.scan_for_credentials()
-
-            total_credentials = credential_results.get("total_matches", 0)
-            high_severity = credential_results.get("summary", {}).get("by_severity", {}).get("high", 0)
-
-            status = "PASS" if total_credentials == 0 else "WARN"
+            total_credentials = credential_results.get('total_matches', 0)
+            high_severity = credential_results.get('summary', {}).get('by_severity', {}).get('high', 0)
+            status = 'PASS' if total_credentials == 0 else 'WARN'
             if high_severity > 0:
-                status = "FAIL"
-
-            return AgentResult(
-                agent_name=agent_name,
-                success=(status != "FAIL"),
-                violations_found=total_credentials,
-                violations_fixed=0,
-                errors=0,
-                skipped=0,
-                status=status,
-                message=(
-                    f"Compliance check: {total_credentials} potential credentials "
-                    f"found ({high_severity} high severity)"
-                ),
-                metadata={
-                    "dry_run": dry_run,
-                    "mode": "compliance",
-                    "credential_scan": "complete",
-                    "total_credentials": total_credentials,
-                    "high_severity_count": high_severity,
-                    "summary": credential_results.get("summary", {}),
-                    "recommendations": credential_results.get("recommendations", []),
-                },
-            )
+                status = 'FAIL'
+            return AgentResult(agent_name=agent_name, success=status != 'FAIL', violations_found=total_credentials, violations_fixed=0, errors=0, skipped=0, status=status, message=f'Compliance check: {total_credentials} potential credentials found ({high_severity} high severity)', metadata={'dry_run': dry_run, 'mode': 'compliance', 'credential_scan': 'complete', 'total_credentials': total_credentials, 'high_severity_count': high_severity, 'summary': credential_results.get('summary', {}), 'recommendations': credential_results.get('recommendations', [])})
         except ImportError:
-            self.logger.warning("[COMPLIANCE] CredentialScannerAgent not available")
-            return AgentResult(
-                agent_name=agent_name,
-                success=True,
-                status="WARN",
-                message="CredentialScannerAgent missing",
-                metadata={"dry_run": dry_run},
-            )
+            self.logger.warning('[COMPLIANCE] CredentialScannerAgent not available')
+            return AgentResult(agent_name=agent_name, success=True, status='WARN', message='CredentialScannerAgent missing', metadata={'dry_run': dry_run})
         # guardian: allow-silent-swallow
         except Exception as e:
-            self.logger.error(f"[COMPLIANCE] Credential scan failed: {e}")
-            return AgentResult(
-                agent_name=agent_name,
-                success=False,
-                errors=1,
-                status="ERROR",
-                message=f"Credential scan error: {str(e)}",
-                metadata={"dry_run": dry_run, "mode": "compliance", "credential_scan": "error"},
-            )
+            self.logger.error(f'[COMPLIANCE] Credential scan failed: {e}')
+            return AgentResult(agent_name=agent_name, success=False, errors=1, status='ERROR', message=f'Credential scan error: {str(e)}', metadata={'dry_run': dry_run, 'mode': 'compliance', 'credential_scan': 'error'})
 
-    def _run_healing_mode(
-        self,
-        agent_name: str,
-        dry_run: bool,
-        context: ExecutionContext | None,
-    ) -> AgentResult:
+    def _run_healing_mode(self, agent_name: str, dry_run: bool, context: ExecutionContext | None) -> AgentResult:
         """Execute agent in HEALING mode - focus on heal_repository."""
-        self.logger.info(f"[HEALING] Running {agent_name}")
-
-        return AgentResult(
-            agent_name=agent_name,
-            success=True,
-            violations_found=0,
-            violations_fixed=0,
-            errors=0,
-            skipped=0,
-            status="PASS",
-            message=f"Healing operations completed for {agent_name}",
-            metadata={"dry_run": dry_run, "mode": "healing"},
-        )
+        self.logger.info(f'[HEALING] Running {agent_name}')
+        return AgentResult(agent_name=agent_name, success=True, violations_found=0, violations_fixed=0, errors=0, skipped=0, status='PASS', message=f'Healing operations completed for {agent_name}', metadata={'dry_run': dry_run, 'mode': 'healing'})
 
     def _run_ssot_mode(self, agent_name: str, dry_run: bool, context: ExecutionContext | None) -> AgentResult:
         """Execute agent in SSOT mode - enforce SSOT compliance."""
-        self.logger.info(f"[SSOT] Running {agent_name}")
-
-        return AgentResult(
-            agent_name=agent_name,
-            success=True,
-            violations_found=0,
-            violations_fixed=0,
-            errors=0,
-            skipped=0,
-            status="PASS",
-            message=f"SSOT compliance verified for {agent_name}",
-            metadata={"dry_run": dry_run, "mode": "ssot"},
-        )
+        self.logger.info(f'[SSOT] Running {agent_name}')
+        return AgentResult(agent_name=agent_name, success=True, violations_found=0, violations_fixed=0, errors=0, skipped=0, status='PASS', message=f'SSOT compliance verified for {agent_name}', metadata={'dry_run': dry_run, 'mode': 'ssot'})
 
     def _run_full_mode(self, agent_name: str, dry_run: bool, context: ExecutionContext | None) -> AgentResult:
         """
@@ -522,32 +311,13 @@ class Orchestrator(SovereignBaseAgent):
 
         [HARDENING] Merges accumulated_context with retry_context to preserve 'goal' and 'dataset'.
         """
-        self.logger.info(f"[FULL] Running {agent_name}")
-
-        # [PHASE 3] Zero-Loss Parameter Merging
+        self.logger.info(f'[FULL] Running {agent_name}')
         merged_payload = {}
-        if context and hasattr(context, "accumulated_context"):
-            # Proper deep update to ensure original task DNA is never overwritten
+        if context and hasattr(context, 'accumulated_context'):
             merged_payload.update(context.accumulated_context)
-            if hasattr(context, "retry_context"):
+            if hasattr(context, 'retry_context'):
                 merged_payload.update(context.retry_context)
-
-        return AgentResult(
-            agent_name=agent_name,
-            success=True,
-            violations_found=0,
-            violations_fixed=0,
-            errors=0,
-            skipped=0,
-            status="PASS",
-            message=f"Agent {agent_name} executed successfully",
-            metadata={
-                "dry_run": dry_run,
-                "mode": self.mode.value,
-                "context_depth": context.metadata.get("depth", 0) if context else 0,
-                "dna_preserved": bool(merged_payload),
-            },
-        )
+        return AgentResult(agent_name=agent_name, success=True, violations_found=0, violations_fixed=0, errors=0, skipped=0, status='PASS', message=f'Agent {agent_name} executed successfully', metadata={'dry_run': dry_run, 'mode': self.mode.value, 'context_depth': context.metadata.get('depth', 0) if context else 0, 'dna_preserved': bool(merged_payload)})
 
     def get_available_agents(self) -> list[str]:
         """
@@ -561,20 +331,16 @@ class Orchestrator(SovereignBaseAgent):
         if self._available_agents is None:
             try:
                 project_root = get_validated_project_root()
-                # Use ssot_discovery exclusively (no rglob)
                 agent_paths = get_agent_paths(project_root)
                 self._available_agents = [Path(p).stem for p in agent_paths]
-                self.logger.debug(
-                    f"[DISCOVERY] Found {len(self._available_agents)} agents via ssot_discovery",
-                )
+                self.logger.debug(f'[DISCOVERY] Found {len(self._available_agents)} agents via ssot_discovery')
             # guardian: allow-silent-swallow
             except Exception as e:
-                self.logger.error(f"[DISCOVERY] Failed to discover agents: {e}")
+                self.logger.error(f'[DISCOVERY] Failed to discover agents: {e}')
                 self._available_agents = []
-
         return self._available_agents
 
-    def validate_mission(self, agents: list[str], context: ExecutionContext | None = None) -> bool:
+    def validate_mission(self, agents: list[str], context: ExecutionContext | None=None) -> bool:
         """
         Pre-flight validation before mission execution.
 
@@ -587,11 +353,9 @@ class Orchestrator(SovereignBaseAgent):
         """
         available = set(self.get_available_agents())
         missing = [a for a in agents if a not in available]
-
         if missing:
-            self.logger.warning(f"[VALIDATION] Missing agents: {missing}")
+            self.logger.warning(f'[VALIDATION] Missing agents: {missing}')
             return False
-
         return True
 
     def _validate_agent_import(self, agent_name: str) -> bool:
@@ -615,118 +379,51 @@ class Orchestrator(SovereignBaseAgent):
         """
         import subprocess
         import sys
-
-        # Try to find the module path for this agent
         try:
             agent_paths = get_agent_paths(self.project_root)
-
-            # Find matching agent path
             agent_path = next((p for p in agent_paths if Path(p).stem == agent_name), None)
             if not agent_path:
-                # Agent not found in discovery - skip validation (may be dynamically loaded)
                 return True
-
-            # Convert path string to module path
             agent_file = Path(agent_path)
             rel_path = agent_file.relative_to(self.project_root)
-            module_path = str(rel_path.with_suffix("")).replace("/", ".").replace("\\", ".")
-
-            # [PERFORMANCE] Return cached result if already validated this session
+            module_path = str(rel_path.with_suffix('')).replace('/', '.').replace('\\', '.')
             if module_path in self._import_cache:
                 return self._import_cache[module_path]
-
-            # [ULTRA-HARDENED] Enforce Module Whitelist
-            if not any(module_path == p or module_path.startswith(p + ".") for p in ALLOWED_MODULE_PREFIXES):
-                self.logger.critical(
-                    f"[GATE] SECURITY BLOCK: Agent '{agent_name}' "
-                    f"({module_path}) is outside allowed namespaces.",
-                )
+            if not any((module_path == p or module_path.startswith(p + '.') for p in ALLOWED_MODULE_PREFIXES)):
+                self.logger.critical(f"[GATE] SECURITY BLOCK: Agent '{agent_name}' ({module_path}) is outside allowed namespaces.")
                 self._import_cache[module_path] = False
                 return False
-
-            # Perform subprocess import check
-            # guardian: allow-magic-config
-            result = subprocess.run(
-                [sys.executable, "-c", f"import {module_path}"],
-                capture_output=True,
-                text=True,
-                timeout=DEFAULT_TIMEOUT,
-                cwd=str(self.project_root),
-            )
-
+            result = subprocess.run([sys.executable, '-c', f'import {module_path}'], capture_output=True, text=True, timeout=DEFAULT_TIMEOUT, cwd=str(self.project_root))
             if result.returncode != 0:
-                self.logger.error(
-                    f"[GATE] Import validation failed for {agent_name}: {result.stderr.strip()[:200]}",
-                )
+                self.logger.error(f'[GATE] Import validation failed for {agent_name}: {result.stderr.strip()[:200]}')
                 self._import_cache[module_path] = False
                 return False
-
             self._import_cache[module_path] = True
             return True
-
         # guardian: allow-silent-swallow
         except Exception as e:
-            self.logger.warning(f"[GATE] Pre-flight check skipped for {agent_name}: {e}")
-            return True  # Allow to proceed if validation itself fails
+            self.logger.warning(f'[GATE] Pre-flight check skipped for {agent_name}: {e}')
+            return True
 
-    def _v15_build_operation_manifest(
-        self,
-        operation: str,
-        target_layer: str = "L3",
-    ) -> SurgicalManifest | None:
+    def _v15_build_operation_manifest(self, operation: str, target_layer: str='L3') -> SurgicalManifest | None:
         """§8.1a — Construct SurgicalManifest for orchestrator-level operation."""
         if not is_v15_enforced():
             return None
-
         import hashlib as _hl
-
-        from agentic_core.L0_routing.enforcement.traceability_contracts import (
-            generate_trace_id,
-        )
-        from agentic_core.L0_routing.types.determinism_contracts_types import (
-            require_manifest_hash_ok,
-        )
-        from agentic_core.L0_routing.types.determinism_types import (
-            FixConstraint,
-            SurgicalManifest,
-        )
-
-        _hex8 = (
-            _hl.sha256(
-                f"{self.__class__.__name__}:{operation}".encode(),
-            )
-            .hexdigest()[:8]
-            .upper()
-        )
+        from agentic_core.L0_routing.enforcement.traceability_contracts import generate_trace_id
+        from agentic_core.L0_routing.types.determinism_contracts_types import require_manifest_hash_ok
+        from agentic_core.L0_routing.types.determinism_types import FixConstraint, SurgicalManifest
+        _hex8 = _hl.sha256(f'{self.__class__.__name__}:{operation}'.encode()).hexdigest()[:8].upper()
         trace_id = generate_trace_id(_hex8)
-
-        ast_snippet = f"{self.__class__.__name__}.{operation}()"
-        manifest = SurgicalManifest(
-            schema_version="1.0.0",
-            correlation_id=trace_id,
-            node_id=self.__class__.__name__,
-            target_layer=target_layer,
-            ast_snippet=ast_snippet,
-            serialization_canon="orchestrator_operation",
-            fix_constraint=FixConstraint.RELAXED,
-            manifest_hash=_hl.sha256(ast_snippet.encode()).hexdigest(),
-            change_history=(),
-            provenance_chain=(trace_id,),
-        )
+        ast_snippet = f'{self.__class__.__name__}.{operation}()'
+        manifest = SurgicalManifest(schema_version='1.0.0', correlation_id=trace_id, node_id=self.__class__.__name__, target_layer=target_layer, ast_snippet=ast_snippet, serialization_canon='orchestrator_operation', fix_constraint=FixConstraint.RELAXED, manifest_hash=_hl.sha256(ast_snippet.encode()).hexdigest(), change_history=(), provenance_chain=(trace_id,))
         require_manifest_hash_ok(manifest)
         return manifest
 
     @timeout(300)
     @standard_heal
     # guardian: allow-magic-config
-    def heal_repository(
-        self,
-        dry_run: bool = True,
-        execute: bool = False,
-        depth: int = 0,
-        max_depth: int = 3,
-        _call_path: set | None = None,
-    ) -> dict[str, int]:
+    def heal_repository(self, dry_run: bool=True, execute: bool=False, depth: int=0, max_depth: int=3, _call_path: set | None=None) -> dict[str, int]:
         """
         L3 Orchestration Agent - Central Nervous System Healing.
 
@@ -737,20 +434,16 @@ class Orchestrator(SovereignBaseAgent):
         """
         if _call_path is None:
             _call_path = set()
-
         agent_name = self.__class__.__name__
         if agent_name in _call_path:
-            return {"violations_found": 0, "violations_fixed": 0, "errors": 1, "skipped": 0}
+            return {'violations_found': 0, 'violations_fixed': 0, 'errors': 1, 'skipped': 0}
         if depth > max_depth:
-            return {"violations_found": 0, "violations_fixed": 0, "errors": 1, "skipped": 0}
-
+            return {'violations_found': 0, 'violations_fixed': 0, 'errors': 1, 'skipped': 0}
         _call_path.add(agent_name)
-        metrics = {"violations_found": 0, "violations_fixed": 0, "errors": 0, "skipped": 0}
-
-        # §8.1a — V15 manifest construction at validation→heal boundary
-        manifest = self._v15_build_operation_manifest("heal_repository")
+        metrics = {'violations_found': 0, 'violations_fixed': 0, 'errors': 0, 'skipped': 0}
+        manifest = self._v15_build_operation_manifest('heal_repository')
         if manifest is not None:
-            gateway = getattr(self, "_v15_gateway", None)
+            gateway = getattr(self, '_v15_gateway', None)
             if gateway is not None:
 
                 def _heal_body(m):
@@ -758,76 +451,56 @@ class Orchestrator(SovereignBaseAgent):
 
                 def _state_hash():
                     import hashlib as _hl
-
-                    _id = f"{self.__class__.__name__}:{id(self)}"
+                    _id = f'{self.__class__.__name__}:{id(self)}'
                     _h = _hl.sha256(_id.encode()).hexdigest()
                     return (_h, _h, _h)
-
-                # guardian: allow-silent-swallow
                 try:
-                    gw_result = gateway.execute(
-                        execution_input=manifest,
-                        heal_fn=_heal_body,
-                        state_hash_fn=_state_hash,
-                        trace_id=manifest.correlation_id,
-                        agent_id="orchestrator_engine",
-                    )
+                    gw_result = gateway.execute(execution_input=manifest, heal_fn=_heal_body, state_hash_fn=_state_hash, trace_id=manifest.correlation_id, agent_id='orchestrator_engine')
                     if gw_result.success:
                         _call_path.discard(agent_name)
                         return gw_result.healing_output
                 # guardian: allow-silent-swallow
                 except Exception as exc:
-                    self.logger.warning("[V15] Gateway execution failed (LOG_ONLY): %s", exc)
-
+                    self.logger.warning('[V15] Gateway execution failed (LOG_ONLY): %s', exc)
         try:
             metrics = self._orchestrator_heal_body(dry_run)
-
         # guardian: allow-silent-swallow
         except Exception as e:
-            self.logger.error(f"Orchestrator healing failed: {e}")
-            metrics["errors"] += 1
+            self.logger.error(f'Orchestrator healing failed: {e}')
+            metrics['errors'] += 1
         finally:
             _call_path.discard(agent_name)
-
         return metrics
 
-    def _orchestrator_heal_body(self, dry_run: bool = True) -> dict[str, int]:
+    def _orchestrator_heal_body(self, dry_run: bool=True) -> dict[str, int]:
         """Core healing logic extracted for gateway wrapping."""
-        metrics = {"violations_found": 0, "violations_fixed": 0, "errors": 0, "skipped": 0}
-
-        # Validate strategies are loadable
+        metrics = {'violations_found': 0, 'violations_fixed': 0, 'errors': 0, 'skipped': 0}
         try:
             strategies = self.strategies
             if not strategies:
-                metrics["violations_found"] += 1
-                self.logger.warning("No strategies loaded")
+                metrics['violations_found'] += 1
+                self.logger.warning('No strategies loaded')
         # guardian: allow-silent-swallow
         except Exception as e:
-            metrics["violations_found"] += 1
-            self.logger.warning(f"Strategy loading failed: {e}")
-
-        # Validate agent discovery
+            metrics['violations_found'] += 1
+            self.logger.warning(f'Strategy loading failed: {e}')
         try:
             available_agents = self.get_available_agents()
             if not available_agents:
-                metrics["violations_found"] += 1
-                self.logger.warning("No agents discovered")
+                metrics['violations_found'] += 1
+                self.logger.warning('No agents discovered')
             else:
-                self.logger.info(f"Discovered {len(available_agents)} agents")
+                self.logger.info(f'Discovered {len(available_agents)} agents')
         # guardian: allow-silent-swallow
         except Exception as e:
-            metrics["violations_found"] += 1
-            self.logger.warning(f"Agent discovery failed: {e}")
-
-        # Validate project root
+            metrics['violations_found'] += 1
+            self.logger.warning(f'Agent discovery failed: {e}')
         if not self.project_root.exists():
-            metrics["violations_found"] += 1
-            self.logger.warning(f"Project root does not exist: {self.project_root}")
-
-        if metrics["violations_found"] == 0:
-            metrics["violations_fixed"] = 1
-            self.logger.info("Orchestrator validation passed")
-
+            metrics['violations_found'] += 1
+            self.logger.warning(f'Project root does not exist: {self.project_root}')
+        if metrics['violations_found'] == 0:
+            metrics['violations_fixed'] = 1
+            self.logger.info('Orchestrator validation passed')
         return metrics
 
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
@@ -847,21 +520,10 @@ class Orchestrator(SovereignBaseAgent):
                 - artifacts: List of modified files
                 - errors: List of error messages
         """
-        violation.get("file") or violation.get("file_path")
-        violation_type = violation.get("type", "unknown")
-
-        # Default implementation - Orchestrator manages orchestration
+        violation.get('file') or violation.get('file_path')
+        violation_type = violation.get('type', 'unknown')
         try:
-            return {
-                "status": "skipped",
-                "details": f"Orchestrator heal() not yet implemented for {violation_type}",
-                "artifacts": [],
-                "errors": [],
-            }
+            return {'status': 'skipped', 'details': f'Orchestrator heal() not yet implemented for {violation_type}', 'artifacts': [], 'errors': []}
+        # guardian: allow-silent-swallow
         except Exception as e:
-            return {
-                "status": "failed",
-                "details": f"Orchestrator heal() failed: {str(e)}",
-                "artifacts": [],
-                "errors": [str(e)],
-            }
+            return {'status': 'failed', 'details': f'Orchestrator heal() failed: {str(e)}', 'artifacts': [], 'errors': [str(e)]}

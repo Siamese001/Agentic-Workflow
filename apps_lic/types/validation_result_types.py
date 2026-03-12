@@ -3,49 +3,32 @@ Stateless validation tools for apps_lic.
 
 Moved from k-series agents to promote modularity and reusability.
 """
-
 from __future__ import annotations
-
 from dataclasses import dataclass
 from typing import Any
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 @dataclass(frozen=True)
 class ValidationResult:
     """Outcome of validator execution."""
-
     passed: bool
     reasons: tuple[str, ...]
     final_draft: str
     attempts: int
     qa_result: dict[str, Any]
 
-
 @dataclass(frozen=True)
 class Draft:
     """Simple draft container."""
-
     subject: str
     body: str
 
     def render(self) -> str:
-        return f"Subject: {self.subject}\n\n{self.body}"
-
+        return f'Subject: {self.subject}\n\n{self.body}'
 
 @dataclass(frozen=True)
 class DraftPackage:
     """Container describing the composed draft and supporting evidence."""
-
     draft: str
     artifacts: dict[str, str]
     total_latency_ms: int = 0
@@ -53,12 +36,10 @@ class DraftPackage:
     def with_draft(self, new_draft: str) -> DraftPackage:
         return DraftPackage(new_draft, dict(self.artifacts), self.total_latency_ms)
 
-
 def score_quality(draft: str, reflexion: bool) -> int:
     """Return a simple heuristic quality score."""
-    base = 5 if "value" in draft.lower() else 3
+    base = 5 if 'value' in draft.lower() else 3
     return base + (2 if reflexion else 0)
-
 
 def validate_schema_policy(data: dict[str, Any], schema: dict[str, Any]) -> ValidationResult:
     """
@@ -71,21 +52,11 @@ def validate_schema_policy(data: dict[str, Any], schema: dict[str, Any]) -> Vali
     Returns:
         ValidationResult with validation outcome
     """
-    # Simple validation logic - can be extended
-    required_fields = schema.get("required", [])
+    required_fields = schema.get('required', [])
     missing_fields = [field for field in required_fields if field not in data]
-
     passed = len(missing_fields) == 0
     reasons = tuple(missing_fields) if not passed else ()
-
-    return ValidationResult(
-        passed=passed,
-        reasons=reasons,
-        final_draft=str(data),
-        attempts=1,
-        qa_result={"validation": "schema_check"},
-    )
-
+    return ValidationResult(passed=passed, reasons=reasons, final_draft=str(data), attempts=1, qa_result={'validation': 'schema_check'})
 
 def check_content_compliance(content: str, prohibited_terms: list[str]) -> ValidationResult:
     """
@@ -99,14 +70,6 @@ def check_content_compliance(content: str, prohibited_terms: list[str]) -> Valid
         ValidationResult with compliance outcome
     """
     violations = [term for term in prohibited_terms if term.lower() in content.lower()]
-
     passed = len(violations) == 0
     reasons = tuple(violations) if not passed else ()
-
-    return ValidationResult(
-        passed=passed,
-        reasons=reasons,
-        final_draft=content,
-        attempts=1,
-        qa_result={"validation": "compliance_check"},
-    )
+    return ValidationResult(passed=passed, reasons=reasons, final_draft=content, attempts=1, qa_result={'validation': 'compliance_check'})

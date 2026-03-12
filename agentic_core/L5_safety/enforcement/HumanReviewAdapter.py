@@ -4,42 +4,26 @@ HumanReviewAdapter - Human-in-the-loop review queue adapter.
 Provides a simple in-memory queue for submitting code changes for human review
 before they are applied. Supports async approval/rejection workflow.
 """
-
 from __future__ import annotations
-
 import logging
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
 from typing import Any
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 Logger = logging.getLogger(__name__)
-
 
 class ReviewStatus(Enum):
     """Status of a human review request."""
-
-    PENDING = "pending"
-    APPROVED = "approved"
-    REJECTED = "rejected"
-    EXPIRED = "expired"
-
+    PENDING = 'pending'
+    APPROVED = 'approved'
+    REJECTED = 'rejected'
+    EXPIRED = 'expired'
 
 @dataclass
 class ReviewRequest:
     """A request for human review."""
-
     review_id: str
     agent_name: str
     file_path: str
@@ -53,19 +37,7 @@ class ReviewRequest:
 
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary representation."""
-        return {
-            "review_id": self.review_id,
-            "agent_name": self.agent_name,
-            "file_path": self.file_path,
-            "change_description": self.change_description,
-            "proposed_change": self.proposed_change,
-            "status": self.status.value,
-            "submitted_at": self.submitted_at,
-            "reviewed_at": self.reviewed_at,
-            "reviewer_notes": self.reviewer_notes,
-            "metadata": self.metadata,
-        }
-
+        return {'review_id': self.review_id, 'agent_name': self.agent_name, 'file_path': self.file_path, 'change_description': self.change_description, 'proposed_change': self.proposed_change, 'status': self.status.value, 'submitted_at': self.submitted_at, 'reviewed_at': self.reviewed_at, 'reviewer_notes': self.reviewer_notes, 'metadata': self.metadata}
 
 class HumanReviewAdapter:
     """
@@ -74,10 +46,9 @@ class HumanReviewAdapter:
     Maintains an in-memory queue of review requests. In production this
     would integrate with an external review system (e.g., GitHub PRs, Slack).
     """
-
     _DEFAULT_TTL_HOURS = 24
 
-    def __init__(self, ttl_hours: int = _DEFAULT_TTL_HOURS):
+    def __init__(self, ttl_hours: int=_DEFAULT_TTL_HOURS):
         """
         Initialize the adapter.
 
@@ -87,14 +58,7 @@ class HumanReviewAdapter:
         self.ttl_hours = ttl_hours
         self._queue: dict[str, ReviewRequest] = {}
 
-    def submit_for_review(
-        self,
-        agent_name: str,
-        file_path: str,
-        change_description: str,
-        proposed_change: str,
-        metadata: dict[str, Any] | None = None,
-    ) -> str:
+    def submit_for_review(self, agent_name: str, file_path: str, change_description: str, proposed_change: str, metadata: dict[str, Any] | None=None) -> str:
         """
         Submit a change for human review.
 
@@ -102,16 +66,9 @@ class HumanReviewAdapter:
             review_id string
         """
         review_id = str(uuid.uuid4())
-        request = ReviewRequest(
-            review_id=review_id,
-            agent_name=agent_name,
-            file_path=file_path,
-            change_description=change_description,
-            proposed_change=proposed_change,
-            metadata=metadata or {},
-        )
+        request = ReviewRequest(review_id=review_id, agent_name=agent_name, file_path=file_path, change_description=change_description, proposed_change=proposed_change, metadata=metadata or {})
         self._queue[review_id] = request
-        Logger.info("Submitted review request %s for %s", review_id, file_path)
+        Logger.info('Submitted review request %s for %s', review_id, file_path)
         return review_id
 
     def check_status(self, review_id: str) -> ReviewStatus | None:
@@ -140,7 +97,7 @@ class HumanReviewAdapter:
         """Return the number of pending review requests."""
         return len(self.get_pending_reviews())
 
-    def approve(self, review_id: str, reviewer_notes: str = "") -> bool:
+    def approve(self, review_id: str, reviewer_notes: str='') -> bool:
         """
         Approve a review request.
 
@@ -153,10 +110,10 @@ class HumanReviewAdapter:
         request.status = ReviewStatus.APPROVED
         request.reviewed_at = datetime.now().isoformat()
         request.reviewer_notes = reviewer_notes
-        Logger.info("Approved review request %s", review_id)
+        Logger.info('Approved review request %s', review_id)
         return True
 
-    def reject(self, review_id: str, reviewer_notes: str = "") -> bool:
+    def reject(self, review_id: str, reviewer_notes: str='') -> bool:
         """
         Reject a review request.
 
@@ -169,7 +126,7 @@ class HumanReviewAdapter:
         request.status = ReviewStatus.REJECTED
         request.reviewed_at = datetime.now().isoformat()
         request.reviewer_notes = reviewer_notes
-        Logger.info("Rejected review request %s", review_id)
+        Logger.info('Rejected review request %s', review_id)
         return True
 
     def clear_expired(self) -> int:
@@ -184,7 +141,7 @@ class HumanReviewAdapter:
         self._queue = {rid: r for rid, r in self._queue.items() if r.status != ReviewStatus.EXPIRED}
         removed = before - len(self._queue)
         if removed:
-            Logger.info("Cleared %d expired review requests", removed)
+            Logger.info('Cleared %d expired review requests', removed)
         return removed
 
     def _expire_if_stale(self, request: ReviewRequest) -> None:

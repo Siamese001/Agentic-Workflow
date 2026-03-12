@@ -23,23 +23,11 @@ Usage::
     binding.emit()            # prints REPLAY-BINDING line to stdout
     line = binding.to_line()  # "REPLAY-BINDING: <json>"
 """
-
 from __future__ import annotations
-
 import hashlib
 import json
 from dataclasses import dataclass
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 @dataclass(frozen=True)
 class MetaLearningReplayBinding:
@@ -55,33 +43,26 @@ class MetaLearningReplayBinding:
         strategy_weights_digest: SHA-256 hex of current MetaLearningAgent weights.
         embedding_model_version: Runtime embedding model identifier string.
     """
-
     faiss_index_digests: dict[str, str]
     strategy_weights_digest: str
     embedding_model_version: str
 
     def __post_init__(self) -> None:
         if not self.faiss_index_digests:
-            raise ValueError("faiss_index_digests must contain at least one entry")
+            raise ValueError('faiss_index_digests must contain at least one entry')
         if len(self.strategy_weights_digest) != 64:
-            raise ValueError(
-                f"strategy_weights_digest must be 64-hex chars, got {len(self.strategy_weights_digest)}"
-            )
+            raise ValueError(f'strategy_weights_digest must be 64-hex chars, got {len(self.strategy_weights_digest)}')
         if not self.embedding_model_version:
-            raise ValueError("embedding_model_version must be a non-empty string")
+            raise ValueError('embedding_model_version must be a non-empty string')
 
     def to_dict(self) -> dict[str, object]:
         """Return a canonical dict representation (keys sorted)."""
-        return {
-            "embedding_model_version": self.embedding_model_version,
-            "faiss_index_digests": dict(sorted(self.faiss_index_digests.items())),
-            "strategy_weights_digest": self.strategy_weights_digest,
-        }
+        return {'embedding_model_version': self.embedding_model_version, 'faiss_index_digests': dict(sorted(self.faiss_index_digests.items())), 'strategy_weights_digest': self.strategy_weights_digest}
 
     def to_line(self) -> str:
         """Serialise to the canonical ``REPLAY-BINDING: <json>`` log line."""
-        payload = json.dumps(self.to_dict(), separators=(",", ":"), sort_keys=True, ensure_ascii=True)
-        return f"REPLAY-BINDING: {payload}"
+        payload = json.dumps(self.to_dict(), separators=(',', ':'), sort_keys=True, ensure_ascii=True)
+        return f'REPLAY-BINDING: {payload}'
 
     def emit(self) -> None:
         """Print the canonical REPLAY-BINDING line to stdout exactly once."""
@@ -95,27 +76,16 @@ class MetaLearningReplayBinding:
             ValueError: If the line is not a valid REPLAY-BINDING line or
                         the JSON payload is missing required keys.
         """
-        prefix = "REPLAY-BINDING: "
+        prefix = 'REPLAY-BINDING: '
         if not line.startswith(prefix):
-            raise ValueError(f"Not a REPLAY-BINDING line: {line!r}")
-        raw = json.loads(line[len(prefix) :])
-        missing = {"faiss_index_digests", "strategy_weights_digest", "embedding_model_version"} - raw.keys()
+            raise ValueError(f'Not a REPLAY-BINDING line: {line!r}')
+        raw = json.loads(line[len(prefix):])
+        missing = {'faiss_index_digests', 'strategy_weights_digest', 'embedding_model_version'} - raw.keys()
         if missing:
-            raise ValueError(f"REPLAY-BINDING missing keys: {sorted(missing)}")
-        return cls(
-            faiss_index_digests=raw["faiss_index_digests"],
-            strategy_weights_digest=raw["strategy_weights_digest"],
-            embedding_model_version=raw["embedding_model_version"],
-        )
+            raise ValueError(f'REPLAY-BINDING missing keys: {sorted(missing)}')
+        return cls(faiss_index_digests=raw['faiss_index_digests'], strategy_weights_digest=raw['strategy_weights_digest'], embedding_model_version=raw['embedding_model_version'])
 
-
-def compute_replay_key(
-    *,
-    trace_id: str,
-    transcript_hash: str,
-    strategy_weights_digest: str,
-    faiss_index_digests: dict[str, str],
-) -> str:
+def compute_replay_key(*, trace_id: str, transcript_hash: str, strategy_weights_digest: str, faiss_index_digests: dict[str, str]) -> str:
     """Compute a deterministic replay key binding all execution-state digests.
 
     The replay key is the SHA-256 of the pipe-concatenated canonical components:
@@ -139,22 +109,10 @@ def compute_replay_key(
         ValueError: If faiss_index_digests is empty or any digest is not 64 hex chars.
     """
     if not faiss_index_digests:
-        raise ValueError("faiss_index_digests must contain at least one entry")
+        raise ValueError('faiss_index_digests must contain at least one entry')
     if len(strategy_weights_digest) != 64:
-        raise ValueError(f"strategy_weights_digest must be 64-hex chars, got {len(strategy_weights_digest)}")
-    sorted_faiss = "|".join(f"{k}:{v}" for k, v in sorted(faiss_index_digests.items()))
-    binding = json.dumps(
-        {
-            "faiss_index_digests_sorted": sorted_faiss,
-            "strategy_weights_digest": strategy_weights_digest,
-            "trace_id": trace_id,
-            "transcript_hash": transcript_hash,
-        },
-        separators=(",", ":"),
-        sort_keys=True,
-        ensure_ascii=True,
-    ).encode("ascii")
+        raise ValueError(f'strategy_weights_digest must be 64-hex chars, got {len(strategy_weights_digest)}')
+    sorted_faiss = '|'.join((f'{k}:{v}' for k, v in sorted(faiss_index_digests.items())))
+    binding = json.dumps({'faiss_index_digests_sorted': sorted_faiss, 'strategy_weights_digest': strategy_weights_digest, 'trace_id': trace_id, 'transcript_hash': transcript_hash}, separators=(',', ':'), sort_keys=True, ensure_ascii=True).encode('ascii')
     return hashlib.sha256(binding).hexdigest()
-
-
-__all__ = ["MetaLearningReplayBinding", "compute_replay_key"]
+__all__ = ['MetaLearningReplayBinding', 'compute_replay_key']

@@ -119,6 +119,16 @@ repos:
         # Also exclude third-party/vendored paths and venv/site-packages
         exclude: (ops_scripts/ci/check_anti_patterns\.py|ops_scripts/.*|tests/support/l6_observability/.*|tests/.*|__pycache__/.*|.nox/.*|archives/.*|.backup/.*|(^|/)(\.venv|venv|site-packages|third_party|vendor|node_modules)/)
 
+      # -- T3a-burndown: ADG Intelligent Burndown Ratchet (anti-pattern count can ONLY decrease) --
+      - id: adg-burndown-gate
+        name: "T3a-burndown: ADG Anti-Pattern Burndown Ratchet"
+        entry: python ops_scripts/ci/adg_burndown_gate.py
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+        exclude: (ops_scripts/ci/adg_burndown_gate\.py|ops_scripts/.*|tests/.*|__pycache__/.*|\.nox/.*|archives/.*|\.backup/.*)
+
       # -- T3a-skip: Zero-Skip Enforcement for UNIT_STRICT -------------------------
       - id: enforce-unit-strict-zero-skip
         name: "T3a-skip: Zero-Skip Enforcement for UNIT_STRICT"

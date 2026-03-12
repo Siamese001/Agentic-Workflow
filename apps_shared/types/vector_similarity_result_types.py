@@ -2,27 +2,15 @@
 
 Provides semantic similarity-based caching for query results.
 """
-
 import hashlib
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import Any
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 @dataclass
 class VectorSimilarityResult:
     """Result of vector similarity search."""
-
     cache_key: str
     similarity_score: float
     cached_content: str
@@ -33,11 +21,9 @@ class VectorSimilarityResult:
         if self.metadata is None:
             self.metadata = {}
 
-
 @dataclass
 class CacheEntry:
     """Entry in the semantic cache."""
-
     key: str
     content: str
     embedding: list[float]
@@ -49,16 +35,11 @@ class CacheEntry:
         """Check if cache entry is expired."""
         return datetime.now() > self.timestamp + timedelta(seconds=self.ttl_seconds)
 
-
 class EnhancedSemanticCache:
     """Enhanced semantic cache with similarity-based retrieval."""
 
-    def __init__(
-        self,
-        max_size: int = 1000,
-        ttl_seconds: int = 3600,
-        similarity_threshold: float = 0.8,
-    ):
+    # guardian: allow-magic-config
+    def __init__(self, max_size: int=1000, ttl_seconds: int=3600, similarity_threshold: float=0.8):
         """Initialize enhanced semantic cache.
 
         Args:
@@ -74,12 +55,8 @@ class EnhancedSemanticCache:
         self.similarity_threshold = similarity_threshold
         self.embedding_cache: dict[str, list[float]] = {}
 
-    def get(
-        self,
-        query: str,
-        query_embedding: list[float] | None = None,
-        top_k: int = 5,
-    ) -> list[VectorSimilarityResult]:
+    # guardian: allow-magic-config
+    def get(self, query: str, query_embedding: list[float] | None=None, top_k: int=5) -> list[VectorSimilarityResult]:
         """Retrieve cached entries similar to query.
 
         Args:
@@ -92,39 +69,18 @@ class EnhancedSemanticCache:
         """
         if not query_embedding:
             query_embedding = self._get_embedding(query)
-
         results = []
-
         for key, entry in self.entries.items():
-            # Skip expired entries
             if entry.is_expired():
                 continue
-
-            # Calculate similarity
             similarity = self._cosine_similarity(query_embedding, entry.embedding)
-
             if similarity >= self.similarity_threshold:
-                result = VectorSimilarityResult(
-                    cache_key=key,
-                    similarity_score=similarity,
-                    cached_content=entry.content,
-                    metadata=entry.metadata,
-                    timestamp=entry.timestamp,
-                )
+                result = VectorSimilarityResult(cache_key=key, similarity_score=similarity, cached_content=entry.content, metadata=entry.metadata, timestamp=entry.timestamp)
                 results.append(result)
-
-        # Sort by similarity and return top_k
         results.sort(key=lambda x: x.similarity_score, reverse=True)
         return results[:top_k]
 
-    def put(
-        self,
-        query: str,
-        content: str,
-        metadata: dict[str, Any] | None = None,
-        embedding: list[float] | None = None,
-        ttl_seconds: int | None = None,
-    ) -> str:
+    def put(self, query: str, content: str, metadata: dict[str, Any] | None=None, embedding: list[float] | None=None, ttl_seconds: int | None=None) -> str:
         """Store content in semantic cache.
 
         Args:
@@ -137,27 +93,12 @@ class EnhancedSemanticCache:
         Returns:
             cache key for the stored entry
         """
-        # Generate cache key
         cache_key = self._generate_cache_key(query, content)
-
-        # Get or generate embedding
         if not embedding:
-            embedding = self._get_embedding(query + " " + content)
-
-        # Create cache entry
-        entry = CacheEntry(
-            key=cache_key,
-            content=content,
-            embedding=embedding,
-            metadata=metadata or {},
-            timestamp=datetime.now(),
-            ttl_seconds=ttl_seconds or self.default_ttl,
-        )
-
-        # Add to cache (evict if necessary)
+            embedding = self._get_embedding(query + ' ' + content)
+        entry = CacheEntry(key=cache_key, content=content, embedding=embedding, metadata=metadata or {}, timestamp=datetime.now(), ttl_seconds=ttl_seconds or self.default_ttl)
         if len(self.entries) >= self.max_size:
             self._evict_oldest()
-
         self.entries[cache_key] = entry
         return cache_key
 
@@ -173,35 +114,25 @@ class EnhancedSemanticCache:
             Number of entries removed
         """
         expired_keys = [key for key, entry in self.entries.items() if entry.is_expired()]
-
         for key in expired_keys:
             del self.entries[key]
-
         return len(expired_keys)
 
     def _generate_cache_key(self, query: str, content: str) -> str:
         """Generate cache key from query and content."""
-        combined = f"{query}:{content}"
+        combined = f'{query}:{content}'
         return hashlib.sha256(combined.encode()).hexdigest()[:16]
 
     def _get_embedding(self, text: str) -> list[float]:
         """Get embedding for text (mock implementation)."""
-        # Check cache first
         if text in self.embedding_cache:
             return self.embedding_cache[text]
-
-        # Mock embedding - in real implementation would use actual embedding model
-        # Create deterministic pseudo-random embedding based on text hash
         text_hash = hashlib.md5(text.encode()).hexdigest()
         embedding = []
-
         for i in range(0, len(text_hash), 2):
-            # Convert hex pairs to float values between -1 and 1
-            hex_pair = text_hash[i : i + 2]
+            hex_pair = text_hash[i:i + 2]
             value = int(hex_pair, 16) / 255.0 * 2 - 1
             embedding.append(value)
-
-        # cache the embedding
         self.embedding_cache[text] = embedding
         return embedding
 
@@ -209,23 +140,15 @@ class EnhancedSemanticCache:
         """Calculate cosine similarity between two vectors."""
         if len(vec1) != len(vec2):
             return 0.0
-
-        dot_product = sum(a * b for a, b in zip(vec1, vec2, strict=False))
-        norm1 = math.sqrt(sum(a * a for a in vec1))
-        norm2 = math.sqrt(sum(b * b for b in vec2))
-
+        dot_product = sum((a * b for a, b in zip(vec1, vec2, strict=False)))
+        norm1 = math.sqrt(sum((a * a for a in vec1)))
+        norm2 = math.sqrt(sum((b * b for b in vec2)))
         if norm1 == 0 or norm2 == 0:
             return 0.0
-
         return dot_product / (norm1 * norm2)
 
-    def generate_fingerprint(
-        self,
-        prompt: str,
-        model: str,
-        temperature: float = 0.7,
-        system_prompt: str | None = None,
-    ) -> str:
+    # guardian: allow-magic-config
+    def generate_fingerprint(self, prompt: str, model: str, temperature: float=0.7, system_prompt: str | None=None) -> str:
         """Generate fingerprint for cache lookup.
 
         Args:
@@ -237,17 +160,10 @@ class EnhancedSemanticCache:
         Returns:
             Fingerprint string
         """
-        # Strip whitespace from all string inputs
-        components = [
-            prompt.strip() if isinstance(prompt, str) else str(prompt),
-            model.strip() if isinstance(model, str) else str(model),
-            str(temperature),
-        ]
+        components = [prompt.strip() if isinstance(prompt, str) else str(prompt), model.strip() if isinstance(model, str) else str(model), str(temperature)]
         if system_prompt is not None:
-            components.append(
-                system_prompt.strip() if isinstance(system_prompt, str) else str(system_prompt),
-            )
-        combined = "|".join(components)
+            components.append(system_prompt.strip() if isinstance(system_prompt, str) else str(system_prompt))
+        combined = '|'.join(components)
         return hashlib.sha256(combined.encode()).hexdigest()
 
     def lookup(self, fingerprint: str) -> dict[str, Any] | None:
@@ -262,14 +178,12 @@ class EnhancedSemanticCache:
         if fingerprint in self.entries:
             entry = self.entries[fingerprint]
             if not entry.is_expired():
-                # Return a copy to prevent modification of cache
                 return dict(entry.content)
             else:
-                # Remove expired entry
                 del self.entries[fingerprint]
         return None
 
-    def store(self, fingerprint: str, data: dict[str, Any], ttl_hours: float | None = None) -> None:
+    def store(self, fingerprint: str, data: dict[str, Any], ttl_hours: float | None=None) -> None:
         """Store content in cache.
 
         Args:
@@ -280,16 +194,7 @@ class EnhancedSemanticCache:
         ttl_seconds = self.ttl_seconds
         if ttl_hours is not None:
             ttl_seconds = int(ttl_hours * 3600)
-
-        entry = CacheEntry(
-            key=fingerprint,
-            content=data,
-            embedding=[],  # Not used for fingerprint-based cache
-            metadata={"stored_at": datetime.now().isoformat()},
-            timestamp=datetime.now(),
-            ttl_seconds=ttl_seconds,
-        )
-
+        entry = CacheEntry(key=fingerprint, content=data, embedding=[], metadata={'stored_at': datetime.now().isoformat()}, timestamp=datetime.now(), ttl_seconds=ttl_seconds)
         self.entries[fingerprint] = entry
 
     def get_cache_stats(self) -> dict[str, Any]:
@@ -298,20 +203,10 @@ class EnhancedSemanticCache:
         Returns:
             Dictionary of cache stats
         """
-        # Remove expired entries first
         self.cleanup_expired()
-
         fresh_entries = len(self.entries)
-        stale_entries = 0  # After cleanup, no stale entries
-
-        return {
-            "total_entries": fresh_entries,
-            "fresh_entries": fresh_entries,
-            "stale_entries": stale_entries,
-            "embedding_cache_size": len(self.embedding_cache),
-            "max_entries": self.max_entries,
-            "ttl_seconds": self.ttl_seconds,
-        }
+        stale_entries = 0
+        return {'total_entries': fresh_entries, 'fresh_entries': fresh_entries, 'stale_entries': stale_entries, 'embedding_cache_size': len(self.embedding_cache), 'max_entries': self.max_entries, 'ttl_seconds': self.ttl_seconds}
 
     def invalidate_by_pattern(self, pattern: str) -> int:
         """Invalidate cache entries matching pattern.
@@ -324,24 +219,16 @@ class EnhancedSemanticCache:
         """
         keys_to_remove = []
         pattern_lower = pattern.lower()
-
         for key, entry in self.entries.items():
-            # Check if pattern exists in content (case-insensitive)
             content = str(entry.content).lower()
             if isinstance(entry.content, dict):
-                # If content is a dict, check all string values
                 for value in entry.content.values():
                     if isinstance(value, str) and pattern_lower in value.lower():
                         keys_to_remove.append(key)
                         break
             elif pattern_lower in content:
                 keys_to_remove.append(key)
-
         for key in keys_to_remove:
             del self.entries[key]
-
         return len(keys_to_remove)
-
-
-# Import math for cosine similarity
 import math

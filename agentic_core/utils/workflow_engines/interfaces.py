@@ -4,23 +4,11 @@ Hybrid Retrieval Interfaces
 Defines the contracts for lexical retrieval, vector retrieval,
 candidate fusion, and reranking components.
 """
-
 from __future__ import annotations
-
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from typing import Any
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 @dataclass
 class Document:
@@ -31,19 +19,13 @@ class Document:
     metadata: dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
-        return {
-            "doc_id": self.doc_id,
-            "content": self.content,
-            "score": self.score,
-            "metadata": self.metadata,
-        }
-
+        return {'doc_id': self.doc_id, 'content': self.content, 'score': self.score, 'metadata': self.metadata}
 
 class IRetrieverLexical(ABC):
     """Interface for lexical (BM25-style) retrieval."""
 
     @abstractmethod
-    def retrieve(self, query: str, top_k: int = 50) -> list[Document]:
+    def retrieve(self, query: str, top_k: int=50) -> list[Document]:
         """Retrieve documents using lexical matching.
 
         Args:
@@ -55,12 +37,11 @@ class IRetrieverLexical(ABC):
         """
         ...
 
-
 class IRetrieverVector(ABC):
     """Interface for dense vector (FAISS-style) retrieval."""
 
     @abstractmethod
-    def retrieve(self, query_embedding: list[float], top_k: int = 50) -> list[Document]:
+    def retrieve(self, query_embedding: list[float], top_k: int=50) -> list[Document]:
         """Retrieve documents by vector similarity.
 
         Args:
@@ -84,16 +65,11 @@ class IRetrieverVector(ABC):
         """
         ...
 
-
 class ICandidateFusion(ABC):
     """Interface for merging lexical and vector retrieval results."""
 
     @abstractmethod
-    def merge(
-        self,
-        lexical_results: list[Document],
-        vector_results: list[Document],
-    ) -> list[Document]:
+    def merge(self, lexical_results: list[Document], vector_results: list[Document]) -> list[Document]:
         """Merge and deduplicate results from lexical and vector retrievers.
 
         Args:
@@ -104,7 +80,6 @@ class ICandidateFusion(ABC):
             Merged, deduplicated, and scored list of Document objects
         """
         ...
-
 
 class IReranker(ABC):
     """Interface for cross-encoder or heuristic reranking."""
@@ -121,12 +96,4 @@ class IReranker(ABC):
             Reranked list of Document objects (highest score first)
         """
         ...
-
-
-__all__ = [
-    "Document",
-    "IRetrieverLexical",
-    "IRetrieverVector",
-    "ICandidateFusion",
-    "IReranker",
-]
+__all__ = ['Document', 'IRetrieverLexical', 'IRetrieverVector', 'ICandidateFusion', 'IReranker']

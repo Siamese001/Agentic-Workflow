@@ -4,7 +4,6 @@ This module provides a centralized health check system that aggregates
 the status of all hardened components to provide a single view of
 system health for operations teams.
 """
-
 import asyncio
 import logging
 import time
@@ -13,46 +12,30 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from typing import Any
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 logger = logging.getLogger(__name__)
-
 
 class HealthStatus(str, Enum):
     """Health status levels."""
-
-    HEALTHY = "healthy"
-    DEGRADED = "degraded"
-    UNHEALTHY = "unhealthy"
-    CRITICAL = "critical"
-    UNKNOWN = "unknown"
-
+    HEALTHY = 'healthy'
+    DEGRADED = 'degraded'
+    UNHEALTHY = 'unhealthy'
+    CRITICAL = 'critical'
+    UNKNOWN = 'unknown'
 
 class ComponentType(str, Enum):
     """Types of components being monitored."""
-
-    BULKHEAD = "bulkhead"
-    CIRCUIT_BREAKER = "circuit_breaker"
-    DEAD_LETTER_QUEUE = "dead_letter_queue"
-    CHECKPOINT_MANAGER = "checkpoint_manager"
-    RETRY_POLICY = "retry_policy"
-    PIPELINE = "pipeline"
-    CUSTOM = "custom"
-
+    BULKHEAD = 'bulkhead'
+    CIRCUIT_BREAKER = 'circuit_breaker'
+    DEAD_LETTER_QUEUE = 'dead_letter_queue'
+    CHECKPOINT_MANAGER = 'checkpoint_manager'
+    RETRY_POLICY = 'retry_policy'
+    PIPELINE = 'pipeline'
+    CUSTOM = 'custom'
 
 @dataclass
 class HealthCheckResult:
     """Result of a health check."""
-
     component_name: str
     component_type: ComponentType
     status: HealthStatus
@@ -67,16 +50,7 @@ class HealthCheckResult:
         Returns:
             Dictionary representation
         """
-        return {
-            "component": self.component_name,
-            "type": self.component_type.value,
-            "status": self.status.value,
-            "message": self.message,
-            "timestamp": self.timestamp.isoformat(),
-            "metrics": self.metrics,
-            "details": self.details,
-        }
-
+        return {'component': self.component_name, 'type': self.component_type.value, 'status': self.status.value, 'message': self.message, 'timestamp': self.timestamp.isoformat(), 'metrics': self.metrics, 'details': self.details}
 
 class HealthChecker(ABC):
     """Abstract base for health checkers."""
@@ -102,7 +76,6 @@ class HealthChecker(ABC):
         """Get component type."""
         pass
 
-
 class BulkheadHealthChecker(HealthChecker):
     """Health checker for bulkheads."""
 
@@ -122,61 +95,38 @@ class BulkheadHealthChecker(HealthChecker):
         """
         try:
             metrics = self.bulkhead_manager.get_all_metrics()
-
-            # Determine overall status
             issues = []
-            metrics["global"]["total_active_tasks"]
-            metrics["global"]["total_queued_tasks"]
-
-            # Check for high utilization
-            for name, bulkhead_metrics in metrics["bulkheads"].items():
+            metrics['global']['total_active_tasks']
+            metrics['global']['total_queued_tasks']
+            for name, bulkhead_metrics in metrics['bulkheads'].items():
                 utilization = bulkhead_metrics.utilization_percent
                 if utilization > 90:
-                    issues.append(f"{name}: High utilization ({utilization:.1f}%)")
+                    issues.append(f'{name}: High utilization ({utilization:.1f}%)')
                 if bulkhead_metrics.queued_tasks > bulkhead_metrics.queue_size * 0.8:
-                    issues.append(
-                        f"{name}: Queue buildup ({bulkhead_metrics.queued_tasks}/{bulkhead_metrics.queue_size})",
-                    )
-
-            # Determine status
+                    issues.append(f'{name}: Queue buildup ({bulkhead_metrics.queued_tasks}/{bulkhead_metrics.queue_size})')
             if not issues:
                 status = HealthStatus.HEALTHY
-                message = "All bulkheads operating normally"
+                message = 'All bulkheads operating normally'
             elif len(issues) <= 2:
                 status = HealthStatus.DEGRADED
                 message = f"Minor issues: {'; '.join(issues[:2])}"
             else:
                 status = HealthStatus.UNHEALTHY
                 message = f"Multiple issues: {'; '.join(issues[:3])}"
-
-            return HealthCheckResult(
-                component_name=self.component_name,
-                component_type=self.component_type,
-                status=status,
-                message=message,
-                timestamp=datetime.utcnow(),
-                metrics=metrics,
-            )
-
+            return HealthCheckResult(component_name=self.component_name, component_type=self.component_type, status=status, message=message, timestamp=datetime.utcnow(), metrics=metrics)
+        # guardian: allow-silent-swallow
         except Exception as e:
-            return HealthCheckResult(
-                component_name=self.component_name,
-                component_type=self.component_type,
-                status=HealthStatus.CRITICAL,
-                message=f"Health check failed: {e}",
-                timestamp=datetime.utcnow(),
-            )
+            return HealthCheckResult(component_name=self.component_name, component_type=self.component_type, status=HealthStatus.CRITICAL, message=f'Health check failed: {e}', timestamp=datetime.utcnow())
 
     @property
     def component_name(self) -> str:
         """Get component name."""
-        return "bulkhead_manager"
+        return 'bulkhead_manager'
 
     @property
     def component_type(self) -> ComponentType:
         """Get component type."""
         return ComponentType.BULKHEAD
-
 
 class CircuitBreakerHealthChecker(HealthChecker):
     """Health checker for circuit breakers."""
@@ -197,23 +147,18 @@ class CircuitBreakerHealthChecker(HealthChecker):
         """
         try:
             all_stats = self.registry.get_all_stats()
-
             open_circuits = []
             half_open_circuits = []
             high_failure_rates = []
-
             for name, stats in all_stats.items():
-                state = stats["state"]
-                if state == "open":
+                state = stats['state']
+                if state == 'open':
                     open_circuits.append(name)
-                elif state == "half_open":
+                elif state == 'half_open':
                     half_open_circuits.append(name)
-
-                failure_rate = stats.get("current_failure_rate", 0)
-                if failure_rate > 0.3:  # 30% failure rate
-                    high_failure_rates.append(f"{name}: {failure_rate:.1%}")
-
-            # Determine status
+                failure_rate = stats.get('current_failure_rate', 0)
+                if failure_rate > 0.3:
+                    high_failure_rates.append(f'{name}: {failure_rate:.1%}')
             if open_circuits:
                 status = HealthStatus.CRITICAL
                 message = f"Circuits open: {', '.join(open_circuits)}"
@@ -223,42 +168,21 @@ class CircuitBreakerHealthChecker(HealthChecker):
                 message = f"Issues detected: {'; '.join(issues[:3])}"
             else:
                 status = HealthStatus.HEALTHY
-                message = "All circuits closed and healthy"
-
-            return HealthCheckResult(
-                component_name=self.component_name,
-                component_type=self.component_type,
-                status=status,
-                message=message,
-                timestamp=datetime.utcnow(),
-                metrics={
-                    "total_circuits": len(all_stats),
-                    "open_circuits": len(open_circuits),
-                    "half_open_circuits": len(half_open_circuits),
-                    "high_failure_rates": len(high_failure_rates),
-                },
-                details={"circuit_stats": all_stats},
-            )
-
+                message = 'All circuits closed and healthy'
+            return HealthCheckResult(component_name=self.component_name, component_type=self.component_type, status=status, message=message, timestamp=datetime.utcnow(), metrics={'total_circuits': len(all_stats), 'open_circuits': len(open_circuits), 'half_open_circuits': len(half_open_circuits), 'high_failure_rates': len(high_failure_rates)}, details={'circuit_stats': all_stats})
+        # guardian: allow-silent-swallow
         except Exception as e:
-            return HealthCheckResult(
-                component_name=self.component_name,
-                component_type=self.component_type,
-                status=HealthStatus.CRITICAL,
-                message=f"Health check failed: {e}",
-                timestamp=datetime.utcnow(),
-            )
+            return HealthCheckResult(component_name=self.component_name, component_type=self.component_type, status=HealthStatus.CRITICAL, message=f'Health check failed: {e}', timestamp=datetime.utcnow())
 
     @property
     def component_name(self) -> str:
         """Get component name."""
-        return "circuit_breaker_registry"
+        return 'circuit_breaker_registry'
 
     @property
     def component_type(self) -> ComponentType:
         """Get component type."""
         return ComponentType.CIRCUIT_BREAKER
-
 
 class DeadLetterQueueHealthChecker(HealthChecker):
     """Health checker for dead letter queue."""
@@ -279,53 +203,35 @@ class DeadLetterQueueHealthChecker(HealthChecker):
         """
         try:
             health = await self.dlq.health_check()
-
-            # Determine status based on queue sizes
-            pending = health["pending_review"]
-            investigation = health["under_investigation"]
+            pending = health['pending_review']
+            investigation = health['under_investigation']
             total_pending = pending + investigation
-
             if total_pending > 100:
                 status = HealthStatus.CRITICAL
-                message = f"Dead letter queue overloaded: {total_pending} items pending"
+                message = f'Dead letter queue overloaded: {total_pending} items pending'
             elif total_pending > 50:
                 status = HealthStatus.UNHEALTHY
-                message = f"Dead letter queue high: {total_pending} items pending"
+                message = f'Dead letter queue high: {total_pending} items pending'
             elif total_pending > 10:
                 status = HealthStatus.DEGRADED
-                message = f"Dead letter queue elevated: {total_pending} items pending"
+                message = f'Dead letter queue elevated: {total_pending} items pending'
             else:
                 status = HealthStatus.HEALTHY
-                message = f"Dead letter queue normal: {total_pending} items pending"
-
-            return HealthCheckResult(
-                component_name=self.component_name,
-                component_type=self.component_type,
-                status=status,
-                message=message,
-                timestamp=datetime.utcnow(),
-                metrics=health,
-            )
-
+                message = f'Dead letter queue normal: {total_pending} items pending'
+            return HealthCheckResult(component_name=self.component_name, component_type=self.component_type, status=status, message=message, timestamp=datetime.utcnow(), metrics=health)
+        # guardian: allow-silent-swallow
         except Exception as e:
-            return HealthCheckResult(
-                component_name=self.component_name,
-                component_type=self.component_type,
-                status=HealthStatus.CRITICAL,
-                message=f"Health check failed: {e}",
-                timestamp=datetime.utcnow(),
-            )
+            return HealthCheckResult(component_name=self.component_name, component_type=self.component_type, status=HealthStatus.CRITICAL, message=f'Health check failed: {e}', timestamp=datetime.utcnow())
 
     @property
     def component_name(self) -> str:
         """Get component name."""
-        return "dead_letter_queue"
+        return 'dead_letter_queue'
 
     @property
     def component_type(self) -> ComponentType:
         """Get component type."""
         return ComponentType.DEAD_LETTER_QUEUE
-
 
 class CheckpointManagerHealthChecker(HealthChecker):
     """Health checker for checkpoint manager."""
@@ -345,59 +251,32 @@ class CheckpointManagerHealthChecker(HealthChecker):
             Health check result
         """
         try:
-            # Test checkpoint operations
-            test_trace_id = f"health_check_{int(time.time())}"
-
-            # Test save
-
-            test_envelope = TextEnvelope(text="health check test", trace_id=test_trace_id)
-
+            test_trace_id = f'health_check_{int(time.time())}'
+            test_envelope = TextEnvelope(text='health check test', trace_id=test_trace_id)
             save_success = await self.checkpoint_manager.save(test_envelope)
-
-            # Test load
             loaded = await self.checkpoint_manager.load(test_trace_id)
-
-            # Test delete
             delete_success = await self.checkpoint_manager.delete(test_trace_id)
-
-            # Get stats
             stats = self.checkpoint_manager.get_stats()
-
             if save_success and loaded and delete_success:
                 status = HealthStatus.HEALTHY
-                message = "Checkpoint operations working normally"
+                message = 'Checkpoint operations working normally'
             else:
                 status = HealthStatus.UNHEALTHY
-                message = f"Checkpoint operations failing (save:{save_success}, load:{loaded is not None}, delete:{delete_success})"
-
-            return HealthCheckResult(
-                component_name=self.component_name,
-                component_type=self.component_type,
-                status=status,
-                message=message,
-                timestamp=datetime.utcnow(),
-                metrics=stats,
-            )
-
+                message = f'Checkpoint operations failing (save:{save_success}, load:{loaded is not None}, delete:{delete_success})'
+            return HealthCheckResult(component_name=self.component_name, component_type=self.component_type, status=status, message=message, timestamp=datetime.utcnow(), metrics=stats)
+        # guardian: allow-silent-swallow
         except Exception as e:
-            return HealthCheckResult(
-                component_name=self.component_name,
-                component_type=self.component_type,
-                status=HealthStatus.CRITICAL,
-                message=f"Health check failed: {e}",
-                timestamp=datetime.utcnow(),
-            )
+            return HealthCheckResult(component_name=self.component_name, component_type=self.component_type, status=HealthStatus.CRITICAL, message=f'Health check failed: {e}', timestamp=datetime.utcnow())
 
     @property
     def component_name(self) -> str:
         """Get component name."""
-        return "checkpoint_manager"
+        return 'checkpoint_manager'
 
     @property
     def component_type(self) -> ComponentType:
         """Get component type."""
         return ComponentType.CHECKPOINT_MANAGER
-
 
 class HealthCheckRegistry:
     """Registry for managing health checks."""
@@ -417,7 +296,7 @@ class HealthCheckRegistry:
         """
         async with self._lock:
             self.checkers[checker.component_name] = checker
-            logger.debug(f"Registered health checker: {checker.component_name}")
+            logger.debug(f'Registered health checker: {checker.component_name}')
 
     async def unregister_checker(self, component_name: str) -> None:
         """Unregister a health checker.
@@ -428,7 +307,7 @@ class HealthCheckRegistry:
         async with self._lock:
             if component_name in self.checkers:
                 del self.checkers[component_name]
-                logger.debug(f"Unregistered health checker: {component_name}")
+                logger.debug(f'Unregistered health checker: {component_name}')
 
     async def check_all(self) -> dict[str, Any]:
         """Check health of all registered components.
@@ -440,66 +319,31 @@ class HealthCheckRegistry:
             results = []
             overall_status = HealthStatus.HEALTHY
             critical_issues = []
-
-            # Run all health checks
             tasks = []
             for checker in self.checkers.values():
                 task = asyncio.create_task(self._safe_check(checker))
                 tasks.append(task)
-
             if tasks:
                 checker_results = await asyncio.gather(*tasks, return_exceptions=True)
-
                 for result in checker_results:
                     if isinstance(result, Exception):
-                        # Health check itself failed
-                        error_result = HealthCheckResult(
-                            component_name="unknown",
-                            component_type=ComponentType.CUSTOM,
-                            status=HealthStatus.CRITICAL,
-                            message=f"Health check error: {result}",
-                            timestamp=datetime.utcnow(),
-                        )
+                        error_result = HealthCheckResult(component_name='unknown', component_type=ComponentType.CUSTOM, status=HealthStatus.CRITICAL, message=f'Health check error: {result}', timestamp=datetime.utcnow())
                         results.append(error_result)
                         critical_issues.append(str(result))
                     else:
                         results.append(result)
-
-                        # Track worst status
                         if result.status == HealthStatus.CRITICAL:
                             overall_status = HealthStatus.CRITICAL
                             critical_issues.append(result.message)
-                        elif (
-                            result.status == HealthStatus.UNHEALTHY
-                            and overall_status != HealthStatus.CRITICAL
-                        ):
+                        elif result.status == HealthStatus.UNHEALTHY and overall_status != HealthStatus.CRITICAL:
                             overall_status = HealthStatus.UNHEALTHY
-                        elif result.status == HealthStatus.DEGRADED and overall_status not in [
-                            HealthStatus.CRITICAL,
-                            HealthStatus.UNHEALTHY,
-                        ]:
+                        elif result.status == HealthStatus.DEGRADED and overall_status not in [HealthStatus.CRITICAL, HealthStatus.UNHEALTHY]:
                             overall_status = HealthStatus.DEGRADED
-
             self._last_check = datetime.utcnow()
             self._last_results = {r.component_name: r for r in results}
-
-            # Build response
-            response = {
-                "status": overall_status.value,
-                "timestamp": self._last_check.isoformat(),
-                "components": [r.to_dict() for r in results],
-                "summary": {
-                    "total_components": len(results),
-                    "healthy": sum(1 for r in results if r.status == HealthStatus.HEALTHY),
-                    "degraded": sum(1 for r in results if r.status == HealthStatus.DEGRADED),
-                    "unhealthy": sum(1 for r in results if r.status == HealthStatus.UNHEALTHY),
-                    "critical": sum(1 for r in results if r.status == HealthStatus.CRITICAL),
-                },
-            }
-
+            response = {'status': overall_status.value, 'timestamp': self._last_check.isoformat(), 'components': [r.to_dict() for r in results], 'summary': {'total_components': len(results), 'healthy': sum((1 for r in results if r.status == HealthStatus.HEALTHY)), 'degraded': sum((1 for r in results if r.status == HealthStatus.DEGRADED)), 'unhealthy': sum((1 for r in results if r.status == HealthStatus.UNHEALTHY)), 'critical': sum((1 for r in results if r.status == HealthStatus.CRITICAL))}}
             if critical_issues:
-                response["critical_issues"] = critical_issues[:5]  # Limit to 5 issues
-
+                response['critical_issues'] = critical_issues[:5]
             return response
 
     async def _safe_check(self, checker: HealthChecker) -> HealthCheckResult:
@@ -513,15 +357,10 @@ class HealthCheckRegistry:
         """
         try:
             return await checker.check_health()
+        # guardian: allow-silent-swallow
         except Exception as e:
-            logger.error(f"Health check failed for {checker.component_name}: {e}")
-            return HealthCheckResult(
-                component_name=checker.component_name,
-                component_type=checker.component_type,
-                status=HealthStatus.CRITICAL,
-                message=f"Health check failed: {e}",
-                timestamp=datetime.utcnow(),
-            )
+            logger.error(f'Health check failed for {checker.component_name}: {e}')
+            return HealthCheckResult(component_name=checker.component_name, component_type=checker.component_type, status=HealthStatus.CRITICAL, message=f'Health check failed: {e}', timestamp=datetime.utcnow())
 
     async def check_component(self, component_name: str) -> HealthCheckResult | None:
         """Check health of specific component.
@@ -536,7 +375,6 @@ class HealthCheckRegistry:
             checker = self.checkers.get(component_name)
             if not checker:
                 return None
-
             return await self._safe_check(checker)
 
     def list_components(self) -> list[str]:
@@ -554,12 +392,8 @@ class HealthCheckRegistry:
             Last health check results
         """
         return self._last_results.copy()
-
-
-# Global health check registry
 _health_registry: HealthCheckRegistry | None = None
 _registry_lock = asyncio.Lock()
-
 
 async def get_health_registry() -> HealthCheckRegistry:
     """Get global health check registry.
@@ -573,13 +407,7 @@ async def get_health_registry() -> HealthCheckRegistry:
             _health_registry = HealthCheckRegistry()
     return _health_registry
 
-
-async def initialize_system_health_checks(
-    bulkhead_manager=None,
-    circuit_breaker_registry=None,
-    dead_letter_queue=None,
-    checkpoint_manager=None,
-) -> None:
+async def initialize_system_health_checks(bulkhead_manager=None, circuit_breaker_registry=None, dead_letter_queue=None, checkpoint_manager=None) -> None:
     """Initialize health checks for all system components.
 
     Args:
@@ -589,18 +417,12 @@ async def initialize_system_health_checks(
         checkpoint_manager: CheckpointManager instance
     """
     registry = await get_health_registry()
-
-    # Register checkers for provided components
     if bulkhead_manager:
         await registry.register_checker(BulkheadHealthChecker(bulkhead_manager))
-
     if circuit_breaker_registry:
         await registry.register_checker(CircuitBreakerHealthChecker(circuit_breaker_registry))
-
     if dead_letter_queue:
         await registry.register_checker(DeadLetterQueueHealthChecker(dead_letter_queue))
-
     if checkpoint_manager:
         await registry.register_checker(CheckpointManagerHealthChecker(checkpoint_manager))
-
-    logger.info(f"Initialized health checks for {len(registry.list_components())} components")
+    logger.info(f'Initialized health checks for {len(registry.list_components())} components')

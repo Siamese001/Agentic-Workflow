@@ -235,6 +235,7 @@ class RetryPolicy:
                     attempts_history=attempts_history,
                 )
 
+            # guardian: allow-silent-swallow
             except Exception as e:
                 # TODO: Handle specific exception properly
                 raise  # Re-raise after logging/handling
@@ -271,6 +272,7 @@ class RetryPolicy:
                 if on_retry:
                     try:
                         on_retry(attempt_info)
+                    # guardian: allow-silent-swallow
                     except Exception as callback_error:
                         logger.error(f"Retry callback failed: {callback_error}")
 

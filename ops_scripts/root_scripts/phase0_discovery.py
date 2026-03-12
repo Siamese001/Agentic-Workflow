@@ -61,6 +61,7 @@ def compute_expected_test_path(module_path: pathlib.Path) -> pathlib.Path:
 
     module_str = str(module_path)
 
+    # guardian: allow-path-string
     if module_str.startswith(AGENTIC_CORE_DIR) or module_str.startswith(AGENTIC_CORE_DIR + "\\"):
         relative_parts = module_path.parts
         test_parts = [TESTS_DIR] + list(relative_parts[:-1]) + [f"test_{module_path.name}"]

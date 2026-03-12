@@ -10,29 +10,9 @@ Phase 4 Optimization - Native Python Utilities:
 - math_operations.py: Mathematical operations and scoring
 - json_parser.py: JSON parsing and manipulation
 """
-
 from __future__ import annotations
-
 from apps_shared.utils.json_parser_validator_util import JsonParser, ParseResult
 from apps_shared.utils.math_operations_util import MathProcessor, ScoreResult
 from apps_shared.utils.text_processing_validator_util import TextMatch, TextProcessor
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-# Lazy imports to avoid circular dependencies
-__all__ = [
-    "TextProcessor",
-    "TextMatch",
-    "MathProcessor",
-    "ScoreResult",
-    "JsonParser",
-    "ParseResult",
-]
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+__all__ = ['TextProcessor', 'TextMatch', 'MathProcessor', 'ScoreResult', 'JsonParser', 'ParseResult']

@@ -5,45 +5,15 @@ semantic clocks, not OS wall-clock (datetime.now, time.time, etc.).
 
 Scans DETERMINISM_ROOTS for wall-clock API calls; exits non-zero on violation.
 """
-
 from __future__ import annotations
-
 import ast
 import sys
 from pathlib import Path
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 REPO_ROOT = Path(__file__).resolve().parents[2]
-
-# Scoped to ONLY the pure determinism engine files (REQ-111/REQ-114).
-# Other directories (L0_routing scripts, mixins, system_learning engines)
-# legitimately use wall-clock for audit timestamps, performance metrics,
-# TTL enforcement, and circuit-breaker timeouts — those are NOT covered
-# by this gate.  The gate focuses on files that produce canonical replay
-# digests and deterministic IDs where wall-clock is a correctness bug.
-DETERMINISM_ROOTS = [
-    "agentic_core/L2_execution/determinism",
-]
-
+DETERMINISM_ROOTS = ['agentic_core/L2_execution/determinism']
 ALLOWED_PATHS: set[str] = set()
-
-WALL_CLOCK_CALLS = {
-    ("time", "time"),
-    ("time", "perf_counter"),
-    ("time", "monotonic"),
-    ("datetime", "now"),
-    ("datetime", "utcnow"),
-}
-
+WALL_CLOCK_CALLS = {('time', 'time'), ('time', 'perf_counter'), ('time', 'monotonic'), ('datetime', 'now'), ('datetime', 'utcnow')}
 
 def _is_wall_clock(node: ast.Call) -> bool:
     """Return True if node is a known wall-clock API call."""
@@ -54,32 +24,29 @@ def _is_wall_clock(node: ast.Call) -> bool:
             return pair in WALL_CLOCK_CALLS
     return False
 
-
 def main() -> int:
     violations: list[str] = []
     for root in DETERMINISM_ROOTS:
         root_path = REPO_ROOT / root
         if not root_path.exists():
             continue
-        for path in root_path.rglob("*.py"):
+        for path in root_path.rglob('*.py'):
             rel = path.relative_to(REPO_ROOT).as_posix()
             if rel in ALLOWED_PATHS:
                 continue
             try:
-                tree = ast.parse(path.read_text(encoding="utf-8", errors="replace"))
+                tree = ast.parse(path.read_text(encoding='utf-8', errors='replace'))
             except SyntaxError:
                 continue
             for node in ast.walk(tree):
                 if isinstance(node, ast.Call) and _is_wall_clock(node):
                     violations.append(f"{rel}:{node.lineno}: wall-clock call '{ast.unparse(node.func)}'")
     if violations:
-        print(f"FAIL: {len(violations)} wall-clock usage(s) in determinism paths:")
+        print(f'FAIL: {len(violations)} wall-clock usage(s) in determinism paths:')
         for v in violations:
-            print(f"  {v}")
+            print(f'  {v}')
         return 1
-    print("OK: no wall-clock usage in determinism paths")
+    print('OK: no wall-clock usage in determinism paths')
     return 0
-
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     sys.exit(main())

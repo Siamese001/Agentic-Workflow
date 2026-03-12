@@ -7,70 +7,27 @@ for Qwen 7B / 14B / Gemini-2.5-Pro tiered routing.
 
 No GPU libraries. No torch/vllm imports. L2 purity preserved.
 """
-
 from __future__ import annotations
-
 from dataclasses import dataclass
 from enum import Enum
 from typing import Literal
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-# ---------------------------------------------------------------------------
-# WAVE 1.1 — Gateway-level hard caps (constants, not env-derived)
-# ---------------------------------------------------------------------------
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 VLLM_MAX_TOKENS_DEFAULT: int = 600
 VLLM_MAX_TOKENS_EXTENDED: int = 1200
 VLLM_MAX_TOKENS_ABSOLUTE: int = 1200
 SAFETY_MARGIN_TOKENS: int = 256
-
-# Tokenizer family pinned to Qwen2.5 family (chars-per-token ratio)
-# Qwen2.5 uses a BPE tokenizer with ~3.5 chars/token for English.
-# Conservative estimate: 3 chars/token to avoid under-counting.
 _QWEN_CHARS_PER_TOKEN: int = 3
-
-# Max model context lengths (tokens) per tier
 QWEN_7B_MAX_MODEL_LEN: int = 32768
 QWEN_14B_MAX_MODEL_LEN: int = 32768
 
-# ---------------------------------------------------------------------------
-# WAVE 1.2 — Task-class → output-cap mapping
-# ---------------------------------------------------------------------------
-
-
 class TaskClass(str, Enum):
     """Authoritative task class taxonomy for vLLM output cap enforcement."""
-
-    HEALING_JSON_ARTIFACT = "healing_json_artifact"
-    PATCH_SUGGESTION = "patch_suggestion"
-    MULTI_FILE_SUMMARY = "multi_file_summary"
-    UNDEFINED = "undefined"
-
-
-# Immutable mapping: task_class → max_output_tokens
-# Any undefined class routes to Gemini-2.5-Pro (not a local cap).
-TASK_CLASS_OUTPUT_CAPS: dict[str, int] = {
-    TaskClass.HEALING_JSON_ARTIFACT.value: 300,
-    TaskClass.PATCH_SUGGESTION.value: 600,
-    TaskClass.MULTI_FILE_SUMMARY.value: 1200,  # whitelisted only
-}
-
-# Whitelist for extended (1200-token) task classes
-EXTENDED_CAP_WHITELIST: frozenset[str] = frozenset(
-    {
-        TaskClass.MULTI_FILE_SUMMARY.value,
-    }
-)
-
+    HEALING_JSON_ARTIFACT = 'healing_json_artifact'
+    PATCH_SUGGESTION = 'patch_suggestion'
+    MULTI_FILE_SUMMARY = 'multi_file_summary'
+    UNDEFINED = 'undefined'
+TASK_CLASS_OUTPUT_CAPS: dict[str, int] = {TaskClass.HEALING_JSON_ARTIFACT.value: 300, TaskClass.PATCH_SUGGESTION.value: 600, TaskClass.MULTI_FILE_SUMMARY.value: 1200}
+EXTENDED_CAP_WHITELIST: frozenset[str] = frozenset({TaskClass.MULTI_FILE_SUMMARY.value})
 
 def get_output_cap(task_class: str) -> int | None:
     """Return the output token cap for a task class.
@@ -86,18 +43,8 @@ def get_output_cap(task_class: str) -> int | None:
     if cap is None:
         return None
     if cap > VLLM_MAX_TOKENS_ABSOLUTE:
-        raise ValueError(
-            f"Task class {task_class!r} cap {cap} exceeds "
-            f"VLLM_MAX_TOKENS_ABSOLUTE={VLLM_MAX_TOKENS_ABSOLUTE}. "
-            "Route to Gemini-2.5-Pro."
-        )
+        raise ValueError(f'Task class {task_class!r} cap {cap} exceeds VLLM_MAX_TOKENS_ABSOLUTE={VLLM_MAX_TOKENS_ABSOLUTE}. Route to Gemini-2.5-Pro.')
     return cap
-
-
-# ---------------------------------------------------------------------------
-# WAVE 1.3 — Hard ceiling enforcement
-# ---------------------------------------------------------------------------
-
 
 def enforce_output_cap(requested_tokens: int, task_class: str) -> int:
     """Enforce hard ceiling on requested output tokens.
@@ -115,22 +62,11 @@ def enforce_output_cap(requested_tokens: int, task_class: str) -> int:
     """
     cap = get_output_cap(task_class)
     if cap is None:
-        raise VLLMOutputCapExceeded(
-            task_class=task_class,
-            requested=requested_tokens,
-            cap=0,
-            reason="undefined_task_class_requires_gemini_escalation",
-        )
+        raise VLLMOutputCapExceeded(task_class=task_class, requested=requested_tokens, cap=0, reason='undefined_task_class_requires_gemini_escalation')
     effective = min(requested_tokens, cap)
     if effective > VLLM_MAX_TOKENS_ABSOLUTE:
-        raise VLLMOutputCapExceeded(
-            task_class=task_class,
-            requested=requested_tokens,
-            cap=VLLM_MAX_TOKENS_ABSOLUTE,
-            reason="exceeds_absolute_ceiling",
-        )
+        raise VLLMOutputCapExceeded(task_class=task_class, requested=requested_tokens, cap=VLLM_MAX_TOKENS_ABSOLUTE, reason='exceeds_absolute_ceiling')
     return effective
-
 
 class VLLMOutputCapExceeded(Exception):
     """Raised when a local vLLM request would exceed the output cap.
@@ -143,16 +79,7 @@ class VLLMOutputCapExceeded(Exception):
         self.requested = requested
         self.cap = cap
         self.reason = reason
-        super().__init__(
-            f"VLLMOutputCapExceeded: task_class={task_class!r}, "
-            f"requested={requested}, cap={cap}, reason={reason}"
-        )
-
-
-# ---------------------------------------------------------------------------
-# WAVE 1.4 — Deterministic tokenizer binding
-# ---------------------------------------------------------------------------
-
+        super().__init__(f'VLLMOutputCapExceeded: task_class={task_class!r}, requested={requested}, cap={cap}, reason={reason}')
 
 def estimate_tokens_qwen(text: str) -> int:
     """Deterministic token estimation for Qwen2.5 tokenizer family.
@@ -171,23 +98,15 @@ def estimate_tokens_qwen(text: str) -> int:
         return 0
     return max(1, len(text) // _QWEN_CHARS_PER_TOKEN)
 
-
-# ---------------------------------------------------------------------------
-# WAVE 2 — Preflight Token Budget Gate types
-# ---------------------------------------------------------------------------
-
-
 class VLLMFailureType(str, Enum):
     """Failure classification for vLLM routing decisions."""
-
-    TOKEN_BUDGET_EXCEEDED = "TOKEN_BUDGET_EXCEEDED"
-    CIRCUIT_BREAKER_OPEN = "CIRCUIT_BREAKER_OPEN"
-    QUEUE_OVERFLOW = "QUEUE_OVERFLOW"
-    GPU_HEALTH_FAILED = "GPU_HEALTH_FAILED"
-    SCHEMA_VALIDATION_FAILED = "SCHEMA_VALIDATION_FAILED"
-    LOW_CONFIDENCE = "LOW_CONFIDENCE"
-    UNDEFINED_TASK_CLASS = "UNDEFINED_TASK_CLASS"
-
+    TOKEN_BUDGET_EXCEEDED = 'TOKEN_BUDGET_EXCEEDED'
+    CIRCUIT_BREAKER_OPEN = 'CIRCUIT_BREAKER_OPEN'
+    QUEUE_OVERFLOW = 'QUEUE_OVERFLOW'
+    GPU_HEALTH_FAILED = 'GPU_HEALTH_FAILED'
+    SCHEMA_VALIDATION_FAILED = 'SCHEMA_VALIDATION_FAILED'
+    LOW_CONFIDENCE = 'LOW_CONFIDENCE'
+    UNDEFINED_TASK_CLASS = 'UNDEFINED_TASK_CLASS'
 
 @dataclass(frozen=True)
 class VLLMPreflightResult:
@@ -195,7 +114,6 @@ class VLLMPreflightResult:
 
     Produced before any local vLLM call. Immutable.
     """
-
     prompt_tokens_estimated: int
     max_output_tokens_requested: int
     max_model_len_configured: int
@@ -206,19 +124,11 @@ class VLLMPreflightResult:
 
     def __post_init__(self) -> None:
         if self.token_budget_ok and self.route_to_gemini:
-            raise ValueError(
-                "VLLMPreflightResult: token_budget_ok=True and route_to_gemini=True "
-                "is contradictory — budget OK should not force Gemini escalation."
-            )
+            raise ValueError('VLLMPreflightResult: token_budget_ok=True and route_to_gemini=True is contradictory — budget OK should not force Gemini escalation.')
         if not self.token_budget_ok and self.failure_type is None:
-            raise ValueError("VLLMPreflightResult: token_budget_ok=False requires failure_type.")
+            raise ValueError('VLLMPreflightResult: token_budget_ok=False requires failure_type.')
 
-
-def run_preflight_budget_check(
-    prompt: str,
-    task_class: str,
-    max_model_len: int,
-) -> VLLMPreflightResult:
+def run_preflight_budget_check(prompt: str, task_class: str, max_model_len: int) -> VLLMPreflightResult:
     """Execute preflight token budget gate.
 
     Algorithm (per spec):
@@ -240,52 +150,20 @@ def run_preflight_budget_check(
         VLLMPreflightResult with all telemetry fields populated.
     """
     prompt_tokens = estimate_tokens_qwen(prompt)
-
-    # Determine output cap — undefined class → Gemini escalation
     cap = get_output_cap(task_class)
     if cap is None:
-        return VLLMPreflightResult(
-            prompt_tokens_estimated=prompt_tokens,
-            max_output_tokens_requested=0,
-            max_model_len_configured=max_model_len,
-            token_budget_ok=False,
-            budget_margin_tokens=0,
-            failure_type=VLLMFailureType.UNDEFINED_TASK_CLASS,
-            route_to_gemini=True,
-        )
-
+        return VLLMPreflightResult(prompt_tokens_estimated=prompt_tokens, max_output_tokens_requested=0, max_model_len_configured=max_model_len, token_budget_ok=False, budget_margin_tokens=0, failure_type=VLLMFailureType.UNDEFINED_TASK_CLASS, route_to_gemini=True)
     required = prompt_tokens + cap
     available = max_model_len - SAFETY_MARGIN_TOKENS
     margin = available - required
     budget_ok = required <= available
-
-    return VLLMPreflightResult(
-        prompt_tokens_estimated=prompt_tokens,
-        max_output_tokens_requested=cap,
-        max_model_len_configured=max_model_len,
-        token_budget_ok=budget_ok,
-        budget_margin_tokens=margin,
-        failure_type=None if budget_ok else VLLMFailureType.TOKEN_BUDGET_EXCEEDED,
-        route_to_gemini=not budget_ok,
-    )
-
-
-# ---------------------------------------------------------------------------
-# WAVE 3 — Tiered Local Routing types
-# ---------------------------------------------------------------------------
-
-LocalTier = Literal["local_fast", "local_strong", "gemini_backstop"]
-
-# Model identifiers — pinned, no env-derived overrides
-QWEN_7B_MODEL_ID: str = "Qwen/Qwen2.5-7B-Instruct"
-QWEN_14B_MODEL_ID: str = "Qwen/Qwen2.5-14B-Instruct"
-GEMINI_25_PRO_MODEL_ID: str = "gemini-2.5-pro"
-
-# Severity levels that force 14B tier
-HIGH_SEVERITY_LEVELS: frozenset[str] = frozenset({"high"})
-# Severity levels that allow 7B tier
-FAST_TIER_SEVERITY_LEVELS: frozenset[str] = frozenset({"low", "medium"})
-
+    return VLLMPreflightResult(prompt_tokens_estimated=prompt_tokens, max_output_tokens_requested=cap, max_model_len_configured=max_model_len, token_budget_ok=budget_ok, budget_margin_tokens=margin, failure_type=None if budget_ok else VLLMFailureType.TOKEN_BUDGET_EXCEEDED, route_to_gemini=not budget_ok)
+LocalTier = Literal['local_fast', 'local_strong', 'gemini_backstop']
+QWEN_7B_MODEL_ID: str = 'Qwen/Qwen2.5-7B-Instruct'
+QWEN_14B_MODEL_ID: str = 'Qwen/Qwen2.5-14B-Instruct'
+GEMINI_25_PRO_MODEL_ID: str = 'gemini-2.5-pro'
+HIGH_SEVERITY_LEVELS: frozenset[str] = frozenset({'high'})
+FAST_TIER_SEVERITY_LEVELS: frozenset[str] = frozenset({'low', 'medium'})
 
 @dataclass(frozen=True)
 class TieredRoutingDecision:
@@ -293,23 +171,13 @@ class TieredRoutingDecision:
 
     Produced after preflight check passes.
     """
-
     tier: LocalTier
     model_id: str
     reason: str
     preflight: VLLMPreflightResult
     failure_type: VLLMFailureType | None
 
-
-def select_local_tier(
-    preflight: VLLMPreflightResult,
-    severity: str,
-    circuit_breaker_open: bool = False,
-    queue_overflow: bool = False,
-    gpu_health_failed: bool = False,
-    schema_validation_failed: bool = False,
-    confidence_below_threshold: bool = False,
-) -> TieredRoutingDecision:
+def select_local_tier(preflight: VLLMPreflightResult, severity: str, circuit_breaker_open: bool=False, queue_overflow: bool=False, gpu_health_failed: bool=False, schema_validation_failed: bool=False, confidence_below_threshold: bool=False) -> TieredRoutingDecision:
     """Select local execution tier per routing invariants.
 
     Routing invariants (in priority order):
@@ -338,108 +206,19 @@ def select_local_tier(
     Returns:
         TieredRoutingDecision with tier, model_id, and reason.
     """
-    # Invariant 1: token budget
     if not preflight.token_budget_ok:
-        return TieredRoutingDecision(
-            tier="gemini_backstop",
-            model_id=GEMINI_25_PRO_MODEL_ID,
-            reason="token_budget_exceeded",
-            preflight=preflight,
-            failure_type=VLLMFailureType.TOKEN_BUDGET_EXCEEDED,
-        )
-
-    # Invariant 2: circuit breaker
+        return TieredRoutingDecision(tier='gemini_backstop', model_id=GEMINI_25_PRO_MODEL_ID, reason='token_budget_exceeded', preflight=preflight, failure_type=VLLMFailureType.TOKEN_BUDGET_EXCEEDED)
     if circuit_breaker_open:
-        return TieredRoutingDecision(
-            tier="gemini_backstop",
-            model_id=GEMINI_25_PRO_MODEL_ID,
-            reason="circuit_breaker_open",
-            preflight=preflight,
-            failure_type=VLLMFailureType.CIRCUIT_BREAKER_OPEN,
-        )
-
-    # Invariant 3: queue overflow
+        return TieredRoutingDecision(tier='gemini_backstop', model_id=GEMINI_25_PRO_MODEL_ID, reason='circuit_breaker_open', preflight=preflight, failure_type=VLLMFailureType.CIRCUIT_BREAKER_OPEN)
     if queue_overflow:
-        return TieredRoutingDecision(
-            tier="gemini_backstop",
-            model_id=GEMINI_25_PRO_MODEL_ID,
-            reason="queue_overflow",
-            preflight=preflight,
-            failure_type=VLLMFailureType.QUEUE_OVERFLOW,
-        )
-
-    # Invariant 4: GPU health
+        return TieredRoutingDecision(tier='gemini_backstop', model_id=GEMINI_25_PRO_MODEL_ID, reason='queue_overflow', preflight=preflight, failure_type=VLLMFailureType.QUEUE_OVERFLOW)
     if gpu_health_failed:
-        return TieredRoutingDecision(
-            tier="gemini_backstop",
-            model_id=GEMINI_25_PRO_MODEL_ID,
-            reason="gpu_health_failed",
-            preflight=preflight,
-            failure_type=VLLMFailureType.GPU_HEALTH_FAILED,
-        )
-
-    # Invariant 5: schema/semantic validation
+        return TieredRoutingDecision(tier='gemini_backstop', model_id=GEMINI_25_PRO_MODEL_ID, reason='gpu_health_failed', preflight=preflight, failure_type=VLLMFailureType.GPU_HEALTH_FAILED)
     if schema_validation_failed:
-        return TieredRoutingDecision(
-            tier="gemini_backstop",
-            model_id=GEMINI_25_PRO_MODEL_ID,
-            reason="schema_validation_failed",
-            preflight=preflight,
-            failure_type=VLLMFailureType.SCHEMA_VALIDATION_FAILED,
-        )
-
-    # Invariant 6: confidence
+        return TieredRoutingDecision(tier='gemini_backstop', model_id=GEMINI_25_PRO_MODEL_ID, reason='schema_validation_failed', preflight=preflight, failure_type=VLLMFailureType.SCHEMA_VALIDATION_FAILED)
     if confidence_below_threshold:
-        return TieredRoutingDecision(
-            tier="gemini_backstop",
-            model_id=GEMINI_25_PRO_MODEL_ID,
-            reason="low_confidence",
-            preflight=preflight,
-            failure_type=VLLMFailureType.LOW_CONFIDENCE,
-        )
-
-    # Invariant 7: severity-based local tier selection
+        return TieredRoutingDecision(tier='gemini_backstop', model_id=GEMINI_25_PRO_MODEL_ID, reason='low_confidence', preflight=preflight, failure_type=VLLMFailureType.LOW_CONFIDENCE)
     if severity in HIGH_SEVERITY_LEVELS:
-        return TieredRoutingDecision(
-            tier="local_strong",
-            model_id=QWEN_14B_MODEL_ID,
-            reason="high_severity_local_strong",
-            preflight=preflight,
-            failure_type=None,
-        )
-
-    # Default: low/medium severity → 7B fast tier
-    return TieredRoutingDecision(
-        tier="local_fast",
-        model_id=QWEN_7B_MODEL_ID,
-        reason="low_medium_severity_local_fast",
-        preflight=preflight,
-        failure_type=None,
-    )
-
-
-__all__ = [
-    "EXTENDED_CAP_WHITELIST",
-    "FAST_TIER_SEVERITY_LEVELS",
-    "GEMINI_25_PRO_MODEL_ID",
-    "HIGH_SEVERITY_LEVELS",
-    "QWEN_14B_MAX_MODEL_LEN",
-    "QWEN_14B_MODEL_ID",
-    "QWEN_7B_MAX_MODEL_LEN",
-    "QWEN_7B_MODEL_ID",
-    "SAFETY_MARGIN_TOKENS",
-    "TASK_CLASS_OUTPUT_CAPS",
-    "VLLM_MAX_TOKENS_ABSOLUTE",
-    "VLLM_MAX_TOKENS_DEFAULT",
-    "VLLM_MAX_TOKENS_EXTENDED",
-    "TaskClass",
-    "TieredRoutingDecision",
-    "VLLMFailureType",
-    "VLLMOutputCapExceeded",
-    "VLLMPreflightResult",
-    "enforce_output_cap",
-    "estimate_tokens_qwen",
-    "get_output_cap",
-    "run_preflight_budget_check",
-    "select_local_tier",
-]
+        return TieredRoutingDecision(tier='local_strong', model_id=QWEN_14B_MODEL_ID, reason='high_severity_local_strong', preflight=preflight, failure_type=None)
+    return TieredRoutingDecision(tier='local_fast', model_id=QWEN_7B_MODEL_ID, reason='low_medium_severity_local_fast', preflight=preflight, failure_type=None)
+__all__ = ['EXTENDED_CAP_WHITELIST', 'FAST_TIER_SEVERITY_LEVELS', 'GEMINI_25_PRO_MODEL_ID', 'HIGH_SEVERITY_LEVELS', 'QWEN_14B_MAX_MODEL_LEN', 'QWEN_14B_MODEL_ID', 'QWEN_7B_MAX_MODEL_LEN', 'QWEN_7B_MODEL_ID', 'SAFETY_MARGIN_TOKENS', 'TASK_CLASS_OUTPUT_CAPS', 'VLLM_MAX_TOKENS_ABSOLUTE', 'VLLM_MAX_TOKENS_DEFAULT', 'VLLM_MAX_TOKENS_EXTENDED', 'TaskClass', 'TieredRoutingDecision', 'VLLMFailureType', 'VLLMOutputCapExceeded', 'VLLMPreflightResult', 'enforce_output_cap', 'estimate_tokens_qwen', 'get_output_cap', 'run_preflight_budget_check', 'select_local_tier']

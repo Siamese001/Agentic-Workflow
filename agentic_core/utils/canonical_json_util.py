@@ -16,23 +16,11 @@ Normalization rules (identical to canonical_serializer_util):
   3. ensure_ascii=True
   4. UTF-8 byte encoding only
 """
-
 from __future__ import annotations
-
 import hashlib
 import json
 from typing import Any
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 class CanonicalJSON:
     """Single source of truth for deterministic JSON serialization."""
@@ -40,22 +28,15 @@ class CanonicalJSON:
     @staticmethod
     def serialize(obj: Any) -> str:
         """Return deterministic JSON string (sorted keys, compact separators)."""
-        return json.dumps(
-            obj,
-            sort_keys=True,
-            separators=(",", ":"),
-            ensure_ascii=True,
-        )
+        return json.dumps(obj, sort_keys=True, separators=(',', ':'), ensure_ascii=True)
 
     @staticmethod
     def serialize_bytes(obj: Any) -> bytes:
         """Return deterministic UTF-8 bytes for HMAC/hash computation."""
-        return CanonicalJSON.serialize(obj).encode("utf-8")
+        return CanonicalJSON.serialize(obj).encode('utf-8')
 
     @staticmethod
     def serialize_hash(obj: Any) -> str:
         """Return SHA-256 hex digest of canonical serialization."""
         return hashlib.sha256(CanonicalJSON.serialize_bytes(obj)).hexdigest()
-
-
-__all__ = ["CanonicalJSON"]
+__all__ = ['CanonicalJSON']

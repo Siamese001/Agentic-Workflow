@@ -20,29 +20,12 @@ Usage::
 The returned digest is a 64-hex SHA-256 string.  The function is deterministic:
 identical inputs always produce the identical output.
 """
-
 from __future__ import annotations
-
 import hashlib
 import json
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-def compute_meta_learning_state_digest(
-    *,
-    faiss_index_digests: dict[str, str],
-    strategy_weights_digest: str,
-    embedding_model_version: str,
-) -> str:
+def compute_meta_learning_state_digest(*, faiss_index_digests: dict[str, str], strategy_weights_digest: str, embedding_model_version: str) -> str:
     """Compute a single deterministic digest covering the full meta-learning state.
 
     Args:
@@ -63,27 +46,11 @@ def compute_meta_learning_state_digest(
         ValueError: If ``faiss_index_digests`` is empty.
     """
     if not faiss_index_digests:
-        raise ValueError("faiss_index_digests must contain at least one entry")
-
-    binding = json.dumps(
-        {
-            "embedding_model_version": embedding_model_version,
-            "faiss_index_digests": dict(sorted(faiss_index_digests.items())),
-            "strategy_weights_digest": strategy_weights_digest,
-        },
-        separators=(",", ":"),
-        sort_keys=True,
-        ensure_ascii=True,
-    ).encode("ascii")
+        raise ValueError('faiss_index_digests must contain at least one entry')
+    binding = json.dumps({'embedding_model_version': embedding_model_version, 'faiss_index_digests': dict(sorted(faiss_index_digests.items())), 'strategy_weights_digest': strategy_weights_digest}, separators=(',', ':'), sort_keys=True, ensure_ascii=True).encode('ascii')
     return hashlib.sha256(binding).hexdigest()
 
-
-def emit_meta_learning_state_digest(
-    *,
-    faiss_index_digests: dict[str, str],
-    strategy_weights_digest: str,
-    embedding_model_version: str,
-) -> str:
+def emit_meta_learning_state_digest(*, faiss_index_digests: dict[str, str], strategy_weights_digest: str, embedding_model_version: str) -> str:
     """Compute and print ``META_LEARNING_STATE_DIGEST`` to stdout.
 
     Wrapper around :func:`compute_meta_learning_state_digest` that also prints
@@ -93,16 +60,7 @@ def emit_meta_learning_state_digest(
     Returns:
         The 64-hex digest string (same as the printed value).
     """
-    digest = compute_meta_learning_state_digest(
-        faiss_index_digests=faiss_index_digests,
-        strategy_weights_digest=strategy_weights_digest,
-        embedding_model_version=embedding_model_version,
-    )
-    print(f"META_LEARNING_STATE_DIGEST: {digest}")
+    digest = compute_meta_learning_state_digest(faiss_index_digests=faiss_index_digests, strategy_weights_digest=strategy_weights_digest, embedding_model_version=embedding_model_version)
+    print(f'META_LEARNING_STATE_DIGEST: {digest}')
     return digest
-
-
-__all__ = [
-    "compute_meta_learning_state_digest",
-    "emit_meta_learning_state_digest",
-]
+__all__ = ['compute_meta_learning_state_digest', 'emit_meta_learning_state_digest']

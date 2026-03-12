@@ -2,26 +2,12 @@
 Resume History Engine - Retrieve resume history
 Refactored from request_retrieve_resume_history.py
 """
-
 from __future__ import annotations
-
 import logging
 from typing import Any
-
 from apps_rg.engines.base_rg_engine import BaseRGEngine
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 Logger = logging.getLogger(__name__)
-
 
 class ResumeHistoryEngine(BaseRGEngine):
     """
@@ -29,27 +15,20 @@ class ResumeHistoryEngine(BaseRGEngine):
     """
 
     def __init__(self, ctx: Any) -> None:
-        super().__init__(ctx, node_id="RETRIEVAL.RESUME_HISTORY")
+        super().__init__(ctx, node_id='RETRIEVAL.RESUME_HISTORY')
 
-    async def execute(self, user_id: str, filters: dict[str, Any] = None) -> list[dict[str, Any]]:
+    async def execute(self, user_id: str, filters: dict[str, Any]=None) -> list[dict[str, Any]]:
         """
         Retrieve resume history for user.
         """
-        self._mcp_audit("resume_history_retrieval", {"user_id": user_id})
-
-        # Placeholder for database query
+        self._mcp_audit('resume_history_retrieval', {'user_id': user_id})
         history = []
-
-        if hasattr(self.ctx, "resume_history"):
+        if hasattr(self.ctx, 'resume_history'):
             history = self.ctx.resume_history.get(user_id, [])
-
-        # Apply filters
         if filters:
-            if filters.get("date_from"):
-                history = [h for h in history if h.get("created_date", "") >= filters["date_from"]]
-
-            if filters.get("version"):
-                history = [h for h in history if h.get("version") == filters["version"]]
-
-        self.record_pass(f"Retrieved {len(history)} resume versions")
+            if filters.get('date_from'):
+                history = [h for h in history if h.get('created_date', '') >= filters['date_from']]
+            if filters.get('version'):
+                history = [h for h in history if h.get('version') == filters['version']]
+        self.record_pass(f'Retrieved {len(history)} resume versions')
         return history

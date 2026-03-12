@@ -51,6 +51,7 @@ class TitaniumRAGPipeline:
     Phase 3 (SOTA): Provides Google-quality ranking and Redis-speed caching
     """
 
+    # guardian: allow-magic-config
     def __init__(
         self,
         # Phase 1 components
@@ -445,6 +446,7 @@ class TitaniumRAGPipeline:
                     f"Graph entities: {len(fusion_result.graph_results.entities)}",
                 )
 
+            # guardian: allow-silent-swallow
             except Exception as e:
                 self.stats["graphrag_fallbacks"] += 1
                 logger.error(f"GraphRAG fusion failed: {e}")

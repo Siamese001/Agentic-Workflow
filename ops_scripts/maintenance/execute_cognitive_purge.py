@@ -80,6 +80,7 @@ def run_cognitive_purge(
     try:
         # Add project root to path
         project_root = Path(__file__).resolve().parent.parent.parent
+        # guardian: allow-global-mutation
         sys.path.insert(0, str(project_root))
 
         from agentic_core.L5_safety.validators import (

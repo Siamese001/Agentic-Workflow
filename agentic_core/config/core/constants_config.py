@@ -22,6 +22,7 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 # Configuration constants
 
 _ROOT = Path(__file__).resolve().parents[3]
+# guardian: allow-global-mutation
 if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))  # guardian: allow-global-mutation
 

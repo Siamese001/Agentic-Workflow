@@ -12,29 +12,16 @@ Deterministic Operations:
 - Keyword scoring algorithm
 - Text normalization and processing
 """
-
 from __future__ import annotations
-
 import json
 import re
 from dataclasses import dataclass
 from typing import Any
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 @dataclass
 class ATSValidationResult:
     """Result of ATS validation with deterministic scoring."""
-
     passed: bool
     issues: list[str]
     score: float | None = None
@@ -43,7 +30,6 @@ class ATSValidationResult:
     def __post_init__(self) -> None:
         if self.metadata is None:
             self.metadata = {}
-
 
 class AtsValidator:
     """
@@ -60,18 +46,14 @@ class AtsValidator:
         Args:
             config: Configuration dictionary containing validation rules
         """
-        self.standard_headers = config.get("standard_headers", {})
-        self.ats_unfriendly_patterns = config.get("ats_unfriendly_patterns", [])
-        self.allowed_non_standard_sections = config.get("allowed_non_standard_sections", [])
-        self.keyword_config = config.get("keyword_optimization", {})
-        self.min_score_threshold = self.keyword_config.get("min_score_threshold", 0.3)
-        self.stop_words: set[str] = set(self.keyword_config.get("stop_words", []))
+        self.standard_headers = config.get('standard_headers', {})
+        self.ats_unfriendly_patterns = config.get('ats_unfriendly_patterns', [])
+        self.allowed_non_standard_sections = config.get('allowed_non_standard_sections', [])
+        self.keyword_config = config.get('keyword_optimization', {})
+        self.min_score_threshold = self.keyword_config.get('min_score_threshold', 0.3)
+        self.stop_words: set[str] = set(self.keyword_config.get('stop_words', []))
 
-    def validate_ats_compatibility(
-        self,
-        resume: dict[str, Any],
-        job_desc: str | None = None,
-    ) -> ATSValidationResult:
+    def validate_ats_compatibility(self, resume: dict[str, Any], job_desc: str | None=None) -> ATSValidationResult:
         """
         Validate ATS compatibility using purely deterministic logic.
 
@@ -83,26 +65,14 @@ class AtsValidator:
             ATSValidationResult with deterministic findings
         """
         issues: list[str] = []
-
-        # Check for ATS-unfriendly patterns (deterministic regex matching)
         issues.extend(self._check_ats_unfriendly_patterns(resume))
-
-        # Validate section headers (deterministic string comparison)
         issues.extend(self._validate_section_headers(resume))
-
-        # Calculate keyword score if job description available
         score = None
         if job_desc:
             score = self.calculate_keyword_score(resume, job_desc)
             if score < self.min_score_threshold:
-                issues.append(f"Low keyword match ({score:.0%})")
-
-        return ATSValidationResult(
-            passed=len(issues) == 0,
-            issues=issues,
-            score=score,
-            metadata={"validation_type": "deterministic"},
-        )
+                issues.append(f'Low keyword match ({score:.0%})')
+        return ATSValidationResult(passed=len(issues) == 0, issues=issues, score=score, metadata={'validation_type': 'deterministic'})
 
     def _check_ats_unfriendly_patterns(self, resume: dict[str, Any]) -> list[str]:
         """
@@ -112,11 +82,9 @@ class AtsValidator:
         """
         issues: list[str] = []
         full_content = json.dumps(resume, ensure_ascii=False)
-
         for pattern in self.ats_unfriendly_patterns:
             if re.search(pattern, full_content):
-                issues.append(f"ATS-unfriendly pattern found: {pattern}")
-
+                issues.append(f'ATS-unfriendly pattern found: {pattern}')
         return issues
 
     def _validate_section_headers(self, resume: dict[str, Any]) -> list[str]:
@@ -126,23 +94,17 @@ class AtsValidator:
         Moved to Deterministic: Pure string validation logic
         """
         issues: list[str] = []
-
         for section_name in resume.keys():
-            if section_name.startswith("_"):
+            if section_name.startswith('_'):
                 continue
-
             normalized = section_name.lower().strip()
             is_standard = False
-
-            # Deterministic header validation
             for standard_section, variants in self.standard_headers.items():
                 if normalized in variants or normalized == standard_section:
                     is_standard = True
                     break
-
             if not is_standard and normalized not in self.allowed_non_standard_sections:
-                issues.append(f"Non-standard section header: {section_name}")
-
+                issues.append(f'Non-standard section header: {section_name}')
         return issues
 
     def calculate_keyword_score(self, resume: dict[str, Any], job_desc: str) -> float:
@@ -151,19 +113,12 @@ class AtsValidator:
 
         Moved to Deterministic: Pure mathematical calculation
         """
-        # Extract keywords from job description (deterministic regex)
-        job_words = set(re.findall(r"\b[a-zA-Z]{3,}\b", job_desc.lower()))
+        job_words = set(re.findall('\\b[a-zA-Z]{3,}\\b', job_desc.lower()))
         job_words -= self.stop_words
-
         if not job_words:
             return 1.0
-
-        # Extract resume text (deterministic processing)
         resume_text = json.dumps(resume).lower()
-
-        # Count matches (deterministic calculation)
-        matches = sum(1 for word in job_words if word in resume_text)
-
+        matches = sum((1 for word in job_words if word in resume_text))
         return matches / len(job_words)
 
     def normalize_text(self, text: str) -> str:
@@ -172,21 +127,17 @@ class AtsValidator:
 
         Moved to Deterministic: Pure string manipulation
         """
-        # Remove extra whitespace
-        text = re.sub(r"\s+", " ", text.strip())
-        # Normalize case for comparison
+        text = re.sub('\\s+', ' ', text.strip())
         return text.lower()
 
     # guardian: allow-magic-config
-    def extract_keywords(self, text: str, min_length: int = 3) -> set[str]:
+    def extract_keywords(self, text: str, min_length: int=3) -> set[str]:
         """
         Extract keywords from text using deterministic regex.
 
         Moved to Deterministic: Pure pattern extraction
         """
-        # Extract words of minimum length
-        words = set(re.findall(rf"\b[a-zA-Z]{{{min_length},}}\b", text.lower()))
-        # Remove stop words
+        words = set(re.findall(f'\\b[a-zA-Z]{{{min_length},}}\\b', text.lower()))
         return words - self.stop_words
 
     def validate_formatting(self, content: str) -> list[str]:
@@ -196,17 +147,10 @@ class AtsValidator:
         Moved to Deterministic: Pure formatting validation
         """
         issues: list[str] = []
-
-        # Check for problematic characters
-        if re.search(r"[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]", content):
-            issues.append("Contains control characters")
-
-        # Check for excessive whitespace
-        if re.search(r"\n{3,}", content):
-            issues.append("Excessive line breaks")
-
-        # Check for mixed line endings
-        if "\r\n" in content and "\n" in content and content.count("\r\n") != content.count("\n"):
-            issues.append("Mixed line ending formats")
-
+        if re.search('[\\x00-\\x08\\x0B\\x0C\\x0E-\\x1F\\x7F]', content):
+            issues.append('Contains control characters')
+        if re.search('\\n{3,}', content):
+            issues.append('Excessive line breaks')
+        if '\r\n' in content and '\n' in content and (content.count('\r\n') != content.count('\n')):
+            issues.append('Mixed line ending formats')
         return issues

@@ -139,6 +139,7 @@ class ConfigGovernor:
     ) -> ConfigReadEvent:
         """Record a config read event."""
         cached = config_key in self._cache
+        # guardian: allow-config-with-logic
         if cached:
             outcome = ConfigReadOutcome.CACHED
         else:

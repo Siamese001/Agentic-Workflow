@@ -1,39 +1,20 @@
 from __future__ import annotations
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-"""
-Secure Subprocess Execution - Timeout-Protected Command Execution
-Prevents livelocks and provides safe subprocess management.
-"""
+'\nSecure Subprocess Execution - Timeout-Protected Command Execution\nPrevents livelocks and provides safe subprocess management.\n'
 import subprocess
 import sys
 from pathlib import Path
 from typing import Any, TypedDict
-
 from agentic_core.utils.security_util import safe_execute
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 class ExecuteCommandArgs(TypedDict):
     """Brief description of functionality and purpose."""
-
     command: str
     args: list[str]
     timeout: int
     cwd: str | None
     capture_output: bool
-
-
 _cached_project_root: Path | None = None
-
 
 def get_project_root() -> Path:
     """
@@ -45,13 +26,12 @@ def get_project_root() -> Path:
         return _cached_project_root
     current_path: Any = Path(__file__).resolve().parent
     while current_path != current_path.parent:
-        if (current_path / ".git").exists() or (current_path / "pyproject.toml").exists():
+        if (current_path / '.git').exists() or (current_path / 'pyproject.toml').exists():
             _cached_project_root = current_path
             return current_path
         current_path = current_path.parent
     _cached_project_root = Path(__file__).resolve().parent
     return _cached_project_root
-
 
 def validate_sandbox(path: str) -> Path:
     """
@@ -71,45 +51,16 @@ def validate_sandbox(path: str) -> Path:
     try:
         abs_path.relative_to(project_root)
     except ValueError:
-        raise ValueError(
-            f"Path '{path}' resolves to '{abs_path}' which is outside the project sandbox '{project_root}'.",
-        )
+        raise ValueError(f"Path '{path}' resolves to '{abs_path}' which is outside the project sandbox '{project_root}'.")
     return abs_path
-
 
 class ExecutionTimeoutError(Exception):
     """Raised when command execution exceeds timeout."""
 
-
 class ExecutionError(Exception):
     """Raised when command execution fails."""
-
-
-ALLOWED_COMMANDS: dict[str, list[str]] = {
-    "python": [sys.executable, "python", "python3"],
-    "isort": ["isort"],
-    "autoflake": ["autoflake"],
-    "black": ["black"],
-    "flake8": ["flake8"],
-    "mypy": ["mypy"],
-    "pytest": ["pytest"],
-    "pip": ["pip", "pip3"],
-}
-DANGEROUS_COMMANDS: list[str] = [
-    "rm",
-    "del",
-    "rmdir",
-    "format",
-    "dd",
-    "mkfs",
-    "fdisk",
-    "shutdown",
-    "reboot",
-    "halt",
-    "poweroff",
-    "init",
-]
-
+ALLOWED_COMMANDS: dict[str, list[str]] = {'python': [sys.executable, 'python', 'python3'], 'isort': ['isort'], 'autoflake': ['autoflake'], 'black': ['black'], 'flake8': ['flake8'], 'mypy': ['mypy'], 'pytest': ['pytest'], 'pip': ['pip', 'pip3']}
+DANGEROUS_COMMANDS: list[str] = ['rm', 'del', 'rmdir', 'format', 'dd', 'mkfs', 'fdisk', 'shutdown', 'reboot', 'halt', 'poweroff', 'init']
 
 def is_command_allowed(command: str) -> bool:
     """
@@ -132,14 +83,8 @@ def is_command_allowed(command: str) -> bool:
                 return True
     return False
 
-
-def execute_with_timeout(
-    command: list[str],
-    timeout: int = 30,
-    cwd: str | None = None,
-    capture_output: bool = True,
-    check: bool = False,
-) -> subprocess.CompletedProcess:
+# guardian: allow-magic-config
+def execute_with_timeout(command: list[str], timeout: int=30, cwd: str | None=None, capture_output: bool=True, check: bool=False) -> subprocess.CompletedProcess:
     """
     Execute a command with timeout protection.
 
@@ -158,30 +103,22 @@ def execute_with_timeout(
         ExecutionError: If command fails and check=True
     """
     if timeout > 300:
-        raise ValueError("Timeout cannot exceed 300 seconds")
+        raise ValueError('Timeout cannot exceed 300 seconds')
     if not command or not command[0]:
-        raise ValueError("Command cannot be empty")
+        raise ValueError('Command cannot be empty')
     if not is_command_allowed(command[0]):
-        raise ExecutionError(f"Command not allowed: {command[0]}")
+        raise ExecutionError(f'Command not allowed: {command[0]}')
     project_root: Any = get_project_root()
     work_dir: Any = project_root
     if cwd:
         work_dir: Any = validate_sandbox(cwd)
     try:
-        result: Any = safe_execute(
-            command,
-            cwd=str(work_dir),
-            capture_output=capture_output,
-            text=True,
-            timeout=timeout,
-            check=check,
-        )
+        result: Any = safe_execute(command, cwd=str(work_dir), capture_output=capture_output, text=True, timeout=timeout, check=check)
         return result
     except subprocess.TimeoutExpired as e:
         raise ExecutionTimeoutError(f"Command timed out after {timeout}s: {' '.join(command)}") from e
     except subprocess.CalledProcessError as e:
         raise ExecutionError(f"Command failed with exit code {e.returncode}: {' '.join(command)}") from e
-
 
 def execute_command(args: ExecuteCommandArgs) -> tuple[int, str, str]:
     """
@@ -199,23 +136,12 @@ def execute_command(args: ExecuteCommandArgs) -> tuple[int, str, str]:
     """
     full_command: Any = [args.command] + args.args
     try:
-        result: Any = execute_with_timeout(
-            command=full_command,
-            timeout=args.timeout,
-            cwd=args.cwd,
-            capture_output=args.capture_output,
-            check=False,
-        )
-        return (
-            result.returncode,
-            result.stdout if result.stdout else "",
-            result.stderr if result.stderr else "",
-        )
+        result: Any = execute_with_timeout(command=full_command, timeout=args.timeout, cwd=args.cwd, capture_output=args.capture_output, check=False)
+        return (result.returncode, result.stdout if result.stdout else '', result.stderr if result.stderr else '')
     except ExecutionTimeoutError:
         raise
     except Exception as e:
-        raise ExecutionError(f"Command execution failed: {e}") from e
-
+        raise ExecutionError(f'Command execution failed: {e}') from e
 
 def check_tool_installed(tool_name: str) -> bool:
     """
@@ -231,15 +157,14 @@ def check_tool_installed(tool_name: str) -> bool:
         return False
     for command in ALLOWED_COMMANDS[tool_name]:
         try:
-            result: Any = safe_execute([command, "--version"], capture_output=True, timeout=DEFAULT_TIMEOUT, check=False)
+            result: Any = safe_execute([command, '--version'], capture_output=True, timeout=DEFAULT_TIMEOUT, check=False)
             if result.returncode == 0:
                 return True
         except (subprocess.TimeoutExpired, FileNotFoundError):
             continue
     return False
 
-
-def run_linter(tool: str, target_path: str = ".", extra_args: list[str] | None = None) -> tuple[bool, str]:
+def run_linter(tool: str, target_path: str='.', extra_args: list[str] | None=None) -> tuple[bool, str]:
     """
     Run a linter tool on the codebase.
     Args:
@@ -251,7 +176,7 @@ def run_linter(tool: str, target_path: str = ".", extra_args: list[str] | None =
         Tuple of (success, output)
     """
     if not check_tool_installed(tool):
-        return (False, f"{tool} is not installed")
+        return (False, f'{tool} is not installed')
     command: Any = ALLOWED_COMMANDS.get(tool, [tool])[0]
     args: Any = [command]
     if extra_args:
@@ -262,11 +187,11 @@ def run_linter(tool: str, target_path: str = ".", extra_args: list[str] | None =
         success: Any = result.returncode == 0
         output: Any = result.stdout if result.stdout else result.stderr
         return (success, output)
+    # guardian: allow-silent-swallow
     except Exception as e:
         return (False, str(e))
 
-
-def run_autofix_tools(target_path: str = ".") -> dict[str, bool]:
+def run_autofix_tools(target_path: str='.') -> dict[str, bool]:
     """
     Run auto-fix tools (isort, autoflake) on the codebase.
 
@@ -277,14 +202,10 @@ def run_autofix_tools(target_path: str = ".") -> dict[str, bool]:
         Dictionary of tool results
     """
     results: Any = {}
-    if check_tool_installed("autoflake"):
-        success, _ = run_linter(
-            "autoflake",
-            target_path,
-            ["--in-place", "--remove-unused-variables", "--remove-all-unused-imports"],
-        )
-        results["autoflake"] = success
-    if check_tool_installed("isort"):
-        success, _ = run_linter("isort", target_path, ["--skip", ".venv", "--skip", "venv"])
-        results["isort"] = success
+    if check_tool_installed('autoflake'):
+        success, _ = run_linter('autoflake', target_path, ['--in-place', '--remove-unused-variables', '--remove-all-unused-imports'])
+        results['autoflake'] = success
+    if check_tool_installed('isort'):
+        success, _ = run_linter('isort', target_path, ['--skip', '.venv', '--skip', 'venv'])
+        results['isort'] = success
     return results

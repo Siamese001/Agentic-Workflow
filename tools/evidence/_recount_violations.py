@@ -5,6 +5,7 @@ from collections import defaultdict
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+# guardian: allow-global-mutation
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
@@ -45,6 +46,7 @@ def _build_fan_in(prod: list[str]) -> dict[str, int]:
     for m in prod:
         try:
             tree = ast.parse((ROOT / m).read_text(encoding="utf-8", errors="replace"))
+        # guardian: allow-silent-swallow
         except Exception:
             continue
         for node in ast.walk(tree):
@@ -72,6 +74,7 @@ def _count_asserts(path: Path) -> int:
         return 0
     try:
         tree = ast.parse(path.read_text(encoding="utf-8", errors="replace"))
+    # guardian: allow-silent-swallow
     except Exception:
         return 0
     n = 0

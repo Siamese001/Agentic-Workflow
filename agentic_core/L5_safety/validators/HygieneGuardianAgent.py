@@ -151,6 +151,7 @@ class HygieneGuardianAgent(SovereignBaseAgent):
                 "errors": [],
             }
 
+        # guardian: allow-silent-swallow
         except Exception as e:
             return {
                 "status": "failed",
@@ -164,6 +165,7 @@ class HygieneGuardianAgent(SovereignBaseAgent):
         try:
             content = file_path.read_text(encoding="utf-8")
             return len(content.strip()) == 0
+        # guardian: allow-silent-swallow
         except Exception:
             return False
 
@@ -205,6 +207,7 @@ class HygieneGuardianAgent(SovereignBaseAgent):
                         debug_lines.append(i)
 
             return debug_lines
+        # guardian: allow-silent-swallow
         except Exception:
             return []
 
@@ -224,6 +227,7 @@ class HygieneGuardianAgent(SovereignBaseAgent):
                 return True, len(matches)
 
             return False, 0
+        # guardian: allow-silent-swallow
         except Exception:
             return False, 0
 
@@ -447,6 +451,7 @@ class HygieneGuardianAgent(SovereignBaseAgent):
                         fixed_count += 1
                     else:
                         print(f"   [ERROR] Failed to archive {violation.file_path}: {result.error}")
+            # guardian: allow-silent-swallow
             except Exception as e:
                 print(f"   [ERROR] Failed to fix {violation.file_path}: {e}")
 

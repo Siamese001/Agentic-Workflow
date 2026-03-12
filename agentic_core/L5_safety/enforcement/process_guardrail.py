@@ -13,42 +13,16 @@ OPERATIONAL SAFETY (Feb 2026):
 - Prevents zombie processes from accumulating
 - Provides fail-safe cleanup on interpreter exit
 """
-
 import atexit
 import logging
 import os
 import signal
 import threading
 from typing import Final
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+from pathlib import Path
 logger = logging.getLogger(__name__)
-
-# Blocked command prefixes - these can corrupt the environment
-BLOCKED_COMMANDS: Final[frozenset[str]] = frozenset(
-    {
-        "pip",
-        "npm",
-        "yarn",
-        "apt",
-        "apt-get",
-        "brew",
-        "rm",
-        "sudo",
-        "powershell",
-        "cmd",
-    },
-)
-
+BLOCKED_COMMANDS: Final[frozenset[str]] = frozenset({'pip', 'npm', 'yarn', 'apt', 'apt-get', 'brew', 'rm', 'sudo', 'powershell', 'cmd'})
 
 class SecurityViolation(Exception):
     """Raised when a command violates security policy."""
@@ -56,8 +30,7 @@ class SecurityViolation(Exception):
     def __init__(self, command: list[str], reason: str):
         self.command = command
         self.reason = reason
-        super().__init__(f"Security violation: {reason}. Command: {command}")
-
+        super().__init__(f'Security violation: {reason}. Command: {command}')
 
 class ProcessGuard:
     """
@@ -79,11 +52,10 @@ class ProcessGuard:
         # Cleanup:
         guard.terminate_all()
     """
-
-    _instance: "ProcessGuard | None" = None
+    _instance: 'ProcessGuard | None' = None
     _lock: threading.Lock = threading.Lock()
 
-    def __new__(cls) -> "ProcessGuard":
+    def __new__(cls) -> 'ProcessGuard':
         """Ensure singleton pattern."""
         if cls._instance is None:
             with cls._lock:
@@ -100,7 +72,7 @@ class ProcessGuard:
         self._register_atexit()
 
     @classmethod
-    def get_instance(cls) -> "ProcessGuard":
+    def get_instance(cls) -> 'ProcessGuard':
         """Get the singleton instance."""
         return cls()
 
@@ -109,12 +81,12 @@ class ProcessGuard:
         if not self._atexit_registered:
             atexit.register(self._atexit_cleanup)
             self._atexit_registered = True
-            logger.debug("ProcessGuard: atexit cleanup registered")
+            logger.debug('ProcessGuard: atexit cleanup registered')
 
     def _atexit_cleanup(self) -> None:
         """Cleanup handler called on interpreter exit."""
         if self._pids:
-            logger.warning(f"ProcessGuard: atexit cleanup killing {len(self._pids)} orphaned processes")
+            logger.warning(f'ProcessGuard: atexit cleanup killing {len(self._pids)} orphaned processes')
             self.terminate_all()
 
     def register_pid(self, pid: int) -> None:
@@ -126,7 +98,7 @@ class ProcessGuard:
         """
         with self._pid_lock:
             self._pids.add(pid)
-            logger.debug(f"ProcessGuard: Registered PID {pid}")
+            logger.debug(f'ProcessGuard: Registered PID {pid}')
 
     def unregister_pid(self, pid: int) -> None:
         """
@@ -137,7 +109,7 @@ class ProcessGuard:
         """
         with self._pid_lock:
             self._pids.discard(pid)
-            logger.debug(f"ProcessGuard: Unregistered PID {pid}")
+            logger.debug(f'ProcessGuard: Unregistered PID {pid}')
 
     def get_active_pids(self) -> set[int]:
         """Get a copy of currently tracked PIDs."""
@@ -151,24 +123,20 @@ class ProcessGuard:
         Returns:
             Dict with 'terminated' and 'failed' PID lists.
         """
-        result = {"terminated": [], "failed": []}
-
+        result = {'terminated': [], 'failed': []}
         with self._pid_lock:
             pids_to_kill = self._pids.copy()
-
         for pid in pids_to_kill:
             try:
                 self._kill_process(pid)
-                result["terminated"].append(pid)
-                logger.info(f"ProcessGuard: Terminated PID {pid}")
+                result['terminated'].append(pid)
+                logger.info(f'ProcessGuard: Terminated PID {pid}')
+            # guardian: allow-silent-swallow
             except Exception as e:
-                result["failed"].append(pid)
-                logger.warning(f"ProcessGuard: Failed to terminate PID {pid}: {e}")
-
-        # Clear the registry
+                result['failed'].append(pid)
+                logger.warning(f'ProcessGuard: Failed to terminate PID {pid}: {e}')
         with self._pid_lock:
             self._pids.clear()
-
         return result
 
     def _kill_process(self, pid: int) -> None:
@@ -179,18 +147,14 @@ class ProcessGuard:
         Platform-aware for Windows vs Unix.
         """
         try:
-            if os.name == "nt":
-                # Windows: use taskkill
+            if os.name == 'nt':
                 os.kill(pid, signal.SIGTERM)
             else:
-                # Unix: SIGTERM first
                 os.kill(pid, signal.SIGTERM)
         except ProcessLookupError:
-            # Process already dead, that's fine
             pass
         except PermissionError:
-            # Can't kill it, log and move on
-            logger.warning(f"ProcessGuard: Permission denied killing PID {pid}")
+            logger.warning(f'ProcessGuard: Permission denied killing PID {pid}')
             raise
 
     def validate_command(self, command: list[str]) -> bool:
@@ -207,27 +171,13 @@ class ProcessGuard:
             SecurityViolation: If command is blocked.
         """
         if not command:
-            raise SecurityViolation(command, "Empty command")
-
-        # Get the base command (first element)
+            raise SecurityViolation(command, 'Empty command')
         base_cmd = command[0].lower()
-
-        # Strip path if present (e.g., /usr/bin/pip -> pip)
-        base_cmd = os.path.basename(base_cmd)
-
-        # Strip extension on Windows (e.g., pip.exe -> pip)
-        if os.name == "nt" and base_cmd.endswith(".exe"):
+        base_cmd = Path(base_cmd).name
+        if os.name == 'nt' and base_cmd.endswith('.exe'):
             base_cmd = base_cmd[:-4]
-
-        # Check against blocklist
         if base_cmd in BLOCKED_COMMANDS:
             raise SecurityViolation(command, f"Command '{base_cmd}' is blocked (environment protection)")
-
-        # Note: When using subprocess with a list (not shell=True), shell metacharacters
-        # are passed as literal arguments and cannot escape to the shell. The blocklist
-        # above is the primary protection. We don't need to check for shell injection
-        # patterns in arguments since they're not interpreted by a shell.
-
         return True
 
     def cleanup(self) -> dict[str, list[int]]:
@@ -243,9 +193,6 @@ class ProcessGuard:
         """
         with cls._lock:
             if cls._instance is not None:
-                # Cleanup before reset
                 cls._instance.terminate_all()
                 cls._instance = None
-
-
-__all__ = ["ProcessGuard", "SecurityViolation", "BLOCKED_COMMANDS"]
+__all__ = ['ProcessGuard', 'SecurityViolation', 'BLOCKED_COMMANDS']

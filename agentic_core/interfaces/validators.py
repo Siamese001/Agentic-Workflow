@@ -13,27 +13,12 @@ AUTHORITY CONSTRAINTS:
 USAGE (apps_*):
     from agentic_core.interfaces.validators import RuleFailure
 """
-
 from __future__ import annotations
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 try:
     from agentic_core.L5_safety.validators import RuleFailure
 except ImportError:
 
-    class RuleFailure:  # type: ignore[no-redef]
+    class RuleFailure:
         """Stub when L5_safety.validators optional deps are not installed."""
-
-
-__all__ = [
-    "RuleFailure",
-]
+__all__ = ['RuleFailure']

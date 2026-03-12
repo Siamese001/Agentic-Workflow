@@ -90,11 +90,18 @@ class GlobalMutationDetector(AntiPatternDetector):
     ) -> AntiPatternViolation | None:
         """Check if a call modifies global state."""
 
-        # Check for whitelist comment
+        # Check for whitelist comment on any of the previous 5 lines (handles if-guard patterns)
         if hasattr(node, "lineno") and node.lineno > 1 and node.lineno <= len(source_lines):
-            prev_line = source_lines[node.lineno - 2].strip()
-            if self.WHITELIST_COMMENT in prev_line:
-                return None
+            for lookback in range(1, 6):
+                check_line = node.lineno - lookback - 1
+                if check_line < 0:
+                    break
+                if self.WHITELIST_COMMENT in source_lines[check_line].strip():
+                    return None
+                # Stop looking back if we hit a non-blank, non-comment, non-if line
+                stripped = source_lines[check_line].strip()
+                if stripped and not stripped.startswith('#') and not stripped.startswith('if '):
+                    break
 
         # Check for sys.path.insert(), sys.path.append(), etc.
         if isinstance(node.func, ast.Attribute):
@@ -141,11 +148,17 @@ class GlobalMutationDetector(AntiPatternDetector):
         # This is tricky - we need to find the parent Assign node
         # For now, we'll check if this subscript is on os.environ
 
-        # Check for whitelist comment
+        # Check for whitelist comment on any of the previous 5 lines
         if hasattr(node, "lineno") and node.lineno > 1 and node.lineno <= len(source_lines):
-            prev_line = source_lines[node.lineno - 2].strip()
-            if self.WHITELIST_COMMENT in prev_line:
-                return None
+            for lookback in range(1, 6):
+                check_line = node.lineno - lookback - 1
+                if check_line < 0:
+                    break
+                if self.WHITELIST_COMMENT in source_lines[check_line].strip():
+                    return None
+                stripped = source_lines[check_line].strip()
+                if stripped and not stripped.startswith('#') and not stripped.startswith('if '):
+                    break
 
         # Check for os.environ[...] pattern
         if isinstance(node.value, ast.Attribute):

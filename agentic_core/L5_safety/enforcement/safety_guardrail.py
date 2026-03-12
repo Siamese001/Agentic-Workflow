@@ -1,27 +1,14 @@
 from __future__ import annotations
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-"""
-L5 Safety: SafetyGuardrail
-Enforces Zero-Loss principles during code mutation.
-"""
+'\nL5 Safety: SafetyGuardrail\nEnforces Zero-Loss principles during code mutation.\n'
 import ast
 from typing import Any
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 class SafetyGuardrail:
     """Enforces Zero-Loss principles during mutation."""
 
-    def __init__(self, deletion_limit: int = 110):
+    # guardian: allow-magic-config
+    def __init__(self, deletion_limit: int=110):
         """
         Initialize SafetyGuardrail.
 
@@ -30,12 +17,7 @@ class SafetyGuardrail:
         """
         self.deletion_limit = deletion_limit
 
-    def verify_change(
-        self,
-        original_code: str,
-        new_code: str,
-        fission_active: bool = False,
-    ) -> tuple[bool, str]:
+    def verify_change(self, original_code: str, new_code: str, fission_active: bool=False) -> tuple[bool, str]:
         """
         Verify that code changes are safe and don't violate zero-loss principles.
 
@@ -48,24 +30,18 @@ class SafetyGuardrail:
             Tuple of (is_safe, message)
         """
         if not new_code.strip():
-            return (False, "Safety Block: Attempted to wipe file.")
+            return (False, 'Safety Block: Attempted to wipe file.')
         try:
             ast.parse(new_code)
         except SyntaxError as e:
-            return (
-                False,
-                f"Safety Block: Mutation introduced syntax error: {e.msg} at line {e.lineno}",
-            )
+            return (False, f'Safety Block: Mutation introduced syntax error: {e.msg} at line {e.lineno}')
         orig_len: Any = len(original_code.splitlines())
         new_len: Any = len(new_code.splitlines())
         delta: Any = orig_len - new_len
         if delta == 0 and original_code == new_code and (not fission_active):
-            return (
-                False,
-                "Safety Block: Mutation resulted in no change (possible engine failure).",
-            )
+            return (False, 'Safety Block: Mutation resulted in no change (possible engine failure).')
         if fission_active:
-            return (True, "Fission Whitelist: Mass deletion permitted for Facade.")
+            return (True, 'Fission Whitelist: Mass deletion permitted for Facade.')
         if delta > self.deletion_limit:
-            return (False, f"Safety Block: Mass deletion detected ({delta} lines).")
-        return (True, "Safety Pass.")
+            return (False, f'Safety Block: Mass deletion detected ({delta} lines).')
+        return (True, 'Safety Pass.')

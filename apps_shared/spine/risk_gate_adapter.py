@@ -8,25 +8,12 @@ This adapter wraps ConfCalibRiskGate and returns a RiskResult compatible
 with the spine's existing _RiskResult contract.
 Falls back to allow=True null behavior if ConfCalibRiskGate cannot be imported.
 """
-
 from __future__ import annotations
-
 import logging
 from dataclasses import dataclass
 from typing import Any
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 logger = logging.getLogger(__name__)
-
 
 @dataclass(frozen=True)
 class RiskResult:
@@ -36,21 +23,13 @@ class RiskResult:
     Extends the null stub type so existing spine code works unchanged.
     Carries the full decision context for observability.
     """
-
     allow: bool
-    level: str = "LOW"
+    level: str = 'LOW'
     reasons: tuple[str, ...] = ()
-
-
-# ---------------------------------------------------------------------------
-# Try to import real ConfCalibRiskGate; null stub on failure
-# ---------------------------------------------------------------------------
-
 
 def _build_real_gate():
     from agentic_core.L5_safety.enforcement.conf_calib_gate import ConfCalibRiskGate
     return ConfCalibRiskGate
-
 
 class RiskGateAdapter:
     """
@@ -67,7 +46,7 @@ class RiskGateAdapter:
             self._gate = ConfCalibRiskGate()
             self._real = True
         except ImportError:
-            logger.warning("ConfCalibRiskGate unavailable; using null fallback (allow=True)")
+            logger.warning('ConfCalibRiskGate unavailable; using null fallback (allow=True)')
             self._gate = None
             self._real = False
 
@@ -85,16 +64,9 @@ class RiskGateAdapter:
         """
         if not self._real:
             return RiskResult(allow=True)
-
-        # d0_injections may already be a rendered string or a raw string
         d0_str = d0_injections if isinstance(d0_injections, str) else str(d0_injections)
-
         decision = self._gate.evaluate(payload_like=payload_like, d0_injections=d0_str)
-        return RiskResult(
-            allow=decision.allow,
-            level=decision.level.value,
-            reasons=decision.reasons,
-        )
+        return RiskResult(allow=decision.allow, level=decision.level.value, reasons=decision.reasons)
 
     @property
     def is_real(self) -> bool:

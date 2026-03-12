@@ -1,36 +1,9 @@
 from __future__ import annotations
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-# NOT_AN_AGENT - This is a foundational CLASS, not a runtime agent
-"""
-L1CognitionBase - Consolidated Base for L1 Cognition Agents
-
-Layer: L1 - Cognition
-Responsibilities:
-- Thought engine operations
-- Intent analysis
-- Memory management
-- Meta-learning coordination
-
-MRO HARDENING:
-- Inheritance order: SovereignBaseAgent (root)
-- All L1 agents inherit from this base for consistent cognition capabilities
-"""
-
+'\nL1CognitionBase - Consolidated Base for L1 Cognition Agents\n\nLayer: L1 - Cognition\nResponsibilities:\n- Thought engine operations\n- Intent analysis\n- Memory management\n- Meta-learning coordination\n\nMRO HARDENING:\n- Inheritance order: SovereignBaseAgent (root)\n- All L1 agents inherit from this base for consistent cognition capabilities\n'
 from dataclasses import dataclass
 from typing import Any
-
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 @dataclass
 class L1CognitionBase(SovereignBaseAgent):
@@ -45,9 +18,8 @@ class L1CognitionBase(SovereignBaseAgent):
 
     MRO: L1CognitionBase -> SovereignBaseAgent -> object
     """
-
-    name: str = "L1CognitionBase"
-    layer: str = "L1"
+    name: str = 'L1CognitionBase'
+    layer: str = 'L1'
 
     def __post_init__(self) -> None:
         """Cooperative MRO initialization."""
@@ -59,7 +31,7 @@ class L1CognitionBase(SovereignBaseAgent):
 
         Override in subclasses for specialized intent analysis.
         """
-        return {"intent": "unknown", "confidence": 0.0, "raw_input": input_text}
+        return {'intent': 'unknown', 'confidence': 0.0, 'raw_input': input_text}
 
     def retrieve_context(self, query: str) -> list[dict[str, Any]]:
         """

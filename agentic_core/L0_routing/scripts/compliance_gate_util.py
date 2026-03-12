@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 L0 Compliance Gate: SSOT Architecture Enforcement
 
@@ -11,24 +10,11 @@ Critical Rules:
 2. SovereignBaseAgent itself is whitelisted (root exception)
 3. Agents must belong to valid layers (tests layer is prohibited)
 """
-
 import logging
 from typing import Any
-
 from agentic_core.runtime.utils.discovery_util import DiscoveredAgent
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 logger = logging.getLogger(__name__)
-
 
 def check_compliance(discovered_agents: list[DiscoveredAgent]) -> list[str]:
     """
@@ -41,33 +27,18 @@ def check_compliance(discovered_agents: list[DiscoveredAgent]) -> list[str]:
         List of violation descriptions (empty if all compliant)
     """
     violations = []
-
     for agent in discovered_agents:
-        # SOVEREIGN ROOT EXCEPTION:
-        # The root base class cannot inherit from itself. It is the origin of the chain.
-        if agent.name == "SovereignBaseAgent":
+        if agent.name == 'SovereignBaseAgent':
             continue
-
-        # Check 1: Inheritance from SovereignBaseAgent
-        # Agents must inherit from SovereignBaseAgent directly or via a mixin chain
-        # We check the MRO to ensure SovereignBaseAgent is present
-        if "SovereignBaseAgent" not in [c.__name__ for c in agent.class_ref.__mro__]:
-            violations.append(f"{agent.name} (Orphaned: No Sovereign Inheritance)")
+        if 'SovereignBaseAgent' not in [c.__name__ for c in agent.class_ref.__mro__]:
+            violations.append(f'{agent.name} (Orphaned: No Sovereign Inheritance)')
             continue
-
-        # Check 2: Layer Validity
-        # Ensure agents belong to recognized architectural layers
-        if agent.layer == "unknown":
-            violations.append(f"{agent.name} (Unknown Layer)")
-        # Note: 'tests' layer is now strictly prohibited.
-        # Test agents must reside in L0_routing.testing
-
+        if agent.layer == 'unknown':
+            violations.append(f'{agent.name} (Unknown Layer)')
     if violations:
-        logger.error(f"Compliance Violation Detected in L-Architecture: {violations}")
-        logger.error("Agents violating architectural rules will be quarantined.")
-
+        logger.error(f'Compliance Violation Detected in L-Architecture: {violations}')
+        logger.error('Agents violating architectural rules will be quarantined.')
     return violations
-
 
 def check_legacy_compatibility() -> dict[str, Any]:
     """
@@ -77,8 +48,4 @@ def check_legacy_compatibility() -> dict[str, Any]:
     Returns:
         Dict containing compatibility status and recommendations
     """
-    return {
-        "status": "compatible",
-        "message": "All agents conform to Sovereign Architecture Pattern",
-        "recommendations": [],
-    }
+    return {'status': 'compatible', 'message': 'All agents conform to Sovereign Architecture Pattern', 'recommendations': []}

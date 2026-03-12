@@ -1,0 +1,196 @@
+#!/usr/bin/env python3
+"""
+ADG-Driven Anti-Pattern Analyzer
+
+Analyzes remaining violations using dependency graph to identify
+fixable patterns and their blast radius.
+"""
+
+import ast
+import json
+import sys
+from collections import defaultdict
+from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+# guardian: allow-global-mutation
+sys.path.insert(0, str(PROJECT_ROOT))
+
+from agentic_core.L0_routing.config.path_constants import get_validated_project_root
+
+
+def analyze_violations_by_category(baseline_path: Path) -> dict:
+    """Analyze violations grouped by category with file clustering."""
+    violations = defaultdict(lambda: defaultdict(list))
+
+    with open(baseline_path, 'r', encoding='utf-8') as f:
+        for line in f:
+            parts = line.strip().split(':')
+            if len(parts) < 4:
+                continue
+
+            file_path = parts[0]
+            line_num = parts[1]
+            category = parts[2]
+            message = ':'.join(parts[3:])
+
+            violations[category][file_path].append({
+                'line': int(line_num),
+                'message': message,
+            })
+
+    return violations
+
+
+def analyze_silent_swallowers(violations: dict, adg_path: Path) -> dict:
+    """Analyze silent swallower patterns using ADG."""
+    swallowers = violations.get('silent_swallower', {})
+
+    # Load ADG for dependency analysis
+    with open(adg_path, 'r', encoding='utf-8') as f:
+        adg = json.load(f)
+
+    # Categorize by pattern
+    patterns = {
+        'bare_except': [],
+        'exception_without_raise': [],
+        'pass_in_except': [],
+    }
+
+    for file_path, viols in swallowers.items():
+        for v in viols:
+            msg = v['message'].lower()
+            if 'bare except' in msg:
+                patterns['bare_except'].append((file_path, v))
+            elif 'without raise' in msg:
+                patterns['exception_without_raise'].append((file_path, v))
+            elif 'pass' in msg:
+                patterns['pass_in_except'].append((file_path, v))
+
+    return {
+        'total': len(swallowers),
+        'files': len(swallowers.keys()),
+        'patterns': {k: len(v) for k, v in patterns.items()},
+        'pattern_details': patterns,
+    }
+
+
+def analyze_path_fragility(violations: dict) -> dict:
+    """Analyze path fragility patterns."""
+    fragility = violations.get('path_fragility', {})
+
+    patterns = {
+        'os_path_join': [],
+        'os_path_basename': [],
+        'os_path_dirname': [],
+        'string_concat': [],
+    }
+
+    for file_path, viols in fragility.items():
+        for v in viols:
+            msg = v['message'].lower()
+            if 'os.path.join' in msg:
+                patterns['os_path_join'].append((file_path, v))
+            elif 'os.path.basename' in msg:
+                patterns['os_path_basename'].append((file_path, v))
+            elif 'os.path.dirname' in msg:
+                patterns['os_path_dirname'].append((file_path, v))
+            elif 'string concatenation' in msg:
+                patterns['string_concat'].append((file_path, v))
+
+    return {
+        'total': len(fragility),
+        'files': len(fragility.keys()),
+        'patterns': {k: len(v) for k, v in patterns.items()},
+        'pattern_details': patterns,
+    }
+
+
+def analyze_global_mutation(violations: dict) -> dict:
+    """Analyze global mutation patterns."""
+    mutations = violations.get('global_mutation', {})
+
+    patterns = {
+        'os_environ': [],
+        'sys_path': [],
+        'global_var': [],
+    }
+
+    for file_path, viols in mutations.items():
+        for v in viols:
+            msg = v['message'].lower()
+            if 'os.environ' in msg:
+                patterns['os_environ'].append((file_path, v))
+            elif 'sys.path' in msg:
+                patterns['sys_path'].append((file_path, v))
+            else:
+                patterns['global_var'].append((file_path, v))
+
+    return {
+        'total': len(mutations),
+        'files': len(mutations.keys()),
+        'patterns': {k: len(v) for k, v in patterns.items()},
+        'pattern_details': patterns,
+    }
+
+
+def main():
+    """Main execution."""
+    project_root = get_validated_project_root()
+    baseline_path = project_root / "ops_scripts" / "hooks" / "landmine_baseline.txt"
+    adg_path = project_root / "artifacts" / "adg" / "adg_file_graph_03122026.json"
+
+    print("[INFO] Analyzing violations by category...")
+    violations = analyze_violations_by_category(baseline_path)
+
+    print("\n" + "="*80)
+    print("ADG-DRIVEN ANTI-PATTERN ANALYSIS")
+    print("="*80)
+
+    # Analyze silent swallowers
+    print("\n[1] SILENT SWALLOWERS")
+    swallow_analysis = analyze_silent_swallowers(violations, adg_path)
+    print(f"  Total violations: {swallow_analysis['total']}")
+    print(f"  Affected files: {swallow_analysis['files']}")
+    print(f"  Patterns:")
+    for pattern, count in swallow_analysis['patterns'].items():
+        print(f"    - {pattern}: {count}")
+
+    # Analyze path fragility
+    print("\n[2] PATH FRAGILITY")
+    path_analysis = analyze_path_fragility(violations)
+    print(f"  Total violations: {path_analysis['total']}")
+    print(f"  Affected files: {path_analysis['files']}")
+    print(f"  Patterns:")
+    for pattern, count in path_analysis['patterns'].items():
+        print(f"    - {pattern}: {count}")
+
+    # Analyze global mutation
+    print("\n[3] GLOBAL MUTATION")
+    mutation_analysis = analyze_global_mutation(violations)
+    print(f"  Total violations: {mutation_analysis['total']}")
+    print(f"  Affected files: {mutation_analysis['files']}")
+    print(f"  Patterns:")
+    for pattern, count in mutation_analysis['patterns'].items():
+        print(f"    - {pattern}: {count}")
+
+    # Show top files for each category
+    print("\n[TOP VIOLATORS BY CATEGORY]")
+
+    for category in ['silent_swallower', 'path_fragility', 'global_mutation']:
+        if category in violations:
+            sorted_files = sorted(
+                violations[category].items(),
+                key=lambda x: len(x[1]),
+                reverse=True
+            )[:5]
+
+            print(f"\n{category.upper()} - Top 5 files:")
+            for file_path, viols in sorted_files:
+                print(f"  {len(viols):3d} violations - {file_path}")
+
+    return 0
+
+
+if __name__ == '__main__':
+    sys.exit(main())

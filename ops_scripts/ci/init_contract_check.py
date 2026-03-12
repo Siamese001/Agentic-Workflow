@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """__init__.py Contract Check — CI Gate (Scan Mode + Shim Trap Protection).
 
 Dynamically discovers and validates ALL __init__.py files under governed
@@ -15,91 +14,67 @@ Exit 0 = pass, exit 1 = violations found.
 
 Merge-ready gate.
 """
-
 from __future__ import annotations
-
 import ast
 import json
 import sys
 from pathlib import Path
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-SCAN_ROOTS = [
-    AGENTIC_CORE_DIR,
-    APPS_LIC_DIR,
-    APPS_RG_DIR,
-    APPS_SHARED_DIR,
-]
-
-GOVERNED_SUBDIRS = ["engines", "reasoning", "validators"]
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+SCAN_ROOTS = [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR]
+GOVERNED_SUBDIRS = ['engines', 'reasoning', 'validators']
 MAX_EAGER_IMPORTS = 10
-
-SHIM_MANIFEST_PATH = "artifacts/consolidation/target_manifest_v3.json"
-
+SHIM_MANIFEST_PATH = 'artifacts/consolidation/target_manifest_v3.json'
 
 def _load_known_shim_files(project_root: Path) -> set[str]:
     """Load set of repo-relative paths of known shim/merge files from v3 manifest."""
     mpath = project_root / SHIM_MANIFEST_PATH
     if not mpath.is_file():
         return set()
-    data = json.loads(mpath.read_text(encoding="utf-8"))
-    entries = data.get("entries", [])
+    data = json.loads(mpath.read_text(encoding='utf-8'))
+    entries = data.get('entries', [])
     paths: set[str] = set()
     for e in entries:
-        fp = e.get("file_path", "")
+        fp = e.get('file_path', '')
         if fp:
-            paths.add(fp.replace("\\", "/"))
+            paths.add(fp.replace('\\', '/'))
     return paths
-
 
 def _has_classdef(filepath: Path) -> bool:
     """Return True if the file contains at least one ClassDef."""
     try:
-        source = filepath.read_text(encoding="utf-8", errors="replace")
+        source = filepath.read_text(encoding='utf-8', errors='replace')
         tree = ast.parse(source, filename=str(filepath))
     except (SyntaxError, OSError):
         return False
-    return any(isinstance(n, ast.ClassDef) for n in ast.walk(tree))
-
+    return any((isinstance(n, ast.ClassDef) for n in ast.walk(tree)))
 
 def _has_empty_all(filepath: Path) -> bool:
     """Return True if the file has __all__ = []."""
     try:
-        source = filepath.read_text(encoding="utf-8", errors="replace")
+        source = filepath.read_text(encoding='utf-8', errors='replace')
         tree = ast.parse(source, filename=str(filepath))
     except (SyntaxError, OSError):
         return False
     for node in ast.walk(tree):
         if isinstance(node, ast.Assign):
             for target in node.targets:
-                if isinstance(target, ast.Name) and target.id == "__all__":
+                if isinstance(target, ast.Name) and target.id == '__all__':
                     if isinstance(node.value, (ast.List, ast.Tuple)):
                         if len(node.value.elts) == 0:
                             return True
     return False
 
-
 def _get_all_exports(filepath: Path) -> set[str] | None:
     """Return the set of names in __all__, or None if __all__ is not defined."""
     try:
-        source = filepath.read_text(encoding="utf-8", errors="replace")
+        source = filepath.read_text(encoding='utf-8', errors='replace')
         tree = ast.parse(source, filename=str(filepath))
     except (SyntaxError, OSError):
         return None
     for node in ast.walk(tree):
         if isinstance(node, ast.Assign):
             for target in node.targets:
-                if isinstance(target, ast.Name) and target.id == "__all__":
+                if isinstance(target, ast.Name) and target.id == '__all__':
                     if isinstance(node.value, (ast.List, ast.Tuple)):
                         names: set[str] = set()
                         for elt in node.value.elts:
@@ -108,97 +83,64 @@ def _get_all_exports(filepath: Path) -> set[str] | None:
                         return names
     return None
 
-
-def _resolve_import_target(
-    init_path: Path,
-    module_name: str,
-    level: int,
-    project_root: Path,
-) -> Path | None:
+def _resolve_import_target(init_path: Path, module_name: str, level: int, project_root: Path) -> Path | None:
     """Resolve an ImportFrom target to a file path."""
     if level == 1:
         parent = init_path.parent
-        candidate = parent / f"{module_name}.py"
+        candidate = parent / f'{module_name}.py'
         if candidate.is_file():
             return candidate
-        candidate = parent / module_name / "__init__.py"
+        candidate = parent / module_name / '__init__.py'
         if candidate.is_file():
             return candidate
     elif level == 0 and module_name:
-        parts = module_name.replace(".", "/")
-        candidate = project_root / f"{parts}.py"
+        parts = module_name.replace('.', '/')
+        candidate = project_root / f'{parts}.py'
         if candidate.is_file():
             return candidate
-        candidate = project_root / parts / "__init__.py"
+        candidate = project_root / parts / '__init__.py'
         if candidate.is_file():
             return candidate
     return None
 
-
-def check_init_file(init_path: Path, project_root: Path, known_shims: set[str] | None = None) -> list[str]:
+def check_init_file(init_path: Path, project_root: Path, known_shims: set[str] | None=None) -> list[str]:
     """Return list of violation messages for a single __init__.py."""
     violations: list[str] = []
-    rel = str(init_path.relative_to(project_root)).replace("\\", "/")
-
+    rel = str(init_path.relative_to(project_root)).replace('\\', '/')
     try:
-        source = init_path.read_text(encoding="utf-8", errors="replace")
+        source = init_path.read_text(encoding='utf-8', errors='replace')
         tree = ast.parse(source, filename=str(init_path))
     except SyntaxError as e:
-        violations.append(f"{rel}: SyntaxError: {e}")
+        violations.append(f'{rel}: SyntaxError: {e}')
         return violations
-
     import_targets: list[tuple[str, int, int, list[str]]] = []
     for node in ast.walk(tree):
         if isinstance(node, ast.ImportFrom) and node.module:
-            names = [alias.name for alias in (node.names or [])]
+            names = [alias.name for alias in node.names or []]
             import_targets.append((node.module, node.level or 0, node.lineno, names))
-
     if len(import_targets) > MAX_EAGER_IMPORTS:
-        violations.append(
-            f"{rel}: imports {len(import_targets)} modules (exceeds ceiling {MAX_EAGER_IMPORTS})",
-        )
-
+        violations.append(f'{rel}: imports {len(import_targets)} modules (exceeds ceiling {MAX_EAGER_IMPORTS})')
     for mod_name, level, lineno, imported_names in import_targets:
         target_file = _resolve_import_target(init_path, mod_name, level, project_root)
-
-        # Rule 3: must not import modules that do not exist
         if target_file is None:
             if level == 1:
-                violations.append(
-                    f"{rel}:{lineno} imports non-existent relative module '.{mod_name}'",
-                )
+                violations.append(f"{rel}:{lineno} imports non-existent relative module '.{mod_name}'")
             continue
-
-        # Rule 1: must not import shim modules
         if not _has_classdef(target_file) or _has_empty_all(target_file):
-            target_rel = str(target_file.relative_to(project_root)).replace("\\", "/")
-            violations.append(
-                f"{rel}:{lineno} imports shim module {target_rel} (no ClassDef or empty __all__)",
-            )
-
-        # Rule 4: must not import symbols not in target's __all__
+            target_rel = str(target_file.relative_to(project_root)).replace('\\', '/')
+            violations.append(f'{rel}:{lineno} imports shim module {target_rel} (no ClassDef or empty __all__)')
         if imported_names and target_file is not None:
             target_all = _get_all_exports(target_file)
             if target_all is not None:
                 for name in imported_names:
                     if name not in target_all:
-                        target_rel = str(target_file.relative_to(project_root)).replace("\\", "/")
-                        violations.append(
-                            f"{rel}:{lineno} imports '{name}' from {target_rel} "
-                            f"but '{name}' is not in __all__",
-                        )
-
-        # Rule 5: must not import known shim/merge files from manifest
+                        target_rel = str(target_file.relative_to(project_root)).replace('\\', '/')
+                        violations.append(f"{rel}:{lineno} imports '{name}' from {target_rel} but '{name}' is not in __all__")
         if target_file is not None:
-            target_rel = str(target_file.relative_to(project_root)).replace("\\", "/")
+            target_rel = str(target_file.relative_to(project_root)).replace('\\', '/')
             if target_rel in known_shims:
-                violations.append(
-                    f"{rel}:{lineno} imports manifest shim {target_rel} "
-                    f"(listed in consolidation targeting manifest)",
-                )
-
+                violations.append(f'{rel}:{lineno} imports manifest shim {target_rel} (listed in consolidation targeting manifest)')
     return violations
-
 
 def _discover_governed_inits(project_root: Path) -> list[Path]:
     """Find all __init__.py files under governed subdirectories."""
@@ -212,39 +154,31 @@ def _discover_governed_inits(project_root: Path) -> list[Path]:
             for governed_dir in root_path.rglob(subdir_name):
                 if not governed_dir.is_dir():
                     continue
-                if "__pycache__" in str(governed_dir):
+                if '__pycache__' in str(governed_dir):
                     continue
-                init_file = governed_dir / "__init__.py"
+                init_file = governed_dir / '__init__.py'
                 if not init_file.is_file():
                     continue
-                rel = str(init_file.relative_to(project_root)).replace("\\", "/")
+                rel = str(init_file.relative_to(project_root)).replace('\\', '/')
                 if rel not in seen:
                     seen.add(rel)
                     inits.append(init_file)
     return inits
 
-
 def main() -> int:
     project_root = Path(__file__).resolve().parents[2]
     all_violations: list[str] = []
     known_shims = _load_known_shim_files(project_root)
-
     init_files = _discover_governed_inits(project_root)
-
     for init_path in init_files:
         all_violations.extend(check_init_file(init_path, project_root, known_shims))
-
-    print(f"Init Contract Check (scan mode): checked {len(init_files)} __init__.py files")
-
+    print(f'Init Contract Check (scan mode): checked {len(init_files)} __init__.py files')
     if all_violations:
-        print(f"FAIL: {len(all_violations)} violation(s):")
+        print(f'FAIL: {len(all_violations)} violation(s):')
         for v in all_violations:
-            print(f"  - {v}")
+            print(f'  - {v}')
         return 1
-
-    print("PASS: 0 violations")
+    print('PASS: 0 violations')
     return 0
-
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     sys.exit(main())

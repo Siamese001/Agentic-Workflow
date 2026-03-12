@@ -4,31 +4,17 @@ agentic_core/L1_cognition/reasoning/types/domain_types.py
 Passive data structures for DomainContextManager.
 Extracted from engine/domain_manager.py to prevent circular dependencies.
 """
-
 from __future__ import annotations
-
 from dataclasses import dataclass, field
 from enum import Enum
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 class SharingPolicy(Enum):
     """Policy for cross-domain pattern sharing."""
-
-    NONE = "none"  # No sharing allowed
-    READ_ONLY = "read_only"  # Can read from other domains
-    BIDIRECTIONAL = "bidirectional"  # Full sharing
-    SELECTIVE = "selective"  # Share only specific pattern types
-
+    NONE = 'none'
+    READ_ONLY = 'read_only'
+    BIDIRECTIONAL = 'bidirectional'
+    SELECTIVE = 'selective'
 
 @dataclass
 class DomainContext:
@@ -42,7 +28,6 @@ class DomainContext:
         allowed_sources: Domains allowed to share patterns with this domain
         pattern_types_shared: Pattern types allowed for sharing (if selective)
     """
-
     domain: str
     parent_domain: str | None = None
     sharing_policy: SharingPolicy = SharingPolicy.NONE

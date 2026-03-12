@@ -10,30 +10,16 @@ Defines:
 
 All dataclasses are frozen/immutable. Timestamp excluded from replay surface.
 """
-
 from __future__ import annotations
-
 from dataclasses import dataclass
 from enum import Enum
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 class HealingTier(str, Enum):
     """Healing model tier selected by the centralized router."""
-
-    LOCAL_AGENT = "LOCAL_AGENT"
-    QWEN_VLLM = "QWEN_VLLM"
-    GEMINI_2_5_PRO = "GEMINI_2_5_PRO"
-
+    LOCAL_AGENT = 'LOCAL_AGENT'
+    QWEN_VLLM = 'QWEN_VLLM'
+    GEMINI_2_5_PRO = 'GEMINI_2_5_PRO'
 
 @dataclass(frozen=True, slots=True)
 class HealingInput:
@@ -51,7 +37,6 @@ class HealingInput:
         agent_id: Optional identifier of the agent requesting healing (execution profile enforcement).
         failure_entropy_class: Entropy classification of the failure (LOW/MEDIUM/HIGH).
     """
-
     failure_type: str
     error_signature: str
     trace_id: str
@@ -59,22 +44,21 @@ class HealingInput:
     blast_radius_estimate: float
     required_tools: tuple[str, ...] = ()
     violation_metadata_refs: tuple[str, ...] = ()
-    replay_mode: bool = False  # New: enables deterministic replay
-    agent_id: str = ""  # Optional: agent identity for execution profile enforcement
-    failure_entropy_class: str = "MEDIUM"  # LOW, MEDIUM, HIGH
+    replay_mode: bool = False
+    agent_id: str = ''
+    failure_entropy_class: str = 'MEDIUM'
 
     def __post_init__(self) -> None:
         if not self.failure_type:
-            raise ValueError("failure_type must not be empty")
+            raise ValueError('failure_type must not be empty')
         if not self.error_signature:
-            raise ValueError("error_signature must not be empty")
+            raise ValueError('error_signature must not be empty')
         if not self.trace_id:
-            raise ValueError("trace_id must not be empty")
+            raise ValueError('trace_id must not be empty')
         if self.retry_count < 0:
-            raise ValueError(f"retry_count must be >= 0, got {self.retry_count}")
-        if not (0.0 <= self.blast_radius_estimate <= 1.0):
-            raise ValueError(f"blast_radius_estimate must be in [0.0, 1.0], got {self.blast_radius_estimate}")
-
+            raise ValueError(f'retry_count must be >= 0, got {self.retry_count}')
+        if not 0.0 <= self.blast_radius_estimate <= 1.0:
+            raise ValueError(f'blast_radius_estimate must be in [0.0, 1.0], got {self.blast_radius_estimate}')
 
 @dataclass(frozen=True, slots=True)
 class HealingDecision:
@@ -85,17 +69,15 @@ class HealingDecision:
         tier: Selected healing tier.
         reason_codes: Deterministic list of reasons contributing to the decision.
     """
-
     heal_confidence: float
     tier: HealingTier
     reason_codes: tuple[str, ...]
 
     def __post_init__(self) -> None:
-        if not (0.0 <= self.heal_confidence <= 1.0):
-            raise ValueError(f"heal_confidence must be in [0.0, 1.0], got {self.heal_confidence}")
+        if not 0.0 <= self.heal_confidence <= 1.0:
+            raise ValueError(f'heal_confidence must be in [0.0, 1.0], got {self.heal_confidence}')
         if not isinstance(self.tier, HealingTier):
-            raise ValueError(f"tier must be a HealingTier enum, got {type(self.tier).__name__}")
-
+            raise ValueError(f'tier must be a HealingTier enum, got {type(self.tier).__name__}')
 
 @dataclass(frozen=True, slots=True)
 class InvocationRecord:
@@ -115,18 +97,16 @@ class InvocationRecord:
         historical_data_hash: Hash of historical data version for replay
         replay_key: Mathematical replay key (timestamp excluded)
     """
-
     tier: HealingTier
     model_id: str
     agent_name: str
     trace_id: str
     heal_confidence: float
     method_called: str
-    provider_config_hash: str  # New: ensures replay determinism
-    historical_data_hash: str  # New: versioned historical data
-    replay_key: str  # New: mathematical replay key
-    response_text: str | None = None  # Captured model output for downstream consumers
-
+    provider_config_hash: str
+    historical_data_hash: str
+    replay_key: str
+    response_text: str | None = None
 
 @dataclass(frozen=True, slots=True)
 class FailureSignal:
@@ -144,7 +124,6 @@ class FailureSignal:
         retry_count: Number of prior attempts.
         blast_radius_estimate: Bounded [0.0, 1.0].
     """
-
     source_agent: str
     failure_type: str
     error_signature: str
@@ -155,34 +134,13 @@ class FailureSignal:
 
     def __post_init__(self) -> None:
         if not self.source_agent:
-            raise ValueError("source_agent must not be empty")
+            raise ValueError('source_agent must not be empty')
         if not self.failure_type:
-            raise ValueError("failure_type must not be empty")
+            raise ValueError('failure_type must not be empty')
         if not self.trace_id:
-            raise ValueError("trace_id must not be empty")
+            raise ValueError('trace_id must not be empty')
 
-    def to_healing_input(
-        self,
-        required_tools: tuple[str, ...] = (),
-        violation_metadata_refs: tuple[str, ...] = (),
-    ) -> HealingInput:
+    def to_healing_input(self, required_tools: tuple[str, ...]=(), violation_metadata_refs: tuple[str, ...]=()) -> HealingInput:
         """Convert FailureSignal to HealingInput for L2.3 router consumption."""
-        return HealingInput(
-            agent_id=self.source_agent,
-            failure_type=self.failure_type,
-            error_signature=self.error_signature,
-            trace_id=self.trace_id,
-            retry_count=self.retry_count,
-            blast_radius_estimate=self.blast_radius_estimate,
-            required_tools=required_tools,
-            violation_metadata_refs=violation_metadata_refs,
-        )
-
-
-__all__ = [
-    "FailureSignal",
-    "HealingDecision",
-    "HealingInput",
-    "HealingTier",
-    "InvocationRecord",
-]
+        return HealingInput(agent_id=self.source_agent, failure_type=self.failure_type, error_signature=self.error_signature, trace_id=self.trace_id, retry_count=self.retry_count, blast_radius_estimate=self.blast_radius_estimate, required_tools=required_tools, violation_metadata_refs=violation_metadata_refs)
+__all__ = ['FailureSignal', 'HealingDecision', 'HealingInput', 'HealingTier', 'InvocationRecord']

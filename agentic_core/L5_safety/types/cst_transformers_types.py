@@ -4,50 +4,31 @@ CST Transformers - Concrete LibCST transformations for surgical healing.
 Provides specific transformers for different types of code modifications
 while preserving comments, whitespace, and formatting.
 """
-
 from __future__ import annotations
-
 from dataclasses import dataclass
-
 import libcst as cst
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 @dataclass
 class ImportTarget:
     """Target for import removal operations."""
-
     line_number: int
-    module_name: str | None = None  # For specific module targeting
-    name: str | None = None  # For specific name targeting in from-imports
-
+    module_name: str | None = None
+    name: str | None = None
 
 @dataclass
 class DocstringTarget:
     """Target for docstring insertion operations."""
-
     line_number: int
-    name: str | None = None  # Class or function name
-    node_type: str = "class"  # "class" or "function"
-    docstring: str = '"""TODO: Add docstring."""'  # Docstring to insert
-
+    name: str | None = None
+    node_type: str = 'class'
+    docstring: str = '"""TODO: Add docstring."""'
 
 @dataclass
 class BareExceptTarget:
     """Target for bare except fix operations."""
-
     line_number: int
-    exception_type: str = "Exception"  # Exception type to use
-
+    exception_type: str = 'Exception'
 
 class SurgicalImportRemover(cst.CSTTransformer):
     """
@@ -73,20 +54,16 @@ class SurgicalImportRemover(cst.CSTTransformer):
     def on_visit(self, node: cst.CSTNode) -> bool:
         """Initialize line tracking."""
         if isinstance(node, cst.Module):
-            # Store the original source lines for reference
-            self.lines = node.code.split("\n")
+            self.lines = node.code.split('\n')
         return True
 
     def leave_Import(self, original_node: cst.Import, updated_node: cst.Import) -> cst.Import:
         """Handle Import nodes by checking if they match our targets."""
-        # Check if this import matches our targets
         for alias in updated_node.names:
             name = alias.asname.value if alias.asname else alias.name.value
             if name in self.target_names:
-                # Remove the entire import statement
                 self.modifications_made += 1
                 return cst.RemoveFromParent()
-
         return updated_node
 
     def leave_ImportFrom(self, original_node: cst.ImportFrom, updated_node: cst.ImportFrom) -> cst.ImportFrom:
@@ -95,73 +72,46 @@ class SurgicalImportRemover(cst.CSTTransformer):
 
         Supports both full line removal and partial name removal.
         """
-        if not hasattr(original_node, "position") or not original_node.position:
+        if not hasattr(original_node, 'position') or not original_node.position:
             return updated_node
-
-        # Check if this import line is targeted
         line_targeted = original_node.position.line in self.target_lines
-
-        # Check if module is targeted
         module_targeted = original_node.module and original_node.module.value in self.target_modules
-
         if not (line_targeted or module_targeted):
             return updated_node
-
-        # Find names to remove
         names_to_remove = set()
         for alias in original_node.names:
             name = alias.asname or alias.name
             if name in self.target_names:
                 names_to_remove.add(name)
-
         if not names_to_remove:
-            # No specific names to remove, check if we should remove entire line
-            if line_targeted and not self.target_names:
+            if line_targeted and (not self.target_names):
                 self.modifications_made += 1
                 return cst.RemoveFromParent()
             return updated_node
-
-        # Filter out the names to remove
         remaining_names = []
         for alias in original_node.names:
             name = alias.asname or alias.name
             if name not in names_to_remove:
                 remaining_names.append(alias)
-
         if not remaining_names:
-            # All names removed, remove the entire import
             self.modifications_made += 1
             return cst.RemoveFromParent()
-
-        # Some names remain, update the import with remaining names
         new_node = updated_node.with_changes(names=remaining_names)
         self.modifications_made += 1
         return new_node
 
-    def leave_SimpleStatementLine(
-        self,
-        original_node: cst.SimpleStatementLine,
-        updated_node: cst.SimpleStatementLine,
-    ) -> cst.SimpleStatementLine:
+    def leave_SimpleStatementLine(self, original_node: cst.SimpleStatementLine, updated_node: cst.SimpleStatementLine) -> cst.SimpleStatementLine:
         """
         Handle SimpleStatementLine to remove empty import statements.
 
         This catches cases where we removed all names from a multi-line import
         and need to clean up the empty statement.
         """
-        # Check if this line only contains an empty import statement
         if len(updated_node.body) == 0:
-            # Check if original line was targeted
-            if (
-                hasattr(original_node, "position")
-                and original_node.position
-                and original_node.position.line in self.target_lines
-            ):
+            if hasattr(original_node, 'position') and original_node.position and (original_node.position.line in self.target_lines):
                 self.modifications_made += 1
                 return cst.RemoveFromParent()
-
         return updated_node
-
 
 class SurgicalDocstringInserter(cst.CSTTransformer):
     """
@@ -195,7 +145,6 @@ class SurgicalDocstringInserter(cst.CSTTransformer):
                 if isinstance(first_expr, cst.Expr):
                     value = first_expr.value
                     if isinstance(value, cst.SimpleString | cst.ConcatenatedString):
-                        # Check if it's a docstring (triple-quoted)
                         if isinstance(value, cst.SimpleString):
                             return value.value.startswith(('"""', "'''"))
         return False
@@ -207,57 +156,32 @@ class SurgicalDocstringInserter(cst.CSTTransformer):
     def leave_ClassDef(self, original_node: cst.ClassDef, updated_node: cst.ClassDef) -> cst.ClassDef:
         """Insert docstring into class if targeted by name."""
         class_name = updated_node.name.value
-
         if class_name not in self.target_names:
             return updated_node
-
-        # Check if class already has a docstring
         if self._has_docstring(updated_node.body):
             return updated_node
-
-        # Get the docstring to insert
         target = self.target_map.get(class_name)
         docstring = target.docstring if target else '"""TODO: Add class docstring."""'
-
-        # Create docstring statement
         docstring_stmt = self._create_docstring_stmt(docstring)
-
-        # Build new body with docstring as first statement
         new_body_stmts = [docstring_stmt] + list(updated_node.body.body)
         new_body = updated_node.body.with_changes(body=new_body_stmts)
-
         self.modifications_made += 1
         return updated_node.with_changes(body=new_body)
 
-    def leave_FunctionDef(
-        self,
-        original_node: cst.FunctionDef,
-        updated_node: cst.FunctionDef,
-    ) -> cst.FunctionDef:
+    def leave_FunctionDef(self, original_node: cst.FunctionDef, updated_node: cst.FunctionDef) -> cst.FunctionDef:
         """Insert docstring into function if targeted by name."""
         func_name = updated_node.name.value
-
         if func_name not in self.target_names:
             return updated_node
-
-        # Check if function already has a docstring
         if self._has_docstring(updated_node.body):
             return updated_node
-
-        # Get the docstring to insert
         target = self.target_map.get(func_name)
         docstring = target.docstring if target else '"""TODO: Add function docstring."""'
-
-        # Create docstring statement
         docstring_stmt = self._create_docstring_stmt(docstring)
-
-        # Build new body with docstring as first statement
         new_body_stmts = [docstring_stmt] + list(updated_node.body.body)
         new_body = updated_node.body.with_changes(body=new_body_stmts)
-
         self.modifications_made += 1
         return updated_node.with_changes(body=new_body)
-
 
 class SurgicalBareExceptFixer(cst.CSTTransformer):
     """
@@ -267,7 +191,7 @@ class SurgicalBareExceptFixer(cst.CSTTransformer):
     Fixes ALL bare except clauses found (no position metadata needed).
     """
 
-    def __init__(self, targets: list[BareExceptTarget] | None = None, fix_all: bool = True):
+    def __init__(self, targets: list[BareExceptTarget] | None=None, fix_all: bool=True):
         """
         Initialize bare except fixer.
 
@@ -280,38 +204,22 @@ class SurgicalBareExceptFixer(cst.CSTTransformer):
         self.fix_all = fix_all
         self.modifications_made = 0
 
-    def leave_ExceptHandler(
-        self,
-        original_node: cst.ExceptHandler,
-        updated_node: cst.ExceptHandler,
-    ) -> cst.ExceptHandler:
+    def leave_ExceptHandler(self, original_node: cst.ExceptHandler, updated_node: cst.ExceptHandler) -> cst.ExceptHandler:
         """Fix bare except clauses."""
-        # Check if this is a bare except (no type specified)
         if updated_node.type is not None:
             return updated_node
-
-        # Fix all bare excepts or only targeted ones
         if self.fix_all or (self.target_lines and self._should_fix(original_node)):
-            # Convert bare except to except Exception
-            # Need to add whitespace after "except" keyword
-            exception_type = cst.Name(value="Exception")
-            new_node = updated_node.with_changes(
-                type=exception_type,
-                whitespace_after_except=cst.SimpleWhitespace(" "),
-            )
+            exception_type = cst.Name(value='Exception')
+            new_node = updated_node.with_changes(type=exception_type, whitespace_after_except=cst.SimpleWhitespace(' '))
             self.modifications_made += 1
             return new_node
-
         return updated_node
 
     def _should_fix(self, node: cst.ExceptHandler) -> bool:
         """Check if this node should be fixed based on targets."""
-        # If we have position info, use it
-        if hasattr(node, "position") and node.position:
+        if hasattr(node, 'position') and node.position:
             return node.position.line in self.target_lines
-        # Otherwise, fix all if fix_all is True
         return self.fix_all
-
 
 class SurgicalFutureImportInserter(cst.CSTTransformer):
     """
@@ -320,24 +228,23 @@ class SurgicalFutureImportInserter(cst.CSTTransformer):
     Handles proper placement after shebang and module docstrings.
     """
 
-    def __init__(self, future_imports: list[str] | None = None):
+    def __init__(self, future_imports: list[str] | None=None):
         """
         Initialize with future imports to add.
 
         Args:
             future_imports: List of future imports (e.g., ["annotations"])
         """
-        self.future_imports = future_imports or ["annotations"]
+        self.future_imports = future_imports or ['annotations']
         self.modifications_made = 0
         self.has_future_import = False
 
     def visit_ImportFrom(self, node: cst.ImportFrom) -> bool:
         """Check if __future__ import already exists."""
         if node.module and isinstance(node.module, cst.Attribute):
-            # Handle from __future__.something import ...
             pass
         elif node.module and isinstance(node.module, cst.Name):
-            if node.module.value == "__future__":
+            if node.module.value == '__future__':
                 self.has_future_import = True
         return True
 
@@ -345,13 +252,8 @@ class SurgicalFutureImportInserter(cst.CSTTransformer):
         """Insert __future__ import at the correct position in the module."""
         if self.has_future_import:
             return updated_node
-
-        # Find insertion point (after shebang and docstring)
         insert_idx = 0
         body = list(updated_node.body)
-
-        # Skip shebang comment if present (it's in leading_lines of first statement)
-        # Skip module docstring if present
         if body:
             first_stmt = body[0]
             if isinstance(first_stmt, cst.SimpleStatementLine):
@@ -359,31 +261,12 @@ class SurgicalFutureImportInserter(cst.CSTTransformer):
                     first_expr = first_stmt.body[0]
                     if isinstance(first_expr, cst.Expr):
                         if isinstance(first_expr.value, cst.SimpleString):
-                            # This is a module docstring, insert after it
                             insert_idx = 1
-
-        # Create __future__ import statement
         import_names = [cst.ImportAlias(name=cst.Name(value=name)) for name in self.future_imports]
-        future_import = cst.SimpleStatementLine(
-            body=[
-                cst.ImportFrom(
-                    module=cst.Name(value="__future__"),
-                    names=import_names,
-                ),
-            ],
-            trailing_whitespace=cst.TrailingWhitespace(
-                whitespace=cst.SimpleWhitespace(value=""),
-                comment=None,
-                newline=cst.Newline(value=None),
-            ),
-        )
-
-        # Insert the import
+        future_import = cst.SimpleStatementLine(body=[cst.ImportFrom(module=cst.Name(value='__future__'), names=import_names)], trailing_whitespace=cst.TrailingWhitespace(whitespace=cst.SimpleWhitespace(value=''), comment=None, newline=cst.Newline(value=None)))
         new_body = body[:insert_idx] + [future_import] + body[insert_idx:]
         self.modifications_made += 1
-
         return updated_node.with_changes(body=new_body)
-
 
 class SurgicalTrailingWhitespaceFixer(cst.CSTTransformer):
     """
@@ -396,16 +279,10 @@ class SurgicalTrailingWhitespaceFixer(cst.CSTTransformer):
         """Initialize the trailing whitespace fixer."""
         self.modifications_made = 0
 
-    def leave_TrailingWhitespace(
-        self,
-        original_node: cst.TrailingWhitespace,
-        updated_node: cst.TrailingWhitespace,
-    ) -> cst.TrailingWhitespace:
+    def leave_TrailingWhitespace(self, original_node: cst.TrailingWhitespace, updated_node: cst.TrailingWhitespace) -> cst.TrailingWhitespace:
         """Remove trailing whitespace before newlines."""
-        # Check if there's non-empty whitespace before the newline
-        if updated_node.whitespace.value.strip() == "" and updated_node.whitespace.value:
-            # Has trailing whitespace - remove it
-            new_node = updated_node.with_changes(whitespace=cst.SimpleWhitespace(""))
+        if updated_node.whitespace.value.strip() == '' and updated_node.whitespace.value:
+            new_node = updated_node.with_changes(whitespace=cst.SimpleWhitespace(''))
             self.modifications_made += 1
             return new_node
         return updated_node
@@ -413,11 +290,10 @@ class SurgicalTrailingWhitespaceFixer(cst.CSTTransformer):
     def leave_EmptyLine(self, original_node: cst.EmptyLine, updated_node: cst.EmptyLine) -> cst.EmptyLine:
         """Remove trailing whitespace from empty lines."""
         if updated_node.whitespace.value:
-            new_node = updated_node.with_changes(whitespace=cst.SimpleWhitespace(""))
+            new_node = updated_node.with_changes(whitespace=cst.SimpleWhitespace(''))
             self.modifications_made += 1
             return new_node
         return updated_node
-
 
 class SurgicalBlankLineNormalizer(cst.CSTTransformer):
     """
@@ -426,7 +302,8 @@ class SurgicalBlankLineNormalizer(cst.CSTTransformer):
     Reduces multiple consecutive blank lines to a maximum of 2.
     """
 
-    def __init__(self, max_blank_lines: int = 2):
+    # guardian: allow-magic-config
+    def __init__(self, max_blank_lines: int=2):
         """
         Initialize the blank line normalizer.
 
@@ -440,10 +317,8 @@ class SurgicalBlankLineNormalizer(cst.CSTTransformer):
         """Normalize blank lines in the module body."""
         new_body = []
         consecutive_empty = 0
-
         for stmt in updated_node.body:
-            # Check leading lines for empty lines
-            if hasattr(stmt, "leading_lines") and stmt.leading_lines:
+            if hasattr(stmt, 'leading_lines') and stmt.leading_lines:
                 new_leading = []
                 for line in stmt.leading_lines:
                     if isinstance(line, cst.EmptyLine):
@@ -455,35 +330,27 @@ class SurgicalBlankLineNormalizer(cst.CSTTransformer):
                     else:
                         consecutive_empty = 0
                         new_leading.append(line)
-
                 if len(new_leading) != len(stmt.leading_lines):
                     stmt = stmt.with_changes(leading_lines=new_leading)
-
             new_body.append(stmt)
-            consecutive_empty = 0  # Reset after non-empty statement
-
+            consecutive_empty = 0
         if self.modifications_made > 0:
             return updated_node.with_changes(body=new_body)
         return updated_node
 
-
 @dataclass
 class StructuralTarget:
     """Target for structural fix operations."""
-
     line_number: int
-    fix_type: str  # "trailing_whitespace", "blank_lines"
-
+    fix_type: str
 
 @dataclass
 class TypeHintTarget:
     """Target for type hint operations."""
-
     line_number: int
-    name: str  # Function or parameter name
-    hint_type: str  # "return", "parameter"
-    type_annotation: str  # The type annotation to add
-
+    name: str
+    hint_type: str
+    type_annotation: str
 
 class SurgicalTypeHintInserter(cst.CSTTransformer):
     """
@@ -504,34 +371,24 @@ class SurgicalTypeHintInserter(cst.CSTTransformer):
         self.target_map = {t.name: t for t in targets}
         self.modifications_made = 0
 
-    def leave_FunctionDef(
-        self,
-        original_node: cst.FunctionDef,
-        updated_node: cst.FunctionDef,
-    ) -> cst.FunctionDef:
+    def leave_FunctionDef(self, original_node: cst.FunctionDef, updated_node: cst.FunctionDef) -> cst.FunctionDef:
         """Add type hints to function if targeted."""
         func_name = updated_node.name.value
-
         if func_name not in self.target_names:
             return updated_node
-
         target = self.target_map.get(func_name)
         if not target:
             return updated_node
-
-        # Handle return type hint
-        if target.hint_type == "return" and updated_node.returns is None:
-            # Parse the type annotation
+        if target.hint_type == 'return' and updated_node.returns is None:
             try:
                 annotation = cst.parse_expression(target.type_annotation)
                 new_returns = cst.Annotation(annotation=annotation)
                 updated_node = updated_node.with_changes(returns=new_returns)
                 self.modifications_made += 1
+            # guardian: allow-silent-swallow
             except Exception:
-                pass  # Skip if annotation parsing fails
-
+                pass
         return updated_node
-
 
 def create_type_hint_inserter(violations) -> SurgicalTypeHintInserter | None:
     """
@@ -544,41 +401,26 @@ def create_type_hint_inserter(violations) -> SurgicalTypeHintInserter | None:
         SurgicalTypeHintInserter instance or None if no type hint violations
     """
     type_hint_targets = []
-
     for violation in violations:
-        if violation.constraint_type == "missing_type_hint" and violation.fix_type == "insert":
+        if violation.constraint_type == 'missing_type_hint' and violation.fix_type == 'insert':
             if violation.target_coordinate:
-                # Extract function name and type from message
                 name = None
-                type_annotation = "Any"
-                hint_type = "return"
-
+                type_annotation = 'Any'
+                hint_type = 'return'
                 if violation.message:
                     import re
-
-                    # Try to extract function name
-                    match = re.search(r"[Ff]unction\s+['\"]?(\w+)['\"]?", violation.message)
+                    match = re.search('[Ff]unction\\s+[\'\\"]?(\\w+)[\'\\"]?', violation.message)
                     if match:
                         name = match.group(1)
-
-                    # Try to extract type annotation
-                    type_match = re.search(r"type[:\s]+['\"]?(\w+)['\"]?", violation.message)
+                    type_match = re.search('type[:\\s]+[\'\\"]?(\\w+)[\'\\"]?', violation.message)
                     if type_match:
                         type_annotation = type_match.group(1)
-
                 if name:
-                    target = TypeHintTarget(
-                        line_number=violation.target_coordinate.line,
-                        name=name,
-                        hint_type=hint_type,
-                        type_annotation=type_annotation,
-                    )
+                    target = TypeHintTarget(line_number=violation.target_coordinate.line, name=name, hint_type=hint_type, type_annotation=type_annotation)
                     type_hint_targets.append(target)
-
     if type_hint_targets:
         return SurgicalTypeHintInserter(type_hint_targets)
     return None
-
 
 def create_trailing_whitespace_fixer(violations) -> SurgicalTrailingWhitespaceFixer | None:
     """
@@ -591,12 +433,12 @@ def create_trailing_whitespace_fixer(violations) -> SurgicalTrailingWhitespaceFi
         SurgicalTrailingWhitespaceFixer instance or None if no violations
     """
     for violation in violations:
-        if violation.constraint_type == "trailing_whitespace":
+        if violation.constraint_type == 'trailing_whitespace':
             return SurgicalTrailingWhitespaceFixer()
     return None
 
-
-def create_blank_line_normalizer(violations, max_blank_lines: int = 2) -> SurgicalBlankLineNormalizer | None:
+# guardian: allow-magic-config
+def create_blank_line_normalizer(violations, max_blank_lines: int=2) -> SurgicalBlankLineNormalizer | None:
     """
     Factory function to create blank line normalizer from violations.
 
@@ -608,10 +450,9 @@ def create_blank_line_normalizer(violations, max_blank_lines: int = 2) -> Surgic
         SurgicalBlankLineNormalizer instance or None if no violations
     """
     for violation in violations:
-        if violation.constraint_type == "excessive_blank_lines":
+        if violation.constraint_type == 'excessive_blank_lines':
             return SurgicalBlankLineNormalizer(max_blank_lines=max_blank_lines)
     return None
-
 
 def create_import_remover(violations) -> SurgicalImportRemover | None:
     """
@@ -624,26 +465,17 @@ def create_import_remover(violations) -> SurgicalImportRemover | None:
         SurgicalImportRemover instance or None if no import violations
     """
     import_targets = []
-
     for violation in violations:
-        if violation.constraint_type == "unused_import" and violation.fix_type == "delete":
+        if violation.constraint_type == 'unused_import' and violation.fix_type == 'delete':
             if violation.target_coordinate:
-                # Extract module name from message if possible
                 module_name = None
-                if violation.message and "Unused import:" in violation.message:
-                    module_name = violation.message.split("Unused import:")[-1].strip()
-
-                target = ImportTarget(
-                    line_number=violation.target_coordinate.line,
-                    module_name=module_name,
-                    name=module_name,  # Use same name for both
-                )
+                if violation.message and 'Unused import:' in violation.message:
+                    module_name = violation.message.split('Unused import:')[-1].strip()
+                target = ImportTarget(line_number=violation.target_coordinate.line, module_name=module_name, name=module_name)
                 import_targets.append(target)
-
     if import_targets:
         return SurgicalImportRemover(import_targets)
     return None
-
 
 def create_docstring_inserter(violations) -> SurgicalDocstringInserter | None:
     """
@@ -656,43 +488,29 @@ def create_docstring_inserter(violations) -> SurgicalDocstringInserter | None:
         SurgicalDocstringInserter instance or None if no docstring violations
     """
     docstring_targets = []
-
     for violation in violations:
-        if violation.constraint_type == "missing_docstring" and violation.fix_type == "insert":
+        if violation.constraint_type == 'missing_docstring' and violation.fix_type == 'insert':
             if violation.target_coordinate:
-                # Extract name from message if possible
                 name = None
-                node_type = "class"
+                node_type = 'class'
                 if violation.message:
                     msg_lower = violation.message.lower()
-                    if "class" in msg_lower:
-                        node_type = "class"
-                        # Try to extract class name from patterns like:
-                        # "Class MyClass missing docstring"
-                        # "Class 'MyClass' missing docstring"
+                    if 'class' in msg_lower:
+                        node_type = 'class'
                         import re
-
-                        match = re.search(r"[Cc]lass\s+['\"]?(\w+)['\"]?", violation.message)
+                        match = re.search('[Cc]lass\\s+[\'\\"]?(\\w+)[\'\\"]?', violation.message)
                         if match:
                             name = match.group(1)
-                    elif "function" in msg_lower or "def " in msg_lower:
-                        node_type = "function"
-                        # Try to extract function name
-                        match = re.search(r"[Ff]unction\s+['\"]?(\w+)['\"]?", violation.message)
+                    elif 'function' in msg_lower or 'def ' in msg_lower:
+                        node_type = 'function'
+                        match = re.search('[Ff]unction\\s+[\'\\"]?(\\w+)[\'\\"]?', violation.message)
                         if match:
                             name = match.group(1)
-
-                target = DocstringTarget(
-                    line_number=violation.target_coordinate.line,
-                    name=name,
-                    node_type=node_type,
-                )
+                target = DocstringTarget(line_number=violation.target_coordinate.line, name=name, node_type=node_type)
                 docstring_targets.append(target)
-
     if docstring_targets:
         return SurgicalDocstringInserter(docstring_targets)
     return None
-
 
 def create_bare_except_fixer(violations) -> SurgicalBareExceptFixer | None:
     """
@@ -705,25 +523,16 @@ def create_bare_except_fixer(violations) -> SurgicalBareExceptFixer | None:
         SurgicalBareExceptFixer instance or None if no bare except violations
     """
     except_targets = []
-
     for violation in violations:
-        if violation.constraint_type == "bare_except" and violation.fix_type == "replace":
+        if violation.constraint_type == 'bare_except' and violation.fix_type == 'replace':
             if violation.target_coordinate:
-                target = BareExceptTarget(
-                    line_number=violation.target_coordinate.line,
-                )
+                target = BareExceptTarget(line_number=violation.target_coordinate.line)
                 except_targets.append(target)
-
     if except_targets:
-        # Use fix_all=True since CST nodes don't have reliable position metadata
         return SurgicalBareExceptFixer(targets=except_targets, fix_all=True)
     return None
 
-
-def create_future_import_inserter(
-    violations,
-    future_imports: list[str] | None = None,
-) -> SurgicalFutureImportInserter | None:
+def create_future_import_inserter(violations, future_imports: list[str] | None=None) -> SurgicalFutureImportInserter | None:
     """
     Factory function to create future import inserter from violations.
 
@@ -735,7 +544,6 @@ def create_future_import_inserter(
         SurgicalFutureImportInserter instance or None if no future import violations
     """
     for violation in violations:
-        if violation.constraint_type == "missing_future_import":
+        if violation.constraint_type == 'missing_future_import':
             return SurgicalFutureImportInserter(future_imports=future_imports)
-
     return None

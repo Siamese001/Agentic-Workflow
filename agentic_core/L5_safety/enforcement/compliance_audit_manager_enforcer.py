@@ -1,20 +1,8 @@
 import logging
 from typing import Any
-
 from .sovereign_policy_registry import PolicySeverity, SovereignPolicyRegistry
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 Logger = logging.getLogger(__name__)
-
 
 class ComplianceAuditManager:
     """
@@ -32,17 +20,13 @@ class ComplianceAuditManager:
         Returns False if action should be blocked.
         """
         policy = next((p for p in self.registry.get_all() if p.id == policy_id), None)
-
         if not policy or not policy.enabled:
-            return True  # Allow if policy not found or disabled
-
-        Logger.info(f"[GOVERNANCE] Auditing {policy_id}: {policy.description}")
-
+            return True
+        Logger.info(f'[GOVERNANCE] Auditing {policy_id}: {policy.description}')
         if policy.severity == PolicySeverity.CRITICAL:
             pass
-
         return True
 
     def generate_report(self) -> str:
         """Generate a compliance report."""
-        return f"Governance Report: {len(self.violations)} violations found."
+        return f'Governance Report: {len(self.violations)} violations found.'

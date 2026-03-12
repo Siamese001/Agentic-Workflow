@@ -30,38 +30,18 @@ Usage:
     class HealingAgent(HealerMixin, LightweightAgentBase):
         pass
 """
-
 from __future__ import annotations
-
 import logging
 from typing import Any
-
 from agentic_core.mixins.caching_mixin import CachingMixin
 from agentic_core.mixins.context_management_mixin import ContextManagementMixin
 from agentic_core.mixins.cost_mixin import CostGuardrailMixin
 from agentic_core.mixins.metrics_mixin import MetricsMixin
 from agentic_core.mixins.tracing_mixin import TracingMixin
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 Logger = logging.getLogger(__name__)
 
-
-class LightweightAgentBase(
-    CostGuardrailMixin,
-    ContextManagementMixin,
-    TracingMixin,
-    CachingMixin,
-    MetricsMixin,
-):
+class LightweightAgentBase(CostGuardrailMixin, ContextManagementMixin, TracingMixin, CachingMixin, MetricsMixin):
     """
     Lightweight base agent with minimal infrastructure.
 
@@ -85,8 +65,7 @@ class LightweightAgentBase(
         """Initializes all parent mixins in the correct MRO order."""
         super().__init__(**kwargs)
         self._lightweight_initialized = True
-
-        Logger.debug(f"[LIGHTWEIGHT] {self.__class__.__name__} lightweight agent initialized")
+        Logger.debug(f'[LIGHTWEIGHT] {self.__class__.__name__} lightweight agent initialized')
 
     def verify_lightweight_state(self) -> bool:
         """
@@ -99,34 +78,15 @@ class LightweightAgentBase(
             RuntimeError: If any initialization check fails
         """
         errors = []
-
-        if not getattr(self, "_lightweight_initialized", False):
-            errors.append(
-                f"{self.__class__.__name__}: _lightweight_initialized is False. "
-                "Did you forget to call super().__post_init__()?",
-            )
-
+        if not getattr(self, '_lightweight_initialized', False):
+            errors.append(f'{self.__class__.__name__}: _lightweight_initialized is False. Did you forget to call super().__post_init__()?')
         if errors:
-            error_msg = "Lightweight initialization failed:\n" + "\n".join(f"  - {e}" for e in errors)
-            Logger.error(f"[LIGHTWEIGHT] {error_msg}")
+            error_msg = 'Lightweight initialization failed:\n' + '\n'.join((f'  - {e}' for e in errors))
+            Logger.error(f'[LIGHTWEIGHT] {error_msg}')
             raise RuntimeError(error_msg)
-
         return True
 
     def get_lightweight_status(self) -> dict[str, Any]:
         """Get current status of lightweight infrastructure."""
-        return {
-            "lightweight_initialized": getattr(self, "_lightweight_initialized", False),
-            "class_name": self.__class__.__name__,
-            "mro_depth": len(type(self).__mro__),
-            "capabilities": [
-                "cost_control",
-                "context_management",
-                "tracing",
-                "caching",
-                "metrics",
-            ],
-        }
-
-
-__all__ = ["LightweightAgentBase"]
+        return {'lightweight_initialized': getattr(self, '_lightweight_initialized', False), 'class_name': self.__class__.__name__, 'mro_depth': len(type(self).__mro__), 'capabilities': ['cost_control', 'context_management', 'tracing', 'caching', 'metrics']}
+__all__ = ['LightweightAgentBase']

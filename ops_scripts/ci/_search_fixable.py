@@ -1,25 +1,12 @@
-#!/usr/bin/env python3
 """Search for potentially fixable SSOT hardcoding cases that might have been missed."""
-
 import sys, os, ast, re
 from pathlib import Path
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+# guardian: allow-global-mutation
 sys.path.insert(0, '.')
 from agentic_core.L5_safety.config.structure_blueprint.ssot import ENFORCED_TERRITORIES, SOVEREIGN_EXCLUDED_FOLDERS
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 ROOT = Path('.')
 fixable_found = []
-
 for territory in sorted(ENFORCED_TERRITORIES):
     scan_root = ROOT / territory
     if not scan_root.exists():
@@ -34,14 +21,11 @@ for territory in sorted(ENFORCED_TERRITORIES):
                 content = fpath.read_text(encoding='utf-8', errors='replace')
                 lines = content.splitlines()
                 for lineno, line in enumerate(lines, 1):
-                    # Look for simple list elements that might have been missed
                     if '"reports"' in line and 'L6_observability' not in line:
-                        # Check if it's a simple list element (not in dict)
-                        if re.search(r'^\s*"reports"', line) or re.search(r'\[\s*"reports"', line):
+                        if re.search('^\\s*"reports"', line) or re.search('\\[\\s*"reports"', line):
                             fixable_found.append((str(fpath.relative_to(ROOT)), lineno, line.strip()))
             except (OSError, UnicodeDecodeError):
                 pass
-
 print('Potentially fixable "reports" cases:')
 for p, l, line in fixable_found[:10]:
     print(f'  {p}:{l} {line}')

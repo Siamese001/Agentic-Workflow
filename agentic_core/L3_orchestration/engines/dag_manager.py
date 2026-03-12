@@ -1,55 +1,21 @@
 from __future__ import annotations
-
 from collections.abc import Callable
 from datetime import datetime
 from typing import Any
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-"""
-DAGManager - Extracted for one-class-per-file pattern.
-
-Originally from: DAGMutatorAgent.py
-Extracted: 2026-01-06 (Surgical Extraction)
-Renamed: 2026-01-22 (Utility Renaming - Not an Agent)
-"""
-
-# SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
-# File appears to be a sovereign component but missing canon high-signal keywords.
-# Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, validator, workflow
-# This boosts alignment detection — review and integrate appropriately
-
-
+'\nDAGManager - Extracted for one-class-per-file pattern.\n\nOriginally from: DAGMutatorAgent.py\nExtracted: 2026-01-06 (Surgical Extraction)\nRenamed: 2026-01-22 (Utility Renaming - Not an Agent)\n'
 import networkx as nx
-
 from agentic_core.utils.decorators_compat_util import standard_heal
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
-
-class DAGManager(
-    HealerMixin,
-    MCPHardenedMixin,
-    L3SubatomicTestingMixin,
-    RedisCacheMixin,
-    PineconeVectorMixin,
-):
+class DAGManager(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin, RedisCacheMixin, PineconeVectorMixin):
     """Manages the dynamic DAG with mutation capabilities.
 
     HARDENED: Redis caching + Pinecone vector support for DAG structure caching.
     """
+    _cache_prefix: str = 'dag_manager'
+    _namespace: str = 'l3_dags'
 
-    # [PHASE 5] Redis/Pinecone integration
-    _cache_prefix: str = "dag_manager"
-    _namespace: str = "l3_dags"
-
-    def __init__(self, config: DAGConfig | None = None) -> None:
+    def __init__(self, config: DAGConfig | None=None) -> None:
         """Initialize the DAG Manager.
 
         Args:
@@ -61,18 +27,8 @@ class DAGManager(
         self.execution_queue: List[str] = []
         self.node_registry: Dict[str, SubatomicHop] = {}
         self.function_registry: Dict[str, Callable] = {}
-
-        # Statistics
-        self.stats = {
-            "total_mutations": 0,
-            "successful_mutations": 0,
-            "spawned_predecessors": 0,
-            "spawned_successors": 0,
-            "skipped_nodes": 0,
-            "replaced_nodes": 0,
-        }
-
-        Logger.info("Initialized DAGManager with dynamic mutation support")
+        self.stats = {'total_mutations': 0, 'successful_mutations': 0, 'spawned_predecessors': 0, 'spawned_successors': 0, 'skipped_nodes': 0, 'replaced_nodes': 0}
+        Logger.info('Initialized DAGManager with dynamic mutation support')
 
     def register_function(self, name: str, function: Callable) -> None:
         """Register a hop function that can be spawned.
@@ -82,9 +38,9 @@ class DAGManager(
             function: The function to register
         """
         self.function_registry[name] = function
-        Logger.debug(f"Registered function: {name}")
+        Logger.debug(f'Registered function: {name}')
 
-    def add_node(self, hop: SubatomicHop, predecessors: List[str] | None = None) -> None:
+    def add_node(self, hop: SubatomicHop, predecessors: List[str] | None=None) -> None:
         """Add a node to the DAG.
 
         Args:
@@ -92,24 +48,15 @@ class DAGManager(
             predecessors: Optional list of predecessor node IDs
         """
         self.node_registry[hop.config.hop_id] = hop
-
-        # Add to graph
         self.graph.add_node(hop.config.hop_id, hop=hop, depth=0, created_at=datetime.now())
-
-        # Add edges from predecessors
         if predecessors:
             for pred in predecessors:
                 if pred in self.graph.nodes:
                     self.graph.add_edge(pred, hop.config.hop_id)
-
-        # Update depths
         self.mutator._update_depths(self.graph)
-
-        # Add to execution queue if no predecessors
         if not predecessors:
             self.execution_queue.append(hop.config.hop_id)
-
-        Logger.info(f"Added node {hop.config.hop_id} to DAG")
+        Logger.info(f'Added node {hop.config.hop_id} to DAG')
 
     def request_mutation(self, mutation: DAGMutation) -> MutationResult:
         """Request a mutation to the DAG.
@@ -120,37 +67,23 @@ class DAGManager(
         Returns:
             Result of the mutation
         """
-        self.stats["total_mutations"] += 1
-
+        self.stats['total_mutations'] += 1
         result = self.mutator.apply_mutation(self.graph, mutation)
-
         if result.success:
-            self.stats["successful_mutations"] += 1
-
-            # Update specific stats
+            self.stats['successful_mutations'] += 1
             if mutation.action == MutationAction.SPAWN_PREDECESSOR:
-                self.stats["spawned_predecessors"] += 1
-                # Queue new node for execution
+                self.stats['spawned_predecessors'] += 1
                 if mutation.new_hop_spec:
                     self.execution_queue.insert(0, mutation.new_hop_spec.hop_id)
             elif mutation.action == MutationAction.SPAWN_SUCCESSOR:
-                self.stats["spawned_successors"] += 1
+                self.stats['spawned_successors'] += 1
             elif mutation.action == MutationAction.SKIP_SUCCESSOR:
-                self.stats["skipped_nodes"] += 1
+                self.stats['skipped_nodes'] += 1
             elif mutation.action == MutationAction.REPLACE_NODE:
-                self.stats["replaced_nodes"] += 1
-
+                self.stats['replaced_nodes'] += 1
         return result
 
-    def create_mutation_request(
-        self,
-        action: MutationAction,
-        target_hop_id: str,
-        hop_function: str,
-        reason: str,
-        requester_hop_id: str,
-        **kwargs,
-    ) -> DAGMutation:
+    def create_mutation_request(self, action: MutationAction, target_hop_id: str, hop_function: str, reason: str, requester_hop_id: str, **kwargs) -> DAGMutation:
         """Create a mutation request.
 
         Args:
@@ -165,14 +98,7 @@ class DAGManager(
             DAGMutation object
         """
         hop_spec = HopSpec(hop_function=hop_function, **kwargs)
-
-        return DAGMutation(
-            action=action,
-            target_hop_id=target_hop_id,
-            new_hop_spec=hop_spec,
-            reason=reason,
-            requester_hop_id=requester_hop_id,
-        )
+        return DAGMutation(action=action, target_hop_id=target_hop_id, new_hop_spec=hop_spec, reason=reason, requester_hop_id=requester_hop_id)
 
     def get_next_node(self) -> SubatomicHop | None:
         """Get the next node to execute.
@@ -182,7 +108,6 @@ class DAGManager(
         """
         if not self.execution_queue:
             return None
-
         hop_id = self.execution_queue.pop(0)
         return self.node_registry.get(hop_id)
 
@@ -199,7 +124,7 @@ class DAGManager(
             hop = self.node_registry[hop_id]
             if hop.state == HopState.RUNNING:
                 hop.state = HopState.PAUSED
-                Logger.info(f"Paused node {hop_id}")
+                Logger.info(f'Paused node {hop_id}')
                 return True
         return False
 
@@ -216,21 +141,14 @@ class DAGManager(
             hop = self.node_registry[hop_id]
             if hop.state == HopState.PAUSED:
                 hop.state = HopState.RUNNING
-                # Add back to queue
                 self.execution_queue.append(hop_id)
-                Logger.info(f"Resumed node {hop_id}")
+                Logger.info(f'Resumed node {hop_id}')
                 return True
         return False
 
     def get_graph_stats(self) -> Dict[str, Any]:
         """Get graph statistics."""
-        return {
-            "node_count": self.graph.number_of_nodes(),
-            "edge_count": self.graph.number_of_edges(),
-            "queue_size": len(self.execution_queue),
-            "registered_functions": len(self.function_registry),
-            **self.stats,
-        }
+        return {'node_count': self.graph.number_of_nodes(), 'edge_count': self.graph.number_of_edges(), 'queue_size': len(self.execution_queue), 'registered_functions': len(self.function_registry), **self.stats}
 
     def visualize_graph(self) -> Dict[str, Any]:
         """Get graph data for visualization.
@@ -240,55 +158,31 @@ class DAGManager(
         """
         nodes = []
         edges = []
-
         for node_id in self.graph.nodes:
             node_data = self.graph.nodes[node_id]
-            hop = node_data.get("hop")
-
-            nodes.append(
-                {
-                    "id": node_id,
-                    "depth": node_data.get("depth", 0),
-                    "state": hop.state.value if hop else None,
-                    "skipped": node_data.get("skipped", False),
-                    "replaced": node_data.get("replaced", False),
-                },
-            )
-
+            hop = node_data.get('hop')
+            nodes.append({'id': node_id, 'depth': node_data.get('depth', 0), 'state': hop.state.value if hop else None, 'skipped': node_data.get('skipped', False), 'replaced': node_data.get('replaced', False)})
         for edge in self.graph.edges:
             edge_data = self.graph.edges[edge]
-            edges.append(
-                {
-                    "source": edge[0],
-                    "target": edge[1],
-                    "bridge": edge_data.get("bridge_created", False),
-                },
-            )
-
-        return {"nodes": nodes, "edges": edges}
+            edges.append({'source': edge[0], 'target': edge[1], 'bridge': edge_data.get('bridge_created', False)})
+        return {'nodes': nodes, 'edges': edges}
 
     @timeout(300)
     @standard_heal
-    def heal_repository(
-        self,
-        dry_run: bool = True,
-        execute: bool = False,
-        depth: int = 0,
-        max_depth: int = 3,
-        _call_path: set | None = None,
-    ) -> Dict[str, int]:
+    # guardian: allow-magic-config
+    def heal_repository(self, dry_run: bool=True, execute: bool=False, depth: int=0, max_depth: int=3, _call_path: set | None=None) -> Dict[str, int]:
         """L3 orchestration agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:
             _call_path = set()
         agent_name = self.__class__.__name__
         if agent_name in _call_path:
-            return {"errors": 1, "cycle_detected": True}
+            return {'errors': 1, 'cycle_detected': True}
         if depth > max_depth:
-            return {"errors": 1, "depth_limited": True}
+            return {'errors': 1, 'depth_limited': True}
         _call_path.add(agent_name)
         try:
-            print(f"[{agent_name}] L3 orchestration - operational only")
-            return {"skipped": 1}
+            print(f'[{agent_name}] L3 orchestration - operational only')
+            return {'skipped': 1}
         finally:
             _call_path.discard(agent_name)

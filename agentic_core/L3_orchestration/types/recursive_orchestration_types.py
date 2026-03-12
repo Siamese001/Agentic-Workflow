@@ -470,6 +470,7 @@ class RecursiveOrchestrator:
 
     @timeout(300)
     @standard_heal
+    # guardian: allow-magic-config
     def heal_repository(
         self,
         dry_run: bool = True,

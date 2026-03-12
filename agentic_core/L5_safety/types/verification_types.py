@@ -5,26 +5,14 @@ This protocol allows SovereignBaseAgent to type-hint against verification
 capabilities without importing concrete L5 implementations, preventing
 circular dependencies.
 """
-
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from typing import Any
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 @dataclass
 class VerificationRequest:
     """Request for verification operation."""
-
     file_path: str
     action_type: str
     target_node: str
@@ -34,11 +22,9 @@ class VerificationRequest:
         if self.context is None:
             self.context = {}
 
-
 @dataclass
 class VerificationResult:
     """Result of verification operation."""
-
     success: bool
     reason: str | None = None
     metadata: dict[str, Any] | None = field(default_factory=dict)
@@ -47,23 +33,13 @@ class VerificationResult:
         if self.metadata is None:
             self.metadata = {}
 
-
 class VerificationGateProtocol(ABC):
     """Protocol for verification gate implementations.
 
     Implementations must verify that target nodes exist before allowing
     modifications. This prevents hallucinated fixes from being executed.
     """
-
-    SUPPORTED_ACTIONS: list[str] = [
-        "delete_import",
-        "modify_function",
-        "remove_class",
-        "modify_method",
-        "modify_variable",
-        "add_import",
-        "rename_symbol",
-    ]
+    SUPPORTED_ACTIONS: list[str] = ['delete_import', 'modify_function', 'remove_class', 'modify_method', 'modify_variable', 'add_import', 'rename_symbol']
 
     @abstractmethod
     def verify_action(self, request: VerificationRequest) -> VerificationResult:
@@ -94,11 +70,11 @@ class VerificationGateProtocol(ABC):
             Error message if invalid, None if valid
         """
         if not request.file_path:
-            return "file_path is required"
+            return 'file_path is required'
         if not request.action_type:
-            return "action_type is required"
+            return 'action_type is required'
         if request.action_type not in self.SUPPORTED_ACTIONS:
-            return f"unsupported action_type: {request.action_type}"
+            return f'unsupported action_type: {request.action_type}'
         if not request.target_node:
-            return "target_node is required"
+            return 'target_node is required'
         return None

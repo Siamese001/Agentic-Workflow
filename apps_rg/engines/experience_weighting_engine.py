@@ -2,26 +2,12 @@
 Experience Weighting Engine - Experience relevance weighting
 Refactored from weight_experience_match.py
 """
-
 from __future__ import annotations
-
 import logging
 from typing import Any
-
 from apps_rg.engines.base_rg_engine import BaseRGEngine
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 Logger = logging.getLogger(__name__)
-
 
 class ExperienceWeightingEngine(BaseRGEngine):
     """
@@ -29,41 +15,30 @@ class ExperienceWeightingEngine(BaseRGEngine):
     """
 
     def __init__(self, ctx: Any) -> None:
-        super().__init__(ctx, node_id="QUALITY.EXPERIENCE_WEIGHTING")
+        super().__init__(ctx, node_id='QUALITY.EXPERIENCE_WEIGHTING')
 
     async def execute(self, experiences: list[dict[str, Any]], target_role: str) -> list[dict[str, Any]]:
         """
         Calculate relevance weights for experience sections.
         """
-        self._mcp_audit("experience_weighting")
-
+        self._mcp_audit('experience_weighting')
         weighted_experiences = []
-
         for exp in experiences:
             weight = self._calculate_relevance(exp, target_role)
-            exp["relevance_weight"] = weight
+            exp['relevance_weight'] = weight
             weighted_experiences.append(exp)
-
-        # Sort by weight
-        weighted_experiences.sort(key=lambda x: x["relevance_weight"], reverse=True)
-
-        self.record_pass(f"Weighted {len(weighted_experiences)} experiences")
+        weighted_experiences.sort(key=lambda x: x['relevance_weight'], reverse=True)
+        self.record_pass(f'Weighted {len(weighted_experiences)} experiences')
         return weighted_experiences
 
     def _calculate_relevance(self, experience: dict[str, Any], target_role: str) -> float:
         """Calculate relevance score."""
-        score = 0.5  # Base score
-
-        title = experience.get("title", "").lower()
+        score = 0.5
+        title = experience.get('title', '').lower()
         target_lower = target_role.lower()
-
-        # Exact role match
         if target_lower in title:
             score += 0.5
-
-        # Related keywords
-        related_keywords = ["senior", "lead", "principal", "staff"]
-        if any(kw in title for kw in related_keywords):
+        related_keywords = ['senior', 'lead', 'principal', 'staff']
+        if any((kw in title for kw in related_keywords)):
             score += 0.2
-
         return min(score, 1.0)

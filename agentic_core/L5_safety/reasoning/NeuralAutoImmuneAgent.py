@@ -4,28 +4,16 @@ Relocated from agentic_core/mixins/neural_autoimmune_mixin.py.
 This is an AGENT (inherits SovereignBaseAgent), not a mixin.
 Stub shadow classes removed — use canonical mixin imports instead.
 """
-
 from __future__ import annotations
-
 from dataclasses import dataclass
 from typing import Any
-
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.utils.timeout_decorator_util import timeout
-
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 @dataclass
 class NeuralAutoImmuneAgent(SovereignBaseAgent):
+
     def __post_init__(self):
         super().__post_init__()
 
@@ -50,20 +38,9 @@ class NeuralAutoImmuneAgent(SovereignBaseAgent):
                 - artifacts: List of modified files
                 - errors: List of error messages
         """
-        violation.get("file") or violation.get("file_path")
-        violation_type = violation.get("type", "unknown")
-
+        violation.get('file') or violation.get('file_path')
+        violation_type = violation.get('type', 'unknown')
         try:
-            return {
-                "status": "skipped",
-                "details": f"NeuralAutoImmuneAgent heal() not yet implemented for {violation_type}",
-                "artifacts": [],
-                "errors": [],
-            }
+            return {'status': 'skipped', 'details': f'NeuralAutoImmuneAgent heal() not yet implemented for {violation_type}', 'artifacts': [], 'errors': []}
         except Exception as e:
-            return {
-                "status": "failed",
-                "details": f"NeuralAutoImmuneAgent heal() failed: {str(e)}",
-                "artifacts": [],
-                "errors": [str(e)],
-            }
+            return {'status': 'failed', 'details': f'NeuralAutoImmuneAgent heal() failed: {str(e)}', 'artifacts': [], 'errors': [str(e)]}

@@ -8,35 +8,14 @@ D0InjectionEngine expects a tuple[RoleFence, ...].
 This adapter converts between the two representations without mutating either side.
 Falls back to the null stub if D0InjectionEngine cannot be imported.
 """
-
 from __future__ import annotations
-
 import logging
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 logger = logging.getLogger(__name__)
 
-# ---------------------------------------------------------------------------
-# Try to import real D0InjectionEngine; null stub on failure
-# ---------------------------------------------------------------------------
-
-
 def _build_real_engine():
-    from agentic_core.L5_safety.enforcement.d0_injection_engine_enforcer import (
-        D0InjectionEngine,
-        RoleFence,
-    )
-    return D0InjectionEngine, RoleFence
-
+    from agentic_core.L5_safety.enforcement.d0_injection_engine_enforcer import D0InjectionEngine, RoleFence
+    return (D0InjectionEngine, RoleFence)
 
 class D0EngineAdapter:
     """
@@ -55,7 +34,7 @@ class D0EngineAdapter:
             self._engine = D0InjectionEngine()
             self._real = True
         except ImportError:
-            logger.warning("D0InjectionEngine unavailable; using null fallback")
+            logger.warning('D0InjectionEngine unavailable; using null fallback')
             self._engine = None
             self._RoleFence = None
             self._real = False
@@ -73,20 +52,17 @@ class D0EngineAdapter:
         """
         if not self._real or not d0_injections:
             return d0_injections
-
         fences = []
-        for segment in d0_injections.split("|"):
+        for segment in d0_injections.split('|'):
             segment = segment.strip()
-            if ":" in segment:
-                fence_id, text = segment.split(":", 1)
+            if ':' in segment:
+                fence_id, text = segment.split(':', 1)
                 fence_id = fence_id.strip()
                 text = text.strip()
                 if fence_id:
                     fences.append(self._RoleFence(fence_id=fence_id, text=text))
-
         if not fences:
             return d0_injections
-
         return self._engine.render_d0(fences=tuple(fences))
 
     @property

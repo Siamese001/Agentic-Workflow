@@ -13,26 +13,13 @@ Normalization rules:
   5. UTF-8 byte encoding only
   6. Compact separators (",", ":") — no whitespace variance
 """
-
 from __future__ import annotations
-
 import json
 from typing import Any
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 _FLOAT_PRECISION = 6
 
-
-def _normalize(obj: Any) -> Any:  # noqa: ANN401
+def _normalize(obj: Any) -> Any:
     """Recursively normalize a Python object for canonical JSON.
 
     - dict: sorted keys, values normalized recursively
@@ -56,8 +43,7 @@ def _normalize(obj: Any) -> Any:  # noqa: ANN401
         return None
     return str(obj)
 
-
-def canonical_bytes(obj: Any) -> bytes:  # noqa: ANN401
+def canonical_bytes(obj: Any) -> bytes:
     """Produce deterministic canonical bytes for hash computation.
 
     This is the ONLY sanctioned serialization path for governance
@@ -65,16 +51,9 @@ def canonical_bytes(obj: Any) -> bytes:  # noqa: ANN401
     separators, and all normalizations applied.
     """
     normalized = _normalize(obj)
-    return json.dumps(
-        normalized,
-        sort_keys=True,
-        separators=(",", ":"),
-        ensure_ascii=True,
-    ).encode("utf-8")
+    return json.dumps(normalized, sort_keys=True, separators=(',', ':'), ensure_ascii=True).encode('utf-8')
 
-
-def canonical_hash(obj: Any) -> str:  # noqa: ANN401
+def canonical_hash(obj: Any) -> str:
     """Convenience: canonical_bytes → sha256 hex digest."""
     import hashlib
-
     return hashlib.sha256(canonical_bytes(obj)).hexdigest()

@@ -3,25 +3,12 @@
 Provides file-backed and in-memory implementations of the ``TelemetryStore``
 protocol defined in ``meta_learning_pipeline.py``.
 """
-
 from __future__ import annotations
-
 import json
 import logging
 from pathlib import Path
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 logger = logging.getLogger(__name__)
-
 
 class FileBackedTelemetryStore:
     """File-backed telemetry store reading from a JSONL telemetry log.
@@ -39,9 +26,7 @@ class FileBackedTelemetryStore:
     def __init__(self, telemetry_path: Path) -> None:
         self._path = Path(telemetry_path)
 
-    def read_events(
-        self, window_start_utc: int, window_end_utc: int
-    ) -> tuple[tuple[int, str, bytes], ...]:
+    def read_events(self, window_start_utc: int, window_end_utc: int) -> tuple[tuple[int, str, bytes], ...]:
         """Read telemetry events within the given time window.
 
         Returns
@@ -51,29 +36,24 @@ class FileBackedTelemetryStore:
         """
         if not self._path.exists():
             return ()
-
         events: list[tuple[int, str, bytes]] = []
         try:
-            for line in self._path.read_text(encoding="utf-8").splitlines():
+            for line in self._path.read_text(encoding='utf-8').splitlines():
                 line = line.strip()
                 if not line:
                     continue
                 try:
                     obj = json.loads(line)
-                    ts = int(obj.get("timestamp_utc", 0))
+                    ts = int(obj.get('timestamp_utc', 0))
                     if window_start_utc <= ts <= window_end_utc:
-                        event_type = str(obj.get("event_type", "unknown"))
-                        payload = json.dumps(
-                            obj.get("payload", {}), separators=(",", ":"), sort_keys=True
-                        ).encode("utf-8")
+                        event_type = str(obj.get('event_type', 'unknown'))
+                        payload = json.dumps(obj.get('payload', {}), separators=(',', ':'), sort_keys=True).encode('utf-8')
                         events.append((ts, event_type, payload))
                 except (json.JSONDecodeError, ValueError, TypeError):
                     continue
         except OSError as exc:
-            logger.debug("Failed to read telemetry file %s: %s", self._path, exc)
-
+            logger.debug('Failed to read telemetry file %s: %s', self._path, exc)
         return tuple(events)
-
 
 class InMemoryTelemetryStore:
     """In-memory telemetry store for testing."""
@@ -84,15 +64,6 @@ class InMemoryTelemetryStore:
     def add_event(self, timestamp_utc: int, event_type: str, payload_bytes: bytes) -> None:
         self._events.append((timestamp_utc, event_type, payload_bytes))
 
-    def read_events(
-        self, window_start_utc: int, window_end_utc: int
-    ) -> tuple[tuple[int, str, bytes], ...]:
-        return tuple(
-            e for e in self._events if window_start_utc <= e[0] <= window_end_utc
-        )
-
-
-__all__ = [
-    "FileBackedTelemetryStore",
-    "InMemoryTelemetryStore",
-]
+    def read_events(self, window_start_utc: int, window_end_utc: int) -> tuple[tuple[int, str, bytes], ...]:
+        return tuple((e for e in self._events if window_start_utc <= e[0] <= window_end_utc))
+__all__ = ['FileBackedTelemetryStore', 'InMemoryTelemetryStore']

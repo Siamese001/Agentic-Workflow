@@ -8,27 +8,13 @@ SSOT Consolidation (Jan 20, 2026):
 All file I/O operations should use these utilities instead of
 raw open()/write() calls.
 """
-
 import logging
 import os
 import shutil
 from pathlib import Path
-
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-# Configure logger
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 logger = logging.getLogger(__name__)
-
 
 def ensure_directory(path: str | Path) -> bool:
     """
@@ -44,16 +30,10 @@ def ensure_directory(path: str | Path) -> bool:
         Path(path).mkdir(parents=True, exist_ok=True)
         return True
     except OSError as e:
-        logger.error(f"Failed to create directory {path}: {e}")
+        logger.error(f'Failed to create directory {path}: {e}')
         return False
 
-
-def safe_read_file(
-    path: str | Path,
-    encoding: str = "utf-8",
-    default=None,
-    errors: str = "replace",
-) -> str | None:
+def safe_read_file(path: str | Path, encoding: str='utf-8', default=None, errors: str='replace') -> str | None:
     """
     Safely read a file with proper error handling.
 
@@ -69,11 +49,10 @@ def safe_read_file(
     try:
         return Path(path).read_text(encoding=encoding, errors=errors)
     except (OSError, UnicodeDecodeError) as e:
-        logger.warning(f"Failed to read file {path}: {e}")
+        logger.warning(f'Failed to read file {path}: {e}')
         return default
 
-
-def safe_write_file(path: str | Path, content: str, encoding: str = "utf-8", backup: bool = True) -> bool:
+def safe_write_file(path: str | Path, content: str, encoding: str='utf-8', backup: bool=True) -> bool:
     """
     Safely write a file using atomic write pattern.
 
@@ -87,28 +66,21 @@ def safe_write_file(path: str | Path, content: str, encoding: str = "utf-8", bac
         True if write was successful, False otherwise.
     """
     path = Path(path)
-
-    # Create backup if requested and file exists
     if backup and path.exists():
-        backup_path = path.with_suffix(f"{path.suffix}.bak")
+        backup_path = path.with_suffix(f'{path.suffix}.bak')
         try:
             shutil.copy2(path, backup_path)
         except OSError as e:
-            logger.warning(f"Failed to create backup of {path}: {e}")
-
-    # Ensure parent directory exists
+            logger.warning(f'Failed to create backup of {path}: {e}')
     ensure_directory(path.parent)
-
-    # Write to temporary file first, then atomic rename
-    temp_path = path.with_suffix(f"{path.suffix}.tmp")
+    temp_path = path.with_suffix(f'{path.suffix}.tmp')
     try:
-        assert_no_persistent_write("L0", "write_text")  # G-12-1: mutation prohibition guard
+        assert_no_persistent_write('L0', 'write_text')
         temp_path.write_text(content, encoding=encoding)
         temp_path.replace(path)
         return True
     except OSError as e:
-        logger.error(f"Failed to write file {path}: {e}")
-        # Clean up temp file if it exists
+        logger.error(f'Failed to write file {path}: {e}')
         if temp_path.exists():
             try:
                 temp_path.unlink()
@@ -116,8 +88,7 @@ def safe_write_file(path: str | Path, content: str, encoding: str = "utf-8", bac
                 pass
         return False
 
-
-def safe_append_file(path: str | Path, content: str, encoding: str = "utf-8") -> bool:
+def safe_append_file(path: str | Path, content: str, encoding: str='utf-8') -> bool:
     """
     Safely append content to a file.
 
@@ -132,15 +103,14 @@ def safe_append_file(path: str | Path, content: str, encoding: str = "utf-8") ->
     try:
         path = Path(path)
         ensure_directory(path.parent)
-        with open(path, "a", encoding=encoding) as f:
+        with open(path, 'a', encoding=encoding) as f:
             f.write(content)
         return True
     except OSError as e:
-        logger.error(f"Failed to append to file {path}: {e}")
+        logger.error(f'Failed to append to file {path}: {e}')
         return False
 
-
-def safe_delete_file(path: str | Path, backup: bool = True) -> bool:
+def safe_delete_file(path: str | Path, backup: bool=True) -> bool:
     """
     Safely delete a file with optional backup.
 
@@ -152,27 +122,22 @@ def safe_delete_file(path: str | Path, backup: bool = True) -> bool:
         True if deletion was successful, False otherwise.
     """
     path = Path(path)
-
     if not path.exists():
         return True
-
-    # Create backup if requested
     if backup:
-        backup_path = path.with_suffix(f"{path.suffix}.bak")
+        backup_path = path.with_suffix(f'{path.suffix}.bak')
         try:
             shutil.copy2(path, backup_path)
         except OSError as e:
-            logger.warning(f"Failed to create backup of {path}: {e}")
-
+            logger.warning(f'Failed to create backup of {path}: {e}')
     try:
         path.unlink()
         return True
     except OSError as e:
-        logger.error(f"Failed to delete file {path}: {e}")
+        logger.error(f'Failed to delete file {path}: {e}')
         return False
 
-
-def safe_move_file(src: str | Path, dst: str | Path, backup: bool = True) -> bool:
+def safe_move_file(src: str | Path, dst: str | Path, backup: bool=True) -> bool:
     """
     Safely move a file with optional backup of destination.
 
@@ -184,31 +149,24 @@ def safe_move_file(src: str | Path, dst: str | Path, backup: bool = True) -> boo
     Returns:
         True if move was successful, False otherwise.
     """
-    src, dst = Path(src), Path(dst)
-
+    src, dst = (Path(src), Path(dst))
     if not src.exists():
-        logger.error(f"Source file {src} does not exist")
+        logger.error(f'Source file {src} does not exist')
         return False
-
-    # Create backup of destination if it exists
     if backup and dst.exists():
-        backup_path = dst.with_suffix(f"{dst.suffix}.bak")
+        backup_path = dst.with_suffix(f'{dst.suffix}.bak')
         try:
             shutil.copy2(dst, backup_path)
         except OSError as e:
-            logger.warning(f"Failed to create backup of {dst}: {e}")
-
-    # Ensure destination directory exists
+            logger.warning(f'Failed to create backup of {dst}: {e}')
     ensure_directory(dst.parent)
-
     try:
-        assert_no_persistent_write("L0", "shutil.mutate")  # G-12-1: mutation prohibition guard
+        assert_no_persistent_write('L0', 'shutil.mutate')
         shutil.move(str(src), str(dst))
         return True
     except OSError as e:
-        logger.error(f"Failed to move file {src} to {dst}: {e}")
+        logger.error(f'Failed to move file {src} to {dst}: {e}')
         return False
-
 
 def get_file_size(path: str | Path) -> int:
     """
@@ -225,7 +183,6 @@ def get_file_size(path: str | Path) -> int:
     except OSError:
         return -1
 
-
 def is_file_empty(path: str | Path) -> bool:
     """
     Check if file is empty.
@@ -238,8 +195,7 @@ def is_file_empty(path: str | Path) -> bool:
     """
     return get_file_size(path) <= 0
 
-
-def create_temp_file(prefix: str = "temp", suffix: str = ".tmp", dir: str | Path = None) -> Path:
+def create_temp_file(prefix: str='temp', suffix: str='.tmp', dir: str | Path=None) -> Path:
     """
     Create a temporary file.
 
@@ -252,7 +208,6 @@ def create_temp_file(prefix: str = "temp", suffix: str = ".tmp", dir: str | Path
         Path to the created temporary file.
     """
     import tempfile
-
     fd, path = tempfile.mkstemp(prefix=prefix, suffix=suffix, dir=dir)
-    os.close(fd)  # Close file descriptor, we'll manage the file ourselves
+    os.close(fd)
     return Path(path)

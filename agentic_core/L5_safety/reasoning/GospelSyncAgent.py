@@ -1,40 +1,12 @@
-# SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
-# File appears to be a sovereign component but missing canon high-signal keywords.
-# Suggested keywords to add in docstring/code: engine, guardrail, memory, orchestrator, prompt, state, workflow
-# This boosts alignment detection — review and integrate appropriately
-
 from dataclasses import dataclass
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
-#!/usr/bin/env python3
-"""
-GOSPEL SYNC AGENT
------------------
-L0 Maintenance Agent designed to ensure 100% synchronization between the
-Gospel (structure_blueprint.py) and the physical filesystem.
-
-CANONICAL PATH: agentic_core/L0_routing/GospelSyncAgent.py
-VIOLATION JUSTIFICATION: None. Standard L0 Infrastructure mapping.
-"""
-
+'\nGOSPEL SYNC AGENT\n-----------------\nL0 Maintenance Agent designed to ensure 100% synchronization between the\nGospel (structure_blueprint.py) and the physical filesystem.\n\nCANONICAL PATH: agentic_core/L0_routing/GospelSyncAgent.py\nVIOLATION JUSTIFICATION: None. Standard L0 Infrastructure mapping.\n'
 import os
 from pathlib import Path
 from typing import Any
-
-# PHASE 2.1: L0 Structural Standardization
 from agentic_core.base_agents.L0RoutingBase import L0RoutingBase
 from agentic_core.L0_routing.utils.ssot_discovery_util import get_python_files
 from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
-
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 @dataclass
 class GospelSyncAgent(L0RoutingBase):
@@ -46,7 +18,7 @@ class GospelSyncAgent(L0RoutingBase):
     Inherits from L0RoutingBaseAgent: HealerMixin, MCPHardenedMixin, L0DelegationTestingMixin
     """
 
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
+    def heal_repository(self, dry_run: bool=True, execute: bool=False, **kwargs) -> dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 
@@ -58,10 +30,9 @@ class GospelSyncAgent(L0RoutingBase):
             Dict with healing summary
         """
         super().heal_repository(**kwargs)
+        return {'violations': 0, 'fixed': 0, 'errors': 0}
 
-        return {"violations": 0, "fixed": 0, "errors": 0}
-
-    def __init__(self, root_dir: str = ".") -> None:
+    def __init__(self, root_dir: str='.') -> None:
         """
         Initialize the Sync Agent with root directory context.
         """
@@ -77,17 +48,9 @@ class GospelSyncAgent(L0RoutingBase):
         """
         canonical_files = self._get_canonical_files()
         actual_files = self._get_actual_files()
-
-        # Heresy = Files on disk NOT in Blueprint
         self.heresy = sorted(actual_files - canonical_files)
-        # Missing = Files in Blueprint NOT on disk
         self.missing = sorted(canonical_files - actual_files)
-
-        return {
-            "heresy": self.heresy,
-            "missing": self.missing,
-            "synchronized": len(self.heresy) == 0 and len(self.missing) == 0,
-        }
+        return {'heresy': self.heresy, 'missing': self.missing, 'synchronized': len(self.heresy) == 0 and len(self.missing) == 0}
 
     def _get_canonical_files(self) -> set[str]:
         """
@@ -95,14 +58,12 @@ class GospelSyncAgent(L0RoutingBase):
         """
         paths = set()
         for _layer, config in self.blueprint.items():
-            layer_path = config.get("path", "")
+            layer_path = config.get('path', '')
             if not layer_path:
                 continue
-            for agent in config.get("agents", []):
-                # Normalize path for multi-OS compatibility
-                # guardian: allow-path-string
-                rel_path = os.path.join(layer_path, f"{agent}.py")
-                paths.add(rel_path.replace("\\", "/"))
+            for agent in config.get('agents', []):
+                rel_path = Path(layer_path) / f'{agent}.py'
+                paths.add(rel_path.replace('\\', '/'))
         return paths
 
     def _get_actual_files(self) -> set[str]:
@@ -112,32 +73,29 @@ class GospelSyncAgent(L0RoutingBase):
         actual = set()
         all_py = get_python_files(self.root)
         for py_file in all_py:
-            if AGENTIC_CORE_DIR in str(py_file) and "__init__" not in py_file.name:
+            if AGENTIC_CORE_DIR in str(py_file) and '__init__' not in py_file.name:
                 rel_path = py_file.relative_to(self.root)
-                actual.add(str(rel_path).replace("\\", "/"))
+                actual.add(str(rel_path).replace('\\', '/'))
         return actual
 
     def report_drift(self) -> None:
         """
         Generates a Sovereign Sync Report for L6 observability consumption.
         """
-        if not self.heresy and not self.missing:
-            print("✅ GOSPEL SYNC: Filesystem is in 100% synchronization with the Blueprint.")
+        if not self.heresy and (not self.missing):
+            print('✅ GOSPEL SYNC: Filesystem is in 100% synchronization with the Blueprint.')
             return
-
         print(f"\n{'=' * 60}")
-        print(" SOVEREIGN SSOT SYNC REPORT")
+        print(' SOVEREIGN SSOT SYNC REPORT')
         print(f"{'=' * 60}")
-
         if self.missing:
-            print(f"❌ MISSING CANON ({len(self.missing)}):")
+            print(f'❌ MISSING CANON ({len(self.missing)}):')
             for m in self.missing:
-                print(f"   [ ] {m}")
-
+                print(f'   [ ] {m}')
         if self.heresy:
-            print(f"\n☢️  HERETICAL FILES ({len(self.heresy)}):")
+            print(f'\n☢️  HERETICAL FILES ({len(self.heresy)}):')
             for h in self.heresy:
-                print(f"   [!] {h}")
+                print(f'   [!] {h}')
         print(f"{'=' * 60}\n")
 
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
@@ -157,31 +115,15 @@ class GospelSyncAgent(L0RoutingBase):
                 - artifacts: List of modified files
                 - errors: List of error messages
         """
-        violation.get("file") or violation.get("file_path")
-        violation_type = violation.get("type", "unknown")
-
-        # Default implementation - GospelSyncAgent syncs gospel files
+        violation.get('file') or violation.get('file_path')
+        violation_type = violation.get('type', 'unknown')
         try:
-            return {
-                "status": "skipped",
-                "details": f"GospelSyncAgent heal() not yet implemented for {violation_type}",
-                "artifacts": [],
-                "errors": [],
-            }
+            return {'status': 'skipped', 'details': f'GospelSyncAgent heal() not yet implemented for {violation_type}', 'artifacts': [], 'errors': []}
         except Exception as e:
-            return {
-                "status": "failed",
-                "details": f"GospelSyncAgent heal() failed: {str(e)}",
-                "artifacts": [],
-                "errors": [str(e)],
-            }
-
-
-if __name__ == "__main__":
+            return {'status': 'failed', 'details': f'GospelSyncAgent heal() failed: {str(e)}', 'artifacts': [], 'errors': [str(e)]}
+if __name__ == '__main__':
     agent = GospelSyncAgent()
     results = agent.perform_sync_audit()
     agent.report_drift()
-
     import sys
-
-    sys.exit(0 if results["synchronized"] else 1)
+    sys.exit(0 if results['synchronized'] else 1)
