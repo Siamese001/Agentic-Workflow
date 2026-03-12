@@ -234,6 +234,13 @@ Every meaningful code change MUST include `## DEPENDENCY_GRAPH` section with: gr
 
 **Exact cluster ID requirement:** Every edit commit message MUST include exact cluster ID. Format: `Fix cluster C7A3B2: <description>`. Vague references ("fix cluster issues") = FORBIDDEN.
 
+**Test failure triage protocol:** Before assigning a repair class, follow the 5-check decision tree in `docs/technical/TEST_FAILURE_decision_tree.md`:
+1. Should this module exist in the architecture? → if yes: `production_bug_fix` (create module)
+2. Is the import path wrong? → if yes: `stale_reference_fix` (correct path)
+3. Is an error supposed to happen here? → if yes: `production_bug_fix` (ensure correct error raised)
+4. Is the test too strict about wording? → if yes: `broken_test_fix` (relax regex, semantic equivalence MUST be preserved — weakening error type or removing assertions is FORBIDDEN)
+5. Did the architecture contract legitimately change? → if yes: `policy_regression_fix` (governance) or `production_bug_fix` (logic); if no: **BLOCKED** — do NOT create fake modules or stub files to silence the failure; fix the test expectation instead
+
 **Repair classification taxonomy:** Every edit MUST be labelled as exactly one class:
 - `production_bug_fix` — defect in production logic
 - `stale_reference_fix` — symbol/path/import no longer canonical

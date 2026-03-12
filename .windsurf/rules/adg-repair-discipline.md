@@ -42,6 +42,20 @@ When a symbol is undefined in N files:
 
 ---
 
+## TEST FAILURE TRIAGE (REQUIRED before repair loop)
+
+Before entering the ADG-controlled repair loop, classify the failure using the 5-check decision tree in `docs/technical/TEST_FAILURE_decision_tree.md`:
+
+1. Should this module exist in the architecture? → `production_bug_fix`
+2. Is the import path wrong? → `stale_reference_fix`
+3. Is an error supposed to happen here? → `production_bug_fix`
+4. Is the test too strict about wording? → `broken_test_fix` (semantic equivalence MUST be preserved)
+5. Did the architecture contract legitimately change? → `policy_regression_fix` or `production_bug_fix`; if NO → **BLOCKED** (fake module anti-pattern)
+
+Record the repair class in the `ADG_REPAIR_LITMUS` evidence section before making any edit.
+
+---
+
 ## ADG-CONTROLLED REPAIR LOOP
 
 Each repair iteration MUST follow this exact sequence:

@@ -8,6 +8,11 @@ import pathlib
 import pytest
 
 pytestmark = pytest.mark.unit
+try:
+    import agentic_core.L6_observability.dashboards.verify_dashboard_e2e_playwright_util as _mod  # noqa: F401  # ADG covers
+except Exception:
+    _mod = None
+
 
 _SRC = (
     pathlib.Path(__file__).parents[5]

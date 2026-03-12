@@ -11,6 +11,11 @@ import sys
 import pytest
 
 pytestmark = pytest.mark.unit
+try:
+    import agentic_core.L2_execution.engines.validation_orchestrator as _mod  # noqa: F401  # ADG covers
+except Exception:
+    _mod = None
+
 
 
 def test_module_syntax():

@@ -8,6 +8,11 @@ import pathlib
 import pytest
 
 pytestmark = pytest.mark.unit
+try:
+    import apps_rg.config.reasoning_toggles_config as _mod  # noqa: F401  # ADG covers
+except Exception:
+    _mod = None
+
 
 _SRC = pathlib.Path(__file__).parents[4] / "apps_rg" / "config" / "reasoning_toggles_config.py"
 

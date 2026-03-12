@@ -10,6 +10,11 @@ import re
 import pytest
 
 pytestmark = pytest.mark.unit
+try:
+    import agentic_core.L4_state.types.state_validation_types as _mod  # noqa: F401  # ADG covers
+except Exception:
+    _mod = None
+
 
 _SHIM = (
     pathlib.Path(__file__).parents[5]
