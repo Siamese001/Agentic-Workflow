@@ -176,7 +176,7 @@ def generate_full_adg(adg_artifacts_dir: Path, ts: str, archive_old: bool = True
 
     # --- Archive old artifacts ---
     if archive_old:
-        _archive_old_artifacts(adg_artifacts_dir, ts, keep_runs=5)
+        _archive_old_artifacts(adg_artifacts_dir, ts, keep_runs=1)
 
 
 def _persist_adg_to_memory(result, artifact, snapshot, graph_diff, routing_summary, ts: str) -> None:
@@ -254,7 +254,7 @@ def _parse_timestamp(ts: str) -> datetime:
     return datetime.strptime(ts, "%Y%m%dT%H%M%SZ")
 
 
-def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 5) -> None:
+def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -> None:
     """Archive old ADG runs to keep artifacts directory clean.
 
     Uses run-based retention (keeps last N complete runs) rather than day-based.
@@ -263,7 +263,7 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 5) -
     Args:
         adg_dir: ADG artifacts directory
         current_ts: Current timestamp (MMDDYYYY)
-        keep_runs: Number of recent complete runs to keep (default: 5)
+        keep_runs: Number of recent complete runs to keep (default: 1)
     """
     if not adg_dir.exists():
         return
