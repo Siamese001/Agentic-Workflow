@@ -78,6 +78,14 @@ repos:
   # ============================================================================
   - repo: local
     hooks:
+      - id: auto-stage-untracked
+        name: "T0-stage: Auto-Stage Untracked Files"
+        entry: python ops_scripts/hooks/auto_stage_untracked.py
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+
       - id: adg-phase-gate
         name: "T0-ADG: ADG Repair Phase Gate (§ADG-1.2)"
         entry: python tools/adg_ci_gate.py check-phase
