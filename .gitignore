@@ -20,6 +20,8 @@ artifacts/adg_ci_lane_gate_result.json
 # ADG LATEST symlinks/copies (auto-generated, point to timestamped artifacts)
 artifacts/adg/adg_LATEST*.sqlite
 artifacts/adg/adg_LATEST*.json
+# ADG archive directory (compressed backups - local only)
+artifacts/adg/_archive/
 # Generated one-off patch scripts
 tools/_patch_evidence.py
 .healing_backups/
