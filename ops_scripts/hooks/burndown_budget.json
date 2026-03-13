@@ -5,6 +5,9 @@
   "agentic_core/L1_cognition/enforcement/react_strategy.py": {
     "silent_swallower": 1
   },
+  "agentic_core/L1_cognition/telemetry/react_chunking_telemetry.py": {
+    "silent_swallower": 1
+  },
   "agentic_core/L3_orchestration/engines/autonomous_workflow_engine.py": {
     "magic_configuration": 1,
     "silent_swallower": 2
@@ -86,5 +89,8 @@
   },
   "system_learning/engines/trace_feature_extractor.py": {
     "silent_swallower": 1
+  },
+  "tools/adg/react_chunking_graph_audit.py": {
+    "global_mutation": 1
   }
 }

@@ -1,13 +1,28 @@
 from __future__ import annotations
 
+import hashlib
+import json
 import logging
 from typing import Any
 
+from agentic_core.L1_cognition.types.react_trace_types import (
+    PromptProvenanceRecord,
+    ReasonTraceEnvelope,
+    ReplayGuard,
+    assert_c0_informational,
+)
 from agentic_core.patterns.base import BaseReasoningPattern
 from agentic_core.runtime.state import AgentState
 from agentic_core.runtime.tools import ToolRegistry
 
 Logger = logging.getLogger(__name__)
+
+_POLICY_HASH_DEFAULT = hashlib.sha256(b"default_policy_v1").hexdigest()
+
+
+def _compute_plan_hash(task: str, tool_names: list[str]) -> str:
+    payload = json.dumps({"task": task, "tools": sorted(tool_names)}, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
 
 class ReActStrategy(BaseReasoningPattern):
@@ -20,10 +35,24 @@ class ReActStrategy(BaseReasoningPattern):
     the actual tool dispatch.  The ``plan`` method is the entry-point used
     by AgentEngine on each turn; it returns the (action, params) tuple for
     that turn.
+
+    Enforcement:
+      - C0 boundary: RAG context is informational only (no authority fields).
+      - ReasonTraceEnvelope emitted after each full trace.
+      - PromptProvenanceRecord captured per execution.
+      - ReplayGuard blocks non-deterministic clock/random usage.
     """
 
     # guardian: allow-magic-config
-    def __init__(self, max_steps: int = 10, enable_self_reflection: bool = True) -> None:
+    def __init__(
+        self,
+        max_steps: int = 10,
+        enable_self_reflection: bool = True,
+        policy_hash: str | None = None,
+        semantic_clock_vector: tuple[int, ...] = (0,),
+        model_id: str = "default",
+        prompt_template_id: str = "default_react_v1",
+    ) -> None:
         from agentic_core.L1_cognition.engines.react_engine import ReActEngine
 
         self._engine = ReActEngine(
@@ -31,6 +60,30 @@ class ReActStrategy(BaseReasoningPattern):
             enable_self_reflection=enable_self_reflection,
         )
         self._tools: ToolRegistry | None = None
+        self._policy_hash: str = policy_hash or _POLICY_HASH_DEFAULT
+        self._semantic_clock_vector: tuple[int, ...] = semantic_clock_vector
+        self._model_id: str = model_id
+        self._prompt_template_id: str = prompt_template_id
+        self._last_envelope: ReasonTraceEnvelope | None = None
+        self._last_provenance: PromptProvenanceRecord | None = None
+
+    @property
+    def last_envelope(self) -> ReasonTraceEnvelope | None:
+        """The ReasonTraceEnvelope emitted by the most recent full trace."""
+        return self._last_envelope
+
+    @property
+    def last_provenance(self) -> PromptProvenanceRecord | None:
+        """The PromptProvenanceRecord captured by the most recent full trace."""
+        return self._last_provenance
+
+    def enforce_c0_boundary(self, rag_context: dict[str, Any]) -> None:
+        """Assert RAG context contains no authority fields (C0 rule).
+
+        Raises:
+            C0BoundaryViolation: if any forbidden field is present.
+        """
+        assert_c0_informational(rag_context, source="ReActStrategy")
 
     async def plan(self, state: AgentState, tools: ToolRegistry) -> tuple[str, dict[str, Any]]:
         """Produce the next (action, params) for the current turn.
@@ -56,8 +109,64 @@ class ReActStrategy(BaseReasoningPattern):
 
         return ("Final Answer", {"result": self._trace.final_answer or "Task Complete"})
 
+    def _emit_envelope(self, trace: Any) -> ReasonTraceEnvelope:
+        """Build and store a ReasonTraceEnvelope from the completed trace."""
+        reason_steps = tuple(s.thought for s in trace.steps)
+        action_steps = tuple(s.action for s in trace.steps)
+        tool_invocations = tuple(
+            f"{s.action}({json.dumps(s.action_input, separators=(',', ':'))})" for s in trace.steps
+        )
+        plan_hash = _compute_plan_hash(
+            trace.Task,
+            list({s.action for s in trace.steps}),
+        )
+        envelope = ReasonTraceEnvelope.build(
+            trace_id=trace.trace_id,
+            plan_hash=plan_hash,
+            reason_steps=reason_steps,
+            action_steps=action_steps,
+            tool_invocations=tool_invocations,
+            policy_hash=self._policy_hash,
+            semantic_clock_vector=self._semantic_clock_vector,
+        )
+        self._last_envelope = envelope
+        Logger.info(
+            "react_envelope_emitted",
+            extra={"trace_id": trace.trace_id, "envelope_hash": envelope.envelope_hash},
+        )
+        return envelope
+
+    def _capture_provenance(self, task: str, rag_context_ids: tuple[str, ...]) -> PromptProvenanceRecord:
+        """Build and store a PromptProvenanceRecord for this execution."""
+        record = PromptProvenanceRecord.build(
+            prompt_text=task,
+            prompt_template_id=self._prompt_template_id,
+            rag_context_ids=rag_context_ids,
+            policy_hash=self._policy_hash,
+            model_id=self._model_id,
+        )
+        self._last_provenance = record
+        return record
+
     async def _run_full_trace(self, state: AgentState, tools: ToolRegistry) -> Any:
-        """Execute the full ReAct trace using real ToolRegistry dispatch."""
+        """Execute the full ReAct trace using real ToolRegistry dispatch.
+
+        Enforcement sequence:
+          1. C0 boundary check on any RAG context in state metadata.
+          2. Provenance record captured from task + context IDs.
+          3. ReplayGuard installed for the duration of the run.
+          4. ReasonTraceEnvelope emitted after trace completes.
+        """
+        rag_context: dict[str, Any] = getattr(state, "rag_context", {}) or {}
+        assert_c0_informational(rag_context, source="ReActStrategy._run_full_trace")
+
+        rag_context_ids: tuple[str, ...] = tuple(str(v) for v in rag_context.get("context_ids", []))
+        self._capture_provenance(state.user_input, rag_context_ids)
+
+        _guard = ReplayGuard(
+            semantic_clock_vector=self._semantic_clock_vector,
+            strict=False,
+        )
 
         async def _think_fn(task: str, steps: list) -> str:
             history = "\n".join(
@@ -88,11 +197,15 @@ class ReActStrategy(BaseReasoningPattern):
                 Logger.error("react_tool_error", extra={"action": action, "error": str(exc)})
                 return f"Error executing '{action}': {exc}"
 
-        return await self._engine.run(
+        trace = await self._engine.run(
             Task=state.user_input,
             think_fn=_think_fn,
             act_fn=_act_fn,
         )
+
+        _guard.assert_clean()
+        self._emit_envelope(trace)
+        return trace
 
     def _select_action(self, task: str, steps: list, tools: ToolRegistry) -> str:
         """Heuristic: pick the most-used registered tool, or 'Final Answer'."""

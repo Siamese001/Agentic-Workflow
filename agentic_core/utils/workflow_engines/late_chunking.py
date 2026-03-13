@@ -244,6 +244,49 @@ def segment_document(
     return manifests
 
 
+@dataclass(frozen=True)
+class EmbeddingLifecycleEvent:
+    """Immutable event recording the lifecycle of a chunk embedding.
+
+    Emitted after a LateChunkManifest is embedded and written to the
+    vector store. Used by the meta-learning bus for S2 telemetry and
+    S5 root-cause analysis.
+    """
+
+    chunk_id: str
+    embedding_model: str
+    embedding_hash: str
+    vector_index_id: str
+
+    def canonical_bytes(self) -> bytes:
+        d = {
+            "chunk_id": self.chunk_id,
+            "embedding_model": self.embedding_model,
+            "embedding_hash": self.embedding_hash,
+            "vector_index_id": self.vector_index_id,
+        }
+        return json.dumps(d, sort_keys=True, separators=(",", ":")).encode("utf-8")
+
+    def event_hash(self) -> str:
+        return hashlib.sha256(self.canonical_bytes()).hexdigest()
+
+    @classmethod
+    def build(
+        cls,
+        manifest: LateChunkManifest,
+        embedding_model: str,
+        vector_index_id: str,
+    ) -> EmbeddingLifecycleEvent:
+        """Derive an EmbeddingLifecycleEvent from a manifest."""
+        embedding_hash = hashlib.sha256(f"{manifest.segment_id}:{embedding_model}".encode()).hexdigest()
+        return cls(
+            chunk_id=manifest.segment_id,
+            embedding_model=embedding_model,
+            embedding_hash=embedding_hash,
+            vector_index_id=vector_index_id,
+        )
+
+
 def build_late_chunk_manifests_for_corpus(
     documents: list[dict[str, Any]], config: LateChunkingPipelineConfig
 ) -> list[LateChunkManifest]:
@@ -268,6 +311,19 @@ def build_late_chunk_manifests_for_corpus(
     return all_manifests
 
 
+def compute_corpus_manifest_hash(manifests: list[LateChunkManifest]) -> str:
+    """Compute a deterministic hash over an ordered list of manifests.
+
+    Stable across replay runs given identical input documents and config.
+    """
+    payload = json.dumps(
+        [m.to_dict() for m in manifests],
+        sort_keys=True,
+        separators=(",", ":"),
+    )
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
 __all__ = [
     "LateChunkingMode",
     "VALID_MODES",
@@ -275,6 +331,8 @@ __all__ = [
     "LateChunkingProfile",
     "LateChunkManifest",
     "LateChunkingPipelineConfig",
+    "EmbeddingLifecycleEvent",
     "segment_document",
     "build_late_chunk_manifests_for_corpus",
+    "compute_corpus_manifest_hash",
 ]
