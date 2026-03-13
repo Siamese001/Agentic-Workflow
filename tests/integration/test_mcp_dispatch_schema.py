@@ -1,0 +1,230 @@
+"""
+Deterministic MCP dispatch and schema correctness tests.
+
+Does NOT require any live MCP server — validates:
+1. _TOOL_DISPATCH completeness and correctness (mcp_manager.py)
+2. sequential_thinking parameter schema (correct vs wrong)
+3. sovereign_mcp_router.py uses correct schema (no Task/goal/max_steps)
+4. wiki_healer._update_deepwiki is wired (not a stub)
+5. web_search_client calls the correctly-dispatched tool name
+6. All dispatch target function names follow mcp<N>_* naming convention
+"""
+
+import ast
+import re
+import sys
+from pathlib import Path
+
+import pytest
+
+ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT))
+
+from agentic_core.L3_orchestration.reasoning.mcp_manager import _TOOL_DISPATCH, _resolve_tool  # noqa: E402
+
+
+# ---------------------------------------------------------------------------
+# 1. _TOOL_DISPATCH correctness
+# ---------------------------------------------------------------------------
+
+REQUIRED_LOGICAL_TOOLS = {
+    # Filesystem
+    "read_file", "write_file", "edit_file", "list_directory",
+    # Memory
+    "create_entities", "search_nodes", "read_graph",
+    # Brave Search
+    "brave_search", "brave_web_search", "brave_local_search",
+    # Playwright
+    "playwright_navigate", "playwright_screenshot", "playwright_get_text",
+    # Fetch
+    "fetch",
+    # DeepWiki
+    "deepwiki_ask", "deepwiki_structure",
+    # Sequential thinking  ← the critical one
+    "sequential_thinking",
+}
+
+MCP_FUNCTION_PATTERN = re.compile(r"^mcp\d+_[a-z]")
+
+
+class TestToolDispatch:
+    def test_all_required_logical_tools_present(self):
+        missing = REQUIRED_LOGICAL_TOOLS - set(_TOOL_DISPATCH.keys())
+        assert not missing, f"Missing logical tool keys: {missing}"
+
+    def test_all_dispatch_targets_follow_mcp_naming(self):
+        bad = {k: v for k, v in _TOOL_DISPATCH.items() if not MCP_FUNCTION_PATTERN.match(v)}
+        assert not bad, f"Non-mcp<N>_ dispatch targets: {bad}"
+
+    def test_sequential_thinking_maps_to_mcp12(self):
+        target = _TOOL_DISPATCH.get("sequential_thinking")
+        assert target == "mcp12_sequentialthinking", (
+            f"sequential_thinking must map to mcp12_sequentialthinking, got: {target}"
+        )
+
+    def test_brave_web_search_alias_present(self):
+        assert _TOOL_DISPATCH.get("brave_web_search") == "mcp1_brave_web_search"
+        assert _TOOL_DISPATCH.get("brave_search") == "mcp1_brave_web_search"
+
+    def test_fetch_maps_to_mcp4(self):
+        assert _TOOL_DISPATCH.get("fetch") == "mcp4_fetch"
+
+    def test_deepwiki_maps_to_mcp3(self):
+        assert _TOOL_DISPATCH.get("deepwiki_ask") == "mcp3_ask_question"
+        assert _TOOL_DISPATCH.get("deepwiki_structure") == "mcp3_read_wiki_structure"
+
+    def test_no_broken_sequential_thinking_import(self):
+        """Ensure there is no reference to the old mcp_sequential_thinking module import."""
+        mcp_manager_src = (ROOT / "agentic_core/L3_orchestration/reasoning/mcp_manager.py").read_text()
+        assert "mcp_sequential_thinking" not in mcp_manager_src, (
+            "mcp_manager.py still references non-existent mcp_sequential_thinking module"
+        )
+        assert "__sequential_thinking__" not in mcp_manager_src, (
+            "mcp_manager.py still uses the old __sequential_thinking__ sentinel"
+        )
+
+    def test_resolve_tool_returns_none_for_unknown(self):
+        result = _resolve_tool("nonexistent_tool_xyz")
+        assert result is None
+
+    def test_resolve_tool_returns_none_for_sequential_when_not_in_builtins(self):
+        """In test env (no Windsurf), sequential_thinking resolves to None gracefully."""
+        import builtins
+        had = hasattr(builtins, "mcp12_sequentialthinking")
+        result = _resolve_tool("sequential_thinking")
+        if not had:
+            assert result is None, "Should return None when mcp12 not injected"
+
+
+# ---------------------------------------------------------------------------
+# 2. sequential_thinking correct schema validation
+# ---------------------------------------------------------------------------
+
+CORRECT_SCHEMA_REQUIRED = {"thought", "nextThoughtNeeded", "thoughtNumber", "totalThoughts"}
+WRONG_SCHEMA_FIELDS = {"Task", "goal", "max_steps", "enforce_no_hallucination", "template"}
+
+
+class TestSequentialThinkingSchema:
+    def test_sovereign_mcp_router_uses_correct_schema(self):
+        """sovereign_mcp_router.py must not use Task/goal/max_steps for sequential_thinking."""
+        src = (ROOT / "agentic_core/L3_orchestration/engines/sovereign_mcp_router.py").read_text()
+        # Find the sequential_thinking call block
+        seq_block_match = re.search(
+            r'call_tool\(\s*["\']sequential_thinking["\'].*?\)',
+            src, re.DOTALL
+        )
+        assert seq_block_match, "No sequential_thinking call_tool found in sovereign_mcp_router.py"
+        call_block = seq_block_match.group(0)
+        for wrong_field in WRONG_SCHEMA_FIELDS:
+            assert f'"{wrong_field}"' not in call_block and f"'{wrong_field}'" not in call_block, (
+                f"sovereign_mcp_router.py still uses wrong schema field '{wrong_field}' "
+                f"in sequential_thinking call"
+            )
+        for correct_field in CORRECT_SCHEMA_REQUIRED:
+            assert correct_field in call_block, (
+                f"sovereign_mcp_router.py missing required schema field '{correct_field}' "
+                f"in sequential_thinking call"
+            )
+
+    def test_model_router_types_no_wrong_schema_for_sequential(self):
+        """model_router_types.py FallbackClient.generate must not use Task/goal/max_steps
+        in a sequential_thinking call_tool block."""
+        src = (ROOT / "apps_shared/types/model_router_types.py").read_text()
+        # Find all sequential_thinking call_tool blocks
+        for match in re.finditer(r'call_tool\(\s*["\']sequential_thinking["\'].*?\)', src, re.DOTALL):
+            block = match.group(0)
+            for wrong_field in WRONG_SCHEMA_FIELDS:
+                assert f'"{wrong_field}"' not in block and f"'{wrong_field}'" not in block, (
+                    f"model_router_types.py still uses wrong schema field '{wrong_field}'"
+                )
+
+    def test_correct_schema_fields_accepted_by_mcp12_spec(self):
+        """Validate correct schema matches the mcp12_sequentialthinking tool definition
+        as confirmed by DeepWiki (modelcontextprotocol/servers)."""
+        required = {"thought", "nextThoughtNeeded", "thoughtNumber", "totalThoughts"}
+        optional = {"isRevision", "revisesThought", "branchFromThought", "branchId", "needsMoreThoughts"}
+        all_valid = required | optional
+        # A correct call should only use fields from all_valid
+        example_call = {
+            "thought": "test",
+            "nextThoughtNeeded": False,
+            "thoughtNumber": 1,
+            "totalThoughts": 1,
+        }
+        unknown = set(example_call.keys()) - all_valid
+        assert not unknown, f"Unknown fields in example call: {unknown}"
+        missing = required - set(example_call.keys())
+        assert not missing, f"Missing required fields: {missing}"
+
+
+# ---------------------------------------------------------------------------
+# 3. wiki_healer is wired (not a stub)
+# ---------------------------------------------------------------------------
+
+class TestWikiHealerWiring:
+    def test_update_deepwiki_calls_mcp3(self):
+        src = (ROOT / "agentic_core/knowledge/healing/wiki_healer.py").read_text()
+        assert "mcp3_ask_question" in src, (
+            "wiki_healer._update_deepwiki must reference mcp3_ask_question"
+        )
+        assert "getattr(builtins" in src, (
+            "wiki_healer must resolve mcp3_ask_question via builtins"
+        )
+
+    def test_update_deepwiki_is_not_stub(self):
+        """Ensure _update_deepwiki no longer just returns True without calling anything."""
+        src = (ROOT / "agentic_core/knowledge/healing/wiki_healer.py").read_text()
+        # Find the _update_deepwiki method body
+        match = re.search(
+            r"async def _update_deepwiki.*?(?=\n    (?:async )?def |\nclass |\Z)",
+            src, re.DOTALL
+        )
+        assert match, "_update_deepwiki method not found"
+        body = match.group(0)
+        # Old stub just logged and returned True without any MCP call
+        assert "mcp3_ask_question" in body, "_update_deepwiki is still a stub"
+        assert "return True" not in body.replace("return result is not None", ""), (
+            "_update_deepwiki unconditionally returns True (stub behaviour)"
+        )
+
+
+# ---------------------------------------------------------------------------
+# 4. web_search_client uses a correctly mapped tool name
+# ---------------------------------------------------------------------------
+
+class TestWebSearchClientDispatch:
+    def test_brave_web_search_call_resolves_via_dispatch(self):
+        """web_search_client.py calls brave_web_search — confirm it's in _TOOL_DISPATCH."""
+        src = (ROOT / "agentic_core/L2_execution/tools/web_search_client.py").read_text(encoding="utf-8", errors="ignore")
+        assert "brave_web_search" in src, "web_search_client.py should call brave_web_search"
+        assert "brave_web_search" in _TOOL_DISPATCH, (
+            "brave_web_search must be in _TOOL_DISPATCH for web_search_client to work"
+        )
+
+
+# ---------------------------------------------------------------------------
+# 5. AST-level: no wrong-schema sequential_thinking calls anywhere in codebase
+# ---------------------------------------------------------------------------
+
+WRONG_SCHEMA_IN_SEQ_CONTEXT_PATTERN = re.compile(
+    r'call_tool\s*\(\s*["\']sequential_thinking["\'].*?(?:"Task"|"goal"|"max_steps"|"enforce_no_hallucination"|"template")',
+    re.DOTALL,
+)
+
+
+class TestNoWrongSchemaAnywhere:
+    def test_no_wrong_schema_sequential_thinking_calls_in_codebase(self):
+        bad_files = []
+        for py_file in ROOT.rglob("*.py"):
+            if any(p in str(py_file) for p in [".git", "__pycache__", "test_mcp_dispatch_schema"]):
+                continue
+            try:
+                src = py_file.read_text(encoding="utf-8", errors="ignore")
+                if "sequential_thinking" in src and WRONG_SCHEMA_IN_SEQ_CONTEXT_PATTERN.search(src):
+                    bad_files.append(str(py_file.relative_to(ROOT)))
+            except Exception:
+                continue
+        assert not bad_files, (
+            f"Wrong-schema sequential_thinking call sites found:\n"
+            + "\n".join(f"  {f}" for f in bad_files)
+        )

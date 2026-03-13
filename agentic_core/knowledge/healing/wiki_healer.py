@@ -156,9 +156,19 @@ class DeepWikiHealingStrategy:
             True if update succeeded, False otherwise
         """
         try:
+            import builtins
+            import asyncio
+            repo = getattr(config, "DEEPWIKI_DEFAULT_REPO", "Siamese001/Agentic-Workflow")
+            ask_fn = getattr(builtins, "mcp3_ask_question", None)
+            if ask_fn is None:
+                Logger.warning("[L0 DEEPWIKI HEALING] mcp3_ask_question not available in builtins")
+                return False
+            result = ask_fn(repoName=repo, question=question)
+            if asyncio.iscoroutine(result):
+                result = await asyncio.ensure_future(result)
             Logger.info(f"[L0 DEEPWIKI HEALING] Documentation generated for {file_path}")
-            Logger.info(f"[L0 DEEPWIKI HEALING] Repo: {config.DEEPWIKI_DEFAULT_REPO}")
-            return True
+            Logger.debug(f"[L0 DEEPWIKI HEALING] DeepWiki response: {str(result)[:200]}")
+            return result is not None
         # guardian: allow-silent-swallow
         except Exception as e:
             Logger.error(f"[L0 DEEPWIKI HEALING] DeepWiki update failed: {e}")

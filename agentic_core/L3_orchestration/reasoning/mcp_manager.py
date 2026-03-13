@@ -35,6 +35,7 @@ _TOOL_DISPATCH: dict[str, str] = {
     "read_graph": "mcp11_read_graph",
     # Brave Search (mcp1_*)
     "brave_search": "mcp1_brave_web_search",
+    "brave_web_search": "mcp1_brave_web_search",
     "brave_local_search": "mcp1_brave_local_search",
     # Playwright (mcp12_*)
     "playwright_navigate": "mcp12_playwright_navigate",
@@ -42,8 +43,13 @@ _TOOL_DISPATCH: dict[str, str] = {
     "playwright_get_text": "mcp12_playwright_get_visible_text",
     "playwright_click": "mcp12_playwright_click",
     "playwright_fill": "mcp12_playwright_fill",
-    # Sequential thinking — handled inline via direct import
-    "sequential_thinking": "__sequential_thinking__",
+    # Fetch (mcp4_*)
+    "fetch": "mcp4_fetch",
+    # DeepWiki (mcp3_*)
+    "deepwiki_ask": "mcp3_ask_question",
+    "deepwiki_structure": "mcp3_read_wiki_structure",
+    # Sequential thinking (mcp12_*)
+    "sequential_thinking": "mcp12_sequentialthinking",
 }
 
 
@@ -53,17 +59,6 @@ def _resolve_tool(tool_name: str) -> Any:
     if mapped is None:
         Logger.debug(f"[MCPManager] No dispatch mapping for tool '{tool_name}'")
         return None
-
-    if mapped == "__sequential_thinking__":
-        # Sequential thinking is a built-in MCP tool — invoke via mcp12 if available
-        try:
-            import importlib
-
-            mod = importlib.import_module("mcp_sequential_thinking")
-            return getattr(mod, "think", None)
-        except ImportError:
-            Logger.debug("[MCPManager] sequential_thinking MCP not importable")
-            return None
 
     # Try to resolve via global builtins (Windsurf injects MCP tools as globals)
     import builtins

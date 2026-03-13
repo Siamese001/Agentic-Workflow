@@ -150,23 +150,35 @@ class SovereignMcpRouter(SovereignBaseAgent):
                             Logger.info(f"[L1 CACHE HIT] Using proven template for Key {key_id}")
                     except (json.JSONDecodeError, AttributeError) as e:
                         Logger.debug(f"Cache retrieval failed: {e}")
-                    reasoning_result: Any = await self.manager.call_tool(
-                        "sequential_thinking",
-                        {
-                            "Task": violation_desc,
-                            "goal": f"Resolve Canon Key {key_id} Violation atomically",
-                            "max_steps": 8,
-                            "template": cached_template,
-                            "enforce_no_hallucination": True,
-                        },
-                    )
-                    if reasoning_result.get("status") == "success" and (not cached_template):
+                    max_thoughts = min(len(cached_template) if cached_template else 8, 15)
+                    thoughts: list[str] = cached_template if cached_template else [
+                        f"Step {i+1}: {'Analyze' if i == 0 else 'Synthesize' if i == max_thoughts - 1 else 'Continue'} resolving Canon Key {key_id}: {violation_desc[:120]}"
+                        for i in range(max_thoughts)
+                    ]
+                    steps_out: list[str] = []
+                    for idx, thought_text in enumerate(thoughts):
+                        is_last = idx == len(thoughts) - 1
+                        step_result: Any = await self.manager.call_tool(
+                            "sequential_thinking",
+                            {
+                                "thought": thought_text,
+                                "nextThoughtNeeded": not is_last,
+                                "thoughtNumber": idx + 1,
+                                "totalThoughts": len(thoughts),
+                            },
+                        )
+                        steps_out.append(thought_text)
+                        if isinstance(step_result, dict) and not step_result.get("nextThoughtNeeded", not is_last):
+                            break
+                    solution = steps_out[-1] if steps_out else violation_desc
+                    reasoning_result: Any = {"steps": steps_out, "solution": solution}
+                    if not cached_template and steps_out:
                         try:
                             _cache = get_hot_cache()
                             if _cache:
                                 _cache.set(
                                     template_key,
-                                    json.dumps(reasoning_result.get("steps", [])),
+                                    json.dumps(steps_out),
                                     ex=60 * 60 * 24 * 30,
                                 )
                         except (AttributeError, TypeError) as e:
@@ -174,8 +186,8 @@ class SovereignMcpRouter(SovereignBaseAgent):
                     return {
                         "status": "l1_sequential",
                         "tool": "sequential_thinking",
-                        "steps": reasoning_result.get("steps", []),
-                        "solution": reasoning_result.get("solution"),
+                        "steps": steps_out,
+                        "solution": solution,
                         "cached": cached_template is not None,
                     }
                 except Exception as reasoning_e:

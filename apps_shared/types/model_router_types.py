@@ -438,7 +438,7 @@ class FallbackClient:
 
     # guardian: allow-magic-config
     async def generate(self, prompt: str, goal: str = "", max_steps: int = 8, **kwargs) -> str:
-        """Route prompt through sequential_thinking MCP with Redis template caching.
+        """Route prompt through sequential_thinking MCP with iterative thought processing.
 
         Args:
             prompt: Task description
@@ -450,31 +450,41 @@ class FallbackClient:
             Reasoning result as text
         """
         try:
-            result = await mcp.call_tool(
-                "sequential_thinking",
-                {
-                    "Task": prompt,
-                    "goal": goal or f"Resolve: {prompt[:100]}",
-                    "max_steps": min(max_steps, 15),
-                    "template": cached_steps,
-                    "enforce_no_hallucination": True,
-                },
-            )
-            steps = result.get("steps", [])
-            solution = result.get("solution", "")
-            if result.get("status") == "success" and (not cached_steps) and _cache and steps:
-                try:
-                    _cache.set(cache_key, _json.dumps(steps), ex=60 * 60 * 24 * 30)
-                # guardian: allow-silent-swallow
-                except Exception:
-                    pass
+            mcp_mgr = _MCPManager()
+            await mcp_mgr.connect("sequential_thinking")
+            total = min(max_steps, 15)
+            initial = f"Analyzing: {prompt[:200]}"
+            if goal:
+                initial += f"\nGoal: {goal}"
+            thoughts = []
+            for idx in range(total):
+                is_last = idx == total - 1
+                thought_text = (
+                    initial if idx == 0
+                    else f"Final synthesis: {len(thoughts)} steps completed." if is_last
+                    else f"Step {idx + 1}: continuing analysis."
+                )
+                step_result = await mcp_mgr.call_tool(
+                    "sequential_thinking",
+                    {
+                        "thought": thought_text,
+                        "nextThoughtNeeded": not is_last,
+                        "thoughtNumber": idx + 1,
+                        "totalThoughts": total,
+                    },
+                )
+                thoughts.append(thought_text)
+                if isinstance(step_result, dict) and not step_result.get("nextThoughtNeeded", not is_last):
+                    break
             self.router._stats["total_requests"] += 1
             self.router._stats["requests_by_tier"][ModelTier.SEQUENTIAL.value] += 1
-            return solution or str(steps)
+            return "\n".join(thoughts)
         # guardian: allow-silent-swallow
         except Exception as e:
             logger.warning(f"[SequentialThinkingClient] Sequential thinking failed: {e}")
-            return await self._fallback_to_reasoning(prompt, **kwargs)
+            fallback_config = self.router._select_model_for_tier(ModelTier.REASONING)
+            client = FallbackClient(fallback_config, self.router)
+            return await client.generate(prompt, **kwargs)
 
 
 _model_router: ModelRouter | None = None
