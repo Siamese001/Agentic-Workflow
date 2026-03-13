@@ -23,16 +23,22 @@ from dataclasses import dataclass
 from typing import Any, Literal
 
 from agentic_core.config.core.sovereign_config import get_sovereign_config
+from agentic_core.L0_routing.config.path_constants import TOOLS_DIR
 from agentic_core.L2_execution.audit.hash_chain_audit_log import HashChainAuditLog
 from agentic_core.L2_execution.types.gateway_types import GenerationRequest, GenerationResponse
-from agentic_core.prompt_governance.security.detectors.injection_detector import InjectionDetector
 from agentic_core.L2_execution.types.replay_envelope_types import ReplayEnvelope
 from data.sdks_mcps.client_wrappers import (
     create_anthropic_client,
     create_openai_client,
     create_vertex_client,
 )
-from agentic_core.L0_routing.config.path_constants import TOOLS_DIR
+
+
+def _get_injection_detector_class():
+    from agentic_core.prompt_governance.security.detectors.injection_detector import InjectionDetector
+
+    return InjectionDetector
+
 
 # Agent execution profile enforcement
 try:
@@ -80,7 +86,7 @@ class ProviderHealthState:
         """
         return current_time < self.degraded_until
 
-# guardian: allow-magic-config
+    # guardian: allow-magic-config
 
     # guardian: allow-magic-config
     def should_degrade(self, error_threshold: float = 0.5, failure_threshold: int = 5) -> bool:
@@ -137,8 +143,8 @@ class SovereignLLMGateway:
 
         self.audit_log: list[dict[str, Any]] = []
 
-        # v5.5 Prompt Security - Injection Detector instance
-        self._injection_detector = InjectionDetector()
+        # v5.5 Prompt Security - Injection Detector instance (lazy L_PG import)
+        self._injection_detector = _get_injection_detector_class()()
 
         # Egress audit log (immutable, hash-chained)
         self._egress_audit_log = HashChainAuditLog()
@@ -268,7 +274,9 @@ class SovereignLLMGateway:
                     degraded_until=current_time + self._degraded_mode_duration,
                     consecutive_failures=new_consecutive_failures,
                 )
-                Logger.warning(f"Provider {provider} entered degraded mode for {self._degraded_mode_duration}s")
+                Logger.warning(
+                    f"Provider {provider} entered degraded mode for {self._degraded_mode_duration}s"
+                )
             else:
                 new_health = ProviderHealthState(
                     provider=provider,

@@ -32,7 +32,13 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBridge
-from system_learning.enforcement.determinism import deterministic_json, stable_sha256_json
+
+
+def _get_determinism_fns():
+    from system_learning.enforcement.determinism import deterministic_json, stable_sha256_json
+
+    return deterministic_json, stable_sha256_json
+
 
 logger = logging.getLogger(__name__)
 

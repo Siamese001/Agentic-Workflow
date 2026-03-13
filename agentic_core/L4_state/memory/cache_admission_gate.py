@@ -39,7 +39,12 @@ import logging
 from dataclasses import dataclass
 from typing import Any, Literal
 
-from system_learning.enforcement.determinism import deterministic_json, stable_sha256_json
+
+def _get_determinism_fns():
+    from system_learning.enforcement.determinism import deterministic_json, stable_sha256_json
+
+    return deterministic_json, stable_sha256_json
+
 
 logger = logging.getLogger(__name__)
 

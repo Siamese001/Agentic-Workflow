@@ -34,18 +34,43 @@ Relations created by the library
 from __future__ import annotations
 
 import logging
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBridge
-from system_learning.types.case_memory_types import (
-    BUNDLE_ARTIFACT_TYPES,
-    CaseBundle,
-    CaseRecord,
-    GovernancePrecedent,
-    HealerBundle,
-    HITLPreferenceRecord,
-    PromptBundle,
-)
+
+if TYPE_CHECKING:
+    from system_learning.types.case_memory_types import (
+        BUNDLE_ARTIFACT_TYPES,
+        CaseBundle,
+        CaseRecord,
+        GovernancePrecedent,
+        HealerBundle,
+        HITLPreferenceRecord,
+        PromptBundle,
+    )
+
+
+def _get_case_memory_types():
+    from system_learning.types.case_memory_types import (
+        BUNDLE_ARTIFACT_TYPES,
+        CaseBundle,
+        CaseRecord,
+        GovernancePrecedent,
+        HealerBundle,
+        HITLPreferenceRecord,
+        PromptBundle,
+    )
+
+    return (
+        BUNDLE_ARTIFACT_TYPES,
+        CaseBundle,
+        CaseRecord,
+        GovernancePrecedent,
+        HealerBundle,
+        HITLPreferenceRecord,
+        PromptBundle,
+    )
+
 
 logger = logging.getLogger(__name__)
 

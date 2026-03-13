@@ -6,8 +6,19 @@ import os
 
 from agentic_core.L2_execution.enforcement.SovereignLLMGateway import get_llm_gateway
 from agentic_core.mixins.instructional_injection_mixin import get_instructional_injection_mixin
-from agentic_core.prompt_governance.core.prompt_assembler import assemble_prompt
-from agentic_core.prompt_governance.security.utils.injection_scan_util import scan_untrusted_text
+
+
+def _get_prompt_assembler():
+    from agentic_core.prompt_governance.core.prompt_assembler import assemble_prompt
+
+    return assemble_prompt
+
+
+def _get_injection_scanner():
+    from agentic_core.prompt_governance.security.utils.injection_scan_util import scan_untrusted_text
+
+    return scan_untrusted_text
+
 
 Logger = logging.getLogger(__name__)
 
