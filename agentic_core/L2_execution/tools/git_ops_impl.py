@@ -4,7 +4,9 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-Logger: Any = logging.getLogger("ActionRegistry.GitTools")
+_LOGGER_NAME = "ActionRegistry.GitTools"
+_DEFAULT_LOG_ENTRIES = 10
+Logger: Any = logging.getLogger(_LOGGER_NAME)
 
 
 class GitTools:
@@ -67,7 +69,7 @@ class GitTools:
         except Exception as e:
             return f"Status Error (Unexpected): {e}"
 
-    def log(self, max_entries: int = 10) -> str:
+    def log(self, max_entries: int = _DEFAULT_LOG_ENTRIES) -> str:
         """
         Gets git commit log.
         Tool ID: ACT-012

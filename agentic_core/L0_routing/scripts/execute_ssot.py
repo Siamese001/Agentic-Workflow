@@ -3771,25 +3771,10 @@ def save_aggregate_report(targets: list[str], project_root: Path) -> Path | None
 
 
 def try_summon_orchestrator(project_root: Path, targets: list[str], execute: bool):
-    """
-    [INTEGRATION] Attempts to load L3 Orchestrator for smart execution.
-    Returns: (success: bool, results: List|None)
-    """
-    try:
-        from agentic_core.L0_routing.utils.subprocess_runner_util import invoke_orchestrator_mission
+    """Attempts to load L3 Orchestrator for smart execution. Delegates to _ssot_pipeline."""
+    from agentic_core.L0_routing.scripts._ssot_pipeline import try_summon_orchestrator as _tso
 
-        logger.info("🧠 L3 ORCHESTRATOR SUMMONED (via subprocess): Delegating command.")
-        result = invoke_orchestrator_mission(project_root=project_root, targets=targets, execute=execute)
-        if result.get("success"):
-            return (True, result.get("results"))
-        if result.get("fallback"):
-            logger.warning("L3 Orchestrator not found. Falling back to L5 iteration.")
-            return (False, None)
-        logger.error(f"L3 Orchestration failed: {result.get('error')}. Falling back.")
-        return (False, None)
-    except (ImportError, AttributeError, TypeError, ValueError) as e:
-        logger.error(f"L3 Orchestration failed: {e}. Falling back to L5 iteration.")
-        return (False, None)
+    return _tso(project_root, targets, execute)
 
 
 EXECUTION_PLAN = [
@@ -5999,215 +5984,31 @@ def run_pipeline(
     state_mgr: "RuntimeStateManager",
     ctx: "HealContext",
 ) -> "dict[str, object]":
-    """Unified pipeline loop replacing the five bespoke execute_phase*_impl functions.
+    """Unified pipeline loop. Delegates to _ssot_pipeline.run_pipeline."""
+    from agentic_core.L0_routing.scripts._ssot_pipeline import run_pipeline as _rp
 
-    Governance invariants enforced:
-    - Digest emitted exactly once per call via _emit_pipeline_digest.
-    - pre_commit and validate receive scan_ctx (heal=False) structurally.
-    - update_agent is never called for execute/heal when gated or fatal.
-    - All four subphase slots are always present in AgentRunResult.subphases.
-    - Exception in any subphase → fatal=True → remaining subphases skipped.
-    - Confidence gate fires immediately after validate, before any execute call.
-
-    Returns dict mapping agent_id -> AgentRunResult.
-    """
-    from agentic_core.L2_execution.protocol import AgentRunResult, SubphaseResult
-
-    _emit_pipeline_digest(adapters, territory, ctx)
-    import dataclasses as _dc2
-
-    if _dc2.is_dataclass(ctx) and (not isinstance(ctx, type)):
-        scan_ctx = _dc2.replace(ctx, heal=False)
-    else:
-
-        class _ScanCtx:
-            pass
-
-        scan_ctx = _ScanCtx()
-        for _attr in ("heal", "enable_llm", "auto_approve", "enable_telemetry", "enable_meta_learning"):
-            setattr(scan_ctx, _attr, getattr(ctx, _attr, False))
-        scan_ctx.heal = False
-        scan_ctx.enable_llm = False
-    results: dict[str, AgentRunResult] = {}
-    for agent_id in AGENT_PIPELINE:
-        adapter = adapters.get(agent_id)
-        if adapter is None:
-            continue
-        run_result = AgentRunResult()
-        for sp in PIPELINE_SUBPHASES:
-            run_result.subphases[sp] = SubphaseResult(skipped=True, skip_reason="not reached")
-        fatal = False
-        for subphase_name in PIPELINE_SUBPHASES:
-            is_mutating = subphase_name in ("execute", "heal")
-            if is_mutating and (not getattr(ctx, "heal", False)):
-                run_result.subphases[subphase_name] = SubphaseResult(skipped=True, skip_reason="heal=False")
-                continue
-            if is_mutating and (run_result.gated or fatal):
-                run_result.subphases[subphase_name] = SubphaseResult(
-                    skipped=True, skip_reason=run_result.gate_reason if run_result.gated else "prior error"
-                )
-                continue
-            state_mgr.update_agent(agent_id, subphase_name)
-            effective_ctx = scan_ctx if not is_mutating else ctx
-            try:
-                method = getattr(adapter, subphase_name)
-                result: SubphaseResult = method(territory, effective_ctx)
-            except (ImportError, AttributeError, TypeError, ValueError, RuntimeError) as exc:
-                result = SubphaseResult(error=str(exc), skipped=True, skip_reason=f"exception: {exc}")
-                run_result.error = str(exc)
-                fatal = True
-                state_mgr.skip_agent(agent_id, f"{subphase_name} exception: {exc}")
-                run_result.subphases[subphase_name] = result
-                break
-            run_result.subphases[subphase_name] = result
-            run_result.violations_total += len(result.violations)
-            run_result.mutations_applied += len(result.fixed)
-            if subphase_name == "validate" and result.violations:
-                confidence = decision_engine.calculate_healing_confidence(
-                    len(result.violations),
-                    [v.get("type", "UNKNOWN") for v in result.violations[:10]],
-                    territory,
-                    agent_name=agent_id,
-                )
-                proceed, reason = decision_engine.should_proceed_with_healing(
-                    confidence, agent_id, territory=territory
-                )
-                if not proceed:
-                    run_result.gated = True
-                    run_result.gate_reason = reason
-                    state_mgr.skip_agent(agent_id, reason)
-                    state_mgr.complete_agent(agent_id, True, f"gated: {reason}")
-                    continue
-            state_mgr.complete_agent(agent_id, result.error is None, result.error or "")
-        results[agent_id] = run_result
-    return results
+    return _rp(adapters, territory, decision_engine, state_mgr, ctx)
 
 
 def print_execution_plan(arbitrate_plan: bool = False, ptc_plan: bool = False) -> None:
-    """Print stable, sorted execution plan to stdout.
+    """Print stable, sorted execution plan to stdout. Delegates to _ssot_pipeline."""
+    from agentic_core.L0_routing.scripts._ssot_pipeline import print_execution_plan as _pep
 
-    Args:
-        arbitrate_plan: If True, include multi-agent arbitration results
-        ptc_plan: If True, include PTC tool call results
-    """
-    for phase in EXECUTION_PLAN:
-        print(f"PHASE {phase['phase']}: {phase['name']}")
-        for agent in phase["agents"]:
-            kwargs_str = f" ({agent['kwargs']})" if agent.get("kwargs") else ""
-            print(f"  - {agent['key']}.{agent['method']}{kwargs_str}")
-            print(f"    # {agent['description']}")
-        print()
-    if arbitrate_plan:
-        print("=== MULTI-AGENT ARBITRATION ===")
-        task = {"task_id": "execute_ssot_plan", "task_kind": "planning"}
-        try:
-            from agentic_core.L3_orchestration.arbitration.arbitration_contract import ArbitrationInput
-            from agentic_core.L3_orchestration.arbitration.arbitrator import Arbitrator
-            from agentic_core.L3_orchestration.arbitration.run_advisors import run_all_advisors
-
-            proposals = run_all_advisors(task)
-            input_data = ArbitrationInput(
-                task_id=task["task_id"], task_kind=task["task_kind"], proposals=proposals
-            )
-            arbitrator = Arbitrator()
-            decision = arbitrator.arbitrate(input_data)
-            print(f"Selected Advisor: {decision.selected_advisor_id}")
-            print(f"Selected Decision: {decision.selected_decision}")
-            print(f"Score Breakdown: {decision.score_breakdown}")
-            print(f"Merged Rationale: {decision.merged_rationale}")
-            print(f"Merged Risks: {decision.merged_risks}")
-        except (OSError, AttributeError, TypeError) as e:
-            print(f"Error listing artifacts: {e}")
-        print()
-    if ptc_plan:
-        print("=== PROGRAMMATIC TOOL CALLING ===")
-        if "violations" not in locals():
-            violations = []
-        try:
-            from agentic_core.L3_orchestration.ptc.builtin_tools import register_builtin_tools
-            from agentic_core.L3_orchestration.ptc.ptc_registry import get_global_registry
-            from agentic_core.L3_orchestration.ptc.tool_call_store import record_tool_call
-            from agentic_core.L3_orchestration.ptc.tool_contract import ToolCall, generate_call_id
-            from agentic_core.L3_orchestration.ptc.tool_invoker import ToolInvoker
-
-            register_builtin_tools()
-            registry = get_global_registry()
-            invoker = ToolInvoker()
-            expr_call = ToolCall(
-                call_id=generate_call_id("expr_eval", {"expr": "2 + 3 * 4"}),
-                tool_id="expr_eval",
-                args={"expr": "2 + 3 * 4"},
-                policy={"timeout": 5},
-            )
-            expr_result = invoker.invoke(expr_call, registry)
-            spec, _ = registry.get("expr_eval")
-            artifact_ref = record_tool_call(expr_call, expr_result, spec)
-            ptc_plan_data = {
-                "tool_calls": [
-                    {
-                        "tool_id": expr_call.tool_id,
-                        "call_id": expr_call.call_id,
-                        "args": expr_call.args,
-                        "exit_code": expr_result.exit_code,
-                        "stdout": expr_result.stdout,
-                        "stderr": expr_result.stderr,
-                        "truncated": expr_result.truncated,
-                    }
-                ],
-                "artifact_ref": {
-                    "kind": artifact_ref.kind,
-                    "logical_id": artifact_ref.logical_id,
-                    "version": artifact_ref.version,
-                    "path": artifact_ref.path,
-                },
-                "summary": "PTC executed 1 tool calls for plan context",
-            }
-            import json
-
-            print(json.dumps(ptc_plan_data, sort_keys=True, separators=(",", ":")))
-        except (ImportError, AttributeError, TypeError, ValueError) as e:
-            ptc_plan_data = {"tool_calls": [], "summary": f"PTC setup failed: {str(e)}", "error": str(e)}
-            import json
-
-            print(json.dumps(ptc_plan_data, sort_keys=True, separators=(",", ":")))
-            violations.append((0, "PTC_SCAN_ERROR", f"Scan error: {e}"))
-        print()
+    _pep(arbitrate_plan=arbitrate_plan, ptc_plan=ptc_plan)
 
 
 def resolve_agent_subset(requested: list[str]) -> list[str]:
-    """Resolve requested agent keys to a closed set including dependencies.
+    """Resolve requested agent keys to a closed set including dependencies. Delegates to _ssot_pipeline."""
+    from agentic_core.L0_routing.scripts._ssot_pipeline import resolve_agent_subset as _ras
 
-    Raises ValueError on unknown keys.
-    Deterministic ordering: sorted alphabetically after closure.
-    """
-    unknown = set(requested) - CANONICAL_ROSTER_KEYS
-    if unknown:
-        raise ValueError(f"Unknown agent key(s): {sorted(unknown)}. Valid: {sorted(CANONICAL_ROSTER_KEYS)}")
-    closed = set(requested)
-    frontier = list(requested)
-    while frontier:
-        key = frontier.pop()
-        for dep in AGENT_DEPENDENCIES.get(key, []):
-            if dep not in closed:
-                closed.add(dep)
-                frontier.append(dep)
-    return sorted(closed)
+    return _ras(requested)
 
 
 def list_available_agents(project_root=None, dedupe=False):
-    """Alias for discover_agents_from_registry (backward compat)."""
-    if project_root is None:
-        project_root = REPO_ROOT
-    agents = discover_agents_from_registry(project_root)
-    if dedupe:
-        seen = set()
-        unique = []
-        for agent in agents:
-            if agent not in seen:
-                seen.add(agent)
-                unique.append(agent)
-        return unique
-    return agents
+    """Alias for discover_agents_from_registry (backward compat). Delegates to _ssot_pipeline."""
+    from agentic_core.L0_routing.scripts._ssot_pipeline import list_available_agents as _laa
+
+    return _laa(project_root=project_root or REPO_ROOT, dedupe=dedupe)
 
 
 _THIS_FILE = "agentic_core/L0_routing/scripts/execute_ssot.py"
@@ -6215,76 +6016,10 @@ _logger_adg = logging.getLogger(__name__ + ".adg_prerun")
 
 
 def _emit_adg_pre_run_artifact(repo_root: "Path") -> None:
-    """Emit artifacts/adg/execution_impact_<timestamp>.json before main execution.
+    """Emit artifacts/adg/execution_impact_<timestamp>.json. Delegates to _ssot_pipeline."""
+    from agentic_core.L0_routing.scripts._ssot_pipeline import _emit_adg_pre_run_artifact as _eapa
 
-    Gracefully degrades: if ADG is unavailable, writes a minimal artifact with
-    adg_available=false. Never raises — must not block main execution.
-    """
-    ts = datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
-    artifacts_dir = repo_root / "artifacts" / "adg"
-    out_path = artifacts_dir / f"execution_impact_{ts}.json"
-    payload: dict = {
-        "emitted_by": "execute_ssot.py",
-        "timestamp": ts,
-        "target_file": _THIS_FILE,
-        "adg_available": False,
-        "adg_error": "",
-        "impacted_modules": [],
-        "impacted_module_count": 0,
-        "impacted_tests": [],
-        "impacted_test_count": 0,
-        "risk_score": 0,
-        "route_mode": "UNKNOWN",
-        "layer_violation_count": 0,
-        "guardian_scope": [],
-        "warnings": [],
-        "confidence_summary": "ADG unavailable — no impact data",
-        "impact_digest": "",
-    }
-    try:
-        artifacts_dir.mkdir(parents=True, exist_ok=True)
-        from agentic_core.adg.applications.execute_ssot_integration import build_pre_run_report
-
-        report = build_pre_run_report(changed_files=[_THIS_FILE], repo_root=repo_root)
-        payload["adg_available"] = report.adg_available
-        payload["adg_error"] = report.adg_error
-        payload["impacted_modules"] = report.impacted_modules
-        payload["impacted_module_count"] = report.impacted_module_count
-        payload["impacted_tests"] = report.impacted_tests
-        payload["impacted_test_count"] = report.impacted_test_count
-        payload["risk_score"] = report.risk_score
-        payload["route_mode"] = report.route_mode
-        payload["layer_violation_count"] = report.layer_violation_count
-        payload["impact_digest"] = report.impact_digest
-        payload["confidence_summary"] = report.summary
-        if report.adg_available:
-            payload["warnings"] = []
-            if report.route_mode == "RESTRICTED":
-                payload["warnings"].append(
-                    f"RESTRICTED mode: risk_score={report.risk_score}, review before proceeding"
-                )
-            elif report.route_mode == "HUMAN_REVIEW":
-                payload["warnings"].append(f"HUMAN_REVIEW required: risk_score={report.risk_score}")
-        else:
-            payload["warnings"].append("ADG unavailable — impact analysis skipped")
-        _logger_adg.info(
-            "ADG pre-run artifact: route_mode=%s risk=%s impacted=%s modules tests=%s",
-            report.route_mode,
-            report.risk_score,
-            report.impacted_module_count,
-            report.impacted_test_count,
-        )
-    # guardian: allow-silent-swallow
-    except Exception as exc:
-        payload["adg_error"] = str(exc)
-        payload["warnings"].append(f"ADG pre-run failed: {exc}")
-        _logger_adg.warning("ADG pre-run artifact emission failed: %s", exc)
-    try:
-        out_path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-        _logger_adg.info("ADG pre-run artifact written: %s", out_path)
-    # guardian: allow-silent-swallow
-    except Exception as exc:
-        _logger_adg.warning("ADG pre-run artifact write failed: %s", exc)
+    _eapa(repo_root)
 
 
 def main() -> int:
@@ -6327,95 +6062,17 @@ def main() -> int:
 
 
 def _build_ssot_territory_targets(project_root: "Path") -> list[str]:
-    """Derive the canonical territory target list from SOVEREIGN_TERRITORIES SSOT.
+    """Derive the canonical territory target list from SOVEREIGN_TERRITORIES SSOT. Delegates to _ssot_pipeline."""
+    from agentic_core.L0_routing.scripts._ssot_pipeline import _build_ssot_territory_targets as _bstt
 
-    Returns only keys whose corresponding directory exists under project_root,
-    sorted with agentic_core sub-layers first (L0 → L6), then alphabetical.
-    Dotfile dirs (.backup, .github, .gravity_state) are excluded — they do not
-    need the full agent pipeline.
-    """
-    try:
-        from agentic_core.L5_safety.config.structure_blueprint import PROJECT_ROOT_WHITELIST
-
-        all_keys = sorted(PROJECT_ROOT_WHITELIST)
-    except ImportError:
-        logger.warning("[territory-build] SSOT import failed — using legacy hardcoded list")
-        return ["prompt_governance", "L5_safety", "L3_orchestration", "L2_execution", "L0_routing"]
-    excluded = {".backup", ".github", ".gravity_state"}
-    agentic_core_sublayers = ["L0_routing", "L2_execution", "L3_orchestration", "L5_safety"]
-    targets = []
-    for sub in agentic_core_sublayers:
-        sub_path = project_root / AGENTIC_CORE_DIR / sub
-        if sub_path.exists():
-            targets.append(sub)
-    skip = set(agentic_core_sublayers) | excluded | {AGENTIC_CORE_DIR}
-    for key in sorted(all_keys):
-        if key in skip:
-            continue
-        territory_path = project_root / key
-        if territory_path.exists():
-            targets.append(key)
-    logger.info(f"[territory-build] SSOT-derived targets ({len(targets)}): {targets}")
-    return targets
+    return _bstt(project_root)
 
 
 def _compute_pipeline_digest(targets: "list[str]") -> str:
-    """Compute a stable determinism digest for the pipeline run.
+    """Compute a stable determinism digest for the pipeline run. Delegates to _ssot_pipeline."""
+    from agentic_core.L0_routing.scripts._ssot_pipeline import _compute_pipeline_digest as _cpd
 
-    Five-component SHA-256 surface:
-      policy_hash          -- canonical sovereign policy identifier
-      registry_hash        -- SHA-256 of sorted agent registry surface
-      config_surface_hash  -- from negative_control_harness (tamper-sensitive)
-      transcript_hash      -- SHA-256 of sorted processed territory names
-      dependency_lock_hash -- stable structural constant
-
-    Returns a 64-char hex string.  Never raises; falls back to a sentinel
-    digest on import failure so the pipeline is not blocked.
-    """
-    import hashlib as _h
-    import json as _j
-
-    try:
-        from agentic_core.L2_execution.determinism.negative_control_harness import get_config_surface as _gcs
-        from agentic_core.L2_execution.determinism.negative_control_harness import hash_config_surface as _hcs
-        from agentic_core.L6_observability.engines.determinism_digest_emitter import (
-            DeterminismDigestEmitter as _DE,
-        )
-    except ImportError as _exc:
-        logger.warning(f"[DETERMINISM-DIGEST] import failed: {_exc}")
-        return _h.sha256(b"determinism-digest:import-failed").hexdigest()
-    try:
-        from pathlib import Path as _P
-
-        _policy_file = _P(__file__).resolve().parents[1] / "policy" / "v15_policy_pack.json"
-        if _policy_file.exists():
-            _policy_bytes = _policy_file.read_bytes()
-            _policy_hash = _h.sha256(_policy_bytes).hexdigest()
-        else:
-            _policy_hash = _h.sha256(b"policy:file-not-found").hexdigest()
-    except (OSError, ImportError, AttributeError):
-        _policy_hash = _h.sha256(b"policy:load-failed").hexdigest()
-    try:
-        from agentic_core.agents.agent_registry import registry_digest as _rd
-
-        _reg_bytes = _j.dumps(_rd(), sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode("utf-8")
-        _registry_hash = _h.sha256(_reg_bytes).hexdigest()
-    except (ImportError, AttributeError, TypeError):
-        _registry_hash = _h.sha256(b"registry:fallback").hexdigest()
-    _config_hash = _hcs(_gcs())
-    _transcript_bytes = _j.dumps(
-        sorted(str(t) for t in targets), sort_keys=True, separators=(",", ":"), ensure_ascii=True
-    ).encode("utf-8")
-    _transcript_hash = _h.sha256(_transcript_bytes).hexdigest()
-    _dep_lock_hash = _h.sha256(b"dependency-lock:stable").hexdigest()
-    _emitter = _DE()
-    return _emitter.compute(
-        policy_hash=_policy_hash,
-        registry_hash=_registry_hash,
-        config_surface_hash=_config_hash,
-        transcript_hash=_transcript_hash,
-        dependency_lock_hash=_dep_lock_hash,
-    )
+    return _cpd(targets)
 
 
 @_optional_runtime_guard()("E.execute_ssot_main.execute_ssot")

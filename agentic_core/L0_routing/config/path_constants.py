@@ -56,7 +56,11 @@ def get_validated_project_root() -> Path:
 # ============================================================================
 
 AGENTIC_CORE_DIR: Final[str] = "agentic_core"
+APPS_EVAL_DIR: Final[str] = "apps_eval"
+APPS_EXEC_DIR: Final[str] = "apps_exec"
 APPS_LIC_DIR: Final[str] = "apps_lic"
+APPS_RESEARCH_DIR: Final[str] = "apps_research"
+APPS_RFP_DIR: Final[str] = "apps_rfp"
 APPS_RG_DIR: Final[str] = "apps_rg"
 APPS_SHARED_DIR: Final[str] = "apps_shared"
 ARCHIVES_DIR: Final[str] = "archives"
@@ -114,7 +118,11 @@ ROOT_WHITELIST: Final[frozenset[str]] = frozenset(
         ".github",
         ".gravity_state",
         "agentic_core",
+        "apps_eval",
+        "apps_exec",
         "apps_lic",
+        "apps_research",
+        "apps_rfp",
         "apps_rg",
         "apps_shared",
         "archives",
@@ -228,7 +236,11 @@ DEPTH_RULES: Final[Mapping[str, int]] = {
     ".github": 2,
     ".gravity_state": 2,
     "agentic_core": 3,
+    "apps_eval": 2,
+    "apps_exec": 2,
     "apps_lic": 2,
+    "apps_research": 2,
+    "apps_rfp": 2,
     "apps_rg": 2,
     "apps_shared": 2,
     "archives": 3,
@@ -255,7 +267,11 @@ PROJECT_ROOT_WHITELIST: Final[frozenset[str]] = frozenset(
         ".gravity_state",
         ".vscode",
         "agentic_core",
+        "apps_eval",
+        "apps_exec",
         "apps_lic",
+        "apps_research",
+        "apps_rfp",
         "apps_rg",
         "apps_shared",
         "archives",
@@ -340,6 +356,54 @@ APPS_SHARED_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = {
     "validators": [],
 }
 
+APPS_EVAL_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = {
+    "config": [],
+    "engines": [],
+    "enforcement": [],
+    "reasoning": [],
+    "scripts": [],
+    "tools": [],
+    "types": [],
+    "utils": [],
+    "validators": [],
+}
+
+APPS_EXEC_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = {
+    "config": [],
+    "engines": [],
+    "enforcement": [],
+    "reasoning": [],
+    "scripts": [],
+    "tools": [],
+    "types": [],
+    "utils": [],
+    "validators": [],
+}
+
+APPS_RESEARCH_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = {
+    "config": [],
+    "engines": [],
+    "enforcement": [],
+    "reasoning": [],
+    "scripts": [],
+    "tools": [],
+    "types": [],
+    "utils": [],
+    "validators": [],
+}
+
+APPS_RFP_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = {
+    "config": [],
+    "engines": [],
+    "enforcement": [],
+    "reasoning": [],
+    "scripts": [],
+    "tools": [],
+    "types": [],
+    "utils": [],
+    "validators": [],
+}
+
 # ============================================================================
 # EXPORTS
 # ============================================================================
@@ -348,8 +412,16 @@ __all__ = [
     "AGENT_DISCOVERY_JSON",
     "AGENT_DISCOVERY_MANIFEST_JSON",
     "AGENTIC_CORE_DIR",
+    "APPS_EVAL_DIR",
+    "APPS_EVAL_SUBFOLDER_MAP",
+    "APPS_EXEC_DIR",
+    "APPS_EXEC_SUBFOLDER_MAP",
     "APPS_LIC_DIR",
     "APPS_LIC_SUBFOLDER_MAP",
+    "APPS_RESEARCH_DIR",
+    "APPS_RESEARCH_SUBFOLDER_MAP",
+    "APPS_RFP_DIR",
+    "APPS_RFP_SUBFOLDER_MAP",
     "APPS_RG_DIR",
     "APPS_RG_SUBFOLDER_MAP",
     "APPS_SHARED_DIR",

@@ -1021,6 +1021,62 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
         },
     }
 
+    # New apps territories (apps_eval, apps_exec, apps_research, apps_rfp)
+    # All share the standard apps LCD subfolder structure.
+    apps_new_lcd_subfolders = apps_lcd_subfolders.copy()
+
+    territories["apps_eval"] = {
+        "depth": 2,
+        "purpose": "Evaluation Application domain — scenario running, regression detection, and eval orchestration.",
+        "subfolders": apps_new_lcd_subfolders,
+        "routing_rules": apps_routing_rules,
+        "ast_signals": {
+            "apps_eval/engines": {
+                "keyword_signals": ["eval", "scenario", "regression", "benchmark"],
+                "weight": 90,
+            }
+        },
+    }
+
+    territories["apps_exec"] = {
+        "depth": 2,
+        "purpose": "Execution Application domain — brief assembly, exec orchestration, and delivery pipelines.",
+        "subfolders": apps_new_lcd_subfolders,
+        "routing_rules": apps_routing_rules,
+        "ast_signals": {
+            "apps_exec/engines": {
+                "keyword_signals": ["exec", "brief", "assembly", "delivery"],
+                "weight": 90,
+            }
+        },
+    }
+
+    territories["apps_research"] = {
+        "depth": 2,
+        "purpose": "Research Application domain — research assembly, source gathering, and synthesis pipelines.",
+        "subfolders": apps_new_lcd_subfolders,
+        "routing_rules": apps_routing_rules,
+        "ast_signals": {
+            "apps_research/engines": {
+                "keyword_signals": ["research", "synthesis", "source", "assembly"],
+                "weight": 90,
+            }
+        },
+    }
+
+    territories["apps_rfp"] = {
+        "depth": 2,
+        "purpose": "RFP Application domain — proposal assembly, RFP orchestration, and bid pipelines.",
+        "subfolders": apps_new_lcd_subfolders,
+        "routing_rules": apps_routing_rules,
+        "ast_signals": {
+            "apps_rfp/engines": {
+                "keyword_signals": ["rfp", "proposal", "bid", "assembly"],
+                "weight": 90,
+            }
+        },
+    }
+
     # Tests territory
     territories["tests"] = {
         "depth": 2,

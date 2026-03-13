@@ -438,7 +438,15 @@ def _infer_layer(path: str) -> str:
     for layer in ("L0", "L1", "L2", "L3", "L4", "L5", "L6"):
         if f"/{layer}_" in path or f"\\{layer}_" in path or f"/{layer}/" in path:
             return layer
-    for prefix in ("apps_shared", "apps_lic", "apps_rg"):
+    for prefix in (
+        "apps_eval",
+        "apps_exec",
+        "apps_lic",
+        "apps_research",
+        "apps_rfp",
+        "apps_rg",
+        "apps_shared",
+    ):
         if path.startswith(prefix) or f"/{prefix}" in path:
             return "L_APP"
     return "L_UNKNOWN"

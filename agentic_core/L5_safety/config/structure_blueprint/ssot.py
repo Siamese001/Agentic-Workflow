@@ -91,7 +91,11 @@ STANDARD_LAYER_STRUCTURE: Final[list[str]] = [
 ENFORCED_TERRITORIES: Final[frozenset[str]] = frozenset(
     {
         "agentic_core",
+        "apps_eval",
+        "apps_exec",
         "apps_lic",
+        "apps_research",
+        "apps_rfp",
         "apps_rg",
         "apps_shared",
         "tests",
@@ -108,7 +112,11 @@ ENFORCED_TERRITORIES: Final[frozenset[str]] = frozenset(
 CODE_TERRITORIES: Final[frozenset[str]] = frozenset(
     {
         "agentic_core",
+        "apps_eval",
+        "apps_exec",
         "apps_lic",
+        "apps_research",
+        "apps_rfp",
         "apps_rg",
         "apps_shared",
         "tests",
@@ -217,6 +225,10 @@ AGENTIC_CORE_DIR: Final[str] = "agentic_core"
 APPS_RG_DIR: Final[str] = "apps_rg"
 APPS_LIC_DIR: Final[str] = "apps_lic"
 APPS_SHARED_DIR: Final[str] = "apps_shared"
+APPS_EVAL_DIR: Final[str] = "apps_eval"
+APPS_EXEC_DIR: Final[str] = "apps_exec"
+APPS_RESEARCH_DIR: Final[str] = "apps_research"
+APPS_RFP_DIR: Final[str] = "apps_rfp"
 
 AGENT_DISCOVERY_JSON: str = "agent_discovery_full.json"
 AGENT_DISCOVERY_MANIFEST_JSON: str = "agent_discovery_full.manifest.json"
@@ -257,12 +269,26 @@ TESTS_AUTOGEN_DIR: str = "tests/unit_min_deps"
 # from here instead of hardcoding test paths.
 # ---------------------------------------------------------------------------
 TEST_MIRROR_ROOTS: frozenset[str] = frozenset(
-    {"agentic_core", "apps_lic", "apps_rg", "apps_shared", "system_learning"}
+    {
+        "agentic_core",
+        "apps_eval",
+        "apps_exec",
+        "apps_lic",
+        "apps_research",
+        "apps_rfp",
+        "apps_rg",
+        "apps_shared",
+        "system_learning",
+    }
 )
 TEST_MIRROR_BASE: str = "tests/unit"
 TEST_CANONICAL_LOCATION_MAP: dict[str, str] = {
     "agentic_core": "tests/unit/agentic_core",
+    "apps_eval": "tests/unit/apps_eval",
+    "apps_exec": "tests/unit/apps_exec",
     "apps_lic": "tests/unit/apps_lic",
+    "apps_research": "tests/unit/apps_research",
+    "apps_rfp": "tests/unit/apps_rfp",
     "apps_rg": "tests/unit/apps_rg",
     "apps_shared": "tests/unit/apps_shared",
     "system_learning": "tests/unit/system_learning",
@@ -394,8 +420,12 @@ VARIABLE_DEPTH_SUBFOLDERS: frozenset[str] = frozenset(
         "runtime",
         "knowledge",
         "agentic_core",
-        "apps_rg",
+        "apps_eval",
+        "apps_exec",
         "apps_lic",
+        "apps_research",
+        "apps_rfp",
+        "apps_rg",
         "apps_shared",
         "ops_scripts",
         "tests",
@@ -458,6 +488,38 @@ def get_apps_shared_subfolder_map() -> Mapping[str, Sequence[str]]:
     from agentic_core.L5_safety.config.structure_blueprint.derived import APPS_SHARED_SUBFOLDER_MAP
 
     return APPS_SHARED_SUBFOLDER_MAP
+
+
+@lru_cache(maxsize=1)
+def get_apps_eval_subfolder_map() -> Mapping[str, Sequence[str]]:
+    """Return APPS_EVAL_SUBFOLDER_MAP from derived module."""
+    from agentic_core.L5_safety.config.structure_blueprint.derived import APPS_EVAL_SUBFOLDER_MAP
+
+    return APPS_EVAL_SUBFOLDER_MAP
+
+
+@lru_cache(maxsize=1)
+def get_apps_exec_subfolder_map() -> Mapping[str, Sequence[str]]:
+    """Return APPS_EXEC_SUBFOLDER_MAP from derived module."""
+    from agentic_core.L5_safety.config.structure_blueprint.derived import APPS_EXEC_SUBFOLDER_MAP
+
+    return APPS_EXEC_SUBFOLDER_MAP
+
+
+@lru_cache(maxsize=1)
+def get_apps_research_subfolder_map() -> Mapping[str, Sequence[str]]:
+    """Return APPS_RESEARCH_SUBFOLDER_MAP from derived module."""
+    from agentic_core.L5_safety.config.structure_blueprint.derived import APPS_RESEARCH_SUBFOLDER_MAP
+
+    return APPS_RESEARCH_SUBFOLDER_MAP
+
+
+@lru_cache(maxsize=1)
+def get_apps_rfp_subfolder_map() -> Mapping[str, Sequence[str]]:
+    """Return APPS_RFP_SUBFOLDER_MAP from derived module."""
+    from agentic_core.L5_safety.config.structure_blueprint.derived import APPS_RFP_SUBFOLDER_MAP
+
+    return APPS_RFP_SUBFOLDER_MAP
 
 
 # ============================================================================
@@ -613,8 +675,12 @@ ROOT_PROTECTED_FILES: frozenset[str] = _STATIC_ROOT_PROTECTED_FILES | _DYNAMIC_R
 PROJECT_ROOT_WHITELIST: Final[frozenset[str]] = frozenset(
     {
         "agentic_core",
-        "apps_rg",
+        "apps_eval",
+        "apps_exec",
         "apps_lic",
+        "apps_research",
+        "apps_rfp",
+        "apps_rg",
         "apps_shared",
         "ops_scripts",
         "tests",

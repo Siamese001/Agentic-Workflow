@@ -21,6 +21,13 @@ from agentic_core.L5_safety.config.structure_blueprint.territories import (
     get_all_territories,
 )
 
+# These mirror ssot.APPS_*_DIR constants; defined here as literals to avoid
+# a circular import (ssot imports derived at module level).
+_APPS_EVAL_DIR: str = "apps_eval"
+_APPS_EXEC_DIR: str = "apps_exec"
+_APPS_RESEARCH_DIR: str = "apps_research"
+_APPS_RFP_DIR: str = "apps_rfp"
+
 # ============================================================================
 # DERIVATION FUNCTIONS
 # ============================================================================
@@ -117,6 +124,12 @@ SUBFOLDER_METADATA: Final[Mapping[str, Mapping[str, Any]]] = _derive_subfolder_m
 APPS_RG_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = _derive_apps_subfolder_map(APPS_RG_DIR)
 APPS_LIC_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = _derive_apps_subfolder_map(APPS_LIC_DIR)
 APPS_SHARED_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = _derive_apps_subfolder_map(APPS_SHARED_DIR)
+APPS_EVAL_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = _derive_apps_subfolder_map(_APPS_EVAL_DIR)
+APPS_EXEC_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = _derive_apps_subfolder_map(_APPS_EXEC_DIR)
+APPS_RESEARCH_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = _derive_apps_subfolder_map(
+    _APPS_RESEARCH_DIR
+)
+APPS_RFP_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = _derive_apps_subfolder_map(_APPS_RFP_DIR)
 
 # Type-safe alias
 agentic_core_registry: Final[Mapping[str, Sequence[str]]] = CORE_SUBFOLDER_MAP

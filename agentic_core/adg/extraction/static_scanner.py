@@ -100,7 +100,11 @@ from agentic_core.adg.schema import (
 )
 from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
+    APPS_EVAL_DIR,
+    APPS_EXEC_DIR,
     APPS_LIC_DIR,
+    APPS_RESEARCH_DIR,
+    APPS_RFP_DIR,
     APPS_RG_DIR,
     APPS_SHARED_DIR,
     OPS_SCRIPTS_DIR,
@@ -114,8 +118,12 @@ logger = logging.getLogger(__name__)
 
 _SCAN_ROOTS: tuple[str, ...] = (
     AGENTIC_CORE_DIR,
-    APPS_RG_DIR,
+    APPS_EVAL_DIR,
+    APPS_EXEC_DIR,
     APPS_LIC_DIR,
+    APPS_RESEARCH_DIR,
+    APPS_RFP_DIR,
+    APPS_RG_DIR,
     APPS_SHARED_DIR,
     SYSTEM_LEARNING_DIR,
     TOOLS_DIR,
