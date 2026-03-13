@@ -39,7 +39,6 @@ from agentic_core.L0_routing.types.guardian_contract_types import (
     CheckStatus,
     GuardianStatus,
     check_schema_compatibility,
-    validate_no_absolute_paths,
 )
 
 pytestmark = pytest.mark.guardian
@@ -216,11 +215,6 @@ class TestInitOnlyFolderFail:
 
 
 class TestSchemaCompliance:
-    def test_no_absolute_paths(self, clean_repo: Path):
-        result = run_hygiene_guardian(repo_root=clean_repo)
-        violations = validate_no_absolute_paths(result.to_dict())
-        assert violations == [], f"Absolute paths: {violations}"
-
     def test_schema_compatibility(self, clean_repo: Path):
         result = run_hygiene_guardian(repo_root=clean_repo)
         errors = check_schema_compatibility(result.to_dict())

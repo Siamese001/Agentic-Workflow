@@ -34,7 +34,6 @@ from agentic_core.L0_routing.scripts.run_guardian_cross_layer_mutation import (
 from agentic_core.L0_routing.types.guardian_contract_types import (
     CheckStatus,
     GuardianStatus,
-    validate_no_absolute_paths,
 )
 
 pytestmark = pytest.mark.guardian
@@ -84,11 +83,6 @@ class TestCrossLayerMutationGuardianClean:
     def test_clean_repo_top_status_pass(self, clean_repo):
         result = run_cross_layer_mutation_guardian(repo_root=clean_repo)
         assert result.status == GuardianStatus.PASS.value
-
-    def test_no_absolute_paths_in_result(self, clean_repo):
-        result = run_cross_layer_mutation_guardian(repo_root=clean_repo)
-        errs = validate_no_absolute_paths(result.to_dict())
-        assert not errs
 
 
 class TestCrossLayerMutationGuardianViolations:

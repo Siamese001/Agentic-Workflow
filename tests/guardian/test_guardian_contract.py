@@ -317,3 +317,77 @@ class TestMalformedInputs:
     def test_artifact_class_defaults_to_individual(self):
         result = _make_result()
         assert result.artifact_class == ArtifactClass.INDIVIDUAL.value
+
+
+# ---------------------------------------------------------------------------
+# 6. Cross-guardian schema compliance (consolidated from per-guardian files)
+# ---------------------------------------------------------------------------
+
+
+def _make_clean_tmp(tmp_path: Path, *subdirs: str) -> Path:
+    """Create a minimal clean repo under tmp_path."""
+    for sub in subdirs:
+        (tmp_path / sub).mkdir(parents=True, exist_ok=True)
+        (tmp_path / sub / "clean.py").write_text("x = 1\n", encoding="utf-8")
+    return tmp_path
+
+
+def _all_guardian_runners():
+    """Return (guardian_id, runner_callable, clean_repo_factory) tuples."""
+    from agentic_core.L0_routing.config.path_constants import (
+        AGENTIC_CORE_DIR,
+        APPS_LIC_DIR,
+        L0_ROUTING_DIR,
+    )
+    from agentic_core.L0_routing.scripts.run_guardian_c0_sovereignty import (
+        run_c0_sovereignty_guardian,
+    )
+    from agentic_core.L0_routing.scripts.run_guardian_change_package_activation import (
+        run_change_package_activation_guardian,
+    )
+    from agentic_core.L0_routing.scripts.run_guardian_cross_layer_mutation import (
+        run_cross_layer_mutation_guardian,
+    )
+    from agentic_core.L0_routing.scripts.run_guardian_escalation_determinism import (
+        run_escalation_determinism_guardian,
+    )
+    from agentic_core.L0_routing.scripts.run_guardian_gateway_bypass import (
+        run_gateway_bypass_guardian,
+    )
+
+    return [
+        ("c0_sovereignty", run_c0_sovereignty_guardian, [AGENTIC_CORE_DIR]),
+        ("change_package_activation", run_change_package_activation_guardian, [AGENTIC_CORE_DIR]),
+        ("cross_layer_mutation", run_cross_layer_mutation_guardian, [L0_ROUTING_DIR]),
+        ("escalation_determinism", run_escalation_determinism_guardian, [AGENTIC_CORE_DIR]),
+        ("gateway_bypass", run_gateway_bypass_guardian, [AGENTIC_CORE_DIR, APPS_LIC_DIR]),
+    ]
+
+
+@pytest.mark.parametrize(
+    "guardian_id,runner,subdirs",
+    [(gid, r, s) for gid, r, s in _all_guardian_runners()],
+    ids=[gid for gid, _, _ in _all_guardian_runners()],
+)
+class TestCrossGuardianSchemaCompliance:
+    """Consolidated schema compliance for all behavioral guardians.
+
+    Replaces the individual test_no_absolute_paths_in_result tests that
+    were duplicated across test_guardian_c0_sovereignty.py,
+    test_guardian_change_package_activation.py,
+    test_guardian_cross_layer_mutation.py,
+    test_guardian_escalation_determinism.py, and
+    test_guardian_gateway_bypass.py.
+    """
+
+    def test_no_absolute_paths(self, guardian_id, runner, subdirs, tmp_path):
+        repo = _make_clean_tmp(tmp_path, *subdirs)
+        result = runner(repo_root=repo)
+        violations = validate_no_absolute_paths(result.to_dict())
+        assert violations == [], f"{guardian_id}: absolute paths in result: {violations}"
+
+    def test_schema_compatible(self, guardian_id, runner, subdirs, tmp_path):
+        repo = _make_clean_tmp(tmp_path, *subdirs)
+        result = runner(repo_root=repo)
+        errors = check_schema_compatibility(result.to_dict())
+        assert errors == [], f"{guardian_id}: schema drift: {errors}"
