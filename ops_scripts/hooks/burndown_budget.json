@@ -1,1 +1,8 @@
-{}
+{
+  "agentic_core/L4_state/memory/cache_admission_gate.py": {
+    "silent_swallower": 1
+  },
+  "agentic_core/cache/cache_key_builders.py": {
+    "direct_prompt_compilation": 1
+  }
+}
