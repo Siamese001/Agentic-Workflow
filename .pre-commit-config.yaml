@@ -23,7 +23,52 @@ default_language_version:
 
 # Global exclude — applied to every hook. Individual hooks may extend this.
 # Excludes artifacts that change on every hook run to prevent infinite loops
-exclude: ^(archives/.*|\.sovereign_healing_backup/.*|^artifacts/migration/|artifacts/adg_ci_lane_gate_result\.json|artifacts/healing/healing_events\.jsonl|artifacts/bypass_audit\.jsonl)
+# Synchronized with .gitignore to ensure consistency
+exclude: |
+  (?x)^(
+    archives/.*|
+    \.sovereign_healing_backup/.*|
+    \.healing_backups/.*|
+    artifacts/migration/.*|
+    artifacts/adg_ci_lane_gate_result\.json|
+    artifacts/healing/healing_events\.jsonl|
+    artifacts/bypass_audit\.jsonl|
+    artifacts/import_health/import_health_report\.json|
+    artifacts/windsurf/.*\.(txt|out|typed|emitted|commit.*|acceptance.*|det.*|neg.*)|
+    temp_[^/]*/.*|
+    tmp.*|
+    _temp_cmd.*|
+    _out_.*|
+    _typed_.*|
+    _typed_emitted_.*|
+    _rebuild_.*|
+    _selfcheck_.*|
+    _run_.*|
+    _capture_.*|
+    _make_.*|
+    \.tmp/.*|
+    runtime_state.*\.json|
+    temp_complete_rules.*\.md|
+    guardian_.*\.(txt|json)|
+    .*\.debug\.log|
+    pytestdebug\.log|
+    \.tmp_.*sites\.txt|
+    .*_sites\.txt|
+    0[0-9]_[^/]*/.*|
+    core/.*|
+    coverage_html/.*|
+    \.test_artifacts/.*|
+    \.backup/guardian_tests/.*|
+    v15_d_evidence_.*\.json|
+    v15_p2_evidence_temp\.json|
+    v15_d_inventory_p4\.json|
+    .*/logs/.*|
+    docs/store/.*|
+    __pycache__/.*|
+    \.pytest_cache/.*|
+    \.ruff_cache/.*|
+    \.mypy_cache/.*
+  )
 
 repos:
   # ============================================================================
