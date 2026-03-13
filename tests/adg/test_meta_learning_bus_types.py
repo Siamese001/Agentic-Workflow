@@ -1,0 +1,518 @@
+"""Tests for TraceFeatureTypes and OptimizationTypes in the meta-learning bus pipeline.
+
+Covers:
+  - TraceFeatureTypes: frozen invariants, validation, hashing
+  - OptimizationTypes: frozen invariants, validation, hashing
+"""
+
+from __future__ import annotations
+
+import hashlib
+
+import pytest
+
+# ---------------------------------------------------------------------------
+# Shared constants
+# ---------------------------------------------------------------------------
+
+_TS = 1_700_000_000
+_HASH64 = "a" * 64  # valid-looking SHA-256 hexdigest for tests
+
+
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
+
+
+def _sha256(text: str) -> str:
+    return hashlib.sha256(text.encode()).hexdigest()
+
+
+# ===========================================================================
+# TestTraceFeatureTypes
+# ===========================================================================
+
+
+class TestFeatureBundle:
+    def _make(self, **kw):
+        from system_learning.types.trace_feature_types import FeatureBundle
+
+        defaults = {
+            "trace_id": "tr-001",
+            "route_selected": "PATH_A",
+            "confidence_gate_state": "PASS",
+            "retrieval_path": "RAG_BGE",
+            "retrieval_groundedness_score": 0.8,
+            "policy_state_accessed": (),
+            "guardrails_applied": (),
+            "determinism_markers": (),
+            "healing_invoked": False,
+            "healer_id": None,
+            "human_escalation_flag": False,
+            "mutation_presence": False,
+            "final_outcome_class": "SUCCESS",
+            "timestamp_utc": _TS,
+            "adg_entity_name": "ADG::Module::foo",
+            "adg_relation_ids": (),
+        }
+        defaults.update(kw)
+        return FeatureBundle(**defaults)
+
+    def test_frozen(self):
+        b = self._make()
+        with pytest.raises((AttributeError, TypeError)):
+            b.route_selected = "NEW"  # type: ignore[misc]
+
+    def test_invalid_outcome_class_raises(self):
+        with pytest.raises(ValueError, match="final_outcome_class"):
+            self._make(final_outcome_class="GARBAGE")
+
+    def test_groundedness_out_of_range_raises(self):
+        with pytest.raises(ValueError, match="retrieval_groundedness_score"):
+            self._make(retrieval_groundedness_score=1.5)
+
+    def test_influence_class_must_be_c0(self):
+        with pytest.raises(ValueError, match="C0_INFORMATIONAL"):
+            self._make(influence_class="C1_ROUTING")
+
+    def test_stable_hash_deterministic(self):
+        b = self._make()
+        assert b.stable_hash() == b.stable_hash()
+
+    def test_stable_hash_changes_with_outcome(self):
+        b1 = self._make(final_outcome_class="SUCCESS")
+        b2 = self._make(final_outcome_class="SAFE_FAILURE")
+        assert b1.stable_hash() != b2.stable_hash()
+
+    def test_to_json_is_string(self):
+        b = self._make()
+        j = b.to_json()
+        assert isinstance(j, str)
+        assert '"trace_id"' in j
+
+    def test_all_outcome_classes_valid(self):
+        for oc in (
+            "SUCCESS",
+            "SAFE_FAILURE",
+            "HEALED_SUCCESS",
+            "ROLLBACK",
+            "HUMAN_OVERRIDE",
+            "REPLAY_FAILURE",
+            "UNKNOWN",
+        ):
+            b = self._make(final_outcome_class=oc)
+            assert b.final_outcome_class == oc
+
+    def test_adg_relation_ids_preserved_in_canonical_dict(self):
+        b = self._make(adg_relation_ids=("rel-z", "rel-a"))
+        d = b.to_dict()
+        # canonical dict sorts them
+        assert d["adg_relation_ids"] == ["rel-a", "rel-z"]
+
+
+class TestTraceFeatureRecord:
+    def _make_bundle(self, trace_id="tr-001", outcome="SUCCESS"):
+        from system_learning.types.trace_feature_types import FeatureBundle
+
+        return FeatureBundle(
+            trace_id=trace_id,
+            route_selected="PATH_A",
+            confidence_gate_state="PASS",
+            retrieval_path="RAG_BGE",
+            retrieval_groundedness_score=0.75,
+            policy_state_accessed=("ph1",),
+            guardrails_applied=("g1",),
+            determinism_markers=("dm1",),
+            healing_invoked=False,
+            healer_id=None,
+            human_escalation_flag=False,
+            mutation_presence=False,
+            final_outcome_class=outcome,
+            timestamp_utc=_TS,
+            adg_entity_name="ADG::Module::bar",
+            adg_relation_ids=("r1", "r2"),
+        )
+
+    def test_from_bundle_sets_record_id(self):
+        from system_learning.types.trace_feature_types import TraceFeatureRecord
+
+        bundle = self._make_bundle()
+        record = TraceFeatureRecord.from_bundle(bundle)
+        assert record.record_id == bundle.stable_hash()
+
+    def test_from_bundle_maps_fields(self):
+        from system_learning.types.trace_feature_types import TraceFeatureRecord
+
+        bundle = self._make_bundle()
+        record = TraceFeatureRecord.from_bundle(bundle)
+        assert record.trace_id == bundle.trace_id
+        assert record.route == bundle.route_selected
+        assert record.retrieval_pattern == bundle.retrieval_path
+        assert record.outcome_class == bundle.final_outcome_class
+        assert record.adg_node_id == bundle.adg_entity_name
+
+    def test_stable_hash_deterministic(self):
+        from system_learning.types.trace_feature_types import TraceFeatureRecord
+
+        bundle = self._make_bundle()
+        r = TraceFeatureRecord.from_bundle(bundle)
+        assert r.stable_hash() == r.stable_hash()
+
+    def test_invalid_outcome_raises(self):
+        from system_learning.types.trace_feature_types import TraceFeatureRecord
+
+        with pytest.raises(ValueError, match="outcome_class"):
+            TraceFeatureRecord(
+                record_id=_HASH64,
+                trace_id="t",
+                route="R",
+                retrieval_pattern="P",
+                retrieval_groundedness=0.5,
+                policy_edges=(),
+                guardrail_edges=(),
+                determinism_signals=(),
+                healer_used=None,
+                hitl_escalation=False,
+                outcome_class="BOGUS",
+                adg_node_id="ADG::X",
+                adg_relation_ids=(),
+                feature_bundle_hash=_HASH64,
+                timestamp_utc=_TS,
+            )
+
+    def test_empty_trace_id_raises(self):
+        from system_learning.types.trace_feature_types import TraceFeatureRecord
+
+        with pytest.raises(ValueError, match="trace_id"):
+            TraceFeatureRecord(
+                record_id=_HASH64,
+                trace_id="",
+                route="R",
+                retrieval_pattern="P",
+                retrieval_groundedness=0.5,
+                policy_edges=(),
+                guardrail_edges=(),
+                determinism_signals=(),
+                healer_used=None,
+                hitl_escalation=False,
+                outcome_class="SUCCESS",
+                adg_node_id="ADG::X",
+                adg_relation_ids=(),
+                feature_bundle_hash=_HASH64,
+                timestamp_utc=_TS,
+            )
+
+
+class TestRCACluster:
+    def _make(self, **kw):
+        from system_learning.types.trace_feature_types import RCACluster
+
+        defaults = {
+            "cluster_id": _HASH64,
+            "failure_pattern": "LOW_GROUNDEDNESS",
+            "dominant_route": "PATH_B",
+            "dominant_guardrail": None,
+            "dominant_retrieval_pattern": "RAG_BGE",
+            "affected_agents": ("ADG::Module::alpha",),
+            "member_trace_ids": ("tr-001", "tr-002"),
+            "member_count": 2,
+            "outcome_distribution": (("SAFE_FAILURE", 2),),
+            "avg_groundedness": 0.3,
+            "hitl_escalation_rate": 0.0,
+            "healer_invocation_rate": 0.0,
+            "adg_cluster_node": "ADG::RCACluster::LOW_GROUNDEDNESS::abc123",
+            "timestamp_utc": _TS,
+        }
+        defaults.update(kw)
+        return RCACluster(**defaults)
+
+    def test_frozen(self):
+        c = self._make()
+        with pytest.raises((AttributeError, TypeError)):
+            c.failure_pattern = "NEW"  # type: ignore[misc]
+
+    def test_empty_failure_pattern_raises(self):
+        with pytest.raises(ValueError, match="failure_pattern"):
+            self._make(failure_pattern="")
+
+    def test_zero_member_count_raises(self):
+        with pytest.raises(ValueError, match="member_count"):
+            self._make(member_count=0)
+
+    def test_stable_hash_deterministic(self):
+        c = self._make()
+        assert c.stable_hash() == c.stable_hash()
+
+    def test_stable_hash_differs_by_cluster_id(self):
+        c1 = self._make(cluster_id=_HASH64)
+        c2 = self._make(cluster_id="b" * 64)
+        assert c1.stable_hash() != c2.stable_hash()
+
+    def test_to_dict_sorts_affected_agents(self):
+        c = self._make(affected_agents=("ADG::Z", "ADG::A"))
+        d = c.to_dict()
+        assert d["affected_agents"] == ["ADG::A", "ADG::Z"]
+
+
+class TestFailurePattern:
+    def _make(self, **kw):
+        from system_learning.types.trace_feature_types import FailurePattern
+
+        defaults = {
+            "pattern_id": _HASH64,
+            "source_type": "VIOLATION",
+            "signature": "AuthorityViolation",
+            "affected_component": "ADG::Module::guard",
+            "occurrence_count": 3,
+            "evidence_hash": _HASH64,
+            "cluster_id": None,
+            "timestamp_utc": _TS,
+        }
+        defaults.update(kw)
+        return FailurePattern(**defaults)
+
+    def test_invalid_source_type_raises(self):
+        with pytest.raises(ValueError, match="source_type"):
+            self._make(source_type="BOGUS")
+
+    def test_zero_occurrence_count_raises(self):
+        with pytest.raises(ValueError, match="occurrence_count"):
+            self._make(occurrence_count=0)
+
+    def test_all_source_types_valid(self):
+        for st in (
+            "VIOLATION",
+            "ANTIPATTERN",
+            "DRIFT_ALERT",
+            "REPLAY_FAILURE",
+            "LOW_GROUNDEDNESS",
+            "OVER_ESCALATION",
+        ):
+            fp = self._make(source_type=st)
+            assert fp.source_type == st
+
+    def test_stable_hash_deterministic(self):
+        fp = self._make()
+        assert fp.stable_hash() == fp.stable_hash()
+
+
+# ===========================================================================
+# TestOptimizationTypes
+# ===========================================================================
+
+
+class TestOptimizationProposal:
+    def _make(self, **kw):
+        from system_learning.types.optimization_types import OptimizationProposal
+
+        defaults = {
+            "proposal_id": _HASH64,
+            "cluster_id": _HASH64,
+            "proposed_change_type": "ROUTING_RULE_ADJUSTMENT",
+            "affected_component": "ADG::Module::router",
+            "expected_outcome": "Improve routing accuracy",
+            "risk_class": "LOW",
+            "change_spec": (("dominant_route", "PATH_A"),),
+            "evidence_bundle_hashes": (_HASH64,),
+            "reward_score": None,
+            "policy_hash": None,
+            "timestamp_utc": _TS,
+        }
+        defaults.update(kw)
+        return OptimizationProposal(**defaults)
+
+    def test_frozen(self):
+        p = self._make()
+        with pytest.raises((AttributeError, TypeError)):
+            p.risk_class = "HIGH"  # type: ignore[misc]
+
+    def test_invalid_change_type_raises(self):
+        with pytest.raises(ValueError, match="proposed_change_type"):
+            self._make(proposed_change_type="TELEPORT")
+
+    def test_invalid_risk_class_raises(self):
+        with pytest.raises(ValueError, match="risk_class"):
+            self._make(risk_class="EXTREME")
+
+    def test_reward_score_out_of_range_raises(self):
+        with pytest.raises(ValueError, match="reward_score"):
+            self._make(reward_score=1.5)
+
+    def test_stable_hash_deterministic(self):
+        p = self._make()
+        assert p.stable_hash() == p.stable_hash()
+
+    def test_all_change_types_valid(self):
+        for ct in (
+            "ROUTING_RULE_ADJUSTMENT",
+            "CONFIDENCE_THRESHOLD_UPDATE",
+            "RETRIEVAL_RANKING_ADJUSTMENT",
+            "EMBEDDING_CORPUS_EXPANSION",
+            "GUARDRAIL_REFINEMENT",
+            "HEALER_ROUTING_IMPROVEMENT",
+            "PROMPT_TUNING",
+            "DPO_DATASET_GENERATION",
+        ):
+            p = self._make(proposed_change_type=ct)
+            assert p.proposed_change_type == ct
+
+
+class TestValidationResult:
+    def _make(self, **kw):
+        from system_learning.types.optimization_types import ValidationResult
+
+        defaults = {
+            "result_id": _HASH64,
+            "proposal_id": _HASH64,
+            "validation_pass": True,
+            "replay_safe": True,
+            "policy_safe": True,
+            "guardrail_safe": True,
+            "determinism_verified": True,
+            "regression_risk": "NONE",
+            "gate_results": (("REPLAY_VALIDATION", True),),
+            "denial_reasons": (),
+            "policy_hash": None,
+            "timestamp_utc": _TS,
+        }
+        defaults.update(kw)
+        return ValidationResult(**defaults)
+
+    def test_pass_with_denial_reasons_raises(self):
+        with pytest.raises(ValueError, match="denial_reasons"):
+            self._make(validation_pass=True, denial_reasons=("GATE_FAIL",))
+
+    def test_fail_without_denial_reasons_raises(self):
+        with pytest.raises(ValueError, match="denial_reasons"):
+            self._make(validation_pass=False, denial_reasons=())
+
+    def test_invalid_regression_risk_raises(self):
+        with pytest.raises(ValueError, match="regression_risk"):
+            self._make(regression_risk="CATASTROPHIC")
+
+    def test_stable_hash_deterministic(self):
+        r = self._make()
+        assert r.stable_hash() == r.stable_hash()
+
+    def test_failing_result_consistent(self):
+        r = self._make(
+            validation_pass=False,
+            denial_reasons=("REPLAY_VALIDATION",),
+            gate_results=(("REPLAY_VALIDATION", False),),
+            regression_risk="HIGH",
+        )
+        assert not r.validation_pass
+        assert "REPLAY_VALIDATION" in r.denial_reasons
+
+
+class TestOptimizationCommit:
+    def _make(self, **kw):
+        from system_learning.types.optimization_types import OptimizationCommit
+
+        defaults = {
+            "commit_id": _HASH64,
+            "proposal_id": _HASH64,
+            "validation_result_id": _HASH64,
+            "affected_rules": ("rule:ROUTING_RULE_ADJUSTMENT",),
+            "affected_routes": ("PATH_A",),
+            "affected_retrieval_policy": (),
+            "affected_components": ("ADG::Module::router",),
+            "policy_hash": None,
+            "change_type": "ROUTING_RULE_ADJUSTMENT",
+            "risk_class": "LOW",
+            "adg_relation": "proposal_commits_optimization",
+            "timestamp_utc": _TS,
+        }
+        defaults.update(kw)
+        return OptimizationCommit(**defaults)
+
+    def test_wrong_adg_relation_raises(self):
+        with pytest.raises(ValueError, match="adg_relation"):
+            self._make(adg_relation="wrong_relation")
+
+    def test_frozen(self):
+        c = self._make()
+        with pytest.raises((AttributeError, TypeError)):
+            c.commit_id = "new"  # type: ignore[misc]
+
+    def test_stable_hash_deterministic(self):
+        c = self._make()
+        assert c.stable_hash() == c.stable_hash()
+
+    def test_canonical_dict_sorts_components(self):
+        c = self._make(affected_components=("ADG::Z", "ADG::A"))
+        d = c.to_dict()
+        assert d["affected_components"] == ["ADG::A", "ADG::Z"]
+
+
+class TestGovernanceRewardSignal:
+    def _make(self, **kw):
+        from system_learning.types.optimization_types import GovernanceRewardSignal
+
+        defaults = {
+            "signal_id": _HASH64,
+            "trace_id": "tr-001",
+            "groundedness_score": 0.9,
+            "policy_compliance": 0.95,
+            "replay_stability": 1.0,
+            "guardrail_cleanliness": 1.0,
+            "mutation_correctness": 1.0,
+            "human_approval": None,
+            "timestamp_utc": _TS,
+        }
+        defaults.update(kw)
+        return GovernanceRewardSignal(**defaults)
+
+    def test_out_of_range_groundedness_raises(self):
+        with pytest.raises(ValueError, match="groundedness_score"):
+            self._make(groundedness_score=1.1)
+
+    def test_all_scores_in_range(self):
+        s = self._make()
+        for attr in (
+            "groundedness_score",
+            "policy_compliance",
+            "replay_stability",
+            "guardrail_cleanliness",
+            "mutation_correctness",
+        ):
+            val = getattr(s, attr)
+            assert 0.0 <= val <= 1.0
+
+    def test_stable_hash_deterministic(self):
+        s = self._make()
+        assert s.stable_hash() == s.stable_hash()
+
+
+class TestGovernanceRewardScore:
+    def _make(self, **kw):
+        from system_learning.types.optimization_types import GovernanceRewardScore
+
+        defaults = {
+            "score_id": _HASH64,
+            "proposal_id": _HASH64,
+            "aggregate_score": 0.85,
+            "groundedness_contrib": 0.225,
+            "policy_compliance_contrib": 0.2375,
+            "replay_stability_contrib": 0.2,
+            "guardrail_cleanliness_contrib": 0.15,
+            "mutation_correctness_contrib": 0.15,
+            "human_approval_rate": 1.0,
+            "invariant_preserved": True,
+            "signal_count": 5,
+            "timestamp_utc": _TS,
+        }
+        defaults.update(kw)
+        return GovernanceRewardScore(**defaults)
+
+    def test_aggregate_out_of_range_raises(self):
+        with pytest.raises(ValueError, match="aggregate_score"):
+            self._make(aggregate_score=-0.1)
+
+    def test_negative_signal_count_raises(self):
+        with pytest.raises(ValueError, match="signal_count"):
+            self._make(signal_count=-1)
+
+    def test_stable_hash_deterministic(self):
+        s = self._make()
+        assert s.stable_hash() == s.stable_hash()
