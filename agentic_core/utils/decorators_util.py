@@ -25,24 +25,58 @@ import os
 import time
 import traceback
 from collections.abc import Callable
-from typing import Any, TypeVar, cast
+from typing import TYPE_CHECKING, Any, TypeVar, cast
 
-from agentic_core.L5_safety.types.heal_llm_seam_types import (
-    HealLlmRequest,
-    PolicyDecisionRecord,
-    guarded_heal_llm_call,
-    reset_heal_seam_capability,
-    set_heal_seam_capability,
-)
-from agentic_core.L5_safety.types.heal_policy_types import (
-    HealEscalationInputs,
-    ReasoningTier,
-    decide_heal_escalation,
-)
 from agentic_core.utils.timeout_decorator_util import TimeoutError, timeout
 
-# Backward-compat alias for tests that patch decide_reasoning_tier
-decide_reasoning_tier = decide_heal_escalation
+if TYPE_CHECKING:
+    from agentic_core.L5_safety.types.heal_llm_seam_types import (
+        HealLlmRequest,
+        PolicyDecisionRecord,
+        guarded_heal_llm_call,
+        reset_heal_seam_capability,
+        set_heal_seam_capability,
+    )
+    from agentic_core.L5_safety.types.heal_policy_types import (
+        HealEscalationInputs,
+        ReasoningTier,
+        decide_heal_escalation,
+    )
+
+
+def _get_heal_llm_seam_types():
+    from agentic_core.L5_safety.types.heal_llm_seam_types import (
+        HealLlmRequest,
+        PolicyDecisionRecord,
+        guarded_heal_llm_call,
+        reset_heal_seam_capability,
+        set_heal_seam_capability,
+    )
+
+    return (
+        HealLlmRequest,
+        PolicyDecisionRecord,
+        guarded_heal_llm_call,
+        reset_heal_seam_capability,
+        set_heal_seam_capability,
+    )
+
+
+def _get_heal_policy_types():
+    from agentic_core.L5_safety.types.heal_policy_types import (
+        HealEscalationInputs,
+        ReasoningTier,
+        decide_heal_escalation,
+    )
+
+    return HealEscalationInputs, ReasoningTier, decide_heal_escalation
+
+
+# Backward-compat alias — resolved lazily at call time
+def decide_reasoning_tier(*args, **kwargs):
+    _, _, _fn = _get_heal_policy_types()
+    return _fn(*args, **kwargs)
+
 
 Logger = logging.getLogger(__name__)
 
@@ -281,8 +315,10 @@ def standard_heal(func: F) -> F:
                 _policy_for_result = policy_record.to_dict()
             else:
                 _policy_for_result = {
-                    "proceed": True, "tier": None,
-                    "threshold_used": "AUTO_APPROVED", "rationale": "auto_approve=True",
+                    "proceed": True,
+                    "tier": None,
+                    "threshold_used": "AUTO_APPROVED",
+                    "rationale": "auto_approve=True",
                 }
 
             # Map *args to named parameters using signature introspection.
@@ -291,10 +327,7 @@ def standard_heal(func: F) -> F:
             try:
                 _sig = inspect.signature(func)
                 _param_names = list(_sig.parameters.keys())
-                _has_var_kw = any(
-                    p.kind == inspect.Parameter.VAR_KEYWORD
-                    for p in _sig.parameters.values()
-                )
+                _has_var_kw = any(p.kind == inspect.Parameter.VAR_KEYWORD for p in _sig.parameters.values())
             except (ValueError, TypeError):
                 _param_names = []
                 _has_var_kw = True

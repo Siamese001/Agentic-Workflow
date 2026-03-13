@@ -17,15 +17,28 @@ L0-L6 Sovereign Stack Hierarchy established.
 """
 from typing import Any
 
-from agentic_core.L5_safety.config.structure_blueprint import (
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
-    L6_OBSERVABILITY_DIR,
-)
+
+def _get_layer_dirs():
+    from agentic_core.L5_safety.config.structure_blueprint import (
+        L0_MAINTENANCE_DIR,
+        L1_COGNITION_DIR,
+        L2_EXECUTION_DIR,
+        L3_ORCHESTRATION_DIR,
+        L4_STATE_DIR,
+        L5_SAFETY_DIR,
+        L6_OBSERVABILITY_DIR,
+    )
+
+    return (
+        L0_MAINTENANCE_DIR,
+        L1_COGNITION_DIR,
+        L2_EXECUTION_DIR,
+        L3_ORCHESTRATION_DIR,
+        L4_STATE_DIR,
+        L5_SAFETY_DIR,
+        L6_OBSERVABILITY_DIR,
+    )
+
 
 # 1. Bounded Contexts (Strict Boundaries)
 # Sovereign Layer Hierarchy (L0=Governance, L6=observability)

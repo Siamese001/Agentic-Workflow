@@ -26,11 +26,16 @@ _ROOT = Path(__file__).resolve().parents[3]
 if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))  # guardian: allow-global-mutation
 
-from agentic_core.L5_safety.config.structure_blueprint.ssot import (
-    DISCOVERY_EXCLUDED_TERRITORIES,
-    GLOBAL_EXCLUDED_DIRS,
-    SOVEREIGN_EXCLUDED_FOLDERS,
-)
+
+def _get_ssot_exclusions():
+    from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+        DISCOVERY_EXCLUDED_TERRITORIES,
+        GLOBAL_EXCLUDED_DIRS,
+        SOVEREIGN_EXCLUDED_FOLDERS,
+    )
+
+    return DISCOVERY_EXCLUDED_TERRITORIES, GLOBAL_EXCLUDED_DIRS, SOVEREIGN_EXCLUDED_FOLDERS
+
 
 # =============================================================================
 # Redis cache configuration

@@ -73,7 +73,12 @@ from agentic_core.L0_routing.config.path_constants import (
     OPS_SCRIPTS_DIR,
 )
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
-from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
+
+
+def _get_sovereign_excluded_folders():
+    from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
+
+    return SOVEREIGN_EXCLUDED_FOLDERS
 
 
 def _get_uwg():
@@ -5024,14 +5029,13 @@ def _write_heal_run_complete(
             "blocker": "AUDIT: expected_calls=0 — LLM routing untested this run. All violations resolved DETERMINISTICALLY. Gate passes vacuously (0/0=1.0). Trigger LLM workload to validate path."
             if llm_trace["stats"]["expected_calls"] == 0
             else (
-                lambda _stats=llm_trace["stats"],
-                _llm_on=getattr(
-                    decision_engine, "enable_llm", True
-                ): f"{_stats['expected_calls']} call(s) routed to LLM, {_stats['actual_calls']} executed"
-                + (
-                    " — LLM disabled (enable_llm=False)"
-                    if not _llm_on
-                    else " — not_executed (routing decided LLM but no llm_call_evidence written)"
+                lambda _stats=llm_trace["stats"], _llm_on=getattr(decision_engine, "enable_llm", True): (
+                    f"{_stats['expected_calls']} call(s) routed to LLM, {_stats['actual_calls']} executed"
+                    + (
+                        " — LLM disabled (enable_llm=False)"
+                        if not _llm_on
+                        else " — not_executed (routing decided LLM but no llm_call_evidence written)"
+                    )
                 )
             )()
             if llm_rate < 0.8
@@ -7187,7 +7191,7 @@ def load_agents(project_root: Path | None = None) -> dict[str, Any]:
         if not search_path.exists():
             continue
         for root, dirs, files in os.walk(search_path):
-            dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
+            dirs[:] = [d for d in dirs if d not in _get_sovereign_excluded_folders()]
             for file in files:
                 if not file.endswith(".py") or file.startswith("__"):
                     continue

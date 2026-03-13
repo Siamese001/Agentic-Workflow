@@ -49,7 +49,6 @@ from agentic_core.L0_routing.utils.core_integrity_util import (
     CoreIntegrityVerifier,
     emergency_shutdown,
 )
-from agentic_core.L4_state.utils.sanitize_telemetry_util import sanitize_tool_output
 from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
 from agentic_core.mixins.audit_trail_mixin import AuditTrailMixin
 
@@ -64,8 +63,25 @@ from agentic_core.mixins.llm_provider_mixin import LLMProviderMixin
 from agentic_core.mixins.meta_learning_client_mixin import MetaLearningClientMixin
 from agentic_core.mixins.runtime_safety_mixin import RuntimeSafetyMixin
 from agentic_core.mixins.validator_mixin import ValidatorMixin
-from agentic_core.runtime.exceptions.healer_exceptions import ConfigurationError
-from agentic_core.runtime.exceptions.SovereignError import SovereignError
+
+
+def _get_configuration_error():
+    from agentic_core.runtime.exceptions.healer_exceptions import ConfigurationError
+
+    return ConfigurationError
+
+
+def _get_sovereign_error():
+    from agentic_core.runtime.exceptions.SovereignError import SovereignError
+
+    return SovereignError
+
+
+def _get_sanitize_tool_output():
+    from agentic_core.L4_state.utils.sanitize_telemetry_util import sanitize_tool_output
+
+    return sanitize_tool_output
+
 
 logger = logging.getLogger(__name__)
 
@@ -461,10 +477,22 @@ class SovereignBaseAgent(
         agent_name = self.__class__.__name__
         active_path = _call_path if _call_path is not None else set()
         if agent_name in active_path:
-            return {"violations_found": 0, "violations_fixed": 0, "status": "SKIPPED", "errors": 0, "skipped": 1}
+            return {
+                "violations_found": 0,
+                "violations_fixed": 0,
+                "status": "SKIPPED",
+                "errors": 0,
+                "skipped": 1,
+            }
         # Max depth guard
         if depth > max_depth:
-            return {"violations_found": 0, "violations_fixed": 0, "status": "SKIPPED", "errors": 0, "skipped": 1}
+            return {
+                "violations_found": 0,
+                "violations_fixed": 0,
+                "status": "SKIPPED",
+                "errors": 0,
+                "skipped": 1,
+            }
 
         from agentic_core.L5_safety.types.heal_policy_types import (
             HealEscalationInputs,

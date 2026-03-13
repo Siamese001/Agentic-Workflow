@@ -16,11 +16,16 @@ Finds all Python classes in agentic_core that:
 
 import warnings
 
-from agentic_core.L5_safety.config.structure_blueprint.ssot import (
-    DISCOVERY_EXCLUDED_TERRITORIES,
-    GLOBAL_EXCLUDED_DIRS,
-    SOVEREIGN_EXCLUDED_FOLDERS,
-)
+
+def _get_ssot_exclusions():
+    from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+        DISCOVERY_EXCLUDED_TERRITORIES,
+        GLOBAL_EXCLUDED_DIRS,
+        SOVEREIGN_EXCLUDED_FOLDERS,
+    )
+
+    return DISCOVERY_EXCLUDED_TERRITORIES, GLOBAL_EXCLUDED_DIRS, SOVEREIGN_EXCLUDED_FOLDERS
+
 
 warnings.warn(
     "find_non_conforming_agents.py is DEPRECATED. Use full_agent_discovery.py instead.",

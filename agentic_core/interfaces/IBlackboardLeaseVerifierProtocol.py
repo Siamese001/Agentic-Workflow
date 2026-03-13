@@ -8,16 +8,31 @@ from pathlib import Path
 from typing import Any, Protocol
 
 from agentic_core.L0_routing.config import AGENTIC_CORE_DIR
-from agentic_core.L2_execution.types.tool_args_types import (
-    CreateDirectoryArgs,
-    DeleteFileArgs,
-    ListFilesArgs,
-    MoveFileArgs,
-    ReadFileArgs,
-    WriteFileArgs,
-)
-from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
-from agentic_core.L5_safety.enforcement.archival_gatekeeper_gate import ArchivalGatekeeper
+
+
+def _get_tool_args_types():
+    from agentic_core.L2_execution.types.tool_args_types import (
+        CreateDirectoryArgs,
+        DeleteFileArgs,
+        ListFilesArgs,
+        MoveFileArgs,
+        ReadFileArgs,
+        WriteFileArgs,
+    )
+
+    return CreateDirectoryArgs, DeleteFileArgs, ListFilesArgs, MoveFileArgs, ReadFileArgs, WriteFileArgs
+
+
+def _get_sovereign_excluded_folders():
+    from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
+
+    return SOVEREIGN_EXCLUDED_FOLDERS
+
+
+def _get_archival_gatekeeper():
+    from agentic_core.L5_safety.enforcement.archival_gatekeeper_gate import ArchivalGatekeeper
+
+    return ArchivalGatekeeper
 
 
 class IBlackboardLeaseVerifier(Protocol):
@@ -33,7 +48,10 @@ class IBlackboardLeaseVerifier(Protocol):
     ) -> None: ...
 
 
-EXCLUDED_DIRS: frozenset[str] = SOVEREIGN_EXCLUDED_FOLDERS
+def __getattr__(name: str):  # noqa: N807
+    if name == "EXCLUDED_DIRS":
+        return _get_sovereign_excluded_folders()
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
 class SandboxViolationError(Exception):

@@ -37,10 +37,6 @@ from agentic_core.L0_routing.config import (
     APPS_SHARED_DIR,
     ARCHIVES_DIR,
 )
-from agentic_core.L2_execution.tools import write_gateway as _wg
-from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
-    LocationHealingStrategy,
-)
 from agentic_core.L5_safety.config.structure_blueprint import (
     APP_SPECIFIC_TARGET_SUBFOLDER,
     AST_DOMAIN_HIT_THRESHOLD,
@@ -58,8 +54,26 @@ from agentic_core.L5_safety.utils.location_constants_util import (
 from agentic_core.L5_safety.utils.location_utils_util import (
     compute_module_path,
 )
-from agentic_core.runtime.config.heal_result_config import HealResult, HealStatus
 from agentic_core.utils.timeout_decorator_util import timeout
+
+
+def _get_write_gateway():
+    from agentic_core.L2_execution.tools import write_gateway
+
+    return write_gateway
+
+
+def _get_location_healing_strategy():
+    from agentic_core.L3_orchestration.reasoning.UnifiedAgent import LocationHealingStrategy
+
+    return LocationHealingStrategy
+
+
+def _get_heal_result_types():
+    from agentic_core.runtime.config.heal_result_config import HealResult, HealStatus
+
+    return HealResult, HealStatus
+
 
 Logger = logging.getLogger(__name__)
 
