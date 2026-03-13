@@ -13,6 +13,11 @@ ADG governance plane: calling ``guarded_get_secret`` or ``guarded_get_env``
 adds a ``validated_by_safety_plane`` relation from the caller to the
 credential surface, closing the gap between ``accesses_credential`` (346)
 and governed access edges (~95).
+
+Layer note: adg.runtime.secret_access (L_TOOLS) is imported lazily inside
+each method to avoid an upward L5->L_TOOLS module-level dependency (ADG
+violation GV-2).  The functional contract is identical; only the import
+timing changes.
 """
 
 from __future__ import annotations
@@ -22,12 +27,6 @@ import logging
 import os
 from typing import Any
 
-from agentic_core.adg.runtime.secret_access import (
-    SecretAccessOutcome,
-    SecretAccessRecorder,
-    SecretKind,
-)
-
 Logger = logging.getLogger(__name__)
 
 _DENIED_PREFIXES: tuple[str, ...] = (
@@ -35,6 +34,17 @@ _DENIED_PREFIXES: tuple[str, ...] = (
     "PRIVATE_KEY",
     "SIGNING_KEY",
 )
+
+
+def _import_secret_access():  # noqa: ANN202
+    """Lazy import helper — defers L_TOOLS import to call time."""
+    from agentic_core.adg.runtime.secret_access import (  # noqa: PLC0415
+        SecretAccessOutcome,
+        SecretAccessRecorder,
+        SecretKind,
+    )
+
+    return SecretAccessOutcome, SecretAccessRecorder, SecretKind
 
 
 class CredentialAccessDenied(PermissionError):
@@ -48,7 +58,7 @@ class CredentialAccessGuard:
 
         guard = CredentialAccessGuard(agent_id="MyAgent", run_id="run-abc")
         api_key = guard.guarded_get_secret("OPENAI_API_KEY")
-        db_pass = guard.guarded_get_env("DB_PASSWORD", kind=SecretKind.PASSWORD)
+        db_pass = guard.guarded_get_env("DB_PASSWORD")
 
     The guard maintains an internal ``SecretAccessRecorder`` and emits a
     ``validated_by_safety_plane`` audit event for each access.
@@ -61,6 +71,7 @@ class CredentialAccessGuard:
         policy_enforced: bool = True,
         denied_prefixes: tuple[str, ...] | None = None,
     ) -> None:
+        _SecretAccessOutcome, SecretAccessRecorder, _SecretKind = _import_secret_access()
         self._agent_id = agent_id
         self._run_id = run_id
         self._policy_enforced = policy_enforced
@@ -74,7 +85,7 @@ class CredentialAccessGuard:
     def guarded_get_secret(
         self,
         secret_name: str,
-        kind: SecretKind = SecretKind.API_KEY,
+        kind: Any = None,
         default: str | None = None,
     ) -> str:
         """Retrieve a secret value through the safety-plane gate.
@@ -91,6 +102,9 @@ class CredentialAccessGuard:
             CredentialAccessDenied: if policy blocks this secret name.
             KeyError: if secret absent and no default provided.
         """
+        SecretAccessOutcome, _SecretAccessRecorder, SecretKind = _import_secret_access()
+        if kind is None:
+            kind = SecretKind.API_KEY
         self._apply_policy_gate(secret_name)
         raw = os.environ.get(secret_name)
         if raw is None:
@@ -114,13 +128,13 @@ class CredentialAccessGuard:
             outcome=SecretAccessOutcome.SUCCESS,
             raw_value=raw,
         )
-        Logger.debug("[CredentialAccessGuard] validated_by_safety_plane: %s (%s)", secret_name, kind.value)
+        Logger.debug("[CredentialAccessGuard] validated_by_safety_plane: %s (%s)", secret_name, kind)
         return raw
 
     def guarded_get_env(
         self,
         var_name: str,
-        kind: SecretKind = SecretKind.ENV_VAR,
+        kind: Any = None,
         default: str | None = None,
     ) -> str | None:
         """Retrieve an environment variable through the safety-plane gate.
@@ -128,6 +142,9 @@ class CredentialAccessGuard:
         Unlike ``guarded_get_secret``, missing variables return *default*
         (which may be None) rather than raising.
         """
+        SecretAccessOutcome, _SecretAccessRecorder, SecretKind = _import_secret_access()
+        if kind is None:
+            kind = SecretKind.ENV_VAR
         self._apply_policy_gate(var_name)
         raw = os.environ.get(var_name, default)
         outcome = SecretAccessOutcome.SUCCESS if raw is not None else SecretAccessOutcome.NOT_FOUND
@@ -143,7 +160,7 @@ class CredentialAccessGuard:
     def guarded_access_credential(
         self,
         credential_name: str,
-        kind: SecretKind = SecretKind.TOKEN,
+        kind: Any = None,
         resolver: Any = None,
     ) -> Any:
         """Access a structured credential through the safety-plane gate.
@@ -161,6 +178,9 @@ class CredentialAccessGuard:
         Raises:
             CredentialAccessDenied: if policy blocks this credential.
         """
+        SecretAccessOutcome, _SecretAccessRecorder, SecretKind = _import_secret_access()
+        if kind is None:
+            kind = SecretKind.TOKEN
         self._apply_policy_gate(credential_name)
         if resolver is not None:
             value = resolver(credential_name)

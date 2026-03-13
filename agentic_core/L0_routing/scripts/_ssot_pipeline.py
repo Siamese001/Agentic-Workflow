@@ -8,7 +8,7 @@ import json
 import logging
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from ._ssot_phases import RuntimeStateManager
@@ -445,6 +445,25 @@ def _emit_adg_pre_run_artifact(repo_root: "Path") -> None:
                 )
             elif report.route_mode == "HUMAN_REVIEW":
                 payload["warnings"].append(f"HUMAN_REVIEW required: risk_score={report.risk_score}")
+            # Wire GuardianPrioritizer: rank guardians by ADG structural signals so
+            # guardian_scope reflects evidence-based execution order, not a static list.
+            try:
+                from agentic_core.adg.applications.guardian_prioritizer import GuardianPrioritizer
+                from agentic_core.adg.runtime.cache_loader import load_or_scan
+
+                _scan = load_or_scan(repo_root=str(repo_root))
+                _prio_result = GuardianPrioritizer(_scan).prioritize(guardian_ids=list(CANONICAL_ROSTER_KEYS))
+                payload["guardian_scope"] = [s.guardian_id for s in _prio_result.ordered()]
+                payload["guardian_priority_digest"] = _prio_result.adg_signals_digest
+                _logger_adg.info(
+                    "ADG guardian prioritization: %d guardians ranked, digest=%s",
+                    len(payload["guardian_scope"]),
+                    _prio_result.adg_signals_digest,
+                )
+            # guardian: allow-silent-swallow
+            except Exception as _gp_exc:
+                payload["warnings"].append(f"GuardianPrioritizer unavailable: {_gp_exc}")
+                _logger_adg.debug("GuardianPrioritizer skipped (non-fatal): %s", _gp_exc)
         else:
             payload["warnings"].append("ADG unavailable — impact analysis skipped")
         _logger_adg.info(

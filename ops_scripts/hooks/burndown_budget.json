@@ -2,27 +2,6 @@
   "agentic_core/L0_routing/engines/agentic_router.py": {
     "silent_swallower": 2
   },
-  "agentic_core/L0_routing/scripts/execute_ssot.py": {
-    "silent_swallower": 1
-  },
-  "agentic_core/L5_safety/reasoning/FileClassificationAgent.py": {
-    "silent_swallower": 1
-  },
-  "agentic_core/adg/runtime/behavioral_index.py": {
-    "silent_swallower": 3
-  },
-  "apps_eval/tools/eval_dry_run_tool.py": {
-    "silent_swallower": 1
-  },
-  "apps_exec/tools/exec_dry_run_tool.py": {
-    "silent_swallower": 1
-  },
-  "apps_research/tools/research_dry_run_tool.py": {
-    "silent_swallower": 1
-  },
-  "apps_rfp/tools/rfp_dry_run_tool.py": {
-    "silent_swallower": 1
-  },
   "agentic_core/L1_cognition/enforcement/react_strategy.py": {
     "silent_swallower": 1
   },
@@ -49,6 +28,9 @@
   "agentic_core/L5_safety/enforcement/embedding_non_interference_guardrail.py": {
     "direct_prompt_compilation": 1
   },
+  "agentic_core/L5_safety/reasoning/FileClassificationAgent.py": {
+    "silent_swallower": 1
+  },
   "agentic_core/L5_safety/reasoning/SelfUpdatingSafetyEngineAgent.py": {
     "path_fragility": 1
   },
@@ -61,8 +43,23 @@
   "agentic_core/L6_observability/engines/drift_detector.py": {
     "direct_prompt_compilation": 1
   },
+  "agentic_core/adg/runtime/behavioral_index.py": {
+    "silent_swallower": 3
+  },
   "agentic_core/cache/cache_key_builders.py": {
     "direct_prompt_compilation": 1
+  },
+  "apps_eval/tools/eval_dry_run_tool.py": {
+    "silent_swallower": 1
+  },
+  "apps_exec/tools/exec_dry_run_tool.py": {
+    "silent_swallower": 1
+  },
+  "apps_research/tools/research_dry_run_tool.py": {
+    "silent_swallower": 1
+  },
+  "apps_rfp/tools/rfp_dry_run_tool.py": {
+    "silent_swallower": 1
   },
   "apps_rg/types/PromptTemplate.py": {
     "magic_configuration": 12

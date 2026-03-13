@@ -77,6 +77,7 @@ from agentic_core.L0_routing.config.path_constants import (
     OPS_SCRIPTS_DIR,
 )
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
+from agentic_core.L0_routing.scripts._ssot_validation_artifacts import _record_healing_action
 
 
 def _get_sovereign_excluded_folders():
@@ -473,19 +474,20 @@ def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager", now_utc: int) -
         logging.info("[MetaLearning] meta_learning_pipeline.run_pipeline() completed.")
     except ImportError as _imp_err:
         logging.debug("[MetaLearning] Pipeline not yet available (pre-Wave 0B): %s", _imp_err)
-    except (AttributeError, TypeError, ValueError) as _pl_err:
+    # guardian: allow-silent-swallow
+    except Exception as _pl_err:
         logging.warning("[MetaLearning] Pipeline run failed (non-fatal): %s", _pl_err)
 
 
 def _get_l5_agent_roster():
     from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import ArchitectureGovernorAgent
     from agentic_core.L5_safety.reasoning.CognitiveDispositionAgent import CognitiveDispositionAgent
-    from agentic_core.L5_safety.reasoning.FileClassificationAgent import FileClassificationAgent
+    from agentic_core.L5_safety.reasoning.FileClassificationAgent import FileClassificationHealerAgent
     from agentic_core.L5_safety.reasoning.filesystem_ssot_reconciler import FilesystemSSOTReconcilerAgent
     from agentic_core.L5_safety.reasoning.GravityLeakHealerAgent import GravityLeakHealerAgent
-    from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+    from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyHealerAgent
     from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
-    from agentic_core.L5_safety.reasoning.root_hygiene_healer import RootHygieneAgent
+    from agentic_core.L5_safety.reasoning.root_hygiene_healer import RootHygieneHealerAgent
     from agentic_core.L6_observability.reasoning.observability_probe_executor import (
         ObservabilityProbeExecutorAgent,
     )
@@ -493,12 +495,12 @@ def _get_l5_agent_roster():
     return (
         ArchitectureGovernorAgent,
         CognitiveDispositionAgent,
-        FileClassificationAgent,
+        FileClassificationHealerAgent,
         FilesystemSSOTReconcilerAgent,
         GravityLeakHealerAgent,
-        HierarchyAgent,
+        HierarchyHealerAgent,
         LocationHealerAgent,
-        RootHygieneAgent,
+        RootHygieneHealerAgent,
         ObservabilityProbeExecutorAgent,
     )
 
@@ -569,7 +571,7 @@ try:
 except ImportError:
     pass
 try:
-    from agentic_core.utils.decorators_compat_util import HEAL_RESULT_SCHEMA, standard_heal
+    from agentic_core.utils.decorators_util import HEAL_RESULT_SCHEMA, standard_heal
 except ImportError:
 
     def standard_heal(func):
@@ -1388,44 +1390,6 @@ def _write_artifact_integrity_json(trace_id: str, output_dir: Path) -> None:
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(integrity, f, indent=2, ensure_ascii=True)
     logger.info(f"[ARTIFACT-INTEGRITY] Wrote artifact_integrity.json with {len(artifacts)} artifact hashes")
-
-
-def _record_healing_action(
-    state_mgr,
-    agent: str,
-    territory: str,
-    routing_score: float = 0.0,
-    routing_tier: str = "DETERMINISTIC",
-    model: str = "none",
-    routing_gate: str = "N/A",
-    confidence: float = 0.0,
-    fix_summary: str = "",
-    outcome: str = "SUCCESS",
-    routing_digest: str | None = None,
-    check_id: str | None = None,
-):
-    """[H2] Record a structured healing action for per-territory JSON and Markdown reports.
-
-    Appends to state_mgr.state["healing_actions"] so Phase 5 can filter by territory
-    and emit a healing_log in the detailed_cert JSON.
-    """
-    action = {
-        "agent": agent,
-        "territory": territory,
-        "routing_score": round(routing_score, 4),
-        "routing_tier": routing_tier,
-        "model": model,
-        "routing_gate": routing_gate,
-        "confidence": round(confidence, 4),
-        "fix_summary": fix_summary,
-        "outcome": outcome,
-        "timestamp": datetime.now().isoformat(),
-        "routing_digest": routing_digest,
-        "check_id": check_id,
-    }
-    if "healing_actions" not in state_mgr.state:
-        state_mgr.state["healing_actions"] = []
-    state_mgr.state["healing_actions"].append(action)
 
 
 @dataclass(frozen=True)
@@ -2445,7 +2409,7 @@ def execute_phase2_reconciliation(
                 reconciliation_log.append(fix_result)
                 decision_engine.release_sovereignty_token(agent_key, success=True)
                 _AGENT_KEY_TO_CLASS_NAME = {
-                    "reconciler": "FilesystemSSOTHealerAgent",
+                    "reconciler": "FilesystemSSOTReconcilerAgent",
                     "location": "LocationHealerAgent",
                     "hierarchy": "HierarchyHealerAgent",
                     "arch_governor": "ArchitectureGovernorAgent",
@@ -2453,7 +2417,7 @@ def execute_phase2_reconciliation(
                     "file_classification": "FileClassificationHealerAgent",
                     "observability_probe": "ObservabilityProbeExecutorAgent",
                     "cognitive_disposition": "CognitiveDispositionAgent",
-                    "root_hygiene": "RootHygieneAgent",
+                    "root_hygiene": "RootHygieneHealerAgent",
                 }
                 _PHASE1_RECORDED = {"reconciler", "location"}
                 if agent_key not in _PHASE1_RECORDED:
@@ -2479,6 +2443,27 @@ def execute_phase2_reconciliation(
                     {"violation": v, "error": str(e), "status": "execution_error"} for v in agent_violations
                 )
                 decision_engine.release_sovereignty_token(agent_key, success=False)
+                _AGENT_KEY_TO_CLASS_NAME_ERR = {
+                    "reconciler": "FilesystemSSOTReconcilerAgent",
+                    "location": "LocationHealerAgent",
+                    "hierarchy": "HierarchyHealerAgent",
+                    "arch_governor": "ArchitectureGovernorAgent",
+                    "gravity_repair": "GravityLeakHealerAgent",
+                    "file_classification": "FileClassificationHealerAgent",
+                    "observability_probe": "ObservabilityProbeExecutorAgent",
+                    "cognitive_disposition": "CognitiveDispositionAgent",
+                    "root_hygiene": "RootHygieneHealerAgent",
+                }
+                _record_healing_action(
+                    state_mgr,
+                    agent=_AGENT_KEY_TO_CLASS_NAME_ERR.get(agent_key, agent_key),
+                    territory=territory,
+                    routing_score=confidence.value if hasattr(confidence, "value") else 0.0,
+                    routing_tier=reason.split("(")[0].strip() if reason else "DETERMINISTIC",
+                    confidence=confidence.value if hasattr(confidence, "value") else 0.0,
+                    fix_summary=f"Phase 2 FAILED: {e}",
+                    outcome="FAILURE",
+                )
                 pbar.update(1)
     return {
         "violations_found": len(violations_list),
@@ -2825,7 +2810,7 @@ def execute_phase1_discovery(agents, territory, decision_engine, state_mgr, ctx:
 def execute_phase1_discovery_impl(agents, territory, decision_engine, state_mgr, ctx: "HealContext" = None):
     """PHASE 1: TERRITORIAL DISCOVERY - Implementation with CognitiveDispositionAgent integration"""
     logger.info(f"=== PHASE 1: DISCOVERY - {territory} ===")
-    state_mgr.update_agent("FilesystemSSOTHealerAgent", "L5 - Safety (Validator)")
+    state_mgr.update_agent("FilesystemSSOTReconcilerAgent", "L5 - Safety (Validator)")
     from agentic_core.L5_safety.reasoning.filesystem_ssot_validator import (
         FilesystemSSOTValidatorAgent as _FilesystemSSOTValidatorAgent,
     )
@@ -2834,23 +2819,39 @@ def execute_phase1_discovery_impl(agents, territory, decision_engine, state_mgr,
     _fs_check = _fs_validator.to_check_dict()
     drift_report = _fs_check["evidence"]
     if drift_report is None:
-        state_mgr.complete_agent("FilesystemSSOTHealerAgent", False, "Returned None")
+        state_mgr.complete_agent("FilesystemSSOTReconcilerAgent", False, "Returned None")
         return (None, None)
+    heal_result = {"skipped": 1}
     if ctx is not None and getattr(ctx, "heal", False):
         _fs_healer_cls = agents.get("reconciler")
         if _fs_healer_cls is not None:
             _fs_healer_instance = _fs_healer_cls(project_root=REPO_ROOT)
-            _fs_healer_instance.heal_repository(dry_run=False, execute=True)
+            # force=True required: without it heal_repository() short-circuits to skipped=1
+            heal_result = _fs_healer_instance.heal_repository(dry_run=False, execute=True, force=True)
+            # run_with_cleanup covers full SSOT blueprint drift (the 29-item scan)
+            cleanup_result = _fs_healer_instance.run_with_cleanup(dry_run=False)
+            heal_result["cleanup"] = cleanup_result
+            logger.info(
+                f"[FilesystemSSOTReconcilerAgent] root_heal={heal_result}, "
+                f"cleanup_applied={cleanup_result.get('actions_applied', 0)}"
+            )
     violations_count = _fs_check.get("violations_count", 0)
-    state_mgr.complete_agent("FilesystemSSOTHealerAgent", True, f"Drift violations: {violations_count}")
+    _heal_applied = heal_result.get("applied", 0) or heal_result.get("cleanup", {}).get("actions_applied", 0)
+    _was_skipped = heal_result.get("skipped", 0) and not heal_result.get("cleanup")
+    _outcome = "SKIPPED" if _was_skipped else "SUCCESS"
+    state_mgr.complete_agent(
+        "FilesystemSSOTReconcilerAgent",
+        True,
+        f"Drift violations: {violations_count}, healed: {_heal_applied}",
+    )
     _record_healing_action(
         state_mgr,
-        agent="FilesystemSSOTHealerAgent",
+        agent="FilesystemSSOTReconcilerAgent",
         territory=territory,
         routing_tier="DETERMINISTIC",
         confidence=1.0,
-        fix_summary=f"SSOT drift scan: {violations_count} violation(s) in {territory}",
-        outcome="SUCCESS",
+        fix_summary=f"SSOT drift scan: {violations_count} violation(s), applied: {_heal_applied}",
+        outcome=_outcome,
     )
     state_mgr.update_agent("LocationHealerAgent", "L5 - Safety")
     location_validator = _get_location_validator_agent()(project_root=REPO_ROOT)
@@ -2907,6 +2908,7 @@ def execute_phase1_discovery_impl(agents, territory, decision_engine, state_mgr,
                 len(violations),
                 _adg_territory_score,
             )
+    # guardian: allow-silent-swallow
     except Exception as _adg_err:
         logger.debug("[ADG] Behavioral enrichment skipped (non-fatal): %s", _adg_err)
     state_mgr.state["adg_territory_score"] = _adg_territory_score
@@ -3137,8 +3139,64 @@ def execute_phase3_alignment_impl(agents, territory, decision_engine, state_mgr,
         if proceed and ctx is not None and ctx.heal:
             _hier_healer_cls = agents.get("hierarchy")
             if _hier_healer_cls is not None:
-                _hier_healer_instance = _hier_healer_cls(project_root=REPO_ROOT)
-                heal_result = _hier_healer_instance.heal_repository(dry_run=False, execute=True)
+                # HITL gate: collect affected paths from scan and prompt before healing
+                from agentic_core.L5_safety.enforcement.hitl_gate import (
+                    HitlChoice,
+                    HitlRequest,
+                    get_hitl_gate,
+                )
+
+                _affected = [
+                    REPO_ROOT / v.get("file", "")
+                    if isinstance(v, dict) and v.get("file")
+                    else REPO_ROOT / territory
+                    for v in (_hier_scan.get("violations") or [])
+                ]
+                if not _affected:
+                    _affected = [REPO_ROOT / territory]
+                _gate = get_hitl_gate(REPO_ROOT)
+                _hitl = _gate.request(
+                    HitlRequest(
+                        agent="HierarchyHealerAgent",
+                        operation="ARCHIVE / RELOCATE",
+                        affected_paths=_affected,
+                        reason=f"{violations} hierarchy violation(s) in territory '{territory}'",
+                        territory=territory,
+                        extra_context="Includes potential purge of orphaned files outside sovereign whitelist",
+                    )
+                )
+                if _hitl.choice == HitlChoice.YES:
+                    _hier_healer_instance = _hier_healer_cls(project_root=REPO_ROOT)
+                    heal_result = _hier_healer_instance.heal_repository(dry_run=False, execute=True)
+                elif _hitl.choice == HitlChoice.ABORT:
+                    logger.warning("[HITL] User aborted healing run at HierarchyHealerAgent")
+                    state_mgr.add_event("hitl", "User ABORTED healing at HierarchyHealerAgent")
+                    state_mgr.complete_agent("HierarchyHealerAgent", False, f"HITL ABORTED: {_hitl.reason}")
+                    _record_healing_action(
+                        state_mgr,
+                        agent="HierarchyHealerAgent",
+                        territory=territory,
+                        routing_tier="DETERMINISTIC",
+                        confidence=0.0,
+                        fix_summary=f"HITL ABORTED by user: {_hitl.reason}",
+                        outcome="SKIPPED",
+                    )
+                    return {"total_healed": 0, "status": "HITL_ABORTED"}
+                else:
+                    logger.info("[HITL] %s — HierarchyHealerAgent skipped", _hitl.reason)
+                    state_mgr.add_event("hitl", f"HierarchyHealerAgent: {_hitl.reason}")
+                    state_mgr.complete_agent("HierarchyHealerAgent", False, f"HITL: {_hitl.reason}")
+                    _record_healing_action(
+                        state_mgr,
+                        agent="HierarchyHealerAgent",
+                        territory=territory,
+                        routing_tier="DETERMINISTIC",
+                        confidence=0.0,
+                        fix_summary=f"HITL {_hitl.choice.value}: {_hitl.reason}",
+                        outcome="SKIPPED",
+                    )
+                    return {"total_healed": 0, "status": f"HITL_{_hitl.choice.value}"}
+                heal_result = heal_result if _hitl.choice == HitlChoice.YES else {}
             else:
                 heal_result = {}
             healed = (
@@ -3302,9 +3360,52 @@ def execute_phase4_validation_impl(agents, territory, state_mgr, ctx: "HealConte
         logger.info(f"ArchitectureGovernorAgent: Auditing all {len(target_territories)} enforced territories")
     else:
         target_territories = [territory]
+
+    # --- ADG signal injection for ArchitectureGovernorAgent ---
+    # Load cross-layer violation and layer hotspot signals from the ADG so the
+    # governor has structural evidence beyond what its own static scan finds.
+    _adg_arch_signals: dict = {}
+    try:
+        from agentic_core.adg.applications.guardian_prioritizer import GuardianPrioritizer
+        from agentic_core.adg.runtime.behavioral_index import ADGBehavioralIndex as _ADGIdx
+
+        _adg_idx = _ADGIdx.from_latest(REPO_ROOT)
+        if _adg_idx is not None:
+            _scan_result = getattr(_adg_idx, "_result", None) or getattr(_adg_idx, "result", None)
+            if _scan_result is not None:
+                _gp = GuardianPrioritizer(_scan_result)
+                _signals = _gp.get_signals()
+                _adg_arch_signals = {
+                    "cross_layer_violations": _signals.get("cross_layer_violations", []),
+                    "layer_hotspots": _signals.get("layer_hotspots", []),
+                    "upward_mutations": _signals.get("upward_mutations", []),
+                }
+                state_mgr.state["adg_arch_signals"] = _adg_arch_signals
+                logger.info(
+                    "[ADG] ArchitectureGovernorAgent signals: cross_layer=%d layer_hotspots=%d upward_mutations=%d",
+                    len(_adg_arch_signals["cross_layer_violations"]),
+                    len(_adg_arch_signals["layer_hotspots"]),
+                    len(_adg_arch_signals["upward_mutations"]),
+                )
+                # Attach signals to governor so it can prioritize ADG-flagged paths
+                if hasattr(arch_gov, "adg_signals"):
+                    arch_gov.adg_signals = _adg_arch_signals
+    # guardian: allow-silent-swallow
+    except Exception as _adg_arch_err:
+        logger.debug(
+            "[ADG] ArchitectureGovernorAgent signal injection skipped (non-fatal): %s", _adg_arch_err
+        )
+    # --- end ADG signal injection ---
+
     gov_report = arch_gov.comprehensive_territory_audit(
         target_territories=target_territories, check_layer_boundaries=True, check_naming_conventions=True
     )
+    # Merge ADG cross-layer signals into the governance report for downstream consumers
+    if gov_report is not None and _adg_arch_signals:
+        gov_report.setdefault(
+            "adg_cross_layer_violations", _adg_arch_signals.get("cross_layer_violations", [])
+        )
+        gov_report.setdefault("adg_layer_hotspots", _adg_arch_signals.get("layer_hotspots", []))
     if gov_report is None:
         state_mgr.complete_agent("ArchitectureGovernorAgent", False, "Returned None")
         return (None, None)
@@ -3806,7 +3907,9 @@ def save_aggregate_report(targets: list[str], project_root: Path) -> Path | None
                 _rs = json.loads(runtime_state_path.read_text(encoding="utf-8"))
                 for hv in _rs.get("hygiene_violations", []):
                     if isinstance(hv, dict):
-                        global_violations.append({**hv, "source": "RootHygieneAgent", "scope": "global"})
+                        global_violations.append(
+                            {**hv, "source": "RootHygieneHealerAgent", "scope": "global"}
+                        )
                 for gv in _rs.get("gravity_violations", []):
                     if isinstance(gv, dict):
                         global_violations.append(
@@ -4264,9 +4367,9 @@ def _print_run_manifest(state_mgr: "RuntimeStateManager", targets: list[str]) ->
     Zero tolerance: if it didn't run, it appears here.
     """
     _W = 78
-    GLOBAL_AGENTS = ["RootHygieneAgent", "GravityValidatorAgent", "GravityLeakHealerAgent"]
+    GLOBAL_AGENTS = ["RootHygieneHealerAgent", "GravityValidatorAgent", "GravityLeakHealerAgent"]
     PER_TERRITORY_AGENTS = [
-        "FilesystemSSOTHealerAgent",
+        "FilesystemSSOTReconcilerAgent",
         "LocationHealerAgent",
         "HierarchyHealerAgent",
         "FileClassificationHealerAgent",
@@ -4303,7 +4406,7 @@ def _print_run_manifest(state_mgr: "RuntimeStateManager", targets: list[str]) ->
             for territory in targets:
                 if territory in msg:
                     error_msgs.setdefault(territory, []).append(msg)
-            if "RootHygieneAgent" in msg:
+            if "RootHygieneHealerAgent" in msg:
                 error_msgs.setdefault("__global__", []).append(msg)
             if "GravityLeakHealerAgent" in msg:
                 error_msgs.setdefault("__global__", []).append(msg)
@@ -6353,15 +6456,15 @@ def _legacy_main(
         ArchitectureGovernorAgent,
         CognitiveDispositionAgent,
         FileClassificationHealerAgent,
-        FilesystemSSOTHealerAgent,
+        FilesystemSSOTReconcilerAgent,
         GravityLeakHealerAgent,
         HierarchyHealerAgent,
         LocationHealerAgent,
-        RootHygieneAgent,
+        RootHygieneHealerAgent,
         ObservabilityProbeExecutorAgent,
     ) = _get_l5_agent_roster()
     agents = {
-        "reconciler": FilesystemSSOTHealerAgent,
+        "reconciler": FilesystemSSOTReconcilerAgent,
         "location": LocationHealerAgent,
         "hierarchy": HierarchyHealerAgent,
         "arch_governor": ArchitectureGovernorAgent,
@@ -6369,7 +6472,7 @@ def _legacy_main(
         "file_classification": FileClassificationHealerAgent,
         "observability_probe": ObservabilityProbeExecutorAgent,
         "cognitive_disposition": CognitiveDispositionAgent,
-        "root_hygiene": RootHygieneAgent,
+        "root_hygiene": RootHygieneHealerAgent,
     }
     targets = []
     mission_mode = ""
@@ -6467,34 +6570,76 @@ def _legacy_main(
             state_mgr.state["hygiene_violations"] = []
             state_mgr.state["hygiene_fixed"] = 0
             try:
-                state_mgr.update_agent("RootHygieneAgent", "L0 - Maintenance")
+                state_mgr.update_agent("RootHygieneHealerAgent", "L0 - Maintenance")
                 hygiene_agent = agents["root_hygiene"](project_root=REPO_ROOT)
                 if hasattr(hygiene_agent, "scan_root_violations"):
                     hygiene_results = hygiene_agent.scan_root_violations()
                     hygiene_violations = hygiene_results.get("violations", [])
                     high = [v for v in hygiene_violations if v.get("severity") == "high"]
                     hygiene_fixed = 0
-                    if ctx and ctx.heal and hasattr(hygiene_agent, "heal"):
-                        for _v in hygiene_violations:
-                            try:
-                                _r = hygiene_agent.heal(_v)
-                                if isinstance(_r, dict) and _r.get("status") == "success":
-                                    hygiene_fixed += 1
-                                    logger.info(
-                                        "[RootHygiene] HEALED %s: %s", _v.get("type"), _v.get("file", "")
+                    if ctx and ctx.heal and hasattr(hygiene_agent, "heal") and hygiene_violations:
+                        # HITL gate: prompt before any destructive hygiene heal
+                        from agentic_core.L5_safety.enforcement.hitl_gate import (
+                            HitlChoice,
+                            HitlRequest,
+                            get_hitl_gate,
+                        )
+
+                        _hygiene_paths = [
+                            REPO_ROOT / _v.get("file", "") if _v.get("file") else REPO_ROOT
+                            for _v in hygiene_violations
+                        ]
+                        _hygiene_gate = get_hitl_gate(REPO_ROOT)
+                        _hygiene_hitl = _hygiene_gate.request(
+                            HitlRequest(
+                                agent="RootHygieneHealerAgent",
+                                operation="DELETE / REMOVE",
+                                affected_paths=_hygiene_paths,
+                                reason=f"{len(hygiene_violations)} root hygiene violation(s) detected",
+                                extra_context="May include removal of duplicate files, root-level detritus, or stale caches",
+                            )
+                        )
+                        if _hygiene_hitl.choice == HitlChoice.ABORT:
+                            logger.warning("[HITL] User aborted healing run at RootHygieneHealerAgent")
+                            state_mgr.add_event("hitl", "User ABORTED healing at RootHygieneHealerAgent")
+                            state_mgr.complete_agent(
+                                "RootHygieneHealerAgent", False, f"HITL ABORTED: {_hygiene_hitl.reason}"
+                            )
+                            _record_healing_action(
+                                state_mgr,
+                                agent="RootHygieneHealerAgent",
+                                territory="__global__",
+                                routing_tier="DETERMINISTIC",
+                                confidence=0.0,
+                                fix_summary=f"HITL ABORTED: {_hygiene_hitl.reason}",
+                                outcome="SKIPPED",
+                            )
+                            return None
+                        elif _hygiene_hitl.choice != HitlChoice.YES:
+                            logger.info("[HITL] %s — RootHygieneHealerAgent skipped", _hygiene_hitl.reason)
+                            state_mgr.add_event("hitl", f"RootHygieneHealerAgent: {_hygiene_hitl.reason}")
+                        else:
+                            for _v in hygiene_violations:
+                                try:
+                                    _r = hygiene_agent.heal(_v)
+                                    if isinstance(_r, dict) and _r.get("status") == "success":
+                                        hygiene_fixed += 1
+                                        logger.info(
+                                            "[RootHygiene] HEALED %s: %s", _v.get("type"), _v.get("file", "")
+                                        )
+                                except (ImportError, AttributeError, TypeError, ValueError) as _he:
+                                    logger.error(
+                                        "[RootHygiene] heal() FAILED for %s: %s\n%s",
+                                        _v.get("type"),
+                                        _he,
+                                        traceback.format_exc(),
                                     )
-                            except (ImportError, AttributeError, TypeError, ValueError) as _he:
-                                logger.error(
-                                    "[RootHygiene] heal() FAILED for %s: %s\n%s",
-                                    _v.get("type"),
-                                    _he,
-                                    traceback.format_exc(),
-                                )
-                                state_mgr.add_event(
-                                    "error", f"RootHygieneAgent heal failed for {_v.get('type')}: {_he}"
-                                )
+                                    state_mgr.add_event(
+                                        "error",
+                                        f"RootHygieneHealerAgent heal failed for {_v.get('type')}: {_he}",
+                                    )
                     state_mgr.complete_agent(
-                        "RootHygieneAgent",
+                        "RootHygieneHealerAgent",
                         True,
                         f"Violations: {len(hygiene_violations)} (high: {len(high)}) fixed: {hygiene_fixed}",
                     )
@@ -6503,7 +6648,7 @@ def _legacy_main(
                     if hygiene_fixed > 0:
                         _record_healing_action(
                             state_mgr,
-                            agent="RootHygieneAgent",
+                            agent="RootHygieneHealerAgent",
                             territory="__global__",
                             routing_tier="DETERMINISTIC",
                             confidence=0.9,
@@ -6511,11 +6656,13 @@ def _legacy_main(
                             outcome="SUCCESS",
                         )
                 else:
-                    state_mgr.complete_agent("RootHygieneAgent", False, "No scan_root_violations method")
+                    state_mgr.complete_agent(
+                        "RootHygieneHealerAgent", False, "No scan_root_violations method"
+                    )
             except (ImportError, AttributeError, TypeError, ValueError) as e:
-                logger.error(f"RootHygieneAgent FAILED: {e}\n{traceback.format_exc()}")
-                state_mgr.add_event("error", f"RootHygieneAgent failed: {e}")
-                state_mgr.complete_agent("RootHygieneAgent", False, str(e))
+                logger.error(f"RootHygieneHealerAgent FAILED: {e}\n{traceback.format_exc()}")
+                state_mgr.add_event("error", f"RootHygieneHealerAgent failed: {e}")
+                state_mgr.complete_agent("RootHygieneHealerAgent", False, str(e))
             try:
                 _run_gravity_repair_global(agents, state_mgr, ctx=ctx)
             except (ImportError, AttributeError, TypeError, ValueError) as e:
@@ -6541,6 +6688,7 @@ def _legacy_main(
                 from dataclasses import replace as _dc_replace
 
                 effective_ctx = ctx
+                trace_id = ctx.trace_id
                 decision_engine._call_path = set()
                 decision_engine._healing_count = 0
                 decision_engine._healing_enabled = True
