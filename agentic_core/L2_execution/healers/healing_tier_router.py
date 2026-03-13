@@ -307,6 +307,74 @@ def route_healing_tier(
     )
 
 
+def route_by_confidence(
+    confidence: float,
+    retry_count: int = 0,
+    failure_type: str = "unknown",
+    error_signature: str = "",
+    blast_radius_estimate: float = 0.5,
+    agent_id: str = "",
+    config: HealingTierConfig | None = None,
+    *,
+    meta_prior_provider: MetaPriorProvider | None = None,
+) -> HealingDecision:
+    """Bridge: convert raw confidence float into a canonical HealingDecision.
+
+    Wraps route_healing_tier() so legacy callers that hold only a confidence
+    float (e.g. SovereignDecisionEngine, decorators_util) can delegate to the
+    single choke-point without constructing a HealingInput themselves.
+
+    Args:
+        confidence: Pre-computed confidence score in [0.0, 1.0].
+        retry_count: Number of prior heal attempts.
+        failure_type: Canonical failure type string (maps to FAILURE_CLASS_PRIORS).
+        error_signature: Error signature for historical look-up.
+        blast_radius_estimate: Normalised blast radius [0.0, 1.0].
+        agent_id: Optional agent identifier for allowlist check.
+        config: Optional HealingTierConfig; uses canonical X/Y defaults if None.
+        meta_prior_provider: Optional live meta-prior provider.
+
+    Returns:
+        Immutable HealingDecision with tier and reason_codes.
+    """
+    safe_confidence = round(max(0.0, min(1.0, confidence)), 6)
+    safe_retry = max(0, retry_count)
+
+    x_threshold = config.heal_confidence_x if config is not None else HEALING_CONFIDENCE_X
+    y_threshold = config.heal_confidence_y if config is not None else HEALING_CONFIDENCE_Y
+    max_retries = config.max_heal_retries if config is not None else 3
+
+    reason_codes: list[str] = [
+        f"route_by_confidence:input_confidence={safe_confidence:.6f}",
+        f"failure_type={failure_type}",
+        f"retry_count={safe_retry}",
+    ]
+
+    if safe_retry >= max_retries:
+        reason_codes.append(f"retry_count>={max_retries}:FORCED_GEMINI")
+        return HealingDecision(
+            heal_confidence=safe_confidence,
+            tier=HealingTier.GEMINI_2_5_PRO,
+            reason_codes=tuple(reason_codes),
+        )
+
+    if safe_confidence >= x_threshold:
+        tier = HealingTier.LOCAL_AGENT
+        reason_codes.append(f"heal_confidence>={x_threshold}:LOCAL_AGENT")
+    elif safe_confidence >= y_threshold:
+        tier = HealingTier.QWEN_VLLM
+        reason_codes.append(f"heal_confidence>={y_threshold}:QWEN_VLLM")
+    else:
+        tier = HealingTier.GEMINI_2_5_PRO
+        reason_codes.append(f"heal_confidence<{y_threshold}:GEMINI_2_5_PRO")
+
+    return HealingDecision(
+        heal_confidence=safe_confidence,
+        tier=tier,
+        reason_codes=tuple(reason_codes),
+    )
+
+
 def _compute_replay_key(healing_input: HealingInput, decision: HealingDecision) -> str:
     """Compute mathematical replay key - timestamp excluded for determinism.
 
@@ -341,6 +409,7 @@ __all__ = [
     "clear_historical_success_rates",
     "compute_heal_confidence",
     "route_healing_tier",
+    "route_by_confidence",
     "set_historical_success_rate",
     "HISTORICAL_DATA_VERSION",
     "HISTORICAL_DATA_HASH",

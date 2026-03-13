@@ -54,19 +54,16 @@ def _get_heal_llm_seam_types():
 
 
 def _get_heal_policy_types():
-    from agentic_core.L5_safety.types.heal_policy_types import (
-        HealEscalationInputs,
-        ReasoningTier,
-        decide_heal_escalation,
-    )
+    from agentic_core.L2_execution.healers.healing_tier_router import route_by_confidence
+    from agentic_core.L5_safety.types.heal_policy_types import ReasoningTier
 
-    return HealEscalationInputs, ReasoningTier, decide_heal_escalation
+    return route_by_confidence, ReasoningTier
 
 
 # Backward-compat alias — resolved lazily at call time
 def decide_reasoning_tier(*args, **kwargs):
-    _, _, _fn = _get_heal_policy_types()
-    return _fn(*args, **kwargs)
+    from agentic_core.L5_safety.types.heal_policy_types import decide_heal_escalation
+    return decide_heal_escalation(*args, **kwargs)
 
 
 Logger = logging.getLogger(__name__)
@@ -231,7 +228,7 @@ def standard_heal(func: F) -> F:
             reset_heal_seam_capability,
             set_heal_seam_capability,
         ) = _get_heal_llm_seam_types()
-        HealEscalationInputs, ReasoningTier, decide_heal_escalation = _get_heal_policy_types()
+        route_by_confidence, ReasoningTier = _get_heal_policy_types()
         capability_token = set_heal_seam_capability(True)
 
         try:
@@ -259,15 +256,22 @@ def standard_heal(func: F) -> F:
             if auto_approve:
                 policy_decision = None
             else:
-                policy_inputs = HealEscalationInputs(
-                    score=score,
-                    enable_llm=enable_llm,
-                )
-                policy_decision = decide_heal_escalation(policy_inputs)
+                heal_decision = route_by_confidence(confidence=0.75, retry_count=score)
+                _tier_name = heal_decision.tier.value
+                policy_decision = type(
+                    "_RoutedDecision",
+                    (),
+                    {
+                        "proceed": True,
+                        "tier": type("_Tier", (), {"name": _tier_name})(),
+                        "threshold_used": "CANONICAL_ROUTER",
+                        "rationale": " | ".join(heal_decision.reason_codes),
+                    },
+                )()
                 Logger.debug(
-                    f"[heal_policy] proceed={policy_decision.proceed} "
-                    f"tier={policy_decision.tier.name if policy_decision.tier else 'NONE'} "
-                    f"threshold={policy_decision.threshold_used}",
+                    f"[heal_policy] proceed=True "
+                    f"tier={_tier_name} "
+                    f"threshold=CANONICAL_ROUTER",
                 )
 
             # Phase 4: LLM escalation (only if tier is set)

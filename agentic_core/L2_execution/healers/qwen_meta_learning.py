@@ -83,8 +83,6 @@ def clear_historical_success_rates() -> None:
 
 
 __all__ = [
-    "HEALING_CONFIDENCE_X",
-    "HEALING_CONFIDENCE_Y",
     "get_historical_success_rate",
     "set_historical_success_rate",
     "update_qwen_confidence_prior",

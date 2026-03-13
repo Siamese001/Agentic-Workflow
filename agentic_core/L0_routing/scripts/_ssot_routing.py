@@ -13,6 +13,13 @@ import time
 from typing import Any
 
 from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, DEFAULT_TIMEOUT
+from agentic_core.L2_execution.healers.healing_tier_config import (
+    HEALING_CONFIDENCE_X as _CONF_X,
+    HEALING_CONFIDENCE_Y as _CONF_Y,
+    QWEN_14B_MODEL_ID as _QWEN_14B_MODEL_ID,
+    SSOT_SCORE_THRESHOLD_DET as _SCORE_DET,
+    SSOT_SCORE_THRESHOLD_QWEN as _SCORE_QWEN,
+)
 from agentic_core.L0_routing.scripts._ssot_types import (
     _QWEN_DISALLOWED,
     _STRUCTURAL_CLASS,
@@ -72,10 +79,10 @@ def compute_routing_decision(inputs: RoutingInputs) -> RoutingDecision:
         if inputs.provider_prohibited_gemini and inputs.provider_prohibited_qwen:
             return _decide(RoutingTier.FAIL_CLOSED, "GATE_4_HARD_OVERRIDE_FAIL_CLOSED", S)
         return _decide(RoutingTier.GEMINI, "GATE_4_HARD_OVERRIDE", S)
-    if S <= 13:
+    if S <= _SCORE_DET:
         tier = RoutingTier.DETERMINISTIC
         gate = "THRESHOLD_LOW_DET"
-    elif S <= 26:
+    elif S <= _SCORE_QWEN:
         tier = RoutingTier.QWEN
         gate = "THRESHOLD_MED_QWEN"
     else:
@@ -85,11 +92,11 @@ def compute_routing_decision(inputs: RoutingInputs) -> RoutingDecision:
             return _decide(RoutingTier.FAIL_CLOSED, "THRESHOLD_HIGH_FAIL_CLOSED", S)
     _qwen_disallowed_type = inputs.failure_type in _QWEN_DISALLOWED
     _qwen_blocked = _qwen_disallowed_type or inputs.provider_prohibited_qwen
-    if tier == RoutingTier.QWEN and S in range(14, 16) and (L == 0) and (not _qwen_blocked):
+    if tier == RoutingTier.QWEN and S in range(_SCORE_DET + 1, _SCORE_DET + 3) and (L == 0) and (not _qwen_blocked):
         tier = RoutingTier.DETERMINISTIC
         gate = f"{gate}.L_TIEBREAK_DOWN"
     elif (
-        tier == RoutingTier.DETERMINISTIC and S in range(12, 14) and (L == 3) and (not _qwen_disallowed_type)
+        tier == RoutingTier.DETERMINISTIC and S in range(_SCORE_DET - 1, _SCORE_DET + 1) and (L == 3) and (not _qwen_disallowed_type)
     ):
         tier = RoutingTier.QWEN
         gate = f"{gate}.L_TIEBREAK_UP"
@@ -366,7 +373,7 @@ class SovereignDecisionEngine:
                     raise
         C = min(3, max(0, int(3 - confidence.value * 3)))
         B = 3 if territory.startswith("L5") else 2 if AGENTIC_CORE_DIR in territory else 1
-        A = 0 if confidence.value >= 0.75 else 2 if confidence.value < 0.5 else 1
+        A = 0 if confidence.value >= _CONF_X else 2 if confidence.value < _CONF_Y else 1
         N = self._compute_novelty_score(failure_type, territory, confidence)
         high_cost = {
             FailureType.LAYER_VIOLATION,
@@ -375,7 +382,7 @@ class SovereignDecisionEngine:
             FailureType.SIGNATURE_VERIFY,
             FailureType.UNSIGNED_INGRESS,
         }
-        F = 3 if failure_type in high_cost else 2 if confidence.value < 0.5 else 1
+        F = 3 if failure_type in high_cost else 2 if confidence.value < _CONF_Y else 1
         L = 0
         ri = RoutingInputs(
             failure_type=failure_type,
@@ -519,19 +526,7 @@ class SovereignDecisionEngine:
             "decision": None,
             "reason": None,
         }
-        try:
-            from agentic_core.L2_execution.healers.healing_tier_config import HEALING_CONFIDENCE_X as _CONF_X
-            from agentic_core.L2_execution.healers.healing_tier_config import HEALING_CONFIDENCE_Y as _CONF_Y
-            from agentic_core.L2_execution.healers.healing_tier_config import (
-                QWEN_14B_MODEL_ID as _QWEN_14B_MODEL_ID,
-            )
-
-            _GEMINI_MODEL_ID = "gemini-2.5-pro"
-        except ImportError:
-            _CONF_X = 0.8
-            _CONF_Y = 0.5
-            _QWEN_14B_MODEL_ID = "Qwen/Qwen2.5-14B-Instruct-GPTQ-Int4"
-            _GEMINI_MODEL_ID = "gemini-2.5-pro"
+        _GEMINI_MODEL_ID = "gemini-2.5-pro"
         if routing.tier != RoutingTier.FAIL_CLOSED:
             if confidence.value > _CONF_X:
                 tier = RoutingTier.DETERMINISTIC

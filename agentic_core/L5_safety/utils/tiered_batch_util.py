@@ -1,5 +1,14 @@
 from __future__ import annotations
 
+from agentic_core.L2_execution.healers.healing_tier_config import (
+    HEALING_CONFIDENCE_X as _HEALING_CONFIDENCE_X,
+    MAX_RETRIES,
+    DEFAULT_SLEEP,
+    THRESHOLD,
+    BUFFER_SIZE,
+    BATCH_SIZE,
+    MAX_DEPTH,
+)
 from agentic_core.L2_execution.tools import write_gateway as _wg
 
 "\n[PHASE 15/17] Tiered Batch Processor - Smart Hybrid Disposition.\n\nImplements a tiered approach to violation processing:\n- Tier 1: High-confidence heuristics (>=0.75) - auto-execute immediately\n- Tier 2: Low-confidence files (<0.75) - route to LLM Gemini\n- Phase 17: Semantic Meta-Learning with Redis/Pinecone caching\n\nThis dramatically reduces LLM API calls while maintaining intelligent triage.\n\n[SSOT] Integrates with CognitiveDispositionAgent and SemanticCacheManager.\n"
@@ -30,7 +39,7 @@ class TieredBatchProcessor:
     def __init__(
         self,
         agent: Any,
-        heuristic_threshold: float = 0.75,
+        heuristic_threshold: float = _HEALING_CONFIDENCE_X,
         checkpoint_file: str | Path = "tiered_checkpoint.json",
         use_semantic_cache: bool = True,
         rate_limit_delay: float = 1.0,

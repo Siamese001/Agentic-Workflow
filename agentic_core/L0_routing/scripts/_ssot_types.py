@@ -19,33 +19,26 @@ from typing import Any
 
 @dataclass
 class ConfidenceScore:
-    """[HARDENED] Environment-aware confidence score for autonomous healing."""
+    """[HARDENED] Confidence score for autonomous healing."""
 
     value: float
     reasoning: str
     factors: dict[str, float] = field(default_factory=dict)
 
     @property
-    def _high_threshold(self) -> float:
-        """Sourced from .env: SOVEREIGN_HIGH_CONFIDENCE (default: 0.75)"""
-        return float(os.getenv("SOVEREIGN_HIGH_CONFIDENCE", "0.75"))
-
-    @property
-    def _med_threshold(self) -> float:
-        """Sourced from .env: SOVEREIGN_MEDIUM_CONFIDENCE (default: 0.50)"""
-        return float(os.getenv("SOVEREIGN_MEDIUM_CONFIDENCE", "0.50"))
-
-    @property
     def is_high_confidence(self) -> bool:
-        return self.value > self._high_threshold
+        from agentic_core.L2_execution.healers.healing_tier_config import HEALING_CONFIDENCE_X
+        return self.value > HEALING_CONFIDENCE_X
 
     @property
     def is_medium_confidence(self) -> bool:
-        return self._med_threshold <= self.value <= self._high_threshold
+        from agentic_core.L2_execution.healers.healing_tier_config import HEALING_CONFIDENCE_X, HEALING_CONFIDENCE_Y
+        return HEALING_CONFIDENCE_Y <= self.value <= HEALING_CONFIDENCE_X
 
     @property
     def is_low_confidence(self) -> bool:
-        return self.value < self._med_threshold
+        from agentic_core.L2_execution.healers.healing_tier_config import HEALING_CONFIDENCE_Y
+        return self.value < HEALING_CONFIDENCE_Y
 
 
 class FailureType(_enum.Enum):

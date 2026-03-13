@@ -34,8 +34,16 @@ Functions:
 from dataclasses import dataclass
 from enum import Enum
 
-SCORE_THRESHOLD_DET: int = 13
-SCORE_THRESHOLD_QWEN: int = 26
+from agentic_core.L2_execution.healers.healing_tier_config import (
+    SSOT_SCORE_THRESHOLD_DET as SCORE_THRESHOLD_DET,
+    SSOT_SCORE_THRESHOLD_QWEN as SCORE_THRESHOLD_QWEN,
+    MAX_RETRIES,
+    DEFAULT_SLEEP,
+    THRESHOLD,
+    BUFFER_SIZE,
+    BATCH_SIZE,
+    MAX_DEPTH,
+)
 
 
 class ReasoningTier(Enum):

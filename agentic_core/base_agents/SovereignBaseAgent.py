@@ -496,31 +496,31 @@ class SovereignBaseAgent(
                 "skipped": 1,
             }
 
-        from agentic_core.L5_safety.types.heal_policy_types import (
-            HealEscalationInputs,
-            decide_heal_escalation,
-        )
+        from agentic_core.L2_execution.healers.healing_tier_router import route_by_confidence
+        from agentic_core.L2_execution.healers.healing_tier_types import HealingTier
 
         start_time = time.time()
 
-        # Extract policy inputs from kwargs
+        # Extract inputs from kwargs
         confidence_value = kwargs.pop("_confidence", 0.75)
-        task_complexity = kwargs.pop("_task_complexity", 5)
-        prior_failures = kwargs.pop("_prior_failures", 0)
-        enable_llm = os.environ.get("HEAL_POLICY_MODEL_ESCALATION") == "1"
+        kwargs.pop("_task_complexity", None)
+        kwargs.pop("_prior_failures", None)
+        retry_count = kwargs.pop("_retry_count", 0)
 
-        # Compute policy decision
-        policy_inputs = HealEscalationInputs(
-            confidence_value=confidence_value,
-            enable_llm=enable_llm,
-            task_complexity=task_complexity,
-            prior_failures=prior_failures,
+        # Delegate to canonical routing choke-point
+        heal_decision = route_by_confidence(
+            confidence=confidence_value,
+            retry_count=retry_count,
         )
-        policy_decision = decide_heal_escalation(policy_inputs)
 
-        # Hard gate: If proceed=False, return deterministic refusal
-        if not policy_decision.proceed:
+        # Hard gate: FAIL_CLOSED → refusal (routing always proceeds for other tiers)
+        if heal_decision.tier not in (
+            HealingTier.LOCAL_AGENT,
+            HealingTier.QWEN_VLLM,
+            HealingTier.GEMINI_2_5_PRO,
+        ):
             execution_time_ms = (time.time() - start_time) * 1000
+            rationale = " | ".join(heal_decision.reason_codes)
             return {
                 "violations_found": 0,
                 "violations_fixed": 0,
@@ -528,12 +528,12 @@ class SovereignBaseAgent(
                 "errors": 0,
                 "skipped": 0,
                 "execution_time_ms": execution_time_ms,
-                "error_message": policy_decision.rationale,
+                "error_message": rationale,
                 "_policy_decision": {
                     "proceed": False,
                     "tier": None,
-                    "threshold_used": policy_decision.threshold_used,
-                    "rationale": policy_decision.rationale,
+                    "threshold_used": "CANONICAL_ROUTER",
+                    "rationale": rationale,
                 },
             }
 
