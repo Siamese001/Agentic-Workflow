@@ -684,8 +684,17 @@ class _ImportVisitor(ast.NodeVisitor):
             self.generic_visit(node)
 
     def visit_Try(self, node: ast.Try) -> None:
+        try_is_optional = any(
+            h.type is not None
+            and self._extract_exception_name(h.type) in ("ImportError", "ModuleNotFoundError")
+            for h in node.handlers
+        )
+        if try_is_optional:
+            self._context_stack.append("optional_import")
         for stmt in node.body:
             self.visit(stmt)
+        if try_is_optional:
+            self._context_stack.pop()
         for handler in node.handlers:
             is_import_error = False
             if handler.type is not None:

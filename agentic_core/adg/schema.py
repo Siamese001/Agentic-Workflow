@@ -549,6 +549,45 @@ ALLOWED_LAYER_EDGES: frozenset[tuple[str, str]] = frozenset(
         ("L_RUNTIME", "L2"),
         ("L_PG", "L0"),
         ("L_PG", "L1"),
+        # L_SHARED is a cross-cutting layer; it may import L0 path constants,
+        # L_RUNTIME exception types, L5 SSOT constants, and L_APP re-exports.
+        ("L_SHARED", "L0"),
+        ("L_SHARED", "L_RUNTIME"),
+        ("L_SHARED", "L5"),
+        ("L_SHARED", "L2"),
+        ("L_SHARED", "L1"),
+        ("L_SHARED", "L_APP"),
+        # L_RUNTIME bootstrap assembles all layers — allowed to import L3/L4/L5.
+        ("L_RUNTIME", "L3"),
+        ("L_RUNTIME", "L4"),
+        ("L_RUNTIME", "L5"),
+        # L_OPS scripts orchestrate system-learning workflows and apps.
+        ("L_OPS", "L_SL"),
+        ("L_OPS", "L_APP"),
+        ("L_OPS", "L_RUNTIME"),
+        # L_APP scripts may integrate system-learning.
+        ("L_APP", "L_SL"),
+        # L4 state may reference L5 error/hardening types and tools utilities.
+        ("L4", "L5"),
+        ("L4", "L_TOOLS"),
+        # L_SL (system_learning) may use L5 safety enforcement.
+        ("L_SL", "L5"),
+        # L_TOOLS may use system_learning ports.
+        ("L_TOOLS", "L_SL"),
+        # L_PG prompt-governance may use runtime detection and L4 state.
+        ("L_PG", "L_RUNTIME"),
+        ("L_PG", "L4"),
+        ("L_PG", "L2"),
+        # L1 cognition may use runtime exceptions and L5 safety.
+        ("L1", "L_RUNTIME"),
+        ("L1", "L5"),
+        ("L1", "L3"),
+        ("L1", "L4"),
+        # L2 execution may reference L5 safety types.
+        ("L2", "L5"),
+        # L3 orchestration may reference L4 state and L5 safety.
+        ("L3", "L4"),
+        ("L3", "L5"),
     }
 )
 
