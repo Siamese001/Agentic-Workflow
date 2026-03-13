@@ -14,6 +14,7 @@ import hashlib
 import json
 import logging
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
@@ -40,6 +41,17 @@ class BaseHealingOrchestrator(SovereignBaseAgent):
         """Initialize healing orchestrator and register in knowledge graph."""
         super().__post_init__()
         self._register_in_knowledge_graph()
+        try:
+            from agentic_core.adg.runtime.behavioral_index import ADGBehavioralIndex
+
+            _idx = ADGBehavioralIndex.from_latest(Path(self.project_root))
+            _profile = _idx.profile_for(self._adg_resolved_self_path()) if _idx else None
+            self.adg_behavioral_score: float = _profile.behavioral_score if _profile else 0.5
+            self.adg_antipattern_signals: list[str] = sorted(_profile.antipattern_signals) if _profile else []
+        # guardian: allow-silent-swallow
+        except Exception:
+            self.adg_behavioral_score = 0.5
+            self.adg_antipattern_signals = []
 
     def _register_in_knowledge_graph(self) -> None:
         """Register this orchestrator as an entity in the Memory MCP knowledge graph."""

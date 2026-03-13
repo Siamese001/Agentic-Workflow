@@ -15,6 +15,7 @@ from __future__ import annotations
 import logging
 import time
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any
 
 from apps_rg.reasoning.healing_cycle import HealingCycle
@@ -51,6 +52,17 @@ class RgHealingOrchestrator(BaseHealingOrchestrator):
 
             self.ctx = ResumeEngineContext()
         Logger.debug(f"[{self.__class__.__name__}] Meta-Learning healing orchestrator initialized")
+        try:
+            from agentic_core.adg.runtime.behavioral_index import ADGBehavioralIndex
+
+            _idx = ADGBehavioralIndex.from_latest(Path(self.project_root))
+            _profile = _idx.profile_for(self._adg_resolved_self_path()) if _idx else None
+            self.adg_behavioral_score: float = _profile.behavioral_score if _profile else 0.5
+            self.adg_antipattern_signals: list[str] = sorted(_profile.antipattern_signals) if _profile else []
+        # guardian: allow-silent-swallow
+        except Exception:
+            self.adg_behavioral_score = 0.5
+            self.adg_antipattern_signals = []
 
     async def run(self) -> dict[str, Any]:
         """

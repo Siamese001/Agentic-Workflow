@@ -12,6 +12,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
@@ -97,6 +98,21 @@ class OutreachHealingResult:
 
 class OutreachSignalRouterAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """Routes signals to appropriate agents."""
+
+    def __post_init__(self) -> None:
+        """Initialize ADG behavioral enrichment."""
+        super().__post_init__()
+        try:
+            from agentic_core.adg.runtime.behavioral_index import ADGBehavioralIndex
+
+            _idx = ADGBehavioralIndex.from_latest(Path(self.project_root))
+            _profile = _idx.profile_for(self._adg_resolved_self_path()) if _idx else None
+            self.adg_behavioral_score: float = _profile.behavioral_score if _profile else 0.5
+            self.adg_antipattern_signals: list[str] = sorted(_profile.antipattern_signals) if _profile else []
+        # guardian: allow-silent-swallow
+        except Exception:
+            self.adg_behavioral_score = 0.5
+            self.adg_antipattern_signals = []
 
     SIGNAL_TO_AGENTS = {
         "LEAD_QUALITY_ISSUE": ["LeadQualityAgent"],

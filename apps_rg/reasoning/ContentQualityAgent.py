@@ -18,6 +18,7 @@ from __future__ import annotations
 import json
 import re
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any
 
 from apps_rg.utils.RGAgentBase import RGAgentBase
@@ -44,6 +45,17 @@ class ContentQualityAgent(RGAgentBase):
         """Initialize content quality agent with logic node composition."""
         super().__post_init__()
         self.skill_extractor = SkillExtractorNode(config=self.config.get("validation_config", {}))
+        try:
+            from agentic_core.adg.runtime.behavioral_index import ADGBehavioralIndex
+
+            _idx = ADGBehavioralIndex.from_latest(Path(self.project_root))
+            _profile = _idx.profile_for(self._adg_resolved_self_path()) if _idx else None
+            self.adg_behavioral_score: float = _profile.behavioral_score if _profile else 0.5
+            self.adg_antipattern_signals: list[str] = sorted(_profile.antipattern_signals) if _profile else []
+        # guardian: allow-silent-swallow
+        except Exception:
+            self.adg_behavioral_score = 0.5
+            self.adg_antipattern_signals = []
 
     PLACEHOLDER_PATTERNS = [
         "\\[(?:NAME|COMPANY|TITLE|PLACEHOLDER|YOUR_NAME|INSERT)\\]",

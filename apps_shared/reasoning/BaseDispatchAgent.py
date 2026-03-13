@@ -9,6 +9,7 @@ from __future__ import annotations
 import logging
 import time
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Any, NamedTuple
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
@@ -47,6 +48,17 @@ class BaseDispatchAgent(SovereignBaseAgent):
         self.TIMEOUT: float = float(self.config_dict.get("timeout", _DEFAULT_TIMEOUT_S))
         Logger.info(f"Initialized {self.__class__.__name__} (timeout={self.TIMEOUT}s)")
         self._register_in_knowledge_graph()
+        try:
+            from agentic_core.adg.runtime.behavioral_index import ADGBehavioralIndex
+
+            _idx = ADGBehavioralIndex.from_latest(Path(self.project_root))
+            _profile = _idx.profile_for(self._adg_resolved_self_path()) if _idx else None
+            self.adg_behavioral_score: float = _profile.behavioral_score if _profile else 0.5
+            self.adg_antipattern_signals: list[str] = sorted(_profile.antipattern_signals) if _profile else []
+        # guardian: allow-silent-swallow
+        except Exception:
+            self.adg_behavioral_score = 0.5
+            self.adg_antipattern_signals = []
 
     def _register_in_knowledge_graph(self) -> None:
         """Register this agent as an entity in the Memory MCP knowledge graph."""
