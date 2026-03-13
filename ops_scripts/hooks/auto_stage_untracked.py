@@ -15,22 +15,16 @@ from pathlib import Path
 
 
 def get_untracked_files() -> list[str]:
-    """Get list of untracked files from git status."""
+    """Get list of untracked files from git ls-files."""
+    # Use git ls-files to get untracked files without quote escaping
     result = subprocess.run(
-        ["git", "status", "--porcelain"],
+        ["git", "ls-files", "--others", "--exclude-standard"],
         capture_output=True,
         text=True,
         check=True,
     )
     
-    untracked = []
-    for line in result.stdout.splitlines():
-        if line.startswith("??"):
-            # Extract filename (everything after "?? ")
-            filepath = line[3:].strip()
-            untracked.append(filepath)
-    
-    return untracked
+    return [line.strip() for line in result.stdout.splitlines() if line.strip()]
 
 
 def should_auto_stage(filepath: str) -> bool:
@@ -77,7 +71,7 @@ def main() -> int:
     # Stage the files
     print(f"[auto-stage] Staging {len(files_to_stage)} untracked file(s):")
     for filepath in files_to_stage:
-        print(f"  + {filepath}")
+        print(f"  + {filepath!s}")
     
     subprocess.run(
         ["git", "add"] + files_to_stage,
