@@ -444,8 +444,26 @@ def _infer_layer(path: str) -> str:
     return "L_UNKNOWN"
 
 
+_RUNTIME_ENFORCEMENT_FILES = [
+    # Gap 1: UWG mutation chokepoint
+    "agentic_core/L2_execution/UniversalWriteGateway.py",
+    # Gap 2: Determinism/replay interception
+    "agentic_core/L2_execution/determinism/replay_guard.py",
+    # Gap 3: Policy hash validation
+    "agentic_core/L0_routing/enforcement/policy_hash_enforcer.py",
+    # Gap 4: HITL/DPO lineage
+    "agentic_core/L6_observability/engines/hitl_dpo_pair_generator.py",
+    # Gap 5: Meta-learning commit gating
+    "agentic_core/L0_routing/meta_control/meta_apply.py",
+]
+
+
 def _create_zip_archive(adg_dir: Path, ts: str, artifact_paths: list[Path]) -> Path:
-    """Create a zip archive of all ADG artifacts for the current run.
+    """Create a zip archive of all ADG artifacts + runtime enforcement files for the current run.
+
+    Structure:
+        adg/<artifact>.json/.sqlite  - ADG graph artifacts
+        runtime/<path>               - Gap 1-5 runtime enforcement files for external LLM validation
 
     Args:
         adg_dir: ADG artifacts directory
@@ -456,15 +474,21 @@ def _create_zip_archive(adg_dir: Path, ts: str, artifact_paths: list[Path]) -> P
         Path to the created zip file
     """
     zip_path = adg_dir / f"adg_run_{ts}.zip"
+    repo_root = adg_dir.parents[1]
 
     with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED, compresslevel=9) as zf:
         for artifact_path in artifact_paths:
             if artifact_path.exists():
-                zf.write(artifact_path, artifact_path.name)
+                zf.write(artifact_path, f"adg/{artifact_path.name}")
+
+        for rel_path in _RUNTIME_ENFORCEMENT_FILES:
+            full_path = repo_root / rel_path
+            if full_path.exists():
+                zf.write(full_path, f"runtime/{rel_path}")
 
     if zip_path.exists():
         zip_size_mb = zip_path.stat().st_size / (1024 * 1024)
-        print(f"[ADG] Zip archive created: {zip_path.name} ({zip_size_mb:.1f} MB)")
+        print(f"[ADG] Zip archive created: {zip_path.name} ({zip_size_mb:.1f} MB, 6 ADG + 5 runtime files)")
 
     return zip_path
 
