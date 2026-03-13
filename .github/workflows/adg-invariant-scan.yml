@@ -3,6 +3,11 @@ name: ADG Invariant Scan
 on:
   push:
     branches: ["**"]
+    paths:
+      - 'agentic_core/**'
+      - 'ops_scripts/**'
+      - 'tools/**'
+      - 'tests/**'
   pull_request:
     branches: ["**"]
 

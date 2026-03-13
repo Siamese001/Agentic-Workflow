@@ -6,6 +6,9 @@ name: Safe Automated Remediation Gate
 on:
   push:
     branches: ["**"]
+    paths:
+      - '**/*.py'
+      - 'ops_scripts/**'
   pull_request:
     branches: ["**"]
 
@@ -22,7 +25,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.12"
 
       - name: Get changed Python files
         id: changed
@@ -100,7 +103,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.12"
 
       - name: Check protected files not modified without justification
         run: |
@@ -215,7 +218,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.12"
 
       - name: Install dependencies
         run: |
@@ -298,7 +301,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.12"
 
       - name: Scan all changed files for parse errors
         run: |
@@ -359,7 +362,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.12"
 
       - name: Check fix-script commits have audit evidence
         run: |

@@ -2,9 +2,13 @@ name: Agent Sprawl Check
 
 on:
   pull_request:
-    branches: [ main, agentic-testing ]
+    branches: ["**"]
   push:
-    branches: [ main, agentic-testing ]
+    branches: ["**"]
+    paths:
+      - 'agentic_core/**'
+      - 'artifacts/dedup/**'
+      - 'ops_scripts/**'
 
 jobs:
   sprawl-check:

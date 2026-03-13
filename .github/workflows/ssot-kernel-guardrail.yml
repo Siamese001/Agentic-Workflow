@@ -2,9 +2,13 @@ name: SSOT Kernel Guardrail
 
 on:
   pull_request:
-    branches: [ main, agentic-testing ]
+    branches: ["**"]
   push:
-    branches: [ main, agentic-testing ]
+    branches: ["**"]
+    paths:
+      - 'agentic_core/**'
+      - 'tools/architectural/**'
+      - 'tests/core/**'
 
 jobs:
   ssot-guardrail:
@@ -21,6 +25,14 @@ jobs:
 
       - name: Install dependencies
         run: pip install -e .
+
+      - name: SSOT Folder Structure Validation
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          echo "Running Agentic SSOT Enforcement..."
+          python -m agentic_core.L5_safety.validators.ssot_folder_check
+          echo "SSOT folder structure verified"
 
       - name: Enforce Module Collision Guard
         run: |
