@@ -14,7 +14,9 @@ LAYER: L3_orchestration (workflow coordination)
 """
 
 import json
+import logging
 import uuid
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
@@ -24,6 +26,9 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L0_routing.enforcement.runtime_guard import (
     runtime_guard,
 )
+from agentic_core.utils.timeout_decorator_util import timeout
+
+_logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -176,7 +181,7 @@ class DecompositionOrchestrator(SovereignBaseAgent):
         mission_id = f"mission_{uuid.uuid4().hex[:8]}"
         plan = MissionPlan(mission_id=mission_id, created_at=datetime.utcnow().isoformat(), prompt=prompt)
         task_hints = self._extract_task_hints(prompt)
-        previous_task_id: Optional[str] = None
+        previous_task_id: str | None = None
         for i, hint in enumerate(task_hints[:max_tasks]):
             task_id = f"task_{i + 1:03d}"
             agent_name, agent_path = self._match_agent_for_task(hint)
@@ -360,6 +365,196 @@ class DecompositionOrchestrator(SovereignBaseAgent):
 def create_decomposition_orchestrator() -> DecompositionOrchestrator:
     """Factory function to create DecompositionOrchestrator."""
     return DecompositionOrchestrator()
+
+
+# ---------------------------------------------------------------------------
+# C4 — WorkerPool + SynthesizerNode clean API
+# ---------------------------------------------------------------------------
+
+
+@dataclass
+class WorkerResult:
+    """Output from a single worker dispatch."""
+
+    task_id: str
+    worker_name: str
+    output: Any = None
+    error: str | None = None
+    success: bool = False
+
+
+class WorkerPool:
+    """Register workers and dispatch AtomicTasks to them by name.
+
+    Provides a clean Orchestrator → Workers → Synthesizer separation.
+
+    Usage::
+
+        pool = WorkerPool()
+        pool.register_worker("CodeHealerAgent", healer_fn)
+        pool.register_worker("NamingAgent", naming_fn)
+        results = await pool.dispatch_plan(plan)
+        summary = await synthesizer.synthesize(results)
+    """
+
+    def __init__(self) -> None:
+        self._workers: dict[str, Callable[[AtomicTask], Awaitable[Any]]] = {}
+
+    def register_worker(
+        self,
+        name: str,
+        fn: Callable[[AtomicTask], Awaitable[Any]],
+    ) -> None:
+        """Register an async worker function for a named agent."""
+        self._workers[name] = fn
+        _logger.debug("worker_pool_register", extra={"worker": name})
+
+    async def dispatch(self, task: AtomicTask) -> WorkerResult:
+        """Dispatch a single AtomicTask to its registered worker."""
+        worker_fn = self._workers.get(task.target_agent)
+        if worker_fn is None:
+            _logger.warning("worker_pool_missing", extra={"agent": task.target_agent, "task": task.task_id})
+            return WorkerResult(
+                task_id=task.task_id,
+                worker_name=task.target_agent,
+                error=f"No worker registered for '{task.target_agent}'",
+            )
+        try:
+            output = await worker_fn(task)
+            task.status = "completed"
+            _logger.info("worker_pool_done", extra={"task": task.task_id, "agent": task.target_agent})
+            return WorkerResult(
+                task_id=task.task_id, worker_name=task.target_agent, output=output, success=True
+            )
+        except Exception as exc:  # guardian: allow-silent-swallower
+            task.status = "failed"
+            _logger.error("worker_pool_error", extra={"task": task.task_id, "error": str(exc)})
+            return WorkerResult(task_id=task.task_id, worker_name=task.target_agent, error=str(exc))
+
+    async def dispatch_plan(self, plan: MissionPlan) -> list[WorkerResult]:
+        """Dispatch all tasks in a MissionPlan sequentially (respects order)."""
+        results: list[WorkerResult] = []
+        for task in plan.tasks:
+            result = await self.dispatch(task)
+            results.append(result)
+        return results
+
+    def collect_results(self, results: list[WorkerResult]) -> dict[str, Any]:
+        """Aggregate worker results into a summary dict."""
+        return {
+            "total": len(results),
+            "succeeded": sum(1 for r in results if r.success),
+            "failed": sum(1 for r in results if not r.success),
+            "outputs": {r.task_id: r.output for r in results if r.success},
+            "errors": {r.task_id: r.error for r in results if r.error},
+        }
+
+
+class SynthesizerNode:
+    """Aggregates worker outputs back to the orchestrator.
+
+    Args:
+        synthesize_fn: Optional async fn(results: list[WorkerResult]) -> str.
+                       If not provided, returns a JSON summary.
+    """
+
+    def __init__(
+        self,
+        synthesize_fn: Callable[[list[WorkerResult]], Awaitable[str]] | None = None,
+    ) -> None:
+        self._synthesize_fn = synthesize_fn
+
+    async def synthesize(self, results: list[WorkerResult]) -> str:
+        """Produce a final aggregated output from worker results."""
+        if self._synthesize_fn is not None:
+            return await self._synthesize_fn(results)
+        succeeded = [r for r in results if r.success]
+        failed = [r for r in results if not r.success]
+        return json.dumps(
+            {
+                "synthesized": True,
+                "tasks_completed": len(succeeded),
+                "tasks_failed": len(failed),
+                "outputs": {r.task_id: r.output for r in succeeded},
+            },
+            indent=2,
+        )
+
+
+# ---------------------------------------------------------------------------
+# C5 — Plan-and-Execute replan loop
+# ---------------------------------------------------------------------------
+
+
+@dataclass
+class ReplanArtifact:
+    """Tracks a single replan event for observability."""
+
+    replan_id: str
+    failed_task_id: str
+    reason: str
+    original_plan_id: str
+    new_tasks: list[AtomicTask] = field(default_factory=list)
+    timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+
+
+def replan_on_failure(
+    orchestrator: DecompositionOrchestrator,
+    plan: MissionPlan,
+    failed_task: AtomicTask,
+    reason: str,
+) -> tuple[MissionPlan, ReplanArtifact]:
+    """Generate an updated plan after a task failure.
+
+    Replaces the failed task with a re-decomposition of its description,
+    appends the new sub-tasks after the failure point, and returns both
+    the updated plan and a ReplanArtifact for observability.
+
+    Args:
+        orchestrator: The DecompositionOrchestrator instance to use for re-decomposition.
+        plan:         The current MissionPlan with the failed task.
+        failed_task:  The AtomicTask that failed.
+        reason:       Human-readable failure reason.
+
+    Returns:
+        (updated_plan, replan_artifact) tuple.
+    """
+    replan_id = f"replan_{uuid.uuid4().hex[:8]}"
+    _logger.info(
+        "replan_triggered",
+        extra={"task_id": failed_task.task_id, "reason": reason[:80], "replan_id": replan_id},
+    )
+
+    sub_plan = orchestrator.decompose(
+        f"Retry: {failed_task.description}. Previous failure reason: {reason}",
+        max_tasks=3,
+    )
+
+    for sub_task in sub_plan.tasks:
+        sub_task.task_id = f"{replan_id}_{sub_task.task_id}"
+        sub_task.dependencies = [failed_task.task_id]
+
+    failed_task.status = "failed"
+
+    for sub_task in sub_plan.tasks:
+        plan.tasks.append(sub_task)
+        plan.execution_order.append(sub_task.task_id)
+
+    plan.validation_summary["replans"] = plan.validation_summary.get("replans", 0) + 1
+
+    artifact = ReplanArtifact(
+        replan_id=replan_id,
+        failed_task_id=failed_task.task_id,
+        reason=reason,
+        original_plan_id=plan.mission_id,
+        new_tasks=sub_plan.tasks,
+    )
+
+    _logger.info(
+        "replan_complete",
+        extra={"replan_id": replan_id, "new_tasks": len(sub_plan.tasks)},
+    )
+    return plan, artifact
 
 
 if __name__ == "__main__":

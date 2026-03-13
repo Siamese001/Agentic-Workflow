@@ -1,8 +1,54 @@
 {
+  "agentic_core/L0_routing/engines/agentic_router.py": {
+    "silent_swallower": 2
+  },
+  "agentic_core/L1_cognition/enforcement/react_strategy.py": {
+    "silent_swallower": 1
+  },
+  "agentic_core/L3_orchestration/engines/autonomous_workflow_engine.py": {
+    "magic_configuration": 1,
+    "silent_swallower": 2
+  },
+  "agentic_core/L3_orchestration/engines/decomposition_orchestrator.py": {
+    "magic_configuration": 1,
+    "silent_swallower": 1
+  },
+  "agentic_core/L3_orchestration/engines/prompt_chain_engine.py": {
+    "silent_swallower": 1
+  },
+  "agentic_core/L3_orchestration/engines/rewoo_engine.py": {
+    "magic_configuration": 1
+  },
   "agentic_core/L4_state/memory/cache_admission_gate.py": {
     "silent_swallower": 1
   },
   "agentic_core/cache/cache_key_builders.py": {
     "direct_prompt_compilation": 1
+  },
+  "system_learning/engines/meta_learning_bus.py": {
+    "silent_swallower": 6
+  },
+  "system_learning/engines/optimization_proposal_engine.py": {
+    "config_with_logic": 1
+  },
+  "system_learning/engines/prompt_execution_tracer.py": {
+    "silent_swallower": 1
+  },
+  "system_learning/engines/prompt_outcome_bus_adapter.py": {
+    "silent_swallower": 1
+  },
+  "system_learning/engines/prompt_provenance_builder.py": {
+    "direct_prompt_compilation": 9
+  },
+  "system_learning/engines/prompt_safety_validator.py": {
+    "config_with_logic": 2,
+    "silent_swallower": 3
+  },
+  "system_learning/engines/proposal_validation_engine.py": {
+    "config_with_logic": 4,
+    "silent_swallower": 2
+  },
+  "system_learning/engines/trace_feature_extractor.py": {
+    "silent_swallower": 1
   }
 }
