@@ -653,12 +653,23 @@ class _ImportVisitor(ast.NodeVisitor):
         self.edges: list[Edge] = []
         self._all_registry: dict[str, list[str]] = all_registry or {}
         self._context_stack: list[str] = []
+        self._function_depth: int = 0
         self.star_import_count: int = 0
         self.star_resolved_count: int = 0
 
     # ------------------------------------------------------------------
     # Context tracking for E7
     # ------------------------------------------------------------------
+
+    def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
+        self._function_depth += 1
+        self.generic_visit(node)
+        self._function_depth -= 1
+
+    def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef) -> None:
+        self._function_depth += 1
+        self.generic_visit(node)
+        self._function_depth -= 1
 
     def visit_If(self, node: ast.If) -> None:
         ctx = self._classify_if_context(node.test)
@@ -693,6 +704,8 @@ class _ImportVisitor(ast.NodeVisitor):
             self.visit(stmt)
 
     def _current_context(self) -> str:
+        if self._function_depth > 0:
+            return "lazy_import"
         return self._context_stack[-1] if self._context_stack else "import"
 
     @staticmethod
@@ -1903,14 +1916,21 @@ def _emit_layer_violation_edges(result: ScanResult) -> list[Edge]:
 
     Only fires on `imports` edges where the from-module layer is forbidden from
     importing the to-symbol's layer.  Deduplicates on (from_module, from_layer, to_layer).
+    Skips lazy imports (inside function bodies, TYPE_CHECKING guards, optional_import blocks).
     """
     from agentic_core.adg.schema import ALLOWED_LAYER_EDGES
+
+    _SKIP_EDGE_KINDS = frozenset(
+        {"lazy_import", "type_checking_import", "optional_import", "version_guard_import"}
+    )
 
     violations: list[Edge] = []
     seen: set[tuple[str, str, str]] = set()
 
     for edge in result.edges:
         if edge.relation_type != "imports":
+            continue
+        if edge.edge_kind in _SKIP_EDGE_KINDS:
             continue
 
         from_rel = edge.source_file
