@@ -940,5 +940,353 @@ class TestASTSourceInjections(unittest.TestCase):
         self.fail("SovereignBaseAgent class not found in AST")
 
 
+# ===========================================================================
+# Phase 5 — apps_* territory ADG enrichment
+# ===========================================================================
+
+
+class TestPhase5AppsSharedEnrichment(unittest.TestCase):
+    """AST-level verification that apps_shared base classes received ADG enrichment."""
+
+    def test_base_dispatch_agent_has_adg_block_in_post_init(self):
+        tree = _ast_of("apps_shared/reasoning/BaseDispatchAgent.py")
+        for cls in ast.walk(tree):
+            if isinstance(cls, ast.ClassDef) and cls.name == "BaseDispatchAgent":
+                for fn in ast.walk(cls):
+                    if isinstance(fn, ast.FunctionDef) and fn.name == "__post_init__":
+                        src = ast.unparse(fn)
+                        self.assertIn("ADGBehavioralIndex", src)
+                        self.assertIn("adg_behavioral_score", src)
+                        self.assertIn("adg_antipattern_signals", src)
+                        return
+        self.fail("BaseDispatchAgent.__post_init__ not found")
+
+    def test_base_healing_orchestrator_has_adg_block_in_post_init(self):
+        tree = _ast_of("apps_shared/reasoning/BaseHealingOrchestrator.py")
+        for cls in ast.walk(tree):
+            if isinstance(cls, ast.ClassDef) and cls.name == "BaseHealingOrchestrator":
+                for fn in ast.walk(cls):
+                    if isinstance(fn, ast.FunctionDef) and fn.name == "__post_init__":
+                        src = ast.unparse(fn)
+                        self.assertIn("ADGBehavioralIndex", src)
+                        self.assertIn("adg_behavioral_score", src)
+                        return
+        self.fail("BaseHealingOrchestrator.__post_init__ not found")
+
+    def test_base_dispatch_agent_has_path_import(self):
+        src = _src("apps_shared/reasoning/BaseDispatchAgent.py")
+        self.assertIn("from pathlib import Path", src)
+
+    def test_base_healing_orchestrator_has_path_import(self):
+        src = _src("apps_shared/reasoning/BaseHealingOrchestrator.py")
+        self.assertIn("from pathlib import Path", src)
+
+    def test_base_dispatch_agent_guardian_exemption_on_adg_block(self):
+        src = _src("apps_shared/reasoning/BaseDispatchAgent.py")
+        # guardian comment must precede the except in the ADG try block
+        self.assertIn("guardian: allow-silent-swallow", src)
+
+    def test_base_healing_orchestrator_guardian_exemption_on_adg_block(self):
+        src = _src("apps_shared/reasoning/BaseHealingOrchestrator.py")
+        self.assertIn("guardian: allow-silent-swallow", src)
+
+    def test_base_dispatch_agent_fallback_defaults_are_safe(self):
+        """Fallback values must be 0.5 (neutral) and [] (empty) — not None."""
+        src = _src("apps_shared/reasoning/BaseDispatchAgent.py")
+        self.assertIn("adg_behavioral_score = 0.5", src)
+        self.assertIn("adg_antipattern_signals = []", src)
+
+    def test_base_healing_orchestrator_fallback_defaults_are_safe(self):
+        src = _src("apps_shared/reasoning/BaseHealingOrchestrator.py")
+        self.assertIn("adg_behavioral_score = 0.5", src)
+        self.assertIn("adg_antipattern_signals = []", src)
+
+
+class TestPhase5AppsLicEnrichment(unittest.TestCase):
+    """Verify LIC domain healing orchestrator and signal router received ADG enrichment."""
+
+    def test_lic_healing_orchestrator_has_adg_block(self):
+        tree = _ast_of("apps_lic/reasoning/LicHealingOrchestrator.py")
+        for cls in ast.walk(tree):
+            if isinstance(cls, ast.ClassDef) and cls.name == "LicHealingOrchestrator":
+                for fn in ast.walk(cls):
+                    if isinstance(fn, ast.FunctionDef) and fn.name == "__post_init__":
+                        src = ast.unparse(fn)
+                        self.assertIn("ADGBehavioralIndex", src)
+                        self.assertIn("adg_behavioral_score", src)
+                        return
+        self.fail("LicHealingOrchestrator.__post_init__ not found")
+
+    def test_lic_healing_orchestrator_has_path_import(self):
+        src = _src("apps_lic/reasoning/LicHealingOrchestrator.py")
+        self.assertIn("from pathlib import Path", src)
+
+    def test_lic_healing_orchestrator_guardian_exemption(self):
+        src = _src("apps_lic/reasoning/LicHealingOrchestrator.py")
+        self.assertIn("guardian: allow-silent-swallow", src)
+
+    def test_outreach_signal_router_has_post_init_with_adg(self):
+        tree = _ast_of("apps_lic/reasoning/OutreachSignalRouterAgent.py")
+        for cls in ast.walk(tree):
+            if isinstance(cls, ast.ClassDef) and cls.name == "OutreachSignalRouterAgent":
+                for fn in ast.walk(cls):
+                    if isinstance(fn, ast.FunctionDef) and fn.name == "__post_init__":
+                        src = ast.unparse(fn)
+                        self.assertIn("ADGBehavioralIndex", src)
+                        return
+        self.fail("OutreachSignalRouterAgent.__post_init__ not found")
+
+    def test_outreach_signal_router_has_path_import(self):
+        src = _src("apps_lic/reasoning/OutreachSignalRouterAgent.py")
+        self.assertIn("from pathlib import Path", src)
+
+    def test_lic_healing_orchestrator_fallback_defaults_safe(self):
+        src = _src("apps_lic/reasoning/LicHealingOrchestrator.py")
+        self.assertIn("adg_behavioral_score = 0.5", src)
+        self.assertIn("adg_antipattern_signals = []", src)
+
+
+class TestPhase5AppsRgEnrichment(unittest.TestCase):
+    """Verify RG domain healing orchestrator and content quality agent received ADG enrichment."""
+
+    def test_rg_healing_orchestrator_has_adg_block(self):
+        tree = _ast_of("apps_rg/reasoning/RgHealingOrchestrator.py")
+        for cls in ast.walk(tree):
+            if isinstance(cls, ast.ClassDef) and cls.name == "RgHealingOrchestrator":
+                for fn in ast.walk(cls):
+                    if isinstance(fn, ast.FunctionDef) and fn.name == "__post_init__":
+                        src = ast.unparse(fn)
+                        self.assertIn("ADGBehavioralIndex", src)
+                        self.assertIn("adg_behavioral_score", src)
+                        return
+        self.fail("RgHealingOrchestrator.__post_init__ not found")
+
+    def test_rg_healing_orchestrator_has_path_import(self):
+        src = _src("apps_rg/reasoning/RgHealingOrchestrator.py")
+        self.assertIn("from pathlib import Path", src)
+
+    def test_rg_healing_orchestrator_guardian_exemption(self):
+        src = _src("apps_rg/reasoning/RgHealingOrchestrator.py")
+        self.assertIn("guardian: allow-silent-swallow", src)
+
+    def test_content_quality_agent_has_adg_block(self):
+        tree = _ast_of("apps_rg/reasoning/ContentQualityAgent.py")
+        for cls in ast.walk(tree):
+            if isinstance(cls, ast.ClassDef) and cls.name == "ContentQualityAgent":
+                for fn in ast.walk(cls):
+                    if isinstance(fn, ast.FunctionDef) and fn.name == "__post_init__":
+                        src = ast.unparse(fn)
+                        self.assertIn("ADGBehavioralIndex", src)
+                        return
+        self.fail("ContentQualityAgent.__post_init__ not found")
+
+    def test_content_quality_agent_has_path_import(self):
+        src = _src("apps_rg/reasoning/ContentQualityAgent.py")
+        self.assertIn("from pathlib import Path", src)
+
+    def test_rg_healing_orchestrator_fallback_defaults_safe(self):
+        src = _src("apps_rg/reasoning/RgHealingOrchestrator.py")
+        self.assertIn("adg_behavioral_score = 0.5", src)
+        self.assertIn("adg_antipattern_signals = []", src)
+
+    def test_content_quality_agent_fallback_defaults_safe(self):
+        src = _src("apps_rg/reasoning/ContentQualityAgent.py")
+        self.assertIn("adg_behavioral_score = 0.5", src)
+        self.assertIn("adg_antipattern_signals = []", src)
+
+
+class TestPhase5AdgBlockStructureInvariant(unittest.TestCase):
+    """Cross-file structural invariants for all Phase 5 ADG enrichment blocks."""
+
+    PHASE5_FILES = [
+        "apps_shared/reasoning/BaseDispatchAgent.py",
+        "apps_shared/reasoning/BaseHealingOrchestrator.py",
+        "apps_lic/reasoning/LicHealingOrchestrator.py",
+        "apps_lic/reasoning/OutreachSignalRouterAgent.py",
+        "apps_rg/reasoning/RgHealingOrchestrator.py",
+        "apps_rg/reasoning/ContentQualityAgent.py",
+    ]
+
+    def test_all_phase5_files_have_adg_behavioral_index_import(self):
+        for fpath in self.PHASE5_FILES:
+            with self.subTest(file=fpath):
+                src = _src(fpath)
+                self.assertIn(
+                    "from agentic_core.adg.runtime.behavioral_index import ADGBehavioralIndex",
+                    src,
+                    msg=f"ADGBehavioralIndex lazy-import missing in {fpath}",
+                )
+
+    def test_all_phase5_files_have_guardian_exemption(self):
+        for fpath in self.PHASE5_FILES:
+            with self.subTest(file=fpath):
+                src = _src(fpath)
+                self.assertIn(
+                    "guardian: allow-silent-swallow",
+                    src,
+                    msg=f"Missing guardian exemption in {fpath}",
+                )
+
+    def test_all_phase5_files_have_path_import(self):
+        for fpath in self.PHASE5_FILES:
+            with self.subTest(file=fpath):
+                src = _src(fpath)
+                self.assertIn(
+                    "from pathlib import Path",
+                    src,
+                    msg=f"Path import missing in {fpath}",
+                )
+
+    def test_all_phase5_files_have_adg_behavioral_score_assignment(self):
+        for fpath in self.PHASE5_FILES:
+            with self.subTest(file=fpath):
+                src = _src(fpath)
+                self.assertIn(
+                    "adg_behavioral_score",
+                    src,
+                    msg=f"adg_behavioral_score attribute missing in {fpath}",
+                )
+
+    def test_all_phase5_files_have_adg_antipattern_signals_assignment(self):
+        for fpath in self.PHASE5_FILES:
+            with self.subTest(file=fpath):
+                src = _src(fpath)
+                self.assertIn(
+                    "adg_antipattern_signals",
+                    src,
+                    msg=f"adg_antipattern_signals attribute missing in {fpath}",
+                )
+
+    def test_adg_block_not_at_top_level_import(self):
+        """ADG import must be inside try block (lazy), not at module top-level."""
+        for fpath in self.PHASE5_FILES:
+            with self.subTest(file=fpath):
+                tree = _ast_of(fpath)
+                # Top-level imports must NOT directly import ADGBehavioralIndex
+                for node in ast.iter_child_nodes(tree):
+                    if isinstance(node, ast.ImportFrom):
+                        if node.module and "behavioral_index" in node.module:
+                            self.fail(f"{fpath}: ADGBehavioralIndex imported at top level (must be lazy)")
+
+    def test_fallback_score_is_neutral_not_zero(self):
+        """Fallback score 0.5 = neutral, not 0.0 (which would unfairly penalise)."""
+        for fpath in self.PHASE5_FILES:
+            with self.subTest(file=fpath):
+                src = _src(fpath)
+                self.assertIn(
+                    "adg_behavioral_score = 0.5",
+                    src,
+                    msg=f"Fallback score must be 0.5 (neutral) in {fpath}",
+                )
+
+
+# ===========================================================================
+# Phase 6 — Dead-import triage: ruff clean (F401 zero violations)
+# ===========================================================================
+
+
+class TestPhase6DeadImportTriage(unittest.TestCase):
+    """Verify that the apps_* and agentic_core source trees are ruff F401-clean."""
+
+    def _run_ruff_f401(self, target_dir: str) -> list[dict]:
+        """Run ruff F401 check and return list of violation dicts."""
+        import json
+        import subprocess
+
+        result = subprocess.run(
+            [
+                "python",
+                "-m",
+                "ruff",
+                "check",
+                "--select",
+                "F401",
+                "--output-format=json",
+                target_dir,
+            ],
+            capture_output=True,
+            text=True,
+            cwd=str(REPO),
+        )
+        if not result.stdout.strip():
+            return []
+        try:
+            return json.loads(result.stdout)
+        except json.JSONDecodeError:
+            return []
+
+    def test_apps_lic_no_dead_imports(self):
+        violations = self._run_ruff_f401("apps_lic/")
+        self.assertEqual(
+            violations,
+            [],
+            msg=f"apps_lic/ has F401 dead-import violations: {violations}",
+        )
+
+    def test_apps_rg_no_dead_imports(self):
+        violations = self._run_ruff_f401("apps_rg/")
+        self.assertEqual(
+            violations,
+            [],
+            msg=f"apps_rg/ has F401 dead-import violations: {violations}",
+        )
+
+    def test_apps_shared_no_dead_imports(self):
+        violations = self._run_ruff_f401("apps_shared/")
+        self.assertEqual(
+            violations,
+            [],
+            msg=f"apps_shared/ has F401 dead-import violations: {violations}",
+        )
+
+    def test_apps_exec_no_dead_imports(self):
+        violations = self._run_ruff_f401("apps_exec/")
+        self.assertEqual(
+            violations,
+            [],
+            msg=f"apps_exec/ has F401 dead-import violations: {violations}",
+        )
+
+    def test_apps_eval_no_dead_imports(self):
+        violations = self._run_ruff_f401("apps_eval/")
+        self.assertEqual(
+            violations,
+            [],
+            msg=f"apps_eval/ has F401 dead-import violations: {violations}",
+        )
+
+    def test_agentic_core_no_dead_imports(self):
+        violations = self._run_ruff_f401("agentic_core/")
+        self.assertEqual(
+            violations,
+            [],
+            msg=f"agentic_core/ has F401 dead-import violations: {violations}",
+        )
+
+    def test_phase5_new_path_imports_are_used(self):
+        """Ensure the Path imports added in Phase 5 are actually used (not themselves dead)."""
+        for fpath in TestPhase5AdgBlockStructureInvariant.PHASE5_FILES:
+            with self.subTest(file=fpath):
+                src = _src(fpath)
+                # Path is used in the ADG block: Path(self.project_root)
+                self.assertIn(
+                    "Path(self.project_root)",
+                    src,
+                    msg=f"Path is imported but not used in {fpath}",
+                )
+
+    def test_no_duplicate_import_of_path_in_phase5_files(self):
+        """Path must appear exactly once as an import (not twice)."""
+        for fpath in TestPhase5AdgBlockStructureInvariant.PHASE5_FILES:
+            with self.subTest(file=fpath):
+                src = _src(fpath)
+                count = src.count("from pathlib import Path")
+                self.assertEqual(
+                    count,
+                    1,
+                    msg=f"'from pathlib import Path' appears {count} times in {fpath} (expected 1)",
+                )
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
