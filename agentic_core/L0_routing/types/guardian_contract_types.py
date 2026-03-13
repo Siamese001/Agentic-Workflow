@@ -24,11 +24,11 @@ from enum import Enum
 from pathlib import Path, PurePosixPath
 from typing import Any
 
-from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
-from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+from agentic_core.L0_routing.config.path_constants import (
     GLOBAL_EXCLUDED_DIRS,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
+from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 
 # ---------------------------------------------------------------------------
 # V15 Enforcement Infrastructure

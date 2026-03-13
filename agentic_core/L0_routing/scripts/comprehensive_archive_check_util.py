@@ -4,7 +4,7 @@ from pathlib import Path
 import os
 
 from agentic_core.L0_routing.config import ARCHIVES_DIR
-from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
+from agentic_core.L0_routing.config.path_constants import SOVEREIGN_EXCLUDED_FOLDERS
 
 PROJECT_ROOT = Path("C:/Git/Agentic-Workflow")
 l4_active = PROJECT_ROOT / "agentic_core/L4_state/memory/L4Agent.py"

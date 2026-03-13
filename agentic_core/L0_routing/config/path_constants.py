@@ -214,6 +214,10 @@ GLOBAL_EXCLUDED_DIRS: Final[frozenset[str]] = frozenset(
     }
 )
 
+DISCOVERY_EXCLUDED_TERRITORIES: Final[frozenset[str]] = frozenset(
+    {"runtime_shared", "legacy_code", "legacy_engines", "archives", "stubs", "examples"},
+)
+
 # ============================================================================
 # STRUCTURAL DEPTH RULES (literal copy from L5 derived.py)
 # Source: agentic_core.L5_safety.config.structure_blueprint.derived.DEPTH_RULES

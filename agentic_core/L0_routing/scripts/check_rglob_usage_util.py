@@ -22,8 +22,6 @@ from pathlib import Path
 
 from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
-)
-from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     DISCOVERY_EXCLUDED_TERRITORIES,
     GLOBAL_EXCLUDED_DIRS,
     SOVEREIGN_EXCLUDED_FOLDERS,

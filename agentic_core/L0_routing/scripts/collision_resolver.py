@@ -12,12 +12,12 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
-from agentic_core.L0_routing.enforcement.mutation_prohibition import safe_os_remove
-from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+from agentic_core.L0_routing.config.path_constants import (
     DISCOVERY_EXCLUDED_TERRITORIES,
     GLOBAL_EXCLUDED_DIRS,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
+from agentic_core.L0_routing.enforcement.mutation_prohibition import safe_os_remove
 
 try:
     from agentic_core.utils.ssot_discovery_validator import get_python_files

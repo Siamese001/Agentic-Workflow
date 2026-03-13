@@ -11,12 +11,12 @@ Rationale:
 import shutil
 from pathlib import Path
 
-from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
     OPS_SCRIPTS_DIR,
+    REPORTS_DIR,
 )
-from agentic_core.L5_safety.config.structure_blueprint.ssot import REPORTS_DIR
+from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 
 # SSOT Constants
 ROOT_MARKERS = [AGENTIC_CORE_DIR, "pyproject.toml"]

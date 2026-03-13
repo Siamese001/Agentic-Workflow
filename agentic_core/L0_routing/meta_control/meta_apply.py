@@ -26,17 +26,30 @@ from agentic_core.L0_routing.types.determinism_types import (
     SemanticClockSnapshot,
     validate_semantic_clock,
 )
-from system_learning.types.apply_attempt_types import (
-    MetaLearningApplyAttemptArtifact,
-    build_apply_attempt,
-)
-from system_learning.types.meta_learning_types import (
-    MUTABLE_COMPONENTS,
-    MetaLearningChangePackageArtifact,
-)
-from system_learning.types.rollout_types import (
-    MetaLearningRolloutPlanArtifact,
-)
+
+
+def _get_apply_attempt_types():
+    from system_learning.types.apply_attempt_types import (
+        MetaLearningApplyAttemptArtifact,
+        build_apply_attempt,
+    )
+
+    return MetaLearningApplyAttemptArtifact, build_apply_attempt
+
+
+def _get_meta_learning_types():
+    from system_learning.types.meta_learning_types import (
+        MUTABLE_COMPONENTS,
+        MetaLearningChangePackageArtifact,
+    )
+
+    return MUTABLE_COMPONENTS, MetaLearningChangePackageArtifact
+
+
+def _get_rollout_types():
+    from system_learning.types.rollout_types import MetaLearningRolloutPlanArtifact
+
+    return MetaLearningRolloutPlanArtifact
 
 
 def _get_CapabilityTokenArtifact():
@@ -193,8 +206,11 @@ def apply_meta_learning_rollout(
     """
     validate_semantic_clock(semantic_clock, "apply_meta_learning_rollout")
 
+    _, _build_apply_attempt = _get_apply_attempt_types()
+    _MUTABLE_COMPONENTS, _ = _get_meta_learning_types()
+
     def _reject(reason: str, **extra_details: str) -> MetaLearningApplyAttemptArtifact:
-        return build_apply_attempt(
+        return _build_apply_attempt(
             change_package_trace_id=change_package.trace_id,
             rollout_trace_id=rollout_plan.trace_id,
             policy_config_hash=policy_config_hash,
@@ -213,7 +229,7 @@ def apply_meta_learning_rollout(
         return _reject("CAPABILITY_TOKEN_MISSING_FS_WRITE")
 
     # --- Gate 2: target_component in MUTABLE_COMPONENTS ---
-    if change_package.target_component not in MUTABLE_COMPONENTS:
+    if change_package.target_component not in _MUTABLE_COMPONENTS:
         return _reject("IMMUTABLE_COMPONENT")
 
     # --- Gate 3: Rollout plan links to change_package ---
@@ -235,7 +251,7 @@ def apply_meta_learning_rollout(
 
     # --- All gates pass ---
     if apply_mode == "DRY_RUN":
-        return build_apply_attempt(
+        return _build_apply_attempt(
             change_package_trace_id=change_package.trace_id,
             rollout_trace_id=rollout_plan.trace_id,
             policy_config_hash=policy_config_hash,
@@ -264,7 +280,7 @@ def apply_meta_learning_rollout(
     # Write new config
     _atomic_write_json(config_file, change_package.change_spec)
 
-    return build_apply_attempt(
+    return _build_apply_attempt(
         change_package_trace_id=change_package.trace_id,
         rollout_trace_id=rollout_plan.trace_id,
         policy_config_hash=policy_config_hash,

@@ -66,8 +66,8 @@ def scan_missing_structure(repo_root: Path) -> list[dict]:
     """
     from agentic_core.L0_routing.config import (
         AGENTIC_CORE_DIR,
+        CORE_SUBFOLDER_MAP,
     )
-    from agentic_core.L5_safety.config.structure_blueprint import CORE_SUBFOLDER_MAP
 
     violations: list[dict] = []
 

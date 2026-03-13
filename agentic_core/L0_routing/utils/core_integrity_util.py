@@ -15,7 +15,12 @@ from typing import Final
 from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
 )
-from agentic_core.runtime.exceptions.healer_exceptions import ConfigurationError
+
+
+def _get_configuration_error():
+    from agentic_core.runtime.exceptions.healer_exceptions import ConfigurationError
+
+    return ConfigurationError
 
 
 class CoreIntegrityVerifier:

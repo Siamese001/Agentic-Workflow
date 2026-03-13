@@ -10,9 +10,14 @@ import re
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, ARCHIVES_DIR, THRESHOLD
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    ARCHIVES_DIR,
+    REPORTS_DIR,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+    THRESHOLD,
+)
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
-from agentic_core.L5_safety.config.structure_blueprint.ssot import REPORTS_DIR, SOVEREIGN_EXCLUDED_FOLDERS
 
 Logger = logging.getLogger(__name__)
 

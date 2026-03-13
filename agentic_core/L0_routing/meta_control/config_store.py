@@ -83,9 +83,12 @@ from agentic_core.L0_routing.meta_control.config_store_types import (
     validate_component_allowed,
 )
 from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
-from system_learning.types.meta_learning_types import (
-    MetaLearningChangePackageArtifact,
-)
+
+
+def _get_MetaLearningChangePackageArtifact():
+    from system_learning.types.meta_learning_types import MetaLearningChangePackageArtifact
+
+    return MetaLearningChangePackageArtifact
 
 
 def _component_dir(store_root: Path, app_id: str, component: str) -> Path:

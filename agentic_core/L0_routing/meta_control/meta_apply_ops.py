@@ -23,15 +23,26 @@ from agentic_core.L0_routing.types.determinism_types import (
     SemanticClockSnapshot,
     validate_semantic_clock,
 )
-from system_learning.types.apply_attempt_types import (
-    MetaLearningApplyAttemptArtifact,
-    build_apply_attempt,
-)
-from system_learning.types.rollout_types import (
-    MetaLearningRollbackArtifact,
-    MetaLearningRolloutPlanArtifact,
-    build_meta_learning_rollback,
-)
+
+
+def _get_apply_attempt_types():
+    from system_learning.types.apply_attempt_types import (
+        MetaLearningApplyAttemptArtifact,
+        build_apply_attempt,
+    )
+
+    return MetaLearningApplyAttemptArtifact, build_apply_attempt
+
+
+def _get_rollout_types():
+    from system_learning.types.rollout_types import (
+        MetaLearningRollbackArtifact,
+        MetaLearningRolloutPlanArtifact,
+        build_meta_learning_rollback,
+    )
+
+    return MetaLearningRollbackArtifact, MetaLearningRolloutPlanArtifact, build_meta_learning_rollback
+
 
 # =============================================================================
 # §Wave7.0.15 — Invariant Registry
@@ -153,7 +164,8 @@ def rollback_meta_learning_rollout(
         rollback_data = json.loads(rollback_file.read_text(encoding="utf-8"))
         _atomic_write_json(config_file, rollback_data)
 
-    return build_meta_learning_rollback(
+    _, _, _build_meta_learning_rollback = _get_rollout_types()
+    return _build_meta_learning_rollback(
         rollout_plan,
         rollback_reason=reason,
         semantic_clock=semantic_clock,
@@ -222,6 +234,8 @@ def apply_with_invariants(
         policy_config_hash,
     )
 
+    _, _build_apply_attempt = _get_apply_attempt_types()
+
     if not all_pass:
         # Rollback: restore prior config
         rollback_meta_learning_rollout(
@@ -232,7 +246,7 @@ def apply_with_invariants(
             semantic_clock=semantic_clock,
             policy_config_hash=policy_config_hash,
         )
-        return build_apply_attempt(
+        return _build_apply_attempt(
             change_package_trace_id=change_package_trace_id,
             rollout_trace_id=rollout_plan.trace_id,
             policy_config_hash=policy_config_hash,
@@ -244,7 +258,7 @@ def apply_with_invariants(
             semantic_clock=semantic_clock,
         )
 
-    return build_apply_attempt(
+    return _build_apply_attempt(
         change_package_trace_id=change_package_trace_id,
         rollout_trace_id=rollout_plan.trace_id,
         policy_config_hash=policy_config_hash,

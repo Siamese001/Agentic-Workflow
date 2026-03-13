@@ -13,8 +13,8 @@ from pathlib import Path
 
 from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
+    SOVEREIGN_EXCLUDED_FOLDERS,
 )
-from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
 
 # SSOT Target Directory
 TARGET_DIR = Path(AGENTIC_CORE_DIR)

@@ -20,9 +20,12 @@ from agentic_core.L0_routing.types.determinism_types import (
     SemanticClockSnapshot,
     validate_semantic_clock,
 )
-from system_learning.types.meta_learning_types import (
-    MUTABLE_COMPONENTS,
-)
+
+
+def _get_MUTABLE_COMPONENTS():
+    from system_learning.types.meta_learning_types import MUTABLE_COMPONENTS
+
+    return MUTABLE_COMPONENTS
 
 
 def canonical_json(obj: Any) -> str:
@@ -37,8 +40,9 @@ def stable_sha256(text: str) -> str:
 
 def validate_component_allowed(component: str) -> None:
     """Raise ValueError if *component* is not in MUTABLE_COMPONENTS (L7 SSOT)."""
-    if component not in MUTABLE_COMPONENTS:
-        raise ValueError(f"COMPONENT_NOT_MUTABLE: {component!r} not in {MUTABLE_COMPONENTS!r}")
+    _MUTABLE_COMPONENTS = _get_MUTABLE_COMPONENTS()
+    if component not in _MUTABLE_COMPONENTS:
+        raise ValueError(f"COMPONENT_NOT_MUTABLE: {component!r} not in {_MUTABLE_COMPONENTS!r}")
 
 
 @dataclass(frozen=True)

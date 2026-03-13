@@ -100,8 +100,8 @@ from agentic_core.L0_routing.config import (
     AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,
 )
+from agentic_core.L0_routing.config.path_constants import REPORTS_DIR
 from agentic_core.L0_routing.seams.canonical_truth_seam import categorize_agent, get_canonical_layer
-from agentic_core.L5_safety.config.structure_blueprint_config import REPORTS_DIR
 
 if platform.system() == "Windows":
     try:
