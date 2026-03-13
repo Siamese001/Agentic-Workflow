@@ -57,9 +57,17 @@ class MetaLearningEmbeddingService:
         if embedder:
             self.embedder = embedder
         else:
-            raise RuntimeError(
-                "MetaLearningEmbeddingService requires an explicit embedder injection. No live embedding client factory is available."
-            )
+            _factory = EmbeddingServiceFactory.get_or_disabled()
+            if not _factory.is_disabled():
+                try:
+                    from system_learning.engines.openai_embedder import BGEEmbedder
+
+                    self.embedder = BGEEmbedder()
+                # guardian: allow-silent-swallow
+                except Exception:
+                    self.embedder = None
+            else:
+                self.embedder = None
         self._factory = EmbeddingServiceFactory.get_or_disabled()
 
     def retrieve(
@@ -85,6 +93,8 @@ class MetaLearningEmbeddingService:
         Raises:
             IntegrityError: If pack integrity validation fails.
         """
+        if self.embedder is None:
+            return None
         if not self._embedder_injected and self._factory.is_disabled():
             return None
         pack_dir = self.base_path / "seed_packs" / namespace / seed_index_version_hash

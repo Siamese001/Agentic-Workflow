@@ -134,6 +134,79 @@ class SovereignSemanticCache(SovereignBaseAgent):
         self._vector_store.pop(key, None)
         Logger.info(f"[L4 PURGE] Purged semantic trail for {Path(file_path).name}")
 
+    def query(self, text: str, top_k: int = 20, namespace: str = "") -> list[dict]:
+        """Semantic similarity search over the in-memory vector store.
+
+        Embeds *text* via BGEEmbedder (BAAI/bge-m3, 1024-dim), then ranks
+        all cached entries by cosine similarity.  Returns informational-only
+        dicts: ``content_hash``, ``score``, ``content`` (metadata text preview).
+
+        Falls back to empty list when the kill-switch is active or the store
+        is empty.  Works with both InMemoryVectorStore (MemoryItem-backed) and
+        plain-dict fallback stores.
+        """
+        import math
+        import os
+
+        if os.environ.get("EMBEDDING_ENABLED", "true").lower() in ("false", "0", "no"):
+            return []
+
+        # Resolve the underlying storage — InMemoryVectorStore wraps a ._storage dict
+        store = getattr(self._vector_store, "_storage", None)
+        if store is None:
+            # Plain-dict fallback (test injection or legacy usage)
+            store = self._vector_store if isinstance(self._vector_store, dict) else {}
+        if not store:
+            return []
+
+        try:
+            from system_learning.engines.openai_embedder import BGEEmbedder
+
+            _embedder = BGEEmbedder()
+            vecs = _embedder.embed_batch([text])
+            if not vecs or not vecs[0]:
+                return []
+            q_vec = vecs[0]
+        # guardian: allow-silent-swallow
+        except Exception:
+            return []
+
+        q_mag = math.sqrt(sum(x * x for x in q_vec))
+        if q_mag == 0.0:
+            return []
+
+        results: list[dict] = []
+        for key, entry in store.items():
+            # entry is either a MemoryItem or a plain dict (test/legacy)
+            if hasattr(entry, "embedding"):
+                # InMemoryVectorStore MemoryItem path
+                d_vec = entry.embedding or []
+                meta = entry.metadata or {}
+                ns = meta.get("namespace", "")
+            elif isinstance(entry, dict):
+                d_vec = entry.get("vector") or []
+                meta = entry.get("metadata") or {}
+                ns = entry.get("namespace", "")
+            else:
+                continue
+            if namespace and ns != namespace:
+                continue
+            if not d_vec:
+                continue
+            dot = sum(a * b for a, b in zip(q_vec, d_vec, strict=False))
+            d_mag = math.sqrt(sum(x * x for x in d_vec))
+            score = dot / (d_mag * q_mag) if d_mag * q_mag != 0 else 0.0
+            results.append(
+                {
+                    "content_hash": key,
+                    "score": score,
+                    "content": meta.get("text", meta.get("path", ""))[:200],
+                }
+            )
+
+        results.sort(key=lambda r: r["score"], reverse=True)
+        return results[:top_k]
+
     @standard_heal
     # guardian: allow-type-erasure
     def heal_repository(self, **kwargs) -> dict:

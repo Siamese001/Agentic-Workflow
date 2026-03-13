@@ -10,10 +10,26 @@ import logging
 from abc import ABC, abstractmethod
 from typing import Any
 
+try:
+    from agentic_core.mixins.semantic_cache_mixin import SemanticCacheMixin
+except ImportError:
+
+    class SemanticCacheMixin:  # type: ignore[no-redef]
+        pass
+
+
+try:
+    from agentic_core.mixins.embedding_mixin import EmbeddingMixin
+except ImportError:
+
+    class EmbeddingMixin:  # type: ignore[no-redef]
+        pass
+
+
 _log = logging.getLogger(__name__)
 
 
-class BaseResearchEngine(ABC):
+class BaseResearchEngine(SemanticCacheMixin, EmbeddingMixin, ABC):
     """Abstract base for all Autonomous Research Engine modules.
 
     Provides:
@@ -30,6 +46,7 @@ class BaseResearchEngine(ABC):
         self.name = self.__class__.__name__
         self.logger = logging.getLogger(self.__class__.__name__)
         self._initialized = True
+        self._semantic_namespace = "apps_research"
 
         try:
             from apps_research.config.agent_spec_config import load_research_specs

@@ -42,8 +42,16 @@ except ImportError:
         pass
 
 
+try:
+    from agentic_core.mixins.embedding_mixin import EmbeddingMixin
+except ImportError:
+
+    class EmbeddingMixin:
+        pass
+
+
 @dataclass
-class RGAgentBase(SemanticCacheMixin, AppBase):
+class RGAgentBase(SemanticCacheMixin, EmbeddingMixin, AppBase):
     """
     RGAgentBase: The Sovereign Foundation for all 'Resume Generation' Agents.
 
