@@ -36,6 +36,10 @@ import logging
 import threading
 from typing import Any
 
+from system_learning.config.semantic_memory_config import (
+    DEFAULT_EMBEDDER_BUFFER_SIZE,
+    GRAPH_NEIGHBORHOOD_BUFFER_SIZE,
+)
 from system_learning.engines.embedding_corpus_extraction import CorpusRecord
 from system_learning.engines.graph_neighborhood_embedder import GraphNeighborhoodEmbedder
 from system_learning.engines.healer_outcome_embedder import HealerOutcomeEmbedder
@@ -60,12 +64,12 @@ class SemanticMemoryRegistry:
     def __init__(
         self,
         *,
-        incident_max_buffer: int = 10_000,
-        mutation_max_buffer: int = 10_000,
-        healer_max_buffer: int = 10_000,
-        preference_max_buffer: int = 10_000,
-        graph_max_buffer: int = 50_000,
-        guardrail_max_buffer: int = 10_000,
+        incident_max_buffer: int = DEFAULT_EMBEDDER_BUFFER_SIZE,
+        mutation_max_buffer: int = DEFAULT_EMBEDDER_BUFFER_SIZE,
+        healer_max_buffer: int = DEFAULT_EMBEDDER_BUFFER_SIZE,
+        preference_max_buffer: int = DEFAULT_EMBEDDER_BUFFER_SIZE,
+        graph_max_buffer: int = GRAPH_NEIGHBORHOOD_BUFFER_SIZE,
+        guardrail_max_buffer: int = DEFAULT_EMBEDDER_BUFFER_SIZE,
     ) -> None:
         self.incidents = IncidentBundleEmbedder(max_buffer=incident_max_buffer)
         self.mutations = MutationDiffEmbedder(max_buffer=mutation_max_buffer)

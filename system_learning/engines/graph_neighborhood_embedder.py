@@ -28,6 +28,7 @@ import threading
 from dataclasses import dataclass
 from typing import Any
 
+from system_learning.config.semantic_memory_config import GRAPH_NEIGHBORHOOD_BUFFER_SIZE
 from system_learning.engines.embedding_corpus_extraction import (
     CorpusRecord,
     compute_content_hash,
@@ -68,7 +69,7 @@ class GraphNeighborhoodEmbedder:
         neighborhood_from_adg_node(), then ingest to populate the buffer.
     """
 
-    def __init__(self, max_buffer: int = 50_000) -> None:  # guardian: allow-magic_configuration
+    def __init__(self, max_buffer: int = GRAPH_NEIGHBORHOOD_BUFFER_SIZE) -> None:
         if max_buffer < 1:
             raise ValueError(f"max_buffer must be >= 1, got {max_buffer}")
         self._max_buffer = max_buffer

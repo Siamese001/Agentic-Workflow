@@ -23,6 +23,7 @@ import threading
 from dataclasses import dataclass
 from typing import Any
 
+from system_learning.config.semantic_memory_config import DEFAULT_EMBEDDER_BUFFER_SIZE
 from system_learning.engines.embedding_corpus_extraction import (
     CorpusRecord,
     compute_content_hash,
@@ -60,7 +61,7 @@ class MutationDiffEmbedder:
     All retrieval is C0_INFORMATIONAL: results influence proposals, not decisions.
     """
 
-    def __init__(self, max_buffer: int = 10_000) -> None:  # guardian: allow-magic_configuration
+    def __init__(self, max_buffer: int = DEFAULT_EMBEDDER_BUFFER_SIZE) -> None:
         if max_buffer < 1:
             raise ValueError(f"max_buffer must be >= 1, got {max_buffer}")
         self._max_buffer = max_buffer
