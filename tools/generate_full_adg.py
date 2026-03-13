@@ -20,6 +20,7 @@ from __future__ import annotations
 import gzip
 import shutil
 import sys
+import zipfile
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -174,6 +175,17 @@ def generate_full_adg(adg_artifacts_dir: Path, ts: str, archive_old: bool = True
     # --- Memory MCP persistence ---
     _persist_adg_to_memory(result, artifact, snapshot, graph_diff, routing_summary, ts)
 
+    # --- Create zip archive of all 6 artifacts ---
+    artifact_files = [
+        paths.snapshot,
+        paths.sqlite,
+        paths.file_graph,
+        paths.symbol_graph,
+        paths.governance_graph,
+        adg_artifacts_dir / f"adg_graphsnap_{ts}.json",
+    ]
+    _create_zip_archive(adg_artifacts_dir, ts, artifact_files)
+
     # --- Archive old artifacts ---
     if archive_old:
         _archive_old_artifacts(adg_artifacts_dir, ts, keep_runs=1)
@@ -215,22 +227,33 @@ def _persist_adg_to_memory(result, artifact, snapshot, graph_diff, routing_summa
 def _extract_timestamp(filename: str) -> str | None:
     """Extract timestamp from ADG artifact filename.
 
-    Supports both formats:
-        New: adg_indexed_03122026.sqlite    -> 03122026  (MMDDYYYY)
-        Old: adg_indexed_20260312T093508Z.sqlite -> 20260312T093508Z  (legacy)
+    Supports formats:
+        Current: adg_indexed_03122026_0512.sqlite    -> 03122026_0512  (MMDDYYYY_HHMM)
+        Legacy1: adg_indexed_03122026.sqlite         -> 03122026       (MMDDYYYY)
+        Legacy2: adg_indexed_20260312T093508Z.sqlite -> 20260312T093508Z  (ISO)
     """
     parts = filename.split("_")
     if len(parts) < 3:
         return None
 
-    # Last part before extension should be timestamp
+    # Check if last two parts form timestamp (MMDDYYYY_HHMM)
+    if len(parts) >= 4:
+        ts_date = parts[-2]
+        ts_time_with_ext = parts[-1]
+        ts_time = ts_time_with_ext.split(".")[0]
+
+        # Current format: MMDDYYYY_HHMM
+        if len(ts_date) == 8 and ts_date.isdigit() and len(ts_time) == 4 and ts_time.isdigit():
+            return f"{ts_date}_{ts_time}"
+
+    # Last part before extension should be timestamp (legacy formats)
     ts_with_ext = parts[-1]
     ts = ts_with_ext.split(".")[0]
 
-    # New format: MMDDYYYY (8 digits)
+    # Legacy format 1: MMDDYYYY (8 digits)
     if len(ts) == 8 and ts.isdigit():
         return ts
-    # Legacy format: YYYYMMDDTHHMMSSz (16 chars)
+    # Legacy format 2: YYYYMMDDTHHMMSSz (16 chars)
     if len(ts) == 16 and ts[8] == "T" and ts.endswith("Z"):
         return ts
     return None
@@ -240,11 +263,16 @@ def _parse_timestamp(ts: str) -> datetime:
     """Parse timestamp string to datetime.
 
     Args:
-        ts: Timestamp string — "03122026" (MMDDYYYY), "20260310" (YYYYMMDD legacy), or "20260311T160257Z" (ISO legacy)
+        ts: Timestamp string — "03122026_0512" (MMDDYYYY_HHMM), "03122026" (MMDDYYYY),
+            "20260310" (YYYYMMDD legacy), or "20260311T160257Z" (ISO legacy)
 
     Returns:
         datetime object
     """
+    # Current format: MMDDYYYY_HHMM
+    if "_" in ts:
+        return datetime.strptime(ts, "%m%d%Y_%H%M")
+
     if len(ts) == 8 and ts.isdigit():
         # Distinguish MMDDYYYY (new) from YYYYMMDD (legacy)
         # If first 4 chars are a plausible year (2020-2099), it's YYYYMMDD
@@ -273,7 +301,7 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
 
     runs = defaultdict(list)
 
-    for pattern in ["adg_*.json", "adg_*.sqlite"]:
+    for pattern in ["adg_*.json", "adg_*.sqlite", "adg_run_*.zip"]:
         for path in adg_dir.glob(pattern):
             # Skip LATEST files
             if "LATEST" in path.name or "latest" in path.name:
@@ -283,7 +311,13 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
             if "_archive" in str(path):
                 continue
 
-            ts = _extract_timestamp(path.name)
+            # Extract timestamp (handles both regular artifacts and zip files)
+            if path.name.startswith("adg_run_") and path.suffix == ".zip":
+                # Extract timestamp from zip filename: adg_run_03132026_0512.zip
+                ts = path.stem.replace("adg_run_", "")
+            else:
+                ts = _extract_timestamp(path.name)
+
             if ts:
                 runs[ts].append(path)
 
@@ -363,10 +397,36 @@ def _infer_layer(path: str) -> str:
     return "L_UNKNOWN"
 
 
+def _create_zip_archive(adg_dir: Path, ts: str, artifact_paths: list[Path]) -> Path:
+    """Create a zip archive of all ADG artifacts for the current run.
+
+    Args:
+        adg_dir: ADG artifacts directory
+        ts: Timestamp string (MMDDYYYY_HHMM format)
+        artifact_paths: List of artifact file paths to include in zip
+
+    Returns:
+        Path to the created zip file
+    """
+    zip_path = adg_dir / f"adg_run_{ts}.zip"
+
+    with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED, compresslevel=9) as zf:
+        for artifact_path in artifact_paths:
+            if artifact_path.exists():
+                zf.write(artifact_path, artifact_path.name)
+
+    if zip_path.exists():
+        zip_size_mb = zip_path.stat().st_size / (1024 * 1024)
+        print(f"[ADG] Zip archive created: {zip_path.name} ({zip_size_mb:.1f} MB)")
+
+    return zip_path
+
+
 def main() -> None:
-    # Timestamp in US Eastern time, format MMDDYYYY
+    # Timestamp in US Eastern time, format MMDDYYYY_HHMM (military time)
     est = timezone(timedelta(hours=-5))  # EST (UTC-5); no DST adjustment needed for artifact names
-    ts = datetime.now(est).strftime("%m%d%Y")
+    now_est = datetime.now(est)
+    ts = now_est.strftime("%m%d%Y_%H%M")  # e.g., 03132026_0512
     adg_artifacts_dir = ROOT / "artifacts" / "adg"
     generate_full_adg(adg_artifacts_dir, ts)
 
