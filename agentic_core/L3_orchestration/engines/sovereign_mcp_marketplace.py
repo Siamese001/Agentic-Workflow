@@ -13,7 +13,7 @@ sovereign_safe_mcps = {
     "Figma",
     "Brave Search",
     "Fetch",
-    "GitKraken",
+    "GitHub",
     "Memory",
 }
 forbidden_providers = {"OpenAI", "Anthropic", "Claude", "GPT", "o1", "Llama"}

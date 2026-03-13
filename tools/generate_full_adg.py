@@ -385,6 +385,53 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
         pct = (savings / bytes_original * 100) if bytes_original > 0 else 0
         print(f"[ADG] Archive: archived {len(to_archive)} runs, {archived_count} files (saved {pct:.0f}%)")
 
+    # Clean up old validation packages and MANIFEST files
+    _cleanup_validation_files(adg_dir, current_ts)
+
+
+def _cleanup_validation_files(adg_dir: Path, current_ts: str) -> None:
+    """Clean up old validation packages and MANIFEST files.
+
+    Keeps only the latest validation package (matching current_ts).
+    Removes all MANIFEST files (low value).
+
+    Args:
+        adg_dir: ADG artifacts directory
+        current_ts: Current timestamp (MMDDYYYY_HHMM format)
+    """
+    if not adg_dir.exists():
+        return
+
+    cleaned_count = 0
+
+    # Remove all MANIFEST files (low value)
+    for manifest_file in adg_dir.glob("MANIFEST_*.txt"):
+        try:
+            manifest_file.unlink()
+            cleaned_count += 1
+        except OSError as e:
+            print(f"[ADG] Cleanup: error removing {manifest_file.name}: {e}")
+
+    # Clean up old validation packages (keep only current timestamp)
+    validation_patterns = [
+        "chatgpt_validation_package_*.zip",
+        "adg_validation_package_*.zip",
+    ]
+
+    for pattern in validation_patterns:
+        for val_file in adg_dir.glob(pattern):
+            # Extract timestamp from validation package filename
+            # e.g., chatgpt_validation_package_03132026_0427.zip
+            if current_ts not in val_file.name:
+                try:
+                    val_file.unlink()
+                    cleaned_count += 1
+                except OSError as e:
+                    print(f"[ADG] Cleanup: error removing {val_file.name}: {e}")
+
+    if cleaned_count > 0:
+        print(f"[ADG] Cleanup: removed {cleaned_count} old validation/manifest files")
+
 
 def _infer_layer(path: str) -> str:
     """Infer layer label from file path."""
@@ -424,7 +471,7 @@ def _create_zip_archive(adg_dir: Path, ts: str, artifact_paths: list[Path]) -> P
 
 def main() -> None:
     # Timestamp in US Eastern time, format MMDDYYYY_HHMM (military time)
-    est = timezone(timedelta(hours=-5))  # EST (UTC-5); no DST adjustment needed for artifact names
+    est = timezone(timedelta(hours=-4))  # EDT (UTC-4); DST active Mar-Nov in US Eastern
     now_est = datetime.now(est)
     ts = now_est.strftime("%m%d%Y_%H%M")  # e.g., 03132026_0512
     adg_artifacts_dir = ROOT / "artifacts" / "adg"

@@ -1,14 +1,12 @@
 from __future__ import annotations
 
-"\nSovereign GitKraken Healing Strategy – Phase 17D (Dec 27, 2025)\nAutonomous version control operations using official GitKraken MCP.\nReplaces all direct subprocess git calls.\n"
+"\nSovereign GitHub Healing Strategy – Phase 17D (Dec 27, 2025)\nAutonomous version control operations using GitHub MCP.\nReplaces all direct subprocess git calls.\nNote: GitKraken does not have an MCP server; using GitHub MCP instead.\n"
 import logging
 from typing import Any
 
+from agentic_core.config.core.sovereign_config import get_sovereign_config
 
-def get_git_client():
-    raise NotImplementedError("P1_core.gitkraken_mcp_client_1 was removed; see RCA_P1_core_dead_imports.md")
-
-
+config = get_sovereign_config()
 Logger: Any = logging.getLogger(__name__)
 
 
@@ -24,12 +22,11 @@ class GitKrakenHealingStrategy:
     """
 
     def __init__(self):
-        """Initialize GitKraken healing strategy with MCP client."""
+        """Initialize GitHub healing strategy with MCP tools."""
         self.name = "GitKrakenHealing"
         self.priority = 1
-        self.git_client = get_git_client()
         self.commits_today = 0
-        Logger.info("[L0 GITKRAKEN HEALING] Strategy initialized")
+        Logger.info("[L0 GITHUB HEALING] Strategy initialized")
 
     async def diagnose(self, issues: list[dict]) -> list[dict]:
         """
@@ -43,7 +40,7 @@ class GitKrakenHealingStrategy:
         """
         fixes: Any = []
         if not config.GITKRAKEN_HEALING_ENABLED:
-            Logger.info("[L0 GITKRAKEN HEALING] GitKraken healing disabled in config")
+            Logger.info("[L0 GITHUB HEALING] GitHub healing disabled in config")
             return fixes
         file_groups: Any = {}
         for issue in issues:
@@ -62,7 +59,7 @@ class GitKrakenHealingStrategy:
                     "strategy": self.name,
                 }
             )
-        Logger.info(f"[L0 GITKRAKEN HEALING] Diagnosed {len(fixes)} version control operations")
+        Logger.info(f"[L0 GITHUB HEALING] Diagnosed {len(fixes)} version control operations")
         return fixes
 
     async def apply(self, fix: dict, ctx: Any = None) -> bool:
@@ -77,39 +74,39 @@ class GitKrakenHealingStrategy:
             True if fix applied successfully, False otherwise
         """
         if not config.GITKRAKEN_HEALING_ENABLED:
-            Logger.warning("[L0 GITKRAKEN HEALING] GitKraken healing disabled in config")
+            Logger.warning("[L0 GITHUB HEALING] GitHub healing disabled in config")
             return False
         try:
             files: Any = fix.get("files", [])
             summary: Any = fix.get("summary", "Sovereignty healing commit")
             if not files:
-                Logger.error("[L0 GITKRAKEN HEALING] No files in fix")
+                Logger.error("[L0 GITHUB HEALING] No files in fix")
                 return False
-            Logger.info(f"[L0 GITKRAKEN HEALING] Creating healing commit for {len(files)} file(s)")
+            Logger.info(f"[L0 GITHUB HEALING] Creating healing commit for {len(files)} file(s)")
             result: Any = await self._create_healing_commit(files, summary)
             if result:
                 commit_sha: Any = result.get("commit_sha", "unknown")
                 Logger.info(
-                    f"[L0 GITKRAKEN HEALING] Commit Successful: {(commit_sha[:8] if len(commit_sha) > 8 else commit_sha)}"
+                    f"[L0 GITHUB HEALING] Commit Successful: {(commit_sha[:8] if len(commit_sha) > 8 else commit_sha)}"
                 )
                 if config.GITKRAKEN_HEALING_AUTO_PR:
                     pr_desc: Any = "\n".join(
                         [f"- {i.get('reason', 'Unknown reason')}" for i in fix.get("details", [])]
                     )
-                    Logger.info("[L0 GITKRAKEN HEALING] Creating PR for review")
+                    Logger.info("[L0 GITHUB HEALING] Creating PR for review")
                     await self._create_pr(summary, pr_desc)
                 self.commits_today += 1
                 return True
             else:
-                Logger.error("[L0 GITKRAKEN HEALING] Failed to create commit")
+                Logger.error("[L0 GITHUB HEALING] Failed to create commit")
                 return False
         except Exception as e:
-            Logger.error(f"[L0 GITKRAKEN HEALING] Sovereign Git operation failed: {e}")
+            Logger.error(f"[L0 GITHUB HEALING] Sovereign Git operation failed: {e}")
             return False
 
     async def _create_healing_commit(self, files: list[str], message: str) -> dict[str, Any]:
         """
-        Create a healing commit via GitKraken MCP.
+        Create a healing commit via GitHub MCP.
 
         Args:
             files: List of file paths to commit
@@ -119,25 +116,19 @@ class GitKrakenHealingStrategy:
             Result dictionary with commit SHA or None if failed
         """
         try:
-            Logger.info(f"[L0 GITKRAKEN HEALING] Adding {len(files)} file(s) to staging")
-            add_result = await self.git_client.add(files)
-            if not add_result or add_result.get("status") != "success":
-                Logger.error(f"[L0 GITKRAKEN HEALING] Failed to add files: {add_result}")
-                return None
-            Logger.info(f"[L0 GITKRAKEN HEALING] Creating commit: {message}")
-            commit_result = await self.git_client.commit(message)
-            if commit_result and commit_result.get("status") == "success":
-                return {"commit_sha": commit_result.get("sha", "unknown"), "status": "success"}
-            else:
-                Logger.error(f"[L0 GITKRAKEN HEALING] Failed to create commit: {commit_result}")
-                return None
+            Logger.info(f"[L0 GITHUB HEALING] Committing {len(files)} file(s)")
+            # Note: GitHub MCP uses mcp10_push_files which combines add+commit
+            # This is a placeholder - actual implementation needs proper GitHub MCP integration
+            Logger.warning("[L0 GITHUB HEALING] GitHub MCP integration not yet implemented")
+            Logger.warning("[L0 GITHUB HEALING] Requires mcp10_push_files or mcp10_create_or_update_file")
+            return None
         except Exception as e:
-            Logger.error(f"[L0 GITKRAKEN HEALING] Commit creation failed: {e}")
+            Logger.error(f"[L0 GITHUB HEALING] Commit creation failed: {e}")
             return None
 
     async def _create_pr(self, title: str, description: str) -> bool:
         """
-        Create a pull request via GitKraken MCP.
+        Create a pull request via GitHub MCP.
 
         Args:
             title: PR title
@@ -151,29 +142,20 @@ class GitKrakenHealingStrategy:
         try:
             full_title = f"{prefix} {title}"
             full_description = f"Autonomous system correction:\n{description}"
-            Logger.info(f"[L0 GITKRAKEN HEALING] Creating PR: {full_title}")
-            pr_result = await self.git_client.create_pr(
-                title=full_title,
-                description=full_description,
-                source_branch=healing_branch,
-                target_branch="main",
-            )
-            if pr_result and pr_result.get("status") == "success":
-                Logger.info(
-                    f"[L0 GITKRAKEN HEALING] PR created successfully: {pr_result.get('pr_url', 'unknown')}"
-                )
-                return True
-            else:
-                Logger.error(f"[L0 GITKRAKEN HEALING] Failed to create PR: {pr_result}")
-                return False
+            Logger.info(f"[L0 GITHUB HEALING] Creating PR: {full_title}")
+            # Note: GitHub MCP uses mcp10_create_pull_request
+            # This is a placeholder - actual implementation needs proper GitHub MCP integration
+            Logger.warning("[L0 GITHUB HEALING] GitHub MCP PR creation not yet implemented")
+            Logger.warning("[L0 GITHUB HEALING] Requires mcp10_create_pull_request with owner/repo/head/base")
+            return False
         except Exception as e:
-            Logger.error(f"[L0 GITKRAKEN HEALING] PR creation failed: {e}")
+            Logger.error(f"[L0 GITHUB HEALING] PR creation failed: {e}")
             return False
 
     def reset_daily_counter(self) -> Any:
         """Reset the daily commit counter (should be called at midnight)."""
         self.commits_today = 0
-        Logger.info("[L0 GITKRAKEN HEALING] Daily counter reset")
+        Logger.info("[L0 GITHUB HEALING] Daily counter reset")
 
 
 async def create_gitkraken_healing_strategy() -> GitKrakenHealingStrategy:
