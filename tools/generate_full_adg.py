@@ -190,6 +190,57 @@ def generate_full_adg(adg_artifacts_dir: Path, ts: str, archive_old: bool = True
     if archive_old:
         _archive_old_artifacts(adg_artifacts_dir, ts, keep_runs=1)
 
+    # --- Auto-ingest to Redis hot cache ---
+    _auto_ingest_to_redis(adg_artifacts_dir, paths.sqlite)
+
+
+def _auto_ingest_to_redis(adg_dir: Path, sqlite_path: Path) -> None:
+    """Automatically ingest the freshly-generated ADG into Redis hot cache.
+
+    Runs tools/adg/adg_redis_ingest.py --force as a subprocess to ensure the
+    Redis cache is immediately hot after ADG generation completes.
+
+    Args:
+        adg_dir: ADG artifacts directory
+        sqlite_path: Path to the just-created .sqlite file
+
+    Raises:
+        RuntimeError: If ingest script is not found
+        subprocess.TimeoutExpired: If ingest takes longer than configured timeout
+        subprocess.CalledProcessError: If ingest script fails
+    """
+    import subprocess
+
+    from agentic_core.config.redis_config import get_adg_cache_config
+
+    config = get_adg_cache_config()
+    ingest_script = ROOT / "tools" / "adg" / "adg_redis_ingest.py"
+    if not ingest_script.exists():
+        raise RuntimeError(f"Redis ingest script not found: {ingest_script}")
+
+    print("[ADG] Auto-ingesting to Redis hot cache...")
+    try:
+        result = subprocess.run(
+            [sys.executable, str(ingest_script), "--force"],
+            cwd=str(ROOT),
+            capture_output=True,
+            text=True,
+            timeout=config.ingest_timeout,
+            check=True,
+        )
+        print("[ADG] ✓ Redis ingest complete — ADG cache is HOT")
+        # Show last 3 lines of output for confirmation
+        lines = [line for line in result.stdout.strip().split("\n") if line.strip()]
+        for line in lines[-3:]:
+            print(f"      {line}")
+    except subprocess.TimeoutExpired as e:
+        print(f"[ADG] WARNING: Redis ingest timed out after {config.ingest_timeout}s — cache may be stale")
+        raise
+    except subprocess.CalledProcessError as e:
+        print(f"[ADG] ERROR: Redis ingest failed (exit {e.returncode}):")
+        print(f"      {e.stderr.strip()[:200]}")
+        raise
+
 
 def _persist_adg_to_memory(result, artifact, snapshot, graph_diff, routing_summary, ts: str) -> None:
     """Persist key ADG signals to Memory MCP knowledge graph via ADGMemoryAdapter."""

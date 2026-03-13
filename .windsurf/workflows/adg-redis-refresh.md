@@ -8,6 +8,26 @@ Invoke with `/adg-redis-refresh`. Runs after any refactor, import change, or str
 
 ---
 
+## STEP 0: Verify Redis server is running (100% availability gate)
+
+**MANDATORY FIRST STEP** - Ensures Redis is available before any cache operations.
+
+// turbo
+```
+python tools/adg/redis_health_check.py --auto-start
+```
+
+**Exit codes:**
+- `0` → Redis running + ADG cache HOT → **SKIP to STEP 5**
+- `1` → Redis running + ADG cache cold → **Continue to STEP 1**
+- `2` → Redis down (auto-start attempted) → **STOP and fix Redis**
+
+If exit code 2, Redis could not be started automatically. Manual intervention required:
+- Windows: Start Redis service via `sc start Redis` or launch `redis-server.exe`
+- Verify: `redis-cli ping` should return `PONG`
+
+---
+
 ## STEP 1: Check Redis cache staleness
 
 // turbo
