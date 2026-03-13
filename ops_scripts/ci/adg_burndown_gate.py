@@ -1,25 +1,36 @@
 """
-ADG Intelligent Burndown Gate — Pre-Commit Anti-Pattern Ratchet
+ADG Intelligent Burndown Gate — Unified Anti-Pattern Ratchet
 
-Enforces a one-way ratchet on anti-pattern counts:
-  - Tracks a BUDGET: {file: {category: max_allowed_count}} in a JSON file.
-  - On every commit the live scan is compared against the budget.
-  - A file+category pair may NEVER exceed its budgeted count.
-  - When violations are fixed the budget automatically shrinks to lock in
-    progress (count can only go down, never up).
-  - Uses ADG dependency graph to surface the highest-ROI files to tackle next.
+Single source of truth for anti-pattern governance.  Replaces both the old
+check_anti_patterns.py (line-number baseline) and the separate budget file.
 
-Ratchet stability: counts per file+category are immune to line-number shifts
-that occur when other lines in the same file are edited.
+Model
+-----
+Tracks a RATCHET: {rel_path: {category: max_allowed_count}} in burndown_budget.json.
+
+Rules enforced on every commit
+  1. NEW file+category pairs are BLOCKED immediately (no new anti-pattern categories
+     may appear in a file that was previously clean, or in any new file).
+  2. EXISTING counts may only DECREASE — any regression is blocked.
+  3. When counts drop, the ratchet tightens automatically to lock in progress.
+
+Why counts not line-number signatures?
+  Line-number signatures (used by the old check_anti_patterns.py) break every
+  time an unrelated line is inserted above a violation.  Count-per-file+category
+  is stable across all edits that don't touch the violation itself.
+
+ADG integration
+  When the ADG file graph artifact is present, fix-next suggestions are sorted
+  by (violation_count × importer_count) to surface highest-ROI targets first.
 
 Exit codes:
-  0  — budget held or improved (commit allowed)
-  1  — budget exceeded (new anti-patterns introduced; commit blocked)
+  0  — ratchet held or improved (commit allowed)
+  1  — ratchet exceeded (new anti-patterns introduced; commit blocked)
 
 Environment overrides:
   ADG_BURNDOWN_BYPASS=1   — skip gate entirely (emergency; logged to stderr)
-  ADG_BURNDOWN_DRY_RUN=1  — report without updating budget file
-  ADG_BURNDOWN_INIT=1     — (re)initialise budget from current scan, then exit 0
+  ADG_BURNDOWN_DRY_RUN=1  — report without updating ratchet file
+  ADG_BURNDOWN_INIT=1     — (re)initialise ratchet from current scan, then exit 0
 """
 
 from __future__ import annotations
@@ -60,9 +71,11 @@ from agentic_core.L5_safety.validators.base_detector_validator import Enforcemen
 
 PROJECT_ROOT = get_validated_project_root()
 
-# Budget file: {rel_path: {category: max_allowed_count}}
-# Stored separately from landmine_baseline.txt — immune to line-number churn.
-BUDGET_FILE = PROJECT_ROOT / OPS_SCRIPTS_DIR / "hooks" / "burndown_budget.json"
+# Ratchet file: {rel_path: {category: max_allowed_count}}
+# Immune to line-number churn — counts per file+category, not signatures.
+RATCHET_FILE = PROJECT_ROOT / OPS_SCRIPTS_DIR / "hooks" / "burndown_budget.json"
+# Keep BUDGET_FILE as alias so external tooling that reads the file by name still works.
+BUDGET_FILE = RATCHET_FILE
 
 _EXCLUDE_DIRS = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES | {".nox"}
 _EXCLUDE_FILE_PATTERNS = ["__dbg_*.py", "**/activate_this.py"]
@@ -76,34 +89,34 @@ _ADG_FILE_GRAPH = PROJECT_ROOT / "artifacts" / "adg" / "adg_file_graph_03122026.
 Budget = dict[str, dict[str, int]]  # {rel_path: {category: count}}
 
 # ---------------------------------------------------------------------------
-# Budget I/O
+# Ratchet I/O
 # ---------------------------------------------------------------------------
 
 
-def _load_budget() -> Budget:
-    if not BUDGET_FILE.exists():
+def _load_ratchet() -> Budget:
+    if not RATCHET_FILE.exists():
         return {}
     try:
-        return json.loads(BUDGET_FILE.read_text(encoding="utf-8"))
+        return json.loads(RATCHET_FILE.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError):
         return {}
 
 
-def _write_budget(budget: Budget) -> None:
-    """Atomically persist the budget (never called in dry-run mode)."""
-    BUDGET_FILE.parent.mkdir(parents=True, exist_ok=True)
-    content = json.dumps(budget, indent=2, sort_keys=True) + "\n"
+def _write_ratchet(ratchet: Budget) -> None:
+    """Atomically persist the ratchet (never called in dry-run mode)."""
+    RATCHET_FILE.parent.mkdir(parents=True, exist_ok=True)
+    content = json.dumps(ratchet, indent=2, sort_keys=True) + "\n"
     fd, tmp = tempfile.mkstemp(
-        dir=str(BUDGET_FILE.parent),
-        prefix=".burndown_budget_",
+        dir=str(RATCHET_FILE.parent),
+        prefix=".burndown_ratchet_",
         suffix=".tmp",
     )
     try:
         os.write(fd, content.encode("utf-8"))
         os.close(fd)
-        if sys.platform == "win32" and BUDGET_FILE.exists():
-            BUDGET_FILE.unlink()
-        Path(tmp).replace(BUDGET_FILE)
+        if sys.platform == "win32" and RATCHET_FILE.exists():
+            RATCHET_FILE.unlink()
+        Path(tmp).replace(RATCHET_FILE)
     except BaseException:
         try:
             os.close(fd)
@@ -116,8 +129,8 @@ def _write_budget(budget: Budget) -> None:
         raise
 
 
-def _budget_total(budget: Budget) -> int:
-    return sum(c for cats in budget.values() for c in cats.values())
+def _ratchet_total(ratchet: Budget) -> int:
+    return sum(c for cats in ratchet.values() for c in cats.values())
 
 
 # ---------------------------------------------------------------------------
@@ -189,41 +202,51 @@ def _adg_fix_priority(
 # ---------------------------------------------------------------------------
 
 
-def _compute_regressions(budget: Budget, current: Budget) -> list[tuple[str, str, int, int]]:
+def _compute_violations(ratchet: Budget, current: Budget) -> list[tuple[str, str, int, int]]:
     """
-    Return (rel_path, category, budget_count, actual_count) tuples where
-    actual_count > budget_count.
+    Return (rel_path, category, allowed, actual) for every pair that violates
+    the ratchet — covers both rules:
+
+    Rule 1 — NEW file+category pair (allowed=0, actual>0):
+        Any category appearing in a file that has no ratchet entry for that
+        category is treated as a new introduction and is blocked immediately.
+
+    Rule 2 — COUNT REGRESSION (allowed>0, actual>allowed):
+        An existing category whose count exceeds its ratchet ceiling.
     """
     out = []
     for rel_path, cats in current.items():
-        budgeted_file = budget.get(rel_path, {})
+        ratchet_file = ratchet.get(rel_path, {})
         for cat, actual in cats.items():
-            allowed = budgeted_file.get(cat, 0)
+            allowed = ratchet_file.get(cat, 0)  # 0 → category not previously seen
             if actual > allowed:
                 out.append((rel_path, cat, allowed, actual))
     return sorted(out)
 
 
-def _shrink_budget(budget: Budget, current: Budget) -> tuple[Budget, int]:
+def _tighten_ratchet(ratchet: Budget, current: Budget) -> tuple[Budget, int]:
     """
-    Return (new_budget, reduced_slot_count) where new_budget = min(budget, current)
-    for every file+category pair, with zero-count entries removed.
+    Return (new_ratchet, improved_slot_count) where new_ratchet = min(ratchet, current)
+    for every file+category pair, with zero-count entries pruned.
+
+    Only shrinks — never grows.  Called after a clean (violation-free) commit
+    to lock in any progress made.
     """
-    new_budget: Budget = {}
-    reduced = 0
-    for rel_path, cats in budget.items():
+    new_ratchet: Budget = {}
+    improved = 0
+    for rel_path, cats in ratchet.items():
         current_cats = current.get(rel_path, {})
         new_cats: dict[str, int] = {}
-        for cat, budgeted in cats.items():
+        for cat, ceiling in cats.items():
             actual = current_cats.get(cat, 0)
-            new_val = min(budgeted, actual)
+            new_val = min(ceiling, actual)
             if new_val > 0:
                 new_cats[cat] = new_val
-            if actual < budgeted:
-                reduced += 1
+            if actual < ceiling:
+                improved += 1
         if new_cats:
-            new_budget[rel_path] = new_cats
-    return new_budget, reduced
+            new_ratchet[rel_path] = new_cats
+    return new_ratchet, improved
 
 
 # ---------------------------------------------------------------------------
@@ -282,78 +305,92 @@ def run_gate() -> int:
     dry_run = os.environ.get("ADG_BURNDOWN_DRY_RUN") == "1"
     init_mode = os.environ.get("ADG_BURNDOWN_INIT") == "1"
 
-    # Scan repo
+    # Single scan — used by all enforcement rules
     python_files = _collect_all_python_files()
     scanner = AntiPatternScanner(project_root=PROJECT_ROOT, enforcement_level=EnforcementLevel.WARNING)
     report = scanner.scan_changed_files(python_files)
     current = _scan_to_counts(report.all_violations)
     current_total = sum(c for cats in current.values() for c in cats.values())
 
-    # Init mode: write budget from current state and exit cleanly
+    # Init mode: write ratchet from current state and exit cleanly
     if init_mode:
         if not dry_run:
-            _write_budget(current)
-        print(f"[ADG-BURNDOWN] Budget initialised: {current_total} violations across {len(current)} files")
-        print(f"  Saved to: {BUDGET_FILE.relative_to(PROJECT_ROOT)}")
+            _write_ratchet(current)
+        print(f"[ADG-BURNDOWN] Ratchet initialised: {current_total} violations across {len(current)} files")
+        print(f"  Saved to: {RATCHET_FILE.relative_to(PROJECT_ROOT)}")
         return 0
 
-    # Load budget
-    budget = _load_budget()
-    if not budget:
-        # First-ever run — bootstrap silently from current state
+    # Load ratchet
+    ratchet = _load_ratchet()
+    if not ratchet:
+        # First-ever run — bootstrap from current state
         if not dry_run:
-            _write_budget(current)
+            _write_ratchet(current)
         _banner("ADG INTELLIGENT BURNDOWN GATE")
-        print(f"  Budget bootstrapped: {current_total} violations across {len(current)} files.")
-        print(f"  Saved to: {BUDGET_FILE.relative_to(PROJECT_ROOT)}")
-        print("  Subsequent commits may only reduce this count.\n")
+        print(f"  Ratchet bootstrapped: {current_total} violations across {len(current)} files.")
+        print(f"  Saved to: {RATCHET_FILE.relative_to(PROJECT_ROOT)}")
+        print("  Subsequent commits may only reduce or hold this count.\n")
         _show_burndown_status(current, _load_adg_importer_counts())
         return 0
 
-    budget_total = _budget_total(budget)
+    ratchet_total = _ratchet_total(ratchet)
 
-    # Detect regressions
-    regressions = _compute_regressions(budget, current)
+    # Unified violation check — Rule 1 (new pairs) + Rule 2 (count regressions)
+    violations = _compute_violations(ratchet, current)
 
-    # Compute shrunken budget (locks in any improvements)
-    new_budget, reduced_slots = _shrink_budget(budget, current)
-    new_budget_total = _budget_total(new_budget)
+    # Tighten ratchet to lock in any improvements
+    new_ratchet, improved_slots = _tighten_ratchet(ratchet, current)
+    new_ratchet_total = _ratchet_total(new_ratchet)
 
-    # Only persist budget shrinkage on clean (non-regressed) commits
-    if not dry_run and not regressions and reduced_slots > 0:
-        _write_budget(new_budget)
+    # Only persist ratchet tightening on clean (violation-free) commits
+    if not dry_run and not violations and improved_slots > 0:
+        _write_ratchet(new_ratchet)
 
     # Report
     _banner("ADG INTELLIGENT BURNDOWN GATE")
-    print(f"  Budget (allowed) : {budget_total:>5d}")
+    print(f"  Ratchet ceiling  : {ratchet_total:>5d}")
     print(f"  Actual (current) : {current_total:>5d}")
-    print(f"  Net vs budget    : {current_total - budget_total:>+5d}")
+    print(f"  Net vs ceiling   : {current_total - ratchet_total:>+5d}")
     if dry_run:
-        print("  Mode             :  DRY RUN (budget NOT updated)")
+        print("  Mode             :  DRY RUN (ratchet NOT updated)")
 
-    if regressions:
-        reg_excess = sum(actual - allowed for _, _, allowed, actual in regressions)
-        print(
-            f"\n[BLOCK] {len(regressions)} file+category pair(s) exceed budget "
-            f"({reg_excess} excess violation(s)):\n"
-        )
-        by_cat: dict[str, int] = defaultdict(int)
-        for _, cat, allowed, actual in regressions:
-            by_cat[cat] += actual - allowed
-        for cat, excess in sorted(by_cat.items()):
-            print(f"  • {cat}: +{excess}")
-        print()
-        for rel_path, cat, allowed, actual in regressions[:25]:
-            print(
-                f"  [FAIL] {rel_path}  [{cat}]  budget={allowed}  actual={actual}  excess=+{actual - allowed}"
-            )
+    if violations:
+        new_pairs = [(p, c, a, ac) for p, c, a, ac in violations if a == 0]
+        regressions = [(p, c, a, ac) for p, c, a, ac in violations if a > 0]
 
-    if reduced_slots > 0:
-        locked = budget_total - new_budget_total
-        print(f"\n[PROGRESS] {reduced_slots} slot(s) improved — budget tightened by {locked} violation(s).")
+        excess_total = sum(ac - a for _, _, a, ac in violations)
+        print(f"\n[BLOCK] {len(violations)} violation(s) — {excess_total} excess anti-pattern(s):\n")
+
+        if new_pairs:
+            print(f"  NEW file+category pairs introduced ({len(new_pairs)}):")
+            by_cat: dict[str, int] = defaultdict(int)
+            for _, cat, _, actual in new_pairs:
+                by_cat[cat] += actual
+            for cat, cnt in sorted(by_cat.items()):
+                print(f"    • {cat}: +{cnt} (was 0)")
+            print()
+            for rel_path, cat, _, actual in new_pairs[:25]:
+                print(f"  [NEW]  {rel_path}  [{cat}]  count={actual}")
+
+        if regressions:
+            print(f"\n  COUNT regressions ({len(regressions)}):")
+            by_cat_r: dict[str, int] = defaultdict(int)
+            for _, cat, allowed, actual in regressions:
+                by_cat_r[cat] += actual - allowed
+            for cat, excess in sorted(by_cat_r.items()):
+                print(f"    • {cat}: +{excess}")
+            print()
+            for rel_path, cat, allowed, actual in regressions[:25]:
+                print(
+                    f"  [FAIL] {rel_path}  [{cat}]  ceiling={allowed}  actual={actual}  excess=+{actual - allowed}"
+                )
+
+    if improved_slots > 0:
+        locked = ratchet_total - new_ratchet_total
+        print(f"\n[PROGRESS] {improved_slots} slot(s) improved — ratchet tightened by {locked} violation(s).")
         cats_improved: dict[str, int] = defaultdict(int)
-        for rel_path, cats in budget.items():
-            new_cats = new_budget.get(rel_path, {})
+        for rel_path, cats in ratchet.items():
+            new_cats = new_ratchet.get(rel_path, {})
             for cat, old_val in cats.items():
                 new_val = new_cats.get(cat, 0)
                 if new_val < old_val:
@@ -363,12 +400,12 @@ def run_gate() -> int:
 
     _show_burndown_status(current, _load_adg_importer_counts())
 
-    if regressions:
+    if violations:
         print(
             "[ACTION] Fix the violations above OR add "
             "'# guardian: allow-<pattern>' to whitelist intentional exceptions."
         )
-        print("         Each file+category budget may only decrease between commits.\n")
+        print("         Each file+category ceiling may only decrease between commits.\n")
         return 1
 
     return 0
