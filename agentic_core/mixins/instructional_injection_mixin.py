@@ -18,7 +18,12 @@ from agentic_core.config.core.injection_layer_config import (
     InjectionLayer,
     InstructionalPattern,
 )
-from agentic_core.prompt_governance.security.utils.injection_scan_util import scan_untrusted_text
+
+
+def _get_scan_untrusted_text():
+    from agentic_core.prompt_governance.security.utils.injection_scan_util import scan_untrusted_text
+
+    return scan_untrusted_text
 
 
 class InstructionalInjectionMixin:
@@ -120,7 +125,7 @@ class InstructionalInjectionMixin:
         """Inject tooling layer patterns (16-20)."""
         # §P1 — Canonical injection scan on tool_output before injection (fail-closed)
         if tool_output:
-            scan_untrusted_text(tool_output, source="mixin_tool_output")
+            _get_scan_untrusted_text()(tool_output, source="mixin_tool_output")
         if tool_output:
             prompt = self.inject_pattern(prompt, 16, tool_output=tool_output)
         if source:

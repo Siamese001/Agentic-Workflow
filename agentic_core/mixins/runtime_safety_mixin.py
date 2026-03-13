@@ -17,7 +17,12 @@ OPERATIONAL SAFETY (Feb 2026):
 import logging
 from typing import Any
 
-from agentic_core.L5_safety.enforcement.process_guardrail import ProcessGuard, SecurityViolation
+
+def _get_process_guardrail():
+    from agentic_core.L5_safety.enforcement.process_guardrail import ProcessGuard, SecurityViolation
+
+    return ProcessGuard, SecurityViolation
+
 
 try:
     from agentic_core.L5_safety.enforcement.safe_subprocess_handler_enforcer import (
@@ -61,6 +66,7 @@ class RuntimeSafetyMixin:
     def __init__(self, *args, **kwargs):
         """Initialize runtime safety mixin."""
         super().__init__(*args, **kwargs)
+        ProcessGuard, _SecurityViolation = _get_process_guardrail()
         self._process_guard = ProcessGuard.get_instance()
 
     # guardian: allow-magic-config
@@ -174,4 +180,11 @@ class RuntimeSafetyMixin:
         return self._RuntimeGuardContext(self)
 
 
-__all__ = ["RuntimeSafetyMixin", "SecurityViolation"]
+def __getattr__(name: str):
+    if name == "SecurityViolation":
+        _, SecurityViolation = _get_process_guardrail()
+        return SecurityViolation
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
+
+__all__ = ["RuntimeSafetyMixin", "SecurityViolation", "_get_process_guardrail"]

@@ -18,9 +18,24 @@ from typing import Any
 
 from agentic_core.embeddings.tokenization_adapter import TokenCountAdapter
 from agentic_core.L0_routing.config.path_constants import DEFAULT_TIMEOUT
-from agentic_core.L4_state.utils.circuit_breaker_util import CircuitBreakerOpenError, get_breaker
-from agentic_core.L5_safety.enforcement.error_recovery_strategy import ErrorRecoveryStrategy
-from agentic_core.L6_observability.utils.system_telemetry_util import SystemTelemetry, get_telemetry
+
+
+def _get_circuit_breaker():
+    from agentic_core.L4_state.utils.circuit_breaker_util import CircuitBreakerOpenError, get_breaker
+
+    return CircuitBreakerOpenError, get_breaker
+
+
+def _get_error_recovery_strategy():
+    from agentic_core.L5_safety.enforcement.error_recovery_strategy import ErrorRecoveryStrategy
+
+    return ErrorRecoveryStrategy
+
+
+def _get_telemetry():
+    from agentic_core.L6_observability.utils.system_telemetry_util import SystemTelemetry, get_telemetry
+
+    return SystemTelemetry, get_telemetry
 
 
 class TokenLimitError(Exception):

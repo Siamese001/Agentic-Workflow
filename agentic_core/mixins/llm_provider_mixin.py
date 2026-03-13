@@ -4,14 +4,20 @@ LLMProviderMixin - Unified LLM Access for Agents
 [PHASE 4 MIGRATION] Provides single interface to all LLM providers.
 """
 
-from typing import Any, Literal
+from __future__ import annotations
 
-from agentic_core.L2_execution.enforcement.SovereignLLMGateway import (
-    SovereignLLMGateway,
-    get_llm_gateway,
-)
+from typing import TYPE_CHECKING, Any, Literal
+
+if TYPE_CHECKING:
+    from agentic_core.L2_execution.enforcement.SovereignLLMGateway import SovereignLLMGateway
 
 Provider = Literal["openai", "anthropic", "google"]
+
+
+def _get_llm_gateway():
+    from agentic_core.L2_execution.enforcement.SovereignLLMGateway import get_llm_gateway
+
+    return get_llm_gateway()
 
 
 class LLMProviderMixin:
@@ -33,7 +39,7 @@ class LLMProviderMixin:
     def llm_gateway(self) -> SovereignLLMGateway:
         """Lazy-load LLM gateway singleton."""
         if self._llm_gateway is None:
-            self._llm_gateway = get_llm_gateway()
+            self._llm_gateway = _get_llm_gateway()
         return self._llm_gateway
 
     async def llm_generate(

@@ -28,10 +28,16 @@ from agentic_core.L0_routing.config.path_constants import (
     APPS_LIC_DIR,
     APPS_RG_DIR,
 )
-from agentic_core.L2_execution.types.ml_write_intent_types import (
-    MLWriteEnvelopeViolation,
-    is_commit_sandbox_active,
-)
+
+
+def _get_ml_write_intent_types():
+    from agentic_core.L2_execution.types.ml_write_intent_types import (
+        MLWriteEnvelopeViolation,
+        is_commit_sandbox_active,
+    )
+
+    return MLWriteEnvelopeViolation, is_commit_sandbox_active
+
 
 Logger = logging.getLogger(__name__)
 
