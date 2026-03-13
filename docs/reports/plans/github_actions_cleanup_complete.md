@@ -8,61 +8,48 @@
 
 ## Summary
 
-- **Before:** 12 workflows (4 broken, 8 redundant)
-- **After:** 3 workflows (0 broken, 0 redundant)
-- **Result:** 100% CI health restored
+- **Before:** 25 workflows (7 broken/redundant)
+- **After:** 18 workflows (7 deleted)
+- **Result:** CI health improved, redundancy reduced
 
 ---
 
-## Final 3 Essential Workflows
+## Current Workflows (18 Active)
 
-### 1. `guardian-tests.yml` - **Master Governance Gate**
-**Purpose:** Comprehensive governance validation
-**Triggers:** L0_routing, L5_safety, tests/guardian changes
-**Key Functions:**
-- Runs all guardian tests
-- Executes `run_all_guardians` (comprehensive system)
-- Validates output directory integrity
-- Uploads artifacts on failure
+The following workflows remain active after cleanup:
+- `adg-invariant-scan.yml`
+- `adg-proof-artifact-truthfulness.yml`
+- `adg-schema-field-names.yml`
+- `agent-sprawl-check.yml`
+- `ci-integrity-gate.yml`
+- `dashboard-freshness.yml`
+- `environment-contract.yml`
+- `guardian-tests.yml`
+- `import-resolution-guardian.yml`
+- `layer-sovereignty-enforcement.yml`
+- `policy-drift-classification.yml`
+- `safe-remediation-gate.yml`
+- `skip-registry-convergence.yml`
+- `spine-determinism-guard.yml`
+- `ssot-kernel-guardrail.yml`
+- `ssot_verify.yml`
+- `structure-invariants.yml`
+- `timeout-progress-enforcement.yml`
 
-**Coverage:** Agent governance, SSOT validation, structure validation, classification, AST analysis, contract testing
-
-### 2. `import-resolution-guardian.yml` - **Import Integrity**
-**Purpose:** Import resolution and validation
-**Triggers:** Core directory changes
-**Key Functions:**
-- ImportResolutionGuardian execution
-- Directory deletion sweep (PR only)
-- Import strict mode canary (non-blocking)
-- Import health reporting
-
-**Unique Value:** Critical import validation not covered by guardians
-
-### 3. `prompt-governance.yml` - **Domain-Specific Validation**
-**Purpose:** Prompt assembly validation
-**Triggers:** Prompt assessment file changes
-**Key Functions:**
-- Validates prompt assembly
-- Ensures prompt module integrity
-
-**Unique Value:** Specialized prompt governance
+**Note:** This document was written when only 3 workflows were planned, but the actual implementation retained 18 workflows for comprehensive coverage.
 
 ---
 
-## Removed Workflows (9 deleted)
+## Removed Workflows (7 deleted)
 
-### Broken Workflows (4):
-1. `dashboard-freshness.yml` - Missing scripts, outdated paths
-2. `mcp-sovereignty.yml` - Wrong Neo4j paths, missing directories
-3. `pascal-sovereignty.yml` - Missing enforcement script
-4. `ssot-enforcement.yml` - Missing validator, redundant with execute_ssot.py
-
-### Redundant Workflows (5):
-1. `agent-sprawl-check.yml` - Individual scripts, covered by run_all_guardians
-2. `ssot-kernel-guardrail.yml` - Subset of execute_ssot.py
-3. `ssot_verify.yml` - Structure verification in execute_ssot.py
-4. `structure-invariants.yml` - Overlap with import guardian
-5. `spine-determinism-guard.yml` - AST checks in guardian system
+The following workflows were deleted:
+1. `sovereignty-hardening.yml` - Consolidated into other sovereignty checks
+2. `qwen-sovereignty-audits.yml` - Qwen-specific audits removed
+3. `redis-integration.yml` - Redis integration checks removed
+4. `prompt-governance.yml` - Prompt governance consolidated
+5. `ssot-enforcement.yml` - Redundant with ssot-kernel-guardrail.yml
+6. `scope-separation-enforcement.yml` - Scope enforcement consolidated
+7. `mcp-sovereignty.yml` - MCP sovereignty checks consolidated
 
 ---
 
@@ -78,9 +65,9 @@
 - Reliable CI/CD pipeline
 
 ### ✅ **Reduced Complexity**
-- **75% reduction** in workflow count (12→3)
-- Clear ownership and maintenance
-- Faster CI execution
+- **28% reduction** in workflow count (25→18)
+- Removed broken and redundant workflows
+- Improved CI reliability
 
 ### ✅ **Complete Coverage Maintained**
 - All critical domains protected
@@ -93,14 +80,14 @@
 
 | Domain | Covered By | Status |
 |--------|------------|--------|
-| Agent Governance | guardian-tests | ✅ |
-| SSOT Validation | guardian-tests (via execute_ssot) | ✅ |
+| Agent Governance | guardian-tests, agent-sprawl-check | ✅ |
+| SSOT Validation | ssot-kernel-guardrail, ssot_verify | ✅ |
 | Import Integrity | import-resolution-guardian | ✅ |
-| Structure Validation | guardian-tests (guardian contracts) | ✅ |
-| Classification | guardian-tests (classification guardians) | ✅ |
-| Prompt Governance | prompt-governance | ✅ |
-| AST Analysis | guardian-tests (AST validators) | ✅ |
-| Contract Testing | guardian-tests (contract guardians) | ✅ |
+| Structure Validation | structure-invariants | ✅ |
+| Layer Sovereignty | layer-sovereignty-enforcement | ✅ |
+| ADG Invariants | adg-invariant-scan | ✅ |
+| AST Analysis | guardian-tests | ✅ |
+| Contract Testing | ci-integrity-gate | ✅ |
 
 ---
 
@@ -129,4 +116,4 @@
 
 ---
 
-**Mission Accomplished:** GitHub Actions optimized from 12 to 3 workflows with 100% coverage and 0 blockers.
+**Mission Accomplished:** GitHub Actions cleaned up from 25 to 18 workflows by removing 7 broken/redundant workflows.

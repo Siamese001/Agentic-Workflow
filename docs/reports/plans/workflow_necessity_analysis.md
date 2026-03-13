@@ -1,5 +1,7 @@
 # Workflow Necessity Analysis
 
+**⚠️ HISTORICAL DOCUMENT:** This analysis proposed reducing to 3 workflows, but the actual implementation retained 18 workflows for comprehensive coverage. See `github_actions_cleanup_complete.md` for actual state.
+
 **Question:** Are these 8 workflows really needed?
 **Answer:** NO - Significant redundancy exists
 

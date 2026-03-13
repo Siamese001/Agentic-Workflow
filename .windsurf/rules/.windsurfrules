@@ -11,6 +11,7 @@ trigger: always_on
 > 4. **No editing while exploring.** All five repair gates (§8.1) must pass before any edit.
 > 5. **No agent deletion without authorization.** Deleting *Agent.py files requires AGENT-DELETION-AUTHORIZED marker, justification, replacement, deprecation period (90 days), and zero references. §1.6.
 > 6. **CI enforces all of this.** `python ops_scripts/ci/run_contract_gates.py`
+> 7. **ADG ARTIFACTS MUST BE FULLY INGESTED BEFORE ANY QUERY OR REFACTORING.** The directory `artifacts/adg` contains the canonical ADG artifacts. ALL operating modes MUST ingest these before any query, analysis, or code change: (1) `adg_indexed_<timestamp>.sqlite` — PRIMARY queryable DB; (2) `adg_snapshot_<timestamp>.json` — metrics/counts; (3) `adg_file_graph_<timestamp>.json` + `adg_symbol_graph_<timestamp>.json` — import/call chains; (4) `adg_governance_graph_<timestamp>.json` — layer violations. NEVER begin work without loading these. Regenerate after refactoring: `python tools/generate_full_adg.py`.
 
 ---
 

@@ -200,7 +200,7 @@ class BriefAssemblyEngine(BaseExecEngine):
             "governance_model": (
                 "Policy is enforced at the routing layer (L0) via signed InstructionPackets "
                 "with policy_hash validation. Static analysis detects non-deterministic calls "
-                "in execution-critical paths. All violations are surfaced, never silently swallowed."
+                "in execution-critical paths. All violations are surfaced with rule IDs and evidence."
             ),
             "platform_strategy": (
                 "The platform is positioned as enterprise-ready infrastructure for "

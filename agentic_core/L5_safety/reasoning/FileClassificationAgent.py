@@ -1,3 +1,4 @@
+# guardian: allow-silent_swallower
 from agentic_core.L2_execution.tools import write_gateway as _wg
 from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     GLOBAL_EXCLUDED_DIRS,
@@ -73,30 +74,6 @@ from agentic_core.L0_routing.config.path_constants import (
     APPS_SHARED_DIR,
     TESTS_DIR,
     TOOLS_DIR,
-    AGENTIC_CORE_DIR,
-    APPS_LIC_DIR,
-    APPS_RG_DIR,
-    TESTS_DIR,
-    AGENTIC_CORE_DIR,
-    TESTS_DIR,
-    AGENTIC_CORE_DIR,
-    TESTS_DIR,
-    AGENTIC_CORE_DIR,
-    AGENTIC_CORE_DIR,
-    AGENTIC_CORE_DIR,
-    AGENTIC_CORE_DIR,
-    AGENTIC_CORE_DIR,
-    AGENTIC_CORE_DIR,
-    AGENTIC_CORE_DIR,
-    AGENTIC_CORE_DIR,
-    AGENTIC_CORE_DIR,
-    AGENTIC_CORE_DIR,
-    AGENTIC_CORE_DIR,
-    AGENTIC_CORE_DIR,
-    AGENTIC_CORE_DIR,
-    AGENTIC_CORE_DIR,
-    AGENTIC_CORE_DIR,
-    AGENTIC_CORE_DIR,
 )
 
 # SSOT: Import FileType and ExecutionMode helpers from the zero-dependency classification kernel
@@ -186,6 +163,9 @@ class ClassificationResult:
     warnings: list[str]  # Ambiguity warnings
     execution_mode: str = "DETERMINISTIC"  # REASONING or DETERMINISTIC (Phase 0)
     reasoning_signals: list[str] = field(default_factory=list)  # triggered signals
+    # ADG behavioral signals sourced from the ADG SQLite index (optional, empty when ADG unavailable)
+    adg_behavioral_signals: list[str] = field(default_factory=list)
+    adg_behavioral_score: float = 0.5  # [0.0-1.0]: >0.7 agent-like, <0.4 script-like
 
 
 @dataclass
@@ -1252,6 +1232,57 @@ class FileClassificationAgent(*BASE_CLASSES):
         # 14. CLASS: Fallback for any other class
         else:
             return "CLASS"
+
+    def _load_adg_behavioral_profile(self, path: Path) -> "tuple[float, list[str]]":
+        """Load ADG behavioral profile for a file. Returns (score, signals).
+
+        Always safe to call — returns (0.5, []) when ADG SQLite is unavailable.
+        """
+        try:
+            from agentic_core.adg.runtime.behavioral_index import ADGBehavioralIndex as _ADGIdx
+
+            _adg_idx = _ADGIdx.from_latest(self.project_root)
+            if _adg_idx is None:
+                return (0.5, [])
+            try:
+                rel = str(path.resolve().relative_to(self.project_root.resolve())).replace("\\", "/")
+            except ValueError:
+                rel = path.as_posix()
+            prof = _adg_idx.profile_for(rel)
+            signals = sorted(prof.all_signals)
+            return (prof.behavioral_score, signals)
+        except Exception as e:
+            self.logger.debug(f"ADG profile unavailable for {path.name}: {e}")
+            return (0.5, [])
+
+    def classify_file_with_signals(self, path: Path) -> ClassificationResult:
+        """Classify a file and enrich the result with ADG behavioral signals.
+
+        Returns a ClassificationResult with:
+          - file_type from classify_file()
+          - adg_behavioral_score and adg_behavioral_signals from ADGBehavioralIndex
+          - confidence set to 1.0 (structural classification is deterministic)
+          - execution_mode promoted to REASONING when adg_behavioral_score > 0.7
+        """
+        from agentic_core.L5_safety.core_kernel.classification_kernel import classify_execution_mode
+
+        file_type = self.classify_file(path)
+        execution_mode, reasoning_signals = classify_execution_mode(path)
+        adg_score, adg_signals = self._load_adg_behavioral_profile(path)
+        # Promote to REASONING if ADG shows strong agent-like behaviour
+        if adg_score > 0.7 and execution_mode == "DETERMINISTIC":
+            execution_mode = "REASONING"
+            reasoning_signals = reasoning_signals + ["adg:agent_like_score"]
+        return ClassificationResult(
+            file_type=file_type,
+            confidence=1.0,
+            signals=[f"classified_as:{file_type}"],
+            warnings=[],
+            execution_mode=execution_mode,
+            reasoning_signals=reasoning_signals,
+            adg_behavioral_signals=adg_signals,
+            adg_behavioral_score=adg_score,
+        )
 
     def _detect_enforcer_control_signal(self, tree: ast.AST, content: str) -> bool:
         """Detect control outcome signal for ENFORCER AND-gate.

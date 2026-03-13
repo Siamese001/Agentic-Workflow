@@ -21,7 +21,7 @@ Each sub-item was validated by AST inspection or file-existence check against th
 | 1b | `HardenedanthropicexecutorStrategy` no `import anthropic` | ✅ PASS |
 | 1b | `HardenedanthropicexecutorStrategy` uses `SovereignLLMGateway` | ✅ PASS |
 | 1c | `ops_scripts/ci/check_sovereign_llm_gateway.py` exists | ✅ PASS |
-| 1d | `.github/workflows/sovereign-gateway-guard.yml` | ✅ PASS (created as `sovereignty-hardening.yml`) |
+| 1d | `.github/workflows/sovereign-gateway-guard.yml` | ⚠️ DELETED (was created as `sovereignty-hardening.yml`, later removed) |
 | 1e | `tests/architecture/test_sovereign_gateway_boundary.py` exists | ✅ PASS |
 
 ---

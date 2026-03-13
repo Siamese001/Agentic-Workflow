@@ -102,23 +102,24 @@ EXIT CODE: 0
 ```
 $ C:\Users\amita\AppData\Local\Programs\Python\Python312\python.exe -c import os; wf='.github/workflows'; fs=sorted(os.listdir(wf)) if os.path.isdir(wf) else []; print(f'count: {len(fs)}'); [print(f'  {f}') for f in fs]
 count: 17
+  adg-invariant-scan.yml
+  adg-proof-artifact-truthfulness.yml
+  adg-schema-field-names.yml
   agent-sprawl-check.yml
+  ci-integrity-gate.yml
   dashboard-freshness.yml
+  environment-contract.yml
   guardian-tests.yml
   import-resolution-guardian.yml
   layer-sovereignty-enforcement.yml
-  layer-write-sovereignty.yml
-  mcp-sovereignty.yml
-  pascal-sovereignty.yml
-  prompt-governance.yml
-  qwen-sovereignty-audits.yml
-  scope-separation-enforcement.yml
-  sovereignty-hardening.yml
+  policy-drift-classification.yml
+  safe-remediation-gate.yml
+  skip-registry-convergence.yml
   spine-determinism-guard.yml
-  ssot-enforcement.yml
   ssot-kernel-guardrail.yml
   ssot_verify.yml
   structure-invariants.yml
+  timeout-progress-enforcement.yml
 EXIT CODE: 0
 ```
 

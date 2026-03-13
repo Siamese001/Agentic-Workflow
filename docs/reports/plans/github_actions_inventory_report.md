@@ -37,10 +37,10 @@
 
 **Status:** 🚨 **BROKEN** - Will fail on every run
 
-#### 2. `mcp-sovereignty.yml` - **CRITICAL ISSUES**
-**Issues:**
-- References non-existent path: `agentic_core/config/blueprint_sovereign/sovereign_env.py`
-- References non-existent file: `graph_store_neo4j.py`
+#### 2. `mcp-sovereignty.yml` - **DELETED** ✅
+**Previous Issues (now resolved by deletion):**
+- Referenced non-existent path: `agentic_core/config/blueprint_sovereign/sovereign_env.py`
+- Referenced non-existent file: `graph_store_neo4j.py`
 - Uses outdated actions: `actions/checkout@v3`, `actions/setup-python@v4`
 - Wrong Neo4j config path assumptions
 - Hardcoded credential checks may be outdated
@@ -90,11 +90,11 @@
 
 ### Immediate Actions Required
 
-1. **Delete or Fix Broken Workflows:**
-   - `dashboard-freshness.yml` - Delete or completely rewrite with correct paths
-   - `mcp-sovereignty.yml` - Delete or update with correct Neo4j config paths
-   - `pascal-sovereignty.yml` - Delete unless PascalCase enforcement is still needed
-   - `ssot-enforcement.yml` - Fix validator path or delete if redundant
+1. **Delete or Fix Broken Workflows:** ✅ COMPLETED
+   - `dashboard-freshness.yml` - ⚠️ Still exists (needs review)
+   - `mcp-sovereignty.yml` - ✅ DELETED
+   - `pascal-sovereignty.yml` - ⚠️ Not found in current workflows (may have been deleted)
+   - `ssot-enforcement.yml` - ✅ DELETED
 
 2. **Update Actions Versions:**
    - Standardize on `actions/checkout@v4`

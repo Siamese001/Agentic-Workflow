@@ -332,6 +332,70 @@ class ResearchAssemblyEngine:
                     word_count=60,
                 ),
             ],
+            ArtifactMode.POSITION: [
+                ResearchSection(
+                    section_id="position_statement",
+                    heading="Position Statement",
+                    body=(
+                        f"**Topic:** {topic}\n\n"
+                        "**Position [ANALYST_INFERENCE]:** Governance-first agentic AI architecture "
+                        "is the only viable foundation for enterprise-scale deployments requiring "
+                        "auditability, reproducibility, and regulatory compliance.\n\n"
+                        "*This is an analyst-held position, not a vendor claim.*"
+                    ),
+                    is_deterministic=True,
+                    claim_type=ClaimType.ANALYST_INFERENCE,
+                    sources=src_ids,
+                    word_count=60,
+                ),
+                ResearchSection(
+                    section_id="supporting_evidence",
+                    heading="Supporting Evidence",
+                    body=(
+                        "**Evidence 1 [DIRECT_EVIDENCE]:** PolicyHashEnforcer validates every "
+                        "InstructionPacket at L0 routing — architecture-layer, not app-layer (SRC-003).\n\n"
+                        "**Evidence 2 [DIRECT_EVIDENCE]:** ADG Anti-Pattern Ratchet enforces violation "
+                        "reduction at every commit, making governance cumulative (SRC-002).\n\n"
+                        "**Evidence 3 [DIRECT_EVIDENCE]:** ExecutionScopeNondeterminismVisitor flags "
+                        "non-deterministic calls statically before execution (SRC-004)."
+                    ),
+                    is_deterministic=True,
+                    claim_type=ClaimType.DIRECT_EVIDENCE,
+                    sources=src_ids,
+                    word_count=80,
+                ),
+                ResearchSection(
+                    section_id="counterarguments",
+                    heading="Counterarguments",
+                    body=(
+                        "**Counterargument 1 [INTERPRETATION]:** Governance-first slows feature velocity. "
+                        "*Response:* The ADG enforcement model shows that ratcheting reduces violations "
+                        "monotonically, reducing rework cost over time.\n\n"
+                        "**Counterargument 2 [INTERPRETATION]:** Application-layer governance is sufficient "
+                        "for most use cases. *Response:* When governance is configurable, it gets "
+                        "disabled under pressure. Constitutional enforcement does not."
+                    ),
+                    is_deterministic=False,
+                    claim_type=ClaimType.INTERPRETATION,
+                    sources=src_ids,
+                    word_count=80,
+                ),
+                ResearchSection(
+                    section_id="conclusion",
+                    heading="Conclusion",
+                    body=(
+                        "**Conclusion [ANALYST_INFERENCE]:** Enterprise agentic AI platforms that embed "
+                        "governance at the architecture layer — not the application layer — will have "
+                        "lower compliance cost, higher auditability, and stronger regulatory positioning "
+                        f"over a {horizon} time horizon.\n\n"
+                        "*All evidence citations link to this repository's implementation.*"
+                    ),
+                    is_deterministic=True,
+                    claim_type=ClaimType.ANALYST_INFERENCE,
+                    sources=src_ids,
+                    word_count=70,
+                ),
+            ],
             ArtifactMode.THOUGHT_LEADERSHIP: [
                 ResearchSection(
                     section_id="hook",

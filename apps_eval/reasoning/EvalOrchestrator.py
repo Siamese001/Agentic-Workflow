@@ -124,21 +124,22 @@ class EvalOrchestrator:
             self._record_hop("HOP-4-GATE", gate.passed)
             result.gate_violations = [f"[{v.rule_id}:{v.severity}] {v.message}" for v in gate.violations]
 
-            if not gate.passed and self.gate_mode == "HARD_FAIL":
-                if result.status != EvalStatus.REGRESSION:
-                    result.status = EvalStatus.FAILED
+            is_dry = request.dry_run or self.dry_run
+            if not gate.passed:
                 _log.error("[EvalOrchestrator] Gate FAILED: %d violations", len(gate.violations))
-            else:
-                is_dry = request.dry_run or self.dry_run
-                if is_dry:
-                    result.status = EvalStatus.DRY_RUN
-                elif result.status not in (EvalStatus.FAILED, EvalStatus.REGRESSION):
-                    result.status = EvalStatus.COMPLETE
+                if not is_dry and self.gate_mode == "HARD_FAIL":
+                    if result.status != EvalStatus.REGRESSION:
+                        result.status = EvalStatus.FAILED
 
-                if not is_dry:
-                    paths = self._emit_artifacts(result, trace_id, request)
-                    result.artifact_paths = paths
-                    self._record_hop("HOP-5-EMIT", True)
+            if is_dry:
+                result.status = EvalStatus.DRY_RUN
+            elif result.status not in (EvalStatus.FAILED, EvalStatus.REGRESSION):
+                result.status = EvalStatus.COMPLETE
+
+            if not is_dry:
+                paths = self._emit_artifacts(result, trace_id, request)
+                result.artifact_paths = paths
+                self._record_hop("HOP-5-EMIT", True)
 
         except (ValueError, TypeError, KeyError, AttributeError, RuntimeError) as exc:
             _log.error("[EvalOrchestrator] Pipeline error trace=%s: %s", trace_id, exc, exc_info=True)

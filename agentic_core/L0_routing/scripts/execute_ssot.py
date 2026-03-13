@@ -1,13 +1,17 @@
+# guardian: allow-silent_swallower
 """
-Unified Sovereign Compliance Protocol (v4.0)
-Merges SSOT Compliance Protocol (Autonomous Decision Engine) with Canon Validator (Observability & Discovery).
+Unified Sovereign Compliance Protocol
 
-PRIMARY FEATURES:
-- Autonomous Confidence-Based Healing (SSOT)
-- Real-time Runtime State & Dashboard Integration (Canon)
-- Multi-Domain Orchestration (Canon)
-- Hybrid Agent Discovery (Canon)
-- Comprehensive Audit Trail (SSOT)
+This script orchestrates the entire compliance and healing process across
+all architectural layers. It provides a unified interface for running
+validators, healers, and maintaining architectural integrity.
+
+Key Features:
+- Multi-phase execution (discovery, validation, alignment, healing)
+- Lazy loading of agents and validators
+- Meta-learning integration for improved routing
+- Comprehensive error handling and recovery
+- ADG behavioral signal integration for enhanced routing decisions
 """
 
 import argparse
@@ -934,6 +938,9 @@ class RoutingInputs:
     deterministic_coverage: bool = False
     provider_prohibited_gemini: bool = False
     provider_prohibited_qwen: bool = False
+    # ADG behavioral score [0.0-1.0]: >0.7=agent-like, <0.4=script-like, 0.5=unknown
+    # Sourced from ADGBehavioralIndex; defaults to 0.5 when ADG unavailable.
+    adg_behavioral_score: float = 0.5
 
 
 @dataclass
@@ -951,12 +958,23 @@ class RoutingDecision:
     def as_log_line(self) -> str:
         f = self.factors
         i = self.inputs
-        return f"[ROUTING] tier={self.tier.value} S={self.score} gate={self.gate_applied} model={self.model_id} C={f.get('C', 0)} B={f.get('B', 0)} A={f.get('A', 0)} N={f.get('N', 0)} F={f.get('F', 0)} L={f.get('L', 0)} replay={i.replay_mode} retry={i.retry_count} playbook={i.playbook_match} det_cov={i.deterministic_coverage} digest={self.determinism_digest}"
+        return f"[ROUTING] tier={self.tier.value} S={self.score} gate={self.gate_applied} model={self.model_id} C={f.get('C', 0)} B={f.get('B', 0)} A={f.get('A', 0)} N={f.get('N', 0)} F={f.get('F', 0)} L={f.get('L', 0)} replay={i.replay_mode} retry={i.retry_count} playbook={i.playbook_match} det_cov={i.deterministic_coverage} adg_score={i.adg_behavioral_score:.3f} digest={self.determinism_digest}"
 
 
 def compute_routing_decision(inputs: RoutingInputs) -> RoutingDecision:
-    """Pure SSOT routing function — strict gate order, no side effects."""
+    """Pure SSOT routing function — strict gate order, no side effects.
+
+    ADG behavioral score integration:
+      adg_behavioral_score < 0.4 (script-like) overrides deterministic_coverage=True
+        when the structural class gate would otherwise require LLM arbitration.
+      adg_behavioral_score > 0.7 (agent-like) with low confidence raises N by 1
+        to reflect the observed behavioural complexity of the target file.
+    """
     C, B, A, N, F, L = (inputs.C, inputs.B, inputs.A, inputs.N, inputs.F, inputs.L)
+    # ADG behavioral signal integration (additive, never overrides hard safety gates)
+    _adg = inputs.adg_behavioral_score
+    _adg_det_cov = inputs.deterministic_coverage or (_adg < 0.4)
+    _adg_N = N + 1 if (_adg > 0.7 and A >= 1 and N < 3) else N
 
     def _decide(tier: RoutingTier, gate: str, score: int = 0) -> RoutingDecision:
         if tier == RoutingTier.DETERMINISTIC:
@@ -986,14 +1004,14 @@ def compute_routing_decision(inputs: RoutingInputs) -> RoutingDecision:
             return _decide(RoutingTier.FAIL_CLOSED, "GATE_1_RETRY_OVERRIDE_FAIL_CLOSED")
         return _decide(RoutingTier.GEMINI, "GATE_1_RETRY_OVERRIDE")
     if inputs.failure_type in _STRUCTURAL_CLASS:
-        if inputs.deterministic_coverage:
+        if _adg_det_cov:
             return _decide(RoutingTier.DETERMINISTIC, "GATE_2_STRUCTURAL_DET_COV")
         if inputs.provider_prohibited_gemini:
             return _decide(RoutingTier.FAIL_CLOSED, "GATE_2_STRUCTURAL_FAIL_CLOSED")
         return _decide(RoutingTier.GEMINI, "GATE_2_STRUCTURAL_NO_DET_COV")
-    if B == 3 and A == 0 and inputs.playbook_match and inputs.deterministic_coverage:
+    if B == 3 and A == 0 and inputs.playbook_match and _adg_det_cov:
         return _decide(RoutingTier.DETERMINISTIC, "GATE_3_CRITICAL_SURFACE_MECH")
-    S = 3 * C + 4 * B + 3 * A + 2 * N + 4 * F
+    S = 3 * C + 4 * B + 3 * A + 2 * _adg_N + 4 * F
     if inputs.playbook_match:
         S = max(0, S - 4)
     if B == 3 and F == 3 and (C >= 2 or A >= 1):
@@ -1022,7 +1040,7 @@ def compute_routing_decision(inputs: RoutingInputs) -> RoutingDecision:
         tier = RoutingTier.QWEN
         gate = f"{gate}.L_TIEBREAK_UP"
     if tier == RoutingTier.QWEN and inputs.failure_type in _QWEN_DISALLOWED:
-        if inputs.deterministic_coverage and A == 0 and (C == 0):
+        if _adg_det_cov and A == 0 and (C == 0):
             return _decide(RoutingTier.DETERMINISTIC, f"{gate}.QWEN_DISALLOWED_DET_FALLBACK", S)
         if inputs.provider_prohibited_gemini:
             return _decide(RoutingTier.FAIL_CLOSED, f"{gate}.QWEN_DISALLOWED_FAIL_CLOSED", S)
@@ -1717,6 +1735,7 @@ class SovereignDecisionEngine:
         deterministic_coverage: bool = False,
         provider_prohibited_gemini: bool = False,
         provider_prohibited_qwen: bool = False,
+        adg_behavioral_score: float = 0.5,
     ) -> "RoutingDecision":
         """Map healing context to a hardened SSOT RoutingDecision."""
         if failure_type is None:
@@ -1779,6 +1798,7 @@ class SovereignDecisionEngine:
             deterministic_coverage=deterministic_coverage,
             provider_prohibited_gemini=provider_prohibited_gemini,
             provider_prohibited_qwen=provider_prohibited_qwen,
+            adg_behavioral_score=adg_behavioral_score,
         )
         decision = compute_routing_decision(ri)
         logger.info(decision.as_log_line())
@@ -1826,11 +1846,17 @@ class SovereignDecisionEngine:
         territory: str,
         historical_success_rate: float = 0.8,
         agent_name: str = "",
+        adg_behavioral_score: float = 0.5,
     ) -> ConfidenceScore:
         """Calculates weighted confidence score.
 
         Uses GPU-accelerated BAAI/bge-m3 cosine similarity for pattern matching
         when agent_name is in BMG_EMBEDDING_AGENT_KEYS.
+
+        adg_behavioral_score [0.0–1.0] from ADGBehavioralIndex:
+          <0.4  script-like: +0.05 confidence boost (deterministic agents are easier to heal)
+          >0.7  agent-like:  -0.05 confidence penalty (adaptive agents require more caution)
+          0.5   unknown:     no adjustment
         """
         if violations_count == 0:
             return ConfidenceScore(value=1.0, reasoning="Zero violations")
@@ -1857,9 +1883,18 @@ class SovereignDecisionEngine:
             final_value *= 1.1
         if territory.startswith("L5"):
             final_value *= 0.9
+        # ADG behavioral adjustment: script-like targets are more predictable to heal
+        adg_suffix = ""
+        if adg_behavioral_score < 0.4:
+            final_value = min(1.0, final_value + 0.05)
+            adg_suffix = " [ADG:script-like+0.05]"
+        elif adg_behavioral_score > 0.7:
+            final_value = max(0.0, final_value - 0.05)
+            adg_suffix = " [ADG:agent-like-0.05]"
         reasoning = f"Base: {base_score:.2f}, Pattern: {pattern_score:.2f}"
         if bmg_used:
             reasoning += " [BMG-GPU]"
+        reasoning += adg_suffix
         return ConfidenceScore(value=min(1.0, final_value), reasoning=reasoning)
 
     def should_proceed_with_healing(
@@ -1874,6 +1909,7 @@ class SovereignDecisionEngine:
         deterministic_coverage: bool = False,
         provider_prohibited_gemini: bool = False,
         provider_prohibited_qwen: bool = False,
+        adg_behavioral_score: float = 0.5,
     ) -> tuple[bool, str]:
         """Determines if healing should proceed using the hardened SSOT routing algorithm."""
         is_safe, msg = self._check_healing_budget(agent_name)
@@ -1890,6 +1926,7 @@ class SovereignDecisionEngine:
             deterministic_coverage=deterministic_coverage,
             provider_prohibited_gemini=provider_prohibited_gemini,
             provider_prohibited_qwen=provider_prohibited_qwen,
+            adg_behavioral_score=adg_behavioral_score,
         )
         decision_data = {
             "agent": agent_name,
@@ -2831,6 +2868,49 @@ def execute_phase1_discovery_impl(agents, territory, decision_engine, state_mgr,
         violations = location_scan_result.get("violations", [])
     else:
         logger.warning(f"Territory path does not exist: {territory_path}")
+    # --- ADG Behavioral enrichment ---
+    # Load behavioral profiles for all violation targets in one bulk query.
+    # Gracefully degrades to neutral (score=0.5) when ADG SQLite is unavailable.
+    _adg_territory_score = 0.5
+    try:
+        from agentic_core.adg.runtime.behavioral_index import ADGBehavioralIndex as _ADGIdx
+
+        _adg_idx = _ADGIdx.from_latest(REPO_ROOT)
+        if _adg_idx is not None and violations:
+            _violation_paths = [
+                str(Path(v.get("file", "")).resolve().relative_to(REPO_ROOT.resolve())).replace("\\", "/")
+                for v in violations
+                if v.get("file")
+            ]
+            _profiles = _adg_idx.profiles_for(_violation_paths) if _violation_paths else {}
+            # Enrich each violation dict with its ADG behavioral score + signal summary
+            for v in violations:
+                fpath = v.get("file", "")
+                if fpath:
+                    try:
+                        rel = str(Path(fpath).resolve().relative_to(REPO_ROOT.resolve())).replace("\\", "/")
+                    except ValueError:
+                        rel = fpath
+                    prof = _profiles.get(rel)
+                    if prof is not None:
+                        v["adg_behavioral_score"] = prof.behavioral_score
+                        v["adg_is_agent_like"] = prof.is_agent_like
+                        v["adg_is_script_like"] = prof.is_script_like
+                        v["adg_signals"] = sorted(prof.all_signals)
+            # Territory-level score: mean across all profiled violations
+            profiled_scores = [v["adg_behavioral_score"] for v in violations if "adg_behavioral_score" in v]
+            if profiled_scores:
+                _adg_territory_score = round(sum(profiled_scores) / len(profiled_scores), 4)
+            logger.debug(
+                "[ADG] territory=%s violations=%d adg_territory_score=%.3f",
+                territory,
+                len(violations),
+                _adg_territory_score,
+            )
+    except Exception as _adg_err:
+        logger.debug("[ADG] Behavioral enrichment skipped (non-fatal): %s", _adg_err)
+    state_mgr.state["adg_territory_score"] = _adg_territory_score
+    # --- end ADG enrichment ---
     if violations:
         logger.info("🧠 Using CognitiveDispositionAgent for enhanced violation analysis...")
         import asyncio
@@ -2845,14 +2925,21 @@ def execute_phase1_discovery_impl(agents, territory, decision_engine, state_mgr,
         logger.info(f"🧠 Enhanced confidence with cognitive analysis: {confidence.value:.2f}")
     else:
         confidence = decision_engine.calculate_healing_confidence(
-            len(violations), [str(v) for v in violations[:10]], territory, agent_name="location"
+            len(violations),
+            [str(v) for v in violations[:10]],
+            territory,
+            agent_name="location",
+            adg_behavioral_score=_adg_territory_score,
         )
     state_mgr.state["compliance_scores"][territory] = confidence.value
     state_mgr.state["location_violations"] = violations
     state_mgr.state["location_scan_result"] = location_scan_result
     if len(violations) > 0:
         proceed, reason = decision_engine.should_proceed_with_healing(
-            confidence, "LocationHealerAgent", territory=territory
+            confidence,
+            "LocationHealerAgent",
+            territory=territory,
+            adg_behavioral_score=_adg_territory_score,
         )
         state_mgr.add_event("decision", f"Location Healing: {reason}")
         logger.info(f"Location Decision: {reason}")
