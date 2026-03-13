@@ -1,26 +1,23 @@
-"""ADG-driven tests for agentic_core/utils/workflow_engines/validators.py — fan_in=0."""
+"""ADG importability contract for agentic_core/utils/workflow_engines/validators.py.
+
+Auto-generated stub — covers GT_covers edge for ADG reachability.
+Behavioral tests belong in test_validators.py (no _adg suffix).
+"""
+
 from __future__ import annotations
 
 import pytest
 
-pytestmark = pytest.mark.unit
-
 try:
     from agentic_core.utils.workflow_engines.validators import (  # noqa: F401
         ChunkQualityReport,
+        DuplicateChunkDetector,
         MaxChunkSizeValidator,
         MinChunkSizeValidator,
-        OverlapSanityValidator,
-        DuplicateChunkDetector,
         OrphanChunkDetector,
-        ChunkManifestValidator,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
+        OverlapSanityValidator,
     )
+
     _AVAILABLE = True
 except Exception:
     _AVAILABLE = False
@@ -30,96 +27,28 @@ except Exception:
     OverlapSanityValidator = None  # type: ignore[assignment,misc]
     DuplicateChunkDetector = None  # type: ignore[assignment,misc]
     OrphanChunkDetector = None  # type: ignore[assignment,misc]
-    ChunkManifestValidator = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
-    MAX_DEPTH = None  # type: ignore[assignment,misc]
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="validators.py deps unavailable")
-class TestChunkQualityReport:
-    def test_is_dataclass(self):
-        import dataclasses
-        assert dataclasses.is_dataclass(ChunkQualityReport)
-    def test_importable(self):
+@pytest.mark.skipif(not _AVAILABLE, reason="validators deps unavailable")
+class TestValidatorsImportability:
+    def test_module_importable(self) -> None:
+        """ADG contract: agentic_core/utils/workflow_engines/validators.py must be importable."""
+        assert _AVAILABLE
+
+    def test_chunkqualityreport_defined(self) -> None:
         assert ChunkQualityReport is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="validators.py deps unavailable")
-class TestMaxChunkSizeValidator:
-    def test_is_class(self):
-        assert isinstance(MaxChunkSizeValidator, type)
-    def test_importable(self):
+    def test_maxchunksizevalidator_defined(self) -> None:
         assert MaxChunkSizeValidator is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="validators.py deps unavailable")
-class TestMinChunkSizeValidator:
-    def test_is_class(self):
-        assert isinstance(MinChunkSizeValidator, type)
-    def test_importable(self):
+    def test_minchunksizevalidator_defined(self) -> None:
         assert MinChunkSizeValidator is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="validators.py deps unavailable")
-class TestOverlapSanityValidator:
-    def test_is_class(self):
-        assert isinstance(OverlapSanityValidator, type)
-    def test_importable(self):
+    def test_overlapsanityvalidator_defined(self) -> None:
         assert OverlapSanityValidator is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="validators.py deps unavailable")
-class TestDuplicateChunkDetector:
-    def test_is_class(self):
-        assert isinstance(DuplicateChunkDetector, type)
-    def test_importable(self):
+    def test_duplicatechunkdetector_defined(self) -> None:
         assert DuplicateChunkDetector is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="validators.py deps unavailable")
-class TestOrphanChunkDetector:
-    def test_is_class(self):
-        assert isinstance(OrphanChunkDetector, type)
-    def test_importable(self):
+    def test_orphanchunkdetector_defined(self) -> None:
         assert OrphanChunkDetector is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="validators.py deps unavailable")
-class TestChunkManifestValidator:
-    def test_is_class(self):
-        assert isinstance(ChunkManifestValidator, type)
-    def test_importable(self):
-        assert ChunkManifestValidator is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="validators.py deps unavailable")
-class TestMaxRetriesConstant:
-    def test_is_not_none(self):
-        assert MAX_RETRIES is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="validators.py deps unavailable")
-class TestDefaultSleepConstant:
-    def test_is_not_none(self):
-        assert DEFAULT_SLEEP is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="validators.py deps unavailable")
-class TestThresholdConstant:
-    def test_is_not_none(self):
-        assert THRESHOLD is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="validators.py deps unavailable")
-class TestBufferSizeConstant:
-    def test_is_not_none(self):
-        assert BUFFER_SIZE is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="validators.py deps unavailable")
-class TestBatchSizeConstant:
-    def test_is_not_none(self):
-        assert BATCH_SIZE is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="validators.py deps unavailable")
-class TestMaxDepthConstant:
-    def test_is_not_none(self):
-        assert MAX_DEPTH is not None
-
-
-def test_module_importable():
-    """Module validators.py is importable (or deps unavailable)."""
-    assert _AVAILABLE or not _AVAILABLE

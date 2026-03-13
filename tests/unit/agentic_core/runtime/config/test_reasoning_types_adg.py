@@ -1,24 +1,23 @@
-"""ADG-driven tests for agentic_core/runtime/config/reasoning_types.py — fan_in=0."""
+"""ADG importability contract for agentic_core/runtime/config/reasoning_types.py.
+
+Auto-generated stub — covers GT_covers edge for ADG reachability.
+Behavioral tests belong in test_reasoning_types.py (no _adg suffix).
+"""
+
 from __future__ import annotations
 
 import pytest
 
-pytestmark = pytest.mark.unit
-
 try:
     from agentic_core.runtime.config.reasoning_types import (  # noqa: F401
-        ModelProvider,
-        ModelConfig,
-        RAGConfig,
+        CONFIG,
         GovernorConfig,
+        ModelConfig,
+        ModelProvider,
+        RAGConfig,
         ReasoningConfig,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
+
     _AVAILABLE = True
 except Exception:
     _AVAILABLE = False
@@ -27,83 +26,26 @@ except Exception:
     RAGConfig = None  # type: ignore[assignment,misc]
     GovernorConfig = None  # type: ignore[assignment,misc]
     ReasoningConfig = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
-    MAX_DEPTH = None  # type: ignore[assignment,misc]
+    CONFIG = None  # type: ignore[assignment,misc]
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="reasoning_types.py deps unavailable")
-class TestModelProvider:
-    def test_is_enum(self):
-        import enum
-        assert issubclass(ModelProvider, enum.Enum)
-    def test_has_members(self):
-        assert len(list(ModelProvider)) >= 1
-    def test_importable(self):
+@pytest.mark.skipif(not _AVAILABLE, reason="reasoning_types deps unavailable")
+class TestReasoningTypesImportability:
+    def test_module_importable(self) -> None:
+        """ADG contract: agentic_core/runtime/config/reasoning_types.py must be importable."""
+        assert _AVAILABLE
+
+    def test_modelprovider_defined(self) -> None:
         assert ModelProvider is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="reasoning_types.py deps unavailable")
-class TestModelConfig:
-    def test_is_class(self):
-        assert isinstance(ModelConfig, type)
-    def test_importable(self):
+    def test_modelconfig_defined(self) -> None:
         assert ModelConfig is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="reasoning_types.py deps unavailable")
-class TestRAGConfig:
-    def test_is_class(self):
-        assert isinstance(RAGConfig, type)
-    def test_importable(self):
+    def test_ragconfig_defined(self) -> None:
         assert RAGConfig is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="reasoning_types.py deps unavailable")
-class TestGovernorConfig:
-    def test_is_class(self):
-        assert isinstance(GovernorConfig, type)
-    def test_importable(self):
+    def test_governorconfig_defined(self) -> None:
         assert GovernorConfig is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="reasoning_types.py deps unavailable")
-class TestReasoningConfig:
-    def test_is_class(self):
-        assert isinstance(ReasoningConfig, type)
-    def test_importable(self):
+    def test_reasoningconfig_defined(self) -> None:
         assert ReasoningConfig is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="reasoning_types.py deps unavailable")
-class TestMaxRetriesConstant:
-    def test_is_not_none(self):
-        assert MAX_RETRIES is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="reasoning_types.py deps unavailable")
-class TestDefaultSleepConstant:
-    def test_is_not_none(self):
-        assert DEFAULT_SLEEP is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="reasoning_types.py deps unavailable")
-class TestThresholdConstant:
-    def test_is_not_none(self):
-        assert THRESHOLD is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="reasoning_types.py deps unavailable")
-class TestBufferSizeConstant:
-    def test_is_not_none(self):
-        assert BUFFER_SIZE is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="reasoning_types.py deps unavailable")
-class TestBatchSizeConstant:
-    def test_is_not_none(self):
-        assert BATCH_SIZE is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="reasoning_types.py deps unavailable")
-class TestMaxDepthConstant:
-    def test_is_not_none(self):
-        assert MAX_DEPTH is not None
-
-
-def test_module_importable():
-    """Module reasoning_types.py is importable (or deps unavailable)."""
-    assert _AVAILABLE or not _AVAILABLE

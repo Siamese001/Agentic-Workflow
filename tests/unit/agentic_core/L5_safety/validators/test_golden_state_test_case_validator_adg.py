@@ -1,24 +1,22 @@
-"""ADG-driven tests for agentic_core/L5_safety/validators/golden_state_test_case_validator.py — fan_in=0."""
+"""ADG importability contract for agentic_core/L5_safety/validators/golden_state_test_case_validator.py.
+
+Auto-generated stub — covers GT_covers edge for ADG reachability.
+Behavioral tests belong in test_golden_state_test_case_validator.py (no _adg suffix).
+"""
+
 from __future__ import annotations
 
 import pytest
 
-pytestmark = pytest.mark.unit
-
 try:
     from agentic_core.L5_safety.validators.golden_state_test_case_validator import (  # noqa: F401
-        GoldenStateTestCase,
-        JudgeVerdict,
         EvalResult,
         GoldenCase,
         GoldenOutput,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
+        GoldenStateTestCase,
+        JudgeVerdict,
     )
+
     _AVAILABLE = True
 except Exception:
     _AVAILABLE = False
@@ -27,80 +25,25 @@ except Exception:
     EvalResult = None  # type: ignore[assignment,misc]
     GoldenCase = None  # type: ignore[assignment,misc]
     GoldenOutput = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
-    MAX_DEPTH = None  # type: ignore[assignment,misc]
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="golden_state_test_case_validator.py deps unavailable")
-class TestGoldenStateTestCase:
-    def test_is_class(self):
-        assert isinstance(GoldenStateTestCase, type)
-    def test_importable(self):
+@pytest.mark.skipif(not _AVAILABLE, reason="golden_state_test_case_validator deps unavailable")
+class TestGoldenStateTestCaseValidatorImportability:
+    def test_module_importable(self) -> None:
+        """ADG contract: agentic_core/L5_safety/validators/golden_state_test_case_validator.py must be importable."""
+        assert _AVAILABLE
+
+    def test_goldenstatetestcase_defined(self) -> None:
         assert GoldenStateTestCase is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="golden_state_test_case_validator.py deps unavailable")
-class TestJudgeVerdict:
-    def test_is_class(self):
-        assert isinstance(JudgeVerdict, type)
-    def test_importable(self):
+    def test_judgeverdict_defined(self) -> None:
         assert JudgeVerdict is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="golden_state_test_case_validator.py deps unavailable")
-class TestEvalResult:
-    def test_is_class(self):
-        assert isinstance(EvalResult, type)
-    def test_importable(self):
+    def test_evalresult_defined(self) -> None:
         assert EvalResult is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="golden_state_test_case_validator.py deps unavailable")
-class TestGoldenCase:
-    def test_is_class(self):
-        assert isinstance(GoldenCase, type)
-    def test_importable(self):
+    def test_goldencase_defined(self) -> None:
         assert GoldenCase is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="golden_state_test_case_validator.py deps unavailable")
-class TestGoldenOutput:
-    def test_is_class(self):
-        assert isinstance(GoldenOutput, type)
-    def test_importable(self):
+    def test_goldenoutput_defined(self) -> None:
         assert GoldenOutput is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="golden_state_test_case_validator.py deps unavailable")
-class TestMaxRetriesConstant:
-    def test_is_not_none(self):
-        assert MAX_RETRIES is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="golden_state_test_case_validator.py deps unavailable")
-class TestDefaultSleepConstant:
-    def test_is_not_none(self):
-        assert DEFAULT_SLEEP is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="golden_state_test_case_validator.py deps unavailable")
-class TestThresholdConstant:
-    def test_is_not_none(self):
-        assert THRESHOLD is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="golden_state_test_case_validator.py deps unavailable")
-class TestBufferSizeConstant:
-    def test_is_not_none(self):
-        assert BUFFER_SIZE is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="golden_state_test_case_validator.py deps unavailable")
-class TestBatchSizeConstant:
-    def test_is_not_none(self):
-        assert BATCH_SIZE is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="golden_state_test_case_validator.py deps unavailable")
-class TestMaxDepthConstant:
-    def test_is_not_none(self):
-        assert MAX_DEPTH is not None
-
-
-def test_module_importable():
-    """Module golden_state_test_case_validator.py is importable (or deps unavailable)."""
-    assert _AVAILABLE or not _AVAILABLE

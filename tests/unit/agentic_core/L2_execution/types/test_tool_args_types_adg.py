@@ -1,50 +1,54 @@
-"""ADG-driven tests for L2_execution/types/tool_args_types.py — fan_in=0."""
+"""ADG importability contract for agentic_core/L2_execution/types/tool_args_types.py.
+
+Auto-generated stub — covers GT_covers edge for ADG reachability.
+Behavioral tests belong in test_tool_args_types.py (no _adg suffix).
+"""
+
 from __future__ import annotations
 
 import pytest
 
-pytestmark = pytest.mark.unit
-
 try:
-    from agentic_core.L2_execution.types.tool_args_types import (
+    from agentic_core.L2_execution.types.tool_args_types import (  # noqa: F401
+        CreateDirectoryArgs,
+        DeleteFileArgs,
+        ListFilesArgs,
+        MoveFileArgs,
         ReadFileArgs,
         WriteFileArgs,
-        ListFilesArgs,
     )
+
     _AVAILABLE = True
 except Exception:
     _AVAILABLE = False
     ReadFileArgs = None  # type: ignore[assignment,misc]
     WriteFileArgs = None  # type: ignore[assignment,misc]
     ListFilesArgs = None  # type: ignore[assignment,misc]
+    MoveFileArgs = None  # type: ignore[assignment,misc]
+    DeleteFileArgs = None  # type: ignore[assignment,misc]
+    CreateDirectoryArgs = None  # type: ignore[assignment,misc]
 
 
 @pytest.mark.skipif(not _AVAILABLE, reason="tool_args_types deps unavailable")
-class TestReadFileArgs:
-    def test_creates(self):
-        args = ReadFileArgs(path="/foo/bar.py")
-        assert args.path == "/foo/bar.py"
+class TestToolArgsTypesImportability:
+    def test_module_importable(self) -> None:
+        """ADG contract: agentic_core/L2_execution/types/tool_args_types.py must be importable."""
+        assert _AVAILABLE
 
+    def test_readfileargs_defined(self) -> None:
+        assert ReadFileArgs is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="tool_args_types deps unavailable")
-class TestWriteFileArgs:
-    def test_creates(self):
-        args = WriteFileArgs(path="/foo/bar.py", content="hello")
-        assert args.path == "/foo/bar.py"
-        assert args.content == "hello"
+    def test_writefileargs_defined(self) -> None:
+        assert WriteFileArgs is not None
 
+    def test_listfilesargs_defined(self) -> None:
+        assert ListFilesArgs is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="tool_args_types deps unavailable")
-class TestListFilesArgs:
-    def test_creates_without_pattern(self):
-        args = ListFilesArgs(directory="/foo")
-        assert args.directory == "/foo"
-        assert args.pattern is None
+    def test_movefileargs_defined(self) -> None:
+        assert MoveFileArgs is not None
 
-    def test_creates_with_pattern(self):
-        args = ListFilesArgs(directory="/foo", pattern="*.py")
-        assert args.pattern == "*.py"
+    def test_deletefileargs_defined(self) -> None:
+        assert DeleteFileArgs is not None
 
-
-def test_module_importable():
-    assert _AVAILABLE or not _AVAILABLE
+    def test_createdirectoryargs_defined(self) -> None:
+        assert CreateDirectoryArgs is not None

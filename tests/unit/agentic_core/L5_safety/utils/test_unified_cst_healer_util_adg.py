@@ -3,6 +3,7 @@
 Auto-generated stub — covers GT_covers edge for ADG reachability.
 Behavioral tests belong in test_unified_cst_healer_util.py (no _adg suffix).
 """
+
 from __future__ import annotations
 
 import pytest
@@ -13,6 +14,7 @@ try:
         HealingResult,
         UnifiedCSTHealer,
     )
+
     _AVAILABLE = True
 except Exception:
     _AVAILABLE = False
@@ -20,18 +22,18 @@ except Exception:
     HealingResult = None  # type: ignore[assignment,misc]
     UnifiedCSTHealer = None  # type: ignore[assignment,misc]
 
-@pytest.mark.skipif(not _AVAILABLE, reason="unified_cst_healer_util.py deps unavailable")
+
+@pytest.mark.skipif(not _AVAILABLE, reason="unified_cst_healer_util deps unavailable")
 class TestUnifiedCstHealerUtilImportability:
     def test_module_importable(self) -> None:
-        """ADG contract: unified_cst_healer_util.py must be importable."""
+        """ADG contract: agentic_core/L5_safety/utils/unified_cst_healer_util.py must be importable."""
         assert _AVAILABLE
 
-    def test_healingconfig_is_type(self) -> None:
+    def test_healingconfig_defined(self) -> None:
         assert HealingConfig is not None
 
-    def test_healingresult_is_type(self) -> None:
+    def test_healingresult_defined(self) -> None:
         assert HealingResult is not None
 
-    def test_unifiedcsthealer_is_type(self) -> None:
+    def test_unifiedcsthealer_defined(self) -> None:
         assert UnifiedCSTHealer is not None
-

@@ -17,10 +17,18 @@ from agentic_core.L0_routing.config import (
 )
 
 
-def _get_configuration_error():
-    from agentic_core.runtime.exceptions.healer_exceptions import ConfigurationError
+class ConfigurationError(Exception):
+    """Module-level fallback; replaced at runtime by healer_exceptions.ConfigurationError."""
 
-    return ConfigurationError
+
+def _get_configuration_error():
+    try:
+        from agentic_core.runtime.exceptions.healer_exceptions import ConfigurationError as _CE
+
+        return _CE
+    # guardian: allow-silent-swallow
+    except Exception:
+        return ConfigurationError
 
 
 class CoreIntegrityVerifier:

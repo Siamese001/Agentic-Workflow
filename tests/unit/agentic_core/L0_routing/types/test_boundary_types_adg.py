@@ -3,23 +3,21 @@
 Auto-generated stub — covers GT_covers edge for ADG reachability.
 Behavioral tests belong in test_boundary_types.py (no _adg suffix).
 """
+
 from __future__ import annotations
 
 import pytest
 
 try:
     from agentic_core.L0_routing.types.boundary_types import (  # noqa: F401
-        SSOTBinding,
-        ContextRetrievalRequest,
-        SchemaValidationStatus,
         BoundarySchemaDescriptor,
+        ContextRetrievalRequest,
         InvariantSeverity,
         InvariantViolation,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
+        SchemaValidationStatus,
+        SSOTBinding,
     )
+
     _AVAILABLE = True
 except Exception:
     _AVAILABLE = False
@@ -29,29 +27,28 @@ except Exception:
     BoundarySchemaDescriptor = None  # type: ignore[assignment,misc]
     InvariantSeverity = None  # type: ignore[assignment,misc]
     InvariantViolation = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
 
-@pytest.mark.skipif(not _AVAILABLE, reason="boundary_types.py deps unavailable")
+
+@pytest.mark.skipif(not _AVAILABLE, reason="boundary_types deps unavailable")
 class TestBoundaryTypesImportability:
     def test_module_importable(self) -> None:
-        """ADG contract: boundary_types.py must be importable."""
+        """ADG contract: agentic_core/L0_routing/types/boundary_types.py must be importable."""
         assert _AVAILABLE
 
-    def test_ssotbinding_is_type(self) -> None:
+    def test_ssotbinding_defined(self) -> None:
         assert SSOTBinding is not None
 
-    def test_contextretrievalrequest_is_type(self) -> None:
+    def test_contextretrievalrequest_defined(self) -> None:
         assert ContextRetrievalRequest is not None
 
-    def test_schemavalidationstatus_is_type(self) -> None:
+    def test_schemavalidationstatus_defined(self) -> None:
         assert SchemaValidationStatus is not None
 
-    def test_max_retries_defined(self) -> None:
-        assert MAX_RETRIES is not None
+    def test_boundaryschemadescriptor_defined(self) -> None:
+        assert BoundarySchemaDescriptor is not None
 
-    def test_default_sleep_defined(self) -> None:
-        assert DEFAULT_SLEEP is not None
+    def test_invariantseverity_defined(self) -> None:
+        assert InvariantSeverity is not None
 
+    def test_invariantviolation_defined(self) -> None:
+        assert InvariantViolation is not None

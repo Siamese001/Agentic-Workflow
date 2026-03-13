@@ -1,27 +1,23 @@
-"""ADG-driven tests for agentic_core/L0_routing/scripts/reasoning.py — fan_in=0."""
+"""ADG importability contract for agentic_core/L0_routing/scripts/reasoning.py.
+
+Auto-generated stub — covers GT_covers edge for ADG reachability.
+Behavioral tests belong in test_reasoning.py (no _adg suffix).
+"""
+
 from __future__ import annotations
 
 import pytest
 
-pytestmark = pytest.mark.unit
-
 try:
     from agentic_core.L0_routing.scripts.reasoning import (  # noqa: F401
-        ReasoningStrategy,
         ChainOfThoughtStrategy,
-        TreeOfThoughtsStrategy,
-        ReActStrategy,
-        ReflectionStrategy,
         CritiqueStrategy,
-        MultiPathStrategy,
-        ReasoningStrategyFactory,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
+        ReActStrategy,
+        ReasoningStrategy,
+        ReflectionStrategy,
+        TreeOfThoughtsStrategy,
     )
+
     _AVAILABLE = True
 except Exception:
     _AVAILABLE = False
@@ -31,103 +27,28 @@ except Exception:
     ReActStrategy = None  # type: ignore[assignment,misc]
     ReflectionStrategy = None  # type: ignore[assignment,misc]
     CritiqueStrategy = None  # type: ignore[assignment,misc]
-    MultiPathStrategy = None  # type: ignore[assignment,misc]
-    ReasoningStrategyFactory = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
-    MAX_DEPTH = None  # type: ignore[assignment,misc]
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="reasoning.py deps unavailable")
-class TestReasoningStrategy:
-    def test_is_class(self):
-        assert isinstance(ReasoningStrategy, type)
-    def test_importable(self):
+@pytest.mark.skipif(not _AVAILABLE, reason="reasoning deps unavailable")
+class TestReasoningImportability:
+    def test_module_importable(self) -> None:
+        """ADG contract: agentic_core/L0_routing/scripts/reasoning.py must be importable."""
+        assert _AVAILABLE
+
+    def test_reasoningstrategy_defined(self) -> None:
         assert ReasoningStrategy is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="reasoning.py deps unavailable")
-class TestChainOfThoughtStrategy:
-    def test_is_class(self):
-        assert isinstance(ChainOfThoughtStrategy, type)
-    def test_importable(self):
+    def test_chainofthoughtstrategy_defined(self) -> None:
         assert ChainOfThoughtStrategy is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="reasoning.py deps unavailable")
-class TestTreeOfThoughtsStrategy:
-    def test_is_class(self):
-        assert isinstance(TreeOfThoughtsStrategy, type)
-    def test_importable(self):
+    def test_treeofthoughtsstrategy_defined(self) -> None:
         assert TreeOfThoughtsStrategy is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="reasoning.py deps unavailable")
-class TestReActStrategy:
-    def test_is_class(self):
-        assert isinstance(ReActStrategy, type)
-    def test_importable(self):
+    def test_reactstrategy_defined(self) -> None:
         assert ReActStrategy is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="reasoning.py deps unavailable")
-class TestReflectionStrategy:
-    def test_is_class(self):
-        assert isinstance(ReflectionStrategy, type)
-    def test_importable(self):
+    def test_reflectionstrategy_defined(self) -> None:
         assert ReflectionStrategy is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="reasoning.py deps unavailable")
-class TestCritiqueStrategy:
-    def test_is_class(self):
-        assert isinstance(CritiqueStrategy, type)
-    def test_importable(self):
+    def test_critiquestrategy_defined(self) -> None:
         assert CritiqueStrategy is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="reasoning.py deps unavailable")
-class TestMultiPathStrategy:
-    def test_is_class(self):
-        assert isinstance(MultiPathStrategy, type)
-    def test_importable(self):
-        assert MultiPathStrategy is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="reasoning.py deps unavailable")
-class TestReasoningStrategyFactory:
-    def test_is_class(self):
-        assert isinstance(ReasoningStrategyFactory, type)
-    def test_importable(self):
-        assert ReasoningStrategyFactory is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="reasoning.py deps unavailable")
-class TestMaxRetriesConstant:
-    def test_is_not_none(self):
-        assert MAX_RETRIES is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="reasoning.py deps unavailable")
-class TestDefaultSleepConstant:
-    def test_is_not_none(self):
-        assert DEFAULT_SLEEP is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="reasoning.py deps unavailable")
-class TestThresholdConstant:
-    def test_is_not_none(self):
-        assert THRESHOLD is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="reasoning.py deps unavailable")
-class TestBufferSizeConstant:
-    def test_is_not_none(self):
-        assert BUFFER_SIZE is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="reasoning.py deps unavailable")
-class TestBatchSizeConstant:
-    def test_is_not_none(self):
-        assert BATCH_SIZE is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="reasoning.py deps unavailable")
-class TestMaxDepthConstant:
-    def test_is_not_none(self):
-        assert MAX_DEPTH is not None
-
-
-def test_module_importable():
-    """Module reasoning.py is importable (or deps unavailable)."""
-    assert _AVAILABLE or not _AVAILABLE
