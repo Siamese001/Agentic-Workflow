@@ -1,83 +1,40 @@
-PYTEST EXECUTION DECISION TREE (LIBRARIAN / BOOK ANALOGY)
-=========================================================
+PYTEST EXECUTION LIFECYCLE (THE LIBRARIAN'S DAILY INSPECTION)
+=============================================================
 
-pytest start
-(the librarian begins the daily library inspection)
-
-    │
-    ▼
-collect test files
-(the librarian gathers all books that must be inspected)
-
-    │
-    ▼
-collect test functions
-(each inspection checklist inside each book is identified)
-
-    │
-    ▼
-for each test
-(the librarian picks up one book to inspect)
-
-    │
-    ▼
-check environment / dependencies
-(the librarian checks if required reference books or catalogs exist)
-
-    │
-    ├── dependency missing
-    │       │
-    │       ▼
-    │     SKIPPED
-    │     (required reference book is missing so inspection cannot be done)
-    │
-    ├── skip marker condition true
-    │       │
-    │       ▼
-    │     SKIPPED
-    │     (this book is marked "do not inspect under current conditions")
-    │
-    ▼
-run setup / fixtures
-(the librarian prepares the inspection desk and opens the book)
-
-    │
-    ├── setup crash
-    │       │
-    │       ▼
-    │     ERROR
-    │     (the book cannot even be opened because it is damaged)
-    │
-    ▼
-execute test body
-(the librarian reads the contents of the book)
-
-    │
-    ├── pytest.skip() triggered
-    │       │
-    │       ▼
-    │     SKIPPED
-    │     (the librarian stops inspection because a rule says it should not continue)
-    │
-    ├── unexpected exception
-    │       │
-    │       ▼
-    │     ERROR
-    │     (pages are corrupted or unreadable during inspection)
-    │
-    ▼
-evaluate assertions
-(the librarian checks the book against the official catalog checklist)
-
-    │
-    ├── assertion failed
-    │       │
-    │       ▼
-    │     FAIL
-    │     (the book does not match the catalog record)
-    │
-    └── assertion passed
-            │
-            ▼
-          PASS
-          (the book matches the catalog perfectly)
+[START] pytest
+(The librarian begins the daily library inspection)
+  │
+  ▼
+[COLLECT] Test Files & Functions
+(The librarian gathers all books and identifies their inspection checklists)
+  │
+  ├─ Check Environment & Dependencies (Are reference catalogs available?)
+  │  ├─ Dependency missing ──────▶ [SKIPPED] (Cannot inspect without references)
+  │  └─ Skip marker condition ───▶ [SKIPPED] (Marked: "Do not inspect currently")
+  │
+  ▼ SUCCESS: Found & Valid
+  │
+[SETUP] Run Fixtures
+(The librarian prepares the desk and attempts to open the book)
+  │
+  ├─ Setup crash / exception ────▶ [ERROR] (Book's cover is glued shut; cannot start)
+  │
+  ▼ SUCCESS: Setup complete
+  │
+[EXECUTE] Run Test Body
+(The librarian reads the contents of the book)
+  │
+  ├─ pytest.skip() triggered ────▶ [SKIPPED] (A rule inside says to stop reading)
+  │
+  ├─ Unexpected exception ───────▶ [FAIL] (Pages are corrupted or unreadable)
+  │
+  ▼ SUCCESS: Execution finishes
+  │
+[EVALUATE] Assertions
+(The librarian checks the book's contents against the official catalog)
+  │
+  ├─ Assertion failed ───────────▶ [FAIL] (The book contains the wrong information)
+  │
+  ▼ SUCCESS: Assertion passed
+  │
+[PASS] (The book matches the catalog perfectly)
