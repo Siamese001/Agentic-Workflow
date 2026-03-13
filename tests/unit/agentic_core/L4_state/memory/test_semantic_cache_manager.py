@@ -4,6 +4,7 @@ fan_in=3 — imported by 3 other modules.
 ADG import-hygiene is covered separately by test_semantic_cache_manager_adg.py.
 This file covers behavioral invariants and public API contracts.
 """
+
 from __future__ import annotations
 
 import pytest
@@ -15,25 +16,25 @@ try:
         CriticalInfrastructureError,
         PII_Sanitizer,
         SemanticCacheManager,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
+
+    # Constants are class attributes, not module-level
+    DEFAULT_WORKING_MEMORY_TTL = SemanticCacheManager.DEFAULT_WORKING_MEMORY_TTL
+    DEFAULT_LONG_TERM_TTL = SemanticCacheManager.DEFAULT_LONG_TERM_TTL
+    DEFAULT_PROMOTION_THRESHOLD = SemanticCacheManager.DEFAULT_PROMOTION_THRESHOLD
+    DEFAULT_TRACE_SAMPLING_RATE = SemanticCacheManager.DEFAULT_TRACE_SAMPLING_RATE
+    DEFAULT_STRICT_MODE = SemanticCacheManager.DEFAULT_STRICT_MODE
     _AVAILABLE = True
 except Exception:
     _AVAILABLE = False
     CriticalInfrastructureError = None  # type: ignore[assignment,misc]
     PII_Sanitizer = None  # type: ignore[assignment,misc]
     SemanticCacheManager = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
-    MAX_DEPTH = None  # type: ignore[assignment,misc]
+    DEFAULT_WORKING_MEMORY_TTL = None  # type: ignore[assignment,misc]
+    DEFAULT_LONG_TERM_TTL = None  # type: ignore[assignment,misc]
+    DEFAULT_PROMOTION_THRESHOLD = None  # type: ignore[assignment,misc]
+    DEFAULT_TRACE_SAMPLING_RATE = None  # type: ignore[assignment,misc]
+    DEFAULT_STRICT_MODE = None  # type: ignore[assignment,misc]
 
 
 @pytest.mark.skipif(not _AVAILABLE, reason="semantic_cache_manager.py deps unavailable")
@@ -41,23 +42,25 @@ class TestCriticalInfrastructureErrorContract:
     def test_is_class(self):
         assert isinstance(CriticalInfrastructureError, type)
 
+
 @pytest.mark.skipif(not _AVAILABLE, reason="semantic_cache_manager.py deps unavailable")
 class TestPII_SanitizerContract:
     def test_is_class(self):
         assert isinstance(PII_Sanitizer, type)
 
     def test_has_method_sanitize(self):
-        assert callable(getattr(PII_Sanitizer, 'sanitize', None))
+        assert callable(getattr(PII_Sanitizer, "sanitize", None))
 
     def test_has_method_is_safe(self):
-        assert callable(getattr(PII_Sanitizer, 'is_safe', None))
+        assert callable(getattr(PII_Sanitizer, "is_safe", None))
 
     def test_has_method_detect_pii(self):
-        assert callable(getattr(PII_Sanitizer, 'detect_pii', None))
+        assert callable(getattr(PII_Sanitizer, "detect_pii", None))
 
     def test_public_api_surface_non_empty(self):
-        pub = [m for m in dir(PII_Sanitizer) if not m.startswith('_')]
+        pub = [m for m in dir(PII_Sanitizer) if not m.startswith("_")]
         assert len(pub) >= 1
+
 
 @pytest.mark.skipif(not _AVAILABLE, reason="semantic_cache_manager.py deps unavailable")
 class TestSemanticCacheManagerContract:
@@ -65,68 +68,65 @@ class TestSemanticCacheManagerContract:
         assert isinstance(SemanticCacheManager, type)
 
     def test_has_method_get_instance(self):
-        assert callable(getattr(SemanticCacheManager, 'get_instance', None))
+        assert callable(getattr(SemanticCacheManager, "get_instance", None))
 
     def test_has_method_reset_instance(self):
-        assert callable(getattr(SemanticCacheManager, 'reset_instance', None))
+        assert callable(getattr(SemanticCacheManager, "reset_instance", None))
 
     def test_has_method_recall(self):
-        assert callable(getattr(SemanticCacheManager, 'recall', None))
+        assert callable(getattr(SemanticCacheManager, "recall", None))
 
     def test_has_method_learn(self):
-        assert callable(getattr(SemanticCacheManager, 'learn', None))
+        assert callable(getattr(SemanticCacheManager, "learn", None))
 
     def test_public_api_surface_non_empty(self):
-        pub = [m for m in dir(SemanticCacheManager) if not m.startswith('_')]
+        pub = [m for m in dir(SemanticCacheManager) if not m.startswith("_")]
         assert len(pub) >= 1
 
-@pytest.mark.skipif(not _AVAILABLE, reason="semantic_cache_manager.py deps unavailable")
-class TestMaxRetriesConstant:
-    def test_is_not_none(self):
-        assert MAX_RETRIES is not None
-
-    def test_value_is_truthy_or_defined(self):
-        assert MAX_RETRIES is not None
 
 @pytest.mark.skipif(not _AVAILABLE, reason="semantic_cache_manager.py deps unavailable")
-class TestDefaultSleepConstant:
+class TestDefaultWorkingMemoryTTLConstant:
     def test_is_not_none(self):
-        assert DEFAULT_SLEEP is not None
+        assert DEFAULT_WORKING_MEMORY_TTL is not None
 
-    def test_value_is_truthy_or_defined(self):
-        assert DEFAULT_SLEEP is not None
+    def test_is_positive(self):
+        assert DEFAULT_WORKING_MEMORY_TTL > 0
+
 
 @pytest.mark.skipif(not _AVAILABLE, reason="semantic_cache_manager.py deps unavailable")
-class TestThresholdConstant:
+class TestDefaultLongTermTTLConstant:
     def test_is_not_none(self):
-        assert THRESHOLD is not None
+        assert DEFAULT_LONG_TERM_TTL is not None
 
-    def test_value_is_truthy_or_defined(self):
-        assert THRESHOLD is not None
+    def test_exceeds_working_memory(self):
+        assert DEFAULT_LONG_TERM_TTL >= DEFAULT_WORKING_MEMORY_TTL
+
 
 @pytest.mark.skipif(not _AVAILABLE, reason="semantic_cache_manager.py deps unavailable")
-class TestBufferSizeConstant:
+class TestDefaultPromotionThresholdConstant:
     def test_is_not_none(self):
-        assert BUFFER_SIZE is not None
+        assert DEFAULT_PROMOTION_THRESHOLD is not None
 
-    def test_value_is_truthy_or_defined(self):
-        assert BUFFER_SIZE is not None
+    def test_is_between_zero_and_one(self):
+        assert 0.0 <= DEFAULT_PROMOTION_THRESHOLD <= 1.0
+
 
 @pytest.mark.skipif(not _AVAILABLE, reason="semantic_cache_manager.py deps unavailable")
-class TestBatchSizeConstant:
+class TestDefaultTraceSamplingRateConstant:
     def test_is_not_none(self):
-        assert BATCH_SIZE is not None
+        assert DEFAULT_TRACE_SAMPLING_RATE is not None
 
-    def test_value_is_truthy_or_defined(self):
-        assert BATCH_SIZE is not None
+    def test_is_between_zero_and_one(self):
+        assert 0.0 <= DEFAULT_TRACE_SAMPLING_RATE <= 1.0
+
 
 @pytest.mark.skipif(not _AVAILABLE, reason="semantic_cache_manager.py deps unavailable")
-class TestMaxDepthConstant:
+class TestDefaultStrictModeConstant:
     def test_is_not_none(self):
-        assert MAX_DEPTH is not None
+        assert DEFAULT_STRICT_MODE is not None
 
-    def test_value_is_truthy_or_defined(self):
-        assert MAX_DEPTH is not None
+    def test_is_bool(self):
+        assert isinstance(DEFAULT_STRICT_MODE, bool)
 
 
 def test_module_importable():
