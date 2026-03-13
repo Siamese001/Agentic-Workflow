@@ -176,7 +176,7 @@ def generate_full_adg(adg_artifacts_dir: Path, ts: str, archive_old: bool = True
 
     # --- Archive old artifacts ---
     if archive_old:
-        _archive_old_artifacts(adg_artifacts_dir, ts, retention_days=7)
+        _archive_old_artifacts(adg_artifacts_dir, ts, keep_runs=5)
 
 
 def _persist_adg_to_memory(result, artifact, snapshot, graph_diff, routing_summary, ts: str) -> None:
@@ -212,99 +212,144 @@ def _persist_adg_to_memory(result, artifact, snapshot, graph_diff, routing_summa
     )
 
 
-def _archive_old_artifacts(adg_dir: Path, current_ts: str, retention_days: int = 7) -> None:
-    """Archive ADG artifacts older than retention period.
+def _extract_timestamp(filename: str) -> str | None:
+    """Extract timestamp from ADG artifact filename.
 
-    Keeps the most recent N days of artifacts in the main directory.
-    Older artifacts are compressed and moved to _archive/YYYY-MM/.
+    Supports both formats:
+        New: adg_indexed_03122026.sqlite    -> 03122026  (MMDDYYYY)
+        Old: adg_indexed_20260312T093508Z.sqlite -> 20260312T093508Z  (legacy)
+    """
+    parts = filename.split("_")
+    if len(parts) < 3:
+        return None
+
+    # Last part before extension should be timestamp
+    ts_with_ext = parts[-1]
+    ts = ts_with_ext.split(".")[0]
+
+    # New format: MMDDYYYY (8 digits)
+    if len(ts) == 8 and ts.isdigit():
+        return ts
+    # Legacy format: YYYYMMDDTHHMMSSz (16 chars)
+    if len(ts) == 16 and ts[8] == "T" and ts.endswith("Z"):
+        return ts
+    return None
+
+
+def _parse_timestamp(ts: str) -> datetime:
+    """Parse timestamp string to datetime.
+
+    Args:
+        ts: Timestamp string — "03122026" (MMDDYYYY), "20260310" (YYYYMMDD legacy), or "20260311T160257Z" (ISO legacy)
+
+    Returns:
+        datetime object
+    """
+    if len(ts) == 8 and ts.isdigit():
+        # Distinguish MMDDYYYY (new) from YYYYMMDD (legacy)
+        # If first 4 chars are a plausible year (2020-2099), it's YYYYMMDD
+        if ts.startswith(("202", "203", "204", "205", "206")):
+            return datetime.strptime(ts, "%Y%m%d")
+        return datetime.strptime(ts, "%m%d%Y")
+    return datetime.strptime(ts, "%Y%m%dT%H%M%SZ")
+
+
+def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 5) -> None:
+    """Archive old ADG runs to keep artifacts directory clean.
+
+    Uses run-based retention (keeps last N complete runs) rather than day-based.
+    This is superior because it preserves complete artifact sets.
 
     Args:
         adg_dir: ADG artifacts directory
         current_ts: Current timestamp (MMDDYYYY)
-        retention_days: Number of days to keep in main directory
+        keep_runs: Number of recent complete runs to keep (default: 5)
     """
     if not adg_dir.exists():
-        print(f"[ADG] Archive: directory {adg_dir} does not exist")
         return
 
-    # Parse current timestamp to get cutoff date
-    try:
-        current_date = datetime.strptime(current_ts, "%m%d%Y")
-        cutoff_date = current_date - timedelta(days=retention_days)
-    except (ValueError, TypeError) as e:
-        print(f"[ADG] Archive: invalid timestamp format {current_ts}: {e}")
+    # Discover all runs by grouping files by timestamp
+    from collections import defaultdict
+
+    runs = defaultdict(list)
+
+    for pattern in ["adg_*.json", "adg_*.sqlite"]:
+        for path in adg_dir.glob(pattern):
+            # Skip LATEST files
+            if "LATEST" in path.name or "latest" in path.name:
+                continue
+
+            # Skip already archived files
+            if "_archive" in str(path):
+                continue
+
+            ts = _extract_timestamp(path.name)
+            if ts:
+                runs[ts].append(path)
+
+    if len(runs) <= keep_runs:
+        return  # All runs within retention policy
+
+    # Sort timestamps by actual datetime (newest first)
+    sorted_timestamps = sorted(runs.keys(), key=_parse_timestamp, reverse=True)
+
+    # Keep the newest N runs, archive the rest
+    to_archive = sorted_timestamps[keep_runs:]
+
+    if not to_archive:
         return
 
-    # Patterns for ADG artifacts to archive
-    patterns = [
-        "adg_snapshot_*.json",
-        "adg_indexed_*.sqlite",
-        "adg_file_graph_*.json",
-        "adg_symbol_graph_*.json",
-        "adg_governance_graph_*.json",
-        "adg_graphsnap_*.json",
-    ]
-
+    # Archive each old run
     archived_count = 0
-    skipped_count = 0
-    error_count = 0
+    bytes_original = 0
+    bytes_archived = 0
 
-    for pattern in patterns:
-        for artifact_path in adg_dir.glob(pattern):
-            # Extract timestamp from filename (MMDDYYYY format)
+    for ts in to_archive:
+        files = runs[ts]
+
+        # Get archive directory for this timestamp
+        try:
+            dt = _parse_timestamp(ts)
+            archive_month_dir = adg_dir / "_archive" / dt.strftime("%Y-%m")
+            archive_month_dir.mkdir(parents=True, exist_ok=True)
+        except (ValueError, OSError) as e:
+            print(f"[ADG] Archive: failed to create archive dir for {ts}: {e}")
+            continue
+
+        # Archive each file in the run
+        for file_path in files:
+            if not file_path.exists():
+                continue
+
             try:
-                # Extract 8-digit timestamp from filename
-                parts = artifact_path.stem.split("_")
-                ts_str = None
-                for part in parts:
-                    if len(part) == 8 and part.isdigit():
-                        ts_str = part
-                        break
+                original_size = file_path.stat().st_size
+                bytes_original += original_size
 
-                if not ts_str:
-                    print(f"[ADG] Archive: skipping {artifact_path.name} (no timestamp found)")
-                    skipped_count += 1
-                    continue
+                # Compress and archive
+                archive_path = archive_month_dir / f"{file_path.name}.gz"
 
-                artifact_date = datetime.strptime(ts_str, "%m%d%Y")
-
-                # Skip if within retention period or is current
-                if artifact_date >= cutoff_date or ts_str == current_ts:
-                    continue
-
-                # Create archive directory: _archive/YYYY-MM/
-                archive_month_dir = adg_dir / "_archive" / artifact_date.strftime("%Y-%m")
-                archive_month_dir.mkdir(parents=True, exist_ok=True)
-
-                # Compress and move
-                archive_path = archive_month_dir / f"{artifact_path.name}.gz"
-
-                # Compress the file
-                with open(artifact_path, "rb") as f_in:
+                with open(file_path, "rb") as f_in:
                     with gzip.open(archive_path, "wb", compresslevel=9) as f_out:
                         shutil.copyfileobj(f_in, f_out)
 
-                # Verify compressed file exists before deleting original
+                # Verify compressed file before deleting original
                 if archive_path.exists() and archive_path.stat().st_size > 0:
-                    artifact_path.unlink()
+                    bytes_archived += archive_path.stat().st_size
+                    file_path.unlink()
                     archived_count += 1
                 else:
-                    print(f"[ADG] Archive: failed to verify {archive_path.name}")
-                    error_count += 1
+                    # Clean up failed compression
                     if archive_path.exists():
-                        archive_path.unlink()  # Clean up failed compression
+                        archive_path.unlink()
 
-            except (ValueError, OSError) as e:
-                print(f"[ADG] Archive: error processing {artifact_path.name}: {e}")
-                error_count += 1
+            except OSError as e:
+                print(f"[ADG] Archive: error archiving {file_path.name}: {e}")
                 continue
 
     if archived_count > 0:
-        print(f"[ADG] Archive: archived {archived_count} old artifacts (retention={retention_days} days)")
-    if error_count > 0:
-        print(f"[ADG] Archive: {error_count} errors during archival")
-    if skipped_count > 0:
-        print(f"[ADG] Archive: skipped {skipped_count} files (no timestamp)")
+        savings = bytes_original - bytes_archived
+        pct = (savings / bytes_original * 100) if bytes_original > 0 else 0
+        print(f"[ADG] Archive: archived {len(to_archive)} runs, {archived_count} files (saved {pct:.0f}%)")
 
 
 def _infer_layer(path: str) -> str:

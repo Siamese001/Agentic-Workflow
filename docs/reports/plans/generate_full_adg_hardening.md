@@ -8,14 +8,19 @@ The `tools/generate_full_adg.py` script was drifting with no archive function, c
 - Potential disk space issues over time
 - Silent failures in Memory MCP persistence (bare `Exception` catches)
 
+**Note:** A standalone `tools/archive_old_adg.py` script existed but was never integrated into the ADG generation workflow, requiring manual execution.
+
 ## Changes Made
 
-### 1. Archive Function Added (`_archive_old_artifacts`)
+### 1. Archive Function Integrated (`_archive_old_artifacts`)
+
+**Source:** Restored superior logic from `tools/archive_old_adg.py` and integrated into automatic ADG generation workflow.
 
 **Retention Policy:**
-- Keeps artifacts from the last 7 days in the main directory
-- Archives older artifacts to `_archive/YYYY-MM/` with gzip compression (level 9)
+- **Run-based retention** (keeps last 5 complete runs, not day-based)
+- Archives older complete runs to `_archive/YYYY-MM/` with gzip compression (level 9)
 - Automatically creates monthly archive directories
+- Preserves complete artifact sets (all 6 files per run)
 
 **Artifacts Archived:**
 - `adg_snapshot_*.json`
@@ -34,6 +39,12 @@ The `tools/generate_full_adg.py` script was drifting with no archive function, c
 **Compression Ratio:**
 - JSON files: ~80-90% reduction (e.g., 30 MB → 3-6 MB)
 - SQLite files: ~40-60% reduction (e.g., 55 MB → 22-33 MB)
+
+**Key Improvements Over Original:**
+- **Automatic execution** - runs after each ADG generation (no manual intervention)
+- **Run-based retention** - preserves complete artifact sets (superior to day-based)
+- **Legacy format support** - handles both MMDDYYYY and ISO timestamp formats
+- **Integrated workflow** - no separate script to remember to run
 
 ### 2. Anti-Pattern Fixes
 
