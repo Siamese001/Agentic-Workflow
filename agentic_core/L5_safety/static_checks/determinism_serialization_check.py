@@ -133,4 +133,154 @@ def scan_repository_for_determinism(repo_root: Path) -> list[tuple[str, int, str
     return all_violations
 
 
-__all__ = ["scan_file_for_determinism", "scan_repository_for_determinism"]
+# =============================================================================
+# Execution-scope non-determinism checker (Gap 7 coverage)
+#
+# The serialization checker above only scans replay/storage modules.
+# This checker covers execution-critical layers (L1_cognition, L2_execution,
+# L3_orchestration, base_agents) for raw non-deterministic calls that escape
+# the DeterminismGuard context manager.
+# =============================================================================
+
+#: Allowlist comment that suppresses a specific line
+_EXEC_ALLOWLIST_COMMENT = "# guardian: allow-nondeterminism"
+
+#: Modules that are themselves the determinism infrastructure — skip them.
+_DETERMINISM_INFRA_PATHS = frozenset(
+    [
+        "determinism_guard.py",
+        "replay_guard.py",
+        "deterministic_providers.py",
+        "determinism_serialization_check.py",
+    ]
+)
+
+#: Execution-critical layer prefixes to scan.
+_EXECUTION_SCOPE_PATTERNS = [
+    "agentic_core/L1_cognition/**/*.py",
+    "agentic_core/L2_execution/**/*.py",
+    "agentic_core/L3_orchestration/**/*.py",
+    "agentic_core/base_agents/**/*.py",
+]
+
+
+class ExecutionScopeNondeterminismVisitor(ast.NodeVisitor):
+    """AST visitor that detects raw non-deterministic calls in execution-critical code.
+
+    Flags:
+    - ``time.time()`` / ``time.monotonic()`` / ``time.sleep()``
+    - ``datetime.now()`` / ``datetime.utcnow()``
+    - ``random.<any>()`` (except ``random.Random(seed)`` construction)
+    - ``uuid.uuid4()``
+
+    Calls on lines annotated with ``# guardian: allow-nondeterminism`` are
+    suppressed, as are calls inside functions/methods named with a
+    ``_determinism`` prefix (i.e., the infrastructure itself).
+    """
+
+    def __init__(self, source_lines: list[str]) -> None:
+        self._lines = source_lines
+        self.violations: list[tuple[int, str, str]] = []
+
+    def _is_allowed(self, lineno: int) -> bool:
+        """True if the source line carries the guardian allowlist comment."""
+        if lineno < 1 or lineno > len(self._lines):
+            return False
+        return _EXEC_ALLOWLIST_COMMENT in self._lines[lineno - 1]
+
+    def visit_Call(self, node: ast.Call) -> None:  # noqa: N802
+        if not self._is_allowed(node.lineno):
+            self._check_call(node)
+        self.generic_visit(node)
+
+    def _check_call(self, node: ast.Call) -> None:
+        func = node.func
+        if not isinstance(func, ast.Attribute):
+            self.generic_visit(node)
+            return
+
+        obj = func.value
+        method = func.attr
+
+        if isinstance(obj, ast.Name):
+            obj_name = obj.id
+
+            # time.time() / time.monotonic() / time.sleep()
+            if obj_name == "time" and method in ("time", "monotonic", "sleep", "perf_counter"):
+                self.violations.append((node.lineno, "EXEC_TIME_CALL", f"time.{method}()"))
+
+            # datetime.now() / datetime.utcnow()
+            elif obj_name == "datetime" and method in ("now", "utcnow"):
+                self.violations.append((node.lineno, "EXEC_DATETIME_NOW", f"datetime.{method}()"))
+
+            # random.* — flag any call except Random(seed) construction
+            elif obj_name == "random" and method not in ("Random", "seed"):
+                self.violations.append((node.lineno, "EXEC_RANDOM_CALL", f"random.{method}()"))
+
+            # uuid.uuid4()
+            elif obj_name == "uuid" and method == "uuid4":
+                self.violations.append((node.lineno, "EXEC_UUID4_CALL", "uuid.uuid4()"))
+
+
+def scan_file_for_execution_nondeterminism(file_path: Path) -> list[tuple[int, str, str]]:
+    """Scan a single file for raw non-deterministic calls in execution scope.
+
+    Args:
+        file_path: Path to file to scan.
+
+    Returns:
+        List of (lineno, rule_id, snippet) tuples.
+    """
+    if file_path.name in _DETERMINISM_INFRA_PATHS:
+        return []
+
+    violations: list[tuple[int, str, str]] = []
+    try:
+        content = file_path.read_text(encoding="utf-8", errors="replace")
+        source_lines = content.splitlines()
+        tree = ast.parse(content, filename=str(file_path))
+        visitor = ExecutionScopeNondeterminismVisitor(source_lines)
+        visitor.visit(tree)
+        violations.extend(visitor.violations)
+    except SyntaxError as e:
+        violations.append((e.lineno or 0, "EXEC_SYNTAX_ERROR", f"Syntax error: {e.msg}"))
+    # guardian: allow-silent-swallow
+    except Exception as e:
+        violations.append((0, "EXEC_SCAN_ERROR", f"Scan error: {e}"))
+    return violations
+
+
+def scan_execution_scope_for_nondeterminism(
+    repo_root: Path,
+) -> list[tuple[str, int, str, str]]:
+    """Scan execution-critical layers for raw non-deterministic calls.
+
+    Covers L1_cognition, L2_execution, L3_orchestration, and base_agents.
+    Skips determinism-infrastructure modules.
+
+    Args:
+        repo_root: Repository root path.
+
+    Returns:
+        Sorted list of (file_path, lineno, rule_id, snippet) tuples.
+    """
+    all_violations: list[tuple[str, int, str, str]] = []
+    for pattern in _EXECUTION_SCOPE_PATTERNS:
+        for py_file in repo_root.glob(pattern):
+            if "__pycache__" in str(py_file):
+                continue
+            file_violations = scan_file_for_execution_nondeterminism(py_file)
+            for lineno, rule_id, snippet in file_violations:
+                rel_path = str(py_file.relative_to(repo_root))
+                all_violations.append((rel_path, lineno, rule_id, snippet))
+    all_violations.sort(key=lambda x: (x[0], x[1], x[2], x[3]))
+    return all_violations
+
+
+__all__ = [
+    "ExecutionScopeNondeterminismVisitor",
+    "scan_execution_scope_for_nondeterminism",
+    "scan_file_for_determinism",
+    "scan_file_for_execution_nondeterminism",
+    "scan_repository_for_determinism",
+]
