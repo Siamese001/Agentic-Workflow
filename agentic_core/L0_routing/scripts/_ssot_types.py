@@ -1,0 +1,341 @@
+"""
+_ssot_types.py — Shared dataclasses, enums, and value types for execute_ssot.
+
+Extracted from execute_ssot.py to reduce file size and improve cohesion.
+All public symbols are re-exported from execute_ssot.py for backward compat.
+"""
+
+import argparse
+import ast
+import enum as _enum
+import os
+import uuid
+import warnings
+from dataclasses import dataclass, field
+from datetime import datetime
+from pathlib import Path
+from typing import Any
+
+
+@dataclass
+class ConfidenceScore:
+    """[HARDENED] Environment-aware confidence score for autonomous healing."""
+
+    value: float
+    reasoning: str
+    factors: dict[str, float] = field(default_factory=dict)
+
+    @property
+    def _high_threshold(self) -> float:
+        """Sourced from .env: SOVEREIGN_HIGH_CONFIDENCE (default: 0.75)"""
+        return float(os.getenv("SOVEREIGN_HIGH_CONFIDENCE", "0.75"))
+
+    @property
+    def _med_threshold(self) -> float:
+        """Sourced from .env: SOVEREIGN_MEDIUM_CONFIDENCE (default: 0.50)"""
+        return float(os.getenv("SOVEREIGN_MEDIUM_CONFIDENCE", "0.50"))
+
+    @property
+    def is_high_confidence(self) -> bool:
+        return self.value > self._high_threshold
+
+    @property
+    def is_medium_confidence(self) -> bool:
+        return self._med_threshold <= self.value <= self._high_threshold
+
+    @property
+    def is_low_confidence(self) -> bool:
+        return self.value < self._med_threshold
+
+
+class FailureType(_enum.Enum):
+    """Classifies the failure being routed.  Drives gate selection."""
+
+    LAYER_VIOLATION = "LAYER_VIOLATION"
+    GATEWAY_BYPASS = "GATEWAY_BYPASS"
+    KILL_SWITCH_BYPASS = "KILL_SWITCH_BYPASS"
+    SIGNATURE_VERIFY = "SIGNATURE_VERIFY"
+    UNSIGNED_INGRESS = "UNSIGNED_INGRESS"
+    IMPORT_BOUNDARY_VIOLATION = "IMPORT_BOUNDARY_VIOLATION"
+    SCHEMA_REQUIRED_FIELDS_MISSING = "SCHEMA_REQUIRED_FIELDS_MISSING"
+    NAMING = "NAMING"
+    HIERARCHY = "HIERARCHY"
+    SHALLOW = "SHALLOW"
+    DEEP = "DEEP"
+    VOID = "VOID"
+    DUPLICATE = "DUPLICATE"
+    ORPHAN = "ORPHAN"
+    UNKNOWN = "UNKNOWN"
+
+
+class RoutingTier(_enum.Enum):
+    DETERMINISTIC = "DETERMINISTIC"
+    QWEN = "QWEN"
+    GEMINI = "GEMINI"
+    FAIL_CLOSED = "FAIL_CLOSED"
+
+
+_STRUCTURAL_CLASS: frozenset[FailureType] = frozenset(
+    {
+        FailureType.LAYER_VIOLATION,
+        FailureType.GATEWAY_BYPASS,
+        FailureType.KILL_SWITCH_BYPASS,
+        FailureType.SIGNATURE_VERIFY,
+        FailureType.UNSIGNED_INGRESS,
+    }
+)
+_QWEN_DISALLOWED: frozenset[FailureType] = _STRUCTURAL_CLASS | frozenset(
+    {FailureType.IMPORT_BOUNDARY_VIOLATION, FailureType.SCHEMA_REQUIRED_FIELDS_MISSING}
+)
+
+
+@dataclass
+class RoutingInputs:
+    """All inputs to compute_routing_decision.  No embeddings allowed."""
+
+    failure_type: FailureType = FailureType.UNKNOWN
+    retry_count: int = 0
+    C: int = 0
+    B: int = 0
+    A: int = 0
+    N: int = 0
+    F: int = 0
+    L: int = 0
+    replay_mode: bool = False
+    playbook_match: bool = False
+    deterministic_coverage: bool = False
+    provider_prohibited_gemini: bool = False
+    provider_prohibited_qwen: bool = False
+
+
+@dataclass
+class RoutingDecision:
+    """Immutable routing result with full audit trail."""
+
+    tier: RoutingTier
+    score: int
+    gate_applied: str
+    model_id: str
+    factors: dict
+    inputs: RoutingInputs
+    determinism_digest: str
+
+    def as_log_line(self) -> str:
+        f = self.factors
+        i = self.inputs
+        return f"[ROUTING] tier={self.tier.value} S={self.score} gate={self.gate_applied} model={self.model_id} C={f.get('C', 0)} B={f.get('B', 0)} A={f.get('A', 0)} N={f.get('N', 0)} F={f.get('F', 0)} L={f.get('L', 0)} replay={i.replay_mode} retry={i.retry_count} playbook={i.playbook_match} det_cov={i.deterministic_coverage} digest={self.determinism_digest}"
+
+
+@dataclass
+class ReconciliationViolation:
+    """Structured violation for enhanced telemetry (Ported from FilesystemSSOTReconciler)."""
+
+    is_valid: bool
+    message: str
+    drift_type: str | None = None
+    file_path: Path | None = None
+    suggested_action: str | None = None
+    severity: int = 5
+
+    # guardian: allow-type-erasure
+    def to_dict(self) -> dict:
+        return {
+            "is_valid": self.is_valid,
+            "message": self.message,
+            "drift_type": self.drift_type,
+            "file_path": str(self.file_path.as_posix()) if self.file_path else None,
+            "severity": self.severity,
+        }
+
+
+@dataclass
+class ReconciliationManifest:
+    """Telemetry manifest for tracking all reconciliation changes."""
+
+    mission_id: str
+    territory: str
+    start_time: str
+    end_time: str | None = None
+    violations_found: int = 0
+    violations_attempted: int = 0
+    violations_fixed: int = 0
+    violations_failed: int = 0
+    modifications: list[dict[str, Any]] = field(default_factory=list)
+    failures: list[dict[str, Any]] = field(default_factory=list)
+    budget_consumed: int = 0
+    confidence_scores: list[float] = field(default_factory=list)
+
+    def add_modification(self, modification: dict[str, Any]) -> None:
+        self.modifications.append(modification)
+        self.violations_attempted += 1
+        if modification.get("success", False):
+            self.violations_fixed += 1
+        else:
+            self.violations_failed += 1
+
+    def add_failure(self, failure: dict[str, Any]) -> None:
+        self.failures.append(failure)
+        self.violations_failed += 1
+
+    # guardian: allow-type-erasure
+    def finalize(self) -> dict[str, Any]:
+        self.end_time = datetime.now().isoformat()
+        return {
+            "mission_id": self.mission_id,
+            "territory": self.territory,
+            "duration": {
+                "start": self.start_time,
+                "end": self.end_time,
+                "seconds": (
+                    datetime.fromisoformat(self.end_time) - datetime.fromisoformat(self.start_time)
+                ).total_seconds()
+                if self.end_time
+                else None,
+            },
+            "violations": {
+                "found": self.violations_found,
+                "attempted": self.violations_attempted,
+                "fixed": self.violations_fixed,
+                "failed": self.violations_failed,
+                "success_rate": self.violations_fixed / max(self.violations_attempted, 1),
+            },
+            "budget": {"consumed": self.budget_consumed, "remaining": max(0, 100 - self.budget_consumed)},
+            "confidence": {
+                "scores": self.confidence_scores,
+                "average": sum(self.confidence_scores) / len(self.confidence_scores)
+                if self.confidence_scores
+                else 0.0,
+            },
+            "modifications": self.modifications,
+            "failures": self.failures,
+        }
+
+
+class ASTCodeQualityValidator:
+    """AST-based code quality validation with memory guards (Ported from TypeMechanic)."""
+
+    def __init__(self, project_root: Path):
+        self.project_root = project_root
+        # guardian: allow-magic-config
+        self.max_file_size = 1000000
+
+    def _read_and_parse_file(self, fp: str) -> tuple[ast.AST | None, str | None]:
+        """Reads a file and parses it into an AST with strict size limits."""
+        try:
+            if os.path.getsize(fp) > self.max_file_size:
+                return (None, "File too large for AST analysis")
+            with open(fp, encoding="utf-8") as f:
+                tree = ast.parse(f.read(), filename=fp)
+                return (tree, None)
+        except (OSError, SyntaxError) as e:
+            return (None, f"Error parsing {fp}: {str(e)}")
+
+    # guardian: allow-type-erasure
+    def check_file_quality(self, file_path: Path) -> dict:
+        """Check file for code quality issues (missing types, etc)."""
+        violations = []
+        tree, error = self._read_and_parse_file(str(file_path))
+        if error:
+            return {"error": error, "violations": []}
+        if tree:
+            for node in ast.walk(tree):
+                if isinstance(node, ast.FunctionDef):
+                    if not node.returns and (not node.name.startswith("__")):
+                        violations.append(
+                            {
+                                "type": "MISSING_TYPE_HINT",
+                                "file": str(file_path),
+                                "line": node.lineno,
+                                "message": f"Function '{node.name}' missing return type hint",
+                            }
+                        )
+        return {"violations": violations, "violations_count": len(violations), "file": str(file_path)}
+
+
+@dataclass(frozen=True)
+class HealContext:
+    """Immutable healing configuration passed uniformly to every phase function.
+
+    Single control surface: --heal drives ALL active-mode flags.
+
+      --heal ON  => heal, auto_approve, enable_llm, enable_telemetry,
+                    enable_meta_learning all True
+      --heal OFF => scan/report only, everything passive
+
+    Per hostile audit Section B1: trace_id must appear in every artifact.
+    Per hostile audit Section E1: trace_id threads through all artifacts and HealContext.
+    Per hostile audit Section E10: execution_mode distinguishes scan/heal/validate modes.
+    """
+
+    heal: bool
+    auto_approve: bool
+    enable_telemetry: bool
+    enable_meta_learning: bool
+    trace_id: str
+    execution_mode: str
+
+    @property
+    def enable_llm(self) -> bool:
+        """LLM arbitration is always active when healing — not a separate flag."""
+        return self.heal
+
+    @property
+    def dry_run(self) -> bool:
+        """Convenience alias — inverted heal for legacy call sites."""
+        return not self.heal
+
+    @classmethod
+    def from_args(cls, args: argparse.Namespace) -> "HealContext":
+        """Construct from parsed CLI args. Single construction point.
+
+        Canonical flag semantics (--heal is the ONLY active-mode switch):
+          --heal ON  => heal, auto_approve, enable_llm, enable_telemetry,
+                        enable_meta_learning all True
+          --heal OFF => all passive/scan-only
+
+        Deprecated flags (kept for backward-compat, emit warnings):
+          --dry-run        => same as omitting --heal
+          --manual         => always autonomous now
+          --interactive    => auto_approve is always True under --heal
+          --apply-proposals => meta-learning always on under --heal
+        """
+        if getattr(args, "dry_run", False):
+            warnings.warn(
+                "--dry-run is deprecated. Omit --heal for scan-only mode.", DeprecationWarning, stacklevel=2
+            )
+        if getattr(args, "manual", False):
+            warnings.warn(
+                "--manual is deprecated. Autonomous mode is always active.", DeprecationWarning, stacklevel=2
+            )
+        if getattr(args, "interactive", False):
+            warnings.warn(
+                "--interactive is deprecated. Auto-approve is always on under --heal.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+        if getattr(args, "apply_proposals", False):
+            warnings.warn(
+                "--apply-proposals is deprecated. Meta-learning is always on under --heal.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+        heal = getattr(args, "heal", False)
+        from datetime import timezone
+
+        timestamp = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
+        trace_id = f"SSOT-{timestamp}-{uuid.uuid4().hex[:8]}"
+        validate = getattr(args, "validate", False)
+        if validate:
+            execution_mode = "validate"
+        elif heal:
+            execution_mode = "heal"
+        else:
+            execution_mode = "scan"
+        return cls(
+            heal=heal,
+            auto_approve=heal,
+            enable_telemetry=heal,
+            enable_meta_learning=heal,
+            trace_id=trace_id,
+            execution_mode=execution_mode,
+        )

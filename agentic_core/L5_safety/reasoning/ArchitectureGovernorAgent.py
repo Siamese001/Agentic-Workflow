@@ -271,25 +271,28 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                         )
                         if any(_cls.endswith(s) for s in _non_agent):
                             continue
-                    _vt_raw = getattr(violation, "violation_type", "")
-                    _vt = _vt_raw.name if hasattr(_vt_raw, "name") else str(_vt_raw)
+                    _vt = (
+                        violation.violation_type
+                        if isinstance(violation.violation_type, str)
+                        else str(violation.violation_type)
+                    )
                     if _vt == "GRAVITY" and violation.file_path:
                         if any(p in (TESTS_DIR, "test") for p in Path(str(violation.file_path)).parts):
                             continue
                     violations_found += 1
-                    v_type_raw = getattr(violation, "violation_type", "UNKNOWN")
-                    if hasattr(v_type_raw, "name"):
-                        v_type_name = v_type_raw.name
-                    else:
-                        v_type_name = str(v_type_raw)
+                    v_type_name = (
+                        violation.violation_type
+                        if isinstance(violation.violation_type, str)
+                        else str(violation.violation_type)
+                    )
                     violation_dict = {
                         "type": v_type_name,
                         "file": str(violation.file_path) if violation.file_path else None,
                         "message": violation.message,
-                        "severity": getattr(violation, "severity", None),
-                        "suggestion": getattr(violation, "suggestion", None),
-                        "source_layer": getattr(violation, "source_layer", None),
-                        "target_layer": getattr(violation, "target_layer", None),
+                        "severity": violation.severity,
+                        "suggestion": violation.suggested_fix,
+                        "source_layer": None,
+                        "target_layer": None,
                     }
                     all_violations.append(violation_dict)
                     if execute and (not dry_run) and self.healing_enabled:
@@ -471,25 +474,28 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                         )
                         if any(_cls2.endswith(s) for s in _non_agent2):
                             continue
-                    _vt2_raw = getattr(violation, "violation_type", "")
-                    _vt2 = _vt2_raw.name if hasattr(_vt2_raw, "name") else str(_vt2_raw)
+                    _vt2 = (
+                        violation.violation_type
+                        if isinstance(violation.violation_type, str)
+                        else str(violation.violation_type)
+                    )
                     if _vt2 == "GRAVITY" and violation.file_path:
                         if any(p in (TESTS_DIR, "test") for p in Path(str(violation.file_path)).parts):
                             continue
                     total_violations += 1
-                    v_type_raw = getattr(violation, "violation_type", "UNKNOWN")
-                    if hasattr(v_type_raw, "name"):
-                        v_type_name = v_type_raw.name
-                    else:
-                        v_type_name = str(v_type_raw)
+                    v_type_name = (
+                        violation.violation_type
+                        if isinstance(violation.violation_type, str)
+                        else str(violation.violation_type)
+                    )
                     violation_dict = {
                         "type": v_type_name,
                         "file": str(violation.file_path) if violation.file_path else None,
                         "message": violation.message,
-                        "severity": getattr(violation, "severity", None),
-                        "suggestion": getattr(violation, "suggestion", None),
-                        "source_layer": getattr(violation, "source_layer", None),
-                        "target_layer": getattr(violation, "target_layer", None),
+                        "severity": violation.severity,
+                        "suggestion": violation.suggested_fix,
+                        "source_layer": None,
+                        "target_layer": None,
                     }
                     violation_details.append(violation_dict)
         # guardian: allow-silent-swallow
@@ -1029,11 +1035,8 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
             if isinstance(v, dict):
                 v_type = v.get("type", "OTHER")
             else:
-                v_type = getattr(v, "violation_type", None)
-                if v_type:
-                    v_type = v_type.name if hasattr(v_type, "name") else str(v_type)
-                else:
-                    v_type = "OTHER"
+                raw_vt = getattr(v, "violation_type", None)
+                v_type = str(raw_vt) if raw_vt is not None else "OTHER"
             v_type = str(v_type).upper()
             if v_type in report:
                 report[v_type] += 1
