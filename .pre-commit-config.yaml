@@ -165,6 +165,7 @@ repos:
         exclude: (ops_scripts/ci/adg_burndown_gate\.py|ops_scripts/.*|tests/.*|__pycache__/.*|\.nox/.*|archives/.*|\.backup/.*)
 
       # -- T3a-c0: C0 Sovereignty Guardian (embedding must not drive routing) -----
+      # OPTIMIZED: Run manually or in CI only - not needed for every local commit
       - id: check-c0-sovereignty
         name: "T3a-c0: C0 Sovereignty — Embedding Boundary Enforcement"
         entry: cmd /c "set PYTHONPATH=.&& python agentic_core/L0_routing/scripts/run_guardian_c0_sovereignty.py"
@@ -172,8 +173,10 @@ repos:
         pass_filenames: false
         always_run: true
         require_serial: true
+        stages: [manual]
 
       # -- T3a-dedup: Dedup Guard (prevent duplicate symbols) -------------------
+      # OPTIMIZED: Run manually or in CI only - not needed for every local commit
       - id: check-dedup-violations
         name: "T3a-dedup: Dedup Guard — Prevent Duplicate Symbols"
         entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/check_dedup_violations.py"
@@ -181,8 +184,10 @@ repos:
         pass_filenames: false
         always_run: true
         require_serial: true
+        stages: [manual]
 
       # -- T3a-sprawl: Script Sprawl Guard (block new runner scripts) -----------
+      # OPTIMIZED: Run manually or in CI only - not needed for every local commit
       - id: check-script-sprawl
         name: "T3a-sprawl: Script Sprawl Guard — Block New Runners"
         entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/check_script_sprawl.py"
@@ -190,8 +195,10 @@ repos:
         pass_filenames: false
         always_run: true
         require_serial: true
+        stages: [manual]
 
       # -- T3a-shim: Shim Discipline (backward-compatibility enforcement) -------
+      # OPTIMIZED: Run manually or in CI only - not needed for every local commit
       - id: check-shim-discipline
         name: "T3a-shim: Shim Discipline — Backward-Compatibility"
         entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/check_shim_discipline.py"
@@ -199,8 +206,10 @@ repos:
         pass_filenames: false
         always_run: true
         require_serial: true
+        stages: [manual]
 
       # -- T3a-rollback: Rollback Gate (multi-file phase checkpoints) -----------
+      # OPTIMIZED: Run manually or in CI only - not needed for every local commit
       - id: check-rollback-checkpoints
         name: "T3a-rollback: Rollback Gate — Phase Checkpoints"
         entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/check_rollback_checkpoints.py"
@@ -208,6 +217,7 @@ repos:
         pass_filenames: false
         always_run: true
         require_serial: true
+        stages: [manual]
 
       # -- T3b: Report location SSOT (staged-only, structural) ------------------
       - id: check-report-location

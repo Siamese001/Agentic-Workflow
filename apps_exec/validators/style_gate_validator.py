@@ -1,0 +1,184 @@
+"""
+Style Gate Validator — apps_exec.
+
+Enforces quality gates on assembled executive brief sections:
+- minimum evidence anchors per section
+- no unsupported strategic claims
+- forbidden buzzword density check
+- required "why this matters" block
+- required audience declaration
+
+Deterministic: all checks are rule-based regex/count operations.
+"""
+
+from __future__ import annotations
+
+import logging
+import re
+from dataclasses import dataclass, field
+
+from apps_exec.types.exec_types import BriefSection, StyleViolation
+
+_log = logging.getLogger(__name__)
+
+_BUZZWORDS = frozenset(
+    [
+        "synergy",
+        "leverage",
+        "game-changer",
+        "disruptive",
+        "revolutionary",
+        "paradigm shift",
+        "bleeding edge",
+        "best-in-class",
+        "world-class",
+        "next-generation",
+        "cutting-edge",
+        "holistic",
+        "ecosystem",
+        "empower",
+        "unlock",
+        "transform",
+    ]
+)
+
+_UNSUPPORTED_CLAIM_PATTERNS = [
+    re.compile(r"(?i)\b(always|never|guaranteed|100%|perfect|flawless)\b"),
+    re.compile(r"(?i)\bfastest\b"),
+    re.compile(r"(?i)\bbest\s+in\s+class\b"),
+]
+
+
+@dataclass
+class StyleGateResult:
+    """Result of a style gate validation pass."""
+
+    passed: bool
+    violations: list[StyleViolation] = field(default_factory=list)
+    quality_score: float = 0.0
+    sections_checked: int = 0
+
+    def first_failure(self) -> StyleViolation | None:
+        for v in self.violations:
+            if v.severity == "BLOCK":
+                return v
+        return None
+
+
+class StyleGateValidator:
+    """Validate assembled brief sections against quality gate rules.
+
+    No silent pass — every violation is recorded with rule_id and evidence.
+    """
+
+    def __init__(self, config: object | None = None) -> None:
+        self._cfg = config
+
+    def validate_sections(
+        self,
+        sections: list[BriefSection],
+        audience: str = "",
+    ) -> StyleGateResult:
+        """Run all style gate checks on assembled sections.
+
+        Args:
+            sections: Assembled BriefSection list.
+            audience: Target persona key for audience-declaration check.
+
+        Returns:
+            StyleGateResult with all violations.
+        """
+        violations: list[StyleViolation] = []
+
+        for section in sections:
+            violations.extend(self._check_evidence_anchors(section))
+            violations.extend(self._check_buzzwords(section))
+            violations.extend(self._check_unsupported_claims(section))
+            violations.extend(self._check_why_this_matters(section))
+            violations.extend(self._check_empty_body(section))
+
+        block_count = sum(1 for v in violations if v.severity == "BLOCK")
+        warn_count = sum(1 for v in violations if v.severity == "WARN")
+
+        total_checks = len(sections) * 5
+        passed_checks = total_checks - block_count - warn_count
+        quality_score = max(0.0, passed_checks / total_checks) if total_checks > 0 else 1.0
+
+        passed = block_count == 0
+        return StyleGateResult(
+            passed=passed,
+            violations=violations,
+            quality_score=round(quality_score, 4),
+            sections_checked=len(sections),
+        )
+
+    def _check_evidence_anchors(self, section: BriefSection) -> list[StyleViolation]:
+        if not section.evidence_anchors:
+            return [
+                StyleViolation(
+                    rule_id="STYLE_EVIDENCE_MISSING",
+                    severity="WARN",
+                    message=f"Section '{section.section_id}' has no evidence anchors.",
+                    section_id=section.section_id,
+                )
+            ]
+        return []
+
+    def _check_buzzwords(self, section: BriefSection) -> list[StyleViolation]:
+        body_lower = section.body.lower()
+        found = [bw for bw in _BUZZWORDS if bw in body_lower]
+        if not found:
+            return []
+        density = len(found) / max(1, len(section.body.split()))
+        severity = "BLOCK" if density > 0.05 else "WARN"
+        return [
+            StyleViolation(
+                rule_id="STYLE_BUZZWORD_DENSITY",
+                severity=severity,
+                message=f"Section '{section.section_id}' contains buzzwords: {found}",
+                section_id=section.section_id,
+                evidence=", ".join(found),
+            )
+        ]
+
+    def _check_unsupported_claims(self, section: BriefSection) -> list[StyleViolation]:
+        results: list[StyleViolation] = []
+        for pattern in _UNSUPPORTED_CLAIM_PATTERNS:
+            match = pattern.search(section.body)
+            if match:
+                results.append(
+                    StyleViolation(
+                        rule_id="STYLE_UNSUPPORTED_CLAIM",
+                        severity="BLOCK",
+                        message=(
+                            f"Section '{section.section_id}' contains unsupported claim: '{match.group(0)}'"
+                        ),
+                        section_id=section.section_id,
+                        evidence=match.group(0),
+                    )
+                )
+        return results
+
+    def _check_why_this_matters(self, section: BriefSection) -> list[StyleViolation]:
+        if not section.why_this_matters or not section.why_this_matters.strip():
+            return [
+                StyleViolation(
+                    rule_id="STYLE_WHY_MISSING",
+                    severity="WARN",
+                    message=f"Section '{section.section_id}' is missing a 'why this matters' block.",
+                    section_id=section.section_id,
+                )
+            ]
+        return []
+
+    def _check_empty_body(self, section: BriefSection) -> list[StyleViolation]:
+        if not section.body or not section.body.strip():
+            return [
+                StyleViolation(
+                    rule_id="STYLE_EMPTY_BODY",
+                    severity="BLOCK",
+                    message=f"Section '{section.section_id}' has an empty body.",
+                    section_id=section.section_id,
+                )
+            ]
+        return []

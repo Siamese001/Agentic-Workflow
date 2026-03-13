@@ -1,0 +1,174 @@
+"""
+apps_exec Configuration Schemas — Executive Brief Generator.
+
+Pydantic models for type-safe configuration. Aligned with apps_rg/apps_lic schema pattern.
+"""
+
+from __future__ import annotations
+
+import json
+import logging
+from pathlib import Path
+from typing import Any
+
+from pydantic import BaseModel, Field, model_validator
+
+_log = logging.getLogger(__name__)
+
+MAX_BRIEF_WORDS = 2000
+MIN_BRIEF_WORDS = 150
+DEFAULT_TIMEOUT_SEC = 60
+MAX_SECTIONS = 20
+
+
+class AudiencePersonaConfig(BaseModel):
+    """Configuration for a target audience persona."""
+
+    persona_id: str = Field(..., description="Unique persona key, e.g. 'recruiter', 'cto', 'svp_eng'")
+    display_name: str = Field(..., description="Human-readable persona label")
+    tone: str = Field(
+        default="professional",
+        description="Tone directive: board-ready | cto-ready | recruiter-friendly | technical",
+    )
+    max_words: int = Field(default=800, ge=50)
+    required_sections: list[str] = Field(default_factory=list)
+    forbidden_phrases: list[str] = Field(default_factory=list)
+
+
+class IngestionConfig(BaseModel):
+    """Controls how source materials are ingested."""
+
+    source_dirs: list[str] = Field(
+        default_factory=lambda: ["docs/architecture", "docs/reports"],
+        description="Directories to ingest as source material",
+    )
+    file_extensions: list[str] = Field(default_factory=lambda: [".md", ".txt", ".json"])
+    max_file_size_kb: int = Field(default=512, ge=1)
+    recursive: bool = Field(default=True)
+
+
+class ExtractionConfig(BaseModel):
+    """Controls capability extraction from source documents."""
+
+    capability_patterns: list[str] = Field(
+        default_factory=lambda: [
+            r"(?i)(supports|provides|enforces|enables|implements)\s+([A-Z][a-z]+(?:\s+[A-Z]?[a-z]+){0,4})",
+            r"(?i)(governance|orchestration|routing|retrieval|safety|observability|determinism)",
+        ]
+    )
+    evidence_anchor_pattern: str = Field(
+        default=r"(?i)(layer|module|engine|agent|validator|contract|spec)\s+\w+",
+        description="Pattern for extracting evidence anchors from source",
+    )
+    max_capabilities_per_section: int = Field(default=10, ge=1)
+
+
+class OutputConfig(BaseModel):
+    """Controls output artifact generation."""
+
+    output_dir: str = Field(default="reports/executive")
+    artifact_prefix: str = Field(default="exec_brief")
+    emit_run_summary: bool = Field(default=True)
+    emit_json_manifest: bool = Field(default=True)
+    dry_run: bool = Field(default=False)
+
+
+class StyleGateConfig(BaseModel):
+    """Quality gate thresholds for style and evidence checks."""
+
+    min_evidence_anchors: int = Field(default=2, ge=0)
+    max_unsupported_claims: int = Field(default=0, ge=0)
+    forbidden_buzzword_density: float = Field(default=0.05, ge=0.0, le=1.0)
+    require_why_this_matters: bool = Field(default=True)
+    require_audience_declaration: bool = Field(default=True)
+    min_quality_score: float = Field(default=0.70, ge=0.0, le=1.0)
+
+
+class ExecAgentSpecs(BaseModel):
+    """Root configuration object for all apps_exec agent specifications."""
+
+    version: str = Field(default="1.0.0")
+    ingestion: IngestionConfig = Field(default_factory=IngestionConfig)
+    extraction: ExtractionConfig = Field(default_factory=ExtractionConfig)
+    output: OutputConfig = Field(default_factory=OutputConfig)
+    style_gate: StyleGateConfig = Field(default_factory=StyleGateConfig)
+    personas: dict[str, AudiencePersonaConfig] = Field(
+        default_factory=lambda: {
+            "recruiter": AudiencePersonaConfig(
+                persona_id="recruiter",
+                display_name="Technical Recruiter",
+                tone="recruiter-friendly",
+                max_words=600,
+                required_sections=["platform_summary", "key_capabilities", "portfolio_value"],
+                forbidden_phrases=["synergy", "leverage as a verb", "game-changer"],
+            ),
+            "cto": AudiencePersonaConfig(
+                persona_id="cto",
+                display_name="Chief Technology Officer",
+                tone="cto-ready",
+                max_words=1200,
+                required_sections=["architecture_overview", "governance_model", "platform_strategy"],
+            ),
+            "svp_eng": AudiencePersonaConfig(
+                persona_id="svp_eng",
+                display_name="SVP Engineering",
+                tone="technical",
+                max_words=1500,
+                required_sections=["system_architecture", "engineering_decisions", "quality_gates"],
+            ),
+            "board": AudiencePersonaConfig(
+                persona_id="board",
+                display_name="Board / Executive Committee",
+                tone="board-ready",
+                max_words=500,
+                required_sections=["strategic_value", "risk_posture", "competitive_differentiation"],
+            ),
+        }
+    )
+    global_step_limit: int = Field(default=10)
+    checkpoint_enabled: bool = Field(default=True)
+    trace_persistence: bool = Field(default=True)
+
+    @model_validator(mode="after")
+    def validate_personas_non_empty(self) -> ExecAgentSpecs:
+        if not self.personas:
+            raise ValueError("ExecAgentSpecs.personas must define at least one persona")
+        return self
+
+
+_SPEC_CACHE: ExecAgentSpecs | None = None
+
+
+def load_exec_specs(spec_path: str | None = None) -> ExecAgentSpecs:
+    """Load ExecAgentSpecs from JSON file or return defaults.
+
+    Args:
+        spec_path: Optional path to a JSON spec file. Defaults to
+            apps_exec/config/exec_agent_specs.json if it exists.
+
+    Returns:
+        Validated ExecAgentSpecs instance.
+    """
+    global _SPEC_CACHE
+    if _SPEC_CACHE is not None:
+        return _SPEC_CACHE
+
+    resolved: Path | None = None
+    if spec_path:
+        resolved = Path(spec_path)
+    else:
+        default = Path(__file__).parent / "exec_agent_specs.json"
+        if default.exists():
+            resolved = default
+
+    if resolved and resolved.exists():
+        try:
+            raw: dict[str, Any] = json.loads(resolved.read_text(encoding="utf-8"))
+            _SPEC_CACHE = ExecAgentSpecs.model_validate(raw)
+            _log.info("[apps_exec] Loaded specs from %s", resolved)
+            return _SPEC_CACHE
+        except (FileNotFoundError, json.JSONDecodeError, ValueError, OSError) as exc:
+            _log.warning("[apps_exec] Failed to load specs from %s: %s — using defaults", resolved, exc)
+
+    _SPEC_CACHE = ExecAgentSpecs()
+    return _SPEC_CACHE

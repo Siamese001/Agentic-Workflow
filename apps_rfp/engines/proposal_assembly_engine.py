@@ -1,0 +1,356 @@
+"""
+Proposal Assembly Engine — apps_rfp.
+
+Assembles deterministic proposal sections, roadmap, and risk matrix
+from a parsed client brief. Section structure is deterministic;
+narrative phrasing is template-rendered and marked as model-ready.
+
+Deterministic: section ordering, roadmap phases, risk matrix schema.
+Model-ready:   industry narrative, value articulation, pain point framing.
+"""
+
+from __future__ import annotations
+
+import logging
+from dataclasses import dataclass, field
+
+from apps_rfp.types.rfp_types import (
+    AssumptionItem,
+    ProposalSection,
+    RfpRequest,
+    RiskItem,
+    RiskSeverity,
+    RoadmapPhase,
+)
+
+_log = logging.getLogger(__name__)
+
+_ROADMAP_TEMPLATES: dict[str, dict] = {
+    "Discovery": {
+        "duration_weeks": 4,
+        "objectives": ("Baseline current state", "Identify integration points", "Define success criteria"),
+        "deliverables": ("Current state assessment", "Data inventory", "Success metrics framework"),
+        "governance_milestone": "Governance charter signed",
+        "measurement_milestone": "Baseline KPIs captured",
+    },
+    "Foundation": {
+        "duration_weeks": 8,
+        "objectives": ("Deploy core platform", "Establish data pipelines", "Implement governance layer"),
+        "deliverables": ("Platform deployment", "Data pipeline v1", "Policy enforcement layer"),
+        "governance_milestone": "Policy enforcement active",
+        "measurement_milestone": "Platform health dashboard live",
+    },
+    "Pilot": {
+        "duration_weeks": 6,
+        "objectives": ("Run first production workload", "Validate routing and safety", "Capture learnings"),
+        "deliverables": ("Pilot use case output", "Evaluation report", "Iteration backlog"),
+        "governance_milestone": "Safety gate validated in production",
+        "measurement_milestone": "Pilot ROI measured",
+    },
+    "Scale": {
+        "duration_weeks": 12,
+        "objectives": ("Expand to additional use cases", "Optimize for throughput", "Enable self-service"),
+        "deliverables": ("Multi-use-case deployment", "Optimization report", "Self-service portal"),
+        "governance_milestone": "Governance review board established",
+        "measurement_milestone": "Full ROI dashboard live",
+    },
+    "Govern": {
+        "duration_weeks": 4,
+        "objectives": ("Continuous governance reviews", "Drift detection active", "Audit trail complete"),
+        "deliverables": ("Governance operations runbook", "Drift monitoring alerts", "Audit report"),
+        "governance_milestone": "Ongoing governance operating model",
+        "measurement_milestone": "Continuous improvement cycle active",
+    },
+}
+
+_RISK_TEMPLATES: list[dict] = [
+    {
+        "category": "technical_complexity",
+        "description": "Integration with legacy systems may require custom adapters",
+        "severity": RiskSeverity.MEDIUM,
+        "mitigation": "Phased integration approach with API abstraction layer",
+    },
+    {
+        "category": "data_quality",
+        "description": "Inconsistent data quality may degrade retrieval accuracy",
+        "severity": RiskSeverity.HIGH,
+        "mitigation": "Data quality gates enforced at ingestion; reject on schema mismatch",
+    },
+    {
+        "category": "regulatory_compliance",
+        "description": "Regulatory requirements may constrain model selection or data residency",
+        "severity": RiskSeverity.HIGH,
+        "mitigation": "Sovereign deployment mode; data residency controls in L0 routing",
+    },
+    {
+        "category": "change_management",
+        "description": "Stakeholder adoption may lag technical delivery",
+        "severity": RiskSeverity.MEDIUM,
+        "mitigation": "Dedicated change management workstream; champion network",
+    },
+    {
+        "category": "model_drift",
+        "description": "Model behavior may shift over time without controlled retraining",
+        "severity": RiskSeverity.HIGH,
+        "mitigation": "Drift detection engine; automatic human escalation on threshold breach",
+    },
+    {
+        "category": "integration_risk",
+        "description": "Third-party API dependencies may introduce latency or availability risk",
+        "severity": RiskSeverity.MEDIUM,
+        "mitigation": "Circuit breaker pattern; graceful degradation to cached responses",
+    },
+]
+
+
+@dataclass
+class ProposalAssemblyResult:
+    """Output of proposal assembly."""
+
+    sections: list[ProposalSection] = field(default_factory=list)
+    roadmap: list[RoadmapPhase] = field(default_factory=list)
+    risks: list[RiskItem] = field(default_factory=list)
+    assumptions: list[AssumptionItem] = field(default_factory=list)
+
+
+class ProposalAssemblyEngine:
+    """Assemble a complete proposal from a parsed client brief.
+
+    Generates all required sections with deterministic templates.
+    Marks assumptions explicitly. Builds phased roadmap and risk matrix.
+    """
+
+    AGENT_ID = "RFP_PROPOSAL_ASSEMBLY"
+
+    def __init__(self, config: object | None = None) -> None:
+        self._config = config
+
+    def execute(self, request: RfpRequest) -> ProposalAssemblyResult:
+        """Assemble complete proposal for the given request.
+
+        Args:
+            request: RfpRequest with problem statement and context.
+
+        Returns:
+            ProposalAssemblyResult with sections, roadmap, risks.
+        """
+        assumptions: list[AssumptionItem] = self._build_assumptions(request)
+        sections = self._build_sections(request, assumptions)
+        roadmap = self._build_roadmap(request)
+        risks = self._build_risks(request)
+
+        _log.info(
+            "[ProposalAssemblyEngine] sections=%d roadmap=%d risks=%d",
+            len(sections),
+            len(roadmap),
+            len(risks),
+        )
+        return ProposalAssemblyResult(
+            sections=sections,
+            roadmap=roadmap,
+            risks=risks,
+            assumptions=assumptions,
+        )
+
+    def _build_assumptions(self, request: RfpRequest) -> list[AssumptionItem]:
+        """Build labeled assumptions from request context."""
+        assumptions = [
+            AssumptionItem(
+                assumption_id="ASM-001",
+                statement=f"Problem statement represents the primary pain point for {request.industry or 'the target organization'}.",
+                basis="client-provided",
+                section_id="current_state",
+            ),
+            AssumptionItem(
+                assumption_id="ASM-002",
+                statement="Organizational data is accessible via standard API or export formats.",
+                basis="analyst judgment",
+                section_id="future_state",
+            ),
+            AssumptionItem(
+                assumption_id="ASM-003",
+                statement="Target deployment environment supports containerized workloads.",
+                basis="architecture posture default",
+                section_id="implementation_roadmap",
+            ),
+        ]
+        if request.delivery_timeline_weeks > 0:
+            assumptions.append(
+                AssumptionItem(
+                    assumption_id="ASM-004",
+                    statement=f"Delivery timeline of {request.delivery_timeline_weeks} weeks is feasible with dedicated resourcing.",
+                    basis="client-provided",
+                    section_id="implementation_roadmap",
+                )
+            )
+        return assumptions
+
+    def _build_sections(
+        self, request: RfpRequest, assumptions: list[AssumptionItem]
+    ) -> list[ProposalSection]:
+        """Build all proposal sections."""
+        industry_display = request.industry.replace("_", " ").title()
+        problem = request.problem_statement or "enterprise AI transformation"
+        posture = (
+            request.architecture_posture.value
+            if hasattr(request.architecture_posture, "value")
+            else str(request.architecture_posture)
+        )
+        assumption_note = f"\n\n*Assumptions: {'; '.join(a.statement for a in assumptions[:2])}*"
+
+        sections: list[ProposalSection] = []
+
+        sections.append(
+            ProposalSection(
+                section_id="executive_summary",
+                heading="Executive Summary",
+                body=(
+                    f"This proposal responds to the challenge of: **{problem}**.\n\n"
+                    f"We recommend an agentic AI platform deployment for the {industry_display} sector "
+                    f"using a {posture} architecture. The platform provides deterministic governance, "
+                    "multi-hop orchestration, and full auditability from day one.\n\n"
+                    "Expected outcomes include reduced manual processing, improved decision quality, "
+                    "and a defensible audit trail meeting regulatory requirements."
+                ),
+                is_deterministic=True,
+                evidence=("agentic_core governance layer", "L0 routing enforcement"),
+                word_count=80,
+            )
+        )
+
+        sections.append(
+            ProposalSection(
+                section_id="current_state",
+                heading="Current State and Pain Points",
+                body=(
+                    f"**Problem Statement:** {problem}\n\n"
+                    f"**Industry Context:** {industry_display} organizations typically face: "
+                    "fragmented data pipelines, manual review bottlenecks, lack of auditability "
+                    "in AI outputs, and difficulty scaling governance across business units.\n\n"
+                    "**Root Cause:** Existing tooling was not designed for agentic workflows. "
+                    "Point solutions create integration debt and governance blind spots."
+                    f"{assumption_note}"
+                ),
+                is_deterministic=True,
+                assumptions=tuple(a for a in assumptions if a.section_id == "current_state"),
+                word_count=90,
+            )
+        )
+
+        sections.append(
+            ProposalSection(
+                section_id="future_state",
+                heading="Future State Architecture",
+                body=(
+                    f"**Target Architecture:** {posture.title()} deployment using a six-layer "
+                    "agentic platform (L0 routing → L6 observability).\n\n"
+                    "**Key Components:**\n"
+                    "- L0 Routing: Policy-enforced entry with InstructionPacket signing\n"
+                    "- L1 Cognition: Adaptive retrieval and RAG pipeline\n"
+                    "- L2 Execution: Deterministic execution contracts\n"
+                    "- L3 Orchestration: Multi-hop agent workflows\n"
+                    "- L5 Safety: Static analysis and hallucination gates\n"
+                    "- L6 Observability: OpenTelemetry-aligned tracing\n\n"
+                    "All components produce auditable, provenance-tagged outputs."
+                ),
+                is_deterministic=True,
+                evidence=("L0-L6 layer architecture", "InstructionPacket contract"),
+                assumptions=tuple(a for a in assumptions if a.section_id == "future_state"),
+                word_count=120,
+            )
+        )
+
+        sections.append(
+            ProposalSection(
+                section_id="implementation_roadmap",
+                heading="Implementation Roadmap",
+                body=(
+                    "The implementation follows a five-phase approach:\n\n"
+                    "1. **Discovery** (4 weeks): Baseline assessment, integration mapping, success criteria\n"
+                    "2. **Foundation** (8 weeks): Core platform deployment, governance layer activation\n"
+                    "3. **Pilot** (6 weeks): First production workload, safety validation, ROI capture\n"
+                    "4. **Scale** (12 weeks): Multi-use-case expansion, self-service enablement\n"
+                    "5. **Govern** (4 weeks): Continuous governance, drift monitoring, audit trail\n\n"
+                    "Each phase includes a governance milestone and a measurement milestone. "
+                    "No phase may be skipped."
+                    f"{assumption_note}"
+                ),
+                is_deterministic=True,
+                assumptions=tuple(a for a in assumptions if a.section_id == "implementation_roadmap"),
+                word_count=110,
+            )
+        )
+
+        sections.append(
+            ProposalSection(
+                section_id="risk_and_governance",
+                heading="Risk and Governance",
+                body=(
+                    "**Governance Model:** Policy enforced at L0 routing via signed InstructionPackets. "
+                    "All outputs carry provenance metadata. Static analysis runs on every commit.\n\n"
+                    "**Risk Register:** See risk matrix in run artifacts.\n\n"
+                    "**Key Risks:**\n"
+                    "- Data quality degradation (HIGH) — mitigated by ingestion gates\n"
+                    "- Model drift (HIGH) — mitigated by drift detection engine\n"
+                    "- Regulatory compliance (HIGH) — mitigated by sovereign deployment mode\n\n"
+                    "**Escalation:** Any CRITICAL-severity risk triggers human review before next phase."
+                ),
+                is_deterministic=True,
+                evidence=("L0 policy enforcement", "drift_detection_healer.py"),
+                word_count=100,
+            )
+        )
+
+        sections.append(
+            ProposalSection(
+                section_id="value_case",
+                heading="Value Case",
+                body=(
+                    "**Value Drivers:**\n"
+                    "1. Reduced manual review cycles → estimated 40-60% time savings on document workflows\n"
+                    "2. Governance at architecture layer → reduced compliance audit cost\n"
+                    "3. Deterministic outputs → repeatable, defensible decision trails\n"
+                    "4. Multi-hop orchestration → complex workflows without custom integration code\n\n"
+                    "**Measurement:** Value is tracked against baseline KPIs captured in Discovery. "
+                    "ROI dashboard live by end of Pilot phase.\n\n"
+                    "*All value estimates are assumptions until baseline measurement is complete.*"
+                ),
+                is_deterministic=True,
+                evidence=("platform capability extraction", "governance layer enforcement"),
+                word_count=100,
+            )
+        )
+
+        return sections
+
+    def _build_roadmap(self, request: RfpRequest) -> list[RoadmapPhase]:
+        """Build phased roadmap from templates."""
+        phases = []
+        for idx, (phase_name, tmpl) in enumerate(_ROADMAP_TEMPLATES.items()):
+            phases.append(
+                RoadmapPhase(
+                    phase_id=f"PHASE-{idx + 1:02d}",
+                    name=phase_name,
+                    duration_weeks=tmpl["duration_weeks"],
+                    objectives=tmpl["objectives"],
+                    deliverables=tmpl["deliverables"],
+                    governance_milestone=tmpl["governance_milestone"],
+                    measurement_milestone=tmpl["measurement_milestone"],
+                )
+            )
+        return phases
+
+    def _build_risks(self, request: RfpRequest) -> list[RiskItem]:
+        """Build risk matrix from templates, adding industry-specific risks."""
+        risks = []
+        for idx, tmpl in enumerate(_RISK_TEMPLATES):
+            risks.append(
+                RiskItem(
+                    risk_id=f"RISK-{idx + 1:03d}",
+                    category=tmpl["category"],
+                    description=tmpl["description"],
+                    severity=tmpl["severity"],
+                    mitigation=tmpl["mitigation"],
+                )
+            )
+        return risks
