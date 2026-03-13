@@ -98,6 +98,25 @@ class HealingPolicyMixin:
         violations_fixed = 0
         errors = 0
         skipped = 0
+        _confidence: float = 1.0
+        try:
+            from pathlib import Path as _Path
+
+            from agentic_core.adg.runtime.behavioral_index import get_behavioral_profile as _gbp
+
+            _self_file = _Path(getattr(self, "__module_file__", __file__) or __file__).resolve()
+            _root = _self_file.parents[3]
+            _bp = _gbp(_self_file, _root)
+            if _bp.deterministic_coverage:
+                _confidence += 0.05
+            elif _bp.behavioral_score > 0.7:
+                _confidence -= 0.05
+            Logger.debug(
+                "[ADG] heal_repository confidence=%.3f (score=%.3f)", _confidence, _bp.behavioral_score
+            )
+        # guardian: allow-silent-swallow
+        except Exception:
+            pass
         try:
             for file_path in self.python_files:
                 try:

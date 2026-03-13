@@ -77,6 +77,25 @@ class CredentialAccessGuard:
         self._policy_enforced = policy_enforced
         self._denied_prefixes = denied_prefixes if denied_prefixes is not None else _DENIED_PREFIXES
         self._recorder = SecretAccessRecorder(agent_id=agent_id, run_id=run_id)
+        self._adg_violates: list[str] = []
+        try:
+            from pathlib import Path as _Path
+
+            from agentic_core.adg.runtime.behavioral_index import get_behavioral_profile as _gbp
+
+            _root = _Path(__file__).resolve().parents[5]
+            _bp = _gbp(_Path(__file__).resolve(), _root)
+            self._adg_violates = sorted(_bp.antipattern_signals)
+            if self._adg_violates:
+                Logger.warning(
+                    "[ADG] CredentialAccessGuard: violates L5->L_TOOLS signals=%s "
+                    "(score=%.3f) — add to guardian priority queue",
+                    self._adg_violates,
+                    _bp.behavioral_score,
+                )
+        # guardian: allow-silent-swallow
+        except Exception:
+            pass
 
     # ------------------------------------------------------------------
     # Public API

@@ -49,6 +49,7 @@ from agentic_core.L0_routing.utils.core_integrity_util import (
     CoreIntegrityVerifier,
     emergency_shutdown,
 )
+from agentic_core.mixins.adg_behavioral_mixin import ADGBehavioralMixin
 from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
 from agentic_core.mixins.audit_trail_mixin import AuditTrailMixin
 
@@ -97,6 +98,7 @@ class SovereignBaseAgent(
     MetaLearningClientMixin,  # Not in infrastructure_mixin
     GoldenContextMixin,  # Not in infrastructure_mixin
     RuntimeSafetyMixin,  # Not in infrastructure_mixin
+    ADGBehavioralMixin,  # ADG behavioral score + antipattern signals for all agents
 ):
     """
     Sovereign Single Source of Truth (SSOT) Root.

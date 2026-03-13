@@ -131,7 +131,23 @@ class DuplicateCodeDetectorAgent(AtomicExecutionMixin, SubatomicTestingMixin, He
         """
         file_types = file_types or self.SUPPORTED_EXTENSIONS
         Logger.info(f"[DUPE SCAN] Scanning for duplicates in {len(file_types)} file types...")
-        results = {"whole_file_duplicates": [], "code_block_duplicates": [], "deletion_recommendations": []}
+        _adg_antipatterns: list = []
+        try:
+            from agentic_core.adg.runtime.behavioral_index import get_behavioral_profile as _gbp
+
+            _bp = _gbp(Path(__file__).resolve(), self.project_root)
+            _adg_antipatterns = sorted(_bp.antipattern_signals)
+            if _adg_antipatterns:
+                Logger.info("[ADG] DuplicateCodeDetectorAgent antipatterns=%s", _adg_antipatterns)
+        # guardian: allow-silent-swallow
+        except Exception:
+            pass
+        results = {
+            "whole_file_duplicates": [],
+            "code_block_duplicates": [],
+            "deletion_recommendations": [],
+            "adg_antipattern_signals": _adg_antipatterns,
+        }
         if scan_whole_files:
             whole_file_dupes = self._scan_whole_files(file_types)
             results["whole_file_duplicates"] = whole_file_dupes

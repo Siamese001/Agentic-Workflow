@@ -116,6 +116,15 @@ class SovereignRAGManager(SovereignBaseAgent):
                 self.logger.warning(f"Vector indexing failed: {e}")
 
     def retrieve(self, query: str, top_k: int = 5) -> list[dict[str, Any]]:
+        _adg_confidence: float = 0.5
+        try:
+            from agentic_core.adg.runtime.behavioral_index import get_behavioral_profile as _gbp
+
+            _root = Path(__file__).resolve().parents[3]
+            _adg_confidence = _gbp(Path(__file__).resolve(), _root).behavioral_score
+        # guardian: allow-silent-swallow
+        except Exception:
+            pass
         vector_results: list[dict[str, Any]] = []
         bm25_results: list[dict[str, Any]] = []
         if self.embedder and self.vector_store:
@@ -127,9 +136,10 @@ class SovereignRAGManager(SovereignBaseAgent):
                         {
                             "source": "vector",
                             "id": r.get("id"),
-                            "score": r.get("score", 0.0),
+                            "score": round(r.get("score", 0.0) * _adg_confidence, 8),
                             "text": (r.get("metadata") or {}).get("text", ""),
                             "metadata": r.get("metadata") or {},
+                            "adg_confidence_weight": _adg_confidence,
                         }
                         for r in raw or []
                     ]

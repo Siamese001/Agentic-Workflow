@@ -63,6 +63,24 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
         self._gravity_repair_agent = None
         self._archival_gatekeeper = None
         self._cognitive_agent = None
+        self.adg_signals: dict[str, list] = {}
+        try:
+            from agentic_core.adg.applications.guardian_prioritizer import GuardianPrioritizer
+            from agentic_core.adg.runtime.cache_loader import load_or_scan as _adg_load_or_scan
+
+            _sr = _adg_load_or_scan(repo_root=str(self.project_root))
+            if _sr is not None:
+                _gp = GuardianPrioritizer(_sr)
+                _raw = _gp.get_signals()
+                self.adg_signals = {
+                    "cross_layer_violations": _raw.get("cross_layer_violations", []),
+                    "fan_in_hotspots": _raw.get("fan_in_hotspots", []),
+                    "orphan_modules": _raw.get("orphan_modules", []),
+                    "upward_mutations": _raw.get("upward_mutations", []),
+                }
+        # guardian: allow-silent-swallow
+        except Exception:
+            pass
         Logger.info(
             f"ArchitectureGovernorAgent initialized (auto_approve={self.auto_approve}, ci_mode={self.ci_mode})"
         )

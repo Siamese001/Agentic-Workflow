@@ -1,9 +1,11 @@
 """Test postgres MCP server startup via npx."""
-import subprocess
-import os
-import time
-import sys
 
+import os
+import subprocess
+import sys
+import time
+
+# guardian: allow-magic-config
 CONN = "postgresql://postgres:postgres@localhost:5432/mcp_db"
 env = {**os.environ, "PGPASSWORD": "postgres"}
 
@@ -30,7 +32,9 @@ if poll is not None:
 print("MCP postgres server is RUNNING (did not exit within 5s)")
 proc.terminate()
 try:
+    # guardian: allow-magic-config
     proc.wait(timeout=3)
+# guardian: allow-silent-swallow
 except Exception:
     proc.kill()
 

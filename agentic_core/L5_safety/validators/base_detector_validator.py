@@ -171,6 +171,28 @@ class AntiPatternDetector(ABC):
                 if self._is_violation_whitelisted(violation):
                     violation.whitelisted = True
 
+            # Phase 3e: ADG confirmation — upgrade to HARD_BLOCK when ADG confirms the same pattern
+            if violations:
+                try:
+                    from agentic_core.adg.runtime.behavioral_index import get_behavioral_profile as _gbp
+
+                    _bp = _gbp(
+                        file_path,
+                        file_path.parents[5] if len(file_path.parents) > 5 else file_path.parents[-1],
+                    )
+                    if _bp.antipattern_signals:
+                        for violation in violations:
+                            if (
+                                not violation.whitelisted
+                                and violation.severity != "hard_block"
+                                and violation.category.value in _bp.antipattern_signals
+                            ):
+                                violation.severity = "hard_block"
+                                violation.metadata["adg_confirmed"] = True
+                # guardian: allow-silent-swallow
+                except Exception:
+                    pass
+
             scan_time = (time.time() - start_time) * 1000
 
             return DetectionResult(

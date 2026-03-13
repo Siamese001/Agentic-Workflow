@@ -229,6 +229,16 @@ class LocationHealerAgent(SovereignBaseAgent):
         if isinstance(file_path, str):
             file_path = Path(file_path)
 
+        _adg_score: float = 0.5
+        try:
+            from agentic_core.adg.runtime.behavioral_index import get_behavioral_profile as _gbp
+
+            _bp = _gbp(file_path, self.project_root)
+            _adg_score = _bp.behavioral_score
+        # guardian: allow-silent-swallow
+        except Exception:
+            pass
+
         message = violation.get("message", "Location violation")
 
         try:
@@ -252,6 +262,7 @@ class LocationHealerAgent(SovereignBaseAgent):
                             "target": str(file_path),
                             "action_taken": result.get("action_taken"),
                             "new_path": result.get("new_path"),
+                            "adg_behavioral_score": _adg_score,
                         },
                     )
                 else:

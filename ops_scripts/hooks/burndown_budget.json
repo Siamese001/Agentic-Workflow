@@ -40,9 +40,6 @@
   "agentic_core/L5_safety/types/safety_types.py": {
     "path_fragility": 1
   },
-  "agentic_core/L6_observability/engines/drift_detector.py": {
-    "direct_prompt_compilation": 1
-  },
   "agentic_core/adg/runtime/behavioral_index.py": {
     "silent_swallower": 3
   },

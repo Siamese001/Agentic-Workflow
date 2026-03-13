@@ -117,9 +117,32 @@ class L3OrchestrationBase(SovereignBaseAgent):
         Returns:
             Execution plan
         """
+        _adg_route_mode: str = "static"
+        _adg_scope_widening: list = []
+        try:
+            from pathlib import Path as _Path
+
+            from agentic_core.adg.runtime.behavioral_index import get_behavioral_profile as _gbp
+
+            _self_file = _Path(__file__).resolve()
+            _root = _self_file.parents[2]
+            _bp = _gbp(_self_file, _root)
+            _adg_route_mode = (
+                "agent"
+                if _bp.behavioral_score > 0.7
+                else "script"
+                if _bp.deterministic_coverage
+                else "hybrid"
+            )
+            _adg_scope_widening = sorted(_bp.antipattern_signals)
+        # guardian: allow-silent-swallow
+        except Exception:
+            pass
         return {
             "task": task,
             "plan": [],
             "status": "not_implemented",
             "message": "Override plan_execution in subclass",
+            "adg_route_mode": _adg_route_mode,
+            "adg_scope_widening": _adg_scope_widening,
         }

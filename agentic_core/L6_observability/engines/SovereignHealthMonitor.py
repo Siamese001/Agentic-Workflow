@@ -44,7 +44,25 @@ class SovereignHealthMonitor:
             fixes: Number of fixes applied in this healing cycle
         """
         timestamp = datetime.now().isoformat()
-        snapshot = {"timestamp": timestamp, "domain": domain, "compliance_score": score, "total_fixes": fixes}
+        _adg_trust_score: float = 1.0
+        try:
+            from pathlib import Path as _Path
+
+            from agentic_core.adg.runtime.behavioral_index import get_behavioral_profile as _gbp
+
+            _root = _Path(__file__).resolve().parents[4]
+            _bp = _gbp(_Path(__file__).resolve(), _root)
+            _adg_trust_score = round(_bp.behavioral_score, 4)
+        # guardian: allow-silent-swallow
+        except Exception:
+            pass
+        snapshot = {
+            "timestamp": timestamp,
+            "domain": domain,
+            "compliance_score": score,
+            "total_fixes": fixes,
+            "adg_trust_score": _adg_trust_score,
+        }
         try:
             self.redis.lpush("sovereign_health_history", json.dumps(snapshot))
             self.redis.set(

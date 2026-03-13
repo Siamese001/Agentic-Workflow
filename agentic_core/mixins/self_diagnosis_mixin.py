@@ -75,6 +75,22 @@ class SelfDiagnosisMixin:
                     }
                     diagnosis["issues"].append(issue)
                     self.Logger.error(f"Health check failed for {component_name}: {e}", exc_info=True)
+        try:
+            import sys as _sys
+            from pathlib import Path as _Path
+
+            from agentic_core.adg.runtime.behavioral_index import get_behavioral_profile as _gbp
+
+            _mod = _sys.modules.get(self.__class__.__module__)
+            _self_file = _Path(getattr(_mod, "__file__", "") or "").resolve() if _mod else None
+            if _self_file and _self_file.exists():
+                _root = _self_file.parents[3]
+                _bp = _gbp(_self_file, _root)
+                diagnosis["adg_antipatterns"] = sorted(_bp.antipattern_signals)
+                diagnosis["adg_behavioral_score"] = _bp.behavioral_score
+        # guardian: allow-silent-swallow
+        except Exception:
+            pass
         if diagnosis["issues"]:
             critical_issues = [i for i in diagnosis["issues"] if i.get("Severity") == "CRITICAL"]
             diagnosis["overall_health"] = "critical" if critical_issues else "degraded"

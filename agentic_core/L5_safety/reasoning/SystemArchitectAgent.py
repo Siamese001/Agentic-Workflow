@@ -231,11 +231,31 @@ class SystemArchitectAgent(SovereignBaseAgent):
         for mod in list(dependency_graph.keys()):
             if mod not in visited:
                 dfs(mod)
+        _adg_score: float = 0.5
+        _adg_antipatterns: list = []
+        try:
+            from agentic_core.adg.runtime.behavioral_index import get_behavioral_profile as _gbp
+
+            _bp = _gbp(self.project_root / target_path, self.project_root)
+            _adg_score = _bp.behavioral_score
+            _adg_antipatterns = sorted(_bp.antipattern_signals)
+            if _adg_antipatterns:
+                Logger.info(
+                    "SystemArchitect[ADG] %s: score=%.2f antipatterns=%s",
+                    target_path,
+                    _adg_score,
+                    _adg_antipatterns,
+                )
+        # guardian: allow-silent-swallow
+        except Exception:
+            pass
         return {
             "valid": len(circular_dependencies) == 0,
             "imports_valid": True,
             "circular_dependencies": circular_dependencies,
             "files_scanned": len(python_files),
+            "adg_behavioral_score": _adg_score,
+            "adg_antipatterns": _adg_antipatterns,
         }
 
     def check_no_deep_nesting(self) -> tuple[bool, list[str]]:

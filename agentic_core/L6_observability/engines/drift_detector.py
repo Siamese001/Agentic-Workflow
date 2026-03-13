@@ -40,9 +40,25 @@ class DriftDetector:
             old_hash = self._context_registry[replay_key]
             if old_hash != c0_context_hash:
                 self._drift_alerts[replay_key] = (old_hash, c0_context_hash)
+                _adg_score: float = 0.5
+                try:
+                    from pathlib import Path as _Path
+
+                    from agentic_core.adg.runtime.behavioral_index import get_behavioral_profile as _gbp
+
+                    _root = _Path(__file__).resolve().parents[4]
+                    _adg_score = _gbp(_Path(__file__).resolve(), _root).behavioral_score
+                # guardian: allow-silent-swallow
+                except Exception:
+                    pass
                 # guardian: allow-direct-prompt-compilation
                 logger.warning(
-                    f"C0 context drift detected for replay key {replay_key}: old_hash={old_hash[:8]}..., new_hash={c0_context_hash[:8]}..."
+                    "C0 context drift detected for replay key %s: old_hash=%s..., "
+                    "new_hash=%s... adg_behavioral_score=%.3f",
+                    replay_key,
+                    old_hash[:8],
+                    c0_context_hash[:8],
+                    _adg_score,
                 )
                 return True
         else:

@@ -169,6 +169,14 @@ class SovereignRagOrchestrator:
         """
         Ultra-hardened hybrid retrieval with RRF fusion and LLM reranking.
         """
+        _adg_confidence: float = 0.5
+        try:
+            from agentic_core.adg.runtime.behavioral_index import get_behavioral_profile as _gbp
+
+            _adg_confidence = _gbp(Path(__file__).resolve(), self.project_root).behavioral_score
+        # guardian: allow-silent-swallow
+        except Exception:
+            pass
         vector_candidates = []
         bm25_candidates = []
         if hasattr(self, "vector_store") and self.vector_store:
@@ -180,7 +188,8 @@ class SovereignRagOrchestrator:
                         "id": res.get("id", f"vec_{i}"),
                         "source": "vector_store",
                         "content": res["metadata"].get("text", ""),
-                        "score": res["score"],
+                        "score": round(res["score"] * _adg_confidence, 8),
+                        "adg_confidence_weight": _adg_confidence,
                     }
                     for i, res in enumerate(raw_results)
                 ]

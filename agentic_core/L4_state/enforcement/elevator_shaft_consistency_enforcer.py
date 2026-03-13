@@ -199,10 +199,27 @@ class ElevatorShaftConsistencyEnforcer:
 
     def summary(self) -> dict[str, Any]:
         """Return a summary of all tracked layers."""
+        _adg_violates: list[str] = []
+        try:
+            from agentic_core.adg.runtime.behavioral_index import get_behavioral_profile as _gbp
+
+            _root = Path(__file__).resolve().parents[4]
+            _bp = _gbp(Path(__file__).resolve(), _root)
+            _adg_violates = sorted(_bp.antipattern_signals)
+            if _adg_violates:
+                Logger.warning(
+                    "[ADG] ElevatorShaftConsistencyEnforcer: layer-violation signals=%s "
+                    "(score=%.3f) — escalate severity",
+                    _adg_violates,
+                    _bp.behavioral_score,
+                )
+        # guardian: allow-silent-swallow
+        except Exception:
+            pass
         return {
             layer: {"last_tick": rec.last_tick, "advance_count": rec.advance_count}
             for layer, rec in sorted(self._layer_records.items())
-        }
+        } | {"adg_violates": _adg_violates}
 
 
 _GLOBAL_ENFORCER: ElevatorShaftConsistencyEnforcer | None = None

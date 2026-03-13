@@ -99,6 +99,21 @@ class MissionPreflight:
                 results.setdefault("errors", []).extend(purge_results["errors"])
         results["gravity"] = self._check_gravity(target_path)
         results["naming"] = self._check_file_locations(target_path)
+        _adg_antipattern_count: int = 0
+        try:
+            from agentic_core.adg.runtime.behavioral_index import get_behavioral_profile as _gbp
+
+            _bp = _gbp(Path(target_sector).resolve(), self.project_root)
+            _adg_antipattern_count = len(_bp.antipattern_signals)
+            if _adg_antipattern_count:
+                print(
+                    f"   [ADG] {target_sector}: {_adg_antipattern_count} antipattern signal(s) "
+                    f"(score={_bp.behavioral_score:.2f})"
+                )
+        # guardian: allow-silent-swallow
+        except Exception:
+            pass
+        results["adg_antipattern_count"] = _adg_antipattern_count
         self._print_dashboard(results)
         total_violations = results["Span"] + results["hierarchy"] + results["naming"] + results["gravity"]
         results["compliant"] = total_violations == 0

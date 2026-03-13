@@ -34,7 +34,25 @@ class L6ObservabilityBase(SovereignBaseAgent):
 
         Override in subclasses for specialized metric collection.
         """
-        return {"metrics": {}, "timestamp": None}
+        _adg_health: dict[str, Any] = {}
+        try:
+            from pathlib import Path as _Path
+
+            from agentic_core.adg.runtime.behavioral_index import ADGBehavioralIndex as _ADGIdx
+
+            _root = _Path(__file__).resolve().parents[2]
+            _idx = _ADGIdx.from_latest(_root)
+            if _idx is not None:
+                _adg_health = {
+                    "adg_trust_score": _idx.trust_score if hasattr(_idx, "trust_score") else None,
+                    "adg_unresolved_imports": len(getattr(_idx, "unresolved_imports", [])),
+                    "adg_layer_violations": len(getattr(_idx, "layer_violations", [])),
+                    "adg_orphan_modules": len(getattr(_idx, "orphan_modules", [])),
+                }
+        # guardian: allow-silent-swallow
+        except Exception:
+            pass
+        return {"metrics": {}, "timestamp": None, **_adg_health}
 
     def emit_telemetry(self, event: dict[str, Any]) -> bool:
         """

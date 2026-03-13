@@ -9,10 +9,11 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from agentic_core.utils.security_util import safe_execute
+
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L0_routing.config.path_constants import DEFAULT_TIMEOUT
 from agentic_core.utils.decorators_compat_util import standard_heal
-from agentic_core.utils.security_util import safe_execute
 from agentic_core.utils.timeout_decorator_util import timeout
 
 
@@ -159,15 +160,30 @@ class DependencyPruningAgent(SovereignBaseAgent):
                 - dry_run: Whether this was a dry run
         """
         print("   [PRUNE] Scanning for unused dependencies...")
+        _adg_dead_imports: int = 0
+        try:
+            from agentic_core.adg.runtime.behavioral_index import get_behavioral_profile as _gbp
+
+            _src = Path(__file__).resolve()
+            _bp = _gbp(_src, self.project_root)
+            _adg_dead_imports = len(_bp.antipattern_signals)
+        # guardian: allow-silent-swallow
+        except Exception:
+            pass
         unused: list[str] = self._find_unused_deptry()
         if not unused:
             print("   [✓] No unused dependencies detected")
-            return {"unused_found": 0, "removed": 0}
+            return {"unused_found": 0, "removed": 0, "adg_dead_import_signals": _adg_dead_imports}
         print(f"   [!] Found {len(unused)} potentially unused packages: {', '.join(unused[:5])}")
         if len(unused) > 5:
             print(f"       ... and {len(unused) - 5} more")
         result: dict[str, Any] = self._remove_from_requirements_txt(unused)
-        return {"unused_found": len(unused), "removed": result["removed"], "dry_run": self.dry_run}
+        return {
+            "unused_found": len(unused),
+            "removed": result["removed"],
+            "dry_run": self.dry_run,
+            "adg_dead_import_signals": _adg_dead_imports,
+        }
 
     # guardian: allow-type-erasure
     def heal(self, violation: dict) -> dict:

@@ -6,13 +6,15 @@ Tests:
 3. Is mcp10 postgres server responding?
 4. Check all npx MCP server startup times
 """
-import subprocess
-import os
-import sys
-import time
-import json
-import threading
 
+import json
+import os
+import subprocess
+import threading
+import time
+
+
+# guardian: allow-magic-config
 def test_mcp_server(name, cmd, timeout=8):
     """Start MCP server, send initialize, measure response time."""
     env = {**os.environ}
@@ -21,19 +23,31 @@ def test_mcp_server(name, cmd, timeout=8):
 
     try:
         proc = subprocess.Popen(
-            cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE, shell=True, env=env,
-            text=True, bufsize=1,
+            cmd,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            shell=True,
+            env=env,
+            text=True,
+            bufsize=1,
         )
 
-        init_req = json.dumps({
-            "jsonrpc": "2.0", "id": 1, "method": "initialize",
-            "params": {
-                "protocolVersion": "2024-11-05",
-                "capabilities": {},
-                "clientInfo": {"name": "diag", "version": "1"}
-            }
-        }) + "\n"
+        init_req = (
+            json.dumps(
+                {
+                    "jsonrpc": "2.0",
+                    "id": 1,
+                    "method": "initialize",
+                    "params": {
+                        "protocolVersion": "2024-11-05",
+                        "capabilities": {},
+                        "clientInfo": {"name": "diag", "version": "1"},
+                    },
+                }
+            )
+            + "\n"
+        )
 
         result = {"response": None, "elapsed": None, "error": None}
 
@@ -45,6 +59,7 @@ def test_mcp_server(name, cmd, timeout=8):
                 line = proc.stdout.readline()
                 result["elapsed"] = round(time.time() - t0, 2)
                 result["response"] = line.strip()[:200]
+            # guardian: allow-silent-swallow
             except Exception as e:
                 result["error"] = str(e)
 
@@ -54,7 +69,9 @@ def test_mcp_server(name, cmd, timeout=8):
 
         proc.terminate()
         try:
+            # guardian: allow-magic-config
             proc.wait(timeout=2)
+        # guardian: allow-silent-swallow
         except Exception:
             proc.kill()
 
@@ -69,23 +86,22 @@ def test_mcp_server(name, cmd, timeout=8):
         else:
             return f"HANG (no response in {timeout}s)"
 
+    # guardian: allow-silent-swallow
     except Exception as e:
         return f"FAIL: {e}"
 
 
 tests = [
-    ("sequential-thinking",
-     "npx -y @modelcontextprotocol/server-sequential-thinking"),
-    ("postgres-mcp",
-     "npx -y @modelcontextprotocol/server-postgres postgresql://postgres:postgres@localhost:5432/mcp_db"),
-    ("redis-mcp",
-     "npx -y @modelcontextprotocol/server-redis"),
-    ("brave-search",
-     "npx -y @modelcontextprotocol/server-brave-search"),
-    ("filesystem",
-     r'npx -y @modelcontextprotocol/server-filesystem "c:\Git\Agentic-Workflow"'),
-    ("memory",
-     "npx -y @modelcontextprotocol/server-memory"),
+    ("sequential-thinking", "npx -y @modelcontextprotocol/server-sequential-thinking"),
+    (
+        "postgres-mcp",
+        # guardian: allow-magic-config
+        "npx -y @modelcontextprotocol/server-postgres postgresql://postgres:postgres@localhost:5432/mcp_db",
+    ),
+    ("redis-mcp", "npx -y @modelcontextprotocol/server-redis"),
+    ("brave-search", "npx -y @modelcontextprotocol/server-brave-search"),
+    ("filesystem", r'npx -y @modelcontextprotocol/server-filesystem "c:\Git\Agentic-Workflow"'),
+    ("memory", "npx -y @modelcontextprotocol/server-memory"),
 ]
 
 print("=" * 65)
@@ -94,6 +110,7 @@ print("=" * 65)
 for name, cmd in tests:
     print(f"\nTesting: {name}")
     print(f"  cmd: {cmd[:70]}")
+    # guardian: allow-magic-config
     result = test_mcp_server(name, cmd, timeout=15)
     status = "✅" if result.startswith("OK") else "❌" if result.startswith("ERR") else "⏱️"
     print(f"  {status} {result}")

@@ -3367,29 +3367,31 @@ def execute_phase4_validation_impl(agents, territory, state_mgr, ctx: "HealConte
     _adg_arch_signals: dict = {}
     try:
         from agentic_core.adg.applications.guardian_prioritizer import GuardianPrioritizer
-        from agentic_core.adg.runtime.behavioral_index import ADGBehavioralIndex as _ADGIdx
+        from agentic_core.adg.runtime.cache_loader import load_or_scan as _adg_load_or_scan
 
-        _adg_idx = _ADGIdx.from_latest(REPO_ROOT)
-        if _adg_idx is not None:
-            _scan_result = getattr(_adg_idx, "_result", None) or getattr(_adg_idx, "result", None)
-            if _scan_result is not None:
-                _gp = GuardianPrioritizer(_scan_result)
-                _signals = _gp.get_signals()
-                _adg_arch_signals = {
-                    "cross_layer_violations": _signals.get("cross_layer_violations", []),
-                    "layer_hotspots": _signals.get("layer_hotspots", []),
-                    "upward_mutations": _signals.get("upward_mutations", []),
-                }
-                state_mgr.state["adg_arch_signals"] = _adg_arch_signals
-                logger.info(
-                    "[ADG] ArchitectureGovernorAgent signals: cross_layer=%d layer_hotspots=%d upward_mutations=%d",
-                    len(_adg_arch_signals["cross_layer_violations"]),
-                    len(_adg_arch_signals["layer_hotspots"]),
-                    len(_adg_arch_signals["upward_mutations"]),
-                )
-                # Attach signals to governor so it can prioritize ADG-flagged paths
-                if hasattr(arch_gov, "adg_signals"):
-                    arch_gov.adg_signals = _adg_arch_signals
+        _scan_result = _adg_load_or_scan(repo_root=str(REPO_ROOT))
+        if _scan_result is not None:
+            _gp = GuardianPrioritizer(_scan_result)
+            _signals = _gp.get_signals()
+            _adg_arch_signals = {
+                "cross_layer_violations": _signals.get("cross_layer_violations", []),
+                "layer_hotspots": _signals.get("layer_hotspots", []),
+                "upward_mutations": _signals.get("upward_mutations", []),
+            }
+            _prio_result = _gp.prioritize()
+            _adg_arch_signals["guardian_priority_order"] = [s.guardian_id for s in _prio_result.ordered()]
+            state_mgr.state["adg_arch_signals"] = _adg_arch_signals
+            logger.info(
+                "[ADG] ArchitectureGovernorAgent signals: cross_layer=%d layer_hotspots=%d "
+                "upward_mutations=%d priority_digest=%s",
+                len(_adg_arch_signals["cross_layer_violations"]),
+                len(_adg_arch_signals["layer_hotspots"]),
+                len(_adg_arch_signals["upward_mutations"]),
+                _prio_result.adg_signals_digest,
+            )
+            # Attach signals to governor so it can prioritize ADG-flagged paths
+            if hasattr(arch_gov, "adg_signals"):
+                arch_gov.adg_signals = _adg_arch_signals
     # guardian: allow-silent-swallow
     except Exception as _adg_arch_err:
         logger.debug(
