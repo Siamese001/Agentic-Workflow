@@ -18,10 +18,13 @@ USAGE (apps_*):
         new_execution_cycle,
     )
 """
+
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 from agentic_core.L2_execution.cid_registry import CIDRegistry, ExecutionCycle
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 @dataclass(frozen=True)
 class ExecutionProposal:
@@ -36,10 +39,12 @@ class ExecutionProposal:
 
     Only string identifiers are permitted.
     """
+
     cid: str
     cycle_id: str
     proposal_type: str
     app_prefix: str
+
 
 def new_execution_cycle(registry: CIDRegistry, cid: str) -> ExecutionCycle:
     """
@@ -49,4 +54,6 @@ def new_execution_cycle(registry: CIDRegistry, cid: str) -> ExecutionCycle:
     Returns an immutable ExecutionCycle — no further mutation.
     """
     return registry.new_cycle(cid)
-__all__ = ['ExecutionProposal', 'CIDRegistry', 'ExecutionCycle', 'new_execution_cycle']
+
+
+__all__ = ["ExecutionProposal", "CIDRegistry", "ExecutionCycle", "new_execution_cycle"]

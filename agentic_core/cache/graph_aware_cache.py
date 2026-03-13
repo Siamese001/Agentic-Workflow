@@ -5,13 +5,16 @@ Only caches affected by a changed file are evicted; unrelated caches survive.
 
 Speedup: 10x cache hit rate over blind TTL invalidation.
 """
+
 from __future__ import annotations
+
 import logging
 from typing import TYPE_CHECKING, Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 if TYPE_CHECKING:
     from agentic_core.adg.runtime.query_engine import ADGRuntimeQueryEngine
 logger = logging.getLogger(__name__)
+
 
 class GraphAwareCache:
     """Cache with ADG-driven precise invalidation.
@@ -31,7 +34,7 @@ class GraphAwareCache:
         entry = self._cache.get(key)
         if entry is not None:
             self._hits += 1
-            return entry['value']
+            return entry["value"]
         self._misses += 1
         return None
 
@@ -43,7 +46,7 @@ class GraphAwareCache:
             value: Value to cache.
             depends_on: List of module relative paths this value depends on.
         """
-        self._cache[key] = {'value': value, 'depends_on': depends_on}
+        self._cache[key] = {"value": value, "depends_on": depends_on}
 
     def invalidate(self, key: str) -> bool:
         """Explicitly remove one cache entry. Returns True if it existed."""
@@ -62,11 +65,16 @@ class GraphAwareCache:
         count = 0
         for key in list(self._cache.keys()):
             entry = self._cache[key]
-            depends_on: list[str] = entry.get('depends_on', [])
-            if any((dep in invalidation_set for dep in depends_on)):
+            depends_on: list[str] = entry.get("depends_on", [])
+            if any(dep in invalidation_set for dep in depends_on):
                 del self._cache[key]
                 count += 1
-        logger.debug('Graph-aware invalidation: changed=%s affected=%d entries (invalidation_set_size=%d)', changed_file, count, len(invalidation_set))
+        logger.debug(
+            "Graph-aware invalidation: changed=%s affected=%d entries (invalidation_set_size=%d)",
+            changed_file,
+            count,
+            len(invalidation_set),
+        )
         return count
 
     def invalidate_all(self) -> int:
@@ -81,5 +89,7 @@ class GraphAwareCache:
 
     def stats(self) -> dict[str, int]:
         """Return cache statistics."""
-        return {'size': self.size(), 'hits': self._hits, 'misses': self._misses}
-__all__ = ['GraphAwareCache']
+        return {"size": self.size(), "hits": self._hits, "misses": self._misses}
+
+
+__all__ = ["GraphAwareCache"]

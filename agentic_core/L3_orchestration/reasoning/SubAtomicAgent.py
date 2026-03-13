@@ -1,11 +1,14 @@
 """Brief description of functionality and purpose."""
+
 from __future__ import annotations
+
 import ast
 from typing import Any
+
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 class SubAtomicAgent(SovereignBaseAgent):
     """Base class stub for structural agents."""
@@ -21,26 +24,39 @@ class SubAtomicAgent(SovereignBaseAgent):
         Returns:
             Dictionary with status, details, artifacts, and errors
         """
-        return {'status': 'skipped', 'details': 'SubAtomicAgent is a base class - healing delegated to subclasses', 'artifacts': [], 'errors': []}
+        return {
+            "status": "skipped",
+            "details": "SubAtomicAgent is a base class - healing delegated to subclasses",
+            "artifacts": [],
+            "errors": [],
+        }
 
     @timeout(300)
     @standard_heal
     # guardian: allow-magic-config
-    def heal_repository(self, dry_run: bool=True, execute: bool=False, depth: int=0, max_depth: int=3, _call_path: set | None=None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """L1 cognition - operational only."""
         if _call_path is None:
             _call_path = set()
-        agent_name = 'SubAtomicAgent'
+        agent_name = "SubAtomicAgent"
         if agent_name in _call_path:
-            return {'errors': 1, 'cycle_detected': True}
+            return {"errors": 1, "cycle_detected": True}
         if depth > max_depth:
-            return {'errors': 1, 'depth_limited': True}
+            return {"errors": 1, "depth_limited": True}
         _call_path.add(agent_name)
         try:
-            print(f'[{agent_name}] L1 cognition - operational only')
-            return {'skipped': 1}
+            print(f"[{agent_name}] L1 cognition - operational only")
+            return {"skipped": 1}
         finally:
             _call_path.discard(agent_name)
+
 
 class SubAtomicAgent_impl:
     """Brief description of functionality and purpose."""
@@ -54,6 +70,7 @@ class SubAtomicAgent_impl:
 
     def execute(self) -> None:
         pass
+
 
 class nesting_depth_visitor(ast.NodeVisitor):
     """
@@ -70,9 +87,21 @@ class nesting_depth_visitor(ast.NodeVisitor):
         """
         Constructs the Violation message string, flattening expressions to reduce syntactic nesting.
         """
-        lineno_val = getattr(node, 'lineno', 'N/A')
+        lineno_val = getattr(node, "lineno", "N/A")
         node_type_val = type(node).__name__
-        message = self.filepath + ':' + str(lineno_val) + ': ' + 'Nesting depth ' + str(current_depth_val) + ' exceeds max ' + str(self.max_allowed_depth) + ' at ' + node_type_val + ' block.'
+        message = (
+            self.filepath
+            + ":"
+            + str(lineno_val)
+            + ": "
+            + "Nesting depth "
+            + str(current_depth_val)
+            + " exceeds max "
+            + str(self.max_allowed_depth)
+            + " at "
+            + node_type_val
+            + " block."
+        )
         return message
 
     def _generic_visit_with_depth(self, node):
@@ -115,6 +144,7 @@ class nesting_depth_visitor(ast.NodeVisitor):
 
     def visit_ExceptHandler(self, node):
         self._generic_visit_with_depth(node)
+
 
 # guardian: allow-type-erasure
 def get_SubAtomicAgent() -> Any:

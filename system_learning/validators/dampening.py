@@ -7,18 +7,23 @@ Implements:
 All policies are frozen dataclasses. All validation functions are pure and
 deterministic (no wall-clock reads).
 """
+
 from __future__ import annotations
+
 from dataclasses import dataclass
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 class DampeningViolation(Exception):
     """Base exception for dampening policy violations."""
 
+
 class CooldownViolation(DampeningViolation):
     """Raised when cooldown period has not elapsed."""
 
+
 class SampleSizeViolation(DampeningViolation):
     """Raised when sample size is below minimum."""
+
 
 @dataclass(frozen=True, slots=True)
 class CooldownPolicy:
@@ -29,7 +34,9 @@ class CooldownPolicy:
     min_seconds_between_updates : int
         Minimum seconds that must elapse between updates to the same surface.
     """
+
     min_seconds_between_updates: int
+
 
 @dataclass(frozen=True, slots=True)
 class SampleSizePolicy:
@@ -40,7 +47,9 @@ class SampleSizePolicy:
     min_observations : int
         Minimum number of observations required before retraining.
     """
+
     min_observations: int
+
 
 def assert_cooldown_ok(last_update_utc: int, now_utc: int, cooldown_policy: CooldownPolicy) -> None:
     """Assert that cooldown period has elapsed.
@@ -62,7 +71,10 @@ def assert_cooldown_ok(last_update_utc: int, now_utc: int, cooldown_policy: Cool
     elapsed_seconds = now_utc - last_update_utc
     if elapsed_seconds < cooldown_policy.min_seconds_between_updates:
         remaining = cooldown_policy.min_seconds_between_updates - elapsed_seconds
-        raise CooldownViolation(f'COOLDOWN_VIOLATION: {remaining} seconds remaining (min={cooldown_policy.min_seconds_between_updates}, elapsed={elapsed_seconds})')
+        raise CooldownViolation(
+            f"COOLDOWN_VIOLATION: {remaining} seconds remaining (min={cooldown_policy.min_seconds_between_updates}, elapsed={elapsed_seconds})"
+        )
+
 
 def assert_min_sample_size(n_observations: int, sample_policy: SampleSizePolicy) -> None:
     """Assert that minimum sample size is met.
@@ -81,4 +93,6 @@ def assert_min_sample_size(n_observations: int, sample_policy: SampleSizePolicy)
     """
     if n_observations < sample_policy.min_observations:
         shortfall = sample_policy.min_observations - n_observations
-        raise SampleSizeViolation(f'SAMPLE_SIZE_VIOLATION: {shortfall} observations short (min={sample_policy.min_observations}, actual={n_observations})')
+        raise SampleSizeViolation(
+            f"SAMPLE_SIZE_VIOLATION: {shortfall} observations short (min={sample_policy.min_observations}, actual={n_observations})"
+        )

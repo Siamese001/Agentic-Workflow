@@ -11,17 +11,22 @@ C0 Informational-Only Contract:
 - MAY append reason_codes for audit.
 - MAY provide pattern_boost for audit (max 0.10).
 """
+
 from __future__ import annotations
+
 from typing import Protocol, TypedDict
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 _MAX_PATTERN_BOOST = 0.1
+
 
 class PatternAdvice(TypedDict):
     """Advisory metadata from pattern matching (informational-only)."""
+
     pattern_match: bool
     pattern_name: str | None
     pattern_boost: float
     extra_reason_codes: tuple[str, ...]
+
 
 class HealingPatternAdvisor(Protocol):
     """Read-only seam for C0 informational-only pattern hints."""
@@ -42,9 +47,12 @@ class HealingPatternAdvisor(Protocol):
         """
         ...
 
+
 class NullHealingPatternAdvisor:
     """No-op advisor (default when no ML client is available)."""
 
     def advise(self, healing_input) -> PatternAdvice:
-        return {'pattern_match': False, 'pattern_name': None, 'pattern_boost': 0.0, 'extra_reason_codes': ()}
-__all__ = ['HealingPatternAdvisor', 'NullHealingPatternAdvisor', 'PatternAdvice', '_MAX_PATTERN_BOOST']
+        return {"pattern_match": False, "pattern_name": None, "pattern_boost": 0.0, "extra_reason_codes": ()}
+
+
+__all__ = ["HealingPatternAdvisor", "NullHealingPatternAdvisor", "PatternAdvice", "_MAX_PATTERN_BOOST"]

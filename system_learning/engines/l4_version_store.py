@@ -6,25 +6,31 @@ Provides:
   - Parent existence enforcement (DAG, not free graph)
   - O(1) activation pointer update and rollback
 """
+
 from __future__ import annotations
+
 import hashlib
 from dataclasses import dataclass
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 class ParentVersionNotFound(Exception):
     """Raised when a specified parent version does not exist in the store."""
 
+
 class VersionNotFound(Exception):
     """Raised when a requested version does not exist in the store."""
+
 
 @dataclass(frozen=True)
 class VersionedPackage:
     """Immutable record of a committed ChangePackage."""
+
     version_id: str
     parent_version_id: str | None
     change_spec_hash: str
     committed_at_utc: int
     package_bytes: bytes
+
 
 class L4VersionStore:
     """Concrete in-memory L4 versioned store.
@@ -40,7 +46,9 @@ class L4VersionStore:
         self._versions: dict[str, VersionedPackage] = {}
         self._active_pointers: dict[str, str] = {}
 
-    def commit_change_package(self, package, parent_version_id: str | None, change_spec_hash: str, committed_at_utc: int) -> str:
+    def commit_change_package(
+        self, package, parent_version_id: str | None, change_spec_hash: str, committed_at_utc: int
+    ) -> str:
         """Commit a ChangePackage and return its version_id.
 
         Parameters
@@ -69,8 +77,16 @@ class L4VersionStore:
         if version_id in self._versions:
             return version_id
         if parent_version_id is not None and parent_version_id not in self._versions:
-            raise ParentVersionNotFound(f'PARENT_VERSION_NOT_FOUND: parent {parent_version_id!r} does not exist')
-        self._versions[version_id] = VersionedPackage(version_id=version_id, parent_version_id=parent_version_id, change_spec_hash=change_spec_hash, committed_at_utc=committed_at_utc, package_bytes=raw)
+            raise ParentVersionNotFound(
+                f"PARENT_VERSION_NOT_FOUND: parent {parent_version_id!r} does not exist"
+            )
+        self._versions[version_id] = VersionedPackage(
+            version_id=version_id,
+            parent_version_id=parent_version_id,
+            change_spec_hash=change_spec_hash,
+            committed_at_utc=committed_at_utc,
+            package_bytes=raw,
+        )
         return version_id
 
     def get_change_package(self, version_id: str) -> VersionedPackage:
@@ -82,7 +98,7 @@ class L4VersionStore:
             If the version_id is not in the store.
         """
         if version_id not in self._versions:
-            raise VersionNotFound(f'VERSION_NOT_FOUND: {version_id!r}')
+            raise VersionNotFound(f"VERSION_NOT_FOUND: {version_id!r}")
         return self._versions[version_id]
 
     def list_versions(self) -> list[str]:
@@ -98,7 +114,7 @@ class L4VersionStore:
             If the target version_id does not exist.
         """
         if version_id not in self._versions:
-            raise VersionNotFound(f'ACTIVATION_TARGET_NOT_FOUND: {version_id!r}')
+            raise VersionNotFound(f"ACTIVATION_TARGET_NOT_FOUND: {version_id!r}")
         self._active_pointers[component] = version_id
 
     def get_active_version(self, component: str) -> str | None:
@@ -116,6 +132,8 @@ class L4VersionStore:
             If the rollback target does not exist.
         """
         if version_id not in self._versions:
-            raise VersionNotFound(f'VERSION_NOT_FOUND: rollback target {version_id!r} does not exist')
+            raise VersionNotFound(f"VERSION_NOT_FOUND: rollback target {version_id!r} does not exist")
         self._active_pointers[component] = version_id
-__all__ = ['L4VersionStore', 'VersionedPackage', 'ParentVersionNotFound', 'VersionNotFound']
+
+
+__all__ = ["L4VersionStore", "VersionedPackage", "ParentVersionNotFound", "VersionNotFound"]

@@ -8,11 +8,13 @@ deterministic call-path controller.
 No GPU libraries. No torch/vllm imports. L2 purity preserved.
 No external SDK dependencies. All types are stdlib + Phase 1/2 types.
 """
+
 from __future__ import annotations
+
 import threading
 from dataclasses import dataclass
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 def select_serving_profile(severity: str) -> VLLMServingProfile:
     """Select serving profile based on severity.
@@ -27,13 +29,20 @@ def select_serving_profile(severity: str) -> VLLMServingProfile:
     Returns:
         VLLMServingProfile for the selected tier.
     """
-    from agentic_core.L2_execution.types.vllm_serving_profile_types import PROFILE_LOCAL_FAST_7B, PROFILE_LOCAL_STRONG_14B
-    if severity == 'high':
+    from agentic_core.L2_execution.types.vllm_serving_profile_types import (
+        PROFILE_LOCAL_FAST_7B,
+        PROFILE_LOCAL_STRONG_14B,
+    )
+
+    if severity == "high":
         return PROFILE_LOCAL_STRONG_14B
     return PROFILE_LOCAL_FAST_7B
+
+
 VLLM_TEMPERATURE: float = 0.0
 VLLM_TOP_P: float = 1.0
 VLLM_SEED: int = 42
+
 
 @dataclass(frozen=True)
 class VLLMLocalRequest:
@@ -42,6 +51,7 @@ class VLLMLocalRequest:
     Immutable. All fields are explicit — no None max_tokens.
     Determinism policy enforced: temperature=0, top_p=1.0, seed=42.
     """
+
     model: str
     prompt: str
     max_tokens: int
@@ -51,6 +61,7 @@ class VLLMLocalRequest:
     task_class: str
     profile_name: str
     max_model_len: int
+
 
 def shape_local_request(prompt: str, task_class: str, profile: VLLMServingProfile) -> VLLMLocalRequest:
     """Shape a local vLLM request with deterministic parameters.
@@ -64,11 +75,23 @@ def shape_local_request(prompt: str, task_class: str, profile: VLLMServingProfil
         VLLMLocalRequest with explicit max_tokens and determinism policy.
     """
     from agentic_core.L2_execution.types.vllm_token_budget_types import get_output_cap
+
     max_output = get_output_cap(task_class)
     if max_output is None:
-        raise ValueError(f'task_class={task_class!r} has no output cap; route to Gemini-2.5-Pro instead')
+        raise ValueError(f"task_class={task_class!r} has no output cap; route to Gemini-2.5-Pro instead")
     max_tokens = min(max_output, profile.max_model_len)
-    return VLLMLocalRequest(model=profile.model, prompt=prompt, max_tokens=max_tokens, temperature=VLLM_TEMPERATURE, top_p=VLLM_TOP_P, seed=VLLM_SEED, task_class=task_class, profile_name=profile.profile_name, max_model_len=profile.max_model_len)
+    return VLLMLocalRequest(
+        model=profile.model,
+        prompt=prompt,
+        max_tokens=max_tokens,
+        temperature=VLLM_TEMPERATURE,
+        top_p=VLLM_TOP_P,
+        seed=VLLM_SEED,
+        task_class=task_class,
+        profile_name=profile.profile_name,
+        max_model_len=profile.max_model_len,
+    )
+
 
 class VLLMQueueController:
     """Threadsafe bounded queue counter for backpressure enforcement.
@@ -76,18 +99,28 @@ class VLLMQueueController:
     Maintains an in-memory queue depth counter. Does not spawn threads.
     """
 
-    def __init__(self, max_depth: int | None=None, timeout_seconds: float | None=None) -> None:
-        from agentic_core.L2_execution.types.vllm_backpressure_types import MAX_QUEUE_DEPTH, QUEUE_WAIT_TIMEOUT_SECONDS
+    def __init__(self, max_depth: int | None = None, timeout_seconds: float | None = None) -> None:
+        from agentic_core.L2_execution.types.vllm_backpressure_types import (
+            MAX_QUEUE_DEPTH,
+            QUEUE_WAIT_TIMEOUT_SECONDS,
+        )
+
         self._max_depth = max_depth if max_depth is not None else MAX_QUEUE_DEPTH
         self._timeout_seconds = timeout_seconds if timeout_seconds is not None else QUEUE_WAIT_TIMEOUT_SECONDS
         self._depth: int = 0
         self._lock = threading.Lock()
 
-    def snapshot(self, oldest_wait_seconds: float=0.0) -> VLLMQueueState:
+    def snapshot(self, oldest_wait_seconds: float = 0.0) -> VLLMQueueState:
         """Return an immutable snapshot of current queue state."""
         from agentic_core.L2_execution.types.vllm_backpressure_types import VLLMQueueState
+
         with self._lock:
-            return VLLMQueueState(current_depth=self._depth, max_depth=self._max_depth, oldest_wait_seconds=oldest_wait_seconds, timeout_seconds=self._timeout_seconds)
+            return VLLMQueueState(
+                current_depth=self._depth,
+                max_depth=self._max_depth,
+                oldest_wait_seconds=oldest_wait_seconds,
+                timeout_seconds=self._timeout_seconds,
+            )
 
     def acquire(self) -> bool:
         """Attempt to acquire a queue slot. Returns True if slot acquired."""
@@ -108,6 +141,7 @@ class VLLMQueueController:
         with self._lock:
             return self._depth
 
+
 class VLLMCircuitBreakerRegistry:
     """Registry of circuit breakers, one per tier.
 
@@ -119,10 +153,16 @@ class VLLMCircuitBreakerRegistry:
         self._lock = threading.Lock()
 
     def get(self, tier: str) -> VLLMCircuitBreaker:
-        from agentic_core.L2_execution.types.vllm_backpressure_types import CIRCUIT_BREAKER_FAILURE_THRESHOLD, VLLMCircuitBreaker
+        from agentic_core.L2_execution.types.vllm_backpressure_types import (
+            CIRCUIT_BREAKER_FAILURE_THRESHOLD,
+            VLLMCircuitBreaker,
+        )
+
         with self._lock:
             if tier not in self._breakers:
-                self._breakers[tier] = VLLMCircuitBreaker(tier=tier, failure_threshold=CIRCUIT_BREAKER_FAILURE_THRESHOLD)
+                self._breakers[tier] = VLLMCircuitBreaker(
+                    tier=tier, failure_threshold=CIRCUIT_BREAKER_FAILURE_THRESHOLD
+                )
             return self._breakers[tier]
 
     def record_failure(self, tier: str) -> None:
@@ -142,6 +182,7 @@ class VLLMCircuitBreakerRegistry:
             for cb in self._breakers.values():
                 cb.reset()
 
+
 @dataclass(frozen=True)
 class VLLMGatewayTelemetry:
     """Immutable telemetry payload for a single gateway call.
@@ -149,6 +190,7 @@ class VLLMGatewayTelemetry:
     All fields are deterministic; no timestamps. Stable key ordering via as_dict().
     PHASE 4: Extended with infrastructure fingerprint fields for replay sealing.
     """
+
     provider_selected: str
     model_tier: str
     prompt_tokens_estimated: int
@@ -173,7 +215,30 @@ class VLLMGatewayTelemetry:
 
     def as_dict(self) -> dict[str, Any]:
         """Return stable-ordered dict representation."""
-        return {'provider_selected': self.provider_selected, 'model_tier': self.model_tier, 'prompt_tokens_estimated': self.prompt_tokens_estimated, 'max_output_tokens_requested': self.max_output_tokens_requested, 'max_model_len_configured': self.max_model_len_configured, 'token_budget_ok': self.token_budget_ok, 'budget_margin_tokens': self.budget_margin_tokens, 'queue_depth': self.queue_depth, 'queue_full': self.queue_full, 'queue_wait_seconds': self.queue_wait_seconds, 'breaker_state': self.breaker_state, 'breaker_failure_count': self.breaker_failure_count, 'failure_type': self.failure_type, 'model_name': self.model_name, 'model_revision_sha': self.model_revision_sha, 'vllm_version': self.vllm_version, 'transformers_version': self.transformers_version, 'torch_version': self.torch_version, 'cuda_version': self.cuda_version, 'driver_version': self.driver_version, 'fingerprint_hash': self.fingerprint_hash}
+        return {
+            "provider_selected": self.provider_selected,
+            "model_tier": self.model_tier,
+            "prompt_tokens_estimated": self.prompt_tokens_estimated,
+            "max_output_tokens_requested": self.max_output_tokens_requested,
+            "max_model_len_configured": self.max_model_len_configured,
+            "token_budget_ok": self.token_budget_ok,
+            "budget_margin_tokens": self.budget_margin_tokens,
+            "queue_depth": self.queue_depth,
+            "queue_full": self.queue_full,
+            "queue_wait_seconds": self.queue_wait_seconds,
+            "breaker_state": self.breaker_state,
+            "breaker_failure_count": self.breaker_failure_count,
+            "failure_type": self.failure_type,
+            "model_name": self.model_name,
+            "model_revision_sha": self.model_revision_sha,
+            "vllm_version": self.vllm_version,
+            "transformers_version": self.transformers_version,
+            "torch_version": self.torch_version,
+            "cuda_version": self.cuda_version,
+            "driver_version": self.driver_version,
+            "fingerprint_hash": self.fingerprint_hash,
+        }
+
 
 @dataclass
 class VLLMGatewayCallResult:
@@ -183,6 +248,7 @@ class VLLMGatewayCallResult:
 
     PHASE 5: Includes invariant_violations list for runtime enforcement.
     """
+
     route_to_gemini: bool
     local_request: VLLMLocalRequest | None
     telemetry: VLLMGatewayTelemetry
@@ -193,9 +259,18 @@ class VLLMGatewayCallResult:
     def __post_init__(self):
         """Initialize invariant_violations to empty list if None."""
         if self.invariant_violations is None:
-            object.__setattr__(self, 'invariant_violations', [])
+            object.__setattr__(self, "invariant_violations", [])
 
-def evaluate_gateway_call(prompt: str, task_class: str, severity: str, queue_controller: VLLMQueueController, breaker_registry: VLLMCircuitBreakerRegistry, oldest_wait_seconds: float=0.0, fingerprint: VLLMInfrastructureFingerprint | None=None) -> VLLMGatewayCallResult:
+
+def evaluate_gateway_call(
+    prompt: str,
+    task_class: str,
+    severity: str,
+    queue_controller: VLLMQueueController,
+    breaker_registry: VLLMCircuitBreakerRegistry,
+    oldest_wait_seconds: float = 0.0,
+    fingerprint: VLLMInfrastructureFingerprint | None = None,
+) -> VLLMGatewayCallResult:
     """Evaluate a full gateway call path deterministically.
 
     Routing invariants (in priority order):
@@ -216,30 +291,85 @@ def evaluate_gateway_call(prompt: str, task_class: str, severity: str, queue_con
         VLLMGatewayCallResult with routing decision, shaped request, telemetry.
     """
     from agentic_core.L2_execution.types.vllm_backpressure_types import evaluate_backpressure
-    from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint_types import VLLMInfrastructureFingerprint
-    from agentic_core.L2_execution.types.vllm_token_budget_types import GEMINI_25_PRO_MODEL_ID, VLLMFailureType, run_preflight_budget_check
+    from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint_types import (
+        VLLMInfrastructureFingerprint,
+    )
+    from agentic_core.L2_execution.types.vllm_token_budget_types import (
+        GEMINI_25_PRO_MODEL_ID,
+        VLLMFailureType,
+        run_preflight_budget_check,
+    )
+
     profile = select_serving_profile(severity)
-    tier = 'local_fast' if profile.profile_name == 'LOCAL_FAST_7B' else 'local_strong'
+    tier = "local_fast" if profile.profile_name == "LOCAL_FAST_7B" else "local_strong"
     queue_state = queue_controller.snapshot(oldest_wait_seconds)
     breaker = breaker_registry.get(tier)
     bp_decision = evaluate_backpressure(queue_state, breaker)
-    preflight = run_preflight_budget_check(prompt=prompt, task_class=task_class, max_model_len=profile.max_model_len)
+    preflight = run_preflight_budget_check(
+        prompt=prompt, task_class=task_class, max_model_len=profile.max_model_len
+    )
     if bp_decision.escalate_to_gemini:
         provider_selected = GEMINI_25_PRO_MODEL_ID
-        model_tier = 'remote'
+        model_tier = "remote"
         failure_type = bp_decision.failure_type.value if bp_decision.failure_type else None
         local_request = None
     elif not preflight.token_budget_ok:
         provider_selected = GEMINI_25_PRO_MODEL_ID
-        model_tier = 'remote'
+        model_tier = "remote"
         failure_type = VLLMFailureType.TOKEN_BUDGET_EXCEEDED.value
         local_request = None
     else:
         provider_selected = profile.model
-        model_tier = 'fast' if profile.profile_name == 'LOCAL_FAST_7B' else 'strong'
+        model_tier = "fast" if profile.profile_name == "LOCAL_FAST_7B" else "strong"
         failure_type = None
         local_request = shape_local_request(prompt, task_class, profile)
-    fp = fingerprint if fingerprint is not None else VLLMInfrastructureFingerprint.deterministic_test_instance()
-    telemetry = VLLMGatewayTelemetry(provider_selected=provider_selected, model_tier=model_tier, prompt_tokens_estimated=preflight.prompt_tokens_estimated, max_output_tokens_requested=preflight.max_output_tokens_requested, max_model_len_configured=preflight.max_model_len_configured, token_budget_ok=preflight.token_budget_ok, budget_margin_tokens=preflight.budget_margin_tokens, queue_depth=queue_state.current_depth, queue_full=queue_state.is_full, queue_wait_seconds=oldest_wait_seconds, breaker_state=breaker.state.value, breaker_failure_count=breaker.consecutive_failures, failure_type=failure_type, model_name=fp.model_name, model_revision_sha=fp.model_revision_sha, vllm_version=fp.vllm_version, transformers_version=fp.transformers_version, torch_version=fp.torch_version, cuda_version=fp.cuda_version, driver_version=fp.driver_version, fingerprint_hash=fp.fingerprint_hash())
-    return VLLMGatewayCallResult(route_to_gemini=bp_decision.escalate_to_gemini or not preflight.token_budget_ok, local_request=local_request, telemetry=telemetry, preflight=preflight, backpressure=bp_decision)
-__all__ = ['VLLM_SEED', 'VLLM_TEMPERATURE', 'VLLM_TOP_P', 'VLLMCircuitBreakerRegistry', 'VLLMGatewayCallResult', 'VLLMGatewayTelemetry', 'VLLMLocalRequest', 'VLLMQueueController', 'evaluate_gateway_call', 'select_serving_profile', 'shape_local_request']
+    fp = (
+        fingerprint
+        if fingerprint is not None
+        else VLLMInfrastructureFingerprint.deterministic_test_instance()
+    )
+    telemetry = VLLMGatewayTelemetry(
+        provider_selected=provider_selected,
+        model_tier=model_tier,
+        prompt_tokens_estimated=preflight.prompt_tokens_estimated,
+        max_output_tokens_requested=preflight.max_output_tokens_requested,
+        max_model_len_configured=preflight.max_model_len_configured,
+        token_budget_ok=preflight.token_budget_ok,
+        budget_margin_tokens=preflight.budget_margin_tokens,
+        queue_depth=queue_state.current_depth,
+        queue_full=queue_state.is_full,
+        queue_wait_seconds=oldest_wait_seconds,
+        breaker_state=breaker.state.value,
+        breaker_failure_count=breaker.consecutive_failures,
+        failure_type=failure_type,
+        model_name=fp.model_name,
+        model_revision_sha=fp.model_revision_sha,
+        vllm_version=fp.vllm_version,
+        transformers_version=fp.transformers_version,
+        torch_version=fp.torch_version,
+        cuda_version=fp.cuda_version,
+        driver_version=fp.driver_version,
+        fingerprint_hash=fp.fingerprint_hash(),
+    )
+    return VLLMGatewayCallResult(
+        route_to_gemini=bp_decision.escalate_to_gemini or not preflight.token_budget_ok,
+        local_request=local_request,
+        telemetry=telemetry,
+        preflight=preflight,
+        backpressure=bp_decision,
+    )
+
+
+__all__ = [
+    "VLLM_SEED",
+    "VLLM_TEMPERATURE",
+    "VLLM_TOP_P",
+    "VLLMCircuitBreakerRegistry",
+    "VLLMGatewayCallResult",
+    "VLLMGatewayTelemetry",
+    "VLLMLocalRequest",
+    "VLLMQueueController",
+    "evaluate_gateway_call",
+    "select_serving_profile",
+    "shape_local_request",
+]

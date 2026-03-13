@@ -4,19 +4,21 @@ PrepareResumeContext.py - Formatting Module
 Domain: resume
 Generated: 2025-12-07T13:28:54.194597
 """
+
 import logging
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 Logger = logging.getLogger(__name__)
+
 
 class PrepareResumeContext:
     """Formatter for resume domain."""
 
-    def __init__(self, config: dict[str, object] | None=None):
+    def __init__(self, config: dict[str, object] | None = None):
         self.config = config or {}
-        self.format_type = self.config.get('format', 'default')
-        Logger.info(f'Initialized {self.__class__.__name__}')
+        self.format_type = self.config.get("format", "default")
+        Logger.info(f"Initialized {self.__class__.__name__}")
 
-    def format(self, data: str | dict, target: str | None=None) -> FormatResult:
+    def format(self, data: str | dict, target: str | None = None) -> FormatResult:
         """Format input data into the required output structure."""
         fmt = target or self.format_type
         transformed = self._transform(data)
@@ -28,6 +30,7 @@ class PrepareResumeContext:
             return data.strip()
         return data
 
-def FormatData(data: str | dict, config: dict | None=None) -> FormatResult:
+
+def FormatData(data: str | dict, config: dict | None = None) -> FormatResult:
     """Format input data into the required output structure."""
     return PrepareResumeContext(config).format(data)

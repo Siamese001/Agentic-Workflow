@@ -3,13 +3,17 @@
 Caches immutable policy definitions to eliminate repeated registry scans.
 Keyed by policy ID for fast O(1) lookups.
 """
+
 from __future__ import annotations
+
 import logging
 from typing import Any
+
 from agentic_core.cache.redis_cache_client import DeterministicRedisCache, get_hot_cache
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 logger = logging.getLogger(__name__)
 _DEFAULT_POLICY_TTL = 3600 * 24 * 30
+
 
 class PolicyRegistryCache:
     """Cache for sovereign policy registry lookups.
@@ -18,11 +22,11 @@ class PolicyRegistryCache:
     Policies are immutable, so cache is long-lived.
     """
 
-    def __init__(self, cache: DeterministicRedisCache | None=None, ttl_seconds: int=_DEFAULT_POLICY_TTL):
+    def __init__(self, cache: DeterministicRedisCache | None = None, ttl_seconds: int = _DEFAULT_POLICY_TTL):
         self._cache = cache or get_hot_cache()
         self._ttl = ttl_seconds
 
-    def get_or_fetch(self, policy_id: str, fetch_policy: Any, *, replay_mode: bool=False) -> dict[str, Any]:
+    def get_or_fetch(self, policy_id: str, fetch_policy: Any, *, replay_mode: bool = False) -> dict[str, Any]:
         """Read-through helper: return cached policy or call *fetch_policy*.
 
         *fetch_policy* is a zero-argument callable that fetches the policy
@@ -37,37 +41,38 @@ class PolicyRegistryCache:
             Policy definition dict
         """
         if not policy_id or not policy_id.strip():
-            raise ValueError('Policy ID must not be empty')
+            raise ValueError("Policy ID must not be empty")
         if not replay_mode:
             try:
-                cache_key = f'policy:{policy_id}'
+                cache_key = f"policy:{policy_id}"
                 cached = self._cache.get_json(cache_key)
                 if cached is not None:
-                    logger.debug(f'[Policy cache] HIT for {policy_id}')
+                    logger.debug(f"[Policy cache] HIT for {policy_id}")
                     return cached
             # guardian: allow-silent-swallow
             except Exception as e:
-                logger.warning(f'[Policy cache] Cache read failed: {e}')
-        logger.debug(f'[Policy cache] MISS for {policy_id} — fetching from registry')
+                logger.warning(f"[Policy cache] Cache read failed: {e}")
+        logger.debug(f"[Policy cache] MISS for {policy_id} — fetching from registry")
         result = fetch_policy()
         if not replay_mode:
             try:
-                cache_key = f'policy:{policy_id}'
+                cache_key = f"policy:{policy_id}"
                 self._cache.set_json(cache_key, result, ttl_seconds=self._ttl)
             # guardian: allow-silent-swallow
             except Exception as e:
-                logger.warning(f'[Policy cache] Cache write failed: {e}')
+                logger.warning(f"[Policy cache] Cache write failed: {e}")
         return result
 
     def invalidate(self, policy_id: str) -> None:
         """Invalidate cached policy for specific ID."""
         try:
-            cache_key = f'policy:{policy_id}'
+            cache_key = f"policy:{policy_id}"
             self._cache.delete(cache_key)
-            logger.debug(f'[Policy cache] Invalidated {policy_id}')
+            logger.debug(f"[Policy cache] Invalidated {policy_id}")
         # guardian: allow-silent-swallow
         except Exception as e:
-            logger.warning(f'[Policy cache] Invalidation failed: {e}')
+            logger.warning(f"[Policy cache] Invalidation failed: {e}")
+
 
 def get_policy_registry_cache() -> PolicyRegistryCache:
     """Get the singleton policy registry cache instance."""

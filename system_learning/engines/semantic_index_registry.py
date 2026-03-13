@@ -29,13 +29,10 @@ from system_learning.config.semantic_memory_config import (
     DEFAULT_EMBEDDER_BUFFER_SIZE,
     GRAPH_NEIGHBORHOOD_BUFFER_SIZE,
 )
+from system_learning.engines.embedding_corpus_extraction import CorpusRecord
 from system_learning.engines.graph_neighborhood_embedder import (
     GraphNeighborhoodEmbedder,
     NeighborhoodRetrievalResult,
-)
-from system_learning.engines.healer_outcome_embedder import (
-    HealerOutcomeEmbedder,
-    HealerRetrievalResult,
 )
 from system_learning.engines.incident_bundle_embedder import (
     IncidentBundleEmbedder,
@@ -50,8 +47,8 @@ from system_learning.engines.path_d_preference_embedder import (
     PreferenceRetrievalResult,
 )
 from system_learning.engines.policy_guardrail_embedder import (
-    PolicyGuardrailEmbedder,
     GuardrailRetrievalResult,
+    PolicyGuardrailEmbedder,
 )
 from system_learning.engines.prompt_outcome_embedder import (
     PromptOutcomeEmbedder,
@@ -65,10 +62,8 @@ from system_learning.engines.retrieval_case_embedder import (
     RetrievalCaseEmbedder,
     RetrievalCaseRetrievalResult,
 )
-from system_learning.engines.embedding_corpus_extraction import CorpusRecord
 from system_learning.types.semantic_memory_types import (
     GraphNeighborhood,
-    HealerOutcomeRecord,
     IncidentBundle,
     MutationDiffRecord,
     PathDPreferencePair,
@@ -90,16 +85,18 @@ INDEX_REPLAY = "replay_index"
 INDEX_PREFERENCE = "preference_index"
 INDEX_GUARDRAIL = "guardrail_index"
 
-ALL_INDEXES = frozenset({
-    INDEX_INCIDENT,
-    INDEX_GRAPH,
-    INDEX_MUTATION,
-    INDEX_PROMPT,
-    INDEX_RETRIEVAL,
-    INDEX_REPLAY,
-    INDEX_PREFERENCE,
-    INDEX_GUARDRAIL,
-})
+ALL_INDEXES = frozenset(
+    {
+        INDEX_INCIDENT,
+        INDEX_GRAPH,
+        INDEX_MUTATION,
+        INDEX_PROMPT,
+        INDEX_RETRIEVAL,
+        INDEX_REPLAY,
+        INDEX_PREFERENCE,
+        INDEX_GUARDRAIL,
+    }
+)
 
 
 @dataclass(frozen=True)
@@ -200,9 +197,7 @@ class SemanticIndexRegistry:
         r = self.incident.ingest(bundle)
         return MultiIndexIngestResult(INDEX_INCIDENT, r.content_hash, r.trace_id)
 
-    def ingest_graph_neighborhood(
-        self, neighborhood: GraphNeighborhood
-    ) -> MultiIndexIngestResult:
+    def ingest_graph_neighborhood(self, neighborhood: GraphNeighborhood) -> MultiIndexIngestResult:
         r = self.graph.ingest(neighborhood)
         return MultiIndexIngestResult(INDEX_GRAPH, r.content_hash, r.trace_id)
 
@@ -210,21 +205,15 @@ class SemanticIndexRegistry:
         r = self.mutation.ingest(record)
         return MultiIndexIngestResult(INDEX_MUTATION, r.content_hash, r.trace_id)
 
-    def ingest_prompt_outcome(
-        self, record: PromptOutcomeEmbeddingRecord
-    ) -> MultiIndexIngestResult:
+    def ingest_prompt_outcome(self, record: PromptOutcomeEmbeddingRecord) -> MultiIndexIngestResult:
         r = self.prompt.ingest(record)
         return MultiIndexIngestResult(INDEX_PROMPT, r.content_hash, r.trace_id)
 
-    def ingest_retrieval_case(
-        self, record: RetrievalCaseRecord
-    ) -> MultiIndexIngestResult:
+    def ingest_retrieval_case(self, record: RetrievalCaseRecord) -> MultiIndexIngestResult:
         r = self.retrieval.ingest(record)
         return MultiIndexIngestResult(INDEX_RETRIEVAL, r.content_hash, r.trace_id)
 
-    def ingest_replay_failure(
-        self, record: ReplayFailureRecord
-    ) -> MultiIndexIngestResult:
+    def ingest_replay_failure(self, record: ReplayFailureRecord) -> MultiIndexIngestResult:
         r = self.replay.ingest(record)
         return MultiIndexIngestResult(INDEX_REPLAY, r.content_hash, r.trace_id)
 
@@ -232,9 +221,7 @@ class SemanticIndexRegistry:
         r = self.preference.ingest(pair)
         return MultiIndexIngestResult(INDEX_PREFERENCE, r.content_hash, r.trace_id)
 
-    def ingest_guardrail_case(
-        self, case: PolicyGuardrailCase
-    ) -> MultiIndexIngestResult:
+    def ingest_guardrail_case(self, case: PolicyGuardrailCase) -> MultiIndexIngestResult:
         r = self.guardrail.ingest(case)
         return MultiIndexIngestResult(INDEX_GUARDRAIL, r.content_hash, r.trace_id)
 
@@ -242,206 +229,205 @@ class SemanticIndexRegistry:
     # Query helpers (delegate to individual embedders)
     # -----------------------------------------------------------------------
 
-    def query_incidents(
-        self, query_text: str, *, k: int = 5
-    ) -> list[IncidentRetrievalResult]:
+    def query_incidents(self, query_text: str, *, k: int = 5) -> list[IncidentRetrievalResult]:
         """Retrieve similar historical incidents."""
-        from system_learning.types.semantic_memory_types import IncidentBundle as _IB
         try:
             from agentic_core.interfaces.embeddings import query_similarity
-            raw = query_similarity(query_text, top_k=min(k, 20),
-                                   namespace="incident_bundles")
+
+            raw = query_similarity(query_text, top_k=min(k, 20), namespace="incident_bundles")
             out: list[IncidentRetrievalResult] = []
             for r in raw:
                 meta = self.incident._meta.get(r.content_hash, {})  # noqa: SLF001
-                out.append(IncidentRetrievalResult(
-                    content_hash=r.content_hash,
-                    similarity_score=r.similarity_score,
-                    trace_id=meta.get("trace_id", ""),
-                    outcome=meta.get("outcome", ""),
-                    healer_id=meta.get("healer_id", ""),
-                    route_path=meta.get("route_path", ""),
-                    content_preview=r.content_preview,
-                ))
+                out.append(
+                    IncidentRetrievalResult(
+                        content_hash=r.content_hash,
+                        similarity_score=r.similarity_score,
+                        trace_id=meta.get("trace_id", ""),
+                        outcome=meta.get("outcome", ""),
+                        healer_id=meta.get("healer_id", ""),
+                        route_path=meta.get("route_path", ""),
+                        content_preview=r.content_preview,
+                    )
+                )
             return out
         # guardian: allow-silent-swallow
         except Exception as exc:
             logger.debug("SemanticIndexRegistry.query_incidents: %s", exc)
             return []
 
-    def query_graph_motifs(
-        self, query_text: str, *, k: int = 5
-    ) -> list[NeighborhoodRetrievalResult]:
+    def query_graph_motifs(self, query_text: str, *, k: int = 5) -> list[NeighborhoodRetrievalResult]:
         """Retrieve similar architectural motifs from the graph index."""
         try:
             from agentic_core.interfaces.embeddings import query_similarity
-            raw = query_similarity(query_text, top_k=min(k, 20),
-                                   namespace="graph_neighborhoods")
+
+            raw = query_similarity(query_text, top_k=min(k, 20), namespace="graph_neighborhoods")
             out: list[NeighborhoodRetrievalResult] = []
             for r in raw:
                 meta = self.graph._meta.get(r.content_hash, {})  # noqa: SLF001
-                out.append(NeighborhoodRetrievalResult(
-                    content_hash=r.content_hash,
-                    similarity_score=r.similarity_score,
-                    node_id=meta.get("node_id", ""),
-                    node_type=meta.get("node_type", ""),
-                    layer=meta.get("layer", ""),
-                    risk_label=meta.get("risk_label", ""),
-                    content_preview=r.content_preview,
-                ))
+                out.append(
+                    NeighborhoodRetrievalResult(
+                        content_hash=r.content_hash,
+                        similarity_score=r.similarity_score,
+                        node_id=meta.get("node_id", ""),
+                        node_type=meta.get("node_type", ""),
+                        layer=meta.get("layer", ""),
+                        risk_label=meta.get("risk_label", ""),
+                        content_preview=r.content_preview,
+                    )
+                )
             return out
         # guardian: allow-silent-swallow
         except Exception as exc:
             logger.debug("SemanticIndexRegistry.query_graph_motifs: %s", exc)
             return []
 
-    def query_mutations(
-        self, query_text: str, *, k: int = 5
-    ) -> list[MutationRetrievalResult]:
+    def query_mutations(self, query_text: str, *, k: int = 5) -> list[MutationRetrievalResult]:
         """Retrieve similar prior mutations."""
         try:
             from agentic_core.interfaces.embeddings import query_similarity
-            raw = query_similarity(query_text, top_k=min(k, 20),
-                                   namespace="mutation_diffs")
+
+            raw = query_similarity(query_text, top_k=min(k, 20), namespace="mutation_diffs")
             out: list[MutationRetrievalResult] = []
             for r in raw:
                 meta = self.mutation._meta.get(r.content_hash, {})  # noqa: SLF001
-                out.append(MutationRetrievalResult(
-                    content_hash=r.content_hash,
-                    similarity_score=r.similarity_score,
-                    mutation_id=meta.get("mutation_id", ""),
-                    target_resource=meta.get("target_resource", ""),
-                    commit_outcome=meta.get("commit_outcome", ""),
-                    content_preview=r.content_preview,
-                ))
+                out.append(
+                    MutationRetrievalResult(
+                        content_hash=r.content_hash,
+                        similarity_score=r.similarity_score,
+                        mutation_id=meta.get("mutation_id", ""),
+                        target_resource=meta.get("target_resource", ""),
+                        commit_outcome=meta.get("commit_outcome", ""),
+                        content_preview=r.content_preview,
+                    )
+                )
             return out
         # guardian: allow-silent-swallow
         except Exception as exc:
             logger.debug("SemanticIndexRegistry.query_mutations: %s", exc)
             return []
 
-    def query_prompt_outcomes(
-        self, query_text: str, *, k: int = 5
-    ) -> list[PromptOutcomeRetrievalResult]:
+    def query_prompt_outcomes(self, query_text: str, *, k: int = 5) -> list[PromptOutcomeRetrievalResult]:
         """Retrieve similar prompt construction outcomes."""
         try:
             from agentic_core.interfaces.embeddings import query_similarity
-            raw = query_similarity(query_text, top_k=min(k, 20),
-                                   namespace="prompt_outcomes")
+
+            raw = query_similarity(query_text, top_k=min(k, 20), namespace="prompt_outcomes")
             out: list[PromptOutcomeRetrievalResult] = []
             for r in raw:
                 meta = self.prompt._meta.get(r.content_hash, {})  # noqa: SLF001
-                out.append(PromptOutcomeRetrievalResult(
-                    content_hash=r.content_hash,
-                    similarity_score=r.similarity_score,
-                    record_id=meta.get("record_id", ""),
-                    safety_outcome=meta.get("safety_outcome", ""),
-                    template_id=meta.get("template_id", ""),
-                    model=meta.get("model", ""),
-                    content_preview=r.content_preview,
-                ))
+                out.append(
+                    PromptOutcomeRetrievalResult(
+                        content_hash=r.content_hash,
+                        similarity_score=r.similarity_score,
+                        record_id=meta.get("record_id", ""),
+                        safety_outcome=meta.get("safety_outcome", ""),
+                        template_id=meta.get("template_id", ""),
+                        model=meta.get("model", ""),
+                        content_preview=r.content_preview,
+                    )
+                )
             return out
         # guardian: allow-silent-swallow
         except Exception as exc:
             logger.debug("SemanticIndexRegistry.query_prompt_outcomes: %s", exc)
             return []
 
-    def query_retrieval_cases(
-        self, query_text: str, *, k: int = 5
-    ) -> list[RetrievalCaseRetrievalResult]:
+    def query_retrieval_cases(self, query_text: str, *, k: int = 5) -> list[RetrievalCaseRetrievalResult]:
         """Retrieve similar RAG retrieval quality cases."""
         try:
             from agentic_core.interfaces.embeddings import query_similarity
-            raw = query_similarity(query_text, top_k=min(k, 20),
-                                   namespace="retrieval_cases")
+
+            raw = query_similarity(query_text, top_k=min(k, 20), namespace="retrieval_cases")
             out: list[RetrievalCaseRetrievalResult] = []
             for r in raw:
                 meta = self.retrieval._meta.get(r.content_hash, {})  # noqa: SLF001
-                out.append(RetrievalCaseRetrievalResult(
-                    content_hash=r.content_hash,
-                    similarity_score=r.similarity_score,
-                    case_id=meta.get("case_id", ""),
-                    support_score=float(meta.get("support_score", 0.0)),
-                    completeness_score=float(meta.get("completeness_score", 0.0)),
-                    escalation_flag=bool(meta.get("escalation_flag", False)),
-                    content_preview=r.content_preview,
-                ))
+                out.append(
+                    RetrievalCaseRetrievalResult(
+                        content_hash=r.content_hash,
+                        similarity_score=r.similarity_score,
+                        case_id=meta.get("case_id", ""),
+                        support_score=float(meta.get("support_score", 0.0)),
+                        completeness_score=float(meta.get("completeness_score", 0.0)),
+                        escalation_flag=bool(meta.get("escalation_flag", False)),
+                        content_preview=r.content_preview,
+                    )
+                )
             return out
         # guardian: allow-silent-swallow
         except Exception as exc:
             logger.debug("SemanticIndexRegistry.query_retrieval_cases: %s", exc)
             return []
 
-    def query_replay_failures(
-        self, query_text: str, *, k: int = 5
-    ) -> list[ReplayFailureRetrievalResult]:
+    def query_replay_failures(self, query_text: str, *, k: int = 5) -> list[ReplayFailureRetrievalResult]:
         """Retrieve similar historical replay failures."""
         try:
             from agentic_core.interfaces.embeddings import query_similarity
-            raw = query_similarity(query_text, top_k=min(k, 20),
-                                   namespace="replay_failures")
+
+            raw = query_similarity(query_text, top_k=min(k, 20), namespace="replay_failures")
             out: list[ReplayFailureRetrievalResult] = []
             for r in raw:
                 meta = self.replay._meta.get(r.content_hash, {})  # noqa: SLF001
-                out.append(ReplayFailureRetrievalResult(
-                    content_hash=r.content_hash,
-                    similarity_score=r.similarity_score,
-                    failure_id=meta.get("failure_id", ""),
-                    nondeterminism_type=meta.get("nondeterminism_type", ""),
-                    replay_key=meta.get("replay_key", ""),
-                    content_preview=r.content_preview,
-                ))
+                out.append(
+                    ReplayFailureRetrievalResult(
+                        content_hash=r.content_hash,
+                        similarity_score=r.similarity_score,
+                        failure_id=meta.get("failure_id", ""),
+                        nondeterminism_type=meta.get("nondeterminism_type", ""),
+                        replay_key=meta.get("replay_key", ""),
+                        content_preview=r.content_preview,
+                    )
+                )
             return out
         # guardian: allow-silent-swallow
         except Exception as exc:
             logger.debug("SemanticIndexRegistry.query_replay_failures: %s", exc)
             return []
 
-    def query_preferences(
-        self, query_text: str, *, k: int = 5
-    ) -> list[PreferenceRetrievalResult]:
+    def query_preferences(self, query_text: str, *, k: int = 5) -> list[PreferenceRetrievalResult]:
         """Retrieve similar HITL preference precedents."""
         try:
             from agentic_core.interfaces.embeddings import query_similarity
-            raw = query_similarity(query_text, top_k=min(k, 20),
-                                   namespace="path_d_preferences")
+
+            raw = query_similarity(query_text, top_k=min(k, 20), namespace="path_d_preferences")
             out: list[PreferenceRetrievalResult] = []
             for r in raw:
                 meta = self.preference._meta.get(r.content_hash, {})  # noqa: SLF001
-                out.append(PreferenceRetrievalResult(
-                    content_hash=r.content_hash,
-                    similarity_score=r.similarity_score,
-                    decision_id=meta.get("decision_id", ""),
-                    decision=meta.get("decision", ""),
-                    agent=meta.get("agent", ""),
-                    content_preview=r.content_preview,
-                ))
+                out.append(
+                    PreferenceRetrievalResult(
+                        content_hash=r.content_hash,
+                        similarity_score=r.similarity_score,
+                        decision_id=meta.get("decision_id", ""),
+                        decision=meta.get("decision", ""),
+                        agent=meta.get("agent", ""),
+                        content_preview=r.content_preview,
+                    )
+                )
             return out
         # guardian: allow-silent-swallow
         except Exception as exc:
             logger.debug("SemanticIndexRegistry.query_preferences: %s", exc)
             return []
 
-    def query_guardrail_cases(
-        self, query_text: str, *, k: int = 5
-    ) -> list[GuardrailRetrievalResult]:
+    def query_guardrail_cases(self, query_text: str, *, k: int = 5) -> list[GuardrailRetrievalResult]:
         """Retrieve similar guardrail block cases."""
         try:
             from agentic_core.interfaces.embeddings import query_similarity
-            raw = query_similarity(query_text, top_k=min(k, 20),
-                                   namespace="policy_guardrail_cases")
+
+            raw = query_similarity(query_text, top_k=min(k, 20), namespace="policy_guardrail_cases")
             out: list[GuardrailRetrievalResult] = []
             for r in raw:
                 meta = self.guardrail._meta.get(r.content_hash, {})  # noqa: SLF001
-                out.append(GuardrailRetrievalResult(
-                    content_hash=r.content_hash,
-                    similarity_score=r.similarity_score,
-                    case_id=meta.get("case_id", ""),
-                    policy_hash=meta.get("policy_hash", ""),
-                    verdict=meta.get("verdict", ""),
-                    strictness_level=meta.get("strictness_level", ""),
-                    content_preview=r.content_preview,
-                ))
+                out.append(
+                    GuardrailRetrievalResult(
+                        content_hash=r.content_hash,
+                        similarity_score=r.similarity_score,
+                        case_id=meta.get("case_id", ""),
+                        policy_hash=meta.get("policy_hash", ""),
+                        verdict=meta.get("verdict", ""),
+                        strictness_level=meta.get("strictness_level", ""),
+                        content_preview=r.content_preview,
+                    )
+                )
             return out
         # guardian: allow-silent-swallow
         except Exception as exc:
@@ -524,6 +510,7 @@ class SemanticIndexRegistry:
         Returns:
             Dict with one entry per index name plus aggregates.
         """
+
         def _frac(used: int, cap: int) -> float:
             return round(used / cap, 4) if cap > 0 else 0.0
 
@@ -605,9 +592,7 @@ class SemanticIndexRegistry:
 
         top3_nd = sorted(replay_stats.items(), key=lambda kv: -kv[1])[:3]
         any_over_90 = any(
-            v["utilization"] >= 0.9
-            for k, v in util.items()
-            if isinstance(v, dict) and "utilization" in v
+            v["utilization"] >= 0.9 for k, v in util.items() if isinstance(v, dict) and "utilization" in v
         )
 
         tier = exp_report.get("quality_tier", "HEALTHY")
@@ -666,14 +651,14 @@ class SemanticIndexRegistry:
             return evicted
 
         return {
-            INDEX_INCIDENT:   _evict_from(self.incident),
-            INDEX_GRAPH:      _evict_from(self.graph),
-            INDEX_MUTATION:   _evict_from(self.mutation),
-            INDEX_PROMPT:     _evict_from(self.prompt),
-            INDEX_RETRIEVAL:  _evict_from(self.retrieval),
-            INDEX_REPLAY:     _evict_from(self.replay),
+            INDEX_INCIDENT: _evict_from(self.incident),
+            INDEX_GRAPH: _evict_from(self.graph),
+            INDEX_MUTATION: _evict_from(self.mutation),
+            INDEX_PROMPT: _evict_from(self.prompt),
+            INDEX_RETRIEVAL: _evict_from(self.retrieval),
+            INDEX_REPLAY: _evict_from(self.replay),
             INDEX_PREFERENCE: _evict_from(self.preference),
-            INDEX_GUARDRAIL:  _evict_from(self.guardrail),
+            INDEX_GUARDRAIL: _evict_from(self.guardrail),
         }
 
     @staticmethod
@@ -686,14 +671,14 @@ class SemanticIndexRegistry:
             Dict mapping index_name -> namespace string.
         """
         return {
-            INDEX_INCIDENT:   "incident_bundles",
-            INDEX_GRAPH:      "graph_neighborhoods",
-            INDEX_MUTATION:   "mutation_diffs",
-            INDEX_PROMPT:     "prompt_outcomes",
-            INDEX_RETRIEVAL:  "retrieval_cases",
-            INDEX_REPLAY:     "replay_failures",
+            INDEX_INCIDENT: "incident_bundles",
+            INDEX_GRAPH: "graph_neighborhoods",
+            INDEX_MUTATION: "mutation_diffs",
+            INDEX_PROMPT: "prompt_outcomes",
+            INDEX_RETRIEVAL: "retrieval_cases",
+            INDEX_REPLAY: "replay_failures",
             INDEX_PREFERENCE: "path_d_preferences",
-            INDEX_GUARDRAIL:  "policy_guardrail_cases",
+            INDEX_GUARDRAIL: "policy_guardrail_cases",
         }
 
 

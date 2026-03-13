@@ -1,8 +1,9 @@
 from __future__ import annotations
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 class NonMonotonicRetryViolation(Exception):
     """Raised when a retry count is not incremented monotonically."""
+
 
 class MonotonicReentrancyEnforcer:
     """
@@ -52,4 +53,6 @@ class MonotonicReentrancyEnforcer:
         """
         expected_next_count = self._persistent_retry_counts.get(trace_id, 0)
         if proposed_count != expected_next_count:
-            raise NonMonotonicRetryViolation(f"Invalid retry count for trace '{trace_id}'. Expected {expected_next_count}, got {proposed_count}.")
+            raise NonMonotonicRetryViolation(
+                f"Invalid retry count for trace '{trace_id}'. Expected {expected_next_count}, got {proposed_count}."
+            )

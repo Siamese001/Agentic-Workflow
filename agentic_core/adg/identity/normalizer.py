@@ -20,7 +20,6 @@ Design constraints:
 
 from __future__ import annotations
 
-import ast
 import logging
 from dataclasses import dataclass, field
 from enum import Enum
@@ -277,7 +276,9 @@ class IdentityNormalizer:
         rpt.inferred_symbols.sort()
         return rpt
 
-    def normalize_from_scan_result(self, result: object) -> tuple[dict[str, IdentityRecord], NormalizationReport]:
+    def normalize_from_scan_result(
+        self, result: object
+    ) -> tuple[dict[str, IdentityRecord], NormalizationReport]:
         """Normalize all imported names found in a ScanResult.
 
         Only normalizes ADG::Symbol:: targets — these represent external,
@@ -294,7 +295,7 @@ class IdentityNormalizer:
             to_name: str = edge.to_name
 
             if to_name.startswith(symbol_prefix):
-                dot_name = to_name[len(symbol_prefix):]
+                dot_name = to_name[len(symbol_prefix) :]
                 raw_names.add(dot_name)
 
         records = self.normalize_many(list(raw_names))

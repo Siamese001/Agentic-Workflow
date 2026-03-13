@@ -15,18 +15,39 @@ Design invariants:
   - Tampered surface is fully deterministic (same inputs -> same output).
   - No wall-clock access.
 """
+
 from __future__ import annotations
+
 import hashlib
 import json
 import os
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 def is_tamper_active() -> bool:
     """Return True iff W_HARDEN_NEGCTRL_TAMPER == '1' in the environment."""
-    return os.environ.get('W_HARDEN_NEGCTRL_TAMPER') == '1'
-_CLEAN_CONFIG: dict[str, Any] = {'blas_eps': 1e-12, 'cutoff': 0.0, 'decision_delta_limit': 0.1, 'embedding_batch': 500, 'embedding_enabled': True, 'embedding_retry': 8, 'max_k': 20, 'meta_learning_enabled': True, 'model_version': 'multilingual-e5-large', 'oscillation_detector_enabled': True, 'proposal_only': True, 'rlhf_delta_max': 2.0, 'rlhf_delta_min': 0.1, 'threads': 4, 'top_k': 20}
-_TAMPER_OVERRIDES: dict[str, Any] = {'cutoff': 0.999, 'tampered': True, 'top_k': 999}
+    return os.environ.get("W_HARDEN_NEGCTRL_TAMPER") == "1"
+
+
+_CLEAN_CONFIG: dict[str, Any] = {
+    "blas_eps": 1e-12,
+    "cutoff": 0.0,
+    "decision_delta_limit": 0.1,
+    "embedding_batch": 500,
+    "embedding_enabled": True,
+    "embedding_retry": 8,
+    "max_k": 20,
+    "meta_learning_enabled": True,
+    "model_version": "multilingual-e5-large",
+    "oscillation_detector_enabled": True,
+    "proposal_only": True,
+    "rlhf_delta_max": 2.0,
+    "rlhf_delta_min": 0.1,
+    "threads": 4,
+    "top_k": 20,
+}
+_TAMPER_OVERRIDES: dict[str, Any] = {"cutoff": 0.999, "tampered": True, "top_k": 999}
+
 
 def get_config_surface() -> dict[str, Any]:
     """Return the embedding/meta-learning config surface.
@@ -39,10 +60,12 @@ def get_config_surface() -> dict[str, Any]:
         surface.update(_TAMPER_OVERRIDES)
     return surface
 
+
 def hash_config_surface(surface: dict[str, Any]) -> str:
     """Return SHA-256 hex of the canonical config surface dict."""
     canonical = _canonical_json_bytes(surface)
     return hashlib.sha256(canonical).hexdigest()
+
 
 def assert_digest_differs(clean_digest: str, tampered_digest: str) -> None:
     """Assert that *clean_digest* != *tampered_digest*.
@@ -51,7 +74,10 @@ def assert_digest_differs(clean_digest: str, tampered_digest: str) -> None:
         AssertionError: if the two digests are identical (tamper not detected).
     """
     if clean_digest == tampered_digest:
-        raise AssertionError(f'NegativeControlHarness: digests are identical — tampering was NOT detected by the digest surface. This is a security failure.\n  clean    = {clean_digest}\n  tampered = {tampered_digest}')
+        raise AssertionError(
+            f"NegativeControlHarness: digests are identical — tampering was NOT detected by the digest surface. This is a security failure.\n  clean    = {clean_digest}\n  tampered = {tampered_digest}"
+        )
+
 
 def assert_digest_stable(digest1: str, digest2: str) -> None:
     """Assert that *digest1* == *digest2* (two independent clean runs).
@@ -60,8 +86,19 @@ def assert_digest_stable(digest1: str, digest2: str) -> None:
         AssertionError: if the two digests differ (non-determinism detected).
     """
     if digest1 != digest2:
-        raise AssertionError(f'NegativeControlHarness: digests differ across runs — non-determinism detected.\n  run1 = {digest1}\n  run2 = {digest2}')
+        raise AssertionError(
+            f"NegativeControlHarness: digests differ across runs — non-determinism detected.\n  run1 = {digest1}\n  run2 = {digest2}"
+        )
+
 
 def _canonical_json_bytes(data: Any) -> bytes:
-    return json.dumps(data, sort_keys=True, separators=(',', ':'), ensure_ascii=True).encode('utf-8')
-__all__ = ['assert_digest_differs', 'assert_digest_stable', 'get_config_surface', 'hash_config_surface', 'is_tamper_active']
+    return json.dumps(data, sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode("utf-8")
+
+
+__all__ = [
+    "assert_digest_differs",
+    "assert_digest_stable",
+    "get_config_surface",
+    "hash_config_surface",
+    "is_tamper_active",
+]

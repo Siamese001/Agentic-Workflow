@@ -1,5 +1,6 @@
 from __future__ import annotations
-'\nSovereign Ingestion Mission - Index all sovereign territories into vector store.\n'
+
+"\nSovereign Ingestion Mission - Index all sovereign territories into vector store.\n"
 import argparse
 import ast
 import asyncio
@@ -8,33 +9,37 @@ from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 async def load_text_file(file_path: Path) -> str:
     """Load text from supported files with encoding fallback."""
     try:
         try:
-            return file_path.read_text(encoding='utf-8')
+            return file_path.read_text(encoding="utf-8")
         except UnicodeDecodeError:
-            return file_path.read_text(encoding='latin-1')
+            return file_path.read_text(encoding="latin-1")
     # guardian: allow-silent-swallow
     except Exception as e:
-        print(f' [!] Failed to read {file_path}: {e}')
-        return ''
+        print(f" [!] Failed to read {file_path}: {e}")
+        return ""
+
 
 class ChunkType(Enum):
     """Semantic chunk types for metadata."""
-    MODULE = 'module'
-    CLASS = 'class'
-    FUNCTION = 'function'
-    METHOD = 'method'
-    DOCSTRING = 'docstring'
-    IMPORT_BLOCK = 'imports'
-    TEXT_BLOCK = 'text'
+
+    MODULE = "module"
+    CLASS = "class"
+    FUNCTION = "function"
+    METHOD = "method"
+    DOCSTRING = "docstring"
+    IMPORT_BLOCK = "imports"
+    TEXT_BLOCK = "text"
+
 
 @dataclass
 class SemanticChunk:
     """Structured semantic chunk with metadata."""
+
     chunk_type: ChunkType
     name: str
     text: str
@@ -42,6 +47,7 @@ class SemanticChunk:
     end_line: int
     parent: str | None = None
     docstring: str | None = None
+
 
 def _extract_docstring(node: ast.AST) -> str | None:
     """Extract docstring from AST node if present."""
@@ -51,9 +57,11 @@ def _extract_docstring(node: ast.AST) -> str | None:
                 return node.body[0].value.value.strip()
     return None
 
+
 def _get_source_segment(lines: list[str], start: int, end: int) -> str:
     """Extract line segment from source lines (1-indexed)."""
-    return '\n'.join(lines[start - 1:end])
+    return "\n".join(lines[start - 1 : end])
+
 
 def chunk_python_ast(text: str, file_path: Path) -> list[SemanticChunk]:
     """Parse Python file to semantic chunks using ast."""
@@ -62,32 +70,68 @@ def chunk_python_ast(text: str, file_path: Path) -> list[SemanticChunk]:
     try:
         tree = ast.parse(text)
     except SyntaxError as e:
-        print(f' [!] AST parse failed for {file_path}: {e}. Falling back to line-based.')
+        print(f" [!] AST parse failed for {file_path}: {e}. Falling back to line-based.")
         return chunk_text_fallback(text, file_path)
     module_doc = _extract_docstring(tree)
     if module_doc:
-        doc_lines = module_doc.count('\n') + 1
-        chunks.append(SemanticChunk(chunk_type=ChunkType.DOCSTRING, name=f'{file_path.stem}.__doc__', text=module_doc, start_line=1, end_line=doc_lines))
+        doc_lines = module_doc.count("\n") + 1
+        chunks.append(
+            SemanticChunk(
+                chunk_type=ChunkType.DOCSTRING,
+                name=f"{file_path.stem}.__doc__",
+                text=module_doc,
+                start_line=1,
+                end_line=doc_lines,
+            )
+        )
     import_nodes = [n for n in ast.iter_child_nodes(tree) if isinstance(n, ast.Import | ast.ImportFrom)]
     if import_nodes:
-        start = min((n.lineno for n in import_nodes))
-        end = max((n.end_lineno or n.lineno for n in import_nodes))
-        chunks.append(SemanticChunk(chunk_type=ChunkType.IMPORT_BLOCK, name=f'{file_path.stem}.__imports__', text=_get_source_segment(lines, start, end), start_line=start, end_line=end))
+        start = min(n.lineno for n in import_nodes)
+        end = max(n.end_lineno or n.lineno for n in import_nodes)
+        chunks.append(
+            SemanticChunk(
+                chunk_type=ChunkType.IMPORT_BLOCK,
+                name=f"{file_path.stem}.__imports__",
+                text=_get_source_segment(lines, start, end),
+                start_line=start,
+                end_line=end,
+            )
+        )
     for node in ast.walk(tree):
         if isinstance(node, ast.ClassDef):
             end_line = node.end_lineno or node.lineno
-            chunks.append(SemanticChunk(chunk_type=ChunkType.CLASS, name=node.name, text=_get_source_segment(lines, node.lineno, end_line), start_line=node.lineno, end_line=end_line, docstring=_extract_docstring(node)))
+            chunks.append(
+                SemanticChunk(
+                    chunk_type=ChunkType.CLASS,
+                    name=node.name,
+                    text=_get_source_segment(lines, node.lineno, end_line),
+                    start_line=node.lineno,
+                    end_line=end_line,
+                    docstring=_extract_docstring(node),
+                )
+            )
         elif isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
             parent_class = None
             parent = node
-            while hasattr(parent, 'parent'):
+            while hasattr(parent, "parent"):
                 parent = parent.parent
                 if isinstance(parent, ast.ClassDef):
                     parent_class = parent.name
                     break
             end_line = node.end_lineno or node.lineno
-            chunks.append(SemanticChunk(chunk_type=ChunkType.METHOD if parent_class else ChunkType.FUNCTION, name=f'{parent_class}.{node.name}' if parent_class else node.name, text=_get_source_segment(lines, node.lineno, end_line), start_line=node.lineno, end_line=end_line, parent=parent_class, docstring=_extract_docstring(node)))
+            chunks.append(
+                SemanticChunk(
+                    chunk_type=ChunkType.METHOD if parent_class else ChunkType.FUNCTION,
+                    name=f"{parent_class}.{node.name}" if parent_class else node.name,
+                    text=_get_source_segment(lines, node.lineno, end_line),
+                    start_line=node.lineno,
+                    end_line=end_line,
+                    parent=parent_class,
+                    docstring=_extract_docstring(node),
+                )
+            )
     return chunks
+
 
 def chunk_text_fallback(text: str, file_path: Path) -> list[SemanticChunk]:
     """Fallback to line-based chunking for non-Python or parse failures."""
@@ -95,22 +139,49 @@ def chunk_text_fallback(text: str, file_path: Path) -> list[SemanticChunk]:
     lines = text.splitlines()
     chunk_size = 50
     for i in range(0, len(lines), chunk_size):
-        chunk_lines = lines[i:i + chunk_size]
-        chunk_text = '\n'.join(chunk_lines).strip()
+        chunk_lines = lines[i : i + chunk_size]
+        chunk_text = "\n".join(chunk_lines).strip()
         if chunk_text:
-            chunks.append(SemanticChunk(chunk_type=ChunkType.TEXT_BLOCK, name=f'{file_path.stem}:lines_{i + 1}-{min(i + chunk_size, len(lines))}', text=chunk_text, start_line=i + 1, end_line=min(i + chunk_size, len(lines))))
+            chunks.append(
+                SemanticChunk(
+                    chunk_type=ChunkType.TEXT_BLOCK,
+                    name=f"{file_path.stem}:lines_{i + 1}-{min(i + chunk_size, len(lines))}",
+                    text=chunk_text,
+                    start_line=i + 1,
+                    end_line=min(i + chunk_size, len(lines)),
+                )
+            )
     return chunks
+
 
 def chunk_text(text: str, file_path: Path) -> list[dict]:
     """
     Smart semantic chunking: AST for Python, fallback for others.
     Returns dicts ready for vector store with enriched metadata.
     """
-    if file_path.suffix.lower() == '.py':
+    if file_path.suffix.lower() == ".py":
         semantic_chunks = chunk_python_ast(text, file_path)
     else:
         semantic_chunks = chunk_text_fallback(text, file_path)
-    return [{'hash': hashlib.sha256(f'{file_path}:{c.start_line}-{c.end_line}'.encode()).hexdigest()[:16], 'text': c.text, 'metadata': {'source': str(file_path), 'start_line': c.start_line, 'end_line': c.end_line, 'file_type': file_path.suffix, 'chunk_type': c.chunk_type.value, 'name': c.name, 'parent': c.parent, 'docstring': c.docstring[:500] if c.docstring else None}} for c in semantic_chunks if c.text.strip()]
+    return [
+        {
+            "hash": hashlib.sha256(f"{file_path}:{c.start_line}-{c.end_line}".encode()).hexdigest()[:16],
+            "text": c.text,
+            "metadata": {
+                "source": str(file_path),
+                "start_line": c.start_line,
+                "end_line": c.end_line,
+                "file_type": file_path.suffix,
+                "chunk_type": c.chunk_type.value,
+                "name": c.name,
+                "parent": c.parent,
+                "docstring": c.docstring[:500] if c.docstring else None,
+            },
+        }
+        for c in semantic_chunks
+        if c.text.strip()
+    ]
+
 
 async def process_file(file_path: Path, embedder: Any, vector_store: Any) -> int:
     """Process a single file and add to vector store"""
@@ -123,54 +194,59 @@ async def process_file(file_path: Path, embedder: Any, vector_store: Any) -> int
     batch_size: Any = 10
     total_processed: Any = 0
     for i in range(0, len(chunks), batch_size):
-        batch: Any = chunks[i:i + batch_size]
-        texts: Any = [chunk['text'] for chunk in batch]
+        batch: Any = chunks[i : i + batch_size]
+        texts: Any = [chunk["text"] for chunk in batch]
         embeddings: Any = await embedder.embed_documents(texts)
         vectors: Any = []
         for j, embedding in enumerate(embeddings):
             chunk: Any = batch[j]
-            meta: Any = chunk['metadata']
-            meta['text'] = chunk['text']
-            vectors.append({'id': chunk['hash'], 'values': embedding, 'metadata': meta})
+            meta: Any = chunk["metadata"]
+            meta["text"] = chunk["text"]
+            vectors.append({"id": chunk["hash"], "values": embedding, "metadata": meta})
         await vector_store.upsert(vectors)
         total_processed += len(batch)
-        print(f'   [+] Indexed {file_path.name}: chunks {i + 1}-{min(i + batch_size, len(chunks))}')
+        print(f"   [+] Indexed {file_path.name}: chunks {i + 1}-{min(i + batch_size, len(chunks))}")
     return total_processed
+
 
 async def scan_directory(directory: Path, embedder: Any, vector_store: Any) -> dict[str, int]:
     """Scan directory and process all supported files"""
-    stats: Any = {'files_processed': 0, 'chunks_indexed': 0}
-    extensions: Any = {'.py', '.md', '.txt', '.json', '.yaml', '.yml'}
+    stats: Any = {"files_processed": 0, "chunks_indexed": 0}
+    extensions: Any = {".py", ".md", ".txt", ".json", ".yaml", ".yml"}
     from agentic_core.utils.ssot_discovery_validator import get_data_files, get_python_files
+
     all_files = list(get_python_files(directory)) + list(get_data_files(directory))
     for file_path in all_files:
         if file_path.is_file() and file_path.suffix in extensions:
-            if file_path.name.startswith('.') or '__pycache__' in str(file_path):
+            if file_path.name.startswith(".") or "__pycache__" in str(file_path):
                 continue
             chunks: Any = await process_file(file_path, embedder, vector_store)
             if chunks > 0:
-                stats['files_processed'] += 1
-                stats['chunks_indexed'] += chunks
+                stats["files_processed"] += 1
+                stats["chunks_indexed"] += chunks
     return stats
+
 
 async def main() -> Any:
     """Main ingestion mission"""
-    parser: Any = argparse.ArgumentParser(description='Sovereign Ingestion Mission')
-    parser.add_argument('--target', required=True, help='Target directory to index')
-    parser.add_argument('--reset', action='store_true', help='Reset index before ingestion')
+    parser: Any = argparse.ArgumentParser(description="Sovereign Ingestion Mission")
+    parser.add_argument("--target", required=True, help="Target directory to index")
+    parser.add_argument("--reset", action="store_true", help="Reset index before ingestion")
     args: Any = parser.parse_args()
     target_path: Any = Path(args.target).resolve()
     if not target_path.exists():
-        print(f'[ERROR] Target directory does not exist: {target_path}')
+        print(f"[ERROR] Target directory does not exist: {target_path}")
         return
-    print(f'\n[*] Sovereign Ingestion Mission: {target_path}')
+    print(f"\n[*] Sovereign Ingestion Mission: {target_path}")
     embedder: Any = None
     vector_store: Any = None
     if args.reset:
-        print('[*] Resetting vector index...')
+        print("[*] Resetting vector index...")
     stats: Any = await scan_directory(target_path, embedder, vector_store)
-    print('\n[✓] Ingestion Complete:')
+    print("\n[✓] Ingestion Complete:")
     print(f"    Files processed: {stats['files_processed']}")
     print(f"    Chunks indexed: {stats['chunks_indexed']}")
-if __name__ == '__main__':
+
+
+if __name__ == "__main__":
     asyncio.run(main())

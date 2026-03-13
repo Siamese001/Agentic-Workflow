@@ -11,47 +11,84 @@ Wraps any healing execution path with P1/P2 contract enforcement:
 This module is the integration proof point demonstrating that P2 contracts
 are exercised in a real execution path.
 """
+
 from __future__ import annotations
+
 import logging
 from dataclasses import dataclass, field
 from typing import Any, Callable
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 MUTATION_COUNTER = 0
-CURRENT_PHASE = 'UNKNOWN'
+CURRENT_PHASE = "UNKNOWN"
+
 
 def _get_manifest_hash_validator():
     from agentic_core.L2_execution.enforcement.manifest_hash_validator import validate_manifest_hashes
+
     return validate_manifest_hashes
+
 
 def _get_guardian_decision():
     from agentic_core.L5_safety.reasoning.guardian_decision import GuardianViolationError, L5Guardian
+
     return (GuardianViolationError, L5Guardian)
+
+
 from agentic_core.agents.agent_registry import get_profile, registry_digest
 from agentic_core.L0_routing.types.crypto_trust_types import HashMismatchTracker
-from agentic_core.L0_routing.types.determinism_contracts_types import create_boundary_snapshot, dedupe_sha256, validate_execution_input, validate_manifest_emission, verify_rollback_integrity
-from agentic_core.L0_routing.types.determinism_types import BoundarySnapshotArtifact, SemanticClock, StateCommitInvalid, SurgicalManifest
-from agentic_core.L0_routing.types.guardian_contract_types import V15HardFailAbort, V15SoftFailAbort, is_v15_hard_fail, is_v15_soft_fail
-from agentic_core.L0_routing.types.routing_contracts_types import GuardrailGuard, PipeOrderEnforcer, PipeOrderViolation, PolicyConfigGuard, PolicyMutationIncident
+from agentic_core.L0_routing.types.determinism_contracts_types import (
+    create_boundary_snapshot,
+    dedupe_sha256,
+    validate_execution_input,
+    validate_manifest_emission,
+    verify_rollback_integrity,
+)
+from agentic_core.L0_routing.types.determinism_types import (
+    BoundarySnapshotArtifact,
+    SemanticClock,
+    StateCommitInvalid,
+    SurgicalManifest,
+)
+from agentic_core.L0_routing.types.guardian_contract_types import (
+    V15HardFailAbort,
+    V15SoftFailAbort,
+    is_v15_hard_fail,
+    is_v15_soft_fail,
+)
+from agentic_core.L0_routing.types.routing_contracts_types import (
+    GuardrailGuard,
+    PipeOrderEnforcer,
+    PipeOrderViolation,
+    PolicyConfigGuard,
+    PolicyMutationIncident,
+)
+
 Logger = logging.getLogger(__name__)
+
 
 class ExecutionGatewayError(RuntimeError):
     """Raised when critical execution gateway operations fail."""
 
-    def __init__(self, message: str, original_error: Exception | None=None):
+    def __init__(self, message: str, original_error: Exception | None = None):
         super().__init__(message)
         self.original_error = original_error
+
 
 class UnregisteredAgentError(RuntimeError):
     """Raised when an agent is not found in AgentExecutionProfileRegistry."""
 
+
 def _get_enforce_healer_pipe_order():
     """Lazy load enforce_healer_pipe_order to avoid upward import."""
     from agentic_core.L2_execution.enforcement.healer_pipe_order import enforce_healer_pipe_order
+
     return enforce_healer_pipe_order
+
 
 @dataclass
 class GatewayResult:
     """Result of a contract-enforced execution."""
+
     success: bool
     manifest: SurgicalManifest
     semantic_clock_tick: int
@@ -61,7 +98,8 @@ class GatewayResult:
     healing_output: dict[str, Any] = field(default_factory=dict)
     error: str | None = None
     dedupe_hit: bool = False
-    registry_hash: str = ''
+    registry_hash: str = ""
+
 
 class V15ExecutionGateway:
     """Contract-enforced execution gateway for healing paths.
@@ -84,7 +122,15 @@ class V15ExecutionGateway:
         """Expose clock for test inspection."""
         return self._clock
 
-    def execute(self, execution_input: Any, heal_fn: Callable[[SurgicalManifest], dict[str, Any]], state_hash_fn: Callable[[], tuple[str, str, str]], trace_id: str='gw-default', agent_id: str='', **kwargs: Any) -> GatewayResult:
+    def execute(
+        self,
+        execution_input: Any,
+        heal_fn: Callable[[SurgicalManifest], dict[str, Any]],
+        state_hash_fn: Callable[[], tuple[str, str, str]],
+        trace_id: str = "gw-default",
+        agent_id: str = "",
+        **kwargs: Any,
+    ) -> GatewayResult:
         """Execute a healing operation under full P2 contract enforcement.
 
         Args:
@@ -102,8 +148,18 @@ class V15ExecutionGateway:
         try:
             return self._execute_with_envelope(execution_input, heal_fn, state_hash_fn, trace_id, **kwargs)
         except V15SoftFailAbort as sfa:
-            Logger.warning('[V15-GW] SOFT_FAIL abort: %s', sfa)
-            return GatewayResult(success=False, manifest=execution_input, semantic_clock_tick=self._clock.step_id, pre_snapshot=None, post_snapshot=None, rollback_verified=False, healing_output={}, error=f'SOFT_FAIL: {sfa}', dedupe_hit=False)
+            Logger.warning("[V15-GW] SOFT_FAIL abort: %s", sfa)
+            return GatewayResult(
+                success=False,
+                manifest=execution_input,
+                semantic_clock_tick=self._clock.step_id,
+                pre_snapshot=None,
+                post_snapshot=None,
+                rollback_verified=False,
+                healing_output={},
+                error=f"SOFT_FAIL: {sfa}",
+                dedupe_hit=False,
+            )
 
     def _enforce_agent_registered(self, agent_id: str) -> None:
         """Raise UnregisteredAgentError if agent_id is empty or not in AGENT_REGISTRY.
@@ -111,14 +167,25 @@ class V15ExecutionGateway:
         Spec: L0 Authority Node, Guarantee #7 — no execution without a registered profile.
         """
         if not agent_id or not agent_id.strip():
-            raise UnregisteredAgentError('agent_id must be a non-empty string. All V15ExecutionGateway.execute() callers must supply a registered agent_id.')
+            raise UnregisteredAgentError(
+                "agent_id must be a non-empty string. All V15ExecutionGateway.execute() callers must supply a registered agent_id."
+            )
         try:
             profile = get_profile(agent_id)
         except (KeyError, Exception):
-            raise UnregisteredAgentError(f"Agent '{agent_id}' not registered in AgentExecutionProfileRegistry. Add an AgentExecutionProfile entry to agentic_core/agents/agent_registry.py.")
+            raise UnregisteredAgentError(
+                f"Agent '{agent_id}' not registered in AgentExecutionProfileRegistry. Add an AgentExecutionProfile entry to agentic_core/agents/agent_registry.py."
+            )
         Logger.debug("[V15-GW] Agent '%s' registry check OK (mode=%s)", agent_id, profile.execution_mode)
 
-    def _execute_with_envelope(self, execution_input: Any, heal_fn: Callable[[SurgicalManifest], dict[str, Any]], state_hash_fn: Callable[[], tuple[str, str, str]], trace_id: str='gw-default', **kwargs: Any) -> GatewayResult:
+    def _execute_with_envelope(
+        self,
+        execution_input: Any,
+        heal_fn: Callable[[SurgicalManifest], dict[str, Any]],
+        state_hash_fn: Callable[[], tuple[str, str, str]],
+        trace_id: str = "gw-default",
+        **kwargs: Any,
+    ) -> GatewayResult:
         """Execute with explicit L2 envelope separation."""
         manifest = self._validate_manifest(execution_input, trace_id)
         self._guardian_validate(manifest, trace_id, **kwargs)
@@ -130,70 +197,102 @@ class V15ExecutionGateway:
     def _validate_manifest(self, execution_input: Any, trace_id: str) -> SurgicalManifest:
         """L2.0: Validate execution input manifest."""
         global CURRENT_PHASE
-        CURRENT_PHASE = 'L2.0'
+        CURRENT_PHASE = "L2.0"
         manifest = validate_execution_input(execution_input)
         validate_manifest_emission(manifest)
-        _HASH_FIELDS = ('policy_hash', 'routing_hash', 'model_hash', 'budget_hash')
-        if any((hasattr(manifest, f) and getattr(manifest, f) is not None for f in _HASH_FIELDS)):
+        _HASH_FIELDS = ("policy_hash", "routing_hash", "model_hash", "budget_hash")
+        if any(hasattr(manifest, f) and getattr(manifest, f) is not None for f in _HASH_FIELDS):
             _get_manifest_hash_validator()(manifest)
         signal_hash = dedupe_sha256(manifest.correlation_id + manifest.node_id)
         dedupe_hit = signal_hash in self._seen_signals
         self._seen_signals.add(signal_hash)
         if dedupe_hit:
-            raise V15SoftFailAbort('Duplicate signal detected')
+            raise V15SoftFailAbort("Duplicate signal detected")
         return manifest
 
     def _guardian_validate(self, manifest: SurgicalManifest, trace_id: str, **kwargs: Any) -> None:
         """L2.1: Guardian validation (non-mutating)."""
         global CURRENT_PHASE
-        CURRENT_PHASE = 'L2.1'
+        CURRENT_PHASE = "L2.1"
         GuardianViolationError, L5Guardian = _get_guardian_decision()
-        guardian = L5Guardian(policy_version='1.0')
-        decision = guardian.validate(manifest, None, '1.0')
+        guardian = L5Guardian(policy_version="1.0")
+        decision = guardian.validate(manifest, None, "1.0")
         guardian.log_decision_to_state_bus(decision, trace_id)
         if not decision.allow:
             raise GuardianViolationError(decision)
         if decision.escalate:
-            Logger.warning(f'[V15-GW] Guardian escalation triggered for {trace_id}')
-        policy_config = kwargs.get('policy_config', {})
+            Logger.warning(f"[V15-GW] Guardian escalation triggered for {trace_id}")
+        policy_config = kwargs.get("policy_config", {})
         policy_guard = PolicyConfigGuard(policy_config=policy_config, wave_id=trace_id)
         guardrail = GuardrailGuard(trace_id=trace_id)
-        fs_hash, git_hash, mem_hash = kwargs.get('state_hash_fn', lambda: ('', '', ''))()
+        fs_hash, git_hash, mem_hash = kwargs.get("state_hash_fn", lambda: ("", "", ""))()
         self._clock.prepare_commit(manifest.target_layer)
-        pre_snapshot = create_boundary_snapshot(trace_id=trace_id, filesystem_hash=fs_hash, git_state_hash=git_hash, agent_memory_hash=mem_hash, semantic_clock=self._clock)
+        pre_snapshot = create_boundary_snapshot(
+            trace_id=trace_id,
+            filesystem_hash=fs_hash,
+            git_state_hash=git_hash,
+            agent_memory_hash=mem_hash,
+            semantic_clock=self._clock,
+        )
         policy_hash = policy_guard.policy_hash
         from agentic_core.L0_routing.types.routing_artifact_types import TokenCapArtifact, TokenGateResult
-        token_cap = TokenCapArtifact(trace_id=trace_id, policy_hash=policy_hash, budget_limit=decision.budget_remaining, tokens_requested=0, gate_result=TokenGateResult.ALLOW)
-        safety_markers = ['trace_id_present', 'policy_hash_present', 'schema_valid', 'guardian_approved']
-        boundary_token = pre_snapshot.trace_id
-        if not guardrail.enforce_all(token_cap=token_cap, payload_hash=dedupe_sha256(manifest.correlation_id + manifest.node_id), expected_hash=dedupe_sha256(manifest.correlation_id + manifest.node_id), markers=safety_markers, boundary_token=boundary_token):
-            raise V15HardFailAbort('Guardrail validation failed')
 
-    def _commit_mutation(self, manifest: SurgicalManifest, heal_fn: Callable[[SurgicalManifest], dict[str, Any]], state_hash_fn: Callable[[], tuple[str, str, str]], trace_id: str, **kwargs: Any) -> GatewayResult:
+        token_cap = TokenCapArtifact(
+            trace_id=trace_id,
+            policy_hash=policy_hash,
+            budget_limit=decision.budget_remaining,
+            tokens_requested=0,
+            gate_result=TokenGateResult.ALLOW,
+        )
+        safety_markers = ["trace_id_present", "policy_hash_present", "schema_valid", "guardian_approved"]
+        boundary_token = pre_snapshot.trace_id
+        if not guardrail.enforce_all(
+            token_cap=token_cap,
+            payload_hash=dedupe_sha256(manifest.correlation_id + manifest.node_id),
+            expected_hash=dedupe_sha256(manifest.correlation_id + manifest.node_id),
+            markers=safety_markers,
+            boundary_token=boundary_token,
+        ):
+            raise V15HardFailAbort("Guardrail validation failed")
+
+    def _commit_mutation(
+        self,
+        manifest: SurgicalManifest,
+        heal_fn: Callable[[SurgicalManifest], dict[str, Any]],
+        state_hash_fn: Callable[[], tuple[str, str, str]],
+        trace_id: str,
+        **kwargs: Any,
+    ) -> GatewayResult:
         """L2.2: Sole mutation authority point."""
         global CURRENT_PHASE, MUTATION_COUNTER
-        CURRENT_PHASE = 'L2.2'
+        CURRENT_PHASE = "L2.2"
         fs_hash, git_hash, mem_hash = state_hash_fn()
-        pre_snapshot = create_boundary_snapshot(trace_id=trace_id, filesystem_hash=fs_hash, git_state_hash=git_hash, agent_memory_hash=mem_hash, semantic_clock=self._clock)
+        pre_snapshot = create_boundary_snapshot(
+            trace_id=trace_id,
+            filesystem_hash=fs_hash,
+            git_state_hash=git_hash,
+            agent_memory_hash=mem_hash,
+            semantic_clock=self._clock,
+        )
         initial_mutation_count = MUTATION_COUNTER
         healing_output = {}
         commit_valid = False
         error = None
         try:
             healing_output = heal_fn(manifest)
-            commit_valid = healing_output.get('errors', 0) == 0
+            commit_valid = healing_output.get("errors", 0) == 0
         except (ValueError, KeyError, AttributeError) as e:
             error = str(e)
             commit_valid = False
-            Logger.error(f'[V15-GW] Healing failed with known error: {e}')
+            Logger.error(f"[V15-GW] Healing failed with known error: {e}")
         except Exception as e:
             error = str(e)
             commit_valid = False
-            Logger.critical(f'[V15-GW] Unexpected healing error: {e}')
-            raise ExecutionGatewayError(f'Critical healing operation failed: {e}') from e
+            Logger.critical(f"[V15-GW] Unexpected healing error: {e}")
+            raise ExecutionGatewayError(f"Critical healing operation failed: {e}") from e
         final_mutation_count = MUTATION_COUNTER
         if final_mutation_count <= initial_mutation_count and commit_valid:
-            Logger.warning('[V15-GW] Successful commit with no mutations detected')
+            Logger.warning("[V15-GW] Successful commit with no mutations detected")
         post_snapshot = None
         rollback_verified = False
         if not commit_valid:
@@ -202,65 +301,124 @@ class V15ExecutionGateway:
                 verify_rollback_integrity(pre_snapshot, current_fs, current_git, current_mem)
                 rollback_verified = True
             except (OSError, ValueError) as e:
-                Logger.error(f'[V15-GW] Rollback integrity check failed: {e}')
+                Logger.error(f"[V15-GW] Rollback integrity check failed: {e}")
                 rollback_verified = False
                 if error is None:
                     error = str(e)
             except Exception as e:
-                Logger.critical(f'[V15-GW] Critical rollback integrity error: {e}')
+                Logger.critical(f"[V15-GW] Critical rollback integrity error: {e}")
                 rollback_verified = False
                 if error is None:
                     error = str(e)
-                raise ExecutionGatewayError(f'Rollback integrity verification failed: {e}') from e
+                raise ExecutionGatewayError(f"Rollback integrity verification failed: {e}") from e
         else:
             post_fs, post_git, post_mem = state_hash_fn()
-            post_snapshot = create_boundary_snapshot(trace_id=trace_id, filesystem_hash=post_fs, git_state_hash=post_git, agent_memory_hash=post_mem, semantic_clock=self._clock)
+            post_snapshot = create_boundary_snapshot(
+                trace_id=trace_id,
+                filesystem_hash=post_fs,
+                git_state_hash=post_git,
+                agent_memory_hash=post_mem,
+                semantic_clock=self._clock,
+            )
             try:
                 self._clock.tick(manifest.target_layer, state_commit_valid=True)
             except StateCommitInvalid as sci:
                 error = str(sci)
                 commit_valid = False
-        return GatewayResult(success=commit_valid, manifest=manifest, semantic_clock_tick=self._clock.step_id, pre_snapshot=pre_snapshot, post_snapshot=post_snapshot, rollback_verified=rollback_verified, healing_output=healing_output, error=error, dedupe_hit=False)
+        return GatewayResult(
+            success=commit_valid,
+            manifest=manifest,
+            semantic_clock_tick=self._clock.step_id,
+            pre_snapshot=pre_snapshot,
+            post_snapshot=post_snapshot,
+            rollback_verified=rollback_verified,
+            healing_output=healing_output,
+            error=error,
+            dedupe_hit=False,
+        )
 
-    def _heal_and_retry(self, manifest: SurgicalManifest, heal_fn: Callable[[SurgicalManifest], dict[str, Any]], state_hash_fn: Callable[[], tuple[str, str, str]], trace_id: str, **kwargs: Any) -> GatewayResult:
+    def _heal_and_retry(
+        self,
+        manifest: SurgicalManifest,
+        heal_fn: Callable[[SurgicalManifest], dict[str, Any]],
+        state_hash_fn: Callable[[], tuple[str, str, str]],
+        trace_id: str,
+        **kwargs: Any,
+    ) -> GatewayResult:
         """L2.3: Healing loop - non-mutating, re-enters L2.0."""
         global CURRENT_PHASE
-        CURRENT_PHASE = 'L2.3'
-        Logger.info(f'[V15-GW] Entering healing loop for {trace_id}')
+        CURRENT_PHASE = "L2.3"
+        Logger.info(f"[V15-GW] Entering healing loop for {trace_id}")
         try:
             return self._execute_with_envelope(manifest, heal_fn, state_hash_fn, trace_id, **kwargs)
         except (ValueError, KeyError, AttributeError) as e:
-            Logger.error(f'[V15-GW] Healing loop failed with known error: {e}')
-            return GatewayResult(success=False, manifest=manifest, semantic_clock_tick=self._clock.step_id, pre_snapshot=None, post_snapshot=None, rollback_verified=False, healing_output={}, error=f'Healing failed with known error: {e}', dedupe_hit=False)
+            Logger.error(f"[V15-GW] Healing loop failed with known error: {e}")
+            return GatewayResult(
+                success=False,
+                manifest=manifest,
+                semantic_clock_tick=self._clock.step_id,
+                pre_snapshot=None,
+                post_snapshot=None,
+                rollback_verified=False,
+                healing_output={},
+                error=f"Healing failed with known error: {e}",
+                dedupe_hit=False,
+            )
         except Exception as e:
-            Logger.critical(f'[V15-GW] Critical healing loop error: {e}')
-            return GatewayResult(success=False, manifest=manifest, semantic_clock_tick=self._clock.step_id, pre_snapshot=None, post_snapshot=None, rollback_verified=False, healing_output={}, error=f'Critical healing failure: {e}', dedupe_hit=False)
+            Logger.critical(f"[V15-GW] Critical healing loop error: {e}")
+            return GatewayResult(
+                success=False,
+                manifest=manifest,
+                semantic_clock_tick=self._clock.step_id,
+                pre_snapshot=None,
+                post_snapshot=None,
+                rollback_verified=False,
+                healing_output={},
+                error=f"Critical healing failure: {e}",
+                dedupe_hit=False,
+            )
 
-    def _pipe_advance(self, pipe: PipeOrderEnforcer, step: str, trace_id: str, observed_steps: list[str] | None=None) -> None:
+    def _pipe_advance(
+        self, pipe: PipeOrderEnforcer, step: str, trace_id: str, observed_steps: list[str] | None = None
+    ) -> None:
         """Advance pipe to *step*. Mode-aware: LOG_ONLY logs, HARD_FAIL raises."""
         if observed_steps is not None:
             observed_steps.append(step)
         try:
             pipe.advance(step)
         except PipeOrderViolation as pov:
-            record = {'type': 'pipe_order_violation', 'trace_id': trace_id, 'expected': pov.expected, 'actual': pov.actual, 'step': pov.step}
+            record = {
+                "type": "pipe_order_violation",
+                "trace_id": trace_id,
+                "expected": pov.expected,
+                "actual": pov.actual,
+                "step": pov.step,
+            }
             self._pipe_violations.append(record)
             if is_v15_hard_fail():
-                raise V15HardFailAbort(f'HARD_FAIL pipe order violation: {record}') from pov
+                raise V15HardFailAbort(f"HARD_FAIL pipe order violation: {record}") from pov
             if is_v15_soft_fail():
-                raise V15SoftFailAbort(f'SOFT_FAIL pipe order violation: {record}')
-            Logger.warning('[V15-GW] §2.5 pipe order violation (non-blocking): %s', record)
+                raise V15SoftFailAbort(f"SOFT_FAIL pipe order violation: {record}")
+            Logger.warning("[V15-GW] §2.5 pipe order violation (non-blocking): %s", record)
 
     def _policy_check(self, guard: PolicyConfigGuard, current_config: dict[str, Any], trace_id: str) -> None:
         """Verify policy immutability. Mode-aware: LOG_ONLY logs, HARD_FAIL raises."""
         try:
             guard.read_config(current_config)
         except PolicyMutationIncident as pmi:
-            record = {'type': 'policy_mutation', 'trace_id': trace_id, 'wave_id': pmi.wave_id, 'expected_hash': pmi.expected_hash, 'actual_hash': pmi.actual_hash}
+            record = {
+                "type": "policy_mutation",
+                "trace_id": trace_id,
+                "wave_id": pmi.wave_id,
+                "expected_hash": pmi.expected_hash,
+                "actual_hash": pmi.actual_hash,
+            }
             self._policy_violations.append(record)
             if is_v15_hard_fail():
-                raise V15HardFailAbort(f'HARD_FAIL policy mutation: {record}') from pmi
+                raise V15HardFailAbort(f"HARD_FAIL policy mutation: {record}") from pmi
             if is_v15_soft_fail():
-                raise V15SoftFailAbort(f'SOFT_FAIL policy mutation: {record}')
-            Logger.warning('[V15-GW] §4.1 policy mutation (non-blocking): %s', record)
-__all__ = ['GatewayResult', 'V15ExecutionGateway']
+                raise V15SoftFailAbort(f"SOFT_FAIL policy mutation: {record}")
+            Logger.warning("[V15-GW] §4.1 policy mutation (non-blocking): %s", record)
+
+
+__all__ = ["GatewayResult", "V15ExecutionGateway"]

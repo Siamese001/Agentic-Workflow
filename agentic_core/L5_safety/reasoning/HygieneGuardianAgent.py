@@ -1,29 +1,38 @@
 from __future__ import annotations
-'\nHygieneGuardianAgent - Repository Hygiene Enforcement\n\nConsolidates hygiene checks:\n- Empty file detection and cleanup\n- Orphaned __init__.py files\n- Stale backup files (.bak, .orig, .backup)\n- Temporary files cleanup (.tmp, .temp, ~)\n- Debug print statement detection\n- Commented-out code detection\n\nTerritory: agentic_core/L5_safety/validators/\n'
+
+"\nHygieneGuardianAgent - Repository Hygiene Enforcement\n\nConsolidates hygiene checks:\n- Empty file detection and cleanup\n- Orphaned __init__.py files\n- Stale backup files (.bak, .orig, .backup)\n- Temporary files cleanup (.tmp, .temp, ~)\n- Debug print statement detection\n- Commented-out code detection\n\nTerritory: agentic_core/L5_safety/validators/\n"
 import os
 import re
 from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
+
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L5_safety.config.structure_blueprint.ssot import DISCOVERY_EXCLUDED_TERRITORIES, GLOBAL_EXCLUDED_DIRS, SOVEREIGN_EXCLUDED_FOLDERS
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
 from agentic_core.L5_safety.enforcement.archival_gatekeeper_gate import ArchivalGatekeeper
 from agentic_core.utils.decorators_compat_util import standard_heal
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 MAX_FILENAME_WORDS = 5
 MAX_TEST_FILENAME_WORDS = 8
-REDUNDANT_TERMS = {'implementation', 'management', 'service', 'script', 'scripts', 'utility', 'utilities'}
+REDUNDANT_TERMS = {"implementation", "management", "service", "script", "scripts", "utility", "utilities"}
+
 
 @dataclass
 class HygieneViolation:
     """Structured violation for hygiene issues."""
+
     file_path: Path
     violation_type: str
     message: str
     line_number: int | None = None
     severity: int = 5
     auto_fixable: bool = False
+
 
 class HygieneGuardianAgent(SovereignBaseAgent):
     """
@@ -46,14 +55,21 @@ class HygieneGuardianAgent(SovereignBaseAgent):
         HealerMixin: Healing chain support
         MCPHardenedMixin: MCP integration
     """
-    PYTHON_EXTENSIONS = {'.py', '.pyi'}
-    BACKUP_EXTENSIONS = {'.bak', '.orig', '.backup', '.old'}
-    TEMP_EXTENSIONS = {'.tmp', '.temp', '.swp', '.swo'}
-    DEBUG_PRINT_PATTERN = re.compile('^\\s*print\\s*\\(', re.MULTILINE)
-    COMMENTED_CODE_PATTERN = re.compile('^\\s*#\\s*(def|class|import|from|if|for|while|try)\\s+', re.MULTILINE)
-    COPY_PATTERNS = [re.compile('^Copy of (.+)$', re.IGNORECASE), re.compile('^(.+) \\(\\d+\\)$'), re.compile('^(.+)_copy\\d*$', re.IGNORECASE)]
 
-    def __init__(self, project_root: Path, ctx: Any=None, dry_run: bool=True):
+    PYTHON_EXTENSIONS = {".py", ".pyi"}
+    BACKUP_EXTENSIONS = {".bak", ".orig", ".backup", ".old"}
+    TEMP_EXTENSIONS = {".tmp", ".temp", ".swp", ".swo"}
+    DEBUG_PRINT_PATTERN = re.compile("^\\s*print\\s*\\(", re.MULTILINE)
+    COMMENTED_CODE_PATTERN = re.compile(
+        "^\\s*#\\s*(def|class|import|from|if|for|while|try)\\s+", re.MULTILINE
+    )
+    COPY_PATTERNS = [
+        re.compile("^Copy of (.+)$", re.IGNORECASE),
+        re.compile("^(.+) \\(\\d+\\)$"),
+        re.compile("^(.+)_copy\\d*$", re.IGNORECASE),
+    ]
+
+    def __init__(self, project_root: Path, ctx: Any = None, dry_run: bool = True):
         """
         Initialize the hygiene guardian.
 
@@ -69,7 +85,13 @@ class HygieneGuardianAgent(SovereignBaseAgent):
         self.agent_name = self.__class__.__name__
         self.naming_violations: list[dict] = []
         self.gatekeeper = ArchivalGatekeeper.get_instance(self.project_root)
-        self.rules = {'MAX_FILENAME_WORDS': MAX_FILENAME_WORDS, 'MAX_TEST_FILENAME_WORDS': MAX_TEST_FILENAME_WORDS, 'FORBIDDEN_PATTERNS': ['temp_', 'test_v2', 'final_final'], 'CASE_CONVENTION': 'snake_case_for_scripts', 'REDUNDANT_TERMS': REDUNDANT_TERMS}
+        self.rules = {
+            "MAX_FILENAME_WORDS": MAX_FILENAME_WORDS,
+            "MAX_TEST_FILENAME_WORDS": MAX_TEST_FILENAME_WORDS,
+            "FORBIDDEN_PATTERNS": ["temp_", "test_v2", "final_final"],
+            "CASE_CONVENTION": "snake_case_for_scripts",
+            "REDUNDANT_TERMS": REDUNDANT_TERMS,
+        }
 
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """
@@ -82,47 +104,64 @@ class HygieneGuardianAgent(SovereignBaseAgent):
             Dict with keys: status, details, artifacts, errors
         """
         try:
-            violation.get('type', '')
-            file_path = violation.get('file')
+            violation.get("type", "")
+            file_path = violation.get("file")
             if not file_path:
-                return {'status': 'failed', 'details': 'No file path provided in violation', 'artifacts': [], 'errors': ['Missing file path']}
-            return {'status': 'manual_required', 'details': 'HygieneGuardianAgent requires manual review for healing', 'artifacts': [], 'errors': []}
+                return {
+                    "status": "failed",
+                    "details": "No file path provided in violation",
+                    "artifacts": [],
+                    "errors": ["Missing file path"],
+                }
+            return {
+                "status": "manual_required",
+                "details": "HygieneGuardianAgent requires manual review for healing",
+                "artifacts": [],
+                "errors": [],
+            }
         # guardian: allow-silent-swallow
         except Exception as e:
-            return {'status': 'failed', 'details': 'Exception during healing', 'artifacts': [], 'errors': [str(e)]}
+            return {
+                "status": "failed",
+                "details": "Exception during healing",
+                "artifacts": [],
+                "errors": [str(e)],
+            }
 
     def _is_empty_file(self, file_path: Path) -> bool:
         """Check if file is empty or contains only whitespace."""
         try:
-            content = file_path.read_text(encoding='utf-8')
+            content = file_path.read_text(encoding="utf-8")
             return len(content.strip()) == 0
         except (OSError, UnicodeDecodeError):
             return False
 
     def _is_orphaned_init(self, file_path: Path) -> bool:
         """Check if __init__.py is orphaned (no other Python files in directory)."""
-        if file_path.name != '__init__.py':
+        if file_path.name != "__init__.py":
             return False
         parent_dir = file_path.parent
-        python_files = [f for f in parent_dir.glob('*.py') if f.name != '__init__.py' and (not f.name.startswith('.'))]
+        python_files = [
+            f for f in parent_dir.glob("*.py") if f.name != "__init__.py" and (not f.name.startswith("."))
+        ]
         return len(python_files) == 0
 
     def _has_debug_prints(self, file_path: Path) -> list[int]:
         """Detect debug print statements and return line numbers."""
         try:
-            content = file_path.read_text(encoding='utf-8')
-            lines = content.split('\n')
+            content = file_path.read_text(encoding="utf-8")
+            lines = content.split("\n")
             debug_lines = []
             for i, line in enumerate(lines, 1):
                 stripped = line.strip()
-                if stripped.startswith('#') or stripped.startswith('"""') or stripped.startswith("'''"):
+                if stripped.startswith("#") or stripped.startswith('"""') or stripped.startswith("'''"):
                     continue
                 if self.DEBUG_PRINT_PATTERN.search(line):
-                    if 'logger' not in line.lower() and 'log(' not in line.lower():
+                    if "logger" not in line.lower() and "log(" not in line.lower():
                         debug_lines.append(i)
             return debug_lines
         except (OSError, UnicodeDecodeError, SyntaxError) as e:
-            self.logger.debug(f'Failed to scan for debug statements in {file_path.name}: {e}')
+            self.logger.debug(f"Failed to scan for debug statements in {file_path.name}: {e}")
             return []
 
     def _has_commented_code(self, file_path: Path) -> tuple[bool, int]:
@@ -133,13 +172,13 @@ class HygieneGuardianAgent(SovereignBaseAgent):
             (has_commented_code, num_lines)
         """
         try:
-            content = file_path.read_text(encoding='utf-8')
+            content = file_path.read_text(encoding="utf-8")
             matches = self.COMMENTED_CODE_PATTERN.findall(content)
             if len(matches) > 5:
                 return (True, len(matches))
             return (False, 0)
         except (OSError, UnicodeDecodeError, SyntaxError) as e:
-            self.logger.debug(f'Failed to scan for commented code in {file_path.name}: {e}')
+            self.logger.debug(f"Failed to scan for commented code in {file_path.name}: {e}")
             return (False, 0)
 
     def _has_repeated_filename_parts(self, filename: str) -> tuple[bool, str | None]:
@@ -158,7 +197,7 @@ class HygieneGuardianAgent(SovereignBaseAgent):
             'data_models_enums_enums' -> (True, 'enums')
             'test_data' -> (False, None)
         """
-        parts = filename.split('_')
+        parts = filename.split("_")
         for i in range(len(parts) - 1):
             if parts[i] == parts[i + 1] and parts[i]:
                 return (True, parts[i])
@@ -192,32 +231,97 @@ class HygieneGuardianAgent(SovereignBaseAgent):
     def _scan_directory(self, directory: Path) -> None:
         """Recursively scan directory for hygiene violations."""
         ignore_dirs = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
-        for item in directory.rglob('*'):
-            if any((ignored in item.parts for ignored in ignore_dirs)):
+        for item in directory.rglob("*"):
+            if any(ignored in item.parts for ignored in ignore_dirs):
                 continue
             if not item.is_file():
                 continue
             if item.suffix in self.BACKUP_EXTENSIONS:
-                self.violations.append(HygieneViolation(file_path=item, violation_type='stale_backup', message=f'Stale backup file: {item.suffix}', severity=3, auto_fixable=True))
-            if item.suffix in self.TEMP_EXTENSIONS or item.name.endswith('~'):
-                self.violations.append(HygieneViolation(file_path=item, violation_type='temp_file', message='Temporary file should be removed', severity=4, auto_fixable=True))
+                self.violations.append(
+                    HygieneViolation(
+                        file_path=item,
+                        violation_type="stale_backup",
+                        message=f"Stale backup file: {item.suffix}",
+                        severity=3,
+                        auto_fixable=True,
+                    )
+                )
+            if item.suffix in self.TEMP_EXTENSIONS or item.name.endswith("~"):
+                self.violations.append(
+                    HygieneViolation(
+                        file_path=item,
+                        violation_type="temp_file",
+                        message="Temporary file should be removed",
+                        severity=4,
+                        auto_fixable=True,
+                    )
+                )
             if item.suffix in self.PYTHON_EXTENSIONS:
                 if self._is_empty_file(item):
-                    self.violations.append(HygieneViolation(file_path=item, violation_type='empty_file', message='Empty Python file', severity=5, auto_fixable=True))
+                    self.violations.append(
+                        HygieneViolation(
+                            file_path=item,
+                            violation_type="empty_file",
+                            message="Empty Python file",
+                            severity=5,
+                            auto_fixable=True,
+                        )
+                    )
                 if self._is_orphaned_init(item):
-                    self.violations.append(HygieneViolation(file_path=item, violation_type='orphaned_init', message='Orphaned __init__.py with no other Python files', severity=4, auto_fixable=True))
+                    self.violations.append(
+                        HygieneViolation(
+                            file_path=item,
+                            violation_type="orphaned_init",
+                            message="Orphaned __init__.py with no other Python files",
+                            severity=4,
+                            auto_fixable=True,
+                        )
+                    )
                 debug_lines = self._has_debug_prints(item)
                 if debug_lines:
-                    self.violations.append(HygieneViolation(file_path=item, violation_type='debug_print', message=f'Debug print statements found on lines: {debug_lines[:5]}', line_number=debug_lines[0], severity=2, auto_fixable=False))
+                    self.violations.append(
+                        HygieneViolation(
+                            file_path=item,
+                            violation_type="debug_print",
+                            message=f"Debug print statements found on lines: {debug_lines[:5]}",
+                            line_number=debug_lines[0],
+                            severity=2,
+                            auto_fixable=False,
+                        )
+                    )
                 has_commented, num_lines = self._has_commented_code(item)
                 if has_commented:
-                    self.violations.append(HygieneViolation(file_path=item, violation_type='commented_code', message=f'Large block of commented-out code ({num_lines} lines)', severity=2, auto_fixable=False))
+                    self.violations.append(
+                        HygieneViolation(
+                            file_path=item,
+                            violation_type="commented_code",
+                            message=f"Large block of commented-out code ({num_lines} lines)",
+                            severity=2,
+                            auto_fixable=False,
+                        )
+                    )
                 has_repeats, pattern = self._has_repeated_filename_parts(item.stem)
                 if has_repeats:
-                    self.violations.append(HygieneViolation(file_path=item, violation_type='repeated_filename', message=f'Repeated string in filename: "{pattern}"', severity=4, auto_fixable=True))
+                    self.violations.append(
+                        HygieneViolation(
+                            file_path=item,
+                            violation_type="repeated_filename",
+                            message=f'Repeated string in filename: "{pattern}"',
+                            severity=4,
+                            auto_fixable=True,
+                        )
+                    )
                 is_copy, original = self._is_copy_pattern_filename(item.stem)
                 if is_copy:
-                    self.violations.append(HygieneViolation(file_path=item, violation_type='copy_pattern', message=f'Copy-pattern filename detected (original: "{original}")', severity=5, auto_fixable=True))
+                    self.violations.append(
+                        HygieneViolation(
+                            file_path=item,
+                            violation_type="copy_pattern",
+                            message=f'Copy-pattern filename detected (original: "{original}")',
+                            severity=5,
+                            auto_fixable=True,
+                        )
+                    )
 
     def _fix_violations(self) -> int:
         """
@@ -229,25 +333,36 @@ class HygieneGuardianAgent(SovereignBaseAgent):
             Number of violations fixed
         """
         fixed_count = 0
-        archivable_types = {'stale_backup', 'temp_file', 'empty_file', 'orphaned_init', 'repeated_filename', 'copy_pattern'}
+        archivable_types = {
+            "stale_backup",
+            "temp_file",
+            "empty_file",
+            "orphaned_init",
+            "repeated_filename",
+            "copy_pattern",
+        }
         for violation in self.violations:
             if not violation.auto_fixable or self.dry_run:
                 continue
             try:
                 if violation.violation_type in archivable_types:
-                    result = self.gatekeeper.safe_delete(violation.file_path, self.agent_name, f'{violation.violation_type}: {violation.message}')
+                    result = self.gatekeeper.safe_delete(
+                        violation.file_path,
+                        self.agent_name,
+                        f"{violation.violation_type}: {violation.message}",
+                    )
                     if result.success:
-                        print(f'   [FIXED] Archived {violation.violation_type}: {violation.file_path}')
+                        print(f"   [FIXED] Archived {violation.violation_type}: {violation.file_path}")
                         fixed_count += 1
                     else:
-                        print(f'   [ERROR] Failed to archive {violation.file_path}: {result.error}')
+                        print(f"   [ERROR] Failed to archive {violation.file_path}: {result.error}")
             # guardian: allow-silent-swallow
             except Exception as e:
-                print(f'   [ERROR] Failed to fix {violation.file_path}: {e}')
+                print(f"   [ERROR] Failed to fix {violation.file_path}: {e}")
         return fixed_count
 
     @standard_heal
-    def heal_repository(self, dry_run: bool=True, execute: bool=False, **kwargs: Any) -> dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs: Any) -> dict[str, Any]:
         """
         Autonomous healing method for repository hygiene.
 
@@ -261,41 +376,46 @@ class HygieneGuardianAgent(SovereignBaseAgent):
         """
         self.dry_run = dry_run and (not execute)
         self.violations = []
-        print(f'\n[*] HYGIENE GUARDIAN - Scanning {self.project_root}')
+        print(f"\n[*] HYGIENE GUARDIAN - Scanning {self.project_root}")
         print(f"    Mode: {('DRY RUN' if self.dry_run else 'EXECUTE')}")
         self._scan_directory(self.project_root)
         by_type: dict[str, list[HygieneViolation]] = {}
         for v in self.violations:
             by_type.setdefault(v.violation_type, []).append(v)
         if self.violations:
-            print(f'\n   [!] Found {len(self.violations)} hygiene violations:')
+            print(f"\n   [!] Found {len(self.violations)} hygiene violations:")
             for vtype, viols in sorted(by_type.items()):
-                print(f'\n   [{vtype.upper()}] {len(viols)} violations:')
+                print(f"\n   [{vtype.upper()}] {len(viols)} violations:")
                 for v in viols[:5]:
                     rel_path = v.file_path.relative_to(self.project_root)
-                    print(f'      - {rel_path}: {v.message}')
+                    print(f"      - {rel_path}: {v.message}")
                 if len(viols) > 5:
-                    print(f'      ... and {len(viols) - 5} more')
+                    print(f"      ... and {len(viols) - 5} more")
         else:
-            print('   [OK] No hygiene violations detected')
+            print("   [OK] No hygiene violations detected")
         fixed_count = 0
         if not self.dry_run:
             fixed_count = self._fix_violations()
-            print(f'\n   [FIXED] {fixed_count} violations auto-fixed')
-        return {'violations_found': len(self.violations), 'violations_fixed': fixed_count, 'errors': 0, 'skipped': 0}
+            print(f"\n   [FIXED] {fixed_count} violations auto-fixed")
+        return {
+            "violations_found": len(self.violations),
+            "violations_fixed": fixed_count,
+            "errors": 0,
+            "skipped": 0,
+        }
 
     def audit_naming_conventions(self) -> list[dict]:
         """
         Performs a deep audit of the repository's naming conventions,
         enforcing word-count limits and semantic density.
         """
-        print(f'[*] Hygiene Guardian: Scanning {self.project_root} for naming violations...')
+        print(f"[*] Hygiene Guardian: Scanning {self.project_root} for naming violations...")
         self.naming_violations = []
         ignored_dirs = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
         for root, dirs, files in os.walk(self.project_root):
             dirs[:] = [d for d in dirs if d not in ignored_dirs]
             for f in files:
-                if not f.endswith('.py') or f.startswith('__'):
+                if not f.endswith(".py") or f.startswith("__"):
                     continue
                 path = Path(root) / f
                 self._check_filename_length(path)
@@ -309,26 +429,37 @@ class HygieneGuardianAgent(SovereignBaseAgent):
         """
         base_name = path.stem
         ext = path.suffix
-        clean_name = base_name.replace('-', '_')
-        clean_name = re.sub('(?<!^)(?=[A-Z])', '_', clean_name)
-        words = [w for w in clean_name.split('_') if w]
+        clean_name = base_name.replace("-", "_")
+        clean_name = re.sub("(?<!^)(?=[A-Z])", "_", clean_name)
+        words = [w for w in clean_name.split("_") if w]
         word_count = len(words)
-        is_test = base_name.startswith('test_') or base_name.endswith('_test')
-        limit = self.rules['MAX_TEST_FILENAME_WORDS'] if is_test else self.rules['MAX_FILENAME_WORDS']
+        is_test = base_name.startswith("test_") or base_name.endswith("_test")
+        limit = self.rules["MAX_TEST_FILENAME_WORDS"] if is_test else self.rules["MAX_FILENAME_WORDS"]
         if word_count > limit:
-            violation = {'file': str(path.relative_to(self.project_root)), 'rule': 'MAX_TEST_FILENAME_WORDS' if is_test else 'MAX_FILENAME_WORDS', 'current_count': word_count, 'limit': limit, 'suggestion': self._generate_concise_suggestion(words, ext)}
+            violation = {
+                "file": str(path.relative_to(self.project_root)),
+                "rule": "MAX_TEST_FILENAME_WORDS" if is_test else "MAX_FILENAME_WORDS",
+                "current_count": word_count,
+                "limit": limit,
+                "suggestion": self._generate_concise_suggestion(words, ext),
+            }
             self.naming_violations.append(violation)
-            print(f'  [VIOLATION] {path.name}: {word_count} words exceeds limit of {limit}')
+            print(f"  [VIOLATION] {path.name}: {word_count} words exceeds limit of {limit}")
 
     def _generate_concise_suggestion(self, words: list[str], ext: str) -> str:
         """Proposes a concise alternative using semantic anchors and redundant term removal."""
-        filtered = [w for w in words if w.lower() not in self.rules['REDUNDANT_TERMS']]
-        if len(filtered) > self.rules['MAX_FILENAME_WORDS']:
+        filtered = [w for w in words if w.lower() not in self.rules["REDUNDANT_TERMS"]]
+        if len(filtered) > self.rules["MAX_FILENAME_WORDS"]:
             mid = len(filtered) // 2
             concise = filtered[:2] + [filtered[mid]] + filtered[-1:]
-            return '_'.join(concise).lower() + ext
-        return '_'.join(filtered).lower() + ext
-        return {'violations_found': len(self.violations), 'violations_fixed': fixed_count, 'violations_by_type': {k: len(v) for k, v in by_type.items()}, 'dry_run': self.dry_run}
+            return "_".join(concise).lower() + ext
+        return "_".join(filtered).lower() + ext
+        return {
+            "violations_found": len(self.violations),
+            "violations_fixed": fixed_count,
+            "violations_by_type": {k: len(v) for k, v in by_type.items()},
+            "dry_run": self.dry_run,
+        }
 
     async def execute(self) -> dict[str, Any]:
         """Execute hygiene checks (async wrapper)."""

@@ -2,19 +2,26 @@
 
 Mirrors PromptLoader pattern exactly — pure infrastructure, no business logic.
 """
+
 from __future__ import annotations
+
 from pathlib import Path
 from typing import Any
+
 import yaml
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 class EvalLoadError(Exception):
     """Raised when an evaluation file cannot be loaded."""
+
     pass
+
 
 class EvalSchemaError(Exception):
     """Raised when an evaluation file has an invalid schema."""
+
     pass
+
 
 class EvaluationLoader:
     """Pure infrastructure component for loading and caching evaluation YAML files.
@@ -36,11 +43,11 @@ class EvaluationLoader:
             ValueError: If eval_dir does not exist or is not a directory.
         """
         if not isinstance(eval_dir, Path):
-            raise TypeError('eval_dir must be a Path object')
+            raise TypeError("eval_dir must be a Path object")
         if not eval_dir.exists():
-            raise ValueError(f'eval_dir does not exist: {eval_dir}')
+            raise ValueError(f"eval_dir does not exist: {eval_dir}")
         if not eval_dir.is_dir():
-            raise ValueError(f'eval_dir must be a directory: {eval_dir}')
+            raise ValueError(f"eval_dir must be a directory: {eval_dir}")
         self._eval_dir = eval_dir.resolve()
         self._cache: dict[str, dict[str, Any]] = {}
 
@@ -58,22 +65,24 @@ class EvaluationLoader:
             EvalSchemaError: If the top-level value is not a dict.
         """
         if not name or not isinstance(name, str):
-            raise ValueError('name must be a non-empty string')
+            raise ValueError("name must be a non-empty string")
         if name not in self._cache:
-            eval_file = self._eval_dir / f'{name}.yaml'
+            eval_file = self._eval_dir / f"{name}.yaml"
             if not eval_file.exists():
-                raise EvalLoadError(f'Evaluation file not found: {eval_file}')
+                raise EvalLoadError(f"Evaluation file not found: {eval_file}")
             if not eval_file.is_file():
-                raise EvalLoadError(f'Path is not a file: {eval_file}')
+                raise EvalLoadError(f"Path is not a file: {eval_file}")
             try:
-                with open(eval_file, encoding='utf-8') as fh:
+                with open(eval_file, encoding="utf-8") as fh:
                     data = yaml.safe_load(fh)
             except yaml.YAMLError as exc:
-                raise EvalLoadError(f'Invalid YAML in {eval_file}: {exc}') from exc
+                raise EvalLoadError(f"Invalid YAML in {eval_file}: {exc}") from exc
             except OSError as exc:
-                raise EvalLoadError(f'Cannot read {eval_file}: {exc}') from exc
+                raise EvalLoadError(f"Cannot read {eval_file}: {exc}") from exc
             if not isinstance(data, dict):
-                raise EvalSchemaError(f'Evaluation file root must be a dict, got {type(data).__name__}: {eval_file}')
+                raise EvalSchemaError(
+                    f"Evaluation file root must be a dict, got {type(data).__name__}: {eval_file}"
+                )
             self._cache[name] = data
         return self._cache[name]
 
@@ -83,4 +92,4 @@ class EvaluationLoader:
 
     def cache_info(self) -> dict[str, Any]:
         """Return cache statistics for testing and monitoring."""
-        return {'cached_items': len(self._cache), 'cache_keys': list(self._cache.keys())}
+        return {"cached_items": len(self._cache), "cache_keys": list(self._cache.keys())}

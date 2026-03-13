@@ -3,12 +3,14 @@
 Consolidates duplicated AST parsing and fuzzy matching logic across the codebase.
 Provides deterministic primitives for structural hashing, similarity scoring, and normalization.
 """
+
 import ast
 import difflib
 import hashlib
 import os
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
-AST_FUZZY_THRESHOLD = float(os.environ.get('AST_FUZZY_THRESHOLD', '0.6'))
+
+AST_FUZZY_THRESHOLD = float(os.environ.get("AST_FUZZY_THRESHOLD", "0.6"))
+
 
 def parse_ast_safe(source: str) -> ast.AST | None:
     """Parse source code to AST with error handling.
@@ -24,6 +26,7 @@ def parse_ast_safe(source: str) -> ast.AST | None:
     except (SyntaxError, ValueError):
         return None
 
+
 def ast_dump_hash(node: ast.AST) -> str:
     """Compute deterministic SHA256 hash of AST structure.
 
@@ -36,7 +39,8 @@ def ast_dump_hash(node: ast.AST) -> str:
         SHA256 hex digest of normalized AST dump
     """
     dump_str = ast.dump(node, include_attributes=False)
-    return hashlib.sha256(dump_str.encode('utf-8')).hexdigest()
+    return hashlib.sha256(dump_str.encode("utf-8")).hexdigest()
+
 
 def tokenize_simple(text: str) -> list[str]:
     """Simple tokenization: split on whitespace and punctuation.
@@ -48,8 +52,10 @@ def tokenize_simple(text: str) -> list[str]:
         List of tokens
     """
     import re
-    tokens = re.split('[\\s\\W]+', text.lower())
+
+    tokens = re.split("[\\s\\W]+", text.lower())
     return [t for t in tokens if t and t.isalpha()]
+
 
 def similarity_score(text_a: str, text_b: str) -> float:
     """Compute fuzzy similarity score using difflib.SequenceMatcher.
@@ -68,6 +74,7 @@ def similarity_score(text_a: str, text_b: str) -> float:
     matcher = difflib.SequenceMatcher(None, tokens_a, tokens_b)
     return matcher.ratio()
 
+
 def normalize_repo_path(path: str) -> str:
     """Normalize repository path to forward slashes.
 
@@ -77,7 +84,8 @@ def normalize_repo_path(path: str) -> str:
     Returns:
         Normalized path with forward slashes
     """
-    return path.replace('\\', '/')
+    return path.replace("\\", "/")
+
 
 def get_threshold() -> float:
     """Get current fuzzy similarity threshold.
@@ -86,6 +94,7 @@ def get_threshold() -> float:
         Threshold value (configurable via AST_FUZZY_THRESHOLD env var)
     """
     return AST_FUZZY_THRESHOLD
+
 
 def parse_evidence(check: dict) -> dict:
     """Extract and normalize evidence from a check dict.
@@ -96,10 +105,11 @@ def parse_evidence(check: dict) -> dict:
     Returns:
         Evidence dict (empty dict if not found or invalid)
     """
-    evidence = check.get('evidence', {})
+    evidence = check.get("evidence", {})
     if not isinstance(evidence, dict):
         return {}
     return evidence
+
 
 def safe_unparse(node: ast.AST) -> str | None:
     """Safely unparse AST node to source code.
@@ -115,6 +125,7 @@ def safe_unparse(node: ast.AST) -> str | None:
     except (AttributeError, TypeError, ValueError):
         return None
 
+
 def compute_file_hash(path: str) -> str:
     """Compute SHA256 hash of a file.
 
@@ -125,11 +136,13 @@ def compute_file_hash(path: str) -> str:
         SHA256 hex digest
     """
     import hashlib
+
     h = hashlib.sha256()
-    with open(path, 'rb') as f:
-        for chunk in iter(lambda: f.read(1024 * 1024), b''):
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(1024 * 1024), b""):
             h.update(chunk)
     return h.hexdigest()
+
 
 def normalize_path(path: str) -> str:
     """Normalize file path to forward slashes.
@@ -140,4 +153,4 @@ def normalize_path(path: str) -> str:
     Returns:
         Normalized path with forward slashes
     """
-    return path.replace('\\', '/').replace('//', '/')
+    return path.replace("\\", "/").replace("//", "/")

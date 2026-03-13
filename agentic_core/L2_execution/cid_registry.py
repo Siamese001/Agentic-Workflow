@@ -4,15 +4,18 @@ L2 CID Registry - Immutable Execution Cycle Tracking
 Implements deterministic correlation ID tracking with immutable ExecutionCycle records.
 No wall-clock usage, no randomness, pure deterministic behavior.
 """
+
 from dataclasses import dataclass
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 @dataclass(frozen=True)
 class ExecutionCycle:
     """Immutable execution cycle record."""
+
     cid: str
     attempt: int
     status: str
+
 
 class CIDRegistry:
     """
@@ -36,7 +39,7 @@ class CIDRegistry:
         Returns:
             New ExecutionCycle with attempt=1 and status="new"
         """
-        cycle = ExecutionCycle(cid=cid, attempt=1, status='new')
+        cycle = ExecutionCycle(cid=cid, attempt=1, status="new")
         self._cycles[cid] = cycle
         return cycle
 
@@ -53,7 +56,7 @@ class CIDRegistry:
             New ExecutionCycle with incremented attempt
         """
         next_attempt = cycle.attempt + 1
-        next_cycle = ExecutionCycle(cid=cycle.cid, attempt=next_attempt, status='retry')
+        next_cycle = ExecutionCycle(cid=cycle.cid, attempt=next_attempt, status="retry")
         self._cycles[cycle.cid] = next_cycle
         return next_cycle
 

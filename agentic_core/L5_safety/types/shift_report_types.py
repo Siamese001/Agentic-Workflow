@@ -9,12 +9,15 @@ Replaces univariate ks_2samp with:
 
 Lives in L5 (safety/types) — detection is observational, not mutating.
 """
+
 from __future__ import annotations
+
 import math
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 MIN_SAMPLE_SIZE = 30
+
 
 @dataclass(frozen=True)
 class ShiftReport:
@@ -22,6 +25,7 @@ class ShiftReport:
 
     Included in LearningArtifact for replay and audit integrity.
     """
+
     joint_shift: bool
     per_feature: dict[str, bool]
     mmd_score: float
@@ -30,18 +34,40 @@ class ShiftReport:
     timestamp: str
 
     @staticmethod
-    def create(*, joint_shift: bool, per_feature: dict[str, bool], mmd_score: float, psi_scores: dict[str, float], sample_size_ok: bool) -> ShiftReport:
+    def create(
+        *,
+        joint_shift: bool,
+        per_feature: dict[str, bool],
+        mmd_score: float,
+        psi_scores: dict[str, float],
+        sample_size_ok: bool,
+    ) -> ShiftReport:
         """Construct with frozen timestamp."""
-        ts = datetime.now(timezone.utc).isoformat(timespec='microseconds')
-        return ShiftReport(joint_shift=joint_shift, per_feature=per_feature, mmd_score=mmd_score, psi_scores=psi_scores, sample_size_ok=sample_size_ok, timestamp=ts)
+        ts = datetime.now(timezone.utc).isoformat(timespec="microseconds")
+        return ShiftReport(
+            joint_shift=joint_shift,
+            per_feature=per_feature,
+            mmd_score=mmd_score,
+            psi_scores=psi_scores,
+            sample_size_ok=sample_size_ok,
+            timestamp=ts,
+        )
 
     @staticmethod
-    def skipped(reason: str='insufficient_samples') -> ShiftReport:
+    def skipped(reason: str = "insufficient_samples") -> ShiftReport:
         """Create a report for skipped detection."""
-        ts = datetime.now(timezone.utc).isoformat(timespec='microseconds')
-        return ShiftReport(joint_shift=False, per_feature={}, mmd_score=0.0, psi_scores={}, sample_size_ok=False, timestamp=ts)
+        ts = datetime.now(timezone.utc).isoformat(timespec="microseconds")
+        return ShiftReport(
+            joint_shift=False,
+            per_feature={},
+            mmd_score=0.0,
+            psi_scores={},
+            sample_size_ok=False,
+            timestamp=ts,
+        )
 
-def _compute_psi(baseline: list[float], treatment: list[float], bins: int=10) -> float:
+
+def _compute_psi(baseline: list[float], treatment: list[float], bins: int = 10) -> float:
     """Compute Population Stability Index between two distributions.
 
     Uses equal-width binning.  Clips to avoid log(0).
@@ -63,11 +89,15 @@ def _compute_psi(baseline: list[float], treatment: list[float], bins: int=10) ->
             counts[idx] += 1
         total = len(data)
         return [c / total + eps for c in counts]
+
     p = _bin_proportions(baseline)
     q = _bin_proportions(treatment)
     return sum(((pi - qi) * math.log(pi / qi) for pi, qi in zip(p, q)))
 
-def _compute_mmd_rbf(baseline: list[list[float]], treatment: list[list[float]], gamma: float | None=None) -> float:
+
+def _compute_mmd_rbf(
+    baseline: list[list[float]], treatment: list[list[float]], gamma: float | None = None
+) -> float:
     """Compute MMD with RBF kernel (simplified).
 
     For production, consider a proper kernel library.
@@ -82,12 +112,14 @@ def _compute_mmd_rbf(baseline: list[list[float]], treatment: list[list[float]], 
     def _rbf(x: list[float], y: list[float]) -> float:
         sq_dist = sum(((a - b) ** 2 for a, b in zip(x, y)))
         return math.exp(-gamma * sq_dist)
+
     n = len(baseline)
     m = len(treatment)
-    kxx = sum((_rbf(baseline[i], baseline[j]) for i in range(n) for j in range(n))) / (n * n)
-    kyy = sum((_rbf(treatment[i], treatment[j]) for i in range(m) for j in range(m))) / (m * m)
-    kxy = sum((_rbf(baseline[i], treatment[j]) for i in range(n) for j in range(m))) / (n * m)
+    kxx = sum(_rbf(baseline[i], baseline[j]) for i in range(n) for j in range(n)) / (n * n)
+    kyy = sum(_rbf(treatment[i], treatment[j]) for i in range(m) for j in range(m)) / (m * m)
+    kxy = sum(_rbf(baseline[i], treatment[j]) for i in range(n) for j in range(m)) / (n * m)
     return max(0.0, kxx + kyy - 2 * kxy)
+
 
 @dataclass
 class CovariateShiftDetector:
@@ -104,11 +136,14 @@ class CovariateShiftDetector:
         )
         assert report.joint_shift is True
     """
+
     feature_names: list[str] = field(default_factory=list)
     mmd_threshold: float = 0.1
     psi_threshold: float = 0.2
 
-    def detect_shift(self, baseline: list[list[float]], treatment: list[list[float]], threshold: float | None=None) -> ShiftReport:
+    def detect_shift(
+        self, baseline: list[list[float]], treatment: list[list[float]], threshold: float | None = None
+    ) -> ShiftReport:
         """Run multivariate drift detection.
 
         Returns a ShiftReport with per-feature and joint flags.
@@ -117,7 +152,7 @@ class CovariateShiftDetector:
         n_baseline = len(baseline)
         n_treatment = len(treatment)
         if n_baseline < MIN_SAMPLE_SIZE or n_treatment < MIN_SAMPLE_SIZE:
-            return ShiftReport.skipped('insufficient_samples')
+            return ShiftReport.skipped("insufficient_samples")
         mmd_score = _compute_mmd_rbf(baseline, treatment)
         psi_scores: dict[str, float] = {}
         per_feature: dict[str, bool] = {}
@@ -130,4 +165,10 @@ class CovariateShiftDetector:
             psi_scores[fname] = psi
             per_feature[fname] = psi > self.psi_threshold
         joint_shift = mmd_score > mmd_thresh or any(per_feature.values())
-        return ShiftReport.create(joint_shift=joint_shift, per_feature=per_feature, mmd_score=mmd_score, psi_scores=psi_scores, sample_size_ok=True)
+        return ShiftReport.create(
+            joint_shift=joint_shift,
+            per_feature=per_feature,
+            mmd_score=mmd_score,
+            psi_scores=psi_scores,
+            sample_size_ok=True,
+        )

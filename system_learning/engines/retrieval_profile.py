@@ -7,11 +7,13 @@ W4-A: RetrievalProfile Authority (L4 Only)
 W4-B: Shadow Embedder wiring for drift detection (non-influential)
 D2: embeddings_enabled is always True — BGE is a mandatory system dependency.
 """
+
 from __future__ import annotations
+
 import hashlib
 import json
 from dataclasses import asdict, dataclass
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 @dataclass(frozen=True, slots=True)
 class RetrievalProfile:
@@ -24,6 +26,7 @@ class RetrievalProfile:
     It is versioned, deterministic, and stored in L4.
     Shadow embedder provides parallel embeddings for telemetry.
     """
+
     profile_id: str
     primary_embedder_id: str
     embedding_dim: int
@@ -46,7 +49,7 @@ class RetrievalProfile:
         for key, value in data.items():
             if isinstance(value, float):
                 data[key] = round(value, 6)
-        return json.dumps(data, separators=(',', ':'), sort_keys=True)
+        return json.dumps(data, separators=(",", ":"), sort_keys=True)
 
     @property
     def profile_digest(self) -> str:
@@ -60,7 +63,7 @@ class RetrievalProfile:
 
     def emit_digest(self) -> None:
         """Print the profile digest for determinism verification."""
-        print(f'W4-PROFILE-DIGEST: {self.profile_digest}')
+        print(f"W4-PROFILE-DIGEST: {self.profile_digest}")
 
     @classmethod
     def create_default(cls) -> RetrievalProfile:
@@ -71,5 +74,18 @@ class RetrievalProfile:
         Returns:
             Default profile with current hardcoded values.
         """
-        return cls(profile_id='retrieval-profile-v3', primary_embedder_id='BAAI/bge-m3', embedding_dim=1024, similarity_cutoff=0.75, top_k=10, influence_cap=0.25, normalization_policy='l2', shadow_embedder_id=None, hybrid_alpha=None, embeddings_enabled=True)
-__all__ = ['RetrievalProfile']
+        return cls(
+            profile_id="retrieval-profile-v3",
+            primary_embedder_id="BAAI/bge-m3",
+            embedding_dim=1024,
+            similarity_cutoff=0.75,
+            top_k=10,
+            influence_cap=0.25,
+            normalization_policy="l2",
+            shadow_embedder_id=None,
+            hybrid_alpha=None,
+            embeddings_enabled=True,
+        )
+
+
+__all__ = ["RetrievalProfile"]

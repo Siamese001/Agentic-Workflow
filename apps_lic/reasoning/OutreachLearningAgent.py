@@ -1,23 +1,28 @@
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
+
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBridge
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 class OutreachEngineContext:
-
     def __init__(self, *args, **kwargs):
         pass
-'\nOutreach Engine Learning Module\n\nProvides learning and memory capabilities:\n- Learning loops for pattern recognition\n- Confidence scoring for decisions\n- Memory persistence across sessions\n'
+
+
+"\nOutreach Engine Learning Module\n\nProvides learning and memory capabilities:\n- Learning loops for pattern recognition\n- Confidence scoring for decisions\n- Memory persistence across sessions\n"
 import hashlib
 import json
 from datetime import datetime
 from enum import Enum
 
+
 class HealerMixin:
     """Legacy mixin - use LICAgentBase instead."""
+
     pass
+
 
 class OutreachConfidenceLevel(Enum):
     """
@@ -26,10 +31,12 @@ class OutreachConfidenceLevel(Enum):
     Defines the confidence thresholds used to categorize the reliability
     of outreach decisions and predictions.
     """
-    LOW = 'low'
-    MEDIUM = 'medium'
-    HIGH = 'high'
-    VERY_HIGH = 'very_high'
+
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"
+    VERY_HIGH = "very_high"
+
 
 @dataclass
 class OutreachLearningExample:
@@ -45,6 +52,7 @@ class OutreachLearningExample:
         confidence: Confidence score (0-1)
         timestamp: ISO timestamp of creation
     """
+
     example_id: str
     TaskType: str
     input_context: str
@@ -52,6 +60,7 @@ class OutreachLearningExample:
     success: bool
     confidence: float
     timestamp: str = field(default_factory=lambda: datetime.now().isoformat())
+
 
 @dataclass
 class OutreachInstruction:
@@ -64,10 +73,12 @@ class OutreachInstruction:
         source: Source of the instruction
         timestamp: ISO timestamp of creation
     """
+
     text: str
     priority: int
     source: str
     timestamp: str = field(default_factory=lambda: datetime.now().isoformat())
+
 
 class OutreachLearningLoop:
     """
@@ -94,18 +105,34 @@ class OutreachLearningLoop:
         self._patterns: dict[str, int] = {}
 
     # guardian: allow-type-erasure
-    async def record_success(self, TaskType: str, input_context: str, output_result: str, confidence: float=0.8) -> Any:
+    async def record_success(
+        self, TaskType: str, input_context: str, output_result: str, confidence: float = 0.8
+    ) -> Any:
         """Record a successful outreach pattern."""
-        example_id = hashlib.sha256(f'{TaskType}:{input_context}:{output_result}'.encode()).hexdigest()[:12]
-        example = OutreachLearningExample(example_id=example_id, TaskType=TaskType, input_context=input_context, output_result=output_result, success=True, confidence=confidence)
+        example_id = hashlib.sha256(f"{TaskType}:{input_context}:{output_result}".encode()).hexdigest()[:12]
+        example = OutreachLearningExample(
+            example_id=example_id,
+            TaskType=TaskType,
+            input_context=input_context,
+            output_result=output_result,
+            success=True,
+            confidence=confidence,
+        )
         self._examples.append(example)
         self._update_patterns(TaskType, success=True)
 
     # guardian: allow-type-erasure
     async def record_failure(self, TaskType: str, input_context: str, error: str) -> Any:
         """Record a failed outreach attempt."""
-        example_id = hashlib.sha256(f'{TaskType}:{input_context}:{error}'.encode()).hexdigest()[:12]
-        example = OutreachLearningExample(example_id=example_id, TaskType=TaskType, input_context=input_context, output_result=error, success=False, confidence=0.0)
+        example_id = hashlib.sha256(f"{TaskType}:{input_context}:{error}".encode()).hexdigest()[:12]
+        example = OutreachLearningExample(
+            example_id=example_id,
+            TaskType=TaskType,
+            input_context=input_context,
+            output_result=error,
+            success=False,
+            confidence=0.0,
+        )
         self._examples.append(example)
         self._update_patterns(TaskType, success=False)
 
@@ -116,21 +143,22 @@ class OutreachLearningLoop:
 
     def get_success_rate(self, TaskType: str) -> float:
         """Get success rate for a Task type."""
-        successes = self._patterns.get(f'{TaskType}:success', 0)
-        failures = self._patterns.get(f'{TaskType}:failure', 0)
+        successes = self._patterns.get(f"{TaskType}:success", 0)
+        failures = self._patterns.get(f"{TaskType}:failure", 0)
         total = successes + failures
         if total == 0:
             return 0.5
         return successes / total
 
     # guardian: allow-magic-config
-    def get_examples(self, TaskType: str=None, limit: int=10) -> list[OutreachLearningExample]:
+    def get_examples(self, TaskType: str = None, limit: int = 10) -> list[OutreachLearningExample]:
         """Get learning examples."""
         if TaskType:
             examples = [e for e in self._examples if e.TaskType == TaskType]
         else:
             examples = self._examples
         return examples[-limit:]
+
 
 class OutreachConfidenceScorer:
     """
@@ -144,31 +172,31 @@ class OutreachConfidenceScorer:
     def score_lead(self, lead: dict[str, Any]) -> float:
         """Score confidence for a lead."""
         score = 0.5
-        if lead.get('company'):
+        if lead.get("company"):
             score += 0.1
-        if lead.get('contact_name'):
+        if lead.get("contact_name"):
             score += 0.1
-        if lead.get('email'):
+        if lead.get("email"):
             score += 0.1
-        if lead.get('title'):
+        if lead.get("title"):
             score += 0.1
-        if lead.get('linkedin'):
+        if lead.get("linkedin"):
             score += 0.1
         return min(1.0, score)
 
     def score_message(self, message: dict[str, Any]) -> float:
         """Score confidence for a message."""
         score = 0.5
-        content = message.get('content', '')
-        subject = message.get('subject', '')
-        if '{name}' in content or '{company}' in content:
+        content = message.get("content", "")
+        subject = message.get("subject", "")
+        if "{name}" in content or "{company}" in content:
             score += 0.15
-        cta_words = ['schedule', 'call', 'meet', 'discuss']
-        if any((word in content.lower() for word in cta_words)):
+        cta_words = ["schedule", "call", "meet", "discuss"]
+        if any(word in content.lower() for word in cta_words):
             score += 0.1
         if 20 <= len(subject) <= 60:
             score += 0.1
-        if 'unsubscribe' in content.lower():
+        if "unsubscribe" in content.lower():
             score += 0.1
         return min(1.0, score)
 
@@ -183,12 +211,13 @@ class OutreachConfidenceScorer:
         else:
             return OutreachConfidenceLevel.LOW
 
+
 class OutreachMemoryPersistence:
     """
     Persists outreach learning across sessions.
     """
 
-    def __init__(self, memory_file: str='outreach_memory.json') -> None:
+    def __init__(self, memory_file: str = "outreach_memory.json") -> None:
         self.memory_file = Path(memory_file)
         self._memory: dict[str, Any] = {}
         self._load()
@@ -206,19 +235,19 @@ class OutreachMemoryPersistence:
         try:
             self.memory_file.write_text(json.dumps(self._memory, indent=2))
         except (OSError, TypeError) as e:
-            self.logger.debug(f'Failed to save memory: {e}')
+            self.logger.debug(f"Failed to save memory: {e}")
 
     # guardian: allow-type-erasure
     def store(self, key: str, value: Any) -> Any:
         """Store a value in memory."""
-        self._memory[key] = {'value': value, 'timestamp': datetime.now().isoformat()}
+        self._memory[key] = {"value": value, "timestamp": datetime.now().isoformat()}
         self._save()
 
     def retrieve(self, key: str) -> Any | None:
         """Retrieve a value from agentic_core.semantic_memory."""
         entry = self._memory.get(key)
         if entry:
-            return entry.get('value')
+            return entry.get("value")
         return None
 
     def list_keys(self) -> list[str]:
@@ -230,6 +259,7 @@ class OutreachMemoryPersistence:
         """Clear all memory."""
         self._memory = {}
         self._save()
+
 
 class OutreachLearningAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """
@@ -249,14 +279,18 @@ class OutreachLearningAgent(SubatomicTestingMixin, SovereignBaseAgent):
         """Register this agent as an entity in the Memory MCP knowledge graph."""
         try:
             bridge = GraphMemoryBridge.get_instance()
-            bridge.create_agent_entity(agent_name=self.__class__.__name__, agent_type='LearningAgent', observations=['OutreachLearningAgent: campaign pattern recognition and confidence scoring'])
+            bridge.create_agent_entity(
+                agent_name=self.__class__.__name__,
+                agent_type="LearningAgent",
+                observations=["OutreachLearningAgent: campaign pattern recognition and confidence scoring"],
+            )
         # guardian: allow-silent-swallow
         except Exception:
             pass
 
     async def execute(self) -> None:
         """Execute execute operation."""
-        print(f'   [{self.name}] Analyzing patterns...')
+        print(f"   [{self.name}] Analyzing patterns...")
         lead_scores = []
         for lead in self.ctx.leads:
             score = self.confidence_scorer.score_lead(lead)
@@ -267,37 +301,46 @@ class OutreachLearningAgent(SubatomicTestingMixin, SovereignBaseAgent):
             message_scores.append(score)
         avg_lead_score = sum(lead_scores) / len(lead_scores) if lead_scores else 0
         avg_message_score = sum(message_scores) / len(message_scores) if message_scores else 0
-        self.memory.store('last_lead_score', avg_lead_score)
-        self.memory.store('last_message_score', avg_message_score)
+        self.memory.store("last_lead_score", avg_lead_score)
+        self.memory.store("last_message_score", avg_message_score)
         try:
             bridge = GraphMemoryBridge.get_instance()
-            bridge.add_observation(entity_name=self.__class__.__name__, observation=f'CampaignAnalysis: lead_score={avg_lead_score:.2f} message_score={avg_message_score:.2f} leads={len(lead_scores)} messages={len(message_scores)}')
+            bridge.add_observation(
+                entity_name=self.__class__.__name__,
+                observation=f"CampaignAnalysis: lead_score={avg_lead_score:.2f} message_score={avg_message_score:.2f} leads={len(lead_scores)} messages={len(message_scores)}",
+            )
         # guardian: allow-silent-swallow
         except Exception:
             pass
         recommendations = []
         if avg_lead_score < 0.6:
-            recommendations.append('Improve lead quality - add more contact details')
+            recommendations.append("Improve lead quality - add more contact details")
         if avg_message_score < 0.6:
-            recommendations.append('Improve message quality - add personalization')
+            recommendations.append("Improve message quality - add personalization")
         if recommendations:
             self.ctx.inject_instruction(f"Learning recommendations: {'; '.join(recommendations)}", priority=7)
-        self.record_result(True, f'Lead score: {avg_lead_score:.2f}, Message score: {avg_message_score:.2f}')
-        print(f'   [{self.name}] ✅ Analysis complete')
+        self.record_result(True, f"Lead score: {avg_lead_score:.2f}, Message score: {avg_message_score:.2f}")
+        print(f"   [{self.name}] ✅ Analysis complete")
 
     # guardian: allow-type-erasure
-    def inject_instruction(self, instruction: str, priority: int=5) -> Any:
+    def inject_instruction(self, instruction: str, priority: int = 5) -> Any:
         """Inject an instruction into the context."""
         self.ctx.inject_instruction(instruction, priority)
 
     # guardian: allow-type-erasure
-    async def record_success(self, TaskType: str, input_context: str, output_result: str, confidence: float=0.8) -> Any:
+    async def record_success(
+        self, TaskType: str, input_context: str, output_result: str, confidence: float = 0.8
+    ) -> Any:
         """Record a successful pattern."""
         await self.learning_loop.record_success(TaskType, input_context, output_result, confidence)
         try:
             bridge = GraphMemoryBridge.get_instance()
             if confidence >= 0.8:
-                bridge.create_mastered_task_relation(agent_name=self.__class__.__name__, task_description=f'outreach:{TaskType}', feedback_score=confidence)
+                bridge.create_mastered_task_relation(
+                    agent_name=self.__class__.__name__,
+                    task_description=f"outreach:{TaskType}",
+                    feedback_score=confidence,
+                )
         # guardian: allow-silent-swallow
         except Exception:
             pass
@@ -308,8 +351,14 @@ class OutreachLearningAgent(SubatomicTestingMixin, SovereignBaseAgent):
         await self.learning_loop.record_failure(TaskType, input_context, error)
         try:
             bridge = GraphMemoryBridge.get_instance()
-            bridge.create_relation(from_entity=self.__class__.__name__, to_entity=f'OutreachTask_{TaskType}', relation_type=GraphMemoryBridge.RELATION_FAILED_TASK)
-            bridge.add_observation(entity_name=self.__class__.__name__, observation=f'FailedTask={TaskType} error={error[:200]}')
+            bridge.create_relation(
+                from_entity=self.__class__.__name__,
+                to_entity=f"OutreachTask_{TaskType}",
+                relation_type=GraphMemoryBridge.RELATION_FAILED_TASK,
+            )
+            bridge.add_observation(
+                entity_name=self.__class__.__name__, observation=f"FailedTask={TaskType} error={error[:200]}"
+            )
         # guardian: allow-silent-swallow
         except Exception:
             pass
@@ -322,9 +371,19 @@ class OutreachLearningAgent(SubatomicTestingMixin, SovereignBaseAgent):
     # guardian: allow-type-erasure
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """Heal violations detected by OutreachLearningAgent."""
-        violation_type = violation.get('type', 'unknown')
+        violation_type = violation.get("type", "unknown")
         try:
-            return {'status': 'skipped', 'details': f'OutreachLearningAgent heal() not yet implemented for {violation_type}', 'artifacts': [], 'errors': []}
+            return {
+                "status": "skipped",
+                "details": f"OutreachLearningAgent heal() not yet implemented for {violation_type}",
+                "artifacts": [],
+                "errors": [],
+            }
         # guardian: allow-silent-swallow
         except Exception as e:
-            return {'status': 'failed', 'details': f'OutreachLearningAgent heal() failed: {str(e)}', 'artifacts': [], 'errors': [str(e)]}
+            return {
+                "status": "failed",
+                "details": f"OutreachLearningAgent heal() failed: {str(e)}",
+                "artifacts": [],
+                "errors": [str(e)],
+            }

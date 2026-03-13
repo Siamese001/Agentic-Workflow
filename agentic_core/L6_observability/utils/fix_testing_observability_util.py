@@ -1,44 +1,50 @@
 from agentic_core.L2_execution.tools import write_gateway as _wg
-'\nFix Testing & observability - Add SubatomicTestingMixin and logging to all agents.\n\nThis script:\n1. Loads all agents from agent_discovery_full.json\n2. For each agent without testing: adds SubatomicTestingMixin to bases\n3. For each agent without observability: adds logging import and logger\n4. This maximizes testing % and observable % in the dashboard\n'
+
+"\nFix Testing & observability - Add SubatomicTestingMixin and logging to all agents.\n\nThis script:\n1. Loads all agents from agent_discovery_full.json\n2. For each agent without testing: adds SubatomicTestingMixin to bases\n3. For each agent without observability: adds logging import and logger\n4. This maximizes testing % and observable % in the dashboard\n"
 import json
 import re
 from pathlib import Path
+
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 try:
     from agentic_core.L0_routing.scripts.full_agent_discovery import AGENT_DISCOVERY_JSON
 except ImportError:
-    AGENT_DISCOVERY_JSON = 'agent_discovery_full.json'
+    AGENT_DISCOVERY_JSON = "agent_discovery_full.json"
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DISCOVERY_JSON = PROJECT_ROOT / AGENT_DISCOVERY_JSON
-LOGGING_IMPORT = 'import logging'
-LOGGER_INIT = 'logger = logging.getLogger(__name__)'
-TESTING_IMPORT = 'from agentic_core.L3_orchestration.reasoning.subatomic_testing_mixin import SubatomicTestingMixin'
+LOGGING_IMPORT = "import logging"
+LOGGER_INIT = "logger = logging.getLogger(__name__)"
+TESTING_IMPORT = (
+    "from agentic_core.L3_orchestration.reasoning.subatomic_testing_mixin import SubatomicTestingMixin"
+)
+
 
 def load_agents() -> list[dict]:
     """Load all agents from discovery JSON."""
-    with open(DISCOVERY_JSON, encoding='utf-8') as f:
+    with open(DISCOVERY_JSON, encoding="utf-8") as f:
         return json.load(f)
+
 
 def add_logging_to_file(file_path: Path) -> bool:
     """Add logging import and logger initialization to a file."""
     try:
-        source = file_path.read_text(encoding='utf-8')
+        source = file_path.read_text(encoding="utf-8")
     except Exception as e:
-        print(f'  [ERROR] Cannot read {file_path}: {e}')
+        print(f"  [ERROR] Cannot read {file_path}: {e}")
         return False
     modified = False
-    if 'import logging' not in source and 'from logging' not in source:
+    if "import logging" not in source and "from logging" not in source:
         lines = source.splitlines()
         insert_idx = 0
         for i, line in enumerate(lines):
-            if line.startswith('import ') or line.startswith('from '):
+            if line.startswith("import ") or line.startswith("from "):
                 insert_idx = i
                 break
         lines.insert(insert_idx, LOGGING_IMPORT)
         modified = True
-        source = '\n'.join(lines)
-    if 'logger = logging.getLogger' not in source and 'Logger = logging.getLogger' not in source:
+        source = "\n".join(lines)
+    if "logger = logging.getLogger" not in source and "Logger = logging.getLogger" not in source:
         lines = source.splitlines()
         insert_idx = 0
         in_docstring = False
@@ -49,76 +55,79 @@ def add_logging_to_file(file_path: Path) -> bool:
                 continue
             if in_docstring:
                 continue
-            if stripped.startswith('#'):
+            if stripped.startswith("#"):
                 continue
-            if stripped.startswith('import ') or stripped.startswith('from '):
+            if stripped.startswith("import ") or stripped.startswith("from "):
                 insert_idx = i + 1
                 continue
-            if stripped and (not stripped.startswith('import')) and (not stripped.startswith('from')):
+            if stripped and (not stripped.startswith("import")) and (not stripped.startswith("from")):
                 break
-        lines.insert(insert_idx, '')
+        lines.insert(insert_idx, "")
         lines.insert(insert_idx + 1, LOGGER_INIT)
         modified = True
-        source = '\n'.join(lines)
+        source = "\n".join(lines)
     if modified:
         try:
-            assert_no_persistent_write('L6', 'write_text')
-            _wg.write_text(file_path, source, encoding='utf-8')
+            assert_no_persistent_write("L6", "write_text")
+            _wg.write_text(file_path, source, encoding="utf-8")
             return True
         except Exception as e:
-            print(f'  [ERROR] Cannot write {file_path}: {e}')
+            print(f"  [ERROR] Cannot write {file_path}: {e}")
             return False
     return False
+
 
 def add_testing_mixin_to_class(file_path: Path, class_name: str) -> bool:
     """Add SubatomicTestingMixin to a class's bases."""
     try:
-        source = file_path.read_text(encoding='utf-8')
+        source = file_path.read_text(encoding="utf-8")
     except Exception as e:
-        print(f'  [ERROR] Cannot read {file_path}: {e}')
+        print(f"  [ERROR] Cannot read {file_path}: {e}")
         return False
-    if 'SubatomicTestingMixin' in source:
+    if "SubatomicTestingMixin" in source:
         return False
     if TESTING_IMPORT not in source:
         lines = source.splitlines()
         last_import_idx = 0
         for i, line in enumerate(lines):
-            if line.startswith('import ') or line.startswith('from '):
+            if line.startswith("import ") or line.startswith("from "):
                 last_import_idx = i
         lines.insert(last_import_idx + 1, TESTING_IMPORT)
-        source = '\n'.join(lines)
-    pattern = f'(class\\s+{re.escape(class_name)}\\s*\\()([^)]*?)(\\)\\s*:)'
+        source = "\n".join(lines)
+    pattern = f"(class\\s+{re.escape(class_name)}\\s*\\()([^)]*?)(\\)\\s*:)"
 
     def add_mixin(match):
         prefix = match.group(1)
         bases = match.group(2).strip()
         suffix = match.group(3)
         if bases:
-            new_bases = f'SubatomicTestingMixin, {bases}'
+            new_bases = f"SubatomicTestingMixin, {bases}"
         else:
-            new_bases = 'SubatomicTestingMixin'
-        return f'{prefix}{new_bases}{suffix}'
+            new_bases = "SubatomicTestingMixin"
+        return f"{prefix}{new_bases}{suffix}"
+
     new_source, count = re.subn(pattern, add_mixin, source)
     if count > 0:
         try:
-            assert_no_persistent_write('L6', 'write_text')
-            _wg.write_text(file_path, new_source, encoding='utf-8')
+            assert_no_persistent_write("L6", "write_text")
+            _wg.write_text(file_path, new_source, encoding="utf-8")
             return True
         except Exception as e:
-            print(f'  [ERROR] Cannot write {file_path}: {e}')
+            print(f"  [ERROR] Cannot write {file_path}: {e}")
             return False
     return False
 
+
 def main():
-    print('=' * 80)
-    print('FIX TESTING & OBSERVABILITY')
-    print('=' * 80)
+    print("=" * 80)
+    print("FIX TESTING & OBSERVABILITY")
+    print("=" * 80)
     agents = load_agents()
-    print(f'\nProcessing {len(agents)} agents...\n')
+    print(f"\nProcessing {len(agents)} agents...\n")
     by_file: dict[str, list[str]] = {}
     for agent in agents:
-        path = agent.get('path', '')
-        class_name = agent.get('class_name', '')
+        path = agent.get("path", "")
+        class_name = agent.get("class_name", "")
         if path and class_name:
             full_path = str(PROJECT_ROOT / path)
             if full_path not in by_file:
@@ -133,13 +142,15 @@ def main():
             continue
         if add_logging_to_file(file_path):
             logging_added += 1
-            print(f'[LOGGING] {file_path.relative_to(PROJECT_ROOT)}')
+            print(f"[LOGGING] {file_path.relative_to(PROJECT_ROOT)}")
         for class_name in class_names:
             if add_testing_mixin_to_class(file_path, class_name):
                 testing_added += 1
-                print(f'[TESTING] {class_name} in {file_path.name}')
-    print('\n' + '=' * 80)
-    print(f'SUMMARY: Logging added to {logging_added} files | Testing mixin added to {testing_added} classes')
-    print('=' * 80)
-if __name__ == '__main__':
+                print(f"[TESTING] {class_name} in {file_path.name}")
+    print("\n" + "=" * 80)
+    print(f"SUMMARY: Logging added to {logging_added} files | Testing mixin added to {testing_added} classes")
+    print("=" * 80)
+
+
+if __name__ == "__main__":
     main()

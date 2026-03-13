@@ -3,11 +3,26 @@
 No import-time validation side effects.
 Call validate_invariant_registry() explicitly to verify schema integrity.
 """
+
 from __future__ import annotations
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
-READ_ONLY_ISOLATION: dict = {'forbidden_verbs': ['write', 'modify', 'update', 'delete'], 'scope': 'retrieval_context', 'authority': 'L1_prompt_governance'}
-MUTATION_BLOCK_SCHEMA: dict = {'type': 'object', 'properties': {'forbidden_verbs': {'type': 'array', 'items': {'type': 'string'}}, 'scope': {'type': 'string'}, 'authority': {'type': 'string'}}, 'required': ['forbidden_verbs', 'scope', 'authority'], 'additionalProperties': False}
-ITERATIVE_FEEDBACK_DIRECTIVE: str = 'PRIVATE REASONING ONLY: You may refine your internal query up to 3 times before producing output. No mutation of external state. No authority granted. Re-query is advisory and read-only.'
+
+READ_ONLY_ISOLATION: dict = {
+    "forbidden_verbs": ["write", "modify", "update", "delete"],
+    "scope": "retrieval_context",
+    "authority": "L1_prompt_governance",
+}
+MUTATION_BLOCK_SCHEMA: dict = {
+    "type": "object",
+    "properties": {
+        "forbidden_verbs": {"type": "array", "items": {"type": "string"}},
+        "scope": {"type": "string"},
+        "authority": {"type": "string"},
+    },
+    "required": ["forbidden_verbs", "scope", "authority"],
+    "additionalProperties": False,
+}
+ITERATIVE_FEEDBACK_DIRECTIVE: str = "PRIVATE REASONING ONLY: You may refine your internal query up to 3 times before producing output. No mutation of external state. No authority granted. Re-query is advisory and read-only."
+
 
 def validate_invariant_registry() -> None:
     """Validate READ_ONLY_ISOLATION against MUTATION_BLOCK_SCHEMA.
@@ -15,7 +30,10 @@ def validate_invariant_registry() -> None:
     Raises:
         RuntimeError: If READ_ONLY_ISOLATION fails schema validation.
     """
-    from agentic_core.prompt_governance.security.validators.output_schema_validator import validate_against_schema
+    from agentic_core.prompt_governance.security.validators.output_schema_validator import (
+        validate_against_schema,
+    )
+
     ok, code, _ = validate_against_schema(READ_ONLY_ISOLATION, MUTATION_BLOCK_SCHEMA)
     if not ok:
-        raise RuntimeError(f'invariant_registry: READ_ONLY_ISOLATION fails MUTATION_BLOCK_SCHEMA: {code}')
+        raise RuntimeError(f"invariant_registry: READ_ONLY_ISOLATION fails MUTATION_BLOCK_SCHEMA: {code}")

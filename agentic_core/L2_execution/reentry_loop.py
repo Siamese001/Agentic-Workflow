@@ -4,8 +4,9 @@ L2 Re-Entry Loop - Bounded Deterministic Retry Mechanism
 Implements bounded retry logic with deterministic behavior.
 No infinite loops, no sleep/time usage, pure deterministic behavior.
 """
+
 from agentic_core.L2_execution.cid_registry import CIDRegistry, ExecutionCycle
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 class ReEntryLoop:
     """
@@ -15,7 +16,7 @@ class ReEntryLoop:
     No infinite loops, no sleep/time usage.
     """
 
-    def __init__(self, max_attempts: int, cid_registry: CIDRegistry=None):
+    def __init__(self, max_attempts: int, cid_registry: CIDRegistry = None):
         """
         Initialize ReEntryLoop with maximum attempts.
 
@@ -24,7 +25,7 @@ class ReEntryLoop:
             cid_registry: Optional CIDRegistry instance
         """
         if max_attempts < 1:
-            raise ValueError('max_attempts must be at least 1')
+            raise ValueError("max_attempts must be at least 1")
         self.max_attempts = max_attempts
         self._cid_registry = cid_registry or CIDRegistry()
 

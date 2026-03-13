@@ -1,4 +1,5 @@
 from agentic_core.L2_execution.tools import write_gateway as _wg
+
 "\nStructuralValidatorAgent - Facade Shell for Zero-Loss Consolidation.\n\nL5 Sovereign Guardian for Structural Enforcement.\nConverted to Facade: 2026-01-31 (Phase 2 Deprecation Implementation)\n\nFACADE PATTERN: Delegates to UnifiedAgent while preserving 100% legacy compatibility.\nAll original imports and signatures work without modification.\n\nRationale:\n    - Canonizes the legacy 'StructureEnforcerAgent' into 'StructuralValidatorAgent'.\n    - Implements Atomic Writes for safe refactoring.\n    - Enforces Layer Gravity (L0-L6) and Naming Laws.\n    - Integrates with ArchitectureGovernorAgent.\n"
 import ast
 import logging
@@ -10,18 +11,26 @@ from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 from typing import Any
+
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L3_orchestration.reasoning.UnifiedAgent import StructuralValidatorStrategy
-from agentic_core.L4_state.utils.layer_gravity_util import GRAVITY_RULES, LAYER_ORDER, extract_layer_from_module, extract_layer_from_path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+from agentic_core.L4_state.utils.layer_gravity_util import (
+    GRAVITY_RULES,
+    LAYER_ORDER,
+    extract_layer_from_module,
+    extract_layer_from_path,
+)
+
 Logger = logging.getLogger(__name__)
 
+
 class StructureViolationType:
-    GRAVITY = 'GRAVITY'
-    HIERARCHY = 'HIERARCHY'
-    NAMING = 'NAMING'
-    DOCUMENTATION = 'DOCUMENTATION'
-    ASCII = 'ASCII'
+    GRAVITY = "GRAVITY"
+    HIERARCHY = "HIERARCHY"
+    NAMING = "NAMING"
+    DOCUMENTATION = "DOCUMENTATION"
+    ASCII = "ASCII"
+
 
 @dataclass
 class StructureViolation:
@@ -31,7 +40,8 @@ class StructureViolation:
     message: str
     suggested_fix: str | None = None
     auto_fixable: bool = False
-    severity: str = 'ERROR'
+    severity: str = "ERROR"
+
 
 @dataclass
 class StructureConfig:
@@ -41,7 +51,7 @@ class StructureConfig:
     enable_documentation: bool = True
     enable_ascii: bool = True
     auto_fix: bool = False
-    agent_suffix: str = 'Agent'
+    agent_suffix: str = "Agent"
     required_docstring: bool = True
     min_docstring_length: int = 10
     project_root: Path | None = None
@@ -53,6 +63,7 @@ class StructureConfig:
     check_contracts: bool = False
     check_hierarchy: bool = True
 
+
 class StructuralValidatorAgent(SovereignBaseAgent):
     """
     Unified structure enforcement with gravity and naming validation.
@@ -61,16 +72,25 @@ class StructuralValidatorAgent(SovereignBaseAgent):
     FACADE SHELL: Delegates to UnifiedAgent with StructuralValidatorStrategy.
     SIGNATURE COMPATIBILITY: 100% preserved - no breaking changes.
     """
+
     LAYER_ORDER = LAYER_ORDER
     GRAVITY_RULES = GRAVITY_RULES
 
-    def __init__(self, config: StructureConfig | None=None):
+    def __init__(self, config: StructureConfig | None = None):
         super().__init__()
         self._config = config or StructureConfig()
         self.project_root = self._config.project_root or Path.cwd()
         self._lock = threading.RLock()
         self._violations: list[StructureViolation] = []
-        self._unified_strategy: StructuralValidatorStrategy | None = StructuralValidatorStrategy({'enable_gravity': self._config.enable_gravity, 'enable_hierarchy': self._config.enable_hierarchy, 'enable_naming': self._config.enable_naming, 'enable_documentation': self._config.enable_documentation, 'agent_suffix': self._config.agent_suffix})
+        self._unified_strategy: StructuralValidatorStrategy | None = StructuralValidatorStrategy(
+            {
+                "enable_gravity": self._config.enable_gravity,
+                "enable_hierarchy": self._config.enable_hierarchy,
+                "enable_naming": self._config.enable_naming,
+                "enable_documentation": self._config.enable_documentation,
+                "agent_suffix": self._config.agent_suffix,
+            }
+        )
 
     @property
     def config(self) -> StructureConfig:
@@ -86,7 +106,7 @@ class StructuralValidatorAgent(SovereignBaseAgent):
         if target_path.is_file():
             self.validate_file(target_path)
         else:
-            for file_path in target_path.rglob('*.py'):
+            for file_path in target_path.rglob("*.py"):
                 self.validate_file(file_path)
         return self
 
@@ -100,16 +120,16 @@ class StructuralValidatorAgent(SovereignBaseAgent):
         if not file_path.exists():
             return violations
         try:
-            content = file_path.read_text(encoding='utf-8')
+            content = file_path.read_text(encoding="utf-8")
         # guardian: allow-silent-swallow
         except Exception as e:
-            Logger.error(f'Failed to read {file_path}: {e}')
+            Logger.error(f"Failed to read {file_path}: {e}")
             return violations
         if self.config.enable_gravity:
             violations.extend(self._check_gravity(file_path, content))
         if self.config.enable_naming:
             violations.extend(self._check_naming(file_path, content))
-        if getattr(self.config, 'check_duplicates', False):
+        if getattr(self.config, "check_duplicates", False):
             pass
         self._violations.extend(violations)
         return violations
@@ -136,57 +156,78 @@ class StructuralValidatorAgent(SovereignBaseAgent):
             if isinstance(node, ast.ImportFrom) and node.module:
                 target_layer = self._extract_layer_from_module(node.module)
                 if target_layer and target_layer not in allowed_layers:
-                    v = StructureViolation(file_path=file_path, line_number=node.lineno, violation_type=StructureViolationType.GRAVITY, message=f'Gravity violation: {source_layer} cannot import from {target_layer} (module: {node.module})', severity='CRITICAL')
+                    v = StructureViolation(
+                        file_path=file_path,
+                        line_number=node.lineno,
+                        violation_type=StructureViolationType.GRAVITY,
+                        message=f"Gravity violation: {source_layer} cannot import from {target_layer} (module: {node.module})",
+                        severity="CRITICAL",
+                    )
                     v.source_layer = source_layer
                     v.target_layer = target_layer
-                    v.suggestion = 'Use dependency injection or move logic to shared utils.'
+                    v.suggestion = "Use dependency injection or move logic to shared utils."
                     violations.append(v)
         return violations
 
     def _check_naming(self, file_path: Path, content: str) -> list[StructureViolation]:
         violations = []
-        if not file_path.name.endswith('.py'):
+        if not file_path.name.endswith(".py"):
             return violations
         try:
             tree = ast.parse(content)
             file_stem = file_path.stem
             for node in tree.body:
                 if isinstance(node, ast.ClassDef):
-                    if 'Agent' in file_path.name and node.name == file_stem and (not node.name.endswith(self.config.agent_suffix)):
-                        violations.append(StructureViolation(file_path=file_path, line_number=node.lineno, violation_type=StructureViolationType.NAMING, message=f"Class '{node.name}' in agent file must end with '{self.config.agent_suffix}'", suggested_fix=f'{node.name}{self.config.agent_suffix}', auto_fixable=True))
+                    if (
+                        "Agent" in file_path.name
+                        and node.name == file_stem
+                        and (not node.name.endswith(self.config.agent_suffix))
+                    ):
+                        violations.append(
+                            StructureViolation(
+                                file_path=file_path,
+                                line_number=node.lineno,
+                                violation_type=StructureViolationType.NAMING,
+                                message=f"Class '{node.name}' in agent file must end with '{self.config.agent_suffix}'",
+                                suggested_fix=f"{node.name}{self.config.agent_suffix}",
+                                auto_fixable=True,
+                            )
+                        )
         except SyntaxError:
             pass
         return violations
 
     # guardian: allow-type-erasure
-    def force_rename_class(self, file_path: Path, old_name: str, new_name: str, dry_run: bool=True) -> dict[str, Any]:
+    def force_rename_class(
+        self, file_path: Path, old_name: str, new_name: str, dry_run: bool = True
+    ) -> dict[str, Any]:
         """Safely renames a class using Atomic Writes."""
         if not file_path.exists():
-            return {'error': 'File not found'}
+            return {"error": "File not found"}
         try:
-            content = file_path.read_text(encoding='utf-8')
-            new_content = re.sub(f'\\bclass\\s+{old_name}\\b', f'class {new_name}', content)
-            new_content = re.sub(f'\\b{old_name}\\b', new_name, new_content)
+            content = file_path.read_text(encoding="utf-8")
+            new_content = re.sub(f"\\bclass\\s+{old_name}\\b", f"class {new_name}", content)
+            new_content = re.sub(f"\\b{old_name}\\b", new_name, new_content)
             if new_content == content:
-                return {'message': 'No changes needed'}
+                return {"message": "No changes needed"}
             if dry_run:
-                Logger.info(f'[PLAN] Rename class {old_name} -> {new_name} in {file_path.name}')
-                return {'applied': False}
+                Logger.info(f"[PLAN] Rename class {old_name} -> {new_name} in {file_path.name}")
+                return {"applied": False}
             temp_fd, temp_path = tempfile.mkstemp(dir=file_path.parent, text=True)
             try:
-                with os.fdopen(temp_fd, 'w', encoding='utf-8') as tf:
+                with os.fdopen(temp_fd, "w", encoding="utf-8") as tf:
                     tf.write(new_content)
-                backup_path = file_path.with_suffix(f'.bak.{int(datetime.now().timestamp())}')
+                backup_path = file_path.with_suffix(f".bak.{int(datetime.now().timestamp())}")
                 _wg.copy_file(file_path, backup_path)
                 os.replace(temp_path, file_path)
-                return {'applied': True, 'backup': str(backup_path)}
+                return {"applied": True, "backup": str(backup_path)}
             except Exception as write_err:
                 _wg.remove_file(temp_path)
                 raise write_err
         # guardian: allow-silent-swallow
         except Exception as e:
-            Logger.error(f'Rename failed: {e}')
-            return {'error': str(e)}
+            Logger.error(f"Rename failed: {e}")
+            return {"error": str(e)}
 
     def check_duplicates(self, root: Path):
         return []
@@ -209,24 +250,26 @@ class StructuralValidatorAgent(SovereignBaseAgent):
                 - errors: Number of errors encountered
                 - skipped: Number of violations skipped
         """
-        violation_type = violation.get('type', '')
-        path = violation.get('path', '')
-        Logger.info(f'[STRUCTURAL_VALIDATOR] Healing {violation_type} at {path}')
+        violation_type = violation.get("type", "")
+        path = violation.get("path", "")
+        Logger.info(f"[STRUCTURAL_VALIDATOR] Healing {violation_type} at {path}")
         try:
-            if violation_type == 'naming' and violation.get('old_name') and violation.get('new_name'):
-                result = self.force_rename_class(Path(path), violation['old_name'], violation['new_name'], dry_run=False)
-                if 'error' not in result:
-                    return {'violations_fixed': 1, 'violations_found': 1, 'errors': 0, 'skipped': 0}
+            if violation_type == "naming" and violation.get("old_name") and violation.get("new_name"):
+                result = self.force_rename_class(
+                    Path(path), violation["old_name"], violation["new_name"], dry_run=False
+                )
+                if "error" not in result:
+                    return {"violations_fixed": 1, "violations_found": 1, "errors": 0, "skipped": 0}
                 else:
-                    return {'violations_fixed': 0, 'violations_found': 1, 'errors': 1, 'skipped': 0}
+                    return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
             else:
-                return {'violations_fixed': 0, 'violations_found': 1, 'errors': 0, 'skipped': 1}
+                return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}
         # guardian: allow-silent-swallow
         except Exception as e:
-            Logger.error(f'[STRUCTURAL_VALIDATOR] Failed to heal: {e}')
-            return {'violations_fixed': 0, 'violations_found': 1, 'errors': 1, 'skipped': 0}
+            Logger.error(f"[STRUCTURAL_VALIDATOR] Failed to heal: {e}")
+            return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
 
     # guardian: allow-type-erasure
     def heal_repository(self, *args, **kwargs) -> dict:
         """heal_repository() not implemented for StructuralValidatorAgent."""
-        raise NotImplementedError('heal_repository() not implemented for StructuralValidatorAgent')
+        raise NotImplementedError("heal_repository() not implemented for StructuralValidatorAgent")

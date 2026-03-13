@@ -8,42 +8,51 @@ dimensions:
 - ContextPrecisionMetric: fraction of retrieved chunks that are relevant
 - GroundednessMetric:     per-claim attribution to context
 """
+
 from __future__ import annotations
+
 import math
 import re
 from typing import Any
+
 from agentic_core.evaluation.metrics.base import EvaluationMetric
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 _FAITHFULNESS_THRESHOLD = 0.75
 _DEFAULT_EMBED_DIM = 1024
+
 
 def _cosine(a: list[float], b: list[float]) -> float:
     """Deterministic cosine similarity; returns 0.0 on zero-norm vectors."""
     if not a or not b or len(a) != len(b):
         return 0.0
     dot = sum((x * y for x, y in zip(a, b)))
-    norm_a = math.sqrt(sum((x * x for x in a)))
-    norm_b = math.sqrt(sum((x * x for x in b)))
+    norm_a = math.sqrt(sum(x * x for x in a))
+    norm_b = math.sqrt(sum(x * x for x in b))
     if norm_a == 0.0 or norm_b == 0.0:
         return 0.0
     return max(-1.0, min(1.0, dot / (norm_a * norm_b)))
 
+
 def _split_sentences(text: str) -> list[str]:
     """Split text into sentences on .!? boundaries; strips empty results."""
-    parts = re.split('(?<=[.!?])\\s+', text.strip())
+    parts = re.split("(?<=[.!?])\\s+", text.strip())
     return [p.strip() for p in parts if p.strip()]
+
 
 def _get_embedder():
     """Return a callable embed(text: str) -> list[float] using BGE-m3 or stub."""
     try:
         from agentic_core.L2_execution.healers.bmg_embedding_similarity import bmg_embed_text
+
         return bmg_embed_text
     # guardian: allow-silent-swallow
     except Exception:
 
         def _stub(text: str) -> list[float]:
             return [0.0] * _DEFAULT_EMBED_DIM
+
         return _stub
+
 
 class FaithfulnessMetric(EvaluationMetric):
     """Measures what fraction of answer sentences are attributable to context.
@@ -54,15 +63,15 @@ class FaithfulnessMetric(EvaluationMetric):
     exceeds ``attribution_threshold`` (default 0.75).
     """
 
-    def __init__(self, attribution_threshold: float=_FAITHFULNESS_THRESHOLD) -> None:
+    def __init__(self, attribution_threshold: float = _FAITHFULNESS_THRESHOLD) -> None:
         self._threshold = attribution_threshold
         self._embed = _get_embedder()
 
     @property
     def name(self) -> str:
-        return 'faithfulness'
+        return "faithfulness"
 
-    def compute(self, prediction: str, ground_truth: Any=None, context: list[str] | None=None) -> float:
+    def compute(self, prediction: str, ground_truth: Any = None, context: list[str] | None = None) -> float:
         if not prediction or not context:
             return 0.0
         sentences = _split_sentences(prediction)
@@ -72,9 +81,10 @@ class FaithfulnessMetric(EvaluationMetric):
         attributable = 0
         for sentence in sentences:
             s_emb = self._embed(sentence)
-            if any((_cosine(s_emb, c_emb) >= self._threshold for c_emb in context_embeddings)):
+            if any(_cosine(s_emb, c_emb) >= self._threshold for c_emb in context_embeddings):
                 attributable += 1
         return round(attributable / len(sentences), 6)
+
 
 class AnswerRelevancyMetric(EvaluationMetric):
     """Cosine similarity between query embedding and answer embedding.
@@ -87,9 +97,9 @@ class AnswerRelevancyMetric(EvaluationMetric):
 
     @property
     def name(self) -> str:
-        return 'answer_relevancy'
+        return "answer_relevancy"
 
-    def compute(self, prediction: str, ground_truth: str, context: Any=None) -> float:
+    def compute(self, prediction: str, ground_truth: str, context: Any = None) -> float:
         """
         Args:
             prediction: Generated answer.
@@ -102,6 +112,7 @@ class AnswerRelevancyMetric(EvaluationMetric):
         answer_emb = self._embed(prediction)
         return round(max(0.0, _cosine(query_emb, answer_emb)), 6)
 
+
 class ContextPrecisionMetric(EvaluationMetric):
     """Set-based context precision.
 
@@ -112,9 +123,11 @@ class ContextPrecisionMetric(EvaluationMetric):
 
     @property
     def name(self) -> str:
-        return 'context_precision'
+        return "context_precision"
 
-    def compute(self, prediction: list[str], ground_truth: set[str] | list[str], context: Any=None) -> float:
+    def compute(
+        self, prediction: list[str], ground_truth: set[str] | list[str], context: Any = None
+    ) -> float:
         """
         Args:
             prediction: Retrieved chunk IDs.
@@ -125,8 +138,9 @@ class ContextPrecisionMetric(EvaluationMetric):
             return 0.0
         retrieved = list(prediction)
         relevant = set(ground_truth) if ground_truth else set()
-        hits = sum((1 for cid in retrieved if cid in relevant))
+        hits = sum(1 for cid in retrieved if cid in relevant)
         return round(hits / len(retrieved), 6)
+
 
 class GroundednessMetric(EvaluationMetric):
     """Per-claim attribution to context chunks.
@@ -137,15 +151,15 @@ class GroundednessMetric(EvaluationMetric):
     No context → groundedness = 0.0 (conservative).
     """
 
-    def __init__(self, attribution_threshold: float=_FAITHFULNESS_THRESHOLD) -> None:
+    def __init__(self, attribution_threshold: float = _FAITHFULNESS_THRESHOLD) -> None:
         self._threshold = attribution_threshold
         self._embed = _get_embedder()
 
     @property
     def name(self) -> str:
-        return 'groundedness'
+        return "groundedness"
 
-    def compute(self, prediction: str, ground_truth: Any=None, context: list[str] | None=None) -> float:
+    def compute(self, prediction: str, ground_truth: Any = None, context: list[str] | None = None) -> float:
         if not prediction or not context:
             return 0.0
         claims = _split_sentences(prediction)
@@ -155,7 +169,16 @@ class GroundednessMetric(EvaluationMetric):
         grounded = 0
         for claim in claims:
             c_emb = self._embed(claim)
-            if any((_cosine(c_emb, ctx_emb) >= self._threshold for ctx_emb in context_embeddings)):
+            if any(_cosine(c_emb, ctx_emb) >= self._threshold for ctx_emb in context_embeddings):
                 grounded += 1
         return round(grounded / len(claims), 6)
-__all__ = ['FaithfulnessMetric', 'AnswerRelevancyMetric', 'ContextPrecisionMetric', 'GroundednessMetric', '_cosine', '_split_sentences']
+
+
+__all__ = [
+    "FaithfulnessMetric",
+    "AnswerRelevancyMetric",
+    "ContextPrecisionMetric",
+    "GroundednessMetric",
+    "_cosine",
+    "_split_sentences",
+]

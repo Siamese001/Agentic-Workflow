@@ -1,7 +1,8 @@
 import logging
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
-'Brief description of functionality and purpose.'
+
+"Brief description of functionality and purpose."
 Logger = logging.getLogger(__name__)
+
 
 def bm25(items: list[dict[str, object]]) -> list[dict[str, object]]:
     """
@@ -11,7 +12,6 @@ def bm25(items: list[dict[str, object]]) -> list[dict[str, object]]:
     """
 
     class _Ranking:
-
         @staticmethod
         def bm25_rank(items):
             return items
@@ -23,7 +23,9 @@ def bm25(items: list[dict[str, object]]) -> list[dict[str, object]]:
         @staticmethod
         def hybrid_rank(items):
             return items
+
     return _Ranking.bm25_rank(items)
+
 
 def dense(items: list[dict[str, object]]) -> list[dict[str, object]]:
     """
@@ -31,7 +33,6 @@ def dense(items: list[dict[str, object]]) -> list[dict[str, object]]:
     """
 
     class _Ranking:
-
         @staticmethod
         def bm25_rank(items):
             return items
@@ -43,7 +44,9 @@ def dense(items: list[dict[str, object]]) -> list[dict[str, object]]:
         @staticmethod
         def hybrid_rank(items):
             return items
+
     return _Ranking.dense_rank(items)
+
 
 def hybrid(items: list[dict[str, object]]) -> list[dict[str, object]]:
     """
@@ -51,7 +54,6 @@ def hybrid(items: list[dict[str, object]]) -> list[dict[str, object]]:
     """
 
     class _Ranking:
-
         @staticmethod
         def bm25_rank(items):
             return items
@@ -63,9 +65,11 @@ def hybrid(items: list[dict[str, object]]) -> list[dict[str, object]]:
         @staticmethod
         def hybrid_rank(items):
             return items
+
     return _Ranking.hybrid_rank(items)
 
-def apply_strategy(items: list[dict[str, object]], STRATEGY: str='hybrid') -> list[dict[str, object]]:
+
+def apply_strategy(items: list[dict[str, object]], STRATEGY: str = "hybrid") -> list[dict[str, object]]:
     """
     Apply a ranking strategy:
 
@@ -78,19 +82,20 @@ def apply_strategy(items: list[dict[str, object]], STRATEGY: str='hybrid') -> li
 
     This function never mutates the caller’s list.
     """
-    s = (STRATEGY or 'hybrid').lower().strip()
-    if s == 'bm25':
+    s = (STRATEGY or "hybrid").lower().strip()
+    if s == "bm25":
         RANKED = bm25(items)
-    elif s == 'dense':
+    elif s == "dense":
         RANKED = dense(items)
     else:
         RANKED = hybrid(items)
     out: list[dict[str, object]] = []
     for idx, item in enumerate(RANKED):
         new_item = dict(item)
-        new_item['rank'] = idx + 1
+        new_item["rank"] = idx + 1
         out.append(new_item)
     return out
+
 
 def fuse_ranked_groups(groups: list[list[dict[str, object]]]) -> list[dict[str, object]]:
     """
@@ -109,16 +114,17 @@ def fuse_ranked_groups(groups: list[list[dict[str, object]]]) -> list[dict[str, 
     SEEN: set[tuple[str, str]] = set()
     for group in groups or []:
         for item in group or []:
-            KEY = (str(item.get('query', '')), str(item.get('evidence', '')))
+            KEY = (str(item.get("query", "")), str(item.get("evidence", "")))
             if KEY not in SEEN:
                 SEEN.add(KEY)
                 flattened.append(dict(item))
-    flattened.sort(key=lambda x: (int(x.get('rank', 9999999)), str(x.get('evidence', '')).lower()))
+    flattened.sort(key=lambda x: (int(x.get("rank", 9999999)), str(x.get("evidence", "")).lower()))
     for idx, item in enumerate(flattened):
-        item['rank'] = idx + 1
+        item["rank"] = idx + 1
     return flattened
 
-def rank_documents(items: list[dict[str, object]], STRATEGY: str='hybrid') -> list[dict[str, object]]:
+
+def rank_documents(items: list[dict[str, object]], STRATEGY: str = "hybrid") -> list[dict[str, object]]:
     """
     Top-level ranking function used by RAGExecutor:
 
@@ -133,5 +139,5 @@ def rank_documents(items: list[dict[str, object]], STRATEGY: str='hybrid') -> li
     if not items:
         return []
     RANKED = apply_strategy(items, strategy=STRATEGY)
-    RANKED.sort(key=lambda x: (int(x.get('rank', 9999999)), x.get('evidence', '')))
+    RANKED.sort(key=lambda x: (int(x.get("rank", 9999999)), x.get("evidence", "")))
     return RANKED

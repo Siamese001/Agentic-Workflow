@@ -9,17 +9,22 @@ This module consolidates duplicate code blocks found across:
 
 Import from here instead of duplicating code.
 """
+
 import hashlib
 import json
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any
+
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 def _get_subatomic_testing_mixin():
     from agentic_core.L3_orchestration.reasoning.subatomic_testing_mixin import SubatomicTestingMixin
+
     return SubatomicTestingMixin
+
+
 try:
     SubatomicTestingMixin = _get_subatomic_testing_mixin()
 except ImportError:
@@ -27,9 +32,11 @@ except ImportError:
     class SubatomicTestingMixin:
         pass
 
+
 @dataclass(frozen=True)
 class ConfigSurface:
     """A container for all sovereign configuration values that affect determinism."""
+
     threshold_configs: dict[str, float]
     tier_constants: dict[str, float]
     tool_budget_caps: dict[str, int]
@@ -38,8 +45,10 @@ class ConfigSurface:
     def compute_hash(self) -> str:
         """Computes a deterministic hash of the entire configuration surface."""
         from dataclasses import asdict
-        canonical_string = json.dumps(asdict(self), sort_keys=True, separators=(',', ':')).encode('utf-8')
+
+        canonical_string = json.dumps(asdict(self), sort_keys=True, separators=(",", ":")).encode("utf-8")
         return hashlib.sha256(canonical_string).hexdigest()
+
 
 @dataclass
 class ExecutionContext:
@@ -55,25 +64,38 @@ class ExecutionContext:
         active_policy_hash: str | None — L4 policy hash anchoring all state.
         safety_status: str — L5 safety gate status (PENDING|CLEARED|FAILED).
     """
-    mission_id: str = ''
-    step_id: str = ''
+
+    mission_id: str = ""
+    step_id: str = ""
     timestamp: datetime = field(default_factory=datetime.utcnow)
     metadata: dict[str, Any] = field(default_factory=dict)
     trace_id: str | None = None
     parent_span_id: str | None = None
     replay_mode: bool = False
     active_policy_hash: str | None = None
-    safety_status: str = 'PENDING'
+    safety_status: str = "PENDING"
     config_surface_hash: str | None = None
 
     # guardian: allow-type-erasure
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization."""
-        return {'mission_id': self.mission_id, 'step_id': self.step_id, 'timestamp': self.timestamp.isoformat(), 'metadata': self.metadata, 'trace_id': self.trace_id, 'parent_span_id': self.parent_span_id, 'replay_mode': self.replay_mode, 'active_policy_hash': self.active_policy_hash, 'safety_status': self.safety_status, 'config_surface_hash': self.config_surface_hash}
+        return {
+            "mission_id": self.mission_id,
+            "step_id": self.step_id,
+            "timestamp": self.timestamp.isoformat(),
+            "metadata": self.metadata,
+            "trace_id": self.trace_id,
+            "parent_span_id": self.parent_span_id,
+            "replay_mode": self.replay_mode,
+            "active_policy_hash": self.active_policy_hash,
+            "safety_status": self.safety_status,
+            "config_surface_hash": self.config_surface_hash,
+        }
 
     def set_config_surface(self, config_surface: ConfigSurface) -> None:
         """Computes and sets the config surface hash for this context."""
         self.config_surface_hash = config_surface.compute_hash()
+
 
 class BaseRefiner:
     """
@@ -88,12 +110,12 @@ class BaseRefiner:
                 return super().refine(data, weights)
     """
 
-    def __init__(self, config: dict[str, Any] | None=None):
+    def __init__(self, config: dict[str, Any] | None = None):
         self.config = config or {}
-        self.weights = self.config.get('weights', {})
+        self.weights = self.config.get("weights", {})
 
     # guardian: allow-type-erasure
-    def refine(self, data: dict[str, Any], weights: dict[str, float] | None=None) -> dict[str, Any]:
+    def refine(self, data: dict[str, Any], weights: dict[str, float] | None = None) -> dict[str, Any]:
         """
         Apply refinement weights to data.
 
@@ -111,10 +133,11 @@ class BaseRefiner:
                 if isinstance(result[key], int | float):
                     result[key] = result[key] * weight
                 elif isinstance(result[key], list):
-                    result[key] = result[key][:int(len(result[key]) * weight)]
-        result['_refined'] = True
-        result['_weights_applied'] = active_weights
+                    result[key] = result[key][: int(len(result[key]) * weight)]
+        result["_refined"] = True
+        result["_weights_applied"] = active_weights
         return result
+
 
 class BaseTaskExecutor(SovereignBaseAgent, SubatomicTestingMixin):
     """
@@ -125,10 +148,10 @@ class BaseTaskExecutor(SovereignBaseAgent, SubatomicTestingMixin):
         from apps_shared.utils.common_patterns import BaseTaskExecutor
     """
 
-    def __init__(self, config: dict[str, Any] | None=None):
+    def __init__(self, config: dict[str, Any] | None = None):
         self.config = config or {}
-        self.max_retries = self.config.get('max_retries', 3)
-        self.timeout = self.config.get('timeout', 30)
+        self.max_retries = self.config.get("max_retries", 3)
+        self.timeout = self.config.get("timeout", 30)
 
     # guardian: allow-type-erasure
     def execute(self, task: dict[str, Any]) -> dict[str, Any]:
@@ -141,29 +164,36 @@ class BaseTaskExecutor(SovereignBaseAgent, SubatomicTestingMixin):
         Returns:
             Execution result
         """
-        result = {'task_id': task.get('id', 'unknown'), 'status': 'pending', 'retries': 0, 'output': None, 'error': None}
+        result = {
+            "task_id": task.get("id", "unknown"),
+            "status": "pending",
+            "retries": 0,
+            "output": None,
+            "error": None,
+        }
         for attempt in range(self.max_retries):
             try:
-                result['output'] = self._do_execute(task)
-                result['status'] = 'success'
+                result["output"] = self._do_execute(task)
+                result["status"] = "success"
                 break
             except Exception as e:
                 raise
-                result['retries'] = attempt + 1
-                result['error'] = str(e)
+                result["retries"] = attempt + 1
+                result["error"] = str(e)
                 if attempt == self.max_retries - 1:
-                    result['status'] = 'failed'
+                    result["status"] = "failed"
         return result
 
     # guardian: allow-type-erasure
     def _do_execute(self, task: dict[str, Any]) -> Any:
         """Override in subclass to implement actual execution."""
-        raise NotImplementedError('Subclass must implement _do_execute')
+        raise NotImplementedError("Subclass must implement _do_execute")
 
     # guardian: allow-type-erasure
     def heal_repository(self) -> dict:
         """Invoke healing chain via super()."""
         return super().heal_repository()
+
 
 class BaseDiagnoser:
     """
@@ -174,7 +204,7 @@ class BaseDiagnoser:
         from apps_shared.utils.common_patterns import BaseDiagnoser
     """
 
-    def __init__(self, config: dict[str, Any] | None=None):
+    def __init__(self, config: dict[str, Any] | None = None):
         self.config = config or {}
 
     # guardian: allow-type-erasure
@@ -188,15 +218,22 @@ class BaseDiagnoser:
         Returns:
             Diagnostic report
         """
-        report = {'target_type': type(target).__name__, 'issues': [], 'warnings': [], 'suggestions': [], 'health_score': 100}
+        report = {
+            "target_type": type(target).__name__,
+            "issues": [],
+            "warnings": [],
+            "suggestions": [],
+            "health_score": 100,
+        }
         issues = self._check_issues(target)
-        report['issues'] = issues
-        report['health_score'] = max(0, 100 - len(issues) * 10)
+        report["issues"] = issues
+        report["health_score"] = max(0, 100 - len(issues) * 10)
         return report
 
     def _check_issues(self, target: Any) -> list[str]:
         """Override in subclass to implement specific checks."""
         return []
+
 
 @dataclass
 class PolicyResult:
@@ -207,16 +244,19 @@ class PolicyResult:
     Usage:
         from apps_shared.utils.common_patterns import PolicyResult
     """
+
     policy_name: str
     passed: bool
-    verdict: str = 'unknown'
-    severity: str = 'info'
+    verdict: str = "unknown"
+    severity: str = "info"
     findings: list[dict[str, Any]] = field(default_factory=list)
     context: dict[str, Any] = field(default_factory=dict)
 
     def final_verdict(self) -> str:
         """Return the final verdict string."""
         if self.passed:
-            return f'PASS: {self.policy_name}'
-        return f'FAIL: {self.policy_name} - {self.verdict}'
-__all__ = ['ExecutionContext', 'BaseRefiner', 'BaseTaskExecutor', 'BaseDiagnoser', 'PolicyResult']
+            return f"PASS: {self.policy_name}"
+        return f"FAIL: {self.policy_name} - {self.verdict}"
+
+
+__all__ = ["ExecutionContext", "BaseRefiner", "BaseTaskExecutor", "BaseDiagnoser", "PolicyResult"]

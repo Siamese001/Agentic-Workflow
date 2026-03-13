@@ -14,15 +14,19 @@ Usage:
                 execution_fn=lambda: self._do_work(task)
             )
 """
+
 from __future__ import annotations
+
 import logging
 from collections.abc import Callable
 from typing import Any
+
 from agentic_core.mixins.meta_learning_contract_mixin import BaseMetaLearner
 from agentic_core.utils.meta_learning_engine_util import MetaLearningEngine
 from agentic_core.utils.meta_learning_storage_util import MetaLearningStorage
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 Logger = logging.getLogger(__name__)
+
 
 class MetaLearningMixin(BaseMetaLearner):
     """Thin adapter connecting Agent self to MetaLearningEngine/Storage."""
@@ -59,7 +63,9 @@ class MetaLearningMixin(BaseMetaLearner):
     def reflect_on_execution(self, task_id: str, status: str, **kwargs) -> None:
         MetaLearningEngine.reflect_on_execution(self._namespace, task_id, status, **kwargs)
 
-    def record_agent_interaction(self, callee_agent: str, success: bool, error_type: str | None=None) -> None:
+    def record_agent_interaction(
+        self, callee_agent: str, success: bool, error_type: str | None = None
+    ) -> None:
         MetaLearningEngine.record_agent_interaction(self._namespace, callee_agent, success, error_type)
 
     def inherit_rules_from(self, parent_entity: str) -> None:

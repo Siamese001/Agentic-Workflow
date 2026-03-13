@@ -3,10 +3,13 @@
 This module provides instructional injection patterns without depending on apps_shared,
 maintaining agentic_core boundary integrity.
 """
+
 import logging
+
 from agentic_core.config.core.injection_layer_config import InjectionLayer, InstructionalPattern
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 logger = logging.getLogger(__name__)
+
 
 def get_instructional_injections() -> list[InstructionalPattern]:
     """Get instructional injection patterns from YAML (mandatory).
@@ -23,13 +26,15 @@ def get_instructional_injections() -> list[InstructionalPattern]:
         YamlValidationError: If YAML validation fails.
     """
     from agentic_core.config.core.yaml_injection_loader import get_yaml_loader
+
     yaml_loader = get_yaml_loader()
     all_patterns = yaml_loader.load_all_patterns()
     patterns = []
     for layer_patterns in all_patterns.values():
         patterns.extend(layer_patterns)
-    logger.info(f'Loaded {len(patterns)} instructional patterns from YAML')
+    logger.info(f"Loaded {len(patterns)} instructional patterns from YAML")
     return patterns
+
 
 def get_required_injections() -> list[InstructionalPattern]:
     """Get required instructional injection patterns.
@@ -43,9 +48,11 @@ def get_required_injections() -> list[InstructionalPattern]:
     all_patterns = get_instructional_injections()
     required_patterns = [pattern for pattern in all_patterns if pattern.required]
     if required_patterns:
-        logger.info(f'Identified {len(required_patterns)} explicitly required instructional patterns')
+        logger.info(f"Identified {len(required_patterns)} explicitly required instructional patterns")
         return required_patterns
     else:
         framing_patterns = [pattern for pattern in all_patterns if pattern.layer == InjectionLayer.FRAMING]
-        logger.info(f'No explicit required patterns found; using FRAMING layer fallback: {len(framing_patterns)} patterns')
+        logger.info(
+            f"No explicit required patterns found; using FRAMING layer fallback: {len(framing_patterns)} patterns"
+        )
         return framing_patterns

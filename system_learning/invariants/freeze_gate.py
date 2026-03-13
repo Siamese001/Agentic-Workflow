@@ -4,11 +4,13 @@ GAP-014: When L2 freeze is active (FREEZ), the meta-learning pipeline must not
 run.  This module provides the FreezeStateReader protocol and a concrete
 JsonFileBackedFreezeReader that reads from runtime_state.json.
 """
+
 from __future__ import annotations
+
 import json
 from pathlib import Path
 from typing import Protocol
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 class FreezeStateReader(Protocol):
     """Protocol: report whether the system is currently frozen."""
@@ -16,6 +18,7 @@ class FreezeStateReader(Protocol):
     def is_frozen(self) -> bool:
         """Return True if meta-learning should be suppressed due to freeze."""
         ...
+
 
 class JsonFileBackedFreezeReader:
     """Read freeze state from runtime_state.json.
@@ -36,25 +39,28 @@ class JsonFileBackedFreezeReader:
     def is_frozen(self) -> bool:
         """Return True if the runtime state file declares a freeze."""
         try:
-            text = self._path.read_text(encoding='utf-8', errors='replace')
+            text = self._path.read_text(encoding="utf-8", errors="replace")
             data: dict = json.loads(text)
         except (OSError, json.JSONDecodeError):
             return False
-        if data.get('freeze'):
+        if data.get("freeze"):
             return True
-        if str(data.get('status', '')).upper() == 'FREEZ':
+        if str(data.get("status", "")).upper() == "FREEZ":
             return True
-        flags = data.get('flags', {})
-        if isinstance(flags, dict) and flags.get('l2_freeze'):
+        flags = data.get("flags", {})
+        if isinstance(flags, dict) and flags.get("l2_freeze"):
             return True
         return False
+
 
 class StaticFreezeReader:
     """Deterministic in-memory freeze reader for tests."""
 
-    def __init__(self, frozen: bool=False) -> None:
+    def __init__(self, frozen: bool = False) -> None:
         self._frozen = frozen
 
     def is_frozen(self) -> bool:
         return self._frozen
-__all__ = ['FreezeStateReader', 'JsonFileBackedFreezeReader', 'StaticFreezeReader']
+
+
+__all__ = ["FreezeStateReader", "JsonFileBackedFreezeReader", "StaticFreezeReader"]

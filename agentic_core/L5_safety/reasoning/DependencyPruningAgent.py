@@ -1,16 +1,20 @@
 from __future__ import annotations
+
 from agentic_core.L2_execution.tools import write_gateway as _wg
-'Dependency Pruning Agent - Detects and removes unused Python dependencies.\n\nThis module provides a batch agent that detects and removes unused Python\ndependencies from requirements.txt using \'deptry\' for accurate AST-based\nunused detection.\n\nTypical usage:\n    agent = DependencyPruningAgent(project_root=Path("/path/to/project"), ctx=context)\n    result = await agent.execute()\n'
+
+"Dependency Pruning Agent - Detects and removes unused Python dependencies.\n\nThis module provides a batch agent that detects and removes unused Python\ndependencies from requirements.txt using 'deptry' for accurate AST-based\nunused detection.\n\nTypical usage:\n    agent = DependencyPruningAgent(project_root=Path(\"/path/to/project\"), ctx=context)\n    result = await agent.execute()\n"
 import json
 import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
+
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.L0_routing.config.path_constants import DEFAULT_TIMEOUT
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.security_util import safe_execute
 from agentic_core.utils.timeout_decorator_util import timeout
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 @dataclass
 class DependencyPruningAgent(SovereignBaseAgent):
@@ -40,7 +44,7 @@ class DependencyPruningAgent(SovereignBaseAgent):
         self.project_root: Path = Path(project_root)
         self.ctx: Any = ctx
         self.dry_run: bool = True
-        self.requirements_path: Path = self.project_root / 'requirements.txt'
+        self.requirements_path: Path = self.project_root / "requirements.txt"
 
     def _find_unused_deptry(self) -> list[str]:
         """Use deptry to find unused dependencies via AST analysis.
@@ -49,10 +53,17 @@ class DependencyPruningAgent(SovereignBaseAgent):
             List of unused package names, empty if deptry fails or not installed.
         """
         try:
-            result = safe_execute(['deptry', '.', '--json'], capture_output=True, text=True, cwd=self.project_root, check=False, timeout=DEFAULT_TIMEOUT)
+            result = safe_execute(
+                ["deptry", ".", "--json"],
+                capture_output=True,
+                text=True,
+                cwd=self.project_root,
+                check=False,
+                timeout=DEFAULT_TIMEOUT,
+            )
             if result.returncode == 0:
                 data: dict[str, Any] = json.loads(result.stdout)
-                return data.get('unused', [])
+                return data.get("unused", [])
         except FileNotFoundError:
             pass
         # guardian: allow-silent-swallow
@@ -73,33 +84,40 @@ class DependencyPruningAgent(SovereignBaseAgent):
                 - file: Name of the modified file
         """
         if not self.requirements_path.exists():
-            return {'removed': 0}
-        content: str = self.requirements_path.read_text(encoding='utf-8')
+            return {"removed": 0}
+        content: str = self.requirements_path.read_text(encoding="utf-8")
         lines: list[str] = content.splitlines()
         new_lines: list[str] = []
         removed: int = 0
         for line in lines:
             line_stripped = line.strip()
-            if not line_stripped or line_stripped.startswith('#'):
+            if not line_stripped or line_stripped.startswith("#"):
                 new_lines.append(line)
                 continue
-            match = re.match('^([a-zA-Z0-9_-]+)', line_stripped)
+            match = re.match("^([a-zA-Z0-9_-]+)", line_stripped)
             if match and match.group(1).lower() in [u.lower() for u in unused]:
                 removed += 1
                 if self.dry_run:
-                    new_lines.append(f'# [PRUNED UNUSED] {line}')
+                    new_lines.append(f"# [PRUNED UNUSED] {line}")
                 else:
                     continue
             else:
                 new_lines.append(line)
         if removed > 0 and (not self.dry_run):
-            _wg.write_text(self.requirements_path, '\n'.join(new_lines) + '\n', encoding='utf-8')
-        return {'removed': removed, 'file': 'requirements.txt'}
+            _wg.write_text(self.requirements_path, "\n".join(new_lines) + "\n", encoding="utf-8")
+        return {"removed": removed, "file": "requirements.txt"}
 
     @timeout(300)
     @standard_heal
     # guardian: allow-magic-config
-    def heal_repository(self, dry_run: bool=True, execute: bool=False, depth: int=0, max_depth: int=3, _call_path: set[str] | None=None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set[str] | None = None,
+    ) -> dict[str, int]:
         """Execute L5 safety healing operations.
 
         This is an operational agent - no repository healing required.
@@ -120,13 +138,13 @@ class DependencyPruningAgent(SovereignBaseAgent):
             _call_path = set()
         agent_name = self.__class__.__name__
         if agent_name in _call_path:
-            return {'errors': 1, 'cycle_detected': True}
+            return {"errors": 1, "cycle_detected": True}
         if depth > max_depth:
-            return {'errors': 1, 'depth_limited': True}
+            return {"errors": 1, "depth_limited": True}
         _call_path.add(agent_name)
         try:
-            print(f'[{agent_name}] L5 safety - operational only')
-            return {'skipped': 1}
+            print(f"[{agent_name}] L5 safety - operational only")
+            return {"skipped": 1}
         finally:
             _call_path.discard(agent_name)
 
@@ -140,16 +158,16 @@ class DependencyPruningAgent(SovereignBaseAgent):
                 - removed: Count of dependencies removed
                 - dry_run: Whether this was a dry run
         """
-        print('   [PRUNE] Scanning for unused dependencies...')
+        print("   [PRUNE] Scanning for unused dependencies...")
         unused: list[str] = self._find_unused_deptry()
         if not unused:
-            print('   [✓] No unused dependencies detected')
-            return {'unused_found': 0, 'removed': 0}
+            print("   [✓] No unused dependencies detected")
+            return {"unused_found": 0, "removed": 0}
         print(f"   [!] Found {len(unused)} potentially unused packages: {', '.join(unused[:5])}")
         if len(unused) > 5:
-            print(f'       ... and {len(unused) - 5} more')
+            print(f"       ... and {len(unused) - 5} more")
         result: dict[str, Any] = self._remove_from_requirements_txt(unused)
-        return {'unused_found': len(unused), 'removed': result['removed'], 'dry_run': self.dry_run}
+        return {"unused_found": len(unused), "removed": result["removed"], "dry_run": self.dry_run}
 
     # guardian: allow-type-erasure
     def heal(self, violation: dict) -> dict:
@@ -164,13 +182,18 @@ class DependencyPruningAgent(SovereignBaseAgent):
         Returns:
             Dictionary with healing results following standard_heal format.
         """
-        package = violation.get('package', '')
+        package = violation.get("package", "")
         if package:
             try:
                 self.dry_run = False
                 result = self._remove_from_requirements_txt([package])
-                return {'violations_fixed': result.get('removed', 0), 'violations_found': 1, 'errors': 0, 'skipped': 0}
+                return {
+                    "violations_fixed": result.get("removed", 0),
+                    "violations_found": 1,
+                    "errors": 0,
+                    "skipped": 0,
+                }
             # guardian: allow-silent-swallow
             except Exception:
-                return {'violations_fixed': 0, 'violations_found': 1, 'errors': 1, 'skipped': 0}
-        return {'violations_fixed': 0, 'violations_found': 1, 'errors': 0, 'skipped': 1}
+                return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
+        return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}

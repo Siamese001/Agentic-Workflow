@@ -11,7 +11,9 @@ Author: Cascade
 Date: February 2026
 Phase: 3 - Production Readiness
 """
+
 from __future__ import annotations
+
 import logging
 import time
 from collections.abc import Callable
@@ -19,26 +21,32 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 Logger = logging.getLogger(__name__)
+
 
 class HealthStatus(str, Enum):
     """Health status levels for the recursion system."""
-    HEALTHY = 'healthy'
-    DEGRADED = 'degraded'
-    UNHEALTHY = 'unhealthy'
-    CRITICAL = 'critical'
+
+    HEALTHY = "healthy"
+    DEGRADED = "degraded"
+    UNHEALTHY = "unhealthy"
+    CRITICAL = "critical"
+
 
 class AlertSeverity(str, Enum):
     """Alert severity levels."""
-    INFO = 'info'
-    WARNING = 'warning'
-    ERROR = 'error'
-    CRITICAL = 'critical'
+
+    INFO = "info"
+    WARNING = "warning"
+    ERROR = "error"
+    CRITICAL = "critical"
+
 
 @dataclass
 class Alert:
     """Alert data structure."""
+
     severity: AlertSeverity
     message: str
     timestamp: str
@@ -46,9 +54,11 @@ class Alert:
     metadata: dict[str, Any] = field(default_factory=dict)
     acknowledged: bool = False
 
+
 @dataclass
 class HealthCheck:
     """Health check result."""
+
     name: str
     status: HealthStatus
     message: str
@@ -56,9 +66,11 @@ class HealthCheck:
     timestamp: str
     metadata: dict[str, Any] = field(default_factory=dict)
 
+
 @dataclass
 class RecursionSnapshot:
     """Point-in-time snapshot of recursion state."""
+
     timestamp: str
     active_recursions: int
     total_spawns: int
@@ -67,6 +79,7 @@ class RecursionSnapshot:
     memory_usage_bytes: int
     cache_hit_rate: float
     health_status: HealthStatus
+
 
 class RecursionMonitor:
     """
@@ -81,7 +94,12 @@ class RecursionMonitor:
     """
 
     # guardian: allow-magic-config
-    def __init__(self, alert_callback: Callable[[Alert], None] | None=None, health_check_interval_sec: int=30, metrics_retention_hours: int=24):
+    def __init__(
+        self,
+        alert_callback: Callable[[Alert], None] | None = None,
+        health_check_interval_sec: int = 30,
+        metrics_retention_hours: int = 24,
+    ):
         """
         Initialize recursion monitor.
 
@@ -96,7 +114,13 @@ class RecursionMonitor:
         self._metrics_history: list[RecursionSnapshot] = []
         self._alerts: list[Alert] = []
         self._health_checks: list[HealthCheck] = []
-        self._thresholds = {'max_active_recursions': 100, 'min_success_rate': 0.8, 'max_avg_depth': 40, 'max_memory_mb': 500, 'min_cache_hit_rate': 0.5}
+        self._thresholds = {
+            "max_active_recursions": 100,
+            "min_success_rate": 0.8,
+            "max_avg_depth": 40,
+            "max_memory_mb": 500,
+            "min_cache_hit_rate": 0.5,
+        }
         self._circuit_open = False
         self._circuit_open_until: datetime | None = None
         self._consecutive_failures = 0
@@ -104,9 +128,11 @@ class RecursionMonitor:
         self._failure_threshold = 5
         self._baseline_response_time_ms: float | None = None
         self._response_times: list[float] = []
-        Logger.info('[RecursionMonitor] Initialized with production settings')
+        Logger.info("[RecursionMonitor] Initialized with production settings")
 
-    def record_spawn(self, success: bool, depth: int, duration_ms: float, memory_bytes: int, cache_hit: bool) -> None:
+    def record_spawn(
+        self, success: bool, depth: int, duration_ms: float, memory_bytes: int, cache_hit: bool
+    ) -> None:
         """
         Record a spawn operation for monitoring.
 
@@ -127,10 +153,24 @@ class RecursionMonitor:
         else:
             self._consecutive_failures = 0
         self._check_performance_degradation(duration_ms)
-        if depth > self._thresholds['max_avg_depth']:
-            self._create_alert(AlertSeverity.WARNING, f'High recursion depth detected: {depth}', 'depth_monitor', {'depth': depth, 'threshold': self._thresholds['max_avg_depth']})
+        if depth > self._thresholds["max_avg_depth"]:
+            self._create_alert(
+                AlertSeverity.WARNING,
+                f"High recursion depth detected: {depth}",
+                "depth_monitor",
+                {"depth": depth, "threshold": self._thresholds["max_avg_depth"]},
+            )
 
-    def record_snapshot(self, active_recursions: int, total_spawns: int, successful_spawns: int, depths: list[int], memory_bytes: int, cache_hits: int, cache_misses: int) -> RecursionSnapshot:
+    def record_snapshot(
+        self,
+        active_recursions: int,
+        total_spawns: int,
+        successful_spawns: int,
+        depths: list[int],
+        memory_bytes: int,
+        cache_hits: int,
+        cache_misses: int,
+    ) -> RecursionSnapshot:
         """
         Record a point-in-time snapshot of recursion state.
 
@@ -149,24 +189,42 @@ class RecursionMonitor:
         success_rate = successful_spawns / max(total_spawns, 1)
         avg_depth = sum(depths) / max(len(depths), 1) if depths else 0
         cache_hit_rate = cache_hits / max(cache_hits + cache_misses, 1)
-        health_status = self._calculate_health_status(active_recursions, success_rate, avg_depth, memory_bytes, cache_hit_rate)
-        snapshot = RecursionSnapshot(timestamp=datetime.now().isoformat(), active_recursions=active_recursions, total_spawns=total_spawns, success_rate=success_rate, avg_depth=avg_depth, memory_usage_bytes=memory_bytes, cache_hit_rate=cache_hit_rate, health_status=health_status)
+        health_status = self._calculate_health_status(
+            active_recursions, success_rate, avg_depth, memory_bytes, cache_hit_rate
+        )
+        snapshot = RecursionSnapshot(
+            timestamp=datetime.now().isoformat(),
+            active_recursions=active_recursions,
+            total_spawns=total_spawns,
+            success_rate=success_rate,
+            avg_depth=avg_depth,
+            memory_usage_bytes=memory_bytes,
+            cache_hit_rate=cache_hit_rate,
+            health_status=health_status,
+        )
         self._metrics_history.append(snapshot)
         self._cleanup_old_metrics()
         return snapshot
 
-    def _calculate_health_status(self, active_recursions: int, success_rate: float, avg_depth: float, memory_bytes: int, cache_hit_rate: float) -> HealthStatus:
+    def _calculate_health_status(
+        self,
+        active_recursions: int,
+        success_rate: float,
+        avg_depth: float,
+        memory_bytes: int,
+        cache_hit_rate: float,
+    ) -> HealthStatus:
         """Calculate overall health status based on metrics."""
         issues = 0
-        if active_recursions > self._thresholds['max_active_recursions']:
+        if active_recursions > self._thresholds["max_active_recursions"]:
             issues += 2
-        if success_rate < self._thresholds['min_success_rate']:
+        if success_rate < self._thresholds["min_success_rate"]:
             issues += 2
-        if avg_depth > self._thresholds['max_avg_depth']:
+        if avg_depth > self._thresholds["max_avg_depth"]:
             issues += 1
-        if memory_bytes > self._thresholds['max_memory_mb'] * 1024 * 1024:
+        if memory_bytes > self._thresholds["max_memory_mb"] * 1024 * 1024:
             issues += 2
-        if cache_hit_rate < self._thresholds['min_cache_hit_rate']:
+        if cache_hit_rate < self._thresholds["min_cache_hit_rate"]:
             issues += 1
         if self._circuit_open:
             return HealthStatus.CRITICAL
@@ -187,23 +245,65 @@ class RecursionMonitor:
         checks = []
         start = time.time()
         circuit_status = HealthStatus.CRITICAL if self._circuit_open else HealthStatus.HEALTHY
-        checks.append(HealthCheck(name='circuit_breaker', status=circuit_status, message='Circuit is open' if self._circuit_open else 'Circuit is closed', duration_ms=(time.time() - start) * 1000, timestamp=datetime.now().isoformat(), metadata={'consecutive_failures': self._consecutive_failures}))
+        checks.append(
+            HealthCheck(
+                name="circuit_breaker",
+                status=circuit_status,
+                message="Circuit is open" if self._circuit_open else "Circuit is closed",
+                duration_ms=(time.time() - start) * 1000,
+                timestamp=datetime.now().isoformat(),
+                metadata={"consecutive_failures": self._consecutive_failures},
+            )
+        )
         start = time.time()
         if self._metrics_history:
             latest = self._metrics_history[-1]
             mem_mb = latest.memory_usage_bytes / (1024 * 1024)
-            mem_status = HealthStatus.HEALTHY if mem_mb < self._thresholds['max_memory_mb'] else HealthStatus.DEGRADED
-            checks.append(HealthCheck(name='memory_usage', status=mem_status, message=f'Memory usage: {mem_mb:.1f}MB', duration_ms=(time.time() - start) * 1000, timestamp=datetime.now().isoformat(), metadata={'memory_mb': mem_mb}))
+            mem_status = (
+                HealthStatus.HEALTHY if mem_mb < self._thresholds["max_memory_mb"] else HealthStatus.DEGRADED
+            )
+            checks.append(
+                HealthCheck(
+                    name="memory_usage",
+                    status=mem_status,
+                    message=f"Memory usage: {mem_mb:.1f}MB",
+                    duration_ms=(time.time() - start) * 1000,
+                    timestamp=datetime.now().isoformat(),
+                    metadata={"memory_mb": mem_mb},
+                )
+            )
         start = time.time()
         if self._metrics_history:
             latest = self._metrics_history[-1]
-            success_status = HealthStatus.HEALTHY if latest.success_rate >= self._thresholds['min_success_rate'] else HealthStatus.DEGRADED
-            checks.append(HealthCheck(name='success_rate', status=success_status, message=f'Success rate: {latest.success_rate:.1%}', duration_ms=(time.time() - start) * 1000, timestamp=datetime.now().isoformat(), metadata={'success_rate': latest.success_rate}))
+            success_status = (
+                HealthStatus.HEALTHY
+                if latest.success_rate >= self._thresholds["min_success_rate"]
+                else HealthStatus.DEGRADED
+            )
+            checks.append(
+                HealthCheck(
+                    name="success_rate",
+                    status=success_status,
+                    message=f"Success rate: {latest.success_rate:.1%}",
+                    duration_ms=(time.time() - start) * 1000,
+                    timestamp=datetime.now().isoformat(),
+                    metadata={"success_rate": latest.success_rate},
+                )
+            )
         start = time.time()
         if self._response_times:
             avg_response = sum(self._response_times) / len(self._response_times)
             response_status = HealthStatus.HEALTHY if avg_response < 1000 else HealthStatus.DEGRADED
-            checks.append(HealthCheck(name='response_time', status=response_status, message=f'Avg response time: {avg_response:.1f}ms', duration_ms=(time.time() - start) * 1000, timestamp=datetime.now().isoformat(), metadata={'avg_response_ms': avg_response}))
+            checks.append(
+                HealthCheck(
+                    name="response_time",
+                    status=response_status,
+                    message=f"Avg response time: {avg_response:.1f}ms",
+                    duration_ms=(time.time() - start) * 1000,
+                    timestamp=datetime.now().isoformat(),
+                    metadata={"avg_response_ms": avg_response},
+                )
+            )
         self._health_checks = checks
         return checks
 
@@ -227,15 +327,20 @@ class RecursionMonitor:
         """Open the circuit breaker."""
         self._circuit_open = True
         self._circuit_open_until = datetime.now() + timedelta(seconds=60)
-        self._create_alert(AlertSeverity.CRITICAL, 'Circuit breaker opened due to consecutive failures', 'circuit_breaker', {'consecutive_failures': self._consecutive_failures})
-        Logger.critical('[CIRCUIT_BREAKER] Circuit opened due to failures')
+        self._create_alert(
+            AlertSeverity.CRITICAL,
+            "Circuit breaker opened due to consecutive failures",
+            "circuit_breaker",
+            {"consecutive_failures": self._consecutive_failures},
+        )
+        Logger.critical("[CIRCUIT_BREAKER] Circuit opened due to failures")
 
     def close_circuit(self) -> None:
         """Manually close the circuit breaker."""
         self._circuit_open = False
         self._circuit_open_until = None
         self._consecutive_failures = 0
-        Logger.info('[CIRCUIT_BREAKER] Circuit manually closed')
+        Logger.info("[CIRCUIT_BREAKER] Circuit manually closed")
 
     def is_circuit_open(self) -> bool:
         """Check if circuit breaker is open."""
@@ -243,7 +348,7 @@ class RecursionMonitor:
             if datetime.now() > self._circuit_open_until:
                 self._circuit_open = False
                 self._circuit_open_until = None
-                Logger.info('[CIRCUIT_BREAKER] Circuit auto-closed after timeout')
+                Logger.info("[CIRCUIT_BREAKER] Circuit auto-closed after timeout")
                 return False
         return self._circuit_open
 
@@ -254,22 +359,40 @@ class RecursionMonitor:
                 self._baseline_response_time_ms = sum(self._response_times[:100]) / 100
             return
         if duration_ms > self._baseline_response_time_ms * 3:
-            self._create_alert(AlertSeverity.WARNING, f'Performance degradation: {duration_ms:.1f}ms (baseline: {self._baseline_response_time_ms:.1f}ms)', 'performance_monitor', {'current_ms': duration_ms, 'baseline_ms': self._baseline_response_time_ms})
+            self._create_alert(
+                AlertSeverity.WARNING,
+                f"Performance degradation: {duration_ms:.1f}ms (baseline: {self._baseline_response_time_ms:.1f}ms)",
+                "performance_monitor",
+                {"current_ms": duration_ms, "baseline_ms": self._baseline_response_time_ms},
+            )
 
-    def _create_alert(self, severity: AlertSeverity, message: str, source: str, metadata: dict[str, Any] | None=None) -> Alert:
+    def _create_alert(
+        self, severity: AlertSeverity, message: str, source: str, metadata: dict[str, Any] | None = None
+    ) -> Alert:
         """Create and store an alert."""
-        alert = Alert(severity=severity, message=message, timestamp=datetime.now().isoformat(), source=source, metadata=metadata or {})
+        alert = Alert(
+            severity=severity,
+            message=message,
+            timestamp=datetime.now().isoformat(),
+            source=source,
+            metadata=metadata or {},
+        )
         self._alerts.append(alert)
         if self.alert_callback:
             try:
                 self.alert_callback(alert)
             # guardian: allow-silent-swallow
             except Exception as e:
-                Logger.error(f'Alert callback failed: {e}')
-        Logger.log(logging.CRITICAL if severity == AlertSeverity.CRITICAL else logging.WARNING, f'[ALERT] [{severity.value.upper()}] {message}')
+                Logger.error(f"Alert callback failed: {e}")
+        Logger.log(
+            logging.CRITICAL if severity == AlertSeverity.CRITICAL else logging.WARNING,
+            f"[ALERT] [{severity.value.upper()}] {message}",
+        )
         return alert
 
-    def get_alerts(self, severity: AlertSeverity | None=None, unacknowledged_only: bool=False) -> list[Alert]:
+    def get_alerts(
+        self, severity: AlertSeverity | None = None, unacknowledged_only: bool = False
+    ) -> list[Alert]:
         """Get alerts with optional filtering."""
         alerts = self._alerts
         if severity:
@@ -301,7 +424,7 @@ class RecursionMonitor:
         """Set a monitoring threshold."""
         if name in self._thresholds:
             self._thresholds[name] = value
-            Logger.info(f'[Monitor] Threshold {name} set to {value}')
+            Logger.info(f"[Monitor] Threshold {name} set to {value}")
             return True
         return False
 
@@ -312,7 +435,7 @@ class RecursionMonitor:
     def get_metrics_summary(self) -> dict[str, Any]:
         """Get summary of collected metrics."""
         if not self._metrics_history:
-            return {'total_snapshots': 0, 'health_status': HealthStatus.HEALTHY.value}
+            return {"total_snapshots": 0, "health_status": HealthStatus.HEALTHY.value}
         latest = self._metrics_history[-1]
         if len(self._metrics_history) >= 2:
             prev = self._metrics_history[-2]
@@ -321,7 +444,23 @@ class RecursionMonitor:
         else:
             success_trend = 0.0
             depth_trend = 0.0
-        return {'total_snapshots': len(self._metrics_history), 'latest_snapshot': {'timestamp': latest.timestamp, 'active_recursions': latest.active_recursions, 'total_spawns': latest.total_spawns, 'success_rate': latest.success_rate, 'avg_depth': latest.avg_depth, 'memory_mb': latest.memory_usage_bytes / (1024 * 1024), 'cache_hit_rate': latest.cache_hit_rate}, 'trends': {'success_rate_change': success_trend, 'depth_change': depth_trend}, 'health_status': latest.health_status.value, 'circuit_open': self._circuit_open, 'alert_count': len(self._alerts), 'unacknowledged_alerts': len([a for a in self._alerts if not a.acknowledged])}
+        return {
+            "total_snapshots": len(self._metrics_history),
+            "latest_snapshot": {
+                "timestamp": latest.timestamp,
+                "active_recursions": latest.active_recursions,
+                "total_spawns": latest.total_spawns,
+                "success_rate": latest.success_rate,
+                "avg_depth": latest.avg_depth,
+                "memory_mb": latest.memory_usage_bytes / (1024 * 1024),
+                "cache_hit_rate": latest.cache_hit_rate,
+            },
+            "trends": {"success_rate_change": success_trend, "depth_change": depth_trend},
+            "health_status": latest.health_status.value,
+            "circuit_open": self._circuit_open,
+            "alert_count": len(self._alerts),
+            "unacknowledged_alerts": len([a for a in self._alerts if not a.acknowledged]),
+        }
 
     def reset(self) -> None:
         """Reset all monitoring state."""
@@ -333,5 +472,7 @@ class RecursionMonitor:
         self._consecutive_failures = 0
         self._response_times.clear()
         self._baseline_response_time_ms = None
-        Logger.info('[RecursionMonitor] Reset complete')
-__all__ = ['RecursionMonitor', 'HealthStatus', 'AlertSeverity', 'Alert', 'HealthCheck', 'RecursionSnapshot']
+        Logger.info("[RecursionMonitor] Reset complete")
+
+
+__all__ = ["RecursionMonitor", "HealthStatus", "AlertSeverity", "Alert", "HealthCheck", "RecursionSnapshot"]

@@ -7,10 +7,12 @@ violation artifacts are frozen dataclasses with strict field validation.
 
 Artifact version: 1.0.0
 """
+
 from __future__ import annotations
+
 from dataclasses import dataclass
 from enum import Enum
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 @dataclass(frozen=True)
 class SSOTBinding:
@@ -19,15 +21,17 @@ class SSOTBinding:
     The binding links the manifest's node_id to the blueprint entry
     that authorizes it.
     """
+
     node_id: str
     blueprint_entry: str
     resolved: bool
 
     def __post_init__(self) -> None:
         if not self.node_id:
-            raise ValueError('SSOTBinding: node_id must be non-empty')
+            raise ValueError("SSOTBinding: node_id must be non-empty")
         if not self.blueprint_entry:
-            raise ValueError('SSOTBinding: blueprint_entry must be non-empty')
+            raise ValueError("SSOTBinding: blueprint_entry must be non-empty")
+
 
 @dataclass(frozen=True)
 class ContextRetrievalRequest:
@@ -36,28 +40,34 @@ class ContextRetrievalRequest:
     Required fields: trace_id, query_hash, semantic_clock_tick.
     Constraint: No direct writes from L0.
     """
+
     trace_id: str
     query_hash: str
     semantic_clock_tick: int
-    source_layer: str = 'L0'
-    target_layer: str = 'L4'
+    source_layer: str = "L0"
+    target_layer: str = "L4"
     read_only: bool = True
 
     def __post_init__(self) -> None:
         if not self.trace_id:
-            raise ValueError('ContextRetrievalRequest: trace_id must be non-empty')
+            raise ValueError("ContextRetrievalRequest: trace_id must be non-empty")
         if not self.query_hash:
-            raise ValueError('ContextRetrievalRequest: query_hash must be non-empty')
+            raise ValueError("ContextRetrievalRequest: query_hash must be non-empty")
         if self.semantic_clock_tick < 0:
-            raise ValueError(f'ContextRetrievalRequest: semantic_clock_tick must be >= 0, got {self.semantic_clock_tick}')
+            raise ValueError(
+                f"ContextRetrievalRequest: semantic_clock_tick must be >= 0, got {self.semantic_clock_tick}"
+            )
         if not self.read_only:
-            raise ValueError('ContextRetrievalRequest: read_only must be True (L0→L4 is advisory-only)')
+            raise ValueError("ContextRetrievalRequest: read_only must be True (L0→L4 is advisory-only)")
+
 
 class SchemaValidationStatus(Enum):
     """Status of a boundary schema validation."""
-    VALID = 'valid'
-    INVALID = 'invalid'
-    MISSING = 'missing'
+
+    VALID = "valid"
+    INVALID = "invalid"
+    MISSING = "missing"
+
 
 @dataclass(frozen=True)
 class BoundarySchemaDescriptor:
@@ -66,6 +76,7 @@ class BoundarySchemaDescriptor:
     Every cross-layer call must declare its schema version and the
     source/target layers. Validation status is captured.
     """
+
     schema_id: str
     schema_version: str
     source_layer: str
@@ -74,26 +85,32 @@ class BoundarySchemaDescriptor:
 
     def __post_init__(self) -> None:
         if not self.schema_id:
-            raise ValueError('BoundarySchemaDescriptor: schema_id must be non-empty')
+            raise ValueError("BoundarySchemaDescriptor: schema_id must be non-empty")
         if not self.schema_version:
-            raise ValueError('BoundarySchemaDescriptor: schema_version must be non-empty')
+            raise ValueError("BoundarySchemaDescriptor: schema_version must be non-empty")
         if not self.source_layer:
-            raise ValueError('BoundarySchemaDescriptor: source_layer must be non-empty')
+            raise ValueError("BoundarySchemaDescriptor: source_layer must be non-empty")
         if not self.target_layer:
-            raise ValueError('BoundarySchemaDescriptor: target_layer must be non-empty')
+            raise ValueError("BoundarySchemaDescriptor: target_layer must be non-empty")
         if not isinstance(self.validation_status, SchemaValidationStatus):
-            raise TypeError(f'BoundarySchemaDescriptor: validation_status must be SchemaValidationStatus, got {type(self.validation_status).__name__}')
+            raise TypeError(
+                f"BoundarySchemaDescriptor: validation_status must be SchemaValidationStatus, got {type(self.validation_status).__name__}"
+            )
+
 
 class InvariantSeverity(Enum):
     """Severity of an invariant violation."""
-    CRITICAL = 'critical'
-    HIGH = 'high'
-    MEDIUM = 'medium'
-    INFO = 'info'
+
+    CRITICAL = "critical"
+    HIGH = "high"
+    MEDIUM = "medium"
+    INFO = "info"
+
 
 @dataclass(frozen=True)
 class InvariantViolation:
     """A single meta-invariant violation with evidence."""
+
     invariant_id: str
     severity: InvariantSeverity
     evidence_paths: tuple[str, ...]
@@ -101,17 +118,21 @@ class InvariantViolation:
 
     def __post_init__(self) -> None:
         if not self.invariant_id:
-            raise ValueError('InvariantViolation: invariant_id must be non-empty')
+            raise ValueError("InvariantViolation: invariant_id must be non-empty")
         if not isinstance(self.severity, InvariantSeverity):
-            raise TypeError(f'InvariantViolation: severity must be InvariantSeverity, got {type(self.severity).__name__}')
+            raise TypeError(
+                f"InvariantViolation: severity must be InvariantSeverity, got {type(self.severity).__name__}"
+            )
         if not isinstance(self.evidence_paths, tuple):
-            raise TypeError('InvariantViolation: evidence_paths must be a tuple')
+            raise TypeError("InvariantViolation: evidence_paths must be a tuple")
         if not self.details:
-            raise ValueError('InvariantViolation: details must be non-empty')
+            raise ValueError("InvariantViolation: details must be non-empty")
+
 
 @dataclass(frozen=True)
 class InvariantCheck:
     """A single invariant check result."""
+
     check_id: str
     description: str
     passed: bool
@@ -119,11 +140,12 @@ class InvariantCheck:
 
     def __post_init__(self) -> None:
         if not self.check_id:
-            raise ValueError('InvariantCheck: check_id must be non-empty')
+            raise ValueError("InvariantCheck: check_id must be non-empty")
         if not self.description:
-            raise ValueError('InvariantCheck: description must be non-empty')
+            raise ValueError("InvariantCheck: description must be non-empty")
         if not self.evidence:
-            raise ValueError('InvariantCheck: evidence must be non-empty')
+            raise ValueError("InvariantCheck: evidence must be non-empty")
+
 
 @dataclass(frozen=True)
 class MetaInvariantReport:
@@ -131,6 +153,7 @@ class MetaInvariantReport:
 
     Fields: trace_id, run_id, semantic_clock_tick, checks, pass_fail, violations.
     """
+
     trace_id: str
     run_id: str
     semantic_clock_tick: int
@@ -140,17 +163,20 @@ class MetaInvariantReport:
 
     def __post_init__(self) -> None:
         if not self.trace_id:
-            raise ValueError('MetaInvariantReport: trace_id must be non-empty')
+            raise ValueError("MetaInvariantReport: trace_id must be non-empty")
         if not self.run_id:
-            raise ValueError('MetaInvariantReport: run_id must be non-empty')
+            raise ValueError("MetaInvariantReport: run_id must be non-empty")
         if self.semantic_clock_tick < 0:
-            raise ValueError(f'MetaInvariantReport: semantic_clock_tick must be >= 0, got {self.semantic_clock_tick}')
+            raise ValueError(
+                f"MetaInvariantReport: semantic_clock_tick must be >= 0, got {self.semantic_clock_tick}"
+            )
         if not isinstance(self.checks, tuple):
-            raise TypeError('MetaInvariantReport: checks must be a tuple')
+            raise TypeError("MetaInvariantReport: checks must be a tuple")
         if not isinstance(self.violations, tuple):
-            raise TypeError('MetaInvariantReport: violations must be a tuple')
+            raise TypeError("MetaInvariantReport: violations must be a tuple")
         if self.violations and self.pass_fail:
-            raise ValueError('MetaInvariantReport: pass_fail cannot be True when violations are present')
+            raise ValueError("MetaInvariantReport: pass_fail cannot be True when violations are present")
+
 
 @dataclass(frozen=True)
 class SideEffectRegistry:
@@ -159,6 +185,7 @@ class SideEffectRegistry:
     Tracks all resources touched (read/written) and APIs called,
     enabling deterministic replay and audit.
     """
+
     trace_id: str
     wave_id: str
     paths_read: tuple[str, ...]
@@ -167,16 +194,19 @@ class SideEffectRegistry:
 
     def __post_init__(self) -> None:
         if not self.trace_id:
-            raise ValueError('SideEffectRegistry: trace_id must be non-empty')
+            raise ValueError("SideEffectRegistry: trace_id must be non-empty")
         if not self.wave_id:
-            raise ValueError('SideEffectRegistry: wave_id must be non-empty')
+            raise ValueError("SideEffectRegistry: wave_id must be non-empty")
         if not isinstance(self.paths_read, tuple):
-            raise TypeError('SideEffectRegistry: paths_read must be a tuple')
+            raise TypeError("SideEffectRegistry: paths_read must be a tuple")
         if not isinstance(self.paths_written, tuple):
-            raise TypeError('SideEffectRegistry: paths_written must be a tuple')
+            raise TypeError("SideEffectRegistry: paths_written must be a tuple")
         if not isinstance(self.apis_called, tuple):
-            raise TypeError('SideEffectRegistry: apis_called must be a tuple')
-V15_DISCOVERY_SCHEMA_VERSION: str = '1.0.0'
+            raise TypeError("SideEffectRegistry: apis_called must be a tuple")
+
+
+V15_DISCOVERY_SCHEMA_VERSION: str = "1.0.0"
+
 
 @dataclass(frozen=True)
 class V15DiscoverySchema:
@@ -185,6 +215,7 @@ class V15DiscoverySchema:
     ALL fields are required. Missing field = HARD FAIL in guardian tests.
     MRO scanners MUST consume ONLY this schema (no live reflection fallback).
     """
+
     identity: str
     layer: str
     status: str
@@ -198,24 +229,41 @@ class V15DiscoverySchema:
 
     def __post_init__(self) -> None:
         if not self.identity:
-            raise ValueError('V15DiscoverySchema: identity must be non-empty')
+            raise ValueError("V15DiscoverySchema: identity must be non-empty")
         if not self.layer:
-            raise ValueError('V15DiscoverySchema: layer must be non-empty')
+            raise ValueError("V15DiscoverySchema: layer must be non-empty")
         if not self.status:
-            raise ValueError('V15DiscoverySchema: status must be non-empty')
+            raise ValueError("V15DiscoverySchema: status must be non-empty")
         if not self.file_path:
-            raise ValueError('V15DiscoverySchema: file_path must be non-empty')
+            raise ValueError("V15DiscoverySchema: file_path must be non-empty")
         if not self.class_name:
-            raise ValueError('V15DiscoverySchema: class_name must be non-empty')
+            raise ValueError("V15DiscoverySchema: class_name must be non-empty")
         if not isinstance(self.mro_chain, tuple):
-            raise TypeError('V15DiscoverySchema: mro_chain must be a tuple')
+            raise TypeError("V15DiscoverySchema: mro_chain must be a tuple")
         if not isinstance(self.mixins, tuple):
-            raise TypeError('V15DiscoverySchema: mixins must be a tuple')
+            raise TypeError("V15DiscoverySchema: mixins must be a tuple")
         if not isinstance(self.detected_methods, tuple):
-            raise TypeError('V15DiscoverySchema: detected_methods must be a tuple')
+            raise TypeError("V15DiscoverySchema: detected_methods must be a tuple")
         if not self.integrity_hash:
-            raise ValueError('V15DiscoverySchema: integrity_hash must be non-empty')
+            raise ValueError("V15DiscoverySchema: integrity_hash must be non-empty")
         if not self.mro_signature:
-            raise ValueError('V15DiscoverySchema: mro_signature must be non-empty')
-V15_DISCOVERY_REQUIRED_FIELDS: frozenset[str] = frozenset((f.name for f in __import__('dataclasses').fields(V15DiscoverySchema)))
-__all__ = ['BoundarySchemaDescriptor', 'ContextRetrievalRequest', 'InvariantCheck', 'InvariantSeverity', 'InvariantViolation', 'MetaInvariantReport', 'SSOTBinding', 'SchemaValidationStatus', 'SideEffectRegistry', 'V15DiscoverySchema', 'V15_DISCOVERY_REQUIRED_FIELDS', 'V15_DISCOVERY_SCHEMA_VERSION']
+            raise ValueError("V15DiscoverySchema: mro_signature must be non-empty")
+
+
+V15_DISCOVERY_REQUIRED_FIELDS: frozenset[str] = frozenset(
+    f.name for f in __import__("dataclasses").fields(V15DiscoverySchema)
+)
+__all__ = [
+    "BoundarySchemaDescriptor",
+    "ContextRetrievalRequest",
+    "InvariantCheck",
+    "InvariantSeverity",
+    "InvariantViolation",
+    "MetaInvariantReport",
+    "SSOTBinding",
+    "SchemaValidationStatus",
+    "SideEffectRegistry",
+    "V15DiscoverySchema",
+    "V15_DISCOVERY_REQUIRED_FIELDS",
+    "V15_DISCOVERY_SCHEMA_VERSION",
+]

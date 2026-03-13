@@ -2,8 +2,9 @@ import json
 import logging
 import sys
 from datetime import datetime, timezone
+
 from agentic_core.config.settings_config import get_settings
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 class JSONFormatter(logging.Formatter):
     """
@@ -11,10 +12,20 @@ class JSONFormatter(logging.Formatter):
     """
 
     def format(self, record: logging.LogRecord) -> str:
-        log_obj = {'timestamp': datetime.now(timezone.utc).isoformat(), 'level': record.levelname, 'message': record.getMessage(), 'module': record.module, 'func': record.funcName, 'line': record.lineno, 'app': get_settings().APP_NAME, 'env': get_settings().ENVIRONMENT}
+        log_obj = {
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "level": record.levelname,
+            "message": record.getMessage(),
+            "module": record.module,
+            "func": record.funcName,
+            "line": record.lineno,
+            "app": get_settings().APP_NAME,
+            "env": get_settings().ENVIRONMENT,
+        }
         if record.exc_info:
-            log_obj['exception'] = self.formatException(record.exc_info)
+            log_obj["exception"] = self.formatException(record.exc_info)
         return json.dumps(log_obj)
+
 
 def setup_logging():
     """
@@ -23,10 +34,10 @@ def setup_logging():
     """
     settings = get_settings()
     handler = logging.StreamHandler(sys.stdout)
-    if settings.ENVIRONMENT == 'prod':
+    if settings.ENVIRONMENT == "prod":
         handler.setFormatter(JSONFormatter())
     else:
-        handler.setFormatter(logging.Formatter('[%(asctime)s] %(levelname)s in %(module)s: %(message)s'))
+        handler.setFormatter(logging.Formatter("[%(asctime)s] %(levelname)s in %(module)s: %(message)s"))
     logger = logging.getLogger()
     logger.setLevel(settings.LOG_LEVEL)
     if not logger.handlers:

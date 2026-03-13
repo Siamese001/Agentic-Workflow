@@ -9,15 +9,19 @@ PHASE 4 META-LEARNING (Feb 2026):
 - Convergence pattern optimization via learned patterns
 - Healing depth tracking to prevent infinite loops
 """
+
 from __future__ import annotations
+
 import logging
 import time
 from dataclasses import dataclass
 from typing import Any
+
 from apps_rg.reasoning.healing_cycle import HealingCycle
 from apps_shared.reasoning.BaseHealingOrchestrator import BaseHealingOrchestrator
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 Logger = logging.getLogger(__name__)
+
 
 @dataclass
 class RgHealingOrchestrator(BaseHealingOrchestrator):
@@ -35,16 +39,18 @@ class RgHealingOrchestrator(BaseHealingOrchestrator):
     Inherits ml_heal_with_learning_enhanced(), orchestrate_healing_cycle(),
     and _apply_healing_strategy() from BaseHealingOrchestrator (2026-03-11, P3-B).
     """
+
     max_cycles: int = 5
     enable_reflection: bool = True
 
     def __post_init__(self) -> None:
         """Initialize healing orchestrator."""
         super().__post_init__()
-        if not hasattr(self, 'ctx') or self.ctx is None:
+        if not hasattr(self, "ctx") or self.ctx is None:
             from .context import ResumeEngineContext
+
             self.ctx = ResumeEngineContext()
-        Logger.debug(f'[{self.__class__.__name__}] Meta-Learning healing orchestrator initialized')
+        Logger.debug(f"[{self.__class__.__name__}] Meta-Learning healing orchestrator initialized")
 
     async def run(self) -> dict[str, Any]:
         """
@@ -57,48 +63,54 @@ class RgHealingOrchestrator(BaseHealingOrchestrator):
             HealingResult with complete execution details
         """
         start_time: float = time.time()
-        print('\n' + '=' * 60)
-        print('🧬 SELF-HEALING ORCHESTRATOR STARTED')
-        print('=' * 60)
+        print("\n" + "=" * 60)
+        print("🧬 SELF-HEALING ORCHESTRATOR STARTED")
+        print("=" * 60)
         convergence_cycle: int | None = None
         for cycle_num in range(1, self.max_cycles + 1):
             self.ctx.signal_healing_cycle(cycle_num)
             print(f"\n{'=' * 40}")
-            print(f'🔄 HEALING CYCLE {cycle_num}/{self.max_cycles}')
+            print(f"🔄 HEALING CYCLE {cycle_num}/{self.max_cycles}")
             print(f"{'=' * 40}")
             self.ctx.modified_sections.clear()
             self.ctx.impact_zone.clear()
-            strategy = 'default'
-            print(f'   📋 Strategy: {strategy}')
+            strategy = "default"
+            print(f"   📋 Strategy: {strategy}")
             cycle = HealingCycle(self.ctx, cycle_num)
             result = await cycle.execute(strategy)
             self.cycle_results.append(result)
-            print(f"   ✅ Passed: {len(result.get('passed_agents', []))} | ❌ Failed: {len(result.get('failed_agents', []))}")
-            if result.get('rollback_triggered', False):
-                print('   ⏪ Rollback triggered')
-            if result.get('converged', False):
+            print(
+                f"   ✅ Passed: {len(result.get('passed_agents', []))} | ❌ Failed: {len(result.get('failed_agents', []))}"
+            )
+            if result.get("rollback_triggered", False):
+                print("   ⏪ Rollback triggered")
+            if result.get("converged", False):
                 convergence_cycle = cycle_num
-                print(f'\n✅ CONVERGED at cycle {cycle_num}')
+                print(f"\n✅ CONVERGED at cycle {cycle_num}")
                 break
-            if hasattr(self.ctx, 'budget') and (not self.ctx.budget.check_budget()):
-                print(f'\n💸 Budget exhausted at cycle {cycle_num}')
+            if hasattr(self.ctx, "budget") and (not self.ctx.budget.check_budget()):
+                print(f"\n💸 Budget exhausted at cycle {cycle_num}")
                 break
             if self.ctx.signals:
-                print(f'   📡 Remaining signals: {list(self.ctx.signals)}')
+                print(f"   📡 Remaining signals: {list(self.ctx.signals)}")
         if self.enable_reflection:
             pass
         end_time: float = time.time()
         total_duration_ms: float = (end_time - start_time) * 1000
         success: bool = convergence_cycle is not None
-        print('\n' + '=' * 60)
+        print("\n" + "=" * 60)
         print(f"{('✅ HEALING SUCCESS' if success else '⚠️ HEALING INCOMPLETE')}")
-        print(f'   Cycles: {len(self.cycle_results)}/{self.max_cycles}')
-        print(f'   Duration: {total_duration_ms:.0f}ms')
-        print(f'   Budget: ${self.ctx.budget.current_cost:.4f}')
-        print('=' * 60)
-        return {'success': success, 'total_cycles': len(self.cycle_results), 'final_state': self.ctx.buffer.to_dict() if hasattr(self.ctx, 'buffer') else {}}
+        print(f"   Cycles: {len(self.cycle_results)}/{self.max_cycles}")
+        print(f"   Duration: {total_duration_ms:.0f}ms")
+        print(f"   Budget: ${self.ctx.budget.current_cost:.4f}")
+        print("=" * 60)
+        return {
+            "success": success,
+            "total_cycles": len(self.cycle_results),
+            "final_state": self.ctx.buffer.to_dict() if hasattr(self.ctx, "buffer") else {},
+        }
 
-    def heal_repository(self, dry_run: bool=False, execute: bool=False, **kwargs: Any) -> dict[str, Any]:
+    def heal_repository(self, dry_run: bool = False, execute: bool = False, **kwargs: Any) -> dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 
@@ -114,11 +126,21 @@ class RgHealingOrchestrator(BaseHealingOrchestrator):
 
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """Heal violations detected by RgHealingOrchestrator."""
-        violation_type = violation.get('type', 'unknown')
+        violation_type = violation.get("type", "unknown")
         try:
-            return {'status': 'skipped', 'details': f'RgHealingOrchestrator heal() not yet implemented for {violation_type}', 'artifacts': [], 'errors': []}
+            return {
+                "status": "skipped",
+                "details": f"RgHealingOrchestrator heal() not yet implemented for {violation_type}",
+                "artifacts": [],
+                "errors": [],
+            }
         except Exception as e:
-            return {'status': 'failed', 'details': f'RgHealingOrchestrator heal() failed: {str(e)}', 'artifacts': [], 'errors': [str(e)]}
+            return {
+                "status": "failed",
+                "details": f"RgHealingOrchestrator heal() failed: {str(e)}",
+                "artifacts": [],
+                "errors": [str(e)],
+            }
 
     def ml_determine_strategy(self, cycle_num: int, signals: set[str]) -> str:
         """
@@ -131,15 +153,17 @@ class RgHealingOrchestrator(BaseHealingOrchestrator):
         Returns:
             Strategy name
         """
-        signal_key = ':'.join(sorted(signals)) if signals else 'no_signals'
-        cache_key = f'strategy:{cycle_num}:{signal_key}'
+        signal_key = ":".join(sorted(signals)) if signals else "no_signals"
+        cache_key = f"strategy:{cycle_num}:{signal_key}"
         cached_strategy = self.ml_cache_get(cache_key)
         if cached_strategy:
-            Logger.info(f'[{self.__class__.__name__}] Using cached strategy for cycle {cycle_num}')
-            return cached_strategy.get('strategy', 'default')
-        return 'default'
+            Logger.info(f"[{self.__class__.__name__}] Using cached strategy for cycle {cycle_num}")
+            return cached_strategy.get("strategy", "default")
+        return "default"
 
-    def ml_record_strategy_success(self, cycle_num: int, signals: set[str], strategy: str, result: dict[str, Any]) -> bool:
+    def ml_record_strategy_success(
+        self, cycle_num: int, signals: set[str], strategy: str, result: dict[str, Any]
+    ) -> bool:
         """
         Record a successful strategy for future recall.
 
@@ -152,10 +176,12 @@ class RgHealingOrchestrator(BaseHealingOrchestrator):
         Returns:
             True if recorded successfully
         """
-        if result.get('converged', False) or result.get('status') == 'success':
-            signal_key = ':'.join(sorted(signals)) if signals else 'no_signals'
-            cache_key = f'strategy:{cycle_num}:{signal_key}'
-            return self.ml_cache_set(cache_key, {'strategy': strategy, 'converged': result.get('converged', False)})
+        if result.get("converged", False) or result.get("status") == "success":
+            signal_key = ":".join(sorted(signals)) if signals else "no_signals"
+            cache_key = f"strategy:{cycle_num}:{signal_key}"
+            return self.ml_cache_set(
+                cache_key, {"strategy": strategy, "converged": result.get("converged", False)}
+            )
         return False
 
     def ml_cache_convergence_pattern(self, pattern_id: str, pattern_data: dict[str, Any]) -> bool:
@@ -169,7 +195,7 @@ class RgHealingOrchestrator(BaseHealingOrchestrator):
         Returns:
             True if cached successfully
         """
-        cache_key = f'convergence_pattern:{pattern_id}'
+        cache_key = f"convergence_pattern:{pattern_id}"
         return self.ml_cache_set(cache_key, pattern_data)
 
     def ml_recall_convergence_pattern(self, pattern_id: str) -> dict[str, Any] | None:
@@ -182,7 +208,7 @@ class RgHealingOrchestrator(BaseHealingOrchestrator):
         Returns:
             Cached pattern data or None
         """
-        cache_key = f'convergence_pattern:{pattern_id}'
+        cache_key = f"convergence_pattern:{pattern_id}"
         return self.ml_cache_get(cache_key)
 
     def ml_heal_with_learning(self, violation: dict[str, Any]) -> dict[str, Any]:

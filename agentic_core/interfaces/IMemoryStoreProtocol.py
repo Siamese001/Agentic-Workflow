@@ -8,9 +8,11 @@ This protocol defines the contract for any component that stores and retrieves
 vector embeddings or memory items. Implementations include InMemoryVectorStore,
 PineconeVectorStore, etc.
 """
+
 from __future__ import annotations
+
 from typing import Any, Protocol, runtime_checkable
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 @runtime_checkable
 class IMemoryStoreProtocol(Protocol):

@@ -24,13 +24,12 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Final
 
+from agentic_core.config.core.registry_config import SOVEREIGN_REGISTRY
 from agentic_core.L5_safety.config.structure_blueprint import (
     AGENTIC_CORE_DIR,
     L4_APPROVED_FOLDERS,
-    PROJECT_ROOT_WHITELIST,
     VARIABLE_DEPTH_SUBFOLDERS,
 )
-from agentic_core.config.core.registry_config import SOVEREIGN_REGISTRY
 from agentic_core.L5_safety.enforcement.registry_verification_enforcer import (
     AgentInfo,
     RegistryVerifier,

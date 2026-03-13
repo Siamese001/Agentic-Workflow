@@ -5,8 +5,9 @@ No component may silently degrade when a required infrastructure dependency
 InfrastructureDependencyError instead of falling back to a local or
 in-process substitute.
 """
+
 from __future__ import annotations
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 class InfrastructureDependencyError(RuntimeError):
     """Raised when a mandatory infrastructure dependency is unavailable.

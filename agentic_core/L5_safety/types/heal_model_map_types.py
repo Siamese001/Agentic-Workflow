@@ -4,11 +4,14 @@ Tier-to-model ID mapping for heal policy escalation.
 Pure mapping function (stdlib-only, no environment access).
 Phase 6 Wave 6.2.
 """
+
 from __future__ import annotations
+
 from agentic_core.L5_safety.types.heal_policy_types import ReasoningTier
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
-LOW_MODEL_ID = 'local_low'
-HIGH_MODEL_ID = 'local_high'
+
+LOW_MODEL_ID = "local_low"
+HIGH_MODEL_ID = "local_high"
+
 
 def map_tier_to_model_id(tier: ReasoningTier) -> str:
     """Map a reasoning tier to a model identifier.

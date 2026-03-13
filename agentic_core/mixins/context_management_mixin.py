@@ -15,7 +15,9 @@ SSOT PRINCIPLE:
     All agents requiring context management should inherit from this mixin.
     This ensures consistent context handling across the agent ecosystem.
 """
+
 from __future__ import annotations
+
 import hashlib
 import logging
 import threading
@@ -23,33 +25,39 @@ import time
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 Logger = logging.getLogger(__name__)
+
 
 class ContextPriority(Enum):
     """Priority levels for context items."""
+
     CRITICAL = 1
     HIGH = 2
     MEDIUM = 3
     LOW = 4
 
+
 @dataclass
 class ContextItem:
     """A single item in the context window."""
+
     content: str
     priority: ContextPriority
     token_count: int
     timestamp: float = field(default_factory=time.time)
-    item_id: str = ''
+    item_id: str = ""
     metadata: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         if not self.item_id:
-            self.item_id = hashlib.sha256(f'{self.content[:100]}{self.timestamp}'.encode()).hexdigest()[:12]
+            self.item_id = hashlib.sha256(f"{self.content[:100]}{self.timestamp}".encode()).hexdigest()[:12]
+
 
 @dataclass
 class ContextConfig:
     """Configuration for context management."""
+
     max_context_tokens: int = 128000
     target_context_tokens: int = 100000
     summarization_threshold_pct: float = 0.75
@@ -57,13 +65,15 @@ class ContextConfig:
     min_context_tokens: int = 4000
     summary_target_tokens: int = 2000
 
+
 class ContextOverflowError(Exception):
     """Raised when context cannot be reduced below limits."""
 
     def __init__(self, current_tokens: int, max_tokens: int):
         self.current_tokens = current_tokens
         self.max_tokens = max_tokens
-        super().__init__(f'Context overflow: {current_tokens} tokens exceeds maximum {max_tokens}')
+        super().__init__(f"Context overflow: {current_tokens} tokens exceeds maximum {max_tokens}")
+
 
 class ContextManagementMixin:
     """
@@ -107,9 +117,17 @@ class ContextManagementMixin:
         self._last_summarization_time: float = 0.0
         self._context_lock = threading.RLock()
         self._context_management_initialized = True
-        Logger.debug(f'[CONTEXT] {self.__class__.__name__} context management initialized')
+        Logger.debug(f"[CONTEXT] {self.__class__.__name__} context management initialized")
 
-    def configure_context(self, max_context_tokens: int | None=None, target_context_tokens: int | None=None, summarization_threshold_pct: float | None=None, prune_threshold_pct: float | None=None, min_context_tokens: int | None=None, summary_target_tokens: int | None=None) -> None:
+    def configure_context(
+        self,
+        max_context_tokens: int | None = None,
+        target_context_tokens: int | None = None,
+        summarization_threshold_pct: float | None = None,
+        prune_threshold_pct: float | None = None,
+        min_context_tokens: int | None = None,
+        summary_target_tokens: int | None = None,
+    ) -> None:
         """
         Configure context management limits.
 
@@ -134,7 +152,7 @@ class ContextManagementMixin:
                 self._context_config.min_context_tokens = min_context_tokens
             if summary_target_tokens is not None:
                 self._context_config.summary_target_tokens = summary_target_tokens
-        Logger.info(f'[CONTEXT] Configured: {self._context_config}')
+        Logger.info(f"[CONTEXT] Configured: {self._context_config}")
 
     def estimate_tokens(self, text: str) -> int:
         """
@@ -151,7 +169,12 @@ class ContextManagementMixin:
         """
         return max(1, len(text) // 4)
 
-    def add_context(self, content: str, priority: ContextPriority=ContextPriority.MEDIUM, metadata: dict[str, Any] | None=None) -> ContextItem:
+    def add_context(
+        self,
+        content: str,
+        priority: ContextPriority = ContextPriority.MEDIUM,
+        metadata: dict[str, Any] | None = None,
+    ) -> ContextItem:
         """
         Add content to the context window.
 
@@ -171,11 +194,15 @@ class ContextManagementMixin:
             projected_total = self._total_context_tokens + token_count
             if projected_total > self._context_config.max_context_tokens:
                 self._manage_context_overflow(token_count)
-            item = ContextItem(content=content, priority=priority, token_count=token_count, metadata=metadata or {})
+            item = ContextItem(
+                content=content, priority=priority, token_count=token_count, metadata=metadata or {}
+            )
             self._context_items.append(item)
             self._total_context_tokens += token_count
             self._check_context_thresholds()
-        Logger.debug(f'[CONTEXT] Added {token_count} tokens (priority={priority.name}). Total: {self._total_context_tokens}/{self._context_config.max_context_tokens}')
+        Logger.debug(
+            f"[CONTEXT] Added {token_count} tokens (priority={priority.name}). Total: {self._total_context_tokens}/{self._context_config.max_context_tokens}"
+        )
         return item
 
     def _check_context_thresholds(self) -> None:
@@ -203,9 +230,11 @@ class ContextManagementMixin:
         if self._total_context_tokens > target:
             self._prune_by_priority(ContextPriority.HIGH, target_tokens=target)
         if self._total_context_tokens + required_tokens > self._context_config.max_context_tokens:
-            raise ContextOverflowError(self._total_context_tokens + required_tokens, self._context_config.max_context_tokens)
+            raise ContextOverflowError(
+                self._total_context_tokens + required_tokens, self._context_config.max_context_tokens
+            )
 
-    def _prune_low_priority_context(self, target_tokens: int | None=None) -> int:
+    def _prune_low_priority_context(self, target_tokens: int | None = None) -> int:
         """
         Prune low priority context items.
 
@@ -217,7 +246,7 @@ class ContextManagementMixin:
         """
         return self._prune_by_priority(ContextPriority.LOW, target_tokens)
 
-    def _prune_by_priority(self, priority: ContextPriority, target_tokens: int | None=None) -> int:
+    def _prune_by_priority(self, priority: ContextPriority, target_tokens: int | None = None) -> int:
         """
         Prune context items of a specific priority.
 
@@ -242,26 +271,39 @@ class ContextManagementMixin:
             self._context_items.remove(item)
             self._total_context_tokens -= item.token_count
         if tokens_freed > 0:
-            Logger.info(f'[CONTEXT] Pruned {tokens_freed} tokens (priority={priority.name}). Remaining: {self._total_context_tokens}')
+            Logger.info(
+                f"[CONTEXT] Pruned {tokens_freed} tokens (priority={priority.name}). Remaining: {self._total_context_tokens}"
+            )
         return tokens_freed
 
     def _trigger_summarization(self) -> None:
         """Trigger summarization of older context."""
         cutoff_time = time.time() - 300
-        items_to_summarize = [item for item in self._context_items if item.priority == ContextPriority.MEDIUM and item.timestamp < cutoff_time]
+        items_to_summarize = [
+            item
+            for item in self._context_items
+            if item.priority == ContextPriority.MEDIUM and item.timestamp < cutoff_time
+        ]
         if not items_to_summarize:
             return
-        combined_content = '\n'.join((item.content for item in items_to_summarize))
+        combined_content = "\n".join(item.content for item in items_to_summarize)
         summary_content = self._create_summary(combined_content)
         for item in items_to_summarize:
             self._context_items.remove(item)
             self._total_context_tokens -= item.token_count
-        summary_item = ContextItem(content=summary_content, priority=ContextPriority.MEDIUM, token_count=self.estimate_tokens(summary_content), metadata={'is_summary': True, 'summarized_items': len(items_to_summarize)})
+        summary_item = ContextItem(
+            content=summary_content,
+            priority=ContextPriority.MEDIUM,
+            token_count=self.estimate_tokens(summary_content),
+            metadata={"is_summary": True, "summarized_items": len(items_to_summarize)},
+        )
         self._context_items.append(summary_item)
         self._total_context_tokens += summary_item.token_count
         self._summaries.append(summary_item)
         self._last_summarization_time = time.time()
-        Logger.info(f'[CONTEXT] Summarized {len(items_to_summarize)} items into {summary_item.token_count} tokens')
+        Logger.info(
+            f"[CONTEXT] Summarized {len(items_to_summarize)} items into {summary_item.token_count} tokens"
+        )
 
     def _create_summary(self, content: str) -> str:
         """
@@ -280,7 +322,7 @@ class ContextManagementMixin:
         if len(content) <= target_chars:
             return content
         half = target_chars // 2
-        return f'{content[:half]}\n...[summarized]...\n{content[-half:]}'
+        return f"{content[:half]}\n...[summarized]...\n{content[-half:]}"
 
     def get_optimized_context(self) -> str:
         """
@@ -297,7 +339,7 @@ class ContextManagementMixin:
             context_parts = []
             for item in sorted_items:
                 context_parts.append(item.content)
-            return '\n\n'.join(context_parts)
+            return "\n\n".join(context_parts)
 
     def get_context_status(self) -> dict[str, Any]:
         """
@@ -309,10 +351,20 @@ class ContextManagementMixin:
         with self._context_lock:
             priority_counts = {}
             for priority in ContextPriority:
-                priority_counts[priority.name] = sum((1 for item in self._context_items if item.priority == priority))
-            return {'total_tokens': self._total_context_tokens, 'max_tokens': self._context_config.max_context_tokens, 'usage_pct': self._total_context_tokens / self._context_config.max_context_tokens, 'item_count': len(self._context_items), 'priority_distribution': priority_counts, 'summaries_created': len(self._summaries), 'last_summarization': self._last_summarization_time}
+                priority_counts[priority.name] = sum(
+                    1 for item in self._context_items if item.priority == priority
+                )
+            return {
+                "total_tokens": self._total_context_tokens,
+                "max_tokens": self._context_config.max_context_tokens,
+                "usage_pct": self._total_context_tokens / self._context_config.max_context_tokens,
+                "item_count": len(self._context_items),
+                "priority_distribution": priority_counts,
+                "summaries_created": len(self._summaries),
+                "last_summarization": self._last_summarization_time,
+            }
 
-    def clear_context(self, preserve_critical: bool=True) -> dict[str, Any]:
+    def clear_context(self, preserve_critical: bool = True) -> dict[str, Any]:
         """
         Clear context items.
 
@@ -324,17 +376,32 @@ class ContextManagementMixin:
         """
         with self._context_lock:
             if preserve_critical:
-                critical_items = [item for item in self._context_items if item.priority == ContextPriority.CRITICAL]
+                critical_items = [
+                    item for item in self._context_items if item.priority == ContextPriority.CRITICAL
+                ]
                 cleared_count = len(self._context_items) - len(critical_items)
-                cleared_tokens = self._total_context_tokens - sum((item.token_count for item in critical_items))
+                cleared_tokens = self._total_context_tokens - sum(item.token_count for item in critical_items)
                 self._context_items = critical_items
-                self._total_context_tokens = sum((item.token_count for item in critical_items))
+                self._total_context_tokens = sum(item.token_count for item in critical_items)
             else:
                 cleared_count = len(self._context_items)
                 cleared_tokens = self._total_context_tokens
                 self._context_items = []
                 self._total_context_tokens = 0
-            summary = {'items_cleared': cleared_count, 'tokens_cleared': cleared_tokens, 'remaining_items': len(self._context_items), 'remaining_tokens': self._total_context_tokens}
-        Logger.info(f'[CONTEXT] Cleared: {summary}')
+            summary = {
+                "items_cleared": cleared_count,
+                "tokens_cleared": cleared_tokens,
+                "remaining_items": len(self._context_items),
+                "remaining_tokens": self._total_context_tokens,
+            }
+        Logger.info(f"[CONTEXT] Cleared: {summary}")
         return summary
-__all__ = ['ContextManagementMixin', 'ContextConfig', 'ContextItem', 'ContextPriority', 'ContextOverflowError']
+
+
+__all__ = [
+    "ContextManagementMixin",
+    "ContextConfig",
+    "ContextItem",
+    "ContextPriority",
+    "ContextOverflowError",
+]

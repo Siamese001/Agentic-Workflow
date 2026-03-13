@@ -4,17 +4,19 @@ EvaluateResumeEffectiveness.py - scoring Module
 Domain: resume
 Generated: 2025-12-07T13:28:54.223993
 """
+
 import logging
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 Logger = logging.getLogger(__name__)
+
 
 class EvaluateResumeEffectiveness:
     """Scorer for resume domain."""
 
-    def __init__(self, config: dict[str, object] | None=None):
+    def __init__(self, config: dict[str, object] | None = None):
         self.config = config or {}
-        self.weights = self.config.get('weights', {})
-        Logger.info(f'Initialized {self.__class__.__name__}')
+        self.weights = self.config.get("weights", {})
+        Logger.info(f"Initialized {self.__class__.__name__}")
 
     def score(self, data: dict[str, object]) -> ScoreResult:
         """Compute score for data."""
@@ -30,14 +32,14 @@ class EvaluateResumeEffectiveness:
             if isinstance(v, int | float):
                 factors[k] = float(v)
             elif isinstance(v, str):
-                factors[f'{k}_len'] = min(1.0, len(v) / 100)
+                factors[f"{k}_len"] = min(1.0, len(v) / 100)
         return factors
 
     def _compute_weighted(self, factors: dict[str, float]) -> float:
         """Compute weighted score."""
         if not factors:
             return 0.5
-        total_w = sum((self.weights.get(k, 1.0) for k in factors))
+        total_w = sum(self.weights.get(k, 1.0) for k in factors)
         weighted = sum((v * self.weights.get(k, 1.0) for k, v in factors.items()))
         return weighted / total_w if total_w else 0.5
 
@@ -45,6 +47,7 @@ class EvaluateResumeEffectiveness:
         """Compute confidence."""
         return min(1.0, len(factors) / 5)
 
-def compute_score(data: dict[str, object], config: dict | None=None) -> ScoreResult:
+
+def compute_score(data: dict[str, object], config: dict | None = None) -> ScoreResult:
     """Compute relevance score based on input parameters."""
     return EvaluateResumeEffectiveness(config).score(data)

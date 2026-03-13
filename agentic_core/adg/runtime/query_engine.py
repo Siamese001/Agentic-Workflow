@@ -9,33 +9,40 @@ Replaces O(n) filesystem scans with pre-built indexes for:
 
 Speedup: 100-1000x over filesystem scan for agent discovery.
 """
+
 from __future__ import annotations
+
 import logging
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 if TYPE_CHECKING:
     from agentic_core.adg.extraction.static_scanner import ScanResult
 logger = logging.getLogger(__name__)
 _SINGLETON: ADGRuntimeQueryEngine | None = None
 
+
 @dataclass
 class AgentCapability:
     """Describes a discovered agent capability from the ADG composition graph."""
+
     agent_class: str
     module_path: str
     layer: str
     composed_symbol: str
 
+
 @dataclass
 class DependencyPath:
     """Result of import path validation between two modules."""
+
     from_module: str
     to_module: str
     allowed: bool
     from_layer: str
     to_layer: str
-    reason: str = ''
+    reason: str = ""
+
 
 class ADGRuntimeQueryEngine:
     """Pre-built indexed query engine over a ScanResult.
@@ -61,37 +68,44 @@ class ADGRuntimeQueryEngine:
 
     def _build_indexes(self) -> None:
         from agentic_core.adg.schema import module_path_to_layer
-        _module_prefix = 'ADG::Module::'
-        _symbol_prefix = 'ADG::Symbol::'
+
+        _module_prefix = "ADG::Module::"
+        _symbol_prefix = "ADG::Symbol::"
         for edge in self._result.edges:
             from_mod = edge.from_name
             to_sym = edge.to_name
             if from_mod.startswith(_module_prefix):
-                rel = from_mod[len(_module_prefix):]
+                rel = from_mod[len(_module_prefix) :]
                 if from_mod not in self._layer_map:
                     self._layer_map[from_mod] = module_path_to_layer(rel)
-            if edge.relation_type == 'imports':
+            if edge.relation_type == "imports":
                 if to_sym not in self._reverse_deps:
                     self._reverse_deps[to_sym] = set()
                 self._reverse_deps[to_sym].add(from_mod)
-            elif edge.relation_type == 'implements':
-                base = edge.symbol or (to_sym[len(_symbol_prefix):] if to_sym.startswith(_symbol_prefix) else to_sym)
+            elif edge.relation_type == "implements":
+                base = edge.symbol or (
+                    to_sym[len(_symbol_prefix) :] if to_sym.startswith(_symbol_prefix) else to_sym
+                )
                 if base not in self._inheritance_index:
                     self._inheritance_index[base] = []
                 if from_mod not in self._inheritance_index[base]:
                     self._inheritance_index[base].append(from_mod)
-            elif edge.relation_type == 'instantiates' and edge.edge_kind == 'composition':
-                sym = edge.symbol or (to_sym[len(_symbol_prefix):] if to_sym.startswith(_symbol_prefix) else to_sym)
-                layer = self._layer_map.get(from_mod, 'L_UNKNOWN')
-                parts = from_mod.split('::')
+            elif edge.relation_type == "instantiates" and edge.edge_kind == "composition":
+                sym = edge.symbol or (
+                    to_sym[len(_symbol_prefix) :] if to_sym.startswith(_symbol_prefix) else to_sym
+                )
+                layer = self._layer_map.get(from_mod, "L_UNKNOWN")
+                parts = from_mod.split("::")
                 class_name = parts[-1] if len(parts) >= 3 else from_mod
-                module_path = parts[2] if len(parts) >= 4 else ''
-                cap = AgentCapability(agent_class=class_name, module_path=module_path, layer=layer, composed_symbol=sym)
+                module_path = parts[2] if len(parts) >= 4 else ""
+                cap = AgentCapability(
+                    agent_class=class_name, module_path=module_path, layer=layer, composed_symbol=sym
+                )
                 if sym not in self._composition_index:
                     self._composition_index[sym] = []
                 self._composition_index[sym].append(cap)
-            elif edge.relation_type == 'reads_from':
-                sym = edge.symbol or ''
+            elif edge.relation_type == "reads_from":
+                sym = edge.symbol or ""
                 if from_mod not in self._config_reads:
                     self._config_reads[from_mod] = []
                 if sym and sym not in self._config_reads[from_mod]:
@@ -126,9 +140,10 @@ class ADGRuntimeQueryEngine:
         Speedup vs full codebase scan: 50-500x.
         """
         from agentic_core.adg.schema import canonical_name
+
         frontier: list[tuple[str, int]] = []
         for f in changed_files:
-            adg = canonical_name('Module', f.replace('\\', '/'))
+            adg = canonical_name("Module", f.replace("\\", "/"))
             frontier.append((adg, 0))
         visited: dict[str, int] = {}
         while frontier:
@@ -139,24 +154,34 @@ class ADGRuntimeQueryEngine:
             for dependent in self._reverse_deps.get(node, set()):
                 if dependent not in visited:
                     frontier.append((dependent, depth + 1))
-        _module_prefix = 'ADG::Module::'
-        return {k[len(_module_prefix):] if k.startswith(_module_prefix) else k: v for k, v in visited.items()}
+        _module_prefix = "ADG::Module::"
+        return {
+            k[len(_module_prefix) :] if k.startswith(_module_prefix) else k: v for k, v in visited.items()
+        }
 
     def validate_import_path(self, from_mod: str, to_mod: str) -> DependencyPath:
         """R1: Validate whether an import between two modules is allowed by layer rules."""
         from agentic_core.adg.schema import ALLOWED_LAYER_EDGES, module_path_to_layer
-        from_layer = module_path_to_layer(from_mod.replace('\\', '/'))
-        to_layer = module_path_to_layer(to_mod.replace('\\', '/'))
+
+        from_layer = module_path_to_layer(from_mod.replace("\\", "/"))
+        to_layer = module_path_to_layer(to_mod.replace("\\", "/"))
         if from_layer == to_layer:
             allowed = True
-            reason = 'same layer'
+            reason = "same layer"
         elif (from_layer, to_layer) in ALLOWED_LAYER_EDGES:
             allowed = True
-            reason = f'allowed edge {from_layer}->{to_layer}'
+            reason = f"allowed edge {from_layer}->{to_layer}"
         else:
             allowed = False
-            reason = f'forbidden edge {from_layer}->{to_layer}'
-        return DependencyPath(from_module=from_mod, to_module=to_mod, allowed=allowed, from_layer=from_layer, to_layer=to_layer, reason=reason)
+            reason = f"forbidden edge {from_layer}->{to_layer}"
+        return DependencyPath(
+            from_module=from_mod,
+            to_module=to_mod,
+            allowed=allowed,
+            from_layer=from_layer,
+            to_layer=to_layer,
+            reason=reason,
+        )
 
     def get_cache_invalidation_set(self, changed_file: str) -> set[str]:
         """R1/R7: Return set of module ADG names transitively affected by changed_file."""
@@ -169,9 +194,19 @@ class ADGRuntimeQueryEngine:
 
     def stats(self) -> dict[str, int]:
         """Return index size stats for observability."""
-        return {'inheritance_index_bases': len(self._inheritance_index), 'reverse_deps_keys': len(self._reverse_deps), 'composition_index_symbols': len(self._composition_index), 'config_reads_modules': len(self._config_reads), 'total_edges': len(self._result.edges), 'total_modules': len(self._result.modules)}
+        return {
+            "inheritance_index_bases": len(self._inheritance_index),
+            "reverse_deps_keys": len(self._reverse_deps),
+            "composition_index_symbols": len(self._composition_index),
+            "config_reads_modules": len(self._config_reads),
+            "total_edges": len(self._result.edges),
+            "total_modules": len(self._result.modules),
+        }
 
-def get_runtime_query_engine(repo_root: str | None=None, force_fresh: bool=False) -> ADGRuntimeQueryEngine:
+
+def get_runtime_query_engine(
+    repo_root: str | None = None, force_fresh: bool = False
+) -> ADGRuntimeQueryEngine:
     """R1: Singleton accessor — load from cache or scan, then build indexes.
 
     Thread-safe for read-after-init access patterns.
@@ -180,8 +215,11 @@ def get_runtime_query_engine(repo_root: str | None=None, force_fresh: bool=False
     if _SINGLETON is not None and (not force_fresh):
         return _SINGLETON
     from agentic_core.adg.runtime.cache_loader import load_or_scan
+
     result = load_or_scan(repo_root=repo_root)
     _SINGLETON = ADGRuntimeQueryEngine(result)
-    logger.info('ADG query engine initialized: %d edges, %d modules', len(result.edges), len(result.modules))
+    logger.info("ADG query engine initialized: %d edges, %d modules", len(result.edges), len(result.modules))
     return _SINGLETON
-__all__ = ['ADGRuntimeQueryEngine', 'AgentCapability', 'DependencyPath', 'get_runtime_query_engine']
+
+
+__all__ = ["ADGRuntimeQueryEngine", "AgentCapability", "DependencyPath", "get_runtime_query_engine"]

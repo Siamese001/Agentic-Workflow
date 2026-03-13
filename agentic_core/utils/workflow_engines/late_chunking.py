@@ -22,15 +22,22 @@ CONSTRAINTS:
 
 C0 RULE: Informational only — no routing/safety mutation.
 """
+
 from __future__ import annotations
+
 import hashlib
 import json
 from dataclasses import dataclass
 from typing import Any, Literal
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
-LateChunkingMode = Literal['standard_chunked', 'late_chunked', 'late_chunked_hybrid', 'late_chunked_hybrid_reranked']
-VALID_MODES: frozenset[str] = frozenset({'standard_chunked', 'late_chunked', 'late_chunked_hybrid', 'late_chunked_hybrid_reranked'})
-VALID_POOLING_STRATEGIES: frozenset[str] = frozenset({'mean', 'max', 'cls', 'weighted_mean'})
+
+LateChunkingMode = Literal[
+    "standard_chunked", "late_chunked", "late_chunked_hybrid", "late_chunked_hybrid_reranked"
+]
+VALID_MODES: frozenset[str] = frozenset(
+    {"standard_chunked", "late_chunked", "late_chunked_hybrid", "late_chunked_hybrid_reranked"}
+)
+VALID_POOLING_STRATEGIES: frozenset[str] = frozenset({"mean", "max", "cls", "weighted_mean"})
+
 
 @dataclass(frozen=True)
 class LateChunkingProfile:
@@ -39,6 +46,7 @@ class LateChunkingProfile:
     Stored in L4 alongside standard RetrievalProfile.
     Must be explicitly activated — never auto-applies.
     """
+
     profile_id: str
     mode: LateChunkingMode
     embedding_model_version: str
@@ -47,42 +55,65 @@ class LateChunkingProfile:
     chunk_window_policy: str
     stride_policy: str
     parent_section_policy: str
-    artifact_hash: str = ''
+    artifact_hash: str = ""
 
     def __post_init__(self) -> None:
         if self.mode not in VALID_MODES:
-            raise ValueError(f'Invalid mode: {self.mode!r}. Must be one of {sorted(VALID_MODES)}')
+            raise ValueError(f"Invalid mode: {self.mode!r}. Must be one of {sorted(VALID_MODES)}")
         if self.pooling_strategy not in VALID_POOLING_STRATEGIES:
-            raise ValueError(f'Invalid pooling_strategy: {self.pooling_strategy!r}. Must be one of {sorted(VALID_POOLING_STRATEGIES)}')
+            raise ValueError(
+                f"Invalid pooling_strategy: {self.pooling_strategy!r}. Must be one of {sorted(VALID_POOLING_STRATEGIES)}"
+            )
         if self.max_input_tokens < 1:
-            raise ValueError('max_input_tokens must be >= 1')
+            raise ValueError("max_input_tokens must be >= 1")
 
     def to_dict(self) -> dict[str, Any]:
-        return {'profile_id': self.profile_id, 'mode': self.mode, 'embedding_model_version': self.embedding_model_version, 'max_input_tokens': self.max_input_tokens, 'pooling_strategy': self.pooling_strategy, 'chunk_window_policy': self.chunk_window_policy, 'stride_policy': self.stride_policy, 'parent_section_policy': self.parent_section_policy, 'artifact_hash': self.artifact_hash}
+        return {
+            "profile_id": self.profile_id,
+            "mode": self.mode,
+            "embedding_model_version": self.embedding_model_version,
+            "max_input_tokens": self.max_input_tokens,
+            "pooling_strategy": self.pooling_strategy,
+            "chunk_window_policy": self.chunk_window_policy,
+            "stride_policy": self.stride_policy,
+            "parent_section_policy": self.parent_section_policy,
+            "artifact_hash": self.artifact_hash,
+        }
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> LateChunkingProfile:
-        return cls(profile_id=data['profile_id'], mode=data['mode'], embedding_model_version=data['embedding_model_version'], max_input_tokens=int(data['max_input_tokens']), pooling_strategy=data['pooling_strategy'], chunk_window_policy=data['chunk_window_policy'], stride_policy=data['stride_policy'], parent_section_policy=data['parent_section_policy'], artifact_hash=data.get('artifact_hash', ''))
+        return cls(
+            profile_id=data["profile_id"],
+            mode=data["mode"],
+            embedding_model_version=data["embedding_model_version"],
+            max_input_tokens=int(data["max_input_tokens"]),
+            pooling_strategy=data["pooling_strategy"],
+            chunk_window_policy=data["chunk_window_policy"],
+            stride_policy=data["stride_policy"],
+            parent_section_policy=data["parent_section_policy"],
+            artifact_hash=data.get("artifact_hash", ""),
+        )
 
     def canonical_bytes(self) -> bytes:
         d = self.to_dict()
-        d.pop('artifact_hash', None)
-        return json.dumps(d, sort_keys=True, separators=(',', ':')).encode('utf-8')
+        d.pop("artifact_hash", None)
+        return json.dumps(d, sort_keys=True, separators=(",", ":")).encode("utf-8")
 
     def profile_digest(self) -> str:
         return hashlib.sha256(self.canonical_bytes()).hexdigest()
 
     @property
     def is_late_chunked(self) -> bool:
-        return self.mode != 'standard_chunked'
+        return self.mode != "standard_chunked"
 
     @property
     def uses_hybrid_retrieval(self) -> bool:
-        return 'hybrid' in self.mode
+        return "hybrid" in self.mode
 
     @property
     def uses_reranking(self) -> bool:
-        return 'reranked' in self.mode
+        return "reranked" in self.mode
+
 
 @dataclass(frozen=True)
 class LateChunkManifest:
@@ -91,6 +122,7 @@ class LateChunkManifest:
     Stores the mapping from source document segment to its pooled
     embedding hash and build profile.
     """
+
     source_doc_id: str
     segment_id: str
     parent_section_id: str
@@ -101,14 +133,32 @@ class LateChunkManifest:
     build_profile_id: str
 
     def to_dict(self) -> dict[str, Any]:
-        return {'source_doc_id': self.source_doc_id, 'segment_id': self.segment_id, 'parent_section_id': self.parent_section_id, 'token_start': self.token_start, 'token_end': self.token_end, 'pooled_embedding_hash': self.pooled_embedding_hash, 'heading_path': list(self.heading_path), 'build_profile_id': self.build_profile_id}
+        return {
+            "source_doc_id": self.source_doc_id,
+            "segment_id": self.segment_id,
+            "parent_section_id": self.parent_section_id,
+            "token_start": self.token_start,
+            "token_end": self.token_end,
+            "pooled_embedding_hash": self.pooled_embedding_hash,
+            "heading_path": list(self.heading_path),
+            "build_profile_id": self.build_profile_id,
+        }
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> LateChunkManifest:
-        return cls(source_doc_id=data['source_doc_id'], segment_id=data['segment_id'], parent_section_id=data['parent_section_id'], token_start=int(data['token_start']), token_end=int(data['token_end']), pooled_embedding_hash=data['pooled_embedding_hash'], heading_path=tuple(data['heading_path']), build_profile_id=data['build_profile_id'])
+        return cls(
+            source_doc_id=data["source_doc_id"],
+            segment_id=data["segment_id"],
+            parent_section_id=data["parent_section_id"],
+            token_start=int(data["token_start"]),
+            token_end=int(data["token_end"]),
+            pooled_embedding_hash=data["pooled_embedding_hash"],
+            heading_path=tuple(data["heading_path"]),
+            build_profile_id=data["build_profile_id"],
+        )
 
     def canonical_bytes(self) -> bytes:
-        return json.dumps(self.to_dict(), sort_keys=True, separators=(',', ':')).encode('utf-8')
+        return json.dumps(self.to_dict(), sort_keys=True, separators=(",", ":")).encode("utf-8")
 
     def content_hash(self) -> str:
         return hashlib.sha256(self.canonical_bytes()).hexdigest()
@@ -117,18 +167,21 @@ class LateChunkManifest:
     def token_count(self) -> int:
         return self.token_end - self.token_start
 
+
 @dataclass
 class LateChunkingPipelineConfig:
     """Configuration for the late chunking pipeline."""
+
     profile: LateChunkingProfile
     stride: int = 64
     max_segment_tokens: int = 256
 
     def __post_init__(self) -> None:
         if self.stride < 1:
-            raise ValueError('stride must be >= 1')
+            raise ValueError("stride must be >= 1")
         if self.max_segment_tokens < 1:
-            raise ValueError('max_segment_tokens must be >= 1')
+            raise ValueError("max_segment_tokens must be >= 1")
+
 
 def _compute_pooled_hash(token_start: int, token_end: int, model_version: str) -> str:
     """Compute a deterministic hash for a pooled embedding segment.
@@ -136,10 +189,21 @@ def _compute_pooled_hash(token_start: int, token_end: int, model_version: str) -
     In production this would hash the actual pooled embedding vector.
     Here it hashes the segment coordinates + model version for determinism.
     """
-    data = json.dumps({'token_start': token_start, 'token_end': token_end, 'model_version': model_version}, sort_keys=True, separators=(',', ':'))
-    return hashlib.sha256(data.encode('utf-8')).hexdigest()
+    data = json.dumps(
+        {"token_start": token_start, "token_end": token_end, "model_version": model_version},
+        sort_keys=True,
+        separators=(",", ":"),
+    )
+    return hashlib.sha256(data.encode("utf-8")).hexdigest()
 
-def segment_document(source_doc_id: str, total_tokens: int, config: LateChunkingPipelineConfig, parent_section_id: str='', heading_path: tuple[str, ...]=()) -> list[LateChunkManifest]:
+
+def segment_document(
+    source_doc_id: str,
+    total_tokens: int,
+    config: LateChunkingPipelineConfig,
+    parent_section_id: str = "",
+    heading_path: tuple[str, ...] = (),
+) -> list[LateChunkManifest]:
     """Deterministically segment a document into late-chunked manifests.
 
     Args:
@@ -159,16 +223,30 @@ def segment_document(source_doc_id: str, total_tokens: int, config: LateChunking
     seg_idx = 0
     while start < total_tokens:
         end = min(start + config.max_segment_tokens, total_tokens)
-        segment_id = f'{source_doc_id}::seg_{seg_idx:04d}'
+        segment_id = f"{source_doc_id}::seg_{seg_idx:04d}"
         pooled_hash = _compute_pooled_hash(start, end, config.profile.embedding_model_version)
-        manifests.append(LateChunkManifest(source_doc_id=source_doc_id, segment_id=segment_id, parent_section_id=parent_section_id, token_start=start, token_end=end, pooled_embedding_hash=pooled_hash, heading_path=heading_path, build_profile_id=config.profile.profile_id))
+        manifests.append(
+            LateChunkManifest(
+                source_doc_id=source_doc_id,
+                segment_id=segment_id,
+                parent_section_id=parent_section_id,
+                token_start=start,
+                token_end=end,
+                pooled_embedding_hash=pooled_hash,
+                heading_path=heading_path,
+                build_profile_id=config.profile.profile_id,
+            )
+        )
         seg_idx += 1
         start += config.max_segment_tokens - config.stride
         if start >= total_tokens:
             break
     return manifests
 
-def build_late_chunk_manifests_for_corpus(documents: list[dict[str, Any]], config: LateChunkingPipelineConfig) -> list[LateChunkManifest]:
+
+def build_late_chunk_manifests_for_corpus(
+    documents: list[dict[str, Any]], config: LateChunkingPipelineConfig
+) -> list[LateChunkManifest]:
     """Build late chunk manifests for a corpus of documents.
 
     Each document must have keys: source_doc_id, total_tokens,
@@ -178,8 +256,25 @@ def build_late_chunk_manifests_for_corpus(documents: list[dict[str, Any]], confi
     """
     all_manifests: list[LateChunkManifest] = []
     for doc in documents:
-        doc_manifests = segment_document(source_doc_id=doc['source_doc_id'], total_tokens=int(doc['total_tokens']), config=config, parent_section_id=doc.get('parent_section_id', ''), heading_path=tuple(doc.get('heading_path', [])))
+        doc_manifests = segment_document(
+            source_doc_id=doc["source_doc_id"],
+            total_tokens=int(doc["total_tokens"]),
+            config=config,
+            parent_section_id=doc.get("parent_section_id", ""),
+            heading_path=tuple(doc.get("heading_path", [])),
+        )
         all_manifests.extend(doc_manifests)
     all_manifests.sort(key=lambda m: (m.source_doc_id, m.token_start))
     return all_manifests
-__all__ = ['LateChunkingMode', 'VALID_MODES', 'VALID_POOLING_STRATEGIES', 'LateChunkingProfile', 'LateChunkManifest', 'LateChunkingPipelineConfig', 'segment_document', 'build_late_chunk_manifests_for_corpus']
+
+
+__all__ = [
+    "LateChunkingMode",
+    "VALID_MODES",
+    "VALID_POOLING_STRATEGIES",
+    "LateChunkingProfile",
+    "LateChunkManifest",
+    "LateChunkingPipelineConfig",
+    "segment_document",
+    "build_late_chunk_manifests_for_corpus",
+]

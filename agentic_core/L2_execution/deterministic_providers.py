@@ -10,13 +10,15 @@ Authority: May only be activated by ReplayGuardMixin during replay mode.
 Invariant: One trace_id per process. Re-patching with a different trace_id is
            a hard error to prevent cross-trace contamination.
 """
+
 from __future__ import annotations
+
 import hashlib
 import random as _random_module
 import time as _time_module
 import uuid as _uuid_module
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 _ACTIVE_TRACE_ID: str | None = None
 _PATCHED: bool = False
 _ORIGINAL_TIME: float = _time_module.time
@@ -26,8 +28,10 @@ _ORIGINAL_RANDINT = _random_module.randint
 _ORIGINAL_CHOICE = _random_module.choice
 _ORIGINAL_UUID4 = _uuid_module.uuid4
 
+
 class DeterministicPatchError(Exception):
     """Raised when attempting to re-patch with a different trace_id."""
+
 
 class FixedTimeProvider:
     """Deterministic time provider for replay mode.
@@ -37,8 +41,8 @@ class FixedTimeProvider:
     """
 
     def __init__(self, trace_id: str) -> None:
-        seed_bytes = hashlib.sha256(trace_id.encode('utf-8')).digest()
-        self._base_time: float = float(int.from_bytes(seed_bytes[:8], byteorder='big') % 1000000000)
+        seed_bytes = hashlib.sha256(trace_id.encode("utf-8")).digest()
+        self._base_time: float = float(int.from_bytes(seed_bytes[:8], byteorder="big") % 1000000000)
         self._offset: float = 0.0
 
     def time(self) -> float:
@@ -48,19 +52,20 @@ class FixedTimeProvider:
     def sleep(self, seconds: float) -> None:
         """Advance virtual clock instead of blocking."""
         if seconds < 0:
-            raise ValueError('sleep duration must be non-negative')
+            raise ValueError("sleep duration must be non-negative")
         self._offset += seconds
 
     def advance(self, seconds: float) -> None:
         """Manually advance virtual clock."""
         if seconds < 0:
-            raise ValueError('advance duration must be non-negative')
+            raise ValueError("advance duration must be non-negative")
         self._offset += seconds
 
     @property
     def current_offset(self) -> float:
         """Return accumulated offset for inspection."""
         return self._offset
+
 
 class DeterministicRandomSource:
     """Deterministic random source for replay mode.
@@ -70,8 +75,8 @@ class DeterministicRandomSource:
     """
 
     def __init__(self, trace_id: str) -> None:
-        seed_bytes = hashlib.sha256(trace_id.encode('utf-8')).digest()
-        seed_int = int.from_bytes(seed_bytes[:8], byteorder='big')
+        seed_bytes = hashlib.sha256(trace_id.encode("utf-8")).digest()
+        seed_int = int.from_bytes(seed_bytes[:8], byteorder="big")
         self._rng = _random_module.Random(seed_int)
 
     def random(self) -> float:
@@ -91,6 +96,7 @@ class DeterministicRandomSource:
         self._rng.shuffle(seq)
         return seq
 
+
 class DeterministicUUIDProvider:
     """Deterministic UUID4 provider for replay mode.
 
@@ -99,8 +105,8 @@ class DeterministicUUIDProvider:
     """
 
     def __init__(self, trace_id: str) -> None:
-        seed_bytes = hashlib.sha256(f'{trace_id}-uuid'.encode()).digest()
-        self._base_int = int.from_bytes(seed_bytes[:16], byteorder='big')
+        seed_bytes = hashlib.sha256(f"{trace_id}-uuid".encode()).digest()
+        self._base_int = int.from_bytes(seed_bytes[:16], byteorder="big")
         self._counter = 0
 
     def uuid4(self) -> _uuid_module.UUID:
@@ -110,6 +116,7 @@ class DeterministicUUIDProvider:
         raw = raw & ~(15 << 76) | 4 << 76
         raw = raw & ~(3 << 62) | 2 << 62
         return _uuid_module.UUID(int=raw)
+
 
 def patch_deterministic(trace_id: str) -> dict[str, Any]:
     """Install deterministic providers for the given trace_id.
@@ -121,7 +128,9 @@ def patch_deterministic(trace_id: str) -> dict[str, Any]:
     global _ACTIVE_TRACE_ID, _PATCHED
     if _PATCHED:
         if _ACTIVE_TRACE_ID != trace_id:
-            raise DeterministicPatchError(f'Already patched with trace_id={_ACTIVE_TRACE_ID!r}, cannot re-patch with trace_id={trace_id!r}. One trace per process.')
+            raise DeterministicPatchError(
+                f"Already patched with trace_id={_ACTIVE_TRACE_ID!r}, cannot re-patch with trace_id={trace_id!r}. One trace per process."
+            )
         return _get_active_providers()
     time_provider = FixedTimeProvider(trace_id)
     random_source = DeterministicRandomSource(trace_id)
@@ -134,7 +143,8 @@ def patch_deterministic(trace_id: str) -> dict[str, Any]:
     _uuid_module.uuid4 = uuid_provider.uuid4
     _ACTIVE_TRACE_ID = trace_id
     _PATCHED = True
-    return {'time_provider': time_provider, 'random_source': random_source, 'uuid_provider': uuid_provider}
+    return {"time_provider": time_provider, "random_source": random_source, "uuid_provider": uuid_provider}
+
 
 def unpatch_deterministic() -> None:
     """Restore original nondeterministic modules.
@@ -152,14 +162,21 @@ def unpatch_deterministic() -> None:
     _ACTIVE_TRACE_ID = None
     _PATCHED = False
 
+
 def is_patched() -> bool:
     """Return True if deterministic providers are currently active."""
     return _PATCHED
+
 
 def get_active_trace_id() -> str | None:
     """Return the trace_id of the active patch, or None."""
     return _ACTIVE_TRACE_ID
 
+
 def _get_active_providers() -> dict[str, Any]:
     """Return dict of current provider instances (internal helper)."""
-    return {'time_provider': _time_module.time, 'random_source': _random_module.random, 'uuid_provider': _uuid_module.uuid4}
+    return {
+        "time_provider": _time_module.time,
+        "random_source": _random_module.random,
+        "uuid_provider": _uuid_module.uuid4,
+    }

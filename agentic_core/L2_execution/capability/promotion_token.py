@@ -3,16 +3,19 @@
 This module provides scoped, single-use, time-bounded capability tokens
 for promotion operations.
 """
+
 import logging
 import secrets
 import time
 from dataclasses import dataclass, field
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 Logger = logging.getLogger(__name__)
+
 
 @dataclass(frozen=True)
 class PromotionToken:
     """Scoped capability token for promotion operations."""
+
     token_id: str
     target_namespace: str
     semantic_clock_window: tuple[int, int]
@@ -20,19 +23,21 @@ class PromotionToken:
     single_use_nonce: str
     guardian_signature: str
     semantic_clock_tick: int
-    allowed_action: str = 'pointer_update'
+    allowed_action: str = "pointer_update"
     created_at: float = field(default_factory=time.time)
 
     def validate_scope_and_use(self) -> bool:
         """Validate token scope and single-use status."""
-        if self.allowed_action != 'pointer_update':
-            Logger.error(f'Token {self.token_id}: Invalid action {self.allowed_action}')
+        if self.allowed_action != "pointer_update":
+            Logger.error(f"Token {self.token_id}: Invalid action {self.allowed_action}")
             return False
         if self.is_expired(self.semantic_clock_tick):
-            Logger.error(f'Token {self.token_id}: Semantic clock {self.semantic_clock_tick} outside window {self.semantic_clock_window}')
+            Logger.error(
+                f"Token {self.token_id}: Semantic clock {self.semantic_clock_tick} outside window {self.semantic_clock_window}"
+            )
             return False
         if PromotionTokenStore.is_nonce_used(self.single_use_nonce):
-            Logger.error(f'Token {self.token_id}: Nonce {self.single_use_nonce} already used')
+            Logger.error(f"Token {self.token_id}: Nonce {self.single_use_nonce} already used")
             return False
         PromotionTokenStore.mark_nonce_used(self.single_use_nonce)
         return True
@@ -52,8 +57,10 @@ class PromotionToken:
         """Check if token is valid for given namespace."""
         return self.target_namespace == namespace
 
+
 class PromotionTokenStore:
     """Store for tracking used nonces and token state."""
+
     _instance = None
     _used_nonces: set[str] = set()
     _active_tokens: dict[str, PromotionToken] = {}
@@ -72,7 +79,7 @@ class PromotionTokenStore:
     def mark_nonce_used(cls, nonce: str) -> None:
         """Mark nonce as used."""
         cls._used_nonces.add(nonce)
-        Logger.info(f'Marked nonce {nonce} as used')
+        Logger.info(f"Marked nonce {nonce} as used")
 
     @classmethod
     def store_token(cls, token: PromotionToken) -> None:
@@ -98,21 +105,38 @@ class PromotionTokenStore:
         cls._used_nonces.clear()
         cls._active_tokens.clear()
 
+
 class PromotionTokenIssuer:
     """Issues promotion tokens with proper scope and constraints."""
 
     def __init__(self):
         self.store = PromotionTokenStore()
 
-    def issue_promotion_token(self, target_namespace: str, semantic_clock_tick: int, window_size: int=100, replay_digest: str='', guardian_signature: str='guardian_sig') -> PromotionToken:
+    def issue_promotion_token(
+        self,
+        target_namespace: str,
+        semantic_clock_tick: int,
+        window_size: int = 100,
+        replay_digest: str = "",
+        guardian_signature: str = "guardian_sig",
+    ) -> PromotionToken:
         """Issue a new promotion token."""
-        token_id = f'promo_{secrets.token_hex(8)}'
+        token_id = f"promo_{secrets.token_hex(8)}"
         single_use_nonce = secrets.token_hex(16)
         start_tick = semantic_clock_tick
         end_tick = semantic_clock_tick + window_size
-        token = PromotionToken(token_id=token_id, allowed_action='pointer_update', target_namespace=target_namespace, semantic_clock_window=(start_tick, end_tick), replay_digest_binding=replay_digest, single_use_nonce=single_use_nonce, guardian_signature=guardian_signature, semantic_clock_tick=semantic_clock_tick)
+        token = PromotionToken(
+            token_id=token_id,
+            allowed_action="pointer_update",
+            target_namespace=target_namespace,
+            semantic_clock_window=(start_tick, end_tick),
+            replay_digest_binding=replay_digest,
+            single_use_nonce=single_use_nonce,
+            guardian_signature=guardian_signature,
+            semantic_clock_tick=semantic_clock_tick,
+        )
         self.store.store_token(token)
-        Logger.info(f'Issued promotion token {token_id} for namespace {target_namespace}')
+        Logger.info(f"Issued promotion token {token_id} for namespace {target_namespace}")
         return token
 
     def validate_token(self, token: PromotionToken, namespace: str, current_tick: int) -> bool:
@@ -126,7 +150,10 @@ class PromotionTokenIssuer:
         if token.is_expired(current_tick):
             return False
         return token.validate_scope_and_use()
+
+
 _token_issuer = None
+
 
 def get_token_issuer() -> PromotionTokenIssuer:
     """Get the singleton token issuer."""
@@ -135,7 +162,20 @@ def get_token_issuer() -> PromotionTokenIssuer:
         _token_issuer = PromotionTokenIssuer()
     return _token_issuer
 
-def issue_promotion_token(target_namespace: str, semantic_clock_tick: int, window_size: int=100, replay_digest: str='', guardian_signature: str='guardian_sig') -> PromotionToken:
+
+def issue_promotion_token(
+    target_namespace: str,
+    semantic_clock_tick: int,
+    window_size: int = 100,
+    replay_digest: str = "",
+    guardian_signature: str = "guardian_sig",
+) -> PromotionToken:
     """Issue a new promotion token."""
     issuer = get_token_issuer()
-    return issuer.issue_promotion_token(target_namespace=target_namespace, semantic_clock_tick=semantic_clock_tick, window_size=window_size, replay_digest=replay_digest, guardian_signature=guardian_signature)
+    return issuer.issue_promotion_token(
+        target_namespace=target_namespace,
+        semantic_clock_tick=semantic_clock_tick,
+        window_size=window_size,
+        replay_digest=replay_digest,
+        guardian_signature=guardian_signature,
+    )

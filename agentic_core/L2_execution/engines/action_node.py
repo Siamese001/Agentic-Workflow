@@ -1,9 +1,10 @@
 from __future__ import annotations
-'\nAction Node - Sub-atomic Execution & Output Generation\n\nHandles tool selection, execution, and output formatting.\nIsolated from perception and reasoning logic.\n'
+
+"\nAction Node - Sub-atomic Execution & Output Generation\n\nHandles tool selection, execution, and output formatting.\nIsolated from perception and reasoning logic.\n"
 import asyncio
 import time
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 class ActionNode:
     """
@@ -34,12 +35,18 @@ class ActionNode:
         """
         start_time = time.time()
         self.actions_executed += 1
-        tools = self._select_tools(reasoning['plan'])
+        tools = self._select_tools(reasoning["plan"])
         results = self._execute_tools(tools, reasoning)
         output = self._format_output(results, reasoning)
         execution_time = time.time() - start_time
         self.total_execution_time += execution_time
-        action_result = {'output': output, 'tools_used': [t['name'] for t in tools], 'tool_count': len(tools), 'execution_time': execution_time, 'success': True}
+        action_result = {
+            "output": output,
+            "tools_used": [t["name"] for t in tools],
+            "tool_count": len(tools),
+            "execution_time": execution_time,
+            "success": True,
+        }
         return action_result
 
     async def act_async(self, reasoning: dict[str, Any]) -> dict[str, Any]:
@@ -54,12 +61,18 @@ class ActionNode:
         """
         start_time = time.time()
         self.actions_executed += 1
-        tools = self._select_tools(reasoning['plan'])
+        tools = self._select_tools(reasoning["plan"])
         results = await asyncio.to_thread(self._execute_tools, tools, reasoning)
         output = await asyncio.to_thread(self._format_output, results, reasoning)
         execution_time = time.time() - start_time
         self.total_execution_time += execution_time
-        action_result = {'output': output, 'tools_used': [t['name'] for t in tools], 'tool_count': len(tools), 'execution_time': execution_time, 'success': True}
+        action_result = {
+            "output": output,
+            "tools_used": [t["name"] for t in tools],
+            "tool_count": len(tools),
+            "execution_time": execution_time,
+            "success": True,
+        }
         return action_result
 
     def act_simple(self, perceived: dict[str, Any]) -> dict[str, Any]:
@@ -77,7 +90,14 @@ class ActionNode:
         output = f"Responding to: {perceived['query'][:50]}..."
         execution_time = time.time() - start_time
         self.total_execution_time += execution_time
-        return {'output': output, 'tools_used': [], 'tool_count': 0, 'execution_time': execution_time, 'success': True, 'simple': True}
+        return {
+            "output": output,
+            "tools_used": [],
+            "tool_count": 0,
+            "execution_time": execution_time,
+            "success": True,
+            "simple": True,
+        }
 
     def _select_tools(self, plan: dict[str, Any]) -> list[dict[str, Any]]:
         """
@@ -90,12 +110,12 @@ class ActionNode:
             List of selected tools
         """
         tools = []
-        step_count = len(plan.get('steps', []))
+        step_count = len(plan.get("steps", []))
         if step_count > 0:
-            tools.append({'name': 'primary_executor', 'type': 'execution', 'priority': 1})
+            tools.append({"name": "primary_executor", "type": "execution", "priority": 1})
             self.tools_used += 1
         if step_count > 2:
-            tools.append({'name': 'secondary_executor', 'type': 'support', 'priority': 2})
+            tools.append({"name": "secondary_executor", "type": "support", "priority": 2})
             self.tools_used += 1
         return tools
 
@@ -112,7 +132,12 @@ class ActionNode:
         """
         results = []
         for tool in tools:
-            result = {'tool': tool['name'], 'status': 'success', 'output': f"Executed {tool['name']}", 'metadata': {'type': tool.get('type', 'unknown'), 'priority': tool.get('priority', 0)}}
+            result = {
+                "tool": tool["name"],
+                "status": "success",
+                "output": f"Executed {tool['name']}",
+                "metadata": {"type": tool.get("type", "unknown"), "priority": tool.get("priority", 0)},
+            }
             results.append(result)
         return results
 
@@ -128,17 +153,24 @@ class ActionNode:
             Formatted output string
         """
         if not results:
-            return 'No tools executed'
+            return "No tools executed"
         output_parts = []
         for result in results:
-            if result.get('status') == 'success':
-                output_parts.append(result.get('output', ''))
-        thoughts = reasoning.get('thoughts', [])
+            if result.get("status") == "success":
+                output_parts.append(result.get("output", ""))
+        thoughts = reasoning.get("thoughts", [])
         if thoughts:
-            output_parts.append(f'Based on {len(thoughts)} thoughts')
-        return ' | '.join(output_parts) if output_parts else 'Execution completed'
+            output_parts.append(f"Based on {len(thoughts)} thoughts")
+        return " | ".join(output_parts) if output_parts else "Execution completed"
 
     def get_statistics(self) -> dict[str, Any]:
         """Get action statistics."""
-        avg_execution_time = self.total_execution_time / self.actions_executed if self.actions_executed > 0 else 0.0
-        return {'actions_executed': self.actions_executed, 'tools_used': self.tools_used, 'total_execution_time': self.total_execution_time, 'avg_execution_time': avg_execution_time}
+        avg_execution_time = (
+            self.total_execution_time / self.actions_executed if self.actions_executed > 0 else 0.0
+        )
+        return {
+            "actions_executed": self.actions_executed,
+            "tools_used": self.tools_used,
+            "total_execution_time": self.total_execution_time,
+            "avg_execution_time": avg_execution_time,
+        }

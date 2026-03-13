@@ -3,10 +3,11 @@ LIC Routing Rules - Message type routing and constraints.
 
 Ported from: archives/LIC_capabilities/reconstructed_capabilities.py
 """
+
 from __future__ import annotations
+
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any
 
 LIMIT: int = 300
 

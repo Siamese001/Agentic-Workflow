@@ -11,9 +11,11 @@ Guarantees:
 
 Same-cycle events (commit_tick == before_tick) are structurally invisible.
 """
+
 from __future__ import annotations
+
 from agentic_core.L4_state.types.violation_event_types import ViolationEvent
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 class ViolationEventStore:
     """
@@ -32,7 +34,9 @@ class ViolationEventStore:
         Idempotent: duplicate hashes are silently ignored.
         """
         if not isinstance(event, ViolationEvent):
-            raise TypeError(f'ViolationEventStore.store_violation_event: expected ViolationEvent, got {type(event).__name__}')
+            raise TypeError(
+                f"ViolationEventStore.store_violation_event: expected ViolationEvent, got {type(event).__name__}"
+            )
         self._events[event.event_hash] = event
         return event.event_hash
 
@@ -57,7 +61,9 @@ class ViolationEventStore:
         Same-cycle events (commit_tick == before_tick) are excluded.
         """
         if window_ticks < 0:
-            raise ValueError(f'ViolationEventStore.fetch_window: window_ticks must be >= 0, got {window_ticks}')
+            raise ValueError(
+                f"ViolationEventStore.fetch_window: window_ticks must be >= 0, got {window_ticks}"
+            )
         low = before_tick - window_ticks
         window = [e for e in self._events.values() if low <= e.commit_tick < before_tick]
         return sorted(window, key=lambda e: (e.commit_tick, e.event_hash))

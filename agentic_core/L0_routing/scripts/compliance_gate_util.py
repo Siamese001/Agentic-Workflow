@@ -10,11 +10,14 @@ Critical Rules:
 2. SovereignBaseAgent itself is whitelisted (root exception)
 3. Agents must belong to valid layers (tests layer is prohibited)
 """
+
 import logging
 from typing import Any
+
 from agentic_core.runtime.utils.discovery_util import DiscoveredAgent
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 logger = logging.getLogger(__name__)
+
 
 def check_compliance(discovered_agents: list[DiscoveredAgent]) -> list[str]:
     """
@@ -28,17 +31,18 @@ def check_compliance(discovered_agents: list[DiscoveredAgent]) -> list[str]:
     """
     violations = []
     for agent in discovered_agents:
-        if agent.name == 'SovereignBaseAgent':
+        if agent.name == "SovereignBaseAgent":
             continue
-        if 'SovereignBaseAgent' not in [c.__name__ for c in agent.class_ref.__mro__]:
-            violations.append(f'{agent.name} (Orphaned: No Sovereign Inheritance)')
+        if "SovereignBaseAgent" not in [c.__name__ for c in agent.class_ref.__mro__]:
+            violations.append(f"{agent.name} (Orphaned: No Sovereign Inheritance)")
             continue
-        if agent.layer == 'unknown':
-            violations.append(f'{agent.name} (Unknown Layer)')
+        if agent.layer == "unknown":
+            violations.append(f"{agent.name} (Unknown Layer)")
     if violations:
-        logger.error(f'Compliance Violation Detected in L-Architecture: {violations}')
-        logger.error('Agents violating architectural rules will be quarantined.')
+        logger.error(f"Compliance Violation Detected in L-Architecture: {violations}")
+        logger.error("Agents violating architectural rules will be quarantined.")
     return violations
+
 
 def check_legacy_compatibility() -> dict[str, Any]:
     """
@@ -48,4 +52,8 @@ def check_legacy_compatibility() -> dict[str, Any]:
     Returns:
         Dict containing compatibility status and recommendations
     """
-    return {'status': 'compatible', 'message': 'All agents conform to Sovereign Architecture Pattern', 'recommendations': []}
+    return {
+        "status": "compatible",
+        "message": "All agents conform to Sovereign Architecture Pattern",
+        "recommendations": [],
+    }

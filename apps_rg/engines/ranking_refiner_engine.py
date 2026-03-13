@@ -2,12 +2,16 @@
 Ranking Refiner Engine - Adjusts rankings based on JD
 Refactored from RefineResumeRanking.py
 """
+
 from __future__ import annotations
+
 import logging
 from typing import Any
+
 from apps_rg.engines.base_rg_engine import BaseRGEngine
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 Logger = logging.getLogger(__name__)
+
 
 class RankingRefinerEngine(BaseRGEngine):
     """
@@ -15,21 +19,21 @@ class RankingRefinerEngine(BaseRGEngine):
     """
 
     def __init__(self, ctx: Any) -> None:
-        super().__init__(ctx, node_id='REFINE.RANKING_REFINER')
+        super().__init__(ctx, node_id="REFINE.RANKING_REFINER")
 
     async def execute(self, initial_ranking: list[str], jd_analysis: dict[str, Any]) -> list[str]:
         """
         Refine section ranking based on JD priorities.
         """
-        self._mcp_audit('ranking_refinement')
+        self._mcp_audit("ranking_refinement")
         refined_ranking = initial_ranking.copy()
-        if jd_analysis.get('technical_heavy'):
-            if 'skills' in refined_ranking:
-                refined_ranking.remove('skills')
-                refined_ranking.insert(0, 'skills')
-        if jd_analysis.get('leadership_heavy'):
-            if 'summary' in refined_ranking:
-                refined_ranking.remove('summary')
-                refined_ranking.insert(0, 'summary')
-        self.record_pass('Ranking refined based on JD analysis')
+        if jd_analysis.get("technical_heavy"):
+            if "skills" in refined_ranking:
+                refined_ranking.remove("skills")
+                refined_ranking.insert(0, "skills")
+        if jd_analysis.get("leadership_heavy"):
+            if "summary" in refined_ranking:
+                refined_ranking.remove("summary")
+                refined_ranking.insert(0, "summary")
+        self.record_pass("Ranking refined based on JD analysis")
         return refined_ranking

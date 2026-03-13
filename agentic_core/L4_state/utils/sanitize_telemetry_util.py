@@ -9,19 +9,27 @@ COGNITIVE HARDENING (Feb 2026):
 - Preserves head/tail context for debugging
 - Special handling for Python tracebacks to preserve actual errors
 """
+
 from typing import Final
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 DEFAULT_MAX_CHARS: Final[int] = 2000
 HEAD_SIZE: Final[int] = 500
 TAIL_SIZE: Final[int] = 500
-TRACEBACK_PATTERNS: Final[tuple[str, ...]] = ('Traceback (most recent call last):', 'Error:', 'Exception:', 'raise ')
+TRACEBACK_PATTERNS: Final[tuple[str, ...]] = (
+    "Traceback (most recent call last):",
+    "Error:",
+    "Exception:",
+    "raise ",
+)
+
 
 def _is_traceback(output: str) -> bool:
     """Detect if output contains a Python traceback."""
-    return any((pattern in output for pattern in TRACEBACK_PATTERNS))
+    return any(pattern in output for pattern in TRACEBACK_PATTERNS)
+
 
 # guardian: allow-magic-config
-def _extract_traceback_tail(output: str, max_tail: int=1000) -> str:
+def _extract_traceback_tail(output: str, max_tail: int = 1000) -> str:
     """
     Extract the meaningful tail of a traceback.
 
@@ -31,16 +39,22 @@ def _extract_traceback_tail(output: str, max_tail: int=1000) -> str:
     lines = output.splitlines()
     traceback_start = -1
     for i, line in enumerate(lines):
-        if 'Traceback (most recent call last):' in line:
+        if "Traceback (most recent call last):" in line:
             traceback_start = i
     if traceback_start >= 0:
-        traceback_section = '\n'.join(lines[traceback_start:])
+        traceback_section = "\n".join(lines[traceback_start:])
         if len(traceback_section) <= max_tail:
             return traceback_section
         return traceback_section[-max_tail:]
     return output[-max_tail:] if len(output) > max_tail else output
 
-def sanitize_tool_output(output: str, max_chars: int=DEFAULT_MAX_CHARS, head_size: int | None=None, tail_size: int | None=None) -> str:
+
+def sanitize_tool_output(
+    output: str,
+    max_chars: int = DEFAULT_MAX_CHARS,
+    head_size: int | None = None,
+    tail_size: int | None = None,
+) -> str:
     """
     Sanitize tool output to prevent token overload.
 
@@ -75,8 +89,10 @@ def sanitize_tool_output(output: str, max_chars: int=DEFAULT_MAX_CHARS, head_siz
         traceback_tail = _extract_traceback_tail(output, traceback_tail_size)
         head = output[:head_size]
         pruned_chars = output_len - head_size - len(traceback_tail)
-        return f'{head}\n\n...[Pruned {pruned_chars} chars - Traceback preserved]...\n\n{traceback_tail}'
+        return f"{head}\n\n...[Pruned {pruned_chars} chars - Traceback preserved]...\n\n{traceback_tail}"
     head = output[:head_size]
     tail = output[-tail_size:]
-    return f'{head}\n\n...[Pruned {pruned_chars} chars]...\n\n{tail}'
-__all__ = ['sanitize_tool_output']
+    return f"{head}\n\n...[Pruned {pruned_chars} chars]...\n\n{tail}"
+
+
+__all__ = ["sanitize_tool_output"]

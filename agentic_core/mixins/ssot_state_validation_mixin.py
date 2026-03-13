@@ -10,20 +10,24 @@ Provides state validation that:
 Layer: L2 Execution Aid
 Authority: Validate only. No L4 mutation. No routing influence.
 """
+
 from __future__ import annotations
+
 import logging
 import time
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
-_logger = logging.getLogger('SSOTStateValidation')
+
+_logger = logging.getLogger("SSOTStateValidation")
+
 
 class SSOTStateValidationError(Exception):
     """Raised when state validation fails. Must never be swallowed."""
 
-    def __init__(self, condition: str, details: dict[str, Any] | None=None):
+    def __init__(self, condition: str, details: dict[str, Any] | None = None):
         self.condition = condition
         self.details = details or {}
-        super().__init__(f'State validation failed: {condition}')
+        super().__init__(f"State validation failed: {condition}")
+
 
 class SSOTStateValidationMixin:
     """Pre/post-condition validation for healing operations.
@@ -36,7 +40,9 @@ class SSOTStateValidationMixin:
         super().__init__(**kwargs)
         self._ssot_validation_failures: list[dict[str, Any]] = []
 
-    def validate_precondition(self, condition_name: str, check: bool, details: dict[str, Any] | None=None) -> None:
+    def validate_precondition(
+        self, condition_name: str, check: bool, details: dict[str, Any] | None = None
+    ) -> None:
         """Assert a precondition before a healing operation.
 
         Parameters
@@ -55,27 +61,49 @@ class SSOTStateValidationMixin:
         """
         if check:
             return
-        failure = {'type': 'precondition', 'condition': condition_name, 'timestamp': time.time(), 'policy_hash': getattr(self, 'active_policy_hash', 'unknown'), 'details': details or {}}
+        failure = {
+            "type": "precondition",
+            "condition": condition_name,
+            "timestamp": time.time(),
+            "policy_hash": getattr(self, "active_policy_hash", "unknown"),
+            "details": details or {},
+        }
         self._ssot_validation_failures.append(failure)
-        state = getattr(self, 'state', None)
+        state = getattr(self, "state", None)
         if isinstance(state, dict):
-            state.setdefault('validation_failures', []).append(failure)
-        _logger.error('[SSOTValidation] Precondition FAILED: %s | policy_hash=%s', condition_name, failure['policy_hash'][:12])
+            state.setdefault("validation_failures", []).append(failure)
+        _logger.error(
+            "[SSOTValidation] Precondition FAILED: %s | policy_hash=%s",
+            condition_name,
+            failure["policy_hash"][:12],
+        )
         raise SSOTStateValidationError(condition_name, details)
 
-    def validate_postcondition(self, condition_name: str, check: bool, details: dict[str, Any] | None=None) -> None:
+    def validate_postcondition(
+        self, condition_name: str, check: bool, details: dict[str, Any] | None = None
+    ) -> None:
         """Assert a postcondition after a healing operation.
 
         Same semantics as validate_precondition but tagged as postcondition.
         """
         if check:
             return
-        failure = {'type': 'postcondition', 'condition': condition_name, 'timestamp': time.time(), 'policy_hash': getattr(self, 'active_policy_hash', 'unknown'), 'details': details or {}}
+        failure = {
+            "type": "postcondition",
+            "condition": condition_name,
+            "timestamp": time.time(),
+            "policy_hash": getattr(self, "active_policy_hash", "unknown"),
+            "details": details or {},
+        }
         self._ssot_validation_failures.append(failure)
-        state = getattr(self, 'state', None)
+        state = getattr(self, "state", None)
         if isinstance(state, dict):
-            state.setdefault('validation_failures', []).append(failure)
-        _logger.error('[SSOTValidation] Postcondition FAILED: %s | policy_hash=%s', condition_name, failure['policy_hash'][:12])
+            state.setdefault("validation_failures", []).append(failure)
+        _logger.error(
+            "[SSOTValidation] Postcondition FAILED: %s | policy_hash=%s",
+            condition_name,
+            failure["policy_hash"][:12],
+        )
         raise SSOTStateValidationError(condition_name, details)
 
     def validate_safety_cleared(self) -> None:
@@ -83,16 +111,23 @@ class SSOTStateValidationMixin:
 
         Raises SSOTStateValidationError if safety is not CLEARED.
         """
-        status = getattr(self, 'safety_status', 'PENDING')
-        self.validate_precondition('safety_status_cleared', status == 'CLEARED', {'actual_status': status})
+        status = getattr(self, "safety_status", "PENDING")
+        self.validate_precondition("safety_status_cleared", status == "CLEARED", {"actual_status": status})
 
     def validate_policy_hash_stable(self) -> None:
         """Assert that policy hash has not drifted since construction.
 
         Raises SSOTStateValidationError if drift detected.
         """
-        drifted = getattr(self, 'policy_hash_drifted', lambda: False)()
-        self.validate_precondition('policy_hash_stable', not drifted, {'initial': getattr(self, 'initial_policy_hash', 'unknown'), 'current': getattr(self, 'active_policy_hash', 'unknown')})
+        drifted = getattr(self, "policy_hash_drifted", lambda: False)()
+        self.validate_precondition(
+            "policy_hash_stable",
+            not drifted,
+            {
+                "initial": getattr(self, "initial_policy_hash", "unknown"),
+                "current": getattr(self, "active_policy_hash", "unknown"),
+            },
+        )
 
     @property
     def validation_failure_count(self) -> int:

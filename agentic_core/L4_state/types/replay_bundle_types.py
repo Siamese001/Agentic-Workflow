@@ -9,16 +9,20 @@ replay_hash = sha256(canonical_bytes excluding replay_hash).
 All list fields sorted for determinism.
 Volatile fields excluded from canonical_bytes.
 """
+
 from __future__ import annotations
+
 import hashlib
 import json
 from dataclasses import dataclass, field
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 _SCHEMA_VERSION: int = 1
+
 
 def _sha256(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
+
 
 @dataclass
 class ReplayBundle:
@@ -41,6 +45,7 @@ class ReplayBundle:
     tool_result_hashes          : list  — sorted list of ToolResult.result_hash strings
     replay_hash                 : str   — sha256(canonical_bytes); auto-computed
     """
+
     schema_version: int
     mission_id: str
     execution_start_tick: int
@@ -53,33 +58,39 @@ class ReplayBundle:
     prior_violation_event_hashes: list[str]
     tool_intent_hashes: list[str]
     tool_result_hashes: list[str]
-    replay_hash: str = field(default='', init=False)
+    replay_hash: str = field(default="", init=False)
 
     def __post_init__(self) -> None:
         if self.schema_version != _SCHEMA_VERSION:
-            raise ValueError(f'ReplayBundle: schema_version must be {_SCHEMA_VERSION}, got {self.schema_version!r}')
+            raise ValueError(
+                f"ReplayBundle: schema_version must be {_SCHEMA_VERSION}, got {self.schema_version!r}"
+            )
         if not self.mission_id:
-            raise ValueError('ReplayBundle: mission_id must be non-empty')
+            raise ValueError("ReplayBundle: mission_id must be non-empty")
         if self.execution_start_tick < 0:
-            raise ValueError(f'ReplayBundle: execution_start_tick must be >= 0, got {self.execution_start_tick}')
+            raise ValueError(
+                f"ReplayBundle: execution_start_tick must be >= 0, got {self.execution_start_tick}"
+            )
         if self.execution_end_tick < self.execution_start_tick:
-            raise ValueError(f'ReplayBundle: execution_end_tick ({self.execution_end_tick}) must be >= execution_start_tick ({self.execution_start_tick})')
+            raise ValueError(
+                f"ReplayBundle: execution_end_tick ({self.execution_end_tick}) must be >= execution_start_tick ({self.execution_start_tick})"
+            )
         if not self.manifest_hash:
-            raise ValueError('ReplayBundle: manifest_hash must be non-empty')
+            raise ValueError("ReplayBundle: manifest_hash must be non-empty")
         if not isinstance(self.active_config_hashes, dict):
-            raise TypeError('ReplayBundle: active_config_hashes must be a dict')
+            raise TypeError("ReplayBundle: active_config_hashes must be a dict")
         if self.retrieval_used and (not self.citation_hash):
-            raise ValueError('ReplayBundle: citation_hash is required when retrieval_used=True')
+            raise ValueError("ReplayBundle: citation_hash is required when retrieval_used=True")
         if not isinstance(self.prior_violation_event_hashes, list):
-            raise TypeError('ReplayBundle: prior_violation_event_hashes must be a list')
+            raise TypeError("ReplayBundle: prior_violation_event_hashes must be a list")
         if not isinstance(self.tool_intent_hashes, list):
-            raise TypeError('ReplayBundle: tool_intent_hashes must be a list')
+            raise TypeError("ReplayBundle: tool_intent_hashes must be a list")
         if not isinstance(self.tool_result_hashes, list):
-            raise TypeError('ReplayBundle: tool_result_hashes must be a list')
+            raise TypeError("ReplayBundle: tool_result_hashes must be a list")
         self.prior_violation_event_hashes = sorted(self.prior_violation_event_hashes)
         self.tool_intent_hashes = sorted(self.tool_intent_hashes)
         self.tool_result_hashes = sorted(self.tool_result_hashes)
-        object.__setattr__(self, 'replay_hash', _sha256(self.canonical_bytes()))
+        object.__setattr__(self, "replay_hash", _sha256(self.canonical_bytes()))
 
     def canonical_bytes(self) -> bytes:
         """
@@ -87,12 +98,68 @@ class ReplayBundle:
         All list fields sorted. active_config_hashes keys sorted.
         No volatile fields (timestamps, trace IDs).
         """
-        doc: dict[str, Any] = {'active_config_hashes': {k: self.active_config_hashes[k] for k in sorted(self.active_config_hashes)}, 'citation_hash': self.citation_hash, 'execution_end_tick': self.execution_end_tick, 'execution_start_tick': self.execution_start_tick, 'manifest_hash': self.manifest_hash, 'mission_id': self.mission_id, 'prior_detection_signal_hash': self.prior_detection_signal_hash, 'prior_violation_event_hashes': sorted(self.prior_violation_event_hashes), 'retrieval_used': self.retrieval_used, 'schema_version': self.schema_version, 'tool_intent_hashes': sorted(self.tool_intent_hashes), 'tool_result_hashes': sorted(self.tool_result_hashes)}
-        return json.dumps(doc, sort_keys=True, separators=(',', ':')).encode()
+        doc: dict[str, Any] = {
+            "active_config_hashes": {
+                k: self.active_config_hashes[k] for k in sorted(self.active_config_hashes)
+            },
+            "citation_hash": self.citation_hash,
+            "execution_end_tick": self.execution_end_tick,
+            "execution_start_tick": self.execution_start_tick,
+            "manifest_hash": self.manifest_hash,
+            "mission_id": self.mission_id,
+            "prior_detection_signal_hash": self.prior_detection_signal_hash,
+            "prior_violation_event_hashes": sorted(self.prior_violation_event_hashes),
+            "retrieval_used": self.retrieval_used,
+            "schema_version": self.schema_version,
+            "tool_intent_hashes": sorted(self.tool_intent_hashes),
+            "tool_result_hashes": sorted(self.tool_result_hashes),
+        }
+        return json.dumps(doc, sort_keys=True, separators=(",", ":")).encode()
 
     def to_dict(self) -> dict[str, Any]:
-        return {'schema_version': self.schema_version, 'mission_id': self.mission_id, 'execution_start_tick': self.execution_start_tick, 'execution_end_tick': self.execution_end_tick, 'manifest_hash': self.manifest_hash, 'active_config_hashes': dict(self.active_config_hashes), 'retrieval_used': self.retrieval_used, 'citation_hash': self.citation_hash, 'prior_detection_signal_hash': self.prior_detection_signal_hash, 'prior_violation_event_hashes': list(self.prior_violation_event_hashes), 'tool_intent_hashes': list(self.tool_intent_hashes), 'tool_result_hashes': list(self.tool_result_hashes), 'replay_hash': self.replay_hash}
+        return {
+            "schema_version": self.schema_version,
+            "mission_id": self.mission_id,
+            "execution_start_tick": self.execution_start_tick,
+            "execution_end_tick": self.execution_end_tick,
+            "manifest_hash": self.manifest_hash,
+            "active_config_hashes": dict(self.active_config_hashes),
+            "retrieval_used": self.retrieval_used,
+            "citation_hash": self.citation_hash,
+            "prior_detection_signal_hash": self.prior_detection_signal_hash,
+            "prior_violation_event_hashes": list(self.prior_violation_event_hashes),
+            "tool_intent_hashes": list(self.tool_intent_hashes),
+            "tool_result_hashes": list(self.tool_result_hashes),
+            "replay_hash": self.replay_hash,
+        }
 
-def build_replay_bundle(mission_id: str, execution_start_tick: int, execution_end_tick: int, manifest_hash: str, active_config_hashes: dict[str, str], *, retrieval_used: bool=False, citation_hash: str='', prior_detection_signal_hash: str='', prior_violation_event_hashes: list[str] | None=None, tool_intent_hashes: list[str] | None=None, tool_result_hashes: list[str] | None=None) -> ReplayBundle:
+
+def build_replay_bundle(
+    mission_id: str,
+    execution_start_tick: int,
+    execution_end_tick: int,
+    manifest_hash: str,
+    active_config_hashes: dict[str, str],
+    *,
+    retrieval_used: bool = False,
+    citation_hash: str = "",
+    prior_detection_signal_hash: str = "",
+    prior_violation_event_hashes: list[str] | None = None,
+    tool_intent_hashes: list[str] | None = None,
+    tool_result_hashes: list[str] | None = None,
+) -> ReplayBundle:
     """Factory: build a ReplayBundle from execution parameters."""
-    return ReplayBundle(schema_version=_SCHEMA_VERSION, mission_id=mission_id, execution_start_tick=execution_start_tick, execution_end_tick=execution_end_tick, manifest_hash=manifest_hash, active_config_hashes=active_config_hashes, retrieval_used=retrieval_used, citation_hash=citation_hash, prior_detection_signal_hash=prior_detection_signal_hash, prior_violation_event_hashes=prior_violation_event_hashes or [], tool_intent_hashes=tool_intent_hashes or [], tool_result_hashes=tool_result_hashes or [])
+    return ReplayBundle(
+        schema_version=_SCHEMA_VERSION,
+        mission_id=mission_id,
+        execution_start_tick=execution_start_tick,
+        execution_end_tick=execution_end_tick,
+        manifest_hash=manifest_hash,
+        active_config_hashes=active_config_hashes,
+        retrieval_used=retrieval_used,
+        citation_hash=citation_hash,
+        prior_detection_signal_hash=prior_detection_signal_hash,
+        prior_violation_event_hashes=prior_violation_event_hashes or [],
+        tool_intent_hashes=tool_intent_hashes or [],
+        tool_result_hashes=tool_result_hashes or [],
+    )

@@ -11,22 +11,57 @@ No ad-hoc keys. Deterministic ordering throughout.
 
 Contract version is an integer that increments on breaking changes.
 """
+
 from __future__ import annotations
+
 import json
 from dataclasses import dataclass
 from enum import Enum
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 class ApprovalDecision(str, Enum):
     """Decision outcome for an approval gate."""
-    APPROVED = 'APPROVED'
-    REJECTED = 'REJECTED'
-APPROVAL_DECISION_VALUES: frozenset[str] = frozenset((s.value for s in ApprovalDecision))
+
+    APPROVED = "APPROVED"
+    REJECTED = "REJECTED"
+
+
+APPROVAL_DECISION_VALUES: frozenset[str] = frozenset(s.value for s in ApprovalDecision)
 CONTRACT_VERSION: int = 1
-CONTRACT_JSON_SCHEMA: dict[str, Any] = {'$schema': 'https://json-schema.org/draft/2020-12/schema', 'title': 'ApprovalBundle', 'type': 'object', 'required': ['contract_version', 'records'], 'additionalProperties': False, 'properties': {'contract_version': {'type': 'integer', 'minimum': 1}, 'records': {'type': 'array', 'items': {'type': 'object', 'required': ['phase_name', 'check_ids', 'decision', 'approver', 'token', 'created_utc'], 'additionalProperties': False, 'properties': {'phase_name': {'type': 'string', 'minLength': 1}, 'guardian_id': {'type': ['string', 'null']}, 'check_ids': {'type': 'array', 'items': {'type': 'string'}}, 'decision': {'type': 'string', 'enum': sorted(APPROVAL_DECISION_VALUES)}, 'approver': {'type': 'string', 'minLength': 1}, 'rationale': {'type': ['string', 'null']}, 'token': {'type': 'string', 'minLength': 1}, 'created_utc': {'type': 'string', 'minLength': 1}}}}}}
-BUNDLE_SCHEMA_KEYS: frozenset[str] = frozenset(CONTRACT_JSON_SCHEMA['properties'].keys())
-RECORD_SCHEMA_KEYS: frozenset[str] = frozenset(CONTRACT_JSON_SCHEMA['properties']['records']['items']['properties'].keys())
+CONTRACT_JSON_SCHEMA: dict[str, Any] = {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "ApprovalBundle",
+    "type": "object",
+    "required": ["contract_version", "records"],
+    "additionalProperties": False,
+    "properties": {
+        "contract_version": {"type": "integer", "minimum": 1},
+        "records": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": ["phase_name", "check_ids", "decision", "approver", "token", "created_utc"],
+                "additionalProperties": False,
+                "properties": {
+                    "phase_name": {"type": "string", "minLength": 1},
+                    "guardian_id": {"type": ["string", "null"]},
+                    "check_ids": {"type": "array", "items": {"type": "string"}},
+                    "decision": {"type": "string", "enum": sorted(APPROVAL_DECISION_VALUES)},
+                    "approver": {"type": "string", "minLength": 1},
+                    "rationale": {"type": ["string", "null"]},
+                    "token": {"type": "string", "minLength": 1},
+                    "created_utc": {"type": "string", "minLength": 1},
+                },
+            },
+        },
+    },
+}
+BUNDLE_SCHEMA_KEYS: frozenset[str] = frozenset(CONTRACT_JSON_SCHEMA["properties"].keys())
+RECORD_SCHEMA_KEYS: frozenset[str] = frozenset(
+    CONTRACT_JSON_SCHEMA["properties"]["records"]["items"]["properties"].keys()
+)
+
 
 @dataclass(frozen=True, slots=True)
 class ApprovalRecord:
@@ -42,6 +77,7 @@ class ApprovalRecord:
         token: Opaque token ID referenced by L2.
         created_utc: ISO-8601 timestamp (required, no auto-now).
     """
+
     phase_name: str
     decision: ApprovalDecision
     approver: str
@@ -53,21 +89,31 @@ class ApprovalRecord:
 
     def __post_init__(self) -> None:
         if not self.phase_name:
-            raise ValueError('phase_name must not be empty')
+            raise ValueError("phase_name must not be empty")
         if not isinstance(self.decision, ApprovalDecision):
-            raise ValueError(f'decision must be an ApprovalDecision enum, got {type(self.decision).__name__}')
+            raise ValueError(f"decision must be an ApprovalDecision enum, got {type(self.decision).__name__}")
         if not self.approver:
-            raise ValueError('approver must not be empty')
+            raise ValueError("approver must not be empty")
         if not self.token:
-            raise ValueError('token must not be empty')
+            raise ValueError("token must not be empty")
         if not self.created_utc:
-            raise ValueError('created_utc must not be empty')
+            raise ValueError("created_utc must not be empty")
         if not isinstance(self.check_ids, tuple):
-            raise TypeError('check_ids must be a tuple')
+            raise TypeError("check_ids must be a tuple")
 
     def to_dict(self) -> dict[str, Any]:
         """Deterministic dict: check_ids sorted."""
-        return {'phase_name': self.phase_name, 'guardian_id': self.guardian_id, 'check_ids': sorted(self.check_ids), 'decision': self.decision.value, 'approver': self.approver, 'rationale': self.rationale, 'token': self.token, 'created_utc': self.created_utc}
+        return {
+            "phase_name": self.phase_name,
+            "guardian_id": self.guardian_id,
+            "check_ids": sorted(self.check_ids),
+            "decision": self.decision.value,
+            "approver": self.approver,
+            "rationale": self.rationale,
+            "token": self.token,
+            "created_utc": self.created_utc,
+        }
+
 
 @dataclass(frozen=True, slots=True)
 class ApprovalBundle:
@@ -76,23 +122,28 @@ class ApprovalBundle:
     Attributes:
         records: Sorted tuple of ApprovalRecord objects (sorted by token).
     """
+
     records: tuple[ApprovalRecord, ...]
 
     def __post_init__(self) -> None:
         if not isinstance(self.records, tuple):
-            raise TypeError('records must be a tuple of ApprovalRecord')
+            raise TypeError("records must be a tuple of ApprovalRecord")
 
     def to_dict(self) -> dict[str, Any]:
         """Deterministic dict: records sorted by token."""
-        return {'contract_version': CONTRACT_VERSION, 'records': sorted([r.to_dict() for r in self.records], key=lambda d: d['token'])}
+        return {
+            "contract_version": CONTRACT_VERSION,
+            "records": sorted([r.to_dict() for r in self.records], key=lambda d: d["token"]),
+        }
 
-    def to_json(self, indent: int=2) -> str:
+    def to_json(self, indent: int = 2) -> str:
         """Serialize to deterministic JSON string."""
         return json.dumps(self.to_dict(), indent=indent, sort_keys=False)
 
     def validate(self) -> list[str]:
         """Validate against CONTRACT_JSON_SCHEMA. Returns list of errors (empty = valid)."""
         return validate_against_json_schema(self.to_dict())
+
 
 def check_schema_compatibility(result_dict: dict[str, Any]) -> list[str]:
     """Verify a serialized result dict has exactly the expected top-level keys.
@@ -105,14 +156,17 @@ def check_schema_compatibility(result_dict: dict[str, Any]) -> list[str]:
     missing = expected_keys - actual_keys
     extra = actual_keys - expected_keys
     if missing:
-        errors.append(f'Missing required keys: {sorted(missing)}')
+        errors.append(f"Missing required keys: {sorted(missing)}")
     if extra:
-        errors.append(f'Unexpected keys (schema drift): {sorted(extra)}')
-    for record in result_dict.get('records', []):
+        errors.append(f"Unexpected keys (schema drift): {sorted(extra)}")
+    for record in result_dict.get("records", []):
         record_keys = set(record.keys())
         if record_keys != RECORD_SCHEMA_KEYS:
-            errors.append(f'Record keys mismatch: expected {sorted(RECORD_SCHEMA_KEYS)}, got {sorted(record_keys)}')
+            errors.append(
+                f"Record keys mismatch: expected {sorted(RECORD_SCHEMA_KEYS)}, got {sorted(record_keys)}"
+            )
     return errors
+
 
 def validate_against_json_schema(result_dict: dict[str, Any]) -> list[str]:
     """Lightweight validation of result_dict against CONTRACT_JSON_SCHEMA.
@@ -127,41 +181,41 @@ def validate_against_json_schema(result_dict: dict[str, Any]) -> list[str]:
 
     def _validate_type(value: Any, type_spec: Any, path: str) -> None:
         if isinstance(type_spec, list):
-            if value is None and 'null' in type_spec:
+            if value is None and "null" in type_spec:
                 return
             for t in type_spec:
-                if t == 'null':
+                if t == "null":
                     continue
-                if t == 'string' and isinstance(value, str):
+                if t == "string" and isinstance(value, str):
                     return
-                if t == 'integer' and isinstance(value, int) and (not isinstance(value, bool)):
+                if t == "integer" and isinstance(value, int) and (not isinstance(value, bool)):
                     return
-                if t == 'object' and isinstance(value, dict):
+                if t == "object" and isinstance(value, dict):
                     return
-                if t == 'array' and isinstance(value, list):
+                if t == "array" and isinstance(value, list):
                     return
-            errors.append(f'{path}: expected one of {type_spec}, got {type(value).__name__}')
-        elif type_spec == 'string':
+            errors.append(f"{path}: expected one of {type_spec}, got {type(value).__name__}")
+        elif type_spec == "string":
             if not isinstance(value, str):
-                errors.append(f'{path}: expected string, got {type(value).__name__}')
-        elif type_spec == 'integer':
+                errors.append(f"{path}: expected string, got {type(value).__name__}")
+        elif type_spec == "integer":
             if not isinstance(value, int) or isinstance(value, bool):
-                errors.append(f'{path}: expected integer, got {type(value).__name__}')
-        elif type_spec == 'object':
+                errors.append(f"{path}: expected integer, got {type(value).__name__}")
+        elif type_spec == "object":
             if not isinstance(value, dict):
-                errors.append(f'{path}: expected object, got {type(value).__name__}')
-        elif type_spec == 'array':
+                errors.append(f"{path}: expected object, got {type(value).__name__}")
+        elif type_spec == "array":
             if not isinstance(value, list):
-                errors.append(f'{path}: expected array, got {type(value).__name__}')
+                errors.append(f"{path}: expected array, got {type(value).__name__}")
 
     def _validate_enum(value: Any, enum_values: list[str], path: str) -> None:
         if value not in enum_values:
             errors.append(f"{path}: value '{value}' not in enum {enum_values}")
 
     def _validate_object(obj: dict, obj_schema: dict, path: str) -> None:
-        props = obj_schema.get('properties', {})
-        required = set(obj_schema.get('required', []))
-        additional = obj_schema.get('additionalProperties', True)
+        props = obj_schema.get("properties", {})
+        required = set(obj_schema.get("required", []))
+        additional = obj_schema.get("additionalProperties", True)
         for req in required:
             if req not in obj:
                 errors.append(f"{path}: missing required field '{req}'")
@@ -172,25 +226,30 @@ def validate_against_json_schema(result_dict: dict[str, Any]) -> list[str]:
         for key, val in obj.items():
             if key in props:
                 prop_schema = props[key]
-                field_path = f'{path}.{key}'
-                if 'type' in prop_schema:
-                    _validate_type(val, prop_schema['type'], field_path)
-                if 'enum' in prop_schema and val is not None:
-                    _validate_enum(val, prop_schema['enum'], field_path)
-                if 'minLength' in prop_schema and isinstance(val, str):
-                    if len(val) < prop_schema['minLength']:
-                        errors.append(f"{field_path}: string length {len(val)} < minLength {prop_schema['minLength']}")
-                if prop_schema.get('type') == 'object' and isinstance(val, dict):
+                field_path = f"{path}.{key}"
+                if "type" in prop_schema:
+                    _validate_type(val, prop_schema["type"], field_path)
+                if "enum" in prop_schema and val is not None:
+                    _validate_enum(val, prop_schema["enum"], field_path)
+                if "minLength" in prop_schema and isinstance(val, str):
+                    if len(val) < prop_schema["minLength"]:
+                        errors.append(
+                            f"{field_path}: string length {len(val)} < minLength {prop_schema['minLength']}"
+                        )
+                if prop_schema.get("type") == "object" and isinstance(val, dict):
                     _validate_object(val, prop_schema, field_path)
-                if prop_schema.get('type') == 'array' and isinstance(val, list):
-                    item_schema = prop_schema.get('items', {})
+                if prop_schema.get("type") == "array" and isinstance(val, list):
+                    item_schema = prop_schema.get("items", {})
                     for i, item in enumerate(val):
-                        if item_schema.get('type') == 'object' and isinstance(item, dict):
-                            _validate_object(item, item_schema, f'{field_path}[{i}]')
-                        elif 'type' in item_schema:
-                            _validate_type(item, item_schema['type'], f'{field_path}[{i}]')
-                        if 'enum' in item_schema and item is not None:
-                            _validate_enum(item, item_schema['enum'], f'{field_path}[{i}]')
-    _validate_object(result_dict, schema, '$')
+                        if item_schema.get("type") == "object" and isinstance(item, dict):
+                            _validate_object(item, item_schema, f"{field_path}[{i}]")
+                        elif "type" in item_schema:
+                            _validate_type(item, item_schema["type"], f"{field_path}[{i}]")
+                        if "enum" in item_schema and item is not None:
+                            _validate_enum(item, item_schema["enum"], f"{field_path}[{i}]")
+
+    _validate_object(result_dict, schema, "$")
     return errors
-__all__ = ['ApprovalBundle', 'ApprovalDecision', 'ApprovalRecord']
+
+
+__all__ = ["ApprovalBundle", "ApprovalDecision", "ApprovalRecord"]

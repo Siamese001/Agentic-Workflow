@@ -1,33 +1,48 @@
 from __future__ import annotations
+
 import time
 import uuid
 from dataclasses import dataclass
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR, LAYER_ROOTS
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    DEFAULT_TIMEOUT,
+    LAYER_ROOTS,
+)
+
 try:
     import numpy as np
 except ImportError as _err:
     raise ImportError("numpy is required for this module. Install with: pip install -e '.[infra]'") from _err
 
+
 def _get_layer_entry():
     """Lazy load layer_entry to avoid upward import."""
     from agentic_core.L6_observability.reasoning.layer_decorator import layer_entry
+
     return layer_entry
+
+
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
+
 try:
     from agentic_core.runtime.shared_runtime import publish_event, subscribe_event
 except ImportError:
 
     def publish_event(event_type: str, payload: dict) -> Any:
         """Execute publish_event operation."""
-        print(f'[CoverageAgent] Event published (stub): {event_type} = {payload}')
+        print(f"[CoverageAgent] Event published (stub): {event_type} = {payload}")
 
     def subscribe_event(event_type: str, handler) -> Any:
         """Execute subscribe_event operation."""
-        print(f'[CoverageAgent] Event subscription (stub): {event_type}')
+        print(f"[CoverageAgent] Event subscription (stub): {event_type}")
+
+
 try:
     from agentic_core.L3_orchestration.reasoning.task_queue import enqueue
 except ImportError:
@@ -36,12 +51,23 @@ except ImportError:
         """Execute enqueue operation."""
         print(f"[CoverageAgent] Task enqueued (stub): {task_payload['task_id']}")
 
+
 @dataclass
 class CoverageAgent(SovereignBaseAgent):
     """CoverageAgent agent for autonomous operations."""
 
     # guardian: allow-magic-config
-    def __init__(self, layers: list[str] | None=None, threshold_entropy: float=2.2, dashboard_api_url: str='http://localhost:8000/api/metrics', intervention_mode: str='full_active', bias_weight: float=4.0, bias_duration_cycles: int=30, synthetic_tasks_per_trigger: int=10, priority_boost_layers: list[str] | None=None) -> None:
+    def __init__(
+        self,
+        layers: list[str] | None = None,
+        threshold_entropy: float = 2.2,
+        dashboard_api_url: str = "http://localhost:8000/api/metrics",
+        intervention_mode: str = "full_active",
+        bias_weight: float = 4.0,
+        bias_duration_cycles: int = 30,
+        synthetic_tasks_per_trigger: int = 10,
+        priority_boost_layers: list[str] | None = None,
+    ) -> None:
         """
         Initialize coverage agent.
 
@@ -55,25 +81,41 @@ class CoverageAgent(SovereignBaseAgent):
             synthetic_tasks_per_trigger: Number of synthetic tasks per trigger
             priority_boost_layers: Ordered list of layers for forced exploration
         """
-        self.name: str = 'CoverageAgent'
-        self.layers: list[str] = layers or [*sorted(LAYER_ROOTS), 'config', 'schemas', 'prompt_governance', 'observability', 'utils', APPS_RG_DIR, APPS_LIC_DIR, APPS_SHARED_DIR]
+        self.name: str = "CoverageAgent"
+        self.layers: list[str] = layers or [
+            *sorted(LAYER_ROOTS),
+            "config",
+            "schemas",
+            "prompt_governance",
+            "observability",
+            "utils",
+            APPS_RG_DIR,
+            APPS_LIC_DIR,
+            APPS_SHARED_DIR,
+        ]
         self.threshold_entropy: float = threshold_entropy
         self.dashboard_api_url: str = dashboard_api_url
         self.intervention_mode: str = intervention_mode
         self.bias_weight: float = bias_weight
         self.bias_duration_cycles: int = bias_duration_cycles
         self.synthetic_tasks_per_trigger: int = synthetic_tasks_per_trigger
-        self.priority_boost_layers: list[str] = priority_boost_layers or ['L5_safety', 'L4_state', 'L1_cognition', 'observability', 'utils']
-        subscribe_event('coverage_params_updated', self._handle_param_update)
+        self.priority_boost_layers: list[str] = priority_boost_layers or [
+            "L5_safety",
+            "L4_state",
+            "L1_cognition",
+            "observability",
+            "utils",
+        ]
+        subscribe_event("coverage_params_updated", self._handle_param_update)
 
     def _handle_param_update(self, event_data: dict) -> None:
         """Handle parameter updates from MetaCoverageOptimizerAgent."""
-        if 'bias_weight' in event_data:
-            self.bias_weight = event_data['bias_weight']
-            print(f'[{self.name}] Updated bias_weight to {self.bias_weight}')
-        if 'synthetic_tasks_per_trigger' in event_data:
-            self.synthetic_tasks_per_trigger = event_data['synthetic_tasks_per_trigger']
-            print(f'[{self.name}] Updated synthetic_tasks_per_trigger to {self.synthetic_tasks_per_trigger}')
+        if "bias_weight" in event_data:
+            self.bias_weight = event_data["bias_weight"]
+            print(f"[{self.name}] Updated bias_weight to {self.bias_weight}")
+        if "synthetic_tasks_per_trigger" in event_data:
+            self.synthetic_tasks_per_trigger = event_data["synthetic_tasks_per_trigger"]
+            print(f"[{self.name}] Updated synthetic_tasks_per_trigger to {self.synthetic_tasks_per_trigger}")
 
     def _fetch_metrics(self) -> dict[str, int] | None:
         """Pull layer activation counts from dashboard backend."""
@@ -81,10 +123,10 @@ class CoverageAgent(SovereignBaseAgent):
             response = requests.get(self.dashboard_api_url, timeout=DEFAULT_TIMEOUT)
             response.raise_for_status()
             data = response.json()
-            return data.get('layer_counts', {})
+            return data.get("layer_counts", {})
         # guardian: allow-silent-swallow
         except Exception as e:
-            print(f'[{self.name}] Metrics fetch failed: {e}')
+            print(f"[{self.name}] Metrics fetch failed: {e}")
             return None
 
     def _compute_proportions(self, counts: dict[str, int]) -> dict[str, float]:
@@ -101,57 +143,96 @@ class CoverageAgent(SovereignBaseAgent):
             return 0.0
         return float(-np.sum(props * np.log2(props)))
 
-    @layer_entry('observability', subterritory='metrics')
+    @layer_entry("observability", subterritory="metrics")
     def act(self) -> str:
         """Primary actuation method — call periodically from orchestrator/metrics coordinator."""
         counts = self._fetch_metrics()
         if not counts:
-            return f'{self.name}: No metrics available.'
+            return f"{self.name}: No metrics available."
         proportions = self._compute_proportions(counts)
         entropy = self._shannon_entropy(proportions)
-        report = f'{self.name}: Entropy={entropy:.2f}/{np.log2(len(self.layers)):.2f} ({entropy / np.log2(len(self.layers)) * 100:.1f}% max). '
+        report = f"{self.name}: Entropy={entropy:.2f}/{np.log2(len(self.layers)):.2f} ({entropy / np.log2(len(self.layers)) * 100:.1f}% max). "
         if entropy < self.threshold_entropy:
-            underrepresented = min(proportions, key=lambda k: (proportions[k], -self.priority_boost_layers.index(k) if k in self.priority_boost_layers else 99))
-            report += f'IMBALANCE DETECTED — Underrepresented: {underrepresented} ({proportions[underrepresented]:.1%}). Triggering active correction.'
-            if 'bias' in self.intervention_mode or 'full' in self.intervention_mode:
+            underrepresented = min(
+                proportions,
+                key=lambda k: (
+                    proportions[k],
+                    -self.priority_boost_layers.index(k) if k in self.priority_boost_layers else 99,
+                ),
+            )
+            report += f"IMBALANCE DETECTED — Underrepresented: {underrepresented} ({proportions[underrepresented]:.1%}). Triggering active correction."
+            if "bias" in self.intervention_mode or "full" in self.intervention_mode:
                 self._apply_routing_bias(underrepresented)
-            if 'full' in self.intervention_mode:
+            if "full" in self.intervention_mode:
                 self._inject_synthetic_exercises(underrepresented)
-            print(f'[CoverageAgent] INTERVENTION TRIGGERED: bias on {underrepresented}, {self.synthetic_tasks_per_trigger} tasks injected')
+            print(
+                f"[CoverageAgent] INTERVENTION TRIGGERED: bias on {underrepresented}, {self.synthetic_tasks_per_trigger} tasks injected"
+            )
         else:
-            report += 'Coverage balanced.'
+            report += "Coverage balanced."
         return report
 
     def _apply_routing_bias(self, layer: str) -> None:
         """Publish bias event — orchestrator subscribes and applies multiplier."""
-        priority_index = self.priority_boost_layers.index(layer) if layer in self.priority_boost_layers else 99
+        priority_index = (
+            self.priority_boost_layers.index(layer) if layer in self.priority_boost_layers else 99
+        )
         effective_weight = self.bias_weight + (5 - priority_index)
-        publish_event('coverage_bias_update', {'underrepresented_layer': layer, 'selection_weight_multiplier': effective_weight, 'remaining_orchestration_cycles': self.bias_duration_cycles, 'trigger_timestamp': time.time()})
+        publish_event(
+            "coverage_bias_update",
+            {
+                "underrepresented_layer": layer,
+                "selection_weight_multiplier": effective_weight,
+                "remaining_orchestration_cycles": self.bias_duration_cycles,
+                "trigger_timestamp": time.time(),
+            },
+        )
 
     def _inject_synthetic_exercises(self, layer: str) -> None:
         """Enqueue safe no-op tasks targeting layer — direct metric increment."""
-        EXERCISER_REGISTRY = {'L1_cognition': 'CognitionExerciserAgent', 'L2_execution': 'ExecutionExerciserAgent', 'L3_orchestration': 'OrchestrationExerciserAgent', 'L4_state': 'StateExerciserAgent'}
-        exerciser_class_name = EXERCISER_REGISTRY.get(layer, 'GeneralExerciserAgent')
+        EXERCISER_REGISTRY = {
+            "L1_cognition": "CognitionExerciserAgent",
+            "L2_execution": "ExecutionExerciserAgent",
+            "L3_orchestration": "OrchestrationExerciserAgent",
+            "L4_state": "StateExerciserAgent",
+        }
+        exerciser_class_name = EXERCISER_REGISTRY.get(layer, "GeneralExerciserAgent")
         for _i in range(self.synthetic_tasks_per_trigger):
-            task_payload = {'task_id': f'coverage_synthetic_{layer}_{uuid.uuid4().hex[:8]}', 'task_type': 'layer_coverage_exercise', 'target_territory': layer, 'agent_class': exerciser_class_name, 'priority': 'high', 'description': f'Generalized coverage exercise for {layer}', 'safe_no_op': True}
+            task_payload = {
+                "task_id": f"coverage_synthetic_{layer}_{uuid.uuid4().hex[:8]}",
+                "task_type": "layer_coverage_exercise",
+                "target_territory": layer,
+                "agent_class": exerciser_class_name,
+                "priority": "high",
+                "description": f"Generalized coverage exercise for {layer}",
+                "safe_no_op": True,
+            }
             enqueue(task_payload)
 
     def _run_self_tests(self) -> dict:
         """Run internal self-tests."""
-        results = {'passed': 0, 'failed': 0, 'tests': []}
+        results = {"passed": 0, "failed": 0, "tests": []}
         try:
             assert self is not None
-            results['passed'] += 1
-            results['tests'].append({'name': 'test_instantiation', 'status': 'passed'})
+            results["passed"] += 1
+            results["tests"].append({"name": "test_instantiation", "status": "passed"})
         except AssertionError as e:
-            results['failed'] += 1
-            results['tests'].append({'name': 'test_instantiation', 'status': 'failed', 'error': str(e)})
+            results["failed"] += 1
+            results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
         return results
 
     @timeout(120)
     @standard_heal
     # guardian: allow-magic-config
-    def heal_repository(self, dry_run: bool=True, execute: bool=False, depth: int=0, max_depth: int=3, _call_path: set | None=None, **kwargs) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+        **kwargs,
+    ) -> dict[str, int]:
         """
         L3 Orchestration Agent - Coverage Agent Healing.
 
@@ -164,25 +245,25 @@ class CoverageAgent(SovereignBaseAgent):
             _call_path = set()
         agent_name = self.__class__.__name__
         if agent_name in _call_path:
-            return {'violations_found': 0, 'violations_fixed': 0, 'errors': 1, 'skipped': 0}
+            return {"violations_found": 0, "violations_fixed": 0, "errors": 1, "skipped": 0}
         if depth > max_depth:
-            return {'violations_found': 0, 'violations_fixed': 0, 'errors': 1, 'skipped': 0}
+            return {"violations_found": 0, "violations_fixed": 0, "errors": 1, "skipped": 0}
         _call_path.add(agent_name)
-        metrics = {'violations_found': 0, 'violations_fixed': 0, 'errors': 0, 'skipped': 0}
+        metrics = {"violations_found": 0, "violations_fixed": 0, "errors": 0, "skipped": 0}
         try:
             if not self.layers or len(self.layers) == 0:
-                metrics['violations_found'] += 1
+                metrics["violations_found"] += 1
             if self.threshold_entropy <= 0 or self.threshold_entropy > 5:
-                metrics['violations_found'] += 1
+                metrics["violations_found"] += 1
             if self.bias_weight <= 0:
-                metrics['violations_found'] += 1
+                metrics["violations_found"] += 1
             if not self.priority_boost_layers:
-                metrics['violations_found'] += 1
-            if metrics['violations_found'] == 0:
-                metrics['violations_fixed'] = 1
+                metrics["violations_found"] += 1
+            if metrics["violations_found"] == 0:
+                metrics["violations_fixed"] = 1
         # guardian: allow-silent-swallow
         except Exception:
-            metrics['errors'] += 1
+            metrics["errors"] += 1
         finally:
             _call_path.discard(agent_name)
         return metrics
@@ -204,10 +285,20 @@ class CoverageAgent(SovereignBaseAgent):
                 - artifacts: List of modified files
                 - errors: List of error messages
         """
-        violation.get('file') or violation.get('file_path')
-        violation_type = violation.get('type', 'unknown')
+        violation.get("file") or violation.get("file_path")
+        violation_type = violation.get("type", "unknown")
         try:
-            return {'status': 'skipped', 'details': f'CoverageAgent heal() not yet implemented for {violation_type}', 'artifacts': [], 'errors': []}
+            return {
+                "status": "skipped",
+                "details": f"CoverageAgent heal() not yet implemented for {violation_type}",
+                "artifacts": [],
+                "errors": [],
+            }
         # guardian: allow-silent-swallow
         except Exception as e:
-            return {'status': 'failed', 'details': f'CoverageAgent heal() failed: {str(e)}', 'artifacts': [], 'errors': [str(e)]}
+            return {
+                "status": "failed",
+                "details": f"CoverageAgent heal() failed: {str(e)}",
+                "artifacts": [],
+                "errors": [str(e)],
+            }

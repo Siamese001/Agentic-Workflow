@@ -14,12 +14,15 @@ MRO HARDENING:
 - When using AtomicExecutionMixin, it MUST come BEFORE this base class:
   class MyAgent(AtomicExecutionMixin, L3OrchestrationBase):
 """
+
 from __future__ import annotations
+
 from dataclasses import dataclass
 from typing import Any
+
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.utils.decorators_compat_util import standard_heal
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 @dataclass
 class L3OrchestrationBase(SovereignBaseAgent):
@@ -41,8 +44,9 @@ class L3OrchestrationBase(SovereignBaseAgent):
     - State Management: YES (via SovereignBaseAgent)
     - Atomic Execution: Optional (via AtomicExecutionMixin)
     """
-    name: str = 'L3OrchestrationBase'
-    layer: str = 'L3'
+
+    name: str = "L3OrchestrationBase"
+    layer: str = "L3"
 
     def __post_init__(self) -> None:
         """Cooperative MRO initialization."""
@@ -50,22 +54,37 @@ class L3OrchestrationBase(SovereignBaseAgent):
 
     @standard_heal
     # guardian: allow-magic-config
-    def heal_repository(self, dry_run: bool=True, execute: bool=False, depth: int=0, max_depth: int=3, _call_path: set=None, **kwargs) -> dict[str, Any]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set = None,
+        **kwargs,
+    ) -> dict[str, Any]:
         """Invoke shared healing chain then allow subclass override."""
         if _call_path is None:
             _call_path = set()
         agent_name = self.__class__.__name__
         if agent_name in _call_path:
-            return {'violations_found': 0, 'violations_fixed': 0, 'errors': [], 'skipped': []}
+            return {"violations_found": 0, "violations_fixed": 0, "errors": [], "skipped": []}
         if depth > max_depth:
-            return {'violations_found': 0, 'violations_fixed': 0, 'errors': [], 'skipped': []}
+            return {"violations_found": 0, "violations_fixed": 0, "errors": [], "skipped": []}
         _call_path.add(agent_name)
         try:
-            result = super().heal_repository(dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path, **kwargs)
+            result = super().heal_repository(
+                dry_run=dry_run,
+                execute=execute,
+                depth=depth,
+                max_depth=max_depth,
+                _call_path=_call_path,
+                **kwargs,
+            )
             return result
         # guardian: allow-silent-swallow
         except Exception as e:
-            return {'violations_found': 0, 'violations_fixed': 0, 'errors': [str(e)], 'skipped': []}
+            return {"violations_found": 0, "violations_fixed": 0, "errors": [str(e)], "skipped": []}
 
     def coordinate_workflow(self, workflow_id: str, context: dict[str, Any]) -> dict[str, Any]:
         """
@@ -80,7 +99,11 @@ class L3OrchestrationBase(SovereignBaseAgent):
         Returns:
             Workflow execution result
         """
-        return {'workflow_id': workflow_id, 'status': 'not_implemented', 'message': 'Override coordinate_workflow in subclass'}
+        return {
+            "workflow_id": workflow_id,
+            "status": "not_implemented",
+            "message": "Override coordinate_workflow in subclass",
+        }
 
     def plan_execution(self, task: dict[str, Any]) -> dict[str, Any]:
         """
@@ -94,4 +117,9 @@ class L3OrchestrationBase(SovereignBaseAgent):
         Returns:
             Execution plan
         """
-        return {'task': task, 'plan': [], 'status': 'not_implemented', 'message': 'Override plan_execution in subclass'}
+        return {
+            "task": task,
+            "plan": [],
+            "status": "not_implemented",
+            "message": "Override plan_execution in subclass",
+        }

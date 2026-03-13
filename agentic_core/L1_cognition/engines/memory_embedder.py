@@ -9,18 +9,29 @@ Provides:
 - Batch embedding support for efficiency
 - Fallback to hash-based signatures when embedding unavailable
 """
+
 from __future__ import annotations
+
 import logging
 from dataclasses import dataclass, field
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 def _get_embedding_sovereign_agent():
     from agentic_core.interfaces.execution_agents import EmbeddingSovereignAgent
+
     return EmbeddingSovereignAgent
-from agentic_core.L1_cognition.types.memory_types import EMBEDDING_DIMENSION, MAX_TEXT_LENGTH, ViolationSignature
+
+
+from agentic_core.L1_cognition.types.memory_types import (
+    EMBEDDING_DIMENSION,
+    MAX_TEXT_LENGTH,
+    ViolationSignature,
+)
+
 Logger = logging.getLogger(__name__)
 _embedder_singleton: Any = None
+
 
 @dataclass
 class HealingMemoryEmbedder:
@@ -35,11 +46,19 @@ class HealingMemoryEmbedder:
     - Batch embedding support for efficiency
     - Fallback to hash-based signatures when embedding unavailable
     """
+
     embedding_dimension: int = EMBEDDING_DIMENSION
     max_text_length: int = MAX_TEXT_LENGTH
     _embedding_agent: Any = field(default=None, init=False)
     _initialized: bool = field(default=False, init=False)
-    stats: dict[str, int] = field(default_factory=lambda: {'embeddings_generated': 0, 'fallback_hashes': 0, 'batch_operations': 0, 'errors': 0})
+    stats: dict[str, int] = field(
+        default_factory=lambda: {
+            "embeddings_generated": 0,
+            "fallback_hashes": 0,
+            "batch_operations": 0,
+            "errors": 0,
+        }
+    )
 
     def __new__(cls, *args, **kwargs):
         """Singleton constructor."""
@@ -64,12 +83,13 @@ class HealingMemoryEmbedder:
         """Initialize the embedding agent with fallback."""
         try:
             from pathlib import Path
+
             self._embedding_agent = _get_embedding_sovereign_agent()(Path.cwd())
-            Logger.info('[HealingMemoryEmbedder] Embedding agent initialized')
+            Logger.info("[HealingMemoryEmbedder] Embedding agent initialized")
         # guardian: allow-silent-swallow
         except Exception as e:
             raise
-            Logger.warning(f'[HealingMemoryEmbedder] Embedding agent unavailable: {e}')
+            Logger.warning(f"[HealingMemoryEmbedder] Embedding agent unavailable: {e}")
             self._embedding_agent = None
 
     def embed_violation(self, violation: dict[str, Any]) -> list[float] | None:
@@ -98,18 +118,21 @@ class HealingMemoryEmbedder:
         text = signature.to_text()
         try:
             from agentic_core.L2_execution.healers.bmg_embedding_similarity import bmg_embed_text
-            embedding = bmg_embed_text(text[:self.max_text_length])
+
+            embedding = bmg_embed_text(text[: self.max_text_length])
             if embedding:
-                self.stats['embeddings_generated'] += 1
+                self.stats["embeddings_generated"] += 1
                 return embedding
         # guardian: allow-silent-swallow
         except Exception as e:
-            Logger.warning(f'[HealingMemoryEmbedder] Embedding failed: {e}')
-            self.stats['errors'] += 1
-        self.stats['fallback_hashes'] += 1
+            Logger.warning(f"[HealingMemoryEmbedder] Embedding failed: {e}")
+            self.stats["errors"] += 1
+        self.stats["fallback_hashes"] += 1
         return None
 
-    def embed_healing_pattern(self, violation: dict[str, Any], healing_result: dict[str, Any]) -> list[float] | None:
+    def embed_healing_pattern(
+        self, violation: dict[str, Any], healing_result: dict[str, Any]
+    ) -> list[float] | None:
         """
         Generate embedding for a healing pattern (violation + result).
 
@@ -123,20 +146,21 @@ class HealingMemoryEmbedder:
         signature = ViolationSignature.from_violation(violation)
         text = signature.to_text()
         result_summary = f" | healing_status: {healing_result.get('status', 'unknown')}"
-        if healing_result.get('strategy'):
+        if healing_result.get("strategy"):
             result_summary += f" | strategy: {healing_result.get('strategy')}"
-        full_text = (text + result_summary)[:self.max_text_length]
+        full_text = (text + result_summary)[: self.max_text_length]
         try:
             from agentic_core.L2_execution.healers.bmg_embedding_similarity import bmg_embed_text
+
             embedding = bmg_embed_text(full_text)
             if embedding:
-                self.stats['embeddings_generated'] += 1
+                self.stats["embeddings_generated"] += 1
                 return embedding
         # guardian: allow-silent-swallow
         except Exception as e:
-            Logger.warning(f'[HealingMemoryEmbedder] Pattern embedding failed: {e}')
-            self.stats['errors'] += 1
-        self.stats['fallback_hashes'] += 1
+            Logger.warning(f"[HealingMemoryEmbedder] Pattern embedding failed: {e}")
+            self.stats["errors"] += 1
+        self.stats["fallback_hashes"] += 1
         return None
 
     def embed_batch(self, violations: list[dict[str, Any]]) -> list[list[float] | None]:
@@ -149,7 +173,7 @@ class HealingMemoryEmbedder:
         Returns:
             List of embedding vectors (None for failures)
         """
-        self.stats['batch_operations'] += 1
+        self.stats["batch_operations"] += 1
         results: list[list[float] | None] = []
         for violation in violations:
             embedding = self.embed_violation(violation)
@@ -183,19 +207,22 @@ class HealingMemoryEmbedder:
         if not embedding1 or not embedding2:
             return 0.0
         if len(embedding1) != len(embedding2):
-            Logger.warning('[HealingMemoryEmbedder] Embedding dimension mismatch')
+            Logger.warning("[HealingMemoryEmbedder] Embedding dimension mismatch")
             return 0.0
         dot_product = sum((a * b for a, b in zip(embedding1, embedding2, strict=False)))
-        norm1 = sum((a * a for a in embedding1)) ** 0.5
-        norm2 = sum((b * b for b in embedding2)) ** 0.5
+        norm1 = sum(a * a for a in embedding1) ** 0.5
+        norm2 = sum(b * b for b in embedding2) ** 0.5
         if norm1 == 0 or norm2 == 0:
             return 0.0
         return dot_product / (norm1 * norm2)
 
     def get_stats(self) -> dict[str, Any]:
         """Get current statistics."""
-        return {**self.stats, 'embedding_available': self._embedding_agent is not None}
+        return {**self.stats, "embedding_available": self._embedding_agent is not None}
+
+
 _healing_memory_embedder: HealingMemoryEmbedder | None = None
+
 
 def get_healing_memory_embedder() -> HealingMemoryEmbedder:
     """Get or create the HealingMemoryEmbedder singleton."""
@@ -203,6 +230,7 @@ def get_healing_memory_embedder() -> HealingMemoryEmbedder:
     if _healing_memory_embedder is None:
         _healing_memory_embedder = HealingMemoryEmbedder()
     return _healing_memory_embedder
+
 
 def reset_healing_memory_embedder() -> None:
     """[TESTING ONLY] Reset the singleton."""

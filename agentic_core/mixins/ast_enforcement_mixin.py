@@ -1,9 +1,11 @@
 from __future__ import annotations
-'ASTEnforcementMixin — Ultra L5 Mixin for AST Enforcement (Jan 01, 2026)\n\nAdd to validators/enforcers for precise AST analysis (no regex).\n- Detect snake_case classes, aliases, etc.\n- Use in _ast_audit override\n- Maximizes AST opportunities across all validators\n'
+
+"ASTEnforcementMixin — Ultra L5 Mixin for AST Enforcement (Jan 01, 2026)\n\nAdd to validators/enforcers for precise AST analysis (no regex).\n- Detect snake_case classes, aliases, etc.\n- Use in _ast_audit override\n- Maximizes AST opportunities across all validators\n"
 import ast
 from pathlib import Path
+
 from agentic_core.L5_safety.config.structure_blueprint import AGENTIC_CORE_DIR
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 class ASTEnforcementMixin:
     """Mixin for sovereign AST enforcement.
@@ -30,11 +32,45 @@ class ASTEnforcementMixin:
         try:
             tree = ast.parse(content)
         except SyntaxError:
-            return {'snake_classes': 0, 'aliases': 0, 'pascal_classes': 0, 'enums': 0, 'dataclasses': 0, 'syntax_error': True}
-        snake_count = sum((1 for node in ast.walk(tree) if isinstance(node, ast.ClassDef) and (node.name[0].islower() or '_' in node.name)))
-        pascal_count = sum((1 for node in ast.walk(tree) if isinstance(node, ast.ClassDef) and node.name[0].isupper() and ('_' not in node.name)))
-        enum_count = sum((1 for node in ast.walk(tree) if isinstance(node, ast.ClassDef) and any((isinstance(base, ast.Name) and base.id == 'Enum' for base in node.bases))))
-        dataclass_count = sum((1 for node in ast.walk(tree) if isinstance(node, ast.ClassDef) and any((isinstance(dec, ast.Name) and dec.id == 'dataclass' or (isinstance(dec, ast.Call) and isinstance(dec.func, ast.Name) and (dec.func.id == 'dataclass')) for dec in node.decorator_list))))
+            return {
+                "snake_classes": 0,
+                "aliases": 0,
+                "pascal_classes": 0,
+                "enums": 0,
+                "dataclasses": 0,
+                "syntax_error": True,
+            }
+        snake_count = sum(
+            1
+            for node in ast.walk(tree)
+            if isinstance(node, ast.ClassDef) and (node.name[0].islower() or "_" in node.name)
+        )
+        pascal_count = sum(
+            1
+            for node in ast.walk(tree)
+            if isinstance(node, ast.ClassDef) and node.name[0].isupper() and ("_" not in node.name)
+        )
+        enum_count = sum(
+            1
+            for node in ast.walk(tree)
+            if isinstance(node, ast.ClassDef)
+            and any(isinstance(base, ast.Name) and base.id == "Enum" for base in node.bases)
+        )
+        dataclass_count = sum(
+            1
+            for node in ast.walk(tree)
+            if isinstance(node, ast.ClassDef)
+            and any(
+                isinstance(dec, ast.Name)
+                and dec.id == "dataclass"
+                or (
+                    isinstance(dec, ast.Call)
+                    and isinstance(dec.func, ast.Name)
+                    and (dec.func.id == "dataclass")
+                )
+                for dec in node.decorator_list
+            )
+        )
         alias_count = 0
         for node in ast.walk(tree):
             if isinstance(node, ast.Assign) and len(node.targets) == 1:
@@ -42,9 +78,16 @@ class ASTEnforcementMixin:
                 if isinstance(target, ast.Name) and isinstance(node.value, ast.Name):
                     if target.id[0].isupper() and node.value.id[0].islower():
                         alias_count += 1
-        return {'snake_classes': snake_count, 'aliases': alias_count, 'pascal_classes': pascal_count, 'enums': enum_count, 'dataclasses': dataclass_count, 'syntax_error': False}
+        return {
+            "snake_classes": snake_count,
+            "aliases": alias_count,
+            "pascal_classes": pascal_count,
+            "enums": enum_count,
+            "dataclasses": dataclass_count,
+            "syntax_error": False,
+        }
 
-    def _ast_audit_repo(self, repo_root: Path, target_prefixes: list[str] | None=None) -> dict:
+    def _ast_audit_repo(self, repo_root: Path, target_prefixes: list[str] | None = None) -> dict:
         """Audit entire repository for snake_case violations.
 
         Args:
@@ -61,21 +104,36 @@ class ASTEnforcementMixin:
         total_aliases = 0
         total_pascal = 0
         from agentic_core.utils.ssot_discovery_validator import get_python_files
+
         all_files = get_python_files(repo_root)
         for path in all_files:
-            if not any((prefix in str(path) for prefix in target_prefixes)):
+            if not any(prefix in str(path) for prefix in target_prefixes):
                 continue
             try:
-                content = path.read_text(encoding='utf-8')
+                content = path.read_text(encoding="utf-8")
                 audit = self._ast_audit_file(content)
-                if audit['snake_classes'] or audit['aliases']:
-                    files_with_violations.append({'path': str(path), 'snake_classes': audit['snake_classes'], 'aliases': audit['aliases'], 'pascal_classes': audit['pascal_classes']})
-                    total_snake += audit['snake_classes']
-                    total_aliases += audit['aliases']
-                total_pascal += audit['pascal_classes']
+                if audit["snake_classes"] or audit["aliases"]:
+                    files_with_violations.append(
+                        {
+                            "path": str(path),
+                            "snake_classes": audit["snake_classes"],
+                            "aliases": audit["aliases"],
+                            "pascal_classes": audit["pascal_classes"],
+                        }
+                    )
+                    total_snake += audit["snake_classes"]
+                    total_aliases += audit["aliases"]
+                total_pascal += audit["pascal_classes"]
             except (UnicodeDecodeError, PermissionError):
                 continue
-        return {'files': files_with_violations, 'total_snake_classes': total_snake, 'total_aliases': total_aliases, 'total_pascal_classes': total_pascal, 'violation_count': len(files_with_violations), 'summary': f'{len(files_with_violations)} files | {total_snake} snake_classes | {total_aliases} aliases'}
+        return {
+            "files": files_with_violations,
+            "total_snake_classes": total_snake,
+            "total_aliases": total_aliases,
+            "total_pascal_classes": total_pascal,
+            "violation_count": len(files_with_violations),
+            "summary": f"{len(files_with_violations)} files | {total_snake} snake_classes | {total_aliases} aliases",
+        }
 
     def _extract_class_names(self, content: str) -> list[str]:
         """Extract all class names from Python source.
@@ -101,4 +159,4 @@ class ASTEnforcementMixin:
         Returns:
             True if snake_case, False if PascalCase
         """
-        return class_name[0].islower() or '_' in class_name
+        return class_name[0].islower() or "_" in class_name

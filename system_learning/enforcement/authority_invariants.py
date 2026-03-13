@@ -11,18 +11,34 @@ FORBIDDEN at all times:
   - WRITE to audit surfaces (audit logs are append-only by L6)
   - Side-channel activation (bypassing governance flow)
 """
+
 from __future__ import annotations
+
 from dataclasses import dataclass
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 class AuthorityViolation(Exception):
     """Raised when System Learning attempts a forbidden operation.
 
     Fail-closed: any ambiguous operation raises this exception.
     """
-_FORBIDDEN_MODES: frozenset[str] = frozenset({'EXECUTE', 'ACTIVATE'})
-_AUDIT_WRITE_OPERATIONS: frozenset[str] = frozenset({'write_audit', 'append_audit', 'delete_audit', 'mutate_audit', 'overwrite_audit', 'patch_audit'})
-_SIDE_CHANNEL_OPERATIONS: frozenset[str] = frozenset({'update_activation_pointer', 'set_active_version', 'activate_change_package', 'flip_pointer', 'swap_active', 'direct_activate'})
+
+
+_FORBIDDEN_MODES: frozenset[str] = frozenset({"EXECUTE", "ACTIVATE"})
+_AUDIT_WRITE_OPERATIONS: frozenset[str] = frozenset(
+    {"write_audit", "append_audit", "delete_audit", "mutate_audit", "overwrite_audit", "patch_audit"}
+)
+_SIDE_CHANNEL_OPERATIONS: frozenset[str] = frozenset(
+    {
+        "update_activation_pointer",
+        "set_active_version",
+        "activate_change_package",
+        "flip_pointer",
+        "swap_active",
+        "direct_activate",
+    }
+)
+
 
 @dataclass(frozen=True)
 class AuthorityContext:
@@ -39,10 +55,12 @@ class AuthorityContext:
     mode : str
         Access mode: one of "READ", "WRITE", "EXECUTE", "ACTIVATE".
     """
+
     caller_layer: str
     operation: str
     target: str
     mode: str
+
 
 def assert_zero_execution_authority(ctx: AuthorityContext) -> None:
     """Fail-closed: raise AuthorityViolation if ctx.mode is EXECUTE or ACTIVATE.
@@ -61,7 +79,10 @@ def assert_zero_execution_authority(ctx: AuthorityContext) -> None:
         If ctx.mode is "EXECUTE" or "ACTIVATE".
     """
     if ctx.mode in _FORBIDDEN_MODES:
-        raise AuthorityViolation(f'AUTHORITY_VIOLATION:ZERO_EXECUTION_AUTHORITY|caller={ctx.caller_layer}|operation={ctx.operation}|target={ctx.target}|mode={ctx.mode}|forbidden_modes={sorted(_FORBIDDEN_MODES)}')
+        raise AuthorityViolation(
+            f"AUTHORITY_VIOLATION:ZERO_EXECUTION_AUTHORITY|caller={ctx.caller_layer}|operation={ctx.operation}|target={ctx.target}|mode={ctx.mode}|forbidden_modes={sorted(_FORBIDDEN_MODES)}"
+        )
+
 
 def assert_read_only_audit_access(ctx: AuthorityContext) -> None:
     """Fail-closed: raise AuthorityViolation for any write to audit surfaces.
@@ -81,9 +102,14 @@ def assert_read_only_audit_access(ctx: AuthorityContext) -> None:
         ctx.operation is a known audit-write operation.
     """
     if ctx.operation in _AUDIT_WRITE_OPERATIONS:
-        raise AuthorityViolation(f'AUTHORITY_VIOLATION:AUDIT_WRITE_FORBIDDEN|caller={ctx.caller_layer}|operation={ctx.operation}|target={ctx.target}|mode={ctx.mode}')
-    if 'audit' in ctx.target.lower() and ctx.mode != 'READ':
-        raise AuthorityViolation(f'AUTHORITY_VIOLATION:AUDIT_SURFACE_NON_READ|caller={ctx.caller_layer}|operation={ctx.operation}|target={ctx.target}|mode={ctx.mode}|required_mode=READ')
+        raise AuthorityViolation(
+            f"AUTHORITY_VIOLATION:AUDIT_WRITE_FORBIDDEN|caller={ctx.caller_layer}|operation={ctx.operation}|target={ctx.target}|mode={ctx.mode}"
+        )
+    if "audit" in ctx.target.lower() and ctx.mode != "READ":
+        raise AuthorityViolation(
+            f"AUTHORITY_VIOLATION:AUDIT_SURFACE_NON_READ|caller={ctx.caller_layer}|operation={ctx.operation}|target={ctx.target}|mode={ctx.mode}|required_mode=READ"
+        )
+
 
 def assert_no_side_channel_activation(ctx: AuthorityContext) -> None:
     """Fail-closed: raise AuthorityViolation for side-channel activation attempts.
@@ -103,6 +129,10 @@ def assert_no_side_channel_activation(ctx: AuthorityContext) -> None:
         If ctx.operation resembles a direct pointer update or activation.
     """
     if ctx.operation in _SIDE_CHANNEL_OPERATIONS:
-        raise AuthorityViolation(f'AUTHORITY_VIOLATION:SIDE_CHANNEL_ACTIVATION_FORBIDDEN|caller={ctx.caller_layer}|operation={ctx.operation}|target={ctx.target}|mode={ctx.mode}|required_path=governance_flow')
-    if ctx.mode == 'ACTIVATE':
-        raise AuthorityViolation(f'AUTHORITY_VIOLATION:DIRECT_ACTIVATE_FORBIDDEN|caller={ctx.caller_layer}|operation={ctx.operation}|target={ctx.target}|mode={ctx.mode}')
+        raise AuthorityViolation(
+            f"AUTHORITY_VIOLATION:SIDE_CHANNEL_ACTIVATION_FORBIDDEN|caller={ctx.caller_layer}|operation={ctx.operation}|target={ctx.target}|mode={ctx.mode}|required_path=governance_flow"
+        )
+    if ctx.mode == "ACTIVATE":
+        raise AuthorityViolation(
+            f"AUTHORITY_VIOLATION:DIRECT_ACTIVATE_FORBIDDEN|caller={ctx.caller_layer}|operation={ctx.operation}|target={ctx.target}|mode={ctx.mode}"
+        )

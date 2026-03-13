@@ -2,18 +2,22 @@
 Shared Validation Mixin - Phase 2 Optimization
 Provides common validation workflow patterns for agents.
 """
+
 from __future__ import annotations
+
 from dataclasses import dataclass
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 @dataclass
 class ValidationResult:
     """Result of a validation operation."""
+
     passed: bool
     issues: list[str]
     suggestions: list[str]
     metadata: dict[str, Any]
+
 
 class ValidationMixin:
     """
@@ -23,7 +27,9 @@ class ValidationMixin:
     duplicate validation boilerplate across agents.
     """
 
-    def validate_with_result(self, data: Any, validation_func: callable, context: dict[str, Any] | None=None) -> ValidationResult:
+    def validate_with_result(
+        self, data: Any, validation_func: callable, context: dict[str, Any] | None = None
+    ) -> ValidationResult:
         """
         Execute validation with standardized result format.
 
@@ -41,18 +47,20 @@ class ValidationMixin:
         try:
             result = validation_func(data, context or {})
             if isinstance(result, dict):
-                issues = result.get('issues', [])
-                suggestions = result.get('suggestions', [])
-                metadata = result.get('metadata', {})
+                issues = result.get("issues", [])
+                suggestions = result.get("suggestions", [])
+                metadata = result.get("metadata", {})
             elif isinstance(result, list | tuple):
                 issues = list(result)
             elif isinstance(result, bool):
                 passed = result
-                return ValidationResult(passed=passed, issues=issues, suggestions=suggestions, metadata=metadata)
+                return ValidationResult(
+                    passed=passed, issues=issues, suggestions=suggestions, metadata=metadata
+                )
             passed = len(issues) == 0
         # guardian: allow-silent-swallow
         except Exception as e:
-            issues.append(f'Validation error: {str(e)}')
+            issues.append(f"Validation error: {str(e)}")
             passed = False
         return ValidationResult(passed=passed, issues=issues, suggestions=suggestions, metadata=metadata)
 
@@ -65,15 +73,20 @@ class ValidationMixin:
             signal_name: Signal name to add/remove based on result
         """
         if result.passed:
-            self.record_pass('Validation passed', data={'suggestions': result.suggestions, **result.metadata})
-            if hasattr(self, 'remove_signal'):
+            self.record_pass("Validation passed", data={"suggestions": result.suggestions, **result.metadata})
+            if hasattr(self, "remove_signal"):
                 self.remove_signal(signal_name)
         else:
-            self.record_fail(f'Validation failed: {len(result.issues)} issues', data={'issues': result.issues, 'suggestions': result.suggestions, **result.metadata})
-            if hasattr(self, 'add_signal'):
+            self.record_fail(
+                f"Validation failed: {len(result.issues)} issues",
+                data={"issues": result.issues, "suggestions": result.suggestions, **result.metadata},
+            )
+            if hasattr(self, "add_signal"):
                 self.add_signal(signal_name)
 
-    def batch_validate(self, validators: list[tuple[str, callable, Any]], stop_on_first_failure: bool=False) -> dict[str, ValidationResult]:
+    def batch_validate(
+        self, validators: list[tuple[str, callable, Any]], stop_on_first_failure: bool = False
+    ) -> dict[str, ValidationResult]:
         """
         Run multiple validators in batch.
 
@@ -106,11 +119,11 @@ class ValidationMixin:
         issues = []
         for field in required_fields:
             if field not in data:
-                issues.append(f'Missing required field: {field}')
+                issues.append(f"Missing required field: {field}")
             elif data[field] is None:
-                issues.append(f'Required field is None: {field}')
+                issues.append(f"Required field is None: {field}")
             elif isinstance(data[field], str) and (not data[field].strip()):
-                issues.append(f'Required field is empty: {field}')
+                issues.append(f"Required field is empty: {field}")
         return ValidationResult(passed=len(issues) == 0, issues=issues, suggestions=[], metadata={})
 
     def validate_field_types(self, data: dict[str, Any], field_types: dict[str, type]) -> ValidationResult:

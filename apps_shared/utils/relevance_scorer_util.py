@@ -3,23 +3,28 @@
 Phase 3 - Pillar 7: Context Engineering (Dynamic Curation)
 Calculates relevance of context chunks to current Think-Act-Observe step.
 """
+
 import logging
 from dataclasses import dataclass
 from enum import Enum
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 Logger = logging.getLogger(__name__)
+
 
 class RelevanceMethod(Enum):
     """Methods for calculating relevance."""
-    KEYWORD_OVERLAP = 'keyword_overlap'
-    SEMANTIC_SIMILARITY = 'semantic_similarity'
-    RECENCY = 'recency'
-    HYBRID = 'hybrid'
+
+    KEYWORD_OVERLAP = "keyword_overlap"
+    SEMANTIC_SIMILARITY = "semantic_similarity"
+    RECENCY = "recency"
+    HYBRID = "hybrid"
+
 
 @dataclass
 class RelevanceScore:
     """Relevance score for a context chunk."""
+
     chunk_id: str
     score: float
     method: RelevanceMethod
@@ -27,7 +32,13 @@ class RelevanceScore:
 
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
-        return {'chunk_id': self.chunk_id, 'score': self.score, 'method': self.method.value, 'components': self.components}
+        return {
+            "chunk_id": self.chunk_id,
+            "score": self.score,
+            "method": self.method.value,
+            "components": self.components,
+        }
+
 
 class RelevanceScorer:
     """Scores context chunks for relevance to current Task.
@@ -38,7 +49,14 @@ class RelevanceScorer:
     - Context Curator (Phase 3, Pillar 7)
     """
 
-    def __init__(self, method: RelevanceMethod=RelevanceMethod.HYBRID, keyword_weight: float=0.3, semantic_weight: float=0.5, recency_weight: float=0.2, enable_logging: bool=True):
+    def __init__(
+        self,
+        method: RelevanceMethod = RelevanceMethod.HYBRID,
+        keyword_weight: float = 0.3,
+        semantic_weight: float = 0.5,
+        recency_weight: float = 0.2,
+        enable_logging: bool = True,
+    ):
         """Initialize relevance scorer.
 
         Args:
@@ -58,9 +76,21 @@ class RelevanceScorer:
         self.semantic_weight /= total_weight
         self.recency_weight /= total_weight
         if self.enable_logging:
-            Logger.info('relevance_scorer_initialized', extra={'method': method.value, 'weights': {'keyword': self.keyword_weight, 'semantic': self.semantic_weight, 'recency': self.recency_weight}})
+            Logger.info(
+                "relevance_scorer_initialized",
+                extra={
+                    "method": method.value,
+                    "weights": {
+                        "keyword": self.keyword_weight,
+                        "semantic": self.semantic_weight,
+                        "recency": self.recency_weight,
+                    },
+                },
+            )
 
-    def score_chunk(self, chunk_id: str, chunk_content: str, query: str, chunk_metadata: dict[str, Any] | None=None) -> RelevanceScore:
+    def score_chunk(
+        self, chunk_id: str, chunk_content: str, query: str, chunk_metadata: dict[str, Any] | None = None
+    ) -> RelevanceScore:
         """Score a single chunk for relevance.
 
         Args:
@@ -74,13 +104,17 @@ class RelevanceScorer:
         """
         components = {}
         if self.method in {RelevanceMethod.KEYWORD_OVERLAP, RelevanceMethod.HYBRID}:
-            components['keyword'] = self._keyword_overlap(chunk_content, query)
+            components["keyword"] = self._keyword_overlap(chunk_content, query)
         if self.method in {RelevanceMethod.SEMANTIC_SIMILARITY, RelevanceMethod.HYBRID}:
-            components['semantic'] = self._semantic_similarity(chunk_content, query)
+            components["semantic"] = self._semantic_similarity(chunk_content, query)
         if self.method in {RelevanceMethod.RECENCY, RelevanceMethod.HYBRID}:
-            components['recency'] = self._recency_score(chunk_metadata or {})
+            components["recency"] = self._recency_score(chunk_metadata or {})
         if self.method == RelevanceMethod.HYBRID:
-            score = components.get('keyword', 0.0) * self.keyword_weight + components.get('semantic', 0.0) * self.semantic_weight + components.get('recency', 0.0) * self.recency_weight
+            score = (
+                components.get("keyword", 0.0) * self.keyword_weight
+                + components.get("semantic", 0.0) * self.semantic_weight
+                + components.get("recency", 0.0) * self.recency_weight
+            )
         else:
             score = list(components.values())[0] if components else 0.0
         return RelevanceScore(chunk_id=chunk_id, score=score, method=self.method, components=components)
@@ -97,11 +131,19 @@ class RelevanceScorer:
         """
         scores = []
         for chunk in chunks:
-            score = self.score_chunk(chunk_id=chunk.get('id', ''), chunk_content=chunk.get('content', ''), query=query, chunk_metadata=chunk.get('metadata'))
+            score = self.score_chunk(
+                chunk_id=chunk.get("id", ""),
+                chunk_content=chunk.get("content", ""),
+                query=query,
+                chunk_metadata=chunk.get("metadata"),
+            )
             scores.append(score)
         scores.sort(key=lambda s: s.score, reverse=True)
         if self.enable_logging:
-            Logger.debug('chunks_scored', extra={'chunk_count': len(chunks), 'top_score': scores[0].score if scores else 0.0})
+            Logger.debug(
+                "chunks_scored",
+                extra={"chunk_count": len(chunks), "top_score": scores[0].score if scores else 0.0},
+            )
         return scores
 
     def _keyword_overlap(self, content: str, query: str) -> float:
@@ -138,7 +180,8 @@ class RelevanceScorer:
 
         def get_trigrams(text: str) -> set:
             text = text.lower()
-            return {text[i:i + 3] for i in range(len(text) - 2)}
+            return {text[i : i + 3] for i in range(len(text) - 2)}
+
         content_trigrams = get_trigrams(content)
         query_trigrams = get_trigrams(query)
         if not query_trigrams:
@@ -158,15 +201,16 @@ class RelevanceScorer:
         Returns:
             Recency score (0.0-1.0)
         """
-        timestamp = metadata.get('timestamp', 0)
-        position = metadata.get('position', 0)
+        timestamp = metadata.get("timestamp", 0)
+        position = metadata.get("position", 0)
         if timestamp > 0:
             return min(timestamp / 1000000, 1.0)
         if position > 0:
             return 1.0 / (1.0 + position)
         return 0.5
 
-def create_relevance_scorer(method: RelevanceMethod=RelevanceMethod.HYBRID) -> RelevanceScorer:
+
+def create_relevance_scorer(method: RelevanceMethod = RelevanceMethod.HYBRID) -> RelevanceScorer:
     """Factory function to create relevance scorer.
 
     Args:

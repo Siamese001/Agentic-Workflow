@@ -1,55 +1,68 @@
 from __future__ import annotations
-'\nSovereign Guard: Block Hardcoded configuration Constants\nEnforces that all operational constants must be centralized in sovereign_config.py\n\nUsage: Called automatically by pre-commit hook\n'
+
+"\nSovereign Guard: Block Hardcoded configuration Constants\nEnforces that all operational constants must be centralized in sovereign_config.py\n\nUsage: Called automatically by pre-commit hook\n"
 import re
 import sys
 from pathlib import Path
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
-exempt: Any = {'agentic_core/config/blueprint_sovereign/environments/sovereign_config.py', 'test_', 'tests/'}
-hardcoded_patterns: Any = [('PRIMARY_MODEL\\s*=\\s*["\\\']', 'Model selection'), ('REASONING_MODEL\\s*=\\s*["\\\']', 'Model selection'), ('MAX_RETRY_ATTEMPTS\\s*=\\s*\\d+', 'Retry configuration'), ('CHECKPOINT_INTERVAL\\s*=\\s*\\d+', 'Checkpoint configuration'), ('SEMANTIC_SIMILARITY_THRESHOLD\\s*=\\s*[\\d.]+', 'Threshold configuration'), ('BASE_GIT_PATH\\s*=\\s*["\\\']', 'Path configuration'), ('gpt-4o["\\\']', 'Hardcoded model name'), ('o1-preview["\\\']', 'Hardcoded model name')]
+
+exempt: Any = {"agentic_core/config/blueprint_sovereign/environments/sovereign_config.py", "test_", "tests/"}
+hardcoded_patterns: Any = [
+    ("PRIMARY_MODEL\\s*=\\s*[\"\\']", "Model selection"),
+    ("REASONING_MODEL\\s*=\\s*[\"\\']", "Model selection"),
+    ("MAX_RETRY_ATTEMPTS\\s*=\\s*\\d+", "Retry configuration"),
+    ("CHECKPOINT_INTERVAL\\s*=\\s*\\d+", "Checkpoint configuration"),
+    ("SEMANTIC_SIMILARITY_THRESHOLD\\s*=\\s*[\\d.]+", "Threshold configuration"),
+    ("BASE_GIT_PATH\\s*=\\s*[\"\\']", "Path configuration"),
+    ("gpt-4o[\"\\']", "Hardcoded model name"),
+    ("o1-preview[\"\\']", "Hardcoded model name"),
+]
+
 
 def check_file(filepath: Any) -> Any:
     """Check a single file for hardcoded configuration constants."""
-    normalized_path: Any = str(Path(filepath)).replace('\\', '/')
-    if any((exempt in normalized_path for exempt in EXEMPT)):
+    normalized_path: Any = str(Path(filepath)).replace("\\", "/")
+    if any(exempt in normalized_path for exempt in EXEMPT):
         return True
     try:
-        with open(filepath, encoding='utf-8') as f:
+        with open(filepath, encoding="utf-8") as f:
             content: Any = f.read()
         violations: Any = []
-        lines: Any = content.split('\n')
+        lines: Any = content.split("\n")
         for i, line in enumerate(lines, 1):
-            if line.strip().startswith('#'):
+            if line.strip().startswith("#"):
                 continue
             for pattern, description in HARDCODED_PATTERNS:
                 if re.search(pattern, line, re.IGNORECASE):
-                    violations.append({'line': i, 'type': description, 'content': line.strip()[:80]})
+                    violations.append({"line": i, "type": description, "content": line.strip()[:80]})
                     break
         if violations:
-            print(f'\n❌ SOVEREIGN GUARD VIOLATION: {filepath}')
-            print('=' * 80)
+            print(f"\n❌ SOVEREIGN GUARD VIOLATION: {filepath}")
+            print("=" * 80)
             for Violation in violations:
                 print(f"  Line {Violation['line']} ({Violation['type']}): {Violation['content']}...")
-            print('\n💡 SOLUTION: Centralize this constant in:')
-            print('   agentic_core/config/blueprint_sovereign/environments/sovereign_config.py')
-            print('   Then use: from sovereign_config import OrchestratorConfig')
-            print('=' * 80)
+            print("\n💡 SOLUTION: Centralize this constant in:")
+            print("   agentic_core/config/blueprint_sovereign/environments/sovereign_config.py")
+            print("   Then use: from sovereign_config import OrchestratorConfig")
+            print("=" * 80)
             return False
         return True
     # guardian: allow-silent-swallow
     except Exception as e:
-        print(f'⚠️  Warning: Could not parse {filepath}: {e}')
+        print(f"⚠️  Warning: Could not parse {filepath}: {e}")
         return True
-if __name__ == '__main__':
+
+
+if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print('Usage: sovereign_precommit_no_hardcoded_util.py <file1> <file2> ...')
+        print("Usage: sovereign_precommit_no_hardcoded_util.py <file1> <file2> ...")
         sys.exit(0)
     all_passed: Any = True
     for filepath in sys.argv[1:]:
         if not check_file(filepath):
             all_passed: Any = False
     if not all_passed:
-        print('\n🚫 Pre-commit BLOCKED: Hardcoded configuration detected.')
-        print('   All config constants must be centralized in sovereign_config.py')
+        print("\n🚫 Pre-commit BLOCKED: Hardcoded configuration detected.")
+        print("   All config constants must be centralized in sovereign_config.py")
         sys.exit(1)
     sys.exit(0)

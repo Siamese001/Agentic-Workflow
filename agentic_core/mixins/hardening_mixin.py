@@ -8,20 +8,26 @@ to any component that executes external operations.
 
 Phase 1 - Pillar 8: Tool Ecosystem (Resilience Middleware)
 """
+
 from __future__ import annotations
+
 import asyncio
 import time
 from collections.abc import Awaitable, Callable
 from typing import Any
+
 from agentic_core.embeddings.tokenization_adapter import TokenCountAdapter
+from agentic_core.L0_routing.config.path_constants import DEFAULT_TIMEOUT
 from agentic_core.L4_state.utils.circuit_breaker_util import CircuitBreakerOpenError, get_breaker
 from agentic_core.L5_safety.enforcement.error_recovery_strategy import ErrorRecoveryStrategy
 from agentic_core.L6_observability.utils.system_telemetry_util import SystemTelemetry, get_telemetry
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 class TokenLimitError(Exception):
     """Raised when token budget exceeds model limits."""
+
     pass
+
 
 class HardeningMixin:
     """Mixin that adds military-grade resilience to any executor.
@@ -31,7 +37,17 @@ class HardeningMixin:
     for external operations.
     """
 
-    def __init__(self, component_name: str, *, failure_threshold: int=5, reset_timeout_s: int=30, max_retries: int=3, base_backoff_ms: int=200, jitter_ms: int=100, telemetry: SystemTelemetry | None=None):
+    def __init__(
+        self,
+        component_name: str,
+        *,
+        failure_threshold: int = 5,
+        reset_timeout_s: int = 30,
+        max_retries: int = 3,
+        base_backoff_ms: int = 200,
+        jitter_ms: int = 100,
+        telemetry: SystemTelemetry | None = None,
+    ):
         """Initialize hardening components.
 
         Args:
@@ -44,11 +60,27 @@ class HardeningMixin:
             telemetry: Custom telemetry instance (uses default if None)
         """
         self.component_name = component_name
-        self.circuit_breaker = get_breaker(name=f'{component_name}_breaker', failure_threshold=failure_threshold, reset_after_s=reset_timeout_s)
-        self.error_recovery = ErrorRecoveryStrategy(max_retries=max_retries, base_backoff_ms=base_backoff_ms, jitter_ms=jitter_ms, enable_circuit_breaker=True)
+        self.circuit_breaker = get_breaker(
+            name=f"{component_name}_breaker",
+            failure_threshold=failure_threshold,
+            reset_after_s=reset_timeout_s,
+        )
+        self.error_recovery = ErrorRecoveryStrategy(
+            max_retries=max_retries,
+            base_backoff_ms=base_backoff_ms,
+            jitter_ms=jitter_ms,
+            enable_circuit_breaker=True,
+        )
         self.telemetry = telemetry or get_telemetry()
 
-    async def execute_hardened(self, operation: str, fn: Callable[[], Awaitable[Any]], *, validate_token_budget: Callable[[], None] | None=None, metadata: dict[str, Any] | None=None) -> Any:
+    async def execute_hardened(
+        self,
+        operation: str,
+        fn: Callable[[], Awaitable[Any]],
+        *,
+        validate_token_budget: Callable[[], None] | None = None,
+        metadata: dict[str, Any] | None = None,
+    ) -> Any:
         """Execute an async function with full hardening applied.
 
         Args:
@@ -69,24 +101,44 @@ class HardeningMixin:
         try:
             if validate_token_budget:
                 await asyncio.wait_for(asyncio.to_thread(validate_token_budget), timeout=DEFAULT_TIMEOUT)
-            result = await self.error_recovery.invoke_with_retry(fn=fn, breaker_name=self.circuit_breaker.name, context=metadata or {})
+            result = await self.error_recovery.invoke_with_retry(
+                fn=fn, breaker_name=self.circuit_breaker.name, context=metadata or {}
+            )
             latency_ms = (time.time() - start_time) * 1000
-            self.telemetry.log_success(component=self.component_name, operation=operation, latency_ms=latency_ms, metadata=metadata)
+            self.telemetry.log_success(
+                component=self.component_name, operation=operation, latency_ms=latency_ms, metadata=metadata
+            )
             return result
         except asyncio.TimeoutError as e:
             latency_ms = (time.time() - start_time) * 1000
-            self.telemetry.log_failure(component=self.component_name, operation=operation, latency_ms=latency_ms, error_type='ValidationTimeout', error_message='Token budget validation timed out', metadata=metadata)
-            raise TokenLimitError('Token budget validation timed out') from e
+            self.telemetry.log_failure(
+                component=self.component_name,
+                operation=operation,
+                latency_ms=latency_ms,
+                error_type="ValidationTimeout",
+                error_message="Token budget validation timed out",
+                metadata=metadata,
+            )
+            raise TokenLimitError("Token budget validation timed out") from e
         except CircuitBreakerOpenError as e:
             latency_ms = (time.time() - start_time) * 1000
-            self.telemetry.log_circuit_breaker(component=self.component_name, breaker_name=e.breaker_name, state='OPEN', metadata=metadata)
+            self.telemetry.log_circuit_breaker(
+                component=self.component_name, breaker_name=e.breaker_name, state="OPEN", metadata=metadata
+            )
             raise
         except Exception as e:
             latency_ms = (time.time() - start_time) * 1000
-            self.telemetry.log_failure(component=self.component_name, operation=operation, latency_ms=latency_ms, error_type=e.__class__.__name__, error_message=str(e), metadata=metadata)
+            self.telemetry.log_failure(
+                component=self.component_name,
+                operation=operation,
+                latency_ms=latency_ms,
+                error_type=e.__class__.__name__,
+                error_message=str(e),
+                metadata=metadata,
+            )
             raise
 
-    def validate_token_budget_tiktoken(self, prompt: str, model: str, max_tokens: int | None=None) -> None:
+    def validate_token_budget_tiktoken(self, prompt: str, model: str, max_tokens: int | None = None) -> None:
         """Validate token budget using tiktoken.
 
         Args:
@@ -101,10 +153,22 @@ class HardeningMixin:
             tokens = TokenCountAdapter.count_tokens(prompt, model)
         except ImportError:
             return
-        model_limits = {'gpt-4': 8192, 'gpt-4-32k': 32768, 'gpt-4-0613': 8192, 'gpt-4-32k-0613': 32768, 'gpt-3.5-turbo': 4096, 'gpt-3.5-turbo-16k': 16384, 'gpt-3.5-turbo-0613': 4096, 'gpt-3.5-turbo-16k-0613': 16384, 'gpt-4o': 128000, 'gpt-4o-2024-08-06': 128000, 'gpt-4o-mini': 128000}
+        model_limits = {
+            "gpt-4": 8192,
+            "gpt-4-32k": 32768,
+            "gpt-4-0613": 8192,
+            "gpt-4-32k-0613": 32768,
+            "gpt-3.5-turbo": 4096,
+            "gpt-3.5-turbo-16k": 16384,
+            "gpt-3.5-turbo-0613": 4096,
+            "gpt-3.5-turbo-16k-0613": 16384,
+            "gpt-4o": 128000,
+            "gpt-4o-2024-08-06": 128000,
+            "gpt-4o-mini": 128000,
+        }
         limit = max_tokens or model_limits.get(model, 4096)
         if tokens > limit:
-            raise TokenLimitError(f'Prompt exceeds token budget: {tokens} > {limit} for model {model}')
+            raise TokenLimitError(f"Prompt exceeds token budget: {tokens} > {limit} for model {model}")
 
     def get_circuit_breaker_state(self) -> str:
         """Get current circuit breaker state."""
@@ -113,6 +177,7 @@ class HardeningMixin:
     def reset_circuit_breaker(self) -> None:
         """Reset circuit breaker to CLOSED state (for testing)."""
         from agentic_core.base_agents.circuit_breaker_config import CircuitBreakerState
+
         self.circuit_breaker.state = CircuitBreakerState.CLOSED
         self.circuit_breaker.failure_count = 0
         self.circuit_breaker.success_count = 0

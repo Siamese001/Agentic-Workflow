@@ -1,13 +1,28 @@
 from __future__ import annotations
-'\nCapability Extractor - AST-based capability analysis for agent classes.\nExtracted from agent_capability_supplement.py for single responsibility.\n'
+
+"\nCapability Extractor - AST-based capability analysis for agent classes.\nExtracted from agent_capability_supplement.py for single responsibility.\n"
 import ast
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 class CapabilityExtractor:
     """Extracts semantic capabilities from agent class definitions."""
-    COMMON_METHODS = {'__init__', 'heal_violation', 'execute', 'run', 'validate', 'monitor'}
-    SEMANTIC_KEYWORDS = {'healing': ['heal', 'fix', 'repair'], 'validation': ['validate', 'check', 'enforce'], 'detection': ['detect', 'find', 'scan'], 'pruning': ['prune', 'clean', 'remove'], 'mapping': ['map', 'territory', 'structure'], 'monitoring': ['watch', 'monitor', 'observe'], 'git_integration': ['git']}
-    PATTERN_KEYWORDS = {'git_operations': [('git', 'subprocess'), ('git', 'repo')], 'dead_code_analysis': ['dead code', 'unused'], 'filesystem_introspection': [('filesystem',), ('path', 'exists')], 'redis_integration': ['redis']}
+
+    COMMON_METHODS = {"__init__", "heal_violation", "execute", "run", "validate", "monitor"}
+    SEMANTIC_KEYWORDS = {
+        "healing": ["heal", "fix", "repair"],
+        "validation": ["validate", "check", "enforce"],
+        "detection": ["detect", "find", "scan"],
+        "pruning": ["prune", "clean", "remove"],
+        "mapping": ["map", "territory", "structure"],
+        "monitoring": ["watch", "monitor", "observe"],
+        "git_integration": ["git"],
+    }
+    PATTERN_KEYWORDS = {
+        "git_operations": [("git", "subprocess"), ("git", "repo")],
+        "dead_code_analysis": ["dead code", "unused"],
+        "filesystem_introspection": [("filesystem",), ("path", "exists")],
+        "redis_integration": ["redis"],
+    }
 
     def extract_capabilities(self, class_node: ast.ClassDef) -> dict[str, any]:
         """Extract rich capability metadata from an agent class.
@@ -18,15 +33,15 @@ class CapabilityExtractor:
         Returns:
             Dictionary with semantic_tags, unique_methods, patterns, and valuable_methods
         """
-        caps = {'semantic_tags': set(), 'unique_methods': set(), 'patterns': set(), 'valuable_methods': []}
+        caps = {"semantic_tags": set(), "unique_methods": set(), "patterns": set(), "valuable_methods": []}
         for item in class_node.body:
             if not isinstance(item, ast.FunctionDef | ast.AsyncFunctionDef):
                 continue
             method_name = item.name
             method_loc = item.lineno
             if method_name not in self.COMMON_METHODS:
-                caps['unique_methods'].add(method_name)
-                caps['valuable_methods'].append((method_name, method_loc, 'Unique method signature'))
+                caps["unique_methods"].add(method_name)
+                caps["valuable_methods"].append((method_name, method_loc, "Unique method signature"))
             self._tag_by_method_name(method_name, caps)
             self._analyze_method_body(item, method_name, method_loc, caps)
         return caps
@@ -40,10 +55,12 @@ class CapabilityExtractor:
         """
         lower_name = method_name.lower()
         for tag, keywords in self.SEMANTIC_KEYWORDS.items():
-            if any((k in lower_name for k in keywords)):
-                caps['semantic_tags'].add(tag)
+            if any(k in lower_name for k in keywords):
+                caps["semantic_tags"].add(tag)
 
-    def _analyze_method_body(self, item: ast.FunctionDef, method_name: str, method_loc: int, caps: dict) -> None:
+    def _analyze_method_body(
+        self, item: ast.FunctionDef, method_name: str, method_loc: int, caps: dict
+    ) -> None:
         """Analyze method body for specialized patterns.
 
         Args:
@@ -53,23 +70,27 @@ class CapabilityExtractor:
             caps: Capabilities dictionary to update
         """
         try:
-            body_source = ast.unparse(item.body) if hasattr(ast, 'unparse') else ''
+            body_source = ast.unparse(item.body) if hasattr(ast, "unparse") else ""
         # guardian: allow-silent-swallow
         except:
-            body_source = ''
+            body_source = ""
         lower_body = body_source.lower()
-        if 'git' in lower_body and 'subprocess' in lower_body or ('git' in lower_body and 'repo' in lower_body):
-            caps['patterns'].add('git_operations')
-            caps['valuable_methods'].append((method_name, method_loc, 'Git repository interaction'))
-        if 'dead code' in lower_body or 'unused' in lower_body:
-            caps['patterns'].add('dead_code_analysis')
-            caps['valuable_methods'].append((method_name, method_loc, 'Dead/unused code detection'))
-        if 'filesystem' in lower_body or ('path' in lower_body and 'exists' in lower_body):
-            caps['patterns'].add('filesystem_introspection')
-            caps['valuable_methods'].append((method_name, method_loc, 'Advanced filesystem checks'))
-        if 'redis' in lower_body:
-            caps['patterns'].add('redis_integration')
-            caps['valuable_methods'].append((method_name, method_loc, 'Redis state access'))
+        if (
+            "git" in lower_body
+            and "subprocess" in lower_body
+            or ("git" in lower_body and "repo" in lower_body)
+        ):
+            caps["patterns"].add("git_operations")
+            caps["valuable_methods"].append((method_name, method_loc, "Git repository interaction"))
+        if "dead code" in lower_body or "unused" in lower_body:
+            caps["patterns"].add("dead_code_analysis")
+            caps["valuable_methods"].append((method_name, method_loc, "Dead/unused code detection"))
+        if "filesystem" in lower_body or ("path" in lower_body and "exists" in lower_body):
+            caps["patterns"].add("filesystem_introspection")
+            caps["valuable_methods"].append((method_name, method_loc, "Advanced filesystem checks"))
+        if "redis" in lower_body:
+            caps["patterns"].add("redis_integration")
+            caps["valuable_methods"].append((method_name, method_loc, "Redis state access"))
 
     def get_all_capabilities(self, caps: dict) -> set[str]:
         """Get all capabilities (semantic tags + patterns) as a unified set.
@@ -80,7 +101,7 @@ class CapabilityExtractor:
         Returns:
             Set of all capability identifiers
         """
-        return caps['semantic_tags'] | caps['patterns']
+        return caps["semantic_tags"] | caps["patterns"]
 
     def filter_unique_methods(self, method_names: set[str]) -> set[str]:
         """Filter out common methods, returning only unique ones.

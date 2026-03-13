@@ -8,20 +8,25 @@ Only the attributes accessed at runtime are defined:
   InjectionMatch.relevance_score  → float
   InjectionMatch.variable_values  → dict[str, Any]
 """
+
 from __future__ import annotations
+
 from dataclasses import dataclass, field
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 @dataclass
 class InjectionPattern:
     """Minimal representation of an instructional injection pattern."""
+
     priority: int = 0
-    template: str = ''
+    template: str = ""
+
 
 @dataclass
 class InjectionMatch:
     """A matched injection pattern with relevance scoring and variable bindings."""
+
     injection: InjectionPattern = field(default_factory=InjectionPattern)
     relevance_score: float = 0.0
     variable_values: dict[str, Any] = field(default_factory=dict)

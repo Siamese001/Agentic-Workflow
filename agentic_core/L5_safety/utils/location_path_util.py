@@ -7,15 +7,18 @@ Contains:
 - is_path_compliant(): L5 Sovereign Structural SSOT — Supreme Court for path validity
 - get_location_agent(): Redirect shim for backward compatibility (→ LocationHealerAgent)
 """
+
 from __future__ import annotations
+
 import re
 from pathlib import Path
 from typing import TYPE_CHECKING
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 if TYPE_CHECKING:
     from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
 
-def is_path_compliant(file_path: str | Path, project_root: Path | None=None) -> bool:
+
+def is_path_compliant(file_path: str | Path, project_root: Path | None = None) -> bool:
     """
     L5 Sovereign Structural SSOT - Hard-enforcement of path validity.
 
@@ -45,7 +48,12 @@ def is_path_compliant(file_path: str | Path, project_root: Path | None=None) -> 
         >>> is_path_compliant('agentic_core/L1/L2/L3/L4/L5/deep.py')  # Too deep
         False
     """
-    from agentic_core.L5_safety.config.structure_blueprint import DEPTH_RULES, PROJECT_ROOT_WHITELIST, get_validated_project_root
+    from agentic_core.L5_safety.config.structure_blueprint import (
+        DEPTH_RULES,
+        PROJECT_ROOT_WHITELIST,
+        get_validated_project_root,
+    )
+
     if project_root is None:
         project_root = get_validated_project_root()
     path = Path(file_path)
@@ -64,14 +72,17 @@ def is_path_compliant(file_path: str | Path, project_root: Path | None=None) -> 
     max_depth = DEPTH_RULES.get(root_folder, 3)
     if len(parts) > max_depth:
         return False
-    if root_folder.startswith(('legacy_', 'old_')):
+    if root_folder.startswith(("legacy_", "old_")):
         return False
-    forbidden_pattern = re.compile('^\\d+_')
+    forbidden_pattern = re.compile("^\\d+_")
     for part in parts:
         if forbidden_pattern.match(part):
             return False
     return True
+
+
 _healer_instance: LocationHealerAgent | None = None
+
 
 def get_location_agent(project_root: Path) -> LocationHealerAgent:
     """Get or create LocationHealerAgent singleton.
@@ -83,5 +94,6 @@ def get_location_agent(project_root: Path) -> LocationHealerAgent:
     global _healer_instance
     if _healer_instance is None:
         from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
+
         _healer_instance = LocationHealerAgent(project_root=project_root)
     return _healer_instance

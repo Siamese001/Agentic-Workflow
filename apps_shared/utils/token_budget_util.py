@@ -3,30 +3,35 @@
 Phase 1 - Pillar 11: Cost & Optimization (Semantic Caching)
 Converts token budget inspector into active enforcement mechanism.
 """
+
 import logging
 from dataclasses import dataclass
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 logger = logging.getLogger(__name__)
+
 
 class BudgetExceededError(Exception):
     """Raised when token budget is exceeded."""
 
-    def __init__(self, message: str, current_tokens: int, max_tokens: int, budget_type: str='total'):
+    def __init__(self, message: str, current_tokens: int, max_tokens: int, budget_type: str = "total"):
         super().__init__(message)
         self.current_tokens = current_tokens
         self.max_tokens = max_tokens
         self.budget_type = budget_type
 
+
 @dataclass
 class TokenBudgetConfig:
     """Token budget configuration."""
+
     max_prompt_tokens: int = 100000
     max_completion_tokens: int = 50000
     max_total_tokens: int = 150000
     max_tokens_per_request: int = 8000
     enforce_limits: bool = True
     warn_threshold: float = 0.8
+
 
 class TokenBudget:
     """Token budget tracker and enforcer.
@@ -35,7 +40,7 @@ class TokenBudget:
     to prevent cost overruns.
     """
 
-    def __init__(self, config: TokenBudgetConfig | None=None, enable_logging: bool=True):
+    def __init__(self, config: TokenBudgetConfig | None = None, enable_logging: bool = True):
         """Initialize token budget.
 
         Args:
@@ -75,13 +80,30 @@ class TokenBudget:
         """
         prompt_tokens = self.estimate_tokens(prompt)
         if prompt_tokens > self.config.max_tokens_per_request:
-            raise BudgetExceededError(f'Prompt exceeds per-request limit: {prompt_tokens} > {self.config.max_tokens_per_request}', current_tokens=prompt_tokens, max_tokens=self.config.max_tokens_per_request, budget_type='per_request')
+            raise BudgetExceededError(
+                f"Prompt exceeds per-request limit: {prompt_tokens} > {self.config.max_tokens_per_request}",
+                current_tokens=prompt_tokens,
+                max_tokens=self.config.max_tokens_per_request,
+                budget_type="per_request",
+            )
         projected_total = self._total_tokens + prompt_tokens + max_completion_tokens
         if self.config.enforce_limits and projected_total > self.config.max_total_tokens:
-            raise BudgetExceededError(f'Request would exceed total budget: {projected_total} > {self.config.max_total_tokens}', current_tokens=projected_total, max_tokens=self.config.max_total_tokens, budget_type='total')
+            raise BudgetExceededError(
+                f"Request would exceed total budget: {projected_total} > {self.config.max_total_tokens}",
+                current_tokens=projected_total,
+                max_tokens=self.config.max_total_tokens,
+                budget_type="total",
+            )
         warn_threshold = self.config.max_total_tokens * self.config.warn_threshold
         if self.enable_logging and projected_total > warn_threshold:
-            logger.warning('token_budget_warning', extra={'projected_total': projected_total, 'max_total': self.config.max_total_tokens, 'utilization': projected_total / self.config.max_total_tokens})
+            logger.warning(
+                "token_budget_warning",
+                extra={
+                    "projected_total": projected_total,
+                    "max_total": self.config.max_total_tokens,
+                    "utilization": projected_total / self.config.max_total_tokens,
+                },
+            )
 
     def record_usage(self, prompt_tokens: int, completion_tokens: int) -> None:
         """Record token usage for a request.
@@ -95,14 +117,37 @@ class TokenBudget:
         self._total_tokens += prompt_tokens + completion_tokens
         self._request_count += 1
         if self.enable_logging:
-            logger.info('token_usage_recorded', extra={'prompt_tokens': prompt_tokens, 'completion_tokens': completion_tokens, 'total_tokens': self._total_tokens, 'request_count': self._request_count})
+            logger.info(
+                "token_usage_recorded",
+                extra={
+                    "prompt_tokens": prompt_tokens,
+                    "completion_tokens": completion_tokens,
+                    "total_tokens": self._total_tokens,
+                    "request_count": self._request_count,
+                },
+            )
         if self.config.enforce_limits:
             if self._prompt_tokens > self.config.max_prompt_tokens:
-                raise BudgetExceededError(f'Prompt token budget exceeded: {self._prompt_tokens} > {self.config.max_prompt_tokens}', current_tokens=self._prompt_tokens, max_tokens=self.config.max_prompt_tokens, budget_type='prompt')
+                raise BudgetExceededError(
+                    f"Prompt token budget exceeded: {self._prompt_tokens} > {self.config.max_prompt_tokens}",
+                    current_tokens=self._prompt_tokens,
+                    max_tokens=self.config.max_prompt_tokens,
+                    budget_type="prompt",
+                )
             if self._completion_tokens > self.config.max_completion_tokens:
-                raise BudgetExceededError(f'Completion token budget exceeded: {self._completion_tokens} > {self.config.max_completion_tokens}', current_tokens=self._completion_tokens, max_tokens=self.config.max_completion_tokens, budget_type='completion')
+                raise BudgetExceededError(
+                    f"Completion token budget exceeded: {self._completion_tokens} > {self.config.max_completion_tokens}",
+                    current_tokens=self._completion_tokens,
+                    max_tokens=self.config.max_completion_tokens,
+                    budget_type="completion",
+                )
             if self._total_tokens > self.config.max_total_tokens:
-                raise BudgetExceededError(f'Total token budget exceeded: {self._total_tokens} > {self.config.max_total_tokens}', current_tokens=self._total_tokens, max_tokens=self.config.max_total_tokens, budget_type='total')
+                raise BudgetExceededError(
+                    f"Total token budget exceeded: {self._total_tokens} > {self.config.max_total_tokens}",
+                    current_tokens=self._total_tokens,
+                    max_tokens=self.config.max_total_tokens,
+                    budget_type="total",
+                )
 
     def get_stats(self) -> dict[str, Any]:
         """Get budget statistics.
@@ -110,7 +155,18 @@ class TokenBudget:
         Returns:
             Dict with budget stats
         """
-        return {'prompt_tokens': self._prompt_tokens, 'completion_tokens': self._completion_tokens, 'total_tokens': self._total_tokens, 'request_count': self._request_count, 'max_prompt_tokens': self.config.max_prompt_tokens, 'max_completion_tokens': self.config.max_completion_tokens, 'max_total_tokens': self.config.max_total_tokens, 'prompt_utilization': self._prompt_tokens / max(1, self.config.max_prompt_tokens), 'completion_utilization': self._completion_tokens / max(1, self.config.max_completion_tokens), 'total_utilization': self._total_tokens / max(1, self.config.max_total_tokens)}
+        return {
+            "prompt_tokens": self._prompt_tokens,
+            "completion_tokens": self._completion_tokens,
+            "total_tokens": self._total_tokens,
+            "request_count": self._request_count,
+            "max_prompt_tokens": self.config.max_prompt_tokens,
+            "max_completion_tokens": self.config.max_completion_tokens,
+            "max_total_tokens": self.config.max_total_tokens,
+            "prompt_utilization": self._prompt_tokens / max(1, self.config.max_prompt_tokens),
+            "completion_utilization": self._completion_tokens / max(1, self.config.max_completion_tokens),
+            "total_utilization": self._total_tokens / max(1, self.config.max_total_tokens),
+        }
 
     def reset(self) -> None:
         """Reset budget counters."""
@@ -119,7 +175,7 @@ class TokenBudget:
         self._total_tokens = 0
         self._request_count = 0
         if self.enable_logging:
-            logger.info('token_budget_reset')
+            logger.info("token_budget_reset")
 
     def get_remaining(self) -> dict[str, int]:
         """Get remaining token budget.
@@ -127,7 +183,12 @@ class TokenBudget:
         Returns:
             Dict with remaining tokens for each category
         """
-        return {'prompt': max(0, self.config.max_prompt_tokens - self._prompt_tokens), 'completion': max(0, self.config.max_completion_tokens - self._completion_tokens), 'total': max(0, self.config.max_total_tokens - self._total_tokens)}
+        return {
+            "prompt": max(0, self.config.max_prompt_tokens - self._prompt_tokens),
+            "completion": max(0, self.config.max_completion_tokens - self._completion_tokens),
+            "total": max(0, self.config.max_total_tokens - self._total_tokens),
+        }
+
 
 def enforce_token_budget(prompt: str, max_completion_tokens: int, budget: TokenBudget) -> None:
     """Convenience function to enforce token budget.

@@ -8,10 +8,13 @@ Contracts:
 - Returns float in [0.0, 1.0].  Default neutral prior = 0.50.
 - NO side effects. NO writes. NO imports of L4 state directly.
 """
+
 from __future__ import annotations
+
 from typing import Protocol
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 _NEUTRAL_PRIOR: float = 0.5
+
 
 class MetaPriorProvider(Protocol):
     """Read-only seam for retrieving heal-time meta-learning priors."""
@@ -31,6 +34,7 @@ class MetaPriorProvider(Protocol):
         """
         ...
 
+
 class NeutralMetaPriorProvider:
     """Fallback provider that always returns the neutral prior.
 
@@ -39,4 +43,6 @@ class NeutralMetaPriorProvider:
 
     def get_prior(self, error_signature: str) -> float:
         return _NEUTRAL_PRIOR
-__all__ = ['MetaPriorProvider', 'NeutralMetaPriorProvider', '_NEUTRAL_PRIOR']
+
+
+__all__ = ["MetaPriorProvider", "NeutralMetaPriorProvider", "_NEUTRAL_PRIOR"]

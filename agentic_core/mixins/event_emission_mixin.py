@@ -6,13 +6,14 @@ It loads sovereign_events_types.py directly via importlib.util.
 
 SSOT: agentic_core/runtime/types/sovereign_events_types.py
 """
+
 import importlib.util
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
-_SOURCE = Path(__file__).resolve().parent.parent / 'runtime' / 'types' / 'sovereign_events_types.py'
-_spec = importlib.util.spec_from_file_location('agentic_core.runtime.types.sovereign_events_types', _SOURCE)
+
+_SOURCE = Path(__file__).resolve().parent.parent / "runtime" / "types" / "sovereign_events_types.py"
+_spec = importlib.util.spec_from_file_location("agentic_core.runtime.types.sovereign_events_types", _SOURCE)
 _mod = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_mod)
 event_emission_mixin = _mod.event_emission_mixin
 SovereignEvent = _mod.SovereignEvent
-__all__ = ['event_emission_mixin', 'SovereignEvent']
+__all__ = ["event_emission_mixin", "SovereignEvent"]

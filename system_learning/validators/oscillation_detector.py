@@ -8,9 +8,11 @@ Invariants:
   - No wall-clock access (now_utc injected)
   - Fail-closed on oscillation detection
 """
+
 from __future__ import annotations
+
 from dataclasses import dataclass
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 @dataclass(frozen=True, slots=True)
 class OscillationPolicy:
@@ -25,9 +27,11 @@ class OscillationPolicy:
     freeze_seconds : int
         Duration to freeze optimization if oscillation detected.
     """
+
     window: int
     epsilon: float
     freeze_seconds: int
+
 
 @dataclass(frozen=True, slots=True)
 class FreezeDecision:
@@ -40,8 +44,10 @@ class FreezeDecision:
     freeze_until_utc : int | None
         Unix timestamp when freeze expires (None if not frozen).
     """
+
     should_freeze: bool
     freeze_until_utc: int | None
+
 
 def detect_oscillation(values: tuple[float, ...], policy: OscillationPolicy) -> bool:
     """Detect oscillation pattern in recent values.
@@ -71,10 +77,11 @@ def detect_oscillation(values: tuple[float, ...], policy: OscillationPolicy) -> 
     """
     if len(values) < policy.window:
         return False
-    recent = values[-policy.window:]
+    recent = values[-policy.window :]
 
     def values_equal(a: float, b: float) -> bool:
         return abs(a - b) <= policy.epsilon
+
     val_a = recent[0]
     val_b = None
     for v in recent[1:]:
@@ -84,13 +91,16 @@ def detect_oscillation(values: tuple[float, ...], policy: OscillationPolicy) -> 
     if val_b is None:
         return False
     expected_pattern = [val_a, val_b] * (policy.window // 2 + 1)
-    expected_pattern = expected_pattern[:policy.window]
+    expected_pattern = expected_pattern[: policy.window]
     for i, v in enumerate(recent):
         if not values_equal(v, expected_pattern[i]):
             return False
     return True
 
-def compute_freeze_decision(values: tuple[float, ...], last_update_utc: int, now_utc: int, policy: OscillationPolicy) -> FreezeDecision:
+
+def compute_freeze_decision(
+    values: tuple[float, ...], last_update_utc: int, now_utc: int, policy: OscillationPolicy
+) -> FreezeDecision:
     """Compute freeze decision based on oscillation detection.
 
     Parameters

@@ -4,15 +4,17 @@ Meta-Learning Protocol for recall-or-execute pattern.
 This protocol enables agents to cache and recall successful execution
 patterns, improving performance and consistency over time.
 """
+
 from abc import ABC, abstractmethod
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 @dataclass
 class LearningContext:
     """Context for meta-learning operations."""
+
     context_key: str
     agent_name: str
     operation_type: str
@@ -25,11 +27,13 @@ class LearningContext:
 
     def to_cache_key(self) -> str:
         """Generate cache key from context."""
-        return f'{self.agent_name}:{self.operation_type}:{self.input_hash}'
+        return f"{self.agent_name}:{self.operation_type}:{self.input_hash}"
+
 
 @dataclass
 class LearningResult:
     """Result of meta-learning operation."""
+
     success: bool
     from_cache: bool
     result: Any
@@ -41,6 +45,7 @@ class LearningResult:
     def __post_init__(self) -> None:
         if self.metadata is None:
             self.metadata = {}
+
 
 class MetaLearningProtocol(ABC):
     """Protocol for meta-learning implementations.
@@ -79,7 +84,7 @@ class MetaLearningProtocol(ABC):
         pass
 
     @abstractmethod
-    def invalidate_cache(self, context_key: str | None=None, agent_name: str | None=None) -> int:
+    def invalidate_cache(self, context_key: str | None = None, agent_name: str | None = None) -> int:
         """Invalidate cached learnings.
 
         Args:

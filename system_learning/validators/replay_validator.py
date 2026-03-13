@@ -9,15 +9,20 @@ Invariants:
   - No store access
   - Fail-closed on any determinism violation
 """
+
 from __future__ import annotations
+
 import hashlib
 from typing import Any, Callable
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 class DeterminismViolation(RuntimeError):
     """Raised when an engine produces different outputs across identical runs."""
 
-def replay_validate(snapshot: Any, engine_fn: Callable[[Any], Any], *, canonicalize_fn: Callable[[Any], bytes]) -> str:
+
+def replay_validate(
+    snapshot: Any, engine_fn: Callable[[Any], Any], *, canonicalize_fn: Callable[[Any], bytes]
+) -> str:
     """Validate that an engine produces identical outputs across two runs.
 
     Runs the engine function twice with the same snapshot input, canonicalizes
@@ -58,5 +63,7 @@ def replay_validate(snapshot: Any, engine_fn: Callable[[Any], Any], *, canonical
     canonical2 = canonicalize_fn(output2)
     hash2 = hashlib.sha256(canonical2).hexdigest()
     if hash1 != hash2:
-        raise DeterminismViolation(f'DETERMINISM_VIOLATION: Engine produced different outputs across runs.\nRun 1 hash: {hash1}\nRun 2 hash: {hash2}')
+        raise DeterminismViolation(
+            f"DETERMINISM_VIOLATION: Engine produced different outputs across runs.\nRun 1 hash: {hash1}\nRun 2 hash: {hash2}"
+        )
     return hash1

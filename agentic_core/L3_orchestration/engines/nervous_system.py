@@ -1,7 +1,8 @@
 from __future__ import annotations
-'Nervous System module.'
+
+"Nervous System module."
 from agentic_core.L3_orchestration.engines.reflex_layer_pattern import ReflexLayer
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 class NervousSystem:
     """Nervous System orchestration."""
@@ -20,4 +21,6 @@ class NervousSystem:
 
     def get_status(self):
         return self.ReflexLayer.get_status()
-__all__ = ['NervousSystem', 'ReflexLayer']
+
+
+__all__ = ["NervousSystem", "ReflexLayer"]

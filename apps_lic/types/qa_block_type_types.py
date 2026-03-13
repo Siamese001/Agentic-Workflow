@@ -1,36 +1,46 @@
 """Types and models for message_assembler."""
+
 from __future__ import annotations
-from dataclasses import dataclass, field
-from enum import Enum
-from typing import Any, Optional
+
 import logging
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+from dataclasses import dataclass
+from enum import Enum
+from typing import Any
+
 Logger: Any = logging.getLogger(__name__)
+
 
 class QaBlockType(Enum):
     """TODO: Add docstring."""
-    LINKEDIN_QA_GRID: Any = 'LINKEDIN_QA_GRID'
-    AI_FILTER_CANONICAL: Any = 'AI_FILTER_CANONICAL'
-    MESSAGE_SPECIFIC_RAG_QA: Any = 'MESSAGE_SPECIFIC_RAG_QA'
-    EVIDENCE_PACK: Any = 'EVIDENCE_PACK'
+
+    LINKEDIN_QA_GRID: Any = "LINKEDIN_QA_GRID"
+    AI_FILTER_CANONICAL: Any = "AI_FILTER_CANONICAL"
+    MESSAGE_SPECIFIC_RAG_QA: Any = "MESSAGE_SPECIFIC_RAG_QA"
+    EVIDENCE_PACK: Any = "EVIDENCE_PACK"
+
 
 @dataclass
 class QaBlock:
     """Docstring."""
+
     block_type: QABlockType
     title: str
     content: str
     order: int
 
+
 @dataclass
 class MessageAssemblerConfig:
     """Docstring."""
+
     canonical_signature_lines: int = 4
     required_qa_blocks: int = 4
+
 
 @dataclass
 class MessageAssemblerResult:
     """Docstring."""
+
     final_message: str
     qa_blocks: list[QABlock]
     signature: str

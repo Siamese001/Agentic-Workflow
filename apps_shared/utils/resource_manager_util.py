@@ -3,6 +3,7 @@
 This module provides centralized resource management with automatic cleanup,
 connection pooling, and prevention of resource leaks.
 """
+
 import asyncio
 import logging
 import threading
@@ -13,22 +14,29 @@ from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
 from typing import Any
+
 import aiofiles
 import aiofiles.os
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import DEFAULT_SLEEP
+
 logger = logging.getLogger(__name__)
+
 
 class ResourceType(Enum):
     """Types of resources managed."""
-    FILE_HANDLE = 'file_handle'
-    NETWORK_CONNECTION = 'network_connection'
-    TEMP_FILE = 'temp_file'
-    LOCK = 'lock'
-    SEMAPHORE = 'semaphore'
+
+    FILE_HANDLE = "file_handle"
+    NETWORK_CONNECTION = "network_connection"
+    TEMP_FILE = "temp_file"
+    LOCK = "lock"
+    SEMAPHORE = "semaphore"
+
 
 @dataclass
 class ResourceInfo:
     """Information about a managed resource."""
+
     resource_id: str
     resource_type: ResourceType
     created_at: float
@@ -36,11 +44,12 @@ class ResourceInfo:
     cleanup_callback: Callable | None = None
     metadata: dict[str, Any] = field(default_factory=dict)
 
+
 class ResourceManager:
     """Manages system resources with automatic cleanup."""
 
     # guardian: allow-magic-config
-    def __init__(self, name: str='default', max_resources: int=1000):
+    def __init__(self, name: str = "default", max_resources: int = 1000):
         """Initialize the resource manager.
 
         Args:
@@ -55,7 +64,7 @@ class ResourceManager:
         self._connection_pools: dict[str, Any] = {}
         self._cleanup_task: asyncio.Task | None = None
         self._running = False
-        logger.debug(f'Initialized ResourceManager: {name}')
+        logger.debug(f"Initialized ResourceManager: {name}")
 
     async def start(self) -> None:
         """Start the resource manager."""
@@ -63,7 +72,7 @@ class ResourceManager:
             return
         self._running = True
         self._cleanup_task = asyncio.create_task(self._cleanup_loop())
-        logger.info(f'Started ResourceManager: {self.name}')
+        logger.info(f"Started ResourceManager: {self.name}")
 
     async def stop(self) -> None:
         """Stop the resource manager and clean up all resources."""
@@ -77,7 +86,7 @@ class ResourceManager:
             except asyncio.CancelledError:
                 pass
         await self.cleanup_all()
-        logger.info(f'Stopped ResourceManager: {self.name}')
+        logger.info(f"Stopped ResourceManager: {self.name}")
 
     def generate_resource_id(self) -> str:
         """Generate a unique resource ID.
@@ -86,9 +95,14 @@ class ResourceManager:
             Unique resource ID
         """
         self._resource_counter += 1
-        return f'{self.name}_res_{self._resource_counter}_{int(time.time() * 1000)}'
+        return f"{self.name}_res_{self._resource_counter}_{int(time.time() * 1000)}"
 
-    def register_resource(self, resource_type: ResourceType, cleanup_callback: Callable | None=None, metadata: dict[str, Any] | None=None) -> str:
+    def register_resource(
+        self,
+        resource_type: ResourceType,
+        cleanup_callback: Callable | None = None,
+        metadata: dict[str, Any] | None = None,
+    ) -> str:
         """Register a resource for tracking.
 
         Args:
@@ -103,7 +117,14 @@ class ResourceManager:
             if len(self._resources) >= self.max_resources:
                 self._force_cleanup()
             resource_id = self.generate_resource_id()
-            resource_info = ResourceInfo(resource_id=resource_id, resource_type=resource_type, created_at=time.time(), last_used=time.time(), cleanup_callback=cleanup_callback, metadata=metadata or {})
+            resource_info = ResourceInfo(
+                resource_id=resource_id,
+                resource_type=resource_type,
+                created_at=time.time(),
+                last_used=time.time(),
+                cleanup_callback=cleanup_callback,
+                metadata=metadata or {},
+            )
             self._resources[resource_id] = resource_info
             return resource_id
 
@@ -138,7 +159,7 @@ class ResourceManager:
                         resource_info.cleanup_callback()
                 # guardian: allow-silent-swallow
                 except Exception as e:
-                    logger.error(f'Cleanup callback failed for {resource_id}: {e}')
+                    logger.error(f"Cleanup callback failed for {resource_id}: {e}")
             return True
 
     async def cleanup_all(self) -> int:
@@ -153,7 +174,7 @@ class ResourceManager:
         for resource_id in resource_ids:
             if self.unregister_resource(resource_id):
                 cleaned += 1
-        logger.info(f'Cleaned up {cleaned} resources in manager {self.name}')
+        logger.info(f"Cleaned up {cleaned} resources in manager {self.name}")
         return cleaned
 
     def _force_cleanup(self) -> None:
@@ -165,7 +186,7 @@ class ResourceManager:
                 to_remove.append(resource_id)
         for resource_id in to_remove:
             self.unregister_resource(resource_id)
-        logger.debug(f'Force cleaned up {len(to_remove)} old resources')
+        logger.debug(f"Force cleaned up {len(to_remove)} old resources")
 
     async def _cleanup_loop(self) -> None:
         """Background cleanup loop."""
@@ -181,15 +202,15 @@ class ResourceManager:
                 for resource_id in to_remove:
                     self.unregister_resource(resource_id)
                 if to_remove:
-                    logger.debug(f'Background cleanup removed {len(to_remove)} resources')
+                    logger.debug(f"Background cleanup removed {len(to_remove)} resources")
             except asyncio.CancelledError:
                 break
             # guardian: allow-silent-swallow
             except Exception as e:
-                logger.error(f'Error in cleanup loop: {e}')
+                logger.error(f"Error in cleanup loop: {e}")
 
     @contextmanager
-    def managed_file(self, file_path: str | Path, mode: str='r'):
+    def managed_file(self, file_path: str | Path, mode: str = "r"):
         """Context manager for managed file operations.
 
         Args:
@@ -199,7 +220,9 @@ class ResourceManager:
         Yields:
             File handle
         """
-        resource_id = self.register_resource(ResourceType.FILE_HANDLE, metadata={'path': str(file_path), 'mode': mode})
+        resource_id = self.register_resource(
+            ResourceType.FILE_HANDLE, metadata={"path": str(file_path), "mode": mode}
+        )
         try:
             with open(file_path, mode) as f:
                 self.update_last_used(resource_id)
@@ -208,7 +231,7 @@ class ResourceManager:
             self.unregister_resource(resource_id)
 
     @asynccontextmanager
-    async def managed_async_file(self, file_path: str | Path, mode: str='r'):
+    async def managed_async_file(self, file_path: str | Path, mode: str = "r"):
         """Context manager for managed async file operations.
 
         Args:
@@ -218,7 +241,9 @@ class ResourceManager:
         Yields:
             Async file handle
         """
-        resource_id = self.register_resource(ResourceType.FILE_HANDLE, metadata={'path': str(file_path), 'mode': mode})
+        resource_id = self.register_resource(
+            ResourceType.FILE_HANDLE, metadata={"path": str(file_path), "mode": mode}
+        )
         try:
             async with aiofiles.open(file_path, mode) as f:
                 self.update_last_used(resource_id)
@@ -227,7 +252,7 @@ class ResourceManager:
             self.unregister_resource(resource_id)
 
     @asynccontextmanager
-    async def atomic_write(self, file_path: str | Path, temp_suffix: str='.tmp'):
+    async def atomic_write(self, file_path: str | Path, temp_suffix: str = ".tmp"):
         """Context manager for atomic file writes.
 
         Args:
@@ -239,15 +264,19 @@ class ResourceManager:
         """
         file_path = Path(file_path)
         temp_path = file_path.with_suffix(file_path.suffix + temp_suffix)
-        resource_id = self.register_resource(ResourceType.TEMP_FILE, cleanup_callback=lambda: temp_path.unlink(missing_ok=True), metadata={'temp_path': str(temp_path), 'target_path': str(file_path)})
+        resource_id = self.register_resource(
+            ResourceType.TEMP_FILE,
+            cleanup_callback=lambda: temp_path.unlink(missing_ok=True),
+            metadata={"temp_path": str(temp_path), "target_path": str(file_path)},
+        )
         try:
             yield temp_path
             if not temp_path.exists():
-                raise OSError(f'Temporary file was not created: {temp_path}')
+                raise OSError(f"Temporary file was not created: {temp_path}")
             if temp_path.stat().st_size == 0 and file_path.exists():
-                raise OSError('Refusing to overwrite with empty file')
+                raise OSError("Refusing to overwrite with empty file")
             await aiofiles.os.replace(str(temp_path), str(file_path))
-            logger.debug(f'Atomically wrote {file_path}')
+            logger.debug(f"Atomically wrote {file_path}")
         # guardian: allow-silent-swallow
         except Exception:
             raise
@@ -267,16 +296,26 @@ class ResourceManager:
             Statistics dictionary
         """
         with self._lock:
-            stats = {'name': self.name, 'total_resources': len(self._resources), 'max_resources': self.max_resources, 'resources_by_type': {}}
+            stats = {
+                "name": self.name,
+                "total_resources": len(self._resources),
+                "max_resources": self.max_resources,
+                "resources_by_type": {},
+            }
             for resource_info in self._resources.values():
                 resource_type = resource_info.resource_type.value
-                stats['resources_by_type'][resource_type] = stats['resources_by_type'].get(resource_type, 0) + 1
+                stats["resources_by_type"][resource_type] = (
+                    stats["resources_by_type"].get(resource_type, 0) + 1
+                )
             return stats
+
+
 _managers: dict[str, ResourceManager] = {}
 _manager_lock = threading.Lock()
 
+
 # guardian: allow-magic-config
-def get_resource_manager(name: str='default', max_resources: int=1000) -> ResourceManager:
+def get_resource_manager(name: str = "default", max_resources: int = 1000) -> ResourceManager:
     """Get or create a resource manager.
 
     Args:
@@ -292,6 +331,7 @@ def get_resource_manager(name: str='default', max_resources: int=1000) -> Resour
             _managers[name] = manager
         return _managers[name]
 
+
 async def shutdown_all_managers() -> None:
     """Shutdown all resource managers."""
     with _manager_lock:
@@ -299,11 +339,12 @@ async def shutdown_all_managers() -> None:
             await manager.stop()
         _managers.clear()
 
+
 class ConnectionPool:
     """Simple connection pool for reusing connections."""
 
     # guardian: allow-magic-config
-    def __init__(self, name: str, max_connections: int=10):
+    def __init__(self, name: str, max_connections: int = 10):
         """Initialize the connection pool.
 
         Args:
@@ -349,7 +390,7 @@ class ConnectionPool:
         while not self._available.empty():
             try:
                 connection = self._available.get_nowait()
-                if hasattr(connection, 'close'):
+                if hasattr(connection, "close"):
                     if asyncio.iscoroutinefunction(connection.close):
                         await connection.close()
                     else:

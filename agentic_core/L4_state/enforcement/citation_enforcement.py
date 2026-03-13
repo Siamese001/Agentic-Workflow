@@ -6,16 +6,20 @@ enforce_citations_for_retrieval(output, anchored_results, retrieval_used) -> out
   - Else attach CitationBundle to output["citations"] deterministically (non-mutating to index)
   - If retrieval_used=False -> return output unchanged (legacy parity)
 """
+
 from __future__ import annotations
+
 import hashlib
 import json
 from typing import Any
+
 from agentic_core.L4_state.types.citation_bundle_types import build_citation_bundle
 from agentic_core.L4_state.types.retrieval_anchor_types import AnchoredResult, RetrievalAnchor
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 def _sha256(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
+
 
 class CitationEnforcementViolation(Exception):
     """
@@ -26,11 +30,15 @@ class CitationEnforcementViolation(Exception):
     code   : str — always "MISSING_CITATIONS"
     detail : str — human-readable description
     """
-    code: str = 'MISSING_CITATIONS'
 
-    def __init__(self, detail: str='') -> None:
+    code: str = "MISSING_CITATIONS"
+
+    def __init__(self, detail: str = "") -> None:
         self.detail = detail
-        super().__init__(f'[{self.code}] Retrieval used but citations missing' + (f': {detail}' if detail else ''))
+        super().__init__(
+            f"[{self.code}] Retrieval used but citations missing" + (f": {detail}" if detail else "")
+        )
+
 
 def _build_request_hash_from_output(output: dict[str, Any]) -> str:
     """
@@ -38,11 +46,23 @@ def _build_request_hash_from_output(output: dict[str, Any]) -> str:
     Uses only non-volatile fields present in the output.
     Falls back to sha256 of the output keys if no canonical subset available.
     """
-    subset = {k: output[k] for k in sorted(output) if k not in ('citations', 'timestamp', 'elapsed_ms', 'trace_id') and isinstance(output[k], (str, int, float, bool))}
-    raw = json.dumps(subset, sort_keys=True, separators=(',', ':')).encode()
+    subset = {
+        k: output[k]
+        for k in sorted(output)
+        if k not in ("citations", "timestamp", "elapsed_ms", "trace_id")
+        and isinstance(output[k], (str, int, float, bool))
+    }
+    raw = json.dumps(subset, sort_keys=True, separators=(",", ":")).encode()
     return _sha256(raw)
 
-def enforce_citations_for_retrieval(output: dict[str, Any], anchored_results: list[AnchoredResult] | None, retrieval_used: bool, *, request_hash: str | None=None) -> dict[str, Any]:
+
+def enforce_citations_for_retrieval(
+    output: dict[str, Any],
+    anchored_results: list[AnchoredResult] | None,
+    retrieval_used: bool,
+    *,
+    request_hash: str | None = None,
+) -> dict[str, Any]:
     """
     Enforce anchor coverage rule for retrieval-backed responses.
 
@@ -69,19 +89,31 @@ def enforce_citations_for_retrieval(output: dict[str, Any], anchored_results: li
     if not retrieval_used:
         return output
     if not anchored_results:
-        raise CitationEnforcementViolation(detail='retrieval_used=True but anchored_results is empty or None')
+        raise CitationEnforcementViolation(detail="retrieval_used=True but anchored_results is empty or None")
     anchors: list[RetrievalAnchor] = [r.anchor for r in anchored_results]
     rh = request_hash if request_hash else _build_request_hash_from_output(output)
     bundle = build_citation_bundle(request_hash=rh, anchors=anchors)
     result = dict(output)
-    result['citations'] = bundle.to_dict()
+    result["citations"] = bundle.to_dict()
     return result
 
-def assemble_response(output: dict[str, Any], anchored_results: list[AnchoredResult] | None, retrieval_used: bool, *, request_hash: str | None=None) -> dict[str, Any]:
+
+def assemble_response(
+    output: dict[str, Any],
+    anchored_results: list[AnchoredResult] | None,
+    retrieval_used: bool,
+    *,
+    request_hash: str | None = None,
+) -> dict[str, Any]:
     """
     Canonical response assembly seam.
 
     Calls enforce_citations_for_retrieval() to attach citations before returning.
     This is the single authoritative entry point for final response construction.
     """
-    return enforce_citations_for_retrieval(output=output, anchored_results=anchored_results, retrieval_used=retrieval_used, request_hash=request_hash)
+    return enforce_citations_for_retrieval(
+        output=output,
+        anchored_results=anchored_results,
+        retrieval_used=retrieval_used,
+        request_hash=request_hash,
+    )

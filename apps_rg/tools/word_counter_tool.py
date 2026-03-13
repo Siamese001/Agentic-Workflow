@@ -2,12 +2,16 @@
 Word Counter Tool - Word counting utility
 Refactored from compute_word_count.py
 """
+
 from __future__ import annotations
+
 import logging
 from typing import Any
+
 from apps_rg.engines.base_resume_engine import BaseRGEngine
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 Logger = logging.getLogger(__name__)
+
 
 class WordCounterTool(BaseRGEngine):
     """
@@ -15,12 +19,12 @@ class WordCounterTool(BaseRGEngine):
     """
 
     def __init__(self, ctx: Any) -> None:
-        super().__init__(ctx, node_id='TOOLS.WORD_COUNTER')
+        super().__init__(ctx, node_id="TOOLS.WORD_COUNTER")
 
     async def execute(self, text: str) -> int:
         """
         Count words in text.
         """
         word_count = len(text.split())
-        self.record_pass(f'Counted {word_count} words')
+        self.record_pass(f"Counted {word_count} words")
         return word_count

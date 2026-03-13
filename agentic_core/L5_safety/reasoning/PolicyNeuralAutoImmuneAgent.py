@@ -1,14 +1,19 @@
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-'\nPolicyNeuralAutoImmuneAgent - Policy-Specific Extension\nCANONICAL: True - Consolidated 2026-01-06 (inherits from base NeuralAutoImmuneAgent)\n\nSimplified policy-focused variant that extends the base NeuralAutoImmuneAgent.\n'
+
+"\nPolicyNeuralAutoImmuneAgent - Policy-Specific Extension\nCANONICAL: True - Consolidated 2026-01-06 (inherits from base NeuralAutoImmuneAgent)\n\nSimplified policy-focused variant that extends the base NeuralAutoImmuneAgent.\n"
 from pathlib import Path
 from typing import Any
+
 from agentic_core.L4_state.reasoning.RedisSovereignAgent import RedisSovereignAgent
+
 from agentic_core.L5_safety.reasoning.NeuralAutoImmuneAgent import NeuralAutoImmuneAgent
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 @dataclass
 class PolicyNeuralAutoImmuneAgent(NeuralAutoImmuneAgent, SovereignBaseAgent):
@@ -23,25 +28,32 @@ class PolicyNeuralAutoImmuneAgent(NeuralAutoImmuneAgent, SovereignBaseAgent):
     # guardian: allow-type-erasure
     def detect_breaches(self) -> Any:
         """Execute detect_breaches operation."""
-        return {'lockdowns_issued': {}}
+        return {"lockdowns_issued": {}}
 
     @timeout(300)
     @standard_heal
     # guardian: allow-magic-config
-    def heal_repository(self, dry_run: bool=True, execute: bool=False, depth: int=0, max_depth: int=3, _call_path: set | None=None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """L5 safety agent - operational only."""
         super().heal_repository()
         if _call_path is None:
             _call_path = set()
         agent_name = self.__class__.__name__
         if agent_name in _call_path:
-            return {'errors': 1, 'cycle_detected': True}
+            return {"errors": 1, "cycle_detected": True}
         if depth > max_depth:
-            return {'errors': 1, 'depth_limited': True}
+            return {"errors": 1, "depth_limited": True}
         _call_path.add(agent_name)
         try:
-            print(f'[{agent_name}] L5 safety - operational only')
-            return {'skipped': 1}
+            print(f"[{agent_name}] L5 safety - operational only")
+            return {"skipped": 1}
         finally:
             _call_path.discard(agent_name)
 
@@ -63,9 +75,19 @@ class PolicyNeuralAutoImmuneAgent(NeuralAutoImmuneAgent, SovereignBaseAgent):
                 - artifacts: List of modified files
                 - errors: List of error messages
         """
-        violation.get('file') or violation.get('file_path')
-        violation_type = violation.get('type', 'unknown')
+        violation.get("file") or violation.get("file_path")
+        violation_type = violation.get("type", "unknown")
         try:
-            return {'status': 'skipped', 'details': f'PolicyNeuralAutoImmuneAgent heal() not yet implemented for {violation_type}', 'artifacts': [], 'errors': []}
+            return {
+                "status": "skipped",
+                "details": f"PolicyNeuralAutoImmuneAgent heal() not yet implemented for {violation_type}",
+                "artifacts": [],
+                "errors": [],
+            }
         except Exception as e:
-            return {'status': 'failed', 'details': f'PolicyNeuralAutoImmuneAgent heal() failed: {str(e)}', 'artifacts': [], 'errors': [str(e)]}
+            return {
+                "status": "failed",
+                "details": f"PolicyNeuralAutoImmuneAgent heal() failed: {str(e)}",
+                "artifacts": [],
+                "errors": [str(e)],
+            }

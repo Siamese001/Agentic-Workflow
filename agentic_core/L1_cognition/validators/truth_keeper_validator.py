@@ -1,12 +1,15 @@
 from __future__ import annotations
+
 import ast
-'Brief description of functionality and purpose.'
-'Brief description of functionality and purpose.'
+
+"Brief description of functionality and purpose."
+"Brief description of functionality and purpose."
 import logging
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 LOGGER = logging.getLogger(__name__)
 Logger: Any = logging.getLogger(__name__)
+
 
 class TruthKeeper:
     """
@@ -40,27 +43,36 @@ class TruthKeeper:
         """
         violations: Any = []
         fixes: Any = []
-        if 'test' in file_path.lower() or file_path.endswith('_test.py'):
-            return {'violations': [], 'fixes': [], 'skipped': True}
+        if "test" in file_path.lower() or file_path.endswith("_test.py"):
+            return {"violations": [], "fixes": [], "skipped": True}
         try:
-            with open(file_path, encoding='utf-8') as f:
+            with open(file_path, encoding="utf-8") as f:
                 content: Any = f.read()
             tree: Any = ast.parse(content)
             for node in ast.walk(tree):
-                if isinstance(node, ast.FunctionDef) and (not node.name.startswith('_')):
+                if isinstance(node, ast.FunctionDef) and (not node.name.startswith("_")):
                     result: Any = await self._check_function_consistency(file_path, node, content)
-                    if result.get('Violation'):
-                        violations.append(result['Violation'])
-                    if result.get('fixed_docstring'):
-                        fixes.append({'function': node.name, 'line': node.lineno, 'old_docstring': result.get('old_docstring'), 'new_docstring': result['fixed_docstring']})
+                    if result.get("Violation"):
+                        violations.append(result["Violation"])
+                    if result.get("fixed_docstring"):
+                        fixes.append(
+                            {
+                                "function": node.name,
+                                "line": node.lineno,
+                                "old_docstring": result.get("old_docstring"),
+                                "new_docstring": result["fixed_docstring"],
+                            }
+                        )
         except SyntaxError as e:
-            violations.append({'type': 'syntax', 'file': file_path, 'message': f'Syntax error: {e}'})
+            violations.append({"type": "syntax", "file": file_path, "message": f"Syntax error: {e}"})
         # guardian: allow-silent-swallow
         except Exception as e:
-            LOGGER.error(f'Error checking {file_path}: {e}')
-        return {'violations': violations, 'fixes': fixes, 'file': file_path}
+            LOGGER.error(f"Error checking {file_path}: {e}")
+        return {"violations": violations, "fixes": fixes, "file": file_path}
 
-    async def _check_function_consistency(self, file_path: str, node: ast.FunctionDef, content: str) -> dict[str, Any]:
+    async def _check_function_consistency(
+        self, file_path: str, node: ast.FunctionDef, content: str
+    ) -> dict[str, Any]:
         """
         Check consistency for a single function.
 
@@ -73,9 +85,18 @@ class TruthKeeper:
             Dictionary with Violation info and potential fix
         """
         [arg.arg for arg in node.args.args]
-        docstring = ast.get_docstring(node) or ''
-        func_lines = content.split('\n')[node.lineno - 1:node.end_lineno]
-        '\n'.join(func_lines)
+        docstring = ast.get_docstring(node) or ""
+        func_lines = content.split("\n")[node.lineno - 1 : node.end_lineno]
+        "\n".join(func_lines)
         if not docstring:
-            return {'Violation': {'type': 'missing_docstring', 'function': node.name, 'line': node.lineno, 'message': f"Function '{node.name}' Missing docstring"}, 'fixed_docstring': None, 'old_docstring': None}
-        return {'Violation': None, 'fixed_docstring': None, 'old_docstring': docstring}
+            return {
+                "Violation": {
+                    "type": "missing_docstring",
+                    "function": node.name,
+                    "line": node.lineno,
+                    "message": f"Function '{node.name}' Missing docstring",
+                },
+                "fixed_docstring": None,
+                "old_docstring": None,
+            }
+        return {"Violation": None, "fixed_docstring": None, "old_docstring": docstring}

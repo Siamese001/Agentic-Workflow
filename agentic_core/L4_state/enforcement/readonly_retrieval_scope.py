@@ -10,11 +10,14 @@ Any persistent mutation (Redis setex/set, Pinecone upsert, file write) that call
 assert_not_read_only() during an active retrieval scope is deterministically blocked
 and surfaces as a typed pre-action violation.
 """
+
 from __future__ import annotations
+
 from contextlib import contextmanager
 from typing import Generator
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 _READ_ONLY_RETRIEVAL_ACTIVE: bool = False
+
 
 class RetrievalMutationViolation(Exception):
     """
@@ -25,17 +28,23 @@ class RetrievalMutationViolation(Exception):
     code   : str  — always "RETRIEVAL_MUTATION_BLOCKED"
     detail : str  — human-readable description of the blocked operation
     """
-    code: str = 'RETRIEVAL_MUTATION_BLOCKED'
 
-    def __init__(self, detail: str='') -> None:
+    code: str = "RETRIEVAL_MUTATION_BLOCKED"
+
+    def __init__(self, detail: str = "") -> None:
         self.detail = detail
-        super().__init__(f'[{self.code}] Mutation blocked inside read-only retrieval scope' + (f': {detail}' if detail else ''))
+        super().__init__(
+            f"[{self.code}] Mutation blocked inside read-only retrieval scope"
+            + (f": {detail}" if detail else "")
+        )
+
 
 def is_read_only_retrieval_active() -> bool:
     """Return True when a read_only_retrieval_scope() is currently active."""
     return _READ_ONLY_RETRIEVAL_ACTIVE
 
-def assert_not_read_only(operation: str='') -> None:
+
+def assert_not_read_only(operation: str = "") -> None:
     """
     Raise RetrievalMutationViolation if a read-only retrieval scope is active.
 
@@ -50,6 +59,7 @@ def assert_not_read_only(operation: str='') -> None:
     """
     if _READ_ONLY_RETRIEVAL_ACTIVE:
         raise RetrievalMutationViolation(detail=operation)
+
 
 @contextmanager
 def read_only_retrieval_scope() -> Generator[None, None, None]:

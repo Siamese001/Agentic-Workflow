@@ -2,33 +2,44 @@
 Prompt Optimizer - Phase 5 Optimization
 LLM prompt optimization utilities for high-reasoning agents.
 """
+
 from __future__ import annotations
+
 from dataclasses import dataclass
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 @dataclass
 class PromptTemplate:
     """Structured prompt template."""
+
     system: str
     user: str
     variables: list[str]
     examples: list[dict[str, str]]
     metadata: dict[str, Any]
 
+
 @dataclass
 class OptimizedPrompt:
     """Result of prompt optimization."""
+
     prompt: str
     token_count: int
     variables_used: dict[str, Any]
     optimization_applied: list[str]
 
+
 class PromptOptimizer:
     """LLM prompt optimization utilities."""
 
     @staticmethod
-    def create_template(system: str, user: str, variables: list[str] | None=None, examples: list[dict[str, str]] | None=None) -> PromptTemplate:
+    def create_template(
+        system: str,
+        user: str,
+        variables: list[str] | None = None,
+        examples: list[dict[str, str]] | None = None,
+    ) -> PromptTemplate:
         """
         Create a structured prompt template.
 
@@ -41,7 +52,9 @@ class PromptOptimizer:
         Returns:
             PromptTemplate instance
         """
-        return PromptTemplate(system=system, user=user, variables=variables or [], examples=examples or [], metadata={})
+        return PromptTemplate(
+            system=system, user=user, variables=variables or [], examples=examples or [], metadata={}
+        )
 
     @staticmethod
     def format_prompt(template: PromptTemplate, **kwargs: Any) -> OptimizedPrompt:
@@ -62,20 +75,30 @@ class PromptOptimizer:
             if var in kwargs:
                 value = kwargs[var]
                 variables_used[var] = value
-                user_prompt = user_prompt.replace(f'{{{var}}}', str(value))
+                user_prompt = user_prompt.replace(f"{{{var}}}", str(value))
             else:
-                optimizations.append(f'Missing variable: {var}')
+                optimizations.append(f"Missing variable: {var}")
         if template.examples:
-            examples_text = '\n\n'.join((f"Example {i + 1}:\nInput: {ex.get('input', '')}\nOutput: {ex.get('output', '')}" for i, ex in enumerate(template.examples)))
-            user_prompt = f'{examples_text}\n\n{user_prompt}'
-            optimizations.append('Added few-shot examples')
-        full_prompt = f'{template.system}\n\n{user_prompt}'
+            examples_text = "\n\n".join(
+                (
+                    f"Example {i + 1}:\nInput: {ex.get('input', '')}\nOutput: {ex.get('output', '')}"
+                    for i, ex in enumerate(template.examples)
+                )
+            )
+            user_prompt = f"{examples_text}\n\n{user_prompt}"
+            optimizations.append("Added few-shot examples")
+        full_prompt = f"{template.system}\n\n{user_prompt}"
         token_count = len(full_prompt) // 4
-        return OptimizedPrompt(prompt=full_prompt, token_count=token_count, variables_used=variables_used, optimization_applied=optimizations)
+        return OptimizedPrompt(
+            prompt=full_prompt,
+            token_count=token_count,
+            variables_used=variables_used,
+            optimization_applied=optimizations,
+        )
 
     @staticmethod
     # guardian: allow-magic-config
-    def compress_prompt(prompt: str, max_tokens: int=4000) -> str:
+    def compress_prompt(prompt: str, max_tokens: int = 4000) -> str:
         """
         Compress prompt to fit within token limit.
 
@@ -91,12 +114,12 @@ class PromptOptimizer:
             return prompt
         target_chars = max_tokens * 4
         if len(prompt) > target_chars:
-            return prompt[:target_chars - 10] + '\n...[truncated]'
+            return prompt[: target_chars - 10] + "\n...[truncated]"
         return prompt
 
     @staticmethod
     # guardian: allow-magic-config
-    def add_context(prompt: str, context: dict[str, Any], max_context_items: int=5) -> str:
+    def add_context(prompt: str, context: dict[str, Any], max_context_items: int = 5) -> str:
         """
         Add context information to prompt.
 
@@ -111,8 +134,8 @@ class PromptOptimizer:
         if not context:
             return prompt
         context_items = list(context.items())[:max_context_items]
-        context_text = '\n'.join((f'- {key}: {value}' for key, value in context_items))
-        return f'Context:\n{context_text}\n\n{prompt}'
+        context_text = "\n".join((f"- {key}: {value}" for key, value in context_items))
+        return f"Context:\n{context_text}\n\n{prompt}"
 
     @staticmethod
     def create_chain_of_thought_prompt(task: str, steps: list[str]) -> str:
@@ -126,7 +149,7 @@ class PromptOptimizer:
         Returns:
             Chain-of-thought prompt
         """
-        steps_text = '\n'.join((f'{i + 1}. {step}' for i, step in enumerate(steps)))
+        steps_text = "\n".join((f"{i + 1}. {step}" for i, step in enumerate(steps)))
         return f"Task: {task}\n\nLet's approach this step-by-step:\n{steps_text}\n\nPlease provide your reasoning for each step and then the final answer."
 
     @staticmethod
@@ -141,11 +164,11 @@ class PromptOptimizer:
         Returns:
             Structured output prompt
         """
-        format_text = '\n'.join((f'- {key}: {desc}' for key, desc in output_format.items()))
-        return f'{task}\n\nPlease provide your response in the following format:\n{format_text}'
+        format_text = "\n".join((f"- {key}: {desc}" for key, desc in output_format.items()))
+        return f"{task}\n\nPlease provide your response in the following format:\n{format_text}"
 
     @staticmethod
-    def optimize_for_cost(prompt: str, strategy: str='compress') -> str:
+    def optimize_for_cost(prompt: str, strategy: str = "compress") -> str:
         """
         Optimize prompt for cost reduction.
 
@@ -156,14 +179,14 @@ class PromptOptimizer:
         Returns:
             Optimized prompt
         """
-        if strategy == 'compress':
-            lines = [line.strip() for line in prompt.split('\n') if line.strip()]
-            return '\n'.join(lines)
-        elif strategy == 'simplify':
-            redundant = ['please note that', 'it is important to', 'you should', 'make sure to']
+        if strategy == "compress":
+            lines = [line.strip() for line in prompt.split("\n") if line.strip()]
+            return "\n".join(lines)
+        elif strategy == "simplify":
+            redundant = ["please note that", "it is important to", "you should", "make sure to"]
             optimized = prompt
             for phrase in redundant:
-                optimized = optimized.replace(phrase, '')
+                optimized = optimized.replace(phrase, "")
             return optimized
         return prompt
 
@@ -178,13 +201,20 @@ class PromptOptimizer:
         Returns:
             Dictionary with quality metrics
         """
-        metrics = {'length': len(prompt), 'estimated_tokens': len(prompt) // 4, 'has_clear_task': 'task:' in prompt.lower() or 'please' in prompt.lower(), 'has_examples': 'example' in prompt.lower(), 'has_format': 'format' in prompt.lower(), 'quality_score': 0.0}
+        metrics = {
+            "length": len(prompt),
+            "estimated_tokens": len(prompt) // 4,
+            "has_clear_task": "task:" in prompt.lower() or "please" in prompt.lower(),
+            "has_examples": "example" in prompt.lower(),
+            "has_format": "format" in prompt.lower(),
+            "quality_score": 0.0,
+        }
         score = 0.0
-        if metrics['has_clear_task']:
+        if metrics["has_clear_task"]:
             score += 0.4
-        if metrics['has_examples']:
+        if metrics["has_examples"]:
             score += 0.3
-        if metrics['has_format']:
+        if metrics["has_format"]:
             score += 0.3
-        metrics['quality_score'] = score
+        metrics["quality_score"] = score
         return metrics

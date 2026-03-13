@@ -1,6 +1,8 @@
 from __future__ import annotations
+
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-'\nSafetyDetectorAgent - Safety & Security Detection\n\nPhase 4 Hard Migration: Consolidates:\n- BiasDetectorAgent (bias detection in outputs)\n- HallucinationDetectorAgent (hallucination detection)\n- PromptInjectionDetectorAgent (injection attack detection)\n\nFeatures:\n- Bias pattern detection in model outputs\n- Hallucination detection via fact-checking\n- Prompt injection attack detection\n- Configurable detection thresholds\n- Real-time safety scoring\n'
+
+"\nSafetyDetectorAgent - Safety & Security Detection\n\nPhase 4 Hard Migration: Consolidates:\n- BiasDetectorAgent (bias detection in outputs)\n- HallucinationDetectorAgent (hallucination detection)\n- PromptInjectionDetectorAgent (injection attack detection)\n\nFeatures:\n- Bias pattern detection in model outputs\n- Hallucination detection via fact-checking\n- Prompt injection attack detection\n- Configurable detection thresholds\n- Real-time safety scoring\n"
 import logging
 import re
 import threading
@@ -8,27 +10,33 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 Logger = logging.getLogger(__name__)
+
 
 class SafetyThreatType(Enum):
     """Types of safety threats."""
+
     BIAS = auto()
     HALLUCINATION = auto()
     PROMPT_INJECTION = auto()
     JAILBREAK = auto()
     DATA_EXFILTRATION = auto()
 
+
 class ThreatSeverity(Enum):
     """Severity levels for threats."""
+
     LOW = 0
     MEDIUM = 1
     HIGH = 2
     CRITICAL = 3
 
+
 @dataclass
 class SafetyThreat:
     """Represents a detected safety threat."""
+
     threat_type: SafetyThreatType
     severity: ThreatSeverity
     message: str
@@ -37,15 +45,18 @@ class SafetyThreat:
     timestamp: datetime = field(default_factory=datetime.utcnow)
     blocked: bool = False
 
+
 @dataclass
 class SafetyConfig:
     """configuration for safety detection."""
+
     enable_bias: bool = True
     enable_hallucination: bool = True
     enable_injection: bool = True
     injection_threshold: float = 0.8
     bias_threshold: float = 0.7
     block_high_severity: bool = True
+
 
 class SafetyDetectorAgent(SovereignBaseAgent):
     """
@@ -67,7 +78,7 @@ class SafetyDetectorAgent(SovereignBaseAgent):
     """
 
     # guardian: allow-type-erasure
-    def heal_repository(self, dry_run: bool=True, execute: bool=False, **kwargs) -> dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 
@@ -78,20 +89,49 @@ class SafetyDetectorAgent(SovereignBaseAgent):
         Returns:
             Dict with healing summary
         """
-        return {'violations': 0, 'fixed': 0, 'errors': 0}
-    INJECTION_PATTERNS = ['ignore\\s+(previous|all|above)\\s+instructions?', 'ignore\\s+all\\s+previous', 'disregard\\s+(previous|all|above|the)', 'forget\\s+(previous|all|above|your)', 'you\\s+are\\s+now\\s+', 'pretend\\s+(you\\s+are|to\\s+be)', 'act\\s+as\\s+(if|a|an)', 'new\\s+instructions?:', 'system\\s*:\\s*', '<\\s*system\\s*>', '\\[\\s*system\\s*\\]', 'override\\s+safety', 'bypass\\s+(all\\s+)?(restrictions?|safety)', 'jailbreak', 'dan\\s+mode', 'developer\\s+mode', 'unrestricted\\s+ai']
-    BIAS_PATTERNS = ['\\b(always|never|all|none|every)\\b.*\\b(men|women|people|group)\\b', '\\b(superior|inferior)\\b.*\\b(race|gender|religion)\\b', '\\b(typical|stereotyp)', '\\b(obviously|clearly)\\s+(men|women|they)\\b']
-    HALLUCINATION_PATTERNS = ['as\\s+of\\s+my\\s+knowledge\\s+cutoff', "i\\s+don'?t\\s+have\\s+access\\s+to\\s+real-?time", 'i\\s+cannot\\s+verify', 'according\\s+to\\s+my\\s+training\\s+data']
+        return {"violations": 0, "fixed": 0, "errors": 0}
 
-    def __init__(self, agent_config: SafetyConfig | None=None):
+    INJECTION_PATTERNS = [
+        "ignore\\s+(previous|all|above)\\s+instructions?",
+        "ignore\\s+all\\s+previous",
+        "disregard\\s+(previous|all|above|the)",
+        "forget\\s+(previous|all|above|your)",
+        "you\\s+are\\s+now\\s+",
+        "pretend\\s+(you\\s+are|to\\s+be)",
+        "act\\s+as\\s+(if|a|an)",
+        "new\\s+instructions?:",
+        "system\\s*:\\s*",
+        "<\\s*system\\s*>",
+        "\\[\\s*system\\s*\\]",
+        "override\\s+safety",
+        "bypass\\s+(all\\s+)?(restrictions?|safety)",
+        "jailbreak",
+        "dan\\s+mode",
+        "developer\\s+mode",
+        "unrestricted\\s+ai",
+    ]
+    BIAS_PATTERNS = [
+        "\\b(always|never|all|none|every)\\b.*\\b(men|women|people|group)\\b",
+        "\\b(superior|inferior)\\b.*\\b(race|gender|religion)\\b",
+        "\\b(typical|stereotyp)",
+        "\\b(obviously|clearly)\\s+(men|women|they)\\b",
+    ]
+    HALLUCINATION_PATTERNS = [
+        "as\\s+of\\s+my\\s+knowledge\\s+cutoff",
+        "i\\s+don'?t\\s+have\\s+access\\s+to\\s+real-?time",
+        "i\\s+cannot\\s+verify",
+        "according\\s+to\\s+my\\s+training\\s+data",
+    ]
+
+    def __init__(self, agent_config: SafetyConfig | None = None):
         self._agent_config = agent_config or SafetyConfig()
         self._lock = threading.RLock()
         self._threats: list[SafetyThreat] = []
         self._compiled_injection = [re.compile(p, re.IGNORECASE) for p in self.INJECTION_PATTERNS]
         self._compiled_bias = [re.compile(p, re.IGNORECASE) for p in self.BIAS_PATTERNS]
-        Logger.info('SafetyDetectorAgent initialized')
+        Logger.info("SafetyDetectorAgent initialized")
 
-    def detect_all(self, text: str, source: str='unknown') -> list[SafetyThreat]:
+    def detect_all(self, text: str, source: str = "unknown") -> list[SafetyThreat]:
         """Run all enabled detections on text."""
         threats = []
         if self._agent_config.enable_injection:
@@ -102,7 +142,7 @@ class SafetyDetectorAgent(SovereignBaseAgent):
             threats.extend(self.detect_hallucination(text, source))
         return threats
 
-    def detect_injection(self, text: str, source: str='user_input') -> list[SafetyThreat]:
+    def detect_injection(self, text: str, source: str = "user_input") -> list[SafetyThreat]:
         """Detect prompt injection attacks."""
         threats = []
         text_lower = text.lower()
@@ -117,33 +157,56 @@ class SafetyDetectorAgent(SovereignBaseAgent):
                 severity = ThreatSeverity.HIGH
             else:
                 severity = ThreatSeverity.MEDIUM
-            threat = SafetyThreat(threat_type=SafetyThreatType.PROMPT_INJECTION, severity=severity, message=f'Prompt injection detected: {len(matched_patterns)} pattern(s) matched', source=source, details={'patterns_matched': matched_patterns, 'text_preview': text[:100] + '...' if len(text) > 100 else text}, blocked=self._agent_config.block_high_severity and severity.value >= ThreatSeverity.HIGH.value)
+            threat = SafetyThreat(
+                threat_type=SafetyThreatType.PROMPT_INJECTION,
+                severity=severity,
+                message=f"Prompt injection detected: {len(matched_patterns)} pattern(s) matched",
+                source=source,
+                details={
+                    "patterns_matched": matched_patterns,
+                    "text_preview": text[:100] + "..." if len(text) > 100 else text,
+                },
+                blocked=self._agent_config.block_high_severity
+                and severity.value >= ThreatSeverity.HIGH.value,
+            )
             threats.append(threat)
             self._threats.append(threat)
         return threats
 
-    def detect_bias(self, text: str, source: str='model_output') -> list[SafetyThreat]:
+    def detect_bias(self, text: str, source: str = "model_output") -> list[SafetyThreat]:
         """Detect bias patterns in text."""
         threats = []
         for pattern in self._compiled_bias:
             match = pattern.search(text)
             if match:
-                threat = SafetyThreat(threat_type=SafetyThreatType.BIAS, severity=ThreatSeverity.MEDIUM, message=f"Potential bias detected: '{match.group()}'", source=source, details={'matched_text': match.group(), 'pattern': pattern.pattern})
+                threat = SafetyThreat(
+                    threat_type=SafetyThreatType.BIAS,
+                    severity=ThreatSeverity.MEDIUM,
+                    message=f"Potential bias detected: '{match.group()}'",
+                    source=source,
+                    details={"matched_text": match.group(), "pattern": pattern.pattern},
+                )
                 threats.append(threat)
                 self._threats.append(threat)
         return threats
 
-    def detect_hallucination(self, text: str, source: str='model_output') -> list[SafetyThreat]:
+    def detect_hallucination(self, text: str, source: str = "model_output") -> list[SafetyThreat]:
         """Detect hallucination indicators in text."""
         threats = []
         for pattern in self.HALLUCINATION_PATTERNS:
             if re.search(pattern, text, re.IGNORECASE):
-                threat = SafetyThreat(threat_type=SafetyThreatType.HALLUCINATION, severity=ThreatSeverity.LOW, message='Potential hallucination indicator detected', source=source, details={'pattern': pattern})
+                threat = SafetyThreat(
+                    threat_type=SafetyThreatType.HALLUCINATION,
+                    severity=ThreatSeverity.LOW,
+                    message="Potential hallucination indicator detected",
+                    source=source,
+                    details={"pattern": pattern},
+                )
                 threats.append(threat)
                 self._threats.append(threat)
         return threats
 
-    def is_safe(self, text: str, source: str='unknown') -> bool:
+    def is_safe(self, text: str, source: str = "unknown") -> bool:
         """Quick check if text is safe (no high-severity threats)."""
         threats = self.detect_all(text, source)
         high_severity = [t for t in threats if t.severity.value >= ThreatSeverity.HIGH.value]
@@ -154,7 +217,7 @@ class SafetyDetectorAgent(SovereignBaseAgent):
         threats = self.detect_all(text)
         if not threats:
             return 1.0
-        total_penalty = sum((t.severity.value * 0.25 for t in threats))
+        total_penalty = sum(t.severity.value * 0.25 for t in threats)
         score = max(0.0, 1.0 - total_penalty)
         return score
 
@@ -180,13 +243,21 @@ class SafetyDetectorAgent(SovereignBaseAgent):
         Returns:
             Dictionary with healing results following standard_heal format.
         """
-        Logger.info('[SAFETY_DETECTOR] Detection-only agent - threats require manual review')
-        return {'violations_fixed': 0, 'violations_found': 1, 'errors': 0, 'skipped': 1, 'reason': 'Detection-only agent - threats require manual security review'}
+        Logger.info("[SAFETY_DETECTOR] Detection-only agent - threats require manual review")
+        return {
+            "violations_fixed": 0,
+            "violations_found": 1,
+            "errors": 0,
+            "skipped": 1,
+            "reason": "Detection-only agent - threats require manual security review",
+        }
+
 
 def create_legacy_bias_detector() -> SafetyDetectorAgent:
     """Create detector for bias only."""
     config = SafetyConfig(enable_bias=True, enable_hallucination=False, enable_injection=False)
     return SafetyDetectorAgent(config=config)
+
 
 def create_legacy_injection_detector() -> SafetyDetectorAgent:
     """Create detector for prompt injection only."""

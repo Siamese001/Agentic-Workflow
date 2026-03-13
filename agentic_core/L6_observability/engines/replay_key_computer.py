@@ -1,13 +1,15 @@
 from __future__ import annotations
+
 import hashlib
 import json
 from dataclasses import dataclass
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 @dataclass(frozen=True)
 class ReplayKeyComponents:
     """A structured container for all components that define a replay key."""
+
     tier_selection: str
     retry_count: int
     threshold_config: dict[str, float]
@@ -17,6 +19,7 @@ class ReplayKeyComponents:
     embedding_pack_hash: str
     embedding_model_version: str
     c0_context_hash: str
+
 
 def compute_replay_key(components: ReplayKeyComponents) -> str:
     """
@@ -40,8 +43,10 @@ def compute_replay_key(components: ReplayKeyComponents) -> str:
 
     def _canonical_json(data: Any) -> str:
         """Computes canonical JSON: sorted keys, UTF-8, no whitespace."""
-        return json.dumps(data, sort_keys=True, ensure_ascii=False, separators=(',', ':'))
+        return json.dumps(data, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
+
     from dataclasses import asdict
+
     material = asdict(components)
     canonical_string = _canonical_json(material)
-    return hashlib.sha256(canonical_string.encode('utf-8')).hexdigest()
+    return hashlib.sha256(canonical_string.encode("utf-8")).hexdigest()

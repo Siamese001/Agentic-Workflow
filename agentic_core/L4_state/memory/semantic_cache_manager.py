@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 '\n[PHASE 17/20] Semantic cache Manager - The Collective Hive Mind.\n\n[PHASE 3 MIGRATION] Canonical Implementation:\n- This is the ONLY SemanticCacheManager in the codebase.\n- All other copies (L5/guardrails, L5/cognition) have been deprecated.\n- Use semantic_cache_mixin.py for agent-level access.\n\nLocated in L4_state as it manages the persistence and state of agentic memory.\nProvides O(1) exact recall (Redis) and semantic similarity recall (InMemoryVectorStore).\n\nPhase 17: Initial implementation with Redis + InMemoryVectorStore\nPhase 20: Hardened singleton pattern, thread safety, and connection retries.\nPhase 20+: Configurable compliance, PII sanitization, trace sampling, memory lifecycle.\n\nconfiguration (Environment Variables):\n- HIVE_MIND_STRICT_MODE: "true" (default) raises on infrastructure failure, "false" degrades gracefully\n- HIVE_MIND_TRACE_SAMPLING_RATE: 0.0 to 1.0 (default 1.0) - controls trace capture rate\n- HIVE_MIND_PROMOTION_THRESHOLD: 0.0 to 1.0 (default 0.8) - minimum feedback score for promotion\n\n[SSOT] This is the canonical location for the Hive Mind infrastructure.\n'
 import hashlib
 import json
@@ -8,12 +9,15 @@ import random
 import threading
 import time
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 Logger = logging.getLogger(__name__)
+
 
 class CriticalInfrastructureError(Exception):
     """Raised when Hive Mind infrastructure is unavailable in STRICT mode."""
+
     pass
+
 
 class PII_Sanitizer:
     """
@@ -30,8 +34,28 @@ class PII_Sanitizer:
 
     All detected PII is replaced with [REDACTED_<TYPE>] placeholders.
     """
+
     import re
-    PATTERNS = {'EMAIL': re.compile('\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\\b', re.IGNORECASE), 'IPV4': re.compile('\\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\b'), 'IPV6': re.compile('\\b(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}\\b|\\b(?:[0-9a-fA-F]{1,4}:){1,7}:\\b|\\b(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}\\b|\\b::(?:[0-9a-fA-F]{1,4}:){0,5}[0-9a-fA-F]{1,4}\\b'), 'OPENAI_KEY': re.compile('\\bsk-[a-zA-Z0-9]{20,}\\b'), 'ANTHROPIC_KEY': re.compile('\\bsk-ant-[a-zA-Z0-9-]{20,}\\b'), 'GENERIC_API_KEY': re.compile('(?:api[_-]?key|apikey|secret[_-]?key|access[_-]?token)\\s*[=:]\\s*["\\\']?([a-zA-Z0-9_-]{20,})["\\\']?', re.IGNORECASE), 'AWS_KEY': re.compile('\\b(?:AKIA|ABIA|ACCA|ASIA)[A-Z0-9]{16}\\b'), 'CREDIT_CARD': re.compile('\\b(?:\\d{4}[- ]?){3,4}\\d{1,4}\\b'), 'PHONE_US': re.compile('\\b(?:\\+1[- ]?)?(?:\\([0-9]{3}\\)|[0-9]{3})[- ]?[0-9]{3}[- ]?[0-9]{4}\\b'), 'SSN': re.compile('\\b[0-9]{3}[- ]?[0-9]{2}[- ]?[0-9]{4}\\b')}
+
+    PATTERNS = {
+        "EMAIL": re.compile("\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\\b", re.IGNORECASE),
+        "IPV4": re.compile(
+            "\\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\b"
+        ),
+        "IPV6": re.compile(
+            "\\b(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}\\b|\\b(?:[0-9a-fA-F]{1,4}:){1,7}:\\b|\\b(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}\\b|\\b::(?:[0-9a-fA-F]{1,4}:){0,5}[0-9a-fA-F]{1,4}\\b"
+        ),
+        "OPENAI_KEY": re.compile("\\bsk-[a-zA-Z0-9]{20,}\\b"),
+        "ANTHROPIC_KEY": re.compile("\\bsk-ant-[a-zA-Z0-9-]{20,}\\b"),
+        "GENERIC_API_KEY": re.compile(
+            "(?:api[_-]?key|apikey|secret[_-]?key|access[_-]?token)\\s*[=:]\\s*[\"\\']?([a-zA-Z0-9_-]{20,})[\"\\']?",
+            re.IGNORECASE,
+        ),
+        "AWS_KEY": re.compile("\\b(?:AKIA|ABIA|ACCA|ASIA)[A-Z0-9]{16}\\b"),
+        "CREDIT_CARD": re.compile("\\b(?:\\d{4}[- ]?){3,4}\\d{1,4}\\b"),
+        "PHONE_US": re.compile("\\b(?:\\+1[- ]?)?(?:\\([0-9]{3}\\)|[0-9]{3})[- ]?[0-9]{3}[- ]?[0-9]{4}\\b"),
+        "SSN": re.compile("\\b[0-9]{3}[- ]?[0-9]{2}[- ]?[0-9]{4}\\b"),
+    }
 
     @classmethod
     def sanitize(cls, content: str) -> str:
@@ -48,7 +72,7 @@ class PII_Sanitizer:
             return content
         sanitized = content
         for pii_type, pattern in cls.PATTERNS.items():
-            sanitized = pattern.sub(f'[REDACTED_{pii_type}]', sanitized)
+            sanitized = pattern.sub(f"[REDACTED_{pii_type}]", sanitized)
         return sanitized
 
     @classmethod
@@ -89,6 +113,7 @@ class PII_Sanitizer:
                 findings[pii_type] = matches
         return findings
 
+
 class SemanticCacheManager:
     """
     Singleton Semantic cache Manager - The Hive Mind.
@@ -111,6 +136,7 @@ class SemanticCacheManager:
         cache = SemanticCacheManager.get_instance()
         result = cache.recall(context, namespace)
     """
+
     _instance: SemanticCacheManager | None = None
     _instance_lock = threading.RLock()
     DEFAULT_STRICT_MODE = True
@@ -120,7 +146,7 @@ class SemanticCacheManager:
     DEFAULT_LONG_TERM_TTL = 86400 * 7
 
     @classmethod
-    def get_instance(cls, api_key: str | None=None) -> SemanticCacheManager:
+    def get_instance(cls, api_key: str | None = None) -> SemanticCacheManager:
         """
         Get the singleton instance of SemanticCacheManager.
 
@@ -141,7 +167,7 @@ class SemanticCacheManager:
             return cls._instance
 
     @classmethod
-    def _create_instance(cls, api_key: str | None=None) -> SemanticCacheManager:
+    def _create_instance(cls, api_key: str | None = None) -> SemanticCacheManager:
         """Internal factory method for creating the singleton."""
         instance = object.__new__(cls)
         instance._initialize(api_key)
@@ -153,16 +179,18 @@ class SemanticCacheManager:
         with cls._instance_lock:
             cls._instance = None
 
-    def __init__(self, api_key: str | None=None):
+    def __init__(self, api_key: str | None = None):
         """
         Initialize is blocked for direct instantiation.
         Use get_instance() instead.
         """
         if SemanticCacheManager._instance is not None:
-            raise RuntimeError('[HiveMind] SINGLETON VIOLATION: Use SemanticCacheManager.get_instance() instead of direct instantiation.')
+            raise RuntimeError(
+                "[HiveMind] SINGLETON VIOLATION: Use SemanticCacheManager.get_instance() instead of direct instantiation."
+            )
         self._initialize(api_key)
 
-    def _initialize(self, api_key: str | None=None) -> None:
+    def _initialize(self, api_key: str | None = None) -> None:
         """
         Internal initialization method with configurable compliance.
 
@@ -175,9 +203,13 @@ class SemanticCacheManager:
         self.api_key = api_key
         # guardian: allow-magic-config
         self.similarity_threshold = 0.98
-        self.strict_mode = os.environ.get('HIVE_MIND_STRICT_MODE', 'true').lower() == 'true'
-        self.trace_sampling_rate = float(os.environ.get('HIVE_MIND_TRACE_SAMPLING_RATE', str(self.DEFAULT_TRACE_SAMPLING_RATE)))
-        self.promotion_threshold = float(os.environ.get('HIVE_MIND_PROMOTION_THRESHOLD', str(self.DEFAULT_PROMOTION_THRESHOLD)))
+        self.strict_mode = os.environ.get("HIVE_MIND_STRICT_MODE", "true").lower() == "true"
+        self.trace_sampling_rate = float(
+            os.environ.get("HIVE_MIND_TRACE_SAMPLING_RATE", str(self.DEFAULT_TRACE_SAMPLING_RATE))
+        )
+        self.promotion_threshold = float(
+            os.environ.get("HIVE_MIND_PROMOTION_THRESHOLD", str(self.DEFAULT_PROMOTION_THRESHOLD))
+        )
         self._lock = threading.RLock()
         self.stateless_mode = False
         self.sanitizer = PII_Sanitizer()
@@ -185,25 +217,38 @@ class SemanticCacheManager:
         self.redis_enabled = False
         self._init_redis()
         from agentic_core.L4_state.memory.in_memory_vector_store import InMemoryVectorStore
+
         self._vector_store: InMemoryVectorStore = InMemoryVectorStore()
         self.vector_store_enabled = True
         self._init_vector_store()
-        self.stats = {'redis_hits': 0, 'vector_store_hits': 0, 'cache_misses': 0, 'cache_stores': 0, 'traces_sampled': 0, 'traces_skipped': 0, 'promotions': 0}
+        self.stats = {
+            "redis_hits": 0,
+            "vector_store_hits": 0,
+            "cache_misses": 0,
+            "cache_stores": 0,
+            "traces_sampled": 0,
+            "traces_skipped": 0,
+            "promotions": 0,
+        }
         infrastructure_available = self.redis_enabled or self.vector_store_enabled
         if not infrastructure_available:
             if self.strict_mode:
-                error_msg = '[HiveMind] CRITICAL: Hive Mind infrastructure unavailable in STRICT mode.'
+                error_msg = "[HiveMind] CRITICAL: Hive Mind infrastructure unavailable in STRICT mode."
                 Logger.critical(error_msg)
                 raise CriticalInfrastructureError(error_msg)
             else:
-                Logger.error('[HiveMind] Hive Mind infrastructure unavailable. Entering STATELESS fallback mode.')
+                Logger.error(
+                    "[HiveMind] Hive Mind infrastructure unavailable. Entering STATELESS fallback mode."
+                )
                 self.stateless_mode = True
         if self.redis_enabled:
-            Logger.info('[HiveMind] Connected to Working Memory (Redis)')
+            Logger.info("[HiveMind] Connected to Working Memory (Redis)")
         else:
-            Logger.warning('[HiveMind] Working Memory (Redis) unavailable')
-        Logger.info('[HiveMind] Connected to Long-Term Memory (InMemoryVectorStore+BGE)')
-        Logger.info(f'[HiveMind] Config: strict_mode={self.strict_mode}, sampling_rate={self.trace_sampling_rate}, promotion_threshold={self.promotion_threshold}')
+            Logger.warning("[HiveMind] Working Memory (Redis) unavailable")
+        Logger.info("[HiveMind] Connected to Long-Term Memory (InMemoryVectorStore+BGE)")
+        Logger.info(
+            f"[HiveMind] Config: strict_mode={self.strict_mode}, sampling_rate={self.trace_sampling_rate}, promotion_threshold={self.promotion_threshold}"
+        )
 
     def _init_redis(self) -> Exception | None:
         """
@@ -214,25 +259,27 @@ class SemanticCacheManager:
         """
         try:
             import redis
-            redis_url = os.environ.get('REDIS_URL', 'redis://localhost:6379')
+
+            redis_url = os.environ.get("REDIS_URL", "redis://localhost:6379")
             self.redis_client = redis.from_url(redis_url, decode_responses=True)
             self.redis_client.ping()
             self.redis_enabled = True
             return None
         except ImportError as e:
-            Logger.debug('[HiveMind] redis package not installed')
+            Logger.debug("[HiveMind] redis package not installed")
             return e
         # guardian: allow-silent-swallow
         except Exception as e:
-            Logger.warning(f'[HiveMind] Redis connection failed: {e}')
+            Logger.warning(f"[HiveMind] Redis connection failed: {e}")
             return e
 
     def _init_vector_store(self) -> None:
         """Initialize in-memory vector store for semantic matching (BGE-m3 backend)."""
         self.vector_store_enabled = True
-        Logger.debug('[HiveMind] In-memory vector store initialized (FAISS+BGE-m3 backend)')
-    _EMBEDDING_MODEL_VERSION: str = os.environ.get('HIVE_MIND_EMBEDDING_MODEL_VERSION', 'bge-m3-v1')
-    _RETRIEVAL_CONFIG_HASH: str = os.environ.get('HIVE_MIND_RETRIEVAL_CONFIG_HASH', 'default')
+        Logger.debug("[HiveMind] In-memory vector store initialized (FAISS+BGE-m3 backend)")
+
+    _EMBEDDING_MODEL_VERSION: str = os.environ.get("HIVE_MIND_EMBEDDING_MODEL_VERSION", "bge-m3-v1")
+    _RETRIEVAL_CONFIG_HASH: str = os.environ.get("HIVE_MIND_RETRIEVAL_CONFIG_HASH", "default")
 
     def _compute_hash(self, context: str, namespace: str) -> str:
         """Compute SHA256 hash for exact matching.
@@ -241,17 +288,18 @@ class SemanticCacheManager:
         config hash) so cached results are automatically invalidated when either
         changes, preventing stale or inconsistent retrieval results.
         """
-        key = '|'.join([namespace, self._EMBEDDING_MODEL_VERSION, self._RETRIEVAL_CONFIG_HASH, context])
+        key = "|".join([namespace, self._EMBEDDING_MODEL_VERSION, self._RETRIEVAL_CONFIG_HASH, context])
         return hashlib.sha256(key.encode()).hexdigest()
 
     def _get_embedding(self, text: str) -> list[float] | None:
         """Generate BGE-m3 embedding for semantic matching."""
         try:
             from agentic_core.L2_execution.healers.bmg_embedding_similarity import bmg_embed_text
+
             return bmg_embed_text(text[:2000])
         # guardian: allow-silent-swallow
         except Exception as e:
-            Logger.warning(f'[HiveMind] BGE embedding failed: {e}')
+            Logger.warning(f"[HiveMind] BGE embedding failed: {e}")
             return None
 
     def recall(self, context: str, namespace: str) -> dict[str, Any] | None:
@@ -270,42 +318,48 @@ class SemanticCacheManager:
         ctx_hash = self._compute_hash(context, namespace)
         if self.redis_enabled:
             try:
-                cached = self.redis_client.get(f'memory:{ctx_hash}')
+                cached = self.redis_client.get(f"memory:{ctx_hash}")
                 if cached:
-                    Logger.debug(f'[HiveMind] Redis HIT for {namespace}')
+                    Logger.debug(f"[HiveMind] Redis HIT for {namespace}")
                     with self._lock:
-                        self.stats['redis_hits'] += 1
+                        self.stats["redis_hits"] += 1
                     return json.loads(cached)
             # guardian: allow-silent-swallow
             except Exception as e:
                 raise
-                Logger.debug(f'[HiveMind] Redis recall failed: {e}')
+                Logger.debug(f"[HiveMind] Redis recall failed: {e}")
         if self.vector_store_enabled and self._vector_store._storage:
             vector = self._get_embedding(context)
             if vector:
                 try:
                     import asyncio
+
                     from agentic_core.L4_state.types.memory_item_types import MemoryQuery
-                    query = MemoryQuery(vector=vector, top_k=1, filter_metadata={'namespace': namespace})
+
+                    query = MemoryQuery(vector=vector, top_k=1, filter_metadata={"namespace": namespace})
                     loop = asyncio.get_event_loop()
                     results = loop.run_until_complete(self._vector_store.query(query))
-                    if results and results[0].score is not None and (results[0].score >= self.similarity_threshold):
+                    if (
+                        results
+                        and results[0].score is not None
+                        and (results[0].score >= self.similarity_threshold)
+                    ):
                         best = results[0]
-                        Logger.info(f'[HiveMind] VectorStore HIT ({best.score:.2f}) for {namespace}')
+                        Logger.info(f"[HiveMind] VectorStore HIT ({best.score:.2f}) for {namespace}")
                         with self._lock:
-                            self.stats['vector_store_hits'] += 1
-                        payload = best.metadata.get('payload')
+                            self.stats["vector_store_hits"] += 1
+                        payload = best.metadata.get("payload")
                         if payload:
                             return json.loads(payload)
                 # guardian: allow-silent-swallow
                 except Exception as e:
                     raise
-                    Logger.debug(f'[HiveMind] VectorStore recall failed: {e}')
+                    Logger.debug(f"[HiveMind] VectorStore recall failed: {e}")
         with self._lock:
-            self.stats['cache_misses'] += 1
+            self.stats["cache_misses"] += 1
         return None
 
-    def _should_sample_trace(self, trace_id: str | None=None) -> bool:
+    def _should_sample_trace(self, trace_id: str | None = None) -> bool:
         """
         Determine if this trace should be sampled based on sampling rate.
 
@@ -321,11 +375,14 @@ class SemanticCacheManager:
         if trace_id is None:
             return random.random() < self.trace_sampling_rate
         import hashlib
+
         hash_int = int(hashlib.sha256(trace_id.encode()).hexdigest()[:8], 16)
         threshold = int(self.trace_sampling_rate * 4294967295)
         return hash_int & 4294967295 < threshold
 
-    def learn(self, context: str, namespace: str, result: dict[str, Any], feedback_score: float | None=None) -> None:
+    def learn(
+        self, context: str, namespace: str, result: dict[str, Any], feedback_score: float | None = None
+    ) -> None:
         """
         Teach the Hive Mind a new result (Working Memory).
 
@@ -345,23 +402,33 @@ class SemanticCacheManager:
         ctx_hash = self._compute_hash(sanitized_context, namespace)
         if not self._should_sample_trace(ctx_hash):
             with self._lock:
-                self.stats['traces_skipped'] += 1
+                self.stats["traces_skipped"] += 1
             return
         with self._lock:
-            self.stats['traces_sampled'] += 1
-        enriched_result = {**result, '_metadata': {'namespace': namespace, 'timestamp': time.time(), 'feedback_score': feedback_score, 'promoted': False}}
+            self.stats["traces_sampled"] += 1
+        enriched_result = {
+            **result,
+            "_metadata": {
+                "namespace": namespace,
+                "timestamp": time.time(),
+                "feedback_score": feedback_score,
+                "promoted": False,
+            },
+        }
         payload_json = json.dumps(enriched_result)
         if self.redis_enabled:
             try:
-                self.redis_client.setex(f'memory:{ctx_hash}', self.DEFAULT_WORKING_MEMORY_TTL, payload_json)
+                self.redis_client.setex(f"memory:{ctx_hash}", self.DEFAULT_WORKING_MEMORY_TTL, payload_json)
             # guardian: allow-silent-swallow
             except Exception as e:
                 raise
-                Logger.debug(f'[HiveMind] Redis learn failed: {e}')
+                Logger.debug(f"[HiveMind] Redis learn failed: {e}")
         with self._lock:
-            self.stats['cache_stores'] += 1
+            self.stats["cache_stores"] += 1
 
-    async def learn_async(self, context: str, namespace: str, result: dict[str, Any], feedback_score: float | None=None) -> None:
+    async def learn_async(
+        self, context: str, namespace: str, result: dict[str, Any], feedback_score: float | None = None
+    ) -> None:
         """
         [PHASE 25] Async version of learn for fire-and-forget pattern.
         """
@@ -371,23 +438,33 @@ class SemanticCacheManager:
         ctx_hash = self._compute_hash(sanitized_context, namespace)
         if not self._should_sample_trace(ctx_hash):
             with self._lock:
-                self.stats['traces_skipped'] += 1
+                self.stats["traces_skipped"] += 1
             return
         with self._lock:
-            self.stats['traces_sampled'] += 1
-        enriched_result = {**result, '_metadata': {'namespace': namespace, 'timestamp': time.time(), 'feedback_score': feedback_score, 'promoted': False}}
+            self.stats["traces_sampled"] += 1
+        enriched_result = {
+            **result,
+            "_metadata": {
+                "namespace": namespace,
+                "timestamp": time.time(),
+                "feedback_score": feedback_score,
+                "promoted": False,
+            },
+        }
         payload_json = json.dumps(enriched_result)
         if self.redis_enabled:
             try:
-                self.redis_client.setex(f'memory:{ctx_hash}', self.DEFAULT_WORKING_MEMORY_TTL, payload_json)
+                self.redis_client.setex(f"memory:{ctx_hash}", self.DEFAULT_WORKING_MEMORY_TTL, payload_json)
             # guardian: allow-silent-swallow
             except Exception as e:
                 raise
-                Logger.debug(f'[HiveMind] Redis async learn failed: {e}')
+                Logger.debug(f"[HiveMind] Redis async learn failed: {e}")
         with self._lock:
-            self.stats['cache_stores'] += 1
+            self.stats["cache_stores"] += 1
 
-    async def promote_to_long_term(self, context: str, namespace: str, result: dict[str, Any], feedback_score: float) -> bool:
+    async def promote_to_long_term(
+        self, context: str, namespace: str, result: dict[str, Any], feedback_score: float
+    ) -> bool:
         """
         Promote a memory to Long-Term DNA storage (InMemoryVectorStore).
 
@@ -404,37 +481,60 @@ class SemanticCacheManager:
             True if promoted, False if rejected or failed
         """
         if feedback_score < self.promotion_threshold:
-            Logger.debug(f'[HiveMind] Promotion rejected: feedback_score={feedback_score} < threshold={self.promotion_threshold}')
+            Logger.debug(
+                f"[HiveMind] Promotion rejected: feedback_score={feedback_score} < threshold={self.promotion_threshold}"
+            )
             return False
         if not self.vector_store_enabled:
-            Logger.warning('[HiveMind] Cannot promote: vector store not available')
+            Logger.warning("[HiveMind] Cannot promote: vector store not available")
             return False
         sanitized_context = self.sanitizer.sanitize(context)
         ctx_hash = self._compute_hash(sanitized_context, namespace)
-        enriched_result = {**result, '_metadata': {'namespace': namespace, 'timestamp': time.time(), 'feedback_score': feedback_score, 'promoted': True, 'promotion_time': time.time()}}
+        enriched_result = {
+            **result,
+            "_metadata": {
+                "namespace": namespace,
+                "timestamp": time.time(),
+                "feedback_score": feedback_score,
+                "promoted": True,
+                "promotion_time": time.time(),
+            },
+        }
         payload_json = json.dumps(enriched_result)
         vector = self._get_embedding(sanitized_context)
         if not vector:
-            Logger.warning('[HiveMind] Cannot promote: Embedding generation failed')
+            Logger.warning("[HiveMind] Cannot promote: Embedding generation failed")
             return False
         try:
             from agentic_core.L4_state.types.memory_item_types import MemoryItem
-            item = MemoryItem(content=sanitized_context, embedding=vector, metadata={'namespace': namespace, 'feedback_score': feedback_score, 'promoted_at': time.time(), 'payload': payload_json})
+
+            item = MemoryItem(
+                content=sanitized_context,
+                embedding=vector,
+                metadata={
+                    "namespace": namespace,
+                    "feedback_score": feedback_score,
+                    "promoted_at": time.time(),
+                    "payload": payload_json,
+                },
+            )
             await self._vector_store.upsert([item])
             if self.redis_enabled:
                 try:
-                    self.redis_client.setex(f'memory:{ctx_hash}', self.DEFAULT_LONG_TERM_TTL, payload_json)
+                    self.redis_client.setex(f"memory:{ctx_hash}", self.DEFAULT_LONG_TERM_TTL, payload_json)
                 # guardian: allow-silent-swallow
                 except Exception as e:
                     raise
-                    Logger.warning(f'[HiveMind] Redis TTL extension failed: {e}')
+                    Logger.warning(f"[HiveMind] Redis TTL extension failed: {e}")
             with self._lock:
-                self.stats['promotions'] += 1
-            Logger.info(f'[HiveMind] Memory promoted to DNA: {namespace} (feedback_score={feedback_score:.2f})')
+                self.stats["promotions"] += 1
+            Logger.info(
+                f"[HiveMind] Memory promoted to DNA: {namespace} (feedback_score={feedback_score:.2f})"
+            )
             return True
         # guardian: allow-silent-swallow
         except Exception as e:
-            Logger.error(f'[HiveMind] Promotion failed: {e}')
+            Logger.error(f"[HiveMind] Promotion failed: {e}")
             return False
 
     def update_feedback_score(self, context: str, namespace: str, feedback_score: float) -> bool:
@@ -457,34 +557,39 @@ class SemanticCacheManager:
         if not self.redis_enabled:
             return False
         try:
-            cached = self.redis_client.get(f'memory:{ctx_hash}')
+            cached = self.redis_client.get(f"memory:{ctx_hash}")
             if not cached:
                 return False
             result = json.loads(cached)
-            if '_metadata' not in result:
-                result['_metadata'] = {}
-            old_score = result['_metadata'].get('feedback_score', 0.0)
-            result['_metadata']['feedback_score'] = feedback_score
-            result['_metadata']['score_updated'] = time.time()
+            if "_metadata" not in result:
+                result["_metadata"] = {}
+            old_score = result["_metadata"].get("feedback_score", 0.0)
+            result["_metadata"]["feedback_score"] = feedback_score
+            result["_metadata"]["score_updated"] = time.time()
             payload_json = json.dumps(result)
-            self.redis_client.setex(f'memory:{ctx_hash}', self.DEFAULT_WORKING_MEMORY_TTL, payload_json)
-            Logger.debug(f'[HiveMind] Feedback score updated: {old_score:.2f} -> {feedback_score:.2f}')
+            self.redis_client.setex(f"memory:{ctx_hash}", self.DEFAULT_WORKING_MEMORY_TTL, payload_json)
+            Logger.debug(f"[HiveMind] Feedback score updated: {old_score:.2f} -> {feedback_score:.2f}")
             if feedback_score >= self.promotion_threshold:
-                clean_result = {k: v for k, v in result.items() if k != '_metadata'}
+                clean_result = {k: v for k, v in result.items() if k != "_metadata"}
                 import asyncio
+
                 try:
                     loop = asyncio.get_event_loop()
                     if loop.is_running():
-                        asyncio.ensure_future(self.promote_to_long_term(context, namespace, clean_result, feedback_score))
+                        asyncio.ensure_future(
+                            self.promote_to_long_term(context, namespace, clean_result, feedback_score)
+                        )
                     else:
-                        loop.run_until_complete(self.promote_to_long_term(context, namespace, clean_result, feedback_score))
+                        loop.run_until_complete(
+                            self.promote_to_long_term(context, namespace, clean_result, feedback_score)
+                        )
                 # guardian: allow-silent-swallow
                 except Exception as e:
-                    Logger.warning(f'[HiveMind] Auto-promote failed: {e}')
+                    Logger.warning(f"[HiveMind] Auto-promote failed: {e}")
             return True
         # guardian: allow-silent-swallow
         except Exception as e:
-            Logger.warning(f'[HiveMind] Feedback update failed: {e}')
+            Logger.warning(f"[HiveMind] Feedback update failed: {e}")
             return False
 
     def get_stats(self) -> dict[str, Any]:
@@ -494,7 +599,17 @@ class SemanticCacheManager:
     def get_statistics(self) -> dict[str, Any]:
         """Get cache statistics."""
         with self._lock:
-            total_hits = self.stats['redis_hits'] + self.stats['vector_store_hits']
-            total_lookups = total_hits + self.stats['cache_misses']
-            total_traces = self.stats['traces_sampled'] + self.stats['traces_skipped']
-            return {**self.stats, 'total_hits': total_hits, 'total_lookups': total_lookups, 'hit_rate': total_hits / total_lookups if total_lookups > 0 else 0.0, 'sampling_rate_actual': self.stats['traces_sampled'] / total_traces if total_traces > 0 else 0.0, 'strict_mode': self.strict_mode, 'stateless_mode': self.stateless_mode}
+            total_hits = self.stats["redis_hits"] + self.stats["vector_store_hits"]
+            total_lookups = total_hits + self.stats["cache_misses"]
+            total_traces = self.stats["traces_sampled"] + self.stats["traces_skipped"]
+            return {
+                **self.stats,
+                "total_hits": total_hits,
+                "total_lookups": total_lookups,
+                "hit_rate": total_hits / total_lookups if total_lookups > 0 else 0.0,
+                "sampling_rate_actual": self.stats["traces_sampled"] / total_traces
+                if total_traces > 0
+                else 0.0,
+                "strict_mode": self.strict_mode,
+                "stateless_mode": self.stateless_mode,
+            }

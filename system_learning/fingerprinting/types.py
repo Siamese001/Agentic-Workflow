@@ -1,14 +1,17 @@
 """Failure fingerprinting types for deterministic failure clustering."""
+
 from __future__ import annotations
+
 import hashlib
 import json
 from dataclasses import dataclass
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 @dataclass(frozen=True)
 class FailureEvent:
     """Structured failure event for deterministic fingerprinting."""
+
     exc_type: str
     error_code: str
     component: str
@@ -17,12 +20,20 @@ class FailureEvent:
 
     def canonical_bytes(self) -> bytes:
         """Canonical byte representation for deterministic fingerprinting."""
-        data = {'exc_type': self.exc_type, 'error_code': self.error_code, 'component': self.component, 'symbols': sorted(self.symbols), 'metadata': {k: str(v) for k, v in sorted(self.metadata.items())}}
-        return json.dumps(data, separators=(',', ':'), sort_keys=True).encode('ascii')
+        data = {
+            "exc_type": self.exc_type,
+            "error_code": self.error_code,
+            "component": self.component,
+            "symbols": sorted(self.symbols),
+            "metadata": {k: str(v) for k, v in sorted(self.metadata.items())},
+        }
+        return json.dumps(data, separators=(",", ":"), sort_keys=True).encode("ascii")
+
 
 @dataclass(frozen=True)
 class FailureFingerprint:
     """Deterministic fingerprint for failure clustering."""
+
     fingerprint_sha256: str
     canonical_bytes: bytes
 

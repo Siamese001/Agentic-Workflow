@@ -4,11 +4,13 @@ W4-E Retrieval Profile Proposal System
 Stages W4-D advisory recommendations into deterministic proposal sets
 requiring explicit approval (HITL) without mutating active profile.
 """
+
 import hashlib
 import json
 from dataclasses import dataclass
+
 from system_learning.engines.retrieval_profile import RetrievalProfile
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 @dataclass(frozen=True, slots=True)
 class RetrievalProfileProposal:
@@ -17,6 +19,7 @@ class RetrievalProfileProposal:
     Stages W4-D advisory recommendations into explicit proposal sets
     that require human approval before activation.
     """
+
     base_profile_id: str
     proposed_profile: RetrievalProfile
     recommended_changes: dict[str, float]
@@ -26,14 +29,20 @@ class RetrievalProfileProposal:
 
     def emit_digest(self) -> None:
         """Print the proposal digest for determinism verification."""
-        print(f'W4E-PROPOSAL-DIGEST: {self.deterministic_digest}')
+        print(f"W4E-PROPOSAL-DIGEST: {self.deterministic_digest}")
 
     def to_canonical_json(self) -> str:
         """Convert to canonical JSON for deterministic serialization."""
-        data = {'base_profile_id': self.base_profile_id, 'proposed_profile': json.loads(self.proposed_profile.to_canonical_json()), 'recommended_changes': {k: round(v, 6) for k, v in self.recommended_changes.items()}, 'approved': self.approved, 'proposed_at_utc': self.proposed_at_utc}
-        return json.dumps(data, sort_keys=True, separators=(',', ':'))
+        data = {
+            "base_profile_id": self.base_profile_id,
+            "proposed_profile": json.loads(self.proposed_profile.to_canonical_json()),
+            "recommended_changes": {k: round(v, 6) for k, v in self.recommended_changes.items()},
+            "approved": self.approved,
+            "proposed_at_utc": self.proposed_at_utc,
+        }
+        return json.dumps(data, sort_keys=True, separators=(",", ":"))
 
-    def create_approved_copy(self, approved_at_utc: int) -> 'RetrievalProfileProposal':
+    def create_approved_copy(self, approved_at_utc: int) -> "RetrievalProfileProposal":
         """Create an approved copy of this proposal.
 
         Args:
@@ -42,16 +51,37 @@ class RetrievalProfileProposal:
         Returns:
             New proposal with approved=True and updated digest
         """
-        approved_proposal = RetrievalProfileProposal(base_profile_id=self.base_profile_id, proposed_profile=self.proposed_profile, recommended_changes=self.recommended_changes, approved=True, proposed_at_utc=self.proposed_at_utc, deterministic_digest=self._compute_approved_digest(approved_at_utc))
+        approved_proposal = RetrievalProfileProposal(
+            base_profile_id=self.base_profile_id,
+            proposed_profile=self.proposed_profile,
+            recommended_changes=self.recommended_changes,
+            approved=True,
+            proposed_at_utc=self.proposed_at_utc,
+            deterministic_digest=self._compute_approved_digest(approved_at_utc),
+        )
         return approved_proposal
 
     def _compute_approved_digest(self, approved_at_utc: int) -> str:
         """Compute digest for approved proposal."""
-        data = {'base_profile_id': self.base_profile_id, 'proposed_profile': json.loads(self.proposed_profile.to_canonical_json()), 'recommended_changes': {k: round(v, 6) for k, v in self.recommended_changes.items()}, 'approved': True, 'proposed_at_utc': self.proposed_at_utc, 'approved_at_utc': approved_at_utc, 'proposal_version': 'W4-E-v1.0'}
-        canonical = json.dumps(data, sort_keys=True, separators=(',', ':'))
-        return hashlib.sha256(canonical.encode('utf-8')).hexdigest()
+        data = {
+            "base_profile_id": self.base_profile_id,
+            "proposed_profile": json.loads(self.proposed_profile.to_canonical_json()),
+            "recommended_changes": {k: round(v, 6) for k, v in self.recommended_changes.items()},
+            "approved": True,
+            "proposed_at_utc": self.proposed_at_utc,
+            "approved_at_utc": approved_at_utc,
+            "proposal_version": "W4-E-v1.0",
+        }
+        canonical = json.dumps(data, sort_keys=True, separators=(",", ":"))
+        return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
-def create_proposal_digest(base_profile_id: str, proposed_profile: RetrievalProfile, recommended_changes: dict[str, float], proposed_at_utc: int) -> str:
+
+def create_proposal_digest(
+    base_profile_id: str,
+    proposed_profile: RetrievalProfile,
+    recommended_changes: dict[str, float],
+    proposed_at_utc: int,
+) -> str:
     """Compute deterministic SHA-256 digest for proposal.
 
     Args:
@@ -63,7 +93,16 @@ def create_proposal_digest(base_profile_id: str, proposed_profile: RetrievalProf
     Returns:
         SHA-256 digest string
     """
-    data = {'base_profile_id': base_profile_id, 'proposed_profile': json.loads(proposed_profile.to_canonical_json()), 'recommended_changes': {k: round(v, 6) for k, v in sorted(recommended_changes.items())}, 'approved': False, 'proposed_at_utc': proposed_at_utc, 'proposal_version': 'W4-E-v1.0'}
-    canonical = json.dumps(data, sort_keys=True, separators=(',', ':'))
-    return hashlib.sha256(canonical.encode('utf-8')).hexdigest()
-__all__ = ['RetrievalProfileProposal', 'create_proposal_digest']
+    data = {
+        "base_profile_id": base_profile_id,
+        "proposed_profile": json.loads(proposed_profile.to_canonical_json()),
+        "recommended_changes": {k: round(v, 6) for k, v in sorted(recommended_changes.items())},
+        "approved": False,
+        "proposed_at_utc": proposed_at_utc,
+        "proposal_version": "W4-E-v1.0",
+    }
+    canonical = json.dumps(data, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+
+__all__ = ["RetrievalProfileProposal", "create_proposal_digest"]

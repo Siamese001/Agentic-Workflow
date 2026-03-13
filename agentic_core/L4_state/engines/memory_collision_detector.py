@@ -1,24 +1,30 @@
 from __future__ import annotations
+
 import threading
 import time
 from dataclasses import dataclass
 from typing import NamedTuple, Sequence
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 class MemoryDeadlockViolation(Exception):
     """Raised when a deadlock is detected during lock acquisition."""
 
+
 class LockAcquisitionResult(NamedTuple):
     """The result of a lock acquisition attempt."""
+
     success: bool
     locks_acquired: list[str]
     violation: MemoryDeadlockViolation | None = None
 
+
 @dataclass(frozen=True)
 class LockPolicy:
     """Defines the policy for lock acquisition."""
+
     lock_hierarchy: list[str]
     timeout_seconds: float = 5.0
+
 
 class MemoryCollisionDetector:
     """
@@ -56,11 +62,13 @@ class MemoryCollisionDetector:
             lock = self._locks[lock_name]
             timeout = self.policy.timeout_seconds - (time.monotonic() - start_time)
             if timeout <= 0:
-                violation = MemoryDeadlockViolation('Timeout exceeded during lock acquisition.')
+                violation = MemoryDeadlockViolation("Timeout exceeded during lock acquisition.")
                 self._release_locks(acquired_locks)
                 return LockAcquisitionResult(success=False, locks_acquired=[], violation=violation)
             if not lock.acquire(timeout=timeout):
-                violation = MemoryDeadlockViolation(f"Failed to acquire lock '{lock_name}' within the timeout.")
+                violation = MemoryDeadlockViolation(
+                    f"Failed to acquire lock '{lock_name}' within the timeout."
+                )
                 self._release_locks(acquired_locks)
                 return LockAcquisitionResult(success=False, locks_acquired=[], violation=violation)
             acquired_locks.append(lock_name)

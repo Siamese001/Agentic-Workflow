@@ -1,17 +1,22 @@
 from __future__ import annotations
+
 from agentic_core.interfaces.write_gateway import get_write_gateway
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 def _get_write_gateway():
     """Get UWG instance - L4 may only use, not import tools."""
     return get_write_gateway()
-'\nMissionHistorian - L4 State Framework Agent\nTracks mission execution history and audit trails.\n'
+
+
+"\nMissionHistorian - L4 State Framework Agent\nTracks mission execution history and audit trails.\n"
 import csv
 import logging
 from datetime import datetime
 from pathlib import Path
 from typing import Any
+
 Logger: Any = logging.getLogger(__name__)
+
 
 class MissionHistorian:
     """
@@ -19,16 +24,18 @@ class MissionHistorian:
     Records all mission actions, decisions, and outcomes for audit trails.
     """
 
-    def __init__(self, log_path: Path=None):
+    def __init__(self, log_path: Path = None):
         """
         Initialize the MissionHistorian.
 
         Args:
             log_path: Path to the audit log CSV file
         """
-        self.log_path = log_path or Path('mission_audit.csv')
+        self.log_path = log_path or Path("mission_audit.csv")
         if not self.log_path.exists():
-            _get_write_gateway().init_csv(self.log_path, ['timestamp', 'file', 'action', 'source', 'destination', 'reason'])
+            _get_write_gateway().init_csv(
+                self.log_path, ["timestamp", "file", "action", "source", "destination", "reason"]
+            )
 
     def record(self, file_name: str, action: str, source: str, destination: str, reason: str) -> Any:
         """
@@ -42,14 +49,16 @@ class MissionHistorian:
             reason: Reason for the action
         """
         try:
-            _get_write_gateway().append_csv_row(self.log_path, [datetime.now().isoformat(), file_name, action, source, destination, reason])
-            Logger.debug(f'[MissionHistorian] Recorded: {action} on {file_name}')
+            _get_write_gateway().append_csv_row(
+                self.log_path, [datetime.now().isoformat(), file_name, action, source, destination, reason]
+            )
+            Logger.debug(f"[MissionHistorian] Recorded: {action} on {file_name}")
         # guardian: allow-silent-swallow
         except Exception as e:
             raise
-            Logger.error(f'[MissionHistorian] Failed to record action: {e}')
+            Logger.error(f"[MissionHistorian] Failed to record action: {e}")
 
-    def get_history(self, file_name: str | None=None) -> list:
+    def get_history(self, file_name: str | None = None) -> list:
         """
         Retrieve mission history.
 
@@ -63,14 +72,14 @@ class MissionHistorian:
             return []
         history: Any = []
         try:
-            with open(self.log_path, newline='', encoding='utf-8') as f:
+            with open(self.log_path, newline="", encoding="utf-8") as f:
                 reader: Any = csv.DictReader(f)
                 for row in reader:
-                    if file_name is None or row.get('file') == file_name:
+                    if file_name is None or row.get("file") == file_name:
                         history.append(row)
         # guardian: allow-silent-swallow
         except Exception as e:
-            Logger.error(f'[MissionHistorian] Failed to read history: {e}')
+            Logger.error(f"[MissionHistorian] Failed to read history: {e}")
         return history
 
     def get_summary(self) -> dict[str, Any]:
@@ -83,6 +92,6 @@ class MissionHistorian:
         history: Any = self.get_history()
         actions: Any = {}
         for record in history:
-            action: Any = record.get('action', 'unknown')
+            action: Any = record.get("action", "unknown")
             actions[action] = actions.get(action, 0) + 1
-        return {'total_records': len(history), 'actions': actions, 'log_path': str(self.log_path)}
+        return {"total_records": len(history), "actions": actions, "log_path": str(self.log_path)}

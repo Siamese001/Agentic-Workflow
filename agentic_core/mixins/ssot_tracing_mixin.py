@@ -10,13 +10,16 @@ Provides tracing that:
 Layer: L6 Observer
 Authority: Trace emission only. No L4 mutation. No routing influence.
 """
+
 from __future__ import annotations
+
 import logging
 import time
 from contextlib import contextmanager
 from typing import Any, Generator
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
-_logger = logging.getLogger('SSOTTracing')
+
+_logger = logging.getLogger("SSOTTracing")
+
 
 class SSOTTracingMixin:
     """Policy-hash-scoped tracing with replay-safe sampling.
@@ -32,7 +35,9 @@ class SSOTTracingMixin:
         self._ssot_active_span: dict[str, Any] | None = None
 
     @contextmanager
-    def trace_span(self, operation: str, tags: dict[str, str] | None=None) -> Generator[dict[str, Any], None, None]:
+    def trace_span(
+        self, operation: str, tags: dict[str, str] | None = None
+    ) -> Generator[dict[str, Any], None, None]:
         """Context manager for a traced span.
 
         Parameters
@@ -47,26 +52,36 @@ class SSOTTracingMixin:
         dict
             The span dict (mutable — caller can add tags).
         """
-        trace_id = getattr(self, 'trace_id', 'unknown')
-        policy_hash = getattr(self, 'active_policy_hash', 'unknown')
-        span = {'operation': operation, 'trace_id': trace_id, 'policy_hash': policy_hash, 'start_time': time.time(), 'end_time': None, 'duration_ms': None, 'tags': tags or {}, 'status': 'active', 'error': None}
+        trace_id = getattr(self, "trace_id", "unknown")
+        policy_hash = getattr(self, "active_policy_hash", "unknown")
+        span = {
+            "operation": operation,
+            "trace_id": trace_id,
+            "policy_hash": policy_hash,
+            "start_time": time.time(),
+            "end_time": None,
+            "duration_ms": None,
+            "tags": tags or {},
+            "status": "active",
+            "error": None,
+        }
         parent = self._ssot_active_span
         if parent is not None:
-            span['parent_operation'] = parent['operation']
+            span["parent_operation"] = parent["operation"]
         self._ssot_active_span = span
         try:
             yield span
-            span['status'] = 'ok'
+            span["status"] = "ok"
         except Exception as exc:
-            span['status'] = 'error'
-            span['error'] = str(exc)
+            span["status"] = "error"
+            span["error"] = str(exc)
             raise
         finally:
-            span['end_time'] = time.time()
-            span['duration_ms'] = (span['end_time'] - span['start_time']) * 1000
+            span["end_time"] = time.time()
+            span["duration_ms"] = (span["end_time"] - span["start_time"]) * 1000
             self._ssot_spans.append(span)
             self._ssot_active_span = parent
-            _logger.debug('[SSOTTrace] %s | %.1fms | %s', operation, span['duration_ms'], span['status'])
+            _logger.debug("[SSOTTrace] %s | %.1fms | %s", operation, span["duration_ms"], span["status"])
 
     @property
     def completed_spans(self) -> list[dict[str, Any]]:

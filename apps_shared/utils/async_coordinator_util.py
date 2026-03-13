@@ -3,6 +3,7 @@
 This module provides coordination for async operations, preventing orphaned tasks,
 managing timeouts safely, and ensuring proper cleanup of async resources.
 """
+
 import asyncio
 import logging
 import time
@@ -10,20 +11,26 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import DEFAULT_SLEEP
+
 logger = logging.getLogger(__name__)
+
 
 class TaskState(Enum):
     """States for async tasks."""
-    PENDING = 'pending'
-    RUNNING = 'running'
-    COMPLETED = 'completed'
-    CANCELLED = 'cancelled'
-    FAILED = 'failed'
+
+    PENDING = "pending"
+    RUNNING = "running"
+    COMPLETED = "completed"
+    CANCELLED = "cancelled"
+    FAILED = "failed"
+
 
 @dataclass
 class TaskInfo:
     """Information about a managed task."""
+
     task_id: str
     task: asyncio.Task
     created_at: float
@@ -33,11 +40,12 @@ class TaskInfo:
     children_ids: set[str] = field(default_factory=set)
     cleanup_callback: Callable | None = None
 
+
 class AsyncCoordinator:
     """Coordinates async tasks and prevents orphaned operations."""
 
     # guardian: allow-magic-config
-    def __init__(self, name: str='default', max_concurrent: int=100):
+    def __init__(self, name: str = "default", max_concurrent: int = 100):
         """Initialize the coordinator.
 
         Args:
@@ -52,7 +60,7 @@ class AsyncCoordinator:
         self._semaphore = asyncio.Semaphore(max_concurrent)
         self._cleanup_task: asyncio.Task | None = None
         self._running = False
-        logger.debug(f'Initialized AsyncCoordinator: {name}')
+        logger.debug(f"Initialized AsyncCoordinator: {name}")
 
     async def start(self) -> None:
         """Start the coordinator and cleanup task."""
@@ -60,7 +68,7 @@ class AsyncCoordinator:
             return
         self._running = True
         self._cleanup_task = asyncio.create_task(self._cleanup_loop())
-        logger.info(f'Started AsyncCoordinator: {self.name}')
+        logger.info(f"Started AsyncCoordinator: {self.name}")
 
     async def stop(self) -> None:
         """Stop the coordinator and cancel all tasks."""
@@ -74,7 +82,7 @@ class AsyncCoordinator:
             except asyncio.CancelledError:
                 pass
         await self.cancel_all_tasks()
-        logger.info(f'Stopped AsyncCoordinator: {self.name}')
+        logger.info(f"Stopped AsyncCoordinator: {self.name}")
 
     def generate_task_id(self) -> str:
         """Generate a unique task ID.
@@ -83,9 +91,15 @@ class AsyncCoordinator:
             Unique task ID
         """
         self._task_counter += 1
-        return f'{self.name}_task_{self._task_counter}_{int(time.time() * 1000)}'
+        return f"{self.name}_task_{self._task_counter}_{int(time.time() * 1000)}"
 
-    async def create_task(self, coro: Awaitable, timeout: float | None=None, parent_id: str | None=None, cleanup_callback: Callable | None=None) -> str:
+    async def create_task(
+        self,
+        coro: Awaitable,
+        timeout: float | None = None,
+        parent_id: str | None = None,
+        cleanup_callback: Callable | None = None,
+    ) -> str:
         """Create and manage a new task.
 
         Args:
@@ -100,13 +114,20 @@ class AsyncCoordinator:
         await self._semaphore.acquire()
         task_id = self.generate_task_id()
         task = asyncio.create_task(self._run_with_timeout(coro, timeout, task_id))
-        task_info = TaskInfo(task_id=task_id, task=task, created_at=time.time(), timeout=timeout, parent_id=parent_id, cleanup_callback=cleanup_callback)
+        task_info = TaskInfo(
+            task_id=task_id,
+            task=task,
+            created_at=time.time(),
+            timeout=timeout,
+            parent_id=parent_id,
+            cleanup_callback=cleanup_callback,
+        )
         async with self._lock:
             self._tasks[task_id] = task_info
             if parent_id and parent_id in self._tasks:
                 self._tasks[parent_id].children_ids.add(task_id)
         task.add_done_callback(lambda t: asyncio.create_task(self._on_task_done(task_id)))
-        logger.debug(f'Created task: {task_id} (timeout: {timeout})')
+        logger.debug(f"Created task: {task_id} (timeout: {timeout})")
         return task_id
 
     async def _run_with_timeout(self, coro: Awaitable, timeout: float | None, task_id: str) -> Any:
@@ -133,14 +154,14 @@ class AsyncCoordinator:
                     self._tasks[task_id].state = TaskState.COMPLETED
             return result
         except asyncio.TimeoutError:
-            logger.warning(f'Task {task_id} timed out after {timeout}s')
+            logger.warning(f"Task {task_id} timed out after {timeout}s")
             async with self._lock:
                 if task_id in self._tasks:
                     self._tasks[task_id].state = TaskState.FAILED
             raise
         # guardian: allow-silent-swallow
         except Exception as e:
-            logger.error(f'Task {task_id} failed: {e}')
+            logger.error(f"Task {task_id} failed: {e}")
             async with self._lock:
                 if task_id in self._tasks:
                     self._tasks[task_id].state = TaskState.FAILED
@@ -160,16 +181,16 @@ class AsyncCoordinator:
         try:
             if task_info.task.cancelled():
                 task_info.state = TaskState.CANCELLED
-                logger.debug(f'Task {task_id} was cancelled')
+                logger.debug(f"Task {task_id} was cancelled")
             elif task_info.task.exception():
                 task_info.state = TaskState.FAILED
-                logger.debug(f'Task {task_id} failed with exception')
+                logger.debug(f"Task {task_id} failed with exception")
             else:
                 task_info.state = TaskState.COMPLETED
-                logger.debug(f'Task {task_id} completed successfully')
+                logger.debug(f"Task {task_id} completed successfully")
         # guardian: allow-silent-swallow
         except Exception as e:
-            logger.error(f'Error handling task completion for {task_id}: {e}')
+            logger.error(f"Error handling task completion for {task_id}: {e}")
         if task_info.cleanup_callback:
             try:
                 if asyncio.iscoroutinefunction(task_info.cleanup_callback):
@@ -178,9 +199,9 @@ class AsyncCoordinator:
                     task_info.cleanup_callback()
             # guardian: allow-silent-swallow
             except Exception as e:
-                logger.error(f'Cleanup callback failed for {task_id}: {e}')
+                logger.error(f"Cleanup callback failed for {task_id}: {e}")
 
-    async def wait_for_task(self, task_id: str, timeout: float | None=None) -> Any:
+    async def wait_for_task(self, task_id: str, timeout: float | None = None) -> Any:
         """Wait for a specific task to complete.
 
         Args:
@@ -193,7 +214,7 @@ class AsyncCoordinator:
         async with self._lock:
             task_info = self._tasks.get(task_id)
             if not task_info:
-                raise ValueError(f'Task not found: {task_id}')
+                raise ValueError(f"Task not found: {task_id}")
         try:
             if timeout:
                 return await asyncio.wait_for(task_info.task, timeout)
@@ -233,7 +254,7 @@ class AsyncCoordinator:
         for task_id in task_ids:
             if await self.cancel_task(task_id):
                 cancelled += 1
-        logger.info(f'Cancelled {cancelled} tasks in coordinator {self.name}')
+        logger.info(f"Cancelled {cancelled} tasks in coordinator {self.name}")
         return cancelled
 
     async def get_task_status(self, task_id: str) -> TaskState | None:
@@ -258,7 +279,13 @@ class AsyncCoordinator:
         async with self._lock:
             result = {}
             for task_id, task_info in self._tasks.items():
-                result[task_id] = {'state': task_info.state.value, 'created_at': task_info.created_at, 'timeout': task_info.timeout, 'parent_id': task_info.parent_id, 'children_count': len(task_info.children_ids)}
+                result[task_id] = {
+                    "state": task_info.state.value,
+                    "created_at": task_info.created_at,
+                    "timeout": task_info.timeout,
+                    "parent_id": task_info.parent_id,
+                    "children_count": len(task_info.children_ids),
+                }
             return result
 
     async def _cleanup_loop(self) -> None:
@@ -270,22 +297,27 @@ class AsyncCoordinator:
                 tasks_to_remove = []
                 async with self._lock:
                     for task_id, task_info in self._tasks.items():
-                        if task_info.state in (TaskState.COMPLETED, TaskState.CANCELLED, TaskState.FAILED) and task_info.created_at < cutoff_time:
+                        if (
+                            task_info.state in (TaskState.COMPLETED, TaskState.CANCELLED, TaskState.FAILED)
+                            and task_info.created_at < cutoff_time
+                        ):
                             tasks_to_remove.append(task_id)
                 for task_id in tasks_to_remove:
                     async with self._lock:
                         if task_id in self._tasks:
                             del self._tasks[task_id]
                 if tasks_to_remove:
-                    logger.debug(f'Cleaned up {len(tasks_to_remove)} old tasks')
+                    logger.debug(f"Cleaned up {len(tasks_to_remove)} old tasks")
             except asyncio.CancelledError:
                 break
             # guardian: allow-silent-swallow
             except Exception as e:
-                logger.error(f'Error in cleanup loop: {e}')
+                logger.error(f"Error in cleanup loop: {e}")
 
     @asynccontextmanager
-    async def managed_task(self, coro: Awaitable, timeout: float | None=None, cleanup_callback: Callable | None=None):
+    async def managed_task(
+        self, coro: Awaitable, timeout: float | None = None, cleanup_callback: Callable | None = None
+    ):
         """Context manager for a managed task.
 
         Args:
@@ -301,11 +333,14 @@ class AsyncCoordinator:
             yield task_id
         finally:
             await self.cancel_task(task_id)
+
+
 _coordinators: dict[str, AsyncCoordinator] = {}
 _coordinator_lock = asyncio.Lock()
 
+
 # guardian: allow-magic-config
-async def get_coordinator(name: str='default', max_concurrent: int=100) -> AsyncCoordinator:
+async def get_coordinator(name: str = "default", max_concurrent: int = 100) -> AsyncCoordinator:
     """Get or create an async coordinator.
 
     Args:
@@ -322,6 +357,7 @@ async def get_coordinator(name: str='default', max_concurrent: int=100) -> Async
             _coordinators[name] = coordinator
         return _coordinators[name]
 
+
 async def shutdown_all_coordinators() -> None:
     """Shutdown all coordinators."""
     async with _coordinator_lock:
@@ -329,7 +365,10 @@ async def shutdown_all_coordinators() -> None:
             await coordinator.stop()
         _coordinators.clear()
 
-def managed(coordinator_name: str='default', timeout: float | None=None, cleanup_callback: Callable | None=None):
+
+def managed(
+    coordinator_name: str = "default", timeout: float | None = None, cleanup_callback: Callable | None = None
+):
     """Decorator to run functions in a managed async context.
 
     Args:
@@ -342,15 +381,21 @@ def managed(coordinator_name: str='default', timeout: float | None=None, cleanup
     """
 
     def decorator(func):
-
         async def wrapper(*args, **kwargs):
             coordinator = await get_coordinator(coordinator_name)
-            async with coordinator.managed_task(func(*args, **kwargs), timeout=timeout, cleanup_callback=cleanup_callback) as task_id:
+            async with coordinator.managed_task(
+                func(*args, **kwargs), timeout=timeout, cleanup_callback=cleanup_callback
+            ) as task_id:
                 return await coordinator.wait_for_task(task_id)
+
         return wrapper
+
     return decorator
 
-async def safe_wait_for(coro: Awaitable, timeout: float, coordinator_name: str='timeout_coordinator') -> Any:
+
+async def safe_wait_for(
+    coro: Awaitable, timeout: float, coordinator_name: str = "timeout_coordinator"
+) -> Any:
     """Wait for a coroutine with timeout, preventing orphaned tasks.
 
     Args:
@@ -368,6 +413,7 @@ async def safe_wait_for(coro: Awaitable, timeout: float, coordinator_name: str='
 
     async def timeout_wrapper():
         return await coro
+
     task_id = await coordinator.create_task(timeout_wrapper(), timeout)
     try:
         return await coordinator.wait_for_task(task_id)

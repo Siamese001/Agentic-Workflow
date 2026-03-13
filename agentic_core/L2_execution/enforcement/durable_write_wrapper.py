@@ -3,12 +3,15 @@ Durable Write Wrapper - Enforces sole mutation authority in L2.2.
 
 All durable writes must go through this wrapper to track mutations.
 """
+
 from __future__ import annotations
+
 import logging
 from typing import Any, Callable
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 Logger = logging.getLogger(__name__)
 from agentic_core.L0_routing.enforcement.execution_gateway import CURRENT_PHASE, MUTATION_COUNTER
+
 
 def durable_write(operation: Callable[..., Any], *args: Any, **kwargs: Any) -> Any:
     """
@@ -26,25 +29,29 @@ def durable_write(operation: Callable[..., Any], *args: Any, **kwargs: Any) -> A
         AssertionError: If not in L2.2 phase
     """
     global CURRENT_PHASE, MUTATION_COUNTER
-    if CURRENT_PHASE != 'L2.2':
-        raise AssertionError(f'Durable write attempted in phase {CURRENT_PHASE}, only L2.2 allowed')
+    if CURRENT_PHASE != "L2.2":
+        raise AssertionError(f"Durable write attempted in phase {CURRENT_PHASE}, only L2.2 allowed")
     MUTATION_COUNTER += 1
-    Logger.info(f'[DURABLE_WRITE] Mutation #{MUTATION_COUNTER} in phase {CURRENT_PHASE}')
+    Logger.info(f"[DURABLE_WRITE] Mutation #{MUTATION_COUNTER} in phase {CURRENT_PHASE}")
     return operation(*args, **kwargs)
+
 
 def reset_mutation_counter() -> None:
     """Reset mutation counter (for testing only)."""
     global MUTATION_COUNTER
     MUTATION_COUNTER = 0
 
+
 def get_mutation_count() -> int:
     """Get current mutation count."""
     return MUTATION_COUNTER
+
 
 def set_phase(phase: str) -> None:
     """Set current execution phase."""
     global CURRENT_PHASE
     CURRENT_PHASE = phase
+
 
 def get_current_phase() -> str:
     """Get current execution phase."""

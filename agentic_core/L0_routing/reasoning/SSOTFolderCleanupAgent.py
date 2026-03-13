@@ -1,17 +1,21 @@
 from __future__ import annotations
+
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-'\n[PHASE 24] SSOT Folder Cleanup Agent - Automated SSOT Compliance Enforcement.\n\nProvides automated cleanup of non-SSOT-approved folders:\n1. Identifies files in non-approved folders\n2. Uses CognitiveDispositionAgent to determine target SSOT folder\n3. Moves files via ArchivalGatekeeper (audited, safe)\n4. Updates imports across the codebase\n5. Deletes empty non-approved folders\n\nThis agent enforces the SSOT protocol by ensuring all files are in approved locations.\n\n[SSOT] This is the canonical agent for SSOT folder cleanup operations.\n'
+
+"\n[PHASE 24] SSOT Folder Cleanup Agent - Automated SSOT Compliance Enforcement.\n\nProvides automated cleanup of non-SSOT-approved folders:\n1. Identifies files in non-approved folders\n2. Uses CognitiveDispositionAgent to determine target SSOT folder\n3. Moves files via ArchivalGatekeeper (audited, safe)\n4. Updates imports across the codebase\n5. Deletes empty non-approved folders\n\nThis agent enforces the SSOT protocol by ensuring all files are in approved locations.\n\n[SSOT] This is the canonical agent for SSOT folder cleanup operations.\n"
 import ast
 import logging
 import os
 import re
 from pathlib import Path
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, ARCHIVES_DIR
+
+from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, ARCHIVES_DIR, THRESHOLD
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 from agentic_core.L5_safety.config.structure_blueprint.ssot import REPORTS_DIR, SOVEREIGN_EXCLUDED_FOLDERS
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 Logger = logging.getLogger(__name__)
+
 
 class SSOTFolderCleanupAgent(SovereignBaseAgent):
     """
@@ -31,7 +35,7 @@ class SSOTFolderCleanupAgent(SovereignBaseAgent):
     - Empty folder deletion is recursive-safe
     """
 
-    def __init__(self, project_root: Path | None=None, dry_run: bool=True):
+    def __init__(self, project_root: Path | None = None, dry_run: bool = True):
         """
         Initialize the SSOT Folder Cleanup Agent.
 
@@ -43,22 +47,51 @@ class SSOTFolderCleanupAgent(SovereignBaseAgent):
         self.dry_run = dry_run
         self._cognitive_agent = None
         self._archival_gatekeeper = None
-        self.stats = {'files_scanned': 0, 'files_moved': 0, 'files_archived': 0, 'imports_updated': 0, 'folders_deleted': 0, 'errors': 0}
+        self.stats = {
+            "files_scanned": 0,
+            "files_moved": 0,
+            "files_archived": 0,
+            "imports_updated": 0,
+            "folders_deleted": 0,
+            "errors": 0,
+        }
         self._load_ssot_config()
 
     def _detect_project_root(self) -> Path:
         """Detect project root by looking for pyproject.toml or .git."""
         current = Path.cwd()
         for parent in [current] + list(current.parents):
-            if (parent / 'pyproject.toml').exists() or (parent / '.git').exists():
+            if (parent / "pyproject.toml").exists() or (parent / ".git").exists():
                 return parent
         return current
 
     def _load_ssot_config(self) -> None:
         """Load SSOT configuration from L0 config."""
         from agentic_core.L0_routing.config import L4_APPROVED_FOLDERS, VARIABLE_DEPTH_SUBFOLDERS
-        self.sovereign_registry = {'agentic_core': {'depth': 4}, 'apps_lic': {'depth': 3}, 'apps_rg': {'depth': 3}}
-        self.core_subfolder_map = {'L0_routing': ['config', 'reasoning', 'scripts', 'types', 'utils', 'enforcement'], 'L1_cognition': ['P1_core', 'reasoning', 'types', 'utils'], 'L2_execution': ['P1_core', 'enforcement', 'reasoning', 'types', 'utils'], 'L3_orchestration': ['P1_core', 'engines', 'reasoning', 'types', 'utils'], 'L4_state': ['P1_core', 'memory', 'reasoning', 'types', 'utils'], 'L5_safety': ['P1_core', 'config', 'core_kernel', 'guardians', 'reasoning', 'types', 'utils', 'validators'], 'L6_observability': ['P1_core', 'dashboards', 'reasoning', 'types', 'utils']}
+
+        self.sovereign_registry = {
+            "agentic_core": {"depth": 4},
+            "apps_lic": {"depth": 3},
+            "apps_rg": {"depth": 3},
+        }
+        self.core_subfolder_map = {
+            "L0_routing": ["config", "reasoning", "scripts", "types", "utils", "enforcement"],
+            "L1_cognition": ["P1_core", "reasoning", "types", "utils"],
+            "L2_execution": ["P1_core", "enforcement", "reasoning", "types", "utils"],
+            "L3_orchestration": ["P1_core", "engines", "reasoning", "types", "utils"],
+            "L4_state": ["P1_core", "memory", "reasoning", "types", "utils"],
+            "L5_safety": [
+                "P1_core",
+                "config",
+                "core_kernel",
+                "guardians",
+                "reasoning",
+                "types",
+                "utils",
+                "validators",
+            ],
+            "L6_observability": ["P1_core", "dashboards", "reasoning", "types", "utils"],
+        }
         self.l4_approved_folders = L4_APPROVED_FOLDERS
         self.variable_depth_subfolders = VARIABLE_DEPTH_SUBFOLDERS
         self._build_approved_paths()
@@ -68,30 +101,34 @@ class SSOTFolderCleanupAgent(SovereignBaseAgent):
         self.approved_paths = set()
         for root in self.sovereign_registry.keys():
             self.approved_paths.add(root)
-            subfolders = self.sovereign_registry[root].get('subfolders', [])
+            subfolders = self.sovereign_registry[root].get("subfolders", [])
             for subfolder in subfolders:
-                self.approved_paths.add(f'{root}/{subfolder}')
+                self.approved_paths.add(f"{root}/{subfolder}")
         for layer, subfolders in self.core_subfolder_map.items():
             for subfolder in subfolders:
-                self.approved_paths.add(f'agentic_core/{layer}/{subfolder}')
+                self.approved_paths.add(f"agentic_core/{layer}/{subfolder}")
         self.approved_paths.update(self.l4_approved_folders)
         self.approved_paths.add(ARCHIVES_DIR)
-        self.approved_paths.add('data')
-        self.approved_paths.add('docs')
+        self.approved_paths.add("data")
+        self.approved_paths.add("docs")
         self.approved_paths.add(REPORTS_DIR)
 
     def _get_cognitive_agent(self):
         """Lazy-load CognitiveDispositionAgent."""
         if self._cognitive_agent is None:
             from agentic_core.L0_routing.seams.safety_reasoning_seam import load_cognitive_disposition_agent
+
             CognitiveDispositionAgent = load_cognitive_disposition_agent()
-            self._cognitive_agent = CognitiveDispositionAgent(project_root=self.project_root, confidence_threshold=THRESHOLD)
+            self._cognitive_agent = CognitiveDispositionAgent(
+                project_root=self.project_root, confidence_threshold=THRESHOLD
+            )
         return self._cognitive_agent
 
     def _get_archival_gatekeeper(self):
         """Lazy-load ArchivalGatekeeper."""
         if self._archival_gatekeeper is None:
             from agentic_core.L0_routing.seams.safety_enforcement_seam import load_archival_gatekeeper
+
             ArchivalGatekeeper = load_archival_gatekeeper().ArchivalGatekeeper
             self._archival_gatekeeper = ArchivalGatekeeper.get_instance(self.project_root)
         return self._archival_gatekeeper
@@ -122,10 +159,10 @@ class SSOTFolderCleanupAgent(SovereignBaseAgent):
             return False
         if parts[0] == AGENTIC_CORE_DIR and len(parts) >= 2:
             layer = parts[1]
-            valid_layers = self.sovereign_registry.get('agentic_core', {}).get('subfolders', [])
+            valid_layers = self.sovereign_registry.get("agentic_core", {}).get("subfolders", [])
             if layer not in valid_layers:
                 return False
-            if len(parts) == 3 and parts[2].endswith('.py'):
+            if len(parts) == 3 and parts[2].endswith(".py"):
                 return True
             if len(parts) >= 3:
                 subfolder = parts[2]
@@ -137,7 +174,7 @@ class SSOTFolderCleanupAgent(SovereignBaseAgent):
         if parts[0] in self.sovereign_registry:
             return True
         for i in range(1, len(parts) + 1):
-            check_path = '/'.join(parts[:i])
+            check_path = "/".join(parts[:i])
             if check_path in self.approved_paths:
                 return True
         return False
@@ -153,9 +190,9 @@ class SSOTFolderCleanupAgent(SovereignBaseAgent):
         agentic_core = self.project_root / AGENTIC_CORE_DIR
         if not agentic_core.exists():
             return non_approved_files
-        for py_file in agentic_core.rglob('*.py'):
-            self.stats['files_scanned'] += 1
-            if any((part in SOVEREIGN_EXCLUDED_FOLDERS for part in py_file.parts)):
+        for py_file in agentic_core.rglob("*.py"):
+            self.stats["files_scanned"] += 1
+            if any(part in SOVEREIGN_EXCLUDED_FOLDERS for part in py_file.parts):
                 continue
             if not self.is_path_ssot_approved(py_file):
                 non_approved_files.append(py_file)
@@ -177,24 +214,35 @@ class SSOTFolderCleanupAgent(SovereignBaseAgent):
         """
         try:
             from agentic_core.L0_routing.seams.safety_reasoning_seam import load_file_classification_agent
+
             FileClassificationAgent = load_file_classification_agent()
             fca = FileClassificationAgent(project_root=self.project_root, dry_run=True, validate_only=True)
             file_type = fca.classify_file(file_path)
             correct_folder = fca._get_correct_folder_for_type(file_type)
-            if correct_folder and file_type != 'UTILITY':
+            if correct_folder and file_type != "UTILITY":
                 try:
                     rel = file_path.relative_to(self.project_root / AGENTIC_CORE_DIR)
-                    layer = rel.parts[0] if len(rel.parts) > 1 else 'L5_safety'
-                    target = f'agentic_core/{layer}/{correct_folder}'
-                    return {'action': 'MOVE', 'target_path': target, 'reason': f'FCA classified as {file_type} -> {correct_folder}/', 'confidence': 0.85}
+                    layer = rel.parts[0] if len(rel.parts) > 1 else "L5_safety"
+                    target = f"agentic_core/{layer}/{correct_folder}"
+                    return {
+                        "action": "MOVE",
+                        "target_path": target,
+                        "reason": f"FCA classified as {file_type} -> {correct_folder}/",
+                        "confidence": 0.85,
+                    }
                 except ValueError:
                     pass
         except Exception:
             raise
             pass
         cognitive = self._get_cognitive_agent()
-        decision = cognitive.analyze_violation(file_path, 'ORPHAN')
-        return {'action': decision.action, 'target_path': decision.target_path, 'reason': decision.reason, 'confidence': decision.confidence}
+        decision = cognitive.analyze_violation(file_path, "ORPHAN")
+        return {
+            "action": decision.action,
+            "target_path": decision.target_path,
+            "reason": decision.reason,
+            "confidence": decision.confidence,
+        }
 
     def move_file_to_ssot(self, source_path: Path, target_path: str) -> bool:
         """
@@ -208,18 +256,18 @@ class SSOTFolderCleanupAgent(SovereignBaseAgent):
             True if move succeeded
         """
         if self.dry_run:
-            Logger.info(f'[DRY RUN] Would move: {source_path} -> {target_path}')
+            Logger.info(f"[DRY RUN] Would move: {source_path} -> {target_path}")
             return True
         gatekeeper = self._get_archival_gatekeeper()
         full_target = self.project_root / target_path / source_path.name
         full_target.parent.mkdir(parents=True, exist_ok=True)
         success = gatekeeper.safe_move(source_path, full_target)
         if success:
-            self.stats['files_moved'] += 1
-            Logger.info(f'Moved: {source_path} -> {full_target}')
+            self.stats["files_moved"] += 1
+            Logger.info(f"Moved: {source_path} -> {full_target}")
         else:
-            self.stats['errors'] += 1
-            Logger.error(f'Failed to move: {source_path}')
+            self.stats["errors"] += 1
+            Logger.error(f"Failed to move: {source_path}")
         return success
 
     def update_imports_for_moved_file(self, old_path: Path, new_path: Path) -> int:
@@ -238,26 +286,26 @@ class SSOTFolderCleanupAgent(SovereignBaseAgent):
         if not old_module or not new_module:
             return 0
         updated_count = 0
-        for py_file in self.project_root.rglob('*.py'):
-            if '__pycache__' in str(py_file):
+        for py_file in self.project_root.rglob("*.py"):
+            if "__pycache__" in str(py_file):
                 continue
             try:
-                content = py_file.read_text(encoding='utf-8')
+                content = py_file.read_text(encoding="utf-8")
                 if old_module not in content:
                     continue
                 new_content = self._update_imports_in_content(content, old_module, new_module)
                 if new_content != content:
                     if self.dry_run:
-                        Logger.info(f'[DRY RUN] Would update imports in: {py_file}')
+                        Logger.info(f"[DRY RUN] Would update imports in: {py_file}")
                     else:
-                        assert_no_persistent_write('L0', 'write_text')
-                        py_file.write_text(new_content, encoding='utf-8')
-                        Logger.info(f'Updated imports in: {py_file}')
+                        assert_no_persistent_write("L0", "write_text")
+                        py_file.write_text(new_content, encoding="utf-8")
+                        Logger.info(f"Updated imports in: {py_file}")
                     updated_count += 1
-                    self.stats['imports_updated'] += 1
+                    self.stats["imports_updated"] += 1
             # guardian: allow-silent-swallow
             except Exception as e:
-                Logger.warning(f'Failed to update imports in {py_file}: {e}')
+                Logger.warning(f"Failed to update imports in {py_file}: {e}")
         return updated_count
 
     def _path_to_module(self, path: Path) -> str | None:
@@ -265,9 +313,9 @@ class SSOTFolderCleanupAgent(SovereignBaseAgent):
         try:
             rel_path = path.relative_to(self.project_root)
             module_parts = list(rel_path.parts)
-            if module_parts[-1].endswith('.py'):
+            if module_parts[-1].endswith(".py"):
                 module_parts[-1] = module_parts[-1][:-3]
-            return '.'.join(module_parts)
+            return ".".join(module_parts)
         except ValueError:
             return None
 
@@ -281,7 +329,7 @@ class SSOTFolderCleanupAgent(SovereignBaseAgent):
         try:
             tree = ast.parse(content)
         except SyntaxError:
-            Logger.warning('Syntax error in file, skipping import updates')
+            Logger.warning("Syntax error in file, skipping import updates")
             return content
         import_lines = set()
         for node in ast.walk(tree):
@@ -290,17 +338,17 @@ class SSOTFolderCleanupAgent(SovereignBaseAgent):
                     import_lines.add(i)
         lines = content.splitlines(keepends=True)
         new_lines = []
-        from_pattern = re.compile(f'from\\s+{re.escape(old_module)}(\\.[^\\s]+)?\\s+import')
-        import_pattern = re.compile(f'import\\s+{re.escape(old_module)}(\\.[^\\s]+)?')
+        from_pattern = re.compile(f"from\\s+{re.escape(old_module)}(\\.[^\\s]+)?\\s+import")
+        import_pattern = re.compile(f"import\\s+{re.escape(old_module)}(\\.[^\\s]+)?")
         for i, line in enumerate(lines, 1):
             if i in import_lines:
                 line = from_pattern.sub(lambda m: f"from {new_module}{m.group(1) or ''} import", line)
-                if not line.strip().startswith('from'):
+                if not line.strip().startswith("from"):
                     line = import_pattern.sub(lambda m: f"import {new_module}{m.group(1) or ''}", line)
             new_lines.append(line)
-        return ''.join(new_lines)
+        return "".join(new_lines)
 
-    def delete_empty_folders(self, start_path: Path | None=None) -> int:
+    def delete_empty_folders(self, start_path: Path | None = None) -> int:
         """
         Delete empty non-SSOT-approved folders.
 
@@ -318,18 +366,18 @@ class SSOTFolderCleanupAgent(SovereignBaseAgent):
                 continue
             if any(dir_path.iterdir()):
                 continue
-            if dir_path.name.startswith('.') or dir_path.name == '__pycache__':
+            if dir_path.name.startswith(".") or dir_path.name == "__pycache__":
                 continue
             if self.dry_run:
-                Logger.info(f'[DRY RUN] Would delete empty folder: {dir_path}')
+                Logger.info(f"[DRY RUN] Would delete empty folder: {dir_path}")
             else:
                 try:
                     dir_path.rmdir()
-                    Logger.info(f'Deleted empty folder: {dir_path}')
+                    Logger.info(f"Deleted empty folder: {dir_path}")
                     deleted_count += 1
-                    self.stats['folders_deleted'] += 1
+                    self.stats["folders_deleted"] += 1
                 except OSError as e:
-                    Logger.warning(f'Failed to delete folder {dir_path}: {e}')
+                    Logger.warning(f"Failed to delete folder {dir_path}: {e}")
         return deleted_count
 
     # guardian: allow-type-erasure
@@ -340,31 +388,63 @@ class SSOTFolderCleanupAgent(SovereignBaseAgent):
         Returns:
             Summary of cleanup operations
         """
-        Logger.info(f'Starting SSOT folder cleanup (dry_run={self.dry_run})')
-        self.stats = {'files_scanned': 0, 'files_moved': 0, 'files_archived': 0, 'imports_updated': 0, 'folders_deleted': 0, 'errors': 0}
+        Logger.info(f"Starting SSOT folder cleanup (dry_run={self.dry_run})")
+        self.stats = {
+            "files_scanned": 0,
+            "files_moved": 0,
+            "files_archived": 0,
+            "imports_updated": 0,
+            "folders_deleted": 0,
+            "errors": 0,
+        }
         non_approved_files = self.find_non_approved_files()
-        Logger.info(f'Found {len(non_approved_files)} files in non-approved locations')
+        Logger.info(f"Found {len(non_approved_files)} files in non-approved locations")
         move_plan = []
         for file_path in non_approved_files:
             triage = self.triage_file(file_path)
-            if triage['action'] == 'MOVE' and triage['target_path']:
-                move_plan.append({'source': file_path, 'target': triage['target_path'], 'reason': triage['reason'], 'confidence': triage['confidence']})
-            elif triage['action'] == 'ARCHIVE':
-                move_plan.append({'source': file_path, 'target': 'archives/ssot_cleanup', 'reason': triage['reason'], 'confidence': triage['confidence'], 'archive': True})
+            if triage["action"] == "MOVE" and triage["target_path"]:
+                move_plan.append(
+                    {
+                        "source": file_path,
+                        "target": triage["target_path"],
+                        "reason": triage["reason"],
+                        "confidence": triage["confidence"],
+                    }
+                )
+            elif triage["action"] == "ARCHIVE":
+                move_plan.append(
+                    {
+                        "source": file_path,
+                        "target": "archives/ssot_cleanup",
+                        "reason": triage["reason"],
+                        "confidence": triage["confidence"],
+                        "archive": True,
+                    }
+                )
             else:
                 Logger.info(f"Skipping {file_path}: {triage['action']} - {triage['reason']}")
         for plan in move_plan:
-            source = plan['source']
-            target = plan['target']
+            source = plan["source"]
+            target = plan["target"]
             new_path = self.project_root / target / source.name
             success = self.move_file_to_ssot(source, target)
             if success and (not self.dry_run):
                 self.update_imports_for_moved_file(source, new_path)
-                if plan.get('archive'):
-                    self.stats['files_archived'] += 1
+                if plan.get("archive"):
+                    self.stats["files_archived"] += 1
         self.delete_empty_folders()
-        summary = {'dry_run': self.dry_run, 'files_scanned': self.stats['files_scanned'], 'non_approved_files': len(non_approved_files), 'files_moved': self.stats['files_moved'], 'files_archived': self.stats['files_archived'], 'imports_updated': self.stats['imports_updated'], 'folders_deleted': self.stats['folders_deleted'], 'errors': self.stats['errors'], 'move_plan': move_plan if self.dry_run else None}
-        Logger.info(f'SSOT cleanup complete: {summary}')
+        summary = {
+            "dry_run": self.dry_run,
+            "files_scanned": self.stats["files_scanned"],
+            "non_approved_files": len(non_approved_files),
+            "files_moved": self.stats["files_moved"],
+            "files_archived": self.stats["files_archived"],
+            "imports_updated": self.stats["imports_updated"],
+            "folders_deleted": self.stats["folders_deleted"],
+            "errors": self.stats["errors"],
+            "move_plan": move_plan if self.dry_run else None,
+        }
+        Logger.info(f"SSOT cleanup complete: {summary}")
         return summary
 
     # guardian: allow-type-erasure
@@ -398,7 +478,7 @@ class SSOTFolderCleanupAgent(SovereignBaseAgent):
             self.dry_run = original_dry_run
 
     # guardian: allow-type-erasure
-    def heal_repository(self, dry_run: bool=True, execute: bool=False, **kwargs) -> dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 
@@ -411,7 +491,12 @@ class SSOTFolderCleanupAgent(SovereignBaseAgent):
         """
         self.dry_run = dry_run
         result = self.cleanup_repository()
-        return {'violations_found': result.get('non_approved_files', 0), 'violations_fixed': result.get('files_moved', 0), 'errors': result.get('errors', 0), 'skipped': 0}
+        return {
+            "violations_found": result.get("non_approved_files", 0),
+            "violations_fixed": result.get("files_moved", 0),
+            "errors": result.get("errors", 0),
+            "skipped": 0,
+        }
 
     # guardian: allow-type-erasure
     def heal(self, violation: dict) -> dict:
@@ -426,19 +511,20 @@ class SSOTFolderCleanupAgent(SovereignBaseAgent):
         Returns:
             Dictionary with healing results following standard_heal format.
         """
-        path = violation.get('path', '')
-        target_path = violation.get('target_path', '')
-        Logger.info(f'[SSOT_CLEANUP] Healing file location: {path}')
+        path = violation.get("path", "")
+        target_path = violation.get("target_path", "")
+        Logger.info(f"[SSOT_CLEANUP] Healing file location: {path}")
         if path and target_path:
             try:
                 from pathlib import Path as PathLib
+
                 source = PathLib(path)
                 if source.exists():
                     success = self.move_file_to_ssot(source, target_path)
                     if success:
-                        return {'violations_fixed': 1, 'violations_found': 1, 'errors': 0, 'skipped': 0}
+                        return {"violations_fixed": 1, "violations_found": 1, "errors": 0, "skipped": 0}
             # guardian: allow-silent-swallow
             except Exception as e:
-                Logger.error(f'[SSOT_CLEANUP] Failed to heal: {e}')
-                return {'violations_fixed': 0, 'violations_found': 1, 'errors': 1, 'skipped': 0}
-        return {'violations_fixed': 0, 'violations_found': 1, 'errors': 0, 'skipped': 1}
+                Logger.error(f"[SSOT_CLEANUP] Failed to heal: {e}")
+                return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
+        return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}

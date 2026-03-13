@@ -5,17 +5,21 @@ Validates:
   - No cycles (DAG structure enforced)
   - Lineage chain integrity
 """
+
 from __future__ import annotations
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 class LineageValidationError(Exception):
     """Base exception for lineage validation failures."""
 
+
 class ParentNotFound(LineageValidationError):
     """Raised when parent version does not exist."""
 
+
 class CycleDetected(LineageValidationError):
     """Raised when a cycle is detected in the lineage chain."""
+
 
 class LineageValidator:
     """Validates lineage chain integrity for versioned ChangePackages.
@@ -55,18 +59,20 @@ class LineageValidator:
         current = version_id
         while current is not None:
             if current in visited:
-                raise CycleDetected(f'CYCLE_DETECTED: version {current!r} appears twice in lineage chain')
+                raise CycleDetected(f"CYCLE_DETECTED: version {current!r} appears twice in lineage chain")
             visited.add(current)
             try:
                 pkg = self._store.get_change_package(current)
             except Exception as e:
-                raise ParentNotFound(f'PARENT_NOT_FOUND: version {current!r} does not exist') from e
+                raise ParentNotFound(f"PARENT_NOT_FOUND: version {current!r} does not exist") from e
             current = pkg.parent_version_id
             if current is not None:
                 try:
                     self._store.get_change_package(current)
                 except Exception as e:
-                    raise ParentNotFound(f'PARENT_NOT_FOUND: parent version {current!r} does not exist') from e
+                    raise ParentNotFound(
+                        f"PARENT_NOT_FOUND: parent version {current!r} does not exist"
+                    ) from e
 
     def validate_chain(self, version_id: str) -> list[str]:
         """Validate and return the full lineage chain.

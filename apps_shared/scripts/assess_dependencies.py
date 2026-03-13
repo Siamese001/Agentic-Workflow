@@ -1,11 +1,12 @@
 import argparse
 from typing import Any
-'Brief description of functionality and purpose.'
-'Brief description of functionality and purpose.'
+
+"Brief description of functionality and purpose."
+"Brief description of functionality and purpose."
 import json
 import os
 import sys
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 def get_active_files(entry_points: Any, root_dir: Any) -> Any:
     """
@@ -30,15 +31,28 @@ def get_active_files(entry_points: Any, root_dir: Any) -> Any:
         active_files.add(rel_ep)
     return sorted(active_files)
 
+
 def main() -> Any:
     """Brief description of functionality and purpose."""
     parser: Any = argparse.ArgumentParser()
-    parser.add_argument('--entry-points', nargs='+', required=True, help='Main script(s) that trigger the application (e.g., canon_validator_v2_agentic.py)')
-    parser.add_argument('--root-dir', type=str, default='/app', help='Root directory of the project')
-    parser.add_argument('--output', type=str, default='active_manifest.json', help='Output file to store the list of active files')
+    parser.add_argument(
+        "--entry-points",
+        nargs="+",
+        required=True,
+        help="Main script(s) that trigger the application (e.g., canon_validator_v2_agentic.py)",
+    )
+    parser.add_argument("--root-dir", type=str, default="/app", help="Root directory of the project")
+    parser.add_argument(
+        "--output",
+        type=str,
+        default="active_manifest.json",
+        help="Output file to store the list of active files",
+    )
     args: Any = parser.parse_args()
     active_files: Any = get_active_files(args.entry_points, args.root_dir)
-    with open(args.output, 'w') as f:
+    with open(args.output, "w") as f:
         json.dump(active_files, f, indent=2)
-if __name__ == '__main__':
+
+
+if __name__ == "__main__":
     main()

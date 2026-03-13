@@ -13,18 +13,23 @@ EPSILON is a hard constant — it is NOT configurable at runtime.
 
 Phase 2.3: Mathematically-Sealed Sovereignty Hardening
 """
+
 from __future__ import annotations
+
 from dataclasses import dataclass
 from typing import Sequence
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 EPSILON: float = 0.01
+
 
 class RegressionError(RuntimeError):
     """Raised when shadow replay detects an unacceptable regression."""
 
+
 @dataclass(frozen=True)
 class ReplayResult:
     """Outcome of a single shadow replay run."""
+
     trace_id: str
     original_digest: str
     replayed_digest: str
@@ -50,9 +55,11 @@ class ReplayResult:
         """Worst-case regression as a positive fraction (0 = no regression)."""
         return max(0.0, -self.performance_delta)
 
+
 @dataclass(frozen=True)
 class ShadowReplaySummary:
     """Aggregated result across all replayed traces."""
+
     total_traces: int
     regression_count: int
     max_regression_threshold: float
@@ -61,7 +68,12 @@ class ShadowReplaySummary:
 
     @property
     def activation_safe(self) -> bool:
-        return self.regression_count == 0 and (not self.any_safety_degraded) and (self.max_regression_threshold <= EPSILON)
+        return (
+            self.regression_count == 0
+            and (not self.any_safety_degraded)
+            and (self.max_regression_threshold <= EPSILON)
+        )
+
 
 class ShadowReplayValidator:
     """Validates meta-learning proposals via shadow replay."""
@@ -80,7 +92,7 @@ class ShadowReplayValidator:
             ValueError: If *replay_results* is empty.
         """
         if not replay_results:
-            raise ValueError('ShadowReplayValidator.validate: replay_results must not be empty')
+            raise ValueError("ShadowReplayValidator.validate: replay_results must not be empty")
         regression_count = 0
         max_threshold = 0.0
         any_safety_degraded = False
@@ -96,8 +108,18 @@ class ShadowReplayValidator:
                 max_threshold = result.regression_threshold
             if result.safety_degraded:
                 any_safety_degraded = True
-        summary = ShadowReplaySummary(total_traces=len(replay_results), regression_count=regression_count, max_regression_threshold=max_threshold, any_safety_degraded=any_safety_degraded, all_digests_stable=digests_stable)
+        summary = ShadowReplaySummary(
+            total_traces=len(replay_results),
+            regression_count=regression_count,
+            max_regression_threshold=max_threshold,
+            any_safety_degraded=any_safety_degraded,
+            all_digests_stable=digests_stable,
+        )
         if not summary.activation_safe:
-            raise RegressionError(f'Shadow replay rejected activation: regressions={regression_count}, max_regression_threshold={max_threshold:.4f} (epsilon={EPSILON}), safety_degraded={any_safety_degraded}')
+            raise RegressionError(
+                f"Shadow replay rejected activation: regressions={regression_count}, max_regression_threshold={max_threshold:.4f} (epsilon={EPSILON}), safety_degraded={any_safety_degraded}"
+            )
         return summary
-__all__ = ['EPSILON', 'RegressionError', 'ReplayResult', 'ShadowReplaySummary', 'ShadowReplayValidator']
+
+
+__all__ = ["EPSILON", "RegressionError", "ReplayResult", "ShadowReplaySummary", "ShadowReplayValidator"]

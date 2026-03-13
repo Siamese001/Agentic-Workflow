@@ -7,10 +7,13 @@ Invariants:
   - Protocol-only; no concrete implementation in this module
   - emit() is fire-and-forget; caller does not branch on its return
 """
+
 from __future__ import annotations
+
 from typing import Protocol
+
 from system_learning.types.healing_outcome_types import HealingOutcomeEvent
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 class HealingOutcomeSink(Protocol):
     """Protocol for receiving L2.3 healing outcome events.
@@ -28,4 +31,6 @@ class HealingOutcomeSink(Protocol):
             Immutable outcome event to record.
         """
         ...
-__all__ = ['HealingOutcomeSink']
+
+
+__all__ = ["HealingOutcomeSink"]

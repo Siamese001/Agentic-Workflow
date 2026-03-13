@@ -15,13 +15,16 @@ Threshold defaults (conservative, override via OscillationFirewallConfig):
   cooldown_window = 6   (check last 6 decisions)
   freeze_cycles   = 10  (frozen for 10 cycles on detection)
 """
+
 from __future__ import annotations
+
 from dataclasses import dataclass
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 class OscillationFirewallTripped(RuntimeError):
     """Raised when routing-tier oscillation is detected and firewall fires."""
+
 
 @dataclass(frozen=True)
 class OscillationFirewallConfig:
@@ -31,14 +34,16 @@ class OscillationFirewallConfig:
         cooldown_window: Number of recent tier decisions to inspect.
         freeze_cycles:   Number of cycles a tier is frozen after oscillation.
     """
+
     cooldown_window: int = 6
     freeze_cycles: int = 10
 
     def __post_init__(self) -> None:
         if self.cooldown_window < 2:
-            raise ValueError('cooldown_window must be >= 2')
+            raise ValueError("cooldown_window must be >= 2")
         if self.freeze_cycles < 1:
-            raise ValueError('freeze_cycles must be >= 1')
+            raise ValueError("freeze_cycles must be >= 1")
+
 
 class OscillationFirewall:
     """Routing-tier oscillation firewall.
@@ -51,11 +56,14 @@ class OscillationFirewall:
         config: OscillationFirewallConfig (defaults are conservative).
     """
 
-    def __init__(self, config: OscillationFirewallConfig | None=None) -> None:
+    def __init__(self, config: OscillationFirewallConfig | None = None) -> None:
         from system_learning.enforcement.oscillation_detector import OscillationDetector
+
         cfg = config or OscillationFirewallConfig()
         self._config = cfg
-        self._detector = OscillationDetector(cooldown_window=cfg.cooldown_window, freeze_cycles=cfg.freeze_cycles)
+        self._detector = OscillationDetector(
+            cooldown_window=cfg.cooldown_window, freeze_cycles=cfg.freeze_cycles
+        )
         self._tier_histories: dict[str, list[Any]] = {}
 
     def record_tier_decision(self, tier: str, cycle: int) -> None:
@@ -66,7 +74,8 @@ class OscillationFirewall:
         if tier not in self._tier_histories:
             self._tier_histories[tier] = []
         self._tier_histories[tier].append(cycle)
-    _ROUTING_PARAM = 'routing_tier'
+
+    _ROUTING_PARAM = "routing_tier"
 
     def assert_no_oscillation(self, tier: str, cycle: int) -> None:
         """Assert that accepting *tier* at *cycle* does not complete oscillation.
@@ -78,10 +87,13 @@ class OscillationFirewall:
             OscillationFirewallTripped: if oscillation pattern is detected.
         """
         from system_learning.enforcement.oscillation_detector import ParameterFrozenError
+
         try:
             self._detector.record_change(self._ROUTING_PARAM, tier, cycle)
         except ParameterFrozenError as exc:
-            raise OscillationFirewallTripped(f'OscillationFirewall: tier {tier!r} is oscillating at cycle {cycle}. Routing frozen.\nDetector: {exc}') from exc
+            raise OscillationFirewallTripped(
+                f"OscillationFirewall: tier {tier!r} is oscillating at cycle {cycle}. Routing frozen.\nDetector: {exc}"
+            ) from exc
         self.record_tier_decision(tier, cycle)
 
     def is_tier_frozen(self, tier: str, cycle: int) -> bool:
@@ -97,7 +109,10 @@ class OscillationFirewall:
         self._detector.reset_for_testing()
         self._tier_histories.clear()
 
-def validate_threshold(tier_sequence: tuple[str, ...], config: OscillationFirewallConfig | None=None) -> bool:
+
+def validate_threshold(
+    tier_sequence: tuple[str, ...], config: OscillationFirewallConfig | None = None
+) -> bool:
     """Return True if *tier_sequence* does NOT contain an oscillation pattern.
 
     Stateless alternative to OscillationFirewall.  Used in invariant tests
@@ -109,9 +124,16 @@ def validate_threshold(tier_sequence: tuple[str, ...], config: OscillationFirewa
     cfg = config or OscillationFirewallConfig()
     if len(tier_sequence) < cfg.cooldown_window:
         return True
-    window = tier_sequence[-cfg.cooldown_window:]
+    window = tier_sequence[-cfg.cooldown_window :]
     for i in range(len(window) - 2):
         if window[i] == window[i + 2] and window[i] != window[i + 1]:
             return False
     return True
-__all__ = ['OscillationFirewall', 'OscillationFirewallConfig', 'OscillationFirewallTripped', 'validate_threshold']
+
+
+__all__ = [
+    "OscillationFirewall",
+    "OscillationFirewallConfig",
+    "OscillationFirewallTripped",
+    "validate_threshold",
+]

@@ -1,9 +1,11 @@
 from __future__ import annotations
-'\nL4StateBase - Consolidated Base for L4 State Agents\n\nLayer: L4 - State\nResponsibilities:\n- Validation context management\n- State ledger operations\n- Memory persistence\n- Context synchronization\n\nMRO HARDENING:\n- Inheritance order: SovereignBaseAgent (root)\n- All L4 agents inherit from this base for consistent state management\n'
+
+"\nL4StateBase - Consolidated Base for L4 State Agents\n\nLayer: L4 - State\nResponsibilities:\n- Validation context management\n- State ledger operations\n- Memory persistence\n- Context synchronization\n\nMRO HARDENING:\n- Inheritance order: SovereignBaseAgent (root)\n- All L4 agents inherit from this base for consistent state management\n"
 from dataclasses import dataclass
 from typing import Any
+
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 @dataclass
 class L4StateBase(SovereignBaseAgent):
@@ -18,8 +20,9 @@ class L4StateBase(SovereignBaseAgent):
 
     MRO: L4StateBase -> SovereignBaseAgent -> object
     """
-    name: str = 'L4StateBase'
-    layer: str = 'L4'
+
+    name: str = "L4StateBase"
+    layer: str = "L4"
 
     def __post_init__(self) -> None:
         """Cooperative MRO initialization."""
@@ -49,4 +52,4 @@ class L4StateBase(SovereignBaseAgent):
 
         Override in subclasses for specialized state validation.
         """
-        return {'valid': True, 'errors': []}
+        return {"valid": True, "errors": []}

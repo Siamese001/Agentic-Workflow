@@ -9,12 +9,15 @@ Provides hallucination detection that:
 Layer: L6 Observer
 Authority: Advisory only. No mutation. No L4 writes. No routing influence.
 """
+
 from __future__ import annotations
+
 import hashlib
 import logging
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
-_logger = logging.getLogger('SSOTHallucinationDetection')
+
+_logger = logging.getLogger("SSOTHallucinationDetection")
+
 
 class SSOTHallucinationDetectionMixin:
     """Advisory hallucination detection for healing outputs.
@@ -28,7 +31,9 @@ class SSOTHallucinationDetectionMixin:
         super().__init__(**kwargs)
         self._ssot_detections: list[dict[str, Any]] = []
 
-    def detect_hallucination(self, agent_output: str, expected_format: str | None=None, context: dict[str, Any] | None=None) -> dict[str, Any]:
+    def detect_hallucination(
+        self, agent_output: str, expected_format: str | None = None, context: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """Analyze an agent output for potential hallucination.
 
         This is ADVISORY ONLY — the result does not mutate any payload.
@@ -47,17 +52,24 @@ class SSOTHallucinationDetectionMixin:
         dict
             Detection result with confidence and flags.
         """
-        policy_hash = getattr(self, 'active_policy_hash', 'unknown')
-        is_replay = getattr(self, 'is_replay_mode', False)
+        policy_hash = getattr(self, "active_policy_hash", "unknown")
+        is_replay = getattr(self, "is_replay_mode", False)
         if is_replay:
-            det_hash = hashlib.sha256(f'{agent_output}|{policy_hash}'.encode()).hexdigest()
+            det_hash = hashlib.sha256(f"{agent_output}|{policy_hash}".encode()).hexdigest()
             confidence = int(det_hash[:8], 16) % 100 / 100.0
         else:
             confidence = self._compute_hallucination_score(agent_output, expected_format)
-        result = {'confidence': confidence, 'is_suspicious': confidence > 0.7, 'policy_hash': policy_hash, 'replay_mode': is_replay, 'output_length': len(agent_output), 'context': context or {}}
+        result = {
+            "confidence": confidence,
+            "is_suspicious": confidence > 0.7,
+            "policy_hash": policy_hash,
+            "replay_mode": is_replay,
+            "output_length": len(agent_output),
+            "context": context or {},
+        }
         self._ssot_detections.append(result)
-        if result['is_suspicious']:
-            _logger.warning('[SSOTHallucination] Suspicious output detected (confidence=%.2f)', confidence)
+        if result["is_suspicious"]:
+            _logger.warning("[SSOTHallucination] Suspicious output detected (confidence=%.2f)", confidence)
         return result
 
     @property
@@ -80,10 +92,10 @@ class SSOTHallucinationDetectionMixin:
         if len(output.strip()) < 10:
             score += 0.3
         if expected_format:
-            if expected_format.lower() == 'json':
-                if not (output.strip().startswith('{') or output.strip().startswith('[')):
+            if expected_format.lower() == "json":
+                if not (output.strip().startswith("{") or output.strip().startswith("[")):
                     score += 0.4
-            elif expected_format.lower() == 'python':
-                if 'def ' not in output and 'class ' not in output and ('import ' not in output):
+            elif expected_format.lower() == "python":
+                if "def " not in output and "class " not in output and ("import " not in output):
                     score += 0.3
         return min(score, 1.0)

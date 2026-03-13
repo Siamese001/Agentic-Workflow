@@ -3,6 +3,7 @@
 This module collects feedback on signal quality, analyzes patterns,
 and adjusts validation thresholds dynamically for optimal outputs.
 """
+
 import logging
 import statistics
 import threading
@@ -12,18 +13,22 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 logger = logging.getLogger(__name__)
+
 
 class FeedbackType(Enum):
     """Types of feedback."""
-    EXPLICIT = 'explicit'
-    IMPLICIT = 'implicit'
-    AUTOMATIC = 'automatic'
+
+    EXPLICIT = "explicit"
+    IMPLICIT = "implicit"
+    AUTOMATIC = "automatic"
+
 
 @dataclass
 class QualityFeedback:
     """Feedback on signal quality."""
+
     assessment_id: str
     feedback_type: FeedbackType
     timestamp: datetime
@@ -38,9 +43,11 @@ class QualityFeedback:
     stage: str | None = None
     user_id: str | None = None
 
+
 @dataclass
 class QualityTrend:
     """Trend analysis for quality metrics."""
+
     metric_name: str
     current_value: float
     trend_direction: str
@@ -48,6 +55,7 @@ class QualityTrend:
     confidence: float
     recent_values: list[float] = field(default_factory=list)
     baseline_value: float | None = None
+
 
 class AdaptiveThresholds:
     """Dynamically adjusting quality thresholds."""
@@ -60,10 +68,12 @@ class AdaptiveThresholds:
         """
         self.thresholds = initial_thresholds.copy()
         self.adjustment_history: list[dict[str, Any]] = []
-        self.min_thresholds = {'excellent': 0.85, 'high': 0.7, 'good': 0.55, 'marginal': 0.4}
-        self.max_thresholds = {'excellent': 0.95, 'high': 0.85, 'good': 0.7, 'marginal': 0.55}
+        self.min_thresholds = {"excellent": 0.85, "high": 0.7, "good": 0.55, "marginal": 0.4}
+        self.max_thresholds = {"excellent": 0.95, "high": 0.85, "good": 0.7, "marginal": 0.55}
 
-    def adjust_thresholds(self, quality_scores: list[float], acceptance_rate: float, target_acceptance: float=0.75) -> dict[str, float]:
+    def adjust_thresholds(
+        self, quality_scores: list[float], acceptance_rate: float, target_acceptance: float = 0.75
+    ) -> dict[str, float]:
         """Adjust thresholds based on performance.
 
         Args:
@@ -80,19 +90,29 @@ class AdaptiveThresholds:
         if abs(acceptance_gap) < 0.05:
             return self.thresholds
         adjustment_factor = acceptance_gap * 0.1
-        for level in ['excellent', 'high', 'good', 'marginal']:
+        for level in ["excellent", "high", "good", "marginal"]:
             current = self.thresholds.get(level, 0.5)
             new_value = current + adjustment_factor
             new_value = max(self.min_thresholds[level], min(self.max_thresholds[level], new_value))
             self.thresholds[level] = new_value
-        self.adjustment_history.append({'timestamp': datetime.now(), 'acceptance_rate': acceptance_rate, 'adjustment_factor': adjustment_factor, 'new_thresholds': self.thresholds.copy()})
-        logger.info(f'Adjusted thresholds: acceptance_rate={acceptance_rate:.2f}, adjustment={adjustment_factor:.3f}')
+        self.adjustment_history.append(
+            {
+                "timestamp": datetime.now(),
+                "acceptance_rate": acceptance_rate,
+                "adjustment_factor": adjustment_factor,
+                "new_thresholds": self.thresholds.copy(),
+            }
+        )
+        logger.info(
+            f"Adjusted thresholds: acceptance_rate={acceptance_rate:.2f}, adjustment={adjustment_factor:.3f}"
+        )
         return self.thresholds
+
 
 class FeedbackLoop:
     """Manages feedback collection and quality improvement."""
 
-    def __init__(self, name: str='default', history_size: int=1000):
+    def __init__(self, name: str = "default", history_size: int = 1000):
         """Initialize the feedback loop.
 
         Args:
@@ -107,9 +127,11 @@ class FeedbackLoop:
         self._trends_cache: dict[str, QualityTrend] = {}
         self._cache_timestamp = 0
         self._cache_ttl = 300
-        self.adaptive_thresholds = AdaptiveThresholds({'excellent': 0.9, 'high': 0.75, 'good': 0.6, 'marginal': 0.4})
+        self.adaptive_thresholds = AdaptiveThresholds(
+            {"excellent": 0.9, "high": 0.75, "good": 0.6, "marginal": 0.4}
+        )
         self._lock = threading.Lock()
-        logger.debug(f'Initialized FeedbackLoop: {name}')
+        logger.debug(f"Initialized FeedbackLoop: {name}")
 
     def record_assessment(self, assessment: SignalAssessment) -> None:
         """Record a signal assessment.
@@ -119,13 +141,13 @@ class FeedbackLoop:
         """
         with self._lock:
             self.assessments.append(assessment)
-            self.quality_history['composite'].append(assessment.composite_score)
-            self.quality_history['relevance'].append(assessment.relevance_score)
-            self.quality_history['authority'].append(assessment.authority_score)
-            self.quality_history['coherence'].append(assessment.coherence_score)
-            self.quality_history['specificity'].append(assessment.specificity_score)
-            self.quality_history['snr'].append(assessment.signal_to_noise_ratio)
-            self.quality_history['accuracy'].append(assessment.factual_accuracy)
+            self.quality_history["composite"].append(assessment.composite_score)
+            self.quality_history["relevance"].append(assessment.relevance_score)
+            self.quality_history["authority"].append(assessment.authority_score)
+            self.quality_history["coherence"].append(assessment.coherence_score)
+            self.quality_history["specificity"].append(assessment.specificity_score)
+            self.quality_history["snr"].append(assessment.signal_to_noise_ratio)
+            self.quality_history["accuracy"].append(assessment.factual_accuracy)
             self._cache_timestamp = 0
 
     def add_feedback(self, feedback: QualityFeedback) -> None:
@@ -140,9 +162,9 @@ class FeedbackLoop:
                 if assessment.content_hash == feedback.assessment_id:
                     assessment.feedback = feedback
                     break
-            logger.debug(f'Added {feedback.feedback_type.value} feedback')
+            logger.debug(f"Added {feedback.feedback_type.value} feedback")
 
-    def analyze_trends(self, force_refresh: bool=False) -> dict[str, QualityTrend]:
+    def analyze_trends(self, force_refresh: bool = False) -> dict[str, QualityTrend]:
         """Analyze quality trends.
 
         Args:
@@ -176,23 +198,29 @@ class FeedbackLoop:
             QualityTrend analysis
         """
         if len(values) < 2:
-            return QualityTrend(metric_name=metric_name, current_value=values[0] if values else 0.0, trend_direction='stable', trend_strength=0.0, confidence=0.0)
+            return QualityTrend(
+                metric_name=metric_name,
+                current_value=values[0] if values else 0.0,
+                trend_direction="stable",
+                trend_strength=0.0,
+                confidence=0.0,
+            )
         n = len(values)
         x = list(range(n))
         x_mean = sum(x) / n
         y_mean = sum(values) / n
-        numerator = sum(((x[i] - x_mean) * (values[i] - y_mean) for i in range(n)))
-        denominator = sum(((x[i] - x_mean) ** 2 for i in range(n)))
+        numerator = sum((x[i] - x_mean) * (values[i] - y_mean) for i in range(n))
+        denominator = sum((x[i] - x_mean) ** 2 for i in range(n))
         if denominator == 0:
             slope = 0
         else:
             slope = numerator / denominator
         if abs(slope) < 0.001:
-            direction = 'stable'
+            direction = "stable"
         elif slope > 0:
-            direction = 'improving'
+            direction = "improving"
         else:
-            direction = 'declining'
+            direction = "declining"
         value_range = max(values) - min(values)
         if value_range > 0:
             strength = min(1.0, abs(slope * n) / value_range)
@@ -200,7 +228,15 @@ class FeedbackLoop:
             strength = 0.0
         variance = statistics.variance(values) if len(values) > 1 else 0
         confidence = max(0.0, 1.0 - variance / (value_range + 0.001))
-        return QualityTrend(metric_name=metric_name, current_value=values[-1], trend_direction=direction, trend_strength=strength, confidence=confidence, recent_values=values[-10:], baseline_value=statistics.mean(values[:10]) if len(values) >= 10 else None)
+        return QualityTrend(
+            metric_name=metric_name,
+            current_value=values[-1],
+            trend_direction=direction,
+            trend_strength=strength,
+            confidence=confidence,
+            recent_values=values[-10:],
+            baseline_value=statistics.mean(values[:10]) if len(values) >= 10 else None,
+        )
 
     def get_quality_insights(self) -> dict[str, Any]:
         """Get insights about quality patterns.
@@ -210,7 +246,7 @@ class FeedbackLoop:
         """
         with self._lock:
             if not self.assessments:
-                return {'message': 'No assessments available'}
+                return {"message": "No assessments available"}
             recent_assessments = list(self.assessments)[-50:]
             quality_counts = defaultdict(int)
             for assessment in recent_assessments:
@@ -219,9 +255,24 @@ class FeedbackLoop:
             for assessment in recent_assessments:
                 for flag in assessment.flags:
                     flag_counts[flag] += 1
-            avg_scores = {'composite': statistics.mean([a.composite_score for a in recent_assessments]), 'relevance': statistics.mean([a.relevance_score for a in recent_assessments]), 'authority': statistics.mean([a.authority_score for a in recent_assessments]), 'coherence': statistics.mean([a.coherence_score for a in recent_assessments]), 'specificity': statistics.mean([a.specificity_score for a in recent_assessments])}
-            high_risk_count = sum((1 for a in recent_assessments if a.hallucination_risk > 0.3))
-            return {'total_assessments': len(self.assessments), 'recent_assessments': len(recent_assessments), 'quality_distribution': dict(quality_counts), 'common_flags': dict(flag_counts), 'average_scores': avg_scores, 'high_hallucination_risk_rate': high_risk_count / len(recent_assessments), 'current_thresholds': self.adaptive_thresholds.thresholds, 'trends': self.analyze_trends()}
+            avg_scores = {
+                "composite": statistics.mean([a.composite_score for a in recent_assessments]),
+                "relevance": statistics.mean([a.relevance_score for a in recent_assessments]),
+                "authority": statistics.mean([a.authority_score for a in recent_assessments]),
+                "coherence": statistics.mean([a.coherence_score for a in recent_assessments]),
+                "specificity": statistics.mean([a.specificity_score for a in recent_assessments]),
+            }
+            high_risk_count = sum(1 for a in recent_assessments if a.hallucination_risk > 0.3)
+            return {
+                "total_assessments": len(self.assessments),
+                "recent_assessments": len(recent_assessments),
+                "quality_distribution": dict(quality_counts),
+                "common_flags": dict(flag_counts),
+                "average_scores": avg_scores,
+                "high_hallucination_risk_rate": high_risk_count / len(recent_assessments),
+                "current_thresholds": self.adaptive_thresholds.thresholds,
+                "trends": self.analyze_trends(),
+            }
 
     def recommend_improvements(self) -> list[str]:
         """Recommend improvements based on feedback.
@@ -231,31 +282,45 @@ class FeedbackLoop:
         """
         insights = self.get_quality_insights()
         recommendations = []
-        if 'quality_distribution' in insights:
-            dist = insights['quality_distribution']
+        if "quality_distribution" in insights:
+            dist = insights["quality_distribution"]
             total = sum(dist.values())
             if total > 0:
-                poor_rate = dist.get('poor', 0) / total
-                marginal_rate = dist.get('marginal', 0) / total
+                poor_rate = dist.get("poor", 0) / total
+                marginal_rate = dist.get("marginal", 0) / total
                 if poor_rate > 0.2:
-                    recommendations.append('High rate of poor quality outputs (>20%). Consider strengthening input validation and prompt engineering.')
+                    recommendations.append(
+                        "High rate of poor quality outputs (>20%). Consider strengthening input validation and prompt engineering."
+                    )
                 if marginal_rate > 0.3:
-                    recommendations.append('Many outputs are only marginal quality. Review factual accuracy requirements and add more specific guidelines.')
-        if 'common_flags' in insights:
-            flags = insights['common_flags']
-            if flags.get('LOW_QUALITY', 0) > 5:
-                recommendations.append('Frequent LOW_QUALITY flags detected. Increase minimum quality thresholds or enhance training data.')
-            if flags.get('HALLUCINATION_RISK', 0) > 3:
-                recommendations.append('Hallucination risks detected. Add stronger fact-checking and source verification.')
-            if flags.get('HIGHLY_REPETITIVE', 0) > 5:
-                recommendations.append('High repetition in outputs. Implement diversity constraints and content variety checks.')
-        if 'trends' in insights:
-            trends = insights['trends']
+                    recommendations.append(
+                        "Many outputs are only marginal quality. Review factual accuracy requirements and add more specific guidelines."
+                    )
+        if "common_flags" in insights:
+            flags = insights["common_flags"]
+            if flags.get("LOW_QUALITY", 0) > 5:
+                recommendations.append(
+                    "Frequent LOW_QUALITY flags detected. Increase minimum quality thresholds or enhance training data."
+                )
+            if flags.get("HALLUCINATION_RISK", 0) > 3:
+                recommendations.append(
+                    "Hallucination risks detected. Add stronger fact-checking and source verification."
+                )
+            if flags.get("HIGHLY_REPETITIVE", 0) > 5:
+                recommendations.append(
+                    "High repetition in outputs. Implement diversity constraints and content variety checks."
+                )
+        if "trends" in insights:
+            trends = insights["trends"]
             for metric, trend in trends.items():
-                if trend.trend_direction == 'declining' and trend.confidence > 0.7:
-                    recommendations.append(f'{metric.title()} quality is declining with high confidence. Review recent changes and consider targeted improvements.')
-        if insights.get('high_hallucination_risk_rate', 0) > 0.15:
-            recommendations.append('High hallucination risk rate (>15%). Implement stricter source verification and reduce speculative language.')
+                if trend.trend_direction == "declining" and trend.confidence > 0.7:
+                    recommendations.append(
+                        f"{metric.title()} quality is declining with high confidence. Review recent changes and consider targeted improvements."
+                    )
+        if insights.get("high_hallucination_risk_rate", 0) > 0.15:
+            recommendations.append(
+                "High hallucination risk rate (>15%). Implement stricter source verification and reduce speculative language."
+            )
         return recommendations
 
     def adjust_thresholds_automatically(self) -> dict[str, float]:
@@ -266,10 +331,14 @@ class FeedbackLoop:
         """
         with self._lock:
             if len(self.assessments) < 20:
-                logger.warning('Insufficient data for automatic threshold adjustment')
+                logger.warning("Insufficient data for automatic threshold adjustment")
                 return self.adaptive_thresholds.thresholds
             recent = list(self.assessments)[-20:]
-            accepted = sum((1 for a in recent if a.quality_level in [SignalQuality.GOOD, SignalQuality.HIGH, SignalQuality.EXCELLENT]))
+            accepted = sum(
+                1
+                for a in recent
+                if a.quality_level in [SignalQuality.GOOD, SignalQuality.HIGH, SignalQuality.EXCELLENT]
+            )
             acceptance_rate = accepted / len(recent)
             quality_scores = [a.composite_score for a in recent]
             new_thresholds = self.adaptive_thresholds.adjust_thresholds(quality_scores, acceptance_rate)
@@ -282,11 +351,43 @@ class FeedbackLoop:
             Export data dictionary
         """
         with self._lock:
-            return {'assessments': [{'content_hash': a.content_hash, 'quality_level': a.quality_level.value, 'composite_score': a.composite_score, 'timestamp': a.timestamp.isoformat(), 'flags': a.flags} for a in self.assessments], 'feedback': [{'assessment_id': f.assessment_id, 'type': f.feedback_type.value, 'ratings': {'accuracy': f.accuracy_rating, 'relevance': f.relevance_rating, 'clarity': f.clarity_rating, 'completeness': f.completeness_rating}, 'comments': f.user_comments, 'timestamp': f.timestamp.isoformat()} for f in self.feedback], 'threshold_history': self.adaptive_thresholds.adjustment_history, 'insights': self.get_quality_insights(), 'recommendations': self.recommend_improvements()}
+            return {
+                "assessments": [
+                    {
+                        "content_hash": a.content_hash,
+                        "quality_level": a.quality_level.value,
+                        "composite_score": a.composite_score,
+                        "timestamp": a.timestamp.isoformat(),
+                        "flags": a.flags,
+                    }
+                    for a in self.assessments
+                ],
+                "feedback": [
+                    {
+                        "assessment_id": f.assessment_id,
+                        "type": f.feedback_type.value,
+                        "ratings": {
+                            "accuracy": f.accuracy_rating,
+                            "relevance": f.relevance_rating,
+                            "clarity": f.clarity_rating,
+                            "completeness": f.completeness_rating,
+                        },
+                        "comments": f.user_comments,
+                        "timestamp": f.timestamp.isoformat(),
+                    }
+                    for f in self.feedback
+                ],
+                "threshold_history": self.adaptive_thresholds.adjustment_history,
+                "insights": self.get_quality_insights(),
+                "recommendations": self.recommend_improvements(),
+            }
+
+
 _feedback_loops: dict[str, FeedbackLoop] = {}
 _loop_lock = threading.Lock()
 
-def get_feedback_loop(name: str='default', history_size: int=1000) -> FeedbackLoop:
+
+def get_feedback_loop(name: str = "default", history_size: int = 1000) -> FeedbackLoop:
     """Get or create a feedback loop.
 
     Args:

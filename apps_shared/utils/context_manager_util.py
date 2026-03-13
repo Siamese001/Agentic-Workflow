@@ -2,25 +2,29 @@
 Context Manager - Phase 5 Optimization
 LLM context management utilities for high-reasoning agents.
 """
+
 from __future__ import annotations
+
 from collections import deque
 from dataclasses import dataclass
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 @dataclass
 class ContextWindow:
     """Represents a context window for LLM."""
+
     messages: list[dict[str, str]]
     max_tokens: int
     current_tokens: int
     metadata: dict[str, Any]
 
+
 class ContextManager:
     """LLM context management utilities."""
 
     # guardian: allow-magic-config
-    def __init__(self, max_tokens: int=4000):
+    def __init__(self, max_tokens: int = 4000):
         """
         Initialize context manager.
 
@@ -48,7 +52,7 @@ class ContextManager:
             role: Message role (user/assistant/system)
             content: Message content
         """
-        self.messages.append({'role': role, 'content': content})
+        self.messages.append({"role": role, "content": content})
 
     def get_context_window(self) -> ContextWindow:
         """
@@ -59,13 +63,18 @@ class ContextManager:
         """
         messages = []
         if self.system_message:
-            messages.append({'role': 'system', 'content': self.system_message})
+            messages.append({"role": "system", "content": self.system_message})
         messages.extend(list(self.messages))
-        total_content = ''.join((msg['content'] for msg in messages))
+        total_content = "".join(msg["content"] for msg in messages)
         current_tokens = len(total_content) // 4
-        return ContextWindow(messages=messages, max_tokens=self.max_tokens, current_tokens=current_tokens, metadata={'message_count': len(messages)})
+        return ContextWindow(
+            messages=messages,
+            max_tokens=self.max_tokens,
+            current_tokens=current_tokens,
+            metadata={"message_count": len(messages)},
+        )
 
-    def trim_context(self, keep_recent: int=10) -> None:
+    def trim_context(self, keep_recent: int = 10) -> None:
         """
         Trim context to keep only recent messages.
 
@@ -82,7 +91,10 @@ class ContextManager:
         first_messages = list(self.messages)[:2]
         last_messages = list(self.messages)[-2:]
         middle_count = len(self.messages) - 4
-        summary = {'role': 'system', 'content': f'[{middle_count} messages summarized for context efficiency]'}
+        summary = {
+            "role": "system",
+            "content": f"[{middle_count} messages summarized for context efficiency]",
+        }
         self.messages = deque(first_messages + [summary] + last_messages)
 
     def clear_context(self) -> None:
@@ -127,7 +139,7 @@ class ContextManager:
 
     @staticmethod
     # guardian: allow-magic-config
-    def create_conversation_context(messages: list[dict[str, str]], max_tokens: int=4000) -> ContextWindow:
+    def create_conversation_context(messages: list[dict[str, str]], max_tokens: int = 4000) -> ContextWindow:
         """
         Create context window from messages.
 
@@ -138,9 +150,14 @@ class ContextManager:
         Returns:
             ContextWindow instance
         """
-        total_content = ''.join((msg.get('content', '') for msg in messages))
+        total_content = "".join(msg.get("content", "") for msg in messages)
         current_tokens = len(total_content) // 4
-        return ContextWindow(messages=messages, max_tokens=max_tokens, current_tokens=current_tokens, metadata={'message_count': len(messages)})
+        return ContextWindow(
+            messages=messages,
+            max_tokens=max_tokens,
+            current_tokens=current_tokens,
+            metadata={"message_count": len(messages)},
+        )
 
     @staticmethod
     def merge_contexts(contexts: list[ContextWindow]) -> ContextWindow:
@@ -158,8 +175,13 @@ class ContextManager:
         for ctx in contexts:
             all_messages.extend(ctx.messages)
             total_tokens += ctx.current_tokens
-        max_tokens = max((ctx.max_tokens for ctx in contexts))
-        return ContextWindow(messages=all_messages, max_tokens=max_tokens, current_tokens=total_tokens, metadata={'merged_count': len(contexts)})
+        max_tokens = max(ctx.max_tokens for ctx in contexts)
+        return ContextWindow(
+            messages=all_messages,
+            max_tokens=max_tokens,
+            current_tokens=total_tokens,
+            metadata={"merged_count": len(contexts)},
+        )
 
     @staticmethod
     def prioritize_messages(messages: list[dict[str, str]], max_tokens: int) -> list[dict[str, str]]:
@@ -175,14 +197,14 @@ class ContextManager:
         """
         if not messages:
             return []
-        system_messages = [msg for msg in messages if msg.get('role') == 'system']
-        other_messages = [msg for msg in messages if msg.get('role') != 'system']
-        system_tokens = sum((len(msg.get('content', '')) // 4 for msg in system_messages))
+        system_messages = [msg for msg in messages if msg.get("role") == "system"]
+        other_messages = [msg for msg in messages if msg.get("role") != "system"]
+        system_tokens = sum(len(msg.get("content", "")) // 4 for msg in system_messages)
         remaining_tokens = max_tokens - system_tokens
         prioritized = system_messages.copy()
         current_tokens = system_tokens
         for msg in reversed(other_messages):
-            msg_tokens = len(msg.get('content', '')) // 4
+            msg_tokens = len(msg.get("content", "")) // 4
             if current_tokens + msg_tokens <= remaining_tokens:
                 prioritized.insert(len(system_messages), msg)
                 current_tokens += msg_tokens

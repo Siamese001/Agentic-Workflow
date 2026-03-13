@@ -6,17 +6,21 @@ Uses token-overlap heuristic (F1 over unigrams) as a deterministic
 zero-dependency approximation.  An LLM-judge variant is available via
 the optional judge callable injected at construction time.
 """
+
 from __future__ import annotations
+
 import re
 from typing import Callable
+
 from .base import GenerationMetric
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 def _tokenize(text: str) -> list[str]:
     """Lowercase, strip punctuation, split on whitespace."""
     text = text.lower()
-    text = re.sub('[^\\w\\s]', ' ', text)
+    text = re.sub("[^\\w\\s]", " ", text)
     return [t for t in text.split() if t]
+
 
 def _token_f1(prediction_tokens: list[str], context_tokens: list[str]) -> float:
     """Compute F1 between two token lists."""
@@ -33,6 +37,7 @@ def _token_f1(prediction_tokens: list[str], context_tokens: list[str]) -> float:
         return 0.0
     return 2 * precision * recall / (precision + recall)
 
+
 class Groundedness(GenerationMetric):
     """Measures whether the answer is supported by the retrieved context.
 
@@ -40,14 +45,14 @@ class Groundedness(GenerationMetric):
     With a judge callable: calls judge(answer, context_str) -> float in [0, 1].
     """
 
-    def __init__(self, judge: Callable[[str, str], float] | None=None):
+    def __init__(self, judge: Callable[[str, str], float] | None = None):
         self._judge = judge
 
     @property
     def name(self) -> str:
-        return 'groundedness'
+        return "groundedness"
 
-    def compute(self, prediction: str, ground_truth: str, context: str | list[str] | None=None) -> float:
+    def compute(self, prediction: str, ground_truth: str, context: str | list[str] | None = None) -> float:
         """Compute groundedness score.
 
         Args:
@@ -61,9 +66,9 @@ class Groundedness(GenerationMetric):
         if not prediction:
             return 0.0
         if context is None:
-            context_str = ground_truth if ground_truth else ''
+            context_str = ground_truth if ground_truth else ""
         elif isinstance(context, list):
-            context_str = ' '.join(context)
+            context_str = " ".join(context)
         else:
             context_str = context
         if not context_str:
@@ -73,4 +78,6 @@ class Groundedness(GenerationMetric):
         pred_tokens = _tokenize(prediction)
         ctx_tokens = _tokenize(context_str)
         return _token_f1(pred_tokens, ctx_tokens)
-__all__ = ['Groundedness', '_tokenize', '_token_f1']
+
+
+__all__ = ["Groundedness", "_tokenize", "_token_f1"]

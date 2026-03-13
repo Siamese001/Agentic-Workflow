@@ -5,12 +5,16 @@ Thin wrapper around InjectionDetector.scan() to standardize scanning calls
 across all prompt joinpoints. Logs source context for audit trail without
 logging raw text.
 """
+
 from __future__ import annotations
+
 import logging
+
 from agentic_core.prompt_governance.security.detectors.injection_detector import InjectionDetector
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 Logger = logging.getLogger(__name__)
 _detector = InjectionDetector()
+
 
 def scan_untrusted_text(text: str, *, source: str) -> None:
     """Scan *text* for injection signatures using the canonical detector.
@@ -25,5 +29,5 @@ def scan_untrusted_text(text: str, *, source: str) -> None:
     """
     if not text:
         return
-    Logger.debug('Injection scan invoked: source=%s, length=%d', source, len(text))
+    Logger.debug("Injection scan invoked: source=%s, length=%d", source, len(text))
     _detector.scan(text)

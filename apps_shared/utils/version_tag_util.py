@@ -10,23 +10,28 @@ Features:
 - Change tracking
 - Deployment safety
 """
+
 import logging
 import time
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 logger = logging.getLogger(__name__)
+
 
 class VersionTag(Enum):
     """Version environment tags."""
-    DEV = 'dev'
-    STAGING = 'staging'
-    PROD = 'prod'
+
+    DEV = "dev"
+    STAGING = "staging"
+    PROD = "prod"
+
 
 @dataclass
 class PromptVersion:
     """Versioned prompt template."""
+
     version_id: str
     template_id: str
     version: str
@@ -34,17 +39,38 @@ class PromptVersion:
     tag: VersionTag
     created_at: float
     created_by: str
-    change_notes: str = ''
+    change_notes: str = ""
     metadata: dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
-        return {'version_id': self.version_id, 'template_id': self.template_id, 'version': self.version, 'content': self.content, 'tag': self.tag.value, 'created_at': self.created_at, 'created_by': self.created_by, 'change_notes': self.change_notes, 'metadata': self.metadata}
+        return {
+            "version_id": self.version_id,
+            "template_id": self.template_id,
+            "version": self.version,
+            "content": self.content,
+            "tag": self.tag.value,
+            "created_at": self.created_at,
+            "created_by": self.created_by,
+            "change_notes": self.change_notes,
+            "metadata": self.metadata,
+        }
 
     @classmethod
-    def from_dict(cls, data: dict[str, Any]) -> 'PromptVersion':
+    def from_dict(cls, data: dict[str, Any]) -> "PromptVersion":
         """Create from dictionary."""
-        return cls(version_id=data['version_id'], template_id=data['template_id'], version=data['version'], content=data['content'], tag=VersionTag(data['tag']), created_at=data['created_at'], created_by=data['created_by'], change_notes=data.get('change_notes', ''), metadata=data.get('metadata', {}))
+        return cls(
+            version_id=data["version_id"],
+            template_id=data["template_id"],
+            version=data["version"],
+            content=data["content"],
+            tag=VersionTag(data["tag"]),
+            created_at=data["created_at"],
+            created_by=data["created_by"],
+            change_notes=data.get("change_notes", ""),
+            metadata=data.get("metadata", {}),
+        )
+
 
 class PromptVersionManager:
     """Manages prompt versions with semantic versioning.
@@ -57,7 +83,7 @@ class PromptVersionManager:
     - Safe deployment
     """
 
-    def __init__(self, enable_logging: bool=True):
+    def __init__(self, enable_logging: bool = True):
         """Initialize version manager.
 
         Args:
@@ -67,9 +93,15 @@ class PromptVersionManager:
         self._versions: dict[str, list[PromptVersion]] = {}
         self._tagged_versions: dict[str, dict[VersionTag, PromptVersion]] = {}
         if self.enable_logging:
-            logger.info('prompt_version_manager_initialized')
+            logger.info("prompt_version_manager_initialized")
 
-    def create_version(self, template: PromptTemplate, created_by: str, change_notes: str='', tag: VersionTag=VersionTag.DEV) -> PromptVersion:
+    def create_version(
+        self,
+        template: PromptTemplate,
+        created_by: str,
+        change_notes: str = "",
+        tag: VersionTag = VersionTag.DEV,
+    ) -> PromptVersion:
         """Create a new version of a prompt.
 
         Args:
@@ -83,7 +115,17 @@ class PromptVersionManager:
         """
         template_id = template.template_id
         next_version = self._get_next_version(template_id, template.version)
-        version = PromptVersion(version_id=f'{template_id}_{next_version}_{int(time.time())}', template_id=template_id, version=next_version, content=template.content, tag=tag, created_at=time.time(), created_by=created_by, change_notes=change_notes, metadata=template.metadata.copy())
+        version = PromptVersion(
+            version_id=f"{template_id}_{next_version}_{int(time.time())}",
+            template_id=template_id,
+            version=next_version,
+            content=template.content,
+            tag=tag,
+            created_at=time.time(),
+            created_by=created_by,
+            change_notes=change_notes,
+            metadata=template.metadata.copy(),
+        )
         if template_id not in self._versions:
             self._versions[template_id] = []
         self._versions[template_id].append(version)
@@ -91,7 +133,10 @@ class PromptVersionManager:
             self._tagged_versions[template_id] = {}
         self._tagged_versions[template_id][tag] = version
         if self.enable_logging:
-            logger.info('version_created', extra={'template_id': template_id, 'version': next_version, 'tag': tag.value})
+            logger.info(
+                "version_created",
+                extra={"template_id": template_id, "version": next_version, "tag": tag.value},
+            )
         return version
 
     def promote_version(self, template_id: str, version: str, to_tag: VersionTag) -> PromptVersion | None:
@@ -117,7 +162,10 @@ class PromptVersionManager:
             self._tagged_versions[template_id] = {}
         self._tagged_versions[template_id][to_tag] = target_version
         if self.enable_logging:
-            logger.info('version_promoted', extra={'template_id': template_id, 'version': version, 'to_tag': to_tag.value})
+            logger.info(
+                "version_promoted",
+                extra={"template_id": template_id, "version": version, "to_tag": to_tag.value},
+            )
         return target_version
 
     def rollback(self, template_id: str, tag: VersionTag, to_version: str) -> PromptVersion | None:
@@ -143,7 +191,10 @@ class PromptVersionManager:
             self._tagged_versions[template_id] = {}
         self._tagged_versions[template_id][tag] = target_version
         if self.enable_logging:
-            logger.warning('version_rolled_back', extra={'template_id': template_id, 'tag': tag.value, 'to_version': to_version})
+            logger.warning(
+                "version_rolled_back",
+                extra={"template_id": template_id, "tag": tag.value, "to_version": to_version},
+            )
         return target_version
 
     def get_version(self, template_id: str, tag: VersionTag) -> PromptVersion | None:
@@ -192,7 +243,12 @@ class PromptVersionManager:
                 v2 = v
         if not v1 or not v2:
             return None
-        return {'version1': v1.to_dict(), 'version2': v2.to_dict(), 'content_changed': v1.content != v2.content, 'content_diff_length': abs(len(v1.content) - len(v2.content))}
+        return {
+            "version1": v1.to_dict(),
+            "version2": v2.to_dict(),
+            "content_changed": v1.content != v2.content,
+            "content_diff_length": abs(len(v1.content) - len(v2.content)),
+        }
 
     def _get_next_version(self, template_id: str, current_version: str) -> str:
         """Get next semantic version.
@@ -206,16 +262,16 @@ class PromptVersionManager:
         """
         versions = self._versions.get(template_id, [])
         if not versions:
-            return '1.0.0'
+            return "1.0.0"
         try:
-            parts = current_version.split('.')
+            parts = current_version.split(".")
             major = int(parts[0])
             minor = int(parts[1]) if len(parts) > 1 else 0
             patch = int(parts[2]) if len(parts) > 2 else 0
         except (ValueError, IndexError):
-            return '1.0.0'
+            return "1.0.0"
         patch += 1
-        return f'{major}.{minor}.{patch}'
+        return f"{major}.{minor}.{patch}"
 
     def bump_minor(self, version: str) -> str:
         """Bump minor version.
@@ -227,12 +283,12 @@ class PromptVersionManager:
             New version
         """
         try:
-            parts = version.split('.')
+            parts = version.split(".")
             major = int(parts[0])
             minor = int(parts[1]) if len(parts) > 1 else 0
         except (ValueError, IndexError):
-            return '1.0.0'
-        return f'{major}.{minor + 1}.0'
+            return "1.0.0"
+        return f"{major}.{minor + 1}.0"
 
     def bump_major(self, version: str) -> str:
         """Bump major version.
@@ -244,11 +300,12 @@ class PromptVersionManager:
             New version
         """
         try:
-            parts = version.split('.')
+            parts = version.split(".")
             major = int(parts[0])
         except (ValueError, IndexError):
-            return '1.0.0'
-        return f'{major + 1}.0.0'
+            return "1.0.0"
+        return f"{major + 1}.0.0"
+
 
 def create_version_manager() -> PromptVersionManager:
     """Factory function to create version manager.

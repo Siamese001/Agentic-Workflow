@@ -3,10 +3,11 @@ LIC Archetype Templates - Generation templates for different recipient types.
 
 Ported from: archives/LIC_capabilities/reconstructed_capabilities.py
 """
+
 from __future__ import annotations
+
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any
 
 
 class RecipientArchetype(Enum):

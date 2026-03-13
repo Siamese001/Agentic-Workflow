@@ -1,15 +1,18 @@
 from __future__ import annotations
-'\nStrategic Recommendation Agent\nL3 Orchestration agent: Reviews full autonomy report data and generates high-signal strategic recommendations.\n\nRestored: 2026-01-13 | Version: 3.0.0\nRefactored: 2026-01-14 | Improved macro + metrics observations\n\nPurpose:\n- Analyzes dashboardData (territories, metrics, gaps) for cross-layer patterns.\n- Generates TWO types of observations:\n  1. MACRO OBSERVATIONS: Architectural insights (consolidation, layer health, structural patterns)\n  2. METRICS OBSERVATIONS: Specific metric-focused recommendations (invocation, coverage, complexity)\n- Outputs structured JSON with strategic review and prioritized recommendations.\n- Integrated into report generator → injects into autonomy_dashboard.html\n'
+
+"\nStrategic Recommendation Agent\nL3 Orchestration agent: Reviews full autonomy report data and generates high-signal strategic recommendations.\n\nRestored: 2026-01-13 | Version: 3.0.0\nRefactored: 2026-01-14 | Improved macro + metrics observations\n\nPurpose:\n- Analyzes dashboardData (territories, metrics, gaps) for cross-layer patterns.\n- Generates TWO types of observations:\n  1. MACRO OBSERVATIONS: Architectural insights (consolidation, layer health, structural patterns)\n  2. METRICS OBSERVATIONS: Specific metric-focused recommendations (invocation, coverage, complexity)\n- Outputs structured JSON with strategic review and prioritized recommendations.\n- Integrated into report generator → injects into autonomy_dashboard.html\n"
 import json
 import logging
 import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
+
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.utils.decorators_compat_util import standard_heal
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 log = logging.getLogger(__name__)
+
 
 @dataclass
 class StrategicRecommendationAgent(SovereignBaseAgent):
@@ -22,7 +25,7 @@ class StrategicRecommendationAgent(SovereignBaseAgent):
     - Integrated into report generator → injects into autonomy_dashboard.html
     """
 
-    def __init__(self, project_root: Path | None=None, llm_client: Any=None) -> None:
+    def __init__(self, project_root: Path | None = None, llm_client: Any = None) -> None:
         """
         Initialize Strategic Recommendation Agent.
 
@@ -33,7 +36,7 @@ class StrategicRecommendationAgent(SovereignBaseAgent):
         super().__init__()
         self.project_root = Path(project_root) if project_root else Path.cwd()
         self.llm_client = llm_client
-        log.info('[L3 STRATEGIC] StrategicRecommendationAgent initialized')
+        log.info("[L3 STRATEGIC] StrategicRecommendationAgent initialized")
 
     def plan(self, dashboard_data: list[dict[str, Any]]) -> str:
         """
@@ -46,26 +49,43 @@ class StrategicRecommendationAgent(SovereignBaseAgent):
             Structured prompt for LLM to generate recommendations
         """
 
-        def safe_get(row: dict, key: str, default: float=0) -> float:
+        def safe_get(row: dict, key: str, default: float = 0) -> float:
             val = row.get(key, default)
-            if val is None or val == 'N/A':
+            if val is None or val == "N/A":
                 return default
             try:
                 return float(val)
             except (ValueError, TypeError):
                 return default
-        low_invocation = [r['Territory'] for r in dashboard_data if safe_get(r, 'Invocation %', 0) < 50 and r.get('Territory') != 'TOTAL']
-        low_mcp = [r['Territory'] for r in dashboard_data if safe_get(r, 'Hardened %', 0) < 50 and r.get('Territory') != 'TOTAL']
-        low_tests = [r['Territory'] for r in dashboard_data if safe_get(r, 'Test %', 0) < 80 and r.get('Territory') != 'TOTAL']
-        high_complexity = [r['Territory'] for r in dashboard_data if safe_get(r, 'Avg CC', 0) > 15 and r.get('Territory') != 'TOTAL']
-        total_row = next((r for r in dashboard_data if r.get('Territory') == 'TOTAL'), {})
-        health = safe_get(total_row, 'Health', 0)
-        total_agents = total_row.get('Total', 0) or 0
-        heal_cap = safe_get(total_row, 'Heal Cap %', 0)
-        invocation = safe_get(total_row, 'Invocation %', 0)
-        hardened = safe_get(total_row, 'Hardened %', 0)
-        test_cov = safe_get(total_row, 'Test %', 0)
-        prompt = f"""\nYou are a senior agentic systems architect reviewing autonomy metrics.\nGenerate:\n1. One paragraph strategic review highlighting cross-layer risks (invocation gaps, MCP hardening, test coverage, complexity, healing discipline).\n2. Top 10 prioritized recommendations (broader, actionable, with estimated impact).\n\nKey signals:\n- Low invocation (<50%) in: {', '.join(low_invocation[:5]) or 'none'}\n- Low MCP hardening (<50%) in: {', '.join(low_mcp[:5]) or 'none'}\n- Low test coverage (<80%) in: {', '.join(low_tests[:5]) or 'none'}\n- High complexity (>15 CC) in: {', '.join(high_complexity[:5]) or 'none'}\n- Overall Health: {health:.1f}%\n- Total Agents: {total_agents}\n- Healing Capability: {heal_cap:.1f}%\n- Invocation: {invocation:.1f}%\n- MCP Hardened: {hardened:.1f}%\n- Test Coverage: {test_cov:.1f}%\n\nOutput strict JSON:\n{{"review": "paragraph text", "recommendations": ["1. Title<br>Details...", "2. Title<br>Details...", ...]}}\n"""
+
+        low_invocation = [
+            r["Territory"]
+            for r in dashboard_data
+            if safe_get(r, "Invocation %", 0) < 50 and r.get("Territory") != "TOTAL"
+        ]
+        low_mcp = [
+            r["Territory"]
+            for r in dashboard_data
+            if safe_get(r, "Hardened %", 0) < 50 and r.get("Territory") != "TOTAL"
+        ]
+        low_tests = [
+            r["Territory"]
+            for r in dashboard_data
+            if safe_get(r, "Test %", 0) < 80 and r.get("Territory") != "TOTAL"
+        ]
+        high_complexity = [
+            r["Territory"]
+            for r in dashboard_data
+            if safe_get(r, "Avg CC", 0) > 15 and r.get("Territory") != "TOTAL"
+        ]
+        total_row = next((r for r in dashboard_data if r.get("Territory") == "TOTAL"), {})
+        health = safe_get(total_row, "Health", 0)
+        total_agents = total_row.get("Total", 0) or 0
+        heal_cap = safe_get(total_row, "Heal Cap %", 0)
+        invocation = safe_get(total_row, "Invocation %", 0)
+        hardened = safe_get(total_row, "Hardened %", 0)
+        test_cov = safe_get(total_row, "Test %", 0)
+        prompt = f"""\nYou are a senior agentic systems architect reviewing autonomy metrics.\nGenerate:\n1. One paragraph strategic review highlighting cross-layer risks (invocation gaps, MCP hardening, test coverage, complexity, healing discipline).\n2. Top 10 prioritized recommendations (broader, actionable, with estimated impact).\n\nKey signals:\n- Low invocation (<50%) in: {", ".join(low_invocation[:5]) or "none"}\n- Low MCP hardening (<50%) in: {", ".join(low_mcp[:5]) or "none"}\n- Low test coverage (<80%) in: {", ".join(low_tests[:5]) or "none"}\n- High complexity (>15 CC) in: {", ".join(high_complexity[:5]) or "none"}\n- Overall Health: {health:.1f}%\n- Total Agents: {total_agents}\n- Healing Capability: {heal_cap:.1f}%\n- Invocation: {invocation:.1f}%\n- MCP Hardened: {hardened:.1f}%\n- Test Coverage: {test_cov:.1f}%\n\nOutput strict JSON:\n{{"review": "paragraph text", "recommendations": ["1. Title<br>Details...", "2. Title<br>Details...", ...]}}\n"""
         return prompt
 
     def act(self, plan: str, dashboard_data: list[dict[str, Any]]) -> dict[str, Any]:
@@ -85,7 +105,7 @@ class StrategicRecommendationAgent(SovereignBaseAgent):
                 return self._parse_llm_response(response)
             # guardian: allow-silent-swallow
             except Exception as e:
-                log.warning(f'[STRATEGIC] LLM call failed: {e}, using fallback')
+                log.warning(f"[STRATEGIC] LLM call failed: {e}, using fallback")
         return self._generate_fallback_recommendations(dashboard_data)
 
     def _parse_llm_response(self, response: str) -> dict[str, Any]:
@@ -101,10 +121,10 @@ class StrategicRecommendationAgent(SovereignBaseAgent):
         try:
             return json.loads(response)
         except json.JSONDecodeError:
-            json_match = re.search('\\{.*\\}', response, re.DOTALL)
+            json_match = re.search("\\{.*\\}", response, re.DOTALL)
             if json_match:
                 return json.loads(json_match.group(0))
-            return {'review': 'Parsing failed', 'recommendations': []}
+            return {"review": "Parsing failed", "recommendations": []}
 
     def _generate_fallback_recommendations(self, dashboard_data: list[dict[str, Any]]) -> dict[str, Any]:
         """
@@ -122,77 +142,189 @@ class StrategicRecommendationAgent(SovereignBaseAgent):
             Dict with review, macro_observations, metric_observations, and recommendations
         """
 
-        def safe_val(row: dict, key: str, default: float=0) -> float:
+        def safe_val(row: dict, key: str, default: float = 0) -> float:
             val = row.get(key, default)
-            if val is None or val == 'N/A':
+            if val is None or val == "N/A":
                 return default
             try:
                 return float(val)
             except (ValueError, TypeError):
                 return default
-        total_row = next((r for r in dashboard_data if r.get('Territory') == 'TOTAL'), {})
-        non_total_rows = [r for r in dashboard_data if r.get('Territory') != 'TOTAL']
-        health = safe_val(total_row, 'Health', 0)
-        invocation = safe_val(total_row, 'Invocation %', 0)
-        mcp_hardened = safe_val(total_row, 'Hardened %', 0)
-        test_coverage = safe_val(total_row, 'Test %', 0)
-        heal_cap = safe_val(total_row, 'Heal Cap %', 0)
-        typed_pct = safe_val(total_row, 'Typed %', 0)
-        documented_pct = safe_val(total_row, 'Documented %', 0)
-        total_agents = total_row.get('Total', 0) or 0
+
+        total_row = next((r for r in dashboard_data if r.get("Territory") == "TOTAL"), {})
+        non_total_rows = [r for r in dashboard_data if r.get("Territory") != "TOTAL"]
+        health = safe_val(total_row, "Health", 0)
+        invocation = safe_val(total_row, "Invocation %", 0)
+        mcp_hardened = safe_val(total_row, "Hardened %", 0)
+        test_coverage = safe_val(total_row, "Test %", 0)
+        heal_cap = safe_val(total_row, "Heal Cap %", 0)
+        typed_pct = safe_val(total_row, "Typed %", 0)
+        documented_pct = safe_val(total_row, "Documented %", 0)
+        total_agents = total_row.get("Total", 0) or 0
         total_territories = len(non_total_rows)
         macro_observations = []
-        l0_rows = [r for r in non_total_rows if 'L0' in r.get('Territory', '')]
+        l0_rows = [r for r in non_total_rows if "L0" in r.get("Territory", "")]
         for l0_row in l0_rows:
-            heal_cap = l0_row.get('Heal Cap %')
-            if heal_cap != 'N/A' and safe_val(l0_row, 'Heal Cap %', 0) > 0:
-                macro_observations.append({'icon': '🔧', 'title': 'L0 Maintenance Layer', 'text': f'L0 is infrastructure/scripts layer. Healing capability is N/A here (currently showing {heal_cap}%). Focus on stability, not self-healing.', 'color': '#6b7280'})
-        apps_rows = [r for r in non_total_rows if 'Apps' in r.get('Territory', '')]
+            heal_cap = l0_row.get("Heal Cap %")
+            if heal_cap != "N/A" and safe_val(l0_row, "Heal Cap %", 0) > 0:
+                macro_observations.append(
+                    {
+                        "icon": "🔧",
+                        "title": "L0 Maintenance Layer",
+                        "text": f"L0 is infrastructure/scripts layer. Healing capability is N/A here (currently showing {heal_cap}%). Focus on stability, not self-healing.",
+                        "color": "#6b7280",
+                    }
+                )
+        apps_rows = [r for r in non_total_rows if "Apps" in r.get("Territory", "")]
         if apps_rows:
-            avg_apps_test = sum((safe_val(r, 'Test %', 0) for r in apps_rows)) / len(apps_rows)
+            avg_apps_test = sum(safe_val(r, "Test %", 0) for r in apps_rows) / len(apps_rows)
             if avg_apps_test < 60:
-                macro_observations.append({'icon': '📱', 'title': 'Apps Test Coverage', 'text': f'Apps territories average {avg_apps_test:.0f}% test coverage. Target 80% for production safety.', 'color': '#ea580c'})
-        if safe_val(total_row, 'Observable %', 0) > 95:
-            macro_observations.append({'icon': '👁️', 'title': 'Excellent observability', 'text': f"{safe_val(total_row, 'Observable %', 0):.1f}% observability coverage. Production debugging is well-supported.", 'color': '#16a34a'})
+                macro_observations.append(
+                    {
+                        "icon": "📱",
+                        "title": "Apps Test Coverage",
+                        "text": f"Apps territories average {avg_apps_test:.0f}% test coverage. Target 80% for production safety.",
+                        "color": "#ea580c",
+                    }
+                )
+        if safe_val(total_row, "Observable %", 0) > 95:
+            macro_observations.append(
+                {
+                    "icon": "👁️",
+                    "title": "Excellent observability",
+                    "text": f"{safe_val(total_row, 'Observable %', 0):.1f}% observability coverage. Production debugging is well-supported.",
+                    "color": "#16a34a",
+                }
+            )
         metric_observations = []
-        avg_cc = safe_val(total_row, 'Avg CC', 0)
+        avg_cc = safe_val(total_row, "Avg CC", 0)
         if avg_cc > 30:
-            metric_observations.append({'icon': '⚠️', 'title': 'High Complexity', 'text': f'Average CC of {avg_cc:.1f} exceeds target (≤15). Refactor high-CC methods in L5 validators and L3 orchestrators.', 'color': '#ea580c'})
+            metric_observations.append(
+                {
+                    "icon": "⚠️",
+                    "title": "High Complexity",
+                    "text": f"Average CC of {avg_cc:.1f} exceeds target (≤15). Refactor high-CC methods in L5 validators and L3 orchestrators.",
+                    "color": "#ea580c",
+                }
+            )
         if test_coverage < 80:
-            metric_observations.append({'icon': '🧪', 'title': 'Test Coverage Gap', 'text': f'Test coverage at {test_coverage:.1f}% (target: 80%). Focus on L1 Cognition and Apps territories first.', 'color': '#dc2626'})
+            metric_observations.append(
+                {
+                    "icon": "🧪",
+                    "title": "Test Coverage Gap",
+                    "text": f"Test coverage at {test_coverage:.1f}% (target: 80%). Focus on L1 Cognition and Apps territories first.",
+                    "color": "#dc2626",
+                }
+            )
         if invocation > 85:
-            metric_observations.append({'icon': '✅', 'title': 'Strong Healing Invocation', 'text': f'{invocation:.1f}% healing invocation is excellent. Maintain this level.', 'color': '#16a34a'})
+            metric_observations.append(
+                {
+                    "icon": "✅",
+                    "title": "Strong Healing Invocation",
+                    "text": f"{invocation:.1f}% healing invocation is excellent. Maintain this level.",
+                    "color": "#16a34a",
+                }
+            )
         recommendations = []
-        review_parts = [f'Portfolio health at {health:.1f}% with {total_agents} agents across {total_territories} territories.']
+        review_parts = [
+            f"Portfolio health at {health:.1f}% with {total_agents} agents across {total_territories} territories."
+        ]
         if test_coverage < 95:
             gap = 95 - test_coverage
-            zero_test_territories = [r for r in non_total_rows if safe_val(r, 'Test %', 0) == 0]
-            review_parts.append(f'Test coverage at {test_coverage:.1f}% (target 95%) increases regression risk.')
-            recommendations.append({'priority': 1, 'category': 'Testing', 'title': 'Expand Test Coverage', 'detail': f'Current: {test_coverage:.1f}% | Gap: {gap:.1f}pp | {len(zero_test_territories)} territories at 0%', 'action': 'Add unit tests for core behaviors. Focus on zero-coverage territories first.', 'impact': 'High - Prevents regressions during healing and refactoring cycles.'})
+            zero_test_territories = [r for r in non_total_rows if safe_val(r, "Test %", 0) == 0]
+            review_parts.append(
+                f"Test coverage at {test_coverage:.1f}% (target 95%) increases regression risk."
+            )
+            recommendations.append(
+                {
+                    "priority": 1,
+                    "category": "Testing",
+                    "title": "Expand Test Coverage",
+                    "detail": f"Current: {test_coverage:.1f}% | Gap: {gap:.1f}pp | {len(zero_test_territories)} territories at 0%",
+                    "action": "Add unit tests for core behaviors. Focus on zero-coverage territories first.",
+                    "impact": "High - Prevents regressions during healing and refactoring cycles.",
+                }
+            )
         if invocation < 100:
             gap = 100 - invocation
-            low_invocation = [r for r in non_total_rows if safe_val(r, 'Invocation %', 0) < 80]
-            review_parts.append(f'Healing invocation at {invocation:.1f}% (target 100%) indicates incomplete healing chains.')
-            recommendations.append({'priority': 2, 'category': 'Healing', 'title': 'Complete Healing Chain Invocation', 'detail': f'Current: {invocation:.1f}% | Gap: {gap:.1f}pp | {len(low_invocation)} territories below 80%', 'action': 'Add super().heal_repository(**kwargs) calls to agents that override heal_repository().', 'impact': 'High - Ensures healing propagates through MRO chain.'})
+            low_invocation = [r for r in non_total_rows if safe_val(r, "Invocation %", 0) < 80]
+            review_parts.append(
+                f"Healing invocation at {invocation:.1f}% (target 100%) indicates incomplete healing chains."
+            )
+            recommendations.append(
+                {
+                    "priority": 2,
+                    "category": "Healing",
+                    "title": "Complete Healing Chain Invocation",
+                    "detail": f"Current: {invocation:.1f}% | Gap: {gap:.1f}pp | {len(low_invocation)} territories below 80%",
+                    "action": "Add super().heal_repository(**kwargs) calls to agents that override heal_repository().",
+                    "impact": "High - Ensures healing propagates through MRO chain.",
+                }
+            )
         if mcp_hardened < 100:
             gap = 100 - mcp_hardened
-            unhardened = [r for r in non_total_rows if safe_val(r, 'Hardened %', 0) < 100]
-            review_parts.append(f'MCP hardening at {mcp_hardened:.1f}% (target 100%) exposes tool boundaries.')
-            recommendations.append({'priority': 3, 'category': 'Security', 'title': 'Complete MCP Hardening', 'detail': f'Current: {mcp_hardened:.1f}% | Gap: {gap:.1f}pp | {len(unhardened)} territories incomplete', 'action': 'Apply MCPHardenedMixin to all agents touching external APIs or tools.', 'impact': 'Critical - Prevents injection and boundary violations.'})
-        high_cc_territories = [r for r in non_total_rows if safe_val(r, 'Avg CC', 0) > 15]
+            unhardened = [r for r in non_total_rows if safe_val(r, "Hardened %", 0) < 100]
+            review_parts.append(
+                f"MCP hardening at {mcp_hardened:.1f}% (target 100%) exposes tool boundaries."
+            )
+            recommendations.append(
+                {
+                    "priority": 3,
+                    "category": "Security",
+                    "title": "Complete MCP Hardening",
+                    "detail": f"Current: {mcp_hardened:.1f}% | Gap: {gap:.1f}pp | {len(unhardened)} territories incomplete",
+                    "action": "Apply MCPHardenedMixin to all agents touching external APIs or tools.",
+                    "impact": "Critical - Prevents injection and boundary violations.",
+                }
+            )
+        high_cc_territories = [r for r in non_total_rows if safe_val(r, "Avg CC", 0) > 15]
         if high_cc_territories:
-            avg_cc = sum((safe_val(r, 'Avg CC', 0) for r in high_cc_territories)) / len(high_cc_territories)
-            recommendations.append({'priority': 4, 'category': 'Maintainability', 'title': 'Reduce Cyclomatic Complexity', 'detail': f'{len(high_cc_territories)} territories have Avg CC >15 (avg: {avg_cc:.1f})', 'action': 'Refactor complex methods into smaller primitives. Target CC ≤10.', 'impact': 'Medium - Reduces bug density and improves testability.'})
+            avg_cc = sum(safe_val(r, "Avg CC", 0) for r in high_cc_territories) / len(high_cc_territories)
+            recommendations.append(
+                {
+                    "priority": 4,
+                    "category": "Maintainability",
+                    "title": "Reduce Cyclomatic Complexity",
+                    "detail": f"{len(high_cc_territories)} territories have Avg CC >15 (avg: {avg_cc:.1f})",
+                    "action": "Refactor complex methods into smaller primitives. Target CC ≤10.",
+                    "impact": "Medium - Reduces bug density and improves testability.",
+                }
+            )
         if typed_pct < 100:
             gap = 100 - typed_pct
-            recommendations.append({'priority': 5, 'category': 'Code Quality', 'title': 'Complete Type Annotations', 'detail': f'Current: {typed_pct:.1f}% | Gap: {gap:.1f}pp', 'action': 'Add type hints to function parameters and return types.', 'impact': 'Medium - Enables static analysis and IDE support.'})
+            recommendations.append(
+                {
+                    "priority": 5,
+                    "category": "Code Quality",
+                    "title": "Complete Type Annotations",
+                    "detail": f"Current: {typed_pct:.1f}% | Gap: {gap:.1f}pp",
+                    "action": "Add type hints to function parameters and return types.",
+                    "impact": "Medium - Enables static analysis and IDE support.",
+                }
+            )
         if documented_pct < 100:
             gap = 100 - documented_pct
-            recommendations.append({'priority': 6, 'category': 'Code Quality', 'title': 'Complete Documentation', 'detail': f'Current: {documented_pct:.1f}% | Gap: {gap:.1f}pp', 'action': 'Add docstrings to all public methods and classes.', 'impact': 'Medium - Reduces hallucinated tool usage by constraining search space.'})
+            recommendations.append(
+                {
+                    "priority": 6,
+                    "category": "Code Quality",
+                    "title": "Complete Documentation",
+                    "detail": f"Current: {documented_pct:.1f}% | Gap: {gap:.1f}pp",
+                    "action": "Add docstrings to all public methods and classes.",
+                    "impact": "Medium - Reduces hallucinated tool usage by constraining search space.",
+                }
+            )
         formatted_recs = []
-        for i, rec in enumerate(sorted(recommendations, key=lambda x: x['priority']), 1):
-            formatted_recs.append(f"{i}. {rec['title']}<br><span style='color:#666'>{rec['detail']}</span><br><b>Action:</b> {rec['action']}<br><span style='color:#059669'><b>Impact:</b> {rec['impact']}</span>")
-        return {'review': ' '.join(review_parts), 'macro_observations': macro_observations, 'metric_observations': metric_observations, 'recommendations': formatted_recs[:10]}
+        for i, rec in enumerate(sorted(recommendations, key=lambda x: x["priority"]), 1):
+            formatted_recs.append(
+                f"{i}. {rec['title']}<br><span style='color:#666'>{rec['detail']}</span><br><b>Action:</b> {rec['action']}<br><span style='color:#059669'><b>Impact:</b> {rec['impact']}</span>"
+            )
+        return {
+            "review": " ".join(review_parts),
+            "macro_observations": macro_observations,
+            "metric_observations": metric_observations,
+            "recommendations": formatted_recs[:10],
+        }
 
     def run(self, dashboard_data: list[dict[str, Any]]) -> dict[str, Any]:
         """
@@ -209,7 +341,7 @@ class StrategicRecommendationAgent(SovereignBaseAgent):
         return result
 
     @standard_heal
-    def heal_repository(self, dry_run: bool=True, **kwargs) -> dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, **kwargs) -> dict[str, int]:
         """Invoke healing chain via super()."""
         return super().heal_repository(dry_run=dry_run, **kwargs)
 
@@ -230,14 +362,29 @@ class StrategicRecommendationAgent(SovereignBaseAgent):
                 - artifacts: List of modified files
                 - errors: List of error messages
         """
-        file_path = violation.get('file') or violation.get('file_path')
-        violation_type = violation.get('type', 'unknown')
+        file_path = violation.get("file") or violation.get("file_path")
+        violation_type = violation.get("type", "unknown")
         try:
-            if hasattr(self, 'heal_repository'):
+            if hasattr(self, "heal_repository"):
                 result = self.heal_repository(dry_run=False)
-                return {'status': 'success' if result.get('violations_fixed', 0) > 0 else 'skipped', 'details': f"StrategicRecommendationAgent healed {result.get('violations_fixed', 0)} violations", 'artifacts': [file_path] if file_path else [], 'errors': []}
+                return {
+                    "status": "success" if result.get("violations_fixed", 0) > 0 else "skipped",
+                    "details": f"StrategicRecommendationAgent healed {result.get('violations_fixed', 0)} violations",
+                    "artifacts": [file_path] if file_path else [],
+                    "errors": [],
+                }
             else:
-                return {'status': 'skipped', 'details': f'StrategicRecommendationAgent heal() not yet implemented for {violation_type}', 'artifacts': [], 'errors': []}
+                return {
+                    "status": "skipped",
+                    "details": f"StrategicRecommendationAgent heal() not yet implemented for {violation_type}",
+                    "artifacts": [],
+                    "errors": [],
+                }
         # guardian: allow-silent-swallow
         except Exception as e:
-            return {'status': 'failed', 'details': f'StrategicRecommendationAgent heal() failed: {str(e)}', 'artifacts': [], 'errors': [str(e)]}
+            return {
+                "status": "failed",
+                "details": f"StrategicRecommendationAgent heal() failed: {str(e)}",
+                "artifacts": [],
+                "errors": [str(e)],
+            }

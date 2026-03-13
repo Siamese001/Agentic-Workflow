@@ -4,35 +4,48 @@ Human Decision Artifact - W5 Implementation
 Defines HumanDecisionArtifact structure for Path D human review workflow.
 Ensures proper loopback invariants and certification invalidation.
 """
+
 from __future__ import annotations
+
 import json
 from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Literal
+
 from agentic_core.L0_routing.engines.assembly_stage import GovernedPayload
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 class HumanAction(Enum):
     """Actions available for human review."""
-    APPROVE = 'APPROVE'
-    MODIFY_DIFF = 'MODIFY_DIFF'
-    REJECT = 'REJECT'
+
+    APPROVE = "APPROVE"
+    MODIFY_DIFF = "MODIFY_DIFF"
+    REJECT = "REJECT"
+
 
 @dataclass
 class StructuredPatchSchema:
     """Schema for structured patches in MODIFY_DIFF actions."""
+
     allowed_tools: tuple[str, ...]
-    patch_format: Literal['unified', 'json', 'structured'] = 'structured'
+    patch_format: Literal["unified", "json", "structured"] = "structured"
     max_patch_size: int = 1024 * 1024
-    required_fields: tuple[str, ...] = ('tool_name', 'parameters', 'rationale')
+    required_fields: tuple[str, ...] = ("tool_name", "parameters", "rationale")
 
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization."""
-        return {'allowed_tools': list(self.allowed_tools), 'patch_format': self.patch_format, 'max_patch_size': self.max_patch_size, 'required_fields': list(self.required_fields)}
+        return {
+            "allowed_tools": list(self.allowed_tools),
+            "patch_format": self.patch_format,
+            "max_patch_size": self.max_patch_size,
+            "required_fields": list(self.required_fields),
+        }
+
 
 @dataclass
 class HumanDecisionArtifact:
     """Artifact for human review workflow in Path D."""
+
     trace_id: str
     policy_hash: str
     reviewer_id: str | None
@@ -47,7 +60,19 @@ class HumanDecisionArtifact:
 
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization."""
-        return {'trace_id': self.trace_id, 'policy_hash': self.policy_hash, 'reviewer_id': self.reviewer_id, 'action': self.action.value, 'structured_patch_schema': self.structured_patch_schema.to_dict(), 'original_plan_hash': self.original_plan_hash, 'plan_content': self.plan_content, 'review_timestamp': self.review_timestamp, 'review_rationale': self.review_rationale, 'modified_plan_hash': self.modified_plan_hash, 'certification_invalidated': self.certification_invalidated}
+        return {
+            "trace_id": self.trace_id,
+            "policy_hash": self.policy_hash,
+            "reviewer_id": self.reviewer_id,
+            "action": self.action.value,
+            "structured_patch_schema": self.structured_patch_schema.to_dict(),
+            "original_plan_hash": self.original_plan_hash,
+            "plan_content": self.plan_content,
+            "review_timestamp": self.review_timestamp,
+            "review_rationale": self.review_rationale,
+            "modified_plan_hash": self.modified_plan_hash,
+            "certification_invalidated": self.certification_invalidated,
+        }
 
     def apply_modify_diff(self, reviewer_id: str, modified_plan: dict[str, Any], rationale: str) -> None:
         """
@@ -60,15 +85,16 @@ class HumanDecisionArtifact:
         """
         import hashlib
         from datetime import datetime
+
         if self.action != HumanAction.MODIFY_DIFF:
-            raise ValueError('Can only apply modify_diff to MODIFY_DIFF artifacts')
+            raise ValueError("Can only apply modify_diff to MODIFY_DIFF artifacts")
         self.reviewer_id = reviewer_id
         self.plan_content = modified_plan
         self.review_rationale = rationale
-        self.review_timestamp = datetime.utcnow().isoformat() + 'Z'
+        self.review_timestamp = datetime.utcnow().isoformat() + "Z"
         self.certification_invalidated = True
-        canonical = json.dumps(modified_plan, ensure_ascii=False, sort_keys=True, separators=(',', ':'))
-        self.modified_plan_hash = hashlib.sha256(canonical.encode('utf-8')).hexdigest()
+        canonical = json.dumps(modified_plan, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+        self.modified_plan_hash = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
     def validate_patch_constraints(self, patch: dict[str, Any]) -> bool:
         """
@@ -85,15 +111,23 @@ class HumanDecisionArtifact:
         for field in self.structured_patch_schema.required_fields:
             if field not in patch:
                 return False
-        tool_name = patch.get('tool_name')
+        tool_name = patch.get("tool_name")
         if tool_name not in self.structured_patch_schema.allowed_tools:
             return False
-        patch_str = json.dumps(patch, separators=(',', ':'))
+        patch_str = json.dumps(patch, separators=(",", ":"))
         if len(patch_str) > self.structured_patch_schema.max_patch_size:
             return False
         return True
 
-def create_human_review_draft(trace_id: str, policy_hash: str, plan_hash: str, governed_payload: GovernedPayload, allowed_tools: tuple[str, ...]=(), plan_content: dict[str, Any] | None=None) -> HumanDecisionArtifact:
+
+def create_human_review_draft(
+    trace_id: str,
+    policy_hash: str,
+    plan_hash: str,
+    governed_payload: GovernedPayload,
+    allowed_tools: tuple[str, ...] = (),
+    plan_content: dict[str, Any] | None = None,
+) -> HumanDecisionArtifact:
     """
     Create a human decision artifact draft for Path D.
 
@@ -108,11 +142,28 @@ def create_human_review_draft(trace_id: str, policy_hash: str, plan_hash: str, g
     Returns:
         HumanDecisionArtifact ready for human review
     """
-    structured_schema = StructuredPatchSchema(allowed_tools=allowed_tools, patch_format='structured', max_patch_size=1024 * 1024, required_fields=('tool_name', 'parameters', 'rationale'))
-    artifact = HumanDecisionArtifact(trace_id=trace_id, policy_hash=policy_hash, reviewer_id=None, action=HumanAction.MODIFY_DIFF, structured_patch_schema=structured_schema, original_plan_hash=plan_hash, plan_content=plan_content, certification_invalidated=False)
+    structured_schema = StructuredPatchSchema(
+        allowed_tools=allowed_tools,
+        patch_format="structured",
+        max_patch_size=1024 * 1024,
+        required_fields=("tool_name", "parameters", "rationale"),
+    )
+    artifact = HumanDecisionArtifact(
+        trace_id=trace_id,
+        policy_hash=policy_hash,
+        reviewer_id=None,
+        action=HumanAction.MODIFY_DIFF,
+        structured_patch_schema=structured_schema,
+        original_plan_hash=plan_hash,
+        plan_content=plan_content,
+        certification_invalidated=False,
+    )
     return artifact
 
-def create_approval_artifact(trace_id: str, policy_hash: str, plan_hash: str, reviewer_id: str, rationale: str | None=None) -> HumanDecisionArtifact:
+
+def create_approval_artifact(
+    trace_id: str, policy_hash: str, plan_hash: str, reviewer_id: str, rationale: str | None = None
+) -> HumanDecisionArtifact:
     """
     Create an approval artifact for Path D.
 
@@ -127,11 +178,27 @@ def create_approval_artifact(trace_id: str, policy_hash: str, plan_hash: str, re
         HumanDecisionArtifact with APPROVE action
     """
     from datetime import datetime
-    structured_schema = StructuredPatchSchema(allowed_tools=(), patch_format='structured', max_patch_size=1024 * 1024, required_fields=())
-    artifact = HumanDecisionArtifact(trace_id=trace_id, policy_hash=policy_hash, reviewer_id=reviewer_id, action=HumanAction.APPROVE, structured_patch_schema=structured_schema, original_plan_hash=plan_hash, review_timestamp=datetime.utcnow().isoformat() + 'Z', review_rationale=rationale, certification_invalidated=False)
+
+    structured_schema = StructuredPatchSchema(
+        allowed_tools=(), patch_format="structured", max_patch_size=1024 * 1024, required_fields=()
+    )
+    artifact = HumanDecisionArtifact(
+        trace_id=trace_id,
+        policy_hash=policy_hash,
+        reviewer_id=reviewer_id,
+        action=HumanAction.APPROVE,
+        structured_patch_schema=structured_schema,
+        original_plan_hash=plan_hash,
+        review_timestamp=datetime.utcnow().isoformat() + "Z",
+        review_rationale=rationale,
+        certification_invalidated=False,
+    )
     return artifact
 
-def create_rejection_artifact(trace_id: str, policy_hash: str, plan_hash: str, reviewer_id: str, rationale: str) -> HumanDecisionArtifact:
+
+def create_rejection_artifact(
+    trace_id: str, policy_hash: str, plan_hash: str, reviewer_id: str, rationale: str
+) -> HumanDecisionArtifact:
     """
     Create a rejection artifact for Path D.
 
@@ -146,7 +213,29 @@ def create_rejection_artifact(trace_id: str, policy_hash: str, plan_hash: str, r
         HumanDecisionArtifact with REJECT action
     """
     from datetime import datetime
-    structured_schema = StructuredPatchSchema(allowed_tools=(), patch_format='structured', max_patch_size=1024 * 1024, required_fields=())
-    artifact = HumanDecisionArtifact(trace_id=trace_id, policy_hash=policy_hash, reviewer_id=reviewer_id, action=HumanAction.REJECT, structured_patch_schema=structured_schema, original_plan_hash=plan_hash, review_timestamp=datetime.utcnow().isoformat() + 'Z', review_rationale=rationale, certification_invalidated=True)
+
+    structured_schema = StructuredPatchSchema(
+        allowed_tools=(), patch_format="structured", max_patch_size=1024 * 1024, required_fields=()
+    )
+    artifact = HumanDecisionArtifact(
+        trace_id=trace_id,
+        policy_hash=policy_hash,
+        reviewer_id=reviewer_id,
+        action=HumanAction.REJECT,
+        structured_patch_schema=structured_schema,
+        original_plan_hash=plan_hash,
+        review_timestamp=datetime.utcnow().isoformat() + "Z",
+        review_rationale=rationale,
+        certification_invalidated=True,
+    )
     return artifact
-__all__ = ['HumanDecisionArtifact', 'HumanAction', 'StructuredPatchSchema', 'create_human_review_draft', 'create_approval_artifact', 'create_rejection_artifact']
+
+
+__all__ = [
+    "HumanDecisionArtifact",
+    "HumanAction",
+    "StructuredPatchSchema",
+    "create_human_review_draft",
+    "create_approval_artifact",
+    "create_rejection_artifact",
+]

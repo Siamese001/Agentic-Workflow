@@ -3,17 +3,21 @@
 Verdicts with confidence < 0.7 are placed here and blocked from routing
 until a human reviewer approves or rejects them.
 """
+
 from __future__ import annotations
+
 import logging
 import threading
 from dataclasses import dataclass, field
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 logger = logging.getLogger(__name__)
+
 
 @dataclass
 class PendingVerdict:
     """A verdict awaiting human review."""
+
     verdict_id: str
     component: str
     trace_id: str
@@ -22,8 +26,9 @@ class PendingVerdict:
     input_hash: str
     reviewed: bool = False
     approved: bool = False
-    reviewer_notes: str = ''
+    reviewer_notes: str = ""
     metadata: dict[str, Any] = field(default_factory=dict)
+
 
 class HumanReviewQueue:
     """Thread-safe queue for AI verdicts requiring human review.
@@ -39,9 +44,14 @@ class HumanReviewQueue:
         """Add a verdict to the review queue."""
         with self._lock:
             self._queue[verdict.verdict_id] = verdict
-        logger.info('HumanReviewQueue: enqueued verdict_id=%s component=%s confidence=%.2f', verdict.verdict_id, verdict.component, verdict.confidence)
+        logger.info(
+            "HumanReviewQueue: enqueued verdict_id=%s component=%s confidence=%.2f",
+            verdict.verdict_id,
+            verdict.component,
+            verdict.confidence,
+        )
 
-    def approve(self, verdict_id: str, reviewer_notes: str='') -> bool:
+    def approve(self, verdict_id: str, reviewer_notes: str = "") -> bool:
         """Mark a verdict as approved. Returns True if found."""
         with self._lock:
             v = self._queue.get(verdict_id)
@@ -50,10 +60,10 @@ class HumanReviewQueue:
             v.reviewed = True
             v.approved = True
             v.reviewer_notes = reviewer_notes
-        logger.info('HumanReviewQueue: approved verdict_id=%s', verdict_id)
+        logger.info("HumanReviewQueue: approved verdict_id=%s", verdict_id)
         return True
 
-    def reject(self, verdict_id: str, reviewer_notes: str='') -> bool:
+    def reject(self, verdict_id: str, reviewer_notes: str = "") -> bool:
         """Mark a verdict as rejected. Returns True if found."""
         with self._lock:
             v = self._queue.get(verdict_id)
@@ -62,7 +72,7 @@ class HumanReviewQueue:
             v.reviewed = True
             v.approved = False
             v.reviewer_notes = reviewer_notes
-        logger.info('HumanReviewQueue: rejected verdict_id=%s', verdict_id)
+        logger.info("HumanReviewQueue: rejected verdict_id=%s", verdict_id)
         return True
 
     def is_approved(self, verdict_id: str) -> bool:
@@ -80,7 +90,7 @@ class HumanReviewQueue:
     def pending_count(self) -> int:
         """Return number of unreviewed verdicts."""
         with self._lock:
-            return sum((1 for v in self._queue.values() if not v.reviewed))
+            return sum(1 for v in self._queue.values() if not v.reviewed)
 
     def all_pending(self) -> list[PendingVerdict]:
         """Return all unreviewed verdicts."""
@@ -90,7 +100,10 @@ class HumanReviewQueue:
     def size(self) -> int:
         with self._lock:
             return len(self._queue)
+
+
 _GLOBAL_REVIEW_QUEUE: HumanReviewQueue | None = None
+
 
 def get_review_queue() -> HumanReviewQueue:
     """Return the module-level singleton review queue."""
@@ -98,4 +111,6 @@ def get_review_queue() -> HumanReviewQueue:
     if _GLOBAL_REVIEW_QUEUE is None:
         _GLOBAL_REVIEW_QUEUE = HumanReviewQueue()
     return _GLOBAL_REVIEW_QUEUE
-__all__ = ['HumanReviewQueue', 'PendingVerdict', 'get_review_queue']
+
+
+__all__ = ["HumanReviewQueue", "PendingVerdict", "get_review_queue"]

@@ -4,16 +4,20 @@ L0 Path Router - Deterministic Path Selection (GAP-02)
 Implements strict Path A/B/C/D dispatch semantics with deterministic logic.
 No business logic, no wall-clock usage, pure path selection.
 """
+
 from enum import Enum
+
 from ..engines.assembly_stage import GovernedPayload
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 class Path(Enum):
     """Deterministic path enumeration for L0 routing."""
-    A = 'A'
-    B = 'B'
-    C = 'C'
-    D = 'D'
+
+    A = "A"
+    B = "B"
+    C = "C"
+    D = "D"
+
 
 class PathRouter:
     """

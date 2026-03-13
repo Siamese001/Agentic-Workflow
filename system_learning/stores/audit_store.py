@@ -4,12 +4,15 @@ Reads from ``logs/compliance_reports/`` to produce byte-serialized audit
 slices for the meta-learning pipeline.  All I/O is explicit (no background
 scanning) and deterministic given the same file contents.
 """
+
 from __future__ import annotations
+
 import json
 import logging
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 logger = logging.getLogger(__name__)
+
 
 class FileBackedAuditStore:
     """File-backed audit store reading from compliance report directory.
@@ -44,12 +47,12 @@ class FileBackedAuditStore:
             JSON-encoded list of matching report dicts.
         """
         if not self._reports_dir.exists():
-            return b'[]'
+            return b"[]"
         matched: list[dict] = []
-        for report_path in sorted(self._reports_dir.glob('*.json')):
+        for report_path in sorted(self._reports_dir.glob("*.json")):
             try:
-                data = json.loads(report_path.read_text(encoding='utf-8'))
-                ts = data.get('timestamp_utc') or data.get('created_utc', 0)
+                data = json.loads(report_path.read_text(encoding="utf-8"))
+                ts = data.get("timestamp_utc") or data.get("created_utc", 0)
                 if isinstance(ts, str):
                     ts = 0
                 if window_start_utc <= ts <= window_end_utc:
@@ -57,9 +60,10 @@ class FileBackedAuditStore:
                 elif ts == 0:
                     matched.append(data)
             except (json.JSONDecodeError, OSError) as exc:
-                logger.debug('Skipping unreadable report %s: %s', report_path.name, exc)
+                logger.debug("Skipping unreadable report %s: %s", report_path.name, exc)
                 continue
-        return json.dumps(matched, separators=(',', ':'), sort_keys=True).encode('utf-8')
+        return json.dumps(matched, separators=(",", ":"), sort_keys=True).encode("utf-8")
+
 
 class InMemoryAuditStore:
     """In-memory audit store for testing.
@@ -68,12 +72,14 @@ class InMemoryAuditStore:
     Falls back to ``b"[]"`` for unknown windows.
     """
 
-    def __init__(self, slices: dict[tuple[int, int], bytes] | None=None) -> None:
+    def __init__(self, slices: dict[tuple[int, int], bytes] | None = None) -> None:
         self._slices: dict[tuple[int, int], bytes] = slices or {}
 
     def read_audit_slice(self, window_start_utc: int, window_end_utc: int) -> bytes:
-        return self._slices.get((window_start_utc, window_end_utc), b'[]')
+        return self._slices.get((window_start_utc, window_end_utc), b"[]")
 
     def add_slice(self, window_start_utc: int, window_end_utc: int, data: bytes) -> None:
         self._slices[window_start_utc, window_end_utc] = data
-__all__ = ['FileBackedAuditStore', 'InMemoryAuditStore']
+
+
+__all__ = ["FileBackedAuditStore", "InMemoryAuditStore"]

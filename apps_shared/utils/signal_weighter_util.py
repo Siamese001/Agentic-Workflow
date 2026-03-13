@@ -4,13 +4,17 @@ This module provides dynamic weighting of retrieved documents based on recipient
 archetype and industry, enabling more relevant content selection for personalized
 outreach and resume generation.
 """
+
 import logging
+
 from pydantic import BaseModel, Field, confloat
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 logger = logging.getLogger(__name__)
+
 
 class SignalWeights(BaseModel):
     """Weight coefficients for different signal types (0.0-1.0)."""
+
     technical_depth: confloat(ge=0.0, le=1.0) = 0.5
     business_impact: confloat(ge=0.0, le=1.0) = 0.5
     leadership_scope: confloat(ge=0.0, le=1.0) = 0.5
@@ -18,20 +22,28 @@ class SignalWeights(BaseModel):
 
     class Config:
         """Pydantic configuration."""
+
         validate_assignment = True
 
     def as_dict(self) -> dict[str, float]:
         """Convert weights to dictionary."""
-        return {'technical_depth': self.technical_depth, 'business_impact': self.business_impact, 'leadership_scope': self.leadership_scope, 'cultural_fit': self.cultural_fit}
+        return {
+            "technical_depth": self.technical_depth,
+            "business_impact": self.business_impact,
+            "leadership_scope": self.leadership_scope,
+            "cultural_fit": self.cultural_fit,
+        }
+
 
 class WeightingResult(BaseModel):
     """Result of reweighting operation."""
-    original_score: confloat(ge=0.0, le=1.0) = Field(..., description='Original relevance score')
-    adjusted_score: confloat(ge=0.0, le=1.0) = Field(..., description='Adjusted score after weighting')
-    weights_applied: SignalWeights = Field(..., description='Weights that were applied')
-    signal_type: str = Field(..., description='Type of signal detected')
-    adjustment_factor: confloat(ge=0.0, le=1.0) = Field(..., description='Weight factor applied')
-    doc_id: str | None = Field(None, description='Document identifier for logging')
+
+    original_score: confloat(ge=0.0, le=1.0) = Field(..., description="Original relevance score")
+    adjusted_score: confloat(ge=0.0, le=1.0) = Field(..., description="Adjusted score after weighting")
+    weights_applied: SignalWeights = Field(..., description="Weights that were applied")
+    signal_type: str = Field(..., description="Type of signal detected")
+    adjustment_factor: confloat(ge=0.0, le=1.0) = Field(..., description="Weight factor applied")
+    doc_id: str | None = Field(None, description="Document identifier for logging")
 
     @property
     def score_change(self) -> float:
@@ -45,6 +57,7 @@ class WeightingResult(BaseModel):
             return 0.0
         return self.score_change / self.original_score * 100
 
+
 class SignalWeighter:
     """Dynamic signal weighter for archetype-aware document scoring.
 
@@ -52,18 +65,98 @@ class SignalWeighter:
     target recipient's persona (e.g., CTO vs. Recruiter) and industry context.
     """
 
-    def __init__(self, default_weights: SignalWeights | None=None):
+    def __init__(self, default_weights: SignalWeights | None = None):
         """Initialize the signal weighter.
 
         Args:
             default_weights: Default weights to use when no specific mapping exists
         """
         self.default_weights = default_weights or SignalWeights()
-        self._archetype_mappings = {'CTO': SignalWeights(technical_depth=0.9, leadership_scope=0.7, business_impact=0.4, cultural_fit=0.3), 'VP Engineering': SignalWeights(technical_depth=0.8, leadership_scope=0.8, business_impact=0.5, cultural_fit=0.4), 'Engineering Manager': SignalWeights(technical_depth=0.6, leadership_scope=0.9, business_impact=0.4, cultural_fit=0.6), 'Staff Engineer': SignalWeights(technical_depth=1.0, leadership_scope=0.4, business_impact=0.3, cultural_fit=0.5), 'Principal Engineer': SignalWeights(technical_depth=1.0, leadership_scope=0.5, business_impact=0.4, cultural_fit=0.5), 'CEO': SignalWeights(technical_depth=0.3, leadership_scope=0.8, business_impact=1.0, cultural_fit=0.7), 'Founder': SignalWeights(technical_depth=0.4, leadership_scope=0.7, business_impact=1.0, cultural_fit=0.8), 'CFO': SignalWeights(technical_depth=0.2, leadership_scope=0.6, business_impact=1.0, cultural_fit=0.5), 'CPO': SignalWeights(technical_depth=0.5, leadership_scope=0.6, business_impact=0.7, cultural_fit=0.9), 'VP Product': SignalWeights(technical_depth=0.4, leadership_scope=0.7, business_impact=0.8, cultural_fit=0.8), 'Product Manager': SignalWeights(technical_depth=0.5, leadership_scope=0.5, business_impact=0.7, cultural_fit=0.8), 'Recruiter': SignalWeights(technical_depth=0.5, leadership_scope=0.4, business_impact=0.5, cultural_fit=0.9), 'Talent Acquisition': SignalWeights(technical_depth=0.5, leadership_scope=0.4, business_impact=0.5, cultural_fit=0.9), 'HR Manager': SignalWeights(technical_depth=0.3, leadership_scope=0.5, business_impact=0.6, cultural_fit=1.0), 'VP Sales': SignalWeights(technical_depth=0.3, leadership_scope=0.6, business_impact=1.0, cultural_fit=0.7), 'Account Executive': SignalWeights(technical_depth=0.3, leadership_scope=0.4, business_impact=0.9, cultural_fit=0.8)}
-        self._industry_modifiers = {'technology': {'technical_depth': 1.2, 'business_impact': 0.9, 'leadership_scope': 1.0, 'cultural_fit': 0.9}, 'finance': {'technical_depth': 0.7, 'business_impact': 1.2, 'leadership_scope': 1.1, 'cultural_fit': 0.8}, 'healthcare': {'technical_depth': 0.9, 'business_impact': 0.8, 'leadership_scope': 1.0, 'cultural_fit': 1.1}, 'retail': {'technical_depth': 0.6, 'business_impact': 1.1, 'leadership_scope': 0.9, 'cultural_fit': 1.0}, 'consulting': {'technical_depth': 0.8, 'business_impact': 1.1, 'leadership_scope': 1.0, 'cultural_fit': 0.9}}
-        logger.info(f'Initialized SignalWeighter with {len(self._archetype_mappings)} archetype mappings')
+        self._archetype_mappings = {
+            "CTO": SignalWeights(
+                technical_depth=0.9, leadership_scope=0.7, business_impact=0.4, cultural_fit=0.3
+            ),
+            "VP Engineering": SignalWeights(
+                technical_depth=0.8, leadership_scope=0.8, business_impact=0.5, cultural_fit=0.4
+            ),
+            "Engineering Manager": SignalWeights(
+                technical_depth=0.6, leadership_scope=0.9, business_impact=0.4, cultural_fit=0.6
+            ),
+            "Staff Engineer": SignalWeights(
+                technical_depth=1.0, leadership_scope=0.4, business_impact=0.3, cultural_fit=0.5
+            ),
+            "Principal Engineer": SignalWeights(
+                technical_depth=1.0, leadership_scope=0.5, business_impact=0.4, cultural_fit=0.5
+            ),
+            "CEO": SignalWeights(
+                technical_depth=0.3, leadership_scope=0.8, business_impact=1.0, cultural_fit=0.7
+            ),
+            "Founder": SignalWeights(
+                technical_depth=0.4, leadership_scope=0.7, business_impact=1.0, cultural_fit=0.8
+            ),
+            "CFO": SignalWeights(
+                technical_depth=0.2, leadership_scope=0.6, business_impact=1.0, cultural_fit=0.5
+            ),
+            "CPO": SignalWeights(
+                technical_depth=0.5, leadership_scope=0.6, business_impact=0.7, cultural_fit=0.9
+            ),
+            "VP Product": SignalWeights(
+                technical_depth=0.4, leadership_scope=0.7, business_impact=0.8, cultural_fit=0.8
+            ),
+            "Product Manager": SignalWeights(
+                technical_depth=0.5, leadership_scope=0.5, business_impact=0.7, cultural_fit=0.8
+            ),
+            "Recruiter": SignalWeights(
+                technical_depth=0.5, leadership_scope=0.4, business_impact=0.5, cultural_fit=0.9
+            ),
+            "Talent Acquisition": SignalWeights(
+                technical_depth=0.5, leadership_scope=0.4, business_impact=0.5, cultural_fit=0.9
+            ),
+            "HR Manager": SignalWeights(
+                technical_depth=0.3, leadership_scope=0.5, business_impact=0.6, cultural_fit=1.0
+            ),
+            "VP Sales": SignalWeights(
+                technical_depth=0.3, leadership_scope=0.6, business_impact=1.0, cultural_fit=0.7
+            ),
+            "Account Executive": SignalWeights(
+                technical_depth=0.3, leadership_scope=0.4, business_impact=0.9, cultural_fit=0.8
+            ),
+        }
+        self._industry_modifiers = {
+            "technology": {
+                "technical_depth": 1.2,
+                "business_impact": 0.9,
+                "leadership_scope": 1.0,
+                "cultural_fit": 0.9,
+            },
+            "finance": {
+                "technical_depth": 0.7,
+                "business_impact": 1.2,
+                "leadership_scope": 1.1,
+                "cultural_fit": 0.8,
+            },
+            "healthcare": {
+                "technical_depth": 0.9,
+                "business_impact": 0.8,
+                "leadership_scope": 1.0,
+                "cultural_fit": 1.1,
+            },
+            "retail": {
+                "technical_depth": 0.6,
+                "business_impact": 1.1,
+                "leadership_scope": 0.9,
+                "cultural_fit": 1.0,
+            },
+            "consulting": {
+                "technical_depth": 0.8,
+                "business_impact": 1.1,
+                "leadership_scope": 1.0,
+                "cultural_fit": 0.9,
+            },
+        }
+        logger.info(f"Initialized SignalWeighter with {len(self._archetype_mappings)} archetype mappings")
 
-    def get_weights(self, archetype: str, industry: str | None=None) -> SignalWeights:
+    def get_weights(self, archetype: str, industry: str | None = None) -> SignalWeights:
         """Get weights for a specific archetype and industry.
 
         Args:
@@ -74,7 +167,7 @@ class SignalWeighter:
             SignalWeights configured for the archetype and industry
         """
         try:
-            normalized_archetype = archetype.strip().lower() if archetype else ''
+            normalized_archetype = archetype.strip().lower() if archetype else ""
             base_weights = None
             for key, weights in self._archetype_mappings.items():
                 if key.lower() == normalized_archetype:
@@ -88,19 +181,38 @@ class SignalWeighter:
                 if normalized_industry in self._industry_modifiers:
                     modifiers = self._industry_modifiers[normalized_industry]
                     try:
-                        adjusted_weights = SignalWeights(technical_depth=min(1.0, base_weights.technical_depth * modifiers['technical_depth']), business_impact=min(1.0, base_weights.business_impact * modifiers['business_impact']), leadership_scope=min(1.0, base_weights.leadership_scope * modifiers['leadership_scope']), cultural_fit=min(1.0, base_weights.cultural_fit * modifiers['cultural_fit']))
-                        logger.debug(f'Applied industry modifiers for {industry}: {base_weights.as_dict()} -> {adjusted_weights.as_dict()}')
+                        adjusted_weights = SignalWeights(
+                            technical_depth=min(
+                                1.0, base_weights.technical_depth * modifiers["technical_depth"]
+                            ),
+                            business_impact=min(
+                                1.0, base_weights.business_impact * modifiers["business_impact"]
+                            ),
+                            leadership_scope=min(
+                                1.0, base_weights.leadership_scope * modifiers["leadership_scope"]
+                            ),
+                            cultural_fit=min(1.0, base_weights.cultural_fit * modifiers["cultural_fit"]),
+                        )
+                        logger.debug(
+                            f"Applied industry modifiers for {industry}: {base_weights.as_dict()} -> {adjusted_weights.as_dict()}"
+                        )
                         return adjusted_weights
                     except Exception as e:
-                        logger.error(f'Failed to apply industry modifiers: {str(e)}')
+                        logger.error(f"Failed to apply industry modifiers: {str(e)}")
                         return None
-            logger.debug(f'Using base weights for archetype {archetype}: {base_weights.as_dict()}')
+            logger.debug(f"Using base weights for archetype {archetype}: {base_weights.as_dict()}")
             return base_weights
         except Exception as e:
             logger.error(f"Error getting weights for archetype '{archetype}': {str(e)}")
             return None
 
-    def reweight_score(self, original_score: float, doc_metadata: dict[str, str | float], weights: SignalWeights, doc_id: str | None=None) -> WeightingResult:
+    def reweight_score(
+        self,
+        original_score: float,
+        doc_metadata: dict[str, str | float],
+        weights: SignalWeights,
+        doc_id: str | None = None,
+    ) -> WeightingResult:
         """Apply dynamic weighting to a document score.
 
         Args:
@@ -114,23 +226,33 @@ class SignalWeighter:
         """
         try:
             if not isinstance(original_score, int | float):
-                logger.error(f'Invalid score type: {type(original_score)} for doc {doc_id}')
+                logger.error(f"Invalid score type: {type(original_score)} for doc {doc_id}")
                 original_score = 0.0
             if not 0.0 <= original_score <= 1.0:
-                logger.warning(f'Score out of bounds: {original_score} for doc {doc_id}, clamping to [0,1]')
+                logger.warning(f"Score out of bounds: {original_score} for doc {doc_id}, clamping to [0,1]")
                 original_score = max(0.0, min(1.0, original_score))
             if not isinstance(doc_metadata, dict):
-                logger.warning(f'Invalid metadata type for doc {doc_id}: {type(doc_metadata)}')
+                logger.warning(f"Invalid metadata type for doc {doc_id}: {type(doc_metadata)}")
                 doc_metadata = {}
             signal_type = self._extract_signal_type(doc_metadata)
             weight = self._get_weight_for_signal_type(signal_type, weights)
             adjusted_score = original_score * weight
             adjusted_score = max(0.0, min(1.0, adjusted_score))
-            result = WeightingResult(original_score=original_score, adjusted_score=adjusted_score, weights_applied=weights, signal_type=signal_type, adjustment_factor=weight, doc_id=doc_id)
-            logger.debug(f'Reweighted score: {original_score:.3f} -> {adjusted_score:.3f} (signal: {signal_type}, weight: {weight:.2f})', extra={'doc_id': doc_id, 'signal_type': signal_type, 'weight': weight})
+            result = WeightingResult(
+                original_score=original_score,
+                adjusted_score=adjusted_score,
+                weights_applied=weights,
+                signal_type=signal_type,
+                adjustment_factor=weight,
+                doc_id=doc_id,
+            )
+            logger.debug(
+                f"Reweighted score: {original_score:.3f} -> {adjusted_score:.3f} (signal: {signal_type}, weight: {weight:.2f})",
+                extra={"doc_id": doc_id, "signal_type": signal_type, "weight": weight},
+            )
             return result
         except Exception as e:
-            logger.error(f'Error reweighting score for doc {doc_id}: {str(e)}')
+            logger.error(f"Error reweighting score for doc {doc_id}: {str(e)}")
             return None
 
     def _extract_signal_type(self, metadata: dict[str, str | float]) -> str:
@@ -143,27 +265,29 @@ class SignalWeighter:
             Signal type string
         """
         try:
-            if 'type' in metadata:
-                return str(metadata['type'])
-            if 'category' in metadata:
-                return str(metadata['category'])
-            if 'tags' in metadata and metadata['tags']:
-                if isinstance(metadata['tags'], list):
-                    return str(metadata['tags'][0])
+            if "type" in metadata:
+                return str(metadata["type"])
+            if "category" in metadata:
+                return str(metadata["category"])
+            if "tags" in metadata and metadata["tags"]:
+                if isinstance(metadata["tags"], list):
+                    return str(metadata["tags"][0])
                 else:
-                    return str(metadata['tags'])
-            content_lower = str(metadata.get('content', '')).lower()
-            if any((keyword in content_lower for keyword in ['revenue', 'growth', 'savings', 'roi'])):
-                return 'business_impact'
-            elif any((keyword in content_lower for keyword in ['team', 'managed', 'led', 'mentorship'])):
-                return 'leadership_scope'
-            elif any((keyword in content_lower for keyword in ['python', 'java', 'architecture', 'algorithm'])):
-                return 'technical_depth'
-            elif any((keyword in content_lower for keyword in ['culture', 'mission', 'values', 'collaboration'])):
-                return 'cultural_fit'
-            return 'balanced'
+                    return str(metadata["tags"])
+            content_lower = str(metadata.get("content", "")).lower()
+            if any(keyword in content_lower for keyword in ["revenue", "growth", "savings", "roi"]):
+                return "business_impact"
+            elif any(keyword in content_lower for keyword in ["team", "managed", "led", "mentorship"]):
+                return "leadership_scope"
+            elif any(keyword in content_lower for keyword in ["python", "java", "architecture", "algorithm"]):
+                return "technical_depth"
+            elif any(
+                keyword in content_lower for keyword in ["culture", "mission", "values", "collaboration"]
+            ):
+                return "cultural_fit"
+            return "balanced"
         except Exception as e:
-            logger.error(f'Error extracting signal type: {str(e)}')
+            logger.error(f"Error extracting signal type: {str(e)}")
             return None
 
     def _get_weight_for_signal_type(self, signal_type: str, weights: SignalWeights) -> float:
@@ -177,13 +301,25 @@ class SignalWeighter:
             Weight value for the signal type
         """
         try:
-            weight_map = {'technical_depth': weights.technical_depth, 'technical': weights.technical_depth, 'business_impact': weights.business_impact, 'business': weights.business_impact, 'leadership_scope': weights.leadership_scope, 'leadership': weights.leadership_scope, 'cultural_fit': weights.cultural_fit, 'cultural': weights.cultural_fit, 'balanced': 0.5}
+            weight_map = {
+                "technical_depth": weights.technical_depth,
+                "technical": weights.technical_depth,
+                "business_impact": weights.business_impact,
+                "business": weights.business_impact,
+                "leadership_scope": weights.leadership_scope,
+                "leadership": weights.leadership_scope,
+                "cultural_fit": weights.cultural_fit,
+                "cultural": weights.cultural_fit,
+                "balanced": 0.5,
+            }
             return weight_map.get(signal_type.lower(), 0.5)
         except Exception as e:
             logger.error(f"Error getting weight for signal type '{signal_type}': {str(e)}")
             return None
 
-    def batch_reweight(self, documents: list[dict[str, str | float]], archetype: str, industry: str | None=None) -> list[WeightingResult]:
+    def batch_reweight(
+        self, documents: list[dict[str, str | float]], archetype: str, industry: str | None = None
+    ) -> list[WeightingResult]:
         """Apply dynamic weighting to a batch of documents.
 
         Args:
@@ -198,17 +334,18 @@ class SignalWeighter:
             weights = self.get_weights(archetype, industry)
             results = []
             for doc in documents:
-                score = float(doc.get('score', 0.0))
-                metadata = {k: v for k, v in doc.items() if k != 'score'}
-                doc_id = doc.get('doc_id') or doc.get('id')
+                score = float(doc.get("score", 0.0))
+                metadata = {k: v for k, v in doc.items() if k != "score"}
+                doc_id = doc.get("doc_id") or doc.get("id")
                 result = self.reweight_score(score, metadata, weights, doc_id)
                 results.append(result)
             return results
         except Exception as e:
-            logger.error(f'Error in batch reweighting: {str(e)}')
+            logger.error(f"Error in batch reweighting: {str(e)}")
             return None
 
-def create_signal_weighter(default_weights: SignalWeights | None=None) -> SignalWeighter:
+
+def create_signal_weighter(default_weights: SignalWeights | None = None) -> SignalWeighter:
     """Create a SignalWeighter instance.
 
     Args:
@@ -219,7 +356,10 @@ def create_signal_weighter(default_weights: SignalWeights | None=None) -> Signal
     """
     return SignalWeighter(default_weights=default_weights)
 
-def weight_results(documents: list[dict[str, str | float]], archetype: str, industry: str | None=None) -> list[WeightingResult]:
+
+def weight_results(
+    documents: list[dict[str, str | float]], archetype: str, industry: str | None = None
+) -> list[WeightingResult]:
     """Quickly weight a batch of results for an archetype.
 
     Args:

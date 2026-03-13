@@ -7,12 +7,14 @@ oscillatory meta-learning from destabilising the routing configuration.
 
 Phase 6.2: Mathematically-Sealed Sovereignty Hardening
 """
+
 from __future__ import annotations
+
 import threading
 from collections import deque
 from dataclasses import dataclass
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 @dataclass(frozen=True)
 class _ThresholdEvent:
@@ -20,8 +22,10 @@ class _ThresholdEvent:
     value: Any
     cycle: int
 
+
 class ParameterFrozenError(RuntimeError):
     """Raised when a frozen parameter is modified during its freeze window."""
+
 
 class OscillationDetector:
     """Detects and freezes oscillating meta-learning threshold parameters.
@@ -39,11 +43,11 @@ class OscillationDetector:
         freeze_cycles: How many cycles a frozen parameter remains locked.
     """
 
-    def __init__(self, cooldown_window: int=10, freeze_cycles: int=5) -> None:
+    def __init__(self, cooldown_window: int = 10, freeze_cycles: int = 5) -> None:
         if cooldown_window < 2:
-            raise ValueError('cooldown_window must be >= 2')
+            raise ValueError("cooldown_window must be >= 2")
         if freeze_cycles < 1:
-            raise ValueError('freeze_cycles must be >= 1')
+            raise ValueError("freeze_cycles must be >= 1")
         self._cooldown_window = cooldown_window
         self._freeze_cycles = freeze_cycles
         self._lock = threading.Lock()
@@ -67,7 +71,9 @@ class OscillationDetector:
             if self._oscillation_detected(parameter):
                 freeze_until = cycle + self._freeze_cycles
                 self._frozen_until[parameter] = freeze_until
-                raise ParameterFrozenError(f'OscillationDetector: parameter {parameter!r} oscillated twice within cooldown_window={self._cooldown_window}; frozen until cycle {freeze_until}')
+                raise ParameterFrozenError(
+                    f"OscillationDetector: parameter {parameter!r} oscillated twice within cooldown_window={self._cooldown_window}; frozen until cycle {freeze_until}"
+                )
 
     def is_frozen(self, parameter: str, cycle: int) -> bool:
         """Return True if *parameter* is currently frozen at *cycle*."""
@@ -88,7 +94,9 @@ class OscillationDetector:
     def _assert_not_frozen(self, parameter: str, cycle: int) -> None:
         freeze_until = self._frozen_until.get(parameter, -1)
         if cycle <= freeze_until:
-            raise ParameterFrozenError(f'OscillationDetector: parameter {parameter!r} is frozen until cycle {freeze_until} (current cycle={cycle})')
+            raise ParameterFrozenError(
+                f"OscillationDetector: parameter {parameter!r} is frozen until cycle {freeze_until} (current cycle={cycle})"
+            )
 
     def _append_event(self, parameter: str, value: Any, cycle: int) -> None:
         if parameter not in self._history:
@@ -107,4 +115,6 @@ class OscillationDetector:
                 if flip_count >= 2:
                     return True
         return False
-__all__ = ['OscillationDetector', 'ParameterFrozenError']
+
+
+__all__ = ["OscillationDetector", "ParameterFrozenError"]

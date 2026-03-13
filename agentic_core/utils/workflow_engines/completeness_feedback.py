@@ -12,11 +12,14 @@ INTENT: Create labeled examples for 'relevant chunk, incomplete context, wrong a
 Integrates with existing deterministic HITL and DPO flows without breaking
 existing routing or evidence contracts.
 """
+
 from __future__ import annotations
+
 from dataclasses import dataclass, field
 from typing import Any
+
 from agentic_core.evaluation.feedback.schemas import ReviewRubric
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 @dataclass
 class CompletenessReviewRubric(ReviewRubric):
@@ -30,6 +33,7 @@ class CompletenessReviewRubric(ReviewRubric):
       incomplete_parent_context  — parent section was available but not used
       answer_not_fully_supported — answer makes claims beyond the evidence span
     """
+
     missing_condition: bool = False
     missing_exception: bool = False
     missing_scope: bool = False
@@ -39,17 +43,49 @@ class CompletenessReviewRubric(ReviewRubric):
 
     def to_dict(self) -> dict[str, Any]:
         base = super().to_dict()
-        base.update({'missing_condition': self.missing_condition, 'missing_exception': self.missing_exception, 'missing_scope': self.missing_scope, 'missing_temporal_qualifier': self.missing_temporal_qualifier, 'incomplete_parent_context': self.incomplete_parent_context, 'answer_not_fully_supported': self.answer_not_fully_supported})
+        base.update(
+            {
+                "missing_condition": self.missing_condition,
+                "missing_exception": self.missing_exception,
+                "missing_scope": self.missing_scope,
+                "missing_temporal_qualifier": self.missing_temporal_qualifier,
+                "incomplete_parent_context": self.incomplete_parent_context,
+                "answer_not_fully_supported": self.answer_not_fully_supported,
+            }
+        )
         return base
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> CompletenessReviewRubric:
-        return cls(grounded=data['grounded'], useful=data['useful'], correct=data['correct'], safe=data['safe'], missing_context=data['missing_context'], reviewer_id=data.get('reviewer_id', ''), notes=data.get('notes', ''), missing_condition=bool(data.get('missing_condition', False)), missing_exception=bool(data.get('missing_exception', False)), missing_scope=bool(data.get('missing_scope', False)), missing_temporal_qualifier=bool(data.get('missing_temporal_qualifier', False)), incomplete_parent_context=bool(data.get('incomplete_parent_context', False)), answer_not_fully_supported=bool(data.get('answer_not_fully_supported', False)))
+        return cls(
+            grounded=data["grounded"],
+            useful=data["useful"],
+            correct=data["correct"],
+            safe=data["safe"],
+            missing_context=data["missing_context"],
+            reviewer_id=data.get("reviewer_id", ""),
+            notes=data.get("notes", ""),
+            missing_condition=bool(data.get("missing_condition", False)),
+            missing_exception=bool(data.get("missing_exception", False)),
+            missing_scope=bool(data.get("missing_scope", False)),
+            missing_temporal_qualifier=bool(data.get("missing_temporal_qualifier", False)),
+            incomplete_parent_context=bool(data.get("incomplete_parent_context", False)),
+            answer_not_fully_supported=bool(data.get("answer_not_fully_supported", False)),
+        )
 
     @property
     def completeness_failure_count(self) -> int:
         """Count of completeness-specific failures labeled."""
-        return sum([self.missing_condition, self.missing_exception, self.missing_scope, self.missing_temporal_qualifier, self.incomplete_parent_context, self.answer_not_fully_supported])
+        return sum(
+            [
+                self.missing_condition,
+                self.missing_exception,
+                self.missing_scope,
+                self.missing_temporal_qualifier,
+                self.incomplete_parent_context,
+                self.answer_not_fully_supported,
+            ]
+        )
 
     @property
     def has_completeness_failure(self) -> bool:
@@ -60,10 +96,11 @@ class CompletenessReviewRubric(ReviewRubric):
     def quality_score(self) -> float:
         """Extended quality score including completeness penalty."""
         base_dimensions = [self.grounded, self.useful, self.correct, self.safe]
-        base_raw = sum((1 for d in base_dimensions if d)) / len(base_dimensions)
+        base_raw = sum(1 for d in base_dimensions if d) / len(base_dimensions)
         context_penalty = 0.1 if self.missing_context else 0.0
         completeness_penalty = 0.05 * self.completeness_failure_count
         return max(0.0, base_raw - context_penalty - completeness_penalty)
+
 
 @dataclass
 class CompletenessFeedbackExample:
@@ -72,6 +109,7 @@ class CompletenessFeedbackExample:
     Captures the 'relevant chunk, incomplete context, wrong answer' pattern.
     Integrates with existing DPO flows via support_failure_reason.
     """
+
     example_id: str
     query: str
     model_answer: str
@@ -83,14 +121,36 @@ class CompletenessFeedbackExample:
     metadata: dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
-        return {'example_id': self.example_id, 'query': self.query, 'model_answer': self.model_answer, 'retrieved_chunks': list(self.retrieved_chunks), 'expanded_parent_context': list(self.expanded_parent_context), 'human_annotation': self.human_annotation.to_dict(), 'support_failure_reason': self.support_failure_reason, 'context_documents': list(self.context_documents), 'metadata': dict(self.metadata)}
+        return {
+            "example_id": self.example_id,
+            "query": self.query,
+            "model_answer": self.model_answer,
+            "retrieved_chunks": list(self.retrieved_chunks),
+            "expanded_parent_context": list(self.expanded_parent_context),
+            "human_annotation": self.human_annotation.to_dict(),
+            "support_failure_reason": self.support_failure_reason,
+            "context_documents": list(self.context_documents),
+            "metadata": dict(self.metadata),
+        }
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> CompletenessFeedbackExample:
-        return cls(example_id=data['example_id'], query=data['query'], model_answer=data['model_answer'], retrieved_chunks=list(data['retrieved_chunks']), expanded_parent_context=list(data['expanded_parent_context']), human_annotation=CompletenessReviewRubric.from_dict(data['human_annotation']), support_failure_reason=data['support_failure_reason'], context_documents=list(data['context_documents']), metadata=dict(data.get('metadata', {})))
+        return cls(
+            example_id=data["example_id"],
+            query=data["query"],
+            model_answer=data["model_answer"],
+            retrieved_chunks=list(data["retrieved_chunks"]),
+            expanded_parent_context=list(data["expanded_parent_context"]),
+            human_annotation=CompletenessReviewRubric.from_dict(data["human_annotation"]),
+            support_failure_reason=data["support_failure_reason"],
+            context_documents=list(data["context_documents"]),
+            metadata=dict(data.get("metadata", {})),
+        )
 
     @property
     def is_right_chunk_wrong_context(self) -> bool:
         """True when the retrieved chunk was relevant but context was incomplete."""
         return self.human_annotation.grounded and self.human_annotation.has_completeness_failure
-__all__ = ['CompletenessReviewRubric', 'CompletenessFeedbackExample']
+
+
+__all__ = ["CompletenessReviewRubric", "CompletenessFeedbackExample"]

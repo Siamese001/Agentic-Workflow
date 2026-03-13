@@ -4,14 +4,18 @@ Chunk Validators
 Validates chunk manifests for size, overlap sanity, duplicates, and orphans.
 All validators are deterministic and zero-dependency.
 """
+
 from __future__ import annotations
+
 from dataclasses import dataclass, field
+
 from .policies import Chunk, ChunkManifest
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 @dataclass
 class ChunkQualityReport:
     """Validation report for a chunk manifest."""
+
     doc_id: str
     policy_name: str
     total_chunks: int
@@ -29,36 +33,59 @@ class ChunkQualityReport:
     @property
     def is_valid(self) -> bool:
         """True iff no violations detected."""
-        return self.duplicates == 0 and self.orphan_chunks == 0 and (self.oversized_chunks == 0) and (self.overlap_violations == 0)
+        return (
+            self.duplicates == 0
+            and self.orphan_chunks == 0
+            and (self.oversized_chunks == 0)
+            and (self.overlap_violations == 0)
+        )
 
     def to_dict(self) -> dict:
-        return {'doc_id': self.doc_id, 'policy_name': self.policy_name, 'total_chunks': self.total_chunks, 'duplicates': self.duplicates, 'orphan_chunks': self.orphan_chunks, 'oversized_chunks': self.oversized_chunks, 'undersized_chunks': self.undersized_chunks, 'overlap_violations': self.overlap_violations, 'duplicate_chunk_ids': self.duplicate_chunk_ids, 'orphan_chunk_ids': self.orphan_chunk_ids, 'oversized_chunk_ids': self.oversized_chunk_ids, 'undersized_chunk_ids': self.undersized_chunk_ids, 'messages': self.messages, 'is_valid': self.is_valid}
+        return {
+            "doc_id": self.doc_id,
+            "policy_name": self.policy_name,
+            "total_chunks": self.total_chunks,
+            "duplicates": self.duplicates,
+            "orphan_chunks": self.orphan_chunks,
+            "oversized_chunks": self.oversized_chunks,
+            "undersized_chunks": self.undersized_chunks,
+            "overlap_violations": self.overlap_violations,
+            "duplicate_chunk_ids": self.duplicate_chunk_ids,
+            "orphan_chunk_ids": self.orphan_chunk_ids,
+            "oversized_chunk_ids": self.oversized_chunk_ids,
+            "undersized_chunk_ids": self.undersized_chunk_ids,
+            "messages": self.messages,
+            "is_valid": self.is_valid,
+        }
+
 
 class MaxChunkSizeValidator:
     """Flags chunks exceeding a maximum token count."""
 
     # guardian: allow-magic-config
-    def __init__(self, max_tokens: int=1024):
+    def __init__(self, max_tokens: int = 1024):
         if max_tokens <= 0:
-            raise ValueError(f'max_tokens must be positive, got {max_tokens}')
+            raise ValueError(f"max_tokens must be positive, got {max_tokens}")
         self.max_tokens = max_tokens
 
     def validate(self, chunks: list[Chunk]) -> list[str]:
         """Return list of chunk_ids that exceed max_tokens."""
         return [c.chunk_id for c in chunks if c.token_count > self.max_tokens]
 
+
 class MinChunkSizeValidator:
     """Flags chunks below a minimum token count (potential orphans)."""
 
     # guardian: allow-magic-config
-    def __init__(self, min_tokens: int=10):
+    def __init__(self, min_tokens: int = 10):
         if min_tokens < 0:
-            raise ValueError(f'min_tokens must be non-negative, got {min_tokens}')
+            raise ValueError(f"min_tokens must be non-negative, got {min_tokens}")
         self.min_tokens = min_tokens
 
     def validate(self, chunks: list[Chunk]) -> list[str]:
         """Return list of chunk_ids that are below min_tokens."""
         return [c.chunk_id for c in chunks if c.token_count < self.min_tokens]
+
 
 class OverlapSanityValidator:
     """Verifies that overlapping windows don't produce identical chunks."""
@@ -70,6 +97,7 @@ class OverlapSanityValidator:
             if chunks[i].content.strip() == chunks[i + 1].content.strip():
                 violations += 1
         return violations
+
 
 class DuplicateChunkDetector:
     """Detects chunks with duplicate content across the manifest."""
@@ -86,6 +114,7 @@ class DuplicateChunkDetector:
                 seen.add(content_key)
         return duplicates
 
+
 class OrphanChunkDetector:
     """Detects chunks with no meaningful content (empty or whitespace-only)."""
 
@@ -93,11 +122,12 @@ class OrphanChunkDetector:
         """Return list of chunk_ids with empty or whitespace-only content."""
         return [c.chunk_id for c in chunks if not c.content.strip()]
 
+
 class ChunkManifestValidator:
     """Runs all validators against a ChunkManifest and produces a ChunkQualityReport."""
 
     # guardian: allow-magic-config
-    def __init__(self, max_chunk_tokens: int=1024, min_chunk_tokens: int=10):
+    def __init__(self, max_chunk_tokens: int = 1024, min_chunk_tokens: int = 10):
         self.max_validator = MaxChunkSizeValidator(max_tokens=max_chunk_tokens)
         self.min_validator = MinChunkSizeValidator(min_tokens=min_chunk_tokens)
         self.overlap_validator = OverlapSanityValidator()
@@ -121,12 +151,36 @@ class ChunkManifestValidator:
         duplicates = self.duplicate_detector.detect(chunks)
         orphans = self.orphan_detector.detect(chunks)
         if oversized:
-            messages.append(f'{len(oversized)} chunk(s) exceed max token limit')
+            messages.append(f"{len(oversized)} chunk(s) exceed max token limit")
         if orphans:
-            messages.append(f'{len(orphans)} orphan chunk(s) detected (empty content)')
+            messages.append(f"{len(orphans)} orphan chunk(s) detected (empty content)")
         if duplicates:
-            messages.append(f'{len(duplicates)} duplicate chunk(s) detected')
+            messages.append(f"{len(duplicates)} duplicate chunk(s) detected")
         if overlap_violations > 0:
-            messages.append(f'{overlap_violations} overlap sanity violation(s) detected')
-        return ChunkQualityReport(doc_id=manifest.doc_id, policy_name=manifest.policy_name, total_chunks=len(chunks), duplicates=len(duplicates), orphan_chunks=len(orphans), oversized_chunks=len(oversized), undersized_chunks=len(undersized), overlap_violations=overlap_violations, duplicate_chunk_ids=duplicates, orphan_chunk_ids=orphans, oversized_chunk_ids=oversized, undersized_chunk_ids=undersized, messages=messages)
-__all__ = ['ChunkQualityReport', 'MaxChunkSizeValidator', 'MinChunkSizeValidator', 'OverlapSanityValidator', 'DuplicateChunkDetector', 'OrphanChunkDetector', 'ChunkManifestValidator']
+            messages.append(f"{overlap_violations} overlap sanity violation(s) detected")
+        return ChunkQualityReport(
+            doc_id=manifest.doc_id,
+            policy_name=manifest.policy_name,
+            total_chunks=len(chunks),
+            duplicates=len(duplicates),
+            orphan_chunks=len(orphans),
+            oversized_chunks=len(oversized),
+            undersized_chunks=len(undersized),
+            overlap_violations=overlap_violations,
+            duplicate_chunk_ids=duplicates,
+            orphan_chunk_ids=orphans,
+            oversized_chunk_ids=oversized,
+            undersized_chunk_ids=undersized,
+            messages=messages,
+        )
+
+
+__all__ = [
+    "ChunkQualityReport",
+    "MaxChunkSizeValidator",
+    "MinChunkSizeValidator",
+    "OverlapSanityValidator",
+    "DuplicateChunkDetector",
+    "OrphanChunkDetector",
+    "ChunkManifestValidator",
+]

@@ -1,24 +1,28 @@
 from __future__ import annotations
-'Action Plane Interface - The Hands.\n\nPhase 2 - Pillar 1: Layering Model\nDefines the contract for all tool execution and external interactions.\nL2 Execution: Side effects allowed, but controlled and observable.\n'
+
+"Action Plane Interface - The Hands.\n\nPhase 2 - Pillar 1: Layering Model\nDefines the contract for all tool execution and external interactions.\nL2 Execution: Side effects allowed, but controlled and observable.\n"
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 class ActionCapability(Enum):
     """Capabilities provided by the action plane."""
-    TOOL_EXECUTION = 'tool_execution'
-    API_CALLS = 'api_calls'
-    FILE_OPERATIONS = 'file_operations'
-    DATABASE_OPERATIONS = 'database_operations'
-    EXTERNAL_SERVICES = 'external_services'
-    SEARCH = 'search'
-    RETRIEVAL = 'retrieval'
+
+    TOOL_EXECUTION = "tool_execution"
+    API_CALLS = "api_calls"
+    FILE_OPERATIONS = "file_operations"
+    DATABASE_OPERATIONS = "database_operations"
+    EXTERNAL_SERVICES = "external_services"
+    SEARCH = "search"
+    RETRIEVAL = "retrieval"
+
 
 @dataclass
 class ActionRequest:
     """Request for action execution."""
+
     action_type: str
     tool_name: str
     parameters: dict[str, Any] = field(default_factory=dict)
@@ -28,11 +32,20 @@ class ActionRequest:
 
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
-        return {'action_type': self.action_type, 'tool_name': self.tool_name, 'parameters': self.parameters, 'context': self.context, 'timeout_ms': self.timeout_ms, 'retry_policy': self.retry_policy}
+        return {
+            "action_type": self.action_type,
+            "tool_name": self.tool_name,
+            "parameters": self.parameters,
+            "context": self.context,
+            "timeout_ms": self.timeout_ms,
+            "retry_policy": self.retry_policy,
+        }
+
 
 @dataclass
 class ActionResult:
     """Result from action execution."""
+
     success: bool
     output: Any = None
     error: str | None = None
@@ -42,7 +55,15 @@ class ActionResult:
 
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
-        return {'success': self.success, 'output': self.output, 'error': self.error, 'metadata': self.metadata, 'execution_time_ms': self.execution_time_ms, 'retries': self.retries}
+        return {
+            "success": self.success,
+            "output": self.output,
+            "error": self.error,
+            "metadata": self.metadata,
+            "execution_time_ms": self.execution_time_ms,
+            "retries": self.retries,
+        }
+
 
 class IActionPlane(ABC):
     """Interface for the Action Plane (Hands).
@@ -72,7 +93,9 @@ class IActionPlane(ABC):
         pass
 
     @abstractmethod
-    async def execute_batch(self, requests: list[ActionRequest], parallel: bool=False) -> list[ActionResult]:
+    async def execute_batch(
+        self, requests: list[ActionRequest], parallel: bool = False
+    ) -> list[ActionResult]:
         """Execute multiple actions.
 
         Args:

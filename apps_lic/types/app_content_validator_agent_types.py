@@ -12,6 +12,7 @@ Features:
 - Message diversity (similarity threshold checking)
 - Configurable validation rules
 """
+
 import logging
 import re
 import warnings
@@ -19,11 +20,15 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import THRESHOLD
+
 Logger = logging.getLogger(__name__)
+
 
 class ContentViolationType(Enum):
     """Types of content violations."""
+
     CONTACT_INVALID = auto()
     CONTACT_MISSING = auto()
     PROFANITY = auto()
@@ -33,25 +38,29 @@ class ContentViolationType(Enum):
     LENGTH = auto()
     FORMAT = auto()
 
+
 @dataclass
 class ContentViolation:
     """Represents a content violation."""
+
     violation_type: ContentViolationType
     message: str
     field_name: str | None = None
     value: str | None = None
-    severity: str = 'error'
+    severity: str = "error"
     rule_id: str | None = None
     suggestion: str | None = None
     similarity_score: float | None = None
 
     def __str__(self) -> str:
-        field_info = f' [{self.field_name}]' if self.field_name else ''
-        return f'[{self.violation_type.name}]{field_info}: {self.message}'
+        field_info = f" [{self.field_name}]" if self.field_name else ""
+        return f"[{self.violation_type.name}]{field_info}: {self.message}"
+
 
 @dataclass
 class ContentValidationReport:
     """Report of content validation results."""
+
     violations: list[ContentViolation] = field(default_factory=list)
     items_validated: int = 0
     items_passed: int = 0
@@ -60,7 +69,7 @@ class ContentValidationReport:
 
     @property
     def has_errors(self) -> bool:
-        return any((v.severity == 'error' for v in self.violations))
+        return any(v.severity == "error" for v in self.violations)
 
     @property
     def is_valid(self) -> bool:
@@ -72,9 +81,11 @@ class ContentValidationReport:
             return 0.0
         return self.items_passed / self.items_validated
 
+
 @dataclass
 class ContentConfig:
     """configuration for content validation."""
+
     validate_email: bool = True
     validate_linkedin: bool = True
     validate_phone: bool = False
@@ -89,8 +100,30 @@ class ContentConfig:
     max_length: int = 2000
     profanity_patterns: list[str] = field(default_factory=list)
     spam_patterns: list[str] = field(default_factory=list)
-    placeholder_patterns: list[str] = field(default_factory=lambda: ['\\[.*?\\]', '\\{.*?\\}', '<.*?>', 'XXX', 'TODO', 'PLACEHOLDER', 'INSERT.*HERE'])
-DEFAULT_SPAM_PATTERNS = ['click here', 'act now', 'limited time', 'free money', 'guaranteed', 'no obligation', 'winner', 'congratulations']
+    placeholder_patterns: list[str] = field(
+        default_factory=lambda: [
+            "\\[.*?\\]",
+            "\\{.*?\\}",
+            "<.*?>",
+            "XXX",
+            "TODO",
+            "PLACEHOLDER",
+            "INSERT.*HERE",
+        ]
+    )
+
+
+DEFAULT_SPAM_PATTERNS = [
+    "click here",
+    "act now",
+    "limited time",
+    "free money",
+    "guaranteed",
+    "no obligation",
+    "winner",
+    "congratulations",
+]
+
 
 @dataclass
 class AppContentValidatorAgent(SubatomicTestingMixin):
@@ -115,24 +148,43 @@ class AppContentValidatorAgent(SubatomicTestingMixin):
         messages = ["Hello John...", "Hello Jane...", "Hello John..."]
         report = agent.validate_diversity(messages)
     """
+
     config: ContentConfig = field(default_factory=ContentConfig)
 
     def __post_init__(self) -> None:
         """Initialize the validator."""
-        self._email_pattern = re.compile('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$')
-        self._linkedin_pattern = re.compile('^(https?://)?(www\\.)?linkedin\\.com/(in|pub)/[a-zA-Z0-9_-]+/?$')
-        self._phone_pattern = re.compile('^\\+?1?\\d{9,15}$')
-        Logger.info('AppContentValidatorAgent initialized')
+        self._email_pattern = re.compile("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")
+        self._linkedin_pattern = re.compile("^(https?://)?(www\\.)?linkedin\\.com/(in|pub)/[a-zA-Z0-9_-]+/?$")
+        self._phone_pattern = re.compile("^\\+?1?\\d{9,15}$")
+        Logger.info("AppContentValidatorAgent initialized")
 
     def validate_email(self, email: str) -> list[ContentViolation]:
         """Validate an email address."""
         violations = []
         if not email:
             if self.config.require_contact:
-                violations.append(ContentViolation(violation_type=ContentViolationType.CONTACT_MISSING, message='Email address is required', field_name='email', severity='error', rule_id='CONTACT-001'))
+                violations.append(
+                    ContentViolation(
+                        violation_type=ContentViolationType.CONTACT_MISSING,
+                        message="Email address is required",
+                        field_name="email",
+                        severity="error",
+                        rule_id="CONTACT-001",
+                    )
+                )
             return violations
         if not self._email_pattern.match(email):
-            violations.append(ContentViolation(violation_type=ContentViolationType.CONTACT_INVALID, message=f'Invalid email format: {email}', field_name='email', value=email, severity='error', rule_id='CONTACT-002', suggestion='Provide a valid email address'))
+            violations.append(
+                ContentViolation(
+                    violation_type=ContentViolationType.CONTACT_INVALID,
+                    message=f"Invalid email format: {email}",
+                    field_name="email",
+                    value=email,
+                    severity="error",
+                    rule_id="CONTACT-002",
+                    suggestion="Provide a valid email address",
+                )
+            )
         return violations
 
     def validate_linkedin(self, url: str) -> list[ContentViolation]:
@@ -141,7 +193,17 @@ class AppContentValidatorAgent(SubatomicTestingMixin):
         if not url:
             return violations
         if not self._linkedin_pattern.match(url):
-            violations.append(ContentViolation(violation_type=ContentViolationType.CONTACT_INVALID, message=f'Invalid LinkedIn URL format: {url}', field_name='linkedin_url', value=url, severity='warning', rule_id='CONTACT-003', suggestion='Provide a valid LinkedIn profile URL'))
+            violations.append(
+                ContentViolation(
+                    violation_type=ContentViolationType.CONTACT_INVALID,
+                    message=f"Invalid LinkedIn URL format: {url}",
+                    field_name="linkedin_url",
+                    value=url,
+                    severity="warning",
+                    rule_id="CONTACT-003",
+                    suggestion="Provide a valid LinkedIn profile URL",
+                )
+            )
         return violations
 
     def validate_content_cleanliness(self, content: str) -> list[ContentViolation]:
@@ -154,23 +216,56 @@ class AppContentValidatorAgent(SubatomicTestingMixin):
             for pattern in self.config.placeholder_patterns:
                 matches = re.findall(pattern, content, re.IGNORECASE)
                 if matches:
-                    violations.append(ContentViolation(violation_type=ContentViolationType.PLACEHOLDER, message=f'Placeholder detected: {matches[0]}', value=matches[0], severity='error', rule_id='CLEAN-001', suggestion='Replace placeholder with actual content'))
+                    violations.append(
+                        ContentViolation(
+                            violation_type=ContentViolationType.PLACEHOLDER,
+                            message=f"Placeholder detected: {matches[0]}",
+                            value=matches[0],
+                            severity="error",
+                            rule_id="CLEAN-001",
+                            suggestion="Replace placeholder with actual content",
+                        )
+                    )
         if self.config.check_spam:
             spam_patterns = self.config.spam_patterns or DEFAULT_SPAM_PATTERNS
             for pattern in spam_patterns:
                 if re.search(pattern, content_lower):
-                    violations.append(ContentViolation(violation_type=ContentViolationType.SPAM, message=f"Spam pattern detected: '{pattern}'", severity='warning', rule_id='CLEAN-002', suggestion='Remove or rephrase spam-like content'))
+                    violations.append(
+                        ContentViolation(
+                            violation_type=ContentViolationType.SPAM,
+                            message=f"Spam pattern detected: '{pattern}'",
+                            severity="warning",
+                            rule_id="CLEAN-002",
+                            suggestion="Remove or rephrase spam-like content",
+                        )
+                    )
         if len(content) < self.config.min_length:
-            violations.append(ContentViolation(violation_type=ContentViolationType.LENGTH, message=f'Content too short: {len(content)} chars (min: {self.config.min_length})', severity='warning', rule_id='CLEAN-003'))
+            violations.append(
+                ContentViolation(
+                    violation_type=ContentViolationType.LENGTH,
+                    message=f"Content too short: {len(content)} chars (min: {self.config.min_length})",
+                    severity="warning",
+                    rule_id="CLEAN-003",
+                )
+            )
         if len(content) > self.config.max_length:
-            violations.append(ContentViolation(violation_type=ContentViolationType.LENGTH, message=f'Content too long: {len(content)} chars (max: {self.config.max_length})', severity='warning', rule_id='CLEAN-004'))
+            violations.append(
+                ContentViolation(
+                    violation_type=ContentViolationType.LENGTH,
+                    message=f"Content too long: {len(content)} chars (max: {self.config.max_length})",
+                    severity="warning",
+                    rule_id="CLEAN-004",
+                )
+            )
         return violations
 
     def calculate_similarity(self, text1: str, text2: str) -> float:
         """Calculate similarity ratio between two texts."""
         return SequenceMatcher(None, text1.lower(), text2.lower()).ratio()
 
-    def validate_diversity(self, messages: list[str], threshold: float | None=None) -> ContentValidationReport:
+    def validate_diversity(
+        self, messages: list[str], threshold: float | None = None
+    ) -> ContentValidationReport:
         """
         Validate message diversity (check for too-similar messages).
 
@@ -191,7 +286,16 @@ class AppContentValidatorAgent(SubatomicTestingMixin):
                 similarity = self.calculate_similarity(messages[i], messages[j])
                 if similarity >= threshold:
                     similar_pairs.append((i, j, similarity))
-                    report.violations.append(ContentViolation(violation_type=ContentViolationType.SIMILARITY, message=f'Messages {i + 1} and {j + 1} are {similarity:.1%} similar (threshold: {threshold:.1%})', severity='error', rule_id='DIV-001', similarity_score=similarity, suggestion='Increase message variation to improve personalization'))
+                    report.violations.append(
+                        ContentViolation(
+                            violation_type=ContentViolationType.SIMILARITY,
+                            message=f"Messages {i + 1} and {j + 1} are {similarity:.1%} similar (threshold: {threshold:.1%})",
+                            severity="error",
+                            rule_id="DIV-001",
+                            similarity_score=similarity,
+                            suggestion="Increase message variation to improve personalization",
+                        )
+                    )
         flagged_indices = set()
         for i, j, _ in similar_pairs:
             flagged_indices.add(i)
@@ -201,7 +305,9 @@ class AppContentValidatorAgent(SubatomicTestingMixin):
         report.execution_time = (datetime.now() - start_time).total_seconds()
         return report
 
-    def validate_message(self, message_data: dict[str, Any], config: ContentConfig | None=None) -> ContentValidationReport:
+    def validate_message(
+        self, message_data: dict[str, Any], config: ContentConfig | None = None
+    ) -> ContentValidationReport:
         """
         Validate a single outreach message.
 
@@ -218,12 +324,12 @@ class AppContentValidatorAgent(SubatomicTestingMixin):
         report.items_validated = 1
         all_violations = []
         if config.validate_email:
-            email = message_data.get('recipient_email', message_data.get('email', ''))
+            email = message_data.get("recipient_email", message_data.get("email", ""))
             all_violations.extend(self.validate_email(email))
         if config.validate_linkedin:
-            linkedin = message_data.get('linkedin_url', message_data.get('linkedin', ''))
+            linkedin = message_data.get("linkedin_url", message_data.get("linkedin", ""))
             all_violations.extend(self.validate_linkedin(linkedin))
-        content = message_data.get('message_body', message_data.get('body', message_data.get('content', '')))
+        content = message_data.get("message_body", message_data.get("body", message_data.get("content", "")))
         all_violations.extend(self.validate_content_cleanliness(content))
         report.violations = all_violations
         report.items_passed = 0 if report.has_errors else 1
@@ -231,7 +337,9 @@ class AppContentValidatorAgent(SubatomicTestingMixin):
         report.execution_time = (datetime.now() - start_time).total_seconds()
         return report
 
-    def validate_messages(self, messages: list[dict[str, Any]], check_diversity: bool=True) -> ContentValidationReport:
+    def validate_messages(
+        self, messages: list[dict[str, Any]], check_diversity: bool = True
+    ) -> ContentValidationReport:
         """
         Validate multiple messages with optional diversity check.
 
@@ -251,11 +359,14 @@ class AppContentValidatorAgent(SubatomicTestingMixin):
             report.items_passed += msg_report.items_passed
             report.items_failed += msg_report.items_failed
         if check_diversity and self.config.check_similarity:
-            message_bodies = [msg.get('message_body', msg.get('body', msg.get('content', ''))) for msg in messages]
+            message_bodies = [
+                msg.get("message_body", msg.get("body", msg.get("content", ""))) for msg in messages
+            ]
             diversity_report = self.validate_diversity(message_bodies)
             report.violations.extend(diversity_report.violations)
         report.execution_time = (datetime.now() - start_time).total_seconds()
         return report
+
 
 def create_legacy_contact_validator(**kwargs: Any) -> AppContentValidatorAgent:
     """
@@ -263,9 +374,21 @@ def create_legacy_contact_validator(**kwargs: Any) -> AppContentValidatorAgent:
 
     DEPRECATED: Use AppContentValidatorAgent directly.
     """
-    warnings.warn('ContactValidatorAgent is deprecated. Use AppContentValidatorAgent instead. This factory will be removed after 2026-02-19.', DeprecationWarning, stacklevel=2)
-    config = ContentConfig(validate_email=True, validate_linkedin=True, check_profanity=False, check_spam=False, check_placeholders=False, check_similarity=False)
+    warnings.warn(
+        "ContactValidatorAgent is deprecated. Use AppContentValidatorAgent instead. This factory will be removed after 2026-02-19.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    config = ContentConfig(
+        validate_email=True,
+        validate_linkedin=True,
+        check_profanity=False,
+        check_spam=False,
+        check_placeholders=False,
+        check_similarity=False,
+    )
     return AppContentValidatorAgent(config=config, **kwargs)
+
 
 def create_legacy_content_cleanliness_validator(**kwargs: Any) -> AppContentValidatorAgent:
     """
@@ -273,9 +396,21 @@ def create_legacy_content_cleanliness_validator(**kwargs: Any) -> AppContentVali
 
     DEPRECATED: Use AppContentValidatorAgent directly.
     """
-    warnings.warn('ContentCleanlinessValidatorAgent is deprecated. Use AppContentValidatorAgent instead. This factory will be removed after 2026-02-19.', DeprecationWarning, stacklevel=2)
-    config = ContentConfig(validate_email=False, validate_linkedin=False, check_profanity=True, check_spam=True, check_placeholders=True, check_similarity=False)
+    warnings.warn(
+        "ContentCleanlinessValidatorAgent is deprecated. Use AppContentValidatorAgent instead. This factory will be removed after 2026-02-19.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    config = ContentConfig(
+        validate_email=False,
+        validate_linkedin=False,
+        check_profanity=True,
+        check_spam=True,
+        check_placeholders=True,
+        check_similarity=False,
+    )
     return AppContentValidatorAgent(config=config, **kwargs)
+
 
 def create_legacy_message_diversity_validator(**kwargs: Any) -> AppContentValidatorAgent:
     """
@@ -283,6 +418,18 @@ def create_legacy_message_diversity_validator(**kwargs: Any) -> AppContentValida
 
     DEPRECATED: Use AppContentValidatorAgent directly.
     """
-    warnings.warn('MessageDiversityValidator is deprecated. Use AppContentValidatorAgent instead. This factory will be removed after 2026-02-19.', DeprecationWarning, stacklevel=2)
-    config = ContentConfig(validate_email=False, validate_linkedin=False, check_profanity=False, check_spam=False, check_placeholders=False, check_similarity=True, similarity_threshold=THRESHOLD)
+    warnings.warn(
+        "MessageDiversityValidator is deprecated. Use AppContentValidatorAgent instead. This factory will be removed after 2026-02-19.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    config = ContentConfig(
+        validate_email=False,
+        validate_linkedin=False,
+        check_profanity=False,
+        check_spam=False,
+        check_placeholders=False,
+        check_similarity=True,
+        similarity_threshold=THRESHOLD,
+    )
     return AppContentValidatorAgent(config=config, **kwargs)

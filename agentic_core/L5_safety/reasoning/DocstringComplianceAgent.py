@@ -1,14 +1,18 @@
 from __future__ import annotations
+
 import ast
+
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L2_execution.tools import write_gateway as _wg
-'Brief description of functionality and purpose.'
-'Brief description of functionality and purpose.'
+
+"Brief description of functionality and purpose."
+"Brief description of functionality and purpose."
 from pathlib import Path
 from typing import Any
+
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 class DocstringComplianceAgent(SovereignBaseAgent):
     """
@@ -25,9 +29,10 @@ class DocstringComplianceAgent(SovereignBaseAgent):
     - Never removes or modifies existing content
     - Single-file scope
     """
+
     MIN_DOCSTRING: str = "'''Brief description of functionality and purpose.'''"
 
-    def __init__(self, ctx: Any, project_root: str | None=None) -> None:
+    def __init__(self, ctx: Any, project_root: str | None = None) -> None:
         """
         Initialize with mandatory ctx for sovereign operation.
 
@@ -39,7 +44,7 @@ class DocstringComplianceAgent(SovereignBaseAgent):
             ValueError: If ctx is None
         """
         if ctx is None:
-            raise ValueError('ctx is mandatory for DocstringComplianceAgent (sovereign agent)')
+            raise ValueError("ctx is mandatory for DocstringComplianceAgent (sovereign agent)")
         self.ctx = ctx
         self.project_root = project_root
 
@@ -55,7 +60,7 @@ class DocstringComplianceAgent(SovereignBaseAgent):
         """
         return await self.heal_violation(Path(file_path), self.ctx)
 
-    async def heal_violation(self, file_path: Path, ctx: Any | None=None) -> dict[str, Any]:
+    async def heal_violation(self, file_path: Path, ctx: Any | None = None) -> dict[str, Any]:
         """
         Per-file healing: add missing docstrings.
 
@@ -68,50 +73,50 @@ class DocstringComplianceAgent(SovereignBaseAgent):
         """
         ctx = ctx or self.ctx
         try:
-            source: str = file_path.read_text(encoding='utf-8')
+            source: str = file_path.read_text(encoding="utf-8")
             tree: ast.Module = ast.parse(source)
             needs_docstring: List[tuple] = []
             if not ast.get_docstring(tree):
-                needs_docstring.append(('module', 0))
+                needs_docstring.append(("module", 0))
             for node in ast.walk(tree):
                 if isinstance(node, ast.ClassDef | ast.FunctionDef | ast.AsyncFunctionDef):
-                    if node.name.startswith('_'):
+                    if node.name.startswith("_"):
                         continue
                     if ast.get_docstring(node) is None:
                         needs_docstring.append((type(node).__name__, node.lineno))
             if not needs_docstring:
-                return {'healed': False}
+                return {"healed": False}
             lines: List[str] = source.splitlines(keepends=True)
             new_lines: List[str] = lines.copy()
             added_count: Any = 0
-            needs_docstring.sort(key=lambda x: x[1] if x[0] != 'module' else 0, reverse=True)
+            needs_docstring.sort(key=lambda x: x[1] if x[0] != "module" else 0, reverse=True)
             for node_type, lineno in needs_docstring:
-                if node_type == 'module':
+                if node_type == "module":
                     insert_idx: Any = 0
                     for i, line in enumerate(lines):
-                        if line.strip() and (not line.strip().startswith(('#', '__'))):
+                        if line.strip() and (not line.strip().startswith(("#", "__"))):
                             insert_idx: Any = i + 1
                             break
-                    indent: Any = ''
+                    indent: Any = ""
                 else:
                     insert_idx: Any = lineno
                     def_line: Any = lines[lineno - 1]
-                    indent: Any = '    ' * (len(def_line) - len(def_line.lstrip()) + 1)
-                doc_lines: Any = [f'{indent}\n']
+                    indent: Any = "    " * (len(def_line) - len(def_line.lstrip()) + 1)
+                doc_lines: Any = [f"{indent}\n"]
                 new_lines[insert_idx:insert_idx] = doc_lines
                 added_count += 1
             if added_count > 0:
-                new_content: Any = ''.join(new_lines)
-                _wg.write_text(file_path, new_content, encoding='utf-8')
-                message: Any = f'Added {added_count} Missing docstring(s)'
-                print(f'      [HEALED] {file_path.name}: {message}')
+                new_content: Any = "".join(new_lines)
+                _wg.write_text(file_path, new_content, encoding="utf-8")
+                message: Any = f"Added {added_count} Missing docstring(s)"
+                print(f"      [HEALED] {file_path.name}: {message}")
                 ctx.report(self.__class__.__name__, key_id=18, success=True, msg=message)
-                return {'healed': True, 'details': message}
-            return {'healed': False}
+                return {"healed": True, "details": message}
+            return {"healed": False}
         # guardian: allow-silent-swallow
         except Exception as e:
-            ctx.report(self.__class__.__name__, 18, False, f'Docstring healing failed: {str(e)[:100]}')
-            return {'healed': False}
+            ctx.report(self.__class__.__name__, 18, False, f"Docstring healing failed: {str(e)[:100]}")
+            return {"healed": False}
 
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """
@@ -123,26 +128,41 @@ class DocstringComplianceAgent(SovereignBaseAgent):
         Returns:
             Dict with status, details, artifacts, errors
         """
-        return {'status': 'success', 'details': 'DocstringComplianceAgent observability heal - no action required', 'artifacts': [], 'errors': []}
+        return {
+            "status": "success",
+            "details": "DocstringComplianceAgent observability heal - no action required",
+            "artifacts": [],
+            "errors": [],
+        }
 
     @timeout(300)
     @standard_heal
     # guardian: allow-magic-config
-    def heal_repository(self, dry_run: bool=True, execute: bool=False, depth: int=0, max_depth: int=3, _call_path: set | None=None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """Autonomous docstring compliance enforcement."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:
             _call_path = set()
         if self.__class__.__name__ in _call_path:
-            return {'errors': 0, 'skipped': 1, 'cycle_detected': True}
+            return {"errors": 0, "skipped": 1, "cycle_detected": True}
         if depth > max_depth:
-            return {'errors': 0, 'skipped': 1, 'depth_limited': True}
+            return {"errors": 0, "skipped": 1, "depth_limited": True}
         _call_path.add(self.__class__.__name__)
         try:
-            print(f'[DocstringCompliance HEAL @ depth {depth}] Requires ctx parameter - operational mode only')
-            return {'skipped': 1, 'requires_ctx': True}
+            print(
+                f"[DocstringCompliance HEAL @ depth {depth}] Requires ctx parameter - operational mode only"
+            )
+            return {"skipped": 1, "requires_ctx": True}
         finally:
             _call_path.discard(self.__class__.__name__)
+
 
 def get_docstring_compliance_agent() -> Any:
     """Brief description of functionality and purpose."""

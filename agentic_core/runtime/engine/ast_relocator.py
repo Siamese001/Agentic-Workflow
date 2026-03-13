@@ -1,13 +1,17 @@
 from __future__ import annotations
+
 import ast
-'Brief description of functionality and purpose.'
+
+"Brief description of functionality and purpose."
 from pathlib import Path
+
 from agentic_core.L5_safety.config.structure_blueprint import SEMANTIC_L2_REGISTRY
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 try:
     project_root = Path(__file__).resolve().parents[3]
 except IndexError:
     project_root = Path.cwd()
+
 
 class AstRelocator(ast.NodeVisitor):
     """
@@ -24,7 +28,17 @@ class AstRelocator(ast.NodeVisitor):
 
     def visit_ClassDef(self, node: ast.ClassDef):
         """Capture top-level classes."""
-        self.entities.append({'type': 'class', 'name': node.name, 'lineno': node.lineno, 'start_line': getattr(node, 'lineno', node.lineno), 'end_lineno': getattr(node, 'end_lineno', node.lineno), 'node': node, 'suggested_location': self._suggest_placement(node, node.name, 'Class')})
+        self.entities.append(
+            {
+                "type": "class",
+                "name": node.name,
+                "lineno": node.lineno,
+                "start_line": getattr(node, "lineno", node.lineno),
+                "end_lineno": getattr(node, "end_lineno", node.lineno),
+                "node": node,
+                "suggested_location": self._suggest_placement(node, node.name, "Class"),
+            }
+        )
         old_class = self.current_class
         self.current_class = node.name
         self.generic_visit(node)
@@ -34,7 +48,17 @@ class AstRelocator(ast.NodeVisitor):
         """Capture top-level functions (skip methods)."""
         if self.current_class:
             return self.generic_visit(node)
-        self.entities.append({'type': 'function', 'name': node.name, 'lineno': node.lineno, 'start_line': getattr(node, 'lineno', node.lineno), 'end_lineno': getattr(node, 'end_lineno', node.lineno), 'node': node, 'suggested_location': self._suggest_placement(node, node.name, 'Function')})
+        self.entities.append(
+            {
+                "type": "function",
+                "name": node.name,
+                "lineno": node.lineno,
+                "start_line": getattr(node, "lineno", node.lineno),
+                "end_lineno": getattr(node, "end_lineno", node.lineno),
+                "node": node,
+                "suggested_location": self._suggest_placement(node, node.name, "Function"),
+            }
+        )
         self.generic_visit(node)
 
     def _suggest_placement(self, node: ast.AST, name: str, entity_type: str) -> tuple[str, str, float]:
@@ -42,31 +66,33 @@ class AstRelocator(ast.NodeVisitor):
         [SEMANTIC SCORING] Calculates placement confidence using the Rich Semantic Registry.
         Returns (L1, L2, Confidence_Score).
         """
-        best_match = ('utils', 'general_helpers', 0.0)
+        best_match = ("utils", "general_helpers", 0.0)
         name_lower = name.lower()
-        docstring = ast.get_docstring(node) or ''
+        docstring = ast.get_docstring(node) or ""
         doc_lower = docstring.lower()
         for l1, l2_dict in SEMANTIC_L2_REGISTRY.items():
             for l2, meta in l2_dict.items():
                 score = 0.0
-                for kw in meta.get('keywords', []):
+                for kw in meta.get("keywords", []):
                     if kw in name_lower:
                         score += 3.0
                     elif kw in doc_lower:
                         score += 1.0
-                if entity_type in meta.get('entity_types', []):
+                if entity_type in meta.get("entity_types", []):
                     score += 0.5
-                purpose_words = meta.get('purpose', '').lower().split()
+                purpose_words = meta.get("purpose", "").lower().split()
                 doc_words = set(doc_lower.split())
                 matches = [w for w in purpose_words if len(w) > 3 and w in doc_words]
                 if matches:
                     score += 1.5
                     if len(matches) > 3:
                         score += 1.0 * len(matches)
-                if entity_type == 'Class' and hasattr(node, 'bases'):
+                if entity_type == "Class" and hasattr(node, "bases"):
                     for base in node.bases:
-                        base_name = getattr(base, 'id', '') or getattr(getattr(base, 'attr', None), 'value', '')
-                        if base_name and any((base_name in b for b in meta.get('bases', []))):
+                        base_name = getattr(base, "id", "") or getattr(
+                            getattr(base, "attr", None), "value", ""
+                        )
+                        if base_name and any(base_name in b for b in meta.get("bases", [])):
                             score += 4.0
                 if score > best_match[2]:
                     best_match = (l1, l2, score)
@@ -79,15 +105,15 @@ class AstRelocator(ast.NodeVisitor):
     @staticmethod
     def extract_entity_code(content_lines: list[str], start: int, end: int) -> str:
         """Surgically extract code block including decorators."""
-        lines = content_lines[start - 1:end]
-        return '\n'.join(lines) + '\n'
+        lines = content_lines[start - 1 : end]
+        return "\n".join(lines) + "\n"
 
     @staticmethod
     def generate_import_fix(old_path: Path, new_path: Path, entity_name: str) -> str:
         """Generate the import string required to access the moved entity."""
         try:
             rel_path = new_path.relative_to(project_root)
-            module_path = str(rel_path.with_suffix('')).replace('/', '.').replace('\\', '.')
-            return f'from {module_path} import {entity_name}'
+            module_path = str(rel_path.with_suffix("")).replace("/", ".").replace("\\", ".")
+            return f"from {module_path} import {entity_name}"
         except ValueError:
-            return f'# Could not resolve import for {entity_name}'
+            return f"# Could not resolve import for {entity_name}"

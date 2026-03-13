@@ -1,37 +1,50 @@
 from __future__ import annotations
-'Cognitive Plane Interface - The Brain.\n\nPhase 2 - Pillar 1: Layering Model\nDefines the contract for all planning, reasoning, and decision-making.\nL1 Cognition: Pure thought, no side effects.\n'
+
+"Cognitive Plane Interface - The Brain.\n\nPhase 2 - Pillar 1: Layering Model\nDefines the contract for all planning, reasoning, and decision-making.\nL1 Cognition: Pure thought, no side effects.\n"
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 class CognitiveCapability(Enum):
     """Capabilities provided by the cognitive plane."""
-    PLANNING = 'planning'
-    REASONING = 'reasoning'
-    DECISION_MAKING = 'decision_making'
-    SELF_REFLECTION = 'self_reflection'
-    TASK_DECOMPOSITION = 'task_decomposition'
-    STRATEGY_SELECTION = 'strategy_selection'
+
+    PLANNING = "planning"
+    REASONING = "reasoning"
+    DECISION_MAKING = "decision_making"
+    SELF_REFLECTION = "self_reflection"
+    TASK_DECOMPOSITION = "task_decomposition"
+    STRATEGY_SELECTION = "strategy_selection"
+
 
 @dataclass
 class PlanningRequest:
     """Request for cognitive planning."""
+
     Task: str
     context: dict[str, Any] = field(default_factory=dict)
     constraints: dict[str, Any] = field(default_factory=dict)
     capabilities_required: list[CognitiveCapability] = field(default_factory=list)
     max_steps: int = 10
-    reasoning_mode: str = 'react'
+    reasoning_mode: str = "react"
 
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
-        return {'Task': self.Task, 'context': self.context, 'constraints': self.constraints, 'capabilities_required': [c.value for c in self.capabilities_required], 'max_steps': self.max_steps, 'reasoning_mode': self.reasoning_mode}
+        return {
+            "Task": self.Task,
+            "context": self.context,
+            "constraints": self.constraints,
+            "capabilities_required": [c.value for c in self.capabilities_required],
+            "max_steps": self.max_steps,
+            "reasoning_mode": self.reasoning_mode,
+        }
+
 
 @dataclass
 class PlanningResult:
     """Result from cognitive planning."""
+
     success: bool
     plan: list[dict[str, Any]]
     reasoning_trace: list[dict[str, Any]] = field(default_factory=list)
@@ -41,7 +54,15 @@ class PlanningResult:
 
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
-        return {'success': self.success, 'plan': self.plan, 'reasoning_trace': self.reasoning_trace, 'confidence': self.confidence, 'metadata': self.metadata, 'errors': self.errors}
+        return {
+            "success": self.success,
+            "plan": self.plan,
+            "reasoning_trace": self.reasoning_trace,
+            "confidence": self.confidence,
+            "metadata": self.metadata,
+            "errors": self.errors,
+        }
+
 
 class ICognitivePlane(ABC):
     """Interface for the Cognitive Plane (Brain).
@@ -69,7 +90,7 @@ class ICognitivePlane(ABC):
         pass
 
     @abstractmethod
-    async def reason(self, query: str, context: dict[str, Any], mode: str='react') -> dict[str, Any]:
+    async def reason(self, query: str, context: dict[str, Any], mode: str = "react") -> dict[str, Any]:
         """Apply reasoning to a query.
 
         Args:

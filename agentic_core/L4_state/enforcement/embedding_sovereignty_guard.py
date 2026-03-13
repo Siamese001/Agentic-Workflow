@@ -1,10 +1,13 @@
 from __future__ import annotations
+
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 class EmbeddingResult:
     """A placeholder for the result of an embedding retrieval operation."""
+
     pass
+
 
 class EmbeddingInfluenceViolation(Exception):
     """Raised when an embedding artifact is detected influencing a sovereign decision."""
@@ -12,7 +15,10 @@ class EmbeddingInfluenceViolation(Exception):
     def __init__(self, decision_type: str, found_in: str):
         self.decision_type = decision_type
         self.found_in = found_in
-        super().__init__(f"Embedding artifact illegally influenced '{decision_type}' decision. Found in: {found_in}.")
+        super().__init__(
+            f"Embedding artifact illegally influenced '{decision_type}' decision. Found in: {found_in}."
+        )
+
 
 def guard_embedding_influence(*args: Any, decision_type: str, **kwargs: Any) -> None:
     """
@@ -43,9 +49,10 @@ def guard_embedding_influence(*args: Any, decision_type: str, **kwargs: Any) -> 
             raise EmbeddingInfluenceViolation(decision_type, path)
         if isinstance(obj, dict):
             for k, v in obj.items():
-                _scan_for_embedding_result(v, f'{path}.{k}')
+                _scan_for_embedding_result(v, f"{path}.{k}")
         elif isinstance(obj, (list, tuple)):
             for i, item in enumerate(obj):
-                _scan_for_embedding_result(item, f'{path}[{i}]')
+                _scan_for_embedding_result(item, f"{path}[{i}]")
+
     for i, arg in enumerate(all_args):
-        _scan_for_embedding_result(arg, f'arg[{i}]')
+        _scan_for_embedding_result(arg, f"arg[{i}]")

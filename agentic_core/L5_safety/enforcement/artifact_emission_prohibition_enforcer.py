@@ -8,14 +8,17 @@ Violation raises PermissionError with deterministic message containing:
   - artifact type
   - trace_id (if available)
 """
-from __future__ import annotations
-import logging
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
-logger = logging.getLogger(__name__)
-FORBIDDEN_EMISSION_LAYERS: frozenset[str] = frozenset({'L0', 'L5', 'L6'})
-FORBIDDEN_ARTIFACT_KINDS: frozenset[str] = frozenset({'RESULT', 'HEALING_PLAN'})
 
-def assert_layer_may_emit(artifact_kind: str, layer: str, trace_id: str | None=None) -> None:
+from __future__ import annotations
+
+import logging
+
+logger = logging.getLogger(__name__)
+FORBIDDEN_EMISSION_LAYERS: frozenset[str] = frozenset({"L0", "L5", "L6"})
+FORBIDDEN_ARTIFACT_KINDS: frozenset[str] = frozenset({"RESULT", "HEALING_PLAN"})
+
+
+def assert_layer_may_emit(artifact_kind: str, layer: str, trace_id: str | None = None) -> None:
     """Fail-closed guard: raises PermissionError if layer may not emit this artifact.
 
     Args:
@@ -31,10 +34,12 @@ def assert_layer_may_emit(artifact_kind: str, layer: str, trace_id: str | None=N
         return
     if artifact_kind not in FORBIDDEN_ARTIFACT_KINDS:
         return
-    msg_parts = [f'ARTIFACT_EMISSION_PROHIBITED:layer={layer}', f'artifact_kind={artifact_kind}']
+    msg_parts = [f"ARTIFACT_EMISSION_PROHIBITED:layer={layer}", f"artifact_kind={artifact_kind}"]
     if trace_id is not None:
-        msg_parts.append(f'trace_id={trace_id}')
-    msg = '|'.join(msg_parts)
-    logger.error('ARTIFACT_EMISSION_PROHIBITION DENY: %s', msg)
+        msg_parts.append(f"trace_id={trace_id}")
+    msg = "|".join(msg_parts)
+    logger.error("ARTIFACT_EMISSION_PROHIBITION DENY: %s", msg)
     raise PermissionError(msg)
-__all__ = ['FORBIDDEN_ARTIFACT_KINDS', 'FORBIDDEN_EMISSION_LAYERS', 'assert_layer_may_emit']
+
+
+__all__ = ["FORBIDDEN_ARTIFACT_KINDS", "FORBIDDEN_EMISSION_LAYERS", "assert_layer_may_emit"]

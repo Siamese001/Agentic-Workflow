@@ -4,9 +4,11 @@ Candidate Fusion
 Reciprocal Rank Fusion (RRF) implementation for merging lexical and vector
 retrieval results into a single ranked candidate list.
 """
+
 from __future__ import annotations
+
 from .interfaces import Document, ICandidateFusion
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 class ReciprocalRankFusion(ICandidateFusion):
     """Merges retrieval results using Reciprocal Rank Fusion (RRF).
@@ -15,9 +17,9 @@ class ReciprocalRankFusion(ICandidateFusion):
     k=60 is the standard constant (Cormack et al., 2009).
     """
 
-    def __init__(self, k: int=60):
+    def __init__(self, k: int = 60):
         if k <= 0:
-            raise ValueError(f'k must be positive, got {k}')
+            raise ValueError(f"k must be positive, got {k}")
         self.k = k
 
     def merge(self, lexical_results: list[Document], vector_results: list[Document]) -> list[Document]:
@@ -42,8 +44,16 @@ class ReciprocalRankFusion(ICandidateFusion):
         merged = []
         for doc_id, rrf_score in sorted(rrf_scores.items(), key=lambda x: -x[1]):
             src = doc_map[doc_id]
-            merged.append(Document(doc_id=src.doc_id, content=src.content, score=rrf_score, metadata={**src.metadata, 'rrf_score': rrf_score}))
+            merged.append(
+                Document(
+                    doc_id=src.doc_id,
+                    content=src.content,
+                    score=rrf_score,
+                    metadata={**src.metadata, "rrf_score": rrf_score},
+                )
+            )
         return merged
+
 
 class ScoreFusion(ICandidateFusion):
     """Merges retrieval results by normalizing and averaging scores."""
@@ -67,6 +77,7 @@ class ScoreFusion(ICandidateFusion):
             if max_s == min_s:
                 return {d.doc_id: 1.0 for d in docs}
             return {d.doc_id: (d.score - min_s) / (max_s - min_s) for d in docs}
+
         lex_norm = _normalize(lexical_results)
         vec_norm = _normalize(vector_results)
         doc_map: dict[str, Document] = {d.doc_id: d for d in lexical_results}
@@ -81,6 +92,15 @@ class ScoreFusion(ICandidateFusion):
         merged = []
         for doc_id, score in sorted(fused_scores.items(), key=lambda x: -x[1]):
             src = doc_map[doc_id]
-            merged.append(Document(doc_id=src.doc_id, content=src.content, score=score, metadata={**src.metadata, 'fused_score': score}))
+            merged.append(
+                Document(
+                    doc_id=src.doc_id,
+                    content=src.content,
+                    score=score,
+                    metadata={**src.metadata, "fused_score": score},
+                )
+            )
         return merged
-__all__ = ['ReciprocalRankFusion', 'ScoreFusion']
+
+
+__all__ = ["ReciprocalRankFusion", "ScoreFusion"]

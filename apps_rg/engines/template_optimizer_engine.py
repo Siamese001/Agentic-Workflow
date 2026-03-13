@@ -5,12 +5,16 @@ Following Batch 5 specifications
 
 HARDENING: Reads 'mission_input' (JD). Selects visual strategy. Writes 'template_strategy'.
 """
+
 from __future__ import annotations
+
 import logging
 from typing import Any
+
 from apps_rg.engines.base_rg_engine import BaseRGEngine
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 Logger = logging.getLogger(__name__)
+
 
 class TemplateOptimizerEngine(BaseRGEngine):
     """
@@ -20,24 +24,24 @@ class TemplateOptimizerEngine(BaseRGEngine):
     """
 
     def __init__(self, ctx: Any) -> None:
-        super().__init__(ctx, node_id='REFINE.TEMPLATE')
+        super().__init__(ctx, node_id="REFINE.TEMPLATE")
 
     async def execute(self) -> dict[str, Any]:
         """
         Select presentation template based on JD analysis.
         """
-        mission = self.ctx.buffer.read('mission_input')
-        jd_text = mission.get('job_description', '') if mission else ''
+        mission = self.ctx.buffer.read("mission_input")
+        jd_text = mission.get("job_description", "") if mission else ""
         if not jd_text:
-            self.record_fail('Empty JD', signal='DATA_MISSING')
-            return {'template': 'standard'}
+            self.record_fail("Empty JD", signal="DATA_MISSING")
+            return {"template": "standard"}
         job_type = self._detect_job_type(jd_text)
-        result = {'job_type': job_type, 'recommended_template': f'sov_v2_{job_type}'}
-        self.ctx.buffer.write('template_strategy', result, source_agent=self.name)
-        self.record_pass(f'Template selected: {job_type}')
+        result = {"job_type": job_type, "recommended_template": f"sov_v2_{job_type}"}
+        self.ctx.buffer.write("template_strategy", result, source_agent=self.name)
+        self.record_pass(f"Template selected: {job_type}")
         return result
 
     def _detect_job_type(self, text: str) -> str:
-        if 'manager' in text.lower() or 'lead' in text.lower():
-            return 'executive'
-        return 'technical'
+        if "manager" in text.lower() or "lead" in text.lower():
+            return "executive"
+        return "technical"

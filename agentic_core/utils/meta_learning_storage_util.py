@@ -8,20 +8,24 @@ Manages all connections to storage backends:
 
 Thread-safe singleton initialization with circuit breaker.
 """
+
 from __future__ import annotations
+
 import hashlib
 import json
 import logging
 import threading
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 Logger = logging.getLogger(__name__)
+
 
 class MetaLearningStorage:
     """Thread-safe storage layer for meta-learning backends.
 
     Class-level singletons with circuit breaker for graceful degradation.
     """
+
     _memory = None
     _memory_lock = threading.RLock()
     _lobotomized = False
@@ -38,12 +42,15 @@ class MetaLearningStorage:
                 if cls._memory is None:
                     try:
                         from agentic_core.L4_state.memory.semantic_cache_manager import SemanticCacheManager
+
                         cls._memory = SemanticCacheManager.get_instance()
-                        Logger.debug(f'[{agent_name}] Connected to Hive Mind')
+                        Logger.debug(f"[{agent_name}] Connected to Hive Mind")
                     except Exception as e:
                         raise
                         cls._lobotomized = True
-                        Logger.critical(f'[{agent_name}] LOBOTOMY PROTOCOL ACTIVE: Hive Mind unavailable ({e})')
+                        Logger.critical(
+                            f"[{agent_name}] LOBOTOMY PROTOCOL ACTIVE: Hive Mind unavailable ({e})"
+                        )
 
     @classmethod
     def recall(cls, context: str, namespace: str) -> dict[str, Any] | None:
@@ -53,10 +60,10 @@ class MetaLearningStorage:
         try:
             result = cls._memory.recall(context, namespace)
             if result:
-                Logger.info(f'[{namespace}] INSTINCT TRIGGERED: Recalled previous experience.')
+                Logger.info(f"[{namespace}] INSTINCT TRIGGERED: Recalled previous experience.")
             return result
         except Exception as e:
-            Logger.warning(f'[{namespace}] Recall error: {e}')
+            Logger.warning(f"[{namespace}] Recall error: {e}")
             return None
 
     @classmethod
@@ -69,28 +76,32 @@ class MetaLearningStorage:
             await cls._memory.learn_async(context, namespace, result)
         except Exception as e:
             raise
-            Logger.warning(f'[{namespace}] Async learn failed: {e}')
+            Logger.warning(f"[{namespace}] Async learn failed: {e}")
 
     @classmethod
-    def learn_with_feedback(cls, context: str, namespace: str, result: dict[str, Any], feedback_score: float) -> bool:
+    def learn_with_feedback(
+        cls, context: str, namespace: str, result: dict[str, Any], feedback_score: float
+    ) -> bool:
         """Learn with feedback score, promoting to long-term DNA if threshold met."""
         if cls._lobotomized or cls._memory is None:
             return False
         try:
             cls._memory.learn(context, namespace, result, feedback_score)
-            promotion_threshold = getattr(cls._memory, 'promotion_threshold', 0.8)
+            promotion_threshold = getattr(cls._memory, "promotion_threshold", 0.8)
             if feedback_score >= promotion_threshold:
                 promoted = cls._memory.promote_to_long_term(context, namespace, result, feedback_score)
                 if promoted:
                     sanitized_context = context
-                    if hasattr(cls._memory, 'sanitizer'):
+                    if hasattr(cls._memory, "sanitizer"):
                         sanitized_context = cls._memory.sanitizer.sanitize(context)
                     cls._create_mastered_task_relation(namespace, sanitized_context, feedback_score)
-                    Logger.info(f'[{namespace}] DNA PROMOTION: Memory promoted with feedback_score={feedback_score:.2f}')
+                    Logger.info(
+                        f"[{namespace}] DNA PROMOTION: Memory promoted with feedback_score={feedback_score:.2f}"
+                    )
                     return True
             return False
         except Exception as e:
-            Logger.warning(f'[{namespace}] Learn with feedback failed: {e}')
+            Logger.warning(f"[{namespace}] Learn with feedback failed: {e}")
             return False
 
     @classmethod
@@ -111,11 +122,12 @@ class MetaLearningStorage:
                 if cls._graph_bridge is None:
                     try:
                         from agentic_core.L4_state.memory.graph_memory_bridge_types import GraphMemoryBridge
+
                         cls._graph_bridge = GraphMemoryBridge.get_instance()
-                        Logger.debug(f'[{agent_name}] Connected to Graph Memory Bridge')
+                        Logger.debug(f"[{agent_name}] Connected to Graph Memory Bridge")
                     except Exception as e:
                         raise
-                        Logger.warning(f'[{agent_name}] Graph Memory Bridge unavailable: {e}')
+                        Logger.warning(f"[{agent_name}] Graph Memory Bridge unavailable: {e}")
 
     @classmethod
     def register_agent_entity(cls, agent_name: str) -> None:
@@ -123,10 +135,12 @@ class MetaLearningStorage:
         if cls._graph_bridge is None:
             return
         try:
-            cls._graph_bridge.create_agent_entity(agent_name=agent_name, agent_type='Agent', observations=[f'Agent {agent_name} initialized'])
+            cls._graph_bridge.create_agent_entity(
+                agent_name=agent_name, agent_type="Agent", observations=[f"Agent {agent_name} initialized"]
+            )
         except Exception as e:
             raise
-            Logger.warning(f'[{agent_name}] Agent entity registration failed: {e}')
+            Logger.warning(f"[{agent_name}] Agent entity registration failed: {e}")
 
     @classmethod
     def _create_mastered_task_relation(cls, agent_name: str, context: str, feedback_score: float) -> None:
@@ -134,10 +148,12 @@ class MetaLearningStorage:
         if cls._graph_bridge is None:
             return
         try:
-            cls._graph_bridge.create_mastered_task_relation(agent_name=agent_name, task_description=context, feedback_score=feedback_score)
+            cls._graph_bridge.create_mastered_task_relation(
+                agent_name=agent_name, task_description=context, feedback_score=feedback_score
+            )
         except Exception as e:
             raise
-            Logger.warning(f'[{agent_name}] MASTERED_TASK relation creation failed: {e}')
+            Logger.warning(f"[{agent_name}] MASTERED_TASK relation creation failed: {e}")
 
     @classmethod
     def get_graph_stats(cls) -> dict[str, Any] | None:
@@ -154,18 +170,18 @@ class MetaLearningStorage:
         """Reset the circuit breaker state."""
         cls._lobotomized = False
         cls._memory = None
-        Logger.info('[MetaLearningStorage] Lobotomy state reset')
+        Logger.info("[MetaLearningStorage] Lobotomy state reset")
 
     @classmethod
     def reset_graph_bridge(cls) -> None:
         """Reset the Graph Memory Bridge."""
         cls._graph_bridge = None
-        Logger.info('[MetaLearningStorage] Graph Memory Bridge reset')
+        Logger.info("[MetaLearningStorage] Graph Memory Bridge reset")
 
     @staticmethod
     def generate_context_hash(namespace: str, context: str) -> str:
         """Deterministic context hash for DNA segregation."""
-        key = f'{namespace}:{context}'
+        key = f"{namespace}:{context}"
         return hashlib.sha256(key.encode()).hexdigest()
 
     @classmethod

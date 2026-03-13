@@ -1,11 +1,14 @@
 from __future__ import annotations
-'\nRAGGuardrail - L5 RAG Content Filtering and Reranking\n\nModel library imports (torch, FlagEmbedding) are forbidden in L0-L6.\nReranker creation is delegated to tools/rag_reranker_shim.py which\nlives outside the layer boundary. The shim result is injected here.\n'
+
+"\nRAGGuardrail - L5 RAG Content Filtering and Reranking\n\nModel library imports (torch, FlagEmbedding) are forbidden in L0-L6.\nReranker creation is delegated to tools/rag_reranker_shim.py which\nlives outside the layer boundary. The shim result is injected here.\n"
 import asyncio
 import math
 import re
 from dataclasses import dataclass
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import BATCH_SIZE
+
 
 class ExternalKnowledgeAccessViolation(Exception):
     """Raised when retrieved context is consumed without a valid CitationBundle.
@@ -14,6 +17,7 @@ class ExternalKnowledgeAccessViolation(Exception):
     aborted if context used without CitationBundle.  Fail-closed.
     """
 
+
 @dataclass(frozen=True)
 class CitationBundle:
     """Immutable citation binding for retrieved chunks.
@@ -21,13 +25,17 @@ class CitationBundle:
     Every chunk of external knowledge entering the execution pipeline MUST
     carry a CitationBundle proving provenance.  Fields mirror REQ-RAGX-003.
     """
+
     chunk_id: str
     source_ref: str
     byte_sha256: str
     byte_range: tuple[int, int]
     score: float
 
-def validate_citation_custody(context_chunks: list[dict[str, Any]], citation_bundles: list[CitationBundle] | None) -> None:
+
+def validate_citation_custody(
+    context_chunks: list[dict[str, Any]], citation_bundles: list[CitationBundle] | None
+) -> None:
     """Enforce that every external-knowledge chunk has a matching CitationBundle.
 
     Args:
@@ -43,27 +51,32 @@ def validate_citation_custody(context_chunks: list[dict[str, Any]], citation_bun
     if not context_chunks:
         return
     if citation_bundles is None or len(citation_bundles) == 0:
-        raise ExternalKnowledgeAccessViolation(f'CITATION_MISSING: {len(context_chunks)} context chunk(s) present but no CitationBundle provided — wave aborted')
+        raise ExternalKnowledgeAccessViolation(
+            f"CITATION_MISSING: {len(context_chunks)} context chunk(s) present but no CitationBundle provided — wave aborted"
+        )
     cited_ids = {cb.chunk_id for cb in citation_bundles}
     for chunk in context_chunks:
-        cid = chunk.get('chunk_id')
+        cid = chunk.get("chunk_id")
         if cid is None:
             raise ExternalKnowledgeAccessViolation("CHUNK_ID_MISSING: context chunk lacks 'chunk_id' field")
         if cid not in cited_ids:
-            raise ExternalKnowledgeAccessViolation(f'CITATION_GAP: chunk_id={cid!r} has no matching CitationBundle — wave aborted')
+            raise ExternalKnowledgeAccessViolation(
+                f"CITATION_GAP: chunk_id={cid!r} has no matching CitationBundle — wave aborted"
+            )
+
 
 class RagGuardrail:
     """Brief description of functionality and purpose."""
 
-    def __init__(self, reranker: Any=None, reranker_available: bool=False, status_message: str=''):
+    def __init__(self, reranker: Any = None, reranker_available: bool = False, status_message: str = ""):
         self.bge_reranker = reranker
         self.reranker_available = reranker_available
         if status_message:
-            print(f'   [OK] {status_message}')
+            print(f"   [OK] {status_message}")
         elif not reranker_available:
-            print('   [!] No reranker injected — falling back to RRF only')
+            print("   [!] No reranker injected — falling back to RRF only")
 
-    async def rerank_documents(self, documents: list[Any], query: str, top_k: int=10) -> list[Any]:
+    async def rerank_documents(self, documents: list[Any], query: str, top_k: int = 10) -> list[Any]:
         """
         L5 reranking using BGE-v2-m3 for sovereign precision
         """
@@ -74,6 +87,7 @@ class RagGuardrail:
 
             def _compute():
                 return self.bge_reranker.compute_score(pairs, batch_size=BATCH_SIZE)
+
             raw_logits: Any = await asyncio.to_thread(_compute)
             if isinstance(raw_logits, float | int):
                 raw_logits: Any = [raw_logits]
@@ -87,13 +101,13 @@ class RagGuardrail:
             confident_docs.sort(key=lambda x: x.score, reverse=True)
             dropped: Any = len(documents) - len(confident_docs)
             if dropped > 0:
-                print(f'   [FILTER] Dropped {dropped} low-confidence docs (<{min_confidence})')
+                print(f"   [FILTER] Dropped {dropped} low-confidence docs (<{min_confidence})")
             if not confident_docs:
-                print('   [!] SOVEREIGN ALERT: Zero documents passed confidence threshold.')
+                print("   [!] SOVEREIGN ALERT: Zero documents passed confidence threshold.")
             return confident_docs[:top_k]
         # guardian: allow-silent-swallow
         except Exception as e:
-            print(f'   [!] BGE reranking failed: {e}')
+            print(f"   [!] BGE reranking failed: {e}")
             return documents
 
     async def filter_hallucinations(self, documents: list[Any], query: str) -> list[Any]:
@@ -102,8 +116,8 @@ class RagGuardrail:
         """
         if not documents:
             return documents
-        combined_context = ' '.join([d.text.lower() for d in documents])
-        query_entities = set(re.findall('\\b[A-Z][a-z]+\\b', query))
+        combined_context = " ".join([d.text.lower() for d in documents])
+        query_entities = set(re.findall("\\b[A-Z][a-z]+\\b", query))
         if not query_entities:
             return documents
         supported_entities = 0
@@ -112,7 +126,7 @@ class RagGuardrail:
                 supported_entities += 1
         ratio = supported_entities / len(query_entities)
         if ratio < 0.5:
-            print(f'   [WARN] Retrieval Validity Low: Only {ratio:.1%} of query entities found in context.')
+            print(f"   [WARN] Retrieval Validity Low: Only {ratio:.1%} of query entities found in context.")
         return documents
 
     async def apply_safety_filters(self, documents: list[Any]) -> list[Any]:
@@ -123,9 +137,9 @@ class RagGuardrail:
         for doc in documents:
             if not doc.text or len(doc.text.strip()) < 10:
                 continue
-            forbidden: Any = ['password', 'secret', 'api_key', 'private_key']
+            forbidden: Any = ["password", "secret", "api_key", "private_key"]
             text_lower: Any = doc.text.lower()
-            if any((word in text_lower for word in forbidden)):
+            if any(word in text_lower for word in forbidden):
                 continue
             filtered.append(doc)
         return filtered

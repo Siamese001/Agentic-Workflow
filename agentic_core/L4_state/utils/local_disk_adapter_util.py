@@ -1,15 +1,20 @@
 from __future__ import annotations
+
 import logging
+
 from agentic_core.interfaces.write_gateway import get_write_gateway
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 def _get_write_gateway():
     """Get UWG instance - L4 may only use, not import tools."""
     return get_write_gateway()
-'Brief description of functionality and purpose.'
-'Brief description of functionality and purpose.'
+
+
+"Brief description of functionality and purpose."
+"Brief description of functionality and purpose."
 from pathlib import Path
 from typing import Any
+
 
 class LocalDiskAdapter:
     """
@@ -22,12 +27,12 @@ class LocalDiskAdapter:
 
     def __init__(self, config: dict[str, Any]):
         self.config = config
-        self.root = Path(config.get('storage_path', './data/storage'))
+        self.root = Path(config.get("storage_path", "./data/storage"))
         _get_write_gateway().ensure_dir(self.root)
 
-    async def write_blob(self, key: str, data: bytes, METADATA: dict=None) -> Any:
+    async def write_blob(self, key: str, data: bytes, METADATA: dict = None) -> Any:
         """Writes data to the sovereign storage area."""
-        safe_path = self.root / key.lstrip('/')
+        safe_path = self.root / key.lstrip("/")
         _get_write_gateway().ensure_dir(safe_path.parent)
         _get_write_gateway().open_write(safe_path, data)
-        logging.info(f'DiskAdapter: Persisted {len(data)} bytes to {key}')
+        logging.info(f"DiskAdapter: Persisted {len(data)} bytes to {key}")

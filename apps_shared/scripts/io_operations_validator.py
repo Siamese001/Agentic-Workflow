@@ -2,13 +2,16 @@
 I/O Operations Script Library - Phase 3 Optimization
 Deterministic I/O operations extracted from agents.
 """
+
 from __future__ import annotations
+
 import json
 import logging
 from pathlib import Path
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 logger = logging.getLogger(__name__)
+
 
 class FileOperations:
     """Deterministic file I/O operations."""
@@ -30,12 +33,12 @@ class FileOperations:
         """
         path = Path(file_path)
         if not path.exists():
-            raise FileNotFoundError(f'File not found: {file_path}')
-        with open(path, encoding='utf-8') as f:
+            raise FileNotFoundError(f"File not found: {file_path}")
+        with open(path, encoding="utf-8") as f:
             return json.load(f)
 
     @staticmethod
-    def write_json(file_path: str | Path, data: dict[str, Any], indent: int=2) -> None:
+    def write_json(file_path: str | Path, data: dict[str, Any], indent: int = 2) -> None:
         """
         Write JSON file.
 
@@ -46,7 +49,7 @@ class FileOperations:
         """
         path = Path(file_path)
         path.parent.mkdir(parents=True, exist_ok=True)
-        with open(path, 'w', encoding='utf-8') as f:
+        with open(path, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=indent)
 
     @staticmethod
@@ -62,8 +65,8 @@ class FileOperations:
         """
         path = Path(file_path)
         if not path.exists():
-            raise FileNotFoundError(f'File not found: {file_path}')
-        with open(path, encoding='utf-8') as f:
+            raise FileNotFoundError(f"File not found: {file_path}")
+        with open(path, encoding="utf-8") as f:
             return f.read()
 
     @staticmethod
@@ -77,11 +80,11 @@ class FileOperations:
         """
         path = Path(file_path)
         path.parent.mkdir(parents=True, exist_ok=True)
-        with open(path, 'w', encoding='utf-8') as f:
+        with open(path, "w", encoding="utf-8") as f:
             f.write(content)
 
     @staticmethod
-    def list_files(directory: str | Path, pattern: str='*', recursive: bool=False) -> list[Path]:
+    def list_files(directory: str | Path, pattern: str = "*", recursive: bool = False) -> list[Path]:
         """
         List files in directory.
 
@@ -130,6 +133,7 @@ class FileOperations:
             path.unlink()
             return True
         return False
+
 
 class DataCollectionOperations:
     """Deterministic data collection operations."""
@@ -197,6 +201,7 @@ class DataCollectionOperations:
                 filtered.append(item)
         return filtered
 
+
 class MonitoringOperations:
     """Deterministic monitoring operations."""
 
@@ -214,8 +219,8 @@ class MonitoringOperations:
         try:
             return FileOperations.read_json(state_file)
         except (FileNotFoundError, json.JSONDecodeError) as e:
-            logger.warning(f'Failed to read state file: {e}')
-            return {'status': 'unknown', 'error': str(e)}
+            logger.warning(f"Failed to read state file: {e}")
+            return {"status": "unknown", "error": str(e)}
 
     @staticmethod
     def record_event(event_log: str | Path, event_type: str, event_data: dict[str, Any]) -> None:
@@ -228,7 +233,8 @@ class MonitoringOperations:
             event_data: Event data
         """
         import datetime
-        event = {'timestamp': datetime.datetime.now().isoformat(), 'type': event_type, 'data': event_data}
+
+        event = {"timestamp": datetime.datetime.now().isoformat(), "type": event_type, "data": event_data}
         log_path = Path(event_log)
         events = []
         if log_path.exists():
@@ -242,7 +248,9 @@ class MonitoringOperations:
         FileOperations.write_json(log_path, events)
 
     @staticmethod
-    def get_recent_events(event_log: str | Path, count: int=10, event_type: str | None=None) -> list[dict[str, Any]]:
+    def get_recent_events(
+        event_log: str | Path, count: int = 10, event_type: str | None = None
+    ) -> list[dict[str, Any]]:
         """
         Get recent events from log.
 
@@ -262,7 +270,7 @@ class MonitoringOperations:
             if not isinstance(events, list):
                 return []
             if event_type:
-                events = [e for e in events if e.get('type') == event_type]
+                events = [e for e in events if e.get("type") == event_type]
             return events[-count:]
         except json.JSONDecodeError:
             return []

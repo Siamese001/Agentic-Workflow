@@ -2,11 +2,13 @@
 
 Provides high-performance cache key generation for LLM requests.
 """
+
 import hashlib
 import json
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
-CACHE_KEY_VERSION = 'v1.0'
+
+CACHE_KEY_VERSION = "v1.0"
+
 
 def generate_llm_cache_key(model: str, messages: list[dict[str, Any]]) -> str:
     """Generate a cache key for LLM requests.
@@ -18,11 +20,14 @@ def generate_llm_cache_key(model: str, messages: list[dict[str, Any]]) -> str:
     Returns:
         cache key string
     """
-    key_data = {'model': model, 'messages': messages}
-    serialized = json.dumps(key_data, sort_keys=True, separators=(',', ':'))
+    key_data = {"model": model, "messages": messages}
+    serialized = json.dumps(key_data, sort_keys=True, separators=(",", ":"))
     return hashlib.sha256(serialized.encode()).hexdigest()
 
-def generate_llm_cache_key_with_fingerprint(model: str, messages: list[dict[str, Any]], fingerprint: str) -> str:
+
+def generate_llm_cache_key_with_fingerprint(
+    model: str, messages: list[dict[str, Any]], fingerprint: str
+) -> str:
     """Generate a cache key with additional fingerprint.
 
     Args:
@@ -33,11 +38,18 @@ def generate_llm_cache_key_with_fingerprint(model: str, messages: list[dict[str,
     Returns:
         cache key string with fingerprint
     """
-    key_data = {'model': model, 'messages': messages, 'fingerprint': fingerprint}
-    serialized = json.dumps(key_data, sort_keys=True, separators=(',', ':'))
+    key_data = {"model": model, "messages": messages, "fingerprint": fingerprint}
+    serialized = json.dumps(key_data, sort_keys=True, separators=(",", ":"))
     return hashlib.sha256(serialized.encode()).hexdigest()
 
-def should_invalidate_cache(cache_key: str, current_version: str | None=None, model: str | None=None, messages: list[dict[str, Any]] | None=None, ttl_seconds: int=3600) -> bool:
+
+def should_invalidate_cache(
+    cache_key: str,
+    current_version: str | None = None,
+    model: str | None = None,
+    messages: list[dict[str, Any]] | None = None,
+    ttl_seconds: int = 3600,
+) -> bool:
     """Check if a cache entry should be invalidated.
 
     This is a simple implementation that always returns False

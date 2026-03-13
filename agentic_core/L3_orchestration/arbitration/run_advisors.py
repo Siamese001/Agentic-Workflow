@@ -4,10 +4,12 @@ Advisor Execution Harness
 Side-effect free execution of multiple advisors with validation.
 Ensures deterministic outputs and contract compliance.
 """
+
 from __future__ import annotations
+
 from .advisors import get_available_advisors, run_advisor
 from .arbitration_contract import AdvisorProposal
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 def run_advisors(task_dict: dict[str, str], advisor_ids: list[str]) -> list[AdvisorProposal]:
     """Run multiple advisors and return their proposals.
@@ -26,11 +28,12 @@ def run_advisors(task_dict: dict[str, str], advisor_ids: list[str]) -> list[Advi
     for advisor_id in advisor_ids:
         available = get_available_advisors()
         if advisor_id not in available:
-            raise ValueError(f'Invalid advisor_id: {advisor_id}. Available: {available}')
+            raise ValueError(f"Invalid advisor_id: {advisor_id}. Available: {available}")
         proposal = run_advisor(advisor_id, task_dict)
         _validate_proposal(proposal)
         proposals.append(proposal)
     return proposals
+
 
 def _validate_proposal(proposal: AdvisorProposal) -> None:
     """Validate proposal meets contract requirements.
@@ -42,18 +45,19 @@ def _validate_proposal(proposal: AdvisorProposal) -> None:
         ValueError: If proposal violates contract
     """
     if not proposal.decision.strip():
-        raise ValueError(f'Advisor {proposal.advisor_id} returned empty decision')
+        raise ValueError(f"Advisor {proposal.advisor_id} returned empty decision")
     if not 0 <= proposal.confidence <= 100:
-        raise ValueError(f'Advisor {proposal.advisor_id} returned invalid confidence: {proposal.confidence}')
+        raise ValueError(f"Advisor {proposal.advisor_id} returned invalid confidence: {proposal.confidence}")
     for i, rationale in enumerate(proposal.rationale):
         if not rationale.strip():
-            raise ValueError(f'Advisor {proposal.advisor_id} returned empty rationale item at index {i}')
+            raise ValueError(f"Advisor {proposal.advisor_id} returned empty rationale item at index {i}")
     for i, risk in enumerate(proposal.risks):
         if not risk.strip():
-            raise ValueError(f'Advisor {proposal.advisor_id} returned empty risk item at index {i}')
+            raise ValueError(f"Advisor {proposal.advisor_id} returned empty risk item at index {i}")
     for i, artifact in enumerate(proposal.artifacts):
         if not artifact.strip():
-            raise ValueError(f'Advisor {proposal.advisor_id} returned empty artifact item at index {i}')
+            raise ValueError(f"Advisor {proposal.advisor_id} returned empty artifact item at index {i}")
+
 
 def run_all_advisors(task_dict: dict[str, str]) -> list[AdvisorProposal]:
     """Run all available advisors.
@@ -66,4 +70,6 @@ def run_all_advisors(task_dict: dict[str, str]) -> list[AdvisorProposal]:
     """
     advisor_ids = get_available_advisors()
     return run_advisors(task_dict, advisor_ids)
-__all__ = ['run_advisors', 'run_all_advisors']
+
+
+__all__ = ["run_advisors", "run_all_advisors"]

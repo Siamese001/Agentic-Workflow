@@ -10,13 +10,16 @@ Design invariants:
 - Separation of concerns: metadata (territory, agent) is captured separately from
   the text that is embedded — matching the Embedding Lifecycle architecture.
 """
+
 from __future__ import annotations
+
 import hashlib
 import math
 import struct
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 _FALLBACK_DIMS = 16
 _FALLBACK_TRUNC = 200
+
 
 def normalize_failure_signal(action: dict) -> str:
     """Compose a normalized embedding-input text from a healing action dict.
@@ -51,14 +54,14 @@ def normalize_failure_signal(action: dict) -> str:
         A normalized ASCII text string for embedding, e.g.:
         "IMPORT_BOUNDARY_VIOLATION gate:import_boundary_check DependencyRepairAgent yaml config loader"
     """
-    failure_type: str = action.get('type') or action.get('routing_tier') or 'UNKNOWN'
-    routing_gate: str = action.get('routing_gate') or ''
-    agent: str = action.get('agent') or 'unknown_agent'
-    fix_summary: str = action.get('fix_summary') or ''
-    error_message: str = str(action.get('error_message') or '')[:_FALLBACK_TRUNC]
-    stack_trace: str = str(action.get('stack_trace') or '')[:_FALLBACK_TRUNC]
+    failure_type: str = action.get("type") or action.get("routing_tier") or "UNKNOWN"
+    routing_gate: str = action.get("routing_gate") or ""
+    agent: str = action.get("agent") or "unknown_agent"
+    fix_summary: str = action.get("fix_summary") or ""
+    error_message: str = str(action.get("error_message") or "")[:_FALLBACK_TRUNC]
+    stack_trace: str = str(action.get("stack_trace") or "")[:_FALLBACK_TRUNC]
     parts: list[str] = [failure_type.upper()]
-    if routing_gate and routing_gate != 'N/A':
+    if routing_gate and routing_gate != "N/A":
         parts.append(routing_gate)
     parts.append(agent)
     if fix_summary:
@@ -67,7 +70,8 @@ def normalize_failure_signal(action: dict) -> str:
         parts.append(error_message)
     if stack_trace:
         parts.append(stack_trace)
-    return ' '.join((p.strip() for p in parts if p.strip()))
+    return " ".join(p.strip() for p in parts if p.strip())
+
 
 def extract_failure_metadata(action: dict) -> dict:
     """Extract metadata fields that are stored alongside (not embedded into) the vector.
@@ -81,7 +85,15 @@ def extract_failure_metadata(action: dict) -> dict:
     Returns:
         Dict of metadata fields to store alongside the failure_vector.
     """
-    return {'territory': action.get('territory', 'unknown'), 'routing_digest': action.get('routing_digest'), 'confidence_score': action.get('confidence'), 'routing_tier': action.get('routing_tier', 'DETERMINISTIC'), 'outcome': action.get('outcome', 'UNKNOWN'), 'timestamp': action.get('timestamp')}
+    return {
+        "territory": action.get("territory", "unknown"),
+        "routing_digest": action.get("routing_digest"),
+        "confidence_score": action.get("confidence"),
+        "routing_tier": action.get("routing_tier", "DETERMINISTIC"),
+        "outcome": action.get("outcome", "UNKNOWN"),
+        "timestamp": action.get("timestamp"),
+    }
+
 
 def generate_fallback_vector(text: str) -> list[float]:
     """Produce a deterministic 16-dimensional L2-normalised fallback vector.
@@ -102,11 +114,13 @@ def generate_fallback_vector(text: str) -> list[float]:
         A 16-dimensional L2-normalised list[float]. Never empty, never None.
         Two consecutive calls with identical text always return identical output.
     """
-    digest = hashlib.sha256(text.encode('utf-8', errors='replace')).digest()
+    digest = hashlib.sha256(text.encode("utf-8", errors="replace")).digest()
     raw: list[float] = []
     for i in range(0, _FALLBACK_DIMS * 2, 2):
-        val = struct.unpack_from('<H', digest, i % len(digest))[0]
+        val = struct.unpack_from("<H", digest, i % len(digest))[0]
         raw.append(float(val))
-    norm = math.sqrt(sum((v * v for v in raw))) or 1.0
+    norm = math.sqrt(sum(v * v for v in raw)) or 1.0
     return [v / norm for v in raw]
-__all__ = ['normalize_failure_signal', 'extract_failure_metadata', 'generate_fallback_vector']
+
+
+__all__ = ["normalize_failure_signal", "extract_failure_metadata", "generate_fallback_vector"]

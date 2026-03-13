@@ -53,9 +53,12 @@ HARDENING:
     preventing silent failures that lead to hard-to-debug issues.
 
 """
+
 from __future__ import annotations
+
 import logging
 from typing import Any
+
 from agentic_core.mixins.context_management_mixin import ContextManagementMixin
 from agentic_core.mixins.cost_mixin import CostGuardrailMixin
 from agentic_core.mixins.healer_mixin import HealerMixin
@@ -65,10 +68,21 @@ from agentic_core.mixins.performance_mixin import PerformanceMixin
 from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.mixins.tool_reliability_mixin import ToolReliabilityMixin
 from agentic_core.mixins.tracing_mixin import TracingMixin
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 Logger = logging.getLogger(__name__)
 
-class InfrastructureMixin(CostGuardrailMixin, ContextManagementMixin, ToolReliabilityMixin, HITLMixin, PerformanceMixin, HealerMixin, MCPHardenedMixin, SubatomicTestingMixin, TracingMixin):
+
+class InfrastructureMixin(
+    CostGuardrailMixin,
+    ContextManagementMixin,
+    ToolReliabilityMixin,
+    HITLMixin,
+    PerformanceMixin,
+    HealerMixin,
+    MCPHardenedMixin,
+    SubatomicTestingMixin,
+    TracingMixin,
+):
     """
 
     Unified infrastructure mixin combining all standard agent capabilities.
@@ -118,6 +132,7 @@ class InfrastructureMixin(CostGuardrailMixin, ContextManagementMixin, ToolReliab
         - Failure to do so will cause verify_state() to raise RuntimeError
 
     """
+
     _infra_initialized: bool = False
 
     def __init__(self) -> None:
@@ -136,7 +151,7 @@ class InfrastructureMixin(CostGuardrailMixin, ContextManagementMixin, ToolReliab
         """
         super().__init__()
         self._infra_initialized = True
-        Logger.debug(f'[INFRA] {self.__class__.__name__} infrastructure initialized')
+        Logger.debug(f"[INFRA] {self.__class__.__name__} infrastructure initialized")
 
     def verify_state(self) -> bool:
         """
@@ -179,15 +194,19 @@ class InfrastructureMixin(CostGuardrailMixin, ContextManagementMixin, ToolReliab
 
         """
         errors = []
-        if not getattr(self, '_infra_initialized', False):
-            errors.append(f'{self.__class__.__name__}: _infra_initialized is False. Did you forget to call super().__init__()?')
-        if not hasattr(self, '_healer_metrics'):
-            errors.append(f'{self.__class__.__name__}: _healer_metrics is missing. HealerMixin was not properly initialized.')
+        if not getattr(self, "_infra_initialized", False):
+            errors.append(
+                f"{self.__class__.__name__}: _infra_initialized is False. Did you forget to call super().__init__()?"
+            )
+        if not hasattr(self, "_healer_metrics"):
+            errors.append(
+                f"{self.__class__.__name__}: _healer_metrics is missing. HealerMixin was not properly initialized."
+            )
         if errors:
-            error_msg = 'Infrastructure initialization failed:\n' + '\n'.join((f'  - {e}' for e in errors))
-            Logger.error(f'[INFRA] {error_msg}')
+            error_msg = "Infrastructure initialization failed:\n" + "\n".join(f"  - {e}" for e in errors)
+            Logger.error(f"[INFRA] {error_msg}")
             raise RuntimeError(error_msg)
-        Logger.debug(f'[INFRA] {self.__class__.__name__} state verification passed')
+        Logger.debug(f"[INFRA] {self.__class__.__name__} state verification passed")
         return True
 
     def get_infrastructure_status(self) -> dict[str, Any]:
@@ -210,7 +229,13 @@ class InfrastructureMixin(CostGuardrailMixin, ContextManagementMixin, ToolReliab
                 - testing_ready (bool): Whether SubatomicTestingMixin is ready
 
         """
-        return {'infra_initialized': getattr(self, '_infra_initialized', False), 'healer_ready': hasattr(self, '_healer_metrics'), 'mcp_ready': hasattr(self, '_mcp_initialized'), 'testing_ready': hasattr(self, '_subatomic_initialized'), 'class_name': self.__class__.__name__}
+        return {
+            "infra_initialized": getattr(self, "_infra_initialized", False),
+            "healer_ready": hasattr(self, "_healer_metrics"),
+            "mcp_ready": hasattr(self, "_mcp_initialized"),
+            "testing_ready": hasattr(self, "_subatomic_initialized"),
+            "class_name": self.__class__.__name__,
+        }
 
     def reset_infrastructure(self) -> None:
         """
@@ -229,8 +254,10 @@ class InfrastructureMixin(CostGuardrailMixin, ContextManagementMixin, ToolReliab
 
         """
         self._infra_initialized = False
-        if hasattr(self, '_healer_metrics'):
-            self._healer_metrics = {'violations_found': 0, 'violations_fixed': 0, 'errors': 0}
-        Logger.debug(f'[INFRA] {self.__class__.__name__} infrastructure reset')
-__all__ = ['InfrastructureMixin']
+        if hasattr(self, "_healer_metrics"):
+            self._healer_metrics = {"violations_found": 0, "violations_fixed": 0, "errors": 0}
+        Logger.debug(f"[INFRA] {self.__class__.__name__} infrastructure reset")
+
+
+__all__ = ["InfrastructureMixin"]
 infrastructure_mixin = InfrastructureMixin

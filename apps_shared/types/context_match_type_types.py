@@ -4,25 +4,30 @@ This module provides schema context matching capabilities for schema operations,
 including context-aware matching, semantic field alignment, and compatibility scoring.
 Follows the functional component pattern with proper logging.
 """
+
 import logging
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 logger = logging.getLogger(__name__)
+
 
 class ContextMatchType(Enum):
     """Types of context matching."""
-    DOMAIN = 'domain'
-    PURPOSE = 'purpose'
-    SEMANTIC = 'semantic'
-    STRUCTURAL = 'structural'
-    USAGE = 'usage'
+
+    DOMAIN = "domain"
+    PURPOSE = "purpose"
+    SEMANTIC = "semantic"
+    STRUCTURAL = "structural"
+    USAGE = "usage"
+
 
 @dataclass
 class SchemaContext:
     """Context information for a schema."""
+
     schema_id: str
     domain: str | None = None
     purpose: str | None = None
@@ -33,9 +38,11 @@ class SchemaContext:
     technical_context: str | None = None
     metadata: dict[str, Any] = field(default_factory=dict)
 
+
 @dataclass
 class ContextMatchRequest:
     """Request for context-based schema matching."""
+
     query_context: SchemaContext
     candidate_schemas: list[tuple[str, dict[str, Any], SchemaContext]]
     match_types: list[ContextMatchType] = field(default_factory=lambda: list(ContextMatchType))
@@ -43,26 +50,32 @@ class ContextMatchRequest:
     top_k: int = 10
     include_explanations: bool = False
 
+
 @dataclass
 class ContextMatchResult:
     """Result of context matching."""
+
     schema_id: str
     match_score: float
     match_details: dict[str, float] = field(default_factory=dict)
     explanation: str | None = None
     compatibility_score: float = 0.0
 
+
 @dataclass
 class SchemaContextMatchResult:
     """Complete context match results."""
+
     query_context: SchemaContext
     matches: list[ContextMatchResult]
     total_candidates: int
     metadata: dict[str, Any] = field(default_factory=dict)
 
+
 @dataclass
 class SchemaContextConfig:
     """configuration for schema context matching."""
+
     domain_weight: float = 0.3
     purpose_weight: float = 0.25
     semantic_weight: float = 0.2
@@ -70,10 +83,11 @@ class SchemaContextConfig:
     usage_weight: float = 0.1
     similarity_threshold: float = 0.5
 
+
 class SchemaContextMatcher:
     """Main class for schema context matching operations."""
 
-    def __init__(self, config: SchemaContextConfig | None=None):
+    def __init__(self, config: SchemaContextConfig | None = None):
         self.config = config or SchemaContextConfig()
         self.logger = logging.getLogger(self.__class__.__name__)
 
@@ -86,28 +100,48 @@ class SchemaContextMatcher:
         Returns:
             SchemaContextMatchResult: Ranked matches with scores
         """
-        self.logger.info(f'Matching context for {len(request.candidate_schemas)} candidates')
+        self.logger.info(f"Matching context for {len(request.candidate_schemas)} candidates")
         try:
             matches = []
             for _schema_id, schema_def, schema_context in request.candidate_schemas:
-                match_result = self._compute_match_score(request.query_context, schema_def, schema_context, request.match_types)
+                match_result = self._compute_match_score(
+                    request.query_context, schema_def, schema_context, request.match_types
+                )
                 if match_result.match_score >= request.min_score:
                     matches.append(match_result)
             matches.sort(key=lambda x: x.match_score, reverse=True)
-            top_matches = matches[:request.top_k]
+            top_matches = matches[: request.top_k]
             if request.include_explanations:
                 for match in top_matches:
-                    match.explanation = self._generate_explanation(request.query_context, match, request.match_types)
-            result = SchemaContextMatchResult(query_context=request.query_context, matches=top_matches, total_candidates=len(request.candidate_schemas), metadata={'matched_at': datetime.utcnow().isoformat(), 'match_types': [t.value for t in request.match_types], 'matcher': 'SchemaContextMatcher'})
-            self.logger.info(f'Context matching completed: {len(top_matches)} matches found')
+                    match.explanation = self._generate_explanation(
+                        request.query_context, match, request.match_types
+                    )
+            result = SchemaContextMatchResult(
+                query_context=request.query_context,
+                matches=top_matches,
+                total_candidates=len(request.candidate_schemas),
+                metadata={
+                    "matched_at": datetime.utcnow().isoformat(),
+                    "match_types": [t.value for t in request.match_types],
+                    "matcher": "SchemaContextMatcher",
+                },
+            )
+            self.logger.info(f"Context matching completed: {len(top_matches)} matches found")
             return result
         # guardian: allow-silent-swallow
         except Exception as e:
-            self.logger.error(f'Context matching failed: {str(e)}')
-            return SchemaContextMatchResult(query_context=request.query_context, matches=[], total_candidates=len(request.candidate_schemas), metadata={'error': str(e)})
+            self.logger.error(f"Context matching failed: {str(e)}")
+            return SchemaContextMatchResult(
+                query_context=request.query_context,
+                matches=[],
+                total_candidates=len(request.candidate_schemas),
+                metadata={"error": str(e)},
+            )
 
     # guardian: allow-magic-config
-    def find_similar_contexts(self, schema_context: SchemaContext, context_database: list[SchemaContext], top_k: int=10) -> list[tuple[str, float]]:
+    def find_similar_contexts(
+        self, schema_context: SchemaContext, context_database: list[SchemaContext], top_k: int = 10
+    ) -> list[tuple[str, float]]:
         """Find schemas with similar contexts.
 
         Args:
@@ -136,10 +170,16 @@ class SchemaContextMatcher:
         Returns:
             bool: True if updated successfully
         """
-        self.logger.info(f'Updating context for schema: {schema_id}')
+        self.logger.info(f"Updating context for schema: {schema_id}")
         return True
 
-    def _compute_match_score(self, query_context: SchemaContext, schema_def: dict[str, Any], schema_context: SchemaContext, match_types: list[ContextMatchType]) -> ContextMatchResult:
+    def _compute_match_score(
+        self,
+        query_context: SchemaContext,
+        schema_def: dict[str, Any],
+        schema_context: SchemaContext,
+        match_types: list[ContextMatchType],
+    ) -> ContextMatchResult:
         """Compute match score between query and candidate."""
         match_details = {}
         total_score = 0.0
@@ -147,33 +187,40 @@ class SchemaContextMatcher:
         if ContextMatchType.DOMAIN in match_types:
             if query_context.domain and schema_context.domain:
                 domain_score = self._match_domains(query_context.domain, schema_context.domain)
-                match_details['domain'] = domain_score
+                match_details["domain"] = domain_score
                 total_score += domain_score * self.config.domain_weight
                 total_weight += self.config.domain_weight
         if ContextMatchType.PURPOSE in match_types:
             if query_context.purpose and schema_context.purpose:
                 purpose_score = self._match_purposes(query_context.purpose, schema_context.purpose)
-                match_details['purpose'] = purpose_score
+                match_details["purpose"] = purpose_score
                 total_score += purpose_score * self.config.purpose_weight
                 total_weight += self.config.purpose_weight
         if ContextMatchType.SEMANTIC in match_types:
             semantic_score = self._match_semantics(query_context, schema_context)
-            match_details['semantic'] = semantic_score
+            match_details["semantic"] = semantic_score
             total_score += semantic_score * self.config.semantic_weight
             total_weight += self.config.semantic_weight
         if ContextMatchType.STRUCTURAL in match_types:
             structural_score = self._match_structure(schema_def)
-            match_details['structural'] = structural_score
+            match_details["structural"] = structural_score
             total_score += structural_score * self.config.structural_weight
             total_weight += self.config.structural_weight
         if ContextMatchType.USAGE in match_types:
-            usage_score = self._match_usage_patterns(query_context.usage_patterns, schema_context.usage_patterns)
-            match_details['usage'] = usage_score
+            usage_score = self._match_usage_patterns(
+                query_context.usage_patterns, schema_context.usage_patterns
+            )
+            match_details["usage"] = usage_score
             total_score += usage_score * self.config.usage_weight
             total_weight += self.config.usage_weight
         final_score = total_score / total_weight if total_weight > 0 else 0.0
         compatibility_score = self._compute_compatibility_score(query_context, schema_context)
-        return ContextMatchResult(schema_id=schema_context.schema_id, match_score=final_score, match_details=match_details, compatibility_score=compatibility_score)
+        return ContextMatchResult(
+            schema_id=schema_context.schema_id,
+            match_score=final_score,
+            match_details=match_details,
+            compatibility_score=compatibility_score,
+        )
 
     def _compute_context_similarity(self, context1: SchemaContext, context2: SchemaContext) -> float:
         """Compute similarity between two contexts."""
@@ -263,7 +310,9 @@ class SchemaContextMatcher:
         if context1.related_schemas and context2.related_schemas:
             overlap = set(context1.related_schemas).intersection(context2.related_schemas)
             if overlap:
-                factors.append(len(overlap) / min(len(context1.related_schemas), len(context2.related_schemas)))
+                factors.append(
+                    len(overlap) / min(len(context1.related_schemas), len(context2.related_schemas))
+                )
         if context1.domain == context2.domain:
             factors.append(0.3)
         if context1.purpose and context2.purpose:
@@ -275,42 +324,62 @@ class SchemaContextMatcher:
         """Extract field names from schema definition."""
         fields = []
 
-        def extract_recursive(obj: object, prefix: str='') -> None:
+        def extract_recursive(obj: object, prefix: str = "") -> None:
             if isinstance(obj, dict):
-                if 'properties' in obj:
-                    for key in obj['properties'].keys():
-                        field_name = f'{prefix}.{key}' if prefix else key
+                if "properties" in obj:
+                    for key in obj["properties"].keys():
+                        field_name = f"{prefix}.{key}" if prefix else key
                         fields.append(field_name)
-                elif 'fields' in obj:
-                    for key in obj['fields'].keys():
-                        field_name = f'{prefix}.{key}' if prefix else key
+                elif "fields" in obj:
+                    for key in obj["fields"].keys():
+                        field_name = f"{prefix}.{key}" if prefix else key
                         fields.append(field_name)
+
         extract_recursive(schema_def)
         return fields
 
-    def _generate_explanation(self, query_context: SchemaContext, match_result: ContextMatchResult, match_types: list[ContextMatchType]) -> str:
+    def _generate_explanation(
+        self,
+        query_context: SchemaContext,
+        match_result: ContextMatchResult,
+        match_types: list[ContextMatchType],
+    ) -> str:
         """Generate explanation for the match."""
         explanations = []
-        if 'domain' in match_result.match_details and match_result.match_details['domain'] > 0.7:
+        if "domain" in match_result.match_details and match_result.match_details["domain"] > 0.7:
             explanations.append(f"Strong domain match ({match_result.match_details['domain']:.2f})")
-        if 'purpose' in match_result.match_details and match_result.match_details['purpose'] > 0.6:
+        if "purpose" in match_result.match_details and match_result.match_details["purpose"] > 0.6:
             explanations.append(f"Similar purpose ({match_result.match_details['purpose']:.2f})")
-        if 'semantic' in match_result.match_details and match_result.match_details['semantic'] > 0.5:
+        if "semantic" in match_result.match_details and match_result.match_details["semantic"] > 0.5:
             explanations.append(f"Semantic alignment ({match_result.match_details['semantic']:.2f})")
-        if 'usage' in match_result.match_details and match_result.match_details['usage'] > 0.4:
+        if "usage" in match_result.match_details and match_result.match_details["usage"] > 0.4:
             explanations.append(f"Shared usage patterns ({match_result.match_details['usage']:.2f})")
         if explanations:
-            return 'Match based on: ' + ', '.join(explanations)
+            return "Match based on: " + ", ".join(explanations)
         else:
-            return 'General similarity match'
+            return "General similarity match"
 
-def create_schema_context_matcher(domain_weight: float=0.3, purpose_weight: float=0.25, semantic_weight: float=0.2, **kwargs: object) -> SchemaContextMatcher:
+
+def create_schema_context_matcher(
+    domain_weight: float = 0.3, purpose_weight: float = 0.25, semantic_weight: float = 0.2, **kwargs: object
+) -> SchemaContextMatcher:
     """Create a configured schema context matcher."""
-    config = SchemaContextConfig(domain_weight=domain_weight, purpose_weight=purpose_weight, semantic_weight=semantic_weight, **kwargs)
+    config = SchemaContextConfig(
+        domain_weight=domain_weight, purpose_weight=purpose_weight, semantic_weight=semantic_weight, **kwargs
+    )
     return SchemaContextMatcher(config)
 
+
 # guardian: allow-magic-config
-def match_schema_context(query_context: dict[str, Any], candidate_schemas: list[tuple[str, dict[str, Any], dict[str, Any]]], match_types: list[str]=None, min_score: float=0.5, top_k: int=10, include_explanations: bool=False, config: dict[str, Any] | None=None) -> dict[str, Any]:
+def match_schema_context(
+    query_context: dict[str, Any],
+    candidate_schemas: list[tuple[str, dict[str, Any], dict[str, Any]]],
+    match_types: list[str] = None,
+    min_score: float = 0.5,
+    top_k: int = 10,
+    include_explanations: bool = False,
+    config: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     """Match schema context.
 
     Args:
@@ -329,6 +398,33 @@ def match_schema_context(query_context: dict[str, Any], candidate_schemas: list[
     matcher = SchemaContextMatcher(matcher_config)
     query_ctx = SchemaContext(**query_context)
     candidates = [(sid, schema, SchemaContext(**ctx)) for sid, schema, ctx in candidate_schemas]
-    request = ContextMatchRequest(query_context=query_ctx, candidate_schemas=candidates, match_types=[ContextMatchType(t) for t in match_types or list(ContextMatchType)], min_score=min_score, top_k=top_k, include_explanations=include_explanations)
+    request = ContextMatchRequest(
+        query_context=query_ctx,
+        candidate_schemas=candidates,
+        match_types=[ContextMatchType(t) for t in match_types or list(ContextMatchType)],
+        min_score=min_score,
+        top_k=top_k,
+        include_explanations=include_explanations,
+    )
     result = matcher.match_context(request)
-    return {'query_context': {'schema_id': result.query_context.schema_id, 'domain': result.query_context.domain, 'purpose': result.query_context.purpose, 'tags': result.query_context.tags, 'usage_patterns': result.query_context.usage_patterns}, 'matches': [{'schema_id': m.schema_id, 'match_score': m.match_score, 'match_details': m.match_details, 'explanation': m.explanation, 'compatibility_score': m.compatibility_score} for m in result.matches], 'total_candidates': result.total_candidates, 'metadata': result.metadata}
+    return {
+        "query_context": {
+            "schema_id": result.query_context.schema_id,
+            "domain": result.query_context.domain,
+            "purpose": result.query_context.purpose,
+            "tags": result.query_context.tags,
+            "usage_patterns": result.query_context.usage_patterns,
+        },
+        "matches": [
+            {
+                "schema_id": m.schema_id,
+                "match_score": m.match_score,
+                "match_details": m.match_details,
+                "explanation": m.explanation,
+                "compatibility_score": m.compatibility_score,
+            }
+            for m in result.matches
+        ],
+        "total_candidates": result.total_candidates,
+        "metadata": result.metadata,
+    }

@@ -3,24 +3,27 @@ Precision@K Metric
 
 precision@k = relevant_docs_in_top_k / k
 """
+
 from __future__ import annotations
+
 from typing import Any
+
 from .base import RetrievalMetric
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 class PrecisionAtK(RetrievalMetric):
     """Measures what fraction of the top-k retrieved documents are relevant."""
 
-    def __init__(self, k: int=5):
+    def __init__(self, k: int = 5):
         if k <= 0:
-            raise ValueError(f'k must be positive, got {k}')
+            raise ValueError(f"k must be positive, got {k}")
         self.k = k
 
     @property
     def name(self) -> str:
-        return f'precision@{self.k}'
+        return f"precision@{self.k}"
 
-    def compute(self, prediction: list[str], ground_truth: list[str], context: Any=None) -> float:
+    def compute(self, prediction: list[str], ground_truth: list[str], context: Any = None) -> float:
         """Compute precision@k.
 
         Args:
@@ -36,7 +39,9 @@ class PrecisionAtK(RetrievalMetric):
         if not ground_truth:
             return 0.0
         relevant_set = set(ground_truth)
-        top_k = prediction[:self.k]
-        relevant_in_top_k = sum((1 for doc_id in top_k if doc_id in relevant_set))
+        top_k = prediction[: self.k]
+        relevant_in_top_k = sum(1 for doc_id in top_k if doc_id in relevant_set)
         return relevant_in_top_k / self.k
-__all__ = ['PrecisionAtK']
+
+
+__all__ = ["PrecisionAtK"]

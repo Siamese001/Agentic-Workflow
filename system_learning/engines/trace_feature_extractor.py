@@ -16,14 +16,11 @@ Design invariants
 
 from __future__ import annotations
 
-import hashlib
 import logging
 from typing import Any
 
-from system_learning.enforcement.determinism import deterministic_json
 from system_learning.types.trace_feature_types import (
     FeatureBundle,
-    OutcomeClassLiteral,
     TraceFeatureRecord,
 )
 
@@ -183,15 +180,9 @@ class TraceFeatureExtractor:
             gnd = 0.0
         gnd = max(0.0, min(1.0, gnd))
 
-        policy_hashes: tuple[str, ...] = tuple(
-            str(h) for h in (signal.get("policy_hashes") or []) if h
-        )
-        guardrails: tuple[str, ...] = tuple(
-            str(g) for g in (signal.get("guardrails_applied") or []) if g
-        )
-        det_markers: tuple[str, ...] = tuple(
-            str(m) for m in (signal.get("determinism_markers") or []) if m
-        )
+        policy_hashes: tuple[str, ...] = tuple(str(h) for h in (signal.get("policy_hashes") or []) if h)
+        guardrails: tuple[str, ...] = tuple(str(g) for g in (signal.get("guardrails_applied") or []) if g)
+        det_markers: tuple[str, ...] = tuple(str(m) for m in (signal.get("determinism_markers") or []) if m)
 
         healing_invoked = bool(signal.get("healing_invoked", False))
         healer_id_raw = signal.get("healer_id")
@@ -203,9 +194,7 @@ class TraceFeatureExtractor:
         outcome = _classify_outcome(signal)
 
         adg_entity = str(signal.get("adg_entity_name") or "ADG::Unknown")
-        adg_rels: tuple[str, ...] = tuple(
-            str(r) for r in (signal.get("adg_relation_ids") or []) if r
-        )
+        adg_rels: tuple[str, ...] = tuple(str(r) for r in (signal.get("adg_relation_ids") or []) if r)
 
         return FeatureBundle(
             trace_id=trace_id,

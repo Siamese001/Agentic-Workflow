@@ -9,12 +9,15 @@ Provides metrics collection that:
 Layer: L6 Observer
 Authority: Read-only metrics emission. No L4 mutation. No routing influence.
 """
+
 from __future__ import annotations
+
 import logging
 import time
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
-_logger = logging.getLogger('SSOTMetrics')
+
+_logger = logging.getLogger("SSOTMetrics")
+
 
 class SSOTMetricsMixin:
     """Policy-hash-scoped metrics collection.
@@ -28,7 +31,7 @@ class SSOTMetricsMixin:
         super().__init__(**kwargs)
         self._ssot_metrics: dict[str, list[dict[str, Any]]] = {}
 
-    def record_metric(self, name: str, value: float, tags: dict[str, str] | None=None) -> dict[str, Any]:
+    def record_metric(self, name: str, value: float, tags: dict[str, str] | None = None) -> dict[str, Any]:
         """Record a metric with policy-hash-scoped key.
 
         Parameters
@@ -45,16 +48,24 @@ class SSOTMetricsMixin:
         dict
             The recorded metric entry.
         """
-        policy_hash = getattr(self, 'active_policy_hash', 'unknown')
-        scoped_key = f'{policy_hash}:{name}'
-        entry = {'name': name, 'scoped_key': scoped_key, 'value': value, 'timestamp': time.time(), 'policy_hash': policy_hash, 'tags': tags or {}, 'replay_mode': getattr(self, 'is_replay_mode', False)}
+        policy_hash = getattr(self, "active_policy_hash", "unknown")
+        scoped_key = f"{policy_hash}:{name}"
+        entry = {
+            "name": name,
+            "scoped_key": scoped_key,
+            "value": value,
+            "timestamp": time.time(),
+            "policy_hash": policy_hash,
+            "tags": tags or {},
+            "replay_mode": getattr(self, "is_replay_mode", False),
+        }
         if scoped_key not in self._ssot_metrics:
             self._ssot_metrics[scoped_key] = []
         self._ssot_metrics[scoped_key].append(entry)
-        _logger.debug('[SSOTMetrics] %s = %s', scoped_key, value)
+        _logger.debug("[SSOTMetrics] %s = %s", scoped_key, value)
         return entry
 
-    def get_metrics(self, name: str | None=None) -> list[dict[str, Any]]:
+    def get_metrics(self, name: str | None = None) -> list[dict[str, Any]]:
         """Retrieve recorded metrics, optionally filtered by name.
 
         Parameters
@@ -69,8 +80,8 @@ class SSOTMetricsMixin:
         """
         if name is None:
             return [e for entries in self._ssot_metrics.values() for e in entries]
-        policy_hash = getattr(self, 'active_policy_hash', 'unknown')
-        scoped_key = f'{policy_hash}:{name}'
+        policy_hash = getattr(self, "active_policy_hash", "unknown")
+        scoped_key = f"{policy_hash}:{name}"
         return list(self._ssot_metrics.get(scoped_key, []))
 
     def clear_metrics(self) -> None:

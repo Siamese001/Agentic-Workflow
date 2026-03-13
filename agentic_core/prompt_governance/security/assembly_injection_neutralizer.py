@@ -1,23 +1,47 @@
 from __future__ import annotations
+
 import re
 from dataclasses import dataclass
 from typing import NamedTuple, Sequence
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 class NeutralizationResult(NamedTuple):
     """The result of a prompt injection neutralization operation."""
+
     sanitized_prompt: str
     injection_detected: bool
     detection_patterns: list[str]
 
+
 @dataclass(frozen=True)
 class InjectionPattern:
     """A single pattern for detecting prompt injection attacks."""
+
     name: str
     regex: re.Pattern
-DEFAULT_PATTERNS: Sequence[InjectionPattern] = [InjectionPattern(name='IGNORE_INSTRUCTIONS_ATTACK', regex=re.compile('(ignore|disregard|override|forget) (all|any|previous|prior) instructions', re.IGNORECASE)), InjectionPattern(name='ROLE_PLAY_HIJACK', regex=re.compile('you are now an unfiltered|act as an unfiltered', re.IGNORECASE)), InjectionPattern(name='PROMPT_LEAKING_ATTACK', regex=re.compile('repeat the words above starting with|repeat everything above', re.IGNORECASE))]
 
-def neutralize_prompt(prompt: str, patterns: Sequence[InjectionPattern]=DEFAULT_PATTERNS) -> NeutralizationResult:
+
+DEFAULT_PATTERNS: Sequence[InjectionPattern] = [
+    InjectionPattern(
+        name="IGNORE_INSTRUCTIONS_ATTACK",
+        regex=re.compile(
+            "(ignore|disregard|override|forget) (all|any|previous|prior) instructions", re.IGNORECASE
+        ),
+    ),
+    InjectionPattern(
+        name="ROLE_PLAY_HIJACK",
+        regex=re.compile("you are now an unfiltered|act as an unfiltered", re.IGNORECASE),
+    ),
+    InjectionPattern(
+        name="PROMPT_LEAKING_ATTACK",
+        regex=re.compile("repeat the words above starting with|repeat everything above", re.IGNORECASE),
+    ),
+]
+
+
+def neutralize_prompt(
+    prompt: str, patterns: Sequence[InjectionPattern] = DEFAULT_PATTERNS
+) -> NeutralizationResult:
     """
     Detects and neutralizes prompt injection attacks in a given prompt string.
 
@@ -39,5 +63,9 @@ def neutralize_prompt(prompt: str, patterns: Sequence[InjectionPattern]=DEFAULT_
     for pattern in patterns:
         if pattern.regex.search(sanitized_prompt):
             detected_patterns.append(pattern.name)
-            sanitized_prompt = pattern.regex.sub('', sanitized_prompt).strip()
-    return NeutralizationResult(sanitized_prompt=sanitized_prompt, injection_detected=bool(detected_patterns), detection_patterns=sorted(detected_patterns))
+            sanitized_prompt = pattern.regex.sub("", sanitized_prompt).strip()
+    return NeutralizationResult(
+        sanitized_prompt=sanitized_prompt,
+        injection_detected=bool(detected_patterns),
+        detection_patterns=sorted(detected_patterns),
+    )

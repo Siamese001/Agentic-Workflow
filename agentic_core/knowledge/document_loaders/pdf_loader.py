@@ -1,4 +1,5 @@
 """Legacy compatibility shim — re-exports PDFDocumentLoader from canonical location."""
+
 from agentic_core.knowledge.document_loaders.pdf_document_loader_config import PDFDocumentLoader
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
-__all__ = ['PDFDocumentLoader']
+
+__all__ = ["PDFDocumentLoader"]

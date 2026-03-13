@@ -8,15 +8,39 @@ Invariants:
   - Fail-closed on malformed input
   - Read-only inputs, proposal-only outputs
 """
+
 from __future__ import annotations
+
 import hashlib
 import re
+
 from system_learning.types.rca_types import RCAFinding, create_rca_report
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 class RCAAnalysisError(RuntimeError):
     """Raised when RCA analysis fails."""
-CLASSIFICATION_RULES = [('SYNTAX', re.compile('SyntaxError:'), lambda line: 'SyntaxError'), ('SYNTAX', re.compile('IndentationError:'), lambda line: 'IndentationError'), ('SYNTAX', re.compile('TabError:'), lambda line: 'TabError'), ('IMPORT', re.compile('ModuleNotFoundError:'), lambda line: 'ModuleNotFoundError'), ('IMPORT', re.compile('ImportError:'), lambda line: 'ImportError'), ('TEST_DISCOVERY', re.compile('ERROR collecting'), lambda line: 'pytest_collection_error'), ('TEST_DISCOVERY', re.compile('collection errors'), lambda line: 'pytest_collection_errors'), ('POLICY_BLOCK', re.compile('SourceMutationBlocked'), lambda line: 'SourceMutationBlocked'), ('POLICY_BLOCK', re.compile('AuthorityViolation'), lambda line: 'AuthorityViolation'), ('RUNTIME', re.compile('RuntimeError:'), lambda line: 'RuntimeError'), ('RUNTIME', re.compile('AttributeError:'), lambda line: 'AttributeError'), ('RUNTIME', re.compile('TypeError:'), lambda line: 'TypeError'), ('RUNTIME', re.compile('ValueError:'), lambda line: 'ValueError'), ('RUNTIME', re.compile('KeyError:'), lambda line: 'KeyError'), ('RUNTIME', re.compile('IndexError:'), lambda line: 'IndexError'), ('TIMEOUT', re.compile('TimeoutError'), lambda line: 'TimeoutError'), ('TIMEOUT', re.compile('timeout'), lambda line: 'timeout')]
+
+
+CLASSIFICATION_RULES = [
+    ("SYNTAX", re.compile("SyntaxError:"), lambda line: "SyntaxError"),
+    ("SYNTAX", re.compile("IndentationError:"), lambda line: "IndentationError"),
+    ("SYNTAX", re.compile("TabError:"), lambda line: "TabError"),
+    ("IMPORT", re.compile("ModuleNotFoundError:"), lambda line: "ModuleNotFoundError"),
+    ("IMPORT", re.compile("ImportError:"), lambda line: "ImportError"),
+    ("TEST_DISCOVERY", re.compile("ERROR collecting"), lambda line: "pytest_collection_error"),
+    ("TEST_DISCOVERY", re.compile("collection errors"), lambda line: "pytest_collection_errors"),
+    ("POLICY_BLOCK", re.compile("SourceMutationBlocked"), lambda line: "SourceMutationBlocked"),
+    ("POLICY_BLOCK", re.compile("AuthorityViolation"), lambda line: "AuthorityViolation"),
+    ("RUNTIME", re.compile("RuntimeError:"), lambda line: "RuntimeError"),
+    ("RUNTIME", re.compile("AttributeError:"), lambda line: "AttributeError"),
+    ("RUNTIME", re.compile("TypeError:"), lambda line: "TypeError"),
+    ("RUNTIME", re.compile("ValueError:"), lambda line: "ValueError"),
+    ("RUNTIME", re.compile("KeyError:"), lambda line: "KeyError"),
+    ("RUNTIME", re.compile("IndexError:"), lambda line: "IndexError"),
+    ("TIMEOUT", re.compile("TimeoutError"), lambda line: "TimeoutError"),
+    ("TIMEOUT", re.compile("timeout"), lambda line: "timeout"),
+]
+
 
 def classify_line(line: str) -> tuple[str, str] | None:
     """Classify a line into (category, signature).
@@ -37,7 +61,10 @@ def classify_line(line: str) -> tuple[str, str] | None:
             return (category, signature)
     return None
 
-def analyze_failures(snapshot_id: str, audit_slice: bytes, window_start_utc: int, window_end_utc: int) -> object:
+
+def analyze_failures(
+    snapshot_id: str, audit_slice: bytes, window_start_utc: int, window_end_utc: int
+) -> object:
     """Analyze failures from audit slice and produce RCA report.
 
     Deterministic parsing rules:
@@ -68,15 +95,15 @@ def analyze_failures(snapshot_id: str, audit_slice: bytes, window_start_utc: int
         If audit_slice cannot be decoded or window is invalid.
     """
     if window_start_utc >= window_end_utc:
-        raise RCAAnalysisError(f'Invalid window: start={window_start_utc} >= end={window_end_utc}')
+        raise RCAAnalysisError(f"Invalid window: start={window_start_utc} >= end={window_end_utc}")
     if isinstance(audit_slice, list):
-        audit_slice = '\n'.join((str(item) for item in audit_slice)).encode('utf-8')
+        audit_slice = "\n".join(str(item) for item in audit_slice).encode("utf-8")
     elif not isinstance(audit_slice, (bytes, bytearray)):
-        audit_slice = b''
+        audit_slice = b""
     try:
-        audit_text = audit_slice.decode('utf-8')
+        audit_text = audit_slice.decode("utf-8")
     except UnicodeDecodeError as e:
-        raise RCAAnalysisError(f'Failed to decode audit_slice as UTF-8: {e}') from e
+        raise RCAAnalysisError(f"Failed to decode audit_slice as UTF-8: {e}") from e
     lines = audit_text.splitlines()
     findings_dict: dict[tuple[str, str], list[str]] = {}
     for line in lines:
@@ -91,16 +118,26 @@ def analyze_failures(snapshot_id: str, audit_slice: bytes, window_start_utc: int
                 findings_dict[key] = []
             findings_dict[key].append(line)
     if not findings_dict:
-        findings_dict['UNKNOWN', 'no_patterns_matched'] = ['<no matching patterns>']
+        findings_dict["UNKNOWN", "no_patterns_matched"] = ["<no matching patterns>"]
     findings = []
     for (category, signature), evidence_lines in findings_dict.items():
         count = len(evidence_lines)
-        canonical_evidence = '\n'.join(sorted(evidence_lines)).encode('utf-8')
+        canonical_evidence = "\n".join(sorted(evidence_lines)).encode("utf-8")
         evidence_hash = hashlib.sha256(canonical_evidence).hexdigest()
-        findings.append(RCAFinding(category=category, signature=signature, count=count, evidence_hash=evidence_hash))
-    return create_rca_report(snapshot_id=snapshot_id, window_start_utc=window_start_utc, window_end_utc=window_end_utc, findings=tuple(findings))
+        findings.append(
+            RCAFinding(category=category, signature=signature, count=count, evidence_hash=evidence_hash)
+        )
+    return create_rca_report(
+        snapshot_id=snapshot_id,
+        window_start_utc=window_start_utc,
+        window_end_utc=window_end_utc,
+        findings=tuple(findings),
+    )
 
-def analyze_failures_and_persist(snapshot_id: str, audit_slice: bytes, window_start_utc: int, window_end_utc: int) -> object:
+
+def analyze_failures_and_persist(
+    snapshot_id: str, audit_slice: bytes, window_start_utc: int, window_end_utc: int
+) -> object:
     """Analyze failures and persist findings to Memory MCP.
 
     Drop-in replacement for ``analyze_failures`` that additionally persists
@@ -112,7 +149,10 @@ def analyze_failures_and_persist(snapshot_id: str, audit_slice: bytes, window_st
     report = analyze_failures(snapshot_id, audit_slice, window_start_utc, window_end_utc)
     try:
         from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
-        get_sl_memory_bridge().persist_rca_findings(snapshot_id, report, window_start=window_start_utc, window_end=window_end_utc)
+
+        get_sl_memory_bridge().persist_rca_findings(
+            snapshot_id, report, window_start=window_start_utc, window_end=window_end_utc
+        )
     # guardian: allow-silent-swallow
     except Exception:
         pass

@@ -7,19 +7,25 @@ representation defined in agentic_core.config.core.injection_layer_config.
 
 SOURCE: data/prompt_governance/injections/
 """
+
 from __future__ import annotations
+
 import logging
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
+
 import yaml
+
 from .injection_layer_config import InjectionLayer, InstructionalPattern
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 logger = logging.getLogger(__name__)
+
 
 @dataclass
 class YamlValidationError(Exception):
     """Raised when YAML validation fails with precise error context."""
+
     filename: str
     missing_key: str | None = None
     parse_error: str | None = None
@@ -28,15 +34,24 @@ class YamlValidationError(Exception):
         if self.missing_key:
             return f"Missing required key '{self.missing_key}' in {self.filename}"
         if self.parse_error:
-            return f'YAML parse error in {self.filename}: {self.parse_error}'
-        return f'Validation error in {self.filename}'
+            return f"YAML parse error in {self.filename}: {self.parse_error}"
+        return f"Validation error in {self.filename}"
+
 
 class YamlInjectionLoader:
     """Deterministic YAML injection pattern loader with validation."""
-    REQUIRED_KEYS = {'description', 'prompt_template', 'success_criteria', 'usage_context'}
-    LAYER_MAPPING = {'framing': InjectionLayer.FRAMING, 'context_engineering': InjectionLayer.CONTEXT, 'reasoning': InjectionLayer.REASONING, 'tool_use': InjectionLayer.TOOLING, 'safety': InjectionLayer.SAFETY, 'output_governance': InjectionLayer.OUTPUT}
 
-    def __init__(self, yaml_root: pathlib.Path | None=None):
+    REQUIRED_KEYS = {"description", "prompt_template", "success_criteria", "usage_context"}
+    LAYER_MAPPING = {
+        "framing": InjectionLayer.FRAMING,
+        "context_engineering": InjectionLayer.CONTEXT,
+        "reasoning": InjectionLayer.REASONING,
+        "tool_use": InjectionLayer.TOOLING,
+        "safety": InjectionLayer.SAFETY,
+        "output_governance": InjectionLayer.OUTPUT,
+    }
+
+    def __init__(self, yaml_root: pathlib.Path | None = None):
         """Initialize the YAML loader.
 
         Args:
@@ -44,7 +59,7 @@ class YamlInjectionLoader:
                       Defaults to data/prompt_governance/injections
         """
         if yaml_root is None:
-            yaml_root = Path('data/prompt_governance/injections')
+            yaml_root = Path("data/prompt_governance/injections")
         self.yaml_root = Path(yaml_root)
         self._cache: dict[str, list[InstructionalPattern]] = {}
 
@@ -58,8 +73,8 @@ class YamlInjectionLoader:
             FileNotFoundError: If yaml_root directory doesn't exist.
         """
         if not self.yaml_root.exists():
-            raise FileNotFoundError(f'YAML root directory not found: {self.yaml_root}')
-        yaml_files = list(self.yaml_root.rglob('*.y*ml'))
+            raise FileNotFoundError(f"YAML root directory not found: {self.yaml_root}")
+        yaml_files = list(self.yaml_root.rglob("*.y*ml"))
         yaml_files.sort()
         return yaml_files
 
@@ -72,9 +87,11 @@ class YamlInjectionLoader:
         Raises:
             YamlValidationError: If any YAML file fails validation.
         """
-        if 'all_patterns' in self._cache:
-            return self._cache['all_patterns']
-        patterns_by_layer: dict[str, list[InstructionalPattern]] = {layer.value: [] for layer in InjectionLayer}
+        if "all_patterns" in self._cache:
+            return self._cache["all_patterns"]
+        patterns_by_layer: dict[str, list[InstructionalPattern]] = {
+            layer.value: [] for layer in InjectionLayer
+        }
         for yaml_file in self.enumerate_yaml_files():
             try:
                 layer_patterns = self._load_yaml_file(yaml_file)
@@ -83,10 +100,12 @@ class YamlInjectionLoader:
             except YamlValidationError:
                 raise
             except Exception as e:
-                raise YamlValidationError(filename=str(yaml_file), parse_error=f'Unexpected error: {e}') from e
+                raise YamlValidationError(
+                    filename=str(yaml_file), parse_error=f"Unexpected error: {e}"
+                ) from e
         for layer_patterns in patterns_by_layer.values():
             layer_patterns.sort(key=lambda p: p.id)
-        self._cache['all_patterns'] = patterns_by_layer
+        self._cache["all_patterns"] = patterns_by_layer
         return patterns_by_layer
 
     def load_by_layer(self, layer: InjectionLayer | str) -> list[InstructionalPattern]:
@@ -118,19 +137,23 @@ class YamlInjectionLoader:
             YamlValidationError: If validation fails.
         """
         try:
-            with open(yaml_file, encoding='utf-8') as f:
+            with open(yaml_file, encoding="utf-8") as f:
                 data = yaml.safe_load(f)
         except yaml.YAMLError as e:
             raise YamlValidationError(filename=str(yaml_file), parse_error=str(e)) from e
         if not isinstance(data, dict):
-            raise YamlValidationError(filename=str(yaml_file), parse_error='Root element must be a dictionary')
+            raise YamlValidationError(
+                filename=str(yaml_file), parse_error="Root element must be a dictionary"
+            )
         patterns = []
         for root_key, root_value in data.items():
             if isinstance(root_value, dict):
                 patterns.extend(self._extract_patterns_from_dict(root_key, root_value, yaml_file))
         return patterns
 
-    def _extract_patterns_from_dict(self, root_key: str, pattern_dict: Dict[str, Any], yaml_file: Path) -> List[InstructionalPattern]:
+    def _extract_patterns_from_dict(
+        self, root_key: str, pattern_dict: Dict[str, Any], yaml_file: Path
+    ) -> List[InstructionalPattern]:
         """Extract patterns from a dictionary structure.
 
         Args:
@@ -154,27 +177,37 @@ class YamlInjectionLoader:
             pattern_data = pattern_dict[pattern_name]
             if not isinstance(pattern_data, dict):
                 continue
-            has_description = isinstance(pattern_data.get('description'), str)
-            has_template = isinstance(pattern_data.get('prompt_template'), str)
+            has_description = isinstance(pattern_data.get("description"), str)
+            has_template = isinstance(pattern_data.get("prompt_template"), str)
             if not (has_description and has_template):
-                logger.debug(f'Skipping pattern {pattern_name} in {yaml_file}: missing description or prompt_template')
+                logger.debug(
+                    f"Skipping pattern {pattern_name} in {yaml_file}: missing description or prompt_template"
+                )
                 skipped_count += 1
                 continue
-            description = pattern_data['description']
-            prompt_template = pattern_data['prompt_template']
+            description = pattern_data["description"]
+            prompt_template = pattern_data["prompt_template"]
             if not isinstance(description, str):
-                logger.debug(f'Skipping pattern {pattern_name} in {yaml_file}: description not a string')
+                logger.debug(f"Skipping pattern {pattern_name} in {yaml_file}: description not a string")
                 skipped_count += 1
                 continue
             if not isinstance(prompt_template, str):
-                logger.debug(f'Skipping pattern {pattern_name} in {yaml_file}: prompt_template not a string')
+                logger.debug(f"Skipping pattern {pattern_name} in {yaml_file}: prompt_template not a string")
                 skipped_count += 1
                 continue
-            pattern = InstructionalPattern(id=pattern_id, name=pattern_name, layer=layer, description=description, template=prompt_template, enabled=pattern_data.get('enabled', True), required=pattern_data.get('required', False))
+            pattern = InstructionalPattern(
+                id=pattern_id,
+                name=pattern_name,
+                layer=layer,
+                description=description,
+                template=prompt_template,
+                enabled=pattern_data.get("enabled", True),
+                required=pattern_data.get("required", False),
+            )
             patterns.append(pattern)
             pattern_id += 1
         if skipped_count > 0:
-            logger.warning(f'Skipped {skipped_count} invalid patterns in {yaml_file}')
+            logger.warning(f"Skipped {skipped_count} invalid patterns in {yaml_file}")
         return patterns
 
     def _determine_layer_from_path(self, yaml_file: Path) -> str:
@@ -191,23 +224,26 @@ class YamlInjectionLoader:
             if part in self.LAYER_MAPPING:
                 return self.LAYER_MAPPING[part].value
         filename = yaml_file.name.lower()
-        if 'framing' in filename:
+        if "framing" in filename:
             return InjectionLayer.FRAMING.value
-        elif 'safety' in filename:
+        elif "safety" in filename:
             return InjectionLayer.SAFETY.value
-        elif 'reasoning' in filename:
+        elif "reasoning" in filename:
             return InjectionLayer.REASONING.value
-        elif 'tool' in filename:
+        elif "tool" in filename:
             return InjectionLayer.TOOLING.value
-        elif 'output' in filename:
+        elif "output" in filename:
             return InjectionLayer.OUTPUT.value
-        elif 'context' in filename:
+        elif "context" in filename:
             return InjectionLayer.CONTEXT.value
-        logger.warning(f'Could not determine layer for {yaml_file}, defaulting to FRAMING')
+        logger.warning(f"Could not determine layer for {yaml_file}, defaulting to FRAMING")
         return InjectionLayer.FRAMING.value
+
+
 _yaml_loader: YamlInjectionLoader | None = None
 
-def get_yaml_loader(yaml_root: pathlib.Path | None=None) -> YamlInjectionLoader:
+
+def get_yaml_loader(yaml_root: pathlib.Path | None = None) -> YamlInjectionLoader:
     """Get the global YAML loader instance.
 
     Args:
@@ -220,6 +256,7 @@ def get_yaml_loader(yaml_root: pathlib.Path | None=None) -> YamlInjectionLoader:
     if _yaml_loader is None:
         _yaml_loader = YamlInjectionLoader(yaml_root)
     return _yaml_loader
+
 
 def clear_yaml_cache() -> None:
     """Clear the YAML loader cache. Useful for testing."""

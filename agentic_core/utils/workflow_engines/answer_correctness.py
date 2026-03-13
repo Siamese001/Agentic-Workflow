@@ -5,11 +5,14 @@ Measures answer correctness using token-overlap F1 (heuristic) or an
 injected LLM-as-judge callable.  The heuristic is deterministic and
 zero-dependency; the judge variant supports production scoring.
 """
+
 from __future__ import annotations
+
 from typing import Any, Callable
+
 from .base import GenerationMetric
 from .groundedness import _token_f1, _tokenize
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 class AnswerCorrectness(GenerationMetric):
     """Measures how correct the generated answer is relative to the expected answer.
@@ -18,14 +21,14 @@ class AnswerCorrectness(GenerationMetric):
     With a judge callable: calls judge(prediction, ground_truth) -> float in [0, 1].
     """
 
-    def __init__(self, judge: Callable[[str, str], float] | None=None):
+    def __init__(self, judge: Callable[[str, str], float] | None = None):
         self._judge = judge
 
     @property
     def name(self) -> str:
-        return 'answer_correctness'
+        return "answer_correctness"
 
-    def compute(self, prediction: str, ground_truth: str, context: Any=None) -> float:
+    def compute(self, prediction: str, ground_truth: str, context: Any = None) -> float:
         """Compute answer correctness score.
 
         Args:
@@ -45,4 +48,6 @@ class AnswerCorrectness(GenerationMetric):
         pred_tokens = _tokenize(prediction)
         gt_tokens = _tokenize(ground_truth)
         return _token_f1(pred_tokens, gt_tokens)
-__all__ = ['AnswerCorrectness']
+
+
+__all__ = ["AnswerCorrectness"]

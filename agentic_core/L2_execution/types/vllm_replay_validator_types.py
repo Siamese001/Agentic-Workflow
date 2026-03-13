@@ -12,10 +12,12 @@ Replay components (canonical, sorted keys):
 
 replay_hash = SHA256(prompt_hash + local_request_hash + fingerprint_hash + response_hash)
 """
+
 from __future__ import annotations
+
 from dataclasses import dataclass, field
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 def canonical_prompt_hash(prompt: str) -> str:
     """
@@ -27,8 +29,13 @@ def canonical_prompt_hash(prompt: str) -> str:
     Returns:
         64-character lowercase hex SHA256 digest.
     """
-    from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint_types import canonical_json, sha256_hex
-    return sha256_hex(canonical_json({'prompt': prompt}))
+    from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint_types import (
+        canonical_json,
+        sha256_hex,
+    )
+
+    return sha256_hex(canonical_json({"prompt": prompt}))
+
 
 def canonical_local_request_hash(request: VLLMLocalRequest) -> str:
     """
@@ -40,9 +47,23 @@ def canonical_local_request_hash(request: VLLMLocalRequest) -> str:
     Returns:
         64-character lowercase hex SHA256 digest.
     """
-    from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint_types import canonical_json, sha256_hex
-    request_dict = {'prompt': request.prompt, 'max_tokens': request.max_tokens, 'temperature': request.temperature, 'top_p': request.top_p, 'seed': request.seed, 'task_class': request.task_class, 'profile_name': request.profile_name, 'max_model_len': request.max_model_len}
+    from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint_types import (
+        canonical_json,
+        sha256_hex,
+    )
+
+    request_dict = {
+        "prompt": request.prompt,
+        "max_tokens": request.max_tokens,
+        "temperature": request.temperature,
+        "top_p": request.top_p,
+        "seed": request.seed,
+        "task_class": request.task_class,
+        "profile_name": request.profile_name,
+        "max_model_len": request.max_model_len,
+    }
     return sha256_hex(canonical_json(request_dict))
+
 
 def canonical_response_hash(result: VLLMGatewayCallResult) -> str:
     """
@@ -56,14 +77,24 @@ def canonical_response_hash(result: VLLMGatewayCallResult) -> str:
     Returns:
         64-character lowercase hex SHA256 digest.
     """
-    from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint_types import canonical_json, sha256_hex
+    from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint_types import (
+        canonical_json,
+        sha256_hex,
+    )
+
     telemetry_dict = result.telemetry.as_dict()
     if result.invariant_violations:
         violations_canonical = [v.as_dict() for v in result.invariant_violations]
-        telemetry_dict['invariant_violations'] = violations_canonical
+        telemetry_dict["invariant_violations"] = violations_canonical
     return sha256_hex(canonical_json(telemetry_dict))
 
-def compute_replay_hash(prompt: str, request: VLLMLocalRequest | None, fingerprint: VLLMInfrastructureFingerprint, result: VLLMGatewayCallResult) -> str:
+
+def compute_replay_hash(
+    prompt: str,
+    request: VLLMLocalRequest | None,
+    fingerprint: VLLMInfrastructureFingerprint,
+    result: VLLMGatewayCallResult,
+) -> str:
     """
     Compute deterministic replay hash from all components.
 
@@ -78,7 +109,11 @@ def compute_replay_hash(prompt: str, request: VLLMLocalRequest | None, fingerpri
     Returns:
         64-character lowercase hex SHA256 digest.
     """
-    from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint_types import canonical_json, sha256_hex
+    from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint_types import (
+        canonical_json,
+        sha256_hex,
+    )
+
     prompt_hash = canonical_prompt_hash(prompt)
     if request is None:
         local_request_hash = sha256_hex(canonical_json({}))
@@ -89,12 +124,14 @@ def compute_replay_hash(prompt: str, request: VLLMLocalRequest | None, fingerpri
     combined = prompt_hash + local_request_hash + fingerprint_hash + response_hash
     return sha256_hex(combined)
 
+
 @dataclass(frozen=True)
 class VLLMReplayArtifact:
     """Immutable artifact for deterministic replay validation.
 
     Contains all components needed to recompute and verify replay_hash.
     """
+
     prompt: str
     local_request: VLLMLocalRequest | None
     fingerprint: VLLMInfrastructureFingerprint
@@ -106,16 +143,20 @@ class VLLMReplayArtifact:
     replay_hash: str = field(init=False)
 
     def __post_init__(self) -> None:
-        from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint_types import canonical_json, sha256_hex
-        object.__setattr__(self, 'prompt_hash', canonical_prompt_hash(self.prompt))
+        from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint_types import (
+            canonical_json,
+            sha256_hex,
+        )
+
+        object.__setattr__(self, "prompt_hash", canonical_prompt_hash(self.prompt))
         if self.local_request is None:
-            object.__setattr__(self, 'local_request_hash', sha256_hex(canonical_json({})))
+            object.__setattr__(self, "local_request_hash", sha256_hex(canonical_json({})))
         else:
-            object.__setattr__(self, 'local_request_hash', canonical_local_request_hash(self.local_request))
-        object.__setattr__(self, 'fingerprint_hash', self.fingerprint.fingerprint_hash())
-        object.__setattr__(self, 'response_hash', canonical_response_hash(self.result))
+            object.__setattr__(self, "local_request_hash", canonical_local_request_hash(self.local_request))
+        object.__setattr__(self, "fingerprint_hash", self.fingerprint.fingerprint_hash())
+        object.__setattr__(self, "response_hash", canonical_response_hash(self.result))
         combined = self.prompt_hash + self.local_request_hash + self.fingerprint_hash + self.response_hash
-        object.__setattr__(self, 'replay_hash', sha256_hex(combined))
+        object.__setattr__(self, "replay_hash", sha256_hex(combined))
 
     def canonical_payload_hash(self) -> str:
         """
@@ -128,6 +169,7 @@ class VLLMReplayArtifact:
             64-character lowercase hex SHA256 digest of the canonical payload.
         """
         from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint_types import sha256_hex
+
         combined = self.prompt_hash + self.local_request_hash + self.fingerprint_hash + self.response_hash
         return sha256_hex(combined)
 
@@ -138,8 +180,11 @@ class VLLMReplayArtifact:
         Returns:
             True if all hashes match (artifact is untampered), False otherwise.
         """
-        current_replay_hash = compute_replay_hash(prompt=self.prompt, request=self.local_request, fingerprint=self.fingerprint, result=self.result)
+        current_replay_hash = compute_replay_hash(
+            prompt=self.prompt, request=self.local_request, fingerprint=self.fingerprint, result=self.result
+        )
         return current_replay_hash == self.replay_hash
+
 
 @dataclass(frozen=True)
 class VLLMReplayValidator:
@@ -169,8 +214,30 @@ class VLLMReplayValidator:
         """
         is_valid = self.validate(artifact)
         if not is_valid:
-            current_replay_hash = compute_replay_hash(prompt=artifact.prompt, request=artifact.local_request, fingerprint=artifact.fingerprint, result=artifact.result)
+            current_replay_hash = compute_replay_hash(
+                prompt=artifact.prompt,
+                request=artifact.local_request,
+                fingerprint=artifact.fingerprint,
+                result=artifact.result,
+            )
         else:
             current_replay_hash = artifact.replay_hash
-        return {'valid': is_valid, 'stored_replay_hash': artifact.replay_hash, 'computed_replay_hash': current_replay_hash, 'prompt_hash': artifact.prompt_hash, 'local_request_hash': artifact.local_request_hash, 'fingerprint_hash': artifact.fingerprint_hash, 'response_hash': artifact.response_hash}
-__all__ = ['VLLMReplayArtifact', 'VLLMReplayValidator', 'canonical_prompt_hash', 'canonical_local_request_hash', 'canonical_response_hash', 'compute_replay_hash']
+        return {
+            "valid": is_valid,
+            "stored_replay_hash": artifact.replay_hash,
+            "computed_replay_hash": current_replay_hash,
+            "prompt_hash": artifact.prompt_hash,
+            "local_request_hash": artifact.local_request_hash,
+            "fingerprint_hash": artifact.fingerprint_hash,
+            "response_hash": artifact.response_hash,
+        }
+
+
+__all__ = [
+    "VLLMReplayArtifact",
+    "VLLMReplayValidator",
+    "canonical_prompt_hash",
+    "canonical_local_request_hash",
+    "canonical_response_hash",
+    "compute_replay_hash",
+]

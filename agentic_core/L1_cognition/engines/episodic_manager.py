@@ -1,14 +1,16 @@
 from __future__ import annotations
-'\nEpisodic Memory - Expanded Mission/Episode Storage\n\nProvides expanded capacity for mission episodes with semantic index\nintegration for long-term pattern access.\n\nFeatures:\n- Expanded capacity (20 → 200 episodes)\n- Semantic index integration for similarity retrieval\n- Automatic offload of old episodes to semantic memory\n- Mission history retention across sessions\n'
+
+"\nEpisodic Memory - Expanded Mission/Episode Storage\n\nProvides expanded capacity for mission episodes with semantic index\nintegration for long-term pattern access.\n\nFeatures:\n- Expanded capacity (20 → 200 episodes)\n- Semantic index integration for similarity retrieval\n- Automatic offload of old episodes to semantic memory\n- Mission history retention across sessions\n"
 import hashlib
 import time
 from dataclasses import dataclass, field
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 @dataclass
 class Episode:
     """Individual episode entry."""
+
     episode_id: str
     summary: str
     mission_type: str
@@ -19,6 +21,7 @@ class Episode:
     duration_ms: float = 0.0
     reward: float = 0.0
     metadata: dict[str, Any] = field(default_factory=dict)
+
 
 class EpisodicMemory:
     """
@@ -31,7 +34,7 @@ class EpisodicMemory:
     - Mission pattern extraction
     """
 
-    def __init__(self, capacity: int=200, embed_index: bool=True):
+    def __init__(self, capacity: int = 200, embed_index: bool = True):
         """
         Initialize episodic memory.
 
@@ -54,6 +57,7 @@ class EpisodicMemory:
         if self._semantic_memory is None and self.embed_index:
             try:
                 from .semantic_manager import semantic_memory
+
                 self._semantic_memory = semantic_memory
             except ImportError:
                 self._semantic_memory = None
@@ -69,22 +73,39 @@ class EpisodicMemory:
         Returns:
             Episode ID
         """
-        episode_id = episode.get('id', self._generate_id(episode))
-        episode_obj = Episode(episode_id=episode_id, summary=episode.get('summary', episode.get('description', str(episode))), mission_type=episode.get('type', episode.get('mission_type', 'task')), outcome=episode.get('outcome', 'unknown'), steps=episode.get('steps', []), context=episode.get('context', {}), duration_ms=episode.get('duration_ms', 0.0), reward=episode.get('reward', 0.0), metadata=episode.get('metadata', {}))
-        if episode_obj.outcome == 'success':
+        episode_id = episode.get("id", self._generate_id(episode))
+        episode_obj = Episode(
+            episode_id=episode_id,
+            summary=episode.get("summary", episode.get("description", str(episode))),
+            mission_type=episode.get("type", episode.get("mission_type", "task")),
+            outcome=episode.get("outcome", "unknown"),
+            steps=episode.get("steps", []),
+            context=episode.get("context", {}),
+            duration_ms=episode.get("duration_ms", 0.0),
+            reward=episode.get("reward", 0.0),
+            metadata=episode.get("metadata", {}),
+        )
+        if episode_obj.outcome == "success":
             self.success_count += 1
-        elif episode_obj.outcome == 'failure':
+        elif episode_obj.outcome == "failure":
             self.failure_count += 1
         self.episodes.append(episode_obj)
         self.total_stored += 1
         if self.semantic_index:
-            self.semantic_index.add_episode({'id': episode_id, 'summary': episode_obj.summary, 'type': episode_obj.mission_type, 'outcome': episode_obj.outcome})
+            self.semantic_index.add_episode(
+                {
+                    "id": episode_id,
+                    "summary": episode_obj.summary,
+                    "type": episode_obj.mission_type,
+                    "outcome": episode_obj.outcome,
+                }
+            )
         while len(self.episodes) > self.capacity:
             self.episodes.pop(0)
             self.total_evicted += 1
         return episode_id
 
-    def retrieve(self, count: int=10) -> list[dict[str, Any]]:
+    def retrieve(self, count: int = 10) -> list[dict[str, Any]]:
         """
         Retrieve recent episodes.
 
@@ -97,7 +118,7 @@ class EpisodicMemory:
         return [self._episode_to_dict(e) for e in self.episodes[-count:]]
 
     # guardian: allow-magic-config
-    def retrieve_relevant(self, query: str, top_k: int=5) -> list[dict[str, Any]]:
+    def retrieve_relevant(self, query: str, top_k: int = 5) -> list[dict[str, Any]]:
         """
         Retrieve relevant episodes using semantic similarity.
 
@@ -111,13 +132,13 @@ class EpisodicMemory:
         in_memory_results = self._keyword_search(query, top_k)
         if self.semantic_index:
             semantic_results = self.semantic_index.query_episodes(query, top_k)
-            seen_ids = {r.get('id') for r in in_memory_results}
+            seen_ids = {r.get("id") for r in in_memory_results}
             for result in semantic_results:
-                if result.get('id') not in seen_ids:
-                    in_memory_results.append(result.get('content', result))
+                if result.get("id") not in seen_ids:
+                    in_memory_results.append(result.get("content", result))
         return in_memory_results[:top_k]
 
-    def retrieve_by_outcome(self, outcome: str, count: int=10) -> list[dict[str, Any]]:
+    def retrieve_by_outcome(self, outcome: str, count: int = 10) -> list[dict[str, Any]]:
         """
         Retrieve episodes by outcome.
 
@@ -131,15 +152,15 @@ class EpisodicMemory:
         matching = [e for e in self.episodes if e.outcome == outcome]
         return [self._episode_to_dict(e) for e in matching[-count:]]
 
-    def retrieve_successes(self, count: int=10) -> list[dict[str, Any]]:
+    def retrieve_successes(self, count: int = 10) -> list[dict[str, Any]]:
         """Retrieve successful episodes."""
-        return self.retrieve_by_outcome('success', count)
+        return self.retrieve_by_outcome("success", count)
 
-    def retrieve_failures(self, count: int=10) -> list[dict[str, Any]]:
+    def retrieve_failures(self, count: int = 10) -> list[dict[str, Any]]:
         """Retrieve failed episodes."""
-        return self.retrieve_by_outcome('failure', count)
+        return self.retrieve_by_outcome("failure", count)
 
-    def retrieve_by_type(self, mission_type: str, count: int=10) -> list[dict[str, Any]]:
+    def retrieve_by_type(self, mission_type: str, count: int = 10) -> list[dict[str, Any]]:
         """
         Retrieve episodes by mission type.
 
@@ -154,7 +175,7 @@ class EpisodicMemory:
         return [self._episode_to_dict(e) for e in matching[-count:]]
 
     # guardian: allow-magic-config
-    def retrieve_high_reward(self, threshold: float=0.5, count: int=10) -> list[dict[str, Any]]:
+    def retrieve_high_reward(self, threshold: float = 0.5, count: int = 10) -> list[dict[str, Any]]:
         """
         Retrieve high-reward episodes.
 
@@ -192,11 +213,22 @@ class EpisodicMemory:
         """Generate unique ID for episode."""
         content = str(episode)
         hash_val = hashlib.sha256(content.encode()).hexdigest()[:12]
-        return f'episode_{self.total_stored}_{hash_val}'
+        return f"episode_{self.total_stored}_{hash_val}"
 
     def _episode_to_dict(self, episode: Episode) -> dict[str, Any]:
         """Convert episode object to dictionary."""
-        return {'id': episode.episode_id, 'summary': episode.summary, 'type': episode.mission_type, 'outcome': episode.outcome, 'steps': episode.steps, 'context': episode.context, 'timestamp': episode.timestamp, 'duration_ms': episode.duration_ms, 'reward': episode.reward, 'metadata': episode.metadata}
+        return {
+            "id": episode.episode_id,
+            "summary": episode.summary,
+            "type": episode.mission_type,
+            "outcome": episode.outcome,
+            "steps": episode.steps,
+            "context": episode.context,
+            "timestamp": episode.timestamp,
+            "duration_ms": episode.duration_ms,
+            "reward": episode.reward,
+            "metadata": episode.metadata,
+        }
 
     def clear(self) -> None:
         """Clear all episodes."""
@@ -204,5 +236,16 @@ class EpisodicMemory:
 
     def get_statistics(self) -> dict[str, Any]:
         """Get memory statistics."""
-        return {'capacity': self.capacity, 'current_size': len(self.episodes), 'total_stored': self.total_stored, 'total_evicted': self.total_evicted, 'success_count': self.success_count, 'failure_count': self.failure_count, 'success_rate': self.get_success_rate(), 'embed_index_enabled': self.embed_index}
+        return {
+            "capacity": self.capacity,
+            "current_size": len(self.episodes),
+            "total_stored": self.total_stored,
+            "total_evicted": self.total_evicted,
+            "success_count": self.success_count,
+            "failure_count": self.failure_count,
+            "success_rate": self.get_success_rate(),
+            "embed_index_enabled": self.embed_index,
+        }
+
+
 episodic_memory = EpisodicMemory()

@@ -4,11 +4,14 @@ Programmatic Tool Calling (PTC) - Tool Registry
 Deterministic registry for tool specifications and handlers.
 Enforces uniqueness, validation, and deterministic ordering.
 """
+
 from __future__ import annotations
+
 import builtins
 from typing import Callable
+
 from .tool_contract import ToolSpec
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 class ToolRegistry:
     """Deterministic registry for tools."""
@@ -30,14 +33,14 @@ class ToolRegistry:
         """
         if spec.tool_id in self._specs:
             raise ValueError(f"Tool '{spec.tool_id}' already registered")
-        valid_side_effects = {'PURE', 'READONLY', 'WRITE_FS', 'SUBPROCESS'}
+        valid_side_effects = {"PURE", "READONLY", "WRITE_FS", "SUBPROCESS"}
         if spec.side_effect_class not in valid_side_effects:
-            raise ValueError(f'Invalid side_effect_class: {spec.side_effect_class}')
+            raise ValueError(f"Invalid side_effect_class: {spec.side_effect_class}")
         arg_names = [arg.name for arg in spec.args]
         if arg_names != sorted(arg_names):
-            raise ValueError('ToolSpec args must be sorted by name')
+            raise ValueError("ToolSpec args must be sorted by name")
         if spec.version < 1:
-            raise ValueError('ToolSpec version must be >= 1')
+            raise ValueError("ToolSpec version must be >= 1")
         self._specs[spec.tool_id] = spec
         self._handlers[spec.tool_id] = handler
 
@@ -85,7 +88,10 @@ class ToolRegistry:
             Number of tools
         """
         return len(self._specs)
+
+
 _GLOBAL_REGISTRY = ToolRegistry()
+
 
 def get_global_registry() -> ToolRegistry:
     """Get the global tool registry.
@@ -95,6 +101,7 @@ def get_global_registry() -> ToolRegistry:
     """
     return _GLOBAL_REGISTRY
 
+
 def register_tool(spec: ToolSpec, handler: Callable) -> None:
     """Register a tool in the global registry.
 
@@ -103,6 +110,7 @@ def register_tool(spec: ToolSpec, handler: Callable) -> None:
         handler: Handler function
     """
     _GLOBAL_REGISTRY.register(spec, handler)
+
 
 def get_tool(tool_id: str) -> tuple[ToolSpec, Callable]:
     """Get tool from global registry.
@@ -115,6 +123,7 @@ def get_tool(tool_id: str) -> tuple[ToolSpec, Callable]:
     """
     return _GLOBAL_REGISTRY.get(tool_id)
 
+
 def list_tools() -> list[ToolSpec]:
     """List all tools in global registry.
 
@@ -122,4 +131,6 @@ def list_tools() -> list[ToolSpec]:
         List of ToolSpec objects
     """
     return _GLOBAL_REGISTRY.list()
-__all__ = ['ToolRegistry', 'get_global_registry', 'register_tool', 'get_tool', 'list_tools']
+
+
+__all__ = ["ToolRegistry", "get_global_registry", "register_tool", "get_tool", "list_tools"]

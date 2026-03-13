@@ -3,23 +3,29 @@
 Enforces write permissions, records mutations, and supports replay mode
 for deterministic simulation without actual side-effects.
 """
+
 from __future__ import annotations
+
 import hashlib
 import logging
 import os
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
+
 from agentic_core.L2_execution.types.instruction_packet_types import InstructionPacket
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 Logger = logging.getLogger(__name__)
+
 
 class ToolNotAllowedError(PermissionError):
     """Raised when an instruction attempts to execute a tool not on the allowlist."""
 
+
 @dataclass(frozen=True)
 class MutationRecord:
     """Immutable record of a write operation for audit trails."""
+
     timestamp: str
     operation: str
     path: str
@@ -28,15 +34,18 @@ class MutationRecord:
     permitted: bool = True
     replay_mode: bool = False
 
+
 @dataclass
 class SimulationResult:
     """Result of a simulated write operation in replay mode."""
+
     operation: str
     path: str
     would_succeed: bool
     simulated_size: int
     simulated_hash: str
     replay_mode: bool = True
+
 
 class UniversalWriteGateway:
     """Single mutation authority for all FS/DB/vector writes.
@@ -45,16 +54,20 @@ class UniversalWriteGateway:
     for deterministic simulation.
     """
 
-    def __init__(self, replay_mode: bool=False):
+    def __init__(self, replay_mode: bool = False):
         self.replay_mode = replay_mode
         self._frozen: bool = False
         self._write_permissions: dict[str, bool] = {}
         self._mutation_ledger: list[MutationRecord] = []
-        self._allowed_paths: set[str] = {'artifacts/', 'docs/reports/', 'logs/', 'temp/', '.cache/'}
-        self._blocked_extensions = {'.exe', '.dll', '.so', '.dylib', '.py', '.js', '.ts', '.jsx', '.tsx'}
-        self._allowed_tools: set[str] = {'file_system.read', 'file_system.write', 'code_interpreter.run_python'}
+        self._allowed_paths: set[str] = {"artifacts/", "docs/reports/", "logs/", "temp/", ".cache/"}
+        self._blocked_extensions = {".exe", ".dll", ".so", ".dylib", ".py", ".js", ".ts", ".jsx", ".tsx"}
+        self._allowed_tools: set[str] = {
+            "file_system.read",
+            "file_system.write",
+            "code_interpreter.run_python",
+        }
 
-    def check_write_permission(self, path: str, operation: str='write') -> bool:
+    def check_write_permission(self, path: str, operation: str = "write") -> bool:
         """Check if write operation is permitted."""
         if self.replay_mode:
             return True
@@ -67,7 +80,9 @@ class UniversalWriteGateway:
             return False
         return self._write_permissions.get(path_normalized, False)
 
-    def record_mutation(self, path: str, operation: str, data: str | bytes | None=None, permitted: bool | None=None) -> MutationRecord:
+    def record_mutation(
+        self, path: str, operation: str, data: str | bytes | None = None, permitted: bool | None = None
+    ) -> MutationRecord:
         """Record mutation for audit trail."""
         if permitted is None:
             permitted = self.check_write_permission(path, operation)
@@ -75,30 +90,45 @@ class UniversalWriteGateway:
         size_bytes = None
         if data is not None:
             if isinstance(data, str):
-                data_bytes = data.encode('utf-8')
+                data_bytes = data.encode("utf-8")
             else:
                 data_bytes = data
             data_hash = hashlib.sha256(data_bytes).hexdigest()
             size_bytes = len(data_bytes)
-        record = MutationRecord(timestamp=hashlib.sha256(os.urandom(16)).hexdigest()[:16], operation=operation, path=str(Path(path).as_posix()), data_hash=data_hash, size_bytes=size_bytes, permitted=permitted, replay_mode=self.replay_mode)
+        record = MutationRecord(
+            timestamp=hashlib.sha256(os.urandom(16)).hexdigest()[:16],
+            operation=operation,
+            path=str(Path(path).as_posix()),
+            data_hash=data_hash,
+            size_bytes=size_bytes,
+            permitted=permitted,
+            replay_mode=self.replay_mode,
+        )
         self._mutation_ledger.append(record)
         return record
 
-    def simulate_write(self, path: str, operation: str, data: str | bytes | None=None) -> SimulationResult:
+    def simulate_write(self, path: str, operation: str, data: str | bytes | None = None) -> SimulationResult:
         """Simulate write operation in replay mode."""
         if not self.replay_mode:
-            raise RuntimeError('simulate_write called outside replay mode')
+            raise RuntimeError("simulate_write called outside replay mode")
         would_succeed = self.check_write_permission(path, operation)
         simulated_size = 0
-        simulated_hash = ''
+        simulated_hash = ""
         if data is not None:
             if isinstance(data, str):
-                data_bytes = data.encode('utf-8')
+                data_bytes = data.encode("utf-8")
             else:
                 data_bytes = data
             simulated_size = len(data_bytes)
             simulated_hash = hashlib.sha256(data_bytes).hexdigest()
-        return SimulationResult(operation=operation, path=str(Path(path).as_posix()), would_succeed=would_succeed, simulated_size=simulated_size, simulated_hash=simulated_hash, replay_mode=True)
+        return SimulationResult(
+            operation=operation,
+            path=str(Path(path).as_posix()),
+            would_succeed=would_succeed,
+            simulated_size=simulated_size,
+            simulated_hash=simulated_hash,
+            replay_mode=True,
+        )
 
     def grant_write_permission(self, path: str) -> None:
         """Grant write permission for a specific path."""
@@ -132,11 +162,17 @@ class UniversalWriteGateway:
         Raises:
             ToolNotAllowedError: If the tool is not in the allowlist.
         """
-        tool_name = instruction.metadata.get('tool_name')
+        tool_name = instruction.metadata.get("tool_name")
         if not tool_name or tool_name not in self._allowed_tools:
-            self.record_mutation(path=f"tool_execution/{tool_name or 'unknown'}", operation='execute_instruction_blocked', permitted=False)
+            self.record_mutation(
+                path=f"tool_execution/{tool_name or 'unknown'}",
+                operation="execute_instruction_blocked",
+                permitted=False,
+            )
             raise ToolNotAllowedError(f"Tool '{tool_name}' is not on the allowlist. Execution blocked.")
-        self.record_mutation(path=f'tool_execution/{tool_name}', operation='execute_instruction_allowed', permitted=True)
+        self.record_mutation(
+            path=f"tool_execution/{tool_name}", operation="execute_instruction_allowed", permitted=True
+        )
 
     def write_file(self, path: str, data: str | bytes) -> SimulationResult | MutationRecord:
         """Write data to path via the UWG sovereign gate.
@@ -146,13 +182,19 @@ class UniversalWriteGateway:
         - replay_mode=False: raises ToolNotAllowedError on blocked paths/extensions.
         """
         if self.replay_mode:
-            return self.simulate_write(path, 'write', data)
-        if not self.check_write_permission(path, 'write'):
-            self.record_mutation(path=path, operation='write', data=data, permitted=False)
+            return self.simulate_write(path, "write", data)
+        if not self.check_write_permission(path, "write"):
+            self.record_mutation(path=path, operation="write", data=data, permitted=False)
             ext = Path(path).suffix.lower()
-            reason = f"extension '{ext}' is blocked" if ext in self._blocked_extensions else f"path '{path}' is not in the allowed write set"
-            raise ToolNotAllowedError(f'UWG write_file blocked: {reason}. Route writes through an allowed path or grant explicit permission.')
-        return self.record_mutation(path=path, operation='write', data=data, permitted=True)
+            reason = (
+                f"extension '{ext}' is blocked"
+                if ext in self._blocked_extensions
+                else f"path '{path}' is not in the allowed write set"
+            )
+            raise ToolNotAllowedError(
+                f"UWG write_file blocked: {reason}. Route writes through an allowed path or grant explicit permission."
+            )
+        return self.record_mutation(path=path, operation="write", data=data, permitted=True)
 
     def append_file(self, path: str, data: str | bytes) -> SimulationResult | MutationRecord:
         """Append data to path via the UWG sovereign gate.
@@ -160,13 +202,17 @@ class UniversalWriteGateway:
         Same blocking semantics as write_file.
         """
         if self.replay_mode:
-            return self.simulate_write(path, 'append', data)
-        if not self.check_write_permission(path, 'append'):
-            self.record_mutation(path=path, operation='append', data=data, permitted=False)
+            return self.simulate_write(path, "append", data)
+        if not self.check_write_permission(path, "append"):
+            self.record_mutation(path=path, operation="append", data=data, permitted=False)
             ext = Path(path).suffix.lower()
-            reason = f"extension '{ext}' is blocked" if ext in self._blocked_extensions else f"path '{path}' is not in the allowed write set"
-            raise ToolNotAllowedError(f'UWG append_file blocked: {reason}.')
-        return self.record_mutation(path=path, operation='append', data=data, permitted=True)
+            reason = (
+                f"extension '{ext}' is blocked"
+                if ext in self._blocked_extensions
+                else f"path '{path}' is not in the allowed write set"
+            )
+            raise ToolNotAllowedError(f"UWG append_file blocked: {reason}.")
+        return self.record_mutation(path=path, operation="append", data=data, permitted=True)
 
     def delete_file(self, path: str) -> SimulationResult | MutationRecord:
         """Delete a file via the UWG sovereign gate.
@@ -174,11 +220,13 @@ class UniversalWriteGateway:
         Same blocking semantics: replay_mode returns SimulationResult; live raises on disallowed.
         """
         if self.replay_mode:
-            return self.simulate_write(path, 'delete')
-        if not self.check_write_permission(path, 'delete'):
-            self.record_mutation(path=path, operation='delete', permitted=False)
-            raise ToolNotAllowedError(f"UWG delete_file blocked: path '{path}' is not in the allowed write set.")
-        return self.record_mutation(path=path, operation='delete', permitted=True)
+            return self.simulate_write(path, "delete")
+        if not self.check_write_permission(path, "delete"):
+            self.record_mutation(path=path, operation="delete", permitted=False)
+            raise ToolNotAllowedError(
+                f"UWG delete_file blocked: path '{path}' is not in the allowed write set."
+            )
+        return self.record_mutation(path=path, operation="delete", permitted=True)
 
     def rename_file(self, src: str, dst: str) -> SimulationResult | MutationRecord:
         """Rename/move a file via the UWG sovereign gate.
@@ -186,14 +234,16 @@ class UniversalWriteGateway:
         Both src and dst must be in the allowed write set.
         """
         if self.replay_mode:
-            return self.simulate_write(dst, 'rename')
-        src_ok = self.check_write_permission(src, 'rename')
-        dst_ok = self.check_write_permission(dst, 'rename')
+            return self.simulate_write(dst, "rename")
+        src_ok = self.check_write_permission(src, "rename")
+        dst_ok = self.check_write_permission(dst, "rename")
         if not src_ok or not dst_ok:
             blocked = src if not src_ok else dst
-            self.record_mutation(path=src, operation='rename', permitted=False)
-            raise ToolNotAllowedError(f"UWG rename_file blocked: path '{blocked}' is not in the allowed write set.")
-        return self.record_mutation(path=src, operation='rename', permitted=True)
+            self.record_mutation(path=src, operation="rename", permitted=False)
+            raise ToolNotAllowedError(
+                f"UWG rename_file blocked: path '{blocked}' is not in the allowed write set."
+            )
+        return self.record_mutation(path=src, operation="rename", permitted=True)
 
     def _verify_signature(self, signature: str) -> bool:
         """REQ-019/177/354: verify a write-payload signature.
@@ -227,7 +277,9 @@ class UniversalWriteGateway:
         """REQ-091: Tier III freeze — all writes blocked until process restart."""
         self._frozen = True
 
-    def write(self, payload: bytes, signature: str, store: Any, *, replay_key: str='', plan_hash: str='') -> None:
+    def write(
+        self, payload: bytes, signature: str, store: Any, *, replay_key: str = "", plan_hash: str = ""
+    ) -> None:
         """REQ-019/177/354: signature-before-side-effect write gate.
 
         Enforces three sequential checks before delegating to store.write():
@@ -238,50 +290,85 @@ class UniversalWriteGateway:
         All three checks must pass.  store is never touched on any failure.
         """
         if self._frozen:
-            raise PermissionError('REQ-091: UWG write blocked — gateway is frozen.')
+            raise PermissionError("REQ-091: UWG write blocked — gateway is frozen.")
         if not self._verify_signature(signature):
-            raise PermissionError('REQ-019: UWG write blocked — signature verification failed before state mutation.')
+            raise PermissionError(
+                "REQ-019: UWG write blocked — signature verification failed before state mutation."
+            )
         if replay_key and (not self._verify_replay_hash(payload, replay_key)):
-            raise PermissionError('REQ-354: UWG write blocked — replay hash mismatch; payload has been tampered with or is non-deterministic.')
+            raise PermissionError(
+                "REQ-354: UWG write blocked — replay hash mismatch; payload has been tampered with or is non-deterministic."
+            )
         if plan_hash and (not self._verify_plan_hash(plan_hash)):
-            raise PermissionError('REQ-354: UWG write blocked — plan hash verification failed; mutation does not originate from an authorised execution plan.')
+            raise PermissionError(
+                "REQ-354: UWG write blocked — plan hash verification failed; mutation does not originate from an authorised execution plan."
+            )
         store.write(payload)
 
     def get_write_stats(self) -> dict[str, Any]:
         """Return statistics about write operations."""
         total = len(self._mutation_ledger)
-        permitted = sum((1 for r in self._mutation_ledger if r.permitted))
-        return {'total_mutations': total, 'permitted_mutations': permitted, 'blocked_mutations': total - permitted, 'replay_mode': self.replay_mode, 'allowed_paths': sorted(self._allowed_paths), 'write_permissions': dict(self._write_permissions)}
+        permitted = sum(1 for r in self._mutation_ledger if r.permitted)
+        return {
+            "total_mutations": total,
+            "permitted_mutations": permitted,
+            "blocked_mutations": total - permitted,
+            "replay_mode": self.replay_mode,
+            "allowed_paths": sorted(self._allowed_paths),
+            "write_permissions": dict(self._write_permissions),
+        }
 
-    def validate_promotion_pointer_update(self, namespace: str, old_pointer: str, new_pointer: str, capability_token) -> bool:
+    def validate_promotion_pointer_update(
+        self, namespace: str, old_pointer: str, new_pointer: str, capability_token
+    ) -> bool:
         """Validate promotion pointer update with capability token."""
         if self.replay_mode:
             return self._simulate_promotion_validation(namespace, old_pointer, new_pointer, capability_token)
-        if not hasattr(capability_token, 'validate_scope_and_use'):
-            Logger.error('Invalid capability token for promotion update')
+        if not hasattr(capability_token, "validate_scope_and_use"):
+            Logger.error("Invalid capability token for promotion update")
             return False
-        if hasattr(capability_token, 'target_namespace') and capability_token.target_namespace != namespace:
-            Logger.error(f'Token namespace mismatch: {capability_token.target_namespace} != {namespace}')
+        if hasattr(capability_token, "target_namespace") and capability_token.target_namespace != namespace:
+            Logger.error(f"Token namespace mismatch: {capability_token.target_namespace} != {namespace}")
             return False
-        if hasattr(capability_token, 'allowed_action') and capability_token.allowed_action != 'pointer_update':
-            Logger.error(f'Invalid action: {capability_token.allowed_action}')
+        if (
+            hasattr(capability_token, "allowed_action")
+            and capability_token.allowed_action != "pointer_update"
+        ):
+            Logger.error(f"Invalid action: {capability_token.allowed_action}")
             return False
-        self.record_mutation(operation='promotion_pointer_update', path=f'promotion://{namespace}', data=f'{old_pointer}->{new_pointer}', permitted=True)
-        Logger.info(f'Promotion pointer update validated for namespace {namespace}: {old_pointer} -> {new_pointer}')
+        self.record_mutation(
+            operation="promotion_pointer_update",
+            path=f"promotion://{namespace}",
+            data=f"{old_pointer}->{new_pointer}",
+            permitted=True,
+        )
+        Logger.info(
+            f"Promotion pointer update validated for namespace {namespace}: {old_pointer} -> {new_pointer}"
+        )
         return True
 
-    def _simulate_promotion_validation(self, namespace: str, old_pointer: str, new_pointer: str, capability_token) -> bool:
+    def _simulate_promotion_validation(
+        self, namespace: str, old_pointer: str, new_pointer: str, capability_token
+    ) -> bool:
         """Simulate promotion validation in replay mode."""
-        self.record_mutation(path=f'promotion://{namespace}', operation='promotion_pointer_update', data=f'{old_pointer}->{new_pointer}', permitted=True)
+        self.record_mutation(
+            path=f"promotion://{namespace}",
+            operation="promotion_pointer_update",
+            data=f"{old_pointer}->{new_pointer}",
+            permitted=True,
+        )
         return True
 
     def update_pointer(self, namespace: str, old_pointer: str, new_pointer: str, capability_token) -> bool:
         """Update pointer with validation."""
         if not self.validate_promotion_pointer_update(namespace, old_pointer, new_pointer, capability_token):
             return False
-        Logger.info(f'Pointer updated in namespace {namespace}')
+        Logger.info(f"Pointer updated in namespace {namespace}")
         return True
+
+
 _global_gateway: UniversalWriteGateway | None = None
+
 
 def get_write_gateway() -> UniversalWriteGateway:
     """Get the global write gateway instance."""
@@ -290,10 +377,12 @@ def get_write_gateway() -> UniversalWriteGateway:
         _global_gateway = UniversalWriteGateway()
     return _global_gateway
 
+
 def set_write_gateway(gateway: UniversalWriteGateway) -> None:
     """Set the global write gateway instance (for testing)."""
     global _global_gateway
     _global_gateway = gateway
+
 
 def reset_write_gateway() -> None:
     """Reset the global write gateway (for testing)."""

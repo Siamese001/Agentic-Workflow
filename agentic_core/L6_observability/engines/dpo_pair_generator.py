@@ -1,31 +1,39 @@
 from __future__ import annotations
+
 from dataclasses import dataclass
 from typing import Any, NamedTuple
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 class BoundingViolation(Exception):
     """Raised when a DPO feedback value is outside the allowed bounds."""
 
+
 @dataclass(frozen=True)
 class DPOPair:
     """Represents a chosen/rejected pair for Direct Preference Optimization."""
+
     control_hash: str
     candidate_hash: str
     control_payload: Any
     candidate_payload: Any
     raw_score: float
 
+
 class BoundedDPOPair(NamedTuple):
     """A DPO pair with its score bounded and clamped."""
+
     pair: DPOPair
     bounded_score: float
+
 
 @dataclass(frozen=True)
 class DPOBoundingPolicy:
     """Defines the sovereign policy for bounding DPO feedback."""
+
     min_clamp: float = 0.1
     max_clamp: float = 2.0
     max_delta: float = 0.1
+
 
 def create_bounded_dpo_pairs(pairs: list[DPOPair], policy: DPOBoundingPolicy) -> list[BoundedDPOPair]:
     """

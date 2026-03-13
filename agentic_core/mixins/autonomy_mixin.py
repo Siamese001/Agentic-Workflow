@@ -1,17 +1,21 @@
 from __future__ import annotations
+
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-'\nAutonomyMixin – Sovereign Agent Role Mixin (Phase 28 – Dec 30, 2025)\nEnables proactive, unprompted execution with constitutional safeguards.\n'
+
+"\nAutonomyMixin – Sovereign Agent Role Mixin (Phase 28 – Dec 30, 2025)\nEnables proactive, unprompted execution with constitutional safeguards.\n"
 import logging
 import time
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 try:
-    from agentic_core.mixins.mcp_hardened_mixin import mcp_hardened_mixin
+    from agentic_core.mixins.mcp_hardened_mixin import mcp_hardened_mixin  # noqa: F401
 except ImportError:
 
     class MCPHardenedMixin:
         """Fallback stub for MCPHardenedMixin."""
+
         pass
+
 
 class AutonomyMixin(SovereignBaseAgent):
     _autonomy_enabled: bool = True
@@ -23,7 +27,7 @@ class AutonomyMixin(SovereignBaseAgent):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.Logger = logging.getLogger(f'{self.__class__.__name__}.Autonomy')
+        self.Logger = logging.getLogger(f"{self.__class__.__name__}.Autonomy")
 
     async def should_act_proactively(self) -> bool:
         if not self._autonomy_enabled:
@@ -49,14 +53,14 @@ class AutonomyMixin(SovereignBaseAgent):
         return True
 
     async def _detect_action_opportunity(self) -> dict[str, Any] | None:
-        raise NotImplementedError(f'{self.__class__.__name__} must implement _detect_action_opportunity')
+        raise NotImplementedError(f"{self.__class__.__name__} must implement _detect_action_opportunity")
 
     async def proactive_execute(self) -> dict[str, Any]:
         if not await self.should_act_proactively():
-            return {'proactive': False, 'skipped': True}
+            return {"proactive": False, "skipped": True}
         opportunity = await self._detect_action_opportunity()
         try:
             result = await self.execute(proactive=True, opportunity_context=opportunity)
-            return {'proactive': True, 'success': True, 'result': result}
+            return {"proactive": True, "success": True, "result": result}
         except Exception as e:
-            return {'proactive': True, 'success': False, 'error': str(e)}
+            return {"proactive": True, "success": False, "error": str(e)}

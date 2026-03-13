@@ -10,12 +10,15 @@ Extracted from:
 
 Both implementations were identical - this consolidates them.
 """
+
 from __future__ import annotations
+
 import ast
 from typing import TYPE_CHECKING
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 if TYPE_CHECKING:
     pass
+
 
 def calculate_mccabe_complexity(node: ast.AST) -> int:
     """
@@ -44,8 +47,9 @@ def calculate_mccabe_complexity(node: ast.AST) -> int:
             complexity += len(child.values) - 1
     return complexity
 
+
 # guardian: allow-magic-config
-def check_function_complexity(node: ast.AST, max_complexity: int=10) -> tuple[bool, int]:
+def check_function_complexity(node: ast.AST, max_complexity: int = 10) -> tuple[bool, int]:
     """
     Check if function exceeds complexity threshold.
 
@@ -66,8 +70,9 @@ def check_function_complexity(node: ast.AST, max_complexity: int=10) -> tuple[bo
     complexity = calculate_mccabe_complexity(node)
     return (complexity <= max_complexity, complexity)
 
+
 # guardian: allow-magic-config
-def analyze_file_complexity(file_path: str, max_complexity: int=10) -> list[dict[str, any]]:
+def analyze_file_complexity(file_path: str, max_complexity: int = 10) -> list[dict[str, any]]:
     """
     Analyze all functions in a file for complexity violations.
 
@@ -80,14 +85,23 @@ def analyze_file_complexity(file_path: str, max_complexity: int=10) -> list[dict
     """
     violations = []
     try:
-        with open(file_path, encoding='utf-8') as f:
+        with open(file_path, encoding="utf-8") as f:
             content = f.read()
         tree = ast.parse(content)
         for node in ast.walk(tree):
             if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
                 complexity = calculate_mccabe_complexity(node)
                 if complexity > max_complexity:
-                    violations.append({'file_path': file_path, 'line_number': node.lineno, 'function_name': node.name, 'complexity': complexity, 'max_allowed': max_complexity, 'message': f"Function '{node.name}' has complexity {complexity} (max {max_complexity})"})
+                    violations.append(
+                        {
+                            "file_path": file_path,
+                            "line_number": node.lineno,
+                            "function_name": node.name,
+                            "complexity": complexity,
+                            "max_allowed": max_complexity,
+                            "message": f"Function '{node.name}' has complexity {complexity} (max {max_complexity})",
+                        }
+                    )
     except (SyntaxError, FileNotFoundError, OSError):
         pass
     return violations

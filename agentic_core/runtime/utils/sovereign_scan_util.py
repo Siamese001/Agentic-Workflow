@@ -1,9 +1,11 @@
 from __future__ import annotations
+
 'SovereignScanner - Centralized single-pass repository mapper.\n\n[Phase 5] Provides shared intelligence layer for L5 agents.\nReduces I/O by sharing a single scan result across all agents.\n\nUsage:\n    scanner = SovereignScanner(project_root)\n    repo_map = scanner.scan_repository()\n\n    # Get files for a specific territory\n    agentic_core_files = scanner.get_root_files("agentic_core")\n'
 import logging
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 Logger = logging.getLogger(__name__)
+
 
 class SovereignScanner:
     """
@@ -12,15 +14,16 @@ class SovereignScanner:
     Reduces I/O by sharing a single scan result across all L5 agents.
     Uses FileCache internally for efficient file enumeration.
     """
+
     _instance: SovereignScanner | None = None
     _initialized: bool = False
 
-    def __new__(cls, project_root: Path | None=None) -> SovereignScanner:
+    def __new__(cls, project_root: Path | None = None) -> SovereignScanner:
         if cls._instance is None:
             cls._instance = super().__new__(cls)
         return cls._instance
 
-    def __init__(self, project_root: Path | None=None) -> None:
+    def __init__(self, project_root: Path | None = None) -> None:
         if SovereignScanner._initialized:
             return
         if project_root is None:
@@ -29,10 +32,10 @@ class SovereignScanner:
         self._root_map: dict[str, list[Path]] = {}
         self._all_files: list[Path] | None = None
         SovereignScanner._initialized = True
-        Logger.info(f'SovereignScanner initialized for: {project_root}')
+        Logger.info(f"SovereignScanner initialized for: {project_root}")
 
     @classmethod
-    def get_instance(cls, project_root: Path | None=None) -> SovereignScanner:
+    def get_instance(cls, project_root: Path | None = None) -> SovereignScanner:
         """Get or create the singleton instance."""
         return cls(project_root)
 
@@ -50,11 +53,13 @@ class SovereignScanner:
             Dictionary mapping root names to lists of Python files
         """
         if self._root_map:
-            Logger.debug('Returning cached repository map')
+            Logger.debug("Returning cached repository map")
             return self._root_map
-        Logger.info('Performing single-pass repository scan...')
+        Logger.info("Performing single-pass repository scan...")
         from agentic_core.utils.file_cache import FileCache
+
         from agentic_core.L5_safety.config.structure_blueprint import SOVEREIGN_REGISTRY
+
         cache = FileCache.get_instance(self.project_root)
         self._all_files = list(cache.get_python_files())
         for root_name in SOVEREIGN_REGISTRY.keys():
@@ -62,9 +67,11 @@ class SovereignScanner:
             if not root_path.exists():
                 self._root_map[root_name] = []
                 continue
-            self._root_map[root_name] = [f for f in self._all_files if self._file_belongs_to_root(f, root_name)]
-        total_files = sum((len(files) for files in self._root_map.values()))
-        Logger.info(f'Repository scan complete: {total_files} files across {len(self._root_map)} roots')
+            self._root_map[root_name] = [
+                f for f in self._all_files if self._file_belongs_to_root(f, root_name)
+            ]
+        total_files = sum(len(files) for files in self._root_map.values())
+        Logger.info(f"Repository scan complete: {total_files} files across {len(self._root_map)} roots")
         return self._root_map
 
     def _file_belongs_to_root(self, file_path: Path, root_name: str) -> bool:
@@ -97,4 +104,4 @@ class SovereignScanner:
         """Invalidate the cached repository map (forces rescan on next access)."""
         self._root_map = {}
         self._all_files = None
-        Logger.info('SovereignScanner cache invalidated')
+        Logger.info("SovereignScanner cache invalidated")

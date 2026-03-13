@@ -4,28 +4,37 @@ Hybrid Retrieval Interfaces
 Defines the contracts for lexical retrieval, vector retrieval,
 candidate fusion, and reranking components.
 """
+
 from __future__ import annotations
+
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 @dataclass
 class Document:
     """Retrieved document with relevance score."""
+
     doc_id: str
     content: str
     score: float = 0.0
     metadata: dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
-        return {'doc_id': self.doc_id, 'content': self.content, 'score': self.score, 'metadata': self.metadata}
+        return {
+            "doc_id": self.doc_id,
+            "content": self.content,
+            "score": self.score,
+            "metadata": self.metadata,
+        }
+
 
 class IRetrieverLexical(ABC):
     """Interface for lexical (BM25-style) retrieval."""
 
     @abstractmethod
-    def retrieve(self, query: str, top_k: int=50) -> list[Document]:
+    def retrieve(self, query: str, top_k: int = 50) -> list[Document]:
         """Retrieve documents using lexical matching.
 
         Args:
@@ -37,11 +46,12 @@ class IRetrieverLexical(ABC):
         """
         ...
 
+
 class IRetrieverVector(ABC):
     """Interface for dense vector (FAISS-style) retrieval."""
 
     @abstractmethod
-    def retrieve(self, query_embedding: list[float], top_k: int=50) -> list[Document]:
+    def retrieve(self, query_embedding: list[float], top_k: int = 50) -> list[Document]:
         """Retrieve documents by vector similarity.
 
         Args:
@@ -65,6 +75,7 @@ class IRetrieverVector(ABC):
         """
         ...
 
+
 class ICandidateFusion(ABC):
     """Interface for merging lexical and vector retrieval results."""
 
@@ -81,6 +92,7 @@ class ICandidateFusion(ABC):
         """
         ...
 
+
 class IReranker(ABC):
     """Interface for cross-encoder or heuristic reranking."""
 
@@ -96,4 +108,6 @@ class IReranker(ABC):
             Reranked list of Document objects (highest score first)
         """
         ...
-__all__ = ['Document', 'IRetrieverLexical', 'IRetrieverVector', 'ICandidateFusion', 'IReranker']
+
+
+__all__ = ["Document", "IRetrieverLexical", "IRetrieverVector", "ICandidateFusion", "IReranker"]

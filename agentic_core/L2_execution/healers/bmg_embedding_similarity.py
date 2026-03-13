@@ -13,12 +13,15 @@ Design invariants:
 - No global mutable state beyond the module-level model cache.
 - All computation is float32; no half-precision accumulator drift.
 """
+
 from __future__ import annotations
+
 import logging
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 logger = logging.getLogger(__name__)
 _MODEL_CACHE: object | None = None
-_MODEL_ID = 'BAAI/bge-m3'
+_MODEL_ID = "BAAI/bge-m3"
+
 
 def _get_model() -> object:
     """Load and cache the BGE-M3 model.  Raises ImportError if unavailable."""
@@ -28,21 +31,26 @@ def _get_model() -> object:
     try:
         from sentence_transformers import SentenceTransformer
     except ImportError as exc:
-        raise ImportError('sentence-transformers is required for BMG embedding similarity. Install with: pip install sentence-transformers') from exc
-    device = 'cuda' if _is_cuda_available() else 'cpu'
-    logger.info('[BMG] Loading %s on %s', _MODEL_ID, device)
+        raise ImportError(
+            "sentence-transformers is required for BMG embedding similarity. Install with: pip install sentence-transformers"
+        ) from exc
+    device = "cuda" if _is_cuda_available() else "cpu"
+    logger.info("[BMG] Loading %s on %s", _MODEL_ID, device)
     _MODEL_CACHE = SentenceTransformer(_MODEL_ID, device=device)
-    logger.info('[BMG] Model loaded successfully on %s', device)
+    logger.info("[BMG] Model loaded successfully on %s", device)
     return _MODEL_CACHE
+
 
 def _is_cuda_available() -> bool:
     """Return True if a CUDA device is reachable without importing torch directly."""
     try:
         import importlib
-        torch_mod = importlib.import_module('torch')
+
+        torch_mod = importlib.import_module("torch")
         return bool(torch_mod.cuda.is_available())
     except Exception:
         return False
+
 
 def bmg_cosine_similarity(unknown: str, candidates: list[str]) -> float:
     """Return the maximum cosine similarity between *unknown* and *candidates*.
@@ -61,16 +69,20 @@ def bmg_cosine_similarity(unknown: str, candidates: list[str]) -> float:
         ValueError: If candidates is empty.
     """
     if not candidates:
-        raise ValueError('candidates must be non-empty')
+        raise ValueError("candidates must be non-empty")
     import numpy as np
+
     model = _get_model()
     all_strings = [unknown] + candidates
-    embeddings: np.ndarray = model.encode(all_strings, convert_to_numpy=True, normalize_embeddings=True, show_progress_bar=False)
+    embeddings: np.ndarray = model.encode(
+        all_strings, convert_to_numpy=True, normalize_embeddings=True, show_progress_bar=False
+    )
     query_vec = embeddings[0]
     candidate_vecs = embeddings[1:]
     similarities: np.ndarray = candidate_vecs @ query_vec
     max_sim: float = float(similarities.max())
     return max(0.0, min(1.0, max_sim))
+
 
 def bmg_embed_text(text: str) -> list[float]:
     """Embed a single text string using BAAI/bge-m3.
@@ -90,12 +102,18 @@ def bmg_embed_text(text: str) -> list[float]:
         ImportError: If sentence-transformers is not installed.
     """
     import numpy as np
+
     model = _get_model()
-    vecs: np.ndarray = model.encode([text], convert_to_numpy=True, normalize_embeddings=True, show_progress_bar=False)
+    vecs: np.ndarray = model.encode(
+        [text], convert_to_numpy=True, normalize_embeddings=True, show_progress_bar=False
+    )
     return vecs[0].tolist()
+
 
 def clear_model_cache() -> None:
     """Invalidate the cached model (for tests and hot-reload)."""
     global _MODEL_CACHE
     _MODEL_CACHE = None
-__all__ = ['bmg_cosine_similarity', 'bmg_embed_text', 'clear_model_cache']
+
+
+__all__ = ["bmg_cosine_similarity", "bmg_embed_text", "clear_model_cache"]

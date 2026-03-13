@@ -14,8 +14,44 @@ Forbidden:
   - apps_lic, apps_rg, apps_shared (downstream domain logic)
   - agentic_core.L* (layer-internal modules — use interfaces shim instead)
 """
+
 from typing import Final
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
-FORBIDDEN_IMPORT_PREFIXES: Final[frozenset] = frozenset({APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR, 'agentic_core.L0_routing', 'agentic_core.L1_cognition', 'agentic_core.L2_execution', 'agentic_core.L3_orchestration', 'agentic_core.L4_state', 'agentic_core.L5_safety', 'agentic_core.L6_observability'})
-ALLOWED_AGENTIC_CORE_PREFIXES: Final[frozenset] = frozenset({'agentic_core.types', 'agentic_core.interfaces', 'agentic_core.classification', 'agentic_core.runtime'})
-STDLIB_PREFIXES: Final[frozenset] = frozenset({'typing', 'pathlib', 'sys', 'os', 'json', 'hashlib', 'dataclasses', 'enum', 'abc', 'collections', 'functools', 'itertools', 'math', 're', 'threading', 'uuid', '__future__'})
+
+FORBIDDEN_IMPORT_PREFIXES: Final[frozenset] = frozenset(
+    {
+        APPS_LIC_DIR,
+        APPS_RG_DIR,
+        APPS_SHARED_DIR,
+        "agentic_core.L0_routing",
+        "agentic_core.L1_cognition",
+        "agentic_core.L2_execution",
+        "agentic_core.L3_orchestration",
+        "agentic_core.L4_state",
+        "agentic_core.L5_safety",
+        "agentic_core.L6_observability",
+    }
+)
+ALLOWED_AGENTIC_CORE_PREFIXES: Final[frozenset] = frozenset(
+    {"agentic_core.types", "agentic_core.interfaces", "agentic_core.classification", "agentic_core.runtime"}
+)
+STDLIB_PREFIXES: Final[frozenset] = frozenset(
+    {
+        "typing",
+        "pathlib",
+        "sys",
+        "os",
+        "json",
+        "hashlib",
+        "dataclasses",
+        "enum",
+        "abc",
+        "collections",
+        "functools",
+        "itertools",
+        "math",
+        "re",
+        "threading",
+        "uuid",
+        "__future__",
+    }
+)

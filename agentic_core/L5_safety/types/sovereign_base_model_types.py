@@ -1,7 +1,8 @@
 from __future__ import annotations
-'\nBase Sovereign Schemas\n======================\nDefines the root models and structural entities for the Sovereign system.\nAll primary system entities should inherit from SovereignBaseModel to\nensure strict validation and immutability.\n'
+
+"\nBase Sovereign Schemas\n======================\nDefines the root models and structural entities for the Sovereign system.\nAll primary system entities should inherit from SovereignBaseModel to\nensure strict validation and immutability.\n"
 from pydantic import BaseModel, ConfigDict, model_validator
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 class SovereignBaseModel(BaseModel):
     """
@@ -9,18 +10,21 @@ class SovereignBaseModel(BaseModel):
     Enforces strict type checking and immutability (frozen) to ensure
     data integrity across agent handoffs and state transitions.
     """
-    model_config = ConfigDict(strict=True, frozen=True, extra='forbid')
 
-    @model_validator(mode='after')
+    model_config = ConfigDict(strict=True, frozen=True, extra="forbid")
+
+    @model_validator(mode="after")
     def validate_invariants(self) -> SovereignBaseModel:
         """Cross-field validation hook for shared invariants."""
         return self
+
 
 class Territory(SovereignBaseModel):
     """
     Represents a logical or physical boundary within the system.
     Used for mapping organizational depth and canonical paths.
     """
+
     name: str
     depth: int
     path: str

@@ -9,13 +9,19 @@ All hashing delegates to:
 
 No local canonicalization is performed here.
 """
+
 from __future__ import annotations
+
 import hashlib
 from pathlib import Path
 from typing import Any
+
 from agentic_core.interfaces.determinism import canonical_bytes
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
-DETERMINISM_EXCLUDED_FIELDS: frozenset[str] = frozenset({'duration_ms', 'timestamp', 'trace_id', 'cycle_counter', 'telemetry', 'created_at', 'updated_at'})
+
+DETERMINISM_EXCLUDED_FIELDS: frozenset[str] = frozenset(
+    {"duration_ms", "timestamp", "trace_id", "cycle_counter", "telemetry", "created_at", "updated_at"}
+)
+
 
 def strip_nondeterministic(obj: Any) -> Any:
     """Recursively strip nondeterministic fields from obj.
@@ -31,10 +37,11 @@ def strip_nondeterministic(obj: Any) -> Any:
     if isinstance(obj, dict):
         return {k: strip_nondeterministic(v) for k, v in obj.items() if k not in DETERMINISM_EXCLUDED_FIELDS}
     if isinstance(obj, tuple):
-        return tuple((strip_nondeterministic(item) for item in obj))
+        return tuple(strip_nondeterministic(item) for item in obj)
     if isinstance(obj, list):
         return [strip_nondeterministic(item) for item in obj]
     return obj
+
 
 def canonical_hash(obj: Any) -> str:
     """Return sha256 hexdigest of canonical_bytes(strip_nondeterministic(obj)).
@@ -44,6 +51,7 @@ def canonical_hash(obj: Any) -> str:
     """
     stripped = strip_nondeterministic(obj)
     return hashlib.sha256(canonical_bytes(stripped)).hexdigest()
+
 
 def file_hash(path: str | Path) -> str:
     """Return sha256 hexdigest of the raw bytes of the file at path."""

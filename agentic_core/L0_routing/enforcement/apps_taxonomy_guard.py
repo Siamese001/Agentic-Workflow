@@ -4,9 +4,10 @@ L0 Routing Apps Taxonomy Guard - Deterministic import-graph checks
 Ensures apps_* remain ZERO authority and cannot import from agentic_core
 in prohibited directions, enforced via deterministic import-graph checks.
 """
+
 import ast
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 class AppsTaxonomyGuard:
     """
@@ -15,7 +16,8 @@ class AppsTaxonomyGuard:
     Uses read-only AST parsing (no imports/execution) to detect
     prohibited imports from apps_* to agentic_core.
     """
-    ALLOWED_IMPORTS = {'agentic_core.interfaces', 'agentic_core.prompt_governance.contracts'}
+
+    ALLOWED_IMPORTS = {"agentic_core.interfaces", "agentic_core.prompt_governance.contracts"}
 
     def scan(self, *, repo_root: str) -> tuple[str, ...]:
         """
@@ -29,7 +31,7 @@ class AppsTaxonomyGuard:
         """
         violations = []
         repo_path = Path(repo_root)
-        for apps_dir in repo_path.glob('apps_*'):
+        for apps_dir in repo_path.glob("apps_*"):
             if apps_dir.is_dir():
                 violations.extend(self._scan_apps_directory(apps_dir, repo_path))
         return tuple(sorted(violations))
@@ -37,7 +39,7 @@ class AppsTaxonomyGuard:
     def _scan_apps_directory(self, apps_dir: Path, repo_root: Path) -> list[str]:
         """Scan a single apps_* directory for violations."""
         violations = []
-        for py_file in apps_dir.rglob('*.py'):
+        for py_file in apps_dir.rglob("*.py"):
             try:
                 violations.extend(self._scan_file(py_file, repo_root))
             except (OSError, UnicodeDecodeError, SyntaxError):
@@ -48,7 +50,7 @@ class AppsTaxonomyGuard:
         """Scan a single Python file for prohibited imports."""
         violations = []
         try:
-            content = file_path.read_text(encoding='utf-8')
+            content = file_path.read_text(encoding="utf-8")
             tree = ast.parse(content)
         except (OSError, UnicodeDecodeError, SyntaxError):
             return violations
@@ -63,22 +65,22 @@ class AppsTaxonomyGuard:
         """Check import node for prohibited agentic_core imports."""
         violations = []
         for alias in node.names:
-            if alias.name.startswith('agentic_core'):
+            if alias.name.startswith("agentic_core"):
                 if not self._is_allowed_import(alias.name):
                     relative_path = file_path.relative_to(repo_root).as_posix()
-                    violation = f'{relative_path}:{node.lineno} import {alias.name}'
+                    violation = f"{relative_path}:{node.lineno} import {alias.name}"
                     violations.append(violation)
         return violations
 
     def _check_import_from_node(self, node: ast.ImportFrom, file_path: Path, repo_root: Path) -> list[str]:
         """Check import-from node for prohibited agentic_core imports."""
         violations = []
-        if node.module and node.module.startswith('agentic_core'):
+        if node.module and node.module.startswith("agentic_core"):
             if not self._is_allowed_import(node.module):
-                imported_names = ', '.join((alias.name for alias in node.names))
-                import_stmt = f'from {node.module} import {imported_names}'
+                imported_names = ", ".join(alias.name for alias in node.names)
+                import_stmt = f"from {node.module} import {imported_names}"
                 relative_path = file_path.relative_to(repo_root).as_posix()
-                violation = f'{relative_path}:{node.lineno} {import_stmt}'
+                violation = f"{relative_path}:{node.lineno} {import_stmt}"
                 violations.append(violation)
         return violations
 
@@ -87,6 +89,6 @@ class AppsTaxonomyGuard:
         if import_path in self.ALLOWED_IMPORTS:
             return True
         for allowed in self.ALLOWED_IMPORTS:
-            if import_path.startswith(allowed + '.'):
+            if import_path.startswith(allowed + "."):
                 return True
         return False

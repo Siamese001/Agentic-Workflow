@@ -1,21 +1,28 @@
 from agentic_core.L2_execution.tools import write_gateway as _wg
-'\nCache & Temp Governance Guard\n\nDeterministic read-only scanner for cache/temp directory governance.\nEnforces location constraints and tracked file detection.\n'
+
+"\nCache & Temp Governance Guard\n\nDeterministic read-only scanner for cache/temp directory governance.\nEnforces location constraints and tracked file detection.\n"
 import os
 import subprocess
 from pathlib import Path
 from typing import Any
-from agentic_core.L5_safety.config.structure_blueprint.ssot import GLOBAL_EXCLUDED_DIRS, SOVEREIGN_EXCLUDED_FOLDERS
+
 from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
+
 
 def is_cache_directory(dir_path: Path) -> bool:
     """Check if directory is a cache directory."""
     cache_names = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS
     return dir_path.name in cache_names
 
+
 def is_excluded_directory(dir_path: Path) -> bool:
     """Check if directory should be excluded from scanning."""
-    return dir_path.name == '.git'
+    return dir_path.name == ".git"
+
 
 def estimate_directory_size(dir_path: Path) -> int:
     """Estimate directory size, capped at 200MB scan."""
@@ -35,14 +42,18 @@ def estimate_directory_size(dir_path: Path) -> int:
         pass
     return total_size
 
+
 def has_tracked_files(dir_path: Path, root_path: Path) -> bool:
     """Check if cache directory has any tracked files under it."""
     try:
         relative_path = dir_path.relative_to(root_path)
-        result = subprocess.run(['git', 'ls-files', str(relative_path)], capture_output=True, text=True, cwd=str(root_path))
+        result = subprocess.run(
+            ["git", "ls-files", str(relative_path)], capture_output=True, text=True, cwd=str(root_path)
+        )
         return bool(result.stdout.strip())
     except (subprocess.SubprocessError, ValueError):
         return False
+
 
 def is_forbidden_location(dir_path: Path, root_path: Path) -> bool:
     """Check if cache directory is in forbidden location."""
@@ -51,18 +62,19 @@ def is_forbidden_location(dir_path: Path, root_path: Path) -> bool:
         path_parts = relative_path.parts
         if path_parts and path_parts[0] in {AGENTIC_CORE_DIR}:
             return True
-        if path_parts and path_parts[0].startswith('apps_'):
+        if path_parts and path_parts[0].startswith("apps_"):
             return True
     except ValueError:
         pass
     return False
+
 
 def scan_cache_directories(root_path: Path) -> dict[str, Any]:
     """Scan repository for cache directories."""
     violations = []
     inventory = []
     dirs_scanned = 0
-    all_dirs = sorted(root_path.rglob('*'))
+    all_dirs = sorted(root_path.rglob("*"))
     for item_path in all_dirs:
         if not item_path.is_dir():
             continue
@@ -74,35 +86,52 @@ def scan_cache_directories(root_path: Path) -> dict[str, Any]:
         relative_path = item_path.relative_to(root_path)
         size_bytes = estimate_directory_size(item_path)
         if has_tracked_files(item_path, root_path):
-            violations.append({'path': str(relative_path), 'type': 'tracked_cache', 'detail': f'Cache directory contains tracked files: {relative_path}'})
+            violations.append(
+                {
+                    "path": str(relative_path),
+                    "type": "tracked_cache",
+                    "detail": f"Cache directory contains tracked files: {relative_path}",
+                }
+            )
         if is_forbidden_location(item_path, root_path):
-            violations.append({'path': str(relative_path), 'type': 'cache_in_core_or_apps', 'detail': f'Cache directory in forbidden location: {relative_path}'})
-        inventory_item = {'path': str(relative_path), 'type': 'cache_directory', 'detail': f'Size: {size_bytes:,} bytes'}
+            violations.append(
+                {
+                    "path": str(relative_path),
+                    "type": "cache_in_core_or_apps",
+                    "detail": f"Cache directory in forbidden location: {relative_path}",
+                }
+            )
+        inventory_item = {
+            "path": str(relative_path),
+            "type": "cache_directory",
+            "detail": f"Size: {size_bytes:,} bytes",
+        }
         if size_bytes > 10 * 1024 * 1024:
-            inventory_item['detail'] += ' (oversize)'
+            inventory_item["detail"] += " (oversize)"
         inventory.append(inventory_item)
-    return {'dirs_scanned': dirs_scanned, 'violations': violations, 'inventory': inventory}
+    return {"dirs_scanned": dirs_scanned, "violations": violations, "inventory": inventory}
+
 
 def main():
     """Main scanner execution."""
     root_path = Path(__file__).parent.parent.parent
-    print(f'Scanning repository for cache directories: {root_path}')
+    print(f"Scanning repository for cache directories: {root_path}")
     result = scan_cache_directories(root_path)
-    output_dir = root_path / 'artifacts' / 'governance'
+    output_dir = root_path / "artifacts" / "governance"
     _wg.ensure_dir(output_dir)
-    report_path = output_dir / 'cache_guard_report.json'
+    report_path = output_dir / "cache_guard_report.json"
     _wg.write_json(report_path, result, indent=2)
-    print(f'Scan complete. Report written to: {report_path}')
+    print(f"Scan complete. Report written to: {report_path}")
     print(f"Directories scanned: {result['dirs_scanned']}")
     print(f"Cache directories found: {len(result['inventory'])}")
     print(f"Violations found: {len(result['violations'])}")
     total_size = 0
     oversize_count = 0
-    for item in result['inventory']:
-        detail = item.get('detail', '')
-        if 'Size:' in detail:
+    for item in result["inventory"]:
+        detail = item.get("detail", "")
+        if "Size:" in detail:
             try:
-                size_str = detail.split('Size:')[1].split(' bytes')[0].replace(',', '').strip()
+                size_str = detail.split("Size:")[1].split(" bytes")[0].replace(",", "").strip()
                 size_bytes = int(size_str)
                 total_size += size_bytes
                 if size_bytes > 10 * 1024 * 1024:
@@ -110,17 +139,19 @@ def main():
             except (ValueError, IndexError):
                 pass
     if total_size > 0:
-        print(f'Total cache size: {total_size:,} bytes')
+        print(f"Total cache size: {total_size:,} bytes")
     if oversize_count > 0:
-        print(f'Oversize directories (>10MB): {oversize_count}')
-    if result['violations']:
-        print('CACHE/TEMP GOVERNANCE VIOLATIONS DETECTED:')
-        for violation in result['violations']:
+        print(f"Oversize directories (>10MB): {oversize_count}")
+    if result["violations"]:
+        print("CACHE/TEMP GOVERNANCE VIOLATIONS DETECTED:")
+        for violation in result["violations"]:
             print(f"  {violation['path']}: {violation['type']} - {violation['detail']}")
         return 1
     else:
-        print('No cache/temp governance violations found.')
+        print("No cache/temp governance violations found.")
         return 0
-if __name__ == '__main__':
+
+
+if __name__ == "__main__":
     exit_code = main()
     exit(exit_code)

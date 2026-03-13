@@ -7,16 +7,21 @@ any L2 tool invocation is permitted.
 
 Phase 3.1: Mathematically-Sealed Sovereignty Hardening
 """
+
 from __future__ import annotations
+
 import threading
+
 from agentic_core.L2_execution.enforcement.key_derivation import get_key_version
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 class TokenRevocationError(RuntimeError):
     """Raised when a token is used after revocation."""
 
+
 class VersionInvalidError(RuntimeError):
     """Raised when a token's authority version is no longer valid."""
+
 
 class CapabilityRevoker:
     """Thread-safe capability token revocation registry.
@@ -65,9 +70,11 @@ class CapabilityRevoker:
             VersionInvalidError: token authority version is invalid or rotated away.
         """
         if self.is_token_revoked(trace_id):
-            raise TokenRevocationError(f'Capability token revoked: trace_id={trace_id}')
+            raise TokenRevocationError(f"Capability token revoked: trace_id={trace_id}")
         if not self.is_version_valid(authority_secret_version):
-            raise VersionInvalidError(f'Capability token authority version invalid: version={authority_secret_version}, current={get_key_version()}')
+            raise VersionInvalidError(
+                f"Capability token authority version invalid: version={authority_secret_version}, current={get_key_version()}"
+            )
 
     def revoked_count(self) -> int:
         with self._lock:
@@ -76,8 +83,11 @@ class CapabilityRevoker:
     def invalid_version_count(self) -> int:
         with self._lock:
             return len(self._invalid_versions)
+
+
 _DEFAULT_REVOKER: CapabilityRevoker | None = None
 _SINGLETON_LOCK = threading.Lock()
+
 
 def get_capability_revoker() -> CapabilityRevoker:
     """Return the process-wide CapabilityRevoker singleton."""
@@ -87,9 +97,18 @@ def get_capability_revoker() -> CapabilityRevoker:
             _DEFAULT_REVOKER = CapabilityRevoker()
     return _DEFAULT_REVOKER
 
+
 def reset_capability_revoker_for_testing() -> None:
     """Reset the singleton (test isolation only)."""
     global _DEFAULT_REVOKER
     with _SINGLETON_LOCK:
         _DEFAULT_REVOKER = None
-__all__ = ['CapabilityRevoker', 'TokenRevocationError', 'VersionInvalidError', 'get_capability_revoker', 'reset_capability_revoker_for_testing']
+
+
+__all__ = [
+    "CapabilityRevoker",
+    "TokenRevocationError",
+    "VersionInvalidError",
+    "get_capability_revoker",
+    "reset_capability_revoker_for_testing",
+]

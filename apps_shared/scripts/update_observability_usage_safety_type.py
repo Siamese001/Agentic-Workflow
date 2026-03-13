@@ -4,37 +4,45 @@ AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
 L5 CANONICAL — WINDSURF Ω — 2025-12-07
 MERKLE-INTENDED: 37c2bab0108a9e73a26d42276f09fc18aaa2410fd207db45332c58a4ed0187b8
 """
-'\nL5 Agentic Core - Safety Layer - update_observability_usage\nImplements L5 Safety/Policy Layer for update observability usage operations\n'
+
+"\nL5 Agentic Core - Safety Layer - update_observability_usage\nImplements L5 Safety/Policy Layer for update observability usage operations\n"
 import logging
 import re
 from abc import ABC, abstractmethod
 from dataclasses import field
 from enum import Enum
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 class UpdateObservabilityUsageSafetyType(Enum):
     """L5 Typed enumeration for deterministic safety operations"""
-    APPLY = 'apply'
-    ENFORCE = 'enforce'
-    VALIDATE = 'validate'
+
+    APPLY = "apply"
+    ENFORCE = "enforce"
+    VALIDATE = "validate"
+
 
 class UpdateObservabilityUsageSafetyConstraints:
     """L5 Safety constraints - fail-closed behavior"""
+
     max_risk_score: float = 0.5
-    allowed_operations: list[str] = field(default_factory=lambda: ['apply', 'enforce', 'validate'])
-    safety_level: str = 'strict'
+    allowed_operations: list[str] = field(default_factory=lambda: ["apply", "enforce", "validate"])
+    safety_level: str = "strict"
     requires_approval: bool = True
+
 
 class UpdateObservabilityUsageSafetyResult:
     """L5 Safety result with full type safety"""
+
     success: bool
     safety_score: float = 0.0
     risk_assessment: dict[str, object] = field(default_factory=dict)
     errors: list[str] = field(default_factory=list)
     safety_validated: bool = False
-    timestamp: str = ''
+    timestamp: str = ""
+
 
 class UpdateObservabilityUsageSafetySafety(ABC):
     """L5 interface foundation - ensures L5 pure safety behavior"""
@@ -49,59 +57,82 @@ class UpdateObservabilityUsageSafetySafety(ABC):
         """L5 Safety validation - fail-closed by default"""
         pass
 
+
 class UpdateObservabilityUsageSafetyImpl(UpdateObservabilityUsageSafetySafety):
     """
     L5 Implementation - L5 Safety/Policy Layer
     Fail-closed safety enforcement with comprehensive policy checks
     """
 
-    def __init__(self, constraints: UpdateObservabilityUsageSafetyConstraints | None=None):
+    def __init__(self, constraints: UpdateObservabilityUsageSafetyConstraints | None = None):
         self.constraints = constraints or UpdateObservabilityUsageSafetyConstraints()
         self.logger = logging.getLogger(self.__class__.__name__)
         self._safety_rules = self._initialize_safety_rules()
 
     def apply_safety(self, data: dict[str, object]) -> UpdateObservabilityUsageSafetyResult:
         """Apply safety checks following L5 architecture principles"""
-        self.logger.info('Applying safety checks to data')
+        self.logger.info("Applying safety checks to data")
         self._validate_input(data)
         if not self.validate_safety(data):
-            raise SecurityError('Data failed L5 safety validation')
+            raise SecurityError("Data failed L5 safety validation")
         safety_score = self._calculate_safety_score(data)
         risk_assessment = self._assess_risks(data)
-        result = UpdateObservabilityUsageSafetyResult(success=safety_score <= self.constraints.max_risk_score, safety_score=safety_score, risk_assessment=risk_assessment, safety_validated=True, timestamp=self._get_timestamp())
-        self.logger.info(f'Safety check completed: score={safety_score}, passed={result.success}')
+        result = UpdateObservabilityUsageSafetyResult(
+            success=safety_score <= self.constraints.max_risk_score,
+            safety_score=safety_score,
+            risk_assessment=risk_assessment,
+            safety_validated=True,
+            timestamp=self._get_timestamp(),
+        )
+        self.logger.info(f"Safety check completed: score={safety_score}, passed={result.success}")
         return result
 
     def validate_safety(self, data: dict[str, object]) -> bool:
         """L5 Safety validation with fail-closed behavior"""
         try:
-            critical_patterns = ['<script[^>]*>.*?</script>', 'javascript:', 'eval\\s*\\(', 'exec\\s*\\(', '__import__', 'subprocess\\.', 'os\\.system', '\\.\\./.*\\.\\.']
+            critical_patterns = [
+                "<script[^>]*>.*?</script>",
+                "javascript:",
+                "eval\\s*\\(",
+                "exec\\s*\\(",
+                "__import__",
+                "subprocess\\.",
+                "os\\.system",
+                "\\.\\./.*\\.\\.",
+            ]
             data_str = str(data).lower()
             for pattern in critical_patterns:
                 if re.search(pattern, data_str, re.IGNORECASE):
-                    self.logger.error(f'Critical dangerous pattern detected: {pattern}')
+                    self.logger.error(f"Critical dangerous pattern detected: {pattern}")
                     return False
             if len(data_str) > 1000000:
-                self.logger.error('Data exceeds safety size limit')
+                self.logger.error("Data exceeds safety size limit")
                 return False
-            self.logger.info('Data passed L5 safety validation')
+            self.logger.info("Data passed L5 safety validation")
             return True
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
-            self.logger.error(f'Safety validation error: {e}')
+            self.logger.error(f"Safety validation error: {e}")
             return False
 
     def _validate_input(self, data: dict[str, object]) -> None:
         """L5 Input validation"""
         if not isinstance(data, dict):
-            raise ValueError('Input must be a dictionary')
+            raise ValueError("Input must be a dictionary")
         if not data:
-            raise ValueError('Input cannot be empty')
+            raise ValueError("Input cannot be empty")
 
     def _calculate_safety_score(self, data: dict[str, object]) -> float:
         """Calculate L5 safety score (0.0 = safe, 1.0 = dangerous)"""
         score = 0.0
         data_str = str(data).lower()
-        suspicious_patterns = [('password', 0.3), ('secret', 0.3), ('token', 0.2), ('key', 0.1), ('admin', 0.2), ('root', 0.3)]
+        suspicious_patterns = [
+            ("password", 0.3),
+            ("secret", 0.3),
+            ("token", 0.2),
+            ("key", 0.1),
+            ("admin", 0.2),
+            ("root", 0.3),
+        ]
         for pattern, weight in suspicious_patterns:
             if pattern in data_str:
                 score += weight
@@ -111,71 +142,100 @@ class UpdateObservabilityUsageSafetyImpl(UpdateObservabilityUsageSafetySafety):
 
     def _assess_risks(self, data: dict[str, object]) -> dict[str, object]:
         """Perform comprehensive risk assessment"""
-        risks = {'injection_risk': self._check_injection_risk(data), 'size_risk': self._check_size_risk(data), 'complexity_risk': self._check_complexity_risk(data), 'pattern_risk': self._check_pattern_risk(data)}
-        return {'risks': risks, 'overall_risk': 'low' if all((r == 'low' for r in risks.values())) else 'medium' if any((r == 'medium' for r in risks.values())) else 'high'}
+        risks = {
+            "injection_risk": self._check_injection_risk(data),
+            "size_risk": self._check_size_risk(data),
+            "complexity_risk": self._check_complexity_risk(data),
+            "pattern_risk": self._check_pattern_risk(data),
+        }
+        return {
+            "risks": risks,
+            "overall_risk": "low"
+            if all(r == "low" for r in risks.values())
+            else "medium"
+            if any(r == "medium" for r in risks.values())
+            else "high",
+        }
 
     def _check_injection_risk(self, data: dict[str, object]) -> str:
         """Check for injection risks"""
-        injection_patterns = ["'", '"', ';', '--', '/*', '*/', 'xp_', 'sp_']
+        injection_patterns = ["'", '"', ";", "--", "/*", "*/", "xp_", "sp_"]
         data_str = str(data)
         for pattern in injection_patterns:
             if pattern in data_str:
-                return 'high'
-        return 'low'
+                return "high"
+        return "low"
 
     def _check_size_risk(self, data: dict[str, object]) -> str:
         """Check size-related risks"""
         size = len(str(data))
         if size > 100000:
-            return 'high'
+            return "high"
         elif size > 10000:
-            return 'medium'
+            return "medium"
         else:
-            return 'low'
+            return "low"
 
     def _check_complexity_risk(self, data: dict[str, object]) -> str:
         """Check complexity risks"""
         try:
             depth = self._calculate_depth(data)
             if depth > 10:
-                return 'high'
+                return "high"
             elif depth > 5:
-                return 'medium'
+                return "medium"
             else:
-                return 'low'
+                return "low"
         except (ValueError, TypeError, RuntimeError):
-            return 'high'
+            return "high"
 
     def _check_pattern_risk(self, data: dict[str, object]) -> str:
         """Check for risky patterns"""
-        risky_patterns = ['eval', 'exec', 'import', 'subprocess', 'os.system']
+        risky_patterns = ["eval", "exec", "import", "subprocess", "os.system"]
         data_str = str(data).lower()
         for pattern in risky_patterns:
             if pattern in data_str:
-                return 'high'
-        return 'low'
+                return "high"
+        return "low"
 
-    def _calculate_depth(self, obj: object, current_depth: int=0) -> int:
+    def _calculate_depth(self, obj: object, current_depth: int = 0) -> int:
         """Calculate nesting depth"""
         if isinstance(obj, dict):
-            return max([self._calculate_depth(v, current_depth + 1) for v in obj.values()], default=current_depth)
+            return max(
+                [self._calculate_depth(v, current_depth + 1) for v in obj.values()], default=current_depth
+            )
         elif isinstance(obj, list):
-            return max([self._calculate_depth(item, current_depth + 1) for item in obj], default=current_depth)
+            return max(
+                [self._calculate_depth(item, current_depth + 1) for item in obj], default=current_depth
+            )
         else:
             return current_depth
 
     def _initialize_safety_rules(self) -> list[dict[str, object]]:
         """Initialize L5 safety rules"""
-        return [{'name': 'no_injection', 'pattern': '(union|select|insert|update|delete|drop)', 'severity': 'high'}, {'name': 'no_scripts', 'pattern': '<script', 'severity': 'high'}, {'name': 'no_eval', 'pattern': 'eval\\s*\\(', 'severity': 'high'}, {'name': 'size_limit', 'max_size': 1000000, 'severity': 'medium'}]
+        return [
+            {
+                "name": "no_injection",
+                "pattern": "(union|select|insert|update|delete|drop)",
+                "severity": "high",
+            },
+            {"name": "no_scripts", "pattern": "<script", "severity": "high"},
+            {"name": "no_eval", "pattern": "eval\\s*\\(", "severity": "high"},
+            {"name": "size_limit", "max_size": 1000000, "severity": "medium"},
+        ]
 
     def _get_timestamp(self) -> str:
         """Get current timestamp for L5 observability"""
         from datetime import datetime
+
         return datetime.utcnow().isoformat()
+
 
 class SecurityError(Exception):
     """L5 Security exception for fail-closed behavior"""
+
     pass
+
 
 class UpdateObservabilityUsageSafetyInterface:
     """L5 Interface - ensures contract compliance"""
@@ -187,19 +247,28 @@ class UpdateObservabilityUsageSafetyInterface:
         """L5 Interface method - applies safety safely"""
         try:
             result = self._safety.apply_safety(data)
-            return {'success': result.success, 'safety_score': result.safety_score, 'risk_assessment': result.risk_assessment, 'errors': result.errors, 'safety_validated': result.safety_validated, 'timestamp': result.timestamp}
+            return {
+                "success": result.success,
+                "safety_score": result.safety_score,
+                "risk_assessment": result.risk_assessment,
+                "errors": result.errors,
+                "safety_validated": result.safety_validated,
+                "timestamp": result.timestamp,
+            }
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
-            raise SecurityError(f'Safety application failed: {e}')
+            raise SecurityError(f"Safety application failed: {e}")
+
 
 class UpdateObservabilityUsageSafetyFactory:
     """L5 builder for creating safety executors with proper configuration"""
 
     @staticmethod
-    def create_safety(safety_level: str='strict') -> UpdateObservabilityUsageSafetyInterface:
+    def create_safety(safety_level: str = "strict") -> UpdateObservabilityUsageSafetyInterface:
         """Create configured safety executor"""
         constraints = UpdateObservabilityUsageSafetyConstraints(safety_level=safety_level)
         safety = UpdateObservabilityUsageSafetyImpl(constraints)
         return UpdateObservabilityUsageSafetyInterface(safety)
+
 
 def update_observability_usage(data: dict[str, object]) -> dict[str, object]:
     """
@@ -217,12 +286,14 @@ def update_observability_usage(data: dict[str, object]) -> dict[str, object]:
     builder = UpdateObservabilityUsageSafetyFactory()
     safety = builder.create_safety()
     return safety.apply_safety(data)
-if __name__ == '__main__':
+
+
+if __name__ == "__main__":
     try:
-        test_data = {'test': 'safe_data'}
+        test_data = {"test": "safe_data"}
         result = update_observability_usage(test_data)
-        logger.info(f'L5 Safety check successful: {result}')
+        logger.info(f"L5 Safety check successful: {result}")
     except SecurityError as e:
-        logger.error(f'L5 Security error: {e}')
+        logger.error(f"L5 Security error: {e}")
     except (ValueError, TypeError, RuntimeError, KeyError) as e:
-        logger.error(f'L5 Unexpected error: {e}')
+        logger.error(f"L5 Unexpected error: {e}")

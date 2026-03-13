@@ -8,12 +8,15 @@ Invariants:
   - Deterministic comparisons only
   - Fail-closed on any regression
 """
+
 from __future__ import annotations
+
 from dataclasses import dataclass
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 class ShadowRegression(RuntimeError):
     """Raised when shadow deployment shows regression vs production."""
+
 
 @dataclass(frozen=True, slots=True)
 class ShadowMetrics:
@@ -32,11 +35,13 @@ class ShadowMetrics:
     mem_mb : float
         Memory usage in megabytes.
     """
+
     p95_latency_ms: float
     error_rate: float
     safety_violation_count: int
     cpu_pct: float
     mem_mb: float
+
 
 @dataclass(frozen=True, slots=True)
 class ShadowThresholds:
@@ -55,11 +60,13 @@ class ShadowThresholds:
     forbid_any_safety_violation_increase : bool
         If True, any increase in safety violations is rejected.
     """
+
     max_p95_latency_regression_pct: float
     max_error_rate_regression_abs: float
     max_cpu_regression_pct: float
     max_mem_regression_pct: float
     forbid_any_safety_violation_increase: bool
+
 
 def evaluate_shadow(production: ShadowMetrics, shadow: ShadowMetrics, thresholds: ShadowThresholds) -> None:
     """Evaluate shadow deployment against production metrics.
@@ -89,22 +96,37 @@ def evaluate_shadow(production: ShadowMetrics, shadow: ShadowMetrics, thresholds
     """
     violations = []
     if production.p95_latency_ms > 0:
-        latency_regression_pct = (shadow.p95_latency_ms - production.p95_latency_ms) / production.p95_latency_ms * 100.0
+        latency_regression_pct = (
+            (shadow.p95_latency_ms - production.p95_latency_ms) / production.p95_latency_ms * 100.0
+        )
         if latency_regression_pct > thresholds.max_p95_latency_regression_pct:
-            violations.append(f'P95_LATENCY_REGRESSION: {latency_regression_pct:.2f}% (threshold: {thresholds.max_p95_latency_regression_pct:.2f}%)')
+            violations.append(
+                f"P95_LATENCY_REGRESSION: {latency_regression_pct:.2f}% (threshold: {thresholds.max_p95_latency_regression_pct:.2f}%)"
+            )
     error_rate_regression = shadow.error_rate - production.error_rate
     if error_rate_regression > thresholds.max_error_rate_regression_abs:
-        violations.append(f'ERROR_RATE_REGRESSION: +{error_rate_regression:.4f} (threshold: {thresholds.max_error_rate_regression_abs:.4f})')
+        violations.append(
+            f"ERROR_RATE_REGRESSION: +{error_rate_regression:.4f} (threshold: {thresholds.max_error_rate_regression_abs:.4f})"
+        )
     if thresholds.forbid_any_safety_violation_increase:
         if shadow.safety_violation_count > production.safety_violation_count:
-            violations.append(f'SAFETY_VIOLATION_INCREASE: {shadow.safety_violation_count} > {production.safety_violation_count} (any increase forbidden)')
+            violations.append(
+                f"SAFETY_VIOLATION_INCREASE: {shadow.safety_violation_count} > {production.safety_violation_count} (any increase forbidden)"
+            )
     if production.cpu_pct > 0:
         cpu_regression_pct = (shadow.cpu_pct - production.cpu_pct) / production.cpu_pct * 100.0
         if cpu_regression_pct > thresholds.max_cpu_regression_pct:
-            violations.append(f'CPU_REGRESSION: {cpu_regression_pct:.2f}% (threshold: {thresholds.max_cpu_regression_pct:.2f}%)')
+            violations.append(
+                f"CPU_REGRESSION: {cpu_regression_pct:.2f}% (threshold: {thresholds.max_cpu_regression_pct:.2f}%)"
+            )
     if production.mem_mb > 0:
         mem_regression_pct = (shadow.mem_mb - production.mem_mb) / production.mem_mb * 100.0
         if mem_regression_pct > thresholds.max_mem_regression_pct:
-            violations.append(f'MEM_REGRESSION: {mem_regression_pct:.2f}% (threshold: {thresholds.max_mem_regression_pct:.2f}%)')
+            violations.append(
+                f"MEM_REGRESSION: {mem_regression_pct:.2f}% (threshold: {thresholds.max_mem_regression_pct:.2f}%)"
+            )
     if violations:
-        raise ShadowRegression(f'SHADOW_REGRESSION: {len(violations)} threshold(s) violated:\n' + '\n'.join((f'  - {v}' for v in violations)))
+        raise ShadowRegression(
+            f"SHADOW_REGRESSION: {len(violations)} threshold(s) violated:\n"
+            + "\n".join(f"  - {v}" for v in violations)
+        )

@@ -2,25 +2,29 @@
 JSON Parser Utilities - Phase 4 Optimization
 Native Python implementations for JSON parsing and manipulation.
 """
+
 from __future__ import annotations
+
 import json
 from dataclasses import dataclass
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 @dataclass
 class ParseResult:
     """Result of a JSON parsing operation."""
+
     success: bool
     data: Any
     errors: list[str]
     metadata: dict[str, Any]
 
+
 class JsonParser:
     """Native Python JSON parsing utilities."""
 
     @staticmethod
-    def parse_json(json_string: str, strict: bool=True) -> ParseResult:
+    def parse_json(json_string: str, strict: bool = True) -> ParseResult:
         """
         Parse JSON string.
 
@@ -35,12 +39,17 @@ class JsonParser:
             data = json.loads(json_string, strict=strict)
             return ParseResult(success=True, data=data, errors=[], metadata={})
         except json.JSONDecodeError as e:
-            return ParseResult(success=False, data=None, errors=[f'JSON decode error: {str(e)}'], metadata={'line': e.lineno, 'column': e.colno})
+            return ParseResult(
+                success=False,
+                data=None,
+                errors=[f"JSON decode error: {str(e)}"],
+                metadata={"line": e.lineno, "column": e.colno},
+            )
         except Exception as e:
-            return ParseResult(success=False, data=None, errors=[f'Parse error: {str(e)}'], metadata={})
+            return ParseResult(success=False, data=None, errors=[f"Parse error: {str(e)}"], metadata={})
 
     @staticmethod
-    def safe_get(data: dict[str, Any], path: str, default: Any=None) -> Any:
+    def safe_get(data: dict[str, Any], path: str, default: Any = None) -> Any:
         """
         Safely get nested value from dictionary using dot notation.
 
@@ -52,7 +61,7 @@ class JsonParser:
         Returns:
             Value at path or default
         """
-        keys = path.split('.')
+        keys = path.split(".")
         current = data
         for key in keys:
             if isinstance(current, dict) and key in current:
@@ -71,7 +80,7 @@ class JsonParser:
             path: Dot-separated path
             value: Value to set
         """
-        keys = path.split('.')
+        keys = path.split(".")
         current = data
         for key in keys[:-1]:
             if key not in current:
@@ -80,7 +89,7 @@ class JsonParser:
         current[keys[-1]] = value
 
     @staticmethod
-    def merge_dicts(dict1: dict[str, Any], dict2: dict[str, Any], deep: bool=True) -> dict[str, Any]:
+    def merge_dicts(dict1: dict[str, Any], dict2: dict[str, Any], deep: bool = True) -> dict[str, Any]:
         """
         Merge two dictionaries.
 
@@ -101,7 +110,7 @@ class JsonParser:
         return result
 
     @staticmethod
-    def flatten_dict(data: dict[str, Any], separator: str='.') -> dict[str, Any]:
+    def flatten_dict(data: dict[str, Any], separator: str = ".") -> dict[str, Any]:
         """
         Flatten nested dictionary.
 
@@ -114,22 +123,23 @@ class JsonParser:
         """
         result = {}
 
-        def _flatten(obj: Any, prefix: str='') -> None:
+        def _flatten(obj: Any, prefix: str = "") -> None:
             if isinstance(obj, dict):
                 for key, value in obj.items():
-                    new_key = f'{prefix}{separator}{key}' if prefix else key
+                    new_key = f"{prefix}{separator}{key}" if prefix else key
                     _flatten(value, new_key)
             elif isinstance(obj, list):
                 for i, item in enumerate(obj):
-                    new_key = f'{prefix}{separator}{i}' if prefix else str(i)
+                    new_key = f"{prefix}{separator}{i}" if prefix else str(i)
                     _flatten(item, new_key)
             else:
                 result[prefix] = obj
+
         _flatten(data)
         return result
 
     @staticmethod
-    def unflatten_dict(data: dict[str, Any], separator: str='.') -> dict[str, Any]:
+    def unflatten_dict(data: dict[str, Any], separator: str = ".") -> dict[str, Any]:
         """
         Unflatten dictionary with dot-separated keys.
 
@@ -142,11 +152,11 @@ class JsonParser:
         """
         result = {}
         for key, value in data.items():
-            JsonParser.safe_set(result, key.replace(separator, '.'), value)
+            JsonParser.safe_set(result, key.replace(separator, "."), value)
         return result
 
     @staticmethod
-    def filter_keys(data: dict[str, Any], keys: list[str], include: bool=True) -> dict[str, Any]:
+    def filter_keys(data: dict[str, Any], keys: list[str], include: bool = True) -> dict[str, Any]:
         """
         Filter dictionary by keys.
 
@@ -178,7 +188,7 @@ class JsonParser:
         errors = []
         for key, expected_type in schema.items():
             if key not in data:
-                errors.append(f'Missing required key: {key}')
+                errors.append(f"Missing required key: {key}")
             elif not isinstance(data[key], expected_type):
                 actual_type = type(data[key]).__name__
                 expected_name = expected_type.__name__
@@ -211,6 +221,7 @@ class JsonParser:
             elif isinstance(obj, list):
                 for item in obj:
                     _extract(item)
+
         _extract(data)
         return results
 
@@ -238,12 +249,13 @@ class JsonParser:
     @staticmethod
     def to_camel_case(snake_str: str) -> str:
         """Convert snake_case to camelCase."""
-        components = snake_str.split('_')
-        return components[0] + ''.join((x.title() for x in components[1:]))
+        components = snake_str.split("_")
+        return components[0] + "".join(x.title() for x in components[1:])
 
     @staticmethod
     def to_snake_case(camel_str: str) -> str:
         """Convert camelCase to snake_case."""
         import re
-        s1 = re.sub('(.)([A-Z][a-z]+)', '\\1_\\2', camel_str)
-        return re.sub('([a-z0-9])([A-Z])', '\\1_\\2', s1).lower()
+
+        s1 = re.sub("(.)([A-Z][a-z]+)", "\\1_\\2", camel_str)
+        return re.sub("([a-z0-9])([A-Z])", "\\1_\\2", s1).lower()

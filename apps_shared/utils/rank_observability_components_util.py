@@ -4,14 +4,16 @@ L2 KG Writer for resume temporal graph data.
 Writes entities, relations, and events to Neo4jGraphStore
 to support resume timeline analysis and job alignment.
 """
+
 from datetime import datetime
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 try:
     _neo4j_graph: Neo4jGraphStore | None = Neo4jGraphStore()
     _NEO4J_AVAILABLE = True
 except ImportError:
     _neo4j_graph = None
     _NEO4J_AVAILABLE = False
+
 
 async def insert_entity(entity: TemporalEntity) -> None:
     """
@@ -23,9 +25,21 @@ async def insert_entity(entity: TemporalEntity) -> None:
         return
     try:
         if _neo4j_graph is not None:
-            _neo4j_graph.upsert_entity(entity_id=entity.entity_id, etype=entity.entity_type, name=entity.entity_id, metadata={'canonical_id': entity.canonical_id, 'aliases': list(entity.aliases), 'confidence': entity.confidence, 'created_at': entity.created_at.isoformat(), **entity.metadata})
+            _neo4j_graph.upsert_entity(
+                entity_id=entity.entity_id,
+                etype=entity.entity_type,
+                name=entity.entity_id,
+                metadata={
+                    "canonical_id": entity.canonical_id,
+                    "aliases": list(entity.aliases),
+                    "confidence": entity.confidence,
+                    "created_at": entity.created_at.isoformat(),
+                    **entity.metadata,
+                },
+            )
     except (ValueError, TypeError, RuntimeError, KeyError):
         ...
+
 
 async def insert_triplet(triplet: TemporalTriplet) -> None:
     """
@@ -37,9 +51,25 @@ async def insert_triplet(triplet: TemporalTriplet) -> None:
         return
     try:
         if _neo4j_graph is not None:
-            _neo4j_graph.upsert_relation(rel_id=triplet.triplet_id, subject_id=triplet.subject, predicate=triplet.predicate, object_id=triplet.object, valid_at=triplet.temporal_range.valid_at.isoformat(), invalid_at=triplet.temporal_range.invalid_at.isoformat() if triplet.temporal_range.invalid_at else None, attrs={'confidence': triplet.confidence, 'source': triplet.source, 'status': triplet.status.value, **triplet.metadata})
+            _neo4j_graph.upsert_relation(
+                rel_id=triplet.triplet_id,
+                subject_id=triplet.subject,
+                predicate=triplet.predicate,
+                object_id=triplet.object,
+                valid_at=triplet.temporal_range.valid_at.isoformat(),
+                invalid_at=triplet.temporal_range.invalid_at.isoformat()
+                if triplet.temporal_range.invalid_at
+                else None,
+                attrs={
+                    "confidence": triplet.confidence,
+                    "source": triplet.source,
+                    "status": triplet.status.value,
+                    **triplet.metadata,
+                },
+            )
     except (ValueError, TypeError, RuntimeError, KeyError):
         ...
+
 
 async def insert_event(event: TemporalEvent) -> None:
     """
@@ -51,12 +81,17 @@ async def insert_event(event: TemporalEvent) -> None:
         return
     try:
         if _neo4j_graph is not None:
-            if event.triplet_id and event.event_type in ['invalidation', 'expiration']:
-                invalid_at = event.metadata.get('invalid_at')
-                invalidated_by = event.metadata.get('invalidated_by')
-                _neo4j_graph.update_relation_invalidity(rel_id=event.triplet_id, invalid_at=invalid_at.isoformat() if isinstance(invalid_at, datetime) else invalid_at, invalidated_by=invalidated_by)
+            if event.triplet_id and event.event_type in ["invalidation", "expiration"]:
+                invalid_at = event.metadata.get("invalid_at")
+                invalidated_by = event.metadata.get("invalidated_by")
+                _neo4j_graph.update_relation_invalidity(
+                    rel_id=event.triplet_id,
+                    invalid_at=invalid_at.isoformat() if isinstance(invalid_at, datetime) else invalid_at,
+                    invalidated_by=invalidated_by,
+                )
     except (ValueError, TypeError, RuntimeError, KeyError):
         ...
+
 
 async def batch_process_invalidation(events_to_update: list[TemporalEvent]) -> None:
     """
@@ -69,7 +104,13 @@ async def batch_process_invalidation(events_to_update: list[TemporalEvent]) -> N
     for event in events_to_update:
         await insert_event(event)
 
-async def ingest_transcript(transcript_id: str, entities: list[TemporalEntity], triplets: list[TemporalTriplet], events: list[TemporalEvent]) -> None:
+
+async def ingest_transcript(
+    transcript_id: str,
+    entities: list[TemporalEntity],
+    triplets: list[TemporalTriplet],
+    events: list[TemporalEvent],
+) -> None:
     """
     Ingests complete resume transcript data for timeline analysis.
 

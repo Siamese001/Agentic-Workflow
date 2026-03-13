@@ -6,22 +6,28 @@ Rationale:
     The automated fixer cannot resolve collisions where two files want the same name.
     This tool finds these specific cases and reports them for manual adjudication.
 """
+
 import ast
 import sys
 from collections import defaultdict
 from pathlib import Path
+
 from agentic_core.L0_routing.enforcement.mutation_prohibition import safe_os_remove
-from agentic_core.L5_safety.config.structure_blueprint.ssot import DISCOVERY_EXCLUDED_TERRITORIES, GLOBAL_EXCLUDED_DIRS, SOVEREIGN_EXCLUDED_FOLDERS
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
+
 try:
     from agentic_core.utils.ssot_discovery_validator import get_python_files
 except ImportError:
 
     def get_python_files(root: Path):
-        return list(root.rglob('*.py'))
+        return list(root.rglob("*.py"))
+
 
 class CollisionResolver:
-
     def __init__(self, root: Path):
         self.root = root
         self.collisions: dict[str, list[Path]] = defaultdict(list)
@@ -29,10 +35,10 @@ class CollisionResolver:
 
     def _get_target_name(self, path: Path) -> str | None:
         """Determine what name this file SHOULD have based on AST analysis."""
-        if path.name in ['__init__.py', '__main__.py', 'conftest.py']:
+        if path.name in ["__init__.py", "__main__.py", "conftest.py"]:
             return None
         try:
-            content = path.read_text(encoding='utf-8')
+            content = path.read_text(encoding="utf-8")
             tree = ast.parse(content)
         # guardian: allow-silent-swallow
         except:
@@ -41,30 +47,30 @@ class CollisionResolver:
         if not classes:
             return None
         primary = classes[0]
-        stem_clean = path.stem.replace('_', '').lower()
+        stem_clean = path.stem.replace("_", "").lower()
         for cls in classes:
             if cls.lower() == stem_clean:
                 primary = cls
                 break
-        is_agent = any((c.endswith('Agent') for c in classes))
+        is_agent = any(c.endswith("Agent") for c in classes)
         for node in ast.walk(tree):
             if isinstance(node, ast.ClassDef):
                 for base in node.bases:
-                    if isinstance(base, ast.Name) and 'Agent' in base.id:
+                    if isinstance(base, ast.Name) and "Agent" in base.id:
                         is_agent = True
-                    elif isinstance(base, ast.Attribute) and 'Agent' in base.attr:
+                    elif isinstance(base, ast.Attribute) and "Agent" in base.attr:
                         is_agent = True
         target = primary
-        if is_agent and (not target.endswith('Agent')):
-            target += 'Agent'
-        return f'{target}.py'
+        if is_agent and (not target.endswith("Agent")):
+            target += "Agent"
+        return f"{target}.py"
 
     def find_collisions(self):
         """Find files that want the same target name within the same directory."""
-        print(f'Scanning {self.root} for collision candidates...')
+        print(f"Scanning {self.root} for collision candidates...")
         dir_targets: dict[Path, dict[str, list[Path]]] = defaultdict(lambda: defaultdict(list))
         for path in get_python_files(self.root):
-            if any((skip in path.parts for skip in self.skip_dirs)):
+            if any(skip in path.parts for skip in self.skip_dirs):
                 continue
             target = self._get_target_name(path)
             if target and target != path.name:
@@ -87,88 +93,90 @@ class CollisionResolver:
     def report(self):
         """Generate a detailed collision report."""
         if not self.collisions:
-            print('\n✅ No collision violations found. Repository is clean.')
+            print("\n✅ No collision violations found. Repository is clean.")
             return 0
-        print(f'\n⚠️  Found {len(self.collisions)} collision groups requiring manual resolution.\n')
-        print('=' * 80)
+        print(f"\n⚠️  Found {len(self.collisions)} collision groups requiring manual resolution.\n")
+        print("=" * 80)
         for i, (target, sources) in enumerate(self.collisions.items(), 1):
             target_path = Path(target)
-            print(f'\n[{i}] TARGET: {target_path.name}')
-            print(f'    Directory: {target_path.parent.relative_to(self.root)}')
-            print('    Contenders:')
+            print(f"\n[{i}] TARGET: {target_path.name}")
+            print(f"    Directory: {target_path.parent.relative_to(self.root)}")
+            print("    Contenders:")
             for src in sources:
                 try:
                     size = src.stat().st_size
-                    content = src.read_text(encoding='utf-8')
+                    content = src.read_text(encoding="utf-8")
                     tree = ast.parse(content)
                     classes = [n.name for n in ast.walk(tree) if isinstance(n, ast.ClassDef)]
-                    class_info = f"[Classes: {', '.join(classes[:3])}]" if classes else '[No classes]'
+                    class_info = f"[Classes: {', '.join(classes[:3])}]" if classes else "[No classes]"
                 # guardian: allow-silent-swallow
                 except:
                     size = 0
-                    class_info = '[Parse error]'
-                marker = '✓ EXISTS' if src.name == target_path.name else '→ WANTS'
-                print(f'      {marker}: {src.name} ({size} bytes) {class_info}')
-        print('\n' + '=' * 80)
-        print('\nRESOLUTION OPTIONS:')
-        print('  1. Manually merge/delete duplicate files')
+                    class_info = "[Parse error]"
+                marker = "✓ EXISTS" if src.name == target_path.name else "→ WANTS"
+                print(f"      {marker}: {src.name} ({size} bytes) {class_info}")
+        print("\n" + "=" * 80)
+        print("\nRESOLUTION OPTIONS:")
+        print("  1. Manually merge/delete duplicate files")
         print("  2. Rename one file's primary class to create a unique target")
-        print('  3. Move one file to a different directory')
-        print('=' * 80)
+        print("  3. Move one file to a different directory")
+        print("=" * 80)
         return len(self.collisions)
 
     def interactive_resolve(self):
         """Interactive mode for resolving collisions one by one."""
         if not self.collisions:
-            print('\n✅ No collisions to resolve.')
+            print("\n✅ No collisions to resolve.")
             return
-        print('\n🔧 INTERACTIVE COLLISION RESOLVER')
-        print(f'   {len(self.collisions)} groups to process')
-        print('   Commands: [1-N] Keep file N, [S] Skip, [Q] Quit\n')
+        print("\n🔧 INTERACTIVE COLLISION RESOLVER")
+        print(f"   {len(self.collisions)} groups to process")
+        print("   Commands: [1-N] Keep file N, [S] Skip, [Q] Quit\n")
         resolved = 0
         for target, sources in list(self.collisions.items()):
             target_path = Path(target)
-            print('\n' + '=' * 60)
-            print(f'TARGET: {target_path.name}')
-            print(f'DIR: {target_path.parent}')
-            print('-' * 60)
+            print("\n" + "=" * 60)
+            print(f"TARGET: {target_path.name}")
+            print(f"DIR: {target_path.parent}")
+            print("-" * 60)
             for i, src in enumerate(sources, 1):
                 size = src.stat().st_size if src.exists() else 0
-                status = 'EXISTS' if src.name == target_path.name else 'RENAME'
-                print(f'  [{i}] {src.name} ({size} bytes) [{status}]')
-            choice = input('\nKeep which file? [1-N/S/Q]: ').strip().upper()
-            if choice == 'Q':
-                print('Exiting interactive mode.')
+                status = "EXISTS" if src.name == target_path.name else "RENAME"
+                print(f"  [{i}] {src.name} ({size} bytes) [{status}]")
+            choice = input("\nKeep which file? [1-N/S/Q]: ").strip().upper()
+            if choice == "Q":
+                print("Exiting interactive mode.")
                 break
-            elif choice == 'S' or not choice:
-                print('Skipped.')
+            elif choice == "S" or not choice:
+                print("Skipped.")
                 continue
             elif choice.isdigit():
                 idx = int(choice) - 1
                 if 0 <= idx < len(sources):
                     winner = sources[idx]
-                    print(f'\n  KEEPING: {winner.name}')
+                    print(f"\n  KEEPING: {winner.name}")
                     for i, src in enumerate(sources):
                         if i != idx and src.exists():
-                            print(f'  DELETING: {src.name}')
-                            safe_os_remove(src, layer='L0')
+                            print(f"  DELETING: {src.name}")
+                            safe_os_remove(src, layer="L0")
                     if winner.name != target_path.name and winner.exists():
-                        print(f'  RENAMING: {winner.name} -> {target_path.name}')
+                        print(f"  RENAMING: {winner.name} -> {target_path.name}")
                         winner.rename(target_path)
                     resolved += 1
-                    print('  ✓ Resolved')
-        print(f'\n✅ Resolved {resolved} collision groups.')
-if __name__ == '__main__':
+                    print("  ✓ Resolved")
+        print(f"\n✅ Resolved {resolved} collision groups.")
+
+
+if __name__ == "__main__":
     root = Path(__file__).parent.parent
     resolver = CollisionResolver(root)
-    print('=' * 60)
-    print('SOVEREIGNTY COLLISION RESOLVER')
-    print('=' * 60)
+    print("=" * 60)
+    print("SOVEREIGNTY COLLISION RESOLVER")
+    print("=" * 60)
     resolver.find_collisions()
-    if '--interactive' in sys.argv or '-i' in sys.argv:
+    if "--interactive" in sys.argv or "-i" in sys.argv:
         resolver.interactive_resolve()
     else:
         count = resolver.report()
         if count > 0:
-            print('\nRun with --interactive (-i) to resolve collisions one by one.')
+            print("\nRun with --interactive (-i) to resolve collisions one by one.")
         sys.exit(count)

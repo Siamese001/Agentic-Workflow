@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 '\n[PHASE 24] AuditTrailMixin - Sovereign Black Box with Cryptographic Chain-of-Custody.\n\nProvides tamper-evident audit logging using SHA-256 hash chaining PLUS\nJSON-structured Black Box logging for forensic analysis.\n\nKey Design Decisions:\n1. JSON-structured logging for machine ingestion (Black Box)\n2. Cryptographic hash chaining for tamper evidence\n3. Does NOT write to Redis directly - injects audit_proof into EventEmission payload\n4. Synchronous hash generation (fast enough for main thread)\n5. Async event emission via event_emission_mixin dependency\n6. Session salt for chain isolation between agent instances\n\nBlack Box Format:\n{\n    "timestamp": "2026-01-24T14:57:00.000Z",\n    "agent_id": "CampaignPlannerAgent",\n    "domain": "apps_rg",\n    "session": "20260124-145700",\n    "action": "BOOT",\n    "details": {"status": "initialized", "mode": "hardened"},\n    "integrity_status": "VERIFIED"\n}\n\nUsage:\n    class MyAgent(AuditTrailMixin, event_emission_mixin, SovereignBaseAgent):\n        async def execute_action(self, action):\n            await self.emit_auditable_action("EXECUTE", {"action_id": action.id})\n            # Also logs to Black Box\n            self.log_sovereign_event("EXECUTE", {"action_id": action.id})\n            result = await self._do_execute(action)\n            return result\n\n[SSOT] Audit trail implementation for L6 observability.\n'
 import hashlib
 import json
@@ -9,8 +10,9 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
-Logger = logging.getLogger('SovereignBlackBox')
+
+Logger = logging.getLogger("SovereignBlackBox")
+
 
 @dataclass
 class AuditProof:
@@ -24,28 +26,38 @@ class AuditProof:
         timestamp: Unix timestamp when proof was generated
         chain_id: Session salt identifying this chain
     """
+
     action_id: str
     prev_hash: str
     curr_hash: str
     timestamp: float
-    chain_id: str = ''
+    chain_id: str = ""
 
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization."""
-        return {'action_id': self.action_id, 'prev_hash': self.prev_hash, 'curr_hash': self.curr_hash, 'timestamp': self.timestamp, 'chain_id': self.chain_id}
+        return {
+            "action_id": self.action_id,
+            "prev_hash": self.prev_hash,
+            "curr_hash": self.curr_hash,
+            "timestamp": self.timestamp,
+            "chain_id": self.chain_id,
+        }
 
     def verify_chain_link(self, expected_prev_hash: str) -> bool:
         """Verify this proof links to the expected previous hash."""
         return self.prev_hash == expected_prev_hash
 
+
 @dataclass
 class AuditChainStats:
     """Statistics for an audit chain."""
+
     chain_id: str
     genesis_time: float
     last_action_time: float
     total_actions: int
     last_hash: str
+
 
 class AuditTrailMixin:
     """
@@ -77,13 +89,14 @@ class AuditTrailMixin:
         _audit_enabled: Whether Black Box logging is enabled
         _session_id: Session identifier for Black Box logs
     """
-    GENESIS_HASH = '0' * 64
+
+    GENESIS_HASH = "0" * 64
     _audit_last_hash: str = GENESIS_HASH
-    _audit_session_salt: str = ''
+    _audit_session_salt: str = ""
     _audit_genesis_time: float = 0.0
     _audit_action_count: int = 0
     _audit_enabled: bool = True
-    _session_id: str = field(default_factory=lambda: datetime.now().strftime('%Y%m%d-%H%M%S'))
+    _session_id: str = field(default_factory=lambda: datetime.now().strftime("%Y%m%d-%H%M%S"))
 
     def __init__(self, *args, **kwargs):
         """Initialize audit chain with unique session salt."""
@@ -93,10 +106,12 @@ class AuditTrailMixin:
         self._audit_genesis_time = time.time()
         self._audit_action_count = 0
         self._audit_enabled = True
-        self._session_id = datetime.now().strftime('%Y%m%d-%H%M%S')
-        Logger.debug(f'[{self.__class__.__name__}] Audit chain initialized: chain_id={self._audit_session_salt[:8]}...')
+        self._session_id = datetime.now().strftime("%Y%m%d-%H%M%S")
+        Logger.debug(
+            f"[{self.__class__.__name__}] Audit chain initialized: chain_id={self._audit_session_salt[:8]}..."
+        )
 
-    def log_sovereign_event(self, action: str, details: dict[str, Any], level: str='INFO') -> None:
+    def log_sovereign_event(self, action: str, details: dict[str, Any], level: str = "INFO") -> None:
         """
         Write an immutable record to the structured Black Box log.
 
@@ -107,22 +122,31 @@ class AuditTrailMixin:
         """
         if not self._audit_enabled:
             return
-        payload = {'timestamp': datetime.now(timezone.utc).isoformat(), 'agent_id': getattr(self, 'name', 'UnknownSovereign'), 'domain': getattr(self, 'domain_root', Path('unknown')).name, 'session': self._session_id, 'action': action.upper(), 'details': details, 'integrity_status': 'VERIFIED'}
+        payload = {
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "agent_id": getattr(self, "name", "UnknownSovereign"),
+            "domain": getattr(self, "domain_root", Path("unknown")).name,
+            "session": self._session_id,
+            "action": action.upper(),
+            "details": details,
+            "integrity_status": "VERIFIED",
+        }
 
         def json_serializer(obj):
             """Custom JSON serializer for dataclass Fields and other objects"""
-            if hasattr(obj, '__name__'):
+            if hasattr(obj, "__name__"):
                 return str(obj)
-            elif hasattr(obj, 'default'):
-                return f'Field({obj.default})'
-            elif hasattr(obj, '__dict__'):
+            elif hasattr(obj, "default"):
+                return f"Field({obj.default})"
+            elif hasattr(obj, "__dict__"):
                 return str(obj)
             else:
                 return str(obj)
-        log_entry = json.dumps(payload, separators=(',', ':'), default=json_serializer)
-        if level == 'ERROR':
+
+        log_entry = json.dumps(payload, separators=(",", ":"), default=json_serializer)
+        if level == "ERROR":
             Logger.error(log_entry)
-        elif level == 'WARNING':
+        elif level == "WARNING":
             Logger.warning(log_entry)
         else:
             Logger.info(log_entry)
@@ -136,7 +160,15 @@ class AuditTrailMixin:
             violations_fixed: Number of violations successfully fixed
             execution_time_ms: Time taken to execute healing
         """
-        self.log_sovereign_event('HEAL', {'violations_found': violations_found, 'violations_fixed': violations_fixed, 'execution_time_ms': execution_time_ms, 'heal_status': 'COMPLETED'})
+        self.log_sovereign_event(
+            "HEAL",
+            {
+                "violations_found": violations_found,
+                "violations_fixed": violations_fixed,
+                "execution_time_ms": execution_time_ms,
+                "heal_status": "COMPLETED",
+            },
+        )
 
     def log_validation_event(self, validator_name: str, result: bool, details: dict[str, Any]) -> None:
         """
@@ -147,17 +179,19 @@ class AuditTrailMixin:
             result: Whether validation passed
             details: Additional validation context
         """
-        self.log_sovereign_event('VALIDATE', {'validator': validator_name, 'result': 'PASS' if result else 'FAIL', **details})
+        self.log_sovereign_event(
+            "VALIDATE", {"validator": validator_name, "result": "PASS" if result else "FAIL", **details}
+        )
 
     def disable_audit(self) -> None:
         """Disable audit logging (for testing only)."""
         self._audit_enabled = False
-        self.log_sovereign_event('AUDIT_CONTROL', {'enabled': False})
+        self.log_sovereign_event("AUDIT_CONTROL", {"enabled": False})
 
     def enable_audit(self) -> None:
         """Enable audit logging."""
         self._audit_enabled = True
-        self.log_sovereign_event('AUDIT_CONTROL', {'enabled': True})
+        self.log_sovereign_event("AUDIT_CONTROL", {"enabled": True})
 
     def _canonicalize_payload(self, payload: dict[str, Any]) -> str:
         """
@@ -172,6 +206,7 @@ class AuditTrailMixin:
             elif isinstance(obj, list | tuple):
                 return [_sort_recursive(item) for item in obj]
             return obj
+
         return str(_sort_recursive(payload))
 
     def _generate_audit_proof(self, action_type: str, payload: dict[str, Any]) -> AuditProof:
@@ -189,14 +224,24 @@ class AuditTrailMixin:
         """
         timestamp = time.time()
         payload_str = self._canonicalize_payload(payload)
-        raw_data = f'{self._audit_last_hash}|{self._audit_session_salt}|{action_type}|{payload_str}|{timestamp}'
+        raw_data = (
+            f"{self._audit_last_hash}|{self._audit_session_salt}|{action_type}|{payload_str}|{timestamp}"
+        )
         curr_hash = hashlib.sha256(raw_data.encode()).hexdigest()
-        proof = AuditProof(action_id=f'act_{self._audit_action_count}_{int(timestamp * 1000)}', prev_hash=self._audit_last_hash, curr_hash=curr_hash, timestamp=timestamp, chain_id=self._audit_session_salt)
+        proof = AuditProof(
+            action_id=f"act_{self._audit_action_count}_{int(timestamp * 1000)}",
+            prev_hash=self._audit_last_hash,
+            curr_hash=curr_hash,
+            timestamp=timestamp,
+            chain_id=self._audit_session_salt,
+        )
         self._audit_last_hash = curr_hash
         self._audit_action_count += 1
         return proof
 
-    async def emit_auditable_action(self, action_type: str, payload: dict[str, Any], severity: str='INFO') -> AuditProof:
+    async def emit_auditable_action(
+        self, action_type: str, payload: dict[str, Any], severity: str = "INFO"
+    ) -> AuditProof:
         """
         Generate proof and emit via event_emission_mixin.
 
@@ -212,11 +257,23 @@ class AuditTrailMixin:
             NotImplementedError: If event_emission_mixin is not present
         """
         proof = self._generate_audit_proof(action_type, payload)
-        if not hasattr(self, 'emit_event'):
-            raise NotImplementedError('AuditTrailMixin requires event_emission_mixin. Ensure your class inherits from both mixins.')
-        event_payload = {'data': payload, 'audit_proof': {'hash': proof.curr_hash, 'prev': proof.prev_hash, 'chain_id': proof.chain_id, 'action_id': proof.action_id}}
-        await self.emit_event(event_type=f'AUDIT_{action_type}', payload=event_payload, severity=severity)
-        Logger.debug(f'[{self.__class__.__name__}] Audited action: {action_type} (hash={proof.curr_hash[:16]}...)')
+        if not hasattr(self, "emit_event"):
+            raise NotImplementedError(
+                "AuditTrailMixin requires event_emission_mixin. Ensure your class inherits from both mixins."
+            )
+        event_payload = {
+            "data": payload,
+            "audit_proof": {
+                "hash": proof.curr_hash,
+                "prev": proof.prev_hash,
+                "chain_id": proof.chain_id,
+                "action_id": proof.action_id,
+            },
+        }
+        await self.emit_event(event_type=f"AUDIT_{action_type}", payload=event_payload, severity=severity)
+        Logger.debug(
+            f"[{self.__class__.__name__}] Audited action: {action_type} (hash={proof.curr_hash[:16]}...)"
+        )
         return proof
 
     def emit_auditable_action_sync(self, action_type: str, payload: dict[str, Any]) -> AuditProof:
@@ -234,7 +291,9 @@ class AuditTrailMixin:
             AuditProof for caller verification
         """
         proof = self._generate_audit_proof(action_type, payload)
-        Logger.debug(f'[{self.__class__.__name__}] Sync audit proof: {action_type} (hash={proof.curr_hash[:16]}...)')
+        Logger.debug(
+            f"[{self.__class__.__name__}] Sync audit proof: {action_type} (hash={proof.curr_hash[:16]}...)"
+        )
         return proof
 
     def verify_chain_integrity(self, proofs: list[AuditProof]) -> tuple[bool, int | None]:
@@ -260,7 +319,13 @@ class AuditTrailMixin:
 
     def get_audit_chain_stats(self) -> AuditChainStats:
         """Get statistics for this audit chain."""
-        return AuditChainStats(chain_id=self._audit_session_salt, genesis_time=self._audit_genesis_time, last_action_time=time.time(), total_actions=self._audit_action_count, last_hash=self._audit_last_hash)
+        return AuditChainStats(
+            chain_id=self._audit_session_salt,
+            genesis_time=self._audit_genesis_time,
+            last_action_time=time.time(),
+            total_actions=self._audit_action_count,
+            last_hash=self._audit_last_hash,
+        )
 
     def get_chain_head(self) -> str:
         """Get the current head of the hash chain."""

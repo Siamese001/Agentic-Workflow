@@ -6,13 +6,17 @@ DEDUPLICATED — absorbed logic from InvokeGenerationServiceAgent, InvokeMessage
 — redundancy eliminated — 2025-12-30
 Refactored: 2026-03-11 (P2-C) — now subclasses BaseDispatchAgent.
 """
+
 from __future__ import annotations
+
 import logging
 from dataclasses import dataclass, field
 from typing import Any
+
 from apps_shared.reasoning.BaseDispatchAgent import BaseDispatchAgent, ExecutionResult
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 Logger: Any = logging.getLogger(__name__)
+
 
 @dataclass
 class DispatchOutreachToolsAgent(BaseDispatchAgent):
@@ -21,6 +25,7 @@ class DispatchOutreachToolsAgent(BaseDispatchAgent):
     Inherits execute(), _heal_timeout_settings(), _heal_config_integrity()
     from BaseDispatchAgent. Adds outreach-specific diagnostics.
     """
+
     config_dict: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
@@ -30,13 +35,14 @@ class DispatchOutreachToolsAgent(BaseDispatchAgent):
     def _run_domain_diagnostics(self) -> None:
         """Run outreach-specific health checks (mock action smoke test)."""
         try:
-            test_result = self._perform_action('test', {'query': 'diagnostic test'})
-            if isinstance(test_result, dict) and 'error' in test_result:
+            test_result = self._perform_action("test", {"query": "diagnostic test"})
+            if isinstance(test_result, dict) and "error" in test_result:
                 Logger.error(f"Diagnostics failed: {test_result['error']}")
         # guardian: allow-silent-swallow
         except Exception as e:
-            Logger.error(f'Diagnostics exception: {e}')
+            Logger.error(f"Diagnostics exception: {e}")
 
-def execute(action: str, params: dict[str, object], config: dict | None=None) -> ExecutionResult:
+
+def execute(action: str, params: dict[str, object], config: dict | None = None) -> ExecutionResult:
     """Execute action."""
     return DispatchOutreachToolsAgent(config_dict=config or {}).execute(action, params)

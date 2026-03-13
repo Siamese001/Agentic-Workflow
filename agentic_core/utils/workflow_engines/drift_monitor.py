@@ -5,7 +5,9 @@ Detects retrieval, embedding, and answer quality drift by comparing
 current snapshots against baseline thresholds.  Emits DriftAlert objects
 and persists snapshots to L4 telemetry registry.
 """
+
 from __future__ import annotations
+
 import logging
 import math
 import statistics
@@ -13,12 +15,14 @@ import uuid
 from collections.abc import Callable
 from datetime import datetime
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 _logger = logging.getLogger(__name__)
 from .snapshots import AnswerQualitySnapshot, DriftAlert, EmbeddingHealthSnapshot, RetrievalDriftSnapshot
 
+
 def _utcnow() -> str:
-    return datetime.utcnow().isoformat() + 'Z'
+    return datetime.utcnow().isoformat() + "Z"
+
 
 class DriftClock:
     """Injectable clock for deterministic testing of drift timestamps."""
@@ -27,15 +31,18 @@ class DriftClock:
     def utcnow() -> str:
         return _utcnow()
 
+
 def _std(values: list[float]) -> float:
     if len(values) < 2:
         return 0.0
     return statistics.stdev(values)
 
+
 def _mean(values: list[float]) -> float:
     if not values:
         return 0.0
     return sum(values) / len(values)
+
 
 class RetrievalDriftMonitor:
     """Tracks retrieval_hit_rate, score_distribution_shift, top_k_stability.
@@ -44,14 +51,28 @@ class RetrievalDriftMonitor:
     """
 
     # guardian: allow-magic-config
-    def __init__(self, hit_rate_threshold: float=0.7, score_std_threshold: float=0.2, stability_threshold: float=0.6, system_version: str='unknown', l4_store: Any | None=None):
+    def __init__(
+        self,
+        hit_rate_threshold: float = 0.7,
+        score_std_threshold: float = 0.2,
+        stability_threshold: float = 0.6,
+        system_version: str = "unknown",
+        l4_store: Any | None = None,
+    ):
         self.hit_rate_threshold = hit_rate_threshold
         self.score_std_threshold = score_std_threshold
         self.stability_threshold = stability_threshold
         self.system_version = system_version
         self.l4_store = l4_store
 
-    def measure(self, queries: list[str], retrieved_doc_ids: list[list[str]], ground_truth_doc_ids: list[list[str]], scores: list[list[float]], now_iso: str | None=None) -> RetrievalDriftSnapshot:
+    def measure(
+        self,
+        queries: list[str],
+        retrieved_doc_ids: list[list[str]],
+        ground_truth_doc_ids: list[list[str]],
+        scores: list[list[float]],
+        now_iso: str | None = None,
+    ) -> RetrievalDriftSnapshot:
         """Compute a retrieval drift snapshot from a batch of queries.
 
         Args:
@@ -65,53 +86,119 @@ class RetrievalDriftMonitor:
         """
         n = len(queries)
         if n == 0:
-            raise ValueError('queries must be non-empty')
+            raise ValueError("queries must be non-empty")
         hits = sum((1 for ret, gt in zip(retrieved_doc_ids, ground_truth_doc_ids) if set(ret) & set(gt)))
         hit_rate = hits / n
         all_scores = [s for query_scores in scores for s in query_scores]
         score_mean = _mean(all_scores)
         score_std = _std(all_scores)
-        top1_docs = [ret[0] if ret else '' for ret in retrieved_doc_ids]
+        top1_docs = [ret[0] if ret else "" for ret in retrieved_doc_ids]
         unique_top1 = len(set(top1_docs))
         top_k_stability = 1.0 - unique_top1 / n if n > 1 else 1.0
-        snapshot = RetrievalDriftSnapshot(timestamp=now_iso if now_iso is not None else _utcnow(), system_version=self.system_version, retrieval_hit_rate=hit_rate, score_distribution_mean=score_mean, score_distribution_std=score_std, top_k_stability=top_k_stability, sample_size=n)
+        snapshot = RetrievalDriftSnapshot(
+            timestamp=now_iso if now_iso is not None else _utcnow(),
+            system_version=self.system_version,
+            retrieval_hit_rate=hit_rate,
+            score_distribution_mean=score_mean,
+            score_distribution_std=score_std,
+            top_k_stability=top_k_stability,
+            sample_size=n,
+        )
         if self.l4_store is not None:
             self._persist(snapshot)
         return snapshot
 
-    def check_alerts(self, snapshot: RetrievalDriftSnapshot, now_iso: str | None=None, id_factory: Callable[[], str] | None=None) -> list[DriftAlert]:
+    def check_alerts(
+        self,
+        snapshot: RetrievalDriftSnapshot,
+        now_iso: str | None = None,
+        id_factory: Callable[[], str] | None = None,
+    ) -> list[DriftAlert]:
         """Return DriftAlerts for any metrics below threshold."""
         _ts = now_iso if now_iso is not None else _utcnow()
         _new_id = id_factory if id_factory is not None else lambda: str(uuid.uuid4())
         alerts: list[DriftAlert] = []
         if snapshot.retrieval_hit_rate < self.hit_rate_threshold:
-            alerts.append(DriftAlert(alert_id=_new_id(), timestamp=_ts, alert_type='retrieval_drift', metric_name='retrieval_hit_rate', current_value=snapshot.retrieval_hit_rate, threshold_value=self.hit_rate_threshold, delta=snapshot.retrieval_hit_rate - self.hit_rate_threshold, severity='warning', message=f'Retrieval hit rate {snapshot.retrieval_hit_rate:.3f} below threshold {self.hit_rate_threshold:.3f}'))
+            alerts.append(
+                DriftAlert(
+                    alert_id=_new_id(),
+                    timestamp=_ts,
+                    alert_type="retrieval_drift",
+                    metric_name="retrieval_hit_rate",
+                    current_value=snapshot.retrieval_hit_rate,
+                    threshold_value=self.hit_rate_threshold,
+                    delta=snapshot.retrieval_hit_rate - self.hit_rate_threshold,
+                    severity="warning",
+                    message=f"Retrieval hit rate {snapshot.retrieval_hit_rate:.3f} below threshold {self.hit_rate_threshold:.3f}",
+                )
+            )
         if snapshot.score_distribution_std > self.score_std_threshold:
-            alerts.append(DriftAlert(alert_id=_new_id(), timestamp=_ts, alert_type='retrieval_drift', metric_name='score_distribution_std', current_value=snapshot.score_distribution_std, threshold_value=self.score_std_threshold, delta=snapshot.score_distribution_std - self.score_std_threshold, severity='warning', message=f'Score distribution std {snapshot.score_distribution_std:.3f} exceeds threshold {self.score_std_threshold:.3f}'))
+            alerts.append(
+                DriftAlert(
+                    alert_id=_new_id(),
+                    timestamp=_ts,
+                    alert_type="retrieval_drift",
+                    metric_name="score_distribution_std",
+                    current_value=snapshot.score_distribution_std,
+                    threshold_value=self.score_std_threshold,
+                    delta=snapshot.score_distribution_std - self.score_std_threshold,
+                    severity="warning",
+                    message=f"Score distribution std {snapshot.score_distribution_std:.3f} exceeds threshold {self.score_std_threshold:.3f}",
+                )
+            )
         if snapshot.top_k_stability < self.stability_threshold:
-            alerts.append(DriftAlert(alert_id=_new_id(), timestamp=_ts, alert_type='retrieval_drift', metric_name='top_k_stability', current_value=snapshot.top_k_stability, threshold_value=self.stability_threshold, delta=snapshot.top_k_stability - self.stability_threshold, severity='info', message=f'Top-k stability {snapshot.top_k_stability:.3f} below threshold {self.stability_threshold:.3f}'))
+            alerts.append(
+                DriftAlert(
+                    alert_id=_new_id(),
+                    timestamp=_ts,
+                    alert_type="retrieval_drift",
+                    metric_name="top_k_stability",
+                    current_value=snapshot.top_k_stability,
+                    threshold_value=self.stability_threshold,
+                    delta=snapshot.top_k_stability - self.stability_threshold,
+                    severity="info",
+                    message=f"Top-k stability {snapshot.top_k_stability:.3f} below threshold {self.stability_threshold:.3f}",
+                )
+            )
         return alerts
 
     def _persist(self, snapshot: RetrievalDriftSnapshot) -> None:
         try:
             from agentic_core.L4_state.storage.persistent_store import create_artifact
-            artifact = create_artifact(kind='retrieval_drift_snapshot', logical_id=f'retrieval_drift_{snapshot.timestamp[:10]}', payload=snapshot.to_dict())
+
+            artifact = create_artifact(
+                kind="retrieval_drift_snapshot",
+                logical_id=f"retrieval_drift_{snapshot.timestamp[:10]}",
+                payload=snapshot.to_dict(),
+            )
             self.l4_store.put(artifact)
         # guardian: allow-silent-swallow
         except Exception:
-            _logger.debug('RetrievalDriftMonitor._persist failed', exc_info=True)
+            _logger.debug("RetrievalDriftMonitor._persist failed", exc_info=True)
+
 
 class EmbeddingDriftMonitor:
     """Tracks vector_norm_distribution, similarity_distribution, version mismatch."""
 
     # guardian: allow-magic-config
-    def __init__(self, norm_std_threshold: float=0.15, similarity_mean_threshold: float=0.5, current_model_version: str='unknown', l4_store: Any | None=None):
+    def __init__(
+        self,
+        norm_std_threshold: float = 0.15,
+        similarity_mean_threshold: float = 0.5,
+        current_model_version: str = "unknown",
+        l4_store: Any | None = None,
+    ):
         self.norm_std_threshold = norm_std_threshold
         self.similarity_mean_threshold = similarity_mean_threshold
         self.current_model_version = current_model_version
         self.l4_store = l4_store
 
-    def measure(self, embeddings: list[list[float]], similarities: list[float], observed_model_version: str='unknown') -> EmbeddingHealthSnapshot:
+    def measure(
+        self,
+        embeddings: list[list[float]],
+        similarities: list[float],
+        observed_model_version: str = "unknown",
+    ) -> EmbeddingHealthSnapshot:
         """Compute an embedding health snapshot.
 
         Args:
@@ -123,52 +210,121 @@ class EmbeddingDriftMonitor:
             EmbeddingHealthSnapshot
         """
         if not embeddings:
-            raise ValueError('embeddings must be non-empty')
-        norms = [math.sqrt(sum((x * x for x in emb))) for emb in embeddings]
+            raise ValueError("embeddings must be non-empty")
+        norms = [math.sqrt(sum(x * x for x in emb)) for emb in embeddings]
         norm_mean = _mean(norms)
         norm_std = _std(norms)
         sim_mean = _mean(similarities)
         sim_std = _std(similarities)
         version_mismatch = observed_model_version != self.current_model_version
-        snapshot = EmbeddingHealthSnapshot(timestamp=_utcnow(), embedding_model_version=observed_model_version, vector_norm_mean=norm_mean, vector_norm_std=norm_std, similarity_distribution_mean=sim_mean, similarity_distribution_std=sim_std, version_mismatch_detected=version_mismatch, sample_size=len(embeddings))
+        snapshot = EmbeddingHealthSnapshot(
+            timestamp=_utcnow(),
+            embedding_model_version=observed_model_version,
+            vector_norm_mean=norm_mean,
+            vector_norm_std=norm_std,
+            similarity_distribution_mean=sim_mean,
+            similarity_distribution_std=sim_std,
+            version_mismatch_detected=version_mismatch,
+            sample_size=len(embeddings),
+        )
         if self.l4_store is not None:
             self._persist(snapshot)
         return snapshot
 
-    def check_alerts(self, snapshot: EmbeddingHealthSnapshot, now_iso: str | None=None, id_factory: Callable[[], str] | None=None) -> list[DriftAlert]:
+    def check_alerts(
+        self,
+        snapshot: EmbeddingHealthSnapshot,
+        now_iso: str | None = None,
+        id_factory: Callable[[], str] | None = None,
+    ) -> list[DriftAlert]:
         """Return DriftAlerts for detected embedding health issues."""
         _ts = now_iso if now_iso is not None else _utcnow()
         _new_id = id_factory if id_factory is not None else lambda: str(uuid.uuid4())
         alerts: list[DriftAlert] = []
         if snapshot.version_mismatch_detected:
-            alerts.append(DriftAlert(alert_id=_new_id(), timestamp=_ts, alert_type='embedding_drift', metric_name='embedding_model_version', current_value=0.0, threshold_value=0.0, delta=0.0, severity='critical', message=f'Embedding model version mismatch: expected {self.current_model_version!r}, got {snapshot.embedding_model_version!r}'))
+            alerts.append(
+                DriftAlert(
+                    alert_id=_new_id(),
+                    timestamp=_ts,
+                    alert_type="embedding_drift",
+                    metric_name="embedding_model_version",
+                    current_value=0.0,
+                    threshold_value=0.0,
+                    delta=0.0,
+                    severity="critical",
+                    message=f"Embedding model version mismatch: expected {self.current_model_version!r}, got {snapshot.embedding_model_version!r}",
+                )
+            )
         if snapshot.vector_norm_std > self.norm_std_threshold:
-            alerts.append(DriftAlert(alert_id=_new_id(), timestamp=_ts, alert_type='embedding_drift', metric_name='vector_norm_std', current_value=snapshot.vector_norm_std, threshold_value=self.norm_std_threshold, delta=snapshot.vector_norm_std - self.norm_std_threshold, severity='warning', message=f'Vector norm std {snapshot.vector_norm_std:.3f} exceeds threshold {self.norm_std_threshold:.3f}'))
+            alerts.append(
+                DriftAlert(
+                    alert_id=_new_id(),
+                    timestamp=_ts,
+                    alert_type="embedding_drift",
+                    metric_name="vector_norm_std",
+                    current_value=snapshot.vector_norm_std,
+                    threshold_value=self.norm_std_threshold,
+                    delta=snapshot.vector_norm_std - self.norm_std_threshold,
+                    severity="warning",
+                    message=f"Vector norm std {snapshot.vector_norm_std:.3f} exceeds threshold {self.norm_std_threshold:.3f}",
+                )
+            )
         if snapshot.similarity_distribution_mean < self.similarity_mean_threshold:
-            alerts.append(DriftAlert(alert_id=_new_id(), timestamp=_ts, alert_type='embedding_drift', metric_name='similarity_distribution_mean', current_value=snapshot.similarity_distribution_mean, threshold_value=self.similarity_mean_threshold, delta=snapshot.similarity_distribution_mean - self.similarity_mean_threshold, severity='warning', message=f'Similarity distribution mean {snapshot.similarity_distribution_mean:.3f} below threshold {self.similarity_mean_threshold:.3f}'))
+            alerts.append(
+                DriftAlert(
+                    alert_id=_new_id(),
+                    timestamp=_ts,
+                    alert_type="embedding_drift",
+                    metric_name="similarity_distribution_mean",
+                    current_value=snapshot.similarity_distribution_mean,
+                    threshold_value=self.similarity_mean_threshold,
+                    delta=snapshot.similarity_distribution_mean - self.similarity_mean_threshold,
+                    severity="warning",
+                    message=f"Similarity distribution mean {snapshot.similarity_distribution_mean:.3f} below threshold {self.similarity_mean_threshold:.3f}",
+                )
+            )
         return alerts
 
     def _persist(self, snapshot: EmbeddingHealthSnapshot) -> None:
         try:
             from agentic_core.L4_state.storage.persistent_store import create_artifact
-            artifact = create_artifact(kind='embedding_health_snapshot', logical_id=f'embedding_health_{snapshot.timestamp[:10]}', payload=snapshot.to_dict())
+
+            artifact = create_artifact(
+                kind="embedding_health_snapshot",
+                logical_id=f"embedding_health_{snapshot.timestamp[:10]}",
+                payload=snapshot.to_dict(),
+            )
             self.l4_store.put(artifact)
         # guardian: allow-silent-swallow
         except Exception:
-            _logger.debug('EmbeddingDriftMonitor._persist failed', exc_info=True)
+            _logger.debug("EmbeddingDriftMonitor._persist failed", exc_info=True)
+
 
 class AnswerQualityMonitor:
     """Tracks groundedness_rate, hallucination_rate, human_override_rate."""
 
     # guardian: allow-magic-config
-    def __init__(self, groundedness_threshold: float=0.7, hallucination_threshold: float=0.15, override_threshold: float=0.2, system_version: str='unknown', l4_store: Any | None=None):
+    def __init__(
+        self,
+        groundedness_threshold: float = 0.7,
+        hallucination_threshold: float = 0.15,
+        override_threshold: float = 0.2,
+        system_version: str = "unknown",
+        l4_store: Any | None = None,
+    ):
         self.groundedness_threshold = groundedness_threshold
         self.hallucination_threshold = hallucination_threshold
         self.override_threshold = override_threshold
         self.system_version = system_version
         self.l4_store = l4_store
 
-    def measure(self, groundedness_scores: list[float], hallucination_flags: list[bool], human_override_flags: list[bool], correctness_scores: list[float]) -> AnswerQualitySnapshot:
+    def measure(
+        self,
+        groundedness_scores: list[float],
+        hallucination_flags: list[bool],
+        human_override_flags: list[bool],
+        correctness_scores: list[float],
+    ) -> AnswerQualitySnapshot:
         """Compute an answer quality drift snapshot.
 
         Args:
@@ -182,39 +338,98 @@ class AnswerQualityMonitor:
         """
         n = len(groundedness_scores)
         if n == 0:
-            raise ValueError('groundedness_scores must be non-empty')
+            raise ValueError("groundedness_scores must be non-empty")
         groundedness_rate = _mean(groundedness_scores)
-        hallucination_rate = sum(hallucination_flags) / len(hallucination_flags) if hallucination_flags else 0.0
+        hallucination_rate = (
+            sum(hallucination_flags) / len(hallucination_flags) if hallucination_flags else 0.0
+        )
         override_rate = sum(human_override_flags) / len(human_override_flags) if human_override_flags else 0.0
         correctness_mean = _mean(correctness_scores)
-        snapshot = AnswerQualitySnapshot(timestamp=_utcnow(), system_version=self.system_version, groundedness_rate=groundedness_rate, hallucination_rate=hallucination_rate, human_override_rate=override_rate, answer_correctness_mean=correctness_mean, sample_size=n)
+        snapshot = AnswerQualitySnapshot(
+            timestamp=_utcnow(),
+            system_version=self.system_version,
+            groundedness_rate=groundedness_rate,
+            hallucination_rate=hallucination_rate,
+            human_override_rate=override_rate,
+            answer_correctness_mean=correctness_mean,
+            sample_size=n,
+        )
         if self.l4_store is not None:
             self._persist(snapshot)
         return snapshot
 
-    def check_alerts(self, snapshot: AnswerQualitySnapshot, now_iso: str | None=None, id_factory: Callable[[], str] | None=None) -> list[DriftAlert]:
+    def check_alerts(
+        self,
+        snapshot: AnswerQualitySnapshot,
+        now_iso: str | None = None,
+        id_factory: Callable[[], str] | None = None,
+    ) -> list[DriftAlert]:
         """Return DriftAlerts for answer quality degradation."""
         _ts = now_iso if now_iso is not None else _utcnow()
         _new_id = id_factory if id_factory is not None else lambda: str(uuid.uuid4())
         alerts: list[DriftAlert] = []
         if snapshot.groundedness_rate < self.groundedness_threshold:
-            alerts.append(DriftAlert(alert_id=_new_id(), timestamp=_ts, alert_type='answer_quality_drift', metric_name='groundedness_rate', current_value=snapshot.groundedness_rate, threshold_value=self.groundedness_threshold, delta=snapshot.groundedness_rate - self.groundedness_threshold, severity='warning', message=f'Groundedness rate {snapshot.groundedness_rate:.3f} below threshold {self.groundedness_threshold:.3f}'))
+            alerts.append(
+                DriftAlert(
+                    alert_id=_new_id(),
+                    timestamp=_ts,
+                    alert_type="answer_quality_drift",
+                    metric_name="groundedness_rate",
+                    current_value=snapshot.groundedness_rate,
+                    threshold_value=self.groundedness_threshold,
+                    delta=snapshot.groundedness_rate - self.groundedness_threshold,
+                    severity="warning",
+                    message=f"Groundedness rate {snapshot.groundedness_rate:.3f} below threshold {self.groundedness_threshold:.3f}",
+                )
+            )
         if snapshot.hallucination_rate > self.hallucination_threshold:
-            alerts.append(DriftAlert(alert_id=_new_id(), timestamp=_ts, alert_type='answer_quality_drift', metric_name='hallucination_rate', current_value=snapshot.hallucination_rate, threshold_value=self.hallucination_threshold, delta=snapshot.hallucination_rate - self.hallucination_threshold, severity='critical', message=f'Hallucination rate {snapshot.hallucination_rate:.3f} exceeds threshold {self.hallucination_threshold:.3f}'))
+            alerts.append(
+                DriftAlert(
+                    alert_id=_new_id(),
+                    timestamp=_ts,
+                    alert_type="answer_quality_drift",
+                    metric_name="hallucination_rate",
+                    current_value=snapshot.hallucination_rate,
+                    threshold_value=self.hallucination_threshold,
+                    delta=snapshot.hallucination_rate - self.hallucination_threshold,
+                    severity="critical",
+                    message=f"Hallucination rate {snapshot.hallucination_rate:.3f} exceeds threshold {self.hallucination_threshold:.3f}",
+                )
+            )
         if snapshot.human_override_rate > self.override_threshold:
-            alerts.append(DriftAlert(alert_id=_new_id(), timestamp=_ts, alert_type='answer_quality_drift', metric_name='human_override_rate', current_value=snapshot.human_override_rate, threshold_value=self.override_threshold, delta=snapshot.human_override_rate - self.override_threshold, severity='warning', message=f'Human override rate {snapshot.human_override_rate:.3f} exceeds threshold {self.override_threshold:.3f}'))
+            alerts.append(
+                DriftAlert(
+                    alert_id=_new_id(),
+                    timestamp=_ts,
+                    alert_type="answer_quality_drift",
+                    metric_name="human_override_rate",
+                    current_value=snapshot.human_override_rate,
+                    threshold_value=self.override_threshold,
+                    delta=snapshot.human_override_rate - self.override_threshold,
+                    severity="warning",
+                    message=f"Human override rate {snapshot.human_override_rate:.3f} exceeds threshold {self.override_threshold:.3f}",
+                )
+            )
         return alerts
 
     def _persist(self, snapshot: AnswerQualitySnapshot) -> None:
         try:
             from agentic_core.L4_state.storage.persistent_store import create_artifact
-            artifact = create_artifact(kind='answer_quality_snapshot', logical_id=f'answer_quality_{snapshot.timestamp[:10]}', payload=snapshot.to_dict())
+
+            artifact = create_artifact(
+                kind="answer_quality_snapshot",
+                logical_id=f"answer_quality_{snapshot.timestamp[:10]}",
+                payload=snapshot.to_dict(),
+            )
             self.l4_store.put(artifact)
         # guardian: allow-silent-swallow
         except Exception:
-            _logger.debug('AnswerQualityMonitor._persist failed', exc_info=True)
+            _logger.debug("AnswerQualityMonitor._persist failed", exc_info=True)
 
-def emit_alerts_to_registry(alerts: list[DriftAlert], source: str, threshold_map: dict[str, float] | None=None) -> None:
+
+def emit_alerts_to_registry(
+    alerts: list[DriftAlert], source: str, threshold_map: dict[str, float] | None = None
+) -> None:
     """P5-5B: Convert DriftAlerts to DriftRegistryEntry and record in DriftRegistry.
 
     P5-5C: For critical-severity entries, also publishes to MetaLearningBus.
@@ -232,10 +447,13 @@ def emit_alerts_to_registry(alerts: list[DriftAlert], source: str, threshold_map
     if not alerts:
         return
     try:
-        from agentic_core.L6_observability.engines.drift_registry import DriftRegistryEntry, get_drift_registry
+        from agentic_core.L6_observability.engines.drift_registry import (
+            DriftRegistryEntry,
+            get_drift_registry,
+        )
     # guardian: allow-silent-swallow
     except Exception:
-        _logger.debug('emit_alerts_to_registry: drift_registry unavailable', exc_info=True)
+        _logger.debug("emit_alerts_to_registry: drift_registry unavailable", exc_info=True)
         return
     registry = get_drift_registry()
     for alert in alerts:
@@ -243,22 +461,69 @@ def emit_alerts_to_registry(alerts: list[DriftAlert], source: str, threshold_map
         try:
             import hashlib
             import json as _json
-            digest_payload = _json.dumps({'source': source, 'metric': alert.metric_name, 'value': alert.current_value, 'threshold': threshold, 'timestamp': alert.timestamp}, sort_keys=True, separators=(',', ':'))
+
+            digest_payload = _json.dumps(
+                {
+                    "source": source,
+                    "metric": alert.metric_name,
+                    "value": alert.current_value,
+                    "threshold": threshold,
+                    "timestamp": alert.timestamp,
+                },
+                sort_keys=True,
+                separators=(",", ":"),
+            )
             deterministic_digest = hashlib.sha256(digest_payload.encode()).hexdigest()
-            entry = DriftRegistryEntry(source=source, timestamp_iso=alert.timestamp, metric_name=alert.metric_name, current_value=alert.current_value, threshold_value=threshold, drift_flag=True, severity=alert.severity, deterministic_digest=deterministic_digest)
+            entry = DriftRegistryEntry(
+                source=source,
+                timestamp_iso=alert.timestamp,
+                metric_name=alert.metric_name,
+                current_value=alert.current_value,
+                threshold_value=threshold,
+                drift_flag=True,
+                severity=alert.severity,
+                deterministic_digest=deterministic_digest,
+            )
             registry.record(entry)
         # guardian: allow-silent-swallow
         except Exception:
-            _logger.debug('emit_alerts_to_registry: failed to record entry for %s', alert.metric_name, exc_info=True)
+            _logger.debug(
+                "emit_alerts_to_registry: failed to record entry for %s", alert.metric_name, exc_info=True
+            )
             continue
-        if alert.severity == 'critical':
+        if alert.severity == "critical":
             try:
                 from system_learning.ports.meta_learning_bus import MetaLearningBus
                 from system_learning.ports.meta_learning_change_package import MetaLearningChangePackage
+
                 bus = MetaLearningBus.get_instance()
-                pkg = MetaLearningChangePackage.create(kind='drift_alert', payload={'source': source, 'metric_name': alert.metric_name, 'current_value': alert.current_value, 'threshold_value': threshold, 'severity': alert.severity, 'alert_id': alert.alert_id, 'timestamp': alert.timestamp, 'digest': deterministic_digest}, proposal_only=True)
+                pkg = MetaLearningChangePackage.create(
+                    kind="drift_alert",
+                    payload={
+                        "source": source,
+                        "metric_name": alert.metric_name,
+                        "current_value": alert.current_value,
+                        "threshold_value": threshold,
+                        "severity": alert.severity,
+                        "alert_id": alert.alert_id,
+                        "timestamp": alert.timestamp,
+                        "digest": deterministic_digest,
+                    },
+                    proposal_only=True,
+                )
                 bus.enqueue(pkg)
             # guardian: allow-silent-swallow
             except Exception:
-                _logger.debug('emit_alerts_to_registry: MetaLearningBus publish failed for critical alert %s', alert.alert_id, exc_info=True)
-__all__ = ['RetrievalDriftMonitor', 'EmbeddingDriftMonitor', 'AnswerQualityMonitor', 'emit_alerts_to_registry']
+                _logger.debug(
+                    "emit_alerts_to_registry: MetaLearningBus publish failed for critical alert %s",
+                    alert.alert_id,
+                    exc_info=True,
+                )
+
+
+__all__ = [
+    "RetrievalDriftMonitor",
+    "EmbeddingDriftMonitor",
+    "AnswerQualityMonitor",
+    "emit_alerts_to_registry",
+]

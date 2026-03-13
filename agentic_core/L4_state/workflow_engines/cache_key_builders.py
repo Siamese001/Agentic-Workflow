@@ -7,8 +7,9 @@ enforce the non-authoritative cache contract:
   - All ``*_hash`` parameters are SHA-256 hexdigests (64 lowercase hex chars).
   - Keys are stable: identical inputs always produce identical keys.
 """
+
 from __future__ import annotations
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 def _require_safe_segment(name: str, value: str) -> None:
     """Raise ``ValueError`` if *value* contains characters illegal in a key segment.
@@ -22,10 +23,13 @@ def _require_safe_segment(name: str, value: str) -> None:
     Hash-typed segments (64-hex strings) are never affected — SHA-256
     hexdigests contain only ``[0-9a-f]``.
     """
-    if ':' in value:
-        raise ValueError(f"Key segment {name!r} contains illegal ':' character: {value!r}. Use a slug, version tag, or hex digest instead.")
+    if ":" in value:
+        raise ValueError(
+            f"Key segment {name!r} contains illegal ':' character: {value!r}. Use a slug, version tag, or hex digest instead."
+        )
     if not value:
-        raise ValueError(f'Key segment {name!r} must not be empty')
+        raise ValueError(f"Key segment {name!r} must not be empty")
+
 
 def _require_hash_segment(name: str, value: str) -> None:
     """Raise ``ValueError`` if *value* is not a valid SHA-256 hexdigest.
@@ -36,13 +40,18 @@ def _require_hash_segment(name: str, value: str) -> None:
     check only (useful for tests that use short placeholder hashes).
     """
     import os
+
     if not value:
-        raise ValueError(f'Hash segment {name!r} must not be empty')
-    strict = os.environ.get('REDIS_CACHE_STRICT_HASH_VALIDATION', '1') != '0'
+        raise ValueError(f"Hash segment {name!r} must not be empty")
+    strict = os.environ.get("REDIS_CACHE_STRICT_HASH_VALIDATION", "1") != "0"
     if strict:
         import re
-        if not re.fullmatch('[0-9a-f]{64}', value):
-            raise ValueError(f'Hash segment {name!r} must be a 64-char lowercase SHA-256 hexdigest, got {value!r}. Set REDIS_CACHE_STRICT_HASH_VALIDATION=0 to disable this check in tests.')
+
+        if not re.fullmatch("[0-9a-f]{64}", value):
+            raise ValueError(
+                f"Hash segment {name!r} must be a 64-char lowercase SHA-256 hexdigest, got {value!r}. Set REDIS_CACHE_STRICT_HASH_VALIDATION=0 to disable this check in tests."
+            )
+
 
 def build_routing_rule_surface_key(routing_state_hash: str) -> str:
     """Key for the active rule-surface snapshot (read-only L4 mirror).
@@ -52,8 +61,9 @@ def build_routing_rule_surface_key(routing_state_hash: str) -> str:
 
     Invalidated when the routing ruleset changes (new ``routing_state_hash``).
     """
-    _require_hash_segment('routing_state_hash', routing_state_hash)
-    return f'routing_rules:{routing_state_hash}'
+    _require_hash_segment("routing_state_hash", routing_state_hash)
+    return f"routing_rules:{routing_state_hash}"
+
 
 def build_route_decision_key(intent_hash: str, policy_hash: str, routing_state_hash: str) -> str:
     """Key for a memoised ``RouteDecisionArtifact``.
@@ -64,10 +74,11 @@ def build_route_decision_key(intent_hash: str, policy_hash: str, routing_state_h
     All three segments are required so a stale decision is never served
     when any input surface changes.
     """
-    _require_hash_segment('intent_hash', intent_hash)
-    _require_hash_segment('policy_hash', policy_hash)
-    _require_hash_segment('routing_state_hash', routing_state_hash)
-    return f'route_decision:{intent_hash}:{policy_hash}:{routing_state_hash}'
+    _require_hash_segment("intent_hash", intent_hash)
+    _require_hash_segment("policy_hash", policy_hash)
+    _require_hash_segment("routing_state_hash", routing_state_hash)
+    return f"route_decision:{intent_hash}:{policy_hash}:{routing_state_hash}"
+
 
 def build_cap_registry_key(cap_registry_hash: str) -> str:
     """Key for the capability-registry / tool-inventory mirror.
@@ -77,10 +88,13 @@ def build_cap_registry_key(cap_registry_hash: str) -> str:
 
     Value holds allowlists, tool availability, and rate-limit envelopes.
     """
-    _require_hash_segment('cap_registry_hash', cap_registry_hash)
-    return f'cap_registry:{cap_registry_hash}'
+    _require_hash_segment("cap_registry_hash", cap_registry_hash)
+    return f"cap_registry:{cap_registry_hash}"
 
-def build_compiled_prompt_key(prompt_bom_hash: str, s0_hash: str, i0_hash: str, d0_hash: str, c0_hash: str) -> str:
+
+def build_compiled_prompt_key(
+    prompt_bom_hash: str, s0_hash: str, i0_hash: str, d0_hash: str, c0_hash: str
+) -> str:
     """Key for a ``CompiledPromptArtifact`` (final assembled strings + token
     estimate + allowed tool schema + signature).
 
@@ -94,13 +108,14 @@ def build_compiled_prompt_key(prompt_bom_hash: str, s0_hash: str, i0_hash: str, 
         d0_hash           — document / retrieval context hash
         c0_hash           — constraint / policy hash
     """
-    _require_hash_segment('prompt_bom_hash', prompt_bom_hash)
-    _require_hash_segment('s0_hash', s0_hash)
-    _require_hash_segment('i0_hash', i0_hash)
-    _require_hash_segment('d0_hash', d0_hash)
-    _require_hash_segment('c0_hash', c0_hash)
+    _require_hash_segment("prompt_bom_hash", prompt_bom_hash)
+    _require_hash_segment("s0_hash", s0_hash)
+    _require_hash_segment("i0_hash", i0_hash)
+    _require_hash_segment("d0_hash", d0_hash)
+    _require_hash_segment("c0_hash", c0_hash)
     # guardian: allow-direct-prompt-compilation
-    return f'compiled_prompt:{prompt_bom_hash}:{s0_hash}:{i0_hash}:{d0_hash}:{c0_hash}'
+    return f"compiled_prompt:{prompt_bom_hash}:{s0_hash}:{i0_hash}:{d0_hash}:{c0_hash}"
+
 
 def build_template_render_key(template_id: str, template_version: str, args_hash: str) -> str:
     """Key for a rendered template string (L4 registry mirror).
@@ -112,11 +127,12 @@ def build_template_render_key(template_id: str, template_version: str, args_hash
     identifiers from the L4 template registry (not user-supplied free text).
     ``args_hash`` is the SHA-256 of the canonical-JSON of the render args.
     """
-    _require_safe_segment('template_id', template_id)
-    _require_safe_segment('template_version', template_version)
-    _require_hash_segment('args_hash', args_hash)
+    _require_safe_segment("template_id", template_id)
+    _require_safe_segment("template_version", template_version)
+    _require_hash_segment("args_hash", args_hash)
     # guardian: allow-direct-prompt-compilation
-    return f'template_render:{template_id}:{template_version}:{args_hash}'
+    return f"template_render:{template_id}:{template_version}:{args_hash}"
+
 
 def build_safety_eval_key(compiled_prompt_hash: str, policy_hash: str, toolset_hash: str) -> str:
     """Key for a memoised safety-evaluation result.
@@ -128,10 +144,11 @@ def build_safety_eval_key(compiled_prompt_hash: str, policy_hash: str, toolset_h
     remediation hints.  L5 remains the certifier; this entry caches the
     result only for identical inputs.
     """
-    _require_hash_segment('compiled_prompt_hash', compiled_prompt_hash)
-    _require_hash_segment('policy_hash', policy_hash)
-    _require_hash_segment('toolset_hash', toolset_hash)
-    return f'safety_eval:{compiled_prompt_hash}:{policy_hash}:{toolset_hash}'
+    _require_hash_segment("compiled_prompt_hash", compiled_prompt_hash)
+    _require_hash_segment("policy_hash", policy_hash)
+    _require_hash_segment("toolset_hash", toolset_hash)
+    return f"safety_eval:{compiled_prompt_hash}:{policy_hash}:{toolset_hash}"
+
 
 def build_orch_plan_key(trace_id: str, plan_hash: str, tool_budget_hash: str) -> str:
     """Key for a resolved orchestration plan (step DAG + deduped tool calls
@@ -144,10 +161,11 @@ def build_orch_plan_key(trace_id: str, plan_hash: str, tool_budget_hash: str) ->
     plans from different traces never collide even when ``plan_hash`` is
     identical.
     """
-    _require_safe_segment('trace_id', trace_id)
-    _require_hash_segment('plan_hash', plan_hash)
-    _require_hash_segment('tool_budget_hash', tool_budget_hash)
-    return f'orch_plan:{trace_id}:{plan_hash}:{tool_budget_hash}'
+    _require_safe_segment("trace_id", trace_id)
+    _require_hash_segment("plan_hash", plan_hash)
+    _require_hash_segment("tool_budget_hash", tool_budget_hash)
+    return f"orch_plan:{trace_id}:{plan_hash}:{tool_budget_hash}"
+
 
 def build_lease_key(plan_hash: str) -> str:
     """Key for a cross-process execution lease (DB 1, short TTL).
@@ -157,8 +175,9 @@ def build_lease_key(plan_hash: str) -> str:
 
     Value holds ``holder_id``, ``nonce``, and ``semantic_clock_tick``.
     """
-    _require_hash_segment('plan_hash', plan_hash)
-    return f'lease:{plan_hash}'
+    _require_hash_segment("plan_hash", plan_hash)
+    return f"lease:{plan_hash}"
+
 
 def build_tool_result_key(tool_call_hash: str) -> str:
     """Key for an idempotency record — the exact bytes returned by a tool
@@ -170,10 +189,13 @@ def build_tool_result_key(tool_call_hash: str) -> str:
     Only populated when ``replay_mode=False`` and the tool call is
     strictly input-hashed.  Must be disabled / bypassed in replay mode.
     """
-    _require_hash_segment('tool_call_hash', tool_call_hash)
-    return f'tool_result:{tool_call_hash}'
+    _require_hash_segment("tool_call_hash", tool_call_hash)
+    return f"tool_result:{tool_call_hash}"
 
-def build_rag_topk_key(u0_hash: str, embedder_version: str, seed_pack_manifest_hash: str, k: int, cutoff: float) -> str:
+
+def build_rag_topk_key(
+    u0_hash: str, embedder_version: str, seed_pack_manifest_hash: str, k: int, cutoff: float
+) -> str:
     """Key for a top-k retrieval result set (C0 informational payload only).
 
     Schema::
@@ -185,9 +207,9 @@ def build_rag_topk_key(u0_hash: str, embedder_version: str, seed_pack_manifest_h
     This entry is strictly informational — it MUST NOT influence
     routing/safety/tier decisions.
     """
-    _require_hash_segment('u0_hash', u0_hash)
-    _require_safe_segment('embedder_version', embedder_version)
-    _require_hash_segment('seed_pack_manifest_hash', seed_pack_manifest_hash)
-    cutoff_r6 = f'{cutoff:.6f}'
+    _require_hash_segment("u0_hash", u0_hash)
+    _require_safe_segment("embedder_version", embedder_version)
+    _require_hash_segment("seed_pack_manifest_hash", seed_pack_manifest_hash)
+    cutoff_r6 = f"{cutoff:.6f}"
     # guardian: allow-direct-prompt-compilation
-    return f'rag_topk:{u0_hash}:{embedder_version}:{seed_pack_manifest_hash}:{k}:{cutoff_r6}'
+    return f"rag_topk:{u0_hash}:{embedder_version}:{seed_pack_manifest_hash}:{k}:{cutoff_r6}"

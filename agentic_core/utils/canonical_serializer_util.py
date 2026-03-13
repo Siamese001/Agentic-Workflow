@@ -13,11 +13,14 @@ Normalization rules:
   5. UTF-8 byte encoding only
   6. Compact separators (",", ":") — no whitespace variance
 """
+
 from __future__ import annotations
+
 import json
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 _FLOAT_PRECISION = 6
+
 
 def _normalize(obj: Any) -> Any:
     """Recursively normalize a Python object for canonical JSON.
@@ -43,6 +46,7 @@ def _normalize(obj: Any) -> Any:
         return None
     return str(obj)
 
+
 def canonical_bytes(obj: Any) -> bytes:
     """Produce deterministic canonical bytes for hash computation.
 
@@ -51,9 +55,11 @@ def canonical_bytes(obj: Any) -> bytes:
     separators, and all normalizations applied.
     """
     normalized = _normalize(obj)
-    return json.dumps(normalized, sort_keys=True, separators=(',', ':'), ensure_ascii=True).encode('utf-8')
+    return json.dumps(normalized, sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode("utf-8")
+
 
 def canonical_hash(obj: Any) -> str:
     """Convenience: canonical_bytes → sha256 hex digest."""
     import hashlib
+
     return hashlib.sha256(canonical_bytes(obj)).hexdigest()

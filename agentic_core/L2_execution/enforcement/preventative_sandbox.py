@@ -14,15 +14,18 @@ Write-vector taxonomy:
 Invariant: No write-capable function may remain unpatched
 during replay mode.
 """
+
 from __future__ import annotations
+
 import builtins
 import contextlib
 import logging
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 Logger = logging.getLogger(__name__)
+
 
 class SandboxViolationError(RuntimeError):
     """Raised when a write-capable function is called in sandbox."""
@@ -31,20 +34,41 @@ class SandboxViolationError(RuntimeError):
         self.function_name = function_name
         super().__init__(f"SandboxViolationError: '{function_name}' is blocked during replay mode.")
 
+
 @dataclass
 class _PatchTarget:
     """Describes one function to patch."""
+
     module_path: str
     attr_name: str
     category: str
-_WRITE_VECTORS: list[_PatchTarget] = [_PatchTarget('builtins', 'open', 'filesystem'), _PatchTarget('os', 'remove', 'filesystem'), _PatchTarget('os', 'rename', 'filesystem'), _PatchTarget('os', 'unlink', 'filesystem'), _PatchTarget('os', 'makedirs', 'filesystem'), _PatchTarget('subprocess', 'run', 'process'), _PatchTarget('subprocess', 'Popen', 'process'), _PatchTarget('subprocess', 'call', 'process'), _PatchTarget('subprocess', 'check_call', 'process'), _PatchTarget('subprocess', 'check_output', 'process'), _PatchTarget('os', 'system', 'process'), _PatchTarget('os', 'popen', 'process'), _PatchTarget('socket', 'socket', 'network')]
+
+
+_WRITE_VECTORS: list[_PatchTarget] = [
+    _PatchTarget("builtins", "open", "filesystem"),
+    _PatchTarget("os", "remove", "filesystem"),
+    _PatchTarget("os", "rename", "filesystem"),
+    _PatchTarget("os", "unlink", "filesystem"),
+    _PatchTarget("os", "makedirs", "filesystem"),
+    _PatchTarget("subprocess", "run", "process"),
+    _PatchTarget("subprocess", "Popen", "process"),
+    _PatchTarget("subprocess", "call", "process"),
+    _PatchTarget("subprocess", "check_call", "process"),
+    _PatchTarget("subprocess", "check_output", "process"),
+    _PatchTarget("os", "system", "process"),
+    _PatchTarget("os", "popen", "process"),
+    _PatchTarget("socket", "socket", "network"),
+]
+
 
 def _resolve_module(module_path: str) -> Any:
     """Import and return the module object."""
     import importlib
-    if module_path == 'builtins':
+
+    if module_path == "builtins":
         return builtins
     return importlib.import_module(module_path)
+
 
 @dataclass
 class PreventativeSandbox:
@@ -60,6 +84,7 @@ class PreventativeSandbox:
 
     Must live in L2 — not in agent constructors, L6, or global.
     """
+
     _originals: dict[str, Any] = field(default_factory=dict, repr=False)
     _active: bool = field(default=False, repr=False)
     _extra_targets: list[_PatchTarget] = field(default_factory=list)
@@ -77,38 +102,39 @@ class PreventativeSandbox:
 
     def _make_guard(self, target: _PatchTarget) -> Callable[..., Any]:
         """Create a guard function that raises on call."""
-        fqn = f'{target.module_path}.{target.attr_name}'
+        fqn = f"{target.module_path}.{target.attr_name}"
 
         def _guard(*args: Any, **kwargs: Any) -> Any:
             raise SandboxViolationError(fqn)
-        _guard.__qualname__ = f'sandbox_guard<{fqn}>'
+
+        _guard.__qualname__ = f"sandbox_guard<{fqn}>"
         return _guard
 
     def _patch_all(self) -> None:
         """Replace all write vectors with guards."""
         for target in self._all_targets():
-            key = f'{target.module_path}.{target.attr_name}'
+            key = f"{target.module_path}.{target.attr_name}"
             try:
                 mod = _resolve_module(target.module_path)
                 original = getattr(mod, target.attr_name, None)
                 if original is None:
-                    Logger.debug(f'[sandbox] skip {key}: not found')
+                    Logger.debug(f"[sandbox] skip {key}: not found")
                     continue
                 if key in self._originals:
-                    Logger.debug(f'[sandbox] skip {key}: already patched')
+                    Logger.debug(f"[sandbox] skip {key}: already patched")
                     continue
                 self._originals[key] = (mod, original)
                 setattr(mod, target.attr_name, self._make_guard(target))
-                Logger.debug(f'[sandbox] patched {key}')
+                Logger.debug(f"[sandbox] patched {key}")
             except ImportError:
-                Logger.debug(f'[sandbox] skip {key}: module not available')
+                Logger.debug(f"[sandbox] skip {key}: module not available")
 
     def _restore_all(self) -> None:
         """Restore all original functions."""
         for key, (mod, original) in self._originals.items():
-            parts = key.rsplit('.', 1)
+            parts = key.rsplit(".", 1)
             setattr(mod, parts[1], original)
-            Logger.debug(f'[sandbox] restored {key}')
+            Logger.debug(f"[sandbox] restored {key}")
         self._originals.clear()
 
     @contextlib.contextmanager
@@ -118,7 +144,7 @@ class PreventativeSandbox:
         Guarantees restoration even on exception.
         """
         if self._active:
-            raise RuntimeError('PreventativeSandbox is already active (double-activation prevented)')
+            raise RuntimeError("PreventativeSandbox is already active (double-activation prevented)")
         self._active = True
         self._patch_all()
         try:

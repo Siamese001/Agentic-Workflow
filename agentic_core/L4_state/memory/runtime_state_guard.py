@@ -2,14 +2,16 @@ import json
 import os
 from pathlib import Path
 from typing import Any
+
+from agentic_core.interfaces.write_gateway import get_write_gateway
 from agentic_core.L0_routing.config import RUNTIME_STATE_JSON
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
-from agentic_core.interfaces.write_gateway import get_write_gateway
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 def _get_write_gateway():
     """Get UWG instance - L4 may only use, not import tools."""
     return get_write_gateway()
+
 
 class RuntimeStateGuard:
     """
@@ -19,7 +21,7 @@ class RuntimeStateGuard:
 
     def __init__(self, project_root: Path):
         self.state_path = project_root / RUNTIME_STATE_JSON
-        self.backup_path = project_root / f'{RUNTIME_STATE_JSON}.bak'
+        self.backup_path = project_root / f"{RUNTIME_STATE_JSON}.bak"
         self._state_cache: dict[str, Any] = {}
         self._batch_depth = 0
         self._dirty = False
@@ -46,27 +48,27 @@ class RuntimeStateGuard:
             with open(self.state_path) as f:
                 self._state_cache = json.load(f)
         except json.JSONDecodeError:
-            print(f'[StateGuard] CORRUPTION DETECTED in {self.state_path}. Attempting restore...')
+            print(f"[StateGuard] CORRUPTION DETECTED in {self.state_path}. Attempting restore...")
             if self.backup_path.exists():
                 _get_write_gateway().copy_file(self.backup_path, self.state_path)
                 with open(self.state_path) as f:
                     self._state_cache = json.load(f)
             else:
-                print('[StateGuard] No backup found. Resetting state.')
+                print("[StateGuard] No backup found. Resetting state.")
                 self._state_cache = {}
 
-    def get_metric(self, key: str, default: Any=0) -> Any:
-        return self._state_cache.get('shared_alignment_metrics', {}).get(key, default)
+    def get_metric(self, key: str, default: Any = 0) -> Any:
+        return self._state_cache.get("shared_alignment_metrics", {}).get(key, default)
 
-    def increment_metric(self, key: str, value: int=1):
+    def increment_metric(self, key: str, value: int = 1):
         """
         Updates metric.
         Persists immediately UNLESS inside a batch context.
         """
-        metrics = self._state_cache.get('shared_alignment_metrics', {})
+        metrics = self._state_cache.get("shared_alignment_metrics", {})
         current = metrics.get(key, 0)
         metrics[key] = current + value
-        self._state_cache['shared_alignment_metrics'] = metrics
+        self._state_cache["shared_alignment_metrics"] = metrics
         if self._batch_depth > 0:
             self._dirty = True
         else:
@@ -77,16 +79,16 @@ class RuntimeStateGuard:
         Writes to a temp file then renames to ensure atomicity.
         Prevents half-written files during crashes.
         """
-        temp_path = self.state_path.with_suffix('.tmp')
+        temp_path = self.state_path.with_suffix(".tmp")
         try:
-            assert_no_persistent_write('L4', 'json.dump')
+            assert_no_persistent_write("L4", "json.dump")
             _get_write_gateway().write_json(temp_path, self._state_cache, indent=4)
             if self.state_path.exists():
                 _get_write_gateway().copy_file(self.state_path, self.backup_path)
             os.replace(temp_path, self.state_path)
         # guardian: allow-silent-swallow
         except Exception as e:
-            print(f'[StateGuard] PERSISTENCE FAILURE: {e}')
+            print(f"[StateGuard] PERSISTENCE FAILURE: {e}")
             if temp_path.exists():
-                assert_no_persistent_write('L4', 'os.mutate')
+                assert_no_persistent_write("L4", "os.mutate")
                 _get_write_gateway().remove_file(temp_path)

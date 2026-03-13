@@ -3,33 +3,40 @@ LIC Vector Memory Store - ChromaDB-based vector store for research.
 
 Ported from: archives/legacy_lic/Agentic LIC/memory_LIC.py
 """
+
 import hashlib
 from dataclasses import dataclass
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 @dataclass
 class VectorDocument:
     """Document stored in vector memory."""
+
     id: str
     text: str
     metadata: dict[str, object]
     embedding: list[float] | None = None
     distance: float | None = None
 
+
 @dataclass
 class QueryResult:
     """Result from a vector memory query."""
+
     documents: list[VectorDocument]
     total_count: int
     query_text: str
     query_time_ms: float = 0.0
 
+
 @dataclass
 class MemoryStats:
     """Statistics about the vector memory store."""
+
     collection_name: str
     document_count: int
     persist_directory: str
+
 
 class LICVectorMemory:
     """
@@ -41,7 +48,9 @@ class LICVectorMemory:
     - HOP-2 ResearchAgent: Queries for relevant context
     """
 
-    def __init__(self, collection_name: str='lic_intelligence', persist_directory: str='./chroma_db') -> None:
+    def __init__(
+        self, collection_name: str = "lic_intelligence", persist_directory: str = "./chroma_db"
+    ) -> None:
         """
         Initialize vector memory store.
 
@@ -64,8 +73,14 @@ class LICVectorMemory:
         """
         try:
             import chromadb
-            self._client = chromadb.PersistentClient(path=self.persist_directory, settings=Settings(anonymized_telemetry=False, allow_reset=True))
-            self._collection = self._client.get_or_create_collection(name=self.collection_name, metadata={'description': 'LIC Intelligence Provider - Pre-computed research'})
+
+            self._client = chromadb.PersistentClient(
+                path=self.persist_directory, settings=Settings(anonymized_telemetry=False, allow_reset=True)
+            )
+            self._collection = self._client.get_or_create_collection(
+                name=self.collection_name,
+                metadata={"description": "LIC Intelligence Provider - Pre-computed research"},
+            )
             self._initialized = True
             return True
         except ImportError:
@@ -79,19 +94,29 @@ class LICVectorMemory:
         """Check if the memory store is initialized."""
         return self._initialized
 
-    def add_document(self, text: str, metadata: dict[str, object], embedding: list[float] | None=None, document_id: str | None=None) -> str:
+    def add_document(
+        self,
+        text: str,
+        metadata: dict[str, object],
+        embedding: list[float] | None = None,
+        document_id: str | None = None,
+    ) -> str:
         """Module implementation."""
         if document_id is None:
             id_string = f"{metadata.get('source_url', '')}_{metadata.get('extracted_at', '')}"
             document_id = hashlib.md5(id_string.encode()).hexdigest()
         if self._initialized and self._collection is not None:
             if embedding is not None:
-                self._collection.add(embeddings=[embedding], documents=[text], metadatas=[metadata], ids=[document_id])
+                self._collection.add(
+                    embeddings=[embedding], documents=[text], metadatas=[metadata], ids=[document_id]
+                )
             else:
                 self._collection.add(documents=[text], metadatas=[metadata], ids=[document_id])
         return document_id
 
-    def query_memory(self, query_text: str, n_results: int=20, filter_metadata: dict[str, object] | None=None) -> QueryResult:
+    def query_memory(
+        self, query_text: str, n_results: int = 20, filter_metadata: dict[str, object] | None = None
+    ) -> QueryResult:
         """
         Query the vector store for relevant documents.
 
@@ -104,36 +129,63 @@ class LICVectorMemory:
             QueryResult with matching documents
         """
         import time
+
         start_time = time.time()
         documents: list[VectorDocument] = []
         if self._initialized and self._collection is not None:
-            results = self._collection.query(query_texts=[query_text], n_results=n_results, where=filter_metadata if filter_metadata else None)
-            if results['ids'] and results['ids'][0]:
-                for i in range(len(results['ids'][0])):
-                    doc = VectorDocument(id=results['ids'][0][i], text=results['documents'][0][i], metadata=results['metadatas'][0][i], distance=results['distances'][0][i] if 'distances' in results else None)
+            results = self._collection.query(
+                query_texts=[query_text],
+                n_results=n_results,
+                where=filter_metadata if filter_metadata else None,
+            )
+            if results["ids"] and results["ids"][0]:
+                for i in range(len(results["ids"][0])):
+                    doc = VectorDocument(
+                        id=results["ids"][0][i],
+                        text=results["documents"][0][i],
+                        metadata=results["metadatas"][0][i],
+                        distance=results["distances"][0][i] if "distances" in results else None,
+                    )
                     documents.append(doc)
         query_time_ms = (time.time() - start_time) * 1000
-        return QueryResult(documents=documents, total_count=len(documents), query_text=query_text, query_time_ms=query_time_ms)
+        return QueryResult(
+            documents=documents,
+            total_count=len(documents),
+            query_text=query_text,
+            query_time_ms=query_time_ms,
+        )
 
-    def query_by_company(self, company_name: str, query_text: str, n_results: int=20) -> QueryResult:
+    def query_by_company(self, company_name: str, query_text: str, n_results: int = 20) -> QueryResult:
         """Query documents filtered by company name."""
-        return self.query_memory(query_text=query_text, n_results=n_results, filter_metadata={'company_name': company_name})
+        return self.query_memory(
+            query_text=query_text, n_results=n_results, filter_metadata={"company_name": company_name}
+        )
 
-    def query_by_executive(self, executive_name: str, query_text: str, n_results: int=10) -> QueryResult:
+    def query_by_executive(self, executive_name: str, query_text: str, n_results: int = 10) -> QueryResult:
         """Query documents filtered by executive name."""
-        return self.query_memory(query_text=query_text, n_results=n_results, filter_metadata={'executive_name': executive_name})
+        return self.query_memory(
+            query_text=query_text, n_results=n_results, filter_metadata={"executive_name": executive_name}
+        )
 
     # guardian: allow-magic-config
-    def get_strategic_briefs(self, company_name: str, max_age_days: int=90) -> QueryResult:
+    def get_strategic_briefs(self, company_name: str, max_age_days: int = 90) -> QueryResult:
         """Get strategic briefs for a company."""
-        return self.query_memory(query_text=f'strategic brief {company_name}', n_results=5, filter_metadata={'company_name': company_name, 'SourceType': 'STRATEGIC_BRIEF'})
+        return self.query_memory(
+            query_text=f"strategic brief {company_name}",
+            n_results=5,
+            filter_metadata={"company_name": company_name, "SourceType": "STRATEGIC_BRIEF"},
+        )
 
     def get_stats(self) -> MemoryStats:
         """Get statistics about the memory store."""
         doc_count = 0
         if self._initialized and self._collection is not None:
             doc_count = self._collection.count()
-        return MemoryStats(collection_name=self.collection_name, document_count=doc_count, persist_directory=self.persist_directory)
+        return MemoryStats(
+            collection_name=self.collection_name,
+            document_count=doc_count,
+            persist_directory=self.persist_directory,
+        )
 
     def delete_document(self, document_id: str) -> bool:
         """Delete a document by ID."""
@@ -150,16 +202,22 @@ class LICVectorMemory:
         if self._initialized and self._client is not None:
             try:
                 self._client.delete_collection(self.collection_name)
-                self._collection = self._client.get_or_create_collection(name=self.collection_name, metadata={'description': 'LIC Intelligence Provider - Pre-computed research'})
+                self._collection = self._client.get_or_create_collection(
+                    name=self.collection_name,
+                    metadata={"description": "LIC Intelligence Provider - Pre-computed research"},
+                )
                 return True
             except (ValueError, TypeError, RuntimeError, KeyError):
                 return False
         return False
 
+
 class MockVectorMemory(LICVectorMemory):
     """Mock implementation for testing without ChromaDB."""
 
-    def __init__(self, collection_name: str='lic_intelligence', persist_directory: str='./chroma_db') -> None:
+    def __init__(
+        self, collection_name: str = "lic_intelligence", persist_directory: str = "./chroma_db"
+    ) -> None:
         """Initialize mock vector memory."""
         super().__init__(collection_name, persist_directory)
         self._documents: dict[str, VectorDocument] = {}
@@ -170,17 +228,28 @@ class MockVectorMemory(LICVectorMemory):
         self._initialized = True
         return True
 
-    def add_document(self, text: str, metadata: dict[str, object], embedding: list[float] | None=None, document_id: str | None=None) -> str:
+    def add_document(
+        self,
+        text: str,
+        metadata: dict[str, object],
+        embedding: list[float] | None = None,
+        document_id: str | None = None,
+    ) -> str:
         """Add document to mock store."""
         if document_id is None:
             id_string = f"{metadata.get('source_url', '')}_{metadata.get('extracted_at', '')}"
             document_id = hashlib.md5(id_string.encode()).hexdigest()
-        self._documents[document_id] = VectorDocument(id=document_id, text=text, metadata=metadata, embedding=embedding)
+        self._documents[document_id] = VectorDocument(
+            id=document_id, text=text, metadata=metadata, embedding=embedding
+        )
         return document_id
 
-    def query_memory(self, query_text: str, n_results: int=20, filter_metadata: dict[str, object] | None=None) -> QueryResult:
+    def query_memory(
+        self, query_text: str, n_results: int = 20, filter_metadata: dict[str, object] | None = None
+    ) -> QueryResult:
         """Query mock store with simple text matching."""
         import time
+
         start_time = time.time()
         results: list[VectorDocument] = []
         query_lower = query_text.lower()
@@ -194,11 +263,17 @@ class MockVectorMemory(LICVectorMemory):
             if len(results) >= n_results:
                 break
         query_time_ms = (time.time() - start_time) * 1000
-        return QueryResult(documents=results, total_count=len(results), query_text=query_text, query_time_ms=query_time_ms)
+        return QueryResult(
+            documents=results, total_count=len(results), query_text=query_text, query_time_ms=query_time_ms
+        )
 
     def get_stats(self) -> MemoryStats:
         """Get mock store statistics."""
-        return MemoryStats(collection_name=self.collection_name, document_count=len(self._documents), persist_directory=self.persist_directory)
+        return MemoryStats(
+            collection_name=self.collection_name,
+            document_count=len(self._documents),
+            persist_directory=self.persist_directory,
+        )
 
     def delete_document(self, document_id: str) -> bool:
         """Delete from mock store."""
@@ -212,7 +287,10 @@ class MockVectorMemory(LICVectorMemory):
         self._documents.clear()
         return True
 
-def create_vector_memory(collection_name: str='lic_intelligence', persist_directory: str='./chroma_db', use_mock: bool=False) -> LICVectorMemory:
+
+def create_vector_memory(
+    collection_name: str = "lic_intelligence", persist_directory: str = "./chroma_db", use_mock: bool = False
+) -> LICVectorMemory:
     """
     builder function to create a vector memory store.
 

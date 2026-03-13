@@ -8,10 +8,13 @@ Invariants:
   - Same inputs => same snapshot_id (bitwise identical)
   - No wall-clock time, no randomness
 """
+
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 from agentic_core.interfaces.determinism_types import SemanticClockSnapshot
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 @dataclass(frozen=True, slots=True)
 class MetaLearningSnapshot:
@@ -44,6 +47,7 @@ class MetaLearningSnapshot:
     semantic_clock : SemanticClockSnapshot
         Immutable clock reference (no wall-clock time).
     """
+
     snapshot_id: str
     engine_version: str
     config_surface_version: str
@@ -57,4 +61,15 @@ class MetaLearningSnapshot:
 
     def to_dict(self) -> dict[str, object]:
         """Deterministic serialization (keys sorted alphabetically)."""
-        return {'audit_window_end_utc': self.audit_window_end_utc, 'audit_window_start_utc': self.audit_window_start_utc, 'config_surface_version': self.config_surface_version, 'engine_version': self.engine_version, 'model_config_hash': self.model_config_hash, 'policy_config_hash': self.policy_config_hash, 'routing_config_hash': self.routing_config_hash, 'semantic_clock': self.semantic_clock.to_dict(), 'snapshot_id': self.snapshot_id, 'telemetry_hash': self.telemetry_hash}
+        return {
+            "audit_window_end_utc": self.audit_window_end_utc,
+            "audit_window_start_utc": self.audit_window_start_utc,
+            "config_surface_version": self.config_surface_version,
+            "engine_version": self.engine_version,
+            "model_config_hash": self.model_config_hash,
+            "policy_config_hash": self.policy_config_hash,
+            "routing_config_hash": self.routing_config_hash,
+            "semantic_clock": self.semantic_clock.to_dict(),
+            "snapshot_id": self.snapshot_id,
+            "telemetry_hash": self.telemetry_hash,
+        }

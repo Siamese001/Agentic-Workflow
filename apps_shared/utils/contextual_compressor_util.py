@@ -3,19 +3,26 @@
 This component extracts only the relevant sentences from retrieved chunks,
 reducing noise and improving signal density in the RAG pipeline.
 """
+
 import logging
 import re
 import time
+
 from pydantic import BaseModel, Field
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 logger = logging.getLogger(__name__)
+
 
 class CompressionResult(BaseModel):
     """Result of contextual compression operation."""
-    original_length: int = Field(..., description='Original text length in characters')
-    compressed_length: int = Field(..., description='Compressed text length in characters')
-    compressed_text: str = Field(..., description='Compressed text content')
-    compression_ratio: float = Field(..., ge=0.0, le=1.0, description='Compression ratio (compressed/original)')
+
+    original_length: int = Field(..., description="Original text length in characters")
+    compressed_length: int = Field(..., description="Compressed text length in characters")
+    compressed_text: str = Field(..., description="Compressed text content")
+    compression_ratio: float = Field(
+        ..., ge=0.0, le=1.0, description="Compression ratio (compressed/original)"
+    )
+
 
 class ContextualCompressor:
     """Compresses retrieved chunks to extract only relevant sentences.
@@ -25,7 +32,7 @@ class ContextualCompressor:
     """
 
     # guardian: allow-magic-config
-    def __init__(self, similarity_threshold: float=0.1, use_llm: bool=False):
+    def __init__(self, similarity_threshold: float = 0.1, use_llm: bool = False):
         """Initialize the Contextual Compressor.
 
         Args:
@@ -34,9 +41,16 @@ class ContextualCompressor:
         """
         self.similarity_threshold = similarity_threshold
         self.use_llm = use_llm
-        self.sentence_pattern = re.compile('(?<!\\w\\.\\w.)(?<![A-Z][a-z]\\.)(?<=\\.|\\?|\\!)\\s', re.MULTILINE)
-        self.entity_patterns = {'person': '\\b([A-Z][a-z]+ [A-Z][a-z]+)\\b', 'organization': '\\b([A-Z]{2,})\\b', 'metric': '\\b(\\d+(?:\\.\\d+)?%|\\d+(?:,\\d{3})*(?:\\.\\d+)?[kmb]?)\\b', 'date': '\\b(\\d{4}|\\d{1,2}/\\d{1,2}/\\d{2,4})\\b'}
-        logger.info(f'Initialized ContextualCompressor: threshold={similarity_threshold}, llm={use_llm}')
+        self.sentence_pattern = re.compile(
+            "(?<!\\w\\.\\w.)(?<![A-Z][a-z]\\.)(?<=\\.|\\?|\\!)\\s", re.MULTILINE
+        )
+        self.entity_patterns = {
+            "person": "\\b([A-Z][a-z]+ [A-Z][a-z]+)\\b",
+            "organization": "\\b([A-Z]{2,})\\b",
+            "metric": "\\b(\\d+(?:\\.\\d+)?%|\\d+(?:,\\d{3})*(?:\\.\\d+)?[kmb]?)\\b",
+            "date": "\\b(\\d{4}|\\d{1,2}/\\d{1,2}/\\d{2,4})\\b",
+        }
+        logger.info(f"Initialized ContextualCompressor: threshold={similarity_threshold}, llm={use_llm}")
 
     def _split_into_sentences(self, text: str) -> list[str]:
         """Split text into sentences using regex.
@@ -64,8 +78,8 @@ class ContextualCompressor:
         """
         words1 = {word.lower().strip('.,!?;:"()[]{}') for word in text1.split()}
         words2 = {word.lower().strip('.,!?;:"()[]{}') for word in text2.split()}
-        words1.discard('')
-        words2.discard('')
+        words1.discard("")
+        words2.discard("")
         intersection = words1.intersection(words2)
         union = words1.union(words2)
         if not union:
@@ -112,25 +126,33 @@ class ContextualCompressor:
             entity_match = bool(query_entities.intersection(sentence_entities))
             sentence_words = {word.lower() for word in sentence.split()}
             keyword_match = bool(query_words.intersection(sentence_words))
-            sentence_scores.append({'index': i, 'sentence': sentence, 'similarity': similarity, 'entity_match': entity_match, 'keyword_match': keyword_match})
+            sentence_scores.append(
+                {
+                    "index": i,
+                    "sentence": sentence,
+                    "similarity": similarity,
+                    "entity_match": entity_match,
+                    "keyword_match": keyword_match,
+                }
+            )
         for i, score in enumerate(sentence_scores):
             should_include = False
-            if score['similarity'] >= self.similarity_threshold:
+            if score["similarity"] >= self.similarity_threshold:
                 should_include = True
-            elif score['entity_match']:
+            elif score["entity_match"]:
                 should_include = True
-            elif score['keyword_match'] and score['similarity'] >= 0.05:
+            elif score["keyword_match"] and score["similarity"] >= 0.05:
                 should_include = True
             if should_include and i > 0:
-                prev_index = sentence_scores[i - 1]['index']
-                if prev_index not in [s['index'] for s in selected_sentences]:
+                prev_index = sentence_scores[i - 1]["index"]
+                if prev_index not in [s["index"] for s in selected_sentences]:
                     selected_sentences.append(sentence_scores[i - 1])
             if should_include:
                 selected_sentences.append(score)
-        selected_sentences.sort(key=lambda x: x['index'])
-        compressed_text = ' '.join((s['sentence'] for s in selected_sentences))
+        selected_sentences.sort(key=lambda x: x["index"])
+        compressed_text = " ".join(s["sentence"] for s in selected_sentences)
         elapsed = time.time() - start_time
-        logger.debug(f'Heuristic compression completed in {elapsed:.3f}s')
+        logger.debug(f"Heuristic compression completed in {elapsed:.3f}s")
         return compressed_text
 
     async def _compress_llm(self, chunks: list[str], query: str) -> str:
@@ -143,19 +165,24 @@ class ContextualCompressor:
         Returns:
             Compressed text
         """
-        full_text = '\n\n'.join(chunks)
+        full_text = "\n\n".join(chunks)
         try:
             client = get_client(Provider.ANTHROPIC)
             prompt = f"Extract verbatim sentences from the text below that answer this question: '{query}'.\nDo not rewrite. Do not summarize. If irrelevant, return empty.\n\nText:\n{full_text}\n\nExtracted sentences:"
             # guardian: allow-magic-config
-            response = await client.messages.create(model='claude-3-5-sonnet-20241022', max_tokens=1000, temperature=0.1, messages=[{'role': 'user', 'content': prompt}])
+            response = await client.messages.create(
+                model="claude-3-5-sonnet-20241022",
+                max_tokens=1000,
+                temperature=0.1,
+                messages=[{"role": "user", "content": prompt}],
+            )
             return response.content[0].text.strip()
         # guardian: allow-silent-swallow
         except Exception as e:
-            logger.error(f'LLM compression failed: {e}')
+            logger.error(f"LLM compression failed: {e}")
             return self._compress_heuristic(chunks, query)
 
-    def compress(self, chunks: list[str], query: str, use_llm: bool | None=None) -> CompressionResult:
+    def compress(self, chunks: list[str], query: str, use_llm: bool | None = None) -> CompressionResult:
         """Compress retrieved chunks to extract relevant sentences.
 
         Args:
@@ -166,28 +193,37 @@ class ContextualCompressor:
         Returns:
             CompressionResult with compressed text and metrics
         """
-        original_text = ' '.join(chunks)
+        original_text = " ".join(chunks)
         original_length = len(original_text)
         should_use_llm = use_llm if use_llm is not None else self.use_llm
         if should_use_llm:
             import asyncio
+
             compressed_text = asyncio.run(self._compress_llm(chunks, query))
         else:
             compressed_text = self._compress_heuristic(chunks, query)
         if not compressed_text or len(compressed_text) < original_length * 0.1:
-            logger.warning('Compression too aggressive, returning original text')
+            logger.warning("Compression too aggressive, returning original text")
             compressed_text = original_text
         compressed_length = len(compressed_text)
         compression_ratio = compressed_length / original_length if original_length > 0 else 1.0
-        logger.info(f'Compression ratio: {compression_ratio:.2f} ({original_length} -> {compressed_length} chars)')
+        logger.info(
+            f"Compression ratio: {compression_ratio:.2f} ({original_length} -> {compressed_length} chars)"
+        )
         if compression_ratio > 0.95:
-            logger.warning('Low compression detected - may need threshold tuning')
+            logger.warning("Low compression detected - may need threshold tuning")
         elif compression_ratio < 0.05:
-            logger.warning('High compression detected - may be too aggressive')
-        return CompressionResult(original_length=original_length, compressed_length=compressed_length, compressed_text=compressed_text, compression_ratio=compression_ratio)
+            logger.warning("High compression detected - may be too aggressive")
+        return CompressionResult(
+            original_length=original_length,
+            compressed_length=compressed_length,
+            compressed_text=compressed_text,
+            compression_ratio=compression_ratio,
+        )
+
 
 # guardian: allow-magic-config
-def compress_chunks(chunks: list[str], query: str, similarity_threshold: float=0.1) -> str:
+def compress_chunks(chunks: list[str], query: str, similarity_threshold: float = 0.1) -> str:
     """Compress chunks using default settings.
 
     Args:

@@ -6,15 +6,21 @@ enforces depth rules, and purges orphans via HierarchyAgent with
 healing_enabled=True. Registered in HEALER_REGISTRY under check_id
 "hierarchy_violations".
 """
+
 from __future__ import annotations
+
 import logging
 from pathlib import Path
+
 from agentic_core.L2_execution.types.heal_contract_types import HealCheckResult, HealStatus
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
-CHECK_ID = 'hierarchy_violations'
+
+CHECK_ID = "hierarchy_violations"
 logger = logging.getLogger(__name__)
 
-def heal_hierarchy_violations(check: dict, *, repo_root: Path | None=None, apply: bool=False) -> HealCheckResult:
+
+def heal_hierarchy_violations(
+    check: dict, *, repo_root: Path | None = None, apply: bool = False
+) -> HealCheckResult:
     """Heal hierarchy violations via HierarchyAgent with healing_enabled=True.
 
     Args:
@@ -25,34 +31,70 @@ def heal_hierarchy_violations(check: dict, *, repo_root: Path | None=None, apply
     Returns:
         HealCheckResult with status HEALED / PARTIAL / SKIPPED / FAILED.
     """
-    violations_count = check.get('violations_count', 0)
-    territory = check.get('territory')
+    violations_count = check.get("violations_count", 0)
+    territory = check.get("territory")
     if not violations_count:
-        return HealCheckResult(check_id=CHECK_ID, status=HealStatus.HEALED, changes_made=(), notes='no hierarchy violations detected')
+        return HealCheckResult(
+            check_id=CHECK_ID,
+            status=HealStatus.HEALED,
+            changes_made=(),
+            notes="no hierarchy violations detected",
+        )
     if not apply:
-        return HealCheckResult(check_id=CHECK_ID, status=HealStatus.SKIPPED, changes_made=(f'would_fix:{violations_count}_hierarchy_violations',), notes='dry-run: no mutations applied')
+        return HealCheckResult(
+            check_id=CHECK_ID,
+            status=HealStatus.SKIPPED,
+            changes_made=(f"would_fix:{violations_count}_hierarchy_violations",),
+            notes="dry-run: no mutations applied",
+        )
     if repo_root is None:
-        return HealCheckResult(check_id=CHECK_ID, status=HealStatus.FAILED, changes_made=(), notes='apply mode requires repo_root')
+        return HealCheckResult(
+            check_id=CHECK_ID,
+            status=HealStatus.FAILED,
+            changes_made=(),
+            notes="apply mode requires repo_root",
+        )
     repo_root = Path(repo_root).resolve()
     try:
         from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+
         hierarchy = HierarchyAgent(project_root=repo_root, healing_enabled=True)
-        res = hierarchy.heal_hierarchy(create_structure=True, relocate_files=True, enforce_depth=True, purge_orphans=True, dry_run=False, auto_approve=True, target_territory=territory)
+        res = hierarchy.heal_hierarchy(
+            create_structure=True,
+            relocate_files=True,
+            enforce_depth=True,
+            purge_orphans=True,
+            dry_run=False,
+            auto_approve=True,
+            target_territory=territory,
+        )
     # guardian: allow-silent-swallow
     except Exception as exc:
-        logger.error('[hierarchy_agent_healer] heal failed: %s', exc)
-        return HealCheckResult(check_id=CHECK_ID, status=HealStatus.FAILED, changes_made=(), notes=f'healer error: {type(exc).__name__}: {exc}', needs_llm_escalation=True, escalation_hint='failure_type=healer_error')
-    summary = res.get('summary', {})
-    total_actions = summary.get('total_actions', 0)
-    dirs_created = summary.get('directories_created', 0)
-    files_relocated = summary.get('files_relocated', 0)
-    orphans_purged = summary.get('orphans_purged', 0)
+        logger.error("[hierarchy_agent_healer] heal failed: %s", exc)
+        return HealCheckResult(
+            check_id=CHECK_ID,
+            status=HealStatus.FAILED,
+            changes_made=(),
+            notes=f"healer error: {type(exc).__name__}: {exc}",
+            needs_llm_escalation=True,
+            escalation_hint="failure_type=healer_error",
+        )
+    summary = res.get("summary", {})
+    total_actions = summary.get("total_actions", 0)
+    dirs_created = summary.get("directories_created", 0)
+    files_relocated = summary.get("files_relocated", 0)
+    orphans_purged = summary.get("orphans_purged", 0)
     changes: list[str] = []
     if dirs_created:
-        changes.append(f'directories_created:{dirs_created}')
+        changes.append(f"directories_created:{dirs_created}")
     if files_relocated:
-        changes.append(f'files_relocated:{files_relocated}')
+        changes.append(f"files_relocated:{files_relocated}")
     if orphans_purged:
-        changes.append(f'orphans_purged:{orphans_purged}')
+        changes.append(f"orphans_purged:{orphans_purged}")
     status = HealStatus.HEALED if total_actions >= 0 else HealStatus.PARTIAL
-    return HealCheckResult(check_id=CHECK_ID, status=status, changes_made=tuple(sorted(changes)), notes=f'total_actions={total_actions} dirs={dirs_created} files={files_relocated}')
+    return HealCheckResult(
+        check_id=CHECK_ID,
+        status=status,
+        changes_made=tuple(sorted(changes)),
+        notes=f"total_actions={total_actions} dirs={dirs_created} files={files_relocated}",
+    )

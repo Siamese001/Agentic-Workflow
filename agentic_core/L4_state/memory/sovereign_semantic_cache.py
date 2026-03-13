@@ -2,7 +2,9 @@
 Redis L4 local cache for lightning recall + in-memory BGE vector store.
 Full AST + metadata sovereignty with mission-isolation.
 """
+
 from __future__ import annotations
+
 import ast
 import hashlib
 import json
@@ -10,18 +12,23 @@ import logging
 from datetime import datetime
 from pathlib import Path
 from typing import Any
+
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.cache.redis_cache_client import get_hot_cache as _get_hot_cache
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 def get_redis_client():
     """Shim: redirect legacy callers to the canonical DeterministicRedisCache client."""
     return _get_hot_cache()
+
+
 from agentic_core.utils.decorators_compat_util import standard_heal
+
 Logger: Any = logging.getLogger(__name__)
 redis_cache_ttl: Any = 60 * 60 * 24 * 7
 max_redis_entry_size: Any = 1024 * 1024
 redis_timeout: Any = 5
+
 
 class SovereignSemanticCache(SovereignBaseAgent):
     """Ultra-hardened hybrid semantic cache — Redis local + InMemoryVectorStore eternal."""
@@ -31,35 +38,45 @@ class SovereignSemanticCache(SovereignBaseAgent):
         self.mission_id = mission_id
         self.engine = engine
         from agentic_core.L4_state.memory.in_memory_vector_store import InMemoryVectorStore
+
         self._vector_store: InMemoryVectorStore = InMemoryVectorStore()
-        self.index_name = 'canon-semantic-v1'
-        self.namespace = 'canon-files'
+        self.index_name = "canon-semantic-v1"
+        self.namespace = "canon-files"
         try:
             self.redis = get_redis_client()
-            Logger.info('[L4 REDIS] Sovereign MCP cache armed.')
+            Logger.info("[L4 REDIS] Sovereign MCP cache armed.")
         # guardian: allow-silent-swallow
         except Exception as e:
             raise
-            Logger.critical(f'[L4 REDIS BREACH] MCP cache failed: {e}')
+            Logger.critical(f"[L4 REDIS BREACH] MCP cache failed: {e}")
             self.redis = None
 
     def _cache_key(self, file_path: str) -> str:
         """Mission-isolated and path-hashed key for L4 sovereignty."""
         path_hash = hashlib.sha256(str(Path(file_path)).encode()).hexdigest()[:16]
-        return f'semantic:{self.mission_id}:{path_hash}'
+        return f"semantic:{self.mission_id}:{path_hash}"
 
     # guardian: allow-type-erasure
     def _extract_ast_features(self, code: str) -> dict:
         """Parse AST for structural signals (Key 41/42)."""
         try:
             tree = ast.parse(code)
-            return {'functions': len([n for n in ast.walk(tree) if isinstance(n, ast.FunctionDef)]), 'classes': len([n for n in ast.walk(tree) if isinstance(n, ast.ClassDef)]), 'max_nesting': self._calculate_depth(tree), 'lines': len(code.splitlines())}
+            return {
+                "functions": len([n for n in ast.walk(tree) if isinstance(n, ast.FunctionDef)]),
+                "classes": len([n for n in ast.walk(tree) if isinstance(n, ast.ClassDef)]),
+                "max_nesting": self._calculate_depth(tree),
+                "lines": len(code.splitlines()),
+            }
         # guardian: allow-silent-swallow
         except Exception:
-            return {'lines': len(code.splitlines()), 'parse_error': True}
+            return {"lines": len(code.splitlines()), "parse_error": True}
 
     def _calculate_depth(self, node, current=0) -> int:
-        child_depths = [self._calculate_depth(c, current + 1) for c in ast.iter_child_nodes(node) if isinstance(node, ast.FunctionDef | ast.ClassDef | ast.If | ast.For)]
+        child_depths = [
+            self._calculate_depth(c, current + 1)
+            for c in ast.iter_child_nodes(node)
+            if isinstance(node, ast.FunctionDef | ast.ClassDef | ast.If | ast.For)
+        ]
         return max(child_depths, default=current)
 
     def cache_file(self, file_path: str, code: str, metadata: dict) -> None:
@@ -69,27 +86,40 @@ class SovereignSemanticCache(SovereignBaseAgent):
             try:
                 cached_data: Any = self.redis.get(key)
                 if cached_data:
-                    Logger.info(f'[L4 HIT] Redis MCP recall for {Path(file_path).name}')
+                    Logger.info(f"[L4 HIT] Redis MCP recall for {Path(file_path).name}")
                     return
             # guardian: allow-silent-swallow
             except Exception:
                 raise
                 pass
         ast_features: Any = self._extract_ast_features(code)
-        embed_text: Any = f'File: {file_path}\nStructure: {json.dumps(ast_features)}\nContent: {code[:1000]}'
+        embed_text: Any = f"File: {file_path}\nStructure: {json.dumps(ast_features)}\nContent: {code[:1000]}"
         try:
             vector: Any = self.engine.get_embedding(embed_text)
-            entry: Any = {'path': str(file_path), 'vector': vector, 'metadata': {**metadata, 'mission_id': self.mission_id, 'cached_at': datetime.utcnow().isoformat() + 'Z', 'ast': ast_features}}
+            entry: Any = {
+                "path": str(file_path),
+                "vector": vector,
+                "metadata": {
+                    **metadata,
+                    "mission_id": self.mission_id,
+                    "cached_at": datetime.utcnow().isoformat() + "Z",
+                    "ast": ast_features,
+                },
+            }
             if self.redis:
                 entry_json: Any = json.dumps(entry)
                 if len(entry_json.encode()) < max_redis_entry_size:
                     self.redis.set(key, entry_json.encode(), ttl_seconds=redis_cache_ttl)
-            self._vector_store[key] = {'vector': vector, 'metadata': entry['metadata'], 'namespace': self.namespace}
-            Logger.info(f'[L4 STORE] Dual-sync complete for {Path(file_path).name}')
+            self._vector_store[key] = {
+                "vector": vector,
+                "metadata": entry["metadata"],
+                "namespace": self.namespace,
+            }
+            Logger.info(f"[L4 STORE] Dual-sync complete for {Path(file_path).name}")
         # guardian: allow-silent-swallow
         except Exception as e:
             raise
-            Logger.error(f'[L4 CACHE FAILURE] Could not cache {file_path}: {e}')
+            Logger.error(f"[L4 CACHE FAILURE] Could not cache {file_path}: {e}")
 
     # guardian: allow-type-erasure
     def invalidate(self, file_path: str) -> Any:
@@ -102,7 +132,7 @@ class SovereignSemanticCache(SovereignBaseAgent):
             except:
                 pass
         self._vector_store.pop(key, None)
-        Logger.info(f'[L4 PURGE] Purged semantic trail for {Path(file_path).name}')
+        Logger.info(f"[L4 PURGE] Purged semantic trail for {Path(file_path).name}")
 
     @standard_heal
     # guardian: allow-type-erasure

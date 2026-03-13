@@ -1,8 +1,9 @@
 from __future__ import annotations
-'\nPerception Node - Sub-atomic Input Processing\n\nHandles input parsing, context preparation, intent classification,\nand memory retrieval. Isolated from reasoning and action logic.\n'
+
+"\nPerception Node - Sub-atomic Input Processing\n\nHandles input parsing, context preparation, intent classification,\nand memory retrieval. Isolated from reasoning and action logic.\n"
 import asyncio
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 class PerceptionNode:
     """
@@ -35,7 +36,13 @@ class PerceptionNode:
         query = self._parse_query(raw_input)
         intent = self._classify_intent(query, raw_input)
         relevant_memory = self._retrieve_relevant_memory(query, context)
-        perceived = {'query': query, 'intent': intent, 'relevant_memory': relevant_memory, 'input_type': raw_input.get('type', 'text'), 'confidence': self._estimate_confidence(query, intent)}
+        perceived = {
+            "query": query,
+            "intent": intent,
+            "relevant_memory": relevant_memory,
+            "input_type": raw_input.get("type", "text"),
+            "confidence": self._estimate_confidence(query, intent),
+        }
         return perceived
 
     async def process_async(self, raw_input: dict[str, Any], context: dict[str, Any]) -> dict[str, Any]:
@@ -52,7 +59,13 @@ class PerceptionNode:
         query = await asyncio.to_thread(self._parse_query, raw_input)
         intent = await asyncio.to_thread(self._classify_intent, query, raw_input)
         relevant_memory = await asyncio.to_thread(self._retrieve_relevant_memory, query, context)
-        perceived = {'query': query, 'intent': intent, 'relevant_memory': relevant_memory, 'input_type': raw_input.get('type', 'text'), 'confidence': self._estimate_confidence(query, intent)}
+        perceived = {
+            "query": query,
+            "intent": intent,
+            "relevant_memory": relevant_memory,
+            "input_type": raw_input.get("type", "text"),
+            "confidence": self._estimate_confidence(query, intent),
+        }
         return perceived
 
     def _parse_query(self, raw_input: dict[str, Any]) -> str:
@@ -66,7 +79,7 @@ class PerceptionNode:
             Parsed query
         """
         if isinstance(raw_input, dict):
-            return raw_input.get('user_query', raw_input.get('text', ''))
+            return raw_input.get("user_query", raw_input.get("text", ""))
         return str(raw_input)
 
     def _classify_intent(self, query: str, raw_input: dict[str, Any]) -> str:
@@ -81,14 +94,14 @@ class PerceptionNode:
             Intent classification
         """
         query_lower = query.lower()
-        if any((word in query_lower for word in ['what', 'how', 'why', 'explain'])):
-            return 'reasoning'
-        elif any((word in query_lower for word in ['do', 'execute', 'run', 'perform'])):
-            return 'action'
-        elif any((word in query_lower for word in ['remember', 'recall', 'memory'])):
-            return 'memory'
+        if any(word in query_lower for word in ["what", "how", "why", "explain"]):
+            return "reasoning"
+        elif any(word in query_lower for word in ["do", "execute", "run", "perform"]):
+            return "action"
+        elif any(word in query_lower for word in ["remember", "recall", "memory"]):
+            return "memory"
         else:
-            return 'general'
+            return "general"
 
     def _retrieve_relevant_memory(self, query: str, context: dict[str, Any]) -> list[dict[str, Any]]:
         """
@@ -102,8 +115,8 @@ class PerceptionNode:
             List of relevant memory items
         """
         memory_items = []
-        if 'memory' in context:
-            memory_items = context.get('memory', [])
+        if "memory" in context:
+            memory_items = context.get("memory", [])
         return memory_items
 
     def _estimate_confidence(self, query: str, intent: str) -> float:
@@ -119,10 +132,10 @@ class PerceptionNode:
         """
         confidence = 0.5
         confidence += min(0.3, len(query) / 100.0)
-        if intent in ['reasoning', 'action', 'memory']:
+        if intent in ["reasoning", "action", "memory"]:
             confidence += 0.2
         return min(1.0, confidence)
 
     def get_statistics(self) -> dict[str, Any]:
         """Get perception statistics."""
-        return {'inputs_processed': self.inputs_processed, 'cache_size': len(self.cache)}
+        return {"inputs_processed": self.inputs_processed, "cache_size": len(self.cache)}

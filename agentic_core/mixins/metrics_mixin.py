@@ -8,7 +8,9 @@ Provides:
 - @timed decorator for automatic timing
 - Metrics aggregation and reporting
 """
+
 from __future__ import annotations
+
 import asyncio
 import functools
 import logging
@@ -17,16 +19,18 @@ import time
 from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 Logger = logging.getLogger(__name__)
+
 
 @dataclass
 class PerformanceMetrics:
     """Performance metrics for an operation."""
+
     operation_name: str
     call_count: int = 0
     total_time_ms: float = 0.0
-    min_time_ms: float = float('inf')
+    min_time_ms: float = float("inf")
     max_time_ms: float = 0.0
     cache_hits: int = 0
     cache_misses: int = 0
@@ -49,12 +53,26 @@ class PerformanceMetrics:
 
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
-        return {'operation_name': self.operation_name, 'call_count': self.call_count, 'total_time_ms': self.total_time_ms, 'avg_time_ms': self.avg_time_ms, 'min_time_ms': self.min_time_ms if self.min_time_ms != float('inf') else 0, 'max_time_ms': self.max_time_ms, 'cache_hits': self.cache_hits, 'cache_misses': self.cache_misses, 'cache_hit_rate': self.cache_hit_rate, 'errors': self.errors}
+        return {
+            "operation_name": self.operation_name,
+            "call_count": self.call_count,
+            "total_time_ms": self.total_time_ms,
+            "avg_time_ms": self.avg_time_ms,
+            "min_time_ms": self.min_time_ms if self.min_time_ms != float("inf") else 0,
+            "max_time_ms": self.max_time_ms,
+            "cache_hits": self.cache_hits,
+            "cache_misses": self.cache_misses,
+            "cache_hit_rate": self.cache_hit_rate,
+            "errors": self.errors,
+        }
+
 
 @dataclass
 class MetricsConfig:
     """Configuration for metrics collection."""
+
     enabled: bool = True
+
 
 class MetricsMixin:
     """
@@ -76,9 +94,9 @@ class MetricsMixin:
         self._metrics_store: dict[str, PerformanceMetrics] = {}
         self._metrics_lock = threading.RLock()
         self._metrics_initialized = True
-        Logger.debug(f'[METRICS] {self.__class__.__name__} metrics initialized')
+        Logger.debug(f"[METRICS] {self.__class__.__name__} metrics initialized")
 
-    def configure_metrics(self, enabled: bool | None=None) -> None:
+    def configure_metrics(self, enabled: bool | None = None) -> None:
         """Configure metrics settings."""
         with self._metrics_lock:
             if enabled is not None:
@@ -90,7 +108,7 @@ class MetricsMixin:
             self._metrics_store[operation_name] = PerformanceMetrics(operation_name=operation_name)
         return self._metrics_store[operation_name]
 
-    def record_timing(self, operation_name: str, duration_ms: float, error: bool=False) -> None:
+    def record_timing(self, operation_name: str, duration_ms: float, error: bool = False) -> None:
         """Record timing for an operation."""
         if not self._metrics_config.enabled:
             return
@@ -119,7 +137,7 @@ class MetricsMixin:
             metrics = self._ensure_metrics(operation_name)
             metrics.cache_misses += 1
 
-    def get_metrics(self, operation_name: str | None=None) -> dict[str, Any]:
+    def get_metrics(self, operation_name: str | None = None) -> dict[str, Any]:
         """Get performance metrics."""
         with self._metrics_lock:
             if operation_name:
@@ -172,7 +190,10 @@ class MetricsMixin:
             finally:
                 duration_ms = (time.time() - start) * 1000
                 self.record_timing(func.__name__, duration_ms, error)
+
         if asyncio.iscoroutinefunction(func):
             return async_wrapper
         return sync_wrapper
-__all__ = ['MetricsMixin', 'MetricsConfig', 'PerformanceMetrics']
+
+
+__all__ = ["MetricsMixin", "MetricsConfig", "PerformanceMetrics"]

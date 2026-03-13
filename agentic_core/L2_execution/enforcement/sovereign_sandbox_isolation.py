@@ -1,7 +1,9 @@
 from __future__ import annotations
+
 from typing import Any, NamedTuple
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 ExecutionTranscript = dict[str, Any]
+
 
 class ReplayNondeterminismViolation(Exception):
     """Raised when a replay operation deviates from the execution transcript."""
@@ -10,15 +12,24 @@ class ReplayNondeterminismViolation(Exception):
         self.message = message
         self.expected = expected
         self.actual = actual
-        super().__init__(f'{message} Expected: {expected}, Actual: {actual}')
+        super().__init__(f"{message} Expected: {expected}, Actual: {actual}")
+
 
 class SandboxResult(NamedTuple):
     """The result of a sandboxed operation."""
+
     success: bool
     result: Any
     violation: ReplayNondeterminismViolation | None = None
 
-def execute_in_sandbox(operation: Any, args: tuple, kwargs: dict, replay_mode: bool, transcript: ExecutionTranscript | None=None) -> SandboxResult:
+
+def execute_in_sandbox(
+    operation: Any,
+    args: tuple,
+    kwargs: dict,
+    replay_mode: bool,
+    transcript: ExecutionTranscript | None = None,
+) -> SandboxResult:
     """
     Executes an operation within a sovereign sandbox, enforcing replay determinism.
 
@@ -47,15 +58,19 @@ def execute_in_sandbox(operation: Any, args: tuple, kwargs: dict, replay_mode: b
         except Exception as e:
             return SandboxResult(success=False, result=e)
     if transcript is None:
-        violation = ReplayNondeterminismViolation('Transcript is missing in replay mode.', expected='Transcript', actual=None)
+        violation = ReplayNondeterminismViolation(
+            "Transcript is missing in replay mode.", expected="Transcript", actual=None
+        )
         return SandboxResult(success=False, result=violation, violation=violation)
     try:
         simulated_result = operation(*args, **kwargs)
     except Exception as e:
         raise
         simulated_result = e
-    expected_result = transcript.get('result')
+    expected_result = transcript.get("result")
     if str(simulated_result) != str(expected_result):
-        violation = ReplayNondeterminismViolation('Replay result does not match transcript.', expected=expected_result, actual=simulated_result)
+        violation = ReplayNondeterminismViolation(
+            "Replay result does not match transcript.", expected=expected_result, actual=simulated_result
+        )
         return SandboxResult(success=False, result=violation, violation=violation)
     return SandboxResult(success=True, result=simulated_result)

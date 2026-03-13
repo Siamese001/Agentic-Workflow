@@ -2,25 +2,29 @@
 Text Processing Utilities - Phase 4 Optimization
 Native Python implementations for common text operations.
 """
+
 from __future__ import annotations
+
 import re
 from dataclasses import dataclass
 from re import Pattern
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 @dataclass
 class TextMatch:
     """Result of a text matching operation."""
+
     matched: bool
     matches: list[str]
     groups: list[tuple]
     positions: list[tuple]
 
+
 class TextProcessor:
     """Native Python text processing utilities."""
 
     @staticmethod
-    def extract_patterns(text: str, pattern: str | Pattern, flags: int=0) -> TextMatch:
+    def extract_patterns(text: str, pattern: str | Pattern, flags: int = 0) -> TextMatch:
         """
         Extract all matches of a pattern from text.
 
@@ -44,10 +48,12 @@ class TextProcessor:
             match_list.append(match.group(0))
             group_list.append(match.groups())
             position_list.append((match.start(), match.end()))
-        return TextMatch(matched=len(match_list) > 0, matches=match_list, groups=group_list, positions=position_list)
+        return TextMatch(
+            matched=len(match_list) > 0, matches=match_list, groups=group_list, positions=position_list
+        )
 
     @staticmethod
-    def validate_pattern(text: str, pattern: str | Pattern, flags: int=0) -> bool:
+    def validate_pattern(text: str, pattern: str | Pattern, flags: int = 0) -> bool:
         """
         Check if text matches a pattern.
 
@@ -66,7 +72,9 @@ class TextProcessor:
         return compiled_pattern.search(text) is not None
 
     @staticmethod
-    def replace_pattern(text: str, pattern: str | Pattern, replacement: str, count: int=0, flags: int=0) -> str:
+    def replace_pattern(
+        text: str, pattern: str | Pattern, replacement: str, count: int = 0, flags: int = 0
+    ) -> str:
         """
         Replace pattern matches in text.
 
@@ -87,7 +95,7 @@ class TextProcessor:
         return compiled_pattern.sub(replacement, text, count=count)
 
     @staticmethod
-    def clean_whitespace(text: str, preserve_newlines: bool=False) -> str:
+    def clean_whitespace(text: str, preserve_newlines: bool = False) -> str:
         """
         Clean excessive whitespace from text.
 
@@ -99,11 +107,11 @@ class TextProcessor:
             Cleaned text
         """
         if preserve_newlines:
-            lines = text.split('\n')
-            cleaned_lines = [re.sub('[ \\t]+', ' ', line.strip()) for line in lines]
-            return '\n'.join(cleaned_lines)
+            lines = text.split("\n")
+            cleaned_lines = [re.sub("[ \\t]+", " ", line.strip()) for line in lines]
+            return "\n".join(cleaned_lines)
         else:
-            return re.sub('\\s+', ' ', text).strip()
+            return re.sub("\\s+", " ", text).strip()
 
     @staticmethod
     def extract_emails(text: str) -> list[str]:
@@ -116,7 +124,7 @@ class TextProcessor:
         Returns:
             List of email addresses found
         """
-        pattern = '\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\\b'
+        pattern = "\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\\b"
         return re.findall(pattern, text)
 
     @staticmethod
@@ -130,11 +138,11 @@ class TextProcessor:
         Returns:
             List of URLs found
         """
-        pattern = 'https?://(?:www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b(?:[-a-zA-Z0-9()@:%_\\+.~#?&/=]*)'
+        pattern = "https?://(?:www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b(?:[-a-zA-Z0-9()@:%_\\+.~#?&/=]*)"
         return re.findall(pattern, text)
 
     @staticmethod
-    def extract_numbers(text: str, include_decimals: bool=True) -> list[float]:
+    def extract_numbers(text: str, include_decimals: bool = True) -> list[float]:
         """
         Extract numbers from text.
 
@@ -146,14 +154,14 @@ class TextProcessor:
             List of numbers found
         """
         if include_decimals:
-            pattern = '-?\\d+\\.?\\d*'
+            pattern = "-?\\d+\\.?\\d*"
         else:
-            pattern = '-?\\d+'
+            pattern = "-?\\d+"
         matches = re.findall(pattern, text)
-        return [float(m) for m in matches if m and m != '-']
+        return [float(m) for m in matches if m and m != "-"]
 
     @staticmethod
-    def tokenize(text: str, delimiter: str | None=None) -> list[str]:
+    def tokenize(text: str, delimiter: str | None = None) -> list[str]:
         """
         Tokenize text into words or custom delimited parts.
 
@@ -170,7 +178,7 @@ class TextProcessor:
             return text.split()
 
     @staticmethod
-    def truncate(text: str, max_length: int, suffix: str='...') -> str:
+    def truncate(text: str, max_length: int, suffix: str = "...") -> str:
         """
         Truncate text to maximum length.
 
@@ -184,7 +192,7 @@ class TextProcessor:
         """
         if len(text) <= max_length:
             return text
-        return text[:max_length - len(suffix)] + suffix
+        return text[: max_length - len(suffix)] + suffix
 
     @staticmethod
     def count_words(text: str) -> int:
@@ -210,5 +218,5 @@ class TextProcessor:
         Returns:
             Number of sentences
         """
-        sentences = re.split('[.!?]+', text)
+        sentences = re.split("[.!?]+", text)
         return len([s for s in sentences if s.strip()])

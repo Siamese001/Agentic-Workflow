@@ -3,10 +3,11 @@
 Ensures that only one surface can be mutated within a given activation window
 to prevent cross-surface contamination and maintain isolation guarantees.
 """
+
 from __future__ import annotations
+
 import time
-from typing import Dict, Optional, Set
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 class SurfaceIsolationValidator:
     """Enforces single-surface mutation per activation window.
@@ -15,16 +16,19 @@ class SurfaceIsolationValidator:
     can be mutated within a given activation window. This prevents
     cross-surface contamination and maintains isolation guarantees.
     """
+
     ACTIVATION_WINDOW_SECONDS = 300
 
     def __init__(self) -> None:
         """Initialize the surface isolation validator."""
-        self._active_surfaces: Dict[str, float] = {}
-        self._completion_timestamps: Dict[str, float] = {}
-        self._completed_surfaces: Set[str] = set()
+        self._active_surfaces: dict[str, float] = {}
+        self._completion_timestamps: dict[str, float] = {}
+        self._completed_surfaces: set[str] = set()
         self._last_cleanup = time.time()
 
-    def can_mutate_surface(self, target_surface: str, authority_sensitivity: str='MEDIUM') -> tuple[bool, str]:
+    def can_mutate_surface(
+        self, target_surface: str, authority_sensitivity: str = "MEDIUM"
+    ) -> tuple[bool, str]:
         """Check if a surface can be mutated.
 
         Args:
@@ -37,18 +41,21 @@ class SurfaceIsolationValidator:
         current_time = time.time()
         self._cleanup_expired_windows(current_time)
         if target_surface in self._completed_surfaces:
-            return (False, f'Surface {target_surface} already completed in current activation window')
-        if authority_sensitivity == 'HIGH':
+            return (False, f"Surface {target_surface} already completed in current activation window")
+        if authority_sensitivity == "HIGH":
             if target_surface not in self._active_surfaces:
                 self._active_surfaces[target_surface] = current_time
-            return (True, 'HIGH authority sensitivity allows mutation')
+            return (True, "HIGH authority sensitivity allows mutation")
         if not self._active_surfaces:
             self._active_surfaces[target_surface] = current_time
-            return (True, 'No active surfaces, mutation allowed')
+            return (True, "No active surfaces, mutation allowed")
         if target_surface in self._active_surfaces:
-            return (True, 'Surface already active in current window')
+            return (True, "Surface already active in current window")
         active_surface = next(iter(self._active_surfaces))
-        return (False, f'Cannot mutate {target_surface}: surface {active_surface} is active in current window')
+        return (
+            False,
+            f"Cannot mutate {target_surface}: surface {active_surface} is active in current window",
+        )
 
     def mark_surface_completed(self, target_surface: str) -> None:
         """Mark a surface as completed for the current activation window.
@@ -68,7 +75,7 @@ class SurfaceIsolationValidator:
         self._completion_timestamps.clear()
         self._last_cleanup = time.time()
 
-    def get_active_surfaces(self) -> Set[str]:
+    def get_active_surfaces(self) -> set[str]:
         """Get the set of currently active surfaces.
 
         Returns:
@@ -77,7 +84,7 @@ class SurfaceIsolationValidator:
         self._cleanup_expired_windows(time.time())
         return set(self._active_surfaces.keys())
 
-    def get_completed_surfaces(self) -> Set[str]:
+    def get_completed_surfaces(self) -> set[str]:
         """Get the set of completed surfaces in current window.
 
         Returns:
@@ -104,7 +111,7 @@ class SurfaceIsolationValidator:
             self._completed_surfaces.discard(s)
         self._last_cleanup = current_time
 
-    def get_window_status(self) -> Dict[str, any]:
+    def get_window_status(self) -> dict[str, any]:
         """Get the current window status for debugging.
 
         Returns:
@@ -112,8 +119,17 @@ class SurfaceIsolationValidator:
         """
         current_time = time.time()
         self._cleanup_expired_windows(current_time)
-        return {'current_time': current_time, 'active_surfaces': dict(self._active_surfaces), 'completed_surfaces': list(self._completed_surfaces), 'window_duration_seconds': self.ACTIVATION_WINDOW_SECONDS, 'last_cleanup': self._last_cleanup}
-_surface_isolation_validator: Optional[SurfaceIsolationValidator] = None
+        return {
+            "current_time": current_time,
+            "active_surfaces": dict(self._active_surfaces),
+            "completed_surfaces": list(self._completed_surfaces),
+            "window_duration_seconds": self.ACTIVATION_WINDOW_SECONDS,
+            "last_cleanup": self._last_cleanup,
+        }
+
+
+_surface_isolation_validator: SurfaceIsolationValidator | None = None
+
 
 def get_surface_isolation_validator() -> SurfaceIsolationValidator:
     """Get the global surface isolation validator instance.
@@ -125,6 +141,7 @@ def get_surface_isolation_validator() -> SurfaceIsolationValidator:
     if _surface_isolation_validator is None:
         _surface_isolation_validator = SurfaceIsolationValidator()
     return _surface_isolation_validator
+
 
 def reset_surface_isolation_validator() -> None:
     """Reset the global surface isolation validator (for testing)."""

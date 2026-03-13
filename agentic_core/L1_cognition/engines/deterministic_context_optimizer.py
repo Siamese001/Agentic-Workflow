@@ -1,32 +1,40 @@
 from __future__ import annotations
+
 import hashlib
 from dataclasses import dataclass
 from typing import NamedTuple, Sequence
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 @dataclass(frozen=True)
 class ContextItem:
     """Represents a single item to be included in the context window."""
+
     content: str
     score: float
     content_hash: str
 
+
 class OptimizationResult(NamedTuple):
     """The result of a context optimization operation."""
+
     optimized_context: Sequence[ContextItem]
     context_hash_before: str
     context_hash_after: str
     top_k_cap: int
+
 
 def _compute_context_hash(items: Sequence[ContextItem]) -> str:
     """Computes a deterministic hash of the context items' identifiers."""
     sorted_hashes = sorted([item.content_hash for item in items])
     hasher = hashlib.sha256()
     for h in sorted_hashes:
-        hasher.update(h.encode('utf-8'))
+        hasher.update(h.encode("utf-8"))
     return hasher.hexdigest()
 
-def optimize_context_window(items: Sequence[ContextItem], top_k_cap: int, seed_pack_hash: str) -> OptimizationResult:
+
+def optimize_context_window(
+    items: Sequence[ContextItem], top_k_cap: int, seed_pack_hash: str
+) -> OptimizationResult:
     """
     Optimizes the context window with deterministic ordering and capping.
 
@@ -43,10 +51,20 @@ def optimize_context_window(items: Sequence[ContextItem], top_k_cap: int, seed_p
         An OptimizationResult containing the sliced context and determinism hashes.
     """
     if not items:
-        empty_hash = hashlib.sha256(b'').hexdigest()
-        return OptimizationResult(optimized_context=[], context_hash_before=empty_hash, context_hash_after=empty_hash, top_k_cap=top_k_cap)
+        empty_hash = hashlib.sha256(b"").hexdigest()
+        return OptimizationResult(
+            optimized_context=[],
+            context_hash_before=empty_hash,
+            context_hash_after=empty_hash,
+            top_k_cap=top_k_cap,
+        )
     context_hash_before = _compute_context_hash(items)
     sorted_items = sorted(items, key=lambda x: (-x.score, x.content_hash))
     optimized_context = sorted_items[:top_k_cap]
     context_hash_after = _compute_context_hash(optimized_context)
-    return OptimizationResult(optimized_context=optimized_context, context_hash_before=context_hash_before, context_hash_after=context_hash_after, top_k_cap=top_k_cap)
+    return OptimizationResult(
+        optimized_context=optimized_context,
+        context_hash_before=context_hash_before,
+        context_hash_after=context_hash_after,
+        top_k_cap=top_k_cap,
+    )

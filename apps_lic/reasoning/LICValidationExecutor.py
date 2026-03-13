@@ -5,11 +5,14 @@ Created: 2026-02-08 (Structural Agent Count Reduction)
 Updated: 2026-03-11 (P1-A: absorbed MessageComplianceAgent as rule_set="message_compliance")
 Updated: 2026-03-11 (P3-A: now subclasses ParameterizedValidator)
 """
+
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 from apps_lic.utils.lic_engine_validation_capability_util import LICEngineValidationCapability
 from apps_shared.reasoning.ParameterizedValidator import ParameterizedValidator
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 @dataclass
 class LICValidationExecutor(LICEngineValidationCapability, ParameterizedValidator):
@@ -21,41 +24,52 @@ class LICValidationExecutor(LICEngineValidationCapability, ParameterizedValidato
     Inherits execute(), collect_issues(), and _RULE_REGISTRY dispatch
     from ParameterizedValidator (P3-A). Rule handlers registered below.
     """
-    rule_set: str = 'generic'
+
+    rule_set: str = "generic"
 
     def collect_issues(self, data: dict, **kwargs) -> list[dict]:
         """Dispatch to rule-specific validation (LIC-local registry)."""
-        if self.rule_set == 'campaign_balance':
+        if self.rule_set == "campaign_balance":
             return self._validate_campaign_balance(data)
-        elif self.rule_set == 'deliverability':
+        elif self.rule_set == "deliverability":
             return self._validate_deliverability(data)
-        elif self.rule_set == 'message_compliance':
+        elif self.rule_set == "message_compliance":
             return self._validate_message_compliance(data)
         return super().collect_issues(data, **kwargs)
 
     def _validate_campaign_balance(self, data: dict) -> list[dict]:
         """Campaign balance validation rules."""
         issues = []
-        channels = data.get('channels', {})
+        channels = data.get("channels", {})
         total = sum(channels.values()) if channels else 0
         if total > 0:
             for ch, val in channels.items():
                 ratio = val / total
                 if ratio > 0.7:
-                    issues.append({'type': 'channel_imbalance', 'channel': ch, 'ratio': ratio})
+                    issues.append({"type": "channel_imbalance", "channel": ch, "ratio": ratio})
         return issues
 
     def _validate_deliverability(self, data: dict) -> list[dict]:
         """Deliverability validation rules."""
         issues = []
-        if data.get('spam_score', 0) > 5:
-            issues.append({'type': 'high_spam_score', 'score': data['spam_score']})
-        if not data.get('dkim_valid', True):
-            issues.append({'type': 'dkim_invalid'})
-        if not data.get('spf_valid', True):
-            issues.append({'type': 'spf_invalid'})
+        if data.get("spam_score", 0) > 5:
+            issues.append({"type": "high_spam_score", "score": data["spam_score"]})
+        if not data.get("dkim_valid", True):
+            issues.append({"type": "dkim_invalid"})
+        if not data.get("spf_valid", True):
+            issues.append({"type": "spf_invalid"})
         return issues
-    _MESSAGE_COMPLIANCE_FORBIDDEN_WORDS = ['guaranteed', 'free money', 'act now', 'limited time', 'winner', 'congratulations', 'urgent', 'click here']
+
+    _MESSAGE_COMPLIANCE_FORBIDDEN_WORDS = [
+        "guaranteed",
+        "free money",
+        "act now",
+        "limited time",
+        "winner",
+        "congratulations",
+        "urgent",
+        "click here",
+    ]
     _MESSAGE_COMPLIANCE_MAX_LENGTH = 5000
 
     def _validate_message_compliance(self, data: dict) -> list[dict]:
@@ -68,15 +82,22 @@ class LICValidationExecutor(LICEngineValidationCapability, ParameterizedValidato
             {"messages": [{"content": str, "subject": str}, ...]}
         """
         issues = []
-        messages = data.get('messages', [])
+        messages = data.get("messages", [])
         for i, message in enumerate(messages):
-            content = message.get('content', '').lower()
-            subject = message.get('subject', '').lower()
+            content = message.get("content", "").lower()
+            subject = message.get("subject", "").lower()
             for word in self._MESSAGE_COMPLIANCE_FORBIDDEN_WORDS:
                 if word in content or word in subject:
-                    issues.append({'type': 'compliance_forbidden_word', 'message_index': i, 'word': word})
-            if 'unsubscribe' not in content:
-                issues.append({'type': 'compliance_missing_unsubscribe', 'message_index': i})
+                    issues.append({"type": "compliance_forbidden_word", "message_index": i, "word": word})
+            if "unsubscribe" not in content:
+                issues.append({"type": "compliance_missing_unsubscribe", "message_index": i})
             if len(content) > self._MESSAGE_COMPLIANCE_MAX_LENGTH:
-                issues.append({'type': 'compliance_message_too_long', 'message_index': i, 'length': len(content), 'max': self._MESSAGE_COMPLIANCE_MAX_LENGTH})
+                issues.append(
+                    {
+                        "type": "compliance_message_too_long",
+                        "message_index": i,
+                        "length": len(content),
+                        "max": self._MESSAGE_COMPLIANCE_MAX_LENGTH,
+                    }
+                )
         return issues

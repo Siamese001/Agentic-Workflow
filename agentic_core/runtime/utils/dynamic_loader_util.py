@@ -4,12 +4,14 @@ Dynamic Dependency Resolver for avoiding circular imports.
 Provides lazy loading of implementations to prevent circular dependencies
 between base agents and L5 components.
 """
+
 import importlib
 import logging
 from typing import Any, TypeVar
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 logger = logging.getLogger(__name__)
-T = TypeVar('T')
+T = TypeVar("T")
+
 
 class DynamicLoader:
     """Dynamically loads implementations to avoid circular dependencies.
@@ -17,9 +19,24 @@ class DynamicLoader:
     Uses lazy loading and caching to efficiently resolve dependencies
     at runtime rather than import time.
     """
+
     _cache: dict[str, Any] = {}
     _instance_cache: dict[str, Any] = {}
-    IMPLEMENTATION_REGISTRY: dict[str, dict[str, str]] = {'verification': {'module': 'agentic_core.L5_safety.enforcement.verification_gate', 'class': 'VerificationGate'}, 'detection': {'module': 'agentic_core.L0_routing.enforcement.detection_signal', 'class': 'DetectionSignalEmitter'}, 'review': {'module': 'agentic_core.L5_safety.enforcement.review_queue', 'class': 'HumanReviewQueue'}, 'meta_learning': {'module': 'agentic_core.mixins.meta_learning_mixin', 'class': 'MetaLearningService'}}
+    IMPLEMENTATION_REGISTRY: dict[str, dict[str, str]] = {
+        "verification": {
+            "module": "agentic_core.L5_safety.enforcement.verification_gate",
+            "class": "VerificationGate",
+        },
+        "detection": {
+            "module": "agentic_core.L0_routing.enforcement.detection_signal",
+            "class": "DetectionSignalEmitter",
+        },
+        "review": {"module": "agentic_core.L5_safety.enforcement.review_queue", "class": "HumanReviewQueue"},
+        "meta_learning": {
+            "module": "agentic_core.mixins.meta_learning_mixin",
+            "class": "MetaLearningService",
+        },
+    }
 
     @classmethod
     def load_class(cls, module_path: str, class_name: str) -> type[T] | None:
@@ -32,20 +49,20 @@ class DynamicLoader:
         Returns:
             Class type or None if loading fails
         """
-        cache_key = f'{module_path}:{class_name}'
+        cache_key = f"{module_path}:{class_name}"
         if cache_key in cls._cache:
             return cls._cache[cache_key]
         try:
             module = importlib.import_module(module_path)
             implementation = getattr(module, class_name)
             cls._cache[cache_key] = implementation
-            logger.debug(f'[LOADER] Loaded {class_name} from {module_path}')
+            logger.debug(f"[LOADER] Loaded {class_name} from {module_path}")
             return implementation
         except ImportError as e:
-            logger.warning(f'[LOADER] Could not import {module_path}: {e}')
+            logger.warning(f"[LOADER] Could not import {module_path}: {e}")
             return None
         except AttributeError as e:
-            logger.warning(f'[LOADER] Class {class_name} not found in {module_path}: {e}')
+            logger.warning(f"[LOADER] Class {class_name} not found in {module_path}: {e}")
             return None
 
     @classmethod
@@ -60,12 +77,14 @@ class DynamicLoader:
         """
         registry_entry = cls.IMPLEMENTATION_REGISTRY.get(protocol_name)
         if registry_entry is None:
-            logger.warning(f'[LOADER] Unknown protocol: {protocol_name}')
+            logger.warning(f"[LOADER] Unknown protocol: {protocol_name}")
             return None
-        return cls.load_class(module_path=registry_entry['module'], class_name=registry_entry['class'])
+        return cls.load_class(module_path=registry_entry["module"], class_name=registry_entry["class"])
 
     @classmethod
-    def create_instance(cls, protocol_name: str, *args: Any, singleton: bool=True, **kwargs: Any) -> T | None:
+    def create_instance(
+        cls, protocol_name: str, *args: Any, singleton: bool = True, **kwargs: Any
+    ) -> T | None:
         """Create instance of implementation.
 
         Args:
@@ -86,10 +105,10 @@ class DynamicLoader:
             instance = implementation(*args, **kwargs)
             if singleton:
                 cls._instance_cache[protocol_name] = instance
-            logger.debug(f'[LOADER] Created instance of {protocol_name}')
+            logger.debug(f"[LOADER] Created instance of {protocol_name}")
             return instance
         except Exception as e:
-            logger.warning(f'[LOADER] Could not create instance of {protocol_name}: {e}')
+            logger.warning(f"[LOADER] Could not create instance of {protocol_name}: {e}")
             return None
 
     @classmethod
@@ -97,10 +116,10 @@ class DynamicLoader:
         """Clear all cached classes and instances."""
         cls._cache.clear()
         cls._instance_cache.clear()
-        logger.info('[LOADER] Cache cleared')
+        logger.info("[LOADER] Cache cleared")
 
     @classmethod
-    def clear_instance_cache(cls, protocol_name: str | None=None) -> None:
+    def clear_instance_cache(cls, protocol_name: str | None = None) -> None:
         """Clear instance cache.
 
         Args:
@@ -121,13 +140,13 @@ class DynamicLoader:
             module_path: Module path
             class_name: Class name
         """
-        cls.IMPLEMENTATION_REGISTRY[protocol_name] = {'module': module_path, 'class': class_name}
-        cache_key = f'{module_path}:{class_name}'
+        cls.IMPLEMENTATION_REGISTRY[protocol_name] = {"module": module_path, "class": class_name}
+        cache_key = f"{module_path}:{class_name}"
         if cache_key in cls._cache:
             del cls._cache[cache_key]
         if protocol_name in cls._instance_cache:
             del cls._instance_cache[protocol_name]
-        logger.info(f'[LOADER] Registered {protocol_name} -> {module_path}:{class_name}')
+        logger.info(f"[LOADER] Registered {protocol_name} -> {module_path}:{class_name}")
 
     @classmethod
     def is_available(cls, protocol_name: str) -> bool:

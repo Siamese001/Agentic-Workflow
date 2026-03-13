@@ -1,11 +1,14 @@
 from __future__ import annotations
+
 'AST Engine - Centralized Architectural Parsing Logic.\n\n[Phase 5] Provides shared AST utilities for L5 agents.\nCentralizes import extraction and gravity violation detection.\n\nUsage:\n\n    imports = get_file_imports(Path("my_file.py"))\n    # Returns: [("module.name", line_number), ...]\n'
 import ast
 import logging
 from pathlib import Path
+
 from agentic_core.L0_routing.config.path_constants import TESTS_DIR
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 Logger = logging.getLogger(__name__)
+
 
 class GravityVisitor(ast.NodeVisitor):
     """
@@ -31,6 +34,7 @@ class GravityVisitor(ast.NodeVisitor):
             self.imports.append((node.module, node.lineno))
         self.generic_visit(node)
 
+
 def get_file_imports(file_path: Path) -> list[tuple[str, int]]:
     """
     Centralized utility to extract imports from a Python file.
@@ -42,18 +46,19 @@ def get_file_imports(file_path: Path) -> list[tuple[str, int]]:
         List of (module_name, line_number) tuples
     """
     try:
-        content = file_path.read_text(encoding='utf-8')
+        content = file_path.read_text(encoding="utf-8")
         tree = ast.parse(content)
-        visitor = GravityVisitor('unknown', file_path)
+        visitor = GravityVisitor("unknown", file_path)
         visitor.visit(tree)
         return visitor.imports
     except SyntaxError as e:
-        Logger.debug(f'Syntax error in {file_path}: {e}')
+        Logger.debug(f"Syntax error in {file_path}: {e}")
         return []
     # guardian: allow-silent-swallow
     except Exception as e:
-        Logger.debug(f'Could not parse {file_path}: {e}')
+        Logger.debug(f"Could not parse {file_path}: {e}")
         return []
+
 
 def extract_layer_from_path(file_path: Path) -> str | None:
     """
@@ -66,18 +71,19 @@ def extract_layer_from_path(file_path: Path) -> str | None:
         Layer string (e.g., "L3") or None if not determinable
     """
     path_str = str(file_path)
-    for layer in ['L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'L6']:
-        if f'/{layer}_' in path_str or f'\\{layer}_' in path_str:
+    for layer in ["L0", "L1", "L2", "L3", "L4", "L5", "L6"]:
+        if f"/{layer}_" in path_str or f"\\{layer}_" in path_str:
             return layer
-        if f'/{layer}/' in path_str or f'\\{layer}\\' in path_str:
+        if f"/{layer}/" in path_str or f"\\{layer}\\" in path_str:
             return layer
-    if '/apps_' in path_str or '\\apps_' in path_str:
-        return 'Apps'
-    if '/apps/' in path_str or '\\apps/' in path_str:
-        return 'Apps'
-    if f'/{TESTS_DIR}/' in path_str or f'\\{TESTS_DIR}\\' in path_str:
+    if "/apps_" in path_str or "\\apps_" in path_str:
+        return "Apps"
+    if "/apps/" in path_str or "\\apps/" in path_str:
+        return "Apps"
+    if f"/{TESTS_DIR}/" in path_str or f"\\{TESTS_DIR}\\" in path_str:
         return TESTS_DIR
     return None
+
 
 def extract_layer_from_import(import_path: str) -> str | None:
     """
@@ -89,14 +95,17 @@ def extract_layer_from_import(import_path: str) -> str | None:
     Returns:
         Layer string (e.g., "L5") or None if not determinable
     """
-    for layer in ['L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'L6']:
-        if f'.{layer}_' in import_path or f'{layer}_' in import_path:
+    for layer in ["L0", "L1", "L2", "L3", "L4", "L5", "L6"]:
+        if f".{layer}_" in import_path or f"{layer}_" in import_path:
             return layer
-    if '.apps_' in import_path or 'apps_' in import_path:
-        return 'Apps'
+    if ".apps_" in import_path or "apps_" in import_path:
+        return "Apps"
     return None
 
-def check_gravity_violation(source_layer: str, target_layer: str, gravity_rules: dict[str, set[str]] | None=None) -> bool:
+
+def check_gravity_violation(
+    source_layer: str, target_layer: str, gravity_rules: dict[str, set[str]] | None = None
+) -> bool:
     """
     Check if importing from target_layer violates gravity rules.
 
@@ -109,6 +118,16 @@ def check_gravity_violation(source_layer: str, target_layer: str, gravity_rules:
         True if this is a violation, False if allowed
     """
     if gravity_rules is None:
-        gravity_rules = {'L0': {'L0'}, 'L1': {'L0', 'L1'}, 'L2': {'L0', 'L1', 'L2'}, 'L3': {'L0', 'L1', 'L2', 'L3'}, 'L4': {'L0', 'L1', 'L2', 'L3', 'L4'}, 'L5': {'L0', 'L1', 'L2', 'L3', 'L4', 'L5'}, 'L6': {'L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'L6'}, 'Apps': {'L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'L6', 'Apps'}, 'tests': {'L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'L6', 'Apps', 'tests'}}
+        gravity_rules = {
+            "L0": {"L0"},
+            "L1": {"L0", "L1"},
+            "L2": {"L0", "L1", "L2"},
+            "L3": {"L0", "L1", "L2", "L3"},
+            "L4": {"L0", "L1", "L2", "L3", "L4"},
+            "L5": {"L0", "L1", "L2", "L3", "L4", "L5"},
+            "L6": {"L0", "L1", "L2", "L3", "L4", "L5", "L6"},
+            "Apps": {"L0", "L1", "L2", "L3", "L4", "L5", "L6", "Apps"},
+            "tests": {"L0", "L1", "L2", "L3", "L4", "L5", "L6", "Apps", "tests"},
+        }
     allowed_layers = gravity_rules.get(source_layer, set())
     return target_layer not in allowed_layers

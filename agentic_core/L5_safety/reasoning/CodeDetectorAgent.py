@@ -6,7 +6,9 @@ Rationale:
     - Implements Atomic Snapshot comparison for Drift detection.
     - Standardized Severity enums for dashboard integration.
 """
+
 from __future__ import annotations
+
 import ast
 import json
 import logging
@@ -17,10 +19,12 @@ from datetime import datetime
 from enum import Enum, auto
 from pathlib import Path
 from typing import Any
+
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.utils.decorators_compat_util import standard_heal
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 Logger = logging.getLogger(__name__)
+
 
 class DetectionType(Enum):
     DEAD_CODE = auto()
@@ -29,11 +33,13 @@ class DetectionType(Enum):
     DEADLOCK = auto()
     MEMORY_LEAK = auto()
 
+
 class Severity(Enum):
     INFO = 0
     WARNING = 1
     ERROR = 2
     CRITICAL = 3
+
 
 @dataclass
 class Detection:
@@ -45,6 +51,7 @@ class Detection:
     details: dict = field(default_factory=dict)
     timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
 
+
 @dataclass
 class DetectorConfig:
     enable_dead_code: bool = True
@@ -53,18 +60,26 @@ class DetectorConfig:
     enable_deadlock: bool = True
     enable_memory_leak: bool = True
     baseline_path: Path | None = None
-    ignore_patterns: list[str] = field(default_factory=lambda: ['test_', '_test.py', 'conftest.py'])
+    ignore_patterns: list[str] = field(default_factory=lambda: ["test_", "_test.py", "conftest.py"])
     project_root: Path | None = None
+
 
 class CodeDetectorAgent(SovereignBaseAgent):
     """
     Unified code quality detector.
     Consolidates DeadCode, Drift, Deadlock, and MemoryLeak detection.
     """
-    LOCK_PATTERNS = ['\\.acquire\\(', 'threading\\.Lock\\(', 'threading\\.RLock\\(', 'asyncio\\.Lock\\(', 'with\\s+\\w+_lock:']
-    MEMORY_LEAK_PATTERNS = ['__del__\\s*\\(', 'global\\s+\\w+\\s*=\\s*\\[\\]', '\\.append\\([^)]+\\)\\s*$']
 
-    def __init__(self, config: DetectorConfig | None=None):
+    LOCK_PATTERNS = [
+        "\\.acquire\\(",
+        "threading\\.Lock\\(",
+        "threading\\.RLock\\(",
+        "asyncio\\.Lock\\(",
+        "with\\s+\\w+_lock:",
+    ]
+    MEMORY_LEAK_PATTERNS = ["__del__\\s*\\(", "global\\s+\\w+\\s*=\\s*\\[\\]", "\\.append\\([^)]+\\)\\s*$"]
+
+    def __init__(self, config: DetectorConfig | None = None):
         self._detector_config = config or DetectorConfig()
         self.project_root = self._detector_config.project_root or Path.cwd()
         self._lock = threading.RLock()
@@ -76,11 +91,11 @@ class CodeDetectorAgent(SovereignBaseAgent):
             # guardian: allow-silent-swallow
             except Exception as e:
                 raise
-                Logger.warning(f'Failed to load baseline: {e}')
+                Logger.warning(f"Failed to load baseline: {e}")
 
     @standard_heal
     # guardian: allow-type-erasure
-    def heal_repository(self, dry_run: bool=True, execute: bool=False, **kwargs) -> dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
         """
         Sovereign Interface.
         Detectors primarily REPORT. 'execute' mode can update baselines.
@@ -88,14 +103,18 @@ class CodeDetectorAgent(SovereignBaseAgent):
         violations = self.run_full_scan()
         if execute and self._detector_config.baseline_path:
             self._update_baseline()
-        return {'violations_found': len(violations), 'violations_fixed': 0, 'report': [asdict(d) for d in violations]}
+        return {
+            "violations_found": len(violations),
+            "violations_fixed": 0,
+            "report": [asdict(d) for d in violations],
+        }
 
     def run_full_scan(self) -> list[Detection]:
         """Scans all Python files in project."""
         self._detections = []
-        files = list(self.project_root.rglob('*.py'))
+        files = list(self.project_root.rglob("*.py"))
         for f in files:
-            if any((p in f.name for p in self._detector_config.ignore_patterns)):
+            if any(p in f.name for p in self._detector_config.ignore_patterns):
                 continue
             self.detect_all(f)
         return self._detections
@@ -106,7 +125,7 @@ class CodeDetectorAgent(SovereignBaseAgent):
             return []
         detections = []
         try:
-            content = file_path.read_text(encoding='utf-8')
+            content = file_path.read_text(encoding="utf-8")
         # guardian: allow-silent-swallow
         except Exception:
             return []
@@ -135,14 +154,22 @@ class CodeDetectorAgent(SovereignBaseAgent):
                     used.add(node.id)
             unused = defined - used
             for name in unused:
-                if name.startswith('_') or name in {'main', 'run', 'execute', '__init__', 'setup'}:
+                if name.startswith("_") or name in {"main", "run", "execute", "__init__", "setup"}:
                     continue
                 lineno = 0
                 for node in ast.walk(tree):
-                    if hasattr(node, 'name') and node.name == name:
+                    if hasattr(node, "name") and node.name == name:
                         lineno = node.lineno
                         break
-                detections.append(Detection(detection_type=DetectionType.DEAD_CODE.name, file_path=str(file_path), line_number=lineno, severity=Severity.WARNING.name, message=f'Potentially unused definition: {name}'))
+                detections.append(
+                    Detection(
+                        detection_type=DetectionType.DEAD_CODE.name,
+                        file_path=str(file_path),
+                        line_number=lineno,
+                        severity=Severity.WARNING.name,
+                        message=f"Potentially unused definition: {name}",
+                    )
+                )
         except SyntaxError:
             pass
         return detections
@@ -152,14 +179,23 @@ class CodeDetectorAgent(SovereignBaseAgent):
         lines = content.splitlines()
         locks = []
         for i, line in enumerate(lines, 1):
-            if any((re.search(p, line) for p in self.LOCK_PATTERNS)):
+            if any(re.search(p, line) for p in self.LOCK_PATTERNS):
                 locks.append((i, line))
         if len(locks) >= 2:
             for j in range(len(locks) - 1):
                 l1, txt1 = locks[j]
                 l2, txt2 = locks[j + 1]
-                if abs(l2 - l1) < 5 and 'release' not in txt1 and ('release' not in txt2):
-                    detections.append(Detection(detection_type=DetectionType.DEADLOCK.name, file_path=str(file_path), line_number=l1, severity=Severity.ERROR.name, message='Potential nested lock acquisition (Deadlock Risk)', details={'nested_lines': [l1, l2]}))
+                if abs(l2 - l1) < 5 and "release" not in txt1 and ("release" not in txt2):
+                    detections.append(
+                        Detection(
+                            detection_type=DetectionType.DEADLOCK.name,
+                            file_path=str(file_path),
+                            line_number=l1,
+                            severity=Severity.ERROR.name,
+                            message="Potential nested lock acquisition (Deadlock Risk)",
+                            details={"nested_lines": [l1, l2]},
+                        )
+                    )
         return detections
 
     def detect_memory_leaks(self, file_path: Path, content: str) -> list[Detection]:
@@ -168,7 +204,16 @@ class CodeDetectorAgent(SovereignBaseAgent):
         for i, line in enumerate(lines, 1):
             for pattern in self.MEMORY_LEAK_PATTERNS:
                 if re.search(pattern, line):
-                    detections.append(Detection(detection_type=DetectionType.MEMORY_LEAK.name, file_path=str(file_path), line_number=i, severity=Severity.WARNING.name, message='Potential memory leak pattern', details={'pattern': pattern}))
+                    detections.append(
+                        Detection(
+                            detection_type=DetectionType.MEMORY_LEAK.name,
+                            file_path=str(file_path),
+                            line_number=i,
+                            severity=Severity.WARNING.name,
+                            message="Potential memory leak pattern",
+                            details={"pattern": pattern},
+                        )
+                    )
         return detections
 
     def detect_method_changes(self, file_path: Path, content: str) -> list[Detection]:
@@ -196,8 +241,14 @@ class CodeDetectorAgent(SovereignBaseAgent):
                 - errors: Number of errors encountered
                 - skipped: Number of violations skipped
         """
-        violation_type = violation.get('type', '')
-        path = violation.get('path', '')
-        Logger.info(f'[CODE_DETECTOR] Detection-only agent: {violation_type} at {path}')
-        return {'violations_fixed': 0, 'violations_found': 1, 'errors': 0, 'skipped': 1, 'reason': 'Detection-only agent - manual intervention required'}
+        violation_type = violation.get("type", "")
+        path = violation.get("path", "")
+        Logger.info(f"[CODE_DETECTOR] Detection-only agent: {violation_type} at {path}")
+        return {
+            "violations_fixed": 0,
+            "violations_found": 1,
+            "errors": 0,
+            "skipped": 1,
+            "reason": "Detection-only agent - manual intervention required",
+        }
         pass

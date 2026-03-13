@@ -15,29 +15,35 @@ References:
 - Adapters Usage.png: "WITH ADAPTERS (LEGACY)" vs "NO ADAPTERS (NATIVE/COMPLIANT)"
 - V10 Diagram: "Legacy Bridge" integration layer
 """
+
 import logging
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Generic, TypeVar
+
 from agentic_core.L5_safety.enforcement.circuit_breaker_gate import CircuitBreaker, get_breaker
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 logger = logging.getLogger(__name__)
-T = TypeVar('T')
+T = TypeVar("T")
+
 
 @dataclass
 class AdapterContext:
     """Context passed through adapter chain."""
+
     request_id: str
     timestamp: datetime = field(default_factory=datetime.utcnow)
-    risk_level: str = 'medium'
+    risk_level: str = "medium"
     bypass_validation: bool = False
     metadata: dict[str, Any] = field(default_factory=dict)
+
 
 @dataclass
 class AdapterResult:
     """Standardized result from adapter operations."""
+
     success: bool
     data: Any = None
     error: str | None = None
@@ -47,7 +53,15 @@ class AdapterResult:
 
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization."""
-        return {'success': self.success, 'data': self.data, 'error': self.error, 'skipped': self.skipped, 'skip_reason': self.skip_reason, 'audit_trail': self.audit_trail}
+        return {
+            "success": self.success,
+            "data": self.data,
+            "error": self.error,
+            "skipped": self.skipped,
+            "skip_reason": self.skip_reason,
+            "audit_trail": self.audit_trail,
+        }
+
 
 class AdapterBase(ABC, Generic[T]):
     """
@@ -75,7 +89,9 @@ class AdapterBase(ABC, Generic[T]):
                 return True
     """
 
-    def __init__(self, legacy_agent: T, service_name: str, circuit_breaker_config: dict[str, Any] | None=None):
+    def __init__(
+        self, legacy_agent: T, service_name: str, circuit_breaker_config: dict[str, Any] | None = None
+    ):
         """
         Initialize adapter with legacy agent.
 
@@ -86,7 +102,7 @@ class AdapterBase(ABC, Generic[T]):
         """
         self._legacy_agent = legacy_agent
         self._service_name = service_name
-        self._circuit_breaker = get_breaker(f'adapter_{service_name}', **circuit_breaker_config or {})
+        self._circuit_breaker = get_breaker(f"adapter_{service_name}", **circuit_breaker_config or {})
         self._audit_log: list[dict[str, Any]] = []
         self._verification_gate = None
         logger.info(f"AdapterBase initialized for '{service_name}' wrapping {type(legacy_agent).__name__}")
@@ -106,9 +122,10 @@ class AdapterBase(ABC, Generic[T]):
         if self._verification_gate is None:
             try:
                 from agentic_core.L5_safety.enforcement.verification_gate import VerificationGate
+
                 self._verification_gate = VerificationGate()
             except ImportError:
-                logger.warning('VerificationGate not available')
+                logger.warning("VerificationGate not available")
         return self._verification_gate
 
     @abstractmethod
@@ -207,17 +224,31 @@ class AdapterBase(ABC, Generic[T]):
         """
         return None
 
-    def _log_audit(self, action: str, context: AdapterContext, result: AdapterResult | None=None, error: Exception | None=None) -> None:
+    def _log_audit(
+        self,
+        action: str,
+        context: AdapterContext,
+        result: AdapterResult | None = None,
+        error: Exception | None = None,
+    ) -> None:
         """Log to audit trail for V10 observability."""
         try:
-            entry = {'timestamp': datetime.utcnow().isoformat(), 'service': self._service_name, 'action': action, 'request_id': context.request_id, 'risk_level': context.risk_level, 'success': result.success if result else False, 'error': str(error) if error else None}
+            entry = {
+                "timestamp": datetime.utcnow().isoformat(),
+                "service": self._service_name,
+                "action": action,
+                "request_id": context.request_id,
+                "risk_level": context.risk_level,
+                "success": result.success if result else False,
+                "error": str(error) if error else None,
+            }
             self._audit_log.append(entry)
-            logger.debug(f'Adapter audit: {entry}')
+            logger.debug(f"Adapter audit: {entry}")
         # guardian: allow-silent-swallow
         except Exception as e:
-            logger.error(f'Failed to log audit: {e}')
+            logger.error(f"Failed to log audit: {e}")
 
-    def execute(self, context: AdapterContext | None=None, *args, **kwargs) -> AdapterResult:
+    def execute(self, context: AdapterContext | None = None, *args, **kwargs) -> AdapterResult:
         """
         Execute the adapted operation with V10 compliance.
 
@@ -239,23 +270,41 @@ class AdapterBase(ABC, Generic[T]):
             AdapterResult with operation outcome
         """
         import uuid
+
         if context is None:
             context = AdapterContext(request_id=str(uuid.uuid4()))
-        audit_trail = {'request_id': context.request_id, 'adapter': self._service_name, 'legacy_agent': type(self._legacy_agent).__name__, 'started_at': datetime.utcnow().isoformat()}
+        audit_trail = {
+            "request_id": context.request_id,
+            "adapter": self._service_name,
+            "legacy_agent": type(self._legacy_agent).__name__,
+            "started_at": datetime.utcnow().isoformat(),
+        }
         if not self._circuit_breaker.allow_request():
-            self._log_audit('circuit_open', context)
-            return AdapterResult(success=False, error='Circuit breaker is OPEN', skipped=True, skip_reason='circuit_breaker_open', audit_trail=audit_trail)
+            self._log_audit("circuit_open", context)
+            return AdapterResult(
+                success=False,
+                error="Circuit breaker is OPEN",
+                skipped=True,
+                skip_reason="circuit_breaker_open",
+                audit_trail=audit_trail,
+            )
         try:
             if not self._validate_input(context, *args, **kwargs):
-                self._log_audit('input_validation_failed', context)
-                return AdapterResult(success=False, error='Input validation failed', skipped=True, skip_reason='input_validation_failed', audit_trail=audit_trail)
+                self._log_audit("input_validation_failed", context)
+                return AdapterResult(
+                    success=False,
+                    error="Input validation failed",
+                    skipped=True,
+                    skip_reason="input_validation_failed",
+                    audit_trail=audit_trail,
+                )
         # guardian: allow-silent-swallow
         except Exception as e:
-            logger.error(f'Input validation error: {e}')
-            return AdapterResult(success=False, error=f'Input validation error: {e}', audit_trail=audit_trail)
+            logger.error(f"Input validation error: {e}")
+            return AdapterResult(success=False, error=f"Input validation error: {e}", audit_trail=audit_trail)
         pre_result = self._pre_execute_hook(context, *args, **kwargs)
         if pre_result is not None:
-            self._log_audit('pre_execute_short_circuit', context, pre_result)
+            self._log_audit("pre_execute_short_circuit", context, pre_result)
             return pre_result
         try:
             raw_result = self._execute_legacy(context, *args, **kwargs)
@@ -264,23 +313,27 @@ class AdapterBase(ABC, Generic[T]):
         except Exception as e:
             raise
             self._circuit_breaker.record_failure(e)
-            self._log_audit('execution_error', context, error=e)
+            self._log_audit("execution_error", context, error=e)
             error_result = self._on_error(e, context)
             if error_result is not None:
                 return error_result
             return AdapterResult(success=False, error=str(e), audit_trail=audit_trail)
         try:
             if not self._validate_output(raw_result, context):
-                self._log_audit('output_validation_failed', context)
-                return AdapterResult(success=False, data=raw_result, error='Output validation failed', audit_trail=audit_trail)
+                self._log_audit("output_validation_failed", context)
+                return AdapterResult(
+                    success=False, data=raw_result, error="Output validation failed", audit_trail=audit_trail
+                )
         # guardian: allow-silent-swallow
         except Exception as e:
-            logger.error(f'Output validation error: {e}')
-            return AdapterResult(success=False, data=raw_result, error=f'Output validation error: {e}', audit_trail=audit_trail)
+            logger.error(f"Output validation error: {e}")
+            return AdapterResult(
+                success=False, data=raw_result, error=f"Output validation error: {e}", audit_trail=audit_trail
+            )
         final_result = self._post_execute_hook(raw_result, context)
-        audit_trail['completed_at'] = datetime.utcnow().isoformat()
+        audit_trail["completed_at"] = datetime.utcnow().isoformat()
         result = AdapterResult(success=True, data=final_result, audit_trail=audit_trail)
-        self._log_audit('success', context, result)
+        self._log_audit("success", context, result)
         return result
 
     def get_audit_log(self) -> list[dict[str, Any]]:
@@ -293,7 +346,13 @@ class AdapterBase(ABC, Generic[T]):
 
     def get_status(self) -> dict[str, Any]:
         """Get adapter status for dashboard."""
-        return {'service_name': self._service_name, 'legacy_agent_type': type(self._legacy_agent).__name__, 'circuit_breaker': self._circuit_breaker.metrics.__dict__, 'audit_log_size': len(self._audit_log)}
+        return {
+            "service_name": self._service_name,
+            "legacy_agent_type": type(self._legacy_agent).__name__,
+            "circuit_breaker": self._circuit_breaker.metrics.__dict__,
+            "audit_log_size": len(self._audit_log),
+        }
+
 
 class HealingAdapter(AdapterBase[T]):
     """
@@ -305,7 +364,7 @@ class HealingAdapter(AdapterBase[T]):
     - Symmetric AST manifest handling
     """
 
-    def __init__(self, legacy_agent: T, service_name: str, project_root: Path | None=None):
+    def __init__(self, legacy_agent: T, service_name: str, project_root: Path | None = None):
         super().__init__(legacy_agent, service_name)
         self._project_root = project_root or Path.cwd()
 
@@ -325,8 +384,10 @@ class HealingAdapter(AdapterBase[T]):
         """
         gate = self._get_verification_gate()
         if gate is None:
-            logger.warning('VerificationGate unavailable, allowing action')
+            logger.warning("VerificationGate unavailable, allowing action")
             return True
         return gate.verify_action(file_path, action_type, target_node)
+
+
 AdapterBaseAdapter = AdapterBase
-__all__ = ['AdapterBase', 'AdapterBaseAdapter', 'AdapterContext', 'AdapterResult', 'HealingAdapter']
+__all__ = ["AdapterBase", "AdapterBaseAdapter", "AdapterContext", "AdapterResult", "HealingAdapter"]

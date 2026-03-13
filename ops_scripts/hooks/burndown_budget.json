@@ -22,8 +22,44 @@
   "agentic_core/L4_state/memory/cache_admission_gate.py": {
     "silent_swallower": 1
   },
+  "agentic_core/L5_safety/enforcement/embedding_non_interference_guardrail.py": {
+    "direct_prompt_compilation": 1
+  },
+  "agentic_core/L5_safety/reasoning/SelfUpdatingSafetyEngineAgent.py": {
+    "path_fragility": 1
+  },
+  "agentic_core/L5_safety/reasoning/SovereignActionPlaneAgent.py": {
+    "path_fragility": 1
+  },
+  "agentic_core/L5_safety/types/safety_types.py": {
+    "path_fragility": 1
+  },
+  "agentic_core/L6_observability/engines/drift_detector.py": {
+    "direct_prompt_compilation": 1
+  },
   "agentic_core/cache/cache_key_builders.py": {
     "direct_prompt_compilation": 1
+  },
+  "apps_rg/types/PromptTemplate.py": {
+    "magic_configuration": 12
+  },
+  "apps_rg/types/routing_tier_types.py": {
+    "magic_configuration": 3
+  },
+  "apps_shared/types/k_node_type_types.py": {
+    "magic_configuration": 33
+  },
+  "apps_shared/types/standard_type_types.py": {
+    "magic_configuration": 8
+  },
+  "apps_shared/types/tone_model_types.py": {
+    "magic_configuration": 5
+  },
+  "apps_shared/utils/bulkhead_manager_util.py": {
+    "magic_configuration": 5
+  },
+  "apps_shared/utils/tone_voice_util.py": {
+    "magic_configuration": 10
   },
   "system_learning/engines/meta_learning_bus.py": {
     "silent_swallower": 6

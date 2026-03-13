@@ -10,14 +10,17 @@ Deterministic Operations:
 - Threshold comparisons
 - Balance rule processing
 """
+
 from __future__ import annotations
+
 from dataclasses import dataclass
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 @dataclass
 class BalanceResult:
     """Result of campaign balance validation."""
+
     passed: bool
     issues: list[str]
     ratio: float | None = None
@@ -27,6 +30,7 @@ class BalanceResult:
         if self.metadata is None:
             self.metadata = {}
 
+
 class CampaignBalanceValidator:
     """
     Pure deterministic campaign balance validation.
@@ -34,16 +38,18 @@ class CampaignBalanceValidator:
     All logic is 100% deterministic - no external dependencies or LLM calls.
     """
 
-    def __init__(self, thresholds: dict[str, Any] | None=None) -> None:
+    def __init__(self, thresholds: dict[str, Any] | None = None) -> None:
         """
         Initialize with balance validation thresholds.
 
         Args:
             thresholds: Configuration for balance validation
         """
-        self.thresholds = thresholds or {'max_leads_per_message': 100, 'min_leads_per_message': 1}
+        self.thresholds = thresholds or {"max_leads_per_message": 100, "min_leads_per_message": 1}
 
-    def validate_campaign_balance(self, campaign: dict[str, Any], leads: list[Any], messages: list[Any]) -> BalanceResult:
+    def validate_campaign_balance(
+        self, campaign: dict[str, Any], leads: list[Any], messages: list[Any]
+    ) -> BalanceResult:
         """
         Validate campaign balance using purely deterministic logic.
 
@@ -62,7 +68,9 @@ class CampaignBalanceValidator:
             issues.extend(ratio_issues)
         field_issues = self._validate_required_fields(campaign)
         issues.extend(field_issues)
-        return BalanceResult(passed=len(issues) == 0, issues=issues, ratio=ratio, metadata={'validation_type': 'deterministic'})
+        return BalanceResult(
+            passed=len(issues) == 0, issues=issues, ratio=ratio, metadata={"validation_type": "deterministic"}
+        )
 
     def _calculate_lead_message_ratio(self, leads: list[Any], messages: list[Any]) -> float | None:
         """
@@ -83,12 +91,12 @@ class CampaignBalanceValidator:
         Moved to Deterministic: Pure comparison logic
         """
         issues: list[str] = []
-        max_ratio = self.thresholds['max_leads_per_message']
-        min_ratio = self.thresholds['min_leads_per_message']
+        max_ratio = self.thresholds["max_leads_per_message"]
+        min_ratio = self.thresholds["min_leads_per_message"]
         if ratio > max_ratio:
-            issues.append('Too many leads per message template')
+            issues.append("Too many leads per message template")
         elif ratio < min_ratio:
-            issues.append('More templates than leads')
+            issues.append("More templates than leads")
         return issues
 
     def _validate_required_fields(self, campaign: dict[str, Any]) -> list[str]:
@@ -98,13 +106,15 @@ class CampaignBalanceValidator:
         Moved to Deterministic: Pure existence validation
         """
         issues: list[str] = []
-        if not campaign.get('name'):
-            issues.append('Campaign missing name')
-        if not campaign.get('goal'):
-            issues.append('Campaign missing goal')
+        if not campaign.get("name"):
+            issues.append("Campaign missing name")
+        if not campaign.get("goal"):
+            issues.append("Campaign missing goal")
         return issues
 
-    def calculate_balance_score(self, campaign: dict[str, Any], leads: list[Any], messages: list[Any]) -> float:
+    def calculate_balance_score(
+        self, campaign: dict[str, Any], leads: list[Any], messages: list[Any]
+    ) -> float:
         """
         Calculate overall balance score using deterministic algorithm.
 
@@ -112,14 +122,14 @@ class CampaignBalanceValidator:
             Float between 0.0 and 1.0 representing balance quality
         """
         score = 1.0
-        if not campaign.get('name'):
+        if not campaign.get("name"):
             score -= 0.3
-        if not campaign.get('goal'):
+        if not campaign.get("goal"):
             score -= 0.3
         ratio = self._calculate_lead_message_ratio(leads, messages)
         if ratio is not None:
-            max_ratio = self.thresholds['max_leads_per_message']
-            min_ratio = self.thresholds['min_leads_per_message']
+            max_ratio = self.thresholds["max_leads_per_message"]
+            min_ratio = self.thresholds["min_leads_per_message"]
             if ratio > max_ratio:
                 excess_ratio = ratio - max_ratio
                 score -= min(0.4, excess_ratio / max_ratio * 0.4)
@@ -128,7 +138,9 @@ class CampaignBalanceValidator:
                 score -= min(0.4, deficit_ratio / min_ratio * 0.4)
         return max(0.0, score)
 
-    def suggest_improvements(self, campaign: dict[str, Any], leads: list[Any], messages: list[Any]) -> list[str]:
+    def suggest_improvements(
+        self, campaign: dict[str, Any], leads: list[Any], messages: list[Any]
+    ) -> list[str]:
         """
         Generate deterministic improvement suggestions.
 
@@ -136,18 +148,18 @@ class CampaignBalanceValidator:
             List of actionable improvement suggestions
         """
         suggestions: list[str] = []
-        if not campaign.get('name'):
-            suggestions.append('Add a descriptive campaign name')
-        if not campaign.get('goal'):
-            suggestions.append('Define a clear campaign goal')
+        if not campaign.get("name"):
+            suggestions.append("Add a descriptive campaign name")
+        if not campaign.get("goal"):
+            suggestions.append("Define a clear campaign goal")
         ratio = self._calculate_lead_message_ratio(leads, messages)
         if ratio is not None:
-            max_ratio = self.thresholds['max_leads_per_message']
-            min_ratio = self.thresholds['min_leads_per_message']
+            max_ratio = self.thresholds["max_leads_per_message"]
+            min_ratio = self.thresholds["min_leads_per_message"]
             if ratio > max_ratio:
                 needed_messages = len(leads) // max_ratio + 1
-                suggestions.append(f'Create {needed_messages - len(messages)} more message templates')
+                suggestions.append(f"Create {needed_messages - len(messages)} more message templates")
             elif ratio < min_ratio:
                 needed_leads = len(messages) * min_ratio
-                suggestions.append(f'Add {needed_leads - len(leads)} more leads or remove templates')
+                suggestions.append(f"Add {needed_leads - len(leads)} more leads or remove templates")
         return suggestions

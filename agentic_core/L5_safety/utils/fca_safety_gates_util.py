@@ -23,18 +23,21 @@ Plan Output:
     7. Deterministic staged plan (WAVE 3.1)
     8. Wave execution API (WAVE 3.2)
 """
+
 from __future__ import annotations
+
 import ast
 import os
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 @dataclass
 class PlannedAction:
     """A single proposed rename/move action."""
+
     action_type: str
     src: str
     dst: str
@@ -42,9 +45,11 @@ class PlannedAction:
     blocked_reason: str | None = None
     impact_score: int = 0
 
+
 @dataclass
 class SafetyGateResult:
     """Aggregate result of all safety gate checks."""
+
     actions: list[PlannedAction] = field(default_factory=list)
     blocked_count: int = 0
     collision_count: int = 0
@@ -52,7 +57,10 @@ class SafetyGateResult:
     mass_action_abort: bool = False
     summary: dict[str, int] = field(default_factory=dict)
 
-def check_rename_collisions(rename_map: dict[str, str], existing_files: set[str], case_sensitive: bool=False) -> list[dict[str, Any]]:
+
+def check_rename_collisions(
+    rename_map: dict[str, str], existing_files: set[str], case_sensitive: bool = False
+) -> list[dict[str, Any]]:
     """
     Detect rename collisions in a proposed rename map.
 
@@ -72,19 +80,34 @@ def check_rename_collisions(rename_map: dict[str, str], existing_files: set[str]
 
     def _norm(p: str) -> str:
         return p.lower() if not case_sensitive else p
+
     dst_to_srcs: dict[str, list[str]] = {}
     for src, dst in rename_map.items():
         key = _norm(dst)
         dst_to_srcs.setdefault(key, []).append(src)
     for dst_norm, srcs in dst_to_srcs.items():
         if len(srcs) > 1:
-            collisions.append({'type': 'DST_COLLISION', 'src': srcs, 'dst': srcs[0] and rename_map[srcs[0]], 'message': f"{len(srcs)} files map to same destination '{rename_map[srcs[0]]}': {srcs}"})
+            collisions.append(
+                {
+                    "type": "DST_COLLISION",
+                    "src": srcs,
+                    "dst": srcs[0] and rename_map[srcs[0]],
+                    "message": f"{len(srcs)} files map to same destination '{rename_map[srcs[0]]}': {srcs}",
+                }
+            )
     existing_norm = {_norm(f): f for f in existing_files}
     for src, dst in rename_map.items():
         dst_n = _norm(dst)
         src_n = _norm(src)
         if dst_n in existing_norm and dst_n != src_n:
-            collisions.append({'type': 'DST_EXISTS', 'src': [src], 'dst': dst, 'message': f"Destination '{dst}' already exists (existing: '{existing_norm[dst_n]}')"})
+            collisions.append(
+                {
+                    "type": "DST_EXISTS",
+                    "src": [src],
+                    "dst": dst,
+                    "message": f"Destination '{dst}' already exists (existing: '{existing_norm[dst_n]}')",
+                }
+            )
     if not case_sensitive:
         for src, dst in rename_map.items():
             src_n = _norm(src)
@@ -92,8 +115,16 @@ def check_rename_collisions(rename_map: dict[str, str], existing_files: set[str]
             if dst_n in existing_norm:
                 actual_existing = existing_norm[dst_n]
                 if actual_existing != dst and _norm(actual_existing) == dst_n and (src != actual_existing):
-                    collisions.append({'type': 'CASING_CONFLICT', 'src': [src], 'dst': dst, 'message': f"Case-insensitive conflict: '{dst}' clashes with existing '{actual_existing}'"})
+                    collisions.append(
+                        {
+                            "type": "CASING_CONFLICT",
+                            "src": [src],
+                            "dst": dst,
+                            "message": f"Case-insensitive conflict: '{dst}' clashes with existing '{actual_existing}'",
+                        }
+                    )
     return collisions
+
 
 def build_import_graph(python_files: list[Path], project_root: Path) -> dict[str, int]:
     """
@@ -109,15 +140,15 @@ def build_import_graph(python_files: list[Path], project_root: Path) -> dict[str
             rel = p.relative_to(project_root)
         except ValueError:
             continue
-        rel_str = str(rel).replace('\\', '/')
-        mod_name = rel_str.replace('/', '.').removesuffix('.py')
-        if mod_name.endswith('.__init__'):
-            mod_name = mod_name.removesuffix('.__init__')
+        rel_str = str(rel).replace("\\", "/")
+        mod_name = rel_str.replace("/", ".").removesuffix(".py")
+        if mod_name.endswith(".__init__"):
+            mod_name = mod_name.removesuffix(".__init__")
         module_to_relpath[mod_name] = rel_str
         import_counts[rel_str] = 0
     for p in python_files:
         try:
-            content = p.read_text(encoding='utf-8', errors='ignore')
+            content = p.read_text(encoding="utf-8", errors="ignore")
             tree = ast.parse(content)
         except (SyntaxError, OSError):
             continue
@@ -132,16 +163,18 @@ def build_import_graph(python_files: list[Path], project_root: Path) -> dict[str
                 _increment_import(mod, module_to_relpath, import_counts)
     return import_counts
 
+
 def _increment_import(mod: str, module_to_relpath: dict[str, str], import_counts: dict[str, int]) -> None:
     """Increment import count for a module if it's in our project."""
     if mod in module_to_relpath:
         import_counts[module_to_relpath[mod]] = import_counts.get(module_to_relpath[mod], 0) + 1
-    parts = mod.split('.')
+    parts = mod.split(".")
     for i in range(len(parts), 0, -1):
-        prefix = '.'.join(parts[:i])
+        prefix = ".".join(parts[:i])
         if prefix in module_to_relpath:
             import_counts[module_to_relpath[prefix]] = import_counts.get(module_to_relpath[prefix], 0) + 1
             break
+
 
 def check_init_reexports(path: Path) -> int:
     """
@@ -152,20 +185,27 @@ def check_init_reexports(path: Path) -> int:
     """
     module_stem = path.stem
     parent = path.parent
-    init_path = parent / '__init__.py'
+    init_path = parent / "__init__.py"
     bonus = 0
     if init_path.exists():
         try:
-            content = init_path.read_text(encoding='utf-8', errors='ignore')
-            pattern = f'from\\s+\\.{re.escape(module_stem)}\\s+import\\s+'
+            content = init_path.read_text(encoding="utf-8", errors="ignore")
+            pattern = f"from\\s+\\.{re.escape(module_stem)}\\s+import\\s+"
             if re.search(pattern, content):
                 bonus += 10
         except OSError:
             pass
     return bonus
 
+
 # guardian: allow-magic-config
-def check_import_impact(rename_map: dict[str, str], import_counts: dict[str, int], python_files: list[Path], project_root: Path, max_import_impact: int=25) -> list[dict[str, Any]]:
+def check_import_impact(
+    rename_map: dict[str, str],
+    import_counts: dict[str, int],
+    python_files: list[Path],
+    project_root: Path,
+    max_import_impact: int = 25,
+) -> list[dict[str, Any]]:
     """
     Gate renames/moves that affect high-import-count modules.
 
@@ -182,15 +222,34 @@ def check_import_impact(rename_map: dict[str, str], import_counts: dict[str, int
     blocked: list[dict[str, Any]] = []
     for src, dst in rename_map.items():
         base_impact = import_counts.get(src, 0)
-        src_path = project_root / src.replace('/', os.sep)
+        src_path = project_root / src.replace("/", os.sep)
         init_bonus = check_init_reexports(src_path) if src_path.exists() else 0
         total_impact = base_impact + init_bonus
         if total_impact > max_import_impact:
-            blocked.append({'type': 'BLOCKED_HIGH_IMPACT', 'src': src, 'dst': dst, 'import_count': base_impact, 'init_reexport_bonus': init_bonus, 'total_impact': total_impact, 'threshold': max_import_impact, 'message': f"'{src}' has impact score {total_impact} (imports={base_impact}, init_reexport={init_bonus}) exceeding threshold {max_import_impact}"})
+            blocked.append(
+                {
+                    "type": "BLOCKED_HIGH_IMPACT",
+                    "src": src,
+                    "dst": dst,
+                    "import_count": base_impact,
+                    "init_reexport_bonus": init_bonus,
+                    "total_impact": total_impact,
+                    "threshold": max_import_impact,
+                    "message": f"'{src}' has impact score {total_impact} (imports={base_impact}, init_reexport={init_bonus}) exceeding threshold {max_import_impact}",
+                }
+            )
     return blocked
+
+
 MAX_ACTIONS_DEFAULT = 50
 
-def check_mass_action(planned_actions_total: int, max_actions: int=MAX_ACTIONS_DEFAULT, force: bool=False, wave_id: str | None=None) -> dict[str, Any] | None:
+
+def check_mass_action(
+    planned_actions_total: int,
+    max_actions: int = MAX_ACTIONS_DEFAULT,
+    force: bool = False,
+    wave_id: str | None = None,
+) -> dict[str, Any] | None:
     """
     Block execution if too many actions are planned.
 
@@ -208,12 +267,25 @@ def check_mass_action(planned_actions_total: int, max_actions: int=MAX_ACTIONS_D
     if force and wave_id:
         return None
     if force and (not wave_id):
-        return {'type': 'ABORTED_MASS_ACTION', 'planned': planned_actions_total, 'max_actions': max_actions, 'reason': 'force=True but wave_id is missing (required for mass override)'}
-    return {'type': 'ABORTED_MASS_ACTION', 'planned': planned_actions_total, 'max_actions': max_actions, 'reason': f"{planned_actions_total} actions exceed max_actions={max_actions}. Pass force=True and wave_id='...' to override."}
-KNOWN_AGENT_BASES = frozenset({'SovereignBaseAgent', 'BaseAgent', 'AgentBase'})
-KNOWN_AGENT_BASE_SUFFIXES = ('Agent', 'AgentBase', 'BaseAgent')
-KNOWN_ORCHESTRATOR_BASES = frozenset({'IOrchestratorAgent'})
-KNOWN_EXECUTOR_SUFFIXES = ('Executor',)
+        return {
+            "type": "ABORTED_MASS_ACTION",
+            "planned": planned_actions_total,
+            "max_actions": max_actions,
+            "reason": "force=True but wave_id is missing (required for mass override)",
+        }
+    return {
+        "type": "ABORTED_MASS_ACTION",
+        "planned": planned_actions_total,
+        "max_actions": max_actions,
+        "reason": f"{planned_actions_total} actions exceed max_actions={max_actions}. Pass force=True and wave_id='...' to override.",
+    }
+
+
+KNOWN_AGENT_BASES = frozenset({"SovereignBaseAgent", "BaseAgent", "AgentBase"})
+KNOWN_AGENT_BASE_SUFFIXES = ("Agent", "AgentBase", "BaseAgent")
+KNOWN_ORCHESTRATOR_BASES = frozenset({"IOrchestratorAgent"})
+KNOWN_EXECUTOR_SUFFIXES = ("Executor",)
+
 
 def detect_agent_lineage(path: Path) -> str:
     """
@@ -227,28 +299,29 @@ def detect_agent_lineage(path: Path) -> str:
         "NOT_AGENT" — no agent indicators found
     """
     try:
-        content = path.read_text(encoding='utf-8', errors='ignore')
+        content = path.read_text(encoding="utf-8", errors="ignore")
         tree = ast.parse(content)
     except (SyntaxError, OSError):
-        return 'NOT_AGENT'
+        return "NOT_AGENT"
     for node in ast.walk(tree):
         if not isinstance(node, ast.ClassDef):
             continue
         class_name = node.name
         base_names = _extract_base_names(node)
-        if class_name.endswith('Orchestrator') or any((b in KNOWN_ORCHESTRATOR_BASES for b in base_names)):
-            return 'ORCHESTRATOR'
-        if any((class_name.endswith(s) for s in KNOWN_EXECUTOR_SUFFIXES)):
-            return 'EXECUTOR'
-        if any((b in KNOWN_AGENT_BASES for b in base_names)):
-            return 'AGENT'
-        if any((b.endswith(s) for b in base_names for s in KNOWN_AGENT_BASE_SUFFIXES)):
-            return 'AGENT'
-        if class_name.endswith('Agent'):
-            if any((b.endswith('Agent') for b in base_names)):
-                return 'AGENT'
-            return 'AGENT_DETECTION_UNCERTAIN'
-    return 'NOT_AGENT'
+        if class_name.endswith("Orchestrator") or any(b in KNOWN_ORCHESTRATOR_BASES for b in base_names):
+            return "ORCHESTRATOR"
+        if any(class_name.endswith(s) for s in KNOWN_EXECUTOR_SUFFIXES):
+            return "EXECUTOR"
+        if any(b in KNOWN_AGENT_BASES for b in base_names):
+            return "AGENT"
+        if any(b.endswith(s) for b in base_names for s in KNOWN_AGENT_BASE_SUFFIXES):
+            return "AGENT"
+        if class_name.endswith("Agent"):
+            if any(b.endswith("Agent") for b in base_names):
+                return "AGENT"
+            return "AGENT_DETECTION_UNCERTAIN"
+    return "NOT_AGENT"
+
 
 def _extract_base_names(class_node: ast.ClassDef) -> list[str]:
     """Extract base class names from a ClassDef node."""
@@ -259,10 +332,15 @@ def _extract_base_names(class_node: ast.ClassDef) -> list[str]:
         elif isinstance(base, ast.Attribute):
             bases.append(base.attr)
     return bases
-OBSERVABILITY_IMPORT_PREFIXES = frozenset({'prometheus_client', 'opentelemetry', 'grafana_client', 'datadog', 'agentic_core.L6_observability'})
-L0_DASHBOARD_ALLOWLIST_FOLDERS = frozenset({'scripts', 'dashboards'})
 
-def check_observability_violation(path: Path, parts: tuple[str, ...] | None=None) -> dict[str, Any] | None:
+
+OBSERVABILITY_IMPORT_PREFIXES = frozenset(
+    {"prometheus_client", "opentelemetry", "grafana_client", "datadog", "agentic_core.L6_observability"}
+)
+L0_DASHBOARD_ALLOWLIST_FOLDERS = frozenset({"scripts", "dashboards"})
+
+
+def check_observability_violation(path: Path, parts: tuple[str, ...] | None = None) -> dict[str, Any] | None:
     """
     Detect OBSERVABILITY_OUTSIDE_L6 using import evidence, not just keywords.
 
@@ -277,14 +355,14 @@ def check_observability_violation(path: Path, parts: tuple[str, ...] | None=None
     """
     if parts is None:
         parts = path.parts
-    if 'L6_observability' in parts:
+    if "L6_observability" in parts:
         return None
-    if 'L0_routing' in parts:
+    if "L0_routing" in parts:
         for folder in L0_DASHBOARD_ALLOWLIST_FOLDERS:
             if folder in parts:
                 return None
     try:
-        content = path.read_text(encoding='utf-8', errors='ignore')
+        content = path.read_text(encoding="utf-8", errors="ignore")
         tree = ast.parse(content)
     except (SyntaxError, OSError):
         return None
@@ -301,24 +379,39 @@ def check_observability_violation(path: Path, parts: tuple[str, ...] | None=None
             if _is_observability_import(mod):
                 obs_imports_found.append(mod)
     if obs_imports_found:
-        current_layer = next((p for p in parts if p.startswith('L') and '_' in p and (len(p) > 1) and p[1].isdigit()), None)
+        current_layer = next(
+            (p for p in parts if p.startswith("L") and "_" in p and (len(p) > 1) and p[1].isdigit()), None
+        )
         if current_layer:
-            return {'file': str(path), 'violation': 'OBSERVABILITY_OUTSIDE_L6', 'evidence_type': 'import', 'imports': obs_imports_found, 'current_layer': current_layer, 'message': f"'{path.name}' imports observability packages {obs_imports_found} but is in {current_layer}, not L6_observability."}
+            return {
+                "file": str(path),
+                "violation": "OBSERVABILITY_OUTSIDE_L6",
+                "evidence_type": "import",
+                "imports": obs_imports_found,
+                "current_layer": current_layer,
+                "message": f"'{path.name}' imports observability packages {obs_imports_found} but is in {current_layer}, not L6_observability.",
+            }
     return None
+
 
 def _is_observability_import(mod: str) -> bool:
     """Check if a module name is a known observability package."""
     for prefix in OBSERVABILITY_IMPORT_PREFIXES:
-        if mod == prefix or mod.startswith(prefix + '.'):
+        if mod == prefix or mod.startswith(prefix + "."):
             return True
     return False
+
 
 @dataclass
 class NestedLCDPolicy:
     """Policy configuration for nested LCD subtree detection."""
+
     strict_lcd_roots_only: bool = False
 
-def check_nested_lcd_with_policy(parts: tuple[str, ...], validate_fn, policy: NestedLCDPolicy | None=None) -> dict[str, Any] | None:
+
+def check_nested_lcd_with_policy(
+    parts: tuple[str, ...], validate_fn, policy: NestedLCDPolicy | None = None
+) -> dict[str, Any] | None:
     """
     Wrapper around validate_no_nested_lcd that applies policy.
 
@@ -334,12 +427,13 @@ def check_nested_lcd_with_policy(parts: tuple[str, ...], validate_fn, policy: Ne
         return None
     # guardian: allow-config-with-logic
     if not policy.strict_lcd_roots_only:
-        result['severity'] = 'WARN'
-        result['executable'] = False
+        result["severity"] = "WARN"
+        result["executable"] = False
     else:
-        result['severity'] = 'VIOLATION'
-        result['executable'] = True
+        result["severity"] = "VIOLATION"
+        result["executable"] = True
     return result
+
 
 def build_execution_plan(actions: list[PlannedAction]) -> dict[str, Any]:
     """
@@ -366,14 +460,33 @@ def build_execution_plan(actions: list[PlannedAction]) -> dict[str, Any]:
             blocked_reason_counts[a.blocked_reason] = blocked_reason_counts.get(a.blocked_reason, 0) + 1
         else:
             executable += 1
-    return {'planned_actions': [{'action_type': a.action_type, 'src': a.src, 'dst': a.dst, 'reason_code': a.reason_code, 'blocked_reason': a.blocked_reason, 'impact_score': a.impact_score} for a in sorted_actions], 'summary': {'by_action_type': action_type_counts, 'by_blocked_reason': blocked_reason_counts}, 'total': len(sorted_actions), 'blocked': blocked, 'executable': executable}
+    return {
+        "planned_actions": [
+            {
+                "action_type": a.action_type,
+                "src": a.src,
+                "dst": a.dst,
+                "reason_code": a.reason_code,
+                "blocked_reason": a.blocked_reason,
+                "impact_score": a.impact_score,
+            }
+            for a in sorted_actions
+        ],
+        "summary": {"by_action_type": action_type_counts, "by_blocked_reason": blocked_reason_counts},
+        "total": len(sorted_actions),
+        "blocked": blocked,
+        "executable": executable,
+    }
+
 
 @dataclass
 class WaveConfig:
     """Configuration for a single execution wave."""
+
     wave_id: str
     allow_action_types: set[str]
     max_actions_per_wave: int = 50
+
 
 def filter_actions_for_wave(actions: list[PlannedAction], wave_config: WaveConfig) -> list[PlannedAction]:
     """
@@ -394,8 +507,20 @@ def filter_actions_for_wave(actions: list[PlannedAction], wave_config: WaveConfi
             break
     return filtered
 
+
 # guardian: allow-magic-config
-def run_all_safety_gates(rename_map: dict[str, str], existing_files: set[str], python_files: list[Path], project_root: Path, case_sensitive: bool=False, max_import_impact: int=25, max_actions: int=MAX_ACTIONS_DEFAULT, force: bool=False, wave_id: str | None=None, import_counts: dict[str, int] | None=None) -> SafetyGateResult:
+def run_all_safety_gates(
+    rename_map: dict[str, str],
+    existing_files: set[str],
+    python_files: list[Path],
+    project_root: Path,
+    case_sensitive: bool = False,
+    max_import_impact: int = 25,
+    max_actions: int = MAX_ACTIONS_DEFAULT,
+    force: bool = False,
+    wave_id: str | None = None,
+    import_counts: dict[str, int] | None = None,
+) -> SafetyGateResult:
     """
     Run all safety gates on a proposed rename/move plan.
 
@@ -406,27 +531,43 @@ def run_all_safety_gates(rename_map: dict[str, str], existing_files: set[str], p
     result.collision_count = len(collisions)
     if import_counts is None:
         import_counts = build_import_graph(python_files, project_root)
-    high_impact = check_import_impact(rename_map, import_counts, python_files, project_root, max_import_impact)
+    high_impact = check_import_impact(
+        rename_map, import_counts, python_files, project_root, max_import_impact
+    )
     result.high_impact_count = len(high_impact)
     mass_block = check_mass_action(len(rename_map), max_actions, force, wave_id)
     result.mass_action_abort = mass_block is not None
     collision_srcs = set()
     for c in collisions:
-        for s in c['src']:
+        for s in c["src"]:
             collision_srcs.add(s)
-    high_impact_srcs = {h['src'] for h in high_impact}
+    high_impact_srcs = {h["src"] for h in high_impact}
     for src, dst in sorted(rename_map.items()):
         blocked = None
         if src in collision_srcs:
-            blocked = 'BLOCKED_RENAME_COLLISION'
+            blocked = "BLOCKED_RENAME_COLLISION"
         elif src in high_impact_srcs:
-            blocked = 'BLOCKED_HIGH_IMPACT'
+            blocked = "BLOCKED_HIGH_IMPACT"
         elif result.mass_action_abort:
-            blocked = 'ABORTED_MASS_ACTION'
+            blocked = "ABORTED_MASS_ACTION"
         impact = import_counts.get(src, 0)
-        action = PlannedAction(action_type='RENAME', src=src, dst=dst, reason_code='NAMING_VIOLATION', blocked_reason=blocked, impact_score=impact)
+        action = PlannedAction(
+            action_type="RENAME",
+            src=src,
+            dst=dst,
+            reason_code="NAMING_VIOLATION",
+            blocked_reason=blocked,
+            impact_score=impact,
+        )
         result.actions.append(action)
         if blocked:
             result.blocked_count += 1
-    result.summary = {'collisions': result.collision_count, 'high_impact': result.high_impact_count, 'mass_action_abort': result.mass_action_abort, 'total_actions': len(result.actions), 'blocked': result.blocked_count, 'executable': len(result.actions) - result.blocked_count}
+    result.summary = {
+        "collisions": result.collision_count,
+        "high_impact": result.high_impact_count,
+        "mass_action_abort": result.mass_action_abort,
+        "total_actions": len(result.actions),
+        "blocked": result.blocked_count,
+        "executable": len(result.actions) - result.blocked_count,
+    }
     return result

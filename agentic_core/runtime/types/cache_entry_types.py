@@ -1,12 +1,14 @@
 from __future__ import annotations
+
 from dataclasses import dataclass, field
-'Semantic cache for LLM response caching.\n\nPhase 1 - Pillar 11: Cost & Optimization (Semantic Caching)\nEnhanced with embedding-based semantic similarity matching.\n'
+
+"Semantic cache for LLM response caching.\n\nPhase 1 - Pillar 11: Cost & Optimization (Semantic Caching)\nEnhanced with embedding-based semantic similarity matching.\n"
 import hashlib
 import json
 import logging
 import time
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 try:
     import numpy as np
 except ImportError as _err:
@@ -15,19 +17,24 @@ try:
     from agentic_core.semantic_memory.embeddings.core_embedder import get_embedding
 except ImportError:
 
-    def get_embedding(text: str, model: str=None, dimensions: int=None):
+    def get_embedding(text: str, model: str = None, dimensions: int = None):
         """Stub embedding function - returns zero vector if real embedder unavailable."""
         import warnings
-        warnings.warn('get_embedding not available, semantic matching disabled', stacklevel=2)
+
+        warnings.warn("get_embedding not available, semantic matching disabled", stacklevel=2)
         return [0.0] * 1536
+
+
 Logger: Any = logging.getLogger(__name__)
 SIMILARITY_THRESHOLD = 0.92
-EMBEDDING_MODEL = 'text-embedding-3-small'
+EMBEDDING_MODEL = "text-embedding-3-small"
 EMBEDDING_DIM = 1536
+
 
 @dataclass
 class CacheEntry:
     """Single cache entry."""
+
     key: str
     prompt: str
     response: Any
@@ -48,26 +55,39 @@ class CacheEntry:
         """
         return time.time() - self.created_at > ttl
 
+
 @dataclass
 class SemanticCacheHit:
     """Extended cache hit with semantic details."""
+
     response: Any
     entry: CacheEntry
     age_seconds: float
     similarity_score: float = 1.0
-    match_type: str = 'exact'
+    match_type: str = "exact"
+
 
 @dataclass
 class CacheMiss:
     """cache miss result."""
+
     prompt: str
-    reason: str = 'not_found'
+    reason: str = "not_found"
+
 
 class semantic_cache:
     """Enhanced semantic cache with optional embedding-based similarity matching."""
 
     # guardian: allow-magic-config
-    def __init__(self, ttl: int=3600, max_entries: int=10000, enable_logging: bool=True, enable_semantic_matching: bool=True, similarity_threshold: float=SIMILARITY_THRESHOLD, embedding_model: str=EMBEDDING_MODEL):
+    def __init__(
+        self,
+        ttl: int = 3600,
+        max_entries: int = 10000,
+        enable_logging: bool = True,
+        enable_semantic_matching: bool = True,
+        similarity_threshold: float = SIMILARITY_THRESHOLD,
+        embedding_model: str = EMBEDDING_MODEL,
+    ):
         """Initialize semantic cache.
 
         Args:
@@ -108,15 +128,15 @@ class semantic_cache:
                 best_key = key
         return (best_key, best_score) if best_key else None
 
-    def _hash_prompt(self, prompt: str, context: dict[str, Any] | None=None) -> str:
+    def _hash_prompt(self, prompt: str, context: dict[str, Any] | None = None) -> str:
         """Generate cache key from prompt and context."""
         cache_input = prompt
         if context:
             context_str = json.dumps(context, sort_keys=True, default=str)
-            cache_input = f'{prompt}::{context_str}'
+            cache_input = f"{prompt}::{context_str}"
         return hashlib.sha256(cache_input.encode()).hexdigest()
 
-    def get(self, prompt: str, context: dict[str, Any] | None=None) -> SemanticCacheHit | CacheMiss:
+    def get(self, prompt: str, context: dict[str, Any] | None = None) -> SemanticCacheHit | CacheMiss:
         """Get cached response, falling back to semantic similarity if enabled."""
         key = self._hash_prompt(prompt, context)
         entry = self._cache.get(key)
@@ -124,11 +144,17 @@ class semantic_cache:
             entry.accessed_at = time.time()
             entry.hit_count += 1
             self._hit_count += 1
-            return SemanticCacheHit(response=entry.response, entry=entry, age_seconds=time.time() - entry.created_at, similarity_score=1.0, match_type='exact')
+            return SemanticCacheHit(
+                response=entry.response,
+                entry=entry,
+                age_seconds=time.time() - entry.created_at,
+                similarity_score=1.0,
+                match_type="exact",
+            )
         if self.enable_semantic_matching:
             query_text = prompt
             if context:
-                query_text += f'::{json.dumps(context, sort_keys=True, default=str)}'
+                query_text += f"::{json.dumps(context, sort_keys=True, default=str)}"
             query_emb = self._compute_embedding(query_text)
             match = self._find_semantic_match(query_emb)
             if match:
@@ -139,12 +165,31 @@ class semantic_cache:
                     matched_entry.hit_count += 1
                     self._semantic_hit_count += 1
                     if self.enable_logging:
-                        Logger.info('semantic_cache_hit', extra={'similarity_score': score, 'matched_prompt_snippet': matched_entry.prompt[:100], 'query_prompt_snippet': prompt[:100]})
-                    return SemanticCacheHit(response=matched_entry.response, entry=matched_entry, age_seconds=time.time() - matched_entry.created_at, similarity_score=score, match_type='semantic')
+                        Logger.info(
+                            "semantic_cache_hit",
+                            extra={
+                                "similarity_score": score,
+                                "matched_prompt_snippet": matched_entry.prompt[:100],
+                                "query_prompt_snippet": prompt[:100],
+                            },
+                        )
+                    return SemanticCacheHit(
+                        response=matched_entry.response,
+                        entry=matched_entry,
+                        age_seconds=time.time() - matched_entry.created_at,
+                        similarity_score=score,
+                        match_type="semantic",
+                    )
         self._miss_count += 1
-        return CacheMiss(prompt=prompt, reason='not_found')
+        return CacheMiss(prompt=prompt, reason="not_found")
 
-    def set(self, prompt: str, response: Any, context: dict[str, Any] | None=None, metadata: dict[str, Any] | None=None) -> None:
+    def set(
+        self,
+        prompt: str,
+        response: Any,
+        context: dict[str, Any] | None = None,
+        metadata: dict[str, Any] | None = None,
+    ) -> None:
         """Set cache entry, computing embedding if semantic matching enabled."""
         if len(self._cache) >= self.max_entries:
             self._evict_oldest()
@@ -154,13 +199,21 @@ class semantic_cache:
         if self.enable_semantic_matching:
             set_text = prompt
             if context:
-                set_text += f'::{json.dumps(context, sort_keys=True, default=str)}'
+                set_text += f"::{json.dumps(context, sort_keys=True, default=str)}"
             embedding = self._compute_embedding(set_text)
             self._embedding_index[key] = embedding
-        entry = CacheEntry(key=key, prompt=prompt, response=response, created_at=now, accessed_at=now, metadata=metadata or {}, embedding=embedding)
+        entry = CacheEntry(
+            key=key,
+            prompt=prompt,
+            response=response,
+            created_at=now,
+            accessed_at=now,
+            metadata=metadata or {},
+            embedding=embedding,
+        )
         self._cache[key] = entry
         if self.enable_logging:
-            Logger.debug(f'Cached entry: {key[:10]}... (semantic: {self.enable_semantic_matching})')
+            Logger.debug(f"Cached entry: {key[:10]}... (semantic: {self.enable_semantic_matching})")
 
     def _evict_oldest(self) -> None:
         """Evict the least recently accessed entry."""
@@ -171,14 +224,14 @@ class semantic_cache:
         if oldest_key in self._embedding_index:
             del self._embedding_index[oldest_key]
         if self.enable_logging:
-            Logger.info(f'Evicted oldest cache entry: {oldest_key[:10]}...')
+            Logger.info(f"Evicted oldest cache entry: {oldest_key[:10]}...")
 
     def clear(self) -> None:
         """Clear all cache entries."""
         self._cache.clear()
         self._embedding_index.clear()
         if self.enable_logging:
-            Logger.info('cache_cleared')
+            Logger.info("cache_cleared")
 
     def get_stats(self) -> dict[str, Any]:
         """Get detailed cache statistics."""
@@ -186,7 +239,15 @@ class semantic_cache:
         total_requests = total_hits + self._miss_count
         hit_rate = total_hits / total_requests if total_requests > 0 else 0.0
         semantic_hit_rate = self._semantic_hit_count / total_requests if total_requests > 0 else 0.0
-        return {'exact_hits': self._hit_count, 'semantic_hits': self._semantic_hit_count, 'misses': self._miss_count, 'total_hit_rate': hit_rate, 'semantic_hit_rate': semantic_hit_rate, 'current_size': len(self._cache), 'max_size': self.max_entries}
+        return {
+            "exact_hits": self._hit_count,
+            "semantic_hits": self._semantic_hit_count,
+            "misses": self._miss_count,
+            "total_hit_rate": hit_rate,
+            "semantic_hit_rate": semantic_hit_rate,
+            "current_size": len(self._cache),
+            "max_size": self.max_entries,
+        }
 
     def prune_expired(self) -> int:
         """Remove all expired entries.
@@ -200,11 +261,17 @@ class semantic_cache:
             if key in self._embedding_index:
                 del self._embedding_index[key]
         if self.enable_logging and expired_keys:
-            Logger.info('cache_pruned', extra={'removed_count': len(expired_keys)})
+            Logger.info("cache_pruned", extra={"removed_count": len(expired_keys)})
         return len(expired_keys)
 
+
 # guardian: allow-magic-config
-def create_semantic_cache(ttl: int=3600, max_entries: int=10000, enable_semantic_matching: bool=True, similarity_threshold: float=SIMILARITY_THRESHOLD) -> semantic_cache:
+def create_semantic_cache(
+    ttl: int = 3600,
+    max_entries: int = 10000,
+    enable_semantic_matching: bool = True,
+    similarity_threshold: float = SIMILARITY_THRESHOLD,
+) -> semantic_cache:
     """Factory function to create a semantic cache.
 
     Args:
@@ -216,4 +283,9 @@ def create_semantic_cache(ttl: int=3600, max_entries: int=10000, enable_semantic
     Returns:
         Configured semantic_cache instance
     """
-    return semantic_cache(ttl=ttl, max_entries=max_entries, enable_semantic_matching=enable_semantic_matching, similarity_threshold=similarity_threshold)
+    return semantic_cache(
+        ttl=ttl,
+        max_entries=max_entries,
+        enable_semantic_matching=enable_semantic_matching,
+        similarity_threshold=similarity_threshold,
+    )

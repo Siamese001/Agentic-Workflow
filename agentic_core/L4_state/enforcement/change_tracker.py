@@ -1,8 +1,9 @@
 from __future__ import annotations
+
 "\nChange Tracker - Sovereign Healing Audit Trail\nCanon-compliant utility for tracking file modifications by healer/fixer agents.\n\nLocation: agentic_core/utils/general_helpers/change_tracker.py\nDepth: 3 (per SSOT semantic_l2_registry['utils']['general_helpers'])\nPurpose: Domain-agnostic core utility for miscellaneous tracking\n"
 from collections import defaultdict
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 class ChangeRecord:
     """Record of a single file modification by a healer/fixer agent."""
@@ -11,6 +12,7 @@ class ChangeRecord:
         self.agent = agent
         self.file_path = str(Path(file_path).resolve())
         self.description = description
+
 
 class ChangeTracker:
     """
@@ -45,19 +47,19 @@ class ChangeTracker:
         """Generate a detailed Markdown report of all changes."""
         by_agent = self._group_by_agent()
         by_file = self._group_by_file()
-        lines = ['## Sovereign Healing Change Report (Canon-Compliant)\n']
-        lines.append('### Changes by Healer/Fixer\n')
+        lines = ["## Sovereign Healing Change Report (Canon-Compliant)\n"]
+        lines.append("### Changes by Healer/Fixer\n")
         for agent, changes in sorted(by_agent.items()):
-            lines.append(f'\n**{agent}** — {len(changes)} file(s) modified')
+            lines.append(f"\n**{agent}** — {len(changes)} file(s) modified")
             for file_path, desc in changes:
-                lines.append(f'- `{file_path}`: {desc}')
-        lines.append('\n### Changes by File\n')
+                lines.append(f"- `{file_path}`: {desc}")
+        lines.append("\n### Changes by File\n")
         for file_path, changes in sorted(by_file.items()):
-            lines.append(f'\n**`{file_path}`** — modified by {len(changes)} healer(s)')
+            lines.append(f"\n**`{file_path}`** — modified by {len(changes)} healer(s)")
             for agent, desc in changes:
-                lines.append(f'- {agent}: {desc}')
-        lines.append(f'\n**Total recorded modifications:** {len(self.records)}\n')
-        return '\n'.join(lines)
+                lines.append(f"- {agent}: {desc}")
+        lines.append(f"\n**Total recorded modifications:** {len(self.records)}\n")
+        return "\n".join(lines)
 
     def clear(self):
         """Clear all recorded changes."""

@@ -9,12 +9,15 @@ retry_count is a HARD FAIL (signals tampering or replay violation).
 
 Phase 3.2: Mathematically-Sealed Sovereignty Hardening
 """
+
 from __future__ import annotations
+
 from dataclasses import dataclass
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 class MonotonicityViolation(RuntimeError):
     """Raised when retry_count decreases between successive escalation contexts."""
+
 
 @dataclass(frozen=True)
 class EscalationContext:
@@ -31,6 +34,7 @@ class EscalationContext:
     previous_retry_count : int
         retry_count of the immediately prior context (0 for the first).
     """
+
     trace_id: str
     retry_count: int
     healing_tier: str
@@ -38,9 +42,11 @@ class EscalationContext:
 
     def __post_init__(self) -> None:
         if self.retry_count < 0:
-            raise ValueError(f'EscalationContext: retry_count must be >= 0, got {self.retry_count}')
+            raise ValueError(f"EscalationContext: retry_count must be >= 0, got {self.retry_count}")
         if self.retry_count < self.previous_retry_count:
-            raise MonotonicityViolation(f'EscalationContext: monotonicity violation — retry_count={self.retry_count} < previous_retry_count={self.previous_retry_count} for trace_id={self.trace_id!r}')
+            raise MonotonicityViolation(
+                f"EscalationContext: monotonicity violation — retry_count={self.retry_count} < previous_retry_count={self.previous_retry_count} for trace_id={self.trace_id!r}"
+            )
 
     @classmethod
     def initial(cls, trace_id: str, healing_tier: str) -> EscalationContext:
@@ -48,7 +54,9 @@ class EscalationContext:
         return cls(trace_id=trace_id, retry_count=0, healing_tier=healing_tier, previous_retry_count=0)
 
     @classmethod
-    def from_result(cls, previous: EscalationContext, new_healing_tier: str | None=None) -> EscalationContext:
+    def from_result(
+        cls, previous: EscalationContext, new_healing_tier: str | None = None
+    ) -> EscalationContext:
         """Create the next context after one healing attempt.
 
         Increments retry_count by 1 and enforces monotonicity.
@@ -63,10 +71,17 @@ class EscalationContext:
                  injection of a tampered *previous*).
         """
         new_count = previous.retry_count + 1
-        return cls(trace_id=previous.trace_id, retry_count=new_count, healing_tier=new_healing_tier or previous.healing_tier, previous_retry_count=previous.retry_count)
+        return cls(
+            trace_id=previous.trace_id,
+            retry_count=new_count,
+            healing_tier=new_healing_tier or previous.healing_tier,
+            previous_retry_count=previous.retry_count,
+        )
 
     @property
     def is_exhausted(self) -> bool:
         """True when retry_count has reached the hard limit (5)."""
         return self.retry_count >= 5
-__all__ = ['EscalationContext', 'MonotonicityViolation']
+
+
+__all__ = ["EscalationContext", "MonotonicityViolation"]

@@ -1,7 +1,8 @@
 from __future__ import annotations
+
 from collections import defaultdict
 from dataclasses import dataclass
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 class ToolBudgetExceededError(Exception):
     """Raised when a tool execution exceeds its deterministic step budget."""
@@ -9,13 +10,18 @@ class ToolBudgetExceededError(Exception):
     def __init__(self, tool_name: str, budget: int):
         self.tool_name = tool_name
         self.budget = budget
-        self.reason_code = 'TOOL_BUDGET_EXCEEDED'
-        super().__init__(f"[{self.reason_code}] Tool '{tool_name}' exceeded execution step budget of {budget}.")
+        self.reason_code = "TOOL_BUDGET_EXCEEDED"
+        super().__init__(
+            f"[{self.reason_code}] Tool '{tool_name}' exceeded execution step budget of {budget}."
+        )
+
 
 @dataclass(frozen=True)
 class ToolBudget:
     """Defines the deterministic execution budget for a tool."""
+
     max_steps: int
+
 
 class DeterministicLoopDetector:
     """

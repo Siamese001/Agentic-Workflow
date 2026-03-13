@@ -22,9 +22,8 @@ Usage from execute_ssot:
 
 from __future__ import annotations
 
-import json
 import logging
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -82,7 +81,7 @@ class PreRunADGReport:
         }
 
     @classmethod
-    def unavailable(cls, changed_files: list[str], reason: str) -> "PreRunADGReport":
+    def unavailable(cls, changed_files: list[str], reason: str) -> PreRunADGReport:
         """Return a degraded report when ADG is unavailable."""
         return cls(
             changed_files=sorted(changed_files),
@@ -132,9 +131,7 @@ def build_pre_run_report(
         impact = engine.analyze(norm_files, include_tests=True)
 
         # Count layer violations in blast radius
-        layer_violation_count = _count_layer_violations_in_scope(
-            result, impact.impacted_modules
-        )
+        layer_violation_count = _count_layer_violations_in_scope(result, impact.impacted_modules)
 
         return PreRunADGReport(
             changed_files=impact.changed_files,
@@ -171,8 +168,8 @@ def _count_layer_violations_in_scope(result: ScanResult, impacted_modules: list[
         if edge.relation_type != "imports":
             continue
         module_prefix = "ADG::Module::"
-        from_path = edge.from_name[len(module_prefix):] if edge.from_name.startswith(module_prefix) else ""
-        to_path = edge.to_name[len(module_prefix):] if edge.to_name.startswith(module_prefix) else ""
+        from_path = edge.from_name[len(module_prefix) :] if edge.from_name.startswith(module_prefix) else ""
+        to_path = edge.to_name[len(module_prefix) :] if edge.to_name.startswith(module_prefix) else ""
         if from_path not in impacted_set or to_path not in impacted_set:
             continue
         fl = module_path_to_layer(from_path)

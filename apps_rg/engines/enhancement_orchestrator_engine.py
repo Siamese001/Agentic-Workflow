@@ -2,12 +2,16 @@
 Enhancement Orchestrator Engine - External tool integration
 Refactored from enhancement_integration.py
 """
+
 from __future__ import annotations
+
 import logging
 from typing import Any
+
 from apps_rg.engines.base_rg_engine import BaseRGEngine
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 Logger = logging.getLogger(__name__)
+
 
 class EnhancementOrchestratorEngine(BaseRGEngine):
     """
@@ -15,23 +19,29 @@ class EnhancementOrchestratorEngine(BaseRGEngine):
     """
 
     def __init__(self, ctx: Any) -> None:
-        super().__init__(ctx, node_id='ORCHESTRATION.ENHANCEMENT')
+        super().__init__(ctx, node_id="ORCHESTRATION.ENHANCEMENT")
 
-    async def execute(self, resume_data: dict[str, Any], enhancement_config: dict[str, Any]) -> dict[str, Any]:
+    async def execute(
+        self, resume_data: dict[str, Any], enhancement_config: dict[str, Any]
+    ) -> dict[str, Any]:
         """
         Coordinate external enhancement tools.
         """
-        self._mcp_audit('enhancement_start')
+        self._mcp_audit("enhancement_start")
         enhanced_data = resume_data.copy()
         enhancements_applied = []
-        if enhancement_config.get('grammar_check', False):
+        if enhancement_config.get("grammar_check", False):
             enhanced_data = await self._apply_grammar_check(enhanced_data)
-            enhancements_applied.append('grammar_check')
-        if enhancement_config.get('keyword_optimization', False):
+            enhancements_applied.append("grammar_check")
+        if enhancement_config.get("keyword_optimization", False):
             enhanced_data = await self._apply_keyword_optimization(enhanced_data)
-            enhancements_applied.append('keyword_optimization')
-        result = {'enhanced_data': enhanced_data, 'enhancements_applied': enhancements_applied, 'enhancement_count': len(enhancements_applied)}
-        self.record_pass(f'Applied {len(enhancements_applied)} enhancements', data=result)
+            enhancements_applied.append("keyword_optimization")
+        result = {
+            "enhanced_data": enhanced_data,
+            "enhancements_applied": enhancements_applied,
+            "enhancement_count": len(enhancements_applied),
+        }
+        self.record_pass(f"Applied {len(enhancements_applied)} enhancements", data=result)
         return result
 
     async def _apply_grammar_check(self, data: dict[str, Any]) -> dict[str, Any]:

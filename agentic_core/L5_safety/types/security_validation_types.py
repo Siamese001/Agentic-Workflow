@@ -9,17 +9,21 @@ Provides a unified interface for running all security validators:
 This module creates a RedTeamValidationSuite that orchestrates
 security testing across multiple validators.
 """
+
 from __future__ import annotations
+
 import logging
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 Logger = logging.getLogger(__name__)
+
 
 @dataclass
 class SecurityValidationResult:
     """Result from a security validation run."""
+
     validator_name: str
     valid: bool
     errors: list[str] = field(default_factory=list)
@@ -27,9 +31,11 @@ class SecurityValidationResult:
     metadata: dict[str, Any] = field(default_factory=dict)
     timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
 
+
 @dataclass
 class SecuritySuiteResult:
     """Aggregated result from running the full security suite."""
+
     overall_valid: bool
     validators_run: int
     validators_passed: int
@@ -37,6 +43,7 @@ class SecuritySuiteResult:
     results: list[SecurityValidationResult] = field(default_factory=list)
     timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
     execution_time_ms: float = 0.0
+
 
 class RedTeamValidationSuite:
     """
@@ -59,16 +66,22 @@ class RedTeamValidationSuite:
         if self._initialized:
             return
         try:
-            from agentic_core.L5_safety.validators.red_team_integration_types import get_adversarial_validator, get_boundary_validator
-            self._validators['adversarial_probe'] = get_adversarial_validator()
-            self._validators['boundary_testing'] = get_boundary_validator()
+            from agentic_core.L5_safety.validators.red_team_integration_types import (
+                get_adversarial_validator,
+                get_boundary_validator,
+            )
+
+            self._validators["adversarial_probe"] = get_adversarial_validator()
+            self._validators["boundary_testing"] = get_boundary_validator()
             self._initialized = True
-            Logger.info(f'[SecuritySuite] Initialized with {len(self._validators)} validators')
+            Logger.info(f"[SecuritySuite] Initialized with {len(self._validators)} validators")
         except ImportError as e:
-            Logger.warning(f'[SecuritySuite] Could not import validators: {e}')
+            Logger.warning(f"[SecuritySuite] Could not import validators: {e}")
             self._initialized = True
 
-    def run_validator(self, validator_name: str, content: Any, context: dict | None=None) -> SecurityValidationResult:
+    def run_validator(
+        self, validator_name: str, content: Any, context: dict | None = None
+    ) -> SecurityValidationResult:
         """
         Run a specific validator.
 
@@ -83,17 +96,27 @@ class RedTeamValidationSuite:
         self._ensure_initialized()
         context = context or {}
         if validator_name not in self._validators:
-            return SecurityValidationResult(validator_name=validator_name, valid=False, errors=[f"Validator '{validator_name}' not found"])
+            return SecurityValidationResult(
+                validator_name=validator_name, valid=False, errors=[f"Validator '{validator_name}' not found"]
+            )
         try:
             validator = self._validators[validator_name]
             result = validator.validate(content, context)
-            return SecurityValidationResult(validator_name=validator_name, valid=result.get('valid', False), errors=result.get('errors', []), warnings=result.get('warnings', []), metadata={k: v for k, v in result.items() if k not in ('valid', 'errors', 'warnings')})
+            return SecurityValidationResult(
+                validator_name=validator_name,
+                valid=result.get("valid", False),
+                errors=result.get("errors", []),
+                warnings=result.get("warnings", []),
+                metadata={k: v for k, v in result.items() if k not in ("valid", "errors", "warnings")},
+            )
         # guardian: allow-silent-swallow
         except Exception as e:
-            Logger.error(f'[SecuritySuite] Validator {validator_name} failed: {e}')
-            return SecurityValidationResult(validator_name=validator_name, valid=False, errors=[f'Validator error: {str(e)}'])
+            Logger.error(f"[SecuritySuite] Validator {validator_name} failed: {e}")
+            return SecurityValidationResult(
+                validator_name=validator_name, valid=False, errors=[f"Validator error: {str(e)}"]
+            )
 
-    def run_all(self, content: Any, context: dict | None=None) -> SecuritySuiteResult:
+    def run_all(self, content: Any, context: dict | None = None) -> SecuritySuiteResult:
         """
         Run all registered security validators.
 
@@ -105,6 +128,7 @@ class RedTeamValidationSuite:
             SecuritySuiteResult with aggregated results
         """
         import time
+
         self._ensure_initialized()
         context = context or {}
         start_time = time.time()
@@ -113,9 +137,16 @@ class RedTeamValidationSuite:
             result = self.run_validator(validator_name, content, context)
             results.append(result)
         execution_time = (time.time() - start_time) * 1000
-        passed = sum((1 for r in results if r.valid))
+        passed = sum(1 for r in results if r.valid)
         failed = len(results) - passed
-        return SecuritySuiteResult(overall_valid=failed == 0, validators_run=len(results), validators_passed=passed, validators_failed=failed, results=results, execution_time_ms=execution_time)
+        return SecuritySuiteResult(
+            overall_valid=failed == 0,
+            validators_run=len(results),
+            validators_passed=passed,
+            validators_failed=failed,
+            results=results,
+            execution_time_ms=execution_time,
+        )
 
     def get_available_validators(self) -> list[str]:
         """Get list of available validator names."""
@@ -125,8 +156,15 @@ class RedTeamValidationSuite:
     def get_status(self) -> dict[str, Any]:
         """Get current status of the security suite."""
         self._ensure_initialized()
-        return {'initialized': self._initialized, 'validators_available': list(self._validators.keys()), 'validator_count': len(self._validators)}
+        return {
+            "initialized": self._initialized,
+            "validators_available": list(self._validators.keys()),
+            "validator_count": len(self._validators),
+        }
+
+
 _security_suite: RedTeamValidationSuite | None = None
+
 
 def get_security_suite() -> RedTeamValidationSuite:
     """Get or create the global security validation suite."""
@@ -135,7 +173,8 @@ def get_security_suite() -> RedTeamValidationSuite:
         _security_suite = RedTeamValidationSuite()
     return _security_suite
 
-def run_security_validation(content: Any, context: dict | None=None) -> SecuritySuiteResult:
+
+def run_security_validation(content: Any, context: dict | None = None) -> SecuritySuiteResult:
     """
     Convenience function to run full security validation.
 

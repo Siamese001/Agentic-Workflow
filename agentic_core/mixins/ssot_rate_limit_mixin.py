@@ -9,12 +9,15 @@ Provides rate limiting that:
 Layer: L2 Execution Aid
 Authority: Throttle only. No L4 mutation. No routing influence.
 """
+
 from __future__ import annotations
+
 import logging
 import time
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
-_logger = logging.getLogger('SSOTRateLimit')
+
+_logger = logging.getLogger("SSOTRateLimit")
+
 
 class RateLimitExceeded(Exception):
     """Raised when a rate limit is exceeded."""
@@ -23,7 +26,8 @@ class RateLimitExceeded(Exception):
         self.bucket = bucket
         self.limit = limit
         self.window = window
-        super().__init__(f'Rate limit exceeded for {bucket}: {limit} calls per {window}s')
+        super().__init__(f"Rate limit exceeded for {bucket}: {limit} calls per {window}s")
+
 
 class SSOTRateLimitMixin:
     """Policy-hash-scoped rate limiter with replay bypass.
@@ -38,7 +42,7 @@ class SSOTRateLimitMixin:
         self._ssot_rate_buckets: dict[str, list[float]] = {}
 
     # guardian: allow-magic-config
-    def rate_check(self, bucket: str, limit: int=100, window: float=60.0) -> bool:
+    def rate_check(self, bucket: str, limit: int = 100, window: float = 60.0) -> bool:
         """Check and record a rate-limited call.
 
         Parameters
@@ -60,7 +64,7 @@ class SSOTRateLimitMixin:
         RateLimitExceeded
             If the rate limit is exceeded (non-replay mode only).
         """
-        if getattr(self, 'is_replay_mode', False):
+        if getattr(self, "is_replay_mode", False):
             return True
         scoped_key = self._scoped_rate_key(bucket)
         now = time.time()
@@ -74,9 +78,9 @@ class SSOTRateLimitMixin:
         return True
 
     # guardian: allow-magic-config
-    def rate_remaining(self, bucket: str, limit: int=100, window: float=60.0) -> int:
+    def rate_remaining(self, bucket: str, limit: int = 100, window: float = 60.0) -> int:
         """Return remaining calls allowed in the current window."""
-        if getattr(self, 'is_replay_mode', False):
+        if getattr(self, "is_replay_mode", False):
             return limit
         scoped_key = self._scoped_rate_key(bucket)
         now = time.time()
@@ -92,5 +96,5 @@ class SSOTRateLimitMixin:
 
     def _scoped_rate_key(self, bucket: str) -> str:
         """Prefix bucket with active_policy_hash."""
-        policy_hash = getattr(self, 'active_policy_hash', 'unknown')
-        return f'{policy_hash}:{bucket}'
+        policy_hash = getattr(self, "active_policy_hash", "unknown")
+        return f"{policy_hash}:{bucket}"

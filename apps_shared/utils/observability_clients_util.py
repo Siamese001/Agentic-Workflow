@@ -2,8 +2,9 @@
 
 Provides tracing and monitoring functionality.
 """
+
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 def create_span(name: str, **kwargs) -> Any:
     """Create a tracing span.
@@ -17,6 +18,7 @@ def create_span(name: str, **kwargs) -> Any:
     """
     return None
 
+
 def record_exception(exception: Exception, **kwargs) -> None:
     """Record an exception in the tracing system.
 
@@ -25,6 +27,7 @@ def record_exception(exception: Exception, **kwargs) -> None:
         **kwargs: Additional context
     """
     pass
+
 
 def set_span_attribute(key: str, value: Any) -> None:
     """Set an attribute on the current span.

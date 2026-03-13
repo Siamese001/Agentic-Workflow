@@ -1,9 +1,11 @@
 from __future__ import annotations
-'\nL1CognitionBase - Consolidated Base for L1 Cognition Agents\n\nLayer: L1 - Cognition\nResponsibilities:\n- Thought engine operations\n- Intent analysis\n- Memory management\n- Meta-learning coordination\n\nMRO HARDENING:\n- Inheritance order: SovereignBaseAgent (root)\n- All L1 agents inherit from this base for consistent cognition capabilities\n'
+
+"\nL1CognitionBase - Consolidated Base for L1 Cognition Agents\n\nLayer: L1 - Cognition\nResponsibilities:\n- Thought engine operations\n- Intent analysis\n- Memory management\n- Meta-learning coordination\n\nMRO HARDENING:\n- Inheritance order: SovereignBaseAgent (root)\n- All L1 agents inherit from this base for consistent cognition capabilities\n"
 from dataclasses import dataclass
 from typing import Any
+
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 @dataclass
 class L1CognitionBase(SovereignBaseAgent):
@@ -18,8 +20,9 @@ class L1CognitionBase(SovereignBaseAgent):
 
     MRO: L1CognitionBase -> SovereignBaseAgent -> object
     """
-    name: str = 'L1CognitionBase'
-    layer: str = 'L1'
+
+    name: str = "L1CognitionBase"
+    layer: str = "L1"
 
     def __post_init__(self) -> None:
         """Cooperative MRO initialization."""
@@ -31,7 +34,7 @@ class L1CognitionBase(SovereignBaseAgent):
 
         Override in subclasses for specialized intent analysis.
         """
-        return {'intent': 'unknown', 'confidence': 0.0, 'raw_input': input_text}
+        return {"intent": "unknown", "confidence": 0.0, "raw_input": input_text}
 
     def retrieve_context(self, query: str) -> list[dict[str, Any]]:
         """

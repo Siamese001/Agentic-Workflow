@@ -16,11 +16,14 @@ Agents compose this via multiple inheritance alongside LICAgentBase.
 
 [CREATED 2026-02-08] Cluster 4 extraction per dedup critique §3.
 """
+
 from __future__ import annotations
+
 from typing import Any, ClassVar
+
 from apps_lic.types.ImmutableStagingBuffer import ImmutableStagingBuffer
 from apps_lic.types.TraceRegistry import TraceRegistry
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 class HOPStageCapability:
     """Pure capability mixin for LIC HOP pipeline stage agents.
@@ -35,7 +38,8 @@ class HOPStageCapability:
         - Set REQUIRED_INPUTS (e.g., ["hop1_analysis", "mission_input"])
         - Override _process(buffer, registry) with business logic
     """
-    HOP_STAGE_NAME: ClassVar[str] = ''
+
+    HOP_STAGE_NAME: ClassVar[str] = ""
     REQUIRED_INPUTS: ClassVar[list[str]] = []
 
     def read_required_inputs(self, buffer: ImmutableStagingBuffer, registry: TraceRegistry) -> dict[str, Any]:
@@ -56,12 +60,19 @@ class HOPStageCapability:
         for key in self.REQUIRED_INPUTS:
             value = buffer.read(key)
             if value is None:
-                registry.add_trace('DATA_ERROR', {'msg': f'Missing {key}'})
-                raise RuntimeError(f'{agent_name} missing required upstream input: {key}')
+                registry.add_trace("DATA_ERROR", {"msg": f"Missing {key}"})
+                raise RuntimeError(f"{agent_name} missing required upstream input: {key}")
             inputs[key] = value
         return inputs
 
-    def write_output(self, buffer: ImmutableStagingBuffer, registry: TraceRegistry, output_data: dict[str, Any], *, decision_meta: dict[str, Any] | None=None) -> None:
+    def write_output(
+        self,
+        buffer: ImmutableStagingBuffer,
+        registry: TraceRegistry,
+        output_data: dict[str, Any],
+        *,
+        decision_meta: dict[str, Any] | None = None,
+    ) -> None:
         """Write stage output to the buffer and log the DECISION_FINAL trace.
 
         Args:
@@ -71,9 +82,9 @@ class HOPStageCapability:
             decision_meta: Optional metadata for the DECISION_FINAL trace.
         """
         if not self.HOP_STAGE_NAME:
-            raise ValueError(f'{self.__class__.__name__} must set HOP_STAGE_NAME')
+            raise ValueError(f"{self.__class__.__name__} must set HOP_STAGE_NAME")
         buffer.write_once(self.HOP_STAGE_NAME, output_data)
-        registry.add_trace('DECISION_FINAL', decision_meta or {'status': 'COMPLETE'})
+        registry.add_trace("DECISION_FINAL", decision_meta or {"status": "COMPLETE"})
 
     def run_stage(self, buffer: ImmutableStagingBuffer, registry: TraceRegistry) -> None:
         """Template method: trace bookends + delegate to _process.
@@ -85,9 +96,9 @@ class HOPStageCapability:
             buffer: The ImmutableStagingBuffer for the mission.
             registry: The TraceRegistry for the mission.
         """
-        registry.add_trace('PHASE_START', {'agent': self.__class__.__name__})
+        registry.add_trace("PHASE_START", {"agent": self.__class__.__name__})
         self._process(buffer, registry)
 
     def _process(self, buffer: ImmutableStagingBuffer, registry: TraceRegistry) -> None:
         """Execute stage-specific business logic. Must be overridden."""
-        raise NotImplementedError(f'{self.__class__.__name__} must implement _process()')
+        raise NotImplementedError(f"{self.__class__.__name__} must implement _process()")

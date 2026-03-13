@@ -1,5 +1,7 @@
 from __future__ import annotations
+
 from agentic_core.L2_execution.tools import write_gateway as _wg
+
 '\nArchivalGatekeeper - Centralized Service for Destructive File Operations\n\nThis module provides a singleton service that handles ALL destructive file operations\n(move, delete, archive) across the entire codebase. This prevents "God Object" creation\nby centralizing file operation logic while keeping agents focused on their domain.\n\nDESIGN PRINCIPLES:\n1. Singleton/Static Service - Single point of control for all file operations\n2. Safe Deletion - \'delete\' actually moves to timestamped archive (soft delete)\n3. Audit Logging - Every operation is logged with full context\n4. No Hard Deletes - Hard delete is banned; all removals go to archive\n\nUSAGE:\n\n    gatekeeper = ArchivalGatekeeper.get_instance(project_root)\n    result = gatekeeper.safe_move(src, dst, "MyAgent", "Relocating to correct territory")\n    result = gatekeeper.safe_archive(src, "MyAgent", "File violates depth rules")\n    result = gatekeeper.safe_delete(src, "MyAgent", "Duplicate file removal")\n\nTerritory: agentic_core/L5_safety/enforcement/\n'
 import json
 import logging
@@ -11,35 +13,54 @@ from datetime import datetime
 from enum import Enum
 from pathlib import Path
 from typing import Any
+
 from agentic_core.L5_safety.config.structure_blueprint import ARCHIVES_DIR
-from agentic_core.L5_safety.config.structure_blueprint.ssot import GLOBAL_EXCLUDED_DIRS, SOVEREIGN_EXCLUDED_FOLDERS
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
+
 logging.basicConfig(level=logging.INFO)
 Logger = logging.getLogger(__name__)
-ARCHIVE_BATCH_ACCEPT_ENV = 'ARCHIVE_BATCH_ACCEPT'
+ARCHIVE_BATCH_ACCEPT_ENV = "ARCHIVE_BATCH_ACCEPT"
+
 
 class ArchivalOperation(Enum):
     """Types of archival operations."""
-    MOVE = 'MOVE'
-    ARCHIVE = 'ARCHIVE'
-    DELETE = 'DELETE'
+
+    MOVE = "MOVE"
+    ARCHIVE = "ARCHIVE"
+    DELETE = "DELETE"
+
 
 @dataclass
 class ArchivalResult:
     """Result of an archival operation."""
+
     success: bool
     operation: ArchivalOperation
     source_path: Path
     destination_path: Path | None = None
-    requester_agent: str = ''
-    reason: str = ''
+    requester_agent: str = ""
+    reason: str = ""
     timestamp: str = field(default_factory=lambda: datetime.now().isoformat())
     error: str | None = None
-    approval_status: str = 'PENDING'
+    approval_status: str = "PENDING"
 
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for logging/serialization."""
-        return {'success': self.success, 'operation': self.operation.value, 'source_path': str(self.source_path), 'destination_path': str(self.destination_path) if self.destination_path else None, 'requester_agent': self.requester_agent, 'reason': self.reason, 'timestamp': self.timestamp, 'error': self.error, 'approval_status': self.approval_status}
+        return {
+            "success": self.success,
+            "operation": self.operation.value,
+            "source_path": str(self.source_path),
+            "destination_path": str(self.destination_path) if self.destination_path else None,
+            "requester_agent": self.requester_agent,
+            "reason": self.reason,
+            "timestamp": self.timestamp,
+            "error": self.error,
+            "approval_status": self.approval_status,
+        }
+
 
 class ArchivalGatekeeper:
     """
@@ -53,12 +74,13 @@ class ArchivalGatekeeper:
 
     Thread-safe singleton implementation.
     """
+
     _instance: ArchivalGatekeeper | None = None
     _lock: threading.Lock = threading.Lock()
     _log_lock: threading.Lock = threading.Lock()
     ARCHIVE_ROOT_NAME = ARCHIVES_DIR
-    ARCHIVE_SUBDIR = 'gatekeeper'
-    AUDIT_LOG_NAME = 'archival_audit.jsonl'
+    ARCHIVE_SUBDIR = "gatekeeper"
+    AUDIT_LOG_NAME = "archival_audit.jsonl"
 
     def __init__(self, project_root: Path):
         """
@@ -77,11 +99,11 @@ class ArchivalGatekeeper:
         self._input_func: Callable[[str], str] = input
         self._l4_ledger_hook: Callable[[ArchivalResult], None] | None = None
         _wg.ensure_dir(self.archive_root)
-        Logger.info(f'[ArchivalGatekeeper] Initialized with project_root: {self.project_root}')
-        Logger.info(f'[ArchivalGatekeeper] Archive root: {self.archive_root}')
+        Logger.info(f"[ArchivalGatekeeper] Initialized with project_root: {self.project_root}")
+        Logger.info(f"[ArchivalGatekeeper] Archive root: {self.archive_root}")
 
     @classmethod
-    def get_instance(cls, project_root: Path | None=None) -> ArchivalGatekeeper:
+    def get_instance(cls, project_root: Path | None = None) -> ArchivalGatekeeper:
         """
         Get the singleton instance of ArchivalGatekeeper.
 
@@ -97,7 +119,7 @@ class ArchivalGatekeeper:
         with cls._lock:
             if cls._instance is None:
                 if project_root is None:
-                    raise ValueError('project_root must be provided on first call to get_instance()')
+                    raise ValueError("project_root must be provided on first call to get_instance()")
                 cls._instance = cls(project_root)
             return cls._instance
 
@@ -119,11 +141,11 @@ class ArchivalGatekeeper:
         Returns:
             Path in archive directory
         """
-        date_folder = datetime.now().strftime('%Y-%m-%d')
+        date_folder = datetime.now().strftime("%Y-%m-%d")
         try:
             rel_path = source_path.relative_to(self.project_root)
         except ValueError:
-            rel_path = Path(str(source_path).replace(':', '_').lstrip('/\\'))
+            rel_path = Path(str(source_path).replace(":", "_").lstrip("/\\"))
         archive_path = self.archive_root / date_folder / rel_path
         return archive_path
 
@@ -138,14 +160,16 @@ class ArchivalGatekeeper:
         """
         with self._log_lock:
             try:
-                _wg.append_text(self.audit_log_path, json.dumps(result.to_dict()) + '\n')
+                _wg.append_text(self.audit_log_path, json.dumps(result.to_dict()) + "\n")
             # guardian: allow-silent-swallow
             except Exception as e:
-                Logger.error(f'[ArchivalGatekeeper] Failed to write audit log: {e}')
-            status = 'SUCCESS' if result.success else 'FAILED'
-            Logger.info(f'[ArchivalGatekeeper] [{status}] {result.operation.value}: {result.source_path} -> {result.destination_path} (requester: {result.requester_agent}, reason: {result.reason})')
+                Logger.error(f"[ArchivalGatekeeper] Failed to write audit log: {e}")
+            status = "SUCCESS" if result.success else "FAILED"
+            Logger.info(
+                f"[ArchivalGatekeeper] [{status}] {result.operation.value}: {result.source_path} -> {result.destination_path} (requester: {result.requester_agent}, reason: {result.reason})"
+            )
 
-    def _validate_path(self, path: Path, operation: str, allow_archive: bool=False) -> str | None:
+    def _validate_path(self, path: Path, operation: str, allow_archive: bool = False) -> str | None:
         """
         Validate a path before operation.
 
@@ -158,17 +182,17 @@ class ArchivalGatekeeper:
             Error message if invalid, None if valid
         """
         if not path.exists():
-            return f'Source path does not exist: {path}'
+            return f"Source path does not exist: {path}"
         if not allow_archive:
             try:
                 path.relative_to(self.archive_root)
-                return f'Cannot {operation} files within archive directory: {path}'
+                return f"Cannot {operation} files within archive directory: {path}"
             except ValueError:
                 pass
         critical_patterns = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS
         for pattern in critical_patterns:
             if pattern in path.parts:
-                return f'Cannot {operation} files in protected directory ({pattern}): {path}'
+                return f"Cannot {operation} files in protected directory ({pattern}): {path}"
         return None
 
     def _is_batch_mode(self) -> bool:
@@ -181,7 +205,10 @@ class ArchivalGatekeeper:
         Returns:
             True if batch mode is enabled
         """
-        return os.environ.get(ARCHIVE_BATCH_ACCEPT_ENV, '').strip() == '1' or os.environ.get('SOVEREIGN_AUTO_APPROVE') == '1'
+        return (
+            os.environ.get(ARCHIVE_BATCH_ACCEPT_ENV, "").strip() == "1"
+            or os.environ.get("SOVEREIGN_AUTO_APPROVE") == "1"
+        )
 
     def _request_approval(self, result: ArchivalResult) -> bool:
         """
@@ -196,40 +223,50 @@ class ArchivalGatekeeper:
         Returns:
             True if approved, False if denied
         """
-        if os.environ.get(ARCHIVE_BATCH_ACCEPT_ENV, '').strip() == '1':
-            result.approval_status = f'BATCH_APPROVED:{ARCHIVE_BATCH_ACCEPT_ENV}'
-            Logger.info(f'[ArchivalGatekeeper] BATCH_APPROVED via {ARCHIVE_BATCH_ACCEPT_ENV}: {result.operation.value} {result.source_path}')
+        if os.environ.get(ARCHIVE_BATCH_ACCEPT_ENV, "").strip() == "1":
+            result.approval_status = f"BATCH_APPROVED:{ARCHIVE_BATCH_ACCEPT_ENV}"
+            Logger.info(
+                f"[ArchivalGatekeeper] BATCH_APPROVED via {ARCHIVE_BATCH_ACCEPT_ENV}: {result.operation.value} {result.source_path}"
+            )
             return True
-        if os.environ.get('SOVEREIGN_AUTO_APPROVE') == '1':
-            result.approval_status = 'BATCH_APPROVED:SOVEREIGN_AUTO_APPROVE'
-            Logger.info(f'[ArchivalGatekeeper] BATCH_APPROVED via SOVEREIGN_AUTO_APPROVE: {result.operation.value} {result.source_path}')
+        if os.environ.get("SOVEREIGN_AUTO_APPROVE") == "1":
+            result.approval_status = "BATCH_APPROVED:SOVEREIGN_AUTO_APPROVE"
+            Logger.info(
+                f"[ArchivalGatekeeper] BATCH_APPROVED via SOVEREIGN_AUTO_APPROVE: {result.operation.value} {result.source_path}"
+            )
             return True
         if not self._require_approval:
-            result.approval_status = 'APPROVED'
+            result.approval_status = "APPROVED"
             return True
-        print('\n' + '=' * 70)
-        print('🔒 ARCHIVAL GATEKEEPER - APPROVAL REQUIRED')
-        print('=' * 70)
-        print(f'  Operation:   {result.operation.value}')
-        print(f'  Requester:   {result.requester_agent}')
-        print(f'  Source:      {result.source_path}')
+        print("\n" + "=" * 70)
+        print("🔒 ARCHIVAL GATEKEEPER - APPROVAL REQUIRED")
+        print("=" * 70)
+        print(f"  Operation:   {result.operation.value}")
+        print(f"  Requester:   {result.requester_agent}")
+        print(f"  Source:      {result.source_path}")
         if result.destination_path:
-            print(f'  Destination: {result.destination_path}')
-        print(f'  Reason:      {result.reason}')
-        print('=' * 70)
+            print(f"  Destination: {result.destination_path}")
+        print(f"  Reason:      {result.reason}")
+        print("=" * 70)
         try:
-            response = self._input_func('Approve this operation? (y/n): ').strip().lower()
-            approved = response in ('y', 'yes')
+            response = self._input_func("Approve this operation? (y/n): ").strip().lower()
+            approved = response in ("y", "yes")
             if approved:
-                result.approval_status = 'APPROVED'
-                Logger.info(f'[ArchivalGatekeeper] User APPROVED: {result.operation.value} {result.source_path}')
+                result.approval_status = "APPROVED"
+                Logger.info(
+                    f"[ArchivalGatekeeper] User APPROVED: {result.operation.value} {result.source_path}"
+                )
             else:
-                result.approval_status = 'DENIED'
-                Logger.info(f'[ArchivalGatekeeper] User DENIED: {result.operation.value} {result.source_path}')
+                result.approval_status = "DENIED"
+                Logger.info(
+                    f"[ArchivalGatekeeper] User DENIED: {result.operation.value} {result.source_path}"
+                )
             return approved
         except (EOFError, KeyboardInterrupt):
-            result.approval_status = 'DENIED'
-            Logger.warning(f'[ArchivalGatekeeper] Non-interactive environment, DENIED: {result.operation.value}')
+            result.approval_status = "DENIED"
+            Logger.warning(
+                f"[ArchivalGatekeeper] Non-interactive environment, DENIED: {result.operation.value}"
+            )
             return False
 
     def set_l4_ledger_hook(self, hook: Callable[[ArchivalResult], None]) -> None:
@@ -243,7 +280,7 @@ class ArchivalGatekeeper:
             hook: Callable that receives ArchivalResult
         """
         self._l4_ledger_hook = hook
-        Logger.info('[ArchivalGatekeeper] L4 Ledger hook registered')
+        Logger.info("[ArchivalGatekeeper] L4 Ledger hook registered")
 
     def _notify_l4_ledger(self, result: ArchivalResult) -> None:
         """
@@ -258,11 +295,11 @@ class ArchivalGatekeeper:
         if self._l4_ledger_hook is not None:
             try:
                 self._l4_ledger_hook(result)
-                Logger.debug(f'[ArchivalGatekeeper] L4 Ledger notified: {result.operation.value}')
+                Logger.debug(f"[ArchivalGatekeeper] L4 Ledger notified: {result.operation.value}")
             # guardian: allow-silent-swallow
             except Exception as e:
                 raise
-                Logger.error(f'[ArchivalGatekeeper] L4 Ledger hook failed: {e}')
+                Logger.error(f"[ArchivalGatekeeper] L4 Ledger hook failed: {e}")
 
     def set_input_function(self, func: Callable[[str], str]) -> None:
         """
@@ -282,7 +319,15 @@ class ArchivalGatekeeper:
         """
         self._require_approval = require
 
-    def safe_move(self, source: str | Path, destination: str | Path, requester_agent: str, reason: str, create_parents: bool=True, overwrite: bool=False) -> ArchivalResult:
+    def safe_move(
+        self,
+        source: str | Path,
+        destination: str | Path,
+        requester_agent: str,
+        reason: str,
+        create_parents: bool = True,
+        overwrite: bool = False,
+    ) -> ArchivalResult:
         """
         Safely move a file or directory.
 
@@ -299,20 +344,43 @@ class ArchivalGatekeeper:
         """
         source = Path(source).resolve()
         destination = Path(destination).resolve()
-        error = self._validate_path(source, 'move')
+        error = self._validate_path(source, "move")
         if error:
-            result = ArchivalResult(success=False, operation=ArchivalOperation.MOVE, source_path=source, destination_path=destination, requester_agent=requester_agent, reason=reason, error=error)
+            result = ArchivalResult(
+                success=False,
+                operation=ArchivalOperation.MOVE,
+                source_path=source,
+                destination_path=destination,
+                requester_agent=requester_agent,
+                reason=reason,
+                error=error,
+            )
             self._log_operation(result)
             return result
-        pending_result = ArchivalResult(success=False, operation=ArchivalOperation.MOVE, source_path=source, destination_path=destination, requester_agent=requester_agent, reason=reason)
+        pending_result = ArchivalResult(
+            success=False,
+            operation=ArchivalOperation.MOVE,
+            source_path=source,
+            destination_path=destination,
+            requester_agent=requester_agent,
+            reason=reason,
+        )
         if not self._request_approval(pending_result):
-            pending_result.error = 'User denied approval'
+            pending_result.error = "User denied approval"
             self._log_operation(pending_result)
             self._notify_l4_ledger(pending_result)
             return pending_result
         try:
             if destination.exists() and (not overwrite):
-                result = ArchivalResult(success=False, operation=ArchivalOperation.MOVE, source_path=source, destination_path=destination, requester_agent=requester_agent, reason=reason, error=f'Destination already exists: {destination}')
+                result = ArchivalResult(
+                    success=False,
+                    operation=ArchivalOperation.MOVE,
+                    source_path=source,
+                    destination_path=destination,
+                    requester_agent=requester_agent,
+                    reason=reason,
+                    error=f"Destination already exists: {destination}",
+                )
                 self._log_operation(result)
                 return result
             if create_parents:
@@ -324,10 +392,27 @@ class ArchivalGatekeeper:
                     _wg.remove_file(destination)
             _wg.move_path(str(source), str(destination))
             self._operation_count += 1
-            result = ArchivalResult(success=True, operation=ArchivalOperation.MOVE, source_path=source, destination_path=destination, requester_agent=requester_agent, reason=reason, approval_status=pending_result.approval_status)
+            result = ArchivalResult(
+                success=True,
+                operation=ArchivalOperation.MOVE,
+                source_path=source,
+                destination_path=destination,
+                requester_agent=requester_agent,
+                reason=reason,
+                approval_status=pending_result.approval_status,
+            )
         except Exception as e:
             raise
-            result = ArchivalResult(success=False, operation=ArchivalOperation.MOVE, source_path=source, destination_path=destination, requester_agent=requester_agent, reason=reason, error=str(e), approval_status=pending_result.approval_status)
+            result = ArchivalResult(
+                success=False,
+                operation=ArchivalOperation.MOVE,
+                source_path=source,
+                destination_path=destination,
+                requester_agent=requester_agent,
+                reason=reason,
+                error=str(e),
+                approval_status=pending_result.approval_status,
+            )
         self._log_operation(result)
         self._notify_l4_ledger(result)
         return result
@@ -347,31 +432,62 @@ class ArchivalGatekeeper:
             ArchivalResult with operation details
         """
         source = Path(source).resolve()
-        error = self._validate_path(source, 'archive')
+        error = self._validate_path(source, "archive")
         if error:
-            result = ArchivalResult(success=False, operation=ArchivalOperation.ARCHIVE, source_path=source, requester_agent=requester_agent, reason=reason, error=error)
+            result = ArchivalResult(
+                success=False,
+                operation=ArchivalOperation.ARCHIVE,
+                source_path=source,
+                requester_agent=requester_agent,
+                reason=reason,
+                error=error,
+            )
             self._log_operation(result)
             return result
         archive_path = self._get_archive_path(source)
-        pending_result = ArchivalResult(success=False, operation=ArchivalOperation.ARCHIVE, source_path=source, destination_path=archive_path, requester_agent=requester_agent, reason=reason)
+        pending_result = ArchivalResult(
+            success=False,
+            operation=ArchivalOperation.ARCHIVE,
+            source_path=source,
+            destination_path=archive_path,
+            requester_agent=requester_agent,
+            reason=reason,
+        )
         if not self._request_approval(pending_result):
-            pending_result.error = 'User denied approval'
+            pending_result.error = "User denied approval"
             self._log_operation(pending_result)
             self._notify_l4_ledger(pending_result)
             return pending_result
         try:
             _wg.ensure_dir(archive_path.parent)
             if archive_path.exists():
-                timestamp_suffix = datetime.now().strftime('_%H%M%S')
+                timestamp_suffix = datetime.now().strftime("_%H%M%S")
                 stem = archive_path.stem
                 suffix = archive_path.suffix
-                archive_path = archive_path.parent / f'{stem}{timestamp_suffix}{suffix}'
+                archive_path = archive_path.parent / f"{stem}{timestamp_suffix}{suffix}"
             _wg.move_path(str(source), str(archive_path))
             self._operation_count += 1
-            result = ArchivalResult(success=True, operation=ArchivalOperation.ARCHIVE, source_path=source, destination_path=archive_path, requester_agent=requester_agent, reason=reason, approval_status=pending_result.approval_status)
+            result = ArchivalResult(
+                success=True,
+                operation=ArchivalOperation.ARCHIVE,
+                source_path=source,
+                destination_path=archive_path,
+                requester_agent=requester_agent,
+                reason=reason,
+                approval_status=pending_result.approval_status,
+            )
         except Exception as e:
             raise
-            result = ArchivalResult(success=False, operation=ArchivalOperation.ARCHIVE, source_path=source, destination_path=archive_path, requester_agent=requester_agent, reason=reason, approval_status=pending_result.approval_status, error=str(e))
+            result = ArchivalResult(
+                success=False,
+                operation=ArchivalOperation.ARCHIVE,
+                source_path=source,
+                destination_path=archive_path,
+                requester_agent=requester_agent,
+                reason=reason,
+                approval_status=pending_result.approval_status,
+                error=str(e),
+            )
         self._log_operation(result)
         self._notify_l4_ledger(result)
         return result
@@ -392,37 +508,68 @@ class ArchivalGatekeeper:
             ArchivalResult with operation details
         """
         source = Path(source).resolve()
-        error = self._validate_path(source, 'delete')
+        error = self._validate_path(source, "delete")
         if error:
-            result = ArchivalResult(success=False, operation=ArchivalOperation.DELETE, source_path=source, requester_agent=requester_agent, reason=reason, error=error)
+            result = ArchivalResult(
+                success=False,
+                operation=ArchivalOperation.DELETE,
+                source_path=source,
+                requester_agent=requester_agent,
+                reason=reason,
+                error=error,
+            )
             self._log_operation(result)
             return result
         archive_path = self._get_archive_path(source)
-        pending_result = ArchivalResult(success=False, operation=ArchivalOperation.DELETE, source_path=source, destination_path=archive_path, requester_agent=requester_agent, reason=f'[SOFT DELETE] {reason}')
+        pending_result = ArchivalResult(
+            success=False,
+            operation=ArchivalOperation.DELETE,
+            source_path=source,
+            destination_path=archive_path,
+            requester_agent=requester_agent,
+            reason=f"[SOFT DELETE] {reason}",
+        )
         if not self._request_approval(pending_result):
-            pending_result.error = 'User denied approval'
+            pending_result.error = "User denied approval"
             self._log_operation(pending_result)
             self._notify_l4_ledger(pending_result)
             return pending_result
         try:
             _wg.ensure_dir(archive_path.parent)
             if archive_path.exists():
-                timestamp_suffix = datetime.now().strftime('_%H%M%S')
+                timestamp_suffix = datetime.now().strftime("_%H%M%S")
                 stem = archive_path.stem
                 suffix = archive_path.suffix
-                archive_path = archive_path.parent / f'{stem}{timestamp_suffix}{suffix}'
+                archive_path = archive_path.parent / f"{stem}{timestamp_suffix}{suffix}"
             _wg.move_path(str(source), str(archive_path))
             self._operation_count += 1
-            result = ArchivalResult(success=True, operation=ArchivalOperation.DELETE, source_path=source, destination_path=archive_path, requester_agent=requester_agent, reason=f'[SOFT DELETE] {reason}', approval_status=pending_result.approval_status)
+            result = ArchivalResult(
+                success=True,
+                operation=ArchivalOperation.DELETE,
+                source_path=source,
+                destination_path=archive_path,
+                requester_agent=requester_agent,
+                reason=f"[SOFT DELETE] {reason}",
+                approval_status=pending_result.approval_status,
+            )
         except Exception as e:
             raise
-            result = ArchivalResult(success=False, operation=ArchivalOperation.DELETE, source_path=source, destination_path=archive_path, requester_agent=requester_agent, approval_status=pending_result.approval_status, reason=reason, error=str(e))
+            result = ArchivalResult(
+                success=False,
+                operation=ArchivalOperation.DELETE,
+                source_path=source,
+                destination_path=archive_path,
+                requester_agent=requester_agent,
+                approval_status=pending_result.approval_status,
+                reason=reason,
+                error=str(e),
+            )
         self._log_operation(result)
         self._notify_l4_ledger(result)
         return result
 
     # guardian: allow-magic-config
-    def get_audit_log(self, limit: int=100) -> list[dict[str, Any]]:
+    def get_audit_log(self, limit: int = 100) -> list[dict[str, Any]]:
         """
         Get recent entries from the audit log.
 
@@ -436,7 +583,7 @@ class ArchivalGatekeeper:
         if not self.audit_log_path.exists():
             return entries
         try:
-            with open(self.audit_log_path, encoding='utf-8') as f:
+            with open(self.audit_log_path, encoding="utf-8") as f:
                 lines = f.readlines()
             for line in reversed(lines[-limit:]):
                 try:
@@ -445,14 +592,16 @@ class ArchivalGatekeeper:
                     continue
         # guardian: allow-silent-swallow
         except Exception as e:
-            Logger.error(f'[ArchivalGatekeeper] Failed to read audit log: {e}')
+            Logger.error(f"[ArchivalGatekeeper] Failed to read audit log: {e}")
         return entries
 
     def get_operation_count(self) -> int:
         """Get total number of operations performed."""
         return self._operation_count
 
-    def restore_from_archive(self, archived_path: str | Path, requester_agent: str, reason: str) -> ArchivalResult:
+    def restore_from_archive(
+        self, archived_path: str | Path, requester_agent: str, reason: str
+    ) -> ArchivalResult:
         """
         Restore a file from the archive to its original location.
 
@@ -468,12 +617,26 @@ class ArchivalGatekeeper:
         try:
             rel_to_archive = archived_path.relative_to(self.archive_root)
         except ValueError:
-            result = ArchivalResult(success=False, operation=ArchivalOperation.MOVE, source_path=archived_path, requester_agent=requester_agent, reason=reason, error=f'File is not in archive directory: {archived_path}')
+            result = ArchivalResult(
+                success=False,
+                operation=ArchivalOperation.MOVE,
+                source_path=archived_path,
+                requester_agent=requester_agent,
+                reason=reason,
+                error=f"File is not in archive directory: {archived_path}",
+            )
             self._log_operation(result)
             return result
         parts = rel_to_archive.parts
         if len(parts) < 2:
-            result = ArchivalResult(success=False, operation=ArchivalOperation.MOVE, source_path=archived_path, requester_agent=requester_agent, reason=reason, error=f'Invalid archive path structure: {archived_path}')
+            result = ArchivalResult(
+                success=False,
+                operation=ArchivalOperation.MOVE,
+                source_path=archived_path,
+                requester_agent=requester_agent,
+                reason=reason,
+                error=f"Invalid archive path structure: {archived_path}",
+            )
             self._log_operation(result)
             return result
         original_rel_path = Path(*parts[1:])
@@ -482,9 +645,24 @@ class ArchivalGatekeeper:
             _wg.ensure_dir(original_path.parent)
             _wg.move_path(str(archived_path), str(original_path))
             self._operation_count += 1
-            result = ArchivalResult(success=True, operation=ArchivalOperation.MOVE, source_path=archived_path, destination_path=original_path, requester_agent=requester_agent, reason=f'[RESTORE] {reason}')
+            result = ArchivalResult(
+                success=True,
+                operation=ArchivalOperation.MOVE,
+                source_path=archived_path,
+                destination_path=original_path,
+                requester_agent=requester_agent,
+                reason=f"[RESTORE] {reason}",
+            )
         except Exception as e:
             raise
-            result = ArchivalResult(success=False, operation=ArchivalOperation.MOVE, source_path=archived_path, destination_path=original_path, requester_agent=requester_agent, reason=f'[RESTORE] {reason}', error=str(e))
+            result = ArchivalResult(
+                success=False,
+                operation=ArchivalOperation.MOVE,
+                source_path=archived_path,
+                destination_path=original_path,
+                requester_agent=requester_agent,
+                reason=f"[RESTORE] {reason}",
+                error=str(e),
+            )
         self._log_operation(result)
         return result

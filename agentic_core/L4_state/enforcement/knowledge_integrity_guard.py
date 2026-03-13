@@ -1,16 +1,19 @@
 from __future__ import annotations
+
 import hashlib
 import json
 from dataclasses import dataclass, field
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 class KnowledgeIntegrityViolation(Exception):
     """Raised when a knowledge mutation breaks the hash chain integrity."""
 
+
 @dataclass(frozen=True)
 class KnowledgeNode:
     """Represents a versioned node in the knowledge base."""
+
     content_hash: str
     prev_hash: str
     node_id: str
@@ -19,12 +22,13 @@ class KnowledgeNode:
 
     def __post_init__(self):
         canonical_bytes = self._canonical_bytes()
-        object.__setattr__(self, 'signature', hashlib.sha256(canonical_bytes).hexdigest())
+        object.__setattr__(self, "signature", hashlib.sha256(canonical_bytes).hexdigest())
 
     def _canonical_bytes(self) -> bytes:
         """Computes the canonical byte representation for signing."""
-        data = {'content_hash': self.content_hash, 'prev_hash': self.prev_hash, 'node_id': self.node_id}
-        return json.dumps(data, sort_keys=True, separators=(',', ':')).encode('utf-8')
+        data = {"content_hash": self.content_hash, "prev_hash": self.prev_hash, "node_id": self.node_id}
+        return json.dumps(data, sort_keys=True, separators=(",", ":")).encode("utf-8")
+
 
 class KnowledgeIntegrityGuard:
     """
@@ -51,9 +55,11 @@ class KnowledgeIntegrityGuard:
         Returns:
             The newly created, signed KnowledgeNode.
         """
-        content_str = json.dumps(content, sort_keys=True).encode('utf-8')
+        content_str = json.dumps(content, sort_keys=True).encode("utf-8")
         content_hash = hashlib.sha256(content_str).hexdigest()
-        new_node = KnowledgeNode(content_hash=content_hash, prev_hash=self._head_hash, node_id=node_id, content=content)
+        new_node = KnowledgeNode(
+            content_hash=content_hash, prev_hash=self._head_hash, node_id=node_id, content=content
+        )
         self._ledger[new_node.signature] = new_node
         self._head_hash = new_node.signature
         return new_node
@@ -68,10 +74,10 @@ class KnowledgeIntegrityGuard:
         current_hash = self._head_hash
         while current_hash != self.genesis_hash:
             if current_hash not in self._ledger:
-                raise KnowledgeIntegrityViolation(f'Chain broken: Node {current_hash} not found.')
+                raise KnowledgeIntegrityViolation(f"Chain broken: Node {current_hash} not found.")
             node = self._ledger[current_hash]
             if node.signature != current_hash:
-                raise KnowledgeIntegrityViolation(f'Node {node.node_id} has a corrupted signature.')
+                raise KnowledgeIntegrityViolation(f"Node {node.node_id} has a corrupted signature.")
             current_hash = node.prev_hash
         return True
 
@@ -83,7 +89,11 @@ class KnowledgeIntegrityGuard:
         overall integrity guarantee.
         """
         self.verify_chain()
-        snapshot_content = {'head_hash': self._head_hash, 'ledger_size': len(self._ledger), 'genesis_hash': self.genesis_hash}
-        snapshot_str = json.dumps(snapshot_content, sort_keys=True).encode('utf-8')
+        snapshot_content = {
+            "head_hash": self._head_hash,
+            "ledger_size": len(self._ledger),
+            "genesis_hash": self.genesis_hash,
+        }
+        snapshot_str = json.dumps(snapshot_content, sort_keys=True).encode("utf-8")
         snapshot_signature = hashlib.sha256(snapshot_str).hexdigest()
-        return {'snapshot': snapshot_content, 'signature': snapshot_signature}
+        return {"snapshot": snapshot_content, "signature": snapshot_signature}

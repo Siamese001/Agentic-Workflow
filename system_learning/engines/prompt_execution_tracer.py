@@ -29,7 +29,6 @@ from system_learning.types.prompt_adg_relations import (
     EXECUTION_GENERATES_TRACE,
     EXECUTION_ROUTES_TO,
     HITL_CAUSED_ESCALATION,
-    HITL_PREFERENCE_RECORD_CREATED,
     OUTCOME_ESCALATED_HITL,
     OUTCOME_FAILED,
     OUTCOME_FAILED_REPLAY,
@@ -123,21 +122,25 @@ def _classify_failure_slot(sig: dict, guardrail_hits: tuple[str, ...]) -> str:
 
 
 def _build_execution_id(prompt_hash: str, trace_id: str, timestamp_utc: int) -> str:
-    canonical = deterministic_json({
-        "prompt_hash": prompt_hash,
-        "timestamp_utc": timestamp_utc,
-        "trace_id": trace_id,
-    })
+    canonical = deterministic_json(
+        {
+            "prompt_hash": prompt_hash,
+            "timestamp_utc": timestamp_utc,
+            "trace_id": trace_id,
+        }
+    )
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 
 def _build_outcome_id(prompt_hash: str, trace_id: str, final_outcome: str, timestamp_utc: int) -> str:
-    canonical = deterministic_json({
-        "final_outcome": final_outcome,
-        "prompt_hash": prompt_hash,
-        "timestamp_utc": timestamp_utc,
-        "trace_id": trace_id,
-    })
+    canonical = deterministic_json(
+        {
+            "final_outcome": final_outcome,
+            "prompt_hash": prompt_hash,
+            "timestamp_utc": timestamp_utc,
+            "trace_id": trace_id,
+        }
+    )
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 
@@ -236,8 +239,7 @@ class PromptExecutionTracer:
         final_outcome = _classify_outcome(sig)
         replay_status = _classify_replay(sig)
 
-        groundedness = float(sig.get("groundedness_score") or
-                             sig.get("retrieval_groundedness_score") or 0.0)
+        groundedness = float(sig.get("groundedness_score") or sig.get("retrieval_groundedness_score") or 0.0)
         groundedness = max(0.0, min(1.0, groundedness))
 
         support_score = max(0.0, min(1.0, float(sig.get("support_score") or 0.0)))
@@ -251,9 +253,7 @@ class PromptExecutionTracer:
 
         healer_invoked = bool(sig.get("healing_invoked") or sig.get("healed"))
         healer_id = sig.get("healer_id") or None
-        hitl_escalation = bool(
-            sig.get("hitl_escalation") or sig.get("human_escalation_flag")
-        )
+        hitl_escalation = bool(sig.get("hitl_escalation") or sig.get("human_escalation_flag"))
 
         failure_slot = _classify_failure_slot(sig, guardrail_hits)
 
@@ -286,12 +286,9 @@ class PromptExecutionTracer:
         relations: list[tuple[str, str, str]] = []
 
         # Execution family
-        relations.append((prompt_node, EXECUTION_ROUTES_TO,
-                          f"ADG::Route::{route}"))
-        relations.append((prompt_node, EXECUTION_EXECUTED_BY_MODEL,
-                          f"ADG::Model::{model_id}"))
-        relations.append((prompt_node, EXECUTION_GENERATES_TRACE,
-                          f"ADG::Trace::{trace_id}"))
+        relations.append((prompt_node, EXECUTION_ROUTES_TO, f"ADG::Route::{route}"))
+        relations.append((prompt_node, EXECUTION_EXECUTED_BY_MODEL, f"ADG::Model::{model_id}"))
+        relations.append((prompt_node, EXECUTION_GENERATES_TRACE, f"ADG::Trace::{trace_id}"))
 
         # Outcome family
         outcome_rel = _pick_outcome_relation(final_outcome)
@@ -302,37 +299,37 @@ class PromptExecutionTracer:
             relations.append((prompt_node, OUTCOME_TRIGGERED_HEALER, healer_node))
 
         if hitl_escalation:
-            relations.append((prompt_node, OUTCOME_ESCALATED_HITL,
-                              f"ADG::HITL::Escalation::{trace_id[:16]}"))
-            relations.append((prompt_node, HITL_CAUSED_ESCALATION,
-                              f"ADG::HITL::Escalation::{trace_id[:16]}"))
+            relations.append((prompt_node, OUTCOME_ESCALATED_HITL, f"ADG::HITL::Escalation::{trace_id[:16]}"))
+            relations.append((prompt_node, HITL_CAUSED_ESCALATION, f"ADG::HITL::Escalation::{trace_id[:16]}"))
 
         if replay_status == "PASSED":
-            relations.append((prompt_node, OUTCOME_PASSED_REPLAY,
-                              f"ADG::ReplayCheck::{trace_id[:16]}"))
+            relations.append((prompt_node, OUTCOME_PASSED_REPLAY, f"ADG::ReplayCheck::{trace_id[:16]}"))
         elif replay_status == "FAILED":
-            relations.append((prompt_node, OUTCOME_FAILED_REPLAY,
-                              f"ADG::ReplayCheck::{trace_id[:16]}"))
+            relations.append((prompt_node, OUTCOME_FAILED_REPLAY, f"ADG::ReplayCheck::{trace_id[:16]}"))
 
         # Retrieval family
         retrieval_path = str(sig.get("retrieval_path") or "UNKNOWN")
-        relations.append((prompt_node, RETRIEVAL_RETRIEVES_VIA,
-                          f"ADG::RetrievalPath::{retrieval_path}"))
+        relations.append((prompt_node, RETRIEVAL_RETRIEVES_VIA, f"ADG::RetrievalPath::{retrieval_path}"))
 
         chunk_ids = sig.get("chunk_ids") or []
         if isinstance(chunk_ids, str):
             chunk_ids = [chunk_ids]
         for cid in sorted(chunk_ids):
-            relations.append((prompt_node, RETRIEVAL_USES_CHUNK,
-                              f"ADG::Chunk::{str(cid)[:16]}"))
+            relations.append((prompt_node, RETRIEVAL_USES_CHUNK, f"ADG::Chunk::{str(cid)[:16]}"))
 
         citation_set_hash = sig.get("citation_set_hash")
         if citation_set_hash:
-            relations.append((prompt_node, RETRIEVAL_USES_CITATION_SET,
-                              f"ADG::CitationSet::{str(citation_set_hash)[:16]}"))
+            relations.append(
+                (prompt_node, RETRIEVAL_USES_CITATION_SET, f"ADG::CitationSet::{str(citation_set_hash)[:16]}")
+            )
 
-        relations.append((prompt_node, RETRIEVAL_SCORES_GROUNDEDNESS,
-                          f"ADG::GroundednessScore::{_fmt_score(groundedness)}"))
+        relations.append(
+            (
+                prompt_node,
+                RETRIEVAL_SCORES_GROUNDEDNESS,
+                f"ADG::GroundednessScore::{_fmt_score(groundedness)}",
+            )
+        )
 
         return ExecutionTraceResult(
             execution_record=execution_record,

@@ -18,12 +18,14 @@ Usage (at process boot)::
     # Returns dict[index_id -> digest] on success.
     # Raises StartupIntegrityError on any mismatch.
 """
+
 from __future__ import annotations
+
 import hashlib
 import json
 from dataclasses import dataclass
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 class StartupIntegrityError(RuntimeError):
     """Raised when boot-time FAISS integrity sweep detects a violation.
@@ -31,6 +33,7 @@ class StartupIntegrityError(RuntimeError):
     Fail-closed: any error during ``verify_all_indexes_in_dir()`` raises this
     immediately with no fallback.  The process should refuse to start.
     """
+
 
 @dataclass
 class IndexVerificationResult:
@@ -43,55 +46,80 @@ class IndexVerificationResult:
         embedder_id: Embedder ID confirmed from the manifest.
         model_version: Model version confirmed from the manifest.
     """
+
     index_id: str
     vector_count: int
     digest: str
     embedder_id: str
     model_version: str
 
-def _verify_single_index(index_id: str, index_dir: Path, *, expected_embedder_id: str | None) -> IndexVerificationResult:
+
+def _verify_single_index(
+    index_id: str, index_dir: Path, *, expected_embedder_id: str | None
+) -> IndexVerificationResult:
     """Verify one 3-file FAISS artifact and return its verification result.
 
     Raises:
         StartupIntegrityError: On any integrity violation.
     """
-    manifest_path = index_dir / 'manifest.json'
-    index_path = index_dir / 'index.json'
-    meta_path = index_dir / 'meta.json'
+    manifest_path = index_dir / "manifest.json"
+    index_path = index_dir / "index.json"
+    meta_path = index_dir / "meta.json"
     for p in (manifest_path, index_path, meta_path):
         if not p.exists():
-            raise StartupIntegrityError(f'[{index_id}] Missing required file: {p.name} in {index_dir}')
+            raise StartupIntegrityError(f"[{index_id}] Missing required file: {p.name} in {index_dir}")
     try:
         manifest_bytes = manifest_path.read_bytes()
-        manifest = json.loads(manifest_bytes.decode('ascii'))
+        manifest = json.loads(manifest_bytes.decode("ascii"))
     except (json.JSONDecodeError, UnicodeDecodeError, OSError) as exc:
-        raise StartupIntegrityError(f'[{index_id}] manifest.json parse error: {exc}') from exc
-    required_fields = {'schema_version', 'embedder_id', 'model_version', 'dims', 'vector_count', 'sha256_index', 'sha256_meta_canonical'}
+        raise StartupIntegrityError(f"[{index_id}] manifest.json parse error: {exc}") from exc
+    required_fields = {
+        "schema_version",
+        "embedder_id",
+        "model_version",
+        "dims",
+        "vector_count",
+        "sha256_index",
+        "sha256_meta_canonical",
+    }
     missing = required_fields - manifest.keys()
     if missing:
-        raise StartupIntegrityError(f'[{index_id}] manifest.json missing required fields: {sorted(missing)}')
-    if expected_embedder_id is not None and manifest['embedder_id'] != expected_embedder_id:
-        raise StartupIntegrityError(f"[{index_id}] embedder_id mismatch: manifest has '{manifest['embedder_id']}' but runtime expects '{expected_embedder_id}'")
+        raise StartupIntegrityError(f"[{index_id}] manifest.json missing required fields: {sorted(missing)}")
+    if expected_embedder_id is not None and manifest["embedder_id"] != expected_embedder_id:
+        raise StartupIntegrityError(
+            f"[{index_id}] embedder_id mismatch: manifest has '{manifest['embedder_id']}' but runtime expects '{expected_embedder_id}'"
+        )
     try:
         index_bytes = index_path.read_bytes()
     except OSError as exc:
-        raise StartupIntegrityError(f'[{index_id}] Cannot read index.json: {exc}') from exc
+        raise StartupIntegrityError(f"[{index_id}] Cannot read index.json: {exc}") from exc
     actual_sha_index = hashlib.sha256(index_bytes).hexdigest()
-    if actual_sha_index != manifest['sha256_index']:
-        raise StartupIntegrityError(f"[{index_id}] index.json SHA-256 mismatch: expected {manifest['sha256_index']!r}, got {actual_sha_index!r}")
+    if actual_sha_index != manifest["sha256_index"]:
+        raise StartupIntegrityError(
+            f"[{index_id}] index.json SHA-256 mismatch: expected {manifest['sha256_index']!r}, got {actual_sha_index!r}"
+        )
     try:
         meta_bytes = meta_path.read_bytes()
     except OSError as exc:
-        raise StartupIntegrityError(f'[{index_id}] Cannot read meta.json: {exc}') from exc
+        raise StartupIntegrityError(f"[{index_id}] Cannot read meta.json: {exc}") from exc
     actual_sha_meta = hashlib.sha256(meta_bytes).hexdigest()
-    if actual_sha_meta != manifest['sha256_meta_canonical']:
-        raise StartupIntegrityError(f"[{index_id}] meta.json SHA-256 mismatch: expected {manifest['sha256_meta_canonical']!r}, got {actual_sha_meta!r}")
+    if actual_sha_meta != manifest["sha256_meta_canonical"]:
+        raise StartupIntegrityError(
+            f"[{index_id}] meta.json SHA-256 mismatch: expected {manifest['sha256_meta_canonical']!r}, got {actual_sha_meta!r}"
+        )
     sha256_manifest = hashlib.sha256(manifest_bytes).hexdigest()
     digest_input = f"{manifest['embedder_id']}|{manifest['model_version']}|{manifest['dims']}|{manifest['vector_count']}|{manifest['sha256_index']}|{manifest['sha256_meta_canonical']}|{sha256_manifest}"
-    digest = hashlib.sha256(digest_input.encode('ascii')).hexdigest()
-    return IndexVerificationResult(index_id=index_id, vector_count=int(manifest['vector_count']), digest=digest, embedder_id=manifest['embedder_id'], model_version=manifest['model_version'])
+    digest = hashlib.sha256(digest_input.encode("ascii")).hexdigest()
+    return IndexVerificationResult(
+        index_id=index_id,
+        vector_count=int(manifest["vector_count"]),
+        digest=digest,
+        embedder_id=manifest["embedder_id"],
+        model_version=manifest["model_version"],
+    )
 
-def verify_all_indexes_in_dir(base_dir: Path, *, expected_embedder_id: str | None=None) -> dict[str, str]:
+
+def verify_all_indexes_in_dir(base_dir: Path, *, expected_embedder_id: str | None = None) -> dict[str, str]:
     """Sweep ``base_dir`` for all persisted FAISS index subdirectories and verify each.
 
     A subdirectory is treated as a FAISS index artifact if it contains at least
@@ -113,14 +141,16 @@ def verify_all_indexes_in_dir(base_dir: Path, *, expected_embedder_id: str | Non
     """
     base = Path(base_dir)
     if not base.exists():
-        raise ValueError(f'base_dir does not exist: {base}')
+        raise ValueError(f"base_dir does not exist: {base}")
     results: dict[str, str] = {}
-    candidate_dirs = sorted((d for d in base.iterdir() if d.is_dir()))
+    candidate_dirs = sorted(d for d in base.iterdir() if d.is_dir())
     for candidate in candidate_dirs:
-        if not (candidate / 'manifest.json').exists():
+        if not (candidate / "manifest.json").exists():
             continue
         index_id = candidate.name
         result = _verify_single_index(index_id, candidate, expected_embedder_id=expected_embedder_id)
         results[index_id] = result.digest
     return results
-__all__ = ['StartupIntegrityError', 'IndexVerificationResult', 'verify_all_indexes_in_dir']
+
+
+__all__ = ["StartupIntegrityError", "IndexVerificationResult", "verify_all_indexes_in_dir"]

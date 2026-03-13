@@ -23,10 +23,12 @@ It only knows about "checks", "issues", "metrics", and "results".
 
 [CREATED 2026-02-08] Cluster 1B extraction per Pure Harness pattern.
 """
+
 from __future__ import annotations
+
 from dataclasses import dataclass, field
 from typing import Any, ClassVar
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 @dataclass
 class InspectionResult:
@@ -37,9 +39,11 @@ class InspectionResult:
         issues: List of issue description strings (empty means healthy).
         metrics: Dictionary of observed metrics from the inspection.
     """
+
     healthy: bool = True
     issues: list[str] = field(default_factory=list)
     metrics: dict[str, Any] = field(default_factory=dict)
+
 
 class InspectionCapability:
     """Pure capability mixin for inspector agents.
@@ -53,9 +57,10 @@ class InspectionCapability:
         - Set INSPECTION_LOG_PREFIX (e.g., "Running checks...")
         - Override perform_checks(target, context) with domain logic
     """
-    INSPECTION_LOG_PREFIX: ClassVar[str] = 'Running inspection...'
 
-    def run_inspection(self, target: Any, context: dict[str, Any] | None=None) -> InspectionResult:
+    INSPECTION_LOG_PREFIX: ClassVar[str] = "Running inspection..."
+
+    def run_inspection(self, target: Any, context: dict[str, Any] | None = None) -> InspectionResult:
         """Template method: log entry, perform checks, build result.
 
         Calls self.perform_checks() and wraps the output in an
@@ -69,12 +74,15 @@ class InspectionCapability:
             InspectionResult with healthy flag, issues, and metrics.
         """
         import logging
+
         logger = logging.getLogger(self.__class__.__module__)
-        logger.info('[%s] %s', self.__class__.__name__, self.INSPECTION_LOG_PREFIX)
+        logger.info("[%s] %s", self.__class__.__name__, self.INSPECTION_LOG_PREFIX)
         issues, metrics = self.perform_checks(target, context)
         return InspectionResult(healthy=len(issues) == 0, issues=issues, metrics=metrics)
 
-    def perform_checks(self, target: Any, context: dict[str, Any] | None=None) -> tuple[list[str], dict[str, Any]]:
+    def perform_checks(
+        self, target: Any, context: dict[str, Any] | None = None
+    ) -> tuple[list[str], dict[str, Any]]:
         """Execute domain-specific inspection logic.
 
         Default implementation provides structural type-checking and metrics
@@ -90,15 +98,15 @@ class InspectionCapability:
         issues: list[str] = []
         metrics: dict[str, Any] = {}
         if target is None:
-            issues.append('Target is null')
+            issues.append("Target is null")
         elif isinstance(target, dict):
-            metrics['field_count'] = len(target)
+            metrics["field_count"] = len(target)
         elif isinstance(target, list):
-            metrics['item_count'] = len(target)
-        metrics['type'] = type(target).__name__
+            metrics["item_count"] = len(target)
+        metrics["type"] = type(target).__name__
         return (issues, metrics)
 
-    def make_heal_result(self, violation: dict[str, Any], *, status: str='skipped') -> dict[str, Any]:
+    def make_heal_result(self, violation: dict[str, Any], *, status: str = "skipped") -> dict[str, Any]:
         """Generate a standard heal stub result.
 
         Args:
@@ -108,5 +116,10 @@ class InspectionCapability:
         Returns:
             Canonical heal result dict.
         """
-        violation_type = violation.get('type', 'unknown')
-        return {'status': status, 'details': f'{self.__class__.__name__} heal() not yet implemented for {violation_type}', 'artifacts': [], 'errors': []}
+        violation_type = violation.get("type", "unknown")
+        return {
+            "status": status,
+            "details": f"{self.__class__.__name__} heal() not yet implemented for {violation_type}",
+            "artifacts": [],
+            "errors": [],
+        }

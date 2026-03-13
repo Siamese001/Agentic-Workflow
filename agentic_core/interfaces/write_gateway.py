@@ -19,15 +19,20 @@ USAGE (L4_state):
         InstructionPacket,
     )
 """
+
 from __future__ import annotations
+
 import hashlib
 import json
 from typing import Sequence
+
 from agentic_core.L2_execution.types.instruction_packet_types import InstructionPacket
 from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway, get_write_gateway
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
-def compute_replay_key(plan_hash: str, tool_calls: Sequence[str], stdout_digest: str, state_diff_hash: str) -> str:
+
+def compute_replay_key(
+    plan_hash: str, tool_calls: Sequence[str], stdout_digest: str, state_diff_hash: str
+) -> str:
     """Addendum 2.1: Compute deterministic replay key for a write operation.
 
     replay_key = SHA256(plan_hash + sorted(tool_calls) + stdout_digest + state_diff_hash)
@@ -35,6 +40,17 @@ def compute_replay_key(plan_hash: str, tool_calls: Sequence[str], stdout_digest:
     All inputs are canonicalised (sorted tool_calls, JSON serialisation) so the
     key is reproducible regardless of call order.
     """
-    canonical = json.dumps({'plan_hash': plan_hash, 'tool_calls': sorted(tool_calls), 'stdout_digest': stdout_digest, 'state_diff_hash': state_diff_hash}, sort_keys=True, separators=(',', ':'))
-    return hashlib.sha256(canonical.encode('utf-8')).hexdigest()
-__all__ = ['UniversalWriteGateway', 'get_write_gateway', 'InstructionPacket', 'compute_replay_key']
+    canonical = json.dumps(
+        {
+            "plan_hash": plan_hash,
+            "tool_calls": sorted(tool_calls),
+            "stdout_digest": stdout_digest,
+            "state_diff_hash": state_diff_hash,
+        },
+        sort_keys=True,
+        separators=(",", ":"),
+    )
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+
+__all__ = ["UniversalWriteGateway", "get_write_gateway", "InstructionPacket", "compute_replay_key"]

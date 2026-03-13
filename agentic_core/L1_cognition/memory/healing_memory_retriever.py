@@ -10,15 +10,18 @@ Design invariants:
 - L1 must not import from L0 or L5. This module imports only from L4 state stores and
   system_learning engines — layer boundaries enforced at import time.
 """
+
 from __future__ import annotations
+
 import hashlib
 import logging
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 logger = logging.getLogger(__name__)
-_INDEX_ID = 'healing_context_v1'
+_INDEX_ID = "healing_context_v1"
+
 
 class VectorSourceMismatchError(RuntimeError):
     """Raised when vectors of incompatible sources are compared.
@@ -28,7 +31,9 @@ class VectorSourceMismatchError(RuntimeError):
     (e.g., bge-m3 ~1024-dim).  Any dimension mismatch detected at comparison
     time raises this error immediately -- no silent coercion.
     """
+
     pass
+
 
 class SovereigntyError(RuntimeError):
     """Raised when retrieval violates the advisory-only boundary.
@@ -36,7 +41,9 @@ class SovereigntyError(RuntimeError):
     Any caller that attempts to use retrieved incidents to influence tier
     selection or routing thresholds MUST raise this error.
     """
+
     pass
+
 
 @dataclass(frozen=True, slots=True)
 class SimilarIncident:
@@ -55,11 +62,13 @@ class SimilarIncident:
     advisory_only : bool
         Always True — prevents misuse as a routing signal.
     """
+
     content_hash: str
     trace_id: str | None
     similarity: float
     metadata: dict[str, Any]
     advisory_only: bool = True
+
 
 class NullHealingMemoryRetriever:
     """Null-object implementation returned when embeddings are disabled or index absent.
@@ -67,12 +76,13 @@ class NullHealingMemoryRetriever:
     All method calls return empty results with zero side effects.
     """
 
-    def retrieve_similar_incidents(self, signal_text: str, top_k: int=5) -> list[SimilarIncident]:
+    def retrieve_similar_incidents(self, signal_text: str, top_k: int = 5) -> list[SimilarIncident]:
         return []
 
     @property
     def is_active(self) -> bool:
         return False
+
 
 class HealingMemoryRetriever:
     """Advisory retriever over the LocalFAISSStore healing context index.
@@ -85,7 +95,7 @@ class HealingMemoryRetriever:
     is the runtime enforcement of the boundary contract (B3 hardening).
     """
 
-    def __init__(self, store: Any, profile: Any | None=None, *, index_id: str=_INDEX_ID) -> None:
+    def __init__(self, store: Any, profile: Any | None = None, *, index_id: str = _INDEX_ID) -> None:
         """Initialise retriever.
 
         Args:
@@ -102,7 +112,7 @@ class HealingMemoryRetriever:
     def is_active(self) -> bool:
         return True
 
-    def retrieve_similar_incidents(self, signal_text: str, top_k: int | None=None) -> list[SimilarIncident]:
+    def retrieve_similar_incidents(self, signal_text: str, top_k: int | None = None) -> list[SimilarIncident]:
         """Retrieve the top-K most similar healing incidents for ``signal_text``.
 
         B3 hardening: every returned item carries ``advisory_only=True``.
@@ -127,40 +137,56 @@ class HealingMemoryRetriever:
         cutoff = 0.75
         effective_top_k = top_k
         if self._profile is not None:
-            cutoff = getattr(self._profile, 'similarity_cutoff', cutoff)
+            cutoff = getattr(self._profile, "similarity_cutoff", cutoff)
             if effective_top_k is None:
-                effective_top_k = getattr(self._profile, 'top_k', 5)
+                effective_top_k = getattr(self._profile, "top_k", 5)
         if effective_top_k is None:
             effective_top_k = 5
         try:
             from agentic_core.L2_execution.healers.bmg_embedding_similarity import bmg_embed_text
+
             query_vec = bmg_embed_text(signal_text)
         # guardian: allow-silent-swallow
         except Exception as exc:
-            logger.debug('[HealingMemoryRetriever] bmg_embed_text unavailable: %s', exc)
+            logger.debug("[HealingMemoryRetriever] bmg_embed_text unavailable: %s", exc)
             return []
         try:
             raw = self._store.search(self._index_id, query_vec, top_k=effective_top_k, cutoff=cutoff)
         # guardian: allow-silent-swallow
         except Exception as exc:
-            logger.debug('[HealingMemoryRetriever] store.search failed: %s', exc)
+            logger.debug("[HealingMemoryRetriever] store.search failed: %s", exc)
             return []
         results: list[SimilarIncident] = []
         for content_hash, trace_id, score in raw:
-            results.append(SimilarIncident(content_hash=content_hash, trace_id=trace_id or None, similarity=score, metadata={}, advisory_only=True))
-        results.sort(key=lambda inc: (-inc.similarity, inc.content_hash, inc.trace_id or ''))
+            results.append(
+                SimilarIncident(
+                    content_hash=content_hash,
+                    trace_id=trace_id or None,
+                    similarity=score,
+                    metadata={},
+                    advisory_only=True,
+                )
+            )
+        results.sort(key=lambda inc: (-inc.similarity, inc.content_hash, inc.trace_id or ""))
         for _inc in results:
             if not _inc.advisory_only:
-                raise SovereigntyError(f'advisory_only=False detected on incident {_inc.content_hash!r}; retrieval results MUST NOT be used to influence routing.')
-        _sorted_ids = '|'.join(sorted((inc.content_hash for inc in results)))
-        _scores_r6 = '|'.join((f'{inc.similarity:.6f}' for inc in sorted(results, key=lambda x: x.content_hash)))
+                raise SovereigntyError(
+                    f"advisory_only=False detected on incident {_inc.content_hash!r}; retrieval results MUST NOT be used to influence routing."
+                )
+        _sorted_ids = "|".join(sorted(inc.content_hash for inc in results))
+        _scores_r6 = "|".join(
+            f"{inc.similarity:.6f}" for inc in sorted(results, key=lambda x: x.content_hash)
+        )
         _signal_norm = signal_text.strip().lower()
-        _digest_input = f'{_signal_norm}|{effective_top_k}|{_sorted_ids}|{_scores_r6}'
-        _digest = hashlib.sha256(_digest_input.encode('utf-8', errors='replace')).hexdigest()
-        print(f'W-B-DETERMINISM-DIGEST: {_digest}')
+        _digest_input = f"{_signal_norm}|{effective_top_k}|{_sorted_ids}|{_scores_r6}"
+        _digest = hashlib.sha256(_digest_input.encode("utf-8", errors="replace")).hexdigest()
+        print(f"W-B-DETERMINISM-DIGEST: {_digest}")
         return results
 
-def build_retriever(base_path: Path | None=None, profile: Any | None=None, *, index_id: str=_INDEX_ID) -> HealingMemoryRetriever | NullHealingMemoryRetriever:
+
+def build_retriever(
+    base_path: Path | None = None, profile: Any | None = None, *, index_id: str = _INDEX_ID
+) -> HealingMemoryRetriever | NullHealingMemoryRetriever:
     """Factory: return a live HealingMemoryRetriever or NullHealingMemoryRetriever.
 
     Returns NullHealingMemoryRetriever when:
@@ -178,6 +204,7 @@ def build_retriever(base_path: Path | None=None, profile: Any | None=None, *, in
         return NullHealingMemoryRetriever()
     try:
         from system_learning.engines.local_faiss_store import LocalFAISSStore, ManifestIntegrityError
+
         store = LocalFAISSStore(base_path=Path(base_path))
         disk_dir = Path(base_path) / index_id
         if disk_dir.exists():
@@ -189,4 +216,13 @@ def build_retriever(base_path: Path | None=None, profile: Any | None=None, *, in
         return HealingMemoryRetriever(store=store, profile=profile, index_id=index_id)
     except ImportError:
         return NullHealingMemoryRetriever()
-__all__ = ['HealingMemoryRetriever', 'NullHealingMemoryRetriever', 'SimilarIncident', 'SovereigntyError', 'VectorSourceMismatchError', 'build_retriever']
+
+
+__all__ = [
+    "HealingMemoryRetriever",
+    "NullHealingMemoryRetriever",
+    "SimilarIncident",
+    "SovereigntyError",
+    "VectorSourceMismatchError",
+    "build_retriever",
+]

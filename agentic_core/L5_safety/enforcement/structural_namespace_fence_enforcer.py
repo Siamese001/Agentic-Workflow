@@ -11,14 +11,30 @@ Design principles:
 - No global __builtins__ monkey-patching.
 - Safe to use alongside test frameworks (pytest, unittest).
 """
+
 import importlib.abc
 import importlib.machinery
 import importlib.util
 import sys
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
-_TRACKED_ROOTS: frozenset = frozenset({APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR, AGENTIC_CORE_DIR, SYSTEM_LEARNING_DIR})
-_ALLOWED_CROSS: dict[str, set[str]] = {'apps_lic': {'agentic_core.types', 'agentic_core.interfaces', 'agentic_core.runtime'}, 'apps_rg': {'agentic_core.types', 'agentic_core.interfaces', 'agentic_core.runtime'}, 'apps_shared': {'agentic_core.types', 'agentic_core.interfaces', 'agentic_core.runtime'}, 'agentic_core.L0_routing': {'system_learning.types', 'system_learning.interfaces'}, 'agentic_core.L1_cognition': {'system_learning.types', 'system_learning.interfaces'}, 'agentic_core.L2_execution': {'system_learning.types', 'system_learning.interfaces'}, 'agentic_core.L3_orchestration': {'system_learning.types', 'system_learning.interfaces'}, 'agentic_core.L4_state': {'system_learning.types', 'system_learning.interfaces'}, 'agentic_core.L5_safety': {'system_learning.types', 'system_learning.interfaces'}, 'agentic_core.L6_observability': {'system_learning.types', 'system_learning.interfaces'}, 'system_learning': {'agentic_core.types', 'agentic_core.interfaces'}}
+
+_TRACKED_ROOTS: frozenset = frozenset(
+    {APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR, AGENTIC_CORE_DIR, SYSTEM_LEARNING_DIR}
+)
+_ALLOWED_CROSS: dict[str, set[str]] = {
+    "apps_lic": {"agentic_core.types", "agentic_core.interfaces", "agentic_core.runtime"},
+    "apps_rg": {"agentic_core.types", "agentic_core.interfaces", "agentic_core.runtime"},
+    "apps_shared": {"agentic_core.types", "agentic_core.interfaces", "agentic_core.runtime"},
+    "agentic_core.L0_routing": {"system_learning.types", "system_learning.interfaces"},
+    "agentic_core.L1_cognition": {"system_learning.types", "system_learning.interfaces"},
+    "agentic_core.L2_execution": {"system_learning.types", "system_learning.interfaces"},
+    "agentic_core.L3_orchestration": {"system_learning.types", "system_learning.interfaces"},
+    "agentic_core.L4_state": {"system_learning.types", "system_learning.interfaces"},
+    "agentic_core.L5_safety": {"system_learning.types", "system_learning.interfaces"},
+    "agentic_core.L6_observability": {"system_learning.types", "system_learning.interfaces"},
+    "system_learning": {"agentic_core.types", "agentic_core.interfaces"},
+}
+
 
 class ProvenanceTracker:
     """Tracks module-to-namespace mapping at module load time."""
@@ -38,21 +54,24 @@ class ProvenanceTracker:
         if module_name in self._provenance:
             return self._provenance[module_name]
         for tracked in _TRACKED_ROOTS:
-            if module_name == tracked or module_name.startswith(tracked + '.'):
+            if module_name == tracked or module_name.startswith(tracked + "."):
                 return _namespace_from_module_name(module_name)
-        return 'external'
+        return "external"
 
     def is_forbidden_cross_import(self, caller_ns: str, target_module: str) -> bool:
         """Return True iff importing target_module from caller_ns is forbidden."""
-        if caller_ns == 'external' or caller_ns == 'unknown':
+        if caller_ns == "external" or caller_ns == "unknown":
             return False
         target_ns = _namespace_from_module_name(target_module)
-        if target_ns == 'external':
+        if target_ns == "external":
             return False
         if caller_ns == target_ns:
             return False
         allowed = _ALLOWED_CROSS.get(caller_ns, set())
-        return not any((target_module == a or target_module.startswith(a + '.') or target_ns == a for a in allowed))
+        return not any(
+            target_module == a or target_module.startswith(a + ".") or target_ns == a for a in allowed
+        )
+
 
 def _extract_namespace(path: Path) -> str:
     """Derive namespace string from file path."""
@@ -60,40 +79,49 @@ def _extract_namespace(path: Path) -> str:
         if part in _TRACKED_ROOTS:
             if part == AGENTIC_CORE_DIR:
                 idx = list(path.parts).index(part)
-                rest = path.parts[idx + 1:]
-                if rest and rest[0].startswith('L') and ('_' in rest[0]):
-                    return f'agentic_core.{rest[0]}'
+                rest = path.parts[idx + 1 :]
+                if rest and rest[0].startswith("L") and ("_" in rest[0]):
+                    return f"agentic_core.{rest[0]}"
             return part
-    return 'external'
+    return "external"
+
 
 def _namespace_from_module_name(module_name: str) -> str:
     """Derive namespace from a dotted module name."""
     for root in _TRACKED_ROOTS:
-        if module_name == root or module_name.startswith(root + '.'):
+        if module_name == root or module_name.startswith(root + "."):
             if root == AGENTIC_CORE_DIR:
-                parts = module_name.split('.')
-                if len(parts) >= 2 and parts[1].startswith('L') and ('_' in parts[1]):
-                    return f'agentic_core.{parts[1]}'
+                parts = module_name.split(".")
+                if len(parts) >= 2 and parts[1].startswith("L") and ("_" in parts[1]):
+                    return f"agentic_core.{parts[1]}"
             return root
-    return 'external'
+    return "external"
+
 
 class ProvenanceLoader(importlib.abc.Loader):
     """Wraps an existing loader to register module provenance on creation."""
 
-    def __init__(self, original_loader: importlib.abc.Loader, tracker: ProvenanceTracker, module_name: str, origin: str | None) -> None:
+    def __init__(
+        self,
+        original_loader: importlib.abc.Loader,
+        tracker: ProvenanceTracker,
+        module_name: str,
+        origin: str | None,
+    ) -> None:
         self._loader = original_loader
         self._tracker = tracker
         self._module_name = module_name
         self._origin = origin
 
     def create_module(self, spec):
-        module = self._loader.create_module(spec) if hasattr(self._loader, 'create_module') else None
+        module = self._loader.create_module(spec) if hasattr(self._loader, "create_module") else None
         self._tracker.register(self._module_name, self._origin)
         return module
 
     def exec_module(self, module):
-        if hasattr(self._loader, 'exec_module'):
+        if hasattr(self._loader, "exec_module"):
             self._loader.exec_module(module)
+
 
 class StructuralNamespaceFinder(importlib.abc.MetaPathFinder):
     """MetaPathFinder that enforces cross-namespace import rules.
@@ -115,30 +143,36 @@ class StructuralNamespaceFinder(importlib.abc.MetaPathFinder):
         caller_ns = self._tracker.namespace_of(caller_module)
         # guardian: allow-config-with-logic
         if self._tracker.is_forbidden_cross_import(caller_ns, fullname):
-            raise ImportError(f"Namespace boundary violation: '{caller_ns}' (module '{caller_module}') may not import '{fullname}'")
+            raise ImportError(
+                f"Namespace boundary violation: '{caller_ns}' (module '{caller_module}') may not import '{fullname}'"
+            )
         return None
 
     def _get_caller_from_loaded_modules(self) -> str | None:
         """Determine calling module by scanning loaded sys.modules for tracked roots."""
         import inspect
+
         frame = inspect.currentframe()
         try:
             if frame is None:
                 return None
             frame = frame.f_back
             while frame is not None:
-                module_name: str = frame.f_globals.get('__name__', '')
+                module_name: str = frame.f_globals.get("__name__", "")
                 if module_name in self._tracker._provenance:
                     return module_name
                 for root in _TRACKED_ROOTS:
-                    if module_name == root or module_name.startswith(root + '.'):
+                    if module_name == root or module_name.startswith(root + "."):
                         return module_name
                 frame = frame.f_back
         finally:
             del frame
         return None
+
+
 _provenance_tracker = ProvenanceTracker()
 _structural_finder: StructuralNamespaceFinder | None = None
+
 
 def install_structural_namespace_fence() -> StructuralNamespaceFinder:
     """Install the namespace fence into sys.meta_path (idempotent)."""
@@ -148,12 +182,14 @@ def install_structural_namespace_fence() -> StructuralNamespaceFinder:
         sys.meta_path.insert(0, _structural_finder)
     return _structural_finder
 
+
 def uninstall_structural_namespace_fence() -> None:
     """Remove the namespace fence from sys.meta_path."""
     global _structural_finder
     if _structural_finder is not None and _structural_finder in sys.meta_path:
         sys.meta_path.remove(_structural_finder)
         _structural_finder = None
+
 
 def get_provenance_tracker() -> ProvenanceTracker:
     """Return the global ProvenanceTracker."""

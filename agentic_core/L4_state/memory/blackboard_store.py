@@ -3,16 +3,19 @@
 Phase 1 Wave 1.2 implementation. Implements IBlackboardLeaseVerifier protocol.
 Provides atomic KV operations, lease semantics, and tick monotonicity.
 """
+
 from __future__ import annotations
+
 from dataclasses import dataclass
 from typing import Any, Literal
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 @dataclass(frozen=True)
 class LeaseResult:
     success: bool
     expiry_tick: int
     reason: str
+
 
 @dataclass(frozen=True)
 class SecurityEvent:
@@ -22,20 +25,28 @@ class SecurityEvent:
     details: str
     timestamp: int
     severity: str
-SecurityEventType = Literal['LEASE_VIOLATION', 'UNAUTHORIZED_ACCESS', 'SUSPICIOUS_ACTIVITY']
+
+
+SecurityEventType = Literal["LEASE_VIOLATION", "UNAUTHORIZED_ACCESS", "SUSPICIOUS_ACTIVITY"]
+
 
 def blackboard_lease_verifier(cls):
     """Minimal decorator for Phase 1 compliance."""
     return cls
 
+
 @dataclass(frozen=True)
 class LeaseEntry:
     """Lease metadata for a Blackboard key."""
+
     agent_id: str
     expiry_tick: int
     commit_tick: int
+
+
 _store: dict[str, Any] = {}
 _leases: dict[str, LeaseEntry] = {}
+
 
 @blackboard_lease_verifier
 class BlackboardStore:
@@ -72,15 +83,19 @@ class BlackboardStore:
             LeaseResult with success status and expiry tick
         """
         if ttl_ticks <= 0:
-            return LeaseResult(success=False, expiry_tick=0, reason='TTL must be positive')
+            return LeaseResult(success=False, expiry_tick=0, reason="TTL must be positive")
         current = _leases.get(key)
         now = commit_tick
         if current and current.expiry_tick > now:
             if current.agent_id != agent_id:
-                return LeaseResult(success=False, expiry_tick=current.expiry_tick, reason=f'Lease held by {current.agent_id} until tick {current.expiry_tick}')
+                return LeaseResult(
+                    success=False,
+                    expiry_tick=current.expiry_tick,
+                    reason=f"Lease held by {current.agent_id} until tick {current.expiry_tick}",
+                )
         expiry = now + ttl_ticks
         _leases[key] = LeaseEntry(agent_id=agent_id, expiry_tick=expiry, commit_tick=now)
-        return LeaseResult(success=True, expiry_tick=expiry, reason='Lease granted')
+        return LeaseResult(success=True, expiry_tick=expiry, reason="Lease granted")
 
     def get(self, key: str) -> Any:
         """Get the value for a key.
@@ -117,7 +132,9 @@ class BlackboardStore:
         del _leases[key]
         return True
 
-    def verify_healing_lease(self, resource_path: str, agent_id: str, commit_tick: int, operation: str) -> LeaseResult:
+    def verify_healing_lease(
+        self, resource_path: str, agent_id: str, commit_tick: int, operation: str
+    ) -> LeaseResult:
         """Verify lease for healing operations.
 
         Implements IBlackboardLeaseVerifier.verify_healing_lease.

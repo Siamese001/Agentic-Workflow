@@ -1,14 +1,16 @@
 from __future__ import annotations
+
 'Git Hygiene Agent - Enforces Git repository hygiene.\n\nThis module provides a batch agent that enforces Git repository hygiene by:\n- Detecting stale branches (no commits in >90 days)\n- Identifying large files in history (>10MB)\n- Checking for uncommitted/unpushed changes\n\nTypical usage:\n    agent = GitHygieneAgent(project_root=Path("/path/to/repo"), ctx=context)\n    result = await agent.execute()\n'
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any
+
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.security_util import safe_git_execute
 from agentic_core.utils.timeout_decorator_util import timeout
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 @dataclass
 class GitHygieneAgent(SovereignBaseAgent):
@@ -53,12 +55,12 @@ class GitHygieneAgent(SovereignBaseAgent):
             Command stdout if successful, empty string otherwise.
         """
         try:
-            result = safe_git_execute(cmd, repo_root=self.project_root, timeout=kwargs.get('timeout', 30))
-            return result.stdout.strip() if result.returncode == 0 else ''
+            result = safe_git_execute(cmd, repo_root=self.project_root, timeout=kwargs.get("timeout", 30))
+            return result.stdout.strip() if result.returncode == 0 else ""
         except FileNotFoundError:
-            if hasattr(self.ctx, 'report'):
-                self.ctx.report('GitHygieneAgent', 0, False, 'git not installed')
-            return ''
+            if hasattr(self.ctx, "report"):
+                self.ctx.report("GitHygieneAgent", 0, False, "git not installed")
+            return ""
 
     def _get_stale_branches(self) -> list[dict[str, Any]]:
         """Find branches with no commits in the last N days.
@@ -70,20 +72,20 @@ class GitHygieneAgent(SovereignBaseAgent):
         """
         cutoff = datetime.now() - timedelta(days=self.stale_days)
         cutoff_ts = int(cutoff.timestamp())
-        branches_output = self._run_git(['branch', '--format=%(refname:short) %(committerdate:unix)'])
+        branches_output = self._run_git(["branch", "--format=%(refname:short) %(committerdate:unix)"])
         stale = []
         for line in branches_output.splitlines():
             parts = line.split()
             if len(parts) < 2:
                 continue
             branch_name = parts[0]
-            if branch_name in {'main', 'master', 'develop'}:
+            if branch_name in {"main", "master", "develop"}:
                 continue
             try:
                 commit_ts = int(parts[-1])
                 if commit_ts < cutoff_ts:
                     age = (datetime.now() - datetime.fromtimestamp(commit_ts)).days
-                    stale.append({'branch': branch_name, 'age_days': age})
+                    stale.append({"branch": branch_name, "age_days": age})
             except ValueError:
                 continue
         return stale
@@ -96,44 +98,59 @@ class GitHygieneAgent(SovereignBaseAgent):
     # guardian: allow-type-erasure
     def _get_repo_status(self) -> dict:
         """Check for uncommitted and unpushed changes."""
-        status = {'uncommitted': False, 'unpushed': False}
-        status['uncommitted'] = bool(self._run_git(['status', '--porcelain']))
-        unpushed_count = self._run_git(['rev-list', '@{u}..', '--count'])
+        status = {"uncommitted": False, "unpushed": False}
+        status["uncommitted"] = bool(self._run_git(["status", "--porcelain"]))
+        unpushed_count = self._run_git(["rev-list", "@{u}..", "--count"])
         if unpushed_count.isdigit():
-            status['unpushed'] = int(unpushed_count) > 0
+            status["unpushed"] = int(unpushed_count) > 0
         return status
 
     # guardian: allow-type-erasure
     async def execute(self) -> dict:
         """Audit repository health and optionally clean up."""
-        print('   [GIT HYGIENE] Auditing repository health...')
+        print("   [GIT HYGIENE] Auditing repository health...")
         stale_branches = self._get_stale_branches()
         status = self._get_repo_status()
         actions = []
         if stale_branches:
-            print(f'   [!] Found {len(stale_branches)} stale branches (> {self.stale_days} days)')
+            print(f"   [!] Found {len(stale_branches)} stale branches (> {self.stale_days} days)")
             for b in stale_branches[:3]:
                 print(f"      → {b['branch']} ({b['age_days']} days)")
             if len(stale_branches) > 3:
-                print(f'      ... and {len(stale_branches) - 3} more')
+                print(f"      ... and {len(stale_branches) - 3} more")
             if not self.dry_run:
                 for b in stale_branches:
-                    result = self._run_git(['branch', '-D', b['branch']])
+                    result = self._run_git(["branch", "-D", b["branch"]])
                     if result or True:
                         actions.append(f"Deleted {b['branch']}")
-        if status['uncommitted']:
-            print('   [!] Uncommitted changes detected')
-        if status['unpushed']:
-            print('   [!] Unpushed commits detected')
-        if stale_branches or status['uncommitted'] or status['unpushed']:
-            if hasattr(self.ctx, 'report'):
-                self.ctx.report('GitHygieneAgent', 48, True, f'Stale: {len(stale_branches)}, Actions: {len(actions)}')
-        return {'stale_branches': len(stale_branches), 'uncommitted': status['uncommitted'], 'unpushed': status['unpushed'], 'actions_taken': len(actions), 'dry_run': self.dry_run}
+        if status["uncommitted"]:
+            print("   [!] Uncommitted changes detected")
+        if status["unpushed"]:
+            print("   [!] Unpushed commits detected")
+        if stale_branches or status["uncommitted"] or status["unpushed"]:
+            if hasattr(self.ctx, "report"):
+                self.ctx.report(
+                    "GitHygieneAgent", 48, True, f"Stale: {len(stale_branches)}, Actions: {len(actions)}"
+                )
+        return {
+            "stale_branches": len(stale_branches),
+            "uncommitted": status["uncommitted"],
+            "unpushed": status["unpushed"],
+            "actions_taken": len(actions),
+            "dry_run": self.dry_run,
+        }
 
     @timeout(300)
     @standard_heal
     # guardian: allow-magic-config
-    def heal_repository(self, dry_run: bool=True, execute: bool=False, depth: int=0, max_depth: int=3, _call_path: set[str] | None=None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set[str] | None = None,
+    ) -> dict[str, int]:
         """Audit and heal Git repository hygiene issues.
 
         Scans for stale branches, large files, uncommitted changes,
@@ -154,46 +171,65 @@ class GitHygieneAgent(SovereignBaseAgent):
             _call_path = set()
         agent_name = self.__class__.__name__
         if agent_name in _call_path:
-            return {'violations_found': 0, 'violations_fixed': 0, 'errors': 1, 'skipped': 0, 'cycle_detected': True}
+            return {
+                "violations_found": 0,
+                "violations_fixed": 0,
+                "errors": 1,
+                "skipped": 0,
+                "cycle_detected": True,
+            }
         if depth > max_depth:
-            return {'violations_found': 0, 'violations_fixed': 0, 'errors': 0, 'skipped': 1, 'depth_limited': True}
+            return {
+                "violations_found": 0,
+                "violations_fixed": 0,
+                "errors": 0,
+                "skipped": 1,
+                "depth_limited": True,
+            }
         _call_path.add(agent_name)
         violations_found = 0
         violations_fixed = 0
         errors = 0
         skipped = 0
         try:
-            self.logger.info(f'[{agent_name}] Auditing Git repository hygiene...')
+            self.logger.info(f"[{agent_name}] Auditing Git repository hygiene...")
             try:
                 result = self.execute(cleanup=False)
-                stale_count = result.get('stale_branches', 0)
-                large_files = result.get('large_files', 0)
-                uncommitted = 1 if result.get('uncommitted', False) else 0
-                unpushed = 1 if result.get('unpushed', False) else 0
+                stale_count = result.get("stale_branches", 0)
+                large_files = result.get("large_files", 0)
+                uncommitted = 1 if result.get("uncommitted", False) else 0
+                unpushed = 1 if result.get("unpushed", False) else 0
                 violations_found = stale_count + large_files + uncommitted + unpushed
                 if violations_found > 0:
-                    self.logger.warning(f'  Found {violations_found} hygiene issues:')
+                    self.logger.warning(f"  Found {violations_found} hygiene issues:")
                     if stale_count:
-                        self.logger.warning(f'    - {stale_count} stale branches')
+                        self.logger.warning(f"    - {stale_count} stale branches")
                     if large_files:
-                        self.logger.warning(f'    - {large_files} large files')
+                        self.logger.warning(f"    - {large_files} large files")
                     if uncommitted:
-                        self.logger.warning('    - Uncommitted changes detected')
+                        self.logger.warning("    - Uncommitted changes detected")
                     if unpushed:
-                        self.logger.warning('    - Unpushed commits detected')
+                        self.logger.warning("    - Unpushed commits detected")
                     if execute and (not dry_run):
                         if stale_count > 0:
                             cleanup_result = self.cleanup_stale_branches()
-                            violations_fixed += cleanup_result.get('actions_taken', 0)
-                            self.logger.info(f'    Cleaned {violations_fixed} stale branches')
+                            violations_fixed += cleanup_result.get("actions_taken", 0)
+                            self.logger.info(f"    Cleaned {violations_fixed} stale branches")
                 else:
-                    self.logger.info('  Repository hygiene is clean')
+                    self.logger.info("  Repository hygiene is clean")
             # guardian: allow-silent-swallow
             except Exception as e:
-                self.logger.error(f'  Error during Git hygiene audit: {e}')
+                self.logger.error(f"  Error during Git hygiene audit: {e}")
                 errors += 1
-            self.logger.info(f'[{agent_name}] Complete: {violations_found} issues, {violations_fixed} fixed')
-            return {'violations_found': violations_found, 'violations_fixed': violations_fixed, 'errors': errors, 'skipped': skipped, 'agent': agent_name, 'dry_run': dry_run}
+            self.logger.info(f"[{agent_name}] Complete: {violations_found} issues, {violations_fixed} fixed")
+            return {
+                "violations_found": violations_found,
+                "violations_fixed": violations_fixed,
+                "errors": errors,
+                "skipped": skipped,
+                "agent": agent_name,
+                "dry_run": dry_run,
+            }
         finally:
             _call_path.discard(agent_name)
 
@@ -210,13 +246,18 @@ class GitHygieneAgent(SovereignBaseAgent):
         Returns:
             Dictionary with healing results following standard_heal format.
         """
-        violation_type = violation.get('type', '')
+        violation_type = violation.get("type", "")
         try:
-            if violation_type == 'stale_branch':
+            if violation_type == "stale_branch":
                 result = self.cleanup_stale_branches()
-                return {'violations_fixed': result.get('actions_taken', 0), 'violations_found': result.get('stale_branches', 0), 'errors': 0, 'skipped': 0}
+                return {
+                    "violations_fixed": result.get("actions_taken", 0),
+                    "violations_found": result.get("stale_branches", 0),
+                    "errors": 0,
+                    "skipped": 0,
+                }
             else:
-                return {'violations_fixed': 0, 'violations_found': 1, 'errors': 0, 'skipped': 1}
+                return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}
         # guardian: allow-silent-swallow
         except Exception:
-            return {'violations_fixed': 0, 'violations_found': 1, 'errors': 1, 'skipped': 0}
+            return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}

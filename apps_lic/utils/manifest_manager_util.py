@@ -3,12 +3,14 @@ Manifest Manager.
 
 Handles persistence of workflow state to disk/storage.
 """
+
 from __future__ import annotations
+
 import json
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 try:
     from agentic_core.mixins.mcp_hardened_mixin import mcp_hardened_mixin
 
@@ -18,6 +20,8 @@ except ImportError:
 
     class MCPHardenedMixin:
         pass
+
+
 try:
     from agentic_core.interfaces.mixins import HealerMixin
 except ImportError:
@@ -25,12 +29,14 @@ except ImportError:
     class HealerMixin:
         pass
 
+
 @dataclass
 class ManifestManager(MCPHardenedMixin, HealerMixin):
     """
     Manages loading and saving of workflow manifests (checkpoints).
     """
-    base_path: str | Path = field(default_factory=lambda: Path('./manifests'))
+
+    base_path: str | Path = field(default_factory=lambda: Path("./manifests"))
 
     def __post_init__(self) -> None:
         super().__init__()
@@ -50,8 +56,8 @@ class ManifestManager(MCPHardenedMixin, HealerMixin):
             Path object of the saved file.
         """
         try:
-            target_file = self.base_path / f'{manifest_id}.json'
-            with open(target_file, 'w', encoding='utf-8') as f:
+            target_file = self.base_path / f"{manifest_id}.json"
+            with open(target_file, "w", encoding="utf-8") as f:
                 json.dump(data, f, indent=2)
             return target_file
         except (OSError, TypeError) as e:
@@ -70,8 +76,8 @@ class ManifestManager(MCPHardenedMixin, HealerMixin):
         Raises:
             FileNotFoundError: If the manifest does not exist.
         """
-        target_file = self.base_path / f'{manifest_id}.json'
+        target_file = self.base_path / f"{manifest_id}.json"
         if not target_file.exists():
-            raise FileNotFoundError(f'Manifest not found: {target_file}')
-        with open(target_file, encoding='utf-8') as f:
+            raise FileNotFoundError(f"Manifest not found: {target_file}")
+        with open(target_file, encoding="utf-8") as f:
             return json.load(f)

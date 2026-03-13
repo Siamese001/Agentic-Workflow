@@ -5,17 +5,21 @@ Fields: trace_id, plan_hash, actor, target, diff, policy_hash,
 
 replay_key = SHA256(trace_id + plan_hash + transcript_hash)  — deterministic, no time entropy.
 """
+
 from __future__ import annotations
+
 import hashlib
 import json
 from dataclasses import dataclass, field
 from typing import Any
+
 from agentic_core.L5_safety.types.hardening_errors import ExecutionTraceIntegrityError
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 def _compute_replay_key(trace_id: str, plan_hash: str, transcript_hash: str) -> str:
-    raw = (trace_id + plan_hash + transcript_hash).encode('ascii', errors='replace')
+    raw = (trace_id + plan_hash + transcript_hash).encode("ascii", errors="replace")
     return hashlib.sha256(raw).hexdigest()
+
 
 @dataclass(frozen=True)
 class ExecutionTrace:
@@ -27,25 +31,41 @@ class ExecutionTrace:
     validation_decision: str
     timing_ms: int
     hash_chain_root: str
-    policy_hash: str = ''
-    prev_hash: str = ''
-    transcript_hash: str = ''
-    agent_id: str = ''
-    error: str = ''
+    policy_hash: str = ""
+    prev_hash: str = ""
+    transcript_hash: str = ""
+    agent_id: str = ""
+    error: str = ""
     extra: dict[str, Any] = field(default_factory=dict)
-    replay_key: str = field(init=False, default='')
+    replay_key: str = field(init=False, default="")
 
     def __post_init__(self) -> None:
         if not self.trace_id:
-            raise ValueError('trace_id required')
-        if self.validation_decision not in ('PASS', 'FAIL', 'ESCALATE'):
-            raise ValueError(f'validation_decision must be PASS|FAIL|ESCALATE, got {self.validation_decision!r}')
+            raise ValueError("trace_id required")
+        if self.validation_decision not in ("PASS", "FAIL", "ESCALATE"):
+            raise ValueError(
+                f"validation_decision must be PASS|FAIL|ESCALATE, got {self.validation_decision!r}"
+            )
         rk = _compute_replay_key(self.trace_id, self.policy_hash, self.transcript_hash)
-        object.__setattr__(self, 'replay_key', rk)
+        object.__setattr__(self, "replay_key", rk)
 
     def canonical_bytes(self) -> bytes:
-        obj = {'agent_id': self.agent_id, 'governed_payload_hash': self.governed_payload_hash, 'hash_chain_root': self.hash_chain_root, 'instruction_packet_id': self.instruction_packet_id, 'llm_response_hash': self.llm_response_hash, 'policy_hash': self.policy_hash, 'prev_hash': self.prev_hash, 'replay_key': self.replay_key, 'sandbox_envelope_ids': list(self.sandbox_envelope_ids), 'timing_ms': self.timing_ms, 'trace_id': self.trace_id, 'transcript_hash': self.transcript_hash, 'validation_decision': self.validation_decision}
-        return json.dumps(obj, sort_keys=True, separators=(',', ':')).encode('ascii')
+        obj = {
+            "agent_id": self.agent_id,
+            "governed_payload_hash": self.governed_payload_hash,
+            "hash_chain_root": self.hash_chain_root,
+            "instruction_packet_id": self.instruction_packet_id,
+            "llm_response_hash": self.llm_response_hash,
+            "policy_hash": self.policy_hash,
+            "prev_hash": self.prev_hash,
+            "replay_key": self.replay_key,
+            "sandbox_envelope_ids": list(self.sandbox_envelope_ids),
+            "timing_ms": self.timing_ms,
+            "trace_id": self.trace_id,
+            "transcript_hash": self.transcript_hash,
+            "validation_decision": self.validation_decision,
+        }
+        return json.dumps(obj, sort_keys=True, separators=(",", ":")).encode("ascii")
 
     def content_hash(self) -> str:
         return hashlib.sha256(self.canonical_bytes()).hexdigest()
@@ -56,10 +76,21 @@ class ExecutionTrace:
         Required fields: trace_id, instruction_packet_id, governed_payload_hash,
         llm_response_hash, validation_decision, hash_chain_root, replay_key.
         """
-        _required = {'trace_id': self.trace_id, 'instruction_packet_id': self.instruction_packet_id, 'governed_payload_hash': self.governed_payload_hash, 'llm_response_hash': self.llm_response_hash, 'validation_decision': self.validation_decision, 'hash_chain_root': self.hash_chain_root, 'replay_key': self.replay_key}
+        _required = {
+            "trace_id": self.trace_id,
+            "instruction_packet_id": self.instruction_packet_id,
+            "governed_payload_hash": self.governed_payload_hash,
+            "llm_response_hash": self.llm_response_hash,
+            "validation_decision": self.validation_decision,
+            "hash_chain_root": self.hash_chain_root,
+            "replay_key": self.replay_key,
+        }
         missing = [k for k, v in _required.items() if not v]
         if missing:
-            raise ExecutionTraceIntegrityError(f'ExecutionTrace missing required field(s): {missing}. Execution marked FAILED — trace is incomplete.')
+            raise ExecutionTraceIntegrityError(
+                f"ExecutionTrace missing required field(s): {missing}. Execution marked FAILED — trace is incomplete."
+            )
+
 
 class ExecutionTraceBuilder:
     """Mutable builder. Call seal() exactly once."""
@@ -67,17 +98,17 @@ class ExecutionTraceBuilder:
     def __init__(self, trace_id: str, instruction_packet_id: str) -> None:
         self.trace_id = trace_id
         self.instruction_packet_id = instruction_packet_id
-        self.governed_payload_hash = ''
+        self.governed_payload_hash = ""
         self.sandbox_envelope_ids: list[str] = []
-        self.llm_response_hash = ''
-        self.validation_decision = 'PASS'
+        self.llm_response_hash = ""
+        self.validation_decision = "PASS"
         self.timing_ms = 0
-        self.hash_chain_root = ''
-        self.policy_hash = ''
-        self.prev_hash = ''
-        self.transcript_hash = ''
-        self.agent_id = ''
-        self.error = ''
+        self.hash_chain_root = ""
+        self.policy_hash = ""
+        self.prev_hash = ""
+        self.transcript_hash = ""
+        self.agent_id = ""
+        self.error = ""
         self.extra: dict[str, Any] = {}
 
     def set_governed_payload(self, routing_hash: str) -> None:
@@ -87,7 +118,7 @@ class ExecutionTraceBuilder:
         self.sandbox_envelope_ids.append(envelope_id)
 
     def set_llm_response(self, raw_text: str) -> None:
-        self.llm_response_hash = hashlib.sha256(raw_text.encode('utf-8', errors='replace')).hexdigest()
+        self.llm_response_hash = hashlib.sha256(raw_text.encode("utf-8", errors="replace")).hexdigest()
 
     def set_transcript(self, transcript_bytes: bytes) -> None:
         """Set transcript_hash from raw PTC ToolTranscript bytes."""
@@ -109,4 +140,19 @@ class ExecutionTraceBuilder:
         self.timing_ms = ms
 
     def seal(self) -> ExecutionTrace:
-        return ExecutionTrace(trace_id=self.trace_id, instruction_packet_id=self.instruction_packet_id, governed_payload_hash=self.governed_payload_hash, sandbox_envelope_ids=tuple(self.sandbox_envelope_ids), llm_response_hash=self.llm_response_hash, validation_decision=self.validation_decision, timing_ms=self.timing_ms, hash_chain_root=self.hash_chain_root, policy_hash=self.policy_hash, prev_hash=self.prev_hash, transcript_hash=self.transcript_hash, agent_id=self.agent_id, error=self.error, extra=self.extra)
+        return ExecutionTrace(
+            trace_id=self.trace_id,
+            instruction_packet_id=self.instruction_packet_id,
+            governed_payload_hash=self.governed_payload_hash,
+            sandbox_envelope_ids=tuple(self.sandbox_envelope_ids),
+            llm_response_hash=self.llm_response_hash,
+            validation_decision=self.validation_decision,
+            timing_ms=self.timing_ms,
+            hash_chain_root=self.hash_chain_root,
+            policy_hash=self.policy_hash,
+            prev_hash=self.prev_hash,
+            transcript_hash=self.transcript_hash,
+            agent_id=self.agent_id,
+            error=self.error,
+            extra=self.extra,
+        )

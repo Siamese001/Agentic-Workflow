@@ -26,10 +26,12 @@ It only knows about "checks", "issues", "scores", and "signals".
 
 [CREATED 2026-02-08] Cluster 2 extraction per Pure Harness pattern.
 """
+
 from __future__ import annotations
+
 import json
 from typing import Any, ClassVar
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 class RGValidationCapability:
     """Pure capability mixin for RG validation loop agents.
@@ -47,10 +49,11 @@ class RGValidationCapability:
         - Set VALIDATION_FAIL_PREFIX (e.g., "Check issues")
         - Override collect_issues() with domain-specific validation logic
     """
-    VALIDATION_SIGNAL: ClassVar[str] = ''
-    VALIDATION_LOG_PREFIX: ClassVar[str] = 'Running validation...'
-    VALIDATION_PASS_MESSAGE: ClassVar[str] = 'Validation passed'
-    VALIDATION_FAIL_PREFIX: ClassVar[str] = 'Validation issues'
+
+    VALIDATION_SIGNAL: ClassVar[str] = ""
+    VALIDATION_LOG_PREFIX: ClassVar[str] = "Running validation..."
+    VALIDATION_PASS_MESSAGE: ClassVar[str] = "Validation passed"
+    VALIDATION_FAIL_PREFIX: ClassVar[str] = "Validation issues"
 
     async def run_validation(self) -> None:
         """Template method: log → collect issues → record pass/fail + signal.
@@ -59,11 +62,11 @@ class RGValidationCapability:
         self.add_signal(), self.remove_signal() — all provided by RGAgentBase.
         """
         if not self.VALIDATION_SIGNAL:
-            raise ValueError(f'{self.__class__.__name__} must set VALIDATION_SIGNAL')
+            raise ValueError(f"{self.__class__.__name__} must set VALIDATION_SIGNAL")
         self.log(self.VALIDATION_LOG_PREFIX)
         issues = await self.collect_issues()
         if issues:
-            self.record_fail(f'{self.VALIDATION_FAIL_PREFIX}: {len(issues)}', data=issues)
+            self.record_fail(f"{self.VALIDATION_FAIL_PREFIX}: {len(issues)}", data=issues)
             self.add_signal(self.VALIDATION_SIGNAL)
         else:
             self.record_pass(self.VALIDATION_PASS_MESSAGE)
@@ -75,7 +78,7 @@ class RGValidationCapability:
         Returns:
             List of issue description strings. Empty list means passed.
         """
-        raise NotImplementedError(f'{self.__class__.__name__} must implement collect_issues()')
+        raise NotImplementedError(f"{self.__class__.__name__} must implement collect_issues()")
 
     @staticmethod
     def content_to_string(content: Any) -> str:
@@ -92,12 +95,12 @@ class RGValidationCapability:
         if isinstance(content, str):
             return content
         if isinstance(content, list):
-            return ' '.join((str(item) for item in content))
+            return " ".join(str(item) for item in content)
         if isinstance(content, dict):
             return json.dumps(content)
         return str(content)
 
-    def make_heal_result(self, violation: dict[str, Any], *, status: str='skipped') -> dict[str, Any]:
+    def make_heal_result(self, violation: dict[str, Any], *, status: str = "skipped") -> dict[str, Any]:
         """Generate a standard heal stub result.
 
         Args:
@@ -107,5 +110,10 @@ class RGValidationCapability:
         Returns:
             Canonical heal result dict.
         """
-        violation_type = violation.get('type', 'unknown')
-        return {'status': status, 'details': f'{self.__class__.__name__} heal() not yet implemented for {violation_type}', 'artifacts': [], 'errors': []}
+        violation_type = violation.get("type", "unknown")
+        return {
+            "status": status,
+            "details": f"{self.__class__.__name__} heal() not yet implemented for {violation_type}",
+            "artifacts": [],
+            "errors": [],
+        }

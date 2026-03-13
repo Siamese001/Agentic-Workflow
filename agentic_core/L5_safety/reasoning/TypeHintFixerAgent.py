@@ -1,10 +1,13 @@
 from __future__ import annotations
+
 import ast
 from dataclasses import dataclass
+
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-'\nTypeHintFixerAgent - Extracted for one-class-per-file pattern.\n\nOriginally from: TypeHintEnforcementAgent.py\nExtracted: 2026-01-06 (Surgical Extraction)\n'
+
+"\nTypeHintFixerAgent - Extracted for one-class-per-file pattern.\n\nOriginally from: TypeHintEnforcementAgent.py\nExtracted: 2026-01-06 (Surgical Extraction)\n"
 from agentic_core.utils.decorators_compat_util import standard_heal
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 @dataclass
 class TypeHintFixerAgent(SovereignBaseAgent, ast.NodeTransformer):
@@ -21,10 +24,10 @@ class TypeHintFixerAgent(SovereignBaseAgent, ast.NodeTransformer):
 
     def visit_FunctionDef(self, node: ast.FunctionDef) -> ast.FunctionDef:
         """Execute visit_FunctionDef operation."""
-        if node.name.startswith('_'):
+        if node.name.startswith("_"):
             return node
         for arg in node.args.args:
-            if arg.annotation is None and arg.arg != 'self' and (arg.arg != 'cls'):
+            if arg.annotation is None and arg.arg != "self" and (arg.arg != "cls"):
                 arg.annotation = ast.Name(id=self.fallback_param, ctx=ast.Load())
                 self.added_count += 1
         if node.returns is None:
@@ -41,8 +44,13 @@ class TypeHintFixerAgent(SovereignBaseAgent, ast.NodeTransformer):
         """Execute visit_Assign operation."""
         if len(node.targets) == 1:
             target = node.targets[0]
-            if isinstance(target, ast.Name) and (not target.id.startswith('_')):
-                new_node = ast.AnnAssign(target=target, annotation=ast.Name(id=self.fallback_var, ctx=ast.Load()), value=node.value, simple=1)
+            if isinstance(target, ast.Name) and (not target.id.startswith("_")):
+                new_node = ast.AnnAssign(
+                    target=target,
+                    annotation=ast.Name(id=self.fallback_var, ctx=ast.Load()),
+                    value=node.value,
+                    simple=1,
+                )
                 self.added_count += 1
                 return new_node
         return node

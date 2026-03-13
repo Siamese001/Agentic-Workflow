@@ -4,6 +4,7 @@ This module implements a dead letter queue (DLQ) to capture and manage
 envelopes that have permanently failed processing, ensuring no data
 is lost and enabling debugging and manual recovery.
 """
+
 import asyncio
 import json
 import logging
@@ -13,32 +14,40 @@ from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
 from typing import Any
+
 import aiofiles
+
 from .core.envelope import SignalEnvelope
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 logger = logging.getLogger(__name__)
+
 
 class FailureReason(str, Enum):
     """Reasons for envelope failure."""
-    VALIDATION_FAILED = 'validation_failed'
-    PROCESSING_ERROR = 'processing_error'
-    TIMEOUT = 'timeout'
-    RESOURCE_EXHAUSTED = 'resource_exhausted'
-    MAX_RETRIES_EXCEEDED = 'max_retries_exceeded'
-    CORRUPTED_PAYLOAD = 'corrupted_payload'
-    UNKNOWN = 'unknown'
+
+    VALIDATION_FAILED = "validation_failed"
+    PROCESSING_ERROR = "processing_error"
+    TIMEOUT = "timeout"
+    RESOURCE_EXHAUSTED = "resource_exhausted"
+    MAX_RETRIES_EXCEEDED = "max_retries_exceeded"
+    CORRUPTED_PAYLOAD = "corrupted_payload"
+    UNKNOWN = "unknown"
+
 
 class DeadLetterStatus(str, Enum):
     """Status of dead letter items."""
-    PENDING_REVIEW = 'pending_review'
-    UNDER_INVESTIGATION = 'under_investigation'
-    RESOLVED = 'resolved'
-    PERMANENTLY_FAILED = 'permanently_failed'
-    REQUEUED = 'requeued'
+
+    PENDING_REVIEW = "pending_review"
+    UNDER_INVESTIGATION = "under_investigation"
+    RESOLVED = "resolved"
+    PERMANENTLY_FAILED = "permanently_failed"
+    REQUEUED = "requeued"
+
 
 @dataclass
 class DeadLetterItem:
     """An item in the dead letter queue."""
+
     envelope: SignalEnvelope
     failure_reason: FailureReason
     failure_stage: str
@@ -57,10 +66,22 @@ class DeadLetterItem:
         Returns:
             Dictionary representation
         """
-        return {'envelope': self.envelope.dict() if hasattr(self.envelope, 'dict') else self.envelope.to_dict(), 'failure_reason': self.failure_reason.value, 'failure_stage': self.failure_stage, 'error_message': self.error_message, 'timestamp': self.timestamp.isoformat(), 'retry_count': self.retry_count, 'max_retries': self.max_retries, 'status': self.status.value, 'investigation_notes': self.investigation_notes, 'resolved_by': self.resolved_by, 'metadata': self.metadata}
+        return {
+            "envelope": self.envelope.dict() if hasattr(self.envelope, "dict") else self.envelope.to_dict(),
+            "failure_reason": self.failure_reason.value,
+            "failure_stage": self.failure_stage,
+            "error_message": self.error_message,
+            "timestamp": self.timestamp.isoformat(),
+            "retry_count": self.retry_count,
+            "max_retries": self.max_retries,
+            "status": self.status.value,
+            "investigation_notes": self.investigation_notes,
+            "resolved_by": self.resolved_by,
+            "metadata": self.metadata,
+        }
 
     @classmethod
-    def from_dict(cls, data: dict[str, Any]) -> 'DeadLetterItem':
+    def from_dict(cls, data: dict[str, Any]) -> "DeadLetterItem":
         """Create from dictionary.
 
         Args:
@@ -69,8 +90,21 @@ class DeadLetterItem:
         Returns:
             DeadLetterItem instance
         """
-        envelope = SignalEnvelope.from_dict(data['envelope'])
-        return cls(envelope=envelope, failure_reason=FailureReason(data['failure_reason']), failure_stage=data['failure_stage'], error_message=data['error_message'], timestamp=datetime.fromisoformat(data['timestamp']), retry_count=data.get('retry_count', 0), max_retries=data.get('max_retries', 3), status=DeadLetterStatus(data.get('status', 'pending_review')), investigation_notes=data.get('investigation_notes'), resolved_by=data.get('resolved_by'), metadata=data.get('metadata', {}))
+        envelope = SignalEnvelope.from_dict(data["envelope"])
+        return cls(
+            envelope=envelope,
+            failure_reason=FailureReason(data["failure_reason"]),
+            failure_stage=data["failure_stage"],
+            error_message=data["error_message"],
+            timestamp=datetime.fromisoformat(data["timestamp"]),
+            retry_count=data.get("retry_count", 0),
+            max_retries=data.get("max_retries", 3),
+            status=DeadLetterStatus(data.get("status", "pending_review")),
+            investigation_notes=data.get("investigation_notes"),
+            resolved_by=data.get("resolved_by"),
+            metadata=data.get("metadata", {}),
+        )
+
 
 class DeadLetterStorage(ABC):
     """Abstract base for dead letter storage."""
@@ -101,7 +135,7 @@ class DeadLetterStorage(ABC):
 
     @abstractmethod
     # guardian: allow-magic-config
-    async def list(self, status: DeadLetterStatus | None=None, limit: int=100) -> list[DeadLetterItem]:
+    async def list(self, status: DeadLetterStatus | None = None, limit: int = 100) -> list[DeadLetterItem]:
         """List items in queue.
 
         Args:
@@ -114,7 +148,7 @@ class DeadLetterStorage(ABC):
         pass
 
     @abstractmethod
-    async def update_status(self, item_id: str, status: DeadLetterStatus, notes: str | None=None) -> bool:
+    async def update_status(self, item_id: str, status: DeadLetterStatus, notes: str | None = None) -> bool:
         """Update item status.
 
         Args:
@@ -151,6 +185,7 @@ class DeadLetterStorage(ABC):
         """
         pass
 
+
 class FileDeadLetterStorage(DeadLetterStorage):
     """File-based dead letter storage."""
 
@@ -162,9 +197,9 @@ class FileDeadLetterStorage(DeadLetterStorage):
         """
         self.storage_path = Path(storage_path)
         self.storage_path.mkdir(parents=True, exist_ok=True)
-        (self.storage_path / 'pending').mkdir(exist_ok=True)
-        (self.storage_path / 'investigation').mkdir(exist_ok=True)
-        (self.storage_path / 'resolved').mkdir(exist_ok=True)
+        (self.storage_path / "pending").mkdir(exist_ok=True)
+        (self.storage_path / "investigation").mkdir(exist_ok=True)
+        (self.storage_path / "resolved").mkdir(exist_ok=True)
 
     def _get_item_path(self, item: DeadLetterItem) -> Path:
         """Get file path for item.
@@ -175,8 +210,14 @@ class FileDeadLetterStorage(DeadLetterStorage):
         Returns:
             File path
         """
-        status_dir = {DeadLetterStatus.PENDING_REVIEW: 'pending', DeadLetterStatus.UNDER_INVESTIGATION: 'investigation', DeadLetterStatus.RESOLVED: 'resolved', DeadLetterStatus.PERMANENTLY_FAILED: 'resolved', DeadLetterStatus.REQUEUED: 'resolved'}.get(item.status, 'pending')
-        return self.storage_path / status_dir / f'{item.envelope.trace_id}.json'
+        status_dir = {
+            DeadLetterStatus.PENDING_REVIEW: "pending",
+            DeadLetterStatus.UNDER_INVESTIGATION: "investigation",
+            DeadLetterStatus.RESOLVED: "resolved",
+            DeadLetterStatus.PERMANENTLY_FAILED: "resolved",
+            DeadLetterStatus.REQUEUED: "resolved",
+        }.get(item.status, "pending")
+        return self.storage_path / status_dir / f"{item.envelope.trace_id}.json"
 
     async def add(self, item: DeadLetterItem) -> bool:
         """Add item to dead letter queue.
@@ -190,15 +231,17 @@ class FileDeadLetterStorage(DeadLetterStorage):
         try:
             path = self._get_item_path(item)
             data = item.to_dict()
-            temp_path = path.with_suffix('.tmp')
-            async with aiofiles.open(temp_path, 'w') as f:
+            temp_path = path.with_suffix(".tmp")
+            async with aiofiles.open(temp_path, "w") as f:
                 await f.write(json.dumps(data, indent=2))
             await aiofiles.os.rename(temp_path, path)
-            logger.warning(f'Added envelope {item.envelope.trace_id} to dead letter queue: {item.failure_reason}')
+            logger.warning(
+                f"Added envelope {item.envelope.trace_id} to dead letter queue: {item.failure_reason}"
+            )
             return True
         # guardian: allow-silent-swallow
         except Exception as e:
-            logger.error(f'Failed to add to dead letter queue: {e}')
+            logger.error(f"Failed to add to dead letter queue: {e}")
             return False
 
     async def get(self, item_id: str) -> DeadLetterItem | None:
@@ -210,8 +253,8 @@ class FileDeadLetterStorage(DeadLetterStorage):
         Returns:
             Dead letter item if found
         """
-        for status_dir in ['pending', 'investigation', 'resolved']:
-            path = self.storage_path / status_dir / f'{item_id}.json'
+        for status_dir in ["pending", "investigation", "resolved"]:
+            path = self.storage_path / status_dir / f"{item_id}.json"
             if path.exists():
                 try:
                     async with aiofiles.open(path) as f:
@@ -220,11 +263,11 @@ class FileDeadLetterStorage(DeadLetterStorage):
                     return DeadLetterItem.from_dict(data)
                 # guardian: allow-silent-swallow
                 except Exception as e:
-                    logger.error(f'Failed to read dead letter item {item_id}: {e}')
+                    logger.error(f"Failed to read dead letter item {item_id}: {e}")
         return None
 
     # guardian: allow-magic-config
-    async def list(self, status: DeadLetterStatus | None=None, limit: int=100) -> list[DeadLetterItem]:
+    async def list(self, status: DeadLetterStatus | None = None, limit: int = 100) -> list[DeadLetterItem]:
         """List items in queue.
 
         Args:
@@ -236,14 +279,20 @@ class FileDeadLetterStorage(DeadLetterStorage):
         """
         items = []
         if status:
-            status_dirs = {DeadLetterStatus.PENDING_REVIEW: ['pending'], DeadLetterStatus.UNDER_INVESTIGATION: ['investigation'], DeadLetterStatus.RESOLVED: ['resolved'], DeadLetterStatus.PERMANENTLY_FAILED: ['resolved'], DeadLetterStatus.REQUEUED: ['resolved']}.get(status, ['pending', 'investigation', 'resolved'])
+            status_dirs = {
+                DeadLetterStatus.PENDING_REVIEW: ["pending"],
+                DeadLetterStatus.UNDER_INVESTIGATION: ["investigation"],
+                DeadLetterStatus.RESOLVED: ["resolved"],
+                DeadLetterStatus.PERMANENTLY_FAILED: ["resolved"],
+                DeadLetterStatus.REQUEUED: ["resolved"],
+            }.get(status, ["pending", "investigation", "resolved"])
         else:
-            status_dirs = ['pending', 'investigation', 'resolved']
+            status_dirs = ["pending", "investigation", "resolved"]
         for status_dir in status_dirs:
             dir_path = self.storage_path / status_dir
             if not dir_path.exists():
                 continue
-            for file_path in dir_path.glob('*.json'):
+            for file_path in dir_path.glob("*.json"):
                 if len(items) >= limit:
                     break
                 try:
@@ -255,11 +304,11 @@ class FileDeadLetterStorage(DeadLetterStorage):
                         items.append(item)
                 # guardian: allow-silent-swallow
                 except Exception as e:
-                    logger.error(f'Failed to read dead letter file {file_path}: {e}')
+                    logger.error(f"Failed to read dead letter file {file_path}: {e}")
         items.sort(key=lambda x: x.timestamp, reverse=True)
         return items[:limit]
 
-    async def update_status(self, item_id: str, status: DeadLetterStatus, notes: str | None=None) -> bool:
+    async def update_status(self, item_id: str, status: DeadLetterStatus, notes: str | None = None) -> bool:
         """Update item status.
 
         Args:
@@ -280,15 +329,15 @@ class FileDeadLetterStorage(DeadLetterStorage):
         new_path = self._get_item_path(item)
         try:
             data = item.to_dict()
-            async with aiofiles.open(old_path, 'w') as f:
+            async with aiofiles.open(old_path, "w") as f:
                 await f.write(json.dumps(data, indent=2))
             if old_path.parent != new_path.parent:
                 await aiofiles.os.rename(old_path, new_path)
-            logger.info(f'Updated dead letter item {item_id} to status: {status.value}')
+            logger.info(f"Updated dead letter item {item_id} to status: {status.value}")
             return True
         # guardian: allow-silent-swallow
         except Exception as e:
-            logger.error(f'Failed to update dead letter item {item_id}: {e}')
+            logger.error(f"Failed to update dead letter item {item_id}: {e}")
             return False
 
     async def delete(self, item_id: str) -> bool:
@@ -306,11 +355,11 @@ class FileDeadLetterStorage(DeadLetterStorage):
         try:
             path = self._get_item_path(item)
             await aiofiles.os.remove(path)
-            logger.info(f'Deleted dead letter item {item_id}')
+            logger.info(f"Deleted dead letter item {item_id}")
             return True
         # guardian: allow-silent-swallow
         except Exception as e:
-            logger.error(f'Failed to delete dead letter item {item_id}: {e}')
+            logger.error(f"Failed to delete dead letter item {item_id}: {e}")
             return False
 
     async def cleanup(self, older_than: timedelta) -> int:
@@ -324,10 +373,10 @@ class FileDeadLetterStorage(DeadLetterStorage):
         """
         count = 0
         cutoff = datetime.utcnow() - older_than
-        resolved_dir = self.storage_path / 'resolved'
+        resolved_dir = self.storage_path / "resolved"
         if not resolved_dir.exists():
             return 0
-        for file_path in resolved_dir.glob('*.json'):
+        for file_path in resolved_dir.glob("*.json"):
             try:
                 mtime = datetime.fromtimestamp(file_path.stat().st_mtime)
                 if mtime < cutoff:
@@ -335,24 +384,32 @@ class FileDeadLetterStorage(DeadLetterStorage):
                     count += 1
             # guardian: allow-silent-swallow
             except Exception as e:
-                logger.error(f'Failed to cleanup dead letter file {file_path}: {e}')
-        logger.info(f'Cleaned up {count} old dead letter items')
+                logger.error(f"Failed to cleanup dead letter file {file_path}: {e}")
+        logger.info(f"Cleaned up {count} old dead letter items")
         return count
+
 
 class DeadLetterQueue:
     """Manages dead letter envelopes for debugging and recovery."""
 
-    def __init__(self, storage: DeadLetterStorage | None=None):
+    def __init__(self, storage: DeadLetterStorage | None = None):
         """Initialize dead letter queue.
 
         Args:
             storage: Storage backend (uses file storage if not provided)
         """
-        self.storage = storage or FileDeadLetterStorage('./dead_letters')
-        self._stats = {'total_failed': 0, 'by_reason': {}, 'by_status': {}, 'resolved': 0, 'requeued': 0}
-        logger.info('Initialized DeadLetterQueue')
+        self.storage = storage or FileDeadLetterStorage("./dead_letters")
+        self._stats = {"total_failed": 0, "by_reason": {}, "by_status": {}, "resolved": 0, "requeued": 0}
+        logger.info("Initialized DeadLetterQueue")
 
-    async def add_failed_envelope(self, envelope: SignalEnvelope, failure_reason: FailureReason, failure_stage: str, error_message: str, metadata: dict[str, Any] | None=None) -> bool:
+    async def add_failed_envelope(
+        self,
+        envelope: SignalEnvelope,
+        failure_reason: FailureReason,
+        failure_stage: str,
+        error_message: str,
+        metadata: dict[str, Any] | None = None,
+    ) -> bool:
         """Add failed envelope to dead letter queue.
 
         Args:
@@ -365,12 +422,19 @@ class DeadLetterQueue:
         Returns:
             True if added successfully
         """
-        item = DeadLetterItem(envelope=envelope, failure_reason=failure_reason, failure_stage=failure_stage, error_message=error_message, timestamp=datetime.utcnow(), metadata=metadata or {})
+        item = DeadLetterItem(
+            envelope=envelope,
+            failure_reason=failure_reason,
+            failure_stage=failure_stage,
+            error_message=error_message,
+            timestamp=datetime.utcnow(),
+            metadata=metadata or {},
+        )
         success = await self.storage.add(item)
         if success:
-            self._stats['total_failed'] += 1
+            self._stats["total_failed"] += 1
             reason_key = failure_reason.value
-            self._stats['by_reason'][reason_key] = self._stats['by_reason'].get(reason_key, 0) + 1
+            self._stats["by_reason"][reason_key] = self._stats["by_reason"].get(reason_key, 0) + 1
         return success
 
     async def get_failed_envelope(self, trace_id: str) -> DeadLetterItem | None:
@@ -385,7 +449,9 @@ class DeadLetterQueue:
         return await self.storage.get(trace_id)
 
     # guardian: allow-magic-config
-    async def list_failed_envelopes(self, status: DeadLetterStatus | None=None, limit: int=100) -> list[DeadLetterItem]:
+    async def list_failed_envelopes(
+        self, status: DeadLetterStatus | None = None, limit: int = 100
+    ) -> list[DeadLetterItem]:
         """List failed envelopes.
 
         Args:
@@ -407,7 +473,9 @@ class DeadLetterQueue:
         Returns:
             True if updated successfully
         """
-        return await self.storage.update_status(trace_id, DeadLetterStatus.UNDER_INVESTIGATION, f'Investigation started by {investigator}')
+        return await self.storage.update_status(
+            trace_id, DeadLetterStatus.UNDER_INVESTIGATION, f"Investigation started by {investigator}"
+        )
 
     async def resolve(self, trace_id: str, resolution: str, resolved_by: str) -> bool:
         """Mark envelope as resolved.
@@ -420,9 +488,11 @@ class DeadLetterQueue:
         Returns:
             True if updated successfully
         """
-        success = await self.storage.update_status(trace_id, DeadLetterStatus.RESOLVED, f'Resolved by {resolved_by}: {resolution}')
+        success = await self.storage.update_status(
+            trace_id, DeadLetterStatus.RESOLVED, f"Resolved by {resolved_by}: {resolution}"
+        )
         if success:
-            self._stats['resolved'] += 1
+            self._stats["resolved"] += 1
         return success
 
     async def requeue(self, trace_id: str, notes: str) -> SignalEnvelope | None:
@@ -439,16 +509,16 @@ class DeadLetterQueue:
         if not item:
             return None
         if item.retry_count >= item.max_retries:
-            logger.warning(f'envelope {trace_id} exceeded max retries ({item.max_retries})')
+            logger.warning(f"envelope {trace_id} exceeded max retries ({item.max_retries})")
             return None
         item.retry_count += 1
         item.status = DeadLetterStatus.REQUEUED
         await self.storage.add(item)
-        logger.info(f'Requeued envelope {trace_id} (attempt {item.retry_count})')
-        self._stats['requeued'] += 1
+        logger.info(f"Requeued envelope {trace_id} (attempt {item.retry_count})")
+        self._stats["requeued"] += 1
         return item.envelope
 
-    async def cleanup(self, older_than: timedelta | None=None) -> int:
+    async def cleanup(self, older_than: timedelta | None = None) -> int:
         """Clean up old resolved items.
 
         Args:
@@ -478,9 +548,19 @@ class DeadLetterQueue:
         pending = await self.list_failed_envelopes(DeadLetterStatus.PENDING_REVIEW, 1000)
         investigation = await self.list_failed_envelopes(DeadLetterStatus.UNDER_INVESTIGATION, 1000)
         resolved = await self.list_failed_envelopes(DeadLetterStatus.RESOLVED, 1000)
-        return {'status': 'healthy', 'pending_review': len(pending), 'under_investigation': len(investigation), 'resolved': len(resolved), 'total_failed': self._stats['total_failed'], 'stats': self.get_stats()}
+        return {
+            "status": "healthy",
+            "pending_review": len(pending),
+            "under_investigation": len(investigation),
+            "resolved": len(resolved),
+            "total_failed": self._stats["total_failed"],
+            "stats": self.get_stats(),
+        }
+
+
 _dlq: DeadLetterQueue | None = None
 _dlq_lock = asyncio.Lock()
+
 
 async def get_dead_letter_queue() -> DeadLetterQueue:
     """Get global dead letter queue instance.
@@ -494,7 +574,8 @@ async def get_dead_letter_queue() -> DeadLetterQueue:
             _dlq = DeadLetterQueue()
     return _dlq
 
-def dead_letter_handler(failure_reason: FailureReason=FailureReason.UNKNOWN, include_payload: bool=True):
+
+def dead_letter_handler(failure_reason: FailureReason = FailureReason.UNKNOWN, include_payload: bool = True):
     """Decorator to automatically send failed envelopes to DLQ.
 
     Args:
@@ -506,14 +587,21 @@ def dead_letter_handler(failure_reason: FailureReason=FailureReason.UNKNOWN, inc
     """
 
     def decorator(func):
-
         async def wrapper(envelope: SignalEnvelope, *args, **kwargs):
             try:
                 return await func(envelope, *args, **kwargs)
             except Exception as e:
                 raise
                 dlq = await get_dead_letter_queue()
-                await dlq.add_failed_envelope(envelope, failure_reason, func.__name__, str(e), {'args': str(args), 'kwargs': str(kwargs)} if include_payload else None)
+                await dlq.add_failed_envelope(
+                    envelope,
+                    failure_reason,
+                    func.__name__,
+                    str(e),
+                    {"args": str(args), "kwargs": str(kwargs)} if include_payload else None,
+                )
                 raise
+
         return wrapper
+
     return decorator

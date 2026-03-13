@@ -10,31 +10,37 @@ Defines the four-method taxonomy that every pipeline adapter must implement:
 These types are imported by ssot_adapters.py and execute_ssot.py.
 No agent modules are imported here. Zero side effects at import time.
 """
+
 from __future__ import annotations
+
 import hashlib
 import os
 from dataclasses import dataclass, field
 from typing import Protocol, runtime_checkable
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 @dataclass
 class SubphaseResult:
     """Result from a single subphase execution."""
+
     violations: list[dict] = field(default_factory=list)
     fixed: list[dict] = field(default_factory=list)
     skipped: bool = False
-    skip_reason: str = ''
+    skip_reason: str = ""
     error: str | None = None
+
 
 @dataclass
 class AgentRunResult:
     """Aggregated result for one agent across all four subphases."""
+
     subphases: dict[str, SubphaseResult] = field(default_factory=dict)
     gated: bool = False
-    gate_reason: str = ''
+    gate_reason: str = ""
     error: str | None = None
     violations_total: int = 0
     mutations_applied: int = 0
+
 
 @runtime_checkable
 class L2AgentProtocol(Protocol):
@@ -55,9 +61,19 @@ class L2AgentProtocol(Protocol):
     def heal(self, territory: str, ctx: object) -> SubphaseResult:
         """Confidence-gated residual repair."""
         ...
-PIPELINE_SUBPHASES: tuple[str, ...] = ('pre_commit', 'validate', 'execute', 'heal')
 
-def compute_pipeline_digest(pipeline_order: list[str], adapter_keys: list[str], territory: str, heal: bool, enable_llm: bool, tamper_token: str='') -> str:
+
+PIPELINE_SUBPHASES: tuple[str, ...] = ("pre_commit", "validate", "execute", "heal")
+
+
+def compute_pipeline_digest(
+    pipeline_order: list[str],
+    adapter_keys: list[str],
+    territory: str,
+    heal: bool,
+    enable_llm: bool,
+    tamper_token: str = "",
+) -> str:
     """Compute a stable SHA-256 digest from pipeline configuration.
 
     Args:
@@ -71,10 +87,22 @@ def compute_pipeline_digest(pipeline_order: list[str], adapter_keys: list[str], 
     Returns:
         64-char lowercase hex SHA-256 digest.
     """
-    payload = '|'.join([','.join(pipeline_order), ','.join(sorted(adapter_keys)), territory, str(heal), str(enable_llm), tamper_token])
-    return hashlib.sha256(payload.encode('utf-8')).hexdigest()
+    payload = "|".join(
+        [
+            ",".join(pipeline_order),
+            ",".join(sorted(adapter_keys)),
+            territory,
+            str(heal),
+            str(enable_llm),
+            tamper_token,
+        ]
+    )
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
-def emit_pipeline_digest(pipeline_order: list[str], adapter_keys: list[str], territory: str, heal: bool, enable_llm: bool) -> str:
+
+def emit_pipeline_digest(
+    pipeline_order: list[str], adapter_keys: list[str], territory: str, heal: bool, enable_llm: bool
+) -> str:
     """Compute digest, print the canonical line, and return the digest string.
 
     Printed line format (exactly once per run):
@@ -84,7 +112,14 @@ def emit_pipeline_digest(pipeline_order: list[str], adapter_keys: list[str], ter
     in the payload so the digest differs from a clean run — used by the
     negative-control test.
     """
-    tamper_token = os.environ.get('SSOT_ORCH_NEGCTRL_TAMPER', '0')
-    digest = compute_pipeline_digest(pipeline_order=pipeline_order, adapter_keys=adapter_keys, territory=territory, heal=heal, enable_llm=enable_llm, tamper_token=tamper_token)
-    print(f'EXECUTE_SSOT_PIPELINE_DIGEST: {digest}')
+    tamper_token = os.environ.get("SSOT_ORCH_NEGCTRL_TAMPER", "0")
+    digest = compute_pipeline_digest(
+        pipeline_order=pipeline_order,
+        adapter_keys=adapter_keys,
+        territory=territory,
+        heal=heal,
+        enable_llm=enable_llm,
+        tamper_token=tamper_token,
+    )
+    print(f"EXECUTE_SSOT_PIPELINE_DIGEST: {digest}")
     return digest

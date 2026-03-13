@@ -1,9 +1,10 @@
 from __future__ import annotations
-'\nReasoning Node - Sub-atomic Thought Generation\n\nHandles reasoning strategy selection, thought generation, and planning.\nIntegrates Phase 1-3 optimizations (caching, pruning, adaptive planning).\n'
+
+"\nReasoning Node - Sub-atomic Thought Generation\n\nHandles reasoning strategy selection, thought generation, and planning.\nIntegrates Phase 1-3 optimizations (caching, pruning, adaptive planning).\n"
 import asyncio
 import time
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 class ReasoningNode:
     """
@@ -33,12 +34,18 @@ class ReasoningNode:
             Reasoning result with thoughts and plan
         """
         start_time = time.time()
-        strategy = self._select_strategy(perceived['intent'])
-        thoughts = self._generate_thoughts(perceived['query'], strategy, perceived)
+        strategy = self._select_strategy(perceived["intent"])
+        thoughts = self._generate_thoughts(perceived["query"], strategy, perceived)
         plan = self._generate_plan(thoughts, perceived)
         reasoning_time = time.time() - start_time
         self.total_reasoning_time += reasoning_time
-        reasoning = {'thoughts': thoughts, 'plan': plan, 'strategy': strategy, 'reasoning_time': reasoning_time, 'thought_count': len(thoughts)}
+        reasoning = {
+            "thoughts": thoughts,
+            "plan": plan,
+            "strategy": strategy,
+            "reasoning_time": reasoning_time,
+            "thought_count": len(thoughts),
+        }
         return reasoning
 
     async def reason_async(self, perceived: dict[str, Any]) -> dict[str, Any]:
@@ -52,12 +59,18 @@ class ReasoningNode:
             Reasoning result
         """
         start_time = time.time()
-        strategy = self._select_strategy(perceived['intent'])
-        thoughts = await asyncio.to_thread(self._generate_thoughts, perceived['query'], strategy, perceived)
+        strategy = self._select_strategy(perceived["intent"])
+        thoughts = await asyncio.to_thread(self._generate_thoughts, perceived["query"], strategy, perceived)
         plan = await asyncio.to_thread(self._generate_plan, thoughts, perceived)
         reasoning_time = time.time() - start_time
         self.total_reasoning_time += reasoning_time
-        reasoning = {'thoughts': thoughts, 'plan': plan, 'strategy': strategy, 'reasoning_time': reasoning_time, 'thought_count': len(thoughts)}
+        reasoning = {
+            "thoughts": thoughts,
+            "plan": plan,
+            "strategy": strategy,
+            "reasoning_time": reasoning_time,
+            "thought_count": len(thoughts),
+        }
         return reasoning
 
     def _select_strategy(self, intent: str) -> str:
@@ -70,10 +83,17 @@ class ReasoningNode:
         Returns:
             Strategy name
         """
-        strategy_map = {'reasoning': 'chain_of_thought', 'action': 'reactive', 'memory': 'retrieval', 'general': 'balanced'}
-        return strategy_map.get(intent, 'balanced')
+        strategy_map = {
+            "reasoning": "chain_of_thought",
+            "action": "reactive",
+            "memory": "retrieval",
+            "general": "balanced",
+        }
+        return strategy_map.get(intent, "balanced")
 
-    def _generate_thoughts(self, query: str, strategy: str, perceived: dict[str, Any]) -> list[dict[str, Any]]:
+    def _generate_thoughts(
+        self, query: str, strategy: str, perceived: dict[str, Any]
+    ) -> list[dict[str, Any]]:
         """
         Generate prioritized thoughts using strategy.
 
@@ -89,20 +109,33 @@ class ReasoningNode:
         """
         self.thoughts_generated += 1
         thoughts = []
-        if strategy == 'chain_of_thought':
-            thoughts = [{'step': 1, 'thought': f'Analyzing: {query[:50]}...', 'confidence': 0.8}, {'step': 2, 'thought': 'Identifying key concepts', 'confidence': 0.75}, {'step': 3, 'thought': 'Forming hypothesis', 'confidence': 0.7}]
-        elif strategy == 'reactive':
-            thoughts = [{'step': 1, 'thought': 'Immediate action needed', 'confidence': 0.9}, {'step': 2, 'thought': 'Execute primary action', 'confidence': 0.85}]
-        elif strategy == 'retrieval':
-            thoughts = [{'step': 1, 'thought': 'Searching memory', 'confidence': 0.8}, {'step': 2, 'thought': 'Retrieving relevant context', 'confidence': 0.75}]
+        if strategy == "chain_of_thought":
+            thoughts = [
+                {"step": 1, "thought": f"Analyzing: {query[:50]}...", "confidence": 0.8},
+                {"step": 2, "thought": "Identifying key concepts", "confidence": 0.75},
+                {"step": 3, "thought": "Forming hypothesis", "confidence": 0.7},
+            ]
+        elif strategy == "reactive":
+            thoughts = [
+                {"step": 1, "thought": "Immediate action needed", "confidence": 0.9},
+                {"step": 2, "thought": "Execute primary action", "confidence": 0.85},
+            ]
+        elif strategy == "retrieval":
+            thoughts = [
+                {"step": 1, "thought": "Searching memory", "confidence": 0.8},
+                {"step": 2, "thought": "Retrieving relevant context", "confidence": 0.75},
+            ]
         else:
-            thoughts = [{'step': 1, 'thought': f'Processing: {query[:50]}...', 'confidence': 0.75}, {'step': 2, 'thought': 'Evaluating options', 'confidence': 0.7}]
+            thoughts = [
+                {"step": 1, "thought": f"Processing: {query[:50]}...", "confidence": 0.75},
+                {"step": 2, "thought": "Evaluating options", "confidence": 0.7},
+            ]
         # guardian: allow-magic-config
         min_confidence = 0.6
-        thoughts = [t for t in thoughts if t.get('confidence', 0) >= min_confidence]
-        if thoughts and thoughts[0].get('confidence', 0) >= 0.9:
+        thoughts = [t for t in thoughts if t.get("confidence", 0) >= min_confidence]
+        if thoughts and thoughts[0].get("confidence", 0) >= 0.9:
             thoughts = thoughts[:1]
-        thoughts.sort(key=lambda t: t.get('confidence', 0), reverse=True)
+        thoughts.sort(key=lambda t: t.get("confidence", 0), reverse=True)
         return thoughts
 
     def _generate_plan(self, thoughts: list[dict[str, Any]], perceived: dict[str, Any]) -> dict[str, Any]:
@@ -119,10 +152,19 @@ class ReasoningNode:
             Execution plan
         """
         self.plans_created += 1
-        steps = [{'action': f'thought_{i}', 'description': thought.get('thought', ''), 'priority': i} for i, thought in enumerate(thoughts)]
+        steps = [
+            {"action": f"thought_{i}", "description": thought.get("thought", ""), "priority": i}
+            for i, thought in enumerate(thoughts)
+        ]
         score = self._score_plan(steps, perceived)
         valid = self._validate_plan(steps, perceived)
-        plan = {'steps': steps, 'score': score, 'valid': valid, 'estimated_cost': len(steps), 'constraints': ['coherence', 'feasibility']}
+        plan = {
+            "steps": steps,
+            "score": score,
+            "valid": valid,
+            "estimated_cost": len(steps),
+            "constraints": ["coherence", "feasibility"],
+        }
         return plan
 
     def _score_plan(self, steps: list[dict[str, Any]], perceived: dict[str, Any]) -> float:
@@ -162,5 +204,12 @@ class ReasoningNode:
 
     def get_statistics(self) -> dict[str, Any]:
         """Get reasoning statistics."""
-        avg_reasoning_time = self.total_reasoning_time / self.thoughts_generated if self.thoughts_generated > 0 else 0.0
-        return {'thoughts_generated': self.thoughts_generated, 'plans_created': self.plans_created, 'total_reasoning_time': self.total_reasoning_time, 'avg_reasoning_time': avg_reasoning_time}
+        avg_reasoning_time = (
+            self.total_reasoning_time / self.thoughts_generated if self.thoughts_generated > 0 else 0.0
+        )
+        return {
+            "thoughts_generated": self.thoughts_generated,
+            "plans_created": self.plans_created,
+            "total_reasoning_time": self.total_reasoning_time,
+            "avg_reasoning_time": avg_reasoning_time,
+        }

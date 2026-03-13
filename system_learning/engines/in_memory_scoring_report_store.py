@@ -3,10 +3,12 @@
 Phase 4: Test implementation with write-once idempotency.
 Provides readback for test verification.
 """
+
 from __future__ import annotations
+
 from system_learning.ports.scoring_report_store import ScoringReportStore
 from system_learning.types.healing_outcome_scoring_types import ScoringReport
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 class InMemoryScoringReportStore(ScoringReportStore):
     """In-memory store for scoring reports.

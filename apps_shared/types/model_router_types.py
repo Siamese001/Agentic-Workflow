@@ -3,42 +3,49 @@
 This module optimizes cost and latency by dynamically selecting the appropriate
 LLM based on task type, complexity, and budget constraints.
 """
+
 import asyncio
 import logging
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 try:
     from agentic_core.L3_orchestration.reasoning.mcp_manager import MCPConnectionManager as _MCPManager
 except ImportError:
     _MCPManager = None
 logger = logging.getLogger(__name__)
 
+
 class ModelTier(str, Enum):
     """Model performance tiers."""
-    FAST = 'FAST'
-    BALANCED = 'BALANCED'
-    REASONING = 'REASONING'
-    SEQUENTIAL = 'SEQUENTIAL'
+
+    FAST = "FAST"
+    BALANCED = "BALANCED"
+    REASONING = "REASONING"
+    SEQUENTIAL = "SEQUENTIAL"
+
 
 class TaskType(str, Enum):
     """Types of tasks that can be routed."""
-    RESUME_FORMATTING = 'RESUME_FORMATTING'
-    MESSAGE_DRAFTING = 'MESSAGE_DRAFTING'
-    STRATEGIC_PLANNING = 'STRATEGIC_PLANNING'
-    CODE_GENERATION = 'CODE_GENERATION'
-    DATA_ANALYSIS = 'DATA_ANALYSIS'
-    CONTENT_CREATION = 'CONTENT_CREATION'
-    TRANSLATION = 'TRANSLATION'
-    SUMMARIZATION = 'SUMMARIZATION'
-    QUESTION_ANSWERING = 'QUESTION_ANSWERING'
-    VALIDATION = 'VALIDATION'
+
+    RESUME_FORMATTING = "RESUME_FORMATTING"
+    MESSAGE_DRAFTING = "MESSAGE_DRAFTING"
+    STRATEGIC_PLANNING = "STRATEGIC_PLANNING"
+    CODE_GENERATION = "CODE_GENERATION"
+    DATA_ANALYSIS = "DATA_ANALYSIS"
+    CONTENT_CREATION = "CONTENT_CREATION"
+    TRANSLATION = "TRANSLATION"
+    SUMMARIZATION = "SUMMARIZATION"
+    QUESTION_ANSWERING = "QUESTION_ANSWERING"
+    VALIDATION = "VALIDATION"
+
 
 @dataclass
 class ModelConfig:
     """configuration for a specific model."""
+
     provider: str
     model_name: str
     tier: ModelTier
@@ -48,9 +55,11 @@ class ModelConfig:
     max_retries: int = 3
     timeout_seconds: int = 30
 
+
 @dataclass
 class TaskProfile:
     """Profile for a task type."""
+
     task_type: TaskType
     default_tier: ModelTier
     min_complexity: int = 1
@@ -58,11 +67,12 @@ class TaskProfile:
     complexity_thresholds: dict[ModelTier, int] = field(default_factory=dict)
     config_overrides: dict[str, Any] = field(default_factory=dict)
 
+
 class ModelRouter:
     """Routes tasks to appropriate models based on various factors."""
 
     # guardian: allow-magic-config
-    def __init__(self, daily_budget: float=5.0, budget_period_hours: int=24):
+    def __init__(self, daily_budget: float = 5.0, budget_period_hours: int = 24):
         """Initialize model router.
 
         Args:
@@ -76,36 +86,127 @@ class ModelRouter:
         self._budget_start = datetime.utcnow()
         self._current_spend = 0.0
         self._usage_history: list[dict[str, Any]] = []
-        self._stats = {'total_requests': 0, 'requests_by_tier': {tier.value: 0 for tier in ModelTier}, 'requests_by_task': {task.value: 0 for task in TaskType}, 'fallbacks': 0, 'budget_enforced': 0, 'total_spend': 0.0}
+        self._stats = {
+            "total_requests": 0,
+            "requests_by_tier": {tier.value: 0 for tier in ModelTier},
+            "requests_by_task": {task.value: 0 for task in TaskType},
+            "fallbacks": 0,
+            "budget_enforced": 0,
+            "total_spend": 0.0,
+        }
         self._initialize_defaults()
-        logger.info(f'Initialized ModelRouter with budget ${daily_budget}/{budget_period_hours}h')
+        logger.info(f"Initialized ModelRouter with budget ${daily_budget}/{budget_period_hours}h")
 
     def _initialize_defaults(self) -> None:
         """Initialize default model configurations and task profiles."""
         # guardian: allow-magic-config
-        self._models['gpt-4o-mini'] = ModelConfig(provider='openai', model_name='gpt-4o-mini', tier=ModelTier.FAST, max_tokens=4096, temperature=0.7, cost_per_1k_tokens=0.00015)
+        self._models["gpt-4o-mini"] = ModelConfig(
+            provider="openai",
+            model_name="gpt-4o-mini",
+            tier=ModelTier.FAST,
+            max_tokens=4096,
+            temperature=0.7,
+            cost_per_1k_tokens=0.00015,
+        )
         # guardian: allow-magic-config
-        self._models['claude-3-haiku'] = ModelConfig(provider='anthropic', model_name='claude-3-haiku-20240307', tier=ModelTier.FAST, max_tokens=4096, temperature=0.7, cost_per_1k_tokens=0.00025)
+        self._models["claude-3-haiku"] = ModelConfig(
+            provider="anthropic",
+            model_name="claude-3-haiku-20240307",
+            tier=ModelTier.FAST,
+            max_tokens=4096,
+            temperature=0.7,
+            cost_per_1k_tokens=0.00025,
+        )
         # guardian: allow-magic-config
-        self._models['gpt-4o'] = ModelConfig(provider='openai', model_name='gpt-4o', tier=ModelTier.BALANCED, max_tokens=4096, temperature=0.7, cost_per_1k_tokens=0.005)
+        self._models["gpt-4o"] = ModelConfig(
+            provider="openai",
+            model_name="gpt-4o",
+            tier=ModelTier.BALANCED,
+            max_tokens=4096,
+            temperature=0.7,
+            cost_per_1k_tokens=0.005,
+        )
         # guardian: allow-magic-config
-        self._models['claude-3-5-sonnet'] = ModelConfig(provider='anthropic', model_name='claude-3-5-sonnet-20241022', tier=ModelTier.BALANCED, max_tokens=4096, temperature=0.7, cost_per_1k_tokens=0.003)
+        self._models["claude-3-5-sonnet"] = ModelConfig(
+            provider="anthropic",
+            model_name="claude-3-5-sonnet-20241022",
+            tier=ModelTier.BALANCED,
+            max_tokens=4096,
+            temperature=0.7,
+            cost_per_1k_tokens=0.003,
+        )
         # guardian: allow-magic-config
-        self._models['o1-preview'] = ModelConfig(provider='openai', model_name='o1-preview', tier=ModelTier.REASONING, max_tokens=32768, temperature=1.0, cost_per_1k_tokens=0.015)
+        self._models["o1-preview"] = ModelConfig(
+            provider="openai",
+            model_name="o1-preview",
+            tier=ModelTier.REASONING,
+            max_tokens=32768,
+            temperature=1.0,
+            cost_per_1k_tokens=0.015,
+        )
         # guardian: allow-magic-config
-        self._models['claude-3-opus'] = ModelConfig(provider='anthropic', model_name='claude-3-opus-20240229', tier=ModelTier.REASONING, max_tokens=4096, temperature=0.7, cost_per_1k_tokens=0.015)
-        self._task_profiles[TaskType.RESUME_FORMATTING] = TaskProfile(task_type=TaskType.RESUME_FORMATTING, default_tier=ModelTier.FAST, complexity_thresholds={ModelTier.FAST: 3, ModelTier.BALANCED: 7, ModelTier.REASONING: 10})
-        self._task_profiles[TaskType.MESSAGE_DRAFTING] = TaskProfile(task_type=TaskType.MESSAGE_DRAFTING, default_tier=ModelTier.BALANCED, complexity_thresholds={ModelTier.FAST: 2, ModelTier.BALANCED: 8, ModelTier.REASONING: 10})
-        self._task_profiles[TaskType.STRATEGIC_PLANNING] = TaskProfile(task_type=TaskType.STRATEGIC_PLANNING, default_tier=ModelTier.REASONING, complexity_thresholds={ModelTier.FAST: 1, ModelTier.BALANCED: 5, ModelTier.REASONING: 8})
-        self._task_profiles[TaskType.CODE_GENERATION] = TaskProfile(task_type=TaskType.CODE_GENERATION, default_tier=ModelTier.BALANCED, complexity_thresholds={ModelTier.FAST: 3, ModelTier.BALANCED: 7, ModelTier.REASONING: 10})
-        self._task_profiles[TaskType.DATA_ANALYSIS] = TaskProfile(task_type=TaskType.DATA_ANALYSIS, default_tier=ModelTier.BALANCED, complexity_thresholds={ModelTier.FAST: 2, ModelTier.BALANCED: 6, ModelTier.REASONING: 9})
-        self._task_profiles[TaskType.CONTENT_CREATION] = TaskProfile(task_type=TaskType.CONTENT_CREATION, default_tier=ModelTier.BALANCED, complexity_thresholds={ModelTier.FAST: 3, ModelTier.BALANCED: 7, ModelTier.REASONING: 10})
-        self._task_profiles[TaskType.TRANSLATION] = TaskProfile(task_type=TaskType.TRANSLATION, default_tier=ModelTier.FAST, complexity_thresholds={ModelTier.FAST: 5, ModelTier.BALANCED: 8, ModelTier.REASONING: 10})
-        self._task_profiles[TaskType.SUMMARIZATION] = TaskProfile(task_type=TaskType.SUMMARIZATION, default_tier=ModelTier.FAST, complexity_thresholds={ModelTier.FAST: 4, ModelTier.BALANCED: 8, ModelTier.REASONING: 10})
-        self._task_profiles[TaskType.QUESTION_ANSWERING] = TaskProfile(task_type=TaskType.QUESTION_ANSWERING, default_tier=ModelTier.BALANCED, complexity_thresholds={ModelTier.FAST: 2, ModelTier.BALANCED: 6, ModelTier.REASONING: 9})
-        self._task_profiles[TaskType.VALIDATION] = TaskProfile(task_type=TaskType.VALIDATION, default_tier=ModelTier.FAST, complexity_thresholds={ModelTier.FAST: 4, ModelTier.BALANCED: 8, ModelTier.REASONING: 10})
+        self._models["claude-3-opus"] = ModelConfig(
+            provider="anthropic",
+            model_name="claude-3-opus-20240229",
+            tier=ModelTier.REASONING,
+            max_tokens=4096,
+            temperature=0.7,
+            cost_per_1k_tokens=0.015,
+        )
+        self._task_profiles[TaskType.RESUME_FORMATTING] = TaskProfile(
+            task_type=TaskType.RESUME_FORMATTING,
+            default_tier=ModelTier.FAST,
+            complexity_thresholds={ModelTier.FAST: 3, ModelTier.BALANCED: 7, ModelTier.REASONING: 10},
+        )
+        self._task_profiles[TaskType.MESSAGE_DRAFTING] = TaskProfile(
+            task_type=TaskType.MESSAGE_DRAFTING,
+            default_tier=ModelTier.BALANCED,
+            complexity_thresholds={ModelTier.FAST: 2, ModelTier.BALANCED: 8, ModelTier.REASONING: 10},
+        )
+        self._task_profiles[TaskType.STRATEGIC_PLANNING] = TaskProfile(
+            task_type=TaskType.STRATEGIC_PLANNING,
+            default_tier=ModelTier.REASONING,
+            complexity_thresholds={ModelTier.FAST: 1, ModelTier.BALANCED: 5, ModelTier.REASONING: 8},
+        )
+        self._task_profiles[TaskType.CODE_GENERATION] = TaskProfile(
+            task_type=TaskType.CODE_GENERATION,
+            default_tier=ModelTier.BALANCED,
+            complexity_thresholds={ModelTier.FAST: 3, ModelTier.BALANCED: 7, ModelTier.REASONING: 10},
+        )
+        self._task_profiles[TaskType.DATA_ANALYSIS] = TaskProfile(
+            task_type=TaskType.DATA_ANALYSIS,
+            default_tier=ModelTier.BALANCED,
+            complexity_thresholds={ModelTier.FAST: 2, ModelTier.BALANCED: 6, ModelTier.REASONING: 9},
+        )
+        self._task_profiles[TaskType.CONTENT_CREATION] = TaskProfile(
+            task_type=TaskType.CONTENT_CREATION,
+            default_tier=ModelTier.BALANCED,
+            complexity_thresholds={ModelTier.FAST: 3, ModelTier.BALANCED: 7, ModelTier.REASONING: 10},
+        )
+        self._task_profiles[TaskType.TRANSLATION] = TaskProfile(
+            task_type=TaskType.TRANSLATION,
+            default_tier=ModelTier.FAST,
+            complexity_thresholds={ModelTier.FAST: 5, ModelTier.BALANCED: 8, ModelTier.REASONING: 10},
+        )
+        self._task_profiles[TaskType.SUMMARIZATION] = TaskProfile(
+            task_type=TaskType.SUMMARIZATION,
+            default_tier=ModelTier.FAST,
+            complexity_thresholds={ModelTier.FAST: 4, ModelTier.BALANCED: 8, ModelTier.REASONING: 10},
+        )
+        self._task_profiles[TaskType.QUESTION_ANSWERING] = TaskProfile(
+            task_type=TaskType.QUESTION_ANSWERING,
+            default_tier=ModelTier.BALANCED,
+            complexity_thresholds={ModelTier.FAST: 2, ModelTier.BALANCED: 6, ModelTier.REASONING: 9},
+        )
+        self._task_profiles[TaskType.VALIDATION] = TaskProfile(
+            task_type=TaskType.VALIDATION,
+            default_tier=ModelTier.FAST,
+            complexity_thresholds={ModelTier.FAST: 4, ModelTier.BALANCED: 8, ModelTier.REASONING: 10},
+        )
 
-    def get_model_config(self, task_type: TaskType, complexity_score: int=1, force_tier: ModelTier | None=None) -> dict[str, Any]:
+    def get_model_config(
+        self, task_type: TaskType, complexity_score: int = 1, force_tier: ModelTier | None = None
+    ) -> dict[str, Any]:
         """Get model configuration for a task.
 
         Args:
@@ -119,7 +220,7 @@ class ModelRouter:
         profile = self._task_profiles.get(task_type)
         # guardian: allow-config-with-logic
         if not profile:
-            raise ValueError(f'Unknown task type: {task_type}')
+            raise ValueError(f"Unknown task type: {task_type}")
         # guardian: allow-config-with-logic
         if force_tier:
             tier = force_tier
@@ -127,11 +228,19 @@ class ModelRouter:
             tier = self._determine_tier(profile, complexity_score)
         tier = self._apply_budget_constraints(tier)
         model_config = self._select_model_for_tier(tier)
-        config = {'provider': model_config.provider, 'model': model_config.model_name, 'tier': tier.value, 'max_tokens': model_config.max_tokens, 'temperature': model_config.temperature, 'max_retries': model_config.max_retries, 'timeout_seconds': model_config.timeout_seconds}
+        config = {
+            "provider": model_config.provider,
+            "model": model_config.model_name,
+            "tier": tier.value,
+            "max_tokens": model_config.max_tokens,
+            "temperature": model_config.temperature,
+            "max_retries": model_config.max_retries,
+            "timeout_seconds": model_config.timeout_seconds,
+        }
         config.update(profile.config_overrides)
-        self._stats['total_requests'] += 1
-        self._stats['requests_by_tier'][tier.value] += 1
-        self._stats['requests_by_task'][task_type.value] += 1
+        self._stats["total_requests"] += 1
+        self._stats["requests_by_tier"][tier.value] += 1
+        self._stats["requests_by_task"][task_type.value] += 1
         return config
 
     def _determine_tier(self, profile: TaskProfile, complexity_score: int) -> ModelTier:
@@ -165,10 +274,10 @@ class ModelRouter:
         """
         if self._is_budget_exceeded():
             if tier == ModelTier.REASONING:
-                self._stats['budget_enforced'] += 1
+                self._stats["budget_enforced"] += 1
                 return ModelTier.BALANCED
             elif tier == ModelTier.BALANCED:
-                self._stats['budget_enforced'] += 1
+                self._stats["budget_enforced"] += 1
                 return ModelTier.FAST
         return tier
 
@@ -183,10 +292,10 @@ class ModelRouter:
         """
         tier_models = [config for config in self._models.values() if config.tier == tier]
         if not tier_models:
-            raise ValueError(f'No models available for tier: {tier}')
+            raise ValueError(f"No models available for tier: {tier}")
         return min(tier_models, key=lambda m: m.cost_per_1k_tokens)
 
-    async def get_client(self, tier: ModelTier) -> 'FallbackClient':
+    async def get_client(self, tier: ModelTier) -> "FallbackClient":
         """Get LLM client for a tier with fallback.
 
         Args:
@@ -210,8 +319,14 @@ class ModelRouter:
             cost: Cost in USD
         """
         self._current_spend += cost
-        self._stats['total_spend'] += cost
-        usage = {'timestamp': datetime.utcnow().isoformat(), 'model': model_name, 'input_tokens': input_tokens, 'output_tokens': output_tokens, 'cost': cost}
+        self._stats["total_spend"] += cost
+        usage = {
+            "timestamp": datetime.utcnow().isoformat(),
+            "model": model_name,
+            "input_tokens": input_tokens,
+            "output_tokens": output_tokens,
+            "cost": cost,
+        }
         self._usage_history.append(usage)
         if len(self._usage_history) > 1000:
             self._usage_history = self._usage_history[-1000:]
@@ -232,7 +347,7 @@ class ModelRouter:
         if elapsed >= timedelta(hours=self.budget_period_hours):
             self._budget_start = now
             self._current_spend = 0.0
-            logger.info('Budget period reset')
+            logger.info("Budget period reset")
 
     def get_stats(self) -> dict[str, Any]:
         """Get router statistics.
@@ -241,8 +356,16 @@ class ModelRouter:
             Statistics dictionary
         """
         stats = self._stats.copy()
-        stats['budget_info'] = {'daily_budget': self.daily_budget, 'current_spend': self._current_spend, 'remaining': max(0, self.daily_budget - self._current_spend), 'period_hours': self.budget_period_hours, 'period_start': self._budget_start.isoformat()}
-        stats['available_models'] = {tier.value: len([m for m in self._models.values() if m.tier == tier]) for tier in ModelTier}
+        stats["budget_info"] = {
+            "daily_budget": self.daily_budget,
+            "current_spend": self._current_spend,
+            "remaining": max(0, self.daily_budget - self._current_spend),
+            "period_hours": self.budget_period_hours,
+            "period_start": self._budget_start.isoformat(),
+        }
+        stats["available_models"] = {
+            tier.value: len([m for m in self._models.values() if m.tier == tier]) for tier in ModelTier
+        }
         return stats
 
     def add_model(self, name: str, config: ModelConfig) -> None:
@@ -253,7 +376,7 @@ class ModelRouter:
             config: Model configuration
         """
         self._models[name] = config
-        logger.info(f'Added model {name} ({config.tier.value})')
+        logger.info(f"Added model {name} ({config.tier.value})")
 
     def add_task_profile(self, profile: TaskProfile) -> None:
         """Add a new task profile.
@@ -262,7 +385,8 @@ class ModelRouter:
             profile: Task profile
         """
         self._task_profiles[profile.task_type] = profile
-        logger.info(f'Added task profile {profile.task_type.value}')
+        logger.info(f"Added task profile {profile.task_type.value}")
+
 
 class FallbackClient:
     """LLM client with automatic fallback and retry logic."""
@@ -295,25 +419,25 @@ class FallbackClient:
             return result
         # guardian: allow-silent-swallow
         except Exception as e:
-            logger.warning(f'Primary model failed: {e}')
+            logger.warning(f"Primary model failed: {e}")
             fallback_tier = self._get_fallback_tier(self.primary_config.tier)
             if fallback_tier:
-                self.router._stats['fallbacks'] += 1
+                self.router._stats["fallbacks"] += 1
                 try:
                     fallback_config = self.router._select_model_for_tier(fallback_tier)
                     client = await self._get_client(fallback_config)
                     result = await client.generate(prompt, **kwargs)
                     self._record_usage(client, prompt, result)
-                    logger.info(f'Fallback to {fallback_config.model_name} succeeded')
+                    logger.info(f"Fallback to {fallback_config.model_name} succeeded")
                     return result
                 # guardian: allow-silent-swallow
                 except Exception as fallback_error:
-                    logger.error(f'[FallbackClient] All providers failed: {fallback_error}')
+                    logger.error(f"[FallbackClient] All providers failed: {fallback_error}")
                     raise
-            raise RuntimeError(f'All model attempts failed. Last error: {e}')
+            raise RuntimeError(f"All model attempts failed. Last error: {e}")
 
     # guardian: allow-magic-config
-    async def generate(self, prompt: str, goal: str='', max_steps: int=8, **kwargs) -> str:
+    async def generate(self, prompt: str, goal: str = "", max_steps: int = 8, **kwargs) -> str:
         """Route prompt through sequential_thinking MCP with Redis template caching.
 
         Args:
@@ -326,24 +450,36 @@ class FallbackClient:
             Reasoning result as text
         """
         try:
-            result = await mcp.call_tool('sequential_thinking', {'Task': prompt, 'goal': goal or f'Resolve: {prompt[:100]}', 'max_steps': min(max_steps, 15), 'template': cached_steps, 'enforce_no_hallucination': True})
-            steps = result.get('steps', [])
-            solution = result.get('solution', '')
-            if result.get('status') == 'success' and (not cached_steps) and _cache and steps:
+            result = await mcp.call_tool(
+                "sequential_thinking",
+                {
+                    "Task": prompt,
+                    "goal": goal or f"Resolve: {prompt[:100]}",
+                    "max_steps": min(max_steps, 15),
+                    "template": cached_steps,
+                    "enforce_no_hallucination": True,
+                },
+            )
+            steps = result.get("steps", [])
+            solution = result.get("solution", "")
+            if result.get("status") == "success" and (not cached_steps) and _cache and steps:
                 try:
                     _cache.set(cache_key, _json.dumps(steps), ex=60 * 60 * 24 * 30)
                 # guardian: allow-silent-swallow
                 except Exception:
                     pass
-            self.router._stats['total_requests'] += 1
-            self.router._stats['requests_by_tier'][ModelTier.SEQUENTIAL.value] += 1
+            self.router._stats["total_requests"] += 1
+            self.router._stats["requests_by_tier"][ModelTier.SEQUENTIAL.value] += 1
             return solution or str(steps)
         # guardian: allow-silent-swallow
         except Exception as e:
-            logger.warning(f'[SequentialThinkingClient] Sequential thinking failed: {e}')
+            logger.warning(f"[SequentialThinkingClient] Sequential thinking failed: {e}")
             return await self._fallback_to_reasoning(prompt, **kwargs)
+
+
 _model_router: ModelRouter | None = None
 _router_lock = asyncio.Lock()
+
 
 async def get_model_router() -> ModelRouter:
     """Get global model router instance.
@@ -357,7 +493,8 @@ async def get_model_router() -> ModelRouter:
             _model_router = ModelRouter()
     return _model_router
 
-async def route_and_generate(task_type: TaskType, prompt: str, complexity_score: int=1, **kwargs) -> str:
+
+async def route_and_generate(task_type: TaskType, prompt: str, complexity_score: int = 1, **kwargs) -> str:
     """Route task and generate response.
 
     Args:
@@ -371,6 +508,6 @@ async def route_and_generate(task_type: TaskType, prompt: str, complexity_score:
     """
     router = await get_model_router()
     config = router.get_model_config(task_type, complexity_score)
-    tier = ModelTier(config['tier'])
+    tier = ModelTier(config["tier"])
     client = await router.get_client(tier)
     return await client.generate(prompt, **kwargs)

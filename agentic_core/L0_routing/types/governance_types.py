@@ -7,27 +7,34 @@ validation enforced at construction time.
 
 Artifact version: 1.0.0
 """
+
 from __future__ import annotations
+
 from dataclasses import dataclass
 from enum import Enum
+
 from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 @dataclass(frozen=True)
 class RouteDecisionRef:
     """§Wave2.2 — Essential subset of a RouteDecisionArtifact for cross-layer linking."""
+
     trace_id: str
     decision: str
     agent_name: str
     reason: str
 
+
 @dataclass(frozen=True)
 class PolicySnapshot:
     """§Wave2.2 — Policy state at the time of escalation."""
+
     security_level: str
     risk_tier: str
     laws_applied: tuple[str, ...]
     policy_hash: str
+
 
 @dataclass(frozen=True)
 class EvidencePack:
@@ -41,39 +48,43 @@ class EvidencePack:
     route_decision_ref, guardian_results, policy_snapshot_data, ssot_hash,
     attachments — all optional (defaults) to preserve backward compat.
     """
+
     trace_id: str
     action_trace: tuple[str, ...]
     policy_evals: tuple[str, ...]
     risk_score: float
     budget_breach_data: dict[str, object]
     boundary_snapshot_hash: str
-    evidence_id: str = ''
-    timestamp_utc: str = ''
-    escalation_reason: str = ''
+    evidence_id: str = ""
+    timestamp_utc: str = ""
+    escalation_reason: str = ""
     route_decision_ref: RouteDecisionRef | None = None
     guardian_results: tuple[str, ...] = ()
     policy_snapshot_data: PolicySnapshot | None = None
-    ssot_hash: str = ''
+    ssot_hash: str = ""
     attachments: tuple[str, ...] = ()
     semantic_clock: SemanticClockSnapshot | None = None
 
     def __post_init__(self) -> None:
         if not self.trace_id:
-            raise ValueError('EvidencePack: trace_id must be non-empty')
+            raise ValueError("EvidencePack: trace_id must be non-empty")
         if not isinstance(self.action_trace, tuple):
-            raise TypeError('EvidencePack: action_trace must be a tuple')
+            raise TypeError("EvidencePack: action_trace must be a tuple")
         if not isinstance(self.policy_evals, tuple):
-            raise TypeError('EvidencePack: policy_evals must be a tuple')
+            raise TypeError("EvidencePack: policy_evals must be a tuple")
         if not 0.0 <= self.risk_score <= 1.0:
-            raise ValueError(f'EvidencePack: risk_score must be in [0.0, 1.0], got {self.risk_score}')
+            raise ValueError(f"EvidencePack: risk_score must be in [0.0, 1.0], got {self.risk_score}")
         if not self.boundary_snapshot_hash:
-            raise ValueError('EvidencePack: boundary_snapshot_hash must be non-empty')
+            raise ValueError("EvidencePack: boundary_snapshot_hash must be non-empty")
+
 
 class ExceptionScope(Enum):
     """Valid scopes for a policy exception."""
-    SINGLE_AGENT = 'single_agent'
-    HEALING_WAVE = 'healing_wave'
-    FULL_PIPELINE = 'full_pipeline'
+
+    SINGLE_AGENT = "single_agent"
+    HEALING_WAVE = "healing_wave"
+    FULL_PIPELINE = "full_pipeline"
+
 
 @dataclass(frozen=True)
 class PolicyExceptionArtifact:
@@ -82,6 +93,7 @@ class PolicyExceptionArtifact:
     Valid only for the current semantic clock tick. The nonce ensures
     single-use and prevents replay attacks.
     """
+
     trace_id: str
     nonce: str
     exception_scope: ExceptionScope
@@ -91,15 +103,19 @@ class PolicyExceptionArtifact:
 
     def __post_init__(self) -> None:
         if not self.trace_id:
-            raise ValueError('PolicyExceptionArtifact: trace_id must be non-empty')
+            raise ValueError("PolicyExceptionArtifact: trace_id must be non-empty")
         if not self.nonce:
-            raise ValueError('PolicyExceptionArtifact: nonce must be non-empty')
+            raise ValueError("PolicyExceptionArtifact: nonce must be non-empty")
         if not isinstance(self.exception_scope, ExceptionScope):
-            raise TypeError(f'PolicyExceptionArtifact: exception_scope must be ExceptionScope, got {type(self.exception_scope).__name__}')
+            raise TypeError(
+                f"PolicyExceptionArtifact: exception_scope must be ExceptionScope, got {type(self.exception_scope).__name__}"
+            )
         if self.semantic_clock_tick < 0:
-            raise ValueError(f'PolicyExceptionArtifact: semantic_clock_tick must be >= 0, got {self.semantic_clock_tick}')
+            raise ValueError(
+                f"PolicyExceptionArtifact: semantic_clock_tick must be >= 0, got {self.semantic_clock_tick}"
+            )
         if not self.issuer_signature:
-            raise ValueError('PolicyExceptionArtifact: issuer_signature must be non-empty')
+            raise ValueError("PolicyExceptionArtifact: issuer_signature must be non-empty")
 
     def is_expired(self, now_tick: int) -> bool:
         """REQ-245: return True if this exception has expired per semantic clock.
@@ -111,18 +127,23 @@ class PolicyExceptionArtifact:
             return False
         return now_tick > self.semantic_clock_tick + self.ttl_ticks
 
+
 class ProposalStatus(Enum):
     """Status of a policy update proposal."""
-    PENDING = 'pending'
-    ACCEPTED = 'accepted'
-    REJECTED = 'rejected'
+
+    PENDING = "pending"
+    ACCEPTED = "accepted"
+    REJECTED = "rejected"
+
 
 class HILOutcome(Enum):
     """§Wave2.3 — Human-in-the-Loop decision outcomes."""
-    APPROVED = 'approved'
-    REJECTED = 'rejected'
-    OVERRIDDEN = 'overridden'
-    NEEDS_MORE_INFO = 'needs_more_info'
+
+    APPROVED = "approved"
+    REJECTED = "rejected"
+    OVERRIDDEN = "overridden"
+    NEEDS_MORE_INFO = "needs_more_info"
+
 
 @dataclass(frozen=True)
 class HILReviewOutcome:
@@ -131,26 +152,32 @@ class HILReviewOutcome:
     Carries the reviewer identity and cryptographic signature for audit.
     MODIFY_DIFF decision requires L5 re-clearance (requires_l5_reclear=True).
     """
+
     decision: str
     reviewer_id: str
     reviewer_sig: str
     requires_l5_reclear: bool = False
 
+
 class ChangeAction(Enum):
     """§Wave2.3 — Actions that can be proposed for a policy change."""
-    ADD = 'add'
-    REMOVE = 'remove'
-    ADJUST = 'adjust'
+
+    ADD = "add"
+    REMOVE = "remove"
+    ADJUST = "adjust"
+
 
 @dataclass(frozen=True)
 class ProposedPolicyChange:
     """§Wave2.3 — A single proposed change to a policy rule or configuration."""
+
     target: str
     action: ChangeAction
     scope: str
     risk_note: str
-    current_value: str = ''
-    proposed_value: str = ''
+    current_value: str = ""
+    proposed_value: str = ""
+
 
 @dataclass(frozen=True)
 class PolicyUpdateProposal:
@@ -163,35 +190,54 @@ class PolicyUpdateProposal:
     hil_outcome, proposed_changes, rationale, proposer, confidence —
     all optional (defaults) to preserve backward compat.
     """
+
     trace_id: str
     override_id: str
     proposed_policy_diff: str
     originating_agent: str
     semantic_clock_tick: int
     status: ProposalStatus = ProposalStatus.PENDING
-    proposal_id: str = ''
-    timestamp_utc: str = ''
-    evidence_pack_id: str = ''
+    proposal_id: str = ""
+    timestamp_utc: str = ""
+    evidence_pack_id: str = ""
     hil_outcome: HILOutcome | None = None
     proposed_changes: tuple[ProposedPolicyChange, ...] = ()
-    rationale: str = ''
-    proposer: str = ''
+    rationale: str = ""
+    proposer: str = ""
     confidence: float = 0.0
     semantic_clock: SemanticClockSnapshot | None = None
 
     def __post_init__(self) -> None:
         if not self.trace_id:
-            raise ValueError('PolicyUpdateProposal: trace_id must be non-empty')
+            raise ValueError("PolicyUpdateProposal: trace_id must be non-empty")
         if not self.override_id:
-            raise ValueError('PolicyUpdateProposal: override_id must be non-empty')
+            raise ValueError("PolicyUpdateProposal: override_id must be non-empty")
         if not self.proposed_policy_diff:
-            raise ValueError('PolicyUpdateProposal: proposed_policy_diff must be non-empty')
+            raise ValueError("PolicyUpdateProposal: proposed_policy_diff must be non-empty")
         if not self.originating_agent:
-            raise ValueError('PolicyUpdateProposal: originating_agent must be non-empty')
+            raise ValueError("PolicyUpdateProposal: originating_agent must be non-empty")
         if self.semantic_clock_tick < 0:
-            raise ValueError(f'PolicyUpdateProposal: semantic_clock_tick must be >= 0, got {self.semantic_clock_tick}')
+            raise ValueError(
+                f"PolicyUpdateProposal: semantic_clock_tick must be >= 0, got {self.semantic_clock_tick}"
+            )
         if not isinstance(self.status, ProposalStatus):
-            raise TypeError(f'PolicyUpdateProposal: status must be ProposalStatus, got {type(self.status).__name__}')
+            raise TypeError(
+                f"PolicyUpdateProposal: status must be ProposalStatus, got {type(self.status).__name__}"
+            )
         if not 0.0 <= self.confidence <= 1.0:
-            raise ValueError(f'PolicyUpdateProposal: confidence must be in [0.0, 1.0], got {self.confidence}')
-__all__ = ['ChangeAction', 'EvidencePack', 'ExceptionScope', 'HILOutcome', 'HILReviewOutcome', 'PolicyExceptionArtifact', 'PolicySnapshot', 'PolicyUpdateProposal', 'ProposalStatus', 'ProposedPolicyChange', 'RouteDecisionRef']
+            raise ValueError(f"PolicyUpdateProposal: confidence must be in [0.0, 1.0], got {self.confidence}")
+
+
+__all__ = [
+    "ChangeAction",
+    "EvidencePack",
+    "ExceptionScope",
+    "HILOutcome",
+    "HILReviewOutcome",
+    "PolicyExceptionArtifact",
+    "PolicySnapshot",
+    "PolicyUpdateProposal",
+    "ProposalStatus",
+    "ProposedPolicyChange",
+    "RouteDecisionRef",
+]

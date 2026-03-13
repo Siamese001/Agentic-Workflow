@@ -9,12 +9,15 @@ Provides adaptive execution that:
 Layer: L2 Execution Aid
 Authority: Mode selection only. No L4 mutation. No routing override.
 """
+
 from __future__ import annotations
+
 import logging
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
-_logger = logging.getLogger('SSOTAdaptiveExecution')
-EXECUTION_MODES = ('standard', 'aggressive', 'conservative', 'minimal')
+
+_logger = logging.getLogger("SSOTAdaptiveExecution")
+EXECUTION_MODES = ("standard", "aggressive", "conservative", "minimal")
+
 
 class SSOTAdaptiveExecutionMixin:
     """L4-derived execution mode with replay lock.
@@ -25,13 +28,13 @@ class SSOTAdaptiveExecutionMixin:
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
-        self._ssot_execution_mode: str = 'standard'
+        self._ssot_execution_mode: str = "standard"
 
     @property
     def execution_mode(self) -> str:
         """Current execution mode. Locked to 'standard' under replay."""
-        if getattr(self, 'is_replay_mode', False):
-            return 'standard'
+        if getattr(self, "is_replay_mode", False):
+            return "standard"
         return self._ssot_execution_mode
 
     def set_execution_mode(self, mode: str) -> bool:
@@ -47,18 +50,18 @@ class SSOTAdaptiveExecutionMixin:
         bool
             True if mode was set, False if rejected (replay mode or invalid).
         """
-        if getattr(self, 'is_replay_mode', False):
-            _logger.warning('[SSOTAdaptive] Mode change rejected: replay mode active')
+        if getattr(self, "is_replay_mode", False):
+            _logger.warning("[SSOTAdaptive] Mode change rejected: replay mode active")
             return False
         if mode not in EXECUTION_MODES:
-            _logger.warning('[SSOTAdaptive] Invalid mode: %s (valid: %s)', mode, EXECUTION_MODES)
+            _logger.warning("[SSOTAdaptive] Invalid mode: %s (valid: %s)", mode, EXECUTION_MODES)
             return False
         old = self._ssot_execution_mode
         self._ssot_execution_mode = mode
-        _logger.info('[SSOTAdaptive] Mode: %s -> %s', old, mode)
+        _logger.info("[SSOTAdaptive] Mode: %s -> %s", old, mode)
         return True
 
-    def derive_mode_from_signals(self, failure_rate: float=0.0, violation_count: int=0) -> str:
+    def derive_mode_from_signals(self, failure_rate: float = 0.0, violation_count: int = 0) -> str:
         """Derive execution mode from L4 aggregate signals.
 
         Under replay mode, always returns "standard".
@@ -75,12 +78,12 @@ class SSOTAdaptiveExecutionMixin:
         str
             Recommended execution mode.
         """
-        if getattr(self, 'is_replay_mode', False):
-            return 'standard'
+        if getattr(self, "is_replay_mode", False):
+            return "standard"
         if failure_rate > 0.5 or violation_count > 50:
-            return 'conservative'
+            return "conservative"
         if failure_rate > 0.2 or violation_count > 20:
-            return 'standard'
+            return "standard"
         if violation_count < 5:
-            return 'aggressive'
-        return 'standard'
+            return "aggressive"
+        return "standard"

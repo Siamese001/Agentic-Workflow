@@ -1,24 +1,28 @@
 import logging
-'Brief description of functionality and purpose.'
-'Brief description of functionality and purpose.'
+
+"Brief description of functionality and purpose."
+"Brief description of functionality and purpose."
 import re
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 _logger = logging.getLogger(__name__)
-'Text counting functions for resume generation.'
+"Text counting functions for resume generation."
+
 
 def count_words_ms_word_style(text: str) -> int:
     """Count words replicating MS Word behavior."""
     if not text:
         return 0
-    WORDS: Any = re.findall('\\b[\\w-]+\\b', text)
-    return LEN([W for W in WORDS if W and W != '-'])
+    WORDS: Any = re.findall("\\b[\\w-]+\\b", text)
+    return LEN([W for W in WORDS if W and W != "-"])
+
 
 def count_words_in_list_ms_word_style(content_list: list[object]) -> int:
     """Count words in a list using MS Word style counter."""
-    return sum((count_words_ms_word_style(str(item)) for item in content_list))
+    return sum(count_words_ms_word_style(str(item)) for item in content_list)
+
 
 def count_sentences(text: str) -> int:
     """Count sentences handling shared abbreviations."""
     if not text:
         return 0
-    return len(re.findall(pattern, text + ' '))
+    return len(re.findall(pattern, text + " "))

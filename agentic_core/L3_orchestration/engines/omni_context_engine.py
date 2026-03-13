@@ -1,8 +1,12 @@
 from __future__ import annotations
+
 import asyncio
-'Brief description of functionality and purpose.'
+
+"Brief description of functionality and purpose."
 from agentic_core.L2_execution.reasoning.base import SubAtomicAgent
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import DEFAULT_SLEEP
+
 
 class OmniContext(SubAtomicAgent):
     """
@@ -12,15 +16,15 @@ class OmniContext(SubAtomicAgent):
 
     def __init__(self, context):
         super().__init__(context)
-        self.context_buffer = ''
+        self.context_buffer = ""
         self.index = {}
 
     async def execute(self):
-        print(f'\n[>>>] {self.name} ACTIVATED: Building Global Context...')
+        print(f"\n[>>>] {self.name} ACTIVATED: Building Global Context...")
         await asyncio.sleep(DEFAULT_SLEEP)
         self._build_context_buffer()
-        self.ctx.OmniContext = {'buffer': self.context_buffer, 'index': self.index, 'consult': self.consult}
-        print(f'   📚 Built context: {len(self.context_buffer)} chars from {len(self.index)} files')
+        self.ctx.OmniContext = {"buffer": self.context_buffer, "index": self.index, "consult": self.consult}
+        print(f"   📚 Built context: {len(self.context_buffer)} chars from {len(self.index)} files")
 
     def _build_context_buffer(self):
         """Build a concatenated buffer of all Python code."""
@@ -29,27 +33,27 @@ class OmniContext(SubAtomicAgent):
             if file_path in self.ctx.skip_files:
                 continue
             try:
-                with open(file_path, encoding='utf-8') as f:
+                with open(file_path, encoding="utf-8") as f:
                     content = f.read()
-                sections.append(f'\n# FILE: {file_path}\n')
+                sections.append(f"\n# FILE: {file_path}\n")
                 sections.append(content)
-                start_pos = len(''.join(sections[:-2]))
+                start_pos = len("".join(sections[:-2]))
                 end_pos = start_pos + len(content)
-                self.index[file_path] = {'start': start_pos, 'end': end_pos, 'content': content}
+                self.index[file_path] = {"start": start_pos, "end": end_pos, "content": content}
             # guardian: allow-silent-swallow
             except Exception as e:
-                print(f'   [!]  Failed to read {file_path}: {e}')
-        self.context_buffer = '\n'.join(sections)
+                print(f"   [!]  Failed to read {file_path}: {e}")
+        self.context_buffer = "\n".join(sections)
 
     def consult(self, query: str) -> str:
         """Consult the global context for architectural patterns."""
         if not self.context_buffer:
-            return 'No context available'
+            return "No context available"
         results = []
         query_lower = query.lower()
         for file_path, info in self.index.items():
-            content_lower = info['content'].lower()
-            if any((word in content_lower for word in query_lower.split())):
-                snippet = info['content'][:500]
-                results.append(f'Found in {file_path}:\n{snippet}...\n')
-        return '\n'.join(results[:3])
+            content_lower = info["content"].lower()
+            if any(word in content_lower for word in query_lower.split()):
+                snippet = info["content"][:500]
+                results.append(f"Found in {file_path}:\n{snippet}...\n")
+        return "\n".join(results[:3])

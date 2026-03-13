@@ -3,17 +3,27 @@
 Provides deterministic prune triggers and rebuild cycles with
 invalidation enforcement.
 """
+
 from __future__ import annotations
+
 from pathlib import Path
 from typing import Any
+
 from system_learning.engines.local_faiss_store import LocalFAISSStore
 from system_learning.types.index_build_metadata_types import IndexBuildMetadata
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 class EmbeddingRetentionScheduler:
     """Scheduler for embedding retention policies and deterministic pruning."""
 
-    def run_once(self, *, now_utc: int, policies: dict[str, dict[str, Any]], stores: dict[str, LocalFAISSStore], persist_base_path: Path | None=None) -> dict[str, IndexBuildMetadata]:
+    def run_once(
+        self,
+        *,
+        now_utc: int,
+        policies: dict[str, dict[str, Any]],
+        stores: dict[str, LocalFAISSStore],
+        persist_base_path: Path | None = None,
+    ) -> dict[str, IndexBuildMetadata]:
         """Run retention scheduler once.
 
         Args:
@@ -35,48 +45,73 @@ class EmbeddingRetentionScheduler:
             if index_id not in policies:
                 continue
             policy = policies[index_id]
-            mode = policy.get('mode', 'none')
-            if mode == 'none':
+            mode = policy.get("mode", "none")
+            if mode == "none":
                 continue
-            elif mode == 'rolling_window':
-                retention_days = policy.get('retention_days')
+            elif mode == "rolling_window":
+                retention_days = policy.get("retention_days")
                 if retention_days is None:
                     continue
                 cutoff_utc = now_utc - retention_days * 24 * 60 * 60
 
                 def rolling_window_predicate(metadata: dict[str, Any]) -> bool:
                     """Return True if record should be pruned (older than cutoff)."""
-                    created_utc = metadata.get('created_utc')
+                    created_utc = metadata.get("created_utc")
                     if created_utc is None:
                         return False
                     return created_utc < cutoff_utc
+
                 num_removed = store.prune(index_id, rolling_window_predicate)
                 if num_removed > 0:
-                    if hasattr(store, '_memory_indexes') and index_id in store._memory_indexes:
-                        old_metadata = store._memory_indexes[index_id]['metadata']
+                    if hasattr(store, "_memory_indexes") and index_id in store._memory_indexes:
+                        old_metadata = store._memory_indexes[index_id]["metadata"]
                     else:
                         _, _, old_metadata = store.open(index_id)
-                    new_metadata = store.rebuild(index_id, built_at_utc=now_utc, canonicalization_version=old_metadata.canonicalization_version, embedding_model_version=old_metadata.embedding_model_version, embedding_model_checksum=old_metadata.embedding_model_checksum)
+                    new_metadata = store.rebuild(
+                        index_id,
+                        built_at_utc=now_utc,
+                        canonicalization_version=old_metadata.canonicalization_version,
+                        embedding_model_version=old_metadata.embedding_model_version,
+                        embedding_model_checksum=old_metadata.embedding_model_checksum,
+                    )
                     results[index_id] = new_metadata
                     if persist_base_path is not None:
                         dest = Path(persist_base_path) / index_id
                         dest.mkdir(parents=True, exist_ok=True)
-                        store.persist_to_disk(index_id, dest, embedder_id=old_metadata.embedding_model_checksum, model_version=old_metadata.embedding_model_version)
-            elif mode == 'predicate':
-                predicate = policy.get('predicate')
+                        store.persist_to_disk(
+                            index_id,
+                            dest,
+                            embedder_id=old_metadata.embedding_model_checksum,
+                            model_version=old_metadata.embedding_model_version,
+                        )
+            elif mode == "predicate":
+                predicate = policy.get("predicate")
                 if predicate is None:
                     continue
                 num_removed = store.prune(index_id, predicate)
                 if num_removed > 0:
-                    if hasattr(store, '_memory_indexes') and index_id in store._memory_indexes:
-                        old_metadata = store._memory_indexes[index_id]['metadata']
+                    if hasattr(store, "_memory_indexes") and index_id in store._memory_indexes:
+                        old_metadata = store._memory_indexes[index_id]["metadata"]
                     else:
                         _, _, old_metadata = store.open(index_id)
-                    new_metadata = store.rebuild(index_id, built_at_utc=now_utc, canonicalization_version=old_metadata.canonicalization_version, embedding_model_version=old_metadata.embedding_model_version, embedding_model_checksum=old_metadata.embedding_model_checksum)
+                    new_metadata = store.rebuild(
+                        index_id,
+                        built_at_utc=now_utc,
+                        canonicalization_version=old_metadata.canonicalization_version,
+                        embedding_model_version=old_metadata.embedding_model_version,
+                        embedding_model_checksum=old_metadata.embedding_model_checksum,
+                    )
                     results[index_id] = new_metadata
                     if persist_base_path is not None:
                         dest = Path(persist_base_path) / index_id
                         dest.mkdir(parents=True, exist_ok=True)
-                        store.persist_to_disk(index_id, dest, embedder_id=old_metadata.embedding_model_checksum, model_version=old_metadata.embedding_model_version)
+                        store.persist_to_disk(
+                            index_id,
+                            dest,
+                            embedder_id=old_metadata.embedding_model_checksum,
+                            model_version=old_metadata.embedding_model_version,
+                        )
         return results
-__all__ = ['EmbeddingRetentionScheduler']
+
+
+__all__ = ["EmbeddingRetentionScheduler"]

@@ -1,16 +1,17 @@
 """Find agents missing super().heal_repository() invocation."""
+
 import json
 import re
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 PROJECT_ROOT = Path(__file__).parent.parent
-dashboard_path = PROJECT_ROOT / REPORTS_DIR / 'autonomy_dashboard.html'
-content = dashboard_path.read_text(encoding='utf-8')
-match = re.search('const agentDataByTerritory\\s*=\\s*(\\{.*?\\});', content, re.DOTALL)
+dashboard_path = PROJECT_ROOT / REPORTS_DIR / "autonomy_dashboard.html"
+content = dashboard_path.read_text(encoding="utf-8")
+match = re.search("const agentDataByTerritory\\s*=\\s*(\\{.*?\\});", content, re.DOTALL)
 if match:
     try:
         agent_data = json.loads(match.group(1))
-        print(f'Found agentDataByTerritory with {len(agent_data)} territories')
+        print(f"Found agentDataByTerritory with {len(agent_data)} territories")
         total_agents = 0
         invocation_yes = 0
         invocation_no = 0
@@ -19,41 +20,42 @@ if match:
         for territory, agents in agent_data.items():
             for agent in agents:
                 total_agents += 1
-                inv = agent.get('invocation', '')
-                name = agent.get('name', 'Unknown')
-                path = agent.get('path', '')
-                if inv == 'Yes':
+                inv = agent.get("invocation", "")
+                name = agent.get("name", "Unknown")
+                path = agent.get("path", "")
+                if inv == "Yes":
                     invocation_yes += 1
-                elif inv == 'Inherited':
+                elif inv == "Inherited":
                     invocation_inherited += 1
                 else:
                     invocation_no += 1
-                    missing_invocation_agents.append({'name': name, 'path': path, 'territory': territory})
-        print(f'\nTotal agents: {total_agents}')
-        print(f'Invocation Yes: {invocation_yes}')
-        print(f'Invocation Inherited: {invocation_inherited}')
-        print(f'Invocation No/Missing: {invocation_no}')
-        print(f'Invocation %: {(invocation_yes + invocation_inherited) / total_agents * 100:.1f}%')
-        print(f'\n=== Agents MISSING invocation ({len(missing_invocation_agents)}) ===')
-        for agent in sorted(missing_invocation_agents, key=lambda x: x['path']):
+                    missing_invocation_agents.append({"name": name, "path": path, "territory": territory})
+        print(f"\nTotal agents: {total_agents}")
+        print(f"Invocation Yes: {invocation_yes}")
+        print(f"Invocation Inherited: {invocation_inherited}")
+        print(f"Invocation No/Missing: {invocation_no}")
+        print(f"Invocation %: {(invocation_yes + invocation_inherited) / total_agents * 100:.1f}%")
+        print(f"\n=== Agents MISSING invocation ({len(missing_invocation_agents)}) ===")
+        for agent in sorted(missing_invocation_agents, key=lambda x: x["path"]):
             print(f"  {agent['path']}")
     except json.JSONDecodeError as e:
-        print(f'JSON parse error: {e}')
+        print(f"JSON parse error: {e}")
 else:
-    print('Could not find agentDataByTerritory in dashboard')
+    print("Could not find agentDataByTerritory in dashboard")
     all_invocations = re.findall('"invocation":\\s*"([^"]*)"', content)
-    print(f'\nFound {len(all_invocations)} invocation values via regex')
+    print(f"\nFound {len(all_invocations)} invocation values via regex")
     from collections import Counter
+
     print(Counter(all_invocations))
-    for line in content.split('\n'):
+    for line in content.split("\n"):
         if '"invocation": "No (missing super)"' in line and len(line) > 10000:
             agent_pattern = '\\{"name":\\s*"([^"]+)"[^}]*"path":\\s*"([^"]+)"[^}]*"invocation":\\s*"([^"]+)"'
             matches = re.findall(agent_pattern, line)
             missing_paths = []
             for name, path, inv in matches:
-                if 'No' in inv or 'missing' in inv:
+                if "No" in inv or "missing" in inv:
                     missing_paths.append(path)
-            print(f'\n=== Files needing super().heal_repository() ({len(missing_paths)}) ===')
+            print(f"\n=== Files needing super().heal_repository() ({len(missing_paths)}) ===")
             for path in sorted(set(missing_paths)):
                 print(path)
             break

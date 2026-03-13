@@ -17,15 +17,23 @@ Usage:
         assert_no_nondeterminism,
     )
 """
+
 from __future__ import annotations
+
 import hashlib
 import json
 import logging
 import re
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 logger = logging.getLogger(__name__)
-FORBIDDEN_PATTERNS: tuple[str, ...] = ('uuid4\\b', 'datetime\\.now\\b', 'time\\.time\\b', 'time\\.monotonic\\b')
+FORBIDDEN_PATTERNS: tuple[str, ...] = (
+    "uuid4\\b",
+    "datetime\\.now\\b",
+    "time\\.time\\b",
+    "time\\.monotonic\\b",
+)
+
 
 def deterministic_json(obj: Any) -> str:
     """Return a deterministic, compact JSON string for *obj*.
@@ -34,7 +42,8 @@ def deterministic_json(obj: Any) -> str:
     - Compact separators ``(',', ':')`` eliminate whitespace variance.
     - This is the ONLY serialization path that L7 hashing may use.
     """
-    return json.dumps(obj, sort_keys=True, separators=(',', ':'))
+    return json.dumps(obj, sort_keys=True, separators=(",", ":"))
+
 
 def stable_sha256_json(obj: Any) -> str:
     """Return the SHA-256 hex digest of ``deterministic_json(obj)``.
@@ -43,9 +52,10 @@ def stable_sha256_json(obj: Any) -> str:
     insertion order or Python version.
     """
     canonical = deterministic_json(obj)
-    return hashlib.sha256(canonical.encode('utf-8')).hexdigest()
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
-def assert_no_nondeterminism(source_text: str, *, filepath: str='<unknown>') -> None:
+
+def assert_no_nondeterminism(source_text: str, *, filepath: str = "<unknown>") -> None:
     """Static check: raise ``PermissionError`` if *source_text* contains
     any forbidden nondeterministic call.
 
@@ -54,5 +64,12 @@ def assert_no_nondeterminism(source_text: str, *, filepath: str='<unknown>') -> 
     for pattern in FORBIDDEN_PATTERNS:
         match = re.search(pattern, source_text)
         if match:
-            logger.error('L7_DETERMINISM DENY: forbidden pattern %r found in %s at offset %d', pattern, filepath, match.start())
-            raise PermissionError(f'L7_DETERMINISM_VIOLATION:FORBIDDEN_CALL|pattern={pattern}|filepath={filepath}|offset={match.start()}')
+            logger.error(
+                "L7_DETERMINISM DENY: forbidden pattern %r found in %s at offset %d",
+                pattern,
+                filepath,
+                match.start(),
+            )
+            raise PermissionError(
+                f"L7_DETERMINISM_VIOLATION:FORBIDDEN_CALL|pattern={pattern}|filepath={filepath}|offset={match.start()}"
+            )

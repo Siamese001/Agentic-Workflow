@@ -8,11 +8,14 @@ Design invariants:
 - BGE embeddings are always active (mandatory system dependency).
 - Fail-closed: any adapter error propagates; no silent fallback.
 """
+
 from __future__ import annotations
+
 import logging
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 logger = logging.getLogger(__name__)
+
 
 class ActivationAuthorizationError(RuntimeError):
     """Raised when pipeline activation is attempted without dual approval.
@@ -21,7 +24,9 @@ class ActivationAuthorizationError(RuntimeError):
     (proposal_only=False) without explicit dual-approval tokens MUST raise
     this error.  The default proposal_only=True is the safe no-op path.
     """
+
     pass
+
 
 class LiveRunPipelineAdapter:
     """Adapts the in-process healing outcome store for meta_learning_pipeline consumption.
@@ -34,7 +39,7 @@ class LiveRunPipelineAdapter:
     a mandatory system dependency; import failure raises at startup.
     """
 
-    def __init__(self, intake_adapter: Any, *, source_tag: str='live_run') -> None:
+    def __init__(self, intake_adapter: Any, *, source_tag: str = "live_run") -> None:
         """Initialise adapter.
 
         Args:
@@ -51,7 +56,7 @@ class LiveRunPipelineAdapter:
         except Exception:
             return 0
 
-    def build_pipeline_deps(self, repo_root: Any, healing_config_optimizer: Any | None=None) -> Any:
+    def build_pipeline_deps(self, repo_root: Any, healing_config_optimizer: Any | None = None) -> Any:
         """Construct PipelineDependencies wired to this adapter's intake store.
 
         Args:
@@ -62,9 +67,22 @@ class LiveRunPipelineAdapter:
             PipelineDependencies ready for run_pipeline().
         """
         from system_learning.pipelines.pipeline_factory import build_pipeline_deps
-        return build_pipeline_deps(repo_root=repo_root, healing_outcome_intake_adapter=self._intake_adapter, healing_config_optimizer=healing_config_optimizer)
 
-    def run(self, *, repo_root: Any, now_utc: int, window_start_utc: int, proposal_only: bool=True, approval_token: str | None=None) -> None:
+        return build_pipeline_deps(
+            repo_root=repo_root,
+            healing_outcome_intake_adapter=self._intake_adapter,
+            healing_config_optimizer=healing_config_optimizer,
+        )
+
+    def run(
+        self,
+        *,
+        repo_root: Any,
+        now_utc: int,
+        window_start_utc: int,
+        proposal_only: bool = True,
+        approval_token: str | None = None,
+    ) -> None:
         """Run the meta_learning_pipeline end-to-end with this adapter's records.
 
         Args:
@@ -83,11 +101,22 @@ class LiveRunPipelineAdapter:
             for catch/log if non-fatal behaviour is desired.
         """
         if not proposal_only and (not approval_token):
-            raise ActivationAuthorizationError('proposal_only=False requires a non-empty approval_token; pass approval_token=<token> to enable pipeline mutations.')
+            raise ActivationAuthorizationError(
+                "proposal_only=False requires a non-empty approval_token; pass approval_token=<token> to enable pipeline mutations."
+            )
         from system_learning.pipelines.meta_learning_pipeline import run_pipeline
         from system_learning.pipelines.pipeline_factory import build_pipeline_config
+
         cfg = build_pipeline_config(proposal_only=proposal_only)
         deps = self.build_pipeline_deps(repo_root=repo_root)
-        run_pipeline(now_utc=now_utc, window_start_utc=window_start_utc, window_end_utc=now_utc, cfg=cfg, deps=deps)
-        logger.info('[LiveRunPipelineAdapter] run_pipeline completed (%d records, source=%s).', self.record_count(), self._source_tag)
-__all__ = ['ActivationAuthorizationError', 'LiveRunPipelineAdapter']
+        run_pipeline(
+            now_utc=now_utc, window_start_utc=window_start_utc, window_end_utc=now_utc, cfg=cfg, deps=deps
+        )
+        logger.info(
+            "[LiveRunPipelineAdapter] run_pipeline completed (%d records, source=%s).",
+            self.record_count(),
+            self._source_tag,
+        )
+
+
+__all__ = ["ActivationAuthorizationError", "LiveRunPipelineAdapter"]

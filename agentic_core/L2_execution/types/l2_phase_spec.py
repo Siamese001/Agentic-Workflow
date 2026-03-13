@@ -11,8 +11,9 @@ Phase ordering (legacy mirror):
     6. healing
     7. certification
 """
+
 from dataclasses import dataclass
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 @dataclass(frozen=True, slots=True)
 class PhaseSpec:
@@ -26,6 +27,7 @@ class PhaseSpec:
         approval_required: Whether human approval is needed (False for now).
         inputs_from_prior: Phase names whose outputs feed this phase (empty for now).
     """
+
     name: str
     guardian_ids: tuple[str, ...] = ()
     healer_ids: tuple[str, ...] = ()
@@ -33,9 +35,23 @@ class PhaseSpec:
     approval_required: bool = False
     inputs_from_prior: tuple[str, ...] = ()
 
+
 @dataclass(frozen=True, slots=True)
 class L2ExecutionPlan:
     """Immutable, ordered sequence of PhaseSpecs defining an execution plan."""
+
     phases: tuple[PhaseSpec, ...]
-LEGACY_MIRROR_PLAN: L2ExecutionPlan = L2ExecutionPlan(phases=(PhaseSpec(name='pre_audit'), PhaseSpec(name='discovery'), PhaseSpec(name='reconciliation'), PhaseSpec(name='alignment'), PhaseSpec(name='arch_validation'), PhaseSpec(name='healing'), PhaseSpec(name='certification')))
-__all__ = ['L2ExecutionPlan', 'LEGACY_MIRROR_PLAN', 'PhaseSpec']
+
+
+LEGACY_MIRROR_PLAN: L2ExecutionPlan = L2ExecutionPlan(
+    phases=(
+        PhaseSpec(name="pre_audit"),
+        PhaseSpec(name="discovery"),
+        PhaseSpec(name="reconciliation"),
+        PhaseSpec(name="alignment"),
+        PhaseSpec(name="arch_validation"),
+        PhaseSpec(name="healing"),
+        PhaseSpec(name="certification"),
+    )
+)
+__all__ = ["L2ExecutionPlan", "LEGACY_MIRROR_PLAN", "PhaseSpec"]

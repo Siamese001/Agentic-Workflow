@@ -8,11 +8,12 @@ the LLM response cycle, RAG state management, and workflow checkpoints.
 Note: 'Residual' prefixes are maintained to prevent collisions with
 legacy Phase 1 models during the final migration.
 """
-from __future__ import annotations
-from dataclasses import dataclass, field
-from enum import Enum
-from typing import Any, Optional
 
+from __future__ import annotations
+
+from dataclasses import dataclass
+from enum import Enum
+from typing import Any
 
 # ==========================================
 # Messaging & Communication

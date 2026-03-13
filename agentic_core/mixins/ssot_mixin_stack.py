@@ -25,7 +25,9 @@ Usage:
     class SovereignDecisionEngine(SSOTMixinStack, AutonomousDecisionEngine):
         pass
 """
+
 from __future__ import annotations
+
 from agentic_core.mixins.replay_guard_mixin import ReplayGuardMixin
 from agentic_core.mixins.ssot_adaptive_execution_mixin import SSOTAdaptiveExecutionMixin
 from agentic_core.mixins.ssot_audit_trail_mixin import SSOTAuditTrailMixin
@@ -41,14 +43,33 @@ from agentic_core.mixins.ssot_rate_limit_mixin import SSOTRateLimitMixin
 from agentic_core.mixins.ssot_self_diagnosis_mixin import SSOTSelfDiagnosisMixin
 from agentic_core.mixins.ssot_state_validation_mixin import SSOTStateValidationMixin
 from agentic_core.mixins.ssot_tracing_mixin import SSOTTracingMixin
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
-class SSOTMixinStack(SSOTFeatureFlagMixin, SSOTMetaLearningMixin, SSOTHallucinationDetectionMixin, SSOTCognitiveRecoveryMixin, SSOTSelfDiagnosisMixin, SSOTAdaptiveExecutionMixin, SSOTContextPropagationMixin, SSOTTracingMixin, SSOTStateValidationMixin, SSOTRateLimitMixin, SSOTCircuitBreakerMixin, SSOTCachingMixin, SSOTMetricsMixin, SSOTAuditTrailMixin, ReplayGuardMixin):
+
+class SSOTMixinStack(
+    SSOTFeatureFlagMixin,
+    SSOTMetaLearningMixin,
+    SSOTHallucinationDetectionMixin,
+    SSOTCognitiveRecoveryMixin,
+    SSOTSelfDiagnosisMixin,
+    SSOTAdaptiveExecutionMixin,
+    SSOTContextPropagationMixin,
+    SSOTTracingMixin,
+    SSOTStateValidationMixin,
+    SSOTRateLimitMixin,
+    SSOTCircuitBreakerMixin,
+    SSOTCachingMixin,
+    SSOTMetricsMixin,
+    SSOTAuditTrailMixin,
+    ReplayGuardMixin,
+):
     """Canonical composite mixin bundling all SSOT mixins.
 
     This class exists solely to provide a single MRO-safe entry point
     for integrating the full SSOT mixin stack into decision engines.
     All mixins use cooperative ``super().__init__(**kwargs)`` chaining.
     """
+
     pass
-__all__ = ['SSOTMixinStack']
+
+
+__all__ = ["SSOTMixinStack"]

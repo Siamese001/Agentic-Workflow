@@ -8,12 +8,15 @@ This adapter wraps ConfCalibRiskGate and returns a RiskResult compatible
 with the spine's existing _RiskResult contract.
 Falls back to allow=True null behavior if ConfCalibRiskGate cannot be imported.
 """
+
 from __future__ import annotations
+
 import logging
 from dataclasses import dataclass
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 logger = logging.getLogger(__name__)
+
 
 @dataclass(frozen=True)
 class RiskResult:
@@ -23,13 +26,17 @@ class RiskResult:
     Extends the null stub type so existing spine code works unchanged.
     Carries the full decision context for observability.
     """
+
     allow: bool
-    level: str = 'LOW'
+    level: str = "LOW"
     reasons: tuple[str, ...] = ()
+
 
 def _build_real_gate():
     from agentic_core.L5_safety.enforcement.conf_calib_gate import ConfCalibRiskGate
+
     return ConfCalibRiskGate
+
 
 class RiskGateAdapter:
     """
@@ -46,7 +53,7 @@ class RiskGateAdapter:
             self._gate = ConfCalibRiskGate()
             self._real = True
         except ImportError:
-            logger.warning('ConfCalibRiskGate unavailable; using null fallback (allow=True)')
+            logger.warning("ConfCalibRiskGate unavailable; using null fallback (allow=True)")
             self._gate = None
             self._real = False
 

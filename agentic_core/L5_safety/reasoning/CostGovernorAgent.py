@@ -1,16 +1,20 @@
 from __future__ import annotations
+
 'Cost Governor Agent - L5 Safety financial guardrail for LLM spend tracking.\n\nThis module provides a financial guardrail agent that tracks and limits\nspending across LLM models and tools. It enforces budget constraints\nand raises exceptions when limits are exceeded.\n\nTypical usage:\n    agent = CostGovernorAgent(config={"budget_limit": 10.0})\n    cost = agent.track(model="gpt-4", input_tokens=100, output_tokens=50)\n'
 import logging
 from dataclasses import dataclass
 from typing import Any
+
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 class BudgetExceededError(Exception):
     """Raised when LLM spending exceeds the configured budget limit."""
+
     pass
+
 
 @dataclass
 class CostGovernorAgent(SovereignBaseAgent):
@@ -38,7 +42,7 @@ class CostGovernorAgent(SovereignBaseAgent):
                 - budget_limit: Maximum allowed spend in dollars (default: 10.0)
         """
         self.config: dict[str, Any] = config
-        self.limit: float = config.get('budget_limit', 10.0)
+        self.limit: float = config.get("budget_limit", 10.0)
         self.spend: float = 0.0
 
     def track(self, model: str, input_tokens: int, output_tokens: int) -> float:
@@ -57,15 +61,24 @@ class CostGovernorAgent(SovereignBaseAgent):
         """
         cost: float = (input_tokens + output_tokens) * 2e-05
         self.spend += cost
-        logging.info(f'Governor: Current Spend ${self.spend:.4f} / Limit ${self.limit:.2f}')
+        logging.info(f"Governor: Current Spend ${self.spend:.4f} / Limit ${self.limit:.2f}")
         if self.spend > self.limit:
-            raise BudgetExceededError(f'BUDGET EXCEEDED: ${self.spend:.2f} exceeds limit of ${self.limit:.2f}')
+            raise BudgetExceededError(
+                f"BUDGET EXCEEDED: ${self.spend:.2f} exceeds limit of ${self.limit:.2f}"
+            )
         return cost
 
     @timeout(300)
     @standard_heal
     # guardian: allow-magic-config
-    def heal_repository(self, dry_run: bool=True, execute: bool=False, depth: int=0, max_depth: int=3, _call_path: set[str] | None=None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set[str] | None = None,
+    ) -> dict[str, int]:
         """Execute L5 safety healing operations.
 
         This is an operational agent - no repository healing required.
@@ -86,13 +99,13 @@ class CostGovernorAgent(SovereignBaseAgent):
             _call_path = set()
         agent_name = self.__class__.__name__
         if agent_name in _call_path:
-            return {'errors': 1, 'cycle_detected': True}
+            return {"errors": 1, "cycle_detected": True}
         if depth > max_depth:
-            return {'errors': 1, 'depth_limited': True}
+            return {"errors": 1, "depth_limited": True}
         _call_path.add(agent_name)
         try:
-            print(f'[{agent_name}] L5 safety - operational only')
-            return {'skipped': 1}
+            print(f"[{agent_name}] L5 safety - operational only")
+            return {"skipped": 1}
         finally:
             _call_path.discard(agent_name)
 
@@ -109,5 +122,11 @@ class CostGovernorAgent(SovereignBaseAgent):
         Returns:
             Dictionary with healing results following standard_heal format.
         """
-        logging.info('[COST_GOVERNOR] Budget violations are runtime-managed')
-        return {'violations_fixed': 0, 'violations_found': 1, 'errors': 0, 'skipped': 1, 'reason': 'Budget violations are runtime-managed, not code-healable'}
+        logging.info("[COST_GOVERNOR] Budget violations are runtime-managed")
+        return {
+            "violations_fixed": 0,
+            "violations_found": 1,
+            "errors": 0,
+            "skipped": 1,
+            "reason": "Budget violations are runtime-managed, not code-healable",
+        }

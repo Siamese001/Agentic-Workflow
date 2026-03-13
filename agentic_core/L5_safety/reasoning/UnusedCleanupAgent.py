@@ -1,12 +1,14 @@
 from __future__ import annotations
+
 'Unused Cleanup Agent - Removes unused imports and variables using autoflake.\n\nThis module provides an atomic agent that removes unused imports and variables\nfrom Python files using the autoflake tool.\n\nTypical usage:\n    agent = UnusedCleanupAgent(project_root="/path/to/project", ctx=context)\n    result = await agent.execute(file_path="src/module.py")\n'
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
+
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L5_safety.utils.code_tool_runner_core_util import CodeToolRunnerCapability
 from agentic_core.utils.security_util import safe_execute
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 @dataclass
 class UnusedCleanupAgent(CodeToolRunnerCapability, SovereignBaseAgent):
@@ -20,6 +22,7 @@ class UnusedCleanupAgent(CodeToolRunnerCapability, SovereignBaseAgent):
         - CodeToolRunnerCapability: Provides shared heal_repository, heal plumbing
         - This class: Provides execute() with autoflake logic
     """
+
     ctx: Any = field(default=None)
 
     # guardian: allow-type-erasure
@@ -35,14 +38,25 @@ class UnusedCleanupAgent(CodeToolRunnerCapability, SovereignBaseAgent):
         """
         file: Path = Path(file_path)
         if not file.exists():
-            return {'healed': False}
+            return {"healed": False}
         try:
-            result = safe_execute(['autoflake', '--in-place', '--remove-all-unused-imports', '--remove-unused-variables', str(file)], capture_output=True, text=True, check=False)
+            result = safe_execute(
+                [
+                    "autoflake",
+                    "--in-place",
+                    "--remove-all-unused-imports",
+                    "--remove-unused-variables",
+                    str(file),
+                ],
+                capture_output=True,
+                text=True,
+                check=False,
+            )
             if result.returncode == 0:
-                return {'healed': True, 'action': 'unused_removed'}
+                return {"healed": True, "action": "unused_removed"}
         except FileNotFoundError:
-            return {'healed': False, 'error': 'autoflake not installed'}
-        return {'healed': False}
+            return {"healed": False, "error": "autoflake not installed"}
+        return {"healed": False}
 
     def heal(self, violation, **kwargs):
         return super().heal(violation, **kwargs)
@@ -50,4 +64,4 @@ class UnusedCleanupAgent(CodeToolRunnerCapability, SovereignBaseAgent):
     # guardian: allow-type-erasure
     def heal_repository(self, *args, **kwargs) -> dict:
         """heal_repository() not implemented for UnusedCleanupAgent."""
-        raise NotImplementedError('heal_repository() not implemented for UnusedCleanupAgent')
+        raise NotImplementedError("heal_repository() not implemented for UnusedCleanupAgent")

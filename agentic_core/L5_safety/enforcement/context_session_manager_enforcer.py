@@ -15,6 +15,7 @@ References:
 - V10 Diagram: Working Memory (Context Window), State Tracking
 - V10 Diagram: Contextual Router receives "Context Query"
 """
+
 import logging
 import threading
 import uuid
@@ -23,22 +24,27 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from typing import Any, Optional
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 logger = logging.getLogger(__name__)
+
 
 class RiskLevel(Enum):
     """Risk classification per V10 Contextual Router."""
-    LOW = 'low'
-    MEDIUM = 'medium'
-    HIGH = 'high'
+
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"
+
 
 @dataclass
 class AttentionState:
     """Attention mechanism state for context window management."""
+
     focus_files: set[str] = field(default_factory=set)
     focus_agents: set[str] = field(default_factory=set)
     priority_violations: list[str] = field(default_factory=list)
     max_context_items: int = 10
+
 
 @dataclass
 class ContextSession:
@@ -51,6 +57,7 @@ class ContextSession:
     - Working memory state
     - Cross-agent context propagation
     """
+
     session_id: str = field(default_factory=lambda: str(uuid.uuid4()))
     created_at: datetime = field(default_factory=datetime.utcnow)
     risk_level: RiskLevel = RiskLevel.MEDIUM
@@ -60,7 +67,7 @@ class ContextSession:
     _state: dict[str, Any] = field(default_factory=dict)
     _history: list[dict[str, Any]] = field(default_factory=list)
 
-    def get(self, key: str, default: Any=None) -> Any:
+    def get(self, key: str, default: Any = None) -> Any:
         """Get value from session state."""
         return self._state.get(key, default)
 
@@ -68,13 +75,28 @@ class ContextSession:
         """Set value in session state with history tracking."""
         old_value = self._state.get(key)
         self._state[key] = value
-        self._history.append({'timestamp': datetime.utcnow().isoformat(), 'action': 'set', 'key': key, 'old_value': old_value, 'new_value': value})
+        self._history.append(
+            {
+                "timestamp": datetime.utcnow().isoformat(),
+                "action": "set",
+                "key": key,
+                "old_value": old_value,
+                "new_value": value,
+            }
+        )
 
     def delete(self, key: str) -> None:
         """Delete key from session state."""
         if key in self._state:
             old_value = self._state.pop(key)
-            self._history.append({'timestamp': datetime.utcnow().isoformat(), 'action': 'delete', 'key': key, 'old_value': old_value})
+            self._history.append(
+                {
+                    "timestamp": datetime.utcnow().isoformat(),
+                    "action": "delete",
+                    "key": key,
+                    "old_value": old_value,
+                }
+            )
 
     def add_focus_file(self, file_path: str) -> None:
         """Add a file to the attention focus set."""
@@ -90,7 +112,9 @@ class ContextSession:
         """Add a violation to priority queue."""
         if violation_id not in self.attention.priority_violations:
             self.attention.priority_violations.insert(0, violation_id)
-            self.attention.priority_violations = self.attention.priority_violations[:self.attention.max_context_items]
+            self.attention.priority_violations = self.attention.priority_violations[
+                : self.attention.max_context_items
+            ]
 
     def escalate_risk(self, new_level: RiskLevel) -> None:
         """Escalate risk level (never decrease)."""
@@ -98,7 +122,7 @@ class ContextSession:
         if level_order[new_level] > level_order[self.risk_level]:
             old_level = self.risk_level
             self.risk_level = new_level
-            logger.info(f'Session {self.session_id} risk escalated: {old_level.value} -> {new_level.value}')
+            logger.info(f"Session {self.session_id} risk escalated: {old_level.value} -> {new_level.value}")
 
     def get_history(self) -> list[dict[str, Any]]:
         """Get state change history."""
@@ -106,18 +130,36 @@ class ContextSession:
 
     def to_dict(self) -> dict[str, Any]:
         """Serialize session for propagation."""
-        return {'session_id': self.session_id, 'created_at': self.created_at.isoformat(), 'risk_level': self.risk_level.value, 'parent_session_id': self.parent_session_id, 'metadata': self.metadata, 'state': dict(self._state), 'attention': {'focus_files': list(self.attention.focus_files), 'focus_agents': list(self.attention.focus_agents), 'priority_violations': self.attention.priority_violations}}
+        return {
+            "session_id": self.session_id,
+            "created_at": self.created_at.isoformat(),
+            "risk_level": self.risk_level.value,
+            "parent_session_id": self.parent_session_id,
+            "metadata": self.metadata,
+            "state": dict(self._state),
+            "attention": {
+                "focus_files": list(self.attention.focus_files),
+                "focus_agents": list(self.attention.focus_agents),
+                "priority_violations": self.attention.priority_violations,
+            },
+        }
 
     @classmethod
-    def from_dict(cls, data: dict[str, Any]) -> 'ContextSession':
+    def from_dict(cls, data: dict[str, Any]) -> "ContextSession":
         """Deserialize session from dictionary."""
-        session = cls(session_id=data.get('session_id', str(uuid.uuid4())), risk_level=RiskLevel(data.get('risk_level', 'medium')), parent_session_id=data.get('parent_session_id'), metadata=data.get('metadata', {}))
-        session._state = data.get('state', {})
-        attention_data = data.get('attention', {})
-        session.attention.focus_files = set(attention_data.get('focus_files', []))
-        session.attention.focus_agents = set(attention_data.get('focus_agents', []))
-        session.attention.priority_violations = attention_data.get('priority_violations', [])
+        session = cls(
+            session_id=data.get("session_id", str(uuid.uuid4())),
+            risk_level=RiskLevel(data.get("risk_level", "medium")),
+            parent_session_id=data.get("parent_session_id"),
+            metadata=data.get("metadata", {}),
+        )
+        session._state = data.get("state", {})
+        attention_data = data.get("attention", {})
+        session.attention.focus_files = set(attention_data.get("focus_files", []))
+        session.attention.focus_agents = set(attention_data.get("focus_agents", []))
+        session.attention.priority_violations = attention_data.get("priority_violations", [])
         return session
+
 
 class ContextSessionManager:
     """
@@ -128,7 +170,8 @@ class ContextSessionManager:
     - Thread-local session access
     - Session inheritance for sub-operations
     """
-    _instance: Optional['ContextSessionManager'] = None
+
+    _instance: Optional["ContextSessionManager"] = None
     _lock = threading.Lock()
 
     def __new__(cls):
@@ -149,14 +192,19 @@ class ContextSessionManager:
     @property
     def current_session(self) -> ContextSession | None:
         """Get the current thread's active session."""
-        return getattr(self._thread_local, 'session', None)
+        return getattr(self._thread_local, "session", None)
 
     @current_session.setter
     def current_session(self, session: ContextSession | None) -> None:
         """Set the current thread's active session."""
         self._thread_local.session = session
 
-    def create_session(self, risk_level: RiskLevel=RiskLevel.MEDIUM, parent_session: ContextSession | None=None, metadata: dict[str, Any] | None=None) -> ContextSession:
+    def create_session(
+        self,
+        risk_level: RiskLevel = RiskLevel.MEDIUM,
+        parent_session: ContextSession | None = None,
+        metadata: dict[str, Any] | None = None,
+    ) -> ContextSession:
         """
         Create a new context session.
 
@@ -168,15 +216,19 @@ class ContextSessionManager:
         Returns:
             New ContextSession instance
         """
-        session = ContextSession(risk_level=risk_level, parent_session_id=parent_session.session_id if parent_session else None, metadata=metadata or {})
+        session = ContextSession(
+            risk_level=risk_level,
+            parent_session_id=parent_session.session_id if parent_session else None,
+            metadata=metadata or {},
+        )
         if parent_session:
             session.attention.focus_files = set(parent_session.attention.focus_files)
             session.attention.focus_agents = set(parent_session.attention.focus_agents)
-            if parent_session.risk_level.value == 'high':
+            if parent_session.risk_level.value == "high":
                 session.risk_level = RiskLevel.HIGH
         with self._session_lock:
             self._sessions[session.session_id] = session
-        logger.debug(f'Created session {session.session_id} (risk={risk_level.value})')
+        logger.debug(f"Created session {session.session_id} (risk={risk_level.value})")
         return session
 
     def get_session(self, session_id: str) -> ContextSession | None:
@@ -189,10 +241,15 @@ class ContextSessionManager:
         with self._session_lock:
             if session_id in self._sessions:
                 del self._sessions[session_id]
-                logger.debug(f'Ended session {session_id}')
+                logger.debug(f"Ended session {session_id}")
 
     @contextmanager
-    def session_scope(self, risk_level: RiskLevel=RiskLevel.MEDIUM, inherit_parent: bool=True, metadata: dict[str, Any] | None=None):
+    def session_scope(
+        self,
+        risk_level: RiskLevel = RiskLevel.MEDIUM,
+        inherit_parent: bool = True,
+        metadata: dict[str, Any] | None = None,
+    ):
         """
         Context manager for session lifecycle.
 
@@ -219,7 +276,9 @@ class ContextSessionManager:
             self.current_session = previous_session
             self.end_session(session.session_id)
 
-    def get_or_create_session(self, session_id: str | None=None, risk_level: RiskLevel=RiskLevel.MEDIUM) -> ContextSession:
+    def get_or_create_session(
+        self, session_id: str | None = None, risk_level: RiskLevel = RiskLevel.MEDIUM
+    ) -> ContextSession:
         """Get existing session or create new one."""
         if session_id:
             session = self.get_session(session_id)
@@ -235,7 +294,7 @@ class ContextSessionManager:
             return dict(self._sessions)
 
     # guardian: allow-magic-config
-    def cleanup_expired(self, max_age_seconds: int=3600) -> int:
+    def cleanup_expired(self, max_age_seconds: int = 3600) -> int:
         """Cleanup sessions older than max_age_seconds."""
         now = datetime.utcnow()
         expired = []
@@ -247,18 +306,26 @@ class ContextSessionManager:
             for session_id in expired:
                 del self._sessions[session_id]
         if expired:
-            logger.info(f'Cleaned up {len(expired)} expired sessions')
+            logger.info(f"Cleaned up {len(expired)} expired sessions")
         return len(expired)
+
 
 def get_session_manager() -> ContextSessionManager:
     """Get the global session manager instance."""
     return ContextSessionManager()
 
+
 def get_current_session() -> ContextSession | None:
     """Get the current thread's active session."""
     return get_session_manager().current_session
 
-def classify_risk(file_count: int=0, has_external_touch: bool=False, cyclomatic_complexity: int=0, is_base_agent: bool=False) -> RiskLevel:
+
+def classify_risk(
+    file_count: int = 0,
+    has_external_touch: bool = False,
+    cyclomatic_complexity: int = 0,
+    is_base_agent: bool = False,
+) -> RiskLevel:
     """
     Classify risk level per V10 Contextual Router logic.
 
@@ -284,4 +351,14 @@ def classify_risk(file_count: int=0, has_external_touch: bool=False, cyclomatic_
     if cyclomatic_complexity > 20:
         return RiskLevel.MEDIUM
     return RiskLevel.LOW
-__all__ = ['AttentionState', 'ContextSession', 'ContextSessionManager', 'RiskLevel', 'classify_risk', 'get_current_session', 'get_session_manager']
+
+
+__all__ = [
+    "AttentionState",
+    "ContextSession",
+    "ContextSessionManager",
+    "RiskLevel",
+    "classify_risk",
+    "get_current_session",
+    "get_session_manager",
+]

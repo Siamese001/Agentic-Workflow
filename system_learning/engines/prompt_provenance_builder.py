@@ -24,7 +24,7 @@ from __future__ import annotations
 
 import hashlib
 from dataclasses import dataclass
-from typing import Callable, Sequence
+from typing import Callable
 
 from system_learning.enforcement.determinism import deterministic_json
 from system_learning.types.prompt_adg_relations import (
@@ -68,6 +68,7 @@ def _classify_budget(total_tokens: int) -> str:
 # ---------------------------------------------------------------------------
 # Default character-based token approximation
 # ---------------------------------------------------------------------------
+
 
 def _default_tokenizer(text: str) -> int:
     """Approximate token count: 1 token ≈ 4 chars."""
@@ -243,7 +244,11 @@ class PromptProvenanceBuilder:
 
         # --- Prompt hash = hash of full canonical assembly ---
         prompt_hash = _prompt_hash(
-            s0_hash, d0_hash, i0_hash, c0_hash, u0_hash,
+            s0_hash,
+            d0_hash,
+            i0_hash,
+            c0_hash,
+            u0_hash,
             request.model_target,
             request.policy_hash,
             request.timestamp_utc,
@@ -253,9 +258,7 @@ class PromptProvenanceBuilder:
         adg_entity_name = f"{request.adg_entity_prefix}::{prompt_hash[:16]}"
 
         # --- Collect C0 sources from slot + any explicit c0_sources ---
-        c0_sources: tuple[str, ...] = tuple(sorted(
-            set(request.c0.source_ids) | {c0_hash}
-        ))
+        c0_sources: tuple[str, ...] = tuple(sorted(set(request.c0.source_ids) | {c0_hash}))
 
         artifact = CompiledPromptArtifact(
             prompt_hash=prompt_hash,
@@ -285,35 +288,36 @@ class PromptProvenanceBuilder:
             relations.append((src, PROVENANCE_C0_CONTEXT_SOURCE, adg_entity_name))
 
         # Slot-to-artifact slot relations
-        relations.append((adg_entity_name, PROVENANCE_USES_S0_RULE,
-                          f"ADG::Slot::S0::{s0_hash[:16]}"))
-        relations.append((adg_entity_name, PROVENANCE_USES_D0_FENCE,
-                          f"ADG::Slot::D0::{d0_hash[:16]}"))
-        relations.append((adg_entity_name, PROVENANCE_USES_I0_INSTRUCTION,
-                          f"ADG::Slot::I0::{i0_hash[:16]}"))
-        relations.append((adg_entity_name, PROVENANCE_USES_C0_CONTEXT,
-                          f"ADG::Slot::C0::{c0_hash[:16]}"))
-        relations.append((adg_entity_name, PROVENANCE_CONTAINS_U0_INPUT,
-                          f"ADG::Slot::U0::{u0_hash[:16]}"))
+        relations.append((adg_entity_name, PROVENANCE_USES_S0_RULE, f"ADG::Slot::S0::{s0_hash[:16]}"))
+        relations.append((adg_entity_name, PROVENANCE_USES_D0_FENCE, f"ADG::Slot::D0::{d0_hash[:16]}"))
+        relations.append((adg_entity_name, PROVENANCE_USES_I0_INSTRUCTION, f"ADG::Slot::I0::{i0_hash[:16]}"))
+        relations.append((adg_entity_name, PROVENANCE_USES_C0_CONTEXT, f"ADG::Slot::C0::{c0_hash[:16]}"))
+        relations.append((adg_entity_name, PROVENANCE_CONTAINS_U0_INPUT, f"ADG::Slot::U0::{u0_hash[:16]}"))
 
         # Budget relations
-        relations.append((
-            adg_entity_name,
-            BUDGET_TOKEN_PROFILE,
-            f"ADG::TokenProfile::{budget_class}::{prompt_hash[:16]}",
-        ))
+        relations.append(
+            (
+                adg_entity_name,
+                BUDGET_TOKEN_PROFILE,
+                f"ADG::TokenProfile::{budget_class}::{prompt_hash[:16]}",
+            )
+        )
         if budget_class == "OVERFLOW":
-            relations.append((
-                adg_entity_name,
-                BUDGET_EXCEEDED,
-                f"ADG::TokenBudget::OVERFLOW::{prompt_hash[:16]}",
-            ))
+            relations.append(
+                (
+                    adg_entity_name,
+                    BUDGET_EXCEEDED,
+                    f"ADG::TokenBudget::OVERFLOW::{prompt_hash[:16]}",
+                )
+            )
         elif budget_class == "EXTENDED":
-            relations.append((
-                adg_entity_name,
-                BUDGET_TRUNCATED,
-                f"ADG::TokenBudget::EXTENDED::{prompt_hash[:16]}",
-            ))
+            relations.append(
+                (
+                    adg_entity_name,
+                    BUDGET_TRUNCATED,
+                    f"ADG::TokenBudget::EXTENDED::{prompt_hash[:16]}",
+                )
+            )
 
         return PromptBuildResult(artifact=artifact, adg_relations=relations)
 
@@ -337,21 +341,27 @@ def _slot_hash(content: str) -> str:
 
 
 def _prompt_hash(
-    s0: str, d0: str, i0: str, c0: str, u0: str,
+    s0: str,
+    d0: str,
+    i0: str,
+    c0: str,
+    u0: str,
     model_target: str,
     policy_hash: str | None,
     timestamp_utc: int,
 ) -> str:
-    canonical = deterministic_json({
-        "c0": c0,
-        "d0": d0,
-        "i0": i0,
-        "model_target": model_target,
-        "policy_hash": policy_hash,
-        "s0": s0,
-        "timestamp_utc": timestamp_utc,
-        "u0": u0,
-    })
+    canonical = deterministic_json(
+        {
+            "c0": c0,
+            "d0": d0,
+            "i0": i0,
+            "model_target": model_target,
+            "policy_hash": policy_hash,
+            "s0": s0,
+            "timestamp_utc": timestamp_utc,
+            "u0": u0,
+        }
+    )
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 

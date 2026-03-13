@@ -1,7 +1,9 @@
 from __future__ import annotations
+
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L2_execution.tools import write_gateway as _wg
-'\nBenchmarkingAgent - L3 System Health Specialist\n\nMeasures execution time of specific functions and operations.\nTracks performance metrics across cycles to detect degradation.\n'
+
+"\nBenchmarkingAgent - L3 System Health Specialist\n\nMeasures execution time of specific functions and operations.\nTracks performance metrics across cycles to detect degradation.\n"
 import json
 import logging
 import statistics
@@ -11,20 +13,35 @@ from datetime import datetime
 from functools import wraps
 from pathlib import Path
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 Logger = logging.getLogger(__name__)
 benchmark_history_size = 1000
 PERFORMANCE_DEGRADATION_THRESHOLD = 0.5
 
+
 class BenchmarkResult:
     """BenchmarkResult agent for autonomous operations."""
+
     pass
-BenchmarkSuite = type('BenchmarkSuite', (), {'name': '', 'add_result': lambda s, r: None, 'is_degraded': lambda s: False, 'stats': {'avg_ms': 0, 'count': 0}, 'get_summary': lambda s: {}})
+
+
+BenchmarkSuite = type(
+    "BenchmarkSuite",
+    (),
+    {
+        "name": "",
+        "add_result": lambda s, r: None,
+        "is_degraded": lambda s: False,
+        "stats": {"avg_ms": 0, "count": 0},
+        "get_summary": lambda s: {},
+    },
+)
+
 
 class BenchmarkResultActual:
     """Result of a single benchmark measurement."""
 
-    def __init__(self, name: str, duration_ms: float, metadata: dict=None):
+    def __init__(self, name: str, duration_ms: float, metadata: dict = None):
         self.name = name
         self.duration_ms = duration_ms
         self.metadata = metadata or {}
@@ -33,7 +50,13 @@ class BenchmarkResultActual:
     # guardian: allow-type-erasure
     def to_dict(self) -> dict:
         """Convert to dictionary."""
-        return {'name': self.name, 'duration_ms': self.duration_ms, 'metadata': self.metadata, 'timestamp': self.timestamp.isoformat()}
+        return {
+            "name": self.name,
+            "duration_ms": self.duration_ms,
+            "metadata": self.metadata,
+            "timestamp": self.timestamp.isoformat(),
+        }
+
 
 class BenchmarkSuite:
     """Collection of benchmarks for a specific operation."""
@@ -41,7 +64,7 @@ class BenchmarkSuite:
     def __init__(self, name: str):
         self.name = name
         self.results: list[BenchmarkResult] = []
-        self.stats = {'count': 0, 'avg_ms': 0.0, 'min_ms': float('inf'), 'max_ms': 0.0, 'std_dev': 0.0}
+        self.stats = {"count": 0, "avg_ms": 0.0, "min_ms": float("inf"), "max_ms": 0.0, "std_dev": 0.0}
 
     # guardian: allow-type-erasure
     def add_result(self, result: BenchmarkResult) -> Any:
@@ -56,22 +79,22 @@ class BenchmarkSuite:
         if not self.results:
             return
         durations = [r.duration_ms for r in self.results]
-        self.stats['count'] = len(durations)
-        self.stats['avg_ms'] = statistics.mean(durations)
-        self.stats['min_ms'] = min(durations)
-        self.stats['max_ms'] = max(durations)
+        self.stats["count"] = len(durations)
+        self.stats["avg_ms"] = statistics.mean(durations)
+        self.stats["min_ms"] = min(durations)
+        self.stats["max_ms"] = max(durations)
         if len(durations) > 1:
-            self.stats['std_dev'] = statistics.stdev(durations)
+            self.stats["std_dev"] = statistics.stdev(durations)
         else:
-            self.stats['std_dev'] = 0.0
+            self.stats["std_dev"] = 0.0
 
-    def is_degraded(self, threshold: float=None) -> bool:
+    def is_degraded(self, threshold: float = None) -> bool:
         """Check if performance has degraded."""
         threshold = threshold or PERFORMANCE_DEGRADATION_THRESHOLD
         if len(self.results) < 10:
             return False
-        recent_avg = statistics.mean((r.duration_ms for r in self.results[-5:]))
-        historical_avg = statistics.mean((r.duration_ms for r in self.results[:-5]))
+        recent_avg = statistics.mean(r.duration_ms for r in self.results[-5:])
+        historical_avg = statistics.mean(r.duration_ms for r in self.results[:-5])
         if historical_avg == 0:
             return False
         degradation = (recent_avg - historical_avg) / historical_avg
@@ -80,8 +103,16 @@ class BenchmarkSuite:
     # guardian: allow-type-erasure
     def get_summary(self) -> dict:
         """Get benchmark summary."""
-        return {'name': self.name, 'statistics': self.stats.copy(), 'is_degraded': self.is_degraded(), 'last_result': self.results[-1].to_dict() if self.results else None}
+        return {
+            "name": self.name,
+            "statistics": self.stats.copy(),
+            "is_degraded": self.is_degraded(),
+            "last_result": self.results[-1].to_dict() if self.results else None,
+        }
+
+
 from agentic_core.utils.decorators_compat_util import standard_heal
+
 
 class BenchmarkingAgent(SovereignBaseAgent):
     """
@@ -105,11 +136,16 @@ class BenchmarkingAgent(SovereignBaseAgent):
         Returns:
             Dict with status, details, artifacts, errors
         """
-        return {'status': 'success', 'details': 'BenchmarkingAgent observability heal - no action required', 'artifacts': [], 'errors': []}
+        return {
+            "status": "success",
+            "details": "BenchmarkingAgent observability heal - no action required",
+            "artifacts": [],
+            "errors": [],
+        }
 
     @standard_heal
     # guardian: allow-type-erasure
-    def heal_repository(self, dry_run: bool=True, execute: bool=False, **kwargs) -> dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 
@@ -121,17 +157,17 @@ class BenchmarkingAgent(SovereignBaseAgent):
             Dict with healing summary
         """
         super().heal_repository(**kwargs)
-        return {'violations_found': 0, 'violations_fixed': 0, 'errors': 0}
+        return {"violations_found": 0, "violations_fixed": 0, "errors": 0}
 
     def __init__(self):
         """Initialize the BenchmarkingAgent."""
         self.suites: dict[str, BenchmarkSuite] = {}
         self.active_benchmarks: dict[str, float] = {}
         self.enabled = True
-        Logger.info('BenchmarkingAgent initialized')
+        Logger.info("BenchmarkingAgent initialized")
 
     # guardian: allow-type-erasure
-    def benchmark(self, name: str, metadata: dict=None) -> Any:
+    def benchmark(self, name: str, metadata: dict = None) -> Any:
         """
         Decorator to benchmark a function.
 
@@ -151,11 +187,13 @@ class BenchmarkingAgent(SovereignBaseAgent):
             def wrapper(*args, **kwargs) -> Any:
                 """Execute wrapper operation."""
                 return self.time_function(name, func, metadata, *args, **kwargs)
+
             return wrapper
+
         return decorator
 
     # guardian: allow-type-erasure
-    def benchmark_async(self, name: str, metadata: dict=None) -> Any:
+    def benchmark_async(self, name: str, metadata: dict = None) -> Any:
         """
         Decorator to benchmark an async function.
 
@@ -175,7 +213,9 @@ class BenchmarkingAgent(SovereignBaseAgent):
             async def wrapper(*args, **kwargs) -> Any:
                 """Execute wrapper operation."""
                 return await self.time_function_async(name, func, metadata, *args, **kwargs)
+
             return wrapper
+
         return decorator
 
     # guardian: allow-type-erasure
@@ -189,9 +229,9 @@ class BenchmarkingAgent(SovereignBaseAgent):
         if not self.enabled:
             return
         self.active_benchmarks[name] = time.perf_counter()
-        Logger.debug(f'Started benchmark: {name}')
+        Logger.debug(f"Started benchmark: {name}")
 
-    def end_timer(self, name: str, metadata: dict=None) -> float:
+    def end_timer(self, name: str, metadata: dict = None) -> float:
         """
         End a manual timer and record result.
 
@@ -210,7 +250,7 @@ class BenchmarkingAgent(SovereignBaseAgent):
         return duration_ms
 
     # guardian: allow-type-erasure
-    def time_function(self, name: str, func: Callable, metadata: dict=None, *args, **kwargs) -> Any:
+    def time_function(self, name: str, func: Callable, metadata: dict = None, *args, **kwargs) -> Any:
         """
         Time a function execution.
 
@@ -233,7 +273,9 @@ class BenchmarkingAgent(SovereignBaseAgent):
         return result
 
     # guardian: allow-type-erasure
-    async def time_function_async(self, name: str, func: Callable, metadata: dict=None, *args, **kwargs) -> Any:
+    async def time_function_async(
+        self, name: str, func: Callable, metadata: dict = None, *args, **kwargs
+    ) -> Any:
         """
         Time an async function execution.
 
@@ -256,7 +298,7 @@ class BenchmarkingAgent(SovereignBaseAgent):
         return result
 
     # guardian: allow-type-erasure
-    def record_result(self, name: str, duration_ms: float, metadata: dict=None) -> Any:
+    def record_result(self, name: str, duration_ms: float, metadata: dict = None) -> Any:
         """
         Record a benchmark result.
 
@@ -273,17 +315,25 @@ class BenchmarkingAgent(SovereignBaseAgent):
         self.suites[name].add_result(result)
         if self.suites[name].is_degraded():
             self._alert_performance_degradation(name, result)
-        Logger.debug(f'Benchmark {name}: {duration_ms:.2f}ms')
+        Logger.debug(f"Benchmark {name}: {duration_ms:.2f}ms")
 
     def _alert_performance_degradation(self, name: str, result: BenchmarkResult):
         """Alert about performance degradation."""
         suite = self.suites[name]
-        alert = {'type': 'PERFORMANCE_DEGRADATION', 'benchmark_name': name, 'current_duration_ms': result.duration_ms, 'historical_avg_ms': suite.stats['avg_ms'], 'degradation_percent': (result.duration_ms - suite.stats['avg_ms']) / suite.stats['avg_ms'] * 100, 'threshold_percent': PERFORMANCE_DEGRADATION_THRESHOLD * 100, 'timestamp': result.timestamp.isoformat()}
-        Logger.warning(f'[!] Performance degradation detected: {name}')
-        Logger.warning(f'  Current: {result.duration_ms:.2f}ms')
+        alert = {
+            "type": "PERFORMANCE_DEGRADATION",
+            "benchmark_name": name,
+            "current_duration_ms": result.duration_ms,
+            "historical_avg_ms": suite.stats["avg_ms"],
+            "degradation_percent": (result.duration_ms - suite.stats["avg_ms"]) / suite.stats["avg_ms"] * 100,
+            "threshold_percent": PERFORMANCE_DEGRADATION_THRESHOLD * 100,
+            "timestamp": result.timestamp.isoformat(),
+        }
+        Logger.warning(f"[!] Performance degradation detected: {name}")
+        Logger.warning(f"  Current: {result.duration_ms:.2f}ms")
         Logger.warning(f"  Historical avg: {suite.stats['avg_ms']:.2f}ms")
         Logger.warning(f"  Degradation: {alert['degradation_percent']:.1f}%")
-        alert_file = Path('observability/alerts/performance.json')
+        alert_file = Path("observability/alerts/performance.json")
         _wg.ensure_dir(alert_file.parent)
         try:
             if alert_file.exists():
@@ -297,7 +347,7 @@ class BenchmarkingAgent(SovereignBaseAgent):
             _wg.write_json(alert_file, alerts, indent=2)
         except Exception as e:
             raise
-            Logger.error(f'Failed to save performance alert: {e}')
+            Logger.error(f"Failed to save performance alert: {e}")
 
     def get_benchmark_summary(self, name: str) -> dict | None:
         """Get summary for a specific benchmark."""
@@ -313,30 +363,36 @@ class BenchmarkingAgent(SovereignBaseAgent):
     def compare_benchmarks(self, name1: str, name2: str) -> dict:
         """Compare two benchmarks."""
         if name1 not in self.suites or name2 not in self.suites:
-            return {'error': 'One or both benchmarks not found'}
+            return {"error": "One or both benchmarks not found"}
         suite1 = self.suites[name1]
         suite2 = self.suites[name2]
-        ratio = suite1.stats['avg_ms'] / suite2.stats['avg_ms'] if suite2.stats['avg_ms'] > 0 else 0
-        return {'benchmark_1': {'name': name1, 'avg_ms': suite1.stats['avg_ms'], 'count': suite1.stats['count']}, 'benchmark_2': {'name': name2, 'avg_ms': suite2.stats['avg_ms'], 'count': suite2.stats['count']}, 'ratio': ratio, 'faster': name1 if ratio < 1 else name2}
+        ratio = suite1.stats["avg_ms"] / suite2.stats["avg_ms"] if suite2.stats["avg_ms"] > 0 else 0
+        return {
+            "benchmark_1": {"name": name1, "avg_ms": suite1.stats["avg_ms"], "count": suite1.stats["count"]},
+            "benchmark_2": {"name": name2, "avg_ms": suite2.stats["avg_ms"], "count": suite2.stats["count"]},
+            "ratio": ratio,
+            "faster": name1 if ratio < 1 else name2,
+        }
 
     # guardian: allow-type-erasure
     def reset_benchmark(self, name: str) -> Any:
         """Reset all data for a benchmark."""
         if name in self.suites:
             del self.suites[name]
-            Logger.info(f'Reset benchmark: {name}')
+            Logger.info(f"Reset benchmark: {name}")
 
     # guardian: allow-type-erasure
     def reset_all(self) -> Any:
         """Reset all benchmark data."""
         self.suites.clear()
         self.active_benchmarks.clear()
-        Logger.info('Reset all benchmarks')
+        Logger.info("Reset all benchmarks")
+
 
 class BenchmarkContext:
     """Context manager for benchmarking."""
 
-    def __init__(self, agent: BenchmarkingAgent, name: str, metadata: dict=None):
+    def __init__(self, agent: BenchmarkingAgent, name: str, metadata: dict = None):
         self.agent = agent
         self.name = name
         self.metadata = metadata
@@ -349,7 +405,10 @@ class BenchmarkContext:
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.agent.end_timer(self.name, self.metadata)
         return False
+
+
 _benchmarking_agent: BenchmarkingAgent | None = None
+
 
 def get_benchmarking_agent() -> BenchmarkingAgent:
     """Get or create the global BenchmarkingAgent instance."""
@@ -357,27 +416,33 @@ def get_benchmarking_agent() -> BenchmarkingAgent:
     if _benchmarking_agent is None:
         _benchmarking_agent = BenchmarkingAgent()
     return _benchmarking_agent
-BenchmarkContext = benchmark_context_manager = type('benchmark_context_manager', (), {})
+
+
+BenchmarkContext = benchmark_context_manager = type("benchmark_context_manager", (), {})
+
 
 # guardian: allow-type-erasure
 def initialize_benchmarking() -> Any:
     """Initialize the BenchmarkingAgent system."""
     get_benchmarking_agent()
-    Logger.info('BenchmarkingAgent system initialized')
+    Logger.info("BenchmarkingAgent system initialized")
+
 
 # guardian: allow-type-erasure
-def benchmark(name: str, metadata: dict=None) -> Any:
+def benchmark(name: str, metadata: dict = None) -> Any:
     """Decorator to benchmark a function."""
     agent = get_benchmarking_agent()
     return agent.benchmark(name, metadata)
 
+
 # guardian: allow-type-erasure
-def benchmark_async(name: str, metadata: dict=None) -> Any:
+def benchmark_async(name: str, metadata: dict = None) -> Any:
     """Decorator to benchmark an async function."""
     agent = get_benchmarking_agent()
     return agent.benchmark_async(name, metadata)
 
-def BenchmarkContext(name: str, metadata: dict=None) -> benchmark_context_manager:
+
+def BenchmarkContext(name: str, metadata: dict = None) -> benchmark_context_manager:
     """Create a benchmark context manager."""
     agent = get_benchmarking_agent()
     return BenchmarkContext(agent, name, metadata)

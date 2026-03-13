@@ -5,10 +5,12 @@ configurations for common use cases.
 
 Phase 2 - Resilient Routing Layer
 """
+
 import logging
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 logger = logging.getLogger(__name__)
 _router_instance: HardenedRouter | None = None
+
 
 def get_resilient_router() -> HardenedRouter:
     """Get or create the singleton resilient router instance.
@@ -24,10 +26,11 @@ def get_resilient_router() -> HardenedRouter:
     """
     global _router_instance
     if _router_instance is None:
-        logger.info('Initializing resilient router with default configurations')
+        logger.info("Initializing resilient router with default configurations")
         _router_instance = HardenedRouter(configs=None)
-        logger.info(f'router initialized with tiers: {list(_router_instance.configs.keys())}')
+        logger.info(f"router initialized with tiers: {list(_router_instance.configs.keys())}")
     return _router_instance
+
 
 def reset_router() -> None:
     """Reset the router singleton (primarily for testing).
@@ -37,8 +40,9 @@ def reset_router() -> None:
     """
     global _router_instance
     if _router_instance is not None:
-        logger.info('Resetting resilient router singleton')
+        logger.info("Resetting resilient router singleton")
         _router_instance = None
+
 
 def create_custom_router(configs: dict) -> HardenedRouter:
     """Create a custom router with specific configurations.
@@ -52,5 +56,5 @@ def create_custom_router(configs: dict) -> HardenedRouter:
     Returns:
         New HardenedRouter instance with custom configs
     """
-    logger.info(f'Creating custom router with tiers: {list(configs.keys())}')
+    logger.info(f"Creating custom router with tiers: {list(configs.keys())}")
     return HardenedRouter(configs=configs)

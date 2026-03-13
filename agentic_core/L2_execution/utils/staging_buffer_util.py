@@ -1,17 +1,22 @@
 from __future__ import annotations
+
 import copy
-'Brief description of functionality and purpose.'
-'Brief description of functionality and purpose.'
+
+"Brief description of functionality and purpose."
+"Brief description of functionality and purpose."
 import logging
 from datetime import datetime
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 Logger: Any = logging.getLogger(__name__)
-'Immutable staging buffer for HOP-4.'
+"Immutable staging buffer for HOP-4."
+
 
 class StagingBufferError(Exception):
     """Custom exception for staging buffer operations."""
+
     pass
+
 
 class ImmutableStagingBuffer:
     """HOP-4: Immutable staging buffer. Once locked, cannot be modified."""

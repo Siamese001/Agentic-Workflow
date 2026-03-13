@@ -1,10 +1,13 @@
 from dataclasses import dataclass
+
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-'\nTypeMechanicAgent - Extracted from SubAtomicAgent.py\nPart of the SubAtomic agent family for code quality enforcement.\n'
+
+"\nTypeMechanicAgent - Extracted from SubAtomicAgent.py\nPart of the SubAtomic agent family for code quality enforcement.\n"
 import ast
 from typing import Any
+
 from agentic_core.L3_orchestration.reasoning.SubAtomicAgent import SubAtomicAgent
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 @dataclass
 class TypeMechanicAgent(SovereignBaseAgent, SubAtomicAgent):
@@ -19,7 +22,7 @@ class TypeMechanicAgent(SovereignBaseAgent, SubAtomicAgent):
     ROLE: Precision Engineering. Requires AST_VALID signal.
     """
 
-    def heal_repository(self, dry_run: bool=True, execute: bool=False, **kwargs) -> dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
         """
         Autonomous healing method.
 
@@ -31,19 +34,19 @@ class TypeMechanicAgent(SovereignBaseAgent, SubAtomicAgent):
             Dict with healing summary
         """
         super().heal_repository(**kwargs)
-        return {'violations': 0, 'fixed': 0, 'errors': 0}
+        return {"violations": 0, "fixed": 0, "errors": 0}
 
     def can_run(self) -> bool:
         """
         Determines if the agent can run based on the presence of the 'AST_VALID' signal.
         """
-        return 'AST_VALID' in self.ctx.signals
+        return "AST_VALID" in self.ctx.signals
 
     def execute(self) -> None:
         """
         Executes the TypeMechanic agent, performing checks for type system violations.
         """
-        print(f'\n[>>>] {self.name} ACTIVATED: Type System Check...')
+        print(f"\n[>>>] {self.name} ACTIVATED: Type System Check...")
         passed, details = self.check_no_missing_type_hints()
         self.ctx.report(self.name, 22, passed, details)
         passed, details = self.check_no_unreachable_code()
@@ -57,11 +60,11 @@ class TypeMechanicAgent(SovereignBaseAgent, SubAtomicAgent):
         Returns (tree, error_message).
         """
         try:
-            with open(fp, encoding='utf-8') as f:
+            with open(fp, encoding="utf-8") as f:
                 tree = ast.parse(f.read(), filename=fp)
                 return (tree, None)
         except (OSError, SyntaxError) as e:
-            return (None, f'Error parsing {fp}: {e}')
+            return (None, f"Error parsing {fp}: {e}")
 
     def _get_missing_type_hint_violations_for_tree(self, fp: str, tree: ast.AST) -> list[str]:
         """
@@ -69,8 +72,14 @@ class TypeMechanicAgent(SovereignBaseAgent, SubAtomicAgent):
         """
         file_violations = []
         for node in ast.walk(tree):
-            if isinstance(node, ast.FunctionDef) and (not node.returns) and (node.name not in ('__init__', '__str__', '__repr__')):
-                file_violations.append(f"{fp}:{node.lineno}: Function '{node.name}' is Missing a return type hint.")
+            if (
+                isinstance(node, ast.FunctionDef)
+                and (not node.returns)
+                and (node.name not in ("__init__", "__str__", "__repr__"))
+            ):
+                file_violations.append(
+                    f"{fp}:{node.lineno}: Function '{node.name}' is Missing a return type hint."
+                )
         return file_violations
 
     def check_no_missing_type_hints(self) -> tuple[bool, list[str]]:
@@ -96,7 +105,9 @@ class TypeMechanicAgent(SovereignBaseAgent, SubAtomicAgent):
         func_violations = []
         for i, stmt in enumerate(func_node.body):
             if isinstance(stmt, ast.Return) and i < len(func_node.body) - 1:
-                func_violations.append(f"{fp}:{stmt.lineno}: Unreachable code after return in function '{func_node.name}'.")
+                func_violations.append(
+                    f"{fp}:{stmt.lineno}: Unreachable code after return in function '{func_node.name}'."
+                )
                 break
         return func_violations
 
@@ -149,9 +160,11 @@ class TypeMechanicAgent(SovereignBaseAgent, SubAtomicAgent):
             if isinstance(node, ast.FunctionDef):
                 assigned, used = self._collect_variables(node)
                 unused = assigned - used
-                unused = {var for var in unused if var != '_'}
+                unused = {var for var in unused if var != "_"}
                 if unused:
-                    file_violations.append(f"{fp}:{node.lineno}: Function '{node.name}' has unused variables: {', '.join(sorted(unused))}.")
+                    file_violations.append(
+                        f"{fp}:{node.lineno}: Function '{node.name}' has unused variables: {', '.join(sorted(unused))}."
+                    )
         return file_violations
 
     def _process_file_for_unused_variables(self, fp: str) -> list[str]:
@@ -160,11 +173,11 @@ class TypeMechanicAgent(SovereignBaseAgent, SubAtomicAgent):
         Handles file I/O and parsing errors.
         """
         try:
-            with open(fp, encoding='utf-8') as f:
+            with open(fp, encoding="utf-8") as f:
                 tree = ast.parse(f.read(), filename=fp)
             return self._get_function_violations_for_file(fp, tree)
         except (OSError, SyntaxError) as e:
-            self.ctx.log_error(f'Error parsing {fp} for unused variables: {e}')
+            self.ctx.log_error(f"Error parsing {fp} for unused variables: {e}")
             return []
 
     def check_no_unused_variables(self) -> tuple[bool, list[str]]:

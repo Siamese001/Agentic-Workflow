@@ -4,35 +4,43 @@ AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
 L5 CANONICAL — WINDSURF Ω — 2025-12-07
 MERKLE-INTENDED: 26be7052cfff0ad7d4638b0536a8c75b25ec68206af6b14659e89c30b148b7b4
 """
-'\nL5 Agentic Core - Plan Layer - rank_data_components\nImplements L1 Cognitive Planning Layer for rank data components operations\n'
+
+"\nL5 Agentic Core - Plan Layer - rank_data_components\nImplements L1 Cognitive Planning Layer for rank data components operations\n"
 import logging
 from abc import ABC, abstractmethod
 from dataclasses import field
 from enum import Enum
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 class RankDataComponentsPlanType(Enum):
     """L5 Typed enumeration for deterministic behavior"""
-    DEFAULT = 'default'
-    CORE = 'core'
-    SYSTEM = 'system'
+
+    DEFAULT = "default"
+    CORE = "core"
+    SYSTEM = "system"
+
 
 class RankDataComponentsPlanConstraints:
     """L5 Safety constraints - fail-closed behavior"""
+
     max_depth: int = 5
-    allowed_operations: list[str] = field(default_factory=lambda: ['read', 'validate', 'filter'])
-    safety_level: str = 'strict'
+    allowed_operations: list[str] = field(default_factory=lambda: ["read", "validate", "filter"])
+    safety_level: str = "strict"
     requires_approval: bool = True
+
 
 class RankDataComponentsPlanResult:
     """L5 Result structure with full type safety"""
+
     success: bool
     data: dict[str, object] = field(default_factory=dict)
     errors: list[str] = field(default_factory=list)
     safety_validated: bool = False
-    timestamp: str = ''
+    timestamp: str = ""
+
 
 class RankDataComponentsPlanProcessor(ABC):
     """L5 interface foundation - ensures L1 pure planning behavior"""
@@ -47,59 +55,75 @@ class RankDataComponentsPlanProcessor(ABC):
         """L5 Safety validation - fail-closed by default"""
         ...
 
+
 class RankDataComponentsPlanImpl(RankDataComponentsPlanProcessor):
     """
     L5 Implementation - L1 Cognitive Planning Layer
     Pure planning functionality with no side effects
     """
 
-    def __init__(self, constraints: RankDataComponentsPlanConstraints | None=None):
+    def __init__(self, constraints: RankDataComponentsPlanConstraints | None = None):
         self.constraints = constraints or RankDataComponentsPlanConstraints()
         self.logger = logging.getLogger(self.__class__.__name__)
 
     def process(self, input_data: dict[str, object]) -> RankDataComponentsPlanResult:
         """Process input following L5 architecture principles"""
-        self.logger.info(f'Processing {input_data}')
+        self.logger.info(f"Processing {input_data}")
         self._validate_input(input_data)
         if not self.validate_safety(input_data):
-            raise SecurityError('Input failed L5 safety validation')
-        result = RankDataComponentsPlanResult(success=True, data={'processed': True, 'input': input_data}, safety_validated=True, timestamp=self._get_timestamp())
-        self.logger.info(f'Successfully processed: {result.success}')
+            raise SecurityError("Input failed L5 safety validation")
+        result = RankDataComponentsPlanResult(
+            success=True,
+            data={"processed": True, "input": input_data},
+            safety_validated=True,
+            timestamp=self._get_timestamp(),
+        )
+        self.logger.info(f"Successfully processed: {result.success}")
         return result
 
     def validate_safety(self, data: dict[str, object]) -> bool:
         """L5 Safety validation with fail-closed behavior"""
         try:
-            dangerous_patterns = ['<script>', 'javascript:', '# SECURITY: ast.literal_eval(', '# SECURITY: pass  # exec disabled: ', '__import__']
+            dangerous_patterns = [
+                "<script>",
+                "javascript:",
+                "# SECURITY: ast.literal_eval(",
+                "# SECURITY: pass  # exec disabled: ",
+                "__import__",
+            ]
             data_str = str(data).lower()
             for pattern in dangerous_patterns:
                 if pattern in data_str:
-                    self.logger.error(f' Dangerous pattern detected: {pattern}')
+                    self.logger.error(f" Dangerous pattern detected: {pattern}")
                     return False
             if len(str(data)) > 1000000:
-                self.logger.error('Data exceeds size limit')
+                self.logger.error("Data exceeds size limit")
                 return False
-            self.logger.info('Data passed L5 safety validation')
+            self.logger.info("Data passed L5 safety validation")
             return True
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
-            self.logger.error(f'Safety validation error: {e}')
+            self.logger.error(f"Safety validation error: {e}")
             return False
 
     def _validate_input(self, input_data: dict[str, object]) -> None:
         """L5 Input validation"""
         if not isinstance(input_data, dict):
-            raise ValueError('Input must be a dictionary')
+            raise ValueError("Input must be a dictionary")
         if not input_data:
-            raise ValueError('Input cannot be empty')
+            raise ValueError("Input cannot be empty")
 
     def _get_timestamp(self) -> str:
         """Get current timestamp for L5 observability"""
         from datetime import datetime
+
         return datetime.utcnow().isoformat()
+
 
 class SecurityError(Exception):
     """L5 Security exception for fail-closed behavior"""
+
     ...
+
 
 class RankDataComponentsPlanInterface:
     """L5 Interface - ensures contract compliance"""
@@ -111,19 +135,27 @@ class RankDataComponentsPlanInterface:
         """L5 Interface method - executes safely"""
         try:
             result = self._processor.process(input_data)
-            return {'success': result.success, 'data': result.data, 'errors': result.errors, 'safety_validated': result.safety_validated, 'timestamp': result.timestamp}
+            return {
+                "success": result.success,
+                "data": result.data,
+                "errors": result.errors,
+                "safety_validated": result.safety_validated,
+                "timestamp": result.timestamp,
+            }
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
-            raise SecurityError(f'Execution failed: {e}')
+            raise SecurityError(f"Execution failed: {e}")
+
 
 class RankDataComponentsPlanFactory:
     """L5 builder for creating processors with proper configuration"""
 
     @staticmethod
-    def create_processor(safety_level: str='strict') -> RankDataComponentsPlanInterface:
+    def create_processor(safety_level: str = "strict") -> RankDataComponentsPlanInterface:
         """Create configured engine"""
         constraints = RankDataComponentsPlanConstraints(safety_level=safety_level)
         engine = RankDataComponentsPlanImpl(constraints)
         return RankDataComponentsPlanInterface(engine)
+
 
 def rank_data_components(input_data: dict[str, object]) -> dict[str, object]:
     """
@@ -141,12 +173,14 @@ def rank_data_components(input_data: dict[str, object]) -> dict[str, object]:
     builder = RankDataComponentsPlanFactory()
     engine = builder.create_processor()
     return engine.execute(input_data)
-if __name__ == '__main__':
+
+
+if __name__ == "__main__":
     try:
-        test_data = {'test': True}
+        test_data = {"test": True}
         result = rank_data_components(test_data)
-        logger.info(f'L5 Execution successful: {result}')
+        logger.info(f"L5 Execution successful: {result}")
     except SecurityError as e:
-        logger.error(f'L5 Security error: {e}')
+        logger.error(f"L5 Security error: {e}")
     except (ValueError, TypeError, RuntimeError, KeyError) as e:
-        logger.error(f'L5 Unexpected error: {e}')
+        logger.error(f"L5 Unexpected error: {e}")

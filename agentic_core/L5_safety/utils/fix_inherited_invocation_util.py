@@ -1,19 +1,23 @@
 from agentic_core.L2_execution.tools import write_gateway as _wg
+
 '\nFix Inherited Invocation - Add heal_repository() methods to agents missing explicit invocation.\n\nThis script:\n1. Loads agents with invocation=\'Inherited\' from agent_discovery_full.json\n2. For each agent class, adds a heal_repository(, **kwargs) method that calls super(, **kwargs).heal_repository(, **kwargs)\n3. This converts "Inherited" → "Yes" status, maximizing invocation %\n'
 import ast
 import json
 from pathlib import Path
+
 from agentic_core.L5_safety.config.structure_blueprint import AGENT_DISCOVERY_JSON
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DISCOVERY_JSON = PROJECT_ROOT / AGENT_DISCOVERY_JSON
 HEAL_METHOD_TEMPLATE = '\n    def heal_repository(self, **kwargs) -> dict:\n        """Invoke healing chain via super()."""\n        return super(, **kwargs).heal_repository(, **kwargs)\n'
 
+
 def load_inherited_agents() -> list[dict]:
     """Load agents with invocation='Inherited' status."""
-    with open(DISCOVERY_JSON, encoding='utf-8') as f:
+    with open(DISCOVERY_JSON, encoding="utf-8") as f:
         agents = json.load(f)
-    return [a for a in agents if a.get('invocation') == 'Inherited']
+    return [a for a in agents if a.get("invocation") == "Inherited"]
+
 
 def find_class_end(source: str, class_name: str) -> tuple[int, int]:
     """Find the end of a class definition to insert method before it."""
@@ -25,7 +29,7 @@ def find_class_end(source: str, class_name: str) -> tuple[int, int]:
         if isinstance(node, ast.ClassDef) and node.name == class_name:
             if node.body:
                 last_node = node.body[-1]
-                end_line = getattr(last_node, 'end_lineno', last_node.lineno)
+                end_line = getattr(last_node, "end_lineno", last_node.lineno)
                 lines = source.splitlines()
                 if node.body:
                     first_body_line = node.body[0].lineno - 1
@@ -38,6 +42,7 @@ def find_class_end(source: str, class_name: str) -> tuple[int, int]:
                 return (end_line, indent)
     return (-1, -1)
 
+
 def has_heal_repository(source: str, class_name: str) -> bool:
     """Check if class already has heal_repository method."""
     try:
@@ -47,67 +52,71 @@ def has_heal_repository(source: str, class_name: str) -> bool:
     for node in ast.walk(tree):
         if isinstance(node, ast.ClassDef) and node.name == class_name:
             for item in node.body:
-                if isinstance(item, ast.FunctionDef) and item.name == 'heal_repository':
+                if isinstance(item, ast.FunctionDef) and item.name == "heal_repository":
                     return True
     return False
+
 
 def add_heal_repository(file_path: Path, class_name: str) -> bool:
     """Add heal_repository method to a class."""
     try:
-        source = file_path.read_text(encoding='utf-8')
+        source = file_path.read_text(encoding="utf-8")
     except Exception as e:
-        print(f'  [ERROR] Cannot read {file_path}: {e}')
+        print(f"  [ERROR] Cannot read {file_path}: {e}")
         return False
     if has_heal_repository(source, class_name):
-        print(f'  [SKIP] {class_name} already has heal_repository')
+        print(f"  [SKIP] {class_name} already has heal_repository")
         return False
     end_line, indent = find_class_end(source, class_name)
     if end_line < 0:
-        print(f'  [ERROR] Cannot find class {class_name} in {file_path}')
+        print(f"  [ERROR] Cannot find class {class_name} in {file_path}")
         return False
     method_lines = HEAL_METHOD_TEMPLATE.strip().splitlines()
-    indented_method = '\n' + '\n'.join((' ' * indent + line if line.strip() else '' for line in method_lines)) + '\n'
+    indented_method = (
+        "\n" + "\n".join(" " * indent + line if line.strip() else "" for line in method_lines) + "\n"
+    )
     lines = source.splitlines(keepends=True)
     insert_idx = end_line
-    while insert_idx < len(lines) and lines[insert_idx - 1].strip() == '':
+    while insert_idx < len(lines) and lines[insert_idx - 1].strip() == "":
         insert_idx += 1
     new_lines = lines[:end_line] + [indented_method] + lines[end_line:]
-    new_source = ''.join(new_lines)
+    new_source = "".join(new_lines)
     try:
-        _wg.write_text(file_path, new_source, encoding='utf-8')
-        print(f'  [ADDED] heal_repository to {class_name}')
+        _wg.write_text(file_path, new_source, encoding="utf-8")
+        print(f"  [ADDED] heal_repository to {class_name}")
         return True
     except Exception as e:
-        print(f'  [ERROR] Cannot write {file_path}: {e}')
+        print(f"  [ERROR] Cannot write {file_path}: {e}")
         return False
 
+
 def main():
-    print('=' * 80)
-    print('FIX INHERITED INVOCATION')
-    print('=' * 80)
+    print("=" * 80)
+    print("FIX INHERITED INVOCATION")
+    print("=" * 80)
     agents = load_inherited_agents()
     print(f"\nFound {len(agents)} agents with 'Inherited' invocation status\n")
     by_file: dict[str, list[str]] = {}
     for agent in agents:
-        path = agent.get('path', '')
-        class_name = agent.get('class_name', '')
+        path = agent.get("path", "")
+        class_name = agent.get("class_name", "")
         if path and class_name:
             full_path = str(PROJECT_ROOT / path)
             if full_path not in by_file:
                 by_file[full_path] = []
             if class_name not in by_file[full_path]:
                 by_file[full_path].append(class_name)
-    print(f'Processing {len(by_file)} unique files...\n')
+    print(f"Processing {len(by_file)} unique files...\n")
     added = 0
     skipped = 0
     errors = 0
     for file_path_str, class_names in sorted(by_file.items()):
         file_path = Path(file_path_str)
         if not file_path.exists():
-            print(f'[SKIP] File not found: {file_path}')
+            print(f"[SKIP] File not found: {file_path}")
             skipped += len(class_names)
             continue
-        print(f'\n{file_path.relative_to(PROJECT_ROOT)}:')
+        print(f"\n{file_path.relative_to(PROJECT_ROOT)}:")
         for class_name in class_names:
             result = add_heal_repository(file_path, class_name)
             if result:
@@ -116,8 +125,10 @@ def main():
                 skipped += 1
             else:
                 errors += 1
-    print('\n' + '=' * 80)
-    print(f'SUMMARY: Added {added} | Skipped {skipped} | Errors {errors}')
-    print('=' * 80)
-if __name__ == '__main__':
+    print("\n" + "=" * 80)
+    print(f"SUMMARY: Added {added} | Skipped {skipped} | Errors {errors}")
+    print("=" * 80)
+
+
+if __name__ == "__main__":
     main()

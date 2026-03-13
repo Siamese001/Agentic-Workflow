@@ -4,28 +4,34 @@ Sequential Handshake State Machine - W5 Implementation
 Deterministic state machine for L3 orchestration handshake protocol.
 Enforces strict state transitions with no bypass allowed.
 """
+
 from __future__ import annotations
+
 import hashlib
 import json
 from dataclasses import dataclass
 from enum import Enum
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 class HandshakeState(Enum):
     """States in the sequential handshake protocol."""
-    INIT = 'INIT'
-    PRECLEAR_REQUESTED = 'PRECLEAR_REQUESTED'
-    CERTIFIED = 'CERTIFIED'
-    SEALED = 'SEALED'
-    DISPATCHED = 'DISPATCHED'
+
+    INIT = "INIT"
+    PRECLEAR_REQUESTED = "PRECLEAR_REQUESTED"
+    CERTIFIED = "CERTIFIED"
+    SEALED = "SEALED"
+    DISPATCHED = "DISPATCHED"
+
 
 @dataclass
 class StateTransition:
     """Record of a state transition for audit trail."""
+
     from_state: HandshakeState
     to_state: HandshakeState
     timestamp: str
     reason: str
+
 
 class HandshakeStateMachine:
     """
@@ -66,8 +72,10 @@ class HandshakeStateMachine:
         Only allowed from INIT state.
         """
         if self._current_state != HandshakeState.INIT:
-            raise ValueError(f'Cannot request preclear from {self._current_state.value}. Must be in INIT state.')
-        self._transition_to(HandshakeState.PRECLEAR_REQUESTED, 'L5 pre-clear requested')
+            raise ValueError(
+                f"Cannot request preclear from {self._current_state.value}. Must be in INIT state."
+            )
+        self._transition_to(HandshakeState.PRECLEAR_REQUESTED, "L5 pre-clear requested")
 
     def certify(self) -> None:
         """
@@ -76,8 +84,10 @@ class HandshakeStateMachine:
         Only allowed from PRECLEAR_REQUESTED state.
         """
         if self._current_state != HandshakeState.PRECLEAR_REQUESTED:
-            raise ValueError(f'Cannot certify from {self._current_state.value}. Must be in PRECLEAR_REQUESTED state.')
-        self._transition_to(HandshakeState.CERTIFIED, 'L5 certification granted')
+            raise ValueError(
+                f"Cannot certify from {self._current_state.value}. Must be in PRECLEAR_REQUESTED state."
+            )
+        self._transition_to(HandshakeState.CERTIFIED, "L5 certification granted")
 
     def seal(self) -> None:
         """
@@ -86,8 +96,8 @@ class HandshakeStateMachine:
         Only allowed from CERTIFIED state.
         """
         if self._current_state != HandshakeState.CERTIFIED:
-            raise ValueError(f'Cannot seal from {self._current_state.value}. Must be in CERTIFIED state.')
-        self._transition_to(HandshakeState.SEALED, 'Plan sealed for execution')
+            raise ValueError(f"Cannot seal from {self._current_state.value}. Must be in CERTIFIED state.")
+        self._transition_to(HandshakeState.SEALED, "Plan sealed for execution")
 
     def dispatch(self) -> None:
         """
@@ -96,8 +106,8 @@ class HandshakeStateMachine:
         Only allowed from SEALED state.
         """
         if self._current_state != HandshakeState.SEALED:
-            raise ValueError(f'Cannot dispatch from {self._current_state.value}. Must be in SEALED state.')
-        self._transition_to(HandshakeState.DISPATCHED, 'Dispatched to L2 execution')
+            raise ValueError(f"Cannot dispatch from {self._current_state.value}. Must be in SEALED state.")
+        self._transition_to(HandshakeState.DISPATCHED, "Dispatched to L2 execution")
 
     def modify_diff(self) -> None:
         """
@@ -107,8 +117,10 @@ class HandshakeStateMachine:
         Invalidates prior certification.
         """
         if self._current_state != HandshakeState.CERTIFIED:
-            raise ValueError(f'Cannot modify_diff from {self._current_state.value}. Must be in CERTIFIED state.')
-        self._transition_to(HandshakeState.PRECLEAR_REQUESTED, 'MODIFY_DIFF invalidated certification')
+            raise ValueError(
+                f"Cannot modify_diff from {self._current_state.value}. Must be in CERTIFIED state."
+            )
+        self._transition_to(HandshakeState.PRECLEAR_REQUESTED, "MODIFY_DIFF invalidated certification")
 
     def get_sequence_hash(self) -> str:
         """
@@ -122,9 +134,15 @@ class HandshakeStateMachine:
 
     def _compute_sequence_hash(self) -> str:
         """Compute SHA256 hash of transition sequence."""
-        sequence_data = {'transitions': [{'from_state': t.from_state.value, 'reason': t.reason, 'to_state': t.to_state.value} for t in self._transition_history], 'final_state': self._current_state.value}
-        canonical = json.dumps(sequence_data, ensure_ascii=False, sort_keys=True, separators=(',', ':'))
-        return hashlib.sha256(canonical.encode('utf-8')).hexdigest()
+        sequence_data = {
+            "transitions": [
+                {"from_state": t.from_state.value, "reason": t.reason, "to_state": t.to_state.value}
+                for t in self._transition_history
+            ],
+            "final_state": self._current_state.value,
+        }
+        canonical = json.dumps(sequence_data, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+        return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
     def _transition_to(self, new_state: HandshakeState, reason: str) -> None:
         """
@@ -133,20 +151,29 @@ class HandshakeStateMachine:
         Records transition in history for audit trail.
         """
         from datetime import datetime, timezone
-        transition = StateTransition(from_state=self._current_state, to_state=new_state, timestamp=datetime.now(timezone.utc).isoformat(), reason=reason)
+
+        transition = StateTransition(
+            from_state=self._current_state,
+            to_state=new_state,
+            timestamp=datetime.now(timezone.utc).isoformat(),
+            reason=reason,
+        )
         self._transition_history.append(transition)
         self._current_state = new_state
         self._sequence_hash = None
 
     def __str__(self) -> str:
         """String representation of current state."""
-        return f'HandshakeStateMachine(state={self._current_state.value}, transitions={len(self._transition_history)})'
+        return f"HandshakeStateMachine(state={self._current_state.value}, transitions={len(self._transition_history)})"
 
     def __repr__(self) -> str:
         """Detailed string representation."""
-        return f'HandshakeStateMachine(current_state={self._current_state.value}, transition_count={len(self._transition_history)}, sequence_hash={self.get_sequence_hash()[:8]}...)'
+        return f"HandshakeStateMachine(current_state={self._current_state.value}, transition_count={len(self._transition_history)}, sequence_hash={self.get_sequence_hash()[:8]}...)"
+
 
 def create_handshake_machine() -> HandshakeStateMachine:
     """Create a new handshake state machine instance."""
     return HandshakeStateMachine()
-__all__ = ['HandshakeStateMachine', 'HandshakeState', 'StateTransition', 'create_handshake_machine']
+
+
+__all__ = ["HandshakeStateMachine", "HandshakeState", "StateTransition", "create_handshake_machine"]

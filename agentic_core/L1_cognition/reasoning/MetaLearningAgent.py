@@ -2,6 +2,7 @@
 MetaLearningAgent: Core adaptive learning agent for strategy weighting and experience replay.
 Restored: 2026-01-13 | Version: 2.1.0 (With Telemetry)
 """
+
 import hashlib
 import json
 import logging
@@ -11,24 +12,29 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 from typing import Any
+
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 TelemetryCallback = Callable[[str, dict[str, Any]], None]
-_STRICT_WEIGHTS_ENV = 'META_LEARNING_STRICT_WEIGHTS'
-_WEIGHTS_SCHEMA_VERSION = '1'
+_STRICT_WEIGHTS_ENV = "META_LEARNING_STRICT_WEIGHTS"
+_WEIGHTS_SCHEMA_VERSION = "1"
+
 
 def _strict_weights_mode() -> bool:
     """Return True when META_LEARNING_STRICT_WEIGHTS=1 is set in the environment."""
-    return os.environ.get(_STRICT_WEIGHTS_ENV, '').strip() == '1'
+    return os.environ.get(_STRICT_WEIGHTS_ENV, "").strip() == "1"
+
 
 @dataclass
 class ExperienceRecord:
     """Represents a single state-action-outcome unit for learning."""
+
     state: dict[str, Any]
     thought_type: str
     outcome: dict[str, Any]
     reward: float
     timestamp: datetime = field(default_factory=datetime.utcnow)
+
 
 class MetaLearningAgent(SovereignBaseAgent):
     """
@@ -38,7 +44,12 @@ class MetaLearningAgent(SovereignBaseAgent):
     Supports telemetry callbacks for dashboard observability.
     """
 
-    def __init__(self, replay_capacity: int=1000, telemetry_callback: TelemetryCallback | None=None, strategy_weights_file: Path | None=None) -> None:
+    def __init__(
+        self,
+        replay_capacity: int = 1000,
+        telemetry_callback: TelemetryCallback | None = None,
+        strategy_weights_file: Path | None = None,
+    ) -> None:
         """Initialize the instance.
 
         Args:
@@ -49,7 +60,7 @@ class MetaLearningAgent(SovereignBaseAgent):
         self.logger = logging.getLogger(self.__class__.__name__)
         self.replay_buffer: list[ExperienceRecord] = []
         self.replay_capacity = replay_capacity
-        self.strategy_weights: dict[str, float] = {'cot': 1.0, 'tot': 1.0, 'react': 1.0, 'reflection': 1.0}
+        self.strategy_weights: dict[str, float] = {"cot": 1.0, "tot": 1.0, "react": 1.0, "reflection": 1.0}
         self.total_experiences = 0
         self.total_replays = 0
         self.patterns_extracted = 0
@@ -59,7 +70,9 @@ class MetaLearningAgent(SovereignBaseAgent):
             self._load_strategy_weights()
         super().__init__()
 
-    def store_experience(self, state: dict[str, Any], thought_type: str, outcome: dict[str, Any], reward: float) -> str:
+    def store_experience(
+        self, state: dict[str, Any], thought_type: str, outcome: dict[str, Any], reward: float
+    ) -> str:
         """Stores a new experience in the replay buffer with reward signal."""
         exp = ExperienceRecord(state=state, thought_type=thought_type, outcome=outcome, reward=reward)
         if len(self.replay_buffer) >= self.replay_capacity:
@@ -68,7 +81,21 @@ class MetaLearningAgent(SovereignBaseAgent):
         self.total_experiences += 1
         exp_id = f"exp_{self.total_experiences}_{datetime.now().strftime('%Y%m%d%H%M%S')}"
         if self.telemetry_callback:
-            self.telemetry_callback('experience_stored', {'experience_id': exp_id, 'thought_type': thought_type, 'reward': reward, 'buffer_size': len(self.replay_buffer), 'total_experiences': self.total_experiences, 'experience': {'thought_type': thought_type, 'reward': reward, 'timestamp': exp.timestamp.isoformat()}})
+            self.telemetry_callback(
+                "experience_stored",
+                {
+                    "experience_id": exp_id,
+                    "thought_type": thought_type,
+                    "reward": reward,
+                    "buffer_size": len(self.replay_buffer),
+                    "total_experiences": self.total_experiences,
+                    "experience": {
+                        "thought_type": thought_type,
+                        "reward": reward,
+                        "timestamp": exp.timestamp.isoformat(),
+                    },
+                },
+            )
         return exp_id
 
     def update_strategy_weights(self) -> dict[str, float]:
@@ -114,16 +141,25 @@ class MetaLearningAgent(SovereignBaseAgent):
             return
         strict = _strict_weights_mode()
         try:
-            raw = json.loads(Path(self._strategy_weights_file).read_text(encoding='utf-8'))
-            loaded = raw.get('strategy_weights', {})
+            raw = json.loads(Path(self._strategy_weights_file).read_text(encoding="utf-8"))
+            loaded = raw.get("strategy_weights", {})
             for key in self.strategy_weights:
                 if key in loaded and isinstance(loaded[key], (int, float)):
                     self.strategy_weights[key] = float(loaded[key])
         except (OSError, json.JSONDecodeError, ValueError) as exc:
             if strict:
-                raise RuntimeError(f"META_LEARNING_STRICT_WEIGHTS=1: corrupt strategy weights file '{self._strategy_weights_file}' — {type(exc).__name__}: {exc}") from exc
+                raise RuntimeError(
+                    f"META_LEARNING_STRICT_WEIGHTS=1: corrupt strategy weights file '{self._strategy_weights_file}' — {type(exc).__name__}: {exc}"
+                ) from exc
             if self.telemetry_callback:
-                self.telemetry_callback('strategy_weights_load_failed_fallback', {'file': str(self._strategy_weights_file), 'exc_type': type(exc).__name__, 'exc_str': str(exc)})
+                self.telemetry_callback(
+                    "strategy_weights_load_failed_fallback",
+                    {
+                        "file": str(self._strategy_weights_file),
+                        "exc_type": type(exc).__name__,
+                        "exc_str": str(exc),
+                    },
+                )
 
     @property
     def strategy_weights_digest(self) -> str:
@@ -133,7 +169,9 @@ class MetaLearningAgent(SovereignBaseAgent):
         Include this in replay transcripts alongside FAISS index digests so that
         a replay run can verify it was initialised from the same learned state.
         """
-        payload = json.dumps({'strategy_weights': self.strategy_weights}, separators=(',', ':'), sort_keys=True).encode('ascii')
+        payload = json.dumps(
+            {"strategy_weights": self.strategy_weights}, separators=(",", ":"), sort_keys=True
+        ).encode("ascii")
         return hashlib.sha256(payload).hexdigest()
 
     def _save_strategy_weights(self) -> None:
@@ -142,10 +180,14 @@ class MetaLearningAgent(SovereignBaseAgent):
             return
         dest = Path(self._strategy_weights_file)
         dest.parent.mkdir(parents=True, exist_ok=True)
-        payload_bytes = json.dumps({'schema_version': _WEIGHTS_SCHEMA_VERSION, 'strategy_weights': self.strategy_weights}, separators=(',', ':'), sort_keys=True).encode('ascii')
-        tmp = dest.with_suffix('.tmp')
+        payload_bytes = json.dumps(
+            {"schema_version": _WEIGHTS_SCHEMA_VERSION, "strategy_weights": self.strategy_weights},
+            separators=(",", ":"),
+            sort_keys=True,
+        ).encode("ascii")
+        tmp = dest.with_suffix(".tmp")
         try:
-            with open(tmp, 'wb') as _fh:
+            with open(tmp, "wb") as _fh:
                 _fh.write(payload_bytes)
                 _fh.flush()
                 os.fsync(_fh.fileno())
@@ -155,14 +197,22 @@ class MetaLearningAgent(SovereignBaseAgent):
                 tmp.unlink(missing_ok=True)
             raise
         if self.telemetry_callback:
-            self.telemetry_callback('strategy_weights_persisted', {'weights_digest': self.strategy_weights_digest, 'strategy_weights': self.strategy_weights.copy()})
+            self.telemetry_callback(
+                "strategy_weights_persisted",
+                {
+                    "weights_digest": self.strategy_weights_digest,
+                    "strategy_weights": self.strategy_weights.copy(),
+                },
+            )
 
     def extract_patterns(self) -> list[dict[str, Any]]:
         """Identifies success/failure patterns from clustered experiences."""
         self.patterns_extracted += 1
-        patterns = [{'type': 'high_reward_cot', 'threshold': 0.8}]
+        patterns = [{"type": "high_reward_cot", "threshold": 0.8}]
         if self.telemetry_callback:
-            self.telemetry_callback('patterns_extracted', {'patterns': patterns, 'total_patterns': self.patterns_extracted})
+            self.telemetry_callback(
+                "patterns_extracted", {"patterns": patterns, "total_patterns": self.patterns_extracted}
+            )
         return patterns
 
     def get_strategy_recommendation(self, context: dict[str, Any]) -> str:
@@ -171,13 +221,27 @@ class MetaLearningAgent(SovereignBaseAgent):
 
     def get_live_statistics(self) -> dict[str, Any]:
         """Get current meta-learning statistics for dashboard observability."""
-        return {'total_experiences': self.total_experiences, 'buffer_size': len(self.replay_buffer), 'buffer_capacity': self.replay_capacity, 'patterns_extracted': self.patterns_extracted, 'strategy_weights': self.strategy_weights.copy(), 'recent_experiences': [{'thought_type': exp.thought_type, 'reward': exp.reward, 'timestamp': exp.timestamp.isoformat()} for exp in self.replay_buffer[-10:]]}
+        return {
+            "total_experiences": self.total_experiences,
+            "buffer_size": len(self.replay_buffer),
+            "buffer_capacity": self.replay_capacity,
+            "patterns_extracted": self.patterns_extracted,
+            "strategy_weights": self.strategy_weights.copy(),
+            "recent_experiences": [
+                {
+                    "thought_type": exp.thought_type,
+                    "reward": exp.reward,
+                    "timestamp": exp.timestamp.isoformat(),
+                }
+                for exp in self.replay_buffer[-10:]
+            ],
+        }
 
     def get_statistics(self) -> dict[str, Any]:
         """Legacy method for backward compatibility."""
         return self.get_live_statistics()
 
-    def _discover_patterns(self, pattern_str: str='*.py', project_root: Path | None=None) -> list[Path]:
+    def _discover_patterns(self, pattern_str: str = "*.py", project_root: Path | None = None) -> list[Path]:
         """
         Discover files matching a pattern using SovereignIndex for high-performance cached lookup.
 
@@ -193,10 +257,10 @@ class MetaLearningAgent(SovereignBaseAgent):
         idx = SovereignIndex.get_instance(project_root)
         return idx.get_files(pattern_str)
 
-    def heal_repository(self, dry_run: bool=True, execute: bool=False, **kwargs) -> dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
         """Autonomous healing with proper invocation chain."""
         super().heal_repository(dry_run=dry_run, execute=execute, **kwargs)
-        return {'violations': 0, 'fixed': 0, 'errors': 0}
+        return {"violations": 0, "fixed": 0, "errors": 0}
 
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """
@@ -215,13 +279,28 @@ class MetaLearningAgent(SovereignBaseAgent):
                 - artifacts: List of modified files
                 - errors: List of error messages
         """
-        file_path = violation.get('file') or violation.get('file_path')
-        violation_type = violation.get('type', 'unknown')
+        file_path = violation.get("file") or violation.get("file_path")
+        violation_type = violation.get("type", "unknown")
         try:
-            if hasattr(self, 'heal_repository'):
+            if hasattr(self, "heal_repository"):
                 result = self.heal_repository(dry_run=False)
-                return {'status': 'success' if result.get('violations_fixed', 0) > 0 else 'skipped', 'details': f"MetaLearningAgent healed {result.get('violations_fixed', 0)} violations", 'artifacts': [file_path] if file_path else [], 'errors': []}
+                return {
+                    "status": "success" if result.get("violations_fixed", 0) > 0 else "skipped",
+                    "details": f"MetaLearningAgent healed {result.get('violations_fixed', 0)} violations",
+                    "artifacts": [file_path] if file_path else [],
+                    "errors": [],
+                }
             else:
-                return {'status': 'skipped', 'details': f'MetaLearningAgent heal() not yet implemented for {violation_type}', 'artifacts': [], 'errors': []}
+                return {
+                    "status": "skipped",
+                    "details": f"MetaLearningAgent heal() not yet implemented for {violation_type}",
+                    "artifacts": [],
+                    "errors": [],
+                }
         except Exception as e:
-            return {'status': 'failed', 'details': f'MetaLearningAgent heal() failed: {str(e)}', 'artifacts': [], 'errors': [str(e)]}
+            return {
+                "status": "failed",
+                "details": f"MetaLearningAgent heal() failed: {str(e)}",
+                "artifacts": [],
+                "errors": [str(e)],
+            }

@@ -1,13 +1,17 @@
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L2_execution.tools import write_gateway as _wg
-'Brief description of functionality and purpose.'
+
+"Brief description of functionality and purpose."
 import re
 from enum import Enum
 from typing import Any
+
 from agentic_core.utils.timeout_decorator_util import timeout
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 class ValidationRejectionReason(Enum):
     """
@@ -16,11 +20,13 @@ class ValidationRejectionReason(Enum):
     Defines the specific reasons why content validation may fail,
     including depth issues, unbound metrics, and language quality problems.
     """
-    INSUFFICIENT_DEPTH = 'INSUFFICIENT_DEPTH'
-    UNBOUND_METRICS = 'UNBOUND_METRICS'
-    FLUFF_LANGUAGE = 'FLUFF_LANGUAGE'
-    ORPHANED_CLAIMS = 'ORPHANED_CLAIMS'
-    MISSING_CITATIONS = 'MISSING_CITATIONS'
+
+    INSUFFICIENT_DEPTH = "INSUFFICIENT_DEPTH"
+    UNBOUND_METRICS = "UNBOUND_METRICS"
+    FLUFF_LANGUAGE = "FLUFF_LANGUAGE"
+    ORPHANED_CLAIMS = "ORPHANED_CLAIMS"
+    MISSING_CITATIONS = "MISSING_CITATIONS"
+
 
 class Violation:
     """
@@ -41,6 +47,7 @@ class Violation:
         """
         self.reason: ValidationRejectionReason = reason
         self.message: str = message
+
 
 class IntegrityGateResult:
     """
@@ -75,6 +82,7 @@ class IntegrityGateResult:
         self.passed = False
         self.violations.append(Violation(reason, message))
 
+
 class FinancialProofPoint:
     """
     Financial metric with value and source citation.
@@ -85,7 +93,7 @@ class FinancialProofPoint:
         source_citation: Optional source citation
     """
 
-    def __init__(self, metric_name: str, value: str, source_citation: str | None=None) -> None:
+    def __init__(self, metric_name: str, value: str, source_citation: str | None = None) -> None:
         """
         Initialize financial proof point.
 
@@ -98,6 +106,7 @@ class FinancialProofPoint:
         self.value: str = value
         self.source_citation: str | None = source_citation
 
+
 class KeyTechnology:
     """
     Technology implementation with details and source.
@@ -108,7 +117,9 @@ class KeyTechnology:
         source_citation: Optional source citation
     """
 
-    def __init__(self, technology_name: str, implementation_details: str, source_citation: str | None=None) -> None:
+    def __init__(
+        self, technology_name: str, implementation_details: str, source_citation: str | None = None
+    ) -> None:
         """
         Initialize key technology.
 
@@ -120,6 +131,7 @@ class KeyTechnology:
         self.technology_name: str = technology_name
         self.implementation_details: str = implementation_details
         self.source_citation: str | None = source_citation
+
 
 class KeyExecutive:
     """
@@ -138,6 +150,7 @@ class KeyExecutive:
         """
         self.name: str = name
 
+
 class StrategicLayer:
     """
     Strategic layer containing core thesis and initiatives.
@@ -148,7 +161,12 @@ class StrategicLayer:
         financial_proof_points: List of financial proof points
     """
 
-    def __init__(self, core_thesis: str, strategic_initiatives: list[str], financial_proof_points: list[FinancialProofPoint]) -> None:
+    def __init__(
+        self,
+        core_thesis: str,
+        strategic_initiatives: list[str],
+        financial_proof_points: list[FinancialProofPoint],
+    ) -> None:
         """
         Initialize strategic layer.
 
@@ -160,6 +178,7 @@ class StrategicLayer:
         self.core_thesis = core_thesis
         self.strategic_initiatives = strategic_initiatives
         self.financial_proof_points = financial_proof_points
+
 
 class TechnicalLayer:
     """
@@ -181,6 +200,7 @@ class TechnicalLayer:
         self.implementation_summary = implementation_summary
         self.key_technologies = key_technologies
 
+
 class LeadershipLayer:
     """
     Leadership layer containing key executives.
@@ -197,6 +217,7 @@ class LeadershipLayer:
             key_executives: List of key executives
         """
         self.key_executives = key_executives
+
 
 class CitationMap:
     """
@@ -215,6 +236,7 @@ class CitationMap:
         """
         self.citations = citations
 
+
 class DeepResearchOutput:
     """
     Deep research output containing all layers.
@@ -226,7 +248,13 @@ class DeepResearchOutput:
         CitationMap: Citation map with source citations
     """
 
-    def __init__(self, StrategicLayer: StrategicLayer, TechnicalLayer: TechnicalLayer, LeadershipLayer: LeadershipLayer, CitationMap: CitationMap) -> None:
+    def __init__(
+        self,
+        StrategicLayer: StrategicLayer,
+        TechnicalLayer: TechnicalLayer,
+        LeadershipLayer: LeadershipLayer,
+        CitationMap: CitationMap,
+    ) -> None:
         """
         Initialize deep research output.
 
@@ -240,7 +268,10 @@ class DeepResearchOutput:
         self.TechnicalLayer = TechnicalLayer
         self.LeadershipLayer = LeadershipLayer
         self.CitationMap = CitationMap
+
+
 from agentic_core.utils.decorators_compat_util import standard_heal
+
 
 @dataclass
 class IntegrityGateExecutorAgent(SovereignBaseAgent):
@@ -249,11 +280,47 @@ class IntegrityGateExecutorAgent(SovereignBaseAgent):
     Validates research outputs against quality criteria including
     depth, citations, and structural requirements.
     """
-    FLUFF_WORDS = {'cutting-edge', 'innovative', 'world-class', 'leading', 'premier', 'revolutionary', 'groundbreaking', 'state-of-the-art', 'best-in-class', 'industry-leading', 'next-generation', 'advanced', 'sophisticated', 'robust', 'powerful', 'comprehensive', 'extensive', 'significant'}
-    TECHNICAL_NOUNS = {'architecture', 'model', 'algorithm', 'framework', 'platform', 'system', 'infrastructure', 'stack', 'pipeline', 'engine', 'service', 'API', 'database', 'network', 'protocol'}
+
+    FLUFF_WORDS = {
+        "cutting-edge",
+        "innovative",
+        "world-class",
+        "leading",
+        "premier",
+        "revolutionary",
+        "groundbreaking",
+        "state-of-the-art",
+        "best-in-class",
+        "industry-leading",
+        "next-generation",
+        "advanced",
+        "sophisticated",
+        "robust",
+        "powerful",
+        "comprehensive",
+        "extensive",
+        "significant",
+    }
+    TECHNICAL_NOUNS = {
+        "architecture",
+        "model",
+        "algorithm",
+        "framework",
+        "platform",
+        "system",
+        "infrastructure",
+        "stack",
+        "pipeline",
+        "engine",
+        "service",
+        "API",
+        "database",
+        "network",
+        "protocol",
+    }
 
     # guardian: allow-magic-config
-    def __init__(self, min_depth_score: float=0.7) -> None:
+    def __init__(self, min_depth_score: float = 0.7) -> None:
         """
         Initialize integrity gate executor.
 
@@ -264,8 +331,8 @@ class IntegrityGateExecutorAgent(SovereignBaseAgent):
 
     def _run_self_tests(self) -> bool:
         """Phase 1: Self-testing for L2 compliance."""
-        assert hasattr(self, 'min_depth_score'), 'Missing min_depth_score'
-        assert 0 <= self.min_depth_score <= 1, 'min_depth_score must be 0-1'
+        assert hasattr(self, "min_depth_score"), "Missing min_depth_score"
+        assert 0 <= self.min_depth_score <= 1, "min_depth_score must be 0-1"
         return True
 
     def execute(self, research_output: DeepResearchOutput) -> IntegrityGateResult:
@@ -283,49 +350,84 @@ class IntegrityGateExecutorAgent(SovereignBaseAgent):
         self._check_citation_coverage(research_output, RESULT)
         RESULT.depth_score = self._calculate_depth_score(research_output)
         if RESULT.depth_score < self.min_depth_score:
-            RESULT.add_violation(ValidationRejectionReason.INSUFFICIENT_DEPTH, f'Depth score {RESULT.depth_score:.2f} below minimum {self.min_depth_score}')
+            RESULT.add_violation(
+                ValidationRejectionReason.INSUFFICIENT_DEPTH,
+                f"Depth score {RESULT.depth_score:.2f} below minimum {self.min_depth_score}",
+            )
         return RESULT
 
-    def _check_unbound_metrics(self, research_output: DeepResearchOutput, result: IntegrityGateResult) -> None:
+    def _check_unbound_metrics(
+        self, research_output: DeepResearchOutput, result: IntegrityGateResult
+    ) -> None:
         for Metric in research_output.StrategicLayer.financial_proof_points:
             if not Metric.source_citation:
-                result.add_violation(ValidationRejectionReason.UNBOUND_METRICS, f"Metric '{Metric.metric_name}' has no source citation")
+                result.add_violation(
+                    ValidationRejectionReason.UNBOUND_METRICS,
+                    f"Metric '{Metric.metric_name}' has no source citation",
+                )
             if not self._has_specific_value(Metric.value):
-                result.add_violation(ValidationRejectionReason.UNBOUND_METRICS, f"Metric '{Metric.metric_name}' has vague value: '{Metric.value}'")
+                result.add_violation(
+                    ValidationRejectionReason.UNBOUND_METRICS,
+                    f"Metric '{Metric.metric_name}' has vague value: '{Metric.value}'",
+                )
 
     def _check_fluff_language(self, research_output: DeepResearchOutput, result: IntegrityGateResult) -> None:
-        text_to_check = [research_output.StrategicLayer.core_thesis, research_output.TechnicalLayer.implementation_summary or '']
+        text_to_check = [
+            research_output.StrategicLayer.core_thesis,
+            research_output.TechnicalLayer.implementation_summary or "",
+        ]
         for tech in research_output.TechnicalLayer.key_technologies:
             text_to_check.append(tech.implementation_details)
         for text in text_to_check:
             if not text:
                 continue
-            WORDS = re.findall('\\b\\w+(?:-\\w+)*\\b', text.lower())
+            WORDS = re.findall("\\b\\w+(?:-\\w+)*\\b", text.lower())
             for i, word in enumerate(WORDS):
                 if word in self.FLUFF_WORDS:
-                    next_words = WORDS[i + 1:i + 3] if i + 1 < len(WORDS) else []
-                    if not any((nw in self.TECHNICAL_NOUNS for nw in next_words)):
-                        result.add_violation(ValidationRejectionReason.FLUFF_LANGUAGE, f"Fluff word '{word}' not followed by technical noun in: '{text[:100]}...'")
+                    next_words = WORDS[i + 1 : i + 3] if i + 1 < len(WORDS) else []
+                    if not any(nw in self.TECHNICAL_NOUNS for nw in next_words):
+                        result.add_violation(
+                            ValidationRejectionReason.FLUFF_LANGUAGE,
+                            f"Fluff word '{word}' not followed by technical noun in: '{text[:100]}...'",
+                        )
 
-    def _check_orphaned_claims(self, research_output: DeepResearchOutput, result: IntegrityGateResult) -> None:
+    def _check_orphaned_claims(
+        self, research_output: DeepResearchOutput, result: IntegrityGateResult
+    ) -> None:
         INITIATIVES = research_output.StrategicLayer.strategic_initiatives
         TECHNOLOGIES = [t.technology_name for t in research_output.TechnicalLayer.key_technologies]
         EXECUTIVES = [e.name for e in research_output.LeadershipLayer.key_executives]
         for initiative in INITIATIVES:
-            has_tech_link = any((tech.lower() in initiative.lower() for tech in TECHNOLOGIES))
-            has_exec_link = any((exec.lower() in initiative.lower() for exec in EXECUTIVES))
+            has_tech_link = any(tech.lower() in initiative.lower() for tech in TECHNOLOGIES)
+            has_exec_link = any(exec.lower() in initiative.lower() for exec in EXECUTIVES)
             if not (has_tech_link or has_exec_link):
-                result.add_violation(ValidationRejectionReason.ORPHANED_CLAIMS, f"Initiative '{initiative}' not linked to specific technology or executive")
+                result.add_violation(
+                    ValidationRejectionReason.ORPHANED_CLAIMS,
+                    f"Initiative '{initiative}' not linked to specific technology or executive",
+                )
 
-    def _check_citation_coverage(self, research_output: DeepResearchOutput, result: IntegrityGateResult) -> None:
+    def _check_citation_coverage(
+        self, research_output: DeepResearchOutput, result: IntegrityGateResult
+    ) -> None:
         if len(research_output.CitationMap.citations) < 3:
-            result.add_violation(ValidationRejectionReason.MISSING_CITATIONS, f'Only {len(research_output.CitationMap.citations)} citations (minimum 3 required)')
-        financial_citations = sum((1 for m in research_output.StrategicLayer.financial_proof_points if m.source_citation))
-        technical_citations = sum((1 for t in research_output.TechnicalLayer.key_technologies if t.source_citation))
+            result.add_violation(
+                ValidationRejectionReason.MISSING_CITATIONS,
+                f"Only {len(research_output.CitationMap.citations)} citations (minimum 3 required)",
+            )
+        financial_citations = sum(
+            1 for m in research_output.StrategicLayer.financial_proof_points if m.source_citation
+        )
+        technical_citations = sum(
+            1 for t in research_output.TechnicalLayer.key_technologies if t.source_citation
+        )
         if financial_citations == 0:
-            result.add_violation(ValidationRejectionReason.MISSING_CITATIONS, 'No citations for financial metrics')
+            result.add_violation(
+                ValidationRejectionReason.MISSING_CITATIONS, "No citations for financial metrics"
+            )
         if technical_citations == 0:
-            result.add_violation(ValidationRejectionReason.MISSING_CITATIONS, 'No citations for technical implementations')
+            result.add_violation(
+                ValidationRejectionReason.MISSING_CITATIONS, "No citations for technical implementations"
+            )
 
     def _calculate_depth_score(self, research_output: DeepResearchOutput) -> float:
         """Calculate depth score."""
@@ -344,13 +446,20 @@ class IntegrityGateExecutorAgent(SovereignBaseAgent):
 
     def _has_specific_value(self, value: str) -> bool:
         """Has specific value."""
-        number_pattern = '\\d+\\.?\\d*[KMBT%]?'
+        number_pattern = "\\d+\\.?\\d*[KMBT%]?"
         return bool(re.search(number_pattern, value))
 
     @timeout(300)
     @standard_heal
     # guardian: allow-magic-config
-    def heal_repository(self, dry_run: bool=True, execute: bool=False, depth: int=0, max_depth: int=3, _call_path: set | None=None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """Validate research outputs in the repository for integrity violations.
 
         Scans for research output files and validates them against integrity
@@ -372,63 +481,102 @@ class IntegrityGateExecutorAgent(SovereignBaseAgent):
             _call_path = set()
         agent_name = self.__class__.__name__
         if agent_name in _call_path:
-            return {'violations_found': 0, 'violations_fixed': 0, 'errors': 1, 'skipped': 0, 'cycle_detected': True}
+            return {
+                "violations_found": 0,
+                "violations_fixed": 0,
+                "errors": 1,
+                "skipped": 0,
+                "cycle_detected": True,
+            }
         if depth > max_depth:
-            return {'violations_found': 0, 'violations_fixed': 0, 'errors': 0, 'skipped': 1, 'depth_limited': True}
+            return {
+                "violations_found": 0,
+                "violations_fixed": 0,
+                "errors": 0,
+                "skipped": 1,
+                "depth_limited": True,
+            }
         _call_path.add(agent_name)
         violations_found = 0
         violations_fixed = 0
         errors = 0
         skipped = 0
         try:
-            self.logger.info(f'[{agent_name}] Scanning for research output integrity violations...')
-            research_dirs = [self.project_root / 'data' / 'golden', self.project_root / 'data' / 'golden_state', self.project_root / 'logs']
+            self.logger.info(f"[{agent_name}] Scanning for research output integrity violations...")
+            research_dirs = [
+                self.project_root / "data" / "golden",
+                self.project_root / "data" / "golden_state",
+                self.project_root / "logs",
+            ]
             for research_dir in research_dirs:
                 if not research_dir.exists():
                     continue
-                for json_file in research_dir.rglob('*.json'):
+                for json_file in research_dir.rglob("*.json"):
                     try:
-                        if 'research' not in json_file.name.lower() and 'output' not in json_file.name.lower():
+                        if (
+                            "research" not in json_file.name.lower()
+                            and "output" not in json_file.name.lower()
+                        ):
                             skipped += 1
                             continue
-                        with open(json_file, encoding='utf-8') as f:
+                        with open(json_file, encoding="utf-8") as f:
                             import json
+
                             data = json.load(f)
                         if not isinstance(data, dict):
                             skipped += 1
                             continue
-                        has_strategic = 'strategic_layer' in data or 'StrategicLayer' in data
-                        has_evidence = 'evidence_layer' in data or 'EvidenceLayer' in data
+                        has_strategic = "strategic_layer" in data or "StrategicLayer" in data
+                        has_evidence = "evidence_layer" in data or "EvidenceLayer" in data
                         if not (has_strategic or has_evidence):
                             skipped += 1
                             continue
-                        self.logger.info(f'  Validating: {json_file.name}')
+                        self.logger.info(f"  Validating: {json_file.name}")
                         issues = []
                         content_str = json.dumps(data)
-                        unbound_pattern = '\\b\\d+\\.?\\d*[%KMBT]?\\b(?!\\s*(percent|million|billion|thousand|users|customers|revenue))'
+                        unbound_pattern = "\\b\\d+\\.?\\d*[%KMBT]?\\b(?!\\s*(percent|million|billion|thousand|users|customers|revenue))"
                         if re.search(unbound_pattern, content_str):
-                            issues.append('potential_unbound_metrics')
-                        fluff_words = ['revolutionary', 'game-changing', 'unprecedented', 'synergy', 'leverage']
+                            issues.append("potential_unbound_metrics")
+                        fluff_words = [
+                            "revolutionary",
+                            "game-changing",
+                            "unprecedented",
+                            "synergy",
+                            "leverage",
+                        ]
                         for word in fluff_words:
                             if word.lower() in content_str.lower():
-                                issues.append(f'fluff_language:{word}')
+                                issues.append(f"fluff_language:{word}")
                         if issues:
                             violations_found += len(issues)
-                            self.logger.warning(f'    Found {len(issues)} issues: {issues[:3]}...')
+                            self.logger.warning(f"    Found {len(issues)} issues: {issues[:3]}...")
                             if execute and (not dry_run):
-                                report_path = json_file.with_suffix('.integrity_report.json')
-                                report = {'source_file': str(json_file), 'issues': issues, 'validated_at': str(Path(__file__).stat().st_mtime)}
+                                report_path = json_file.with_suffix(".integrity_report.json")
+                                report = {
+                                    "source_file": str(json_file),
+                                    "issues": issues,
+                                    "validated_at": str(Path(__file__).stat().st_mtime),
+                                }
                                 _wg.write_json(report_path, report, indent=2)
                                 violations_fixed += 1
-                                self.logger.info(f'    Generated report: {report_path.name}')
+                                self.logger.info(f"    Generated report: {report_path.name}")
                     except json.JSONDecodeError:
                         skipped += 1
                     # guardian: allow-silent-swallow
                     except Exception as e:
-                        self.logger.error(f'    Error processing {json_file}: {e}')
+                        self.logger.error(f"    Error processing {json_file}: {e}")
                         errors += 1
-            self.logger.info(f'[{agent_name}] Complete: {violations_found} violations, {violations_fixed} fixed, {errors} errors')
-            return {'violations_found': violations_found, 'violations_fixed': violations_fixed, 'errors': errors, 'skipped': skipped, 'agent': agent_name, 'dry_run': dry_run}
+            self.logger.info(
+                f"[{agent_name}] Complete: {violations_found} violations, {violations_fixed} fixed, {errors} errors"
+            )
+            return {
+                "violations_found": violations_found,
+                "violations_fixed": violations_fixed,
+                "errors": errors,
+                "skipped": skipped,
+                "agent": agent_name,
+                "dry_run": dry_run,
+            }
         finally:
             _call_path.discard(agent_name)
 
@@ -449,16 +597,29 @@ class IntegrityGateExecutorAgent(SovereignBaseAgent):
                 - artifacts: List of modified files
                 - errors: List of error messages
         """
-        violation.get('file') or violation.get('file_path')
-        violation_type = violation.get('type', 'unknown')
+        violation.get("file") or violation.get("file_path")
+        violation_type = violation.get("type", "unknown")
         try:
-            return {'status': 'skipped', 'details': f'IntegrityGateExecutorAgent heal() not yet implemented for {violation_type} - integrity violations require manual review', 'artifacts': [], 'errors': []}
+            return {
+                "status": "skipped",
+                "details": f"IntegrityGateExecutorAgent heal() not yet implemented for {violation_type} - integrity violations require manual review",
+                "artifacts": [],
+                "errors": [],
+            }
         # guardian: allow-silent-swallow
         except Exception as e:
-            return {'status': 'failed', 'details': f'IntegrityGateExecutorAgent heal() failed: {str(e)}', 'artifacts': [], 'errors': [str(e)]}
+            return {
+                "status": "failed",
+                "details": f"IntegrityGateExecutorAgent heal() failed: {str(e)}",
+                "artifacts": [],
+                "errors": [str(e)],
+            }
+
 
 # guardian: allow-magic-config
-def validate_research_output(research_output: DeepResearchOutput, min_depth_score: float=0.7) -> IntegrityGateResult:
+def validate_research_output(
+    research_output: DeepResearchOutput, min_depth_score: float = 0.7
+) -> IntegrityGateResult:
     """TODO: Add docstring."""
     super().heal_repository()
     EXECUTOR = IntegrityGateExecutorAgent(min_depth_score=min_depth_score)

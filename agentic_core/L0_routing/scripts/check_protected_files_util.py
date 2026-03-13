@@ -18,31 +18,40 @@ EXIT CODES:
     0 - No protected files modified OR override present
     1 - Protected files modified without override
 """
+
 import subprocess
 import sys
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
-PROTECTED_FILES = ['agentic_core/L5_safety/enforcement/ArchivalGatekeeper.py', 'agentic_core/L5_safety/validators/decorators.py']
-OVERRIDE_FLAG = '#gatekeeper-override'
+
+PROTECTED_FILES = [
+    "agentic_core/L5_safety/enforcement/ArchivalGatekeeper.py",
+    "agentic_core/L5_safety/validators/decorators.py",
+]
+OVERRIDE_FLAG = "#gatekeeper-override"
+
 
 def get_staged_files() -> list[str]:
     """Get list of files staged for commit."""
     try:
-        result = subprocess.run(['git', 'diff', '--cached', '--name-only'], capture_output=True, text=True, check=True)
-        return [f.strip() for f in result.stdout.strip().split('\n') if f.strip()]
+        result = subprocess.run(
+            ["git", "diff", "--cached", "--name-only"], capture_output=True, text=True, check=True
+        )
+        return [f.strip() for f in result.stdout.strip().split("\n") if f.strip()]
     except subprocess.CalledProcessError:
         return []
+
 
 def get_commit_message() -> str:
     """Get the commit message if available."""
     try:
-        commit_msg_file = Path('.git/COMMIT_EDITMSG')
+        commit_msg_file = Path(".git/COMMIT_EDITMSG")
         if commit_msg_file.exists():
             return commit_msg_file.read_text()
-        return ''
+        return ""
     # guardian: allow-silent-swallow
     except Exception:
-        return ''
+        return ""
+
 
 def main():
     """TODO: Add documentation for main."""
@@ -67,5 +76,7 @@ def main():
     for _f in modified_protected:
         pass
     sys.exit(1)
-if __name__ == '__main__':
+
+
+if __name__ == "__main__":
     main()

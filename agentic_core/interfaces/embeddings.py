@@ -17,9 +17,11 @@ USAGE (apps_*):
         query_similarity,
     )
 """
+
 from __future__ import annotations
+
 from dataclasses import dataclass
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 @dataclass(frozen=True)
 class SimilarityResult:
@@ -35,11 +37,13 @@ class SimilarityResult:
 
     Contains only: content_hash, similarity_score, content_preview.
     """
+
     content_hash: str
     similarity_score: float
     content_preview: str
 
-def query_similarity(query: str, top_k: int=20, namespace: str='') -> list[SimilarityResult]:
+
+def query_similarity(query: str, top_k: int = 20, namespace: str = "") -> list[SimilarityResult]:
     """
     Query existing embeddings — informational only, C0 context.
 
@@ -55,10 +59,20 @@ def query_similarity(query: str, top_k: int=20, namespace: str='') -> list[Simil
         top_k = 20
     try:
         from agentic_core.L4_state.memory.sovereign_semantic_cache import SovereignSemanticCache
+
         cache = SovereignSemanticCache()
         raw = cache.query(query, top_k=top_k, namespace=namespace)
-        return [SimilarityResult(content_hash=r.get('content_hash', ''), similarity_score=float(r.get('score', 0.0)), content_preview=r.get('content', '')[:200]) for r in raw]
+        return [
+            SimilarityResult(
+                content_hash=r.get("content_hash", ""),
+                similarity_score=float(r.get("score", 0.0)),
+                content_preview=r.get("content", "")[:200],
+            )
+            for r in raw
+        ]
     # guardian: allow-silent-swallow
     except Exception:
         return []
-__all__ = ['SimilarityResult', 'query_similarity']
+
+
+__all__ = ["SimilarityResult", "query_similarity"]

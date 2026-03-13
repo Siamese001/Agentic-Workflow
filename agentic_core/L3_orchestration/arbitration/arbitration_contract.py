@@ -4,14 +4,17 @@ Multi-Agent Arbitration Contract
 Defines immutable data structures for multi-agent arbitration system.
 Provides deterministic JSON serialization for advisor proposals and decisions.
 """
+
 from __future__ import annotations
+
 import json
 from dataclasses import dataclass, field
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 @dataclass(frozen=True)
 class AdvisorProposal:
     """Immutable proposal from an advisor agent."""
+
     advisor_id: str
     decision: str
     confidence: int
@@ -22,24 +25,26 @@ class AdvisorProposal:
     def __post_init__(self):
         """Validate proposal constraints and normalize list ordering."""
         if not self.advisor_id:
-            raise ValueError('advisor_id cannot be empty')
+            raise ValueError("advisor_id cannot be empty")
         if not self.decision:
-            raise ValueError('decision cannot be empty')
+            raise ValueError("decision cannot be empty")
         if not 0 <= self.confidence <= 100:
-            raise ValueError('confidence must be between 0 and 100')
-        if any((not r for r in self.rationale)):
-            raise ValueError('rationale items cannot be empty')
-        if any((not r for r in self.risks)):
-            raise ValueError('risk items cannot be empty')
-        if any((not a for a in self.artifacts)):
-            raise ValueError('artifact items cannot be empty')
-        object.__setattr__(self, 'rationale', sorted(self.rationale))
-        object.__setattr__(self, 'risks', sorted(self.risks))
-        object.__setattr__(self, 'artifacts', sorted(self.artifacts))
+            raise ValueError("confidence must be between 0 and 100")
+        if any(not r for r in self.rationale):
+            raise ValueError("rationale items cannot be empty")
+        if any(not r for r in self.risks):
+            raise ValueError("risk items cannot be empty")
+        if any(not a for a in self.artifacts):
+            raise ValueError("artifact items cannot be empty")
+        object.__setattr__(self, "rationale", sorted(self.rationale))
+        object.__setattr__(self, "risks", sorted(self.risks))
+        object.__setattr__(self, "artifacts", sorted(self.artifacts))
+
 
 @dataclass(frozen=True)
 class ArbitrationInput:
     """Immutable input for arbitration process."""
+
     task_id: str
     task_kind: str
     proposals: list[AdvisorProposal] = field(default_factory=list)
@@ -47,16 +52,18 @@ class ArbitrationInput:
     def __post_init__(self):
         """Validate input constraints."""
         if not self.task_id:
-            raise ValueError('task_id cannot be empty')
+            raise ValueError("task_id cannot be empty")
         if not self.task_kind:
-            raise ValueError('task_kind cannot be empty')
+            raise ValueError("task_kind cannot be empty")
         advisor_ids = [p.advisor_id for p in self.proposals]
         if len(advisor_ids) != len(set(advisor_ids)):
-            raise ValueError('duplicate advisor IDs not allowed')
+            raise ValueError("duplicate advisor IDs not allowed")
+
 
 @dataclass(frozen=True)
 class ArbitrationDecision:
     """Immutable final arbitration decision."""
+
     selected_advisor_id: str
     selected_decision: str
     score_breakdown: dict[str, int] = field(default_factory=dict)
@@ -66,40 +73,88 @@ class ArbitrationDecision:
     def __post_init__(self):
         """Validate decision constraints and normalize list ordering."""
         if not self.selected_advisor_id:
-            raise ValueError('selected_advisor_id cannot be empty')
+            raise ValueError("selected_advisor_id cannot be empty")
         if not self.selected_decision:
-            raise ValueError('selected_decision cannot be empty')
-        object.__setattr__(self, 'merged_rationale', sorted(self.merged_rationale))
-        object.__setattr__(self, 'merged_risks', sorted(self.merged_risks))
+            raise ValueError("selected_decision cannot be empty")
+        object.__setattr__(self, "merged_rationale", sorted(self.merged_rationale))
+        object.__setattr__(self, "merged_risks", sorted(self.merged_risks))
+
 
 def proposal_to_json(proposal: AdvisorProposal) -> str:
     """Serialize AdvisorProposal to deterministic JSON."""
-    data = {'advisor_id': proposal.advisor_id, 'decision': proposal.decision, 'confidence': proposal.confidence, 'rationale': sorted(proposal.rationale), 'risks': sorted(proposal.risks), 'artifacts': sorted(proposal.artifacts)}
-    return json.dumps(data, sort_keys=True, separators=(',', ':'))
+    data = {
+        "advisor_id": proposal.advisor_id,
+        "decision": proposal.decision,
+        "confidence": proposal.confidence,
+        "rationale": sorted(proposal.rationale),
+        "risks": sorted(proposal.risks),
+        "artifacts": sorted(proposal.artifacts),
+    }
+    return json.dumps(data, sort_keys=True, separators=(",", ":"))
+
 
 def proposal_from_json(json_str: str) -> AdvisorProposal:
     """Deserialize JSON string to AdvisorProposal."""
     data = json.loads(json_str)
-    return AdvisorProposal(advisor_id=data['advisor_id'], decision=data['decision'], confidence=data['confidence'], rationale=data['rationale'], risks=data['risks'], artifacts=data['artifacts'])
+    return AdvisorProposal(
+        advisor_id=data["advisor_id"],
+        decision=data["decision"],
+        confidence=data["confidence"],
+        rationale=data["rationale"],
+        risks=data["risks"],
+        artifacts=data["artifacts"],
+    )
+
 
 def arbitration_input_to_json(input_data: ArbitrationInput) -> str:
     """Serialize ArbitrationInput to deterministic JSON."""
-    data = {'task_id': input_data.task_id, 'task_kind': input_data.task_kind, 'proposals': [proposal_to_json(p) for p in input_data.proposals]}
-    return json.dumps(data, sort_keys=True, separators=(',', ':'))
+    data = {
+        "task_id": input_data.task_id,
+        "task_kind": input_data.task_kind,
+        "proposals": [proposal_to_json(p) for p in input_data.proposals],
+    }
+    return json.dumps(data, sort_keys=True, separators=(",", ":"))
+
 
 def arbitration_input_from_json(json_str: str) -> ArbitrationInput:
     """Deserialize JSON string to ArbitrationInput."""
     data = json.loads(json_str)
-    proposals = [proposal_from_json(p_json) for p_json in data['proposals']]
-    return ArbitrationInput(task_id=data['task_id'], task_kind=data['task_kind'], proposals=proposals)
+    proposals = [proposal_from_json(p_json) for p_json in data["proposals"]]
+    return ArbitrationInput(task_id=data["task_id"], task_kind=data["task_kind"], proposals=proposals)
+
 
 def decision_to_json(decision: ArbitrationDecision) -> str:
     """Serialize ArbitrationDecision to deterministic JSON."""
-    data = {'selected_advisor_id': decision.selected_advisor_id, 'selected_decision': decision.selected_decision, 'score_breakdown': decision.score_breakdown, 'merged_rationale': sorted(decision.merged_rationale), 'merged_risks': sorted(decision.merged_risks)}
-    return json.dumps(data, sort_keys=True, separators=(',', ':'))
+    data = {
+        "selected_advisor_id": decision.selected_advisor_id,
+        "selected_decision": decision.selected_decision,
+        "score_breakdown": decision.score_breakdown,
+        "merged_rationale": sorted(decision.merged_rationale),
+        "merged_risks": sorted(decision.merged_risks),
+    }
+    return json.dumps(data, sort_keys=True, separators=(",", ":"))
+
 
 def decision_from_json(json_str: str) -> ArbitrationDecision:
     """Deserialize JSON string to ArbitrationDecision."""
     data = json.loads(json_str)
-    return ArbitrationDecision(selected_advisor_id=data['selected_advisor_id'], selected_decision=data['selected_decision'], score_breakdown=data['score_breakdown'], merged_rationale=data['merged_rationale'], merged_risks=data['merged_risks'])
-__all__ = ['AdvisorProposal', 'ArbitrationInput', 'ArbitrationDecision', 'proposal_to_json', 'proposal_from_json', 'arbitration_input_to_json', 'arbitration_input_from_json', 'decision_to_json', 'decision_from_json']
+    return ArbitrationDecision(
+        selected_advisor_id=data["selected_advisor_id"],
+        selected_decision=data["selected_decision"],
+        score_breakdown=data["score_breakdown"],
+        merged_rationale=data["merged_rationale"],
+        merged_risks=data["merged_risks"],
+    )
+
+
+__all__ = [
+    "AdvisorProposal",
+    "ArbitrationInput",
+    "ArbitrationDecision",
+    "proposal_to_json",
+    "proposal_from_json",
+    "arbitration_input_to_json",
+    "arbitration_input_from_json",
+    "decision_to_json",
+    "decision_from_json",
+]

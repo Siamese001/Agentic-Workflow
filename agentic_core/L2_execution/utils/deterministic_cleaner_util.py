@@ -1,5 +1,6 @@
 from __future__ import annotations
-'\nL6 Deterministic Pre-Flight Sanitation\n\nImplements deterministic cleaners that run before LLM processing\nto maintain baseline code quality and save tokens.\n'
+
+"\nL6 Deterministic Pre-Flight Sanitation\n\nImplements deterministic cleaners that run before LLM processing\nto maintain baseline code quality and save tokens.\n"
 import ast
 import logging
 import os
@@ -8,11 +9,14 @@ import subprocess
 import tempfile
 from pathlib import Path
 from typing import Any
+
 from agentic_core.shared.architecture_constants import ALLOWED_ROOT_FILES
+
 from agentic_core.utils.security_util import safe_execute
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 LOGGER = logging.getLogger(__name__)
 Logger: Any = logging.getLogger(__name__)
+
 
 class DeterministicCleaner:
     """
@@ -20,7 +24,7 @@ class DeterministicCleaner:
     before it reaches the LLM for processing.
     """
 
-    def __init__(self, enable_isort: bool=True, enable_autopep8: bool=True):
+    def __init__(self, enable_isort: bool = True, enable_autopep8: bool = True):
         """
         Initialize the deterministic cleaner.
 
@@ -30,24 +34,24 @@ class DeterministicCleaner:
         """
         self.enable_isort = enable_isort
         self.enable_autopep8 = enable_autopep8
-        self.has_isort = self._check_tool('isort')
-        self.has_autopep8 = self._check_tool('autopep8')
+        self.has_isort = self._check_tool("isort")
+        self.has_autopep8 = self._check_tool("autopep8")
         if self.enable_isort and (not self.has_isort):
-            LOGGER.warning('isort not available - import sorting disabled')
+            LOGGER.warning("isort not available - import sorting disabled")
             self.enable_isort = False
         if self.enable_autopep8 and (not self.has_autopep8):
-            LOGGER.warning('autopep8 not available - PEP8 formatting disabled')
+            LOGGER.warning("autopep8 not available - PEP8 formatting disabled")
             self.enable_autopep8 = False
 
     def _check_tool(self, tool_name: str) -> bool:
         """Check if a formatting tool is available."""
         try:
-            safe_execute([tool_name, '--version'], capture_output=True, check=True)
+            safe_execute([tool_name, "--version"], capture_output=True, check=True)
             return True
         except (subprocess.CalledProcessError, FileNotFoundError):
             return False
 
-    def deterministic_clean(self, code: str, file_path: str | None=None) -> tuple[str, bool]:
+    def deterministic_clean(self, code: str, file_path: str | None = None) -> tuple[str, bool]:
         """
         Apply deterministic cleaning to code.
 
@@ -74,7 +78,7 @@ class DeterministicCleaner:
             return (cleaned_code, was_modified)
         # guardian: allow-silent-swallow
         except Exception as e:
-            LOGGER.error(f'Error in deterministic cleaning: {e}')
+            LOGGER.error(f"Error in deterministic cleaning: {e}")
             return (original_code, False)
 
     def _scrub_markdown_artifacts(self, code: str) -> str:
@@ -87,61 +91,66 @@ class DeterministicCleaner:
         Returns:
             Clean Python code
         """
-        code = re.sub('```python\\s*\\n?', '', code)
-        code = re.sub('```\\s*\\n?', '', code)
-        code = re.sub('^#.*?```.*?```', '', code, flags=re.MULTILINE | re.DOTALL)
+        code = re.sub("```python\\s*\\n?", "", code)
+        code = re.sub("```\\s*\\n?", "", code)
+        code = re.sub("^#.*?```.*?```", "", code, flags=re.MULTILINE | re.DOTALL)
         code = code.strip()
         return code
 
-    def _apply_isort(self, code: str, file_path: str | None=None) -> str:
+    def _apply_isort(self, code: str, file_path: str | None = None) -> str:
         """Apply isort to sort imports."""
         try:
-            with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
+            with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
                 f.write(code)
                 temp_file = f.name
             try:
-                safe_execute(['isort', '--profile', 'black', temp_file], capture_output=True, text=True, check=True)
+                safe_execute(
+                    ["isort", "--profile", "black", temp_file], capture_output=True, text=True, check=True
+                )
                 with open(temp_file) as f:
                     return f.read()
             finally:
                 os.unlink(temp_file)
         except subprocess.CalledProcessError as e:
-            LOGGER.warning(f'isort failed: {e.stderr}')
+            LOGGER.warning(f"isort failed: {e.stderr}")
             return code
 
-    def _apply_autopep8(self, code: str, file_path: str | None=None) -> str:
+    def _apply_autopep8(self, code: str, file_path: str | None = None) -> str:
         """Apply autopep8 for PEP8 formatting."""
         try:
-            result = safe_execute(['autopep8', '--', '-'], input=code, capture_output=True, text=True, check=True)
+            result = safe_execute(
+                ["autopep8", "--", "-"], input=code, capture_output=True, text=True, check=True
+            )
             return result.stdout
         except subprocess.CalledProcessError as e:
-            LOGGER.warning(f'autopep8 failed: {e.stderr}')
+            LOGGER.warning(f"autopep8 failed: {e.stderr}")
             return code
 
     def _basic_cleanup(self, code: str) -> str:
         """Apply basic cleanup operations."""
-        lines = code.split('\n')
+        lines = code.split("\n")
         cleaned_lines = []
         blank_count = 0
         for line in lines:
-            if line.strip() == '':
+            if line.strip() == "":
                 blank_count += 1
                 if blank_count <= 2:
                     cleaned_lines.append(line)
             else:
                 blank_count = 0
                 cleaned_lines.append(line)
-        result = '\n'.join(cleaned_lines)
-        if result and (not result.endswith('\n')):
-            result += '\n'
+        result = "\n".join(cleaned_lines)
+        if result and (not result.endswith("\n")):
+            result += "\n"
         return result
+
 
 class CompliantFileWriter:
     """
     Writes files with compliance checks and validation.
     """
 
-    def __init__(self, root_dir: str | None=None):
+    def __init__(self, root_dir: str | None = None):
         """
         Initialize the compliant file writer.
 
@@ -151,7 +160,7 @@ class CompliantFileWriter:
         self.root_dir = Path(root_dir) if root_dir else Path.cwd()
         self.cleaner = DeterministicCleaner()
 
-    def write_compliant_file(self, file_path: str, content: str, pre_clean: bool=True) -> bool:
+    def write_compliant_file(self, file_path: str, content: str, pre_clean: bool = True) -> bool:
         """
         Write a file with compliance checks.
 
@@ -166,23 +175,23 @@ class CompliantFileWriter:
         try:
             path: Any = Path(file_path)
             if not self._check_root_hygiene(path):
-                LOGGER.error(f'Root hygiene Violation: {file_path}')
+                LOGGER.error(f"Root hygiene Violation: {file_path}")
                 return False
             if pre_clean:
                 content, was_cleaned = self.cleaner.deterministic_clean(content, file_path)
                 if was_cleaned:
-                    LOGGER.info(f'Pre-flight cleaning applied to {file_path}')
+                    LOGGER.info(f"Pre-flight cleaning applied to {file_path}")
             if not self._validate_syntax(content):
-                LOGGER.error(f'Syntax validation failed for {file_path}')
+                LOGGER.error(f"Syntax validation failed for {file_path}")
                 return False
             path.parent.mkdir(parents=True, exist_ok=True)
-            with open(path, 'w', encoding='utf-8') as f:
+            with open(path, "w", encoding="utf-8") as f:
                 f.write(content)
-            LOGGER.debug(f'Successfully wrote compliant file: {file_path}')
+            LOGGER.debug(f"Successfully wrote compliant file: {file_path}")
             return True
         # guardian: allow-silent-swallow
         except Exception as e:
-            LOGGER.error(f'Failed to write compliant file {file_path}: {e}')
+            LOGGER.error(f"Failed to write compliant file {file_path}: {e}")
             return False
 
     def _check_root_hygiene(self, file_path: Path) -> bool:
@@ -197,14 +206,17 @@ class CompliantFileWriter:
             ast.parse(content)
             return True
         except SyntaxError as e:
-            LOGGER.error(f'Syntax error: {e}')
+            LOGGER.error(f"Syntax error: {e}")
             return False
         # guardian: allow-silent-swallow
         except Exception as e:
-            LOGGER.error(f'Validation error: {e}')
+            LOGGER.error(f"Validation error: {e}")
             return False
+
+
 _cleaner: DeterministicCleaner | None = None
 _writer: CompliantFileWriter | None = None
+
 
 def get_deterministic_cleaner() -> DeterministicCleaner:
     """Get or create the global deterministic cleaner instance."""
@@ -213,14 +225,16 @@ def get_deterministic_cleaner() -> DeterministicCleaner:
         _cleaner = DeterministicCleaner()
     return _cleaner
 
-def get_compliant_writer(root_dir: str | None=None) -> CompliantFileWriter:
+
+def get_compliant_writer(root_dir: str | None = None) -> CompliantFileWriter:
     """Get or create the global compliant file writer instance."""
     global _writer
     if _writer is None:
         _writer = CompliantFileWriter(root_dir)
     return _writer
 
-def deterministic_clean(code: str, file_path: str | None=None) -> tuple[str, bool]:
+
+def deterministic_clean(code: str, file_path: str | None = None) -> tuple[str, bool]:
     """
     Apply deterministic cleaning to code.
     Args:
@@ -233,7 +247,8 @@ def deterministic_clean(code: str, file_path: str | None=None) -> tuple[str, boo
     cleaner: Any = get_deterministic_cleaner()
     return cleaner.deterministic_clean(code, file_path)
 
-def write_compliant_file(file_path: str, content: str, pre_clean: bool=True) -> bool:
+
+def write_compliant_file(file_path: str, content: str, pre_clean: bool = True) -> bool:
     """
     Write a file with compliance checks.
 

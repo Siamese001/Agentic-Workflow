@@ -3,13 +3,16 @@ NamingAgent - Agent for handling naming conventions and validation.
 
 Re-exported from L5_safety for backwards compatibility.
 """
+
 from fnmatch import fnmatch
 from pathlib import Path
 from typing import Any
+
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L5_safety.config.structure_blueprint import PROJECT_ROOT_METADATA
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 TREE_SITTER_AVAILABLE = False
+
 
 class PlacementResult:
     """
@@ -21,7 +24,7 @@ class PlacementResult:
         suggestions: List of alternative placement suggestions
     """
 
-    def __init__(self, path: str='', confidence: float=1.0) -> None:
+    def __init__(self, path: str = "", confidence: float = 1.0) -> None:
         """
         Initialize placement result.
 
@@ -33,6 +36,7 @@ class PlacementResult:
         self.confidence: float = confidence
         self.suggestions: list = []
 
+
 class NamingAgent(SovereignBaseAgent):
     """
     Stub NamingAgent for backwards compatibility.
@@ -42,13 +46,15 @@ class NamingAgent(SovereignBaseAgent):
     """
 
     # guardian: allow-type-erasure
-    def heal_repository(self, dry_run: bool=True, execute: bool=False, depth: int=0, **kwargs: Any) -> dict[str, Any]:
+    def heal_repository(
+        self, dry_run: bool = True, execute: bool = False, depth: int = 0, **kwargs: Any
+    ) -> dict[str, Any]:
         """Autonomous healing method (Canon Key 51 compliance)."""
         try:
             super().heal_repository(dry_run=dry_run, **kwargs)
         except (AttributeError, TypeError):
             pass
-        return {'violations_found': 0, 'violations_fixed': 0, 'errors': 0}
+        return {"violations_found": 0, "violations_fixed": 0, "errors": 0}
 
     # guardian: allow-type-erasure
     def heal(self, violation: dict) -> dict:
@@ -56,13 +62,18 @@ class NamingAgent(SovereignBaseAgent):
         [SOVEREIGN CONTRACT] Standardized healing interface for NamingAgent.
         """
         try:
-            target = violation.get('file')
-            violation.get('type', '')
+            target = violation.get("file")
+            violation.get("type", "")
             if not target:
-                return {'status': 'skipped', 'reason': 'No target file specified'}
-            return {'status': 'manual_required', 'reason': 'Naming violations require manual review', 'suggested_action': f'Review naming conventions for {target}', 'confidence': 0.8}
+                return {"status": "skipped", "reason": "No target file specified"}
+            return {
+                "status": "manual_required",
+                "reason": "Naming violations require manual review",
+                "suggested_action": f"Review naming conventions for {target}",
+                "confidence": 0.8,
+            }
         except Exception as e:
-            return {'status': 'error', 'error': str(e)}
+            return {"status": "error", "error": str(e)}
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         """Initialize the stub NamingAgent."""
@@ -74,7 +85,7 @@ class NamingAgent(SovereignBaseAgent):
         [SSOT] Checks PROJECT_ROOT_METADATA for whitelist exemptions.
         """
         for meta in PROJECT_ROOT_METADATA.values():
-            for pattern in meta.get('file_patterns', []):
+            for pattern in meta.get("file_patterns", []):
                 if fnmatch(name, pattern):
                     return True
         return True
@@ -97,11 +108,12 @@ class NamingAgent(SovereignBaseAgent):
         return {}
 
     # guardian: allow-type-erasure
-    def move_to_canonical_location(self, path: Path, dry_run: bool=True) -> dict:
+    def move_to_canonical_location(self, path: Path, dry_run: bool = True) -> dict:
         """Stub method for canonical moves."""
-        return {'moved': False, 'reason': 'Stub implementation'}
+        return {"moved": False, "reason": "Stub implementation"}
 
-def get_naming_agent(project_root: str | None=None) -> NamingAgent:
+
+def get_naming_agent(project_root: str | None = None) -> NamingAgent:
     """
     Get a NamingAgent instance.
 
@@ -116,4 +128,6 @@ def get_naming_agent(project_root: str | None=None) -> NamingAgent:
     if project_root:
         return NamingAgent(project_root)
     return NamingAgent()
-__all__ = ['NamingAgent', 'get_naming_agent', 'TREE_SITTER_AVAILABLE', 'PlacementResult']
+
+
+__all__ = ["NamingAgent", "get_naming_agent", "TREE_SITTER_AVAILABLE", "PlacementResult"]

@@ -6,24 +6,27 @@ Provides deterministic clustering of historical embeddings to detect
 recurring failure motifs. All outputs are stable, hash-verifiable,
 and bounded to C0 influence only.
 """
+
 from __future__ import annotations
+
 import hashlib
 import json
 import math
 from dataclasses import asdict, dataclass, field
 from typing import Any, Protocol, runtime_checkable
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 @runtime_checkable
 class EmbeddingClient(Protocol):
     """Minimal protocol for embedding clients (informational-only, C0 influence)."""
 
-    async def get_embeddings_batch(self, texts: list[str]) -> list[list[float]]:
-        ...
+    async def get_embeddings_batch(self, texts: list[str]) -> list[list[float]]: ...
+
 
 @dataclass
 class PatternAnalysisConfig:
     """Configuration for PatternAnalysisEngine."""
+
     precision: int = 6
     min_cluster_size: int = 2
     distance_threshold: float = 0.25
@@ -31,56 +34,84 @@ class PatternAnalysisConfig:
     min_observations: int = 10
     drift_score_threshold: float = 0.7
 
+
 @dataclass(frozen=True)
 class Cluster:
     """Deterministic cluster representation."""
+
     centroid: list[float]
     cluster_size: int
     representative_metadata_keys: list[str]
 
+
 @dataclass(frozen=True)
 class PatternSummary:
     """Summary of pattern analysis with deterministic digest."""
+
     clusters: list[Cluster]
     pattern_digest: str
+
 
 @dataclass(frozen=True)
 class PatternFindingKey:
     """Stable key identifying a finding type."""
+
     label: str
     component: str
     dimension: str
 
+
 @dataclass(frozen=True)
 class PatternFinding:
     """A single deterministic finding from pattern analysis."""
+
     key: PatternFindingKey
     severity: float
     evidence: str
     metrics: tuple
 
+
 @dataclass(frozen=True)
 class PatternSourceIds:
     """Version IDs of input data sources consumed by the analysis."""
+
     healing_snapshot_version: str | None
     detection_signal_version: str | None
     drift_snapshot_version: str | None
 
+
 @dataclass(frozen=True)
 class PatternAnalysisReport:
     """Deterministic pattern analysis report (new API)."""
+
     findings: tuple
     source_ids: PatternSourceIds
     _digest: str = field(compare=False)
 
     def canonical_bytes(self) -> bytes:
         """Canonical byte representation for hashing."""
-        data = {'findings': [{'key': {'label': f.key.label, 'component': f.key.component, 'dimension': f.key.dimension}, 'severity': f.severity, 'evidence': f.evidence, 'metrics': list(f.metrics)} for f in self.findings], 'source_ids': {'healing_snapshot_version': self.source_ids.healing_snapshot_version, 'detection_signal_version': self.source_ids.detection_signal_version, 'drift_snapshot_version': self.source_ids.drift_snapshot_version}}
-        return json.dumps(data, sort_keys=True, separators=(',', ':')).encode('utf-8')
+        data = {
+            "findings": [
+                {
+                    "key": {"label": f.key.label, "component": f.key.component, "dimension": f.key.dimension},
+                    "severity": f.severity,
+                    "evidence": f.evidence,
+                    "metrics": list(f.metrics),
+                }
+                for f in self.findings
+            ],
+            "source_ids": {
+                "healing_snapshot_version": self.source_ids.healing_snapshot_version,
+                "detection_signal_version": self.source_ids.detection_signal_version,
+                "drift_snapshot_version": self.source_ids.drift_snapshot_version,
+            },
+        }
+        return json.dumps(data, sort_keys=True, separators=(",", ":")).encode("utf-8")
 
     def content_hash(self) -> str:
         """SHA-256 hex digest of canonical bytes."""
         return hashlib.sha256(self.canonical_bytes()).hexdigest()
+
 
 class PatternAnalysisEngine:
     """Deterministic pattern analysis engine for semantic clustering.
@@ -90,7 +121,13 @@ class PatternAnalysisEngine:
     precision rounding to ensure identical outputs across runs.
     """
 
-    def __init__(self, config: PatternAnalysisConfig | None=None, *, precision: int=6, embedder: EmbeddingClient | None=None) -> None:
+    def __init__(
+        self,
+        config: PatternAnalysisConfig | None = None,
+        *,
+        precision: int = 6,
+        embedder: EmbeddingClient | None = None,
+    ) -> None:
         """Initialize engine with deterministic precision.
 
         Args:
@@ -106,7 +143,17 @@ class PatternAnalysisEngine:
             self._precision = precision
         self.embedder = embedder
 
-    def analyze(self, historical_embeddings: list[list[float]] | None=None, metadata: list[dict[str, Any]] | None=None, *, min_cluster_size: int=2, healing_snapshot_bytes: bytes | None=None, detection_signal_bytes: bytes | None=None, drift_snapshot_bytes: bytes | None=None, now_utc: int | None=None) -> PatternSummary | PatternAnalysisReport:
+    def analyze(
+        self,
+        historical_embeddings: list[list[float]] | None = None,
+        metadata: list[dict[str, Any]] | None = None,
+        *,
+        min_cluster_size: int = 2,
+        healing_snapshot_bytes: bytes | None = None,
+        detection_signal_bytes: bytes | None = None,
+        drift_snapshot_bytes: bytes | None = None,
+        now_utc: int | None = None,
+    ) -> PatternSummary | PatternAnalysisReport:
         """Analyze patterns from either raw embeddings or snapshot bytes.
 
         Two calling conventions:
@@ -115,63 +162,123 @@ class PatternAnalysisEngine:
                             drift_snapshot_bytes=..., now_utc=...) -> PatternAnalysisReport
         """
         if healing_snapshot_bytes is not None or now_utc is not None:
-            return self._analyze_from_snapshots(healing_snapshot_bytes=healing_snapshot_bytes, detection_signal_bytes=detection_signal_bytes, drift_snapshot_bytes=drift_snapshot_bytes, now_utc=now_utc)
-        return self._analyze_embeddings(historical_embeddings=historical_embeddings or [], metadata=metadata or [], min_cluster_size=min_cluster_size)
+            return self._analyze_from_snapshots(
+                healing_snapshot_bytes=healing_snapshot_bytes,
+                detection_signal_bytes=detection_signal_bytes,
+                drift_snapshot_bytes=drift_snapshot_bytes,
+                now_utc=now_utc,
+            )
+        return self._analyze_embeddings(
+            historical_embeddings=historical_embeddings or [],
+            metadata=metadata or [],
+            min_cluster_size=min_cluster_size,
+        )
 
-    def _analyze_from_snapshots(self, *, healing_snapshot_bytes: bytes | None, detection_signal_bytes: bytes | None, drift_snapshot_bytes: bytes | None, now_utc: int | None) -> PatternAnalysisReport:
+    def _analyze_from_snapshots(
+        self,
+        *,
+        healing_snapshot_bytes: bytes | None,
+        detection_signal_bytes: bytes | None,
+        drift_snapshot_bytes: bytes | None,
+        now_utc: int | None,
+    ) -> PatternAnalysisReport:
         """Analyze from snapshot bytes — new typed API."""
         import json as _json
+
         findings: list[PatternFinding] = []
         healing_version: str | None = None
         detection_version: str | None = None
         drift_version: str | None = None
         if healing_snapshot_bytes is not None:
             try:
-                snap = _json.loads(healing_snapshot_bytes.decode('utf-8'))
+                snap = _json.loads(healing_snapshot_bytes.decode("utf-8"))
             except (_json.JSONDecodeError, UnicodeDecodeError) as exc:
-                raise ValueError(f'Invalid healing_snapshot_bytes: {exc}') from exc
-            healing_version = snap.get('version_id')
-            aggregates = snap.get('aggregates', [])
+                raise ValueError(f"Invalid healing_snapshot_bytes: {exc}") from exc
+            healing_version = snap.get("version_id")
+            aggregates = snap.get("aggregates", [])
             for agg in aggregates:
-                key_data = agg.get('key', {})
-                healer = key_data.get('healer_name', 'unknown')
-                counts = agg.get('aggregate', agg.get('counts', {}))
-                total = counts.get('total_count', 0)
-                success = counts.get('success_count', 0)
+                key_data = agg.get("key", {})
+                healer = key_data.get("healer_name", "unknown")
+                counts = agg.get("aggregate", agg.get("counts", {}))
+                total = counts.get("total_count", 0)
+                success = counts.get("success_count", 0)
                 if total >= self._config.min_observations:
                     success_rate = success / total if total > 0 else 0.0
                     if success_rate < self._config.success_rate_threshold_low:
                         severity = round(1.0 - success_rate, 6)
-                        evidence = f'success_rate_{success_rate:.6f}|threshold_{self._config.success_rate_threshold_low:.6f}|sample_size_{total}'
-                        metrics = (('success_rate', round(success_rate, 6)), ('sample_size', total), ('error_rate', round(1.0 - success_rate, 6)))
-                        findings.append(PatternFinding(key=PatternFindingKey(label='UNDERPERFORMING_HEALER_TIER', component=healer, dimension='performance'), severity=severity, evidence=evidence, metrics=metrics))
+                        evidence = f"success_rate_{success_rate:.6f}|threshold_{self._config.success_rate_threshold_low:.6f}|sample_size_{total}"
+                        metrics = (
+                            ("success_rate", round(success_rate, 6)),
+                            ("sample_size", total),
+                            ("error_rate", round(1.0 - success_rate, 6)),
+                        )
+                        findings.append(
+                            PatternFinding(
+                                key=PatternFindingKey(
+                                    label="UNDERPERFORMING_HEALER_TIER",
+                                    component=healer,
+                                    dimension="performance",
+                                ),
+                                severity=severity,
+                                evidence=evidence,
+                                metrics=metrics,
+                            )
+                        )
         if drift_snapshot_bytes is not None:
             try:
-                drift = _json.loads(drift_snapshot_bytes.decode('utf-8'))
-                drift_version = drift.get('version')
-                for score_entry in drift.get('drift_scores', []):
-                    component = score_entry.get('component', 'unknown')
-                    score = score_entry.get('score', 0.0)
+                drift = _json.loads(drift_snapshot_bytes.decode("utf-8"))
+                drift_version = drift.get("version")
+                for score_entry in drift.get("drift_scores", []):
+                    component = score_entry.get("component", "unknown")
+                    score = score_entry.get("score", 0.0)
                     if score >= self._config.drift_score_threshold:
-                        evidence = f'drift_score_{score:.6f}|threshold_{self._config.drift_score_threshold:.6f}'
-                        findings.append(PatternFinding(key=PatternFindingKey(label='ROUTING_DRIFT_HIGH', component=component, dimension='drift'), severity=round(score, 6), evidence=evidence, metrics=tuple(sorted([('drift_score', round(score, 6))]))))
+                        evidence = (
+                            f"drift_score_{score:.6f}|threshold_{self._config.drift_score_threshold:.6f}"
+                        )
+                        findings.append(
+                            PatternFinding(
+                                key=PatternFindingKey(
+                                    label="ROUTING_DRIFT_HIGH", component=component, dimension="drift"
+                                ),
+                                severity=round(score, 6),
+                                evidence=evidence,
+                                metrics=tuple(sorted([("drift_score", round(score, 6))])),
+                            )
+                        )
             # guardian: allow-silent-swallow
             except Exception:
                 pass
         if detection_signal_bytes is not None:
             try:
-                det = _json.loads(detection_signal_bytes.decode('utf-8'))
-                detection_version = det.get('version')
+                det = _json.loads(detection_signal_bytes.decode("utf-8"))
+                detection_version = det.get("version")
             # guardian: allow-silent-swallow
             except Exception:
                 pass
         findings.sort(key=lambda f: (f.key.label, f.key.component, f.key.dimension))
-        source_ids = PatternSourceIds(healing_snapshot_version=healing_version, detection_signal_version=detection_version, drift_snapshot_version=drift_version)
-        canonical = _json.dumps({'findings': [f.evidence for f in findings], 'source_ids': {'healing': healing_version, 'detection': detection_version, 'drift': drift_version}}, sort_keys=True, separators=(',', ':'))
+        source_ids = PatternSourceIds(
+            healing_snapshot_version=healing_version,
+            detection_signal_version=detection_version,
+            drift_snapshot_version=drift_version,
+        )
+        canonical = _json.dumps(
+            {
+                "findings": [f.evidence for f in findings],
+                "source_ids": {
+                    "healing": healing_version,
+                    "detection": detection_version,
+                    "drift": drift_version,
+                },
+            },
+            sort_keys=True,
+            separators=(",", ":"),
+        )
         digest = hashlib.sha256(canonical.encode()).hexdigest()
         return PatternAnalysisReport(findings=tuple(findings), source_ids=source_ids, _digest=digest)
 
-    def _analyze_embeddings(self, historical_embeddings: list[list[float]], metadata: list[dict[str, Any]], min_cluster_size: int) -> PatternSummary:
+    def _analyze_embeddings(
+        self, historical_embeddings: list[list[float]], metadata: list[dict[str, Any]], min_cluster_size: int
+    ) -> PatternSummary:
         """Analyze historical embeddings for deterministic patterns.
 
         Args:
@@ -183,7 +290,7 @@ class PatternAnalysisEngine:
             PatternSummary with deterministic clusters and digest
         """
         if len(historical_embeddings) != len(metadata):
-            raise ValueError('Embeddings and metadata must have same length')
+            raise ValueError("Embeddings and metadata must have same length")
         if not historical_embeddings:
             return PatternSummary(clusters=[], pattern_digest=self._empty_digest())
         processed_embeddings = [self._l2_normalize(self._round_vector(emb)) for emb in historical_embeddings]
@@ -191,10 +298,12 @@ class PatternAnalysisEngine:
         digest = self._compute_digest(clusters)
         return PatternSummary(clusters=clusters, pattern_digest=digest)
 
-    async def analyze_texts(self, texts: list[str], metadata: list[dict[str, Any]], *, min_cluster_size: int) -> PatternSummary:
+    async def analyze_texts(
+        self, texts: list[str], metadata: list[dict[str, Any]], *, min_cluster_size: int
+    ) -> PatternSummary:
         """Analyze texts by embedding them first and then clustering."""
         if not self.embedder:
-            raise RuntimeError('PatternAnalysisEngine not initialized with an embedder.')
+            raise RuntimeError("PatternAnalysisEngine not initialized with an embedder.")
         embeddings = await self.embedder.get_embeddings_batch(texts)
         return self.analyze(embeddings, metadata, min_cluster_size=min_cluster_size)
 
@@ -202,7 +311,9 @@ class PatternAnalysisEngine:
         """Round vector to fixed precision for determinism."""
         return [round(x, self._precision) for x in vector]
 
-    def _deterministic_cluster(self, embeddings: list[list[float]], metadata: list[dict[str, Any]], min_cluster_size: int) -> list[Cluster]:
+    def _deterministic_cluster(
+        self, embeddings: list[list[float]], metadata: list[dict[str, Any]], min_cluster_size: int
+    ) -> list[Cluster]:
         """Perform deterministic clustering using distance threshold."""
         if not embeddings:
             return []
@@ -239,13 +350,19 @@ class PatternAnalysisEngine:
                     if key not in seen:
                         seen.add(key)
                         unique_keys.append(key)
-                clusters.append(Cluster(centroid=centroid, cluster_size=len(cluster_indices), representative_metadata_keys=unique_keys[:10]))
+                clusters.append(
+                    Cluster(
+                        centroid=centroid,
+                        cluster_size=len(cluster_indices),
+                        representative_metadata_keys=unique_keys[:10],
+                    )
+                )
         clusters.sort(key=lambda c: self._vector_hash(c.centroid))
         return clusters
 
     def _l2_normalize(self, v: list[float]) -> list[float]:
         """L2 normalize a vector with an epsilon guard."""
-        norm = math.sqrt(sum((x * x for x in v)))
+        norm = math.sqrt(sum(x * x for x in v))
         if norm < 1e-12:
             return [0.0] * len(v)
         return [x / norm for x in v]
@@ -262,22 +379,33 @@ class PatternAnalysisEngine:
         dim = len(vectors[0])
         centroid = []
         for i in range(dim):
-            mean_val = sum((v[i] for v in vectors)) / len(vectors)
+            mean_val = sum(v[i] for v in vectors) / len(vectors)
             centroid.append(round(mean_val, self._precision))
         return centroid
 
     def _vector_hash(self, vector: list[float]) -> str:
         """Compute deterministic hash of vector for sorting."""
-        vector_str = json.dumps(vector, separators=(',', ':'))
+        vector_str = json.dumps(vector, separators=(",", ":"))
         return hashlib.sha256(vector_str.encode()).hexdigest()[:16]
 
     def _compute_digest(self, clusters: list[Cluster]) -> str:
         """Compute deterministic digest over all clusters."""
         cluster_data = [asdict(cluster) for cluster in clusters]
-        canonical_json = json.dumps(cluster_data, separators=(',', ':'), sort_keys=True)
+        canonical_json = json.dumps(cluster_data, separators=(",", ":"), sort_keys=True)
         return hashlib.sha256(canonical_json.encode()).hexdigest()
 
     def _empty_digest(self) -> str:
         """Digest for empty input."""
         return hashlib.sha256(json.dumps([]).encode()).hexdigest()
-__all__ = ['PatternAnalysisConfig', 'PatternAnalysisEngine', 'PatternSummary', 'Cluster', 'PatternFinding', 'PatternFindingKey', 'PatternSourceIds', 'PatternAnalysisReport']
+
+
+__all__ = [
+    "PatternAnalysisConfig",
+    "PatternAnalysisEngine",
+    "PatternSummary",
+    "Cluster",
+    "PatternFinding",
+    "PatternFindingKey",
+    "PatternSourceIds",
+    "PatternAnalysisReport",
+]

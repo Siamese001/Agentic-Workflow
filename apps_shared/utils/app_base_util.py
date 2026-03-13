@@ -7,26 +7,34 @@ Phase 2A.3 - Base Class Standardization
 NOTE: This is a CLASS (blueprint/template), NOT an active worker agent.
 Zero-Ambiguity Standard: Removed "Agent" suffix to clarify its role.
 """
+
 from __future__ import annotations
+
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Final
+
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 try:
     from agentic_core.interfaces.mixins import MetaLearningMixin
 except ImportError:
 
     class MetaLearningMixin:
         """Fallback MetaLearningMixin when not available."""
+
         pass
+
+
 try:
     from agentic_core.interfaces.mixins import HealerMixin
 except ImportError:
 
     class HealerMixin:
         """Fallback HealerMixin when not available."""
+
         pass
+
 
 @dataclass
 class AppBase(MetaLearningMixin, SovereignBaseAgent, HealerMixin):
@@ -45,11 +53,12 @@ class AppBase(MetaLearningMixin, SovereignBaseAgent, HealerMixin):
     NOTE: This is a CLASS (blueprint), NOT an active worker agent.
     The "Agent" suffix was removed per Zero-Ambiguity Naming Standard.
     """
-    domain_root: Path = field(default_factory=lambda: Path('apps'))
-    _app_version: Final[str] = '2.5.0-unified'
-    _namespace: str = field(default='apps', init=False)
+
+    domain_root: Path = field(default_factory=lambda: Path("apps"))
+    _app_version: Final[str] = "2.5.0-unified"
+    _namespace: str = field(default="apps", init=False)
     _similarity_threshold: float = field(default=0.85, init=False)
-    _resource_prefix: str = field(default='app', init=False)
+    _resource_prefix: str = field(default="app", init=False)
 
     def __post_init__(self) -> None:
         """
@@ -66,7 +75,13 @@ class AppBase(MetaLearningMixin, SovereignBaseAgent, HealerMixin):
         Returns:
             Dictionary with app context information
         """
-        return {'domain': str(self.domain_root), 'version': self._app_version, 'namespace': self._namespace, 'capabilities': self.get_sovereign_capabilities(), 'resource_prefix': self._resource_prefix}
+        return {
+            "domain": str(self.domain_root),
+            "version": self._app_version,
+            "namespace": self._namespace,
+            "capabilities": self.get_sovereign_capabilities(),
+            "resource_prefix": self._resource_prefix,
+        }
 
     def get_resource_key(self, key: str) -> str:
         """
@@ -78,7 +93,7 @@ class AppBase(MetaLearningMixin, SovereignBaseAgent, HealerMixin):
         Returns:
             Namespaced resource key
         """
-        return f'{self._resource_prefix}:{self._namespace}:{key}'
+        return f"{self._resource_prefix}:{self._namespace}:{key}"
 
     def validate_app_config(self) -> bool:
         """
@@ -91,7 +106,7 @@ class AppBase(MetaLearningMixin, SovereignBaseAgent, HealerMixin):
         if not self.domain_root.exists():
             return False
         # guardian: allow-config-with-logic
-        if not self._namespace or self._namespace == '':
+        if not self._namespace or self._namespace == "":
             return False
         return True
 
@@ -102,7 +117,13 @@ class AppBase(MetaLearningMixin, SovereignBaseAgent, HealerMixin):
         Returns:
             Dictionary with app metadata
         """
-        return {'agent_class': self.__class__.__name__, 'domain': str(self.domain_root), 'namespace': self._namespace, 'version': self._app_version, 'similarity_threshold': self._similarity_threshold}
+        return {
+            "agent_class": self.__class__.__name__,
+            "domain": str(self.domain_root),
+            "namespace": self._namespace,
+            "version": self._app_version,
+            "similarity_threshold": self._similarity_threshold,
+        }
 
     def heal(self, violation, **kwargs):
         return super().heal(violation, **kwargs)

@@ -13,12 +13,18 @@ OPERATIONAL SAFETY (Feb 2026):
 - All subprocess calls are validated against the security firewall
 - Cleanup is guaranteed via context manager or explicit cleanup() call
 """
+
 import logging
 from typing import Any
+
 from agentic_core.L5_safety.enforcement.process_guardrail import ProcessGuard, SecurityViolation
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 try:
-    from agentic_core.L5_safety.enforcement.safe_subprocess_handler_enforcer import safe_communicate, safe_popen, safe_run
+    from agentic_core.L5_safety.enforcement.safe_subprocess_handler_enforcer import (
+        safe_communicate,
+        safe_popen,
+        safe_run,
+    )
 except ImportError:
 
     def safe_communicate(*args, **kwargs):
@@ -29,7 +35,10 @@ except ImportError:
 
     def safe_run(*args, **kwargs):
         return None
+
+
 logger = logging.getLogger(__name__)
+
 
 class RuntimeSafetyMixin:
     """
@@ -55,15 +64,35 @@ class RuntimeSafetyMixin:
         self._process_guard = ProcessGuard.get_instance()
 
     # guardian: allow-magic-config
-    def safe_run(self, command: list[str], *, capture_output: bool=True, text: bool=True, timeout: float | None=60.0, cwd: str | None=None, sanitize_output: bool=True, max_output_chars: int=2000, **kwargs: Any):
+    def safe_run(
+        self,
+        command: list[str],
+        *,
+        capture_output: bool = True,
+        text: bool = True,
+        timeout: float | None = 60.0,
+        cwd: str | None = None,
+        sanitize_output: bool = True,
+        max_output_chars: int = 2000,
+        **kwargs: Any,
+    ):
         """
         Safely run a subprocess with security validation.
 
         See safe_subprocess.safe_run for full documentation.
         """
-        return safe_run(command, capture_output=capture_output, text=text, timeout=timeout, cwd=cwd, sanitize_output=sanitize_output, max_output_chars=max_output_chars, **kwargs)
+        return safe_run(
+            command,
+            capture_output=capture_output,
+            text=text,
+            timeout=timeout,
+            cwd=cwd,
+            sanitize_output=sanitize_output,
+            max_output_chars=max_output_chars,
+            **kwargs,
+        )
 
-    def safe_popen(self, command: list[str], *, cwd: str | None=None, **kwargs: Any):
+    def safe_popen(self, command: list[str], *, cwd: str | None = None, **kwargs: Any):
         """
         Safely spawn a subprocess with PID tracking.
 
@@ -72,13 +101,26 @@ class RuntimeSafetyMixin:
         return safe_popen(command, cwd=cwd, **kwargs)
 
     # guardian: allow-magic-config
-    def safe_communicate(self, process, input_data: str | bytes | None=None, timeout: float | None=60.0, sanitize_output: bool=True, max_output_chars: int=2000):
+    def safe_communicate(
+        self,
+        process,
+        input_data: str | bytes | None = None,
+        timeout: float | None = 60.0,
+        sanitize_output: bool = True,
+        max_output_chars: int = 2000,
+    ):
         """
         Safely communicate with a Popen process.
 
         See safe_subprocess.safe_communicate for full documentation.
         """
-        return safe_communicate(process, input_data=input_data, timeout=timeout, sanitize_output=sanitize_output, max_output_chars=max_output_chars)
+        return safe_communicate(
+            process,
+            input_data=input_data,
+            timeout=timeout,
+            sanitize_output=sanitize_output,
+            max_output_chars=max_output_chars,
+        )
 
     def cleanup_processes(self) -> dict[str, list[int]]:
         """
@@ -88,7 +130,7 @@ class RuntimeSafetyMixin:
             Dict with 'terminated' and 'failed' PID lists.
         """
         result = self._process_guard.cleanup()
-        if result['terminated']:
+        if result["terminated"]:
             logger.info(f"RuntimeSafetyMixin: Cleaned up {len(result['terminated'])} processes")
         return result
 
@@ -110,7 +152,7 @@ class RuntimeSafetyMixin:
     class _RuntimeGuardContext:
         """Context manager for guaranteed process cleanup."""
 
-        def __init__(self, mixin: 'RuntimeSafetyMixin'):
+        def __init__(self, mixin: "RuntimeSafetyMixin"):
             self._mixin = mixin
 
         def __enter__(self):
@@ -130,4 +172,6 @@ class RuntimeSafetyMixin:
                 # Cleanup happens automatically on exit
         """
         return self._RuntimeGuardContext(self)
-__all__ = ['RuntimeSafetyMixin', 'SecurityViolation']
+
+
+__all__ = ["RuntimeSafetyMixin", "SecurityViolation"]

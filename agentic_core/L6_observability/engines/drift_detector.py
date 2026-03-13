@@ -2,13 +2,17 @@
 
 Alerts when C0 context changes between replays, indicating potential
 drift in the embedding space that could affect decision consistency.
+
+# guardian: allow-direct-prompt-compilation
 """
+
 from __future__ import annotations
+
 import hashlib
 import logging
-from typing import Dict, Optional, Tuple
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 logger = logging.getLogger(__name__)
+
 
 class DriftDetector:
     """Detects drift in C0 context hash between executions.
@@ -19,8 +23,8 @@ class DriftDetector:
 
     def __init__(self) -> None:
         """Initialize the drift detector."""
-        self._context_registry: Dict[str, str] = {}
-        self._drift_alerts: Dict[str, Tuple[str, str]] = {}
+        self._context_registry: dict[str, str] = {}
+        self._drift_alerts: dict[str, tuple[str, str]] = {}
 
     def register_context_hash(self, replay_key: str, c0_context_hash: str) -> bool:
         """Register a C0 context hash for a replay key.
@@ -37,13 +41,15 @@ class DriftDetector:
             if old_hash != c0_context_hash:
                 self._drift_alerts[replay_key] = (old_hash, c0_context_hash)
                 # guardian: allow-direct-prompt-compilation
-                logger.warning(f'C0 context drift detected for replay key {replay_key}: old_hash={old_hash[:8]}..., new_hash={c0_context_hash[:8]}...')
+                logger.warning(
+                    f"C0 context drift detected for replay key {replay_key}: old_hash={old_hash[:8]}..., new_hash={c0_context_hash[:8]}..."
+                )
                 return True
         else:
             self._context_registry[replay_key] = c0_context_hash
         return False
 
-    def get_drift_alert(self, replay_key: str) -> Optional[Tuple[str, str]]:
+    def get_drift_alert(self, replay_key: str) -> tuple[str, str] | None:
         """Get drift alert for a replay key.
 
         Args:
@@ -73,7 +79,7 @@ class DriftDetector:
         """
         self._drift_alerts.pop(replay_key, None)
 
-    def get_all_drift_alerts(self) -> Dict[str, Tuple[str, str]]:
+    def get_all_drift_alerts(self) -> dict[str, tuple[str, str]]:
         """Get all drift alerts.
 
         Returns:
@@ -95,9 +101,9 @@ class DriftDetector:
         Returns:
             SHA-256 hash of the C0 context.
         """
-        return hashlib.sha256(c0_context.encode('utf-8', errors='replace')).hexdigest()
+        return hashlib.sha256(c0_context.encode("utf-8", errors="replace")).hexdigest()
 
-    def get_context_hash(self, replay_key: str) -> Optional[str]:
+    def get_context_hash(self, replay_key: str) -> str | None:
         """Get the registered context hash for a replay key.
 
         Args:
@@ -107,7 +113,10 @@ class DriftDetector:
             The context hash if registered, None otherwise.
         """
         return self._context_registry.get(replay_key)
-_drift_detector: Optional[DriftDetector] = None
+
+
+_drift_detector: DriftDetector | None = None
+
 
 def get_drift_detector() -> DriftDetector:
     """Get the global drift detector instance.
@@ -119,6 +128,7 @@ def get_drift_detector() -> DriftDetector:
     if _drift_detector is None:
         _drift_detector = DriftDetector()
     return _drift_detector
+
 
 def reset_drift_detector() -> None:
     """Reset the global drift detector (for testing)."""

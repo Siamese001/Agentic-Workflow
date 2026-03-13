@@ -7,15 +7,19 @@ Invariants:
   - Risk classification is rule-based
   - High impact defaults to REJECT unless explicitly overridden
 """
+
 from __future__ import annotations
+
 from enum import Enum
 from typing import Any, Protocol
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 class ApprovalDecision(Enum):
     """Approval decision for change package."""
-    APPROVE = 'APPROVE'
-    REJECT = 'REJECT'
+
+    APPROVE = "APPROVE"
+    REJECT = "REJECT"
+
 
 class ApprovalGate(Protocol):
     """Protocol for approval gate."""
@@ -39,6 +43,7 @@ class ApprovalGate(Protocol):
         """
         ...
 
+
 class RiskTierClassifier(Protocol):
     """Protocol for risk tier classification."""
 
@@ -57,6 +62,7 @@ class RiskTierClassifier(Protocol):
         """
         ...
 
+
 class DefaultRuleBasedGate:
     """Default deterministic rule-based approval gate.
 
@@ -71,7 +77,12 @@ class DefaultRuleBasedGate:
     """
 
     # guardian: allow-magic-config
-    def __init__(self, risk_classifier: RiskTierClassifier, high_impact_threshold: int=3, allow_high_impact: bool=False):
+    def __init__(
+        self,
+        risk_classifier: RiskTierClassifier,
+        high_impact_threshold: int = 3,
+        allow_high_impact: bool = False,
+    ):
         """Initialize approval gate.
 
         Parameters
@@ -111,6 +122,7 @@ class DefaultRuleBasedGate:
             return ApprovalDecision.REJECT
         return ApprovalDecision.APPROVE
 
+
 class DefaultRiskClassifier:
     """Default deterministic risk tier classifier.
 
@@ -123,7 +135,13 @@ class DefaultRiskClassifier:
     """
 
     # guardian: allow-magic-config
-    def __init__(self, max_surfaces_low: int=1, max_surfaces_medium: int=3, max_delta_low: float=0.05, max_delta_medium: float=0.1):
+    def __init__(
+        self,
+        max_surfaces_low: int = 1,
+        max_surfaces_medium: int = 3,
+        max_delta_low: float = 0.05,
+        max_delta_medium: float = 0.1,
+    ):
         """Initialize risk classifier.
 
         Parameters
@@ -155,9 +173,9 @@ class DefaultRiskClassifier:
         int
             Risk tier (0-4).
         """
-        num_surfaces = getattr(pkg, 'num_surfaces', 1)
-        max_delta = getattr(pkg, 'max_delta', 0.0)
-        affects_l5 = getattr(pkg, 'affects_l5', False)
+        num_surfaces = getattr(pkg, "num_surfaces", 1)
+        max_delta = getattr(pkg, "max_delta", 0.0)
+        affects_l5 = getattr(pkg, "affects_l5", False)
         if affects_l5 and max_delta > self.max_delta_medium:
             return 4
         if affects_l5 or num_surfaces > self.max_surfaces_medium or max_delta > self.max_delta_medium:

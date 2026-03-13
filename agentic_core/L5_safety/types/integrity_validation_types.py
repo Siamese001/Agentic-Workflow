@@ -1,14 +1,16 @@
 from __future__ import annotations
-'\nIntegrity Validation Guardrail - Consolidated Integrity Checks\n\nMerges:\n- L5IntegrityGateExecutor\n- GravityEnforcer\n\nComposable Rules:\n- integrity_checks: Data integrity validation\n- gravity_compliance: Gravity enforcement\n'
+
+"\nIntegrity Validation Guardrail - Consolidated Integrity Checks\n\nMerges:\n- L5IntegrityGateExecutor\n- GravityEnforcer\n\nComposable Rules:\n- integrity_checks: Data integrity validation\n- gravity_compliance: Gravity enforcement\n"
 import hashlib
 import time
 from dataclasses import dataclass, field
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 @dataclass
 class IntegrityViolation:
     """Integrity violation record."""
+
     rule: str
     severity: str
     description: str
@@ -16,13 +18,16 @@ class IntegrityViolation:
     actual: Any = None
     location: str | None = None
 
+
 @dataclass
 class IntegrityResult:
     """Result of integrity validation."""
+
     valid: bool
     violations: list[IntegrityViolation] = field(default_factory=list)
     checksum: str | None = None
     validation_time_ms: float = 0.0
+
 
 class IntegrityValidationGuardrail:
     """
@@ -36,14 +41,23 @@ class IntegrityValidationGuardrail:
 
     def __init__(self):
         """Initialize integrity validation guardrail."""
-        self.enabled_rules: list[str] = ['integrity_checks', 'gravity_compliance']
-        self.gravity_rules = {'L0': [], 'L1': ['L0'], 'L2': ['L0', 'L1'], 'L3': ['L0', 'L1', 'L2'], 'L4': ['L0', 'L1', 'L2', 'L3'], 'L5': ['L0', 'L1', 'L2', 'L3', 'L4']}
+        self.enabled_rules: list[str] = ["integrity_checks", "gravity_compliance"]
+        self.gravity_rules = {
+            "L0": [],
+            "L1": ["L0"],
+            "L2": ["L0", "L1"],
+            "L3": ["L0", "L1", "L2"],
+            "L4": ["L0", "L1", "L2", "L3"],
+            "L5": ["L0", "L1", "L2", "L3", "L4"],
+        }
         self.checksums: dict[str, str] = {}
         self.validations_performed = 0
         self.violations_found = 0
         self.gravity_violations = 0
 
-    async def validate_integrity(self, data: Any, expected_checksum: str | None=None, data_id: str | None=None) -> IntegrityResult:
+    async def validate_integrity(
+        self, data: Any, expected_checksum: str | None = None, data_id: str | None = None
+    ) -> IntegrityResult:
         """
         Validate data integrity.
 
@@ -60,18 +74,41 @@ class IntegrityValidationGuardrail:
         violations = []
         data_str = str(data)
         actual_checksum = hashlib.sha256(data_str.encode()).hexdigest()
-        if 'integrity_checks' in self.enabled_rules:
+        if "integrity_checks" in self.enabled_rules:
             if expected_checksum and actual_checksum != expected_checksum:
-                violations.append(IntegrityViolation(rule='integrity_checks', severity='error', description='Checksum mismatch - data may be corrupted', expected=expected_checksum, actual=actual_checksum))
+                violations.append(
+                    IntegrityViolation(
+                        rule="integrity_checks",
+                        severity="error",
+                        description="Checksum mismatch - data may be corrupted",
+                        expected=expected_checksum,
+                        actual=actual_checksum,
+                    )
+                )
             if data_id and data_id in self.checksums:
                 if self.checksums[data_id] != actual_checksum:
-                    violations.append(IntegrityViolation(rule='integrity_checks', severity='warning', description='Data has changed since last validation', expected=self.checksums[data_id], actual=actual_checksum))
+                    violations.append(
+                        IntegrityViolation(
+                            rule="integrity_checks",
+                            severity="warning",
+                            description="Data has changed since last validation",
+                            expected=self.checksums[data_id],
+                            actual=actual_checksum,
+                        )
+                    )
         if data_id:
             self.checksums[data_id] = actual_checksum
         self.violations_found += len(violations)
-        return IntegrityResult(valid=len(violations) == 0, violations=violations, checksum=actual_checksum, validation_time_ms=(time.time() - start_time) * 1000)
+        return IntegrityResult(
+            valid=len(violations) == 0,
+            violations=violations,
+            checksum=actual_checksum,
+            validation_time_ms=(time.time() - start_time) * 1000,
+        )
 
-    async def validate_gravity(self, source_layer: str, imported_layers: list[str], file_path: str | None=None) -> IntegrityResult:
+    async def validate_gravity(
+        self, source_layer: str, imported_layers: list[str], file_path: str | None = None
+    ) -> IntegrityResult:
         """
         Validate gravity compliance (layer import rules).
 
@@ -86,15 +123,30 @@ class IntegrityValidationGuardrail:
         start_time = time.time()
         self.validations_performed += 1
         violations = []
-        if 'gravity_compliance' not in self.enabled_rules:
-            return IntegrityResult(valid=True, violations=[], validation_time_ms=(time.time() - start_time) * 1000)
+        if "gravity_compliance" not in self.enabled_rules:
+            return IntegrityResult(
+                valid=True, violations=[], validation_time_ms=(time.time() - start_time) * 1000
+            )
         allowed_imports = self.gravity_rules.get(source_layer, [])
         for imported in imported_layers:
             if imported not in allowed_imports and imported != source_layer:
-                violations.append(IntegrityViolation(rule='gravity_compliance', severity='error', description=f'Gravity violation: {source_layer} cannot import from {imported}', expected=f'Allowed: {allowed_imports}', actual=imported, location=file_path))
+                violations.append(
+                    IntegrityViolation(
+                        rule="gravity_compliance",
+                        severity="error",
+                        description=f"Gravity violation: {source_layer} cannot import from {imported}",
+                        expected=f"Allowed: {allowed_imports}",
+                        actual=imported,
+                        location=file_path,
+                    )
+                )
                 self.gravity_violations += 1
         self.violations_found += len(violations)
-        return IntegrityResult(valid=len(violations) == 0, violations=violations, validation_time_ms=(time.time() - start_time) * 1000)
+        return IntegrityResult(
+            valid=len(violations) == 0,
+            violations=violations,
+            validation_time_ms=(time.time() - start_time) * 1000,
+        )
 
     def register_checksum(self, data_id: str, checksum: str) -> None:
         """Register expected checksum for data."""
@@ -112,4 +164,10 @@ class IntegrityValidationGuardrail:
 
     def get_statistics(self) -> dict[str, Any]:
         """Get integrity validation statistics."""
-        return {'validations_performed': self.validations_performed, 'violations_found': self.violations_found, 'gravity_violations': self.gravity_violations, 'registered_checksums': len(self.checksums), 'enabled_rules': self.enabled_rules}
+        return {
+            "validations_performed": self.validations_performed,
+            "violations_found": self.violations_found,
+            "gravity_violations": self.gravity_violations,
+            "registered_checksums": len(self.checksums),
+            "enabled_rules": self.enabled_rules,
+        }

@@ -1,9 +1,11 @@
 from __future__ import annotations
-'\nL5SafetyBase - Consolidated Base for L5 Safety Agents\n\nLayer: L5 - Safety\nResponsibilities:\n- Guardrails enforcement\n- Validation operations\n- Gravity (structural integrity) checks\n- Security policy enforcement\n\nMRO HARDENING:\n- Inheritance order: SovereignBaseAgent (root)\n- All L5 agents inherit from this base for consistent safety capabilities\n'
+
+"\nL5SafetyBase - Consolidated Base for L5 Safety Agents\n\nLayer: L5 - Safety\nResponsibilities:\n- Guardrails enforcement\n- Validation operations\n- Gravity (structural integrity) checks\n- Security policy enforcement\n\nMRO HARDENING:\n- Inheritance order: SovereignBaseAgent (root)\n- All L5 agents inherit from this base for consistent safety capabilities\n"
 from dataclasses import dataclass
 from typing import Any
+
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 @dataclass
 class L5SafetyBase(SovereignBaseAgent):
@@ -18,8 +20,9 @@ class L5SafetyBase(SovereignBaseAgent):
 
     MRO: L5SafetyBase -> SovereignBaseAgent -> object
     """
-    name: str = 'L5SafetyBase'
-    layer: str = 'L5'
+
+    name: str = "L5SafetyBase"
+    layer: str = "L5"
 
     def __post_init__(self) -> None:
         """Cooperative MRO initialization."""
@@ -31,7 +34,7 @@ class L5SafetyBase(SovereignBaseAgent):
 
         Override in subclasses for specialized validation.
         """
-        return {'valid': True, 'violations': [], 'warnings': []}
+        return {"valid": True, "violations": [], "warnings": []}
 
     def enforce_guardrail(self, guardrail_name: str, context: dict[str, Any]) -> bool:
         """
@@ -47,4 +50,4 @@ class L5SafetyBase(SovereignBaseAgent):
 
         Override in subclasses for specialized gravity checks.
         """
-        return {'compliant': True, 'violations': []}
+        return {"compliant": True, "violations": []}

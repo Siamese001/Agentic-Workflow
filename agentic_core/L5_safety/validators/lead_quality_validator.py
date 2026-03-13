@@ -12,14 +12,17 @@ Deterministic Operations:
 - Email domain validation (pattern matching)
 - Spam indicator detection (keyword matching)
 """
+
 from __future__ import annotations
+
 from dataclasses import dataclass
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 @dataclass
 class LeadQualityResult:
     """Result of lead quality validation."""
+
     passed: bool
     issues: list[str]
     score: float | None = None
@@ -29,6 +32,7 @@ class LeadQualityResult:
         if self.metadata is None:
             self.metadata = {}
 
+
 class LeadQualityValidator:
     """
     Pure deterministic lead quality validation.
@@ -37,7 +41,7 @@ class LeadQualityValidator:
     external dependencies or LLM calls.
     """
 
-    def __init__(self, config: dict[str, Any] | None=None) -> None:
+    def __init__(self, config: dict[str, Any] | None = None) -> None:
         """
         Initialize with lead quality validation configuration.
 
@@ -45,10 +49,12 @@ class LeadQualityValidator:
             config: Configuration dictionary containing validation rules
         """
         config = config or {}
-        self.required_fields = config.get('required_fields', ['company'])
-        self.contact_fields = config.get('contact_fields', ['contact_name', 'email'])
-        self.suspicious_domains = config.get('suspicious_domains', ['.xyz', '.top', '.click', '.link', '.work', '.date'])
-        self.spam_indicators = config.get('spam_indicators', ['test@', 'noreply@', 'donotreply@', 'spam@'])
+        self.required_fields = config.get("required_fields", ["company"])
+        self.contact_fields = config.get("contact_fields", ["contact_name", "email"])
+        self.suspicious_domains = config.get(
+            "suspicious_domains", [".xyz", ".top", ".click", ".link", ".work", ".date"]
+        )
+        self.spam_indicators = config.get("spam_indicators", ["test@", "noreply@", "donotreply@", "spam@"])
 
     def validate_lead_quality(self, leads: list[dict[str, Any]]) -> LeadQualityResult:
         """
@@ -61,7 +67,12 @@ class LeadQualityValidator:
             LeadQualityResult with deterministic findings
         """
         if not leads:
-            return LeadQualityResult(passed=True, issues=[], score=1.0, metadata={'validation_type': 'deterministic', 'lead_count': 0})
+            return LeadQualityResult(
+                passed=True,
+                issues=[],
+                score=1.0,
+                metadata={"validation_type": "deterministic", "lead_count": 0},
+            )
         issues: list[str] = []
         for i, lead in enumerate(leads):
             field_issues = self._check_required_fields(lead, i)
@@ -73,7 +84,12 @@ class LeadQualityValidator:
             spam_issues = self._check_spam_indicators(lead, i)
             issues.extend(spam_issues)
         score = self._calculate_quality_score(issues, len(leads))
-        return LeadQualityResult(passed=len(issues) == 0, issues=issues, score=score, metadata={'validation_type': 'deterministic', 'lead_count': len(leads)})
+        return LeadQualityResult(
+            passed=len(issues) == 0,
+            issues=issues,
+            score=score,
+            metadata={"validation_type": "deterministic", "lead_count": len(leads)},
+        )
 
     def _check_required_fields(self, lead: dict[str, Any], lead_index: int) -> list[str]:
         """
@@ -84,7 +100,7 @@ class LeadQualityValidator:
         issues: list[str] = []
         for field in self.required_fields:
             if not lead.get(field):
-                issues.append(f'Lead {lead_index}: Missing {field}')
+                issues.append(f"Lead {lead_index}: Missing {field}")
         return issues
 
     def _check_contact_info(self, lead: dict[str, Any], lead_index: int) -> list[str]:
@@ -94,9 +110,9 @@ class LeadQualityValidator:
         Moved to Deterministic: Pure field presence validation
         """
         issues: list[str] = []
-        has_contact = any((lead.get(field) for field in self.contact_fields))
+        has_contact = any(lead.get(field) for field in self.contact_fields)
         if not has_contact:
-            issues.append(f'Lead {lead_index}: Missing contact info')
+            issues.append(f"Lead {lead_index}: Missing contact info")
         return issues
 
     def _check_email_domain(self, lead: dict[str, Any], lead_index: int) -> list[str]:
@@ -106,11 +122,11 @@ class LeadQualityValidator:
         Moved to Deterministic: Pure domain validation
         """
         issues: list[str] = []
-        email = lead.get('email', '')
+        email = lead.get("email", "")
         if email:
             for domain in self.suspicious_domains:
                 if email.endswith(domain):
-                    issues.append(f'Lead {lead_index}: Suspicious email domain')
+                    issues.append(f"Lead {lead_index}: Suspicious email domain")
                     break
         return issues
 
@@ -121,11 +137,11 @@ class LeadQualityValidator:
         Moved to Deterministic: Pure keyword matching
         """
         issues: list[str] = []
-        email = lead.get('email', '').lower()
+        email = lead.get("email", "").lower()
         if email:
             for indicator in self.spam_indicators:
                 if indicator in email:
-                    issues.append(f'Lead {lead_index}: Spam indicator in email')
+                    issues.append(f"Lead {lead_index}: Spam indicator in email")
                     break
         return issues
 
@@ -157,7 +173,7 @@ class LeadQualityValidator:
         Moved to Deterministic: Pure completeness calculation
         """
         all_fields = self.required_fields + self.contact_fields
-        present_fields = sum((1 for field in all_fields if lead.get(field)))
+        present_fields = sum(1 for field in all_fields if lead.get(field))
         return present_fields / len(all_fields) if all_fields else 1.0
 
     def analyze_lead_risk(self, lead: dict[str, Any]) -> dict[str, Any]:
@@ -166,9 +182,9 @@ class LeadQualityValidator:
 
         Returns detailed risk analysis for a lead.
         """
-        email = lead.get('email', '')
-        has_suspicious_domain = any((email.endswith(d) for d in self.suspicious_domains))
-        has_spam_indicator = any((ind in email.lower() for ind in self.spam_indicators))
+        email = lead.get("email", "")
+        has_suspicious_domain = any(email.endswith(d) for d in self.suspicious_domains)
+        has_spam_indicator = any(ind in email.lower() for ind in self.spam_indicators)
         completeness = self.get_lead_completeness(lead)
         risk_score = 0
         if has_suspicious_domain:
@@ -177,5 +193,11 @@ class LeadQualityValidator:
             risk_score += 5
         if completeness < 0.5:
             risk_score += 2
-        risk_level = 'low' if risk_score == 0 else 'medium' if risk_score < 5 else 'high'
-        return {'has_suspicious_domain': has_suspicious_domain, 'has_spam_indicator': has_spam_indicator, 'completeness': completeness, 'risk_score': risk_score, 'risk_level': risk_level}
+        risk_level = "low" if risk_score == 0 else "medium" if risk_score < 5 else "high"
+        return {
+            "has_suspicious_domain": has_suspicious_domain,
+            "has_spam_indicator": has_spam_indicator,
+            "completeness": completeness,
+            "risk_score": risk_score,
+            "risk_level": risk_level,
+        }

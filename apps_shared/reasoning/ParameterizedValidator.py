@@ -15,11 +15,14 @@ Usage:
     v = MyValidator(rule_set="my_rule")
     result = v.execute(data)
 """
+
 from __future__ import annotations
+
 from dataclasses import dataclass, field
 from typing import Any, Callable
+
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 @dataclass
 class ParameterizedValidator(SovereignBaseAgent):
@@ -31,7 +34,8 @@ class ParameterizedValidator(SovereignBaseAgent):
     The `execute()` method calls `collect_issues()` and wraps the result
     in a standard dict with keys: rule_set, issues, issue_count, passed.
     """
-    rule_set: str = 'generic'
+
+    rule_set: str = "generic"
     _RULE_REGISTRY: dict[str, Callable] = field(default_factory=dict)
 
     @classmethod
@@ -41,18 +45,30 @@ class ParameterizedValidator(SovereignBaseAgent):
         def decorator(func: Callable) -> Callable:
             cls._RULE_REGISTRY[name] = func
             return func
+
         return decorator
 
     def execute(self, data: dict[str, Any], **kwargs: Any) -> dict[str, Any]:
         """Execute validation and return a standard result dict."""
         issues = self.collect_issues(data, **kwargs)
-        return {'rule_set': self.rule_set, 'issues': issues, 'issue_count': len(issues), 'passed': len(issues) == 0}
+        return {
+            "rule_set": self.rule_set,
+            "issues": issues,
+            "issue_count": len(issues),
+            "passed": len(issues) == 0,
+        }
 
     def collect_issues(self, data: dict[str, Any], **kwargs: Any) -> list[dict[str, Any]]:
         """Dispatch to the registered rule handler for self.rule_set."""
         handler = self._RULE_REGISTRY.get(self.rule_set)
         if handler is None:
-            return [{'type': 'unknown_rule_set', 'severity': 'high', 'message': f'No handler for rule_set={self.rule_set!r}'}]
+            return [
+                {
+                    "type": "unknown_rule_set",
+                    "severity": "high",
+                    "message": f"No handler for rule_set={self.rule_set!r}",
+                }
+            ]
         return handler(self, data, **kwargs)
 
     def heal_repository(self) -> dict[str, Any]:
@@ -61,5 +77,10 @@ class ParameterizedValidator(SovereignBaseAgent):
 
     def heal(self, violation: dict[str, Any], **kwargs: Any) -> dict[str, Any]:
         """Heal violations — not yet implemented at base level."""
-        violation_type = violation.get('type', 'unknown')
-        return {'status': 'skipped', 'details': f'{self.__class__.__name__} heal() not yet implemented for {violation_type}', 'artifacts': [], 'errors': []}
+        violation_type = violation.get("type", "unknown")
+        return {
+            "status": "skipped",
+            "details": f"{self.__class__.__name__} heal() not yet implemented for {violation_type}",
+            "artifacts": [],
+            "errors": [],
+        }

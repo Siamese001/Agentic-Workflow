@@ -3,12 +3,15 @@
 Phase 1 - Pillar 3: Typed Contracts (Strict Schemas)
 Migrated from archives/legacy_resume_gen/Agentic-Workflow-10_7_main/core_v10_7/mcp.py
 """
+
 import logging
 from dataclasses import dataclass, field
 from typing import Any, Protocol
+
 from .providers import get_default_class, get_default_module
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 logger = logging.getLogger(__name__)
+
 
 class MCPClient(Protocol):
     """Protocol defining the MCP client interface.
@@ -28,6 +31,7 @@ class MCPClient(Protocol):
         """
         ...
 
+
 @dataclass
 class MCPClientSpec:
     """Typed representation of a configured MCP client.
@@ -43,8 +47,9 @@ class MCPClientSpec:
         parameters: Client initialization parameters
         optional: Whether this client is optional (won't fail if unavailable)
     """
+
     name: str
-    provider: str = 'stub'
+    provider: str = "stub"
     module: str | None = None
     class_name: str | None = None
     parameters: dict[str, Any] = field(default_factory=dict)
@@ -80,11 +85,16 @@ class MCPClientSpec:
             raise ValueError("MCPClientSpec requires a non-empty 'name'")
         if not isinstance(self.parameters, dict):
             raise ValueError(f"MCPClientSpec '{self.name}' parameters must be a dict")
-        if self.provider != 'stub':
+        if self.provider != "stub":
             if not self.resolved_module():
-                raise ValueError(f"MCPClientSpec '{self.name}': no module specified and no default for provider '{self.provider}'")
+                raise ValueError(
+                    f"MCPClientSpec '{self.name}': no module specified and no default for provider '{self.provider}'"
+                )
             if not self.resolved_class():
-                raise ValueError(f"MCPClientSpec '{self.name}': no class_name specified and no default for provider '{self.provider}'")
+                raise ValueError(
+                    f"MCPClientSpec '{self.name}': no class_name specified and no default for provider '{self.provider}'"
+                )
+
 
 class MCPClientStub:
     """Safe fallback MCP client.
@@ -94,7 +104,7 @@ class MCPClientStub:
     while maintaining type safety.
     """
 
-    def __init__(self, name: str, parameters: dict[str, Any] | None=None):
+    def __init__(self, name: str, parameters: dict[str, Any] | None = None):
         """Initialize stub client.
 
         Args:
@@ -103,7 +113,7 @@ class MCPClientStub:
         """
         self.name = name
         self.parameters = parameters or {}
-        logger.info('mcp_stub_created', extra={'client_name': name, 'parameters': parameters})
+        logger.info("mcp_stub_created", extra={"client_name": name, "parameters": parameters})
 
     def __call__(self, *args, **kwargs) -> dict[str, Any]:
         """All calls return a structured stub result.
@@ -111,12 +121,20 @@ class MCPClientStub:
         Returns:
             Dict with stub=True and error message
         """
-        return {'stub': True, 'client': self.name, 'parameters': self.parameters, 'args': args, 'kwargs': kwargs, 'error': self.parameters.get('error', 'Stubbed MCP client.')}
+        return {
+            "stub": True,
+            "client": self.name,
+            "parameters": self.parameters,
+            "args": args,
+            "kwargs": kwargs,
+            "error": self.parameters.get("error", "Stubbed MCP client."),
+        }
 
     def __repr__(self) -> str:
         """String representation."""
-        details = ', '.join((f'{k}={v}' for k, v in self.parameters.items()))
-        return f'<MCPClientStub name={self.name} {details}>'
+        details = ", ".join((f"{k}={v}" for k, v in self.parameters.items()))
+        return f"<MCPClientStub name={self.name} {details}>"
+
 
 class MCPClientRegistry:
     """Registry for managing MCP clients.
@@ -141,7 +159,14 @@ class MCPClientRegistry:
         spec.validate()
         self._specs[spec.name] = spec
         self._clients[spec.name] = client
-        logger.info('mcp_client_registered', extra={'client_name': spec.name, 'provider': spec.provider, 'is_stub': isinstance(client, MCPClientStub)})
+        logger.info(
+            "mcp_client_registered",
+            extra={
+                "client_name": spec.name,
+                "provider": spec.provider,
+                "is_stub": isinstance(client, MCPClientStub),
+            },
+        )
 
     def get(self, name: str) -> Any | None:
         """Get a client by name.

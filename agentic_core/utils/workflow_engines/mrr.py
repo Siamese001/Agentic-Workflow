@@ -3,19 +3,22 @@ Mean Reciprocal Rank (MRR) Metric
 
 MRR = 1 / rank_of_first_relevant_doc
 """
+
 from __future__ import annotations
+
 from typing import Any
+
 from .base import RetrievalMetric
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 class MeanReciprocalRank(RetrievalMetric):
     """MRR measures the rank position of the first relevant document."""
 
     @property
     def name(self) -> str:
-        return 'MRR'
+        return "MRR"
 
-    def compute(self, prediction: list[str], ground_truth: list[str], context: Any=None) -> float:
+    def compute(self, prediction: list[str], ground_truth: list[str], context: Any = None) -> float:
         """Compute MRR for a single query.
 
         Args:
@@ -49,4 +52,6 @@ class MeanReciprocalRank(RetrievalMetric):
         if not scores:
             return 0.0
         return sum(scores) / len(scores)
-__all__ = ['MeanReciprocalRank']
+
+
+__all__ = ["MeanReciprocalRank"]

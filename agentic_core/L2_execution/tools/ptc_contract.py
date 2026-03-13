@@ -14,13 +14,11 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field
-from typing import Any
 
 from agentic_core.L2_execution.types.instruction_packet_types import (
     SignatureVerificationError,
 )
 from agentic_core.L2_execution.types.sandbox_envelope_types import SandboxEnvelope
-
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -110,8 +108,7 @@ class PTCContractEnforcer:
         """
         if not isinstance(envelope, SandboxEnvelope):
             raise TypeError(
-                f"PTCContractEnforcer.pre_execute: expected SandboxEnvelope, "
-                f"got {type(envelope).__name__}"
+                f"PTCContractEnforcer.pre_execute: expected SandboxEnvelope, got {type(envelope).__name__}"
             )
         if not envelope.is_signed:
             self._violation_count += 1
@@ -139,8 +136,7 @@ class PTCContractEnforcer:
         """
         if not isinstance(raw_output, str):
             raise TypeError(
-                f"PTCContractEnforcer.post_execute: expected str, "
-                f"got {type(raw_output).__name__}"
+                f"PTCContractEnforcer.post_execute: expected str, got {type(raw_output).__name__}"
             )
         redacted = redact_output(raw_output)
         encoded_len = len(redacted.encode("utf-8"))

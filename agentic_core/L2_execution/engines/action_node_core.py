@@ -1,17 +1,29 @@
 from __future__ import annotations
-'\nCore Executor - Atomic Module\nExtracted from ActionNode.py via Atomic Fission Protocol\nHandles plan execution and step orchestration\n'
+
+"\nCore Executor - Atomic Module\nExtracted from ActionNode.py via Atomic Fission Protocol\nHandles plan execution and step orchestration\n"
 import logging
 from pathlib import Path
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
-Logger: Any = logging.getLogger('ActionNode.CoreExecutor')
+
+Logger: Any = logging.getLogger("ActionNode.CoreExecutor")
+
 
 class ActionNodeCore:
     """
     Core execution logic for ActionNode.
     Handles plan parsing and step orchestration.
     """
-    TOOL_MAP: dict[str, str] = {'write_file': 'write_file', 'create_file': 'write_file', 'read_file': 'read_file', 'read': 'read_file', 'list_files': 'list_files', 'ls': 'list_files', 'run_command': 'run_command', 'execute': 'run_command'}
+
+    TOOL_MAP: dict[str, str] = {
+        "write_file": "write_file",
+        "create_file": "write_file",
+        "read_file": "read_file",
+        "read": "read_file",
+        "list_files": "list_files",
+        "ls": "list_files",
+        "run_command": "run_command",
+        "execute": "run_command",
+    }
 
     def __init__(self, work_dir: str, allowed_tools: dict[str, Any]):
         """
@@ -38,18 +50,18 @@ class ActionNodeCore:
         """
         Logger.info(f"⚙️ Action Node received plan for goal: {plan.get('goal', 'N/A')}")
         results: list[dict[str, Any]] = []
-        steps: list[dict[str, Any]] = plan.get('steps') or plan.get('plan', {}).get('steps', [])
+        steps: list[dict[str, Any]] = plan.get("steps") or plan.get("plan", {}).get("steps", [])
         if not steps:
-            Logger.warning('[!] Received empty plan. No actions taken.')
-            return {'status': 'skipped', 'results': []}
+            Logger.warning("[!] Received empty plan. No actions taken.")
+            return {"status": "skipped", "results": []}
         for step in steps:
             result: Any = self._execute_single_step(step)
             results.append(result)
-            if result.get('status') == 'error':
+            if result.get("status") == "error":
                 Logger.error(f"🛑 Execution halted at step {step.get('step', 'N/A')}: {result.get('output')}")
-                return {'status': 'failed', 'results': results}
-        Logger.info('[OK] Plan execution completed successfully.')
-        return {'status': 'success', 'results': results}
+                return {"status": "failed", "results": results}
+        Logger.info("[OK] Plan execution completed successfully.")
+        return {"status": "success", "results": results}
 
     def _execute_single_step(self, step: dict[str, Any]) -> dict[str, Any]:
         """
@@ -62,19 +74,21 @@ class ActionNodeCore:
         Returns:
             Dict[str, Any]: A dictionary containing the step number, status, and output.
         """
-        action_name: str = step.get('action', '').lower().replace(' ', '_')
-        params: dict[str, Any] = step.get('params', {})
-        step_number: int | str = step.get('step', 'N/A')
+        action_name: str = step.get("action", "").lower().replace(" ", "_")
+        params: dict[str, Any] = step.get("params", {})
+        step_number: int | str = step.get("step", "N/A")
         tool_key: str | None = self.TOOL_MAP.get(action_name)
         if not tool_key or tool_key not in self.allowed_tools:
             msg = f"[X] Tool '{action_name}' (mapped to '{tool_key}') is NOT whitelisted or recognized."
             Logger.warning(msg)
-            return {'step': step_number, 'status': 'blocked', 'output': msg}
+            return {"step": step_number, "status": "blocked", "output": msg}
         Logger.info(f"🔨 Executing Tool '{tool_key}' for step {step_number} with params: {params}")
         try:
             output: str = self.allowed_tools[tool_key](**params)
-            return {'step': step_number, 'status': 'success', 'output': output}
+            return {"step": step_number, "status": "success", "output": output}
         except Exception as e:
             Logger.error(f"[X] Tool '{tool_key}' execution failed for step {step_number}: {e}", exc_info=True)
-            return {'step': step_number, 'status': 'error', 'output': str(e)}
-__all__ = ['ActionNodeCore']
+            return {"step": step_number, "status": "error", "output": str(e)}
+
+
+__all__ = ["ActionNodeCore"]

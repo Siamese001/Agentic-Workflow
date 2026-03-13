@@ -1,40 +1,42 @@
 from dataclasses import dataclass
+
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
-'\nRgTemplateOptimizerAgent - Extracted for one-class-per-file pattern.\n\nOriginally from: LeadQualityAgent.py\nExtracted: 2026-01-06 (Surgical Extraction)\n'
+
+"\nRgTemplateOptimizerAgent - Extracted for one-class-per-file pattern.\n\nOriginally from: LeadQualityAgent.py\nExtracted: 2026-01-06 (Surgical Extraction)\n"
+
 
 @dataclass
 class LicTemplateOptimizerAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """Optimizes message templates for engagement."""
 
     async def execute(self) -> None:
-        print(f'   [{self.name}] Optimizing templates...')
+        print(f"   [{self.name}] Optimizing templates...")
         messages = self.ctx.messages
         if not messages:
-            self.record_result(True, 'No templates to optimize')
+            self.record_result(True, "No templates to optimize")
             return
         optimizations = []
         for i, message in enumerate(messages):
-            content = message.get('content', '')
-            subject = message.get('subject', '')
+            content = message.get("content", "")
+            subject = message.get("subject", "")
             if len(subject) > 60:
-                optimizations.append(f'Message {i}: Subject too long')
+                optimizations.append(f"Message {i}: Subject too long")
             elif len(subject) < 10:
-                optimizations.append(f'Message {i}: Subject too short')
-            if '{name}' not in content and '{company}' not in content:
-                optimizations.append(f'Message {i}: Missing personalization')
-            cta_words = ['schedule', 'call', 'meet', 'discuss', 'connect']
-            has_cta = any((word in content.lower() for word in cta_words))
+                optimizations.append(f"Message {i}: Subject too short")
+            if "{name}" not in content and "{company}" not in content:
+                optimizations.append(f"Message {i}: Missing personalization")
+            cta_words = ["schedule", "call", "meet", "discuss", "connect"]
+            has_cta = any(word in content.lower() for word in cta_words)
             if not has_cta:
-                optimizations.append(f'Message {i}: Missing call to action')
+                optimizations.append(f"Message {i}: Missing call to action")
         if optimizations:
-            self.add_signal('TEMPLATE_NEEDS_OPTIMIZATION')
-            self.record_result(False, f'Optimizations needed: {len(optimizations)}')
-            print(f'   [{self.name}] ⚠️ Optimizations needed: {len(optimizations)}')
+            self.add_signal("TEMPLATE_NEEDS_OPTIMIZATION")
+            self.record_result(False, f"Optimizations needed: {len(optimizations)}")
+            print(f"   [{self.name}] ⚠️ Optimizations needed: {len(optimizations)}")
         else:
-            self.record_result(True, 'Templates optimized')
-            print(f'   [{self.name}] ✅ Templates optimized')
+            self.record_result(True, "Templates optimized")
+            print(f"   [{self.name}] ✅ Templates optimized")
 
     # guardian: allow-type-erasure
     def heal_repository(self) -> dict:
@@ -44,8 +46,18 @@ class LicTemplateOptimizerAgent(SubatomicTestingMixin, SovereignBaseAgent):
     # guardian: allow-type-erasure
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """Heal violations detected by LicTemplateOptimizerAgent."""
-        violation_type = violation.get('type', 'unknown')
+        violation_type = violation.get("type", "unknown")
         try:
-            return {'status': 'skipped', 'details': f'LicTemplateOptimizerAgent heal() not yet implemented for {violation_type}', 'artifacts': [], 'errors': []}
+            return {
+                "status": "skipped",
+                "details": f"LicTemplateOptimizerAgent heal() not yet implemented for {violation_type}",
+                "artifacts": [],
+                "errors": [],
+            }
         except Exception as e:
-            return {'status': 'failed', 'details': f'LicTemplateOptimizerAgent heal() failed: {str(e)}', 'artifacts': [], 'errors': [str(e)]}
+            return {
+                "status": "failed",
+                "details": f"LicTemplateOptimizerAgent heal() failed: {str(e)}",
+                "artifacts": [],
+                "errors": [str(e)],
+            }

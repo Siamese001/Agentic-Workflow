@@ -2,12 +2,16 @@
 Brand Compliance Engine - Tone policing
 Refactored from BrandComplianceAgent.py
 """
+
 from __future__ import annotations
+
 import logging
 from typing import Any
+
 from apps_rg.engines.base_rg_engine import BaseRGEngine
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 Logger = logging.getLogger(__name__)
+
 
 class BrandComplianceEngine(BaseRGEngine):
     """
@@ -15,23 +19,29 @@ class BrandComplianceEngine(BaseRGEngine):
     """
 
     def __init__(self, ctx: Any) -> None:
-        super().__init__(ctx, node_id='SAFETY.BRAND')
+        super().__init__(ctx, node_id="SAFETY.BRAND")
 
     async def execute(self, content: dict[str, Any]) -> dict[str, Any]:
         """
         Validate brand compliance.
         """
-        self._mcp_audit('brand_compliance_check')
+        self._mcp_audit("brand_compliance_check")
         violations = []
-        forbidden_phrases = ['responsible for', 'duties included', 'helped with', 'assisted in']
+        forbidden_phrases = ["responsible for", "duties included", "helped with", "assisted in"]
         for section_name, section_content in content.items():
             text = str(section_content).lower()
             for phrase in forbidden_phrases:
                 if phrase in text:
-                    violations.append({'section': section_name, 'phrase': phrase, 'severity': 'high'})
-        result = {'compliant': len(violations) == 0, 'violations': violations, 'violation_count': len(violations)}
+                    violations.append({"section": section_name, "phrase": phrase, "severity": "high"})
+        result = {
+            "compliant": len(violations) == 0,
+            "violations": violations,
+            "violation_count": len(violations),
+        }
         if violations:
-            self.record_fail(f'Brand compliance violations: {len(violations)}', data=result, signal='BRAND_VIOLATION')
+            self.record_fail(
+                f"Brand compliance violations: {len(violations)}", data=result, signal="BRAND_VIOLATION"
+            )
         else:
-            self.record_pass('Brand compliance validated')
+            self.record_pass("Brand compliance validated")
         return result

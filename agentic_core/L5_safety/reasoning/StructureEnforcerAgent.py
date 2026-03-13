@@ -1,7 +1,9 @@
 from __future__ import annotations
+
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L2_execution.tools import write_gateway as _wg
-'\nStructureEnforcerAgent - Structural Enforcement\n\nPhase 3 Hard Migration: Consolidates:\n- GravityEnforcerAgent (layer gravity enforcement)\n- HierarchyEnforcerAgent (hierarchy enforcement)\n- NamingEnforcerAgent (naming conventions)\n- DocEnforcerAgent (documentation enforcement)\n- ASCIIEnforcerAgent (ASCII compliance)\n- StrictDocEnforcerAgent (strict documentation)\n\nFeatures:\n- Gravity/layer import enforcement\n- Hierarchy validation\n- Naming convention enforcement ([Name]Agent suffix)\n- Documentation completeness checks\n- ASCII compliance validation\n- Auto-rename for non-compliant classes\n'
+
+"\nStructureEnforcerAgent - Structural Enforcement\n\nPhase 3 Hard Migration: Consolidates:\n- GravityEnforcerAgent (layer gravity enforcement)\n- HierarchyEnforcerAgent (hierarchy enforcement)\n- NamingEnforcerAgent (naming conventions)\n- DocEnforcerAgent (documentation enforcement)\n- ASCIIEnforcerAgent (ASCII compliance)\n- StrictDocEnforcerAgent (strict documentation)\n\nFeatures:\n- Gravity/layer import enforcement\n- Hierarchy validation\n- Naming convention enforcement ([Name]Agent suffix)\n- Documentation completeness checks\n- ASCII compliance validation\n- Auto-rename for non-compliant classes\n"
 import ast
 import logging
 import re
@@ -10,49 +12,59 @@ from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 from typing import Any
+
 from agentic_core.L0_routing.config import ARCHIVES_DIR
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 Logger = logging.getLogger(__name__)
+
 
 class StructureViolationType:
     """Types of structure violations."""
-    GRAVITY = 'GRAVITY'
-    HIERARCHY = 'HIERARCHY'
-    NAMING = 'NAMING'
-    DOCUMENTATION = 'DOCUMENTATION'
-    ASCII = 'ASCII'
+
+    GRAVITY = "GRAVITY"
+    HIERARCHY = "HIERARCHY"
+    NAMING = "NAMING"
+    DOCUMENTATION = "DOCUMENTATION"
+    ASCII = "ASCII"
+
 
 @dataclass
 class StructureViolation:
     """Represents a structure violation."""
+
     file_path: Path
     line_number: int
     violation_type: str
     message: str
     suggested_fix: str | None = None
     auto_fixable: bool = False
-    severity: str = 'ERROR'
+    severity: str = "ERROR"
+
 
 @dataclass
 class NamingRule:
     """Naming convention rule."""
+
     pattern: str
     suffix: str
     description: str
     auto_rename: bool = True
 
+
 @dataclass
 class StructureConfig:
     """configuration for structure enforcement."""
+
     enable_gravity: bool = True
     enable_hierarchy: bool = True
     enable_naming: bool = True
     enable_documentation: bool = True
     enable_ascii: bool = True
     auto_fix: bool = False
-    agent_suffix: str = 'Agent'
+    agent_suffix: str = "Agent"
     required_docstring: bool = True
     min_docstring_length: int = 10
+
 
 class StructureEnforcerAgent(SovereignBaseAgent):
     """
@@ -80,7 +92,7 @@ class StructureEnforcerAgent(SovereignBaseAgent):
     """
 
     # guardian: allow-type-erasure
-    def heal_repository(self, dry_run: bool=True, execute: bool=False, **kwargs) -> dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 
@@ -91,16 +103,25 @@ class StructureEnforcerAgent(SovereignBaseAgent):
         Returns:
             Dict with healing summary
         """
-        return {'violations': 0, 'fixed': 0, 'errors': 0}
-    LAYER_ORDER = {'L0': 0, 'L1': 1, 'L2': 2, 'L3': 3, 'L4': 4, 'L5': 5, 'L6': 6}
-    GRAVITY_RULES = {'L0': {'L0'}, 'L1': {'L0', 'L1'}, 'L2': {'L0', 'L1', 'L2'}, 'L3': {'L0', 'L1', 'L2', 'L3'}, 'L4': {'L0', 'L1', 'L2', 'L3', 'L4'}, 'L5': {'L0', 'L1', 'L2', 'L3', 'L4', 'L5'}, 'L6': {'L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'L6'}}
+        return {"violations": 0, "fixed": 0, "errors": 0}
 
-    def __init__(self, project_root: Path | None=None, agent_config: StructureConfig | None=None):
+    LAYER_ORDER = {"L0": 0, "L1": 1, "L2": 2, "L3": 3, "L4": 4, "L5": 5, "L6": 6}
+    GRAVITY_RULES = {
+        "L0": {"L0"},
+        "L1": {"L0", "L1"},
+        "L2": {"L0", "L1", "L2"},
+        "L3": {"L0", "L1", "L2", "L3"},
+        "L4": {"L0", "L1", "L2", "L3", "L4"},
+        "L5": {"L0", "L1", "L2", "L3", "L4", "L5"},
+        "L6": {"L0", "L1", "L2", "L3", "L4", "L5", "L6"},
+    }
+
+    def __init__(self, project_root: Path | None = None, agent_config: StructureConfig | None = None):
         self.project_root = project_root or Path.cwd()
         self._agent_config = agent_config or StructureConfig()
         self._lock = threading.RLock()
         self._violations: list[StructureViolation] = []
-        Logger.info('StructureEnforcerAgent initialized')
+        Logger.info("StructureEnforcerAgent initialized")
 
     def validate_file(self, file_path: Path) -> list[StructureViolation]:
         """Validate a file for all structure rules."""
@@ -108,10 +129,10 @@ class StructureEnforcerAgent(SovereignBaseAgent):
         if not file_path.exists():
             return violations
         try:
-            content = file_path.read_text(encoding='utf-8')
+            content = file_path.read_text(encoding="utf-8")
         # guardian: allow-silent-swallow
         except Exception as e:
-            Logger.error(f'Failed to read {file_path}: {e}')
+            Logger.error(f"Failed to read {file_path}: {e}")
             return violations
         if self._agent_config.enable_gravity:
             violations.extend(self._check_gravity(file_path, content))
@@ -126,15 +147,15 @@ class StructureEnforcerAgent(SovereignBaseAgent):
     def _extract_layer(self, path: Path) -> str | None:
         """Extract layer from file path."""
         path_str = str(path)
-        for layer in ['L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'L6']:
-            if f'/{layer}_' in path_str or f'\\{layer}_' in path_str:
+        for layer in ["L0", "L1", "L2", "L3", "L4", "L5", "L6"]:
+            if f"/{layer}_" in path_str or f"\\{layer}_" in path_str:
                 return layer
         return None
 
     def _extract_layer_from_module(self, module: str) -> str | None:
         """Extract layer from module name."""
-        for layer in ['L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'L6']:
-            if f'.{layer}_' in module or module.startswith(f'{layer}_') or f'_{layer}_' in module:
+        for layer in ["L0", "L1", "L2", "L3", "L4", "L5", "L6"]:
+            if f".{layer}_" in module or module.startswith(f"{layer}_") or f"_{layer}_" in module:
                 return layer
         return None
 
@@ -153,13 +174,21 @@ class StructureEnforcerAgent(SovereignBaseAgent):
             if isinstance(node, ast.ImportFrom) and node.module:
                 target_layer = self._extract_layer_from_module(node.module)
                 if target_layer and target_layer not in allowed_layers:
-                    violations.append(StructureViolation(file_path=file_path, line_number=node.lineno, violation_type=StructureViolationType.GRAVITY, message=f'Gravity violation: {source_layer} cannot import from {target_layer}', severity='CRITICAL'))
+                    violations.append(
+                        StructureViolation(
+                            file_path=file_path,
+                            line_number=node.lineno,
+                            violation_type=StructureViolationType.GRAVITY,
+                            message=f"Gravity violation: {source_layer} cannot import from {target_layer}",
+                            severity="CRITICAL",
+                        )
+                    )
         return violations
 
     def _check_naming(self, file_path: Path, content: str) -> list[StructureViolation]:
         """Check naming convention violations."""
         violations = []
-        if not file_path.name.endswith('Agent.py'):
+        if not file_path.name.endswith("Agent.py"):
             return violations
         try:
             tree = ast.parse(content)
@@ -168,7 +197,16 @@ class StructureEnforcerAgent(SovereignBaseAgent):
         for node in ast.walk(tree):
             if isinstance(node, ast.ClassDef):
                 if not node.name.endswith(self._agent_config.agent_suffix):
-                    violations.append(StructureViolation(file_path=file_path, line_number=node.lineno, violation_type=StructureViolationType.NAMING, message=f"Class '{node.name}' must end with '{self._agent_config.agent_suffix}' suffix", suggested_fix=f'{node.name}{self._agent_config.agent_suffix}', auto_fixable=True))
+                    violations.append(
+                        StructureViolation(
+                            file_path=file_path,
+                            line_number=node.lineno,
+                            violation_type=StructureViolationType.NAMING,
+                            message=f"Class '{node.name}' must end with '{self._agent_config.agent_suffix}' suffix",
+                            suggested_fix=f"{node.name}{self._agent_config.agent_suffix}",
+                            auto_fixable=True,
+                        )
+                    )
         return violations
 
     def _check_documentation(self, file_path: Path, content: str) -> list[StructureViolation]:
@@ -182,21 +220,45 @@ class StructureEnforcerAgent(SovereignBaseAgent):
             if isinstance(node, ast.ClassDef | ast.FunctionDef):
                 docstring = ast.get_docstring(node)
                 if self._agent_config.required_docstring and (not docstring):
-                    violations.append(StructureViolation(file_path=file_path, line_number=node.lineno, violation_type=StructureViolationType.DOCUMENTATION, message=f"Missing docstring for {type(node).__name__} '{node.name}'", severity='WARNING'))
+                    violations.append(
+                        StructureViolation(
+                            file_path=file_path,
+                            line_number=node.lineno,
+                            violation_type=StructureViolationType.DOCUMENTATION,
+                            message=f"Missing docstring for {type(node).__name__} '{node.name}'",
+                            severity="WARNING",
+                        )
+                    )
                 elif docstring and len(docstring) < self._agent_config.min_docstring_length:
-                    violations.append(StructureViolation(file_path=file_path, line_number=node.lineno, violation_type=StructureViolationType.DOCUMENTATION, message=f"Docstring too short for '{node.name}' (min {self._agent_config.min_docstring_length} chars)", severity='INFO'))
+                    violations.append(
+                        StructureViolation(
+                            file_path=file_path,
+                            line_number=node.lineno,
+                            violation_type=StructureViolationType.DOCUMENTATION,
+                            message=f"Docstring too short for '{node.name}' (min {self._agent_config.min_docstring_length} chars)",
+                            severity="INFO",
+                        )
+                    )
         return violations
 
     def _check_ascii(self, file_path: Path, content: str) -> list[StructureViolation]:
         """Check ASCII compliance."""
         violations = []
-        lines = content.split('\n')
+        lines = content.split("\n")
         for i, line in enumerate(lines, 1):
             try:
-                line.encode('ascii')
+                line.encode("ascii")
             except UnicodeEncodeError:
                 non_ascii = [c for c in line if ord(c) > 127]
-                violations.append(StructureViolation(file_path=file_path, line_number=i, violation_type=StructureViolationType.ASCII, message=f'Non-ASCII characters found: {non_ascii[:5]}', severity='WARNING'))
+                violations.append(
+                    StructureViolation(
+                        file_path=file_path,
+                        line_number=i,
+                        violation_type=StructureViolationType.ASCII,
+                        message=f"Non-ASCII characters found: {non_ascii[:5]}",
+                        severity="WARNING",
+                    )
+                )
         return violations
 
     def check_gravity_import(self, source_layer: str, target_layer: str) -> tuple[bool, str]:
@@ -212,12 +274,14 @@ class StructureEnforcerAgent(SovereignBaseAgent):
         """
         allowed_layers = self.GRAVITY_RULES.get(source_layer, set())
         if target_layer in allowed_layers:
-            return (True, f'{source_layer} can import from {target_layer}')
+            return (True, f"{source_layer} can import from {target_layer}")
         else:
-            return (False, f'Gravity violation: {source_layer} cannot import from {target_layer}')
+            return (False, f"Gravity violation: {source_layer} cannot import from {target_layer}")
 
     # guardian: allow-type-erasure
-    def force_rename_class(self, file_path: Path, old_name: str, new_name: str, dry_run: bool=True) -> dict[str, Any]:
+    def force_rename_class(
+        self, file_path: Path, old_name: str, new_name: str, dry_run: bool = True
+    ) -> dict[str, Any]:
         """
         Force rename a class to comply with naming conventions.
 
@@ -230,32 +294,38 @@ class StructureEnforcerAgent(SovereignBaseAgent):
         Returns:
             Result dictionary
         """
-        result = {'file': str(file_path), 'old_name': old_name, 'new_name': new_name, 'applied': False, 'dry_run': dry_run}
+        result = {
+            "file": str(file_path),
+            "old_name": old_name,
+            "new_name": new_name,
+            "applied": False,
+            "dry_run": dry_run,
+        }
         if not file_path.exists():
-            result['error'] = 'File not found'
+            result["error"] = "File not found"
             return result
         try:
-            content = file_path.read_text(encoding='utf-8')
+            content = file_path.read_text(encoding="utf-8")
         # guardian: allow-silent-swallow
         except Exception as e:
-            result['error'] = str(e)
+            result["error"] = str(e)
             return result
-        new_content = re.sub(f'\\bclass\\s+{old_name}\\b', f'class {new_name}', content)
-        new_content = re.sub(f'\\b{old_name}\\b', new_name, new_content)
+        new_content = re.sub(f"\\bclass\\s+{old_name}\\b", f"class {new_name}", content)
+        new_content = re.sub(f"\\b{old_name}\\b", new_name, new_content)
         if new_content == content:
-            result['message'] = 'No changes needed'
+            result["message"] = "No changes needed"
             return result
         if not dry_run:
-            backup_dir = self.project_root / ARCHIVES_DIR / 'healing_backups' / 'naming'
+            backup_dir = self.project_root / ARCHIVES_DIR / "healing_backups" / "naming"
             _wg.ensure_dir(backup_dir)
             backup_path = backup_dir / f"{file_path.name}.{datetime.now().strftime('%Y%m%d_%H%M%S')}"
             _wg.copy_file(file_path, backup_path)
-            _wg.write_text(file_path, new_content, encoding='utf-8')
-            result['applied'] = True
-            result['backup'] = str(backup_path)
-            Logger.info(f'Renamed class: {old_name} -> {new_name} in {file_path}')
+            _wg.write_text(file_path, new_content, encoding="utf-8")
+            result["applied"] = True
+            result["backup"] = str(backup_path)
+            Logger.info(f"Renamed class: {old_name} -> {new_name} in {file_path}")
         else:
-            result['message'] = 'Dry run - no changes applied'
+            result["message"] = "Dry run - no changes applied"
         return result
 
     def validate_hierarchy(self, file_path: Path) -> list[StructureViolation]:
@@ -264,7 +334,7 @@ class StructureEnforcerAgent(SovereignBaseAgent):
         layer = self._extract_layer(file_path)
         if not layer:
             return violations
-        expected_prefix = f'{layer}_'
+        expected_prefix = f"{layer}_"
         path_parts = file_path.parts
         layer_found = False
         for part in path_parts:
@@ -272,7 +342,14 @@ class StructureEnforcerAgent(SovereignBaseAgent):
                 layer_found = True
                 break
         if not layer_found:
-            violations.append(StructureViolation(file_path=file_path, line_number=0, violation_type=StructureViolationType.HIERARCHY, message=f'File not in expected layer directory: {layer}'))
+            violations.append(
+                StructureViolation(
+                    file_path=file_path,
+                    line_number=0,
+                    violation_type=StructureViolationType.HIERARCHY,
+                    message=f"File not in expected layer directory: {layer}",
+                )
+            )
         return violations
 
     def get_violations(self) -> list[StructureViolation]:
@@ -296,40 +373,76 @@ class StructureEnforcerAgent(SovereignBaseAgent):
                 - errors: Number of errors encountered
                 - skipped: Number of violations skipped
         """
-        violation_type = violation.get('type', '')
-        path = violation.get('path', '')
-        Logger.info(f'[STRUCTURE_ENFORCER] Healing {violation_type} at {path}')
+        violation_type = violation.get("type", "")
+        path = violation.get("path", "")
+        Logger.info(f"[STRUCTURE_ENFORCER] Healing {violation_type} at {path}")
         try:
             file_path = Path(path) if path else None
             if not file_path or not file_path.exists():
-                return {'violations_fixed': 0, 'violations_found': 1, 'errors': 0, 'skipped': 1}
-            if violation_type == 'gravity':
+                return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}
+            if violation_type == "gravity":
                 result = self.enforce_gravity(file_path)
-                return {'violations_fixed': len(result), 'violations_found': len(result), 'errors': 0, 'skipped': 0}
-            elif violation_type == 'naming':
+                return {
+                    "violations_fixed": len(result),
+                    "violations_found": len(result),
+                    "errors": 0,
+                    "skipped": 0,
+                }
+            elif violation_type == "naming":
                 result = self.enforce_naming(file_path)
-                return {'violations_fixed': len(result), 'violations_found': len(result), 'errors': 0, 'skipped': 0}
-            elif violation_type == 'hierarchy':
+                return {
+                    "violations_fixed": len(result),
+                    "violations_found": len(result),
+                    "errors": 0,
+                    "skipped": 0,
+                }
+            elif violation_type == "hierarchy":
                 result = self.enforce_hierarchy(file_path)
-                return {'violations_fixed': len(result), 'violations_found': len(result), 'errors': 0, 'skipped': 0}
+                return {
+                    "violations_fixed": len(result),
+                    "violations_found": len(result),
+                    "errors": 0,
+                    "skipped": 0,
+                }
             else:
-                return {'violations_fixed': 0, 'violations_found': 1, 'errors': 0, 'skipped': 1}
+                return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}
         # guardian: allow-silent-swallow
         except Exception as e:
-            Logger.error(f'[STRUCTURE_ENFORCER] Failed to heal: {e}')
-            return {'violations_fixed': 0, 'violations_found': 1, 'errors': 1, 'skipped': 0}
+            Logger.error(f"[STRUCTURE_ENFORCER] Failed to heal: {e}")
+            return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
+
 
 def create_legacy_gravity_enforcer() -> StructureEnforcerAgent:
     """Create enforcer for gravity rules."""
-    config = StructureConfig(enable_gravity=True, enable_hierarchy=False, enable_naming=False, enable_documentation=False, enable_ascii=False)
+    config = StructureConfig(
+        enable_gravity=True,
+        enable_hierarchy=False,
+        enable_naming=False,
+        enable_documentation=False,
+        enable_ascii=False,
+    )
     return StructureEnforcerAgent(config=config)
+
 
 def create_legacy_naming_enforcer() -> StructureEnforcerAgent:
     """Create enforcer for naming conventions."""
-    config = StructureConfig(enable_gravity=False, enable_hierarchy=False, enable_naming=True, enable_documentation=False, enable_ascii=False)
+    config = StructureConfig(
+        enable_gravity=False,
+        enable_hierarchy=False,
+        enable_naming=True,
+        enable_documentation=False,
+        enable_ascii=False,
+    )
     return StructureEnforcerAgent(config=config)
+
 
 def create_legacy_doc_enforcer() -> StructureEnforcerAgent:
     """Create enforcer for documentation."""
-    config = StructureConfig(enable_gravity=False, enable_hierarchy=False, enable_naming=False, enable_documentation=True, enable_ascii=False)
+    config = StructureConfig(
+        enable_gravity=False,
+        enable_hierarchy=False,
+        enable_naming=False,
+        enable_documentation=True,
+        enable_ascii=False,
+    )
     return StructureEnforcerAgent(config=config)

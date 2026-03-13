@@ -1,19 +1,23 @@
 from __future__ import annotations
-'Dynamic DAG Mutation Manager - Runtime graph transformation.\n\nThis module implements the ability for the DAG to rewrite itself at runtime,\nallowing nodes to spawn new predecessors when they detect Missing information.\n'
+
+"Dynamic DAG Mutation Manager - Runtime graph transformation.\n\nThis module implements the ability for the DAG to rewrite itself at runtime,\nallowing nodes to spawn new predecessors when they detect Missing information.\n"
 import logging
 import uuid
 from datetime import datetime
 from enum import Enum
 from typing import TYPE_CHECKING, Any
+
 import networkx as nx
 from pydantic import BaseModel, Field, validator
+
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 if TYPE_CHECKING:
     pass
 Logger = logging.getLogger(__name__)
+
 
 class GraphTransaction:
     """Context manager for atomic graph mutations.
@@ -41,7 +45,7 @@ class GraphTransaction:
         self.original_graph = self.manager.graph
         self.transaction_graph = self.manager.graph.copy()
         self.manager._transaction_graph = self.transaction_graph
-        Logger.debug('Entered graph transaction')
+        Logger.debug("Entered graph transaction")
         return self.transaction_graph
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -58,16 +62,16 @@ class GraphTransaction:
         self.manager._transaction_graph = None
         if exc_type is not None:
             self.manager.graph = self.original_graph
-            Logger.error(f'DAG Mutation failed. Rolled back state. Error: {exc_val}')
+            Logger.error(f"DAG Mutation failed. Rolled back state. Error: {exc_val}")
             return False
         try:
             self._validate_transaction_graph()
             self.manager.graph = self.transaction_graph
-            Logger.debug('DAG Transaction committed successfully')
+            Logger.debug("DAG Transaction committed successfully")
         # guardian: allow-silent-swallow
         except Exception as e:
             self.manager.graph = self.original_graph
-            Logger.error(f'DAG Transaction validation failed. Rolled back. Error: {e}')
+            Logger.error(f"DAG Transaction validation failed. Rolled back. Error: {e}")
             return False
         return True
 
@@ -78,33 +82,39 @@ class GraphTransaction:
             ValueError: If validation fails
         """
         if not nx.is_directed_acyclic_graph(self.transaction_graph):
-            raise ValueError('Transaction would create a cycle')
+            raise ValueError("Transaction would create a cycle")
         if not nx.is_weakly_connected(self.transaction_graph):
-            Logger.warning('Transaction created disconnected components')
+            Logger.warning("Transaction created disconnected components")
         for node in self.transaction_graph.nodes():
-            if 'hop_spec' not in self.transaction_graph.nodes[node]:
-                raise ValueError(f'Node {node} Missing hop_spec attribute')
+            if "hop_spec" not in self.transaction_graph.nodes[node]:
+                raise ValueError(f"Node {node} Missing hop_spec attribute")
         self._validate_depth_ordering()
 
     def _validate_depth_ordering(self):
         """Validate that depth values are consistent with graph structure."""
-        depths = nx.get_node_attributes(self.transaction_graph, 'depth')
+        depths = nx.get_node_attributes(self.transaction_graph, "depth")
         for edge in self.transaction_graph.edges():
             source, target = edge
             source_depth = depths.get(source, 0)
             target_depth = depths.get(target, 0)
             if source_depth >= target_depth:
-                raise ValueError(f'Depth ordering Violation: {source}({source_depth}) -> {target}({target_depth})')
+                raise ValueError(
+                    f"Depth ordering Violation: {source}({source_depth}) -> {target}({target_depth})"
+                )
+
 
 class MutationAction(Enum):
     """Types of DAG mutations."""
-    SPAWN_PREDECESSOR = 'SPAWN_PREDECESSOR'
-    SPAWN_SUCCESSOR = 'SPAWN_SUCCESSOR'
-    SKIP_SUCCESSOR = 'SKIP_SUCCESSOR'
-    REPLACE_NODE = 'REPLACE_NODE'
+
+    SPAWN_PREDECESSOR = "SPAWN_PREDECESSOR"
+    SPAWN_SUCCESSOR = "SPAWN_SUCCESSOR"
+    SKIP_SUCCESSOR = "SKIP_SUCCESSOR"
+    REPLACE_NODE = "REPLACE_NODE"
+
 
 class HopSpec(BaseModel):
     """Specification for creating a new hop."""
+
     hop_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     hop_function: str
     parameters: dict[str, Any] = Field(default_factory=dict)
@@ -113,10 +123,12 @@ class HopSpec(BaseModel):
     retry_policy: dict[str, Any] | None = None
 
     class Config:
-        extra = 'allow'
+        extra = "allow"
+
 
 class DAGMutation(BaseModel):
     """A mutation request for the DAG."""
+
     mutation_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     action: MutationAction
     target_hop_id: str
@@ -125,17 +137,19 @@ class DAGMutation(BaseModel):
     timestamp: datetime = Field(default_factory=datetime.now)
     requester_hop_id: str
 
-    @validator('new_hop_spec')
+    @validator("new_hop_spec")
     def validate_hop_spec(cls, v, values):
         # guardian: allow-config-with-logic
-        if values.get('action') in [MutationAction.SPAWN_PREDECESSOR, MutationAction.SPAWN_SUCCESSOR]:
+        if values.get("action") in [MutationAction.SPAWN_PREDECESSOR, MutationAction.SPAWN_SUCCESSOR]:
             # guardian: allow-config-with-logic
             if v is None:
-                raise ValueError('new_hop_spec is required for spawn operations')
+                raise ValueError("new_hop_spec is required for spawn operations")
         return v
+
 
 class MutationResult(BaseModel):
     """Result of applying a mutation."""
+
     mutation_id: str
     success: bool
     message: str
@@ -143,12 +157,15 @@ class MutationResult(BaseModel):
     new_edges: list[tuple] = Field(default_factory=list)
     timestamp: datetime = Field(default_factory=datetime.now)
 
+
 class DAGConfig(BaseModel):
     """configuration for DAG management."""
+
     max_depth: int = Field(default=50, ge=1, le=100)
     max_fan_out: int = Field(default=10, ge=1, le=50)
     enable_mutation_logging: bool = True
     mutation_history_size: int = Field(default=1000, ge=100)
+
 
 class DAGMutatorAgent(SovereignBaseAgent):
     """Handles the actual graph mutations."""
@@ -184,77 +201,119 @@ class DAGMutatorAgent(SovereignBaseAgent):
                 elif mutation.action == MutationAction.REPLACE_NODE:
                     result = self._replace_node(tx_graph, mutation)
                 else:
-                    raise ValueError(f'Unknown mutation action: {mutation.action}')
+                    raise ValueError(f"Unknown mutation action: {mutation.action}")
                 if self.config.enable_mutation_logging:
-                    Logger.info(f'Applied mutation {mutation.mutation_id}: {mutation.action.value} on {mutation.target_hop_id} - {mutation.reason}')
+                    Logger.info(
+                        f"Applied mutation {mutation.mutation_id}: {mutation.action.value} on {mutation.target_hop_id} - {mutation.reason}"
+                    )
                 self._store_mutation_result(result)
                 return result
         # guardian: allow-silent-swallow
         except Exception as e:
             raise
-            error_result = MutationResult(mutation_id=mutation.mutation_id, success=False, message=f'Mutation failed: {str(e)}')
+            error_result = MutationResult(
+                mutation_id=mutation.mutation_id, success=False, message=f"Mutation failed: {str(e)}"
+            )
             self._store_mutation_result(error_result)
             return error_result
 
     def _validate_mutation(self, graph: nx.DiGraph, mutation: DAGMutation) -> None:
         """Validate that a mutation is safe to apply."""
         if mutation.target_hop_id not in graph.nodes:
-            raise ValueError(f'Target node {mutation.target_hop_id} not found in graph')
+            raise ValueError(f"Target node {mutation.target_hop_id} not found in graph")
         if mutation.action == MutationAction.SPAWN_PREDECESSOR:
-            target_depth = graph.nodes[mutation.target_hop_id].get('depth', 0)
+            target_depth = graph.nodes[mutation.target_hop_id].get("depth", 0)
             if target_depth >= self.config.max_depth - 1:
-                raise ValueError(f'Cannot spawn predecessor: would exceed max depth {self.config.max_depth}')
+                raise ValueError(f"Cannot spawn predecessor: would exceed max depth {self.config.max_depth}")
         if mutation.new_hop_spec and mutation.new_hop_spec.hop_id in graph.nodes:
-            raise ValueError(f'Node {mutation.new_hop_spec.hop_id} already exists')
+            raise ValueError(f"Node {mutation.new_hop_spec.hop_id} already exists")
         if mutation.action == MutationAction.SPAWN_SUCCESSOR:
             successors = list(graph.successors(mutation.target_hop_id))
             if len(successors) >= self.config.max_fan_out:
-                raise ValueError(f'Cannot spawn successor: would exceed max fan-out {self.config.max_fan_out}')
+                raise ValueError(
+                    f"Cannot spawn successor: would exceed max fan-out {self.config.max_fan_out}"
+                )
 
     def _spawn_predecessor(self, graph: nx.DiGraph, mutation: DAGMutation) -> MutationResult:
         """Spawn a new predecessor node."""
         new_node = mutation.new_hop_spec.hop_id
         target_node = mutation.target_hop_id
-        graph.add_node(new_node, hop_spec=mutation.new_hop_spec.dict(), depth=graph.nodes[target_node].get('depth', 0) + 1, created_by=mutation.requester_hop_id, created_at=mutation.timestamp)
-        graph.add_edge(new_node, target_node, created_by=mutation.requester_hop_id, created_at=mutation.timestamp)
+        graph.add_node(
+            new_node,
+            hop_spec=mutation.new_hop_spec.dict(),
+            depth=graph.nodes[target_node].get("depth", 0) + 1,
+            created_by=mutation.requester_hop_id,
+            created_at=mutation.timestamp,
+        )
+        graph.add_edge(
+            new_node, target_node, created_by=mutation.requester_hop_id, created_at=mutation.timestamp
+        )
         self._update_depths(graph)
         if not nx.is_directed_acyclic_graph(graph):
             graph.remove_node(new_node)
-            raise ValueError('Mutation would create a cycle')
-        return MutationResult(mutation_id=mutation.mutation_id, success=True, message=f'Spawned predecessor {new_node} for {target_node}', affected_nodes=[new_node, target_node], new_edges=[(new_node, target_node)])
+            raise ValueError("Mutation would create a cycle")
+        return MutationResult(
+            mutation_id=mutation.mutation_id,
+            success=True,
+            message=f"Spawned predecessor {new_node} for {target_node}",
+            affected_nodes=[new_node, target_node],
+            new_edges=[(new_node, target_node)],
+        )
 
     def _spawn_successor(self, graph: nx.DiGraph, mutation: DAGMutation) -> MutationResult:
         """Spawn a new successor node."""
         new_node = mutation.new_hop_spec.hop_id
         target_node = mutation.target_hop_id
-        graph.add_node(new_node, hop_spec=mutation.new_hop_spec.dict(), depth=graph.nodes[target_node].get('depth', 0) - 1, created_by=mutation.requester_hop_id, created_at=mutation.timestamp)
+        graph.add_node(
+            new_node,
+            hop_spec=mutation.new_hop_spec.dict(),
+            depth=graph.nodes[target_node].get("depth", 0) - 1,
+            created_by=mutation.requester_hop_id,
+            created_at=mutation.timestamp,
+        )
         old_successors = list(graph.successors(target_node))
         for successor in old_successors:
             graph.remove_edge(target_node, successor)
             graph.add_edge(new_node, successor, moved_from=target_node, created_by=mutation.requester_hop_id)
-        graph.add_edge(target_node, new_node, created_by=mutation.requester_hop_id, created_at=mutation.timestamp)
+        graph.add_edge(
+            target_node, new_node, created_by=mutation.requester_hop_id, created_at=mutation.timestamp
+        )
         self._update_depths(graph)
         if not nx.is_directed_acyclic_graph(graph):
             graph.remove_node(new_node)
             for successor in old_successors:
                 graph.add_edge(target_node, successor)
-            raise ValueError('Mutation would create a cycle')
-        return MutationResult(mutation_id=mutation.mutation_id, success=True, message=f'Spawned successor {new_node} for {target_node}', affected_nodes=[new_node, target_node] + old_successors, new_edges=[(target_node, new_node)] + [(new_node, s) for s in old_successors])
+            raise ValueError("Mutation would create a cycle")
+        return MutationResult(
+            mutation_id=mutation.mutation_id,
+            success=True,
+            message=f"Spawned successor {new_node} for {target_node}",
+            affected_nodes=[new_node, target_node] + old_successors,
+            new_edges=[(target_node, new_node)] + [(new_node, s) for s in old_successors],
+        )
 
     def _skip_successor(self, graph: nx.DiGraph, mutation: DAGMutation) -> MutationResult:
         """Skip a successor node by bridging the gap."""
         target_node = mutation.target_hop_id
         successors = list(graph.successors(target_node))
         if not successors:
-            raise ValueError(f'Node {target_node} has no successors to skip')
+            raise ValueError(f"Node {target_node} has no successors to skip")
         skip_node = successors[0]
         skip_successors = list(graph.successors(skip_node))
         for skip_successor in skip_successors:
-            graph.add_edge(target_node, skip_successor, bridge_created=True, created_by=mutation.requester_hop_id)
-        graph.nodes[skip_node]['skipped'] = True
-        graph.nodes[skip_node]['skipped_by'] = mutation.requester_hop_id
-        graph.nodes[skip_node]['skipped_at'] = mutation.timestamp
-        return MutationResult(mutation_id=mutation.mutation_id, success=True, message=f'Skipped successor {skip_node} of {target_node}', affected_nodes=[target_node, skip_node] + skip_successors, new_edges=[(target_node, s) for s in skip_successors])
+            graph.add_edge(
+                target_node, skip_successor, bridge_created=True, created_by=mutation.requester_hop_id
+            )
+        graph.nodes[skip_node]["skipped"] = True
+        graph.nodes[skip_node]["skipped_by"] = mutation.requester_hop_id
+        graph.nodes[skip_node]["skipped_at"] = mutation.timestamp
+        return MutationResult(
+            mutation_id=mutation.mutation_id,
+            success=True,
+            message=f"Skipped successor {skip_node} of {target_node}",
+            affected_nodes=[target_node, skip_node] + skip_successors,
+            new_edges=[(target_node, s) for s in skip_successors],
+        )
 
     def _replace_node(self, graph: nx.DiGraph, mutation: DAGMutation) -> MutationResult:
         """Replace a node with a new one."""
@@ -262,39 +321,52 @@ class DAGMutatorAgent(SovereignBaseAgent):
         new_node = mutation.new_hop_spec.hop_id
         predecessors = list(graph.predecessors(old_node))
         successors = list(graph.successors(old_node))
-        graph.add_node(new_node, hop_spec=mutation.new_hop_spec.dict(), depth=graph.nodes[old_node].get('depth', 0), created_by=mutation.requester_hop_id, created_at=mutation.timestamp, replaces=old_node)
+        graph.add_node(
+            new_node,
+            hop_spec=mutation.new_hop_spec.dict(),
+            depth=graph.nodes[old_node].get("depth", 0),
+            created_by=mutation.requester_hop_id,
+            created_at=mutation.timestamp,
+            replaces=old_node,
+        )
         for pred in predecessors:
             graph.add_edge(pred, new_node, replaced_from=old_node, created_by=mutation.requester_hop_id)
         for succ in successors:
             graph.add_edge(new_node, succ, replaced_to=old_node, created_by=mutation.requester_hop_id)
-        graph.nodes[old_node]['replaced'] = True
-        graph.nodes[old_node]['replaced_by'] = new_node
-        graph.nodes[old_node]['replaced_at'] = mutation.timestamp
+        graph.nodes[old_node]["replaced"] = True
+        graph.nodes[old_node]["replaced_by"] = new_node
+        graph.nodes[old_node]["replaced_at"] = mutation.timestamp
         graph.remove_edges_from([(p, old_node) for p in predecessors])
         graph.remove_edges_from([(old_node, s) for s in successors])
-        return MutationResult(mutation_id=mutation.mutation_id, success=True, message=f'Replaced node {old_node} with {new_node}', affected_nodes=[old_node, new_node] + predecessors + successors, new_edges=[(p, new_node) for p in predecessors] + [(new_node, s) for s in successors])
+        return MutationResult(
+            mutation_id=mutation.mutation_id,
+            success=True,
+            message=f"Replaced node {old_node} with {new_node}",
+            affected_nodes=[old_node, new_node] + predecessors + successors,
+            new_edges=[(p, new_node) for p in predecessors] + [(new_node, s) for s in successors],
+        )
 
     def _update_depths(self, graph: nx.DiGraph) -> None:
         """Update depth annotations for all nodes."""
         roots = [n for n in graph.nodes if graph.in_degree(n) == 0]
         for root in roots:
-            graph.nodes[root]['depth'] = 0
+            graph.nodes[root]["depth"] = 0
             queue = [(root, 0)]
             while queue:
                 node, depth = queue.pop(0)
                 for successor in graph.successors(node):
-                    current_depth = graph.nodes[successor].get('depth', -1)
+                    current_depth = graph.nodes[successor].get("depth", -1)
                     if depth + 1 > current_depth:
-                        graph.nodes[successor]['depth'] = depth + 1
+                        graph.nodes[successor]["depth"] = depth + 1
                         queue.append((successor, depth + 1))
 
     def _store_mutation_result(self, result: MutationResult) -> None:
         """Store mutation result in history."""
         self.mutation_history.append(result)
         if len(self.mutation_history) > self.config.mutation_history_size:
-            self.mutation_history = self.mutation_history[-self.config.mutation_history_size:]
+            self.mutation_history = self.mutation_history[-self.config.mutation_history_size :]
 
-    def get_mutation_history(self, limit: int | None=None) -> list[MutationResult]:
+    def get_mutation_history(self, limit: int | None = None) -> list[MutationResult]:
         """Get mutation history."""
         if limit:
             return self.mutation_history[-limit:]
@@ -303,29 +375,44 @@ class DAGMutatorAgent(SovereignBaseAgent):
     @timeout(120)
     @standard_heal
     # guardian: allow-magic-config
-    def heal_repository(self, dry_run: bool=True, execute: bool=False, depth: int=0, max_depth: int=3, _call_path: set | None=None) -> dict[str, int]:
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+    ) -> dict[str, int]:
         """
         DAG Mutation Healing - Validates graph mutation logic integrity.
 
         WIRED CAPABILITIES:
         - _validate_mutation(): Self-diagnostic on graph mutation rules.
         """
-        metrics = super().heal_repository(dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path)
+        metrics = super().heal_repository(
+            dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path
+        )
         if not isinstance(metrics, dict):
-            metrics = {'violations': 0, 'fixed': 0, 'errors': 0}
-        if metrics.get('cycle_detected'):
+            metrics = {"violations": 0, "fixed": 0, "errors": 0}
+        if metrics.get("cycle_detected"):
             return metrics
         try:
             test_graph = nx.DiGraph()
-            test_graph.add_node('root', depth=0)
-            test_mutation = DAGMutation(action=MutationAction.SPAWN_SUCCESSOR, target_hop_id='root', new_hop_spec=HopSpec(hop_function='test_func', parameters={}), reason='diagnostic_check', requester_hop_id='system_healer')
-            if hasattr(self, '_validate_mutation'):
+            test_graph.add_node("root", depth=0)
+            test_mutation = DAGMutation(
+                action=MutationAction.SPAWN_SUCCESSOR,
+                target_hop_id="root",
+                new_hop_spec=HopSpec(hop_function="test_func", parameters={}),
+                reason="diagnostic_check",
+                requester_hop_id="system_healer",
+            )
+            if hasattr(self, "_validate_mutation"):
                 self._validate_mutation(test_graph, test_mutation)
-                metrics['fixed'] = metrics.get('fixed', 0) + 1
+                metrics["fixed"] = metrics.get("fixed", 0) + 1
         # guardian: allow-silent-swallow
         except Exception as e:
-            Logger.error(f'DAG Mutator healing failed: {e}')
-            metrics['errors'] = metrics.get('errors', 0) + 1
+            Logger.error(f"DAG Mutator healing failed: {e}")
+            metrics["errors"] = metrics.get("errors", 0) + 1
         return metrics
 
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
@@ -345,10 +432,20 @@ class DAGMutatorAgent(SovereignBaseAgent):
                 - artifacts: List of modified files
                 - errors: List of error messages
         """
-        violation.get('file') or violation.get('file_path')
-        violation_type = violation.get('type', 'unknown')
+        violation.get("file") or violation.get("file_path")
+        violation_type = violation.get("type", "unknown")
         try:
-            return {'status': 'skipped', 'details': f'DAGMutatorAgent heal() not yet implemented for {violation_type}', 'artifacts': [], 'errors': []}
+            return {
+                "status": "skipped",
+                "details": f"DAGMutatorAgent heal() not yet implemented for {violation_type}",
+                "artifacts": [],
+                "errors": [],
+            }
         # guardian: allow-silent-swallow
         except Exception as e:
-            return {'status': 'failed', 'details': f'DAGMutatorAgent heal() failed: {str(e)}', 'artifacts': [], 'errors': [str(e)]}
+            return {
+                "status": "failed",
+                "details": f"DAGMutatorAgent heal() failed: {str(e)}",
+                "artifacts": [],
+                "errors": [str(e)],
+            }

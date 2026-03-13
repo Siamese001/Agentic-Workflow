@@ -1,12 +1,21 @@
 from __future__ import annotations
-'\nSecurity Utilities for Agentic Workflow\n\nZero-Trust subprocess execution wrapper with comprehensive input validation,\ninjection prevention, and observability integration.\n\nZero-Ambiguity Standard: Renamed from SecurityViolationError.py to subprocess_security_util.py\nCategory: UTILITY (Security utilities, not just an Error class)\n\nCreated: 2026-01-20\nPurpose: Harden all subprocess calls against shell injection attacks\n'
+
+"\nSecurity Utilities for Agentic Workflow\n\nZero-Trust subprocess execution wrapper with comprehensive input validation,\ninjection prevention, and observability integration.\n\nZero-Ambiguity Standard: Renamed from SecurityViolationError.py to subprocess_security_util.py\nCategory: UTILITY (Security utilities, not just an Error class)\n\nCreated: 2026-01-20\nPurpose: Harden all subprocess calls against shell injection attacks\n"
 import logging
 import re
 import subprocess
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 Logger = logging.getLogger(__name__)
-SHELL_METACHARACTERS = {'|': 'pipe operator', '&&': 'AND operator', '||': 'OR operator', '`': 'backtick command substitution', '$(': 'command substitution', '&': 'background execution'}
+SHELL_METACHARACTERS = {
+    "|": "pipe operator",
+    "&&": "AND operator",
+    "||": "OR operator",
+    "`": "backtick command substitution",
+    "$(": "command substitution",
+    "&": "background execution",
+}
+
 
 def _is_shell_injection_risk(arg: str) -> bool:
     """
@@ -21,32 +30,46 @@ def _is_shell_injection_risk(arg: str) -> bool:
     Returns:
         True if injection risk detected, False otherwise
     """
-    if arg.startswith('import ') or 'import ' in arg[:50]:
+    if arg.startswith("import ") or "import " in arg[:50]:
         return False
-    if '|' in arg and '||' not in arg:
+    if "|" in arg and "||" not in arg:
         return True
-    if '&&' in arg:
+    if "&&" in arg:
         return True
-    if '||' in arg:
+    if "||" in arg:
         return True
-    if '`' in arg:
+    if "`" in arg:
         return True
-    if '$(' in arg:
+    if "$(" in arg:
         return True
-    if re.search('>\\s*[/\\\\]', arg):
+    if re.search(">\\s*[/\\\\]", arg):
         return True
-    if re.search('<\\s*[/\\\\]', arg):
+    if re.search("<\\s*[/\\\\]", arg):
         return True
-    if arg.strip().endswith('&'):
+    if arg.strip().endswith("&"):
         return True
     return False
-INJECTION_REGEX = re.compile('\\||&&|\\|\\||`|\\$\\(|>\\s*[/\\\\]|<\\s*[/\\\\]|&\\s*$')
+
+
+INJECTION_REGEX = re.compile("\\||&&|\\|\\||`|\\$\\(|>\\s*[/\\\\]|<\\s*[/\\\\]|&\\s*$")
+
 
 class SecurityViolationError(Exception):
     """Raised when a security violation is detected in subprocess arguments."""
+
     pass
 
-def safe_execute(args: list[str], cwd: str | Path | None=None, timeout: int | None=None, capture_output: bool=True, text: bool=True, check: bool=True, env: dict[str, str] | None=None, input_data: str | None=None) -> subprocess.CompletedProcess:
+
+def safe_execute(
+    args: list[str],
+    cwd: str | Path | None = None,
+    timeout: int | None = None,
+    capture_output: bool = True,
+    text: bool = True,
+    check: bool = True,
+    env: dict[str, str] | None = None,
+    input_data: str | None = None,
+) -> subprocess.CompletedProcess:
     """
     Hardened wrapper for subprocess.run with zero-trust security constraints.
 
@@ -82,41 +105,65 @@ def safe_execute(args: list[str], cwd: str | Path | None=None, timeout: int | No
         >>> result = safe_execute(['ls', '-la'], cwd='/tmp')
     """
     if not isinstance(args, list):
-        raise TypeError(f'safe_execute requires args as List[str], got {type(args).__name__}. This prevents accidental shell injection via string commands.')
+        raise TypeError(
+            f"safe_execute requires args as List[str], got {type(args).__name__}. This prevents accidental shell injection via string commands."
+        )
     if not args:
-        raise ValueError('safe_execute requires non-empty args list')
+        raise ValueError("safe_execute requires non-empty args list")
     for i, arg in enumerate(args):
         if not isinstance(arg, str):
-            raise TypeError(f'Argument {i} must be str, got {type(arg).__name__}: {arg}')
+            raise TypeError(f"Argument {i} must be str, got {type(arg).__name__}: {arg}")
         if _is_shell_injection_risk(arg):
-            truncated = arg[:100] + '...' if len(arg) > 100 else arg
-            raise SecurityViolationError(f"Shell injection pattern detected in argument {i}: '{truncated}'\nBlocked patterns: | && || ` $( > /path < /path & (at end)\nThis is a security violation. Use safe alternatives or file-based I/O.")
+            truncated = arg[:100] + "..." if len(arg) > 100 else arg
+            raise SecurityViolationError(
+                f"Shell injection pattern detected in argument {i}: '{truncated}'\nBlocked patterns: | && || ` $( > /path < /path & (at end)\nThis is a security violation. Use safe alternatives or file-based I/O."
+            )
     if cwd is not None:
         cwd_path = Path(cwd)
         if not cwd_path.exists():
-            Logger.warning(f'[Security] Working directory does not exist: {cwd}')
+            Logger.warning(f"[Security] Working directory does not exist: {cwd}")
         cwd = str(cwd_path)
-    cmd_str = ' '.join(args)
-    Logger.info(f'[Security] Executing safe command: {cmd_str}')
+    cmd_str = " ".join(args)
+    Logger.info(f"[Security] Executing safe command: {cmd_str}")
     if cwd:
-        Logger.debug(f'[Security] Working directory: {cwd}')
+        Logger.debug(f"[Security] Working directory: {cwd}")
     if timeout:
-        Logger.debug(f'[Security] Timeout: {timeout}s')
+        Logger.debug(f"[Security] Timeout: {timeout}s")
     try:
-        result = subprocess.run(args, cwd=cwd, timeout=timeout, capture_output=capture_output, text=text, check=check, env=env, input=input_data, shell=False)
-        Logger.info(f'[Security] Command completed successfully: {args[0]} (exit code: {result.returncode})')
+        result = subprocess.run(
+            args,
+            cwd=cwd,
+            timeout=timeout,
+            capture_output=capture_output,
+            text=text,
+            check=check,
+            env=env,
+            input=input_data,
+            shell=False,
+        )
+        Logger.info(f"[Security] Command completed successfully: {args[0]} (exit code: {result.returncode})")
         return result
     except subprocess.CalledProcessError as e:
-        Logger.error(f"[Security] Command failed: {cmd_str}\nExit code: {e.returncode}\nStderr: {(e.stderr[:500] if e.stderr else 'N/A')}")
+        Logger.error(
+            f"[Security] Command failed: {cmd_str}\nExit code: {e.returncode}\nStderr: {(e.stderr[:500] if e.stderr else 'N/A')}"
+        )
         raise
     except subprocess.TimeoutExpired:
-        Logger.error(f'[Security] Command timeout after {timeout}s: {cmd_str}')
+        Logger.error(f"[Security] Command timeout after {timeout}s: {cmd_str}")
         raise
     except Exception as e:
-        Logger.error(f'[Security] Unexpected error executing command: {cmd_str}\nError: {e}')
+        Logger.error(f"[Security] Unexpected error executing command: {cmd_str}\nError: {e}")
         raise
 
-def safe_popen(args: list[str], cwd: str | Path | None=None, stdout: int | None=subprocess.PIPE, stderr: int | None=subprocess.PIPE, text: bool=True, env: dict[str, str] | None=None) -> subprocess.Popen:
+
+def safe_popen(
+    args: list[str],
+    cwd: str | Path | None = None,
+    stdout: int | None = subprocess.PIPE,
+    stderr: int | None = subprocess.PIPE,
+    text: bool = True,
+    env: dict[str, str] | None = None,
+) -> subprocess.Popen:
     """
     Hardened wrapper for subprocess.Popen with zero-trust security constraints.
 
@@ -145,26 +192,27 @@ def safe_popen(args: list[str], cwd: str | Path | None=None, stdout: int | None=
         >>> proc.wait()
     """
     if not isinstance(args, list):
-        raise TypeError(f'safe_popen requires args as List[str], got {type(args).__name__}')
+        raise TypeError(f"safe_popen requires args as List[str], got {type(args).__name__}")
     if not args:
-        raise ValueError('safe_popen requires non-empty args list')
+        raise ValueError("safe_popen requires non-empty args list")
     for i, arg in enumerate(args):
         if not isinstance(arg, str):
-            raise TypeError(f'Argument {i} must be str, got {type(arg).__name__}: {arg}')
+            raise TypeError(f"Argument {i} must be str, got {type(arg).__name__}: {arg}")
         if _is_shell_injection_risk(arg):
-            truncated = arg[:100] + '...' if len(arg) > 100 else arg
+            truncated = arg[:100] + "..." if len(arg) > 100 else arg
             raise SecurityViolationError(f"Shell injection pattern detected in argument {i}: '{truncated}'")
     if cwd is not None:
         cwd = str(Path(cwd))
-    cmd_str = ' '.join(args)
-    Logger.info(f'[Security] Starting Popen process: {cmd_str}')
+    cmd_str = " ".join(args)
+    Logger.info(f"[Security] Starting Popen process: {cmd_str}")
     try:
         proc = subprocess.Popen(args, cwd=cwd, stdout=stdout, stderr=stderr, text=text, env=env, shell=False)
-        Logger.info(f'[Security] Popen process started: PID {proc.pid}')
+        Logger.info(f"[Security] Popen process started: PID {proc.pid}")
         return proc
     except Exception as e:
-        Logger.error(f'[Security] Failed to start Popen process: {cmd_str}\nError: {e}')
+        Logger.error(f"[Security] Failed to start Popen process: {cmd_str}\nError: {e}")
         raise
+
 
 def validate_command_whitelist(args: list[str], allowed_commands: list[str]) -> bool:
     """
@@ -187,17 +235,20 @@ def validate_command_whitelist(args: list[str], allowed_commands: list[str]) -> 
     if not args:
         return False
     command = args[0]
-    if '/' in command or '\\' in command:
+    if "/" in command or "\\" in command:
         command = Path(command).name
-    if command.endswith('.exe'):
+    if command.endswith(".exe"):
         command = command[:-4]
     is_allowed = command in allowed_commands
     if not is_allowed:
         Logger.warning(f"[Security] Command '{command}' not in whitelist: {allowed_commands}")
     return is_allowed
 
+
 # guardian: allow-magic-config
-def safe_git_execute(git_args: list[str], repo_root: str | Path | None=None, timeout: int=30) -> subprocess.CompletedProcess:
+def safe_git_execute(
+    git_args: list[str], repo_root: str | Path | None = None, timeout: int = 30
+) -> subprocess.CompletedProcess:
     """
     Convenience wrapper for safe git command execution.
 
@@ -213,5 +264,5 @@ def safe_git_execute(git_args: list[str], repo_root: str | Path | None=None, tim
         >>> result = safe_git_execute(['status'])
         >>> result = safe_git_execute(['commit', '-m', 'message'], repo_root='/path/to/repo')
     """
-    args = ['git'] + git_args
+    args = ["git"] + git_args
     return safe_execute(args, cwd=repo_root, timeout=timeout)

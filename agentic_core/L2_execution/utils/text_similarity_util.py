@@ -1,15 +1,18 @@
 from __future__ import annotations
-'\nText similarity computation using TF-IDF cosine similarity.\n\nProvides core similarity calculation with sklearn alternative path.\n'
+
+"\nText similarity computation using TF-IDF cosine similarity.\n\nProvides core similarity calculation with sklearn alternative path.\n"
 import math
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 try:
     from sklearn.feature_extraction.text import TfidfVectorizer
     from sklearn.metrics.pairwise import cosine_similarity
+
     SKLEARN_AVAILABLE: Any = True
 except ImportError:
     TfidfVectorizer = None
     SKLEARN_AVAILABLE: Any = False
+
 
 class TextSimilarityCalculator:
     """Calculate TF-IDF cosine similarity between texts."""
@@ -18,7 +21,7 @@ class TextSimilarityCalculator:
         """Initialize the similarity calculator."""
         self.vectorizer = None
         if SKLEARN_AVAILABLE and TfidfVectorizer is not None:
-            self.vectorizer = TfidfVectorizer(stop_words='english', norm='l2')
+            self.vectorizer = TfidfVectorizer(stop_words="english", norm="l2")
 
     def calculate(self, text1: str, text2: str) -> float:
         """Calculate cosine similarity between two texts."""
@@ -54,7 +57,7 @@ class TextSimilarityCalculator:
         return numerator / denominator
 
     # guardian: allow-magic-config
-    def find_duplicates(self, texts: list[str], threshold: float=0.9) -> list[tuple[int, int, float]]:
+    def find_duplicates(self, texts: list[str], threshold: float = 0.9) -> list[tuple[int, int, float]]:
         """Find text pairs with similarity >= threshold."""
         duplicates = []
         for i in range(len(texts)):
