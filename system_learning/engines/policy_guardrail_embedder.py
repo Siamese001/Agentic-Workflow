@@ -226,6 +226,130 @@ class PolicyGuardrailEmbedder:
             logger.debug("PolicyGuardrailEmbedder._retrieve: %s", exc)
             return []
 
+    def verdict_stats(self) -> dict[str, int]:
+        """Return a count of buffered cases by verdict.
+
+        Returns:
+            Dict mapping verdict → count, always containing all three keys
+            (true_positive, false_positive, false_negative) even if zero.
+        """
+        stats: dict[str, int] = {
+            "true_positive": 0,
+            "false_positive": 0,
+            "false_negative": 0,
+        }
+        with self._lock:
+            for meta in self._meta.values():
+                v = meta.get("verdict", "")
+                if v in stats:
+                    stats[v] += 1
+        return stats
+
+    def evict_by_policy_hash(self, policy_hash: str) -> int:
+        """Remove all buffered records whose case metadata matches ``policy_hash``.
+
+        Useful when a policy is rotated and its historical cases are no longer
+        relevant for calibration.
+
+        Args:
+            policy_hash: Policy hash to evict.
+
+        Returns:
+            Number of records evicted.
+        """
+        if not policy_hash:
+            raise ValueError("policy_hash must not be empty")
+        evicted = 0
+        with self._lock:
+            keep_records: list[CorpusRecord] = []
+            for record in self._records:
+                meta = self._meta.get(record.content_hash, {})
+                if meta.get("policy_hash") == policy_hash:
+                    self._meta.pop(record.content_hash, None)
+                    evicted += 1
+                    logger.debug(
+                        "PolicyGuardrailEmbedder: evicted record %s for policy %s",
+                        record.content_hash[:16],
+                        policy_hash[:16],
+                    )
+                else:
+                    keep_records.append(record)
+            self._records = keep_records
+        return evicted
+
+    def retrieve_by_verdict(
+        self,
+        verdict: str,
+        *,
+        limit: int = 20,
+    ) -> list[dict[str, str]]:
+        """Return metadata snapshots of buffered cases matching a verdict.
+
+        Does not call the embedding service — operates purely over the
+        in-memory meta store. C0_INFORMATIONAL.
+
+        Args:
+            verdict: One of ``true_positive``, ``false_positive``,
+                ``false_negative``.
+            limit: Maximum results to return (capped at 100).
+
+        Returns:
+            List of metadata dicts, sorted by case_id for determinism.
+        """
+        if verdict not in ("true_positive", "false_positive", "false_negative"):
+            raise ValueError(
+                f"verdict must be true_positive/false_positive/false_negative, got {verdict!r}"
+            )
+        limit = min(limit, 100)
+        results: list[dict[str, str]] = []
+        with self._lock:
+            for meta in self._meta.values():
+                if meta.get("verdict") == verdict:
+                    results.append(dict(meta))
+        results.sort(key=lambda m: m.get("case_id", ""))
+        return results[:limit]
+
+    def retrieve_false_positives(
+        self,
+        *,
+        limit: int = 20,
+    ) -> list[dict[str, str]]:
+        """Convenience wrapper — returns buffered false_positive cases.
+
+        Use to identify over-triggered guardrail patterns that should be
+        candidates for strictness relaxation.
+
+        Args:
+            limit: Maximum results.
+
+        Returns:
+            List of metadata dicts, sorted by case_id.
+        """
+        return self.retrieve_by_verdict("false_positive", limit=limit)
+
+    def top_strictness_levels(self, *, top_n: int = 5) -> list[tuple[str, int]]:
+        """Return the most frequent strictness_level values in the buffer.
+
+        Useful for calibration dashboards: shows which strictness tiers
+        generate the most guardrail incidents.
+
+        Args:
+            top_n: Number of top levels to return (capped at 20).
+
+        Returns:
+            List of (strictness_level, count) tuples sorted by count desc,
+            then level name asc for stability.
+        """
+        top_n = min(top_n, 20)
+        counts: dict[str, int] = {}
+        with self._lock:
+            for meta in self._meta.values():
+                level = meta.get("strictness_level", "")
+                if level:
+                    counts[level] = counts.get(level, 0) + 1
+        ranked = sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))
+        return ranked[:top_n]
+
     @staticmethod
     def case_from_l5_block(
         *,
