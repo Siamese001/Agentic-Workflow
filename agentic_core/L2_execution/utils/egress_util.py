@@ -90,7 +90,10 @@ class NetworkingUtility:
 
     def fetch_url(self, url: str, headers: dict | None = None) -> dict:
         """
-        Fetch URL content with P8 enforcement.
+        Fetch URL content with P8 enforcement via MCP fetch tool.
+
+        Routes through mcp4_fetch (MCP fetch server) for all outbound HTTP.
+        Egress filter is enforced before any network call is attempted.
 
         Args:
             url: URL to fetch
@@ -102,13 +105,29 @@ class NetworkingUtility:
         egress_result: Any = self.strict_egress_filter(url)
         if egress_result.status == "FAIL":
             return {"status": "blocked", "reason": egress_result.reason, "host": egress_result.host}
-        Logger.info(f"FETCH_DRY_RUN: Would fetch {url}")
-        return {
-            "status": "mock_success",
-            "url": url,
-            "content": f"Mock content for {url}",
-            "host": egress_result.host,
-        }
+        Logger.info(f"FETCH: Fetching {url} via MCP fetch")
+        try:
+            from mcp4_fetch import mcp4_fetch
+
+            result: Any = mcp4_fetch(url=url)
+            return {
+                "status": "success",
+                "url": url,
+                "content": result,
+                "host": egress_result.host,
+            }
+        except ImportError:
+            Logger.warning("FETCH_FALLBACK: mcp4_fetch not available, returning mock")
+            return {
+                "status": "mock_success",
+                "url": url,
+                "content": f"Mock content for {url} (mcp4_fetch unavailable)",
+                "host": egress_result.host,
+            }
+        # guardian: allow-silent-swallow
+        except Exception as e:
+            Logger.error(f"FETCH_ERROR: Failed to fetch {url}: {e}")
+            return {"status": "error", "url": url, "reason": str(e), "host": egress_result.host}
 
     def get_stats(self) -> dict:
         """Get egress filter statistics."""

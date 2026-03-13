@@ -248,8 +248,43 @@ class StateManagementAgent(SovereignBaseAgent):
                 self._manifest[key] = entry
             self._save_manifest()
             self._notify_registry_update(key, "set")
+            self._mcp8_mirror_set(key, data)
             Logger.debug(f"State set: {key}")
             return str(file_path)
+
+    def _mcp8_mirror_set(self, key: str, data: Any) -> None:
+        """Mirror state to MCP memory server (mcp8) for cross-session persistence.
+
+        Non-blocking — failures are logged but never propagate to callers.
+        L4 file-based state remains the authoritative source of truth.
+        """
+        try:
+            from mcp8_add_observations import mcp8_add_observations
+            from mcp8_create_entities import mcp8_create_entities
+            from mcp8_search_nodes import mcp8_search_nodes
+
+            entity_name = f"state:{key}"
+            observation = json.dumps(data, sort_keys=True, default=str)
+            existing = mcp8_search_nodes(query=entity_name)
+            nodes = existing.get("entities", []) if isinstance(existing, dict) else []
+            if any(n.get("name") == entity_name for n in nodes):
+                mcp8_add_observations(observations=[{"entityName": entity_name, "contents": [observation]}])
+            else:
+                mcp8_create_entities(
+                    entities=[
+                        {
+                            "name": entity_name,
+                            "entityType": "StateEntry",
+                            "observations": [observation],
+                        }
+                    ]
+                )
+            Logger.debug(f"[mcp8] Mirrored state: {key}")
+        except ImportError:
+            pass
+        # guardian: allow-silent-swallow
+        except Exception as e:
+            Logger.debug(f"[mcp8] Mirror failed for {key}: {e}")
 
     def get_state(self, key: str) -> Any | None:
         """

@@ -459,6 +459,40 @@ def reset_cache_singletons() -> None:
     _coordination_cache = None
 
 
+def check_redis_health_via_mcp() -> dict[str, object]:
+    """Probe Redis availability using the MCP Redis tool (mcp11_*).
+
+    Uses the MCP Redis server as an alternative connectivity probe — useful
+    when the raw ``redis`` package is unavailable or for cross-checking the
+    MCP layer's Redis connection independently of the native client.
+
+    Returns:
+        ``dict`` with keys:
+            - ``"healthy"`` (bool): True when MCP Redis responded.
+            - ``"method"`` (str): Always ``"mcp11"``.
+            - ``"error"`` (str | None): Error message when not healthy.
+    """
+    try:
+        from mcp11_delete import mcp11_delete
+        from mcp11_get import mcp11_get
+        from mcp11_set import mcp11_set
+
+        probe_key = "__mcp_health_probe__"
+        probe_val = "1"
+        mcp11_set(key=probe_key, value=probe_val, expireSeconds=10)
+        result = mcp11_get(key=probe_key)
+        mcp11_delete(key=probe_key)
+        healthy = result is not None
+        logger.info("MCP Redis health probe: healthy=%s", healthy)
+        return {"healthy": healthy, "method": "mcp11", "error": None}
+    except ImportError:
+        return {"healthy": False, "method": "mcp11", "error": "mcp11 tools not available"}
+    # guardian: allow-silent-swallow
+    except Exception as exc:
+        logger.warning("MCP Redis health probe failed: %s", exc)
+        return {"healthy": False, "method": "mcp11", "error": str(exc)}
+
+
 def check_redis_health(redis_url: str | None = None) -> dict[str, object]:
     """Probe Redis availability and return a structured health report.
 
