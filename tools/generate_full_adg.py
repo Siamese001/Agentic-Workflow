@@ -17,8 +17,10 @@ NOTE: adg_LATEST_* copies not generated (create_latest_symlinks=False by default
 
 from __future__ import annotations
 
+import gzip
+import shutil
 import sys
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -41,8 +43,14 @@ from agentic_core.adg.artifact.multi_writer import write_all_artifacts
 from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
 
 
-def generate_full_adg(adg_artifacts_dir: Path, ts: str) -> None:
-    """Generate full ADG and write all artifact tiers."""
+def generate_full_adg(adg_artifacts_dir: Path, ts: str, archive_old: bool = True) -> None:
+    """Generate full ADG and write all artifact tiers.
+
+    Args:
+        adg_artifacts_dir: Directory for ADG artifacts
+        ts: Timestamp string (MMDDYYYY format)
+        archive_old: If True, archive artifacts older than retention period
+    """
     print("[ADG] Starting full scan...")
 
     scanner = ADGStaticScanner(repo_root=ROOT)
@@ -166,6 +174,10 @@ def generate_full_adg(adg_artifacts_dir: Path, ts: str) -> None:
     # --- Memory MCP persistence ---
     _persist_adg_to_memory(result, artifact, snapshot, graph_diff, routing_summary, ts)
 
+    # --- Archive old artifacts ---
+    if archive_old:
+        _archive_old_artifacts(adg_artifacts_dir, ts, retention_days=7)
+
 
 def _persist_adg_to_memory(result, artifact, snapshot, graph_diff, routing_summary, ts: str) -> None:
     """Persist key ADG signals to Memory MCP knowledge graph via ADGMemoryAdapter."""
@@ -173,8 +185,7 @@ def _persist_adg_to_memory(result, artifact, snapshot, graph_diff, routing_summa
         from agentic_core.adg.adapters.memory_mcp_adapter import get_adapter
 
         adapter = get_adapter()
-    # guardian: allow-silent-swallow
-    except Exception as e:  # guardian: allow-silent-swallower
+    except (ImportError, AttributeError, RuntimeError) as e:
         print(f"[ADG] Memory MCP unavailable — skipping persistence: {e}")
         return
 
@@ -189,8 +200,7 @@ def _persist_adg_to_memory(result, artifact, snapshot, graph_diff, routing_summa
 
     try:
         adapter.ingest_snapshot(result, ts, diff_edges=diff_edges)
-    # guardian: allow-silent-swallow
-    except Exception as e:  # guardian: allow-silent-swallower
+    except (ValueError, TypeError, AttributeError, RuntimeError, OSError) as e:
         print(f"[ADG] Memory MCP: ingest_snapshot failed: {e}")
         return
 
@@ -200,6 +210,101 @@ def _persist_adg_to_memory(result, artifact, snapshot, graph_diff, routing_summa
     print(
         f"[ADG] Memory MCP: persisted snapshot + layers + hotspots + {min(total_violations, 50)}/{total_violations} violations (critical={critical_count})"
     )
+
+
+def _archive_old_artifacts(adg_dir: Path, current_ts: str, retention_days: int = 7) -> None:
+    """Archive ADG artifacts older than retention period.
+
+    Keeps the most recent N days of artifacts in the main directory.
+    Older artifacts are compressed and moved to _archive/YYYY-MM/.
+
+    Args:
+        adg_dir: ADG artifacts directory
+        current_ts: Current timestamp (MMDDYYYY)
+        retention_days: Number of days to keep in main directory
+    """
+    if not adg_dir.exists():
+        print(f"[ADG] Archive: directory {adg_dir} does not exist")
+        return
+
+    # Parse current timestamp to get cutoff date
+    try:
+        current_date = datetime.strptime(current_ts, "%m%d%Y")
+        cutoff_date = current_date - timedelta(days=retention_days)
+    except (ValueError, TypeError) as e:
+        print(f"[ADG] Archive: invalid timestamp format {current_ts}: {e}")
+        return
+
+    # Patterns for ADG artifacts to archive
+    patterns = [
+        "adg_snapshot_*.json",
+        "adg_indexed_*.sqlite",
+        "adg_file_graph_*.json",
+        "adg_symbol_graph_*.json",
+        "adg_governance_graph_*.json",
+        "adg_graphsnap_*.json",
+    ]
+
+    archived_count = 0
+    skipped_count = 0
+    error_count = 0
+
+    for pattern in patterns:
+        for artifact_path in adg_dir.glob(pattern):
+            # Extract timestamp from filename (MMDDYYYY format)
+            try:
+                # Extract 8-digit timestamp from filename
+                parts = artifact_path.stem.split("_")
+                ts_str = None
+                for part in parts:
+                    if len(part) == 8 and part.isdigit():
+                        ts_str = part
+                        break
+
+                if not ts_str:
+                    print(f"[ADG] Archive: skipping {artifact_path.name} (no timestamp found)")
+                    skipped_count += 1
+                    continue
+
+                artifact_date = datetime.strptime(ts_str, "%m%d%Y")
+
+                # Skip if within retention period or is current
+                if artifact_date >= cutoff_date or ts_str == current_ts:
+                    continue
+
+                # Create archive directory: _archive/YYYY-MM/
+                archive_month_dir = adg_dir / "_archive" / artifact_date.strftime("%Y-%m")
+                archive_month_dir.mkdir(parents=True, exist_ok=True)
+
+                # Compress and move
+                archive_path = archive_month_dir / f"{artifact_path.name}.gz"
+
+                # Compress the file
+                with open(artifact_path, "rb") as f_in:
+                    with gzip.open(archive_path, "wb", compresslevel=9) as f_out:
+                        shutil.copyfileobj(f_in, f_out)
+
+                # Verify compressed file exists before deleting original
+                if archive_path.exists() and archive_path.stat().st_size > 0:
+                    artifact_path.unlink()
+                    archived_count += 1
+                else:
+                    print(f"[ADG] Archive: failed to verify {archive_path.name}")
+                    error_count += 1
+                    if archive_path.exists():
+                        archive_path.unlink()  # Clean up failed compression
+
+            except (ValueError, OSError) as e:
+                print(f"[ADG] Archive: error processing {artifact_path.name}: {e}")
+                error_count += 1
+                continue
+
+    if archived_count > 0:
+        print(f"[ADG] Archive: archived {archived_count} old artifacts (retention={retention_days} days)")
+    if error_count > 0:
+        print(f"[ADG] Archive: {error_count} errors during archival")
+    if skipped_count > 0:
+        print(f"[ADG] Archive: skipped {skipped_count} files (no timestamp)")
 
 
 def _infer_layer(path: str) -> str:
