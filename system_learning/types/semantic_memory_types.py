@@ -402,11 +402,269 @@ class PolicyGuardrailCase:
         return " ## ".join(parts)
 
 
+# ---------------------------------------------------------------------------
+# 7. Replay Failure Record (addendum §2.4)
+# ---------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class ReplayFailureRecord:
+    """Determinism failure case for replay triage clustering.
+
+    Captures nondeterminism type, mismatch explanation, affected subsystems,
+    and attempted remediation so that nearest-neighbour search can cluster
+    systemic determinism leaks and accelerate replay debugging.
+
+    influence_class is always C0_INFORMATIONAL.
+    replay_key and determinism_digest are metadata-only (not embedded in text).
+    """
+
+    failure_id: str
+    failure_summary: str
+    nondeterminism_type: str
+    mismatch_explanation: str
+    affected_subsystems: tuple[str, ...]
+    attempted_remediation: str
+    replay_key: str
+    determinism_digest: str
+    trace_id: str
+    timestamp_utc: int
+    failure_hash: str = field(default="", init=False)
+    influence_class: Literal["C0_INFORMATIONAL"] = field(
+        default="C0_INFORMATIONAL", init=False
+    )
+
+    def __post_init__(self) -> None:
+        if not self.failure_id:
+            raise ValueError("failure_id must not be empty")
+        if not self.nondeterminism_type:
+            raise ValueError("nondeterminism_type must not be empty")
+        if not self.replay_key:
+            raise ValueError("replay_key must not be empty")
+        h = _sha256_json(self._canonical_dict())
+        object.__setattr__(self, "failure_hash", h)
+
+    def _canonical_dict(self) -> dict:
+        return {
+            "affected_subsystems": sorted(self.affected_subsystems),
+            "attempted_remediation": self.attempted_remediation,
+            "determinism_digest": self.determinism_digest,
+            "failure_id": self.failure_id,
+            "failure_summary": self.failure_summary,
+            "mismatch_explanation": self.mismatch_explanation,
+            "nondeterminism_type": self.nondeterminism_type,
+            "replay_key": self.replay_key,
+            "timestamp_utc": self.timestamp_utc,
+            "trace_id": self.trace_id,
+        }
+
+    def to_embedding_text(self) -> str:
+        """Canonical flat text for embedding.
+
+        IDs (replay_key, determinism_digest, trace_id) are metadata only;
+        they do NOT appear in the embedded text.
+        """
+        parts = [
+            f"summary:{self.failure_summary}",
+            f"nondeterminism:{self.nondeterminism_type}",
+            f"mismatch:{self.mismatch_explanation}",
+            f"subsystems:{' | '.join(sorted(self.affected_subsystems))}",
+            f"remediation:{self.attempted_remediation}",
+        ]
+        return " ## ".join(parts)
+
+
+# ---------------------------------------------------------------------------
+# 8. Prompt Outcome Embedding Record (addendum §2.5)
+# ---------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class PromptOutcomeEmbeddingRecord:
+    """Prompt construction + outcome for semantic memory.
+
+    Encodes prompt slot summaries (S0/D0/I0/C0/U0), task description,
+    answer summary, safety outcome, and retrieval grounding so that
+    nearest-neighbour search can find successful prompt constructions
+    and detect prompt drift.
+
+    prompt_hash, template_id, route, model, policy_hash are metadata only.
+    influence_class is always C0_INFORMATIONAL.
+    """
+
+    record_id: str
+    slot_s0_summary: str
+    slot_d0_summary: str
+    slot_i0_summary: str
+    slot_c0_summary: str
+    slot_u0_summary: str
+    task_description: str
+    answer_summary: str
+    safety_outcome: str
+    retrieval_grounding_summary: str
+    prompt_hash: str
+    template_id: str
+    route: str
+    model: str
+    policy_hash: str
+    trace_id: str
+    timestamp_utc: int
+    record_hash: str = field(default="", init=False)
+    influence_class: Literal["C0_INFORMATIONAL"] = field(
+        default="C0_INFORMATIONAL", init=False
+    )
+
+    def __post_init__(self) -> None:
+        if not self.record_id:
+            raise ValueError("record_id must not be empty")
+        if not self.task_description:
+            raise ValueError("task_description must not be empty")
+        if self.safety_outcome not in (
+            "ALLOWED", "BLOCKED", "ESCALATED", "HEALED", "UNKNOWN"
+        ):
+            raise ValueError(
+                f"safety_outcome must be ALLOWED/BLOCKED/ESCALATED/HEALED/UNKNOWN, "
+                f"got {self.safety_outcome!r}"
+            )
+        h = _sha256_json(self._canonical_dict())
+        object.__setattr__(self, "record_hash", h)
+
+    def _canonical_dict(self) -> dict:
+        return {
+            "answer_summary": self.answer_summary,
+            "model": self.model,
+            "policy_hash": self.policy_hash,
+            "prompt_hash": self.prompt_hash,
+            "record_id": self.record_id,
+            "retrieval_grounding_summary": self.retrieval_grounding_summary,
+            "route": self.route,
+            "safety_outcome": self.safety_outcome,
+            "slot_c0_summary": self.slot_c0_summary,
+            "slot_d0_summary": self.slot_d0_summary,
+            "slot_i0_summary": self.slot_i0_summary,
+            "slot_s0_summary": self.slot_s0_summary,
+            "slot_u0_summary": self.slot_u0_summary,
+            "task_description": self.task_description,
+            "template_id": self.template_id,
+            "timestamp_utc": self.timestamp_utc,
+            "trace_id": self.trace_id,
+        }
+
+    def to_embedding_text(self) -> str:
+        """Canonical flat text for embedding.
+
+        IDs (prompt_hash, template_id, route, model, policy_hash, trace_id)
+        are metadata only; they do NOT appear in the embedded text.
+        """
+        parts = [
+            f"s0:{self.slot_s0_summary}",
+            f"d0:{self.slot_d0_summary}",
+            f"i0:{self.slot_i0_summary}",
+            f"c0:{self.slot_c0_summary}",
+            f"u0:{self.slot_u0_summary}",
+            f"task:{self.task_description}",
+            f"answer:{self.answer_summary}",
+            f"safety:{self.safety_outcome}",
+            f"grounding:{self.retrieval_grounding_summary}",
+        ]
+        return " ## ".join(parts)
+
+
+# ---------------------------------------------------------------------------
+# 9. Retrieval Case Record (addendum §2.6)
+# ---------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class RetrievalCaseRecord:
+    """RAG retrieval quality case for retrieval policy learning.
+
+    Encodes query summary, chunk summaries, support reasoning, and answer
+    quality summary with quality signals (completeness_score, support_score,
+    escalation_flag, healer_invoked, replay_pass) as metadata so that
+    the meta-learning bus can adjust retrieval depth, chunk ranking, and
+    corpus expansion strategies.
+
+    query_id and chunk_ids are metadata only.
+    influence_class is always C0_INFORMATIONAL.
+    """
+
+    case_id: str
+    query_summary: str
+    chunk_summaries: tuple[str, ...]
+    support_reasoning: str
+    answer_quality_summary: str
+    query_id: str
+    chunk_ids: tuple[str, ...]
+    support_score: float
+    completeness_score: float
+    escalation_flag: bool
+    healer_invoked: bool
+    replay_pass: bool
+    trace_id: str
+    timestamp_utc: int
+    case_hash: str = field(default="", init=False)
+    influence_class: Literal["C0_INFORMATIONAL"] = field(
+        default="C0_INFORMATIONAL", init=False
+    )
+
+    def __post_init__(self) -> None:
+        if not self.case_id:
+            raise ValueError("case_id must not be empty")
+        if not self.query_summary:
+            raise ValueError("query_summary must not be empty")
+        if not (0.0 <= self.support_score <= 1.0):
+            raise ValueError(
+                f"support_score must be in [0.0, 1.0], got {self.support_score}"
+            )
+        if not (0.0 <= self.completeness_score <= 1.0):
+            raise ValueError(
+                f"completeness_score must be in [0.0, 1.0], got {self.completeness_score}"
+            )
+        h = _sha256_json(self._canonical_dict())
+        object.__setattr__(self, "case_hash", h)
+
+    def _canonical_dict(self) -> dict:
+        return {
+            "answer_quality_summary": self.answer_quality_summary,
+            "case_id": self.case_id,
+            "chunk_ids": sorted(self.chunk_ids),
+            "chunk_summaries": sorted(self.chunk_summaries),
+            "completeness_score": round(self.completeness_score, 6),
+            "escalation_flag": self.escalation_flag,
+            "healer_invoked": self.healer_invoked,
+            "query_id": self.query_id,
+            "query_summary": self.query_summary,
+            "replay_pass": self.replay_pass,
+            "support_reasoning": self.support_reasoning,
+            "support_score": round(self.support_score, 6),
+            "timestamp_utc": self.timestamp_utc,
+            "trace_id": self.trace_id,
+        }
+
+    def to_embedding_text(self) -> str:
+        """Canonical flat text for embedding.
+
+        query_id and chunk_ids are metadata only; they do NOT appear in text.
+        """
+        chunks_text = " | ".join(sorted(self.chunk_summaries))
+        parts = [
+            f"query:{self.query_summary}",
+            f"chunks:{chunks_text}",
+            f"support:{self.support_reasoning}",
+            f"quality:{self.answer_quality_summary}",
+        ]
+        return " ## ".join(parts)
+
+
 __all__ = [
+    "GraphNeighborhood",
+    "HealerOutcomeRecord",
     "IncidentBundle",
     "MutationDiffRecord",
-    "HealerOutcomeRecord",
     "PathDPreferencePair",
-    "GraphNeighborhood",
     "PolicyGuardrailCase",
+    "PromptOutcomeEmbeddingRecord",
+    "ReplayFailureRecord",
+    "RetrievalCaseRecord",
 ]
