@@ -1,0 +1,508 @@
+"""Trace feature types for the ADG-driven meta-learning bus.
+
+Every execution trace is converted into a deterministic FeatureBundle
+and stored as a TraceFeatureRecord linked to ADG node and relation IDs.
+RCA clustering then groups these records into RCACluster objects that
+drive optimization proposal generation.
+
+Design invariants
+-----------------
+1. All types are frozen dataclasses — no mutation after construction.
+2. No wall-clock reads; ``timestamp_utc`` is always caller-supplied.
+3. stable_hash() = SHA-256(deterministic_json(to_dict())) for every type.
+4. Influence class: C0_INFORMATIONAL — these records MUST NOT mutate
+   routing, safety, or config state directly.
+5. All tuple fields preserve insertion order; sort only where explicitly
+   documented (e.g. adg_relation_ids for dedup stability).
+"""
+
+from __future__ import annotations
+
+import hashlib
+from dataclasses import dataclass, field
+from typing import Literal
+
+from system_learning.enforcement.determinism import deterministic_json
+
+# ---------------------------------------------------------------------------
+# Outcome class literals
+# ---------------------------------------------------------------------------
+
+OutcomeClassLiteral = Literal[
+    "SUCCESS",
+    "SAFE_FAILURE",
+    "HEALED_SUCCESS",
+    "ROLLBACK",
+    "HUMAN_OVERRIDE",
+    "REPLAY_FAILURE",
+    "UNKNOWN",
+]
+
+_VALID_OUTCOME_CLASSES: frozenset[str] = frozenset(
+    {
+        "SUCCESS",
+        "SAFE_FAILURE",
+        "HEALED_SUCCESS",
+        "ROLLBACK",
+        "HUMAN_OVERRIDE",
+        "REPLAY_FAILURE",
+        "UNKNOWN",
+    }
+)
+
+# ---------------------------------------------------------------------------
+# FeatureBundle — structured signal snapshot for one execution trace
+# ---------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class FeatureBundle:
+    """Structured feature snapshot extracted from a single execution trace.
+
+    Each field maps directly to an ADG relation family.
+
+    Attributes
+    ----------
+    trace_id : str
+        Correlation ID of the originating execution trace.
+    route_selected : str
+        Routing path selected (e.g. ``"PATH_A"``, ``"PATH_D"``).
+        Maps to ADG ``routes_path`` / ``routes_through``.
+    confidence_gate_state : str
+        State of the confidence gate at routing time
+        (``"PASS"``, ``"STALL"``, ``"ESCALATE"``).
+        Maps to ADG ``gated_by_confidence`` / ``forces_stall``.
+    retrieval_path : str
+        Retrieval strategy used (e.g. ``"RAG_BGE"``, ``"DIRECT"``,
+        ``"SKIP"``).  Maps to ADG ``retrieves_via``.
+    retrieval_groundedness_score : float
+        Groundedness score from the retrieval step (0.0–1.0).
+        Maps to ADG ``scores_groundedness``.
+    policy_state_accessed : tuple[str, ...]
+        Policy hashes accessed during this trace.
+        Maps to ADG ``applies_policy``.
+    guardrails_applied : tuple[str, ...]
+        Guardrail IDs that fired during this trace.
+        Maps to ADG ``applies_guardrail``.
+    determinism_markers : tuple[str, ...]
+        Replay keys or determinism digests present in this trace.
+        Maps to ADG ``records_execution_trace``.
+    healing_invoked : bool
+        Whether a healer was invoked during this trace.
+        Maps to ADG ``orchestrates_healing``.
+    healer_id : str | None
+        Healer identifier if healing was invoked.
+        Maps to ADG ``dispatches_healing_run``.
+    human_escalation_flag : bool
+        Whether the trace was escalated to a human operator.
+        Maps to ADG ``escalates_to_human``.
+    mutation_presence : bool
+        Whether any source mutation occurred during this trace.
+        Maps to ADG ``records_mutation_transport``.
+    final_outcome_class : str
+        Outcome class of this trace (see ``_VALID_OUTCOME_CLASSES``).
+    timestamp_utc : int
+        Unix timestamp of the trace (caller-supplied, no wall-clock).
+    adg_entity_name : str
+        ADG entity name of the primary node associated with this trace.
+    adg_relation_ids : tuple[str, ...]
+        Sorted tuple of ADG relation IDs observed in this trace (for
+        dedup stability across equivalent traces).
+    influence_class : str
+        Always ``"C0_INFORMATIONAL"`` — this bundle MUST NOT influence
+        routing, safety, or config decisions directly.
+    """
+
+    trace_id: str
+    route_selected: str
+    confidence_gate_state: str
+    retrieval_path: str
+    retrieval_groundedness_score: float
+    policy_state_accessed: tuple[str, ...]
+    guardrails_applied: tuple[str, ...]
+    determinism_markers: tuple[str, ...]
+    healing_invoked: bool
+    healer_id: str | None
+    human_escalation_flag: bool
+    mutation_presence: bool
+    final_outcome_class: str
+    timestamp_utc: int
+    adg_entity_name: str
+    adg_relation_ids: tuple[str, ...]
+    influence_class: str = "C0_INFORMATIONAL"
+
+    def __post_init__(self) -> None:
+        if not self.trace_id:
+            raise ValueError("trace_id must not be empty")
+        if self.final_outcome_class not in _VALID_OUTCOME_CLASSES:
+            raise ValueError(
+                f"final_outcome_class must be one of {sorted(_VALID_OUTCOME_CLASSES)}, "
+                f"got {self.final_outcome_class!r}"
+            )
+        if not 0.0 <= self.retrieval_groundedness_score <= 1.0:
+            raise ValueError(
+                f"retrieval_groundedness_score must be in [0.0, 1.0], "
+                f"got {self.retrieval_groundedness_score}"
+            )
+        if self.influence_class != "C0_INFORMATIONAL":
+            raise ValueError("influence_class must be C0_INFORMATIONAL")
+
+    def _canonical_dict(self) -> dict:
+        return {
+            "adg_entity_name": self.adg_entity_name,
+            "adg_relation_ids": sorted(self.adg_relation_ids),
+            "confidence_gate_state": self.confidence_gate_state,
+            "determinism_markers": list(self.determinism_markers),
+            "final_outcome_class": self.final_outcome_class,
+            "guardrails_applied": list(self.guardrails_applied),
+            "healer_id": self.healer_id,
+            "healing_invoked": self.healing_invoked,
+            "human_escalation_flag": self.human_escalation_flag,
+            "influence_class": self.influence_class,
+            "mutation_presence": self.mutation_presence,
+            "policy_state_accessed": list(self.policy_state_accessed),
+            "retrieval_groundedness_score": round(self.retrieval_groundedness_score, 6),
+            "retrieval_path": self.retrieval_path,
+            "route_selected": self.route_selected,
+            "timestamp_utc": self.timestamp_utc,
+            "trace_id": self.trace_id,
+        }
+
+    def stable_hash(self) -> str:
+        return hashlib.sha256(
+            deterministic_json(self._canonical_dict()).encode("utf-8")
+        ).hexdigest()
+
+    def to_dict(self) -> dict:
+        return self._canonical_dict()
+
+    def to_json(self) -> str:
+        return deterministic_json(self._canonical_dict())
+
+
+# ---------------------------------------------------------------------------
+# TraceFeatureRecord — persisted record linking bundle to ADG
+# ---------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class TraceFeatureRecord:
+    """Persisted learning record for a single execution trace.
+
+    Links a FeatureBundle to ADG node and relation identifiers so that
+    downstream clustering and proposal engines can query by ADG topology.
+
+    Attributes
+    ----------
+    record_id : str
+        Content-addressed ID = stable_hash() of this record.
+    trace_id : str
+        Originating trace correlation ID.
+    route : str
+        Route path selected.
+    retrieval_pattern : str
+        Retrieval strategy label.
+    retrieval_groundedness : float
+        Groundedness score (0.0–1.0).
+    policy_edges : tuple[str, ...]
+        Policy hash values observed.
+    guardrail_edges : tuple[str, ...]
+        Guardrail IDs fired.
+    determinism_signals : tuple[str, ...]
+        Replay / determinism markers.
+    healer_used : str | None
+        Healer identifier if healing was invoked.
+    hitl_escalation : bool
+        Whether HITL escalation occurred.
+    outcome_class : str
+        Final outcome class.
+    adg_node_id : str
+        Primary ADG entity name for this record.
+    adg_relation_ids : tuple[str, ...]
+        All ADG relation IDs observed (sorted for stability).
+    feature_bundle_hash : str
+        stable_hash() of the originating FeatureBundle.
+    timestamp_utc : int
+        Caller-supplied Unix timestamp.
+    """
+
+    record_id: str
+    trace_id: str
+    route: str
+    retrieval_pattern: str
+    retrieval_groundedness: float
+    policy_edges: tuple[str, ...]
+    guardrail_edges: tuple[str, ...]
+    determinism_signals: tuple[str, ...]
+    healer_used: str | None
+    hitl_escalation: bool
+    outcome_class: str
+    adg_node_id: str
+    adg_relation_ids: tuple[str, ...]
+    feature_bundle_hash: str
+    timestamp_utc: int
+
+    def __post_init__(self) -> None:
+        if not self.trace_id:
+            raise ValueError("trace_id must not be empty")
+        if self.outcome_class not in _VALID_OUTCOME_CLASSES:
+            raise ValueError(
+                f"outcome_class must be one of {sorted(_VALID_OUTCOME_CLASSES)}, "
+                f"got {self.outcome_class!r}"
+            )
+
+    def _canonical_dict(self) -> dict:
+        return {
+            "adg_node_id": self.adg_node_id,
+            "adg_relation_ids": sorted(self.adg_relation_ids),
+            "determinism_signals": list(self.determinism_signals),
+            "feature_bundle_hash": self.feature_bundle_hash,
+            "guardrail_edges": list(self.guardrail_edges),
+            "healer_used": self.healer_used,
+            "hitl_escalation": self.hitl_escalation,
+            "outcome_class": self.outcome_class,
+            "policy_edges": list(self.policy_edges),
+            "record_id": self.record_id,
+            "retrieval_groundedness": round(self.retrieval_groundedness, 6),
+            "retrieval_pattern": self.retrieval_pattern,
+            "route": self.route,
+            "timestamp_utc": self.timestamp_utc,
+            "trace_id": self.trace_id,
+        }
+
+    def stable_hash(self) -> str:
+        return hashlib.sha256(
+            deterministic_json(self._canonical_dict()).encode("utf-8")
+        ).hexdigest()
+
+    def to_dict(self) -> dict:
+        return self._canonical_dict()
+
+    def to_json(self) -> str:
+        return deterministic_json(self._canonical_dict())
+
+    @staticmethod
+    def from_bundle(bundle: FeatureBundle) -> "TraceFeatureRecord":
+        """Construct a TraceFeatureRecord from a FeatureBundle.
+
+        record_id is set to the bundle's stable_hash so the ADG entity
+        name for this record is deterministically derived from feature
+        content.
+        """
+        bundle_hash = bundle.stable_hash()
+        # Build a temporary record to compute the stable record_id
+        temp = TraceFeatureRecord(
+            record_id=bundle_hash,
+            trace_id=bundle.trace_id,
+            route=bundle.route_selected,
+            retrieval_pattern=bundle.retrieval_path,
+            retrieval_groundedness=bundle.retrieval_groundedness_score,
+            policy_edges=bundle.policy_state_accessed,
+            guardrail_edges=bundle.guardrails_applied,
+            determinism_signals=bundle.determinism_markers,
+            healer_used=bundle.healer_id,
+            hitl_escalation=bundle.human_escalation_flag,
+            outcome_class=bundle.final_outcome_class,
+            adg_node_id=bundle.adg_entity_name,
+            adg_relation_ids=tuple(sorted(bundle.adg_relation_ids)),
+            feature_bundle_hash=bundle_hash,
+            timestamp_utc=bundle.timestamp_utc,
+        )
+        return temp
+
+
+# ---------------------------------------------------------------------------
+# RCACluster — ADG-keyed cluster of traces sharing a failure pattern
+# ---------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class RCACluster:
+    """Cluster of traces sharing a dominant failure pattern.
+
+    Produced by the RCA cluster engine from a set of TraceFeatureRecords.
+    Feeds the optimization proposal generator.
+
+    Attributes
+    ----------
+    cluster_id : str
+        Content-addressed ID = stable_hash() of this cluster.
+    failure_pattern : str
+        Dominant failure category (e.g. ``"IMPORT_ERROR"``,
+        ``"LOW_GROUNDEDNESS"``, ``"HEALER_TIMEOUT"``).
+    dominant_route : str
+        Most common route path in this cluster.
+    dominant_guardrail : str | None
+        Most common guardrail that fired (if any).
+    dominant_retrieval_pattern : str
+        Most common retrieval pattern in this cluster.
+    affected_agents : tuple[str, ...]
+        ADG entity names of affected agents / modules (sorted).
+    member_trace_ids : tuple[str, ...]
+        trace_ids of all member records (sorted for stability).
+    member_count : int
+        Number of member traces.
+    outcome_distribution : tuple[tuple[str, int], ...]
+        Sorted tuple of (outcome_class, count) pairs.
+    avg_groundedness : float
+        Mean retrieval groundedness score across members (rounded to 6dp).
+    hitl_escalation_rate : float
+        Fraction of members with HITL escalation (rounded to 6dp).
+    healer_invocation_rate : float
+        Fraction of members where a healer was invoked (rounded to 6dp).
+    adg_cluster_node : str
+        ADG entity name for this cluster (used by CaseLibrary / bridge).
+    timestamp_utc : int
+        Caller-supplied Unix timestamp of cluster creation.
+    """
+
+    cluster_id: str
+    failure_pattern: str
+    dominant_route: str
+    dominant_guardrail: str | None
+    dominant_retrieval_pattern: str
+    affected_agents: tuple[str, ...]
+    member_trace_ids: tuple[str, ...]
+    member_count: int
+    outcome_distribution: tuple[tuple[str, int], ...]
+    avg_groundedness: float
+    hitl_escalation_rate: float
+    healer_invocation_rate: float
+    adg_cluster_node: str
+    timestamp_utc: int
+
+    def __post_init__(self) -> None:
+        if not self.failure_pattern:
+            raise ValueError("failure_pattern must not be empty")
+        if self.member_count < 1:
+            raise ValueError("member_count must be >= 1")
+
+    def _canonical_dict(self) -> dict:
+        return {
+            "adg_cluster_node": self.adg_cluster_node,
+            "affected_agents": sorted(self.affected_agents),
+            "avg_groundedness": round(self.avg_groundedness, 6),
+            "cluster_id": self.cluster_id,
+            "dominant_guardrail": self.dominant_guardrail,
+            "dominant_retrieval_pattern": self.dominant_retrieval_pattern,
+            "dominant_route": self.dominant_route,
+            "failure_pattern": self.failure_pattern,
+            "healer_invocation_rate": round(self.healer_invocation_rate, 6),
+            "hitl_escalation_rate": round(self.hitl_escalation_rate, 6),
+            "member_count": self.member_count,
+            "member_trace_ids": sorted(self.member_trace_ids),
+            "outcome_distribution": sorted(self.outcome_distribution),
+            "timestamp_utc": self.timestamp_utc,
+        }
+
+    def stable_hash(self) -> str:
+        return hashlib.sha256(
+            deterministic_json(self._canonical_dict()).encode("utf-8")
+        ).hexdigest()
+
+    def to_dict(self) -> dict:
+        return self._canonical_dict()
+
+    def to_json(self) -> str:
+        return deterministic_json(self._canonical_dict())
+
+
+# ---------------------------------------------------------------------------
+# FailurePattern — negative case learning artifact
+# ---------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class FailurePattern:
+    """Negative-case learning artifact for a recurring failure signature.
+
+    Sources: violates, antipattern, drift alerts, replay failures,
+    low-groundedness retrieval, over-escalation.
+
+    Attributes
+    ----------
+    pattern_id : str
+        Content-addressed ID.
+    source_type : str
+        Category of negative signal (``"VIOLATION"``, ``"ANTIPATTERN"``,
+        ``"DRIFT_ALERT"``, ``"REPLAY_FAILURE"``, ``"LOW_GROUNDEDNESS"``,
+        ``"OVER_ESCALATION"``).
+    signature : str
+        Normalized failure signature string.
+    affected_component : str
+        ADG entity name of the affected component.
+    occurrence_count : int
+        Number of observed occurrences.
+    evidence_hash : str
+        SHA-256 of canonical evidence bytes.
+    cluster_id : str | None
+        Parent RCACluster if already grouped.
+    timestamp_utc : int
+        Caller-supplied timestamp.
+    """
+
+    pattern_id: str
+    source_type: str
+    signature: str
+    affected_component: str
+    occurrence_count: int
+    evidence_hash: str
+    cluster_id: str | None
+    timestamp_utc: int
+
+    _VALID_SOURCE_TYPES: frozenset[str] = field(
+        default=frozenset(
+            {
+                "VIOLATION",
+                "ANTIPATTERN",
+                "DRIFT_ALERT",
+                "REPLAY_FAILURE",
+                "LOW_GROUNDEDNESS",
+                "OVER_ESCALATION",
+            }
+        ),
+        init=False,
+        compare=False,
+        repr=False,
+    )
+
+    def __post_init__(self) -> None:
+        if self.source_type not in self._VALID_SOURCE_TYPES:
+            raise ValueError(
+                f"source_type must be one of {sorted(self._VALID_SOURCE_TYPES)}, "
+                f"got {self.source_type!r}"
+            )
+        if self.occurrence_count < 1:
+            raise ValueError("occurrence_count must be >= 1")
+
+    def _canonical_dict(self) -> dict:
+        return {
+            "affected_component": self.affected_component,
+            "cluster_id": self.cluster_id,
+            "evidence_hash": self.evidence_hash,
+            "occurrence_count": self.occurrence_count,
+            "pattern_id": self.pattern_id,
+            "signature": self.signature,
+            "source_type": self.source_type,
+            "timestamp_utc": self.timestamp_utc,
+        }
+
+    def stable_hash(self) -> str:
+        return hashlib.sha256(
+            deterministic_json(self._canonical_dict()).encode("utf-8")
+        ).hexdigest()
+
+    def to_dict(self) -> dict:
+        return self._canonical_dict()
+
+    def to_json(self) -> str:
+        return deterministic_json(self._canonical_dict())
+
+
+__all__ = [
+    "FailurePattern",
+    "FeatureBundle",
+    "OutcomeClassLiteral",
+    "RCACluster",
+    "TraceFeatureRecord",
+]
