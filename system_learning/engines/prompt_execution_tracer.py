@@ -1,0 +1,411 @@
+"""Prompt Execution Tracer — captures execution lineage and outcome graph edges.
+
+Responsibilities
+----------------
+1. Accept a raw execution signal dict and produce a ``PromptExecutionRecord``
+   and a ``PromptOutcomeRecord``.
+2. Emit all execution ADG relations (section 5) and outcome ADG relations
+   (section 6) and retrieval ADG relations (section 7).
+3. Classify the failure slot (section 12) from the outcome + guardrail hits.
+4. Emit HITL relations (section 11) when hitl_escalation=True.
+
+Design invariants
+-----------------
+1. No wall-clock reads; ``timestamp_utc`` always caller-supplied.
+2. Fail-safe extraction — missing signal fields always produce safe defaults.
+3. All outputs are content-addressed.
+4. The tracer is pure-function: deterministic for identical inputs.
+"""
+
+from __future__ import annotations
+
+import hashlib
+import logging
+from dataclasses import dataclass
+
+from system_learning.enforcement.determinism import deterministic_json
+from system_learning.types.prompt_adg_relations import (
+    EXECUTION_EXECUTED_BY_MODEL,
+    EXECUTION_GENERATES_TRACE,
+    EXECUTION_ROUTES_TO,
+    HITL_CAUSED_ESCALATION,
+    HITL_PREFERENCE_RECORD_CREATED,
+    OUTCOME_ESCALATED_HITL,
+    OUTCOME_FAILED,
+    OUTCOME_FAILED_REPLAY,
+    OUTCOME_PASSED_REPLAY,
+    OUTCOME_PRODUCED_ANSWER,
+    OUTCOME_TRIGGERED_HEALER,
+    RETRIEVAL_RETRIEVES_VIA,
+    RETRIEVAL_SCORES_GROUNDEDNESS,
+    RETRIEVAL_USES_CHUNK,
+    RETRIEVAL_USES_CITATION_SET,
+)
+from system_learning.types.prompt_artifact_types import (
+    PromptExecutionRecord,
+    PromptOutcomeRecord,
+)
+
+logger = logging.getLogger(__name__)
+
+# ---------------------------------------------------------------------------
+# Outcome classifier
+# ---------------------------------------------------------------------------
+
+_OUTCOME_PRIORITY = (
+    "REPLAY_FAILURE",
+    "ESCALATED",
+    "HEALED_SUCCESS",
+    "SAFE_FAILURE",
+    "SUCCESS",
+    "UNKNOWN",
+)
+
+
+def _classify_outcome(sig: dict) -> str:
+    if sig.get("replay_failed") is True:
+        return "REPLAY_FAILURE"
+    if sig.get("hitl_escalation") is True or sig.get("human_escalation_flag") is True:
+        return "ESCALATED"
+    healed = sig.get("healed") is True or sig.get("healing_invoked") is True
+    success = sig.get("success")
+    if success is True and healed:
+        return "HEALED_SUCCESS"
+    if success is True:
+        return "SUCCESS"
+    if success is False:
+        return "SAFE_FAILURE"
+    return "UNKNOWN"
+
+
+# ---------------------------------------------------------------------------
+# Replay status classifier
+# ---------------------------------------------------------------------------
+
+
+def _classify_replay(sig: dict) -> str:
+    if sig.get("replay_failed") is True:
+        return "FAILED"
+    if sig.get("replay_passed") is True:
+        return "PASSED"
+    return "NOT_TESTED"
+
+
+# ---------------------------------------------------------------------------
+# Slot failure classifier (section 12)
+# ---------------------------------------------------------------------------
+
+_SLOT_FAILURE_MAP: dict[str, str] = {
+    "POLICY_VIOLATION": "S0",
+    "HALLUCINATION": "C0",
+    "MISINTERPRETED_TASK": "U0",
+    "STYLE_DRIFT": "I0",
+    "CONTEXT_OVERFLOW": "C0",
+    "GUARDRAIL_BLOCK": "D0",
+}
+
+
+def _classify_failure_slot(sig: dict, guardrail_hits: tuple[str, ...]) -> str:
+    explicit = sig.get("failure_slot")
+    if explicit in ("S0", "D0", "I0", "C0", "U0", "NONE"):
+        return explicit
+    failure_type = sig.get("failure_type", "")
+    if failure_type in _SLOT_FAILURE_MAP:
+        return _SLOT_FAILURE_MAP[failure_type]
+    if guardrail_hits:
+        return "D0"  # guardrails fire in the D0 defensive fence
+    return "NONE"
+
+
+# ---------------------------------------------------------------------------
+# Execution record builder
+# ---------------------------------------------------------------------------
+
+
+def _build_execution_id(prompt_hash: str, trace_id: str, timestamp_utc: int) -> str:
+    canonical = deterministic_json({
+        "prompt_hash": prompt_hash,
+        "timestamp_utc": timestamp_utc,
+        "trace_id": trace_id,
+    })
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+
+def _build_outcome_id(prompt_hash: str, trace_id: str, final_outcome: str, timestamp_utc: int) -> str:
+    canonical = deterministic_json({
+        "final_outcome": final_outcome,
+        "prompt_hash": prompt_hash,
+        "timestamp_utc": timestamp_utc,
+        "trace_id": trace_id,
+    })
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+
+# ---------------------------------------------------------------------------
+# Trace result container
+# ---------------------------------------------------------------------------
+
+
+@dataclass
+class ExecutionTraceResult:
+    """Output of PromptExecutionTracer.trace().
+
+    Attributes
+    ----------
+    execution_record : PromptExecutionRecord
+    outcome_record : PromptOutcomeRecord
+    adg_relations : list[tuple[str, str, str]]
+    """
+
+    execution_record: PromptExecutionRecord
+    outcome_record: PromptOutcomeRecord
+    adg_relations: list[tuple[str, str, str]]
+
+
+# ---------------------------------------------------------------------------
+# Tracer
+# ---------------------------------------------------------------------------
+
+
+class PromptExecutionTracer:
+    """Converts raw execution signal dicts into structured execution and
+    outcome records with full ADG relation emission.
+
+    Usage::
+
+        tracer = PromptExecutionTracer()
+        result = tracer.trace(
+            prompt_hash="abc...",
+            trace_id="tr-001",
+            signal={...},
+            timestamp_utc=ts,
+        )
+        # result.execution_record, result.outcome_record, result.adg_relations
+    """
+
+    def trace(
+        self,
+        prompt_hash: str,
+        trace_id: str,
+        signal: dict,
+        timestamp_utc: int,
+    ) -> ExecutionTraceResult:
+        """Trace a single prompt execution.
+
+        Parameters
+        ----------
+        prompt_hash : str
+            Hash of the compiled prompt artifact.
+        trace_id : str
+            ADG trace ID for this execution.
+        signal : dict
+            Raw execution signal dictionary.
+        timestamp_utc : int
+            Caller-supplied execution timestamp.
+
+        Returns
+        -------
+        ExecutionTraceResult
+        """
+        sig = signal or {}
+
+        route = str(sig.get("route_selected") or "UNKNOWN")
+        model_id = str(sig.get("model_id") or sig.get("model") or "UNKNOWN")
+        latency_ms = max(0, int(sig.get("latency_ms") or 0))
+        input_tokens = max(0, int(sig.get("input_tokens") or 0))
+        output_tokens = max(0, int(sig.get("output_tokens") or 0))
+        adg_prefix = str(sig.get("adg_entity_prefix") or "ADG::PromptExecution")
+
+        execution_id = _build_execution_id(prompt_hash, trace_id, timestamp_utc)
+        exec_entity = f"{adg_prefix}::{execution_id[:16]}"
+
+        execution_record = PromptExecutionRecord(
+            execution_id=execution_id,
+            prompt_hash=prompt_hash,
+            trace_id=trace_id,
+            route_selected=route,
+            model_id=model_id,
+            latency_ms=latency_ms,
+            input_tokens=input_tokens,
+            output_tokens=output_tokens,
+            adg_entity_name=exec_entity,
+            timestamp_utc=timestamp_utc,
+        )
+
+        # --- Outcome ---
+        final_outcome = _classify_outcome(sig)
+        replay_status = _classify_replay(sig)
+
+        groundedness = float(sig.get("groundedness_score") or
+                             sig.get("retrieval_groundedness_score") or 0.0)
+        groundedness = max(0.0, min(1.0, groundedness))
+
+        support_score = max(0.0, min(1.0, float(sig.get("support_score") or 0.0)))
+        completeness_score = max(0.0, min(1.0, float(sig.get("completeness_score") or 0.0)))
+        citation_count = max(0, int(sig.get("citation_count") or 0))
+
+        raw_guardrails = sig.get("guardrail_hits") or sig.get("guardrails_applied") or []
+        if isinstance(raw_guardrails, str):
+            raw_guardrails = [raw_guardrails]
+        guardrail_hits: tuple[str, ...] = tuple(sorted(str(g) for g in raw_guardrails if g))
+
+        healer_invoked = bool(sig.get("healing_invoked") or sig.get("healed"))
+        healer_id = sig.get("healer_id") or None
+        hitl_escalation = bool(
+            sig.get("hitl_escalation") or sig.get("human_escalation_flag")
+        )
+
+        failure_slot = _classify_failure_slot(sig, guardrail_hits)
+
+        outcome_id = _build_outcome_id(prompt_hash, trace_id, final_outcome, timestamp_utc)
+        outcome_entity = f"ADG::PromptOutcome::{outcome_id[:16]}"
+
+        outcome_record = PromptOutcomeRecord(
+            outcome_id=outcome_id,
+            prompt_hash=prompt_hash,
+            trace_id=trace_id,
+            route=route,
+            model=model_id,
+            groundedness_score=groundedness,
+            guardrail_hits=guardrail_hits,
+            healer_invoked=healer_invoked,
+            healer_id=healer_id,
+            hitl_escalation=hitl_escalation,
+            replay_status=replay_status,
+            final_outcome=final_outcome,
+            failure_slot=failure_slot,
+            support_score=support_score,
+            completeness_score=completeness_score,
+            citation_count=citation_count,
+            adg_entity_name=outcome_entity,
+            timestamp_utc=timestamp_utc,
+        )
+
+        # --- ADG relations ---
+        prompt_node = f"ADG::CompiledPrompt::{prompt_hash[:16]}"
+        relations: list[tuple[str, str, str]] = []
+
+        # Execution family
+        relations.append((prompt_node, EXECUTION_ROUTES_TO,
+                          f"ADG::Route::{route}"))
+        relations.append((prompt_node, EXECUTION_EXECUTED_BY_MODEL,
+                          f"ADG::Model::{model_id}"))
+        relations.append((prompt_node, EXECUTION_GENERATES_TRACE,
+                          f"ADG::Trace::{trace_id}"))
+
+        # Outcome family
+        outcome_rel = _pick_outcome_relation(final_outcome)
+        relations.append((prompt_node, outcome_rel, outcome_entity))
+
+        if healer_invoked:
+            healer_node = f"ADG::Healer::{healer_id or 'UNKNOWN'}"
+            relations.append((prompt_node, OUTCOME_TRIGGERED_HEALER, healer_node))
+
+        if hitl_escalation:
+            relations.append((prompt_node, OUTCOME_ESCALATED_HITL,
+                              f"ADG::HITL::Escalation::{trace_id[:16]}"))
+            relations.append((prompt_node, HITL_CAUSED_ESCALATION,
+                              f"ADG::HITL::Escalation::{trace_id[:16]}"))
+
+        if replay_status == "PASSED":
+            relations.append((prompt_node, OUTCOME_PASSED_REPLAY,
+                              f"ADG::ReplayCheck::{trace_id[:16]}"))
+        elif replay_status == "FAILED":
+            relations.append((prompt_node, OUTCOME_FAILED_REPLAY,
+                              f"ADG::ReplayCheck::{trace_id[:16]}"))
+
+        # Retrieval family
+        retrieval_path = str(sig.get("retrieval_path") or "UNKNOWN")
+        relations.append((prompt_node, RETRIEVAL_RETRIEVES_VIA,
+                          f"ADG::RetrievalPath::{retrieval_path}"))
+
+        chunk_ids = sig.get("chunk_ids") or []
+        if isinstance(chunk_ids, str):
+            chunk_ids = [chunk_ids]
+        for cid in sorted(chunk_ids):
+            relations.append((prompt_node, RETRIEVAL_USES_CHUNK,
+                              f"ADG::Chunk::{str(cid)[:16]}"))
+
+        citation_set_hash = sig.get("citation_set_hash")
+        if citation_set_hash:
+            relations.append((prompt_node, RETRIEVAL_USES_CITATION_SET,
+                              f"ADG::CitationSet::{str(citation_set_hash)[:16]}"))
+
+        relations.append((prompt_node, RETRIEVAL_SCORES_GROUNDEDNESS,
+                          f"ADG::GroundednessScore::{_fmt_score(groundedness)}"))
+
+        return ExecutionTraceResult(
+            execution_record=execution_record,
+            outcome_record=outcome_record,
+            adg_relations=relations,
+        )
+
+    def trace_batch(
+        self,
+        executions: list[tuple[str, str, dict, int]],
+    ) -> list[ExecutionTraceResult]:
+        """Trace a batch of executions.
+
+        Parameters
+        ----------
+        executions : list of (prompt_hash, trace_id, signal, timestamp_utc)
+
+        Returns
+        -------
+        list[ExecutionTraceResult]
+            Sorted by execution_record.execution_id for determinism.
+        """
+        results = []
+        for prompt_hash, trace_id, signal, ts in executions:
+            try:
+                results.append(self.trace(prompt_hash, trace_id, signal, ts))
+            except Exception as exc:
+                logger.warning(
+                    "prompt_execution_tracer: trace failed",
+                    extra={"trace_id": trace_id, "error": str(exc)},
+                )
+        results.sort(key=lambda r: r.execution_record.execution_id)
+        return results
+
+
+# ---------------------------------------------------------------------------
+# Outcome relation picker
+# ---------------------------------------------------------------------------
+
+
+def _pick_outcome_relation(final_outcome: str) -> str:
+    mapping = {
+        "SUCCESS": OUTCOME_PRODUCED_ANSWER,
+        "HEALED_SUCCESS": OUTCOME_PRODUCED_ANSWER,
+        "SAFE_FAILURE": OUTCOME_FAILED,
+        "ESCALATED": OUTCOME_ESCALATED_HITL,
+        "REPLAY_FAILURE": OUTCOME_FAILED_REPLAY,
+        "UNKNOWN": OUTCOME_FAILED,
+    }
+    return mapping.get(final_outcome, OUTCOME_FAILED)
+
+
+def _fmt_score(score: float) -> str:
+    return f"{score:.4f}"
+
+
+# ---------------------------------------------------------------------------
+# Module-level convenience
+# ---------------------------------------------------------------------------
+
+
+def trace_execution(
+    prompt_hash: str,
+    trace_id: str,
+    signal: dict,
+    timestamp_utc: int,
+) -> ExecutionTraceResult:
+    """Module-level convenience wrapper."""
+    return PromptExecutionTracer().trace(prompt_hash, trace_id, signal, timestamp_utc)
+
+
+__all__ = [
+    "ExecutionTraceResult",
+    "PromptExecutionTracer",
+    "trace_execution",
+]

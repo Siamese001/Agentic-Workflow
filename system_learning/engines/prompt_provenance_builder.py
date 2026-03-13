@@ -1,0 +1,378 @@
+"""Prompt Provenance Builder — assembles CompiledPromptArtifact and emits ADG provenance relations.
+
+Responsibilities
+----------------
+1. Accept raw slot content (S0/D0/I0/C0/U0 strings or pre-hashed manifests)
+   and assemble a ``CompiledPromptArtifact``.
+2. Compute a deterministic ``PromptSlotManifest`` with per-slot token counts.
+3. Emit all 9 provenance ADG relations linking the artifact to its sources.
+4. Emit budget relations (token_profile / truncated / exceeded_budget).
+
+Design invariants
+-----------------
+1. No wall-clock reads; ``timestamp_utc`` always caller-supplied.
+2. All outputs are content-addressed (stable_hash).
+3. Token counting is caller-supplied (tokenizer-agnostic); defaults to
+   character-based approximation (len // 4) when no tokenizer is given.
+4. The builder is pure-function: calling build() twice with the same
+   inputs produces identical artifacts and identical relation sets.
+5. Emitted relations are returned as a list of (from, relation, to) tuples
+   for the caller to persist; this engine never writes to the ADG directly.
+"""
+
+from __future__ import annotations
+
+import hashlib
+from dataclasses import dataclass
+from typing import Callable, Sequence
+
+from system_learning.enforcement.determinism import deterministic_json
+from system_learning.types.prompt_adg_relations import (
+    BUDGET_EXCEEDED,
+    BUDGET_TOKEN_PROFILE,
+    BUDGET_TRUNCATED,
+    PROVENANCE_C0_CONTEXT_SOURCE,
+    PROVENANCE_CONTAINS_U0_INPUT,
+    PROVENANCE_FEWSHOT_USED_BY,
+    PROVENANCE_INSTRUCTION_INJECTION_SOURCE,
+    PROVENANCE_TEMPLATE_USED_BY,
+    PROVENANCE_USES_C0_CONTEXT,
+    PROVENANCE_USES_D0_FENCE,
+    PROVENANCE_USES_I0_INSTRUCTION,
+    PROVENANCE_USES_S0_RULE,
+)
+from system_learning.types.prompt_artifact_types import (
+    CompiledPromptArtifact,
+    PromptSlotManifest,
+)
+
+# ---------------------------------------------------------------------------
+# Budget class thresholds (token counts)
+# ---------------------------------------------------------------------------
+
+_BUDGET_COMPACT = 1024
+_BUDGET_STANDARD = 4096
+_BUDGET_EXTENDED = 8192
+
+
+def _classify_budget(total_tokens: int) -> str:
+    if total_tokens <= _BUDGET_COMPACT:
+        return "COMPACT"
+    if total_tokens <= _BUDGET_STANDARD:
+        return "STANDARD"
+    if total_tokens <= _BUDGET_EXTENDED:
+        return "EXTENDED"
+    return "OVERFLOW"
+
+
+# ---------------------------------------------------------------------------
+# Default character-based token approximation
+# ---------------------------------------------------------------------------
+
+def _default_tokenizer(text: str) -> int:
+    """Approximate token count: 1 token ≈ 4 chars."""
+    return max(1, len(text) // 4) if text else 0
+
+
+# ---------------------------------------------------------------------------
+# Slot content container
+# ---------------------------------------------------------------------------
+
+
+@dataclass
+class SlotPayload:
+    """Raw content for a single prompt slot.
+
+    Attributes
+    ----------
+    content : str
+        The actual slot text.
+    source_ids : tuple[str, ...]
+        ADG entity IDs or hashes of sources that contributed to this slot.
+    """
+
+    content: str
+    source_ids: tuple[str, ...] = ()
+
+
+# ---------------------------------------------------------------------------
+# Build input
+# ---------------------------------------------------------------------------
+
+
+@dataclass
+class PromptBuildRequest:
+    """All inputs required to build a CompiledPromptArtifact.
+
+    Attributes
+    ----------
+    s0 : SlotPayload
+        System / role slot.
+    d0 : SlotPayload
+        Defensive fence slot.
+    i0 : SlotPayload
+        Instruction slot.
+    c0 : SlotPayload
+        Context / RAG slot.
+    u0 : SlotPayload
+        User input slot.
+    template_ids : tuple[str, ...]
+        Template identifiers used for assembly.
+    fewshot_ids : tuple[str, ...]
+        Few-shot example IDs injected.
+    injection_ids : tuple[str, ...]
+        I0-injection policy IDs.
+    model_target : str
+        Model this prompt is compiled for.
+    policy_hash : str | None
+        Active policy hash at compile time.
+    adg_entity_prefix : str
+        Prefix for the artifact's ADG entity name
+        (e.g. ``"ADG::CompiledPrompt"``).
+    timestamp_utc : int
+        Caller-supplied compilation timestamp.
+    """
+
+    s0: SlotPayload
+    d0: SlotPayload
+    i0: SlotPayload
+    c0: SlotPayload
+    u0: SlotPayload
+    template_ids: tuple[str, ...]
+    fewshot_ids: tuple[str, ...]
+    injection_ids: tuple[str, ...]
+    model_target: str
+    policy_hash: str | None
+    adg_entity_prefix: str
+    timestamp_utc: int
+
+
+# ---------------------------------------------------------------------------
+# Build result
+# ---------------------------------------------------------------------------
+
+
+@dataclass
+class PromptBuildResult:
+    """Result of PromptProvenanceBuilder.build().
+
+    Attributes
+    ----------
+    artifact : CompiledPromptArtifact
+    adg_relations : list[tuple[str, str, str]]
+        (from_entity, relation_type, to_entity) tuples emitted.
+    """
+
+    artifact: CompiledPromptArtifact
+    adg_relations: list[tuple[str, str, str]]
+
+
+# ---------------------------------------------------------------------------
+# Builder
+# ---------------------------------------------------------------------------
+
+
+class PromptProvenanceBuilder:
+    """Assembles CompiledPromptArtifact and emits ADG provenance relations.
+
+    Usage::
+
+        builder = PromptProvenanceBuilder()
+        result = builder.build(request, timestamp_utc=ts)
+        artifact = result.artifact
+        for (frm, rel, to) in result.adg_relations:
+            adg.create_relation(frm, rel, to)
+    """
+
+    def __init__(
+        self,
+        tokenizer: Callable[[str], int] | None = None,
+        budget_thresholds: tuple[int, int, int] | None = None,
+    ) -> None:
+        self._tokenizer = tokenizer or _default_tokenizer
+        if budget_thresholds is not None:
+            self._compact, self._standard, self._extended = budget_thresholds
+        else:
+            self._compact = _BUDGET_COMPACT
+            self._standard = _BUDGET_STANDARD
+            self._extended = _BUDGET_EXTENDED
+
+    def build(self, request: PromptBuildRequest) -> PromptBuildResult:
+        """Build a CompiledPromptArtifact from a PromptBuildRequest.
+
+        Parameters
+        ----------
+        request : PromptBuildRequest
+
+        Returns
+        -------
+        PromptBuildResult
+        """
+        tok = self._tokenizer
+
+        # --- Slot hashes and token counts ---
+        s0_hash = _slot_hash(request.s0.content)
+        d0_hash = _slot_hash(request.d0.content)
+        i0_hash = _slot_hash(request.i0.content)
+        c0_hash = _slot_hash(request.c0.content)
+        u0_hash = _slot_hash(request.u0.content)
+
+        s0_tok = tok(request.s0.content)
+        d0_tok = tok(request.d0.content)
+        i0_tok = tok(request.i0.content)
+        c0_tok = tok(request.c0.content)
+        u0_tok = tok(request.u0.content)
+        total_tok = s0_tok + d0_tok + i0_tok + c0_tok + u0_tok
+
+        budget_class = self._classify_budget(total_tok)
+
+        slot_manifest = PromptSlotManifest(
+            s0_hash=s0_hash,
+            d0_hash=d0_hash,
+            i0_hash=i0_hash,
+            c0_hash=c0_hash,
+            u0_hash=u0_hash,
+            s0_tokens=s0_tok,
+            d0_tokens=d0_tok,
+            i0_tokens=i0_tok,
+            c0_tokens=c0_tok,
+            u0_tokens=u0_tok,
+            total_tokens=total_tok,
+            budget_class=budget_class,
+        )
+
+        # --- Prompt hash = hash of full canonical assembly ---
+        prompt_hash = _prompt_hash(
+            s0_hash, d0_hash, i0_hash, c0_hash, u0_hash,
+            request.model_target,
+            request.policy_hash,
+            request.timestamp_utc,
+        )
+
+        # --- ADG entity name ---
+        adg_entity_name = f"{request.adg_entity_prefix}::{prompt_hash[:16]}"
+
+        # --- Collect C0 sources from slot + any explicit c0_sources ---
+        c0_sources: tuple[str, ...] = tuple(sorted(
+            set(request.c0.source_ids) | {c0_hash}
+        ))
+
+        artifact = CompiledPromptArtifact(
+            prompt_hash=prompt_hash,
+            slot_manifest=slot_manifest,
+            template_ids=tuple(sorted(request.template_ids)),
+            fewshot_ids=tuple(sorted(request.fewshot_ids)),
+            injection_ids=tuple(sorted(request.injection_ids)),
+            c0_sources=c0_sources,
+            model_target=request.model_target,
+            policy_hash=request.policy_hash,
+            adg_entity_name=adg_entity_name,
+            influence_class="C0_INFORMATIONAL",
+            timestamp_utc=request.timestamp_utc,
+        )
+
+        # --- Emit ADG relations ---
+        relations: list[tuple[str, str, str]] = []
+
+        # Slot provenance relations
+        for tid in sorted(request.template_ids):
+            relations.append((tid, PROVENANCE_TEMPLATE_USED_BY, adg_entity_name))
+        for fid in sorted(request.fewshot_ids):
+            relations.append((fid, PROVENANCE_FEWSHOT_USED_BY, adg_entity_name))
+        for iid in sorted(request.injection_ids):
+            relations.append((iid, PROVENANCE_INSTRUCTION_INJECTION_SOURCE, adg_entity_name))
+        for src in sorted(request.c0.source_ids):
+            relations.append((src, PROVENANCE_C0_CONTEXT_SOURCE, adg_entity_name))
+
+        # Slot-to-artifact slot relations
+        relations.append((adg_entity_name, PROVENANCE_USES_S0_RULE,
+                          f"ADG::Slot::S0::{s0_hash[:16]}"))
+        relations.append((adg_entity_name, PROVENANCE_USES_D0_FENCE,
+                          f"ADG::Slot::D0::{d0_hash[:16]}"))
+        relations.append((adg_entity_name, PROVENANCE_USES_I0_INSTRUCTION,
+                          f"ADG::Slot::I0::{i0_hash[:16]}"))
+        relations.append((adg_entity_name, PROVENANCE_USES_C0_CONTEXT,
+                          f"ADG::Slot::C0::{c0_hash[:16]}"))
+        relations.append((adg_entity_name, PROVENANCE_CONTAINS_U0_INPUT,
+                          f"ADG::Slot::U0::{u0_hash[:16]}"))
+
+        # Budget relations
+        relations.append((
+            adg_entity_name,
+            BUDGET_TOKEN_PROFILE,
+            f"ADG::TokenProfile::{budget_class}::{prompt_hash[:16]}",
+        ))
+        if budget_class == "OVERFLOW":
+            relations.append((
+                adg_entity_name,
+                BUDGET_EXCEEDED,
+                f"ADG::TokenBudget::OVERFLOW::{prompt_hash[:16]}",
+            ))
+        elif budget_class == "EXTENDED":
+            relations.append((
+                adg_entity_name,
+                BUDGET_TRUNCATED,
+                f"ADG::TokenBudget::EXTENDED::{prompt_hash[:16]}",
+            ))
+
+        return PromptBuildResult(artifact=artifact, adg_relations=relations)
+
+    def _classify_budget(self, total_tokens: int) -> str:
+        if total_tokens <= self._compact:
+            return "COMPACT"
+        if total_tokens <= self._standard:
+            return "STANDARD"
+        if total_tokens <= self._extended:
+            return "EXTENDED"
+        return "OVERFLOW"
+
+
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
+
+
+def _slot_hash(content: str) -> str:
+    return hashlib.sha256(content.encode("utf-8")).hexdigest()
+
+
+def _prompt_hash(
+    s0: str, d0: str, i0: str, c0: str, u0: str,
+    model_target: str,
+    policy_hash: str | None,
+    timestamp_utc: int,
+) -> str:
+    canonical = deterministic_json({
+        "c0": c0,
+        "d0": d0,
+        "i0": i0,
+        "model_target": model_target,
+        "policy_hash": policy_hash,
+        "s0": s0,
+        "timestamp_utc": timestamp_utc,
+        "u0": u0,
+    })
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+
+# ---------------------------------------------------------------------------
+# Module-level convenience
+# ---------------------------------------------------------------------------
+
+
+def build_compiled_prompt(
+    request: PromptBuildRequest,
+    *,
+    tokenizer: Callable[[str], int] | None = None,
+) -> PromptBuildResult:
+    """Module-level convenience wrapper."""
+    return PromptProvenanceBuilder(tokenizer=tokenizer).build(request)
+
+
+__all__ = [
+    "PromptBuildRequest",
+    "PromptBuildResult",
+    "PromptProvenanceBuilder",
+    "SlotPayload",
+    "build_compiled_prompt",
+]
