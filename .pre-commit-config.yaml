@@ -10,14 +10,6 @@
 #   T3c  guard         — reject generated artifacts that got re-tracked
 #   T3d  purge-cache   — cleanup, always last
 #
-# Demoted to [manual] stage (available via `pre-commit run --hook-stage manual`):
-#   T3a-skip  zero-skip enforcement   — runs full test suite; CI only
-#   T3g       governance policy       — fires on 3 specific files only
-#   T3h       evidence contract       — fires on docs/reports/sub/*.md only
-#   T3h       apps_shared guard       — one-time migration regression guard
-#   T3i       pytest.ini scope        — fires on pytest.ini only
-#   T4a       import dependency       — covered by T1+T2a for >95% of cases
-#
 # NOTE: T3a–T3d share a single `repo: local` block. Tier labels in comments
 #       are logical groupings; YAML structure groups them under one repo entry.
 #
@@ -127,16 +119,6 @@ repos:
         require_serial: true
         exclude: (ops_scripts/ci/adg_burndown_gate\.py|ops_scripts/.*|tests/.*|__pycache__/.*|\.nox/.*|archives/.*|\.backup/.*)
 
-      # -- T3a-skip: Zero-Skip Enforcement for UNIT_STRICT (CI only — too slow + Windows WinError 206) --
-      - id: enforce-unit-strict-zero-skip
-        name: "T3a-skip: Zero-Skip Enforcement for UNIT_STRICT"
-        entry: python tools/adg_ci_lane_gate.py --lane unit_strict --fail-on-skip
-        language: system
-        pass_filenames: false
-        always_run: true
-        require_serial: true
-        stages: [manual]
-
       # -- T3a-c0: C0 Sovereignty Guardian (embedding must not drive routing) -----
       - id: check-c0-sovereignty
         name: "T3a-c0: C0 Sovereignty — Embedding Boundary Enforcement"
@@ -203,19 +185,6 @@ repos:
         always_run: true
         require_serial: true
 
-      # -- T3d: Folder Purity Validation (architectural enforcement) -------------
-      # Scope: Validate Agent, Types, and Engine placement rules
-      # MOVED TO MANUAL STAGE due to extensive structural violations in apps_shared
-      # See docs/rules/governance.md for policy details
-      - id: folder-purity-validation
-        name: "T3d: Folder Purity Validation"
-        entry: python ops_scripts/hooks/validate_folder_purity.py
-        language: system
-        pass_filenames: false
-        always_run: true
-        require_serial: true
-        stages: [manual]
-
       # -- T3f: Module Collision Guard (architectural enforcement) ----------------
       # Scope: Detect duplicate modules, logical import paths, case collisions
       # Blocks commits that violate architectural module integrity
@@ -226,55 +195,6 @@ repos:
         pass_filenames: false
         always_run: true
         require_serial: true
-
-      # -- T3h: Evidence Contract Validator (narrow scope docs/reports/sub/*.md — manual only) --
-      - id: validate-evidence-contract
-        name: "T3h: Evidence Contract Validator"
-        entry: python ops_scripts/ci/validate_evidence_contract.py
-        language: system
-        pass_filenames: true
-        types_or: [markdown]
-        files: ^docs/reports/sub/.*\.md$
-        require_serial: true
-        stages: [manual]
-
-      # -- T3i + T3g: pytest.ini and governance policy — narrow triggers, manual only --
-      - id: guard-pytest-ini-scope
-        name: "T3i: Guard pytest.ini scope changes"
-        entry: python ops_scripts/ci/guard_pytest_ini_scope.py
-        language: system
-        pass_filenames: true
-        files: ^pytest\.ini$
-        require_serial: true
-        stages: [manual]
-
-      - id: governance-policy-validation
-        name: "T3g: Governance Policy Validation"
-        entry: python ops_scripts/hooks/validate_governance_policy.py
-        language: system
-        pass_filenames: false
-        always_run: true
-        stages: [manual]
-
-      # -- T3h: Guard apps_shared instructional_layer (one-time regression guard — manual only) --
-      - id: guard-apps-shared-instructional-layer
-        name: "T3h: Guard apps_shared instructional layer imports"
-        entry: python ops_scripts/hooks/guard_apps_shared_instructional_layer.py
-        language: system
-        pass_filenames: false
-        always_run: true
-        require_serial: true
-        stages: [manual]
-
-      # -- T4a: Import Dependency Validation (covered by T1+T2a for >95% of cases — manual only) --
-      - id: import-dependency-check
-        name: "T4a: Import Dependency Validation"
-        entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/validate_import_dependencies.py"
-        language: system
-        types: [python]
-        pass_filenames: false
-        require_serial: true
-        stages: [manual]
 
       # -- T5: Pycache purge (FINAL CLEANUP - runs last) ------------------------
       # Scope: rglob("__pycache__") from repo root, skips .venv/env/.git.
