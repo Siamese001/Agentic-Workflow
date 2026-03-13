@@ -981,14 +981,20 @@ class TestPhase5AppsSharedEnrichment(unittest.TestCase):
         src = _src("apps_shared/reasoning/BaseHealingOrchestrator.py")
         self.assertIn("from pathlib import Path", src)
 
-    def test_base_dispatch_agent_guardian_exemption_on_adg_block(self):
+    def test_base_dispatch_agent_adg_block_uses_narrowed_exception(self):
         src = _src("apps_shared/reasoning/BaseDispatchAgent.py")
-        # guardian comment must precede the except in the ADG try block
-        self.assertIn("guardian: allow-silent-swallow", src)
+        self.assertIn("except (ImportError, AttributeError, OSError)", src)
+        # ADG block must not use broad except — check the adg block specifically
+        adg_block = src[src.find("from agentic_core.adg.runtime.behavioral_index") :]
+        adg_block = adg_block[: adg_block.find("\n\n") + 10]
+        self.assertNotIn("except Exception", adg_block)
 
-    def test_base_healing_orchestrator_guardian_exemption_on_adg_block(self):
+    def test_base_healing_orchestrator_adg_block_uses_narrowed_exception(self):
         src = _src("apps_shared/reasoning/BaseHealingOrchestrator.py")
-        self.assertIn("guardian: allow-silent-swallow", src)
+        self.assertIn("except (ImportError, AttributeError, OSError)", src)
+        adg_block = src[src.find("from agentic_core.adg.runtime.behavioral_index") :]
+        adg_block = adg_block[: adg_block.find("\n\n") + 10]
+        self.assertNotIn("except Exception", adg_block)
 
     def test_base_dispatch_agent_fallback_defaults_are_safe(self):
         """Fallback values must be 0.5 (neutral) and [] (empty) — not None."""
@@ -1021,9 +1027,12 @@ class TestPhase5AppsLicEnrichment(unittest.TestCase):
         src = _src("apps_lic/reasoning/LicHealingOrchestrator.py")
         self.assertIn("from pathlib import Path", src)
 
-    def test_lic_healing_orchestrator_guardian_exemption(self):
+    def test_lic_healing_orchestrator_adg_block_uses_narrowed_exception(self):
         src = _src("apps_lic/reasoning/LicHealingOrchestrator.py")
-        self.assertIn("guardian: allow-silent-swallow", src)
+        self.assertIn("except (ImportError, AttributeError, OSError)", src)
+        adg_block = src[src.find("from agentic_core.adg.runtime.behavioral_index") :]
+        adg_block = adg_block[: adg_block.find("\n\n") + 10]
+        self.assertNotIn("except Exception", adg_block)
 
     def test_outreach_signal_router_has_post_init_with_adg(self):
         tree = _ast_of("apps_lic/reasoning/OutreachSignalRouterAgent.py")
@@ -1065,9 +1074,12 @@ class TestPhase5AppsRgEnrichment(unittest.TestCase):
         src = _src("apps_rg/reasoning/RgHealingOrchestrator.py")
         self.assertIn("from pathlib import Path", src)
 
-    def test_rg_healing_orchestrator_guardian_exemption(self):
+    def test_rg_healing_orchestrator_adg_block_uses_narrowed_exception(self):
         src = _src("apps_rg/reasoning/RgHealingOrchestrator.py")
-        self.assertIn("guardian: allow-silent-swallow", src)
+        self.assertIn("except (ImportError, AttributeError, OSError)", src)
+        adg_block = src[src.find("from agentic_core.adg.runtime.behavioral_index") :]
+        adg_block = adg_block[: adg_block.find("\n\n") + 10]
+        self.assertNotIn("except Exception", adg_block)
 
     def test_content_quality_agent_has_adg_block(self):
         tree = _ast_of("apps_rg/reasoning/ContentQualityAgent.py")
@@ -1122,9 +1134,17 @@ class TestPhase5AdgBlockStructureInvariant(unittest.TestCase):
             with self.subTest(file=fpath):
                 src = _src(fpath)
                 self.assertIn(
-                    "guardian: allow-silent-swallow",
+                    "except (ImportError, AttributeError, OSError)",
                     src,
-                    msg=f"Missing guardian exemption in {fpath}",
+                    msg=f"Missing narrowed exception in {fpath}",
+                )
+                # Scope check to the ADG block only — other broad excepts elsewhere are pre-existing
+                adg_block = src[src.find("from agentic_core.adg.runtime.behavioral_index") :]
+                adg_block = adg_block[: adg_block.find("\n\n") + 10]
+                self.assertNotIn(
+                    "except Exception",
+                    adg_block,
+                    msg=f"ADG block must not use broad except Exception in {fpath}",
                 )
 
     def test_all_phase5_files_have_path_import(self):
@@ -1221,10 +1241,14 @@ class TestPhase5dRemainingAppsEnrichment(unittest.TestCase):
                                 found = True
                 self.assertTrue(found, msg=f"{cls_name}.__post_init__ not found in {fpath}")
 
-    def test_all_orchestrators_have_guardian_exemption(self):
+    def test_all_orchestrators_use_narrowed_exception_not_broad_except(self):
         for fpath, _ in self.PHASE5D_FILES:
             with self.subTest(file=fpath):
-                self.assertIn("guardian: allow-silent-swallow", _src(fpath))
+                src = _src(fpath)
+                self.assertIn("except (ImportError, AttributeError, OSError)", src)
+                adg_block = src[src.find("from agentic_core.adg.runtime.behavioral_index") :]
+                adg_block = adg_block[: adg_block.find("\n\n") + 10]
+                self.assertNotIn("except Exception", adg_block)
 
     def test_all_orchestrators_have_fallback_neutral_score(self):
         for fpath, _ in self.PHASE5D_FILES:
