@@ -54,6 +54,17 @@ class ExecOrchestrator:
         self._extraction = CapabilityExtractionEngine()
         self._assembly = BriefAssemblyEngine()
         self._gate = StyleGateValidator()
+        try:
+            from agentic_core.adg.runtime.behavioral_index import ADGBehavioralIndex
+
+            _idx = ADGBehavioralIndex.from_latest(Path(__file__).resolve().parents[3])
+            _profile = _idx.profile_for(Path(__file__).resolve()) if _idx else None
+            self.adg_behavioral_score: float = _profile.behavioral_score if _profile else 0.5
+            self.adg_antipattern_signals: list[str] = sorted(_profile.antipattern_signals) if _profile else []
+        # guardian: allow-silent-swallow
+        except Exception:
+            self.adg_behavioral_score = 0.5
+            self.adg_antipattern_signals = []
 
     def run(self, request: ExecBriefRequest) -> ExecBriefResult:
         """Execute the full brief generation pipeline.

@@ -1181,6 +1181,97 @@ class TestPhase5AdgBlockStructureInvariant(unittest.TestCase):
 
 
 # ===========================================================================
+# Phase 5d — apps_eval / apps_exec / apps_research / apps_rfp orchestrators
+# ===========================================================================
+
+
+class TestPhase5dRemainingAppsEnrichment(unittest.TestCase):
+    """ADG enrichment for the four additional apps_* orchestrators."""
+
+    PHASE5D_FILES = [
+        ("apps_eval/reasoning/EvalOrchestrator.py", "EvalOrchestrator"),
+        ("apps_exec/reasoning/ExecOrchestrator.py", "ExecOrchestrator"),
+        ("apps_research/reasoning/ResearchOrchestrator.py", "ResearchOrchestrator"),
+        ("apps_rfp/reasoning/RfpOrchestrator.py", "RfpOrchestrator"),
+    ]
+
+    def test_all_orchestrators_have_adg_block_in_post_init(self):
+        for fpath, cls_name in self.PHASE5D_FILES:
+            with self.subTest(file=fpath):
+                tree = _ast_of(fpath)
+                found = False
+                for cls in ast.walk(tree):
+                    if isinstance(cls, ast.ClassDef) and cls.name == cls_name:
+                        for fn in ast.walk(cls):
+                            if isinstance(fn, ast.FunctionDef) and fn.name == "__post_init__":
+                                fn_src = ast.unparse(fn)
+                                self.assertIn(
+                                    "ADGBehavioralIndex", fn_src, msg=f"{fpath}: missing ADGBehavioralIndex"
+                                )
+                                self.assertIn(
+                                    "adg_behavioral_score",
+                                    fn_src,
+                                    msg=f"{fpath}: missing adg_behavioral_score",
+                                )
+                                self.assertIn(
+                                    "adg_antipattern_signals",
+                                    fn_src,
+                                    msg=f"{fpath}: missing adg_antipattern_signals",
+                                )
+                                found = True
+                self.assertTrue(found, msg=f"{cls_name}.__post_init__ not found in {fpath}")
+
+    def test_all_orchestrators_have_guardian_exemption(self):
+        for fpath, _ in self.PHASE5D_FILES:
+            with self.subTest(file=fpath):
+                self.assertIn("guardian: allow-silent-swallow", _src(fpath))
+
+    def test_all_orchestrators_have_fallback_neutral_score(self):
+        for fpath, _ in self.PHASE5D_FILES:
+            with self.subTest(file=fpath):
+                self.assertIn("adg_behavioral_score = 0.5", _src(fpath))
+
+    def test_all_orchestrators_have_fallback_empty_signals(self):
+        for fpath, _ in self.PHASE5D_FILES:
+            with self.subTest(file=fpath):
+                self.assertIn("adg_antipattern_signals = []", _src(fpath))
+
+    def test_adg_import_is_lazy_not_top_level(self):
+        """ADGBehavioralIndex must NOT appear as a top-level import."""
+        for fpath, _ in self.PHASE5D_FILES:
+            with self.subTest(file=fpath):
+                tree = _ast_of(fpath)
+                for node in ast.iter_child_nodes(tree):
+                    if isinstance(node, ast.ImportFrom):
+                        if node.module and "behavioral_index" in node.module:
+                            self.fail(f"{fpath}: ADGBehavioralIndex imported at top level (must be lazy)")
+
+    def test_path_resolution_uses_dunder_file(self):
+        """Plain dataclass orchestrators use Path(__file__) not self.project_root."""
+        for fpath, _ in self.PHASE5D_FILES:
+            with self.subTest(file=fpath):
+                src = _src(fpath)
+                self.assertIn(
+                    "Path(__file__)", src, msg=f"{fpath}: should use Path(__file__) for ADG root resolution"
+                )
+
+    def test_path_already_imported_not_duplicated(self):
+        """Path was already imported — must appear exactly once."""
+        for fpath, _ in self.PHASE5D_FILES:
+            with self.subTest(file=fpath):
+                count = _src(fpath).count("from pathlib import Path")
+                self.assertEqual(
+                    count, 1, msg=f"{fpath}: 'from pathlib import Path' appears {count}x (expected 1)"
+                )
+
+    def test_adg_block_uses_correct_parents_depth(self):
+        """parents[3] = repo root from apps_<x>/reasoning/OrchestratorFile.py."""
+        for fpath, _ in self.PHASE5D_FILES:
+            with self.subTest(file=fpath):
+                self.assertIn("parents[3]", _src(fpath), msg=f"{fpath}: wrong parents depth for repo root")
+
+
+# ===========================================================================
 # Phase 6 — Dead-import triage: ruff clean (F401 zero violations)
 # ===========================================================================
 
