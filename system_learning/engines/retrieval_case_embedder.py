@@ -247,6 +247,135 @@ class RetrievalCaseEmbedder:
             "replay_pass_rate": replay_rate,
         }
 
+    def escalation_candidates(self, *, limit: int = 20) -> list[dict[str, Any]]:
+        """Return metadata for buffered cases where escalation_flag=True.
+
+        Sorted by (completeness_score asc, case_id asc) — lowest-quality
+        escalations first, since those are most urgent for corpus improvement.
+
+        Args:
+            limit: Maximum results (capped at 100).
+
+        Returns:
+            List of metadata dicts for escalated cases.
+        """
+        limit = min(limit, 100)
+        results: list[dict[str, Any]] = []
+        with self._lock:
+            for meta in self._meta.values():
+                if meta.get("escalation_flag"):
+                    results.append(dict(meta))
+        results.sort(key=lambda m: (m.get("completeness_score", 0.0), m.get("case_id", "")))
+        return results[:limit]
+
+    def corpus_expansion_report(self) -> dict[str, Any]:
+        """Generate a corpus expansion guidance report from buffered cases.
+
+        Identifies:
+          - Cases that escalated without a healer (pure retrieval gaps)
+          - Cases with support_score < 0.5 (weak chunk coverage)
+          - Cases where replay failed (determinism risk)
+          - Overall quality tier: 'HEALTHY' / 'DEGRADED' / 'CRITICAL'
+
+        Returns:
+            Dict with keys:
+              pure_escalation_count   — escalated and healer_invoked=False
+              weak_support_count      — support_score < 0.5
+              replay_failure_count    — replay_pass=False
+              total                   — total buffered cases
+              quality_tier            — 'HEALTHY' | 'DEGRADED' | 'CRITICAL'
+        """
+        with self._lock:
+            metas = list(self._meta.values())
+        n = len(metas)
+        pure_esc = sum(
+            1 for m in metas
+            if m.get("escalation_flag") and not m.get("healer_invoked")
+        )
+        weak_sup = sum(1 for m in metas if m.get("support_score", 1.0) < 0.5)
+        replay_fail = sum(1 for m in metas if not m.get("replay_pass", True))
+        if n == 0:
+            tier = "HEALTHY"
+        else:
+            degraded_rate = (pure_esc + weak_sup + replay_fail) / n
+            if degraded_rate >= 0.5:
+                tier = "CRITICAL"
+            elif degraded_rate >= 0.2:
+                tier = "DEGRADED"
+            else:
+                tier = "HEALTHY"
+        return {
+            "pure_escalation_count": pure_esc,
+            "weak_support_count": weak_sup,
+            "replay_failure_count": replay_fail,
+            "total": n,
+            "quality_tier": tier,
+        }
+
+    def evict_by_query_id(self, query_id: str) -> int:
+        """Remove all buffered records matching a query_id.
+
+        Use to retire cases associated with a specific query session
+        (e.g. when a query template is updated and old cases are stale).
+
+        Args:
+            query_id: The query identifier to evict.
+
+        Returns:
+            Number of records evicted.
+
+        Raises:
+            ValueError: If query_id is empty.
+        """
+        if not query_id:
+            raise ValueError("query_id must not be empty")
+        evicted = 0
+        with self._lock:
+            keep: list[CorpusRecord] = []
+            for record in self._records:
+                meta = self._meta.get(record.content_hash, {})
+                if meta.get("query_id") == query_id:
+                    self._meta.pop(record.content_hash, None)
+                    evicted += 1
+                else:
+                    keep.append(record)
+            self._records = keep
+        return evicted
+
+    def score_percentile_buckets(self) -> dict[str, dict[str, int]]:
+        """Bucket support_score and completeness_score into quartile ranges.
+
+        Returns counts per quartile for both scores, enabling quick
+        corpus quality distribution visualization without external tools.
+
+        Buckets: 'Q1' [0.0, 0.25), 'Q2' [0.25, 0.50),
+                 'Q3' [0.50, 0.75), 'Q4' [0.75, 1.0]
+
+        Returns:
+            Dict with keys 'support_score' and 'completeness_score',
+            each mapping to {'Q1': n, 'Q2': n, 'Q3': n, 'Q4': n}.
+        """
+        support_buckets: dict[str, int] = {"Q1": 0, "Q2": 0, "Q3": 0, "Q4": 0}
+        complete_buckets: dict[str, int] = {"Q1": 0, "Q2": 0, "Q3": 0, "Q4": 0}
+
+        def _bucket(v: float) -> str:
+            if v < 0.25:
+                return "Q1"
+            if v < 0.50:
+                return "Q2"
+            if v < 0.75:
+                return "Q3"
+            return "Q4"
+
+        with self._lock:
+            for meta in self._meta.values():
+                support_buckets[_bucket(float(meta.get("support_score", 0.0)))] += 1
+                complete_buckets[_bucket(float(meta.get("completeness_score", 0.0)))] += 1
+        return {
+            "support_score": support_buckets,
+            "completeness_score": complete_buckets,
+        }
+
     def _retrieve(
         self,
         query_text: str,

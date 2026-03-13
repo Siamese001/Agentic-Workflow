@@ -511,6 +511,191 @@ class SemanticIndexRegistry:
         """
         return self.guardrail.verdict_stats()
 
+    def total_buffer_utilization(self) -> dict[str, Any]:
+        """Return buffer utilization fractions for all 8 indexes.
+
+        For each index returns:
+          - ``used``: current record count
+          - ``capacity``: max_buffer configured at construction
+          - ``utilization``: used / capacity rounded to 4 dp (0.0 when cap=0)
+
+        Also includes ``total_used`` and ``total_capacity`` aggregate keys.
+
+        Returns:
+            Dict with one entry per index name plus aggregates.
+        """
+        def _frac(used: int, cap: int) -> float:
+            return round(used / cap, 4) if cap > 0 else 0.0
+
+        snap = self.buffer_snapshot()
+        entries = {
+            INDEX_INCIDENT: {
+                "used": snap.incident_index,
+                "capacity": self.incident._max_buffer,  # noqa: SLF001
+                "utilization": _frac(snap.incident_index, self.incident._max_buffer),  # noqa: SLF001
+            },
+            INDEX_GRAPH: {
+                "used": snap.graph_index,
+                "capacity": self.graph._max_buffer,  # noqa: SLF001
+                "utilization": _frac(snap.graph_index, self.graph._max_buffer),  # noqa: SLF001
+            },
+            INDEX_MUTATION: {
+                "used": snap.mutation_index,
+                "capacity": self.mutation._max_buffer,  # noqa: SLF001
+                "utilization": _frac(snap.mutation_index, self.mutation._max_buffer),  # noqa: SLF001
+            },
+            INDEX_PROMPT: {
+                "used": snap.prompt_index,
+                "capacity": self.prompt._max_buffer,  # noqa: SLF001
+                "utilization": _frac(snap.prompt_index, self.prompt._max_buffer),  # noqa: SLF001
+            },
+            INDEX_RETRIEVAL: {
+                "used": snap.retrieval_index,
+                "capacity": self.retrieval._max_buffer,  # noqa: SLF001
+                "utilization": _frac(snap.retrieval_index, self.retrieval._max_buffer),  # noqa: SLF001
+            },
+            INDEX_REPLAY: {
+                "used": snap.replay_index,
+                "capacity": self.replay._max_buffer,  # noqa: SLF001
+                "utilization": _frac(snap.replay_index, self.replay._max_buffer),  # noqa: SLF001
+            },
+            INDEX_PREFERENCE: {
+                "used": snap.preference_index,
+                "capacity": self.preference._max_buffer,  # noqa: SLF001
+                "utilization": _frac(snap.preference_index, self.preference._max_buffer),  # noqa: SLF001
+            },
+            INDEX_GUARDRAIL: {
+                "used": snap.guardrail_index,
+                "capacity": self.guardrail._max_buffer,  # noqa: SLF001
+                "utilization": _frac(snap.guardrail_index, self.guardrail._max_buffer),  # noqa: SLF001
+            },
+        }
+        total_used = sum(v["used"] for v in entries.values())
+        total_cap = sum(v["capacity"] for v in entries.values())
+        entries["total_used"] = total_used  # type: ignore[assignment]
+        entries["total_capacity"] = total_cap  # type: ignore[assignment]
+        return entries
+
+    def cross_index_health_report(self) -> dict[str, Any]:
+        """Generate a unified health report across all 8 semantic indexes.
+
+        Combines:
+          - Buffer snapshot with utilization
+          - Retrieval quality summary (avg scores, escalation rate)
+          - Prompt safety outcome stats
+          - Replay nondeterminism stats (top 3 types)
+          - Guardrail verdict stats
+          - Corpus expansion quality tier from retrieval index
+          - Overall health: 'OK' | 'WARN' | 'CRITICAL'
+
+        Health rules:
+          - CRITICAL if retrieval quality_tier == 'CRITICAL'
+          - WARN if retrieval quality_tier == 'DEGRADED' or any index > 90% full
+          - OK otherwise
+
+        Returns:
+            Flat dict with health fields for telemetry emission.
+        """
+        util = self.total_buffer_utilization()
+        rq = self.retrieval_quality_summary()
+        prompt_stats = self.prompt_safety_outcome_stats()
+        replay_stats = self.replay_nondeterminism_stats()
+        guardrail_stats = self.guardrail_verdict_stats()
+        exp_report = self.retrieval.corpus_expansion_report()
+
+        top3_nd = sorted(replay_stats.items(), key=lambda kv: -kv[1])[:3]
+        any_over_90 = any(
+            v["utilization"] >= 0.9
+            for k, v in util.items()
+            if isinstance(v, dict) and "utilization" in v
+        )
+
+        tier = exp_report.get("quality_tier", "HEALTHY")
+        if tier == "CRITICAL":
+            health = "CRITICAL"
+        elif tier == "DEGRADED" or any_over_90:
+            health = "WARN"
+        else:
+            health = "OK"
+
+        return {
+            "health": health,
+            "total_records": util.get("total_used", 0),
+            "total_capacity": util.get("total_capacity", 0),
+            "retrieval_avg_support_score": rq.get("avg_support_score", 0.0),
+            "retrieval_avg_completeness_score": rq.get("avg_completeness_score", 0.0),
+            "retrieval_escalation_rate": rq.get("escalation_rate", 0.0),
+            "retrieval_quality_tier": tier,
+            "prompt_blocked_count": prompt_stats.get("BLOCKED", 0),
+            "prompt_escalated_count": prompt_stats.get("ESCALATED", 0),
+            "replay_top3_nondeterminism": top3_nd,
+            "guardrail_false_positive_count": guardrail_stats.get("false_positive", 0),
+            "guardrail_true_positive_count": guardrail_stats.get("true_positive", 0),
+        }
+
+    def bulk_evict_by_trace_id(self, trace_id: str) -> dict[str, int]:
+        """Evict all records matching a trace_id across every index.
+
+        Used when a trace is invalidated (e.g. replay failure, policy revocation)
+        and all derived semantic memory records must be retired atomically.
+
+        Args:
+            trace_id: The trace ID to evict across all indexes.
+
+        Returns:
+            Dict mapping index_name -> evicted_count for all 8 indexes.
+            Indexes with zero evictions are still included.
+
+        Raises:
+            ValueError: If trace_id is empty.
+        """
+        if not trace_id:
+            raise ValueError("trace_id must not be empty")
+
+        def _evict_from(embedder: Any) -> int:
+            evicted = 0
+            with embedder._lock:  # noqa: SLF001
+                keep = []
+                for record in embedder._records:  # noqa: SLF001
+                    if record.trace_id == trace_id:
+                        embedder._meta.pop(record.content_hash, None)  # noqa: SLF001
+                        evicted += 1
+                    else:
+                        keep.append(record)
+                embedder._records = keep  # noqa: SLF001
+            return evicted
+
+        return {
+            INDEX_INCIDENT:   _evict_from(self.incident),
+            INDEX_GRAPH:      _evict_from(self.graph),
+            INDEX_MUTATION:   _evict_from(self.mutation),
+            INDEX_PROMPT:     _evict_from(self.prompt),
+            INDEX_RETRIEVAL:  _evict_from(self.retrieval),
+            INDEX_REPLAY:     _evict_from(self.replay),
+            INDEX_PREFERENCE: _evict_from(self.preference),
+            INDEX_GUARDRAIL:  _evict_from(self.guardrail),
+        }
+
+    @staticmethod
+    def index_namespace_map() -> dict[str, str]:
+        """Return the canonical namespace string for each index.
+
+        Useful for building seed-pack manifests or verifying namespace routing.
+
+        Returns:
+            Dict mapping index_name -> namespace string.
+        """
+        return {
+            INDEX_INCIDENT:   "incident_bundles",
+            INDEX_GRAPH:      "graph_neighborhoods",
+            INDEX_MUTATION:   "mutation_diffs",
+            INDEX_PROMPT:     "prompt_outcomes",
+            INDEX_RETRIEVAL:  "retrieval_cases",
+            INDEX_REPLAY:     "replay_failures",
+            INDEX_PREFERENCE: "path_d_preferences",
+            INDEX_GUARDRAIL:  "policy_guardrail_cases",
+        }
+
 
 __all__ = [
     "SemanticIndexRegistry",

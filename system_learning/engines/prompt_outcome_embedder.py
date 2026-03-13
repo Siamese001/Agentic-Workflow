@@ -240,6 +240,137 @@ class PromptOutcomeEmbedder:
             self._records = keep
         return evicted
 
+    def top_templates_by_outcome(
+        self, outcome: str, *, top_n: int = 5
+    ) -> list[tuple[str, int]]:
+        """Return the most-used template_ids for a given safety_outcome.
+
+        Scans the in-memory buffer and counts template_id occurrences filtered
+        by the requested safety_outcome.  Sorted by (count desc, template_id asc).
+
+        Args:
+            outcome: One of ALLOWED / BLOCKED / ESCALATED / HEALED / UNKNOWN.
+            top_n: Maximum entries returned (capped at 50).
+
+        Returns:
+            List of (template_id, count) tuples, highest-count first.
+
+        Raises:
+            ValueError: If outcome is not a valid safety outcome literal.
+        """
+        if outcome not in _VALID_SAFETY_OUTCOMES:
+            raise ValueError(
+                f"outcome must be one of {sorted(_VALID_SAFETY_OUTCOMES)}, "
+                f"got {outcome!r}"
+            )
+        top_n = min(top_n, 50)
+        counts: dict[str, int] = {}
+        with self._lock:
+            for meta in self._meta.values():
+                if meta.get("safety_outcome") == outcome:
+                    tid = meta.get("template_id", "")
+                    if tid:
+                        counts[tid] = counts.get(tid, 0) + 1
+        ranked = sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))
+        return ranked[:top_n]
+
+    def model_stats(self) -> dict[str, dict[str, int]]:
+        """Return per-model safety outcome breakdowns for the buffered corpus.
+
+        Useful for detecting model-specific safety regressions or identifying
+        which models produce more escalations / blocks.
+
+        Returns:
+            Dict mapping model_name -> {safety_outcome: count, ...}.
+            Only models/outcomes actually observed are included.
+            Sorted by model name.
+        """
+        result: dict[str, dict[str, int]] = {}
+        with self._lock:
+            for meta in self._meta.values():
+                model = meta.get("model", "")
+                outcome = meta.get("safety_outcome", "")
+                if model and outcome:
+                    if model not in result:
+                        result[model] = {}
+                    result[model][outcome] = result[model].get(outcome, 0) + 1
+        return dict(sorted(result.items()))
+
+    def evict_before_timestamp(self, cutoff_utc: int) -> int:
+        """Remove all buffered records whose CorpusRecord was ingested before a cutoff.
+
+        The cutoff is matched against the ``trace_id`` timestamp embedded in the
+        CorpusRecord via the originating PromptOutcomeEmbeddingRecord.
+        Since CorpusRecord carries no timestamp itself, the cutoff is applied via
+        a monotonic ingest-order proxy: records with trace_ids not surviving a
+        registry refresh are retired.
+
+        Implementation: compares ``timestamp_utc`` stored in meta (populated by
+        ``record_from_execution`` when the field is present, otherwise falls back
+        to scanning ``record_hash`` ordering).  This method is a best-effort
+        semantic retirement tool, NOT a hard time-based eviction.
+
+        Actually implemented as: evict all records whose ``record_id`` ends with a
+        numeric suffix parsed from the trace or whose meta ``timestamp_utc`` (if
+        stored by callers who populate it) is strictly less than cutoff_utc.
+
+        Since the base PromptOutcomeEmbeddingRecord does not store timestamp in
+        the meta dict (only record_hash is meta), this provides a hook callers
+        can use by storing timestamp in the trace_id field.  For correctness the
+        method scans the CorpusRecord.trace_id and parses an integer suffix.
+
+        Simpler and correct implementation: scan record.trace_id for ``@TS:``
+        prefix to extract a timestamp, then evict if < cutoff.  Callers who want
+        timestamp-based eviction must pass trace_id as ``@TS:<unix_int>``.
+        If trace_id has no such prefix, the record is kept.
+
+        Args:
+            cutoff_utc: Unix timestamp (integer seconds). Records whose trace_id
+                encodes a timestamp < cutoff_utc are evicted.
+
+        Returns:
+            Number of records evicted.
+
+        Raises:
+            ValueError: If cutoff_utc <= 0.
+        """
+        if cutoff_utc <= 0:
+            raise ValueError(f"cutoff_utc must be > 0, got {cutoff_utc}")
+        evicted = 0
+        with self._lock:
+            keep: list[CorpusRecord] = []
+            for record in self._records:
+                tid = record.trace_id
+                if tid.startswith("@TS:"):
+                    try:
+                        ts = int(tid[4:])
+                        if ts < cutoff_utc:
+                            self._meta.pop(record.content_hash, None)
+                            evicted += 1
+                            continue
+                    except ValueError:
+                        pass
+                keep.append(record)
+            self._records = keep
+        return evicted
+
+    def route_distribution(self) -> dict[str, int]:
+        """Return count of buffered records by route.
+
+        Enables detection of route-specific prompt outcome patterns,
+        e.g. whether L2_PREMIUM consistently escalates more than L2_STANDARD.
+
+        Returns:
+            Dict mapping route -> count, sorted alphabetically by route.
+        """
+        counts: dict[str, int] = {}
+        with self._lock:
+            for meta in self._meta.values():
+                route = meta.get("route", "")
+                if route:
+                    counts[route] = counts.get(route, 0) + 1
+        return dict(sorted(counts.items()))
+
     def _retrieve(
         self,
         query_text: str,

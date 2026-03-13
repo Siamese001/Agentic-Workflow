@@ -232,6 +232,85 @@ class ReplayFailureEmbedder:
             self._records = keep
         return evicted
 
+    def top_affected_subsystems(self, *, top_n: int = 5) -> list[tuple[str, int]]:
+        """Return the most frequently affected subsystems across buffered failures.
+
+        Counts each unique subsystem mention across all ``affected_subsystems``
+        tuples in the buffer, then returns the top-N pairs sorted by
+        (count desc, subsystem name asc) for tie-breaking.
+
+        Args:
+            top_n: Maximum number of entries to return (capped at 50).
+
+        Returns:
+            List of (subsystem_name, count) tuples, highest-count first.
+        """
+        top_n = min(top_n, 50)
+        counts: dict[str, int] = {}
+        with self._lock:
+            for record in self._records:
+                text = record.text
+                subsystems_segment = ""
+                for part in text.split(" ## "):
+                    if part.startswith("subsystems:"):
+                        subsystems_segment = part[len("subsystems:"):]
+                        break
+                if subsystems_segment:
+                    for sub in subsystems_segment.split(" | "):
+                        sub = sub.strip()
+                        if sub:
+                            counts[sub] = counts.get(sub, 0) + 1
+        ranked = sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))
+        return ranked[:top_n]
+
+    def evict_by_nondeterminism_type(self, nondeterminism_type: str) -> int:
+        """Remove all buffered records matching a nondeterminism_type.
+
+        Use when a class of nondeterminism has been fully remediated and its
+        historical records should no longer influence cluster retrieval.
+
+        Args:
+            nondeterminism_type: The nondeterminism class to evict.
+
+        Returns:
+            Number of records evicted.
+
+        Raises:
+            ValueError: If nondeterminism_type is empty.
+        """
+        if not nondeterminism_type:
+            raise ValueError("nondeterminism_type must not be empty")
+        evicted = 0
+        with self._lock:
+            keep: list[CorpusRecord] = []
+            for record in self._records:
+                meta = self._meta.get(record.content_hash, {})
+                if meta.get("nondeterminism_type") == nondeterminism_type:
+                    self._meta.pop(record.content_hash, None)
+                    evicted += 1
+                else:
+                    keep.append(record)
+            self._records = keep
+        return evicted
+
+    def replay_key_summary(self) -> list[tuple[str, int]]:
+        """Return (replay_key, case_count) pairs sorted by count descending.
+
+        Useful for identifying which replay sessions have contributed the most
+        failure records — candidates for bulk eviction once a session retires.
+
+        Returns:
+            List of (replay_key, count) tuples, highest-count first.
+            Tie-break: alphabetical by replay_key.
+        """
+        counts: dict[str, int] = {}
+        with self._lock:
+            for meta in self._meta.values():
+                rk = meta.get("replay_key", "")
+                if rk:
+                    counts[rk] = counts.get(rk, 0) + 1
+        return sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))
+
     def _retrieve(
         self,
         query_text: str,
