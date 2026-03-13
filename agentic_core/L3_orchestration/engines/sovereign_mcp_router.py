@@ -10,7 +10,6 @@ from typing import Any
 
 from agentic_core.cache.redis_cache_client import get_hot_cache
 from agentic_core.L3_orchestration.reasoning.mcp_manager import MCPConnectionManager, load_mcp_config
-from agentic_core.L5_safety.enforcement.mcp_sovereign_authority_enforcer import mcp_authority
 
 Logger: Any = logging.getLogger(__name__)
 

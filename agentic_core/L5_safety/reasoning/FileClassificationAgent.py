@@ -169,7 +169,7 @@ class ClassificationResult:
 
 
 @dataclass
-class FileClassificationAgent(*BASE_CLASSES):
+class FileClassificationHealerAgent(*BASE_CLASSES):
     """
     Enforces file classification and naming conventions with architectural integrity.
 
@@ -5694,3 +5694,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+# Backward-compat alias — Phase 10 rename (FileClassificationAgent → FileClassificationHealerAgent)
+FileClassificationAgent = FileClassificationHealerAgent

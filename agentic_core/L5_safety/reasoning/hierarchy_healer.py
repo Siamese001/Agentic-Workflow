@@ -66,7 +66,7 @@ Logger = logging.getLogger(__name__)
 
 
 @dataclass
-class HierarchyAgent(SovereignBaseAgent):
+class HierarchyHealerAgent(SovereignBaseAgent):
     """
     Unified Hierarchy Management Agent
 
@@ -895,7 +895,9 @@ class HierarchyAgent(SovereignBaseAgent):
                 results["tests_archived"] = tests_count
 
         # Universal depth (agentic_core)
-        if not target_territory or not (target_territory.startswith("apps_") or target_territory == TESTS_DIR):
+        if not target_territory or not (
+            target_territory.startswith("apps_") or target_territory == TESTS_DIR
+        ):
             universal_count = self._enforce_universal_depth()
             results["violations_found"] += universal_count
             if self.healing_enabled:
@@ -1873,8 +1875,12 @@ _hierarchy_agent_instance = None
 
 
 def get_hierarchy_agent(project_root):
-    """Get or create HierarchyAgent singleton."""
+    """Get or create HierarchyHealerAgent singleton."""
     global _hierarchy_agent_instance
     if _hierarchy_agent_instance is None:
-        _hierarchy_agent_instance = HierarchyAgent(project_root)
+        _hierarchy_agent_instance = HierarchyHealerAgent(project_root)
     return _hierarchy_agent_instance
+
+
+# Backward-compat alias — Phase 10 rename (HierarchyAgent → HierarchyHealerAgent)
+HierarchyAgent = HierarchyHealerAgent

@@ -14,8 +14,6 @@ import logging
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L5_safety.types.hardening_errors import LedgerIntegrityViolation
-
 logger = logging.getLogger(__name__)
 _GENESIS_HASH = "0" * 64
 

@@ -12,8 +12,6 @@ from __future__ import annotations
 import logging
 from typing import Any, Callable
 
-from agentic_core.L5_safety.types.hardening_errors import MutationCommitFailure
-
 logger = logging.getLogger(__name__)
 
 
@@ -40,6 +38,8 @@ class TwoPhaseCoordinator:
         Returns (resource_result, ledger_result) on success.
         Raises MutationCommitFailure if either ACK fails.
         """
+        from agentic_core.L5_safety.types.hardening_errors import MutationCommitFailure
+
         ctx_str = str(context or {})
         resource_result: Any = None
         ledger_result: Any = None

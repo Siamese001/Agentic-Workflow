@@ -14,11 +14,15 @@ FilesystemSSOTReconcilerAgent renamed to filesystem_ssot_reconciler.py in Phase 
 FilesystemSSOTValidatorAgent renamed to filesystem_ssot_validator.py in Phase 7.
 LocationValidatorAgent renamed to location_validator.py in Phase 8.
 ObservabilityProbeExecutorAgent renamed to observability_probe_executor.py in Phase 9.
+Phase 10: Class names aligned to *HealerAgent convention per naming framework doc.
+  HierarchyAgent -> HierarchyHealerAgent (alias preserved in hierarchy_healer.py)
+  RootHygieneAgent -> RootHygieneHealerAgent (alias preserved in root_hygiene_healer.py)
+  FileClassificationAgent -> FileClassificationHealerAgent (alias preserved in FileClassificationAgent.py)
 
 New invariants:
   - Roster imports real classes directly (no shim modules)
   - Deleted shim files no longer exist
-  - state_mgr display labels are unchanged until Phase 10
+  - state_mgr display labels use canonical *HealerAgent names (Phase 10+)
 """
 
 import ast
@@ -34,21 +38,22 @@ from agentic_core.L0_routing.config.path_constants import (
 REPO_ROOT = Path(__file__).resolve().parents[5]
 EXECUTE_SSOT = REPO_ROOT / L0_ROUTING_DIR / "scripts" / "execute_ssot.py"
 
-# Direct class imports now used in _get_l5_agent_roster() (shims deleted, Phase 1)
+# Direct class imports now used in _get_l5_agent_roster() (Phase 10 canonical names)
 CANONICAL_ROSTER_IMPORTS = [
-    "FileClassificationAgent",
-    "HierarchyAgent",
+    "FileClassificationHealerAgent",
+    "HierarchyHealerAgent",
+    "RootHygieneHealerAgent",
     "GravityLeakHealerAgent",
     "FilesystemSSOTReconcilerAgent",
 ]
 
 # Shim names that were deleted and whose class names must NOT appear in the roster.
 DELETED_SHIM_NAMES = [
-    "FileClassificationHealerAgent",  # deleted Phase 1 — shim for FileClassificationAgent
-    "HierarchyHealerAgent",  # deleted Phase 1 — shim for HierarchyAgent
     "FilesystemSSOTHealerAgent",  # deleted Phase 1 — shim for FilesystemSSOTReconcilerAgent
     "HierarchyValidatorAgent",  # deleted Phase 1 — thin wrapper, inlined in execute_ssot
     "LocationAgent",  # deleted Phase 2 — deprecated §26-violating shim for LocationHealerAgent
+    # Note: FileClassificationAgent, HierarchyAgent, RootHygieneAgent are kept as backward-compat
+    # aliases in their source files — they are NOT deleted shims, just aliases.
 ]
 
 # Module files that were renamed to snake_case. Their class names may still exist in the
@@ -56,8 +61,8 @@ DELETED_SHIM_NAMES = [
 RENAMED_MODULE_FILES = [
     "GravityValidatorAgent",  # Phase 3 — now gravity_validator.py
     "FileClassificationValidatorAgent",  # Phase 4 — now file_classification_validator.py
-    "HierarchyAgent",  # Phase 5 — now hierarchy_healer.py (class HierarchyAgent preserved)
-    "RootHygieneAgent",  # Phase 6 — now root_hygiene_healer.py (class RootHygieneAgent preserved)
+    "HierarchyAgent",  # Phase 5 — now hierarchy_healer.py (class renamed to HierarchyHealerAgent in Phase 10)
+    "RootHygieneAgent",  # Phase 6 — now root_hygiene_healer.py (class renamed to RootHygieneHealerAgent in Phase 10)
     "FilesystemSSOTReconcilerAgent",  # Phase 7 — now filesystem_ssot_reconciler.py
     "FilesystemSSOTValidatorAgent",  # Phase 7 — now filesystem_ssot_validator.py
     "LocationValidatorAgent",  # Phase 8 — now location_validator.py
@@ -97,19 +102,21 @@ def _return_names_in_function(func_node: ast.FunctionDef) -> list[str]:
 
 
 CANONICAL_STATE_MGR_NAMES = [
-    "FilesystemSSOTHealerAgent",
+    "FilesystemSSOTReconcilerAgent",
     "LocationHealerAgent",
     "FileClassificationHealerAgent",
     "HierarchyHealerAgent",
     "GravityLeakHealerAgent",
+    "RootHygieneHealerAgent",
 ]
 
 LEGACY_STATE_MGR_NAMES = [
-    "FilesystemSSOTReconcilerAgent",
+    "FilesystemSSOTHealerAgent",
     "LocationAgent",
     "FileClassificationAgent",
     "HierarchyAgent",
     "GravityLeakRepairAgent",
+    "RootHygieneAgent",
 ]
 
 
@@ -171,8 +178,9 @@ class TestRosterUsesDirectImports:
     def test_direct_classes_are_importable(self):
         """Direct class imports used in roster must be resolvable."""
         direct_class_paths = {
-            "FileClassificationAgent": "agentic_core.L5_safety.reasoning.FileClassificationAgent",
-            "HierarchyAgent": "agentic_core.L5_safety.reasoning.hierarchy_healer",
+            "FileClassificationHealerAgent": "agentic_core.L5_safety.reasoning.FileClassificationAgent",
+            "HierarchyHealerAgent": "agentic_core.L5_safety.reasoning.hierarchy_healer",
+            "RootHygieneHealerAgent": "agentic_core.L5_safety.reasoning.root_hygiene_healer",
             "FilesystemSSOTReconcilerAgent": "agentic_core.L5_safety.reasoning.filesystem_ssot_reconciler",
             "GravityLeakHealerAgent": "agentic_core.L5_safety.reasoning.GravityLeakHealerAgent",
         }

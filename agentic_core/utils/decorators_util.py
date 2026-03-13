@@ -30,17 +30,8 @@ from typing import TYPE_CHECKING, Any, TypeVar, cast
 from agentic_core.utils.timeout_decorator_util import TimeoutError, timeout
 
 if TYPE_CHECKING:
-    from agentic_core.L5_safety.types.heal_llm_seam_types import (
-        HealLlmRequest,
-        PolicyDecisionRecord,
-        guarded_heal_llm_call,
-        reset_heal_seam_capability,
-        set_heal_seam_capability,
-    )
     from agentic_core.L5_safety.types.heal_policy_types import (
-        HealEscalationInputs,
         ReasoningTier,
-        decide_heal_escalation,
     )
 
 
@@ -233,6 +224,14 @@ def standard_heal(func: F) -> F:
         agent_name = self.__class__.__name__
 
         # Phase 3: Set canonical seam capability token
+        (
+            HealLlmRequest,
+            PolicyDecisionRecord,
+            guarded_heal_llm_call,
+            reset_heal_seam_capability,
+            set_heal_seam_capability,
+        ) = _get_heal_llm_seam_types()
+        HealEscalationInputs, ReasoningTier, decide_heal_escalation = _get_heal_policy_types()
         capability_token = set_heal_seam_capability(True)
 
         try:

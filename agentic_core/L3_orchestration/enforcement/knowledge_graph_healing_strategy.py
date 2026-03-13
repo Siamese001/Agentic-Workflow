@@ -9,8 +9,6 @@ from typing import Any
 
 from agentic_core.L0_routing.P1_core.filesystem_mcp_client_1 import get_filesystem_client
 
-from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBridge
-
 Logger: Any = logging.getLogger(__name__)
 
 
@@ -27,6 +25,8 @@ class KnowledgeGraphHealingStrategy:
 
     def __init__(self):
         """Initialize knowledge graph healing strategy with MCP clients."""
+        from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBridge
+
         self.name = "KnowledgeGraphHealing"
         self.priority = 2
         self.fs_client = get_filesystem_client()

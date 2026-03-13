@@ -7,7 +7,6 @@ from datetime import datetime
 
 from agentic_core.cache.redis_cache_client import get_hot_cache
 from agentic_core.L0_routing.config.path_constants import PROJECT_ROOT_WHITELIST
-from agentic_core.L5_safety.enforcement.mcp_sovereign_authority_enforcer import mcp_authority
 from agentic_core.seams.contracts.mcp import MCPConnectionManager
 
 Logger = logging.getLogger(__name__)

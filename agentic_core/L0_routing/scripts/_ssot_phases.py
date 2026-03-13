@@ -380,7 +380,7 @@ def execute_phase1_discovery_impl(
     """PHASE 1: TERRITORIAL DISCOVERY - Implementation with CognitiveDispositionAgent integration"""
     REPO_ROOT = repo_root
     logger.info(f"=== PHASE 1: DISCOVERY - {territory} ===")
-    state_mgr.update_agent("FilesystemSSOTHealerAgent", "L5 - Safety (Validator)")
+    state_mgr.update_agent("FilesystemSSOTReconcilerAgent", "L5 - Safety (Validator)")
     from agentic_core.L5_safety.reasoning.filesystem_ssot_validator import (
         FilesystemSSOTValidatorAgent as _FilesystemSSOTValidatorAgent,
     )
@@ -389,23 +389,39 @@ def execute_phase1_discovery_impl(
     _fs_check = _fs_validator.to_check_dict()
     drift_report = _fs_check["evidence"]
     if drift_report is None:
-        state_mgr.complete_agent("FilesystemSSOTHealerAgent", False, "Returned None")
+        state_mgr.complete_agent("FilesystemSSOTReconcilerAgent", False, "Returned None")
         return (None, None)
+    heal_result = {"skipped": 1}
     if ctx is not None and getattr(ctx, "heal", False):
         _fs_healer_cls = agents.get("reconciler")
         if _fs_healer_cls is not None:
             _fs_healer_instance = _fs_healer_cls(project_root=REPO_ROOT)
-            _fs_healer_instance.heal_repository(dry_run=False, execute=True)
+            # force=True required: without it heal_repository() short-circuits to skipped=1
+            heal_result = _fs_healer_instance.heal_repository(dry_run=False, execute=True, force=True)
+            # run_with_cleanup covers full SSOT blueprint drift (the 29-item scan)
+            cleanup_result = _fs_healer_instance.run_with_cleanup(dry_run=False)
+            heal_result["cleanup"] = cleanup_result
+            logger.info(
+                f"[FilesystemSSOTReconcilerAgent] root_heal={heal_result}, "
+                f"cleanup_applied={cleanup_result.get('actions_applied', 0)}"
+            )
     violations_count = _fs_check.get("violations_count", 0)
-    state_mgr.complete_agent("FilesystemSSOTHealerAgent", True, f"Drift violations: {violations_count}")
+    _heal_applied = heal_result.get("applied", 0) or heal_result.get("cleanup", {}).get("actions_applied", 0)
+    _was_skipped = heal_result.get("skipped", 0) and not heal_result.get("cleanup")
+    _outcome = "SKIPPED" if _was_skipped else "SUCCESS"
+    state_mgr.complete_agent(
+        "FilesystemSSOTReconcilerAgent",
+        True,
+        f"Drift violations: {violations_count}, healed: {_heal_applied}",
+    )
     _record_healing_action(
         state_mgr,
-        agent="FilesystemSSOTHealerAgent",
+        agent="FilesystemSSOTReconcilerAgent",
         territory=territory,
         routing_tier="DETERMINISTIC",
         confidence=1.0,
-        fix_summary=f"SSOT drift scan: {violations_count} violation(s) in {territory}",
-        outcome="SUCCESS",
+        fix_summary=f"SSOT drift scan: {violations_count} violation(s), applied: {_heal_applied}",
+        outcome=_outcome,
     )
     from agentic_core.L0_routing.context.location_validator_seam import get_location_validator_agent
 
@@ -585,7 +601,7 @@ def execute_phase1_discovery_impl(
         state_mgr.state["classification_scan_result"] = classification_scan_result
         state_mgr.state["classification_check_dict"] = _fc_check
         state_mgr.state["classification_file_registry"] = _fc_evidence.get("file_registry", [])
-        logger.info(f"FileClassificationAgent early detection: {classification_count} issues found")
+        logger.info(f"FileClassificationHealerAgent early detection: {classification_count} issues found")
     # guardian: allow-silent-swallow
     except Exception as e:
         logger.error(f"FileClassificationHealerAgent early detection FAILED: {e}\n{traceback.format_exc()}")
@@ -745,7 +761,7 @@ def execute_phase2_reconciliation(
                 reconciliation_log.append(fix_result)
                 decision_engine.release_sovereignty_token(agent_key, success=True)
                 _AGENT_KEY_TO_CLASS_NAME = {
-                    "reconciler": "FilesystemSSOTHealerAgent",
+                    "reconciler": "FilesystemSSOTReconcilerAgent",
                     "location": "LocationHealerAgent",
                     "hierarchy": "HierarchyHealerAgent",
                     "arch_governor": "ArchitectureGovernorAgent",
@@ -753,7 +769,7 @@ def execute_phase2_reconciliation(
                     "file_classification": "FileClassificationHealerAgent",
                     "observability_probe": "ObservabilityProbeExecutorAgent",
                     "cognitive_disposition": "CognitiveDispositionAgent",
-                    "root_hygiene": "RootHygieneAgent",
+                    "root_hygiene": "RootHygieneHealerAgent",
                 }
                 _PHASE1_RECORDED = {"reconciler", "location"}
                 if agent_key not in _PHASE1_RECORDED:
@@ -883,8 +899,64 @@ def execute_phase3_alignment_impl(
         if proceed and ctx is not None and ctx.heal:
             _hier_healer_cls = agents.get("hierarchy")
             if _hier_healer_cls is not None:
-                _hier_healer_instance = _hier_healer_cls(project_root=REPO_ROOT)
-                heal_result = _hier_healer_instance.heal_repository(dry_run=False, execute=True)
+                # HITL gate: collect affected paths from scan and prompt before healing
+                from agentic_core.L5_safety.enforcement.hitl_gate import (
+                    HitlChoice,
+                    HitlRequest,
+                    get_hitl_gate,
+                )
+
+                _affected = [
+                    REPO_ROOT / v.get("file", "")
+                    if isinstance(v, dict) and v.get("file")
+                    else REPO_ROOT / territory
+                    for v in (_hier_scan.get("violations") or [])
+                ]
+                if not _affected:
+                    _affected = [REPO_ROOT / territory]
+                _gate = get_hitl_gate(REPO_ROOT)
+                _hitl = _gate.request(
+                    HitlRequest(
+                        agent="HierarchyHealerAgent",
+                        operation="ARCHIVE / RELOCATE",
+                        affected_paths=_affected,
+                        reason=f"{violations} hierarchy violation(s) in territory '{territory}'",
+                        territory=territory,
+                        extra_context="Includes potential purge of orphaned files outside sovereign whitelist",
+                    )
+                )
+                if _hitl.choice == HitlChoice.YES:
+                    _hier_healer_instance = _hier_healer_cls(project_root=REPO_ROOT)
+                    heal_result = _hier_healer_instance.heal_repository(dry_run=False, execute=True)
+                elif _hitl.choice == HitlChoice.ABORT:
+                    logger.warning("[HITL] User aborted healing run at HierarchyHealerAgent")
+                    state_mgr.add_event("hitl", "User ABORTED healing at HierarchyHealerAgent")
+                    state_mgr.complete_agent("HierarchyHealerAgent", False, f"HITL ABORTED: {_hitl.reason}")
+                    _record_healing_action(
+                        state_mgr,
+                        agent="HierarchyHealerAgent",
+                        territory=territory,
+                        routing_tier="DETERMINISTIC",
+                        confidence=0.0,
+                        fix_summary=f"HITL ABORTED by user: {_hitl.reason}",
+                        outcome="SKIPPED",
+                    )
+                    return {"total_healed": 0, "status": "HITL_ABORTED"}
+                else:
+                    logger.info("[HITL] %s — HierarchyHealerAgent skipped", _hitl.reason)
+                    state_mgr.add_event("hitl", f"HierarchyHealerAgent: {_hitl.reason}")
+                    state_mgr.complete_agent("HierarchyHealerAgent", False, f"HITL: {_hitl.reason}")
+                    _record_healing_action(
+                        state_mgr,
+                        agent="HierarchyHealerAgent",
+                        territory=territory,
+                        routing_tier="DETERMINISTIC",
+                        confidence=0.0,
+                        fix_summary=f"HITL {_hitl.choice.value}: {_hitl.reason}",
+                        outcome="SKIPPED",
+                    )
+                    return {"total_healed": 0, "status": f"HITL_{_hitl.choice.value}"}
+                heal_result = heal_result if _hitl.choice == HitlChoice.YES else {}
             else:
                 heal_result = {}
             healed = (
@@ -1268,7 +1340,7 @@ def execute_phase7_final_impl(agents, territory, state_mgr, decision_engine=None
                 "file": class_violation.get("file", "multiple"),
                 "message": f"{subtype} violation: {count} file(s) need attention",
                 "severity": "medium",
-                "recommended_action": f"Run FileClassificationAgent to fix {subtype} issues",
+                "recommended_action": f"Run FileClassificationHealerAgent to fix {subtype} issues",
                 "llm_triggered": decision_engine.enable_llm,
                 "confidence": round(class_violation.get("confidence", 0.7), 3),
                 "count": count,

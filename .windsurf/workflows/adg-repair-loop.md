@@ -6,6 +6,14 @@ description: ADG-controlled repair loop - strictly graph-first, no full-suite ru
 
 This workflow enforces §ADG-1. Invoke with `/adg-repair-loop`.
 
+### STEP 0: Verify ADG Redis cache is hot
+// turbo
+```
+python -c "import redis; r = redis.Redis(host='localhost', port=6379, db=0, decode_responses=True); meta = r.hgetall('adg:meta'); print('ADG cache timestamp:', meta.get('timestamp','MISSING')); print('Nodes:', meta.get('node_count','MISSING')); print('Keys total:', r.dbsize())"
+```
+
+If `MISSING` or `node_count` < 8000 → run `/adg-redis-refresh` before continuing.
+
 ### STEP 1: Load current cluster state
 // turbo
 ```
@@ -38,7 +46,15 @@ If any answer is missing → rebuild ADG: `python tools/adg_semantic_builder.py 
 - Fix the definition, not the call sites
 - No changes to test files unless the test itself has a missing import that is the root cause
 
-### STEP 5: Verify with scoped rerun
+### STEP 5: Refresh ADG Redis after fix
+// turbo
+```
+python tools/adg/adg_redis_ingest.py
+```
+
+Staleness guard auto-skips if sqlite is unchanged. If `generate_full_adg.py` was run as part of the fix, use `--force` instead.
+
+### STEP 6: Verify with scoped rerun
 // turbo
 ```
 python -m pytest <SAME_CLUSTER_TEST_IDS> --tb=short -q --no-header
@@ -46,11 +62,11 @@ python -m pytest <SAME_CLUSTER_TEST_IDS> --tb=short -q --no-header
 
 Must see: `N passed` with 0 failures before moving to next cluster.
 
-### STEP 6: Advance to next cluster
+### STEP 7: Advance to next cluster
 
-Repeat STEPS 1-5 for next unresolved cluster.
+Repeat STEPS 1-6 for next unresolved cluster.
 
-### STEP 7: Full convergence check (after ALL clusters green)
+### STEP 8: Full convergence check (after ALL clusters green)
 // turbo
 ```
 python -m pytest <ALL_CLUSTER_SCOPED_TESTS> --tb=no -q --no-header

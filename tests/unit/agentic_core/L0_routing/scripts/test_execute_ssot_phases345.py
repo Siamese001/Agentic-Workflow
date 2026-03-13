@@ -32,7 +32,20 @@ Phase 5:
 from __future__ import annotations
 
 import importlib
+from pathlib import Path
 from unittest.mock import MagicMock, patch
+
+from agentic_core.L5_safety.enforcement.hitl_gate import HitlGate
+
+
+def _auto_approve_gate(repo_root=None):
+    """Return an auto-approving HitlGate for use in tests that exercise heal=True paths."""
+    return HitlGate(
+        repo_root or Path("."),
+        input_fn=lambda _: "Y",
+        _tty_override=True,
+    )
+
 
 import pytest
 
@@ -163,9 +176,13 @@ class TestPhase3Alignment:
 
         with patch.dict("sys.modules", self._hier_agent_patch(hier_cls)):
             with patch("agentic_core.L0_routing.scripts.execute_ssot.REPO_ROOT", MagicMock()):
-                result = mod.execute_phase3_alignment_impl(
-                    agents, "neutral", de, sm, ctx=_make_ctx(heal=True)
-                )
+                with patch(
+                    "agentic_core.L5_safety.enforcement.hitl_gate.get_hitl_gate",
+                    return_value=_auto_approve_gate(),
+                ):
+                    result = mod.execute_phase3_alignment_impl(
+                        agents, "neutral", de, sm, ctx=_make_ctx(heal=True)
+                    )
 
         assert result is not None
         healer_inst.heal_repository.assert_called_once()
@@ -185,7 +202,11 @@ class TestPhase3Alignment:
 
         with patch.dict("sys.modules", self._hier_agent_patch(hier_cls)):
             with patch("agentic_core.L0_routing.scripts.execute_ssot.REPO_ROOT", MagicMock()):
-                mod.execute_phase3_alignment_impl(agents, "neutral", de, sm, ctx=_make_ctx(heal=True))
+                with patch(
+                    "agentic_core.L5_safety.enforcement.hitl_gate.get_hitl_gate",
+                    return_value=_auto_approve_gate(),
+                ):
+                    mod.execute_phase3_alignment_impl(agents, "neutral", de, sm, ctx=_make_ctx(heal=True))
 
         assert sm.state.get("hierarchy_fixed") is not None
 
@@ -538,9 +559,13 @@ class TestPhaseMatrix:
             },
         ):
             with patch("agentic_core.L0_routing.scripts.execute_ssot.REPO_ROOT", MagicMock()):
-                mod.execute_phase3_alignment_impl(
-                    agents_with_healer, "neutral", de, sm, ctx=_make_ctx(heal=heal)
-                )
+                with patch(
+                    "agentic_core.L5_safety.enforcement.hitl_gate.get_hitl_gate",
+                    return_value=_auto_approve_gate(),
+                ):
+                    mod.execute_phase3_alignment_impl(
+                        agents_with_healer, "neutral", de, sm, ctx=_make_ctx(heal=heal)
+                    )
 
         if expect_healer:
             healer_inst.heal_repository.assert_called()

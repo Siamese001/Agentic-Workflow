@@ -13,8 +13,6 @@ import json
 from dataclasses import dataclass, field
 from typing import Any
 
-from agentic_core.L5_safety.types.hardening_errors import ExecutionTraceIntegrityError
-
 
 def _compute_replay_key(trace_id: str, plan_hash: str, transcript_hash: str) -> str:
     raw = (trace_id + plan_hash + transcript_hash).encode("ascii", errors="replace")

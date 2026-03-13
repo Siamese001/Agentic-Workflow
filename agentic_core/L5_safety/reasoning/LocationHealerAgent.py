@@ -63,6 +63,9 @@ def _get_write_gateway():
     return write_gateway
 
 
+_wg = _get_write_gateway()
+
+
 def _get_location_healing_strategy():
     from agentic_core.L3_orchestration.reasoning.UnifiedAgent import LocationHealingStrategy
 
@@ -150,7 +153,8 @@ class LocationHealerAgent(SovereignBaseAgent):
         self._autonomous_mode = False
 
         # [PHASE 3] Initialize unified location healing strategy
-        self._unified_strategy: LocationHealingStrategy | None = LocationHealingStrategy(
+        _LocationHealingStrategy = _get_location_healing_strategy()
+        self._unified_strategy = _LocationHealingStrategy(
             {
                 "project_root": str(self.project_root),
                 "backup_enabled": True,

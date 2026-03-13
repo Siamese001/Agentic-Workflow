@@ -241,7 +241,11 @@ def _record_healing_action(
 
     Appends to state_mgr.state["healing_actions"] so Phase 5 can filter by territory
     and emit a healing_log in the detailed_cert JSON.
+
+    Also persists the outcome to the system learning memory bridge (fire-and-forget,
+    never raises) so healing patterns accumulate cross-session — same wiring as apps_*.
     """
+    ts = datetime.now().isoformat()
     action = {
         "agent": agent,
         "territory": territory,
@@ -252,10 +256,43 @@ def _record_healing_action(
         "confidence": round(confidence, 4),
         "fix_summary": fix_summary,
         "outcome": outcome,
-        "timestamp": datetime.now().isoformat(),
+        "timestamp": ts,
         "routing_digest": routing_digest,
         "check_id": check_id,
     }
     if "healing_actions" not in state_mgr.state:
         state_mgr.state["healing_actions"] = []
     state_mgr.state["healing_actions"].append(action)
+
+    # ------------------------------------------------------------------
+    # System learning persistence — fire-and-forget, never raises
+    # ------------------------------------------------------------------
+    try:
+        from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
+
+        _bridge = get_sl_memory_bridge()
+        # Build a compact error signature from agent + territory + outcome
+        error_sig = f"{agent}::{territory}::{outcome}"
+        # Healing success rate: 1.0 = healed, 0.0 = failure/skipped
+        _rate = 1.0 if outcome == "SUCCESS" else 0.0
+        _bridge.persist_healing_success_rate(error_sig, rate=_rate, count=1, ts=ts)
+
+        # Persist failure pattern for non-success outcomes so RCA can cluster them
+        if outcome not in ("SUCCESS",):
+            import hashlib as _hl
+
+            _pattern_id = _hl.sha256(f"{error_sig}:{fix_summary[:80]}".encode()).hexdigest()[:16]
+            _label = f"{agent} {outcome} in {territory}: {fix_summary[:80]}"
+            _centroid = _hl.sha256(f"{agent}:{territory}".encode()).hexdigest()[:16]
+            _bridge.persist_failure_pattern(
+                pattern_id=_pattern_id,
+                pattern_label=_label,
+                centroid_hash=_centroid,
+                member_count=1,
+                ts=ts,
+            )
+    except ImportError as _sl_err:
+        logger.debug("[SL] system_learning persist skipped (not available): %s", _sl_err)
+    except Exception as _sl_err:
+        logger.warning("[SL] system_learning persist failed: %s", _sl_err)
+        raise

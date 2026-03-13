@@ -15,6 +15,8 @@ import re
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, OPS_SCRIPTS_DIR
+
 CHECK_ID = "gravity_violations"
 _LAYER_DIR_PATTERN = re.compile("^L[0-6]_")
 

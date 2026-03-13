@@ -14,8 +14,6 @@ import json
 import logging
 from typing import Any
 
-from agentic_core.L5_safety.types.hardening_errors import MutationReplayIntegrityViolation
-
 logger = logging.getLogger(__name__)
 
 

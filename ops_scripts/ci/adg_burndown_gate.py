@@ -51,10 +51,6 @@ _REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
-if sys.platform == "win32":
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
-    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
-
 from agentic_core.L0_routing.config.path_constants import (
     OPS_SCRIPTS_DIR,
     get_validated_project_root,
@@ -80,8 +76,19 @@ BUDGET_FILE = RATCHET_FILE
 _EXCLUDE_DIRS = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES | {".nox"}
 _EXCLUDE_FILE_PATTERNS = ["__dbg_*.py", "**/activate_this.py"]
 
-# ADG artifact — graceful degradation when absent
-_ADG_FILE_GRAPH = PROJECT_ROOT / "artifacts" / "adg" / "adg_file_graph_03122026.json"
+
+# ADG artifact — graceful degradation when absent.
+# Resolved dynamically to the latest available adg_file_graph_*.json so this
+# never falls stale after a re-generation run.
+def _resolve_adg_file_graph(root: Path) -> Path:
+    adg_dir = root / "artifacts" / "adg"
+    candidates = sorted(adg_dir.glob("adg_file_graph_*.json"), reverse=True)
+    if candidates:
+        return candidates[0]
+    return adg_dir / "adg_file_graph.json"
+
+
+_ADG_FILE_GRAPH = _resolve_adg_file_graph(PROJECT_ROOT)
 
 # ---------------------------------------------------------------------------
 # Type alias
@@ -416,4 +423,7 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    if sys.platform == "win32":
+        sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
+        sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
     sys.exit(main())
