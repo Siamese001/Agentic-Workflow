@@ -13,7 +13,7 @@ Gates
                                 (unless agent_executes_agent_delta > 0)
   M3 — Mutation Sovereignty  : writes_to_delta > 0  →  FAIL
                                 (unless writes_through_delta > 0)
-  M4 — Guardrail Coverage    : applies_guardrail / calls < 0.10  →  FAIL (enforce after W3)
+  M4 — Guardrail Coverage    : applies_guardrail / calls < GUARDRAIL_COVERAGE_THRESHOLD  →  FAIL (enforce after W3)
   M5 — Trace Coverage        : records_execution_trace / (calls + invokes_eval) < 0.05  →  FAIL (enforce after W5)
   M6 — Replay Key Gate       : emits_replay_key_delta == 0 for routing PRs  →  FAIL (enforce after W4)
 
@@ -28,12 +28,6 @@ Exit codes
 ----------
   0  — all enforced gates pass (warn-mode failures only log to stderr)
   1  — at least one enforce-mode gate failed
-  2  — baseline file missing or corrupt (hard fail — run --init to fix)
-
-Usage
------
-  python ops_scripts/ci/_adg_ci_gates.py               # check mode
-  python ops_scripts/ci/_adg_ci_gates.py --init        # write baseline from live Redis
   python ops_scripts/ci/_adg_ci_gates.py --set-enforce M1,M2,M3  # switch gates to enforce
   python ops_scripts/ci/_adg_ci_gates.py --set-warn M4,M5,M6     # switch gates back to warn
 
@@ -80,7 +74,7 @@ GATE_DEFS: dict[str, dict] = {
     },
     "M4": {
         "label": "Guardrail Coverage Gate",
-        "description": "applies_guardrail / calls must be >= 0.10",
+        "description": f"applies_guardrail / calls must be >= {GUARDRAIL_COVERAGE_THRESHOLD}",
     },
     "M5": {
         "label": "Trace Coverage Gate",
@@ -214,7 +208,7 @@ def _eval_m4(cur: dict, base: dict) -> tuple[bool, str]:
     ag = cur.get("applies_guardrail", 0)
     calls = cur.get("calls", 1)
     ratio = ag / calls if calls > 0 else 0.0
-    threshold = 0.10
+    threshold = GUARDRAIL_COVERAGE_THRESHOLD
     if ratio < threshold:
         return False, f"applies_guardrail/calls = {ag}/{calls} = {ratio:.4f} < {threshold} required"
     return True, f"OK: guardrail ratio = {ratio:.4f} ({ag}/{calls})"

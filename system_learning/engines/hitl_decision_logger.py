@@ -12,10 +12,14 @@ Design constraints:
 """
 from __future__ import annotations
 from agentic_core.L5_safety.enforcement.credential_guard import get_credential_guard as credential_guard
+import logging
 import os
 import threading
 from pathlib import Path
 from typing import Any
+
+logger = logging.getLogger(__name__)
+
 _lock = threading.Lock()
 _decision_counter: int = 0
 _DEFAULT_EVIDENCE_PATH = Path('docs/reports/evidence/wave6_evidence.md')
@@ -103,6 +107,6 @@ def log_routing_correction(user_input: str, wrong_target: str, correct_target: s
         snapshot_id = f'hitl_routing_{decision_n}'
         optimizer = DefaultRLHFOptimizer()
         optimizer.propose_from_dpo(dpo_batch_bytes=dpo_batch.encode('utf-8'), snapshot_id=snapshot_id)
-    except Exception:
-        pass
+    except Exception as exc:
+        logger.warning(f"Failed to emit DPO pair for routing correction: {exc}")
     return decision_n
