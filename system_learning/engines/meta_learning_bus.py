@@ -37,6 +37,9 @@ Design invariants
 
 from __future__ import annotations
 
+# Configuration constants
+DEFAULT_COMMIT_REWARD_THRESHOLD = 0.60
+
 import hashlib
 import logging
 from dataclasses import dataclass
@@ -93,7 +96,7 @@ class MetaLearningBusConfig:
     reward_threshold: float = 0.50
 
     # Minimum reward score for a proposal to proceed to commit
-    commit_reward_threshold: float = 0.60
+    commit_reward_threshold: float = DEFAULT_COMMIT_REWARD_THRESHOLD
 
     # Whether to emit ADG relations (requires bridge availability)
     emit_adg_relations: bool = True
