@@ -1,144 +1,83 @@
-====================================================================================================================================================================================================================
-                                                              PROMPT LIFECYCLE & TAXONOMY — AUTHORITY GRADIENT & FLOW DEPENDENCIES (ADG-ENHANCED)
-====================================================================================================================================================================================================================
-  AUTHORITY GRADIENT: ZERO (Unprivileged) ──────> INFORMATIONAL (Data) ──────> GOVERNED (Capabilities) ──────> BINDING (Constraints) ──────> ABSOLUTE (Invariants)
-====================================================================================================================================================================================================================
-  [ STAGE 1: INGESTION & INTENT FORMATION ]        [ STAGE 2: ROUTING & SLOT ASSEMBLY ]                                                [ STAGE 3: VALIDATION & EXECUTION ]
-+-------------------------------+         +-------------------------------------------------------------------------+         +-------------------------------+         +-------------------------------+
-| L1: COGNITIVE STUDIO          |         | L0: ROUTING (PROMPT TRAFFIC CONTROL)                                    |         | L5: SAFETY GUARDIAN           |         | L2: EXECUTION SANDBOX         |
-|-------------------------------|         |-------------------------------------------------------------------------|         |-------------------------------|         |-------------------------------|
-| INGESTION:                    |         | CLASSIFICATION:                                                         |         | PRE-FLIGHT VALIDATION:        |         | EXECUTION:                    |
-| - Raw NL / UI inputs          |-------->| - Receives [U0] + [C0] from L1                                          |-------->| - Evaluates assembled prompt  |-------->| - Applies approved change set |
-| - Creates [U0] Intent (ZERO)  |         | - Classifies vs. L4 routing state                                       |         | - Checks vs. L4 policy        |         | - AST surgery / FS mutation   |
-| - Pulls [C0] RAG Context      |         | - Selects path (A/B/C/D)                                                |         | - Budget enforcement          |         | - SOLE durable write authority|
-|                               |         | - Triggers Elevator Shaft (L0<->L5)                                     |         | - BLOCKS or ALLOWS            |         |                               |
-| ADG: generates_prompt (215)   |         |                                                                         |         | ADG: applies_guardrail (68)   |         | SUCCESS → L4 versioning       |
-+-------------------------------+         | ASSEMBLY ORDER (Hierarchy of Authority):                                |         +-------------------------------+         | FAILURE → Healer Loop         |
-                                          | 1. [S0: SYSTEM] - Constitutions (ABSOLUTE)                              |                                                 +-------------------------------+
-                                          | 2. [I0: INSTRUCTIONAL] - Mixins (GOVERNED)                              |
-                                          | 3. [D0: INJECTIONS] - Fences (BINDING)                                  |
-                                          | 4. [C0: DEPENDENCY] - RAG/Context (INFORMATIONAL)                       |
-                                          | 5. [U0: USER PROMPT] - Raw intent (ZERO)                                |
-                                          |                                                                         |
-                                          | SAFETY CHECKS:                                                          |
-                                          | - Prompt injection scan (U0 for S0/I0 override attempts)               |
-                                          | - Token budget calculation (Truncates C0/U0 if S0+I0 maxed)            |
-                                          |                                                                         |
-                                          | OUTPUT: CompiledPromptArtifact (HMAC-SHA256 signed)                    |
-                                          | ADG: consumes_prompt (11), prompt_template_used_by (45)                |
-                                          +-------------------------------------------------------------------------+
-====================================================================================================================================================================================================================
-  [ SLOT TAXONOMY — AUTHORITY GRADIENT DETAIL ]
-====================================================================================================================================================================================================================
-+-------------------------------------------------------------------------------------------------------------------------------------------------+
-| SLOT S0: SYSTEM / STATE (ABSOLUTE AUTHORITY)                                                                                                    |
-+-------------------------------------------------------------------------------------------------------------------------------------------------+
-| PURPOSE: Hard-coded constitutions + invariants (Determinism, Safety, No Upward Imports)                                                        |
-| SOURCE: L4 Master State / L5 Policy Blueprints                                                                                                 |
-| AUTHORITY: ABSOLUTE — Immutable anchor for all reasoning                                                                                       |
-| EXAMPLES: "Never mutate routing decisions", "Layer gravity must be preserved", "All writes via UWG"                                            |
-| ADG: reads_policy_state (1,317 edges) — L0/L1/L2 read S0 policy state                                                                          |
-+-------------------------------------------------------------------------------------------------------------------------------------------------+
-                                                                           |
-                                                                           V (Foundational directive)
-+-------------------------------------------------------------------------------------------------------------------------------------------------+
-| SLOT I0: INSTRUCTIONAL (GOVERNED AUTHORITY)                                                                                                     |
-+-------------------------------------------------------------------------------------------------------------------------------------------------+
-| PURPOSE: Identity and "Mixin" behaviors (HealMixin, ValidateMixin, MCPHardenedMixin)                                                           |
-| SOURCE: L4 State (Mixins) / Step 1 Capability Definitions                                                                                      |
-| AUTHORITY: GOVERNED — Defines "How" an agent operates                                                                                          |
-| EXAMPLES: "When healing, analyze blast radius first", "Validate all imports via ADG", "Emit determinism digest"                                |
-| INHERITANCE: Inherited from [[SovereignBaseAgent]] root SSOT                                                                                   |
-| ADG: prompt_template_used_by (45 edges) — Templates instantiated by agents                                                                     |
-+-------------------------------------------------------------------------------------------------------------------------------------------------+
-                                                                           |
-                                                                           V (Capability boundaries)
-+-------------------------------------------------------------------------------------------------------------------------------------------------+
-| SLOT D0: INJECTIONS (BINDING AUTHORITY)                                                                                                        |
-+-------------------------------------------------------------------------------------------------------------------------------------------------+
-| PURPOSE: Semantic fences, tool constraints, scope boundaries                                                                                   |
-| SOURCE: L5 Safety (Active Guardian) policy evaluators                                                                                          |
-| AUTHORITY: BINDING — Constraints applied before commit                                                                                         |
-| EXAMPLES: "Max file size: 10KB", "Allowed tools: [read, write, analyze]", "Forbidden imports: [os.system, eval]"                               |
-| ENFORCEMENT: Post-retrieval redaction, context budget enforcement, stop-sequence injection                                                     |
-| ADG: applies_guardrail (68 edges) — Guardrails applied at assembly time                                                                        |
-+-------------------------------------------------------------------------------------------------------------------------------------------------+
-                                                                           |
-                                                                           V (Enforced constraints)
-+-------------------------------------------------------------------------------------------------------------------------------------------------+
-| SLOT C0: DEPENDENCY (INFORMATIONAL AUTHORITY)                                                                                                  |
-+-------------------------------------------------------------------------------------------------------------------------------------------------+
-| PURPOSE: RAG / Elevator Shaft injected knowledge and citations                                                                                 |
-| SOURCE: L4 Knowledge Index / L2.1 boundary_snapshot.json                                                                                       |
-| AUTHORITY: INFORMATIONAL — Grounding data, no execution authority                                                                              |
-| EXAMPLES: "Previous healing: ImportError resolved via dependency_repair", "ADG shows 52 retrieves_via edges", "Test coverage: 78%"             |
-| CONTENT: High-fidelity artifacts (JSON Manifests, AST Snapshots, RAG chunks)                                                                   |
-| SOVEREIGNTY: Cannot mutate routing, cannot escalate tiers, cannot alter thresholds                                                             |
-+-------------------------------------------------------------------------------------------------------------------------------------------------+
-                                                                           |
-                                                                           V (Grounding data)
-+-------------------------------------------------------------------------------------------------------------------------------------------------+
-| SLOT U0: USER PROMPT (ZERO AUTHORITY)                                                                                                          |
-+-------------------------------------------------------------------------------------------------------------------------------------------------+
-| PURPOSE: Raw "What" — User intent without authority                                                                                            |
-| SOURCE: L1 Thinking / Natural language input                                                                                                   |
-| AUTHORITY: ZERO — Non-mutant proposal, wrapped in delimiters                                                                                   |
-| EXAMPLES: "Fix the ImportError in module X", "Analyze test coverage gaps", "Refactor layer violations"                                         |
-| AIRLOCK: Cannot pass L1→L0 without wrapping in authority hierarchy                                                                             |
-| INJECTION PROTECTION: Scanned for S0/I0 override attempts before assembly                                                                      |
-+-------------------------------------------------------------------------------------------------------------------------------------------------+
-====================================================================================================================================================================================================================
-  [ DEPENDENCY FLOW PATTERNS ]
-====================================================================================================================================================================================================================
-+------------------------------------------+  +------------------------------------------+  +------------------------------------------+  +------------------------------------------+
-| PARALLEL DEPENDENCIES                    |  | SEQUENTIAL DEPENDENCIES                  |  | FEEDBACK DEPENDENCIES                    |  | CROSS-LAYER DEPENDENCIES                 |
-|------------------------------------------|  |------------------------------------------|  |------------------------------------------|  |------------------------------------------|
-| L1 Intent + L1 RAG Context:              |  | INGESTION → ROUTING → ASSEMBLY:          |  | EXECUTION OUTCOME → L4 STATE:            |  | L1 → L0 (Intent):                        |
-| - Intent formation independent           |  | 1. L1: Ingest raw input                  |  | - Success → Version in L4                |  | - generates_prompt (215 edges)           |
-| - RAG retrieval concurrent               |  | 2. L1: Create U0 + pull C0               |  | - Failure → Healer loop                  |  |                                          |
-| - Both feed into L0 routing              |  | 3. L0: Classify + route                  |  | - Healer → Re-enter assembly gate        |  | L0 → L4 (State Read):                    |
-|                                          |  | 4. L0: Assemble S0+I0+D0+C0+U0           |  |                                          |  | - reads_policy_state (1,317 edges)       |
-| L0 Assembly + L5 Validation:             |  | 5. L5: Validate assembled prompt         |  | META-LEARNING → ROUTING CONFIG:          |  |                                          |
-| - Assembly prepares artifact             |  | 6. L2: Execute if allowed                |  | - Analyzes prompt outcomes               |  | L5 → L0 (Guardrails):                    |
-| - L5 validates in parallel               |  | 7. L4: Version or trigger heal           |  | - Proposes S0/I0/D0 adjustments          |  | - applies_guardrail (68 edges)           |
-| - Join at execution gate                 |  |                                          |  | - Applies to future prompts              |  |                                          |
-|                                          |  | CRITICAL: Each step depends on previous  |  |                                          |  | L0 → L2 (Execution):                     |
-| L4 Template + L0 Compilation:            |  | - Cannot skip steps                      |  | TEMPLATE EVOLUTION:                      |  | - consumes_prompt (11 edges)             |
-| - Templates stored in L4                 |  | - Cannot reorder authority hierarchy     |  | - L4 templates updated based on success  |  |                                          |
-| - L0 compiles on-demand                  |  | - S0 always first, U0 always last        |  | - prompt_template_used_by tracks usage   |  | L4 → L0 (Templates):                     |
-| - Memoization for repeated prompts       |  |                                          |  | - High-success templates promoted        |  | - prompt_template_used_by (45 edges)     |
-+------------------------------------------+  +------------------------------------------+  +------------------------------------------+  +------------------------------------------+
-====================================================================================================================================================================================================================
-  [ SOVEREIGN LLM GATEWAY — THE ONLY OUTBOUND PROMPT SEAM ]
-====================================================================================================================================================================================================================
-+-------------------------------------------------------------------------------------------------------------------------------------------------+
-| GATEWAY RESPONSIBILITIES:                                                                                                                       |
-| 1. Consumes CompiledPromptArtifact (HMAC-SHA256 signed)                                                                                        |
-| 2. Translates S0/I0/U0 stack into provider-specific API formats (OpenAI/Gemini/Anthropic)                                                      |
-| 3. Maps tool schemas to provider native tool-calling formats                                                                                   |
-| 4. Injects mandatory stop-sequences from D0                                                                                                    |
-| 5. Logs EXACT final payload to Telemetry Ledger for determinism/replay validation                                                              |
-|                                                                                                                                                 |
-| SOVEREIGNTY ENFORCEMENT:                                                                                                                        |
-| - Single outbound seam prevents prompt leakage                                                                                                 |
-| - Signature verification prevents tampering between Assembly and Gateway                                                                       |
-| - Telemetry logging enables deterministic replay                                                                                               |
-| - Provider abstraction maintains portability                                                                                                   |
-+-------------------------------------------------------------------------------------------------------------------------------------------------+
-====================================================================================================================================================================================================================
-  CORE PROMPT DATA CONTRACTS
-====================================================================================================================================================================================================================
-| [1] PromptBOM (L0 → Assembly)        : [trace_id, system_version_hash, mixins_required[], raw_u0, raw_c0, template_args]                                                                                     |
-| [2] CompiledPromptArtifact (Assembly): [final_system_string, final_user_string, allowed_tools_schema[], token_estimate, signature(HMAC-SHA256)]                                                               |
-|                                        → Signature prevents tampering between Assembly and LLM Gateway                                                                                                         |
-| [3] TemplateManifest (L4 Registry)   : [template_id, version, git_commit_hash, required_variables[], schema_version]                                                                                          |
-| [4] AuthoritySlot                    : [slot_type: S0|I0|D0|C0|U0, content: str, authority_level: int, source_layer: str]                                                                                     |
-| [5] PromptInjectionScanResult        : [detected: bool, override_attempts: list[str], risk_score: float, blocked: bool]                                                                                       |
-|                                                                                                                                                                                                                |
-| SOVEREIGNTY INVARIANT: C0 and U0 slots carry NO route_mode, safety_threshold, execution_tier, or auth_token fields                                                                                            |
-====================================================================================================================================================================================================================
+========================================================================================================================
+PROMPT LIFECYCLE & TAXONOMY (ADG-ENHANCED) — NON-LINEAR FLOW & FEEDBACK
+========================================================================================================================
+AUTHORITY: [ZERO] Unprivileged -> [INFORMATIONAL] Data -> [GOVERNED] Caps -> [BINDING] Rules -> [ABSOLUTE] Invariants
+------------------------------------------------------------------------------------------------------------------------
+1. PARALLEL INGESTION & CONTEXT LOADING (L1)
+------------------------------------------------------------------------------------------------------------------------
+• L1 INTENT: Raw NL/UI inputs -> [U0] Intent (ZERO) | ADG: generates_prompt (215)
+• L1 RAG: Vector search (K=20), completeness scoring -> [C0] Context | ADG: retrieves_via (52)
 
-ADG CACHE INTEGRATION: Enhanced Redis MCP client enables full prompt lifecycle dependency analysis
-TIMESTAMP: 03132026_1424 | ADG NODES: 8,234 | ADG EDGES: 224,969 | L0: 372 modules | L1: 106 modules | L4: 154 modules | L5: 627 modules
-PROMPT EDGE TOPOLOGY: generates_prompt(215), consumes_prompt(11), prompt_template_used_by(45), reads_policy_state(1,317), applies_guardrail(68)
-LAST UPDATED: 2026-03-14 08:38 UTC — Merged Lifecycle + Taxonomy with flow dependencies and authority gradient
+------------------------------------------------------------------------------------------------------------------------
+2. ROUTING & ASSEMBLY (L0)
+------------------------------------------------------------------------------------------------------------------------
+• CLASSIFY: Evaluates [U0]+[C0] vs L4 routing state.
+• BRANCHING: Path A (High/Strict), Path B (Med/Std), Path C (Low/Fast), Path D (Novel/Learning).
+• SLOT ASSEMBLY (Order): 1. S0 (Absolute) | 2. I0 (Governed) | 3. D0 (Binding) | 4. C0 (Info) | 5. U0 (Zero).
+• SAFETY/CHECKS: Concurrent Injection Scan (U0 vs S0/I0), Token Budget, Authority Hierarchy Validation.
+• OUTPUT: CompiledPromptArtifact (HMAC-SHA256) | ADG: consumes_prompt (11), prompt_template_used_by (45).
+
+------------------------------------------------------------------------------------------------------------------------
+3. VALIDATION & EXECUTION (L5 / L2)
+------------------------------------------------------------------------------------------------------------------------
+• L5 SAFETY: Pre-flight budget, policy compliance, injection scan, budget enforcement | ADG: applies_guardrail (68).
+• L2 SANDBOX:
+  - IF ALLOW: AST surgery, FS mutation -> SUCCESS (L4 version).
+  - IF BLOCK: Log rejection, emit feedback to L4, NO mutation.
+  - IF FAILURE: Rollback to snapshot -> HEALER LOOP -> Re-enter assembly with modified proposal.
+
+------------------------------------------------------------------------------------------------------------------------
+4. SLOT TAXONOMY & AUTHORITY GRADIENT
+------------------------------------------------------------------------------------------------------------------------
+SLOT | AUTHORITY | PURPOSE (Source) & EXAMPLES                          | ADG / EDGE DATA             | FEEDBACK LOOP
+-----|-----------|------------------------------------------------------|-----------------------------|------------------
+S0   | ABSOLUTE  | Constitutions/Invariants (L4 State/L5 Policy).       | reads_policy_state (1,317)  | Meta-learn failure -> 
+     |           | e.g., "Layer gravity", "Writes via UWG".             | Anchor for all reasoning.   | Update S0 policy.
+-----|-----------|------------------------------------------------------|-----------------------------|------------------
+I0   | GOVERNED  | Identity/Mixins (L4 State/Cap Defs).                 | prompt_template_used_by (45)| Low success -> 
+     |           | e.g., HealMixin, ValidateMixin, MCPHardened.         | Defines "How" agent acts.   | Revise/AB test.
+-----|-----------|------------------------------------------------------|-----------------------------|------------------
+D0   | BINDING   | Semantic Fences (L5 Active Guardian).                | applies_guardrail (68)      | High rejection -> 
+     |           | e.g., "Max file: 10KB", "No os.system".              | Constraints before commit.  | Relax/Tune thresholds.
+-----|-----------|------------------------------------------------------|-----------------------------|------------------
+C0   | INFO      | Grounding/RAG (L4 Index/L2.1 Snapshot).              | retrieves_via (52)          | Low groundedness -> 
+     |           | e.g., "ImportError resolved", AST snapshots.         | Grounding; no execution auth| Tune RAG/reranking.
+-----|-----------|------------------------------------------------------|-----------------------------|------------------
+U0   | ZERO      | Raw Intent (L1 Thinking/NL Input).                   | generates_prompt (215)      | Injection detected -> 
+     |           | e.g., "Fix module X", "Analyze coverage".            | Scanned for S0/I0 overrides | Strengthen S0 rules.
+
+------------------------------------------------------------------------------------------------------------------------
+5. DEPENDENCY FLOW PATTERNS
+------------------------------------------------------------------------------------------------------------------------
+• PARALLEL: L1 Intent + L1 RAG concurrent; L0 Assembly + L5 Validation parallel; L4 slot loading.
+• CONDITIONAL: L0 routing branches (A/B/C/D); L5 outcomes (Allow/Block/Defer); L2 success/fail branches.
+• FEEDBACK: Success -> Reinforce I0; Fail -> Healer Loop; Rejection -> D0 tuning; Meta-Learning (N>=100).
+• CROSS-LAYER: L1->L0 (generates_prompt: 215); L0->L4 (reads_policy: 1,317); L5->L0 (applies_guardrail: 68).
+
+------------------------------------------------------------------------------------------------------------------------
+6. SOVEREIGN LLM GATEWAY (THE OUTBOUND SEAM)
+------------------------------------------------------------------------------------------------------------------------
+• RESPONSIBILITIES: Consume signed artifact, translate S0/I0/U0 to provider API (OpenAI/Gemini/Anthropic), 
+  map tool schemas, inject D0 stop-sequences, log final payload to Telemetry Ledger (determinism/replay).
+• ENFORCEMENT: Single seam (prevents leakage), Signature verification (no tampering), Provider abstraction.
+
+------------------------------------------------------------------------------------------------------------------------
+7. CORE DATA CONTRACTS
+------------------------------------------------------------------------------------------------------------------------
+[1] PromptBOM: [trace_id, system_version_hash, mixins_required[], raw_u0, raw_c0, template_args]
+[2] CompiledPromptArtifact: [final_system_string, final_user_string, allowed_tools_schema[], tokens, HMAC-SHA256]
+[3] TemplateManifest: [template_id, version, git_commit_hash, required_variables[], schema_version]
+[4] AuthoritySlot: [slot_type: S0|I0|D0|C0|U0, content, authority_level, source_layer]
+[5] InjectionScanResult: [detected: bool, override_attempts[], risk_score, blocked: bool]
+[6] RoutingDecision: [path: A|B|C|D, risk: H|M|L|N, rationale, confidence]
+INVARIANT: C0/U0 slots carry NO route_mode, safety_threshold, execution_tier, or auth_token fields.
+
+------------------------------------------------------------------------------------------------------------------------
+METADATA & TOPOLOGY (LATEST REDIS HOT CACHE)
+------------------------------------------------------------------------------------------------------------------------
+TIMESTAMP: 03132026_1424 | DIGEST: ab160598f0aeab8e | ADG NODES: 8,253 | ADG EDGES: 225,857
+LAYER DISTRIBUTION: L0: 372 | L1: 106 | L2: 326 | L4: 156 | L5: 627 | L6: 53
+PROMPT EDGES: generates_prompt(215), consumes_prompt(11), prompt_template_used_by(45), reads_policy_state(1,317), applies_guardrail(68), retrieves_via(52)
+CROSS-LAYER I/O: reads_from(66,985), writes_to(4,882)
+LAST UPDATED: 2026-03-14 08:46 UTC — Non-linear flow with parallel execution, conditional branching, and cross-prompt learning
+========================================================================================================================

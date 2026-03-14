@@ -51,4 +51,3 @@ ADG CACHE: Redis MCP Client | TIMESTAMP: 03132026_1424 | LAST UPDATED: 2026-03-1
 TOPOLOGY: Nodes: 8,234 | Edges: 224,969 | L1: 106 mod | L2: 316 mod | L4: 154 mod
 EDGES: reads_from(66,640), writes_to(4,875), retrieves_via(52), stores_embedding(14), digest(3)
 ====================================================================================================
-

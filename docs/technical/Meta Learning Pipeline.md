@@ -67,4 +67,3 @@
 | RCAReport            : [failure_category, root_cause, adg_blast_radius] -> Maps failures across layers via ADG edge correlation.                         |
 ====================================================================================================================================================================
 ENHANCED ACCESS: tools/adg/enhanced_redis_mcp_client.py (HASH/SET/LIST) | TIMESTAMP: 2026-03-14 07:56 UTC | STATUS: Deterministic Replay Enabled
-

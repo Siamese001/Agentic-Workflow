@@ -25,7 +25,7 @@ import redis
 # Config
 # ---------------------------------------------------------------------------
 ADG_DIR = r"c:\Git\Agentic-Workflow\artifacts\adg"
-SNAPSHOT_SUFFIX = "03132026_1424"
+SNAPSHOT_SUFFIX = "03142026_0834"
 # guardian: allow-path-string
 SQLITE_PATH = os.path.join(ADG_DIR, f"adg_indexed_{SNAPSHOT_SUFFIX}.sqlite")
 # guardian: allow-path-string
