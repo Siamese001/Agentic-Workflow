@@ -33,9 +33,11 @@ import redis
 
 logger = logging.getLogger(__name__)
 
-REDIS_HOST = "localhost"  # guardian: allow-magic_configuration
-REDIS_PORT = 6379  # guardian: allow-magic_configuration
-REDIS_DB = 0  # guardian: allow-magic_configuration
+REDIS_HOST = "localhost"
+REDIS_PORT = 6379
+REDIS_DB = 0
+GIT_DIFF_TIMEOUT_S = 30
+PYTEST_RUN_TIMEOUT_S = 300
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 
@@ -54,28 +56,25 @@ def _changed_prod_files(base_ref: str) -> list[str]:
     Uses git diff --name-only.
     """
     try:
-        # guardian: allow-magic-config
         result = subprocess.run(
             ["git", "diff", "--name-only", f"{base_ref}...HEAD"],
             capture_output=True,
             text=True,
             cwd=str(PROJECT_ROOT),
-            timeout=30,
+            timeout=GIT_DIFF_TIMEOUT_S,
         )
         if result.returncode != 0:
             # Fallback: staged files vs HEAD
-            # guardian: allow-magic-config
             result = subprocess.run(
                 ["git", "diff", "--name-only", "--cached"],
                 capture_output=True,
                 text=True,
                 cwd=str(PROJECT_ROOT),
-                timeout=30,
+                timeout=GIT_DIFF_TIMEOUT_S,
             )
         lines = result.stdout.strip().splitlines()
         return [ln for ln in lines if ln.endswith(".py") and not ln.startswith("tests/")]
-    # guardian: allow-silent-swallow
-    except Exception as exc:
+    except (subprocess.TimeoutExpired, OSError, FileNotFoundError) as exc:
         logger.error("[drift-ci] git diff failed: %s", exc)
         return []
 
@@ -100,8 +99,7 @@ def _resolve_test_paths_for_module(r: redis.Redis, prod_path: str) -> list[str]:
                 rp = tnode.get("resolved_path", "")
                 if rp and rp.startswith("tests/"):
                     test_paths.add(rp)
-    # guardian: allow-silent-swallow
-    except Exception as exc:
+    except redis.RedisError as exc:
         logger.warning("[drift-ci] covers lookup failed for %s: %s", prod_path, exc)
     return sorted(test_paths)
 
@@ -135,11 +133,11 @@ def _run_pytest(test_paths: list[str]) -> int:
                 "--no-header",
             ],
             cwd=str(PROJECT_ROOT),
-            timeout=300,
+            timeout=PYTEST_RUN_TIMEOUT_S,
         )
         return proc.returncode
     except subprocess.TimeoutExpired:
-        print("[drift-ci] ERROR: pytest timed out after 300s")
+        print(f"[drift-ci] ERROR: pytest timed out after {PYTEST_RUN_TIMEOUT_S}s")
         return 2
 
 
@@ -186,7 +184,7 @@ def run(base_ref: str = "origin/main", dry_run: bool = False) -> int:
     try:
         r = _connect()
         r.ping()
-    except Exception as exc:
+    except redis.RedisError as exc:
         print(f"[drift-ci] ERROR: cannot connect to Redis: {exc}")
         return 2
 

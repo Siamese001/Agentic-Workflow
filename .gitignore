@@ -148,6 +148,9 @@ artifacts/import_health/import_health_report.json
 # Runtime logs (any layer)
 **/logs/
 
+# Windsurf plans scratch scripts (temporary, auto-generated)
+.windsurf/plans/*.py
+
 # Windsurf evidence artifacts (temporary, auto-generated)
 artifacts/windsurf/*.txt
 artifacts/windsurf/*.out

@@ -37,14 +37,19 @@ import redis
 
 logger = logging.getLogger(__name__)
 
-REDIS_HOST = "localhost"  # guardian: allow-magic_configuration
-REDIS_PORT = 6379  # guardian: allow-magic_configuration
-REDIS_DB = 0  # guardian: allow-magic_configuration
+REDIS_HOST = "localhost"
+REDIS_PORT = 6379
+REDIS_DB = 0
 
-LIFECYCLE_TTL = 86400  # guardian: allow-magic_configuration — 24 h
-WORK_QUEUE_TTL = 3600  # guardian: allow-magic_configuration — 1 h
-DRIFT_THRESHOLD = 0.5  # guardian: allow-magic_configuration — composite score above this triggers healing
-WORK_BUDGET = 10  # guardian: allow-magic_configuration — max modules to heal per lifecycle run
+LIFECYCLE_TTL = 86400  # 24 h
+WORK_QUEUE_TTL = 3600  # 1 h
+DRIFT_THRESHOLD = 0.5  # composite score above this triggers healing
+WORK_BUDGET = 10  # max modules to heal per lifecycle run
+META_BUS_REWARD_THRESHOLD = 0.40
+META_BUS_COMMIT_THRESHOLD = 0.55
+PYTEST_COLLECT_TIMEOUT_S = 60
+PYTEST_RUN_TIMEOUT_S = 120
+RESCORE_TIMEOUT_S = 180
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 
@@ -188,10 +193,9 @@ def _run_meta_learning_bus(
         )
 
         bus = MetaLearningBus(
-            # guardian: allow-magic-config
             config=MetaLearningBusConfig(
-                reward_threshold=0.40,
-                commit_reward_threshold=0.55,
+                reward_threshold=META_BUS_REWARD_THRESHOLD,
+                commit_reward_threshold=META_BUS_COMMIT_THRESHOLD,
                 emit_adg_relations=True,
             )
         )
@@ -209,8 +213,7 @@ def _run_meta_learning_bus(
             len(result.rejected_proposal_ids),
         )
         return len(result.commits), affected
-    # guardian: allow-silent-swallow
-    except Exception as exc:
+    except (ImportError, AttributeError, RuntimeError) as exc:
         logger.warning("[lifecycle] MetaLearningBus unavailable: %s", exc)
         return 0, []
 
@@ -328,8 +331,7 @@ def _heal_orphan_test(path: str, dry_run: bool) -> HealResult:
         src.rename(dest)
         logger.info("[lifecycle] quarantined orphan: %s", path)
         return HealResult(item=item, status="fixed")
-    # guardian: allow-silent-swallow
-    except Exception as exc:
+    except OSError as exc:
         return HealResult(item=item, status="error", error=str(exc))
 
 
@@ -372,8 +374,7 @@ def _heal_uncovered_module(r: redis.Redis, path: str, dry_run: bool) -> tuple[He
                 if sym and not sym.startswith("_"):
                     symbols.append(sym)
         symbols = sorted(set(symbols))[:5]
-    # guardian: allow-silent-swallow
-    except Exception:
+    except redis.RedisError:
         pass
 
     # Generate minimal stub
@@ -415,8 +416,7 @@ def _heal_uncovered_module(r: redis.Redis, path: str, dry_run: bool) -> tuple[He
         stub_abs.write_text(stub_content, encoding="utf-8")
         logger.info("[lifecycle] generated stub: %s", stub_rel)
         return HealResult(item=item, status="fixed"), str(stub_rel)
-    # guardian: allow-silent-swallow
-    except Exception as exc:
+    except OSError as exc:
         return HealResult(item=item, status="error", error=str(exc)), None
 
 
@@ -455,8 +455,7 @@ def _resolve_test_paths(r: redis.Redis, prod_path: str) -> list[str]:
                 rp = tnode.get("resolved_path", "")
                 if rp and rp.startswith("tests/"):
                     test_paths.append(rp)
-    # guardian: allow-silent-swallow
-    except Exception as exc:
+    except redis.RedisError as exc:
         logger.warning("[lifecycle] covers lookup failed for %s: %s", prod_path, exc)
 
     return sorted(set(test_paths))
@@ -481,6 +480,26 @@ def _run_scoped_pytest(test_paths: list[str]) -> tuple[int, int, int]:
         return 0, 0, 0
 
     try:
+        proc = subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "pytest",
+                *abs_paths,
+                "--tb=no",
+                "-q",
+                "--no-header",
+                "--co",  # collect-only first for safety
+            ],
+            capture_output=True,
+            text=True,
+            cwd=str(PROJECT_ROOT),
+            timeout=PYTEST_COLLECT_TIMEOUT_S,
+        )
+        if proc.returncode != 0:
+            # collect failed — run anyway to get real failure count
+            pass
+
         run_proc = subprocess.run(
             [
                 sys.executable,
@@ -494,7 +513,7 @@ def _run_scoped_pytest(test_paths: list[str]) -> tuple[int, int, int]:
             capture_output=True,
             text=True,
             cwd=str(PROJECT_ROOT),
-            timeout=120,
+            timeout=PYTEST_RUN_TIMEOUT_S,
         )
         exit_code = run_proc.returncode
         stdout = run_proc.stdout
@@ -519,8 +538,7 @@ def _run_scoped_pytest(test_paths: list[str]) -> tuple[int, int, int]:
     except subprocess.TimeoutExpired:
         logger.warning("[lifecycle] pytest timed out for paths: %s", test_paths)
         return 2, 0, 0
-    # guardian: allow-silent-swallow
-    except Exception as exc:
+    except OSError as exc:
         logger.warning("[lifecycle] pytest error: %s", exc)
         return 2, 0, 0
 
@@ -558,10 +576,9 @@ def _run_outcome_trace(
             "retrieval_groundedness_score": passed / total,
         }
         bus = MetaLearningBus(
-            # guardian: allow-magic-config
             config=MetaLearningBusConfig(
-                reward_threshold=0.40,
-                commit_reward_threshold=0.55,
+                reward_threshold=META_BUS_REWARD_THRESHOLD,
+                commit_reward_threshold=META_BUS_COMMIT_THRESHOLD,
                 emit_adg_relations=True,
             )
         )
@@ -572,8 +589,7 @@ def _run_outcome_trace(
             pipeline_timestamp_utc=timestamp + 1,
         )
         logger.info("[lifecycle] outcome trace fed to MetaLearningBus")
-    # guardian: allow-silent-swallow
-    except Exception as exc:
+    except (ImportError, AttributeError, RuntimeError) as exc:
         logger.warning("[lifecycle] outcome trace failed: %s", exc)
 
 
@@ -587,13 +603,12 @@ def _rescore(dry_run: bool) -> float:
     if dry_run:
         return -1.0
     try:
-        # guardian: allow-magic-config
         proc = subprocess.run(
             [sys.executable, "-m", "tools.adg.drift_score"],
             capture_output=True,
             text=True,
             cwd=str(PROJECT_ROOT),
-            timeout=180,
+            timeout=RESCORE_TIMEOUT_S,
         )
         if proc.returncode != 0:
             logger.warning("[lifecycle] drift_score re-run failed: %s", proc.stderr[-500:])
@@ -602,8 +617,7 @@ def _rescore(dry_run: bool) -> float:
         r = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB, decode_responses=True)
         val = r.get("adg:drift:score")
         return float(val) if val else -1.0
-    # guardian: allow-silent-swallow
-    except Exception as exc:
+    except (subprocess.TimeoutExpired, OSError, redis.RedisError) as exc:
         logger.warning("[lifecycle] rescore failed: %s", exc)
         return -1.0
 
@@ -682,9 +696,7 @@ def run_lifecycle(dry_run: bool = False) -> LifecycleResult:
         LifecycleResult with all stage outcomes.
     """
     try:
-        r = redis.Redis(
-            host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB, decode_responses=True
-        )
+        r = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB, decode_responses=True)
         r.ping()
     except Exception as exc:
         raise RuntimeError(f"[lifecycle] cannot connect to Redis: {exc}") from exc

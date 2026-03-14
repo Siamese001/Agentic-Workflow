@@ -39,16 +39,12 @@ import redis
 
 logger = logging.getLogger(__name__)
 
-# guardian: allow-magic-config
 REDIS_HOST = "localhost"
-# guardian: allow-magic-config
 REDIS_PORT = 6379
-# guardian: allow-magic-config
 REDIS_DB = 0
-# guardian: allow-magic-config
 STALE_HOURS = 2.0
-# guardian: allow-magic-config
 EPSILON = 0.005  # allow tiny float noise before flagging regression
+RESCORE_TIMEOUT_S = 180
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 BASELINE_KEY = "adg:drift:baseline"
 
@@ -65,17 +61,15 @@ def _connect() -> redis.Redis:
 def _rescore() -> bool:
     """Re-run drift_score.py synchronously. Return True on success."""
     try:
-        # guardian: allow-magic-config
         result = subprocess.run(
             [sys.executable, "-m", "tools.adg.drift_score"],
             capture_output=True,
             text=True,
             cwd=str(PROJECT_ROOT),
-            timeout=180,
+            timeout=RESCORE_TIMEOUT_S,
         )
         return result.returncode == 0
-    # guardian: allow-silent-swallow
-    except Exception as exc:
+    except (subprocess.TimeoutExpired, OSError) as exc:
         logger.error("[drift-ratchet] rescore failed: %s", exc)
         return False
 
@@ -98,7 +92,7 @@ def _read_current(r: redis.Redis) -> tuple[float, list[str], list[dict], float] 
     for x in blast_raw:
         try:
             blast_top.append(json.loads(x))
-        except Exception:
+        except json.JSONDecodeError:
             pass
     return float(score_raw), list(uncovered), blast_top, ts
 
@@ -110,8 +104,7 @@ def _read_baseline(r: redis.Redis) -> dict | None:
         return None
     try:
         return json.loads(raw)
-    # guardian: allow-silent-swallow
-    except Exception:
+    except json.JSONDecodeError:
         return None
 
 
@@ -144,7 +137,7 @@ def check(promote: bool = False) -> int:
     try:
         r = _connect()
         r.ping()
-    except Exception as exc:
+    except redis.RedisError as exc:
         print(f"[drift-ratchet] ERROR: cannot connect to Redis: {exc}")
         return 2
 
