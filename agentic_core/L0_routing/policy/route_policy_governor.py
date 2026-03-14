@@ -24,7 +24,6 @@ from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import (
     RoutingArtifact,
     get_routing_gateway,
 )
-from agentic_core.runtime.execution_trace import get_active_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -71,6 +70,8 @@ class RoutePolicyGovernor:
         self._ledger: list[RoutingProposal] = []
 
     def _trace_id(self) -> str:
+        from agentic_core.runtime.execution_trace import get_active_execution_trace  # noqa: PLC0415
+
         active = get_active_execution_trace()
         return active.trace_id if active else "no-active-trace"
 

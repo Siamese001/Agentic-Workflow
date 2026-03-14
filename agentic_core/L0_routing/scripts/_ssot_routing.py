@@ -13,11 +13,19 @@ import time
 from typing import Any
 
 from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, DEFAULT_TIMEOUT
-from agentic_core.L2_execution.healers.healing_tier_config import (
+from agentic_core.L0_routing.config.ssot_tier_constants import (
     HEALING_CONFIDENCE_X as _CONF_X,
+)
+from agentic_core.L0_routing.config.ssot_tier_constants import (
     HEALING_CONFIDENCE_Y as _CONF_Y,
+)
+from agentic_core.L0_routing.config.ssot_tier_constants import (
     QWEN_14B_MODEL_ID as _QWEN_14B_MODEL_ID,
+)
+from agentic_core.L0_routing.config.ssot_tier_constants import (
     SSOT_SCORE_THRESHOLD_DET as _SCORE_DET,
+)
+from agentic_core.L0_routing.config.ssot_tier_constants import (
     SSOT_SCORE_THRESHOLD_QWEN as _SCORE_QWEN,
 )
 from agentic_core.L0_routing.scripts._ssot_types import (
@@ -92,11 +100,19 @@ def compute_routing_decision(inputs: RoutingInputs) -> RoutingDecision:
             return _decide(RoutingTier.FAIL_CLOSED, "THRESHOLD_HIGH_FAIL_CLOSED", S)
     _qwen_disallowed_type = inputs.failure_type in _QWEN_DISALLOWED
     _qwen_blocked = _qwen_disallowed_type or inputs.provider_prohibited_qwen
-    if tier == RoutingTier.QWEN and S in range(_SCORE_DET + 1, _SCORE_DET + 3) and (L == 0) and (not _qwen_blocked):
+    if (
+        tier == RoutingTier.QWEN
+        and S in range(_SCORE_DET + 1, _SCORE_DET + 3)
+        and (L == 0)
+        and (not _qwen_blocked)
+    ):
         tier = RoutingTier.DETERMINISTIC
         gate = f"{gate}.L_TIEBREAK_DOWN"
     elif (
-        tier == RoutingTier.DETERMINISTIC and S in range(_SCORE_DET - 1, _SCORE_DET + 1) and (L == 3) and (not _qwen_disallowed_type)
+        tier == RoutingTier.DETERMINISTIC
+        and S in range(_SCORE_DET - 1, _SCORE_DET + 1)
+        and (L == 3)
+        and (not _qwen_disallowed_type)
     ):
         tier = RoutingTier.QWEN
         gate = f"{gate}.L_TIEBREAK_UP"

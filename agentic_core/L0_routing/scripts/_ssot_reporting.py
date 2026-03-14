@@ -10,8 +10,10 @@ from collections import Counter
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
-from agentic_core.L2_execution.healers.healing_tier_config import (
+from agentic_core.L0_routing.config.ssot_tier_constants import (
     HEALING_CONFIDENCE_X as _CONF_X,
+)
+from agentic_core.L0_routing.config.ssot_tier_constants import (
     HEALING_CONFIDENCE_Y as _CONF_Y,
 )
 
@@ -491,7 +493,9 @@ def _write_mandatory_json_output(state_mgr: Any, decision_engine: Any) -> None:
                 "avg": round(sum(conf_vals) / len(conf_vals), 4) if conf_vals else None,
                 "max": round(max(conf_vals), 4) if conf_vals else None,
                 f"band_local_gte{int(_CONF_X * 100):03d}": sum(1 for c in conf_vals if c >= _CONF_X),
-                f"band_qwen_{int(_CONF_Y * 100):03d}_{int(_CONF_X * 100) - 1:03d}": sum(1 for c in conf_vals if _CONF_Y <= c < _CONF_X),
+                f"band_qwen_{int(_CONF_Y * 100):03d}_{int(_CONF_X * 100) - 1:03d}": sum(
+                    1 for c in conf_vals if _CONF_Y <= c < _CONF_X
+                ),
                 f"band_gemini_lt{int(_CONF_Y * 100):03d}": sum(1 for c in conf_vals if c < _CONF_Y),
             },
             "tier_routing": dict(tier_counts),

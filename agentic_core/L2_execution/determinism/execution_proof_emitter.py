@@ -19,12 +19,10 @@ import hashlib
 import logging
 import time
 from dataclasses import dataclass
-from typing import Callable
+from typing import TYPE_CHECKING, Callable
 
-from agentic_core.runtime.execution_trace import (
-    ExecutionTrace,
-    get_active_execution_trace,
-)
+if TYPE_CHECKING:
+    from agentic_core.runtime.execution_trace import ExecutionTrace
 
 logger = logging.getLogger(__name__)
 
@@ -87,6 +85,8 @@ class ExecutionProofEmitter:
         self._ledger: list[ExecutionProof] = []
 
     def _trace_id(self) -> str:
+        from agentic_core.runtime.execution_trace import get_active_execution_trace  # noqa: PLC0415
+
         active: ExecutionTrace | None = get_active_execution_trace()
         return active.trace_id if active else "no-active-trace"
 

@@ -21,7 +21,6 @@ from agentic_core.L0_routing.types.routing_artifact_types import (
     RoutePath,
     RoutingRationale,
 )
-from agentic_core.runtime.execution_trace import get_active_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -101,6 +100,8 @@ class DeterministicRoutingGateway:
         Returns a :class:`RoutingArtifact` that must be forwarded with the
         request so downstream layers can verify routing provenance.
         """
+        from agentic_core.runtime.execution_trace import get_active_execution_trace  # noqa: PLC0415
+
         active = get_active_execution_trace()
         trace_id = active.trace_id if active else "no-active-trace"
         ts = time.monotonic()
