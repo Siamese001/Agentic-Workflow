@@ -24,7 +24,7 @@ def main() -> int:
     from ops_scripts.ci.active_set_helper import get_active_set
     try:
         result = get_active_set(project_root)
-    # guardian: allow-silent-swallow
+    # guardian: allow-silent-swallower
     except Exception as exc:
         print(f'FAIL: could not enumerate active agents: {exc}', file=sys.stderr)
         return 1

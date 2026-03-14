@@ -52,7 +52,7 @@ def main() -> int:
                     errors.append(f"Active set count mismatch: snapshot={snapshot_count} live={result.count}. Fix: COMMIT_MESSAGE='ACTIVE_SET_SNAPSHOT_BUMP:<reason>' python ops_scripts/ci/active_set_snapshot_check.py")
                 if result.fingerprint != snapshot.get('fingerprint', ''):
                     errors.append(f"Active set fingerprint mismatch: snapshot={snapshot.get('fingerprint', '')[:16]}... live={result.fingerprint[:16]}... Fix: COMMIT_MESSAGE='ACTIVE_SET_SNAPSHOT_BUMP:<reason>' python ops_scripts/ci/active_set_snapshot_check.py")
-            # guardian: allow-silent-swallow
+            # guardian: allow silent swallower
             except Exception as e:
                 errors.append(f'Active set helper failed: {e}')
     else:

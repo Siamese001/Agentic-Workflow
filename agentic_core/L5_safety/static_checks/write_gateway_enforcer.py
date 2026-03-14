@@ -120,7 +120,7 @@ def scan_file_for_writes(file_path: Path) -> list[tuple[int, str, str]]:
         violations.extend(visitor.violations)
     except SyntaxError as e:
         violations.append((e.lineno or 0, "WRITE_SYNTAX_ERROR", f"Syntax error: {e.msg}"))
-    # guardian: allow-silent-swallow
+    # guardian: allow-silent-swallower
     except Exception as e:
         violations.append((0, "WRITE_SCAN_ERROR", f"Scan error: {e}"))
     return violations

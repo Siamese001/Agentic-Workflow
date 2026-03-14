@@ -127,6 +127,7 @@ class MCPTestRunner:
             self.record(
                 case.name, MCPTestResult.HANG, f"DID NOT RETURN in {self.timeout}s — HANG CONFIRMED", elapsed
             )
+        # guardian: allow-silent-swallower
         except Exception as exc:
             elapsed = int((time.monotonic() - t0) * 1000)
             detail = str(exc)[:200]

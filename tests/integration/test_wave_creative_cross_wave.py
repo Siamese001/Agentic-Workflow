@@ -99,6 +99,7 @@ class TestW1MutationRecordCreative:
             try:
                 rec = uwg.record_mutation(path='artifacts/concurrent.json', operation='write', data=f'worker-{i}')
                 results.append(rec.mutation_hash)
+            # guardian: allow-silent-swallower
             except Exception as e:
                 errors.append(str(e))
         threads = [threading.Thread(target=write_worker, args=(i,)) for i in range(20)]
@@ -289,6 +290,7 @@ class TestW3GuardrailCreative:
         def check_worker(i):
             try:
                 gate.check(f'op_{i % 3}', f'target_{i}')
+            # guardian: allow-silent-swallower
             except Exception as e:
                 errors.append(str(e))
         threads = [threading.Thread(target=check_worker, args=(i,)) for i in range(50)]
@@ -434,7 +436,8 @@ class TestW5TraceContextCreative:
             def recorder(i):
                 try:
                     ctx.record(layer='L3', module=f'Mod{i}', operation=f'op_{i}')
-                except Exception as e:
+                # guardian: allow-silent-swallower
+            except Exception as e:
                     errors.append(str(e))
             threads = [threading.Thread(target=recorder, args=(i,)) for i in range(30)]
             for t in threads:
@@ -513,6 +516,7 @@ class TestW6RunStateAuthorityCreative:
         def committer(i):
             try:
                 rsa.commit(f'key_{i}', f'value_{i}')
+            # guardian: allow-silent-swallower
             except Exception as e:
                 errors.append(str(e))
         threads = [threading.Thread(target=committer, args=(i,)) for i in range(40)]

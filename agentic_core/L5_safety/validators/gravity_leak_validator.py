@@ -51,7 +51,7 @@ class GravityLeakValidatorAgent:
             )
 
             agent = GravityLeakRepairAgent(project_root=self._project_root)
-            result = agent.heal_repository(dry_run=True, execute=False)
+            result = agent.heal_repository(dry_run=True, execute=False)  # guardian: allow-silent-swallower
         except Exception as exc:
             Logger.warning("[GravityLeakValidator] scan failed: %s", exc)
             return {

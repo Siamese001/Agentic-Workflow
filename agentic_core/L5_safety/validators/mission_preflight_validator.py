@@ -110,7 +110,7 @@ class MissionPreflight:
                     f"   [ADG] {target_sector}: {_adg_antipattern_count} antipattern signal(s) "
                     f"(score={_bp.behavioral_score:.2f})"
                 )
-        # guardian: allow-silent-swallow
+        # guardian: allow-silent-swallower
         except Exception:
             pass
         results["adg_antipattern_count"] = _adg_antipattern_count

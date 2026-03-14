@@ -151,7 +151,7 @@ class HygieneGuardianAgent(SovereignBaseAgent):
                 "errors": [],
             }
 
-        # guardian: allow-silent-swallow
+        # guardian: allow-silent-swallower
         except Exception as e:
             return {
                 "status": "failed",

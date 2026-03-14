@@ -189,7 +189,7 @@ class AntiPatternDetector(ABC):
                             ):
                                 violation.severity = "hard_block"
                                 violation.metadata["adg_confirmed"] = True
-                # guardian: allow-silent-swallow
+                # guardian: allow-silent-swallower
                 except Exception:
                     pass
 

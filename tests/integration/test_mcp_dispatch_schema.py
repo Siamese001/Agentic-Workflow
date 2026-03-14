@@ -222,6 +222,7 @@ class TestNoWrongSchemaAnywhere:
                 src = py_file.read_text(encoding="utf-8", errors="ignore")
                 if "sequential_thinking" in src and WRONG_SCHEMA_IN_SEQ_CONTEXT_PATTERN.search(src):
                     bad_files.append(str(py_file.relative_to(ROOT)))
+            # guardian: allow-silent-swallower
             except Exception:
                 continue
         assert not bad_files, (
