@@ -7,7 +7,10 @@ All evaluation metrics must implement the EvaluationMetric protocol.
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from agentic_core.evaluation.metrics.classification import ConfusionMatrix
 
 
 class EvaluationMetric(ABC):
@@ -57,4 +60,22 @@ class GenerationMetric(EvaluationMetric):
     def compute(self, prediction: str, ground_truth: str, context: Any = None) -> float: ...
 
 
-__all__ = ["EvaluationMetric", "RetrievalMetric", "GenerationMetric"]
+class ClassificationMetric(EvaluationMetric):
+    """Base class for classification-oriented metrics.
+
+    prediction = list of predicted labels (str or int)
+    ground_truth = list of true labels (str or int)
+    context = unused (reserved for future use)
+
+    Subclasses must implement both compute() (returns scalar F1/precision/recall)
+    and confusion() (returns a ConfusionMatrix).
+    """
+
+    @abstractmethod
+    def compute(self, prediction: list, ground_truth: list, context: Any = None) -> float: ...
+
+    @abstractmethod
+    def confusion(self, prediction: list, ground_truth: list) -> ConfusionMatrix: ...
+
+
+__all__ = ["EvaluationMetric", "RetrievalMetric", "GenerationMetric", "ClassificationMetric"]

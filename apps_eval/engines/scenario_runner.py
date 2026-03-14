@@ -111,6 +111,42 @@ _SCENARIO_DEFINITIONS: dict[str, dict[str, Any]] = {
         "expected_outcome": ScenarioOutcome.PASS,
         "deterministic": True,
     },
+    "binary_precision_perfect": {
+        "description": "BinaryClassificationMetric: all predicted positives are true positives → precision=1.0",
+        "target_fn": "apps_eval.engines.scenario_runner._scenario_binary_precision_perfect",
+        "expected_outcome": ScenarioOutcome.PASS,
+        "deterministic": True,
+    },
+    "binary_recall_perfect": {
+        "description": "BinaryClassificationMetric: all true positives retrieved → recall=1.0",
+        "target_fn": "apps_eval.engines.scenario_runner._scenario_binary_recall_perfect",
+        "expected_outcome": ScenarioOutcome.PASS,
+        "deterministic": True,
+    },
+    "binary_f1_harmonic_mean": {
+        "description": "F1Score: harmonic mean invariant F1 = 2*P*R/(P+R) holds",
+        "target_fn": "apps_eval.engines.scenario_runner._scenario_binary_f1_harmonic_mean",
+        "expected_outcome": ScenarioOutcome.PASS,
+        "deterministic": True,
+    },
+    "multiclass_macro_f1": {
+        "description": "MultiClassF1Metric: macro average = unweighted mean of per-class F1",
+        "target_fn": "apps_eval.engines.scenario_runner._scenario_multiclass_macro_f1",
+        "expected_outcome": ScenarioOutcome.PASS,
+        "deterministic": True,
+    },
+    "multiclass_weighted_f1": {
+        "description": "MultiClassF1Metric: weighted average proportional to class support",
+        "target_fn": "apps_eval.engines.scenario_runner._scenario_multiclass_weighted_f1",
+        "expected_outcome": ScenarioOutcome.PASS,
+        "deterministic": True,
+    },
+    "confusion_matrix_invariants": {
+        "description": "ConfusionMatrix: TP+FP+TN+FN == total sample count invariant holds",
+        "target_fn": "apps_eval.engines.scenario_runner._scenario_confusion_matrix_invariants",
+        "expected_outcome": ScenarioOutcome.PASS,
+        "deterministic": True,
+    },
 }
 
 
@@ -360,6 +396,135 @@ def _scenario_tampered_signature() -> tuple[ScenarioOutcome, float, str]:
     )
 
 
+def _scenario_binary_precision_perfect() -> tuple[ScenarioOutcome, float, str]:
+    try:
+        from agentic_core.evaluation.metrics.classification import BinaryClassificationMetric
+
+        metric = BinaryClassificationMetric(positive_label=1, metric="precision")
+        preds = [1, 1, 1, 0, 0]
+        truth = [1, 1, 1, 1, 0]
+        score = metric.compute(preds, truth)
+        if abs(score - 1.0) < 1e-6:
+            return ScenarioOutcome.PASS, 1.0, f"precision={score:.6f} (expected 1.0)"
+        return ScenarioOutcome.FAIL, 0.0, f"precision={score:.6f} (expected 1.0)"
+    except ImportError as e:
+        return ScenarioOutcome.SKIP, _SKIP_SCORE, f"agentic_core.evaluation not available: {e}"
+    except _SCENARIO_EXCEPTIONS as exc:
+        return ScenarioOutcome.FAIL, 0.0, str(exc)
+
+
+def _scenario_binary_recall_perfect() -> tuple[ScenarioOutcome, float, str]:
+    try:
+        from agentic_core.evaluation.metrics.classification import BinaryClassificationMetric
+
+        metric = BinaryClassificationMetric(positive_label=1, metric="recall")
+        preds = [1, 1, 1, 1, 0]
+        truth = [1, 1, 1, 0, 0]
+        score = metric.compute(preds, truth)
+        if abs(score - 1.0) < 1e-6:
+            return ScenarioOutcome.PASS, 1.0, f"recall={score:.6f} (expected 1.0)"
+        return ScenarioOutcome.FAIL, 0.0, f"recall={score:.6f} (expected 1.0)"
+    except ImportError as e:
+        return ScenarioOutcome.SKIP, _SKIP_SCORE, f"agentic_core.evaluation not available: {e}"
+    except _SCENARIO_EXCEPTIONS as exc:
+        return ScenarioOutcome.FAIL, 0.0, str(exc)
+
+
+def _scenario_binary_f1_harmonic_mean() -> tuple[ScenarioOutcome, float, str]:
+    try:
+        from agentic_core.evaluation.metrics.classification import BinaryClassificationMetric
+        from agentic_core.evaluation.metrics.f1_score import F1Score
+
+        preds = [1, 1, 0, 1, 0]
+        truth = [1, 0, 1, 1, 0]
+        p_metric = BinaryClassificationMetric(positive_label=1, metric="precision")
+        r_metric = BinaryClassificationMetric(positive_label=1, metric="recall")
+        f1_metric = F1Score(positive_label=1)
+        p = p_metric.compute(preds, truth)
+        r = r_metric.compute(preds, truth)
+        f1 = f1_metric.compute(preds, truth)
+        expected_f1 = 2 * p * r / (p + r) if (p + r) > 0 else 0.0
+        if abs(f1 - expected_f1) < 1e-5:
+            return ScenarioOutcome.PASS, 1.0, f"F1={f1:.6f} == 2*{p:.4f}*{r:.4f}/({p:.4f}+{r:.4f})"
+        return ScenarioOutcome.FAIL, 0.0, f"F1={f1:.6f} != harmonic mean {expected_f1:.6f}"
+    except ImportError as e:
+        return ScenarioOutcome.SKIP, _SKIP_SCORE, f"agentic_core.evaluation not available: {e}"
+    except _SCENARIO_EXCEPTIONS as exc:
+        return ScenarioOutcome.FAIL, 0.0, str(exc)
+
+
+def _scenario_multiclass_macro_f1() -> tuple[ScenarioOutcome, float, str]:
+    try:
+        from agentic_core.evaluation.metrics.classification import MultiClassF1Metric
+
+        metric = MultiClassF1Metric(averaging="macro", metric="f1")
+        preds = ["cat", "dog", "bird", "cat", "dog", "bird"]
+        truth = ["cat", "cat", "bird", "cat", "dog", "dog"]
+        score = metric.compute(preds, truth)
+        per_class = metric.per_class_scores(preds, truth)
+        expected = sum(v["f1"] for v in per_class.values()) / len(per_class)
+        if abs(score - expected) < 1e-5:
+            return ScenarioOutcome.PASS, 1.0, f"macro_f1={score:.6f} == mean of per-class F1"
+        return ScenarioOutcome.FAIL, 0.0, f"macro_f1={score:.6f} != {expected:.6f}"
+    except ImportError as e:
+        return ScenarioOutcome.SKIP, _SKIP_SCORE, f"agentic_core.evaluation not available: {e}"
+    except _SCENARIO_EXCEPTIONS as exc:
+        return ScenarioOutcome.FAIL, 0.0, str(exc)
+
+
+def _scenario_multiclass_weighted_f1() -> tuple[ScenarioOutcome, float, str]:
+    try:
+        from agentic_core.evaluation.metrics.classification import MultiClassF1Metric
+
+        metric_w = MultiClassF1Metric(averaging="weighted", metric="f1")
+        metric_m = MultiClassF1Metric(averaging="macro", metric="f1")
+        preds = ["A", "A", "B", "B", "C", "C", "A"]
+        truth = ["A", "B", "B", "B", "C", "A", "A"]
+        w_score = metric_w.compute(preds, truth)
+        m_score = metric_m.compute(preds, truth)
+        per_class = metric_w.per_class_scores(preds, truth)
+        total_support = sum(v["support"] for v in per_class.values())
+        expected_w = sum(v["f1"] * v["support"] for v in per_class.values()) / total_support
+        if abs(w_score - expected_w) < 1e-5 and w_score != m_score:
+            return (
+                ScenarioOutcome.PASS,
+                1.0,
+                f"weighted_f1={w_score:.6f} correct; differs from macro={m_score:.6f}",
+            )
+        if abs(w_score - expected_w) < 1e-5:
+            return ScenarioOutcome.PASS, 0.9, f"weighted_f1={w_score:.6f} correct (equal to macro)"
+        return ScenarioOutcome.FAIL, 0.0, f"weighted_f1={w_score:.6f} != {expected_w:.6f}"
+    except ImportError as e:
+        return ScenarioOutcome.SKIP, _SKIP_SCORE, f"agentic_core.evaluation not available: {e}"
+    except _SCENARIO_EXCEPTIONS as exc:
+        return ScenarioOutcome.FAIL, 0.0, str(exc)
+
+
+def _scenario_confusion_matrix_invariants() -> tuple[ScenarioOutcome, float, str]:
+    try:
+        from agentic_core.evaluation.metrics.classification import BinaryClassificationMetric
+
+        metric = BinaryClassificationMetric(positive_label=1)
+        preds = [1, 0, 1, 0, 1, 0, 1, 0]
+        truth = [1, 1, 0, 0, 1, 0, 0, 1]
+        cm = metric.confusion(preds, truth)
+        total = cm.total()
+        expected_total = len(preds)
+        if total != expected_total:
+            return ScenarioOutcome.FAIL, 0.0, f"TP+FP+TN+FN={total} != {expected_total}"
+        if cm.tp + cm.fp + cm.tn + cm.fn != total:
+            return ScenarioOutcome.FAIL, 0.0, "ConfusionMatrix count invariant violated"
+        return (
+            ScenarioOutcome.PASS,
+            1.0,
+            f"TP={cm.tp} FP={cm.fp} TN={cm.tn} FN={cm.fn} total={total}",
+        )
+    except ImportError as e:
+        return ScenarioOutcome.SKIP, _SKIP_SCORE, f"agentic_core.evaluation not available: {e}"
+    except _SCENARIO_EXCEPTIONS as exc:
+        return ScenarioOutcome.FAIL, 0.0, str(exc)
+
+
 _SCENARIO_FN_MAP: dict[str, Any] = {
     "policy_hash_valid": _scenario_policy_hash_valid,
     "policy_hash_invalid": _scenario_policy_hash_invalid,
@@ -375,6 +540,12 @@ _SCENARIO_FN_MAP: dict[str, Any] = {
     "multi_hop_gate_fail": _scenario_multi_hop_gate_fail,
     "signed_output_valid": _scenario_signed_output_valid,
     "tampered_signature": _scenario_tampered_signature,
+    "binary_precision_perfect": _scenario_binary_precision_perfect,
+    "binary_recall_perfect": _scenario_binary_recall_perfect,
+    "binary_f1_harmonic_mean": _scenario_binary_f1_harmonic_mean,
+    "multiclass_macro_f1": _scenario_multiclass_macro_f1,
+    "multiclass_weighted_f1": _scenario_multiclass_weighted_f1,
+    "confusion_matrix_invariants": _scenario_confusion_matrix_invariants,
 }
 
 

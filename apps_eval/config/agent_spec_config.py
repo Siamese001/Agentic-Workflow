@@ -103,6 +103,19 @@ class EvalAgentSpecs(BaseModel):
                 target_module="apps_exec.reasoning.ExecOrchestrator",
                 scenario_ids=["recruiter_brief", "cto_brief", "dry_run"],
             ),
+            "ml_metrics_validation": BenchmarkSuiteConfig(
+                suite_id="ml_metrics_validation",
+                display_name="ML Evaluation Metrics Validation",
+                target_module="agentic_core.evaluation.metrics.classification",
+                scenario_ids=[
+                    "binary_precision_perfect",
+                    "binary_recall_perfect",
+                    "binary_f1_harmonic_mean",
+                    "multiclass_macro_f1",
+                    "multiclass_weighted_f1",
+                    "confusion_matrix_invariants",
+                ],
+            ),
         }
     )
     scorecard_dimensions: list[ScorecardDimensionConfig] = Field(
@@ -130,6 +143,12 @@ class EvalAgentSpecs(BaseModel):
                 display_name="Output Richness",
                 weight=1.0,
                 threshold_pass=0.65,
+            ),
+            ScorecardDimensionConfig(
+                dimension_id="ml_metric_correctness",
+                display_name="ML Metric Correctness",
+                weight=2.0,
+                threshold_pass=0.90,
             ),
         ]
     )

@@ -86,7 +86,10 @@ class EvaluationReport:
     missing_scope_rate: float
     missing_exception_rate: float
     missing_temporal_qualifier_rate: float
-    sample_count: int
+    classification_f1: float = 0.0
+    classification_precision: float = 0.0
+    classification_recall: float = 0.0
+    sample_count: int = 0
     metadata: dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -108,6 +111,9 @@ class EvaluationReport:
             "missing_scope_rate": round(self.missing_scope_rate, 6),
             "missing_exception_rate": round(self.missing_exception_rate, 6),
             "missing_temporal_qualifier_rate": round(self.missing_temporal_qualifier_rate, 6),
+            "classification_f1": round(self.classification_f1, 6),
+            "classification_precision": round(self.classification_precision, 6),
+            "classification_recall": round(self.classification_recall, 6),
             "sample_count": self.sample_count,
             "metadata": dict(self.metadata),
         }
@@ -132,6 +138,9 @@ class EvaluationReport:
             missing_scope_rate=float(data["missing_scope_rate"]),
             missing_exception_rate=float(data["missing_exception_rate"]),
             missing_temporal_qualifier_rate=float(data["missing_temporal_qualifier_rate"]),
+            classification_f1=float(data.get("classification_f1", 0.0)),
+            classification_precision=float(data.get("classification_precision", 0.0)),
+            classification_recall=float(data.get("classification_recall", 0.0)),
             sample_count=int(data["sample_count"]),
             metadata=dict(data.get("metadata", {})),
         )
@@ -166,7 +175,10 @@ class EvaluationDeltaReport:
     delta_support_score: float
     delta_high_similarity_wrong_answer_rate: float
     delta_parent_reconstruction_rate: float
-    candidate_is_better: bool
+    delta_classification_f1: float = 0.0
+    delta_classification_precision: float = 0.0
+    delta_classification_recall: float = 0.0
+    candidate_is_better: bool = False
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -184,6 +196,9 @@ class EvaluationDeltaReport:
             "delta_support_score": round(self.delta_support_score, 6),
             "delta_high_similarity_wrong_answer_rate": round(self.delta_high_similarity_wrong_answer_rate, 6),
             "delta_parent_reconstruction_rate": round(self.delta_parent_reconstruction_rate, 6),
+            "delta_classification_f1": round(self.delta_classification_f1, 6),
+            "delta_classification_precision": round(self.delta_classification_precision, 6),
+            "delta_classification_recall": round(self.delta_classification_recall, 6),
             "candidate_is_better": self.candidate_is_better,
         }
 
@@ -217,6 +232,13 @@ class EvaluationDeltaReport:
             ),
             delta_parent_reconstruction_rate=round(
                 candidate.parent_reconstruction_applied_rate - baseline.parent_reconstruction_applied_rate, 6
+            ),
+            delta_classification_f1=round(candidate.classification_f1 - baseline.classification_f1, 6),
+            delta_classification_precision=round(
+                candidate.classification_precision - baseline.classification_precision, 6
+            ),
+            delta_classification_recall=round(
+                candidate.classification_recall - baseline.classification_recall, 6
             ),
             candidate_is_better=better,
         )

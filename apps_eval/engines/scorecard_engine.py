@@ -23,6 +23,7 @@ _SUITE_TO_DIMENSION: dict[str, str] = {
     "orchestration_hop": "correctness",
     "output_contracts": "correctness",
     "exec_brief_generation": "output_richness",
+    "ml_metrics_validation": "ml_metric_correctness",
 }
 
 
@@ -80,6 +81,7 @@ class ScorecardEngine:
                 "governance": 2.5,
                 "latency": 1.5,
                 "output_richness": 1.0,
+                "ml_metric_correctness": 2.0,
             }
             dim_weight_map = default_dims
 

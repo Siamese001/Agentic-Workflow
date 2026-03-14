@@ -1,12 +1,37 @@
 """Evaluation metrics package."""
-from .base import EvaluationMetric, GenerationMetric, RetrievalMetric
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
+from .base import ClassificationMetric, EvaluationMetric, GenerationMetric, RetrievalMetric
+
 try:
     from .answer_correctness import AnswerCorrectness
 except ModuleNotFoundError:
     AnswerCorrectness = None
 try:
-    from .completeness_metrics import ChunkStrategyReport, CompletenessExperimentReport, EvaluationDeltaReport, EvaluationMetricResult, EvaluationReport, RetrievalExperimentReport
+    from .classification import BinaryClassificationMetric, ConfusionMatrix, MultiClassF1Metric
+except ModuleNotFoundError:
+    BinaryClassificationMetric = None
+    ConfusionMatrix = None
+    MultiClassF1Metric = None
+try:
+    from .completeness_metrics import (
+        ChunkStrategyReport,
+        CompletenessExperimentReport,
+        EvaluationDeltaReport,
+        EvaluationMetricResult,
+        EvaluationReport,
+        RetrievalExperimentReport,
+    )
 except ModuleNotFoundError:
     ChunkStrategyReport = None
     CompletenessExperimentReport = None
@@ -23,6 +48,10 @@ try:
 except ModuleNotFoundError:
     MeanReciprocalRank = None
 try:
+    from .f1_score import F1Score
+except ModuleNotFoundError:
+    F1Score = None
+try:
     from .ndcg import NDCG
 except ModuleNotFoundError:
     NDCG = None
@@ -34,4 +63,25 @@ try:
     from .recall_at_k import RecallAtK
 except ModuleNotFoundError:
     RecallAtK = None
-__all__ = ['EvaluationMetric', 'RetrievalMetric', 'GenerationMetric', 'PrecisionAtK', 'RecallAtK', 'MeanReciprocalRank', 'NDCG', 'Groundedness', 'AnswerCorrectness', 'EvaluationMetricResult', 'EvaluationReport', 'EvaluationDeltaReport', 'RetrievalExperimentReport', 'ChunkStrategyReport', 'CompletenessExperimentReport']
+__all__ = [
+    "EvaluationMetric",
+    "RetrievalMetric",
+    "GenerationMetric",
+    "ClassificationMetric",
+    "PrecisionAtK",
+    "RecallAtK",
+    "MeanReciprocalRank",
+    "NDCG",
+    "Groundedness",
+    "AnswerCorrectness",
+    "EvaluationMetricResult",
+    "EvaluationReport",
+    "EvaluationDeltaReport",
+    "RetrievalExperimentReport",
+    "ChunkStrategyReport",
+    "CompletenessExperimentReport",
+    "ConfusionMatrix",
+    "BinaryClassificationMetric",
+    "MultiClassF1Metric",
+    "F1Score",
+]
