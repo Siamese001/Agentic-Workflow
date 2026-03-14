@@ -76,3 +76,4 @@
 | SOVEREIGNTY INVARIANT: Contracts [18]-[25] carry NO route_mode, safety_threshold, execution_tier, or auth_token fields.                  |
 ============================================================================================================================================
 ADG CACHE: Nodes: 8,234 | Edges: 224,969 | RAG TOPOLOGY: retrieves_via(52), pulls_context(32), scores_groundedness(40), generates_prompt(215)
+
