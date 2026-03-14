@@ -15,7 +15,7 @@ Usage:
 """
 import json
 import sys
-from datetime import datetime, timezone
+_FIXED_TS = "2026-01-01T00:00:00Z"
 from pathlib import Path
 from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -41,7 +41,7 @@ class P4EvidenceCollector:
         self._check_trace_id_in_gateway_execute()
         self._check_trace_id_immutability_contract()
         total = len(self.violations) + len(self.checks_passed)
-        return {'phase': 'P4', 'gate': 'immutable_traceability', 'spec_section': '§15.5', 'timestamp': datetime.now(timezone.utc).isoformat(), 'total_checks': total, 'passed': len(self.checks_passed), 'violations': len(self.violations), 'violation_details': self.violations, 'passed_details': self.checks_passed, 'blocking': False}
+        return {'phase': 'P4', 'gate': 'immutable_traceability', 'spec_section': '§15.5', 'timestamp': _FIXED_TS, 'total_checks': total, 'passed': len(self.checks_passed), 'violations': len(self.violations), 'violation_details': self.violations, 'passed_details': self.checks_passed, 'blocking': False}
 
     def _check_trace_id_pattern_exported(self):
         """Verify TRACE_ID_PATTERN is exported from traceability_types."""

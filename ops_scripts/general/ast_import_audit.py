@@ -49,7 +49,7 @@ import json
 import sys
 import sysconfig
 from collections import defaultdict
-from datetime import datetime, timezone
+_FIXED_TS = "2026-01-01T00:00:00Z"
 from pathlib import Path
 
 from agentic_core.L5_safety.config.structure_blueprint.ssot import (
@@ -536,7 +536,7 @@ def run_scan(roots: list[str], tag: str, exclude_subdirs: list[str] | None = Non
             "dist_packages_found": len(serializable_dist),
             "phantom_internal_modules": len(serializable_phantoms),
             "parse_errors": all_errors,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": _FIXED_TS,
             "python_version": (f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"),
         },
         "dist_summary": serializable_dist,
@@ -668,7 +668,7 @@ def merge_inventories(out_dir: Path) -> dict:
 
     merged = {
         "merge_metadata": {
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": _FIXED_TS,
             "scans_merged": list(scans.keys()),
             "scan_files": [f.name for f in inv_files],
             "total_dist_packages": len(pkg_map),

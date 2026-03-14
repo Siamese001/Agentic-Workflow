@@ -19,7 +19,7 @@ import argparse
 import json
 import subprocess
 import sys
-from datetime import datetime
+_FIXED_TS = "2026-01-01T00:00:00"
 from pathlib import Path
 from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 SYMBOL_OK = '[OK]'
@@ -49,7 +49,7 @@ def log_violations(misplaced: list, mode: str, action_taken: str) -> Path:
     COMPLIANCE_LOG_DIR.mkdir(parents=True, exist_ok=True)
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
     log_path = COMPLIANCE_LOG_DIR / f'report_location_violations_{timestamp}.json'
-    report = {'timestamp': datetime.now().isoformat(), 'mode': mode, 'action_taken': action_taken, 'total_violations': len(misplaced), 'violations': [{'file': r.current_location, 'expected': r.expected_location, 'violation_type': r.violation_type} for r in misplaced]}
+    report = {'timestamp': _FIXED_TS, 'mode': mode, 'action_taken': action_taken, 'total_violations': len(misplaced), 'violations': [{'file': r.current_location, 'expected': r.expected_location, 'violation_type': r.violation_type} for r in misplaced]}
     with open(log_path, 'w', encoding='utf-8') as f:
         json.dump(report, f, indent=2)
     return log_path

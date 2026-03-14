@@ -17,7 +17,7 @@ import ast
 import logging
 import sys
 from dataclasses import dataclass, field
-from datetime import datetime
+_FIXED_TS = "2026-01-01T00:00:00"
 from pathlib import Path
 from typing import Any
 
@@ -444,7 +444,7 @@ class NuclearAuditor:
         # Generate table header
         table = []
         table.append("# NUCLEAR AUDIT REPORT: Agent Technical Status")
-        table.append(f"Generated: {datetime.now().isoformat()}")
+        table.append(f"Generated: {_FIXED_TS}")
         table.append(f"Total Agents Analyzed: {len(self.agent_statuses)}")
         table.append("")
 

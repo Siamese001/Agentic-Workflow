@@ -16,7 +16,7 @@ import ast
 import json
 import re
 import sys
-from datetime import datetime, timezone
+_FIXED_TS = "2026-01-01T00:00:00Z"
 from pathlib import Path
 from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -43,7 +43,7 @@ class P6EvidenceCollector:
         self._check_p6_artifact_immutability()
         self._check_all_type_files_exist()
         total = len(self.violations) + len(self.checks_passed)
-        return {'phase': 'P6', 'gate': 'typed_boundaries', 'spec_section': '§1.5/§3.8', 'timestamp': datetime.now(timezone.utc).isoformat(), 'total_checks': total, 'passed': len(self.checks_passed), 'violations': len(self.violations), 'violation_details': self.violations, 'passed_details': self.checks_passed, 'blocking': False}
+        return {'phase': 'P6', 'gate': 'typed_boundaries', 'spec_section': '§1.5/§3.8', 'timestamp': _FIXED_TS, 'total_checks': total, 'passed': len(self.checks_passed), 'violations': len(self.violations), 'violation_details': self.violations, 'passed_details': self.checks_passed, 'blocking': False}
 
     def _check_ssot_binding_type(self):
         """Verify SSOTBinding type exists with required fields."""

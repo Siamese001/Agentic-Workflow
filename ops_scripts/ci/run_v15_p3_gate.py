@@ -13,7 +13,7 @@ Usage:
 """
 import json
 import sys
-from datetime import datetime, timezone
+_FIXED_TS = "2026-01-01T00:00:00Z"
 from pathlib import Path
 from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -38,7 +38,7 @@ class P3EvidenceCollector:
         self._check_semantic_clock_wiring()
         self._check_state_hash_fn_present()
         total = len(self.violations) + len(self.checks_passed)
-        return {'phase': 'P3', 'gate': 'no_silent_state_mutation', 'spec_section': '§13.1', 'timestamp': datetime.now(timezone.utc).isoformat(), 'total_checks': total, 'passed': len(self.checks_passed), 'violations': len(self.violations), 'violation_details': self.violations, 'passed_details': self.checks_passed, 'blocking': False}
+        return {'phase': 'P3', 'gate': 'no_silent_state_mutation', 'spec_section': '§13.1', 'timestamp': _FIXED_TS, 'total_checks': total, 'passed': len(self.checks_passed), 'violations': len(self.violations), 'violation_details': self.violations, 'passed_details': self.checks_passed, 'blocking': False}
 
     def _check_forbidden_mutation_patterns(self):
         """Scan enforcement files for forbidden global mutation patterns."""

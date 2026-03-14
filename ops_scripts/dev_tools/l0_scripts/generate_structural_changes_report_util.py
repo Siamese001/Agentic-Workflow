@@ -8,6 +8,9 @@ of all folders relocated, moved, created, and removed during the 120 structural 
 
 import json
 import os
+import json
+
+_FIXED_TS = "2026-01-01T00:00:00"
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -156,7 +159,7 @@ def generate_comprehensive_report() -> dict[str, Any]:
     # Build report
     report = {
         "report_metadata": {
-            "generated_at": datetime.now().isoformat(),
+            "generated_at": _FIXED_TS,
             "report_version": "1.0",
             "test_date": "2026-01-22",
             "test_suite": "Boundary Stress Tests + Governance Hardening",

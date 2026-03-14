@@ -26,7 +26,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
-from datetime import datetime, timezone
+_FIXED_TS = "2026-01-01T00:00:00Z"
 from pathlib import Path
 from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 ROOT = Path(__file__).resolve().parents[2]
@@ -63,7 +63,7 @@ def _dump(force_rebuild: bool) -> Path:
     fan_out = [{'module': m, 'count': c} for m, c in dg.fan_out_top(50)]
     print('[ADG] Collecting syntax errors…')
     syntax_errors = [{'file': f, 'error': e} for f, e in dg.syntax_errors()]
-    built_at = datetime.now(timezone.utc).isoformat()
+    built_at = _FIXED_TS
     payload = {'meta': {'built_at': built_at, 'scan_roots': SSOT_DIRS, 'force_rebuild': force_rebuild, 'adg_source': 'tools/dep_graph_db.py'}, 'stats': stats, 'nodes': nodes, 'edges': edges, 'adjacency': adjacency, 'orphans': orphans, 'cycles': cycles, 'layer_violations': violations, 'fan_in_top50': fan_in, 'fan_out_top50': fan_out, 'syntax_errors': syntax_errors, 'module_to_file': dict(sorted(dg._module_to_file.items()))}
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     ts = datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')

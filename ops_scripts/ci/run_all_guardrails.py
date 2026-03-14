@@ -21,6 +21,9 @@ import sys
 import time
 from dataclasses import dataclass, field
 from datetime import datetime
+import json
+
+_FIXED_TS = "2026-01-01T00:00:00"
 from pathlib import Path
 from typing import List, Dict, Any, Optional
 
@@ -369,7 +372,7 @@ class GuardrailOrchestrator:
     def save_report(self, output_path: Path):
         """Save detailed JSON report."""
         report = {
-            "timestamp": datetime.now().isoformat(),
+            "timestamp": _FIXED_TS,
             "total_elapsed": time.time() - self.start_time,
             "summary": {
                 "total": len(self.results),
