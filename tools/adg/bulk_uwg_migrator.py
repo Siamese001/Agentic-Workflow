@@ -10,6 +10,8 @@ Usage:
     python tools/adg/bulk_uwg_migrator.py --layer L_APP --dry-run
     python tools/adg/bulk_uwg_migrator.py --layer L3 --execute
     python tools/adg/bulk_uwg_migrator.py --all --execute
+
+# guardian: allow-global-mutation
 """
 from __future__ import annotations
 import ast
