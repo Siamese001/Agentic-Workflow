@@ -1,232 +1,53 @@
-================================================================================================================================================================
-                                        EXECUTE_SSOT EMBEDDING LIFECYCLE — CONSOLIDATED VIEW
-================================================================================================================================================================
+====================================================================================================
+               EMBEDDING LIFECYCLE: FLOW DEPENDENCIES & ADG-ENHANCED PIPELINE
+====================================================================================================
+[ STAGE 1: INGESTION & VECTORIZATION ]          [ STAGE 2: RETRIEVAL, ROUTING & EXECUTION ]
++---------------------------------------+       +--------------------------------------------------+
+| L2: INCIDENT DETECTION                |       | L1: VECTOR SEARCH (ANN SIMILARITY)               |
+| - Stack traces / Invariants           |       | 1. Query: embed(normalized_text)                 |
+| - Territory violations / Tests        |------>| 2. similarity(query_v, e_i)                      |
+| ADG: reads_from (66,640)              |       | 3. Retrieve top_k nearest vectors                |
++-------------------|-------------------+       | ADG: retrieves_via (52 edges)                    |
+                    v                           +-------------------|------------------------------+
++---------------------------------------+                           v
+| L2: NORMALIZATION                     |       +--------------------------------------------------+
+| - Parse traces / Extract signatures   |       | L0: HEALING DECISION -> L3: PATH SELECTION       |
+| - Collect execution context           |       | - Decision: Uses metadata + cluster stats        |
++-------------------|-------------------+       | - Routing: Path A/B/C/D selection                |
+                    v                           | - Advisory: Embeddings inform, L0 decides        |
++---------------------------------------+       +-------------------|------------------------------+
+| L1: EMBEDDING GENERATION (bge-m3)     |                           v
+| - FIXED Model (No retraining)         |       +--------------------------------------------------+
+| - INPUT: normalized_failure_text      |       | L2: EXECUTION & HEALING AGENTS                   |
+| - OUTPUT: failure_vector [v1...vd]    |------>| - Dependency / Architecture / Gravity / Test     |
+| - Property: Knowledge grows via Index |       | - System Mutation: Performed & Validated         |
++---------------------------------------+       | ADG: writes_to (4,875)                           |
+                                                +-------------------|------------------------------+
+====================================================================v===============================
+[ STAGE 3: LEARNING LOOP & SYSTEM GROWTH ]
++--------------------------------------------------------------------------------------------------+
+| L4: STORAGE / L6: TELEMETRY — EVENT PERSISTENCE                                                  |
+| 1. Re-embed failure (Fixed bge-m3) -> 2. Insert into Index -> 3. Index Grows: {e1...eN, e_new}   |
+| ADG: stores_embedding (14 edges) tracks vector insertions                                        |
++--------------------------------------------------------------------------------------------------+
+| META-LEARNING SYSTEM: CROSS-INCIDENT ANALYSIS                                                    |
+| - Analyzes: Recurring signatures (clustering), healer efficacy, regression patterns              |
+| - Property: Consumes vectors from memory; Proposes routing optimizations; Never retrains model   |
+| ADG: emits_determinism_digest (3), chunks_into (1)                                               |
++--------------------------------------------------------------------------------------------------+
 
+====================================================================================================
+[ DEPENDENCY FLOW SUMMARY ]                             [ KEY PRINCIPLES ]
++----------------------------+-----------------------+  +------------------------------------------+
+| TYPE       | FLOW          | ADG IMPACT            |  | 1. MODEL INVARIANT: bge-m3 stays FIXED   |
+|------------|---------------|-----------------------|  | 2. INDEX GROWTH: Knowledge is cumulative |
+| Parallel   | Meta + Embed  | Independent paths     |  | 3. BINDING: Vectors tied to healer/files |
+| Sequential | Signal->Vector| Strict order 1-8      |  | 4. ADVISORY: L1 suggests, L0 authorizes  |
+| Feedback   | Loop->Query   | Index expansion       |  | 5. META: Cross-incident optimization     |
+| Cross-Layer| L2->L1 / L1->L4| Inter-layer edges     |  | 6. REPLAY: Determinism digests enabled   |
++------------+---------------+-----------------------+  +------------------------------------------+
 
-RAW SIGNAL
-[L2]
-+---------------------------------------------------+
-| 💥 SYSTEM INCIDENT OCCURS                         |
-|---------------------------------------------------|
-| Failure signals collected:                        |
-| * stack traces (ImportError etc.)                 |
-| * invariant violations                            |
-| * territory violations                            |
-| * test failures                                   |
-| * repository context / file path                  |
-+---------------------------------------------------+
-
-
-
-ENCODER  (METADATA EXTRACTION — NO EMBEDDINGS YET)
-[L2]
-+---------------------------------------------------+
-| 🧹 FAILURE NORMALIZATION                          |
-|---------------------------------------------------|
-| * parse stack trace                               |
-| * extract error signature                         |
-| * collect execution + repository context          |
-| * normalize failure text                          |
-|                                                   |
-| METADATA CAPTURED                                 |
-| * territory / invariant identifiers               |
-| * repository path / files involved                |
-+---------------------------------------------------+
-
-
-
-VECTOR  (EMBEDDING GENERATED HERE)
-[L1]
-+---------------------------------------------------+
-| 🧠 EMBEDDING MODEL (bge-m3)                        |
-|---------------------------------------------------|
-| INPUT                                             |
-| normalized failure text                           |
-|                                                   |
-| Example                                           |
-| "ImportError yaml config loader"                  |
-|                                                   |
-| OUTPUT                                            |
-| failure_vector = [v1 ... vd]                      |
-|                                                   |
-| IMPORTANT                                         |
-| The embedding model rarely changes.               |
-|                                                   |
-| The embedding model generates vectors but         |
-| does NOT store them.                              |
-|                                                   |
-| System knowledge does NOT grow by retraining      |
-| the embedding model.                              |
-|                                                   |
-| System knowledge grows because new vectors are    |
-| inserted into the vector index during the         |
-| learning loop.                                    |
-+---------------------------------------------------+
-
-
-
-MEMORY  (VECTOR INDEX STORAGE)
-[L1]
-+---------------------------------------------------+
-| 📚 INCIDENT MEMORY — VECTOR INDEX                 |
-|---------------------------------------------------|
-| Vector storage format                             |
-|                                                   |
-| vector_id → embedding_vector                      |
-|                                                   |
-| Example                                           |
-|                                                   |
-| id_1 → e1                                         |
-| id_2 → e2                                         |
-| id_3 → e3                                         |
-| ...                                               |
-| id_N → eN                                         |
-|                                                   |
-| These vectors are organized internally using      |
-| Approximate Nearest Neighbor structures such as:  |
-|                                                   |
-| * HNSW graphs                                     |
-| * IVF clusters                                    |
-| * PQ partitions                                   |
-|                                                   |
-| CRITICAL SYSTEM PROPERTY                          |
-|                                                   |
-| The embedding model stays fixed.                  |
-|                                                   |
-| The vector index accumulates vectors.             |
-|                                                   |
-| As new incidents occur, new vectors are inserted  |
-| into this index, expanding the searchable memory  |
-| of the system.                                    |
-+---------------------------------------------------+
-
-
-
-VECTOR SEARCH
-[L1]
-+---------------------------------------------------+
-| 🔎 SIMILARITY SEARCH                              |
-|---------------------------------------------------|
-| query_vector = embed(normalized_failure_text)     |
-|                                                   |
-| similarity(query_vector, e_i)                     |
-|                                                   |
-| ANN navigation retrieves                          |
-|                                                   |
-| top_k nearest vectors                             |
-|                                                   |
-| Example results                                   |
-|                                                   |
-| Incident A → yaml dependency issue                |
-| Incident B → configuration loader error           |
-| Incident C → path resolution failure              |
-|                                                   |
-| If no close match → novel failure cluster         |
-+---------------------------------------------------+
-
-
-
-ROUTING
-[L0]
-+---------------------------------------------------+
-| 🧭 HEALING DECISION ENGINE                        |
-|---------------------------------------------------|
-| Uses retrieved metadata                           |
-|                                                   |
-| * violation type                                  |
-| * healer used previously                          |
-| * repair actions                                  |
-| * historical success / failure                    |
-| * cluster statistics                              |
-|                                                   |
-| Determines root cause + healer                    |
-|                                                   |
-| (embeddings are advisory signals only)            |
-+---------------------------------------------------+
-
-
-
-ORCHESTRATION
-[L3]
-+---------------------------------------------------+
-| 🗺 PATH SELECTION ENGINE                          |
-|---------------------------------------------------|
-| Routes execution to appropriate repair path       |
-|                                                   |
-| Examples                                          |
-| * Path A                                          |
-| * Path B                                          |
-| * Path C                                          |
-| * Path D                                          |
-+---------------------------------------------------+
-
-
-
-EXECUTION + HEALING
-[L2]
-+---------------------------------------------------+
-| 🛠 EXECUTION + HEALING AGENTS                     |
-|---------------------------------------------------|
-| * DependencyRepairAgent                           |
-| * ArchitectureGovernorAgent                       |
-| * GravityRepairAgent                              |
-| * TestRepairAgent                                 |
-|                                                   |
-| System mutation performed and validated           |
-+---------------------------------------------------+
-
-
-
-LEARNING LOOP  (VECTOR INSERTION)
-[L4 STORAGE | L6 TELEMETRY]
-+---------------------------------------------------+
-| 🗂 HEALING EVENT STORED                           |
-|---------------------------------------------------|
-| When a healing event completes:                   |
-|                                                   |
-| failure_vector_new = embed(normalized_failure)    |
-|                                                   |
-| Insert vector into index:                         |
-|                                                   |
-| id_new → failure_vector_new                       |
-|                                                   |
-| Vector index becomes:                             |
-|                                                   |
-| {e1, e2, e3, ... eN, e_new}                       |
-|                                                   |
-| This expands the system's searchable incident     |
-| memory.                                           |
-|                                                   |
-| The embedding model remains unchanged.            |
-|                                                   |
-| The vector index grows over time.                 |
-+---------------------------------------------------+
-
-
-
-SYSTEM LEARNING
-[CORE CAPABILITY]
-+---------------------------------------------------+
-| 🧠 META-LEARNING SYSTEM                           |
-|---------------------------------------------------|
-| Analyzes vectors stored in the vector index       |
-| together with incident metadata.                  |
-|                                                   |
-| Identifies:                                       |
-| * recurring failure signatures                    |
-| * effective healers per failure type              |
-| * regression patterns                             |
-| * routing improvements                            |
-|                                                   |
-| The meta-learning system consumes vectors from    |
-| memory but does not retrain the embedding model.  |
-+---------------------------------------------------+
-
-
-================================================================================================================================================================
-KEY PRINCIPLE
-
-Embedding model stays fixed.
-
-Vector index accumulates vectors and becomes the system's growing memory.
-================================================================================================================================================================
+ADG CACHE: Redis MCP Client | TIMESTAMP: 03132026_1424 | LAST UPDATED: 2026-03-14 08:17 UTC
+TOPOLOGY: Nodes: 8,234 | Edges: 224,969 | L1: 106 mod | L2: 316 mod | L4: 154 mod
+EDGES: reads_from(66,640), writes_to(4,875), retrieves_via(52), stores_embedding(14), digest(3)
+====================================================================================================

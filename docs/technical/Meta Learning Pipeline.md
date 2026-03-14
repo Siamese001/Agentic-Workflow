@@ -1,80 +1,69 @@
-======================================================================================================================================================================
-                                          AGENTIC SYSTEM — WIDESCREEN META-LEARNING PIPELINE & FEEDBACK CYCLES
-======================================================================================================================================================================
-  [ THE TOP LAYER: INGESTION & OBSERVABILITY ]                                [ THE SIDE LAYER: STATE & THE META-LEARNING PIPELINE ]
-+---------------------------------------------------+                         +--------------------------------------------------------------------------------------+
-| L1: COGNITIVE STUDIO / L6: OBSERVABILITY          |                         | L4: STATE, MEMORY & PERSISTENCE (THE LEARNING HUB)                                   |
-|---------------------------------------------------|                         |--------------------------------------------------------------------------------------|
-| - [L1] RAG Hydration & Intent Ingestion.          |                         | STAGE 1-4: IMMUTABLE DATA FREEZE & SNAPSHOT                                          |
-| - [L6] ANOMALY ENGINE: Emits Drift Scores &       |======(Raw Output)======>| [STAGE 1] AUDIT: AuditStore.read_audit_slice(window_start, window_end)               |
-|        Threat Signals during live requests.       |                         | [STAGE 2] TELEMETRY: TelemetryStore.read_events(window_start, window_end)            |
-+---------------------------------------------------+                         | [STAGE 3] CONFIG: ConfigProvider.get_current_configs()                               |
-                          ^                                                   | [STAGE 4] SNAPSHOT: MetaLearningSnapshot(engine_version, SemanticClockSnapshot)      |
-                          |                                                   +--------------------------------------------------------------------------------------+
-                          |                                                                             ||
-                          |                                                                             vv
-==========================|=============================================================================||============================================================
-  [ THE CONTROL SPINE ]   |                                                                             ||
-+-------------------------|---------------------------------------------------------------+             ||
-| L0: TRAFFIC CONTROL / L3: ORCHESTRATION / L5: SAFETY|                                       |             ||
-|-------------------------|---------------------------------------------------------------|             ||
-| - [L0] Updates routing rules via active updates.    |                                       |             ||
-| - [L3] Tunes orchestration weights.                 |                                       || (Frozen Snapshot for stable analysis)
-| - [L5] Updates safety rule strictness.              |                                       |             ||
-+-----------------------------------------------------------------------------------------+             ||
-                          ^                                                                             vv
-                          |                                                   +--------------------------------------------------------------------------------------+
-                          |                                                   | STAGE 5-6: ROOT CAUSE ANALYSIS & PROPOSAL GENERATION                                 |
-                          |                                                   |--------------------------------------------------------------------------------------|
-                          |                                                   | [STAGE 5] RCA: analyze_failures() -> RCAReport (Categorizes Failure Type).           |
-                          | (The Feedback Bus: Applies Updates)               | [STAGE 6] PROPOSE: Target specific optimization areas (Resource, Syntax, RLHF).      |
-                          |                                                   |   - Generates targeted `ChangePackages` (Strictly `proposal_only=True`).             |
-                          |                                                   |   - Embeds RLHF DPO threshold adjustments.                                          |
-                          |                                                   |                                                                                      |
-                          |                                                   | PROPOSER PROTOCOLS (Protocol-based dependency injection):                            |
-                          |                                                   | - L0Proposer: Routing weight optimization proposals                                  |
-                          |                                                   | - L1Proposer: Cognitive priming and RAG threshold proposals                          |
-                          |                                                   | - L5Proposer: Safety rule strictness and risk tier proposals                         |
-                          |                                                   | - RAGProposer: Retrieval profile and embedding config proposals                      |
-                          |                                                   |                                                                                      |
-                          |                                                   | OPTIMIZATION ENGINES:                                                                |
-                          |                                                   | - RLHFOptimizer: propose_from_dpo(dpo_batch_bytes) -> ChangePackage                  |
-                          |                                                   | - HealingConfigOptimizer: Tunes healing tier thresholds from outcome data            |
-                          |                                                   | - PatternAnalysisEngine: Extracts semantic patterns from execution traces            |
-                          |                                                   | - HealingConfidenceScorer: Recalibrates confidence scoring weights                   |
-                          |                                                   | - FailureFingerprinter: Categorizes failure signatures for RCA                       |
-                          |                                                   | - RiskCorrelator: Correlates risk signals across layers                              |
-                          |                                                   +--------------------------------------------------------------------------------------+
-                          |                                                                             ||
-                          |                                                                             vv
-                          |                                                   +--------------------------------------------------------------------------------------+
-                          |                                                   | STAGE 7: VALIDATION GAUNTLET (THE REGRESSION SHIELD)                                 |
-                          |                                                   |--------------------------------------------------------------------------------------|
-                          |                                                   | [STAGE 7] VALIDATE: Evaluates proposals via Replay & Shadow Evaluators.             |
-                          |                                                   | [!] OSCILLATE RULE: Strictly rejects flapping thresholds.                            |
-                          |                                                   | [!] STABILITY CHECK: Requires mathematical stability before rule commit.             |
-                          |                                                   |                                                                                      |
-                          |                                                   | ARBITRATION & APPROVAL:                                                              |
-                          |                                                   | - ArbitrationEngine: Resolves conflicting proposals across proposers                 |
-                          |                                                   | - ArbitrationPolicy: Defines conflict resolution strategy                            |
-                          |                                                   | - ApprovalGate (Protocol): decide(change_package) -> ApprovalDecision                |
-                          |                                                   | - DefaultRuleBasedGate: Risk-based approval with configurable thresholds             |
-                          |                                                   | - RiskTierClassifier: classify(change_package) -> RiskTier                           |
-                          +===================================================| [STAGE 8] PATTERN: Extracts semantic patterns -> Singleton RAG Factory (C0).        |
-                                                                              | [STAGE 9] COMMIT: Activator commits proven `ChangePackages` to VersionStore.         |
-                                                                              | [!] INJECTION RULE: Dual Injection required (VersionStore + ApprovalGate).           |
-                                                                              +--------------------------------------------------------------------------------------+
-======================================================================================================================================================================
-  CORE META-LEARNING DATA CONTRACTS
-======================================================================================================================================================================
-| [14] ChangePackage        : [source, target, changes:bytes, confidence:float, reason:tuple, timestamp_utc] -> proposal_only=True by default.                      |
-| [15] CommitProofInvariant : Proof MUST bind to true implementation commit. No churn commits permitted.                                                            |
-| [32] PipelineConfig       : [engine_version, config_surface_version, shadow_thresholds, cooldown_policy, sample_policy, oscillation_policy,                      |
-|                              enabled_proposers, require_replay_validation, require_shadow_validation, proposal_only] -> Immutable pipeline configuration          |
-| [33] PipelineDependencies : [audit_store, telemetry_store, config_provider, baseline_metrics_provider, l0_proposer, rag_proposer, l1_proposer, l5_proposer,      |
-|                              version_store, activator, approval_gate, healing_outcome_intake_adapter, healing_config_optimizer, l4_state_writer,                  |
-|                              pattern_analysis_engine, resource_predictor_bytes, rollback_refinement_decision_bytes, dpo_batch_bytes, rlhf_optimizer,              |
-|                              healing_confidence_scorer, failure_fingerprinter, risk_correlator, arbitration_engine, arbitration_policy] -> Protocol-based DI      |
-| [34] ApprovalDecision     : Enum[APPROVE, REJECT, DEFER] -> Approval gate decision for ChangePackage activation                                                  |
-| [35] RCAReport            : [failure_category, root_cause, affected_components, recommended_actions] -> Root cause analysis output                               |
-======================================================================================================================================================================
+====================================================================================================================================================================
+                                            META-LEARNING PIPELINE — STAGE-BY-STAGE ARCHITECTURE & INTERACTIONS
+====================================================================================================================================================================
+  [ OBSERVABILITY & INGESTION ]                                            [[ THE META-LEARNING STATE MACHINE (L4) ]]
++---------------------------------+         +--------------------------------------------------------------------------------------------------------------+
+| L1: COGNITIVE / L6: OBS         |         | STAGE 1: AUDIT SNAPSHOT FREEZE                                                                               |
+|---------------------------------|         | - AuditStore.read_audit_slice() -> Capture error signatures & latency distributions                          |
+| - Intent Ingestion              |==(Raw)=>| - Enhanced: ADG dependency traces for blast radius analysis                                                   |
+| - Drift & Threat Signals        |         | - Immutability: Snapshot frozen at semantic clock tick T                                                     |
+| - Real-time Telemetry           |         +------------------------------------------------------|-------------------------------------------------------+
+| - ADG Dependency Tracking       |                                                                V
++---------------------------------+         +--------------------------------------------------------------------------------------------------------------+
+                                            | STAGE 2: TELEMETRY EVENT COLLECTION                                                                          |
+  [ CONTROL SPINE ]                         | - TelemetryStore.read_events() -> Map agent invocations & policy violations                                  |
++---------------------------------+         | - Enhanced: ADG fan-in/fan-out metrics correlated with execution patterns                            |
+| L0: TRAFFIC / L3: ORCH / L5: SF |         +------------------------------------------------------|-------------------------------------------------------+
+|---------------------------------|                                                                V
+| - Active Routing Rules          |         +--------------------------------------------------------------------------------------------------------------+
+| - Orchestration Weights         |         | STAGE 3: CONFIGURATION SNAPSHOT                                                                              |
+| - Safety Thresholds             |         | - ConfigProvider.get_current_configs() -> Active weights & safety thresholds                                 |
++---------------------------------+         | - ADG Validation: Verification of import chains & configuration dependency mapping                           |
+                ^                           +------------------------------------------------------|-------------------------------------------------------+
+                |                                                                                  V
+                |                           +--------------------------------------------------------------------------------------------------------------+
+                |                           | STAGE 4: META-LEARNING SNAPSHOT ASSEMBLY                                                                     |
+                |                           | - MetaLearningSnapshot(engine_version, SemanticClock) -> Single immutable snapshot                           |
+                |                           | - ADG Digest: Includes full ADG integrity hash for graph versioning                                          |
+                |                           +------------------------------------------------------|-------------------------------------------------------+
+                |                                                                                  V
+                |                           +--------------------------------------------------------------------------------------------------------------+
+                |                           | STAGE 5: ROOT CAUSE ANALYSIS (RCA)                                                                           |
+                |                           | - analyze_failures() -> RCAReport (Blast radius via ADG traversal)                                           |
+                |                           | - Pattern Detection: FailureFingerprinter extracts semantic signatures                                        |
+                |                           +------------------------------------------------------|-------------------------------------------------------+
+                |                                                                                  V
+                |                           +--------------------------------------------------------------------------------------------------------------+
+                |                           | STAGE 6: PROPOSAL GENERATION                                                                                 |
+                |                           | - L0/L1/L5/RAG Proposers generate ChangePackages (proposal_only=True)                                        |
+                |                           | - RLHFOptimizer: Tunes thresholds via DPO batch preference analysis                                          |
+                |                           +------------------------------------------------------|-------------------------------------------------------+
+                |                                                                                  V
+                |                           +--------------------------------------------------------------------------------------------------------------+
+                |                           | STAGE 7: VALIDATION GAUNTLET (THE REGRESSION SHIELD)                                                         |
+                |                           | - Shadow & Replay Validation: Verifies performance via ADG simulation traversal                              |
+                |                           | - Rejection Rules: OSCILLATE (flapping), REGRESSION (latency), VIOLATION (layer breach)                      |
+                |                           +------------------------------------------------------|-------------------------------------------------------+
+                |                                                                                  V
+                |                           +--------------------------------------------------------------------------------------------------------------+
+                |                           | STAGE 8: PATTERN EXTRACTION & LEARNING                                                                       |
+                |                           | - PatternAnalysisEngine: Records motifs in Singleton RAG Factory (C0)                                        |
+                |                           | - Learning: Success/Failure patterns embedded for future similarity retrieval                                |
+                |                           +------------------------------------------------------|-------------------------------------------------------+
+                |                                                                                  V
+                |                           +--------------------------------------------------------------------------------------------------------------+
+                |                           | STAGE 9: COMMIT & ACTIVATION                                                                                 |
+                |                           | - Activator: Binds CommitProofInvariant to VersionStore; triggers ADG Cache Refresh                          |
+                +---------------------------| - Deployment: Proven config propagates to control spine via Feedback Bus                                     |
+                (The Feedback Bus)          +--------------------------------------------------------------------------------------------------------------+
+====================================================================================================================================================================
+                                                            CORE META-LEARNING DATA CONTRACTS & INTERACTIONS
+====================================================================================================================================================================
+| ChangePackage        : [changes:bytes, confidence:float, reason:tuple, adg_delta_digest] -> Must pass Gauntlet to remove proposal_only flag.             |
+| CommitProofInvariant : Proof MUST bind to implementation commit. Prevents churn/oscillation via historical causal consistency check.                     |
+| PipelineConfig       : Immutable engine settings (shadow_thresholds, enabled_proposers, oscillation_policy) governing meta-learning behavior.            |
+| PipelineDependencies : Protocol-based injection (audit_store, rlhf_optimizer, risk_correlator) using Enhanced Redis MCP for ADG-aware analysis.          |
+| ApprovalDecision     : Enum[APPROVE, REJECT, DEFER] -> Final gate output based on RiskTier and validation results.                                       |
+| RCAReport            : [failure_category, root_cause, adg_blast_radius] -> Maps failures across layers via ADG edge correlation.                         |
+====================================================================================================================================================================
+ENHANCED ACCESS: tools/adg/enhanced_redis_mcp_client.py (HASH/SET/LIST) | TIMESTAMP: 2026-03-14 07:56 UTC | STATUS: Deterministic Replay Enabled
