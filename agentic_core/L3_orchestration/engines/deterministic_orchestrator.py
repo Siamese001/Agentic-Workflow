@@ -17,6 +17,7 @@ from typing import Any
 
 from agentic_core.L0_routing.types.governance_types import GovernedPayload
 from agentic_core.runtime.trace_context import get_trace_context
+from agentic_core.L4_state.authority.run_state_authority import get_run_state_authority
 from agentic_core.L3_orchestration.engines.handshake_state_machine import (
     HandshakeState,
     HandshakeStateMachine,
@@ -113,10 +114,14 @@ class DeterministicOrchestrator:
     No direct provider SDK imports, no embedding instantiation, no L4 mutation.
     """
 
-    def __init__(self, project_root: Path | None = None):
+    def __init__(self, project_root: Path | None = None, run_id: str = ""):
         self.project_root = project_root or Path.cwd()
         self.handshake_machine = HandshakeStateMachine()
-        self._agent_registry_hash = self._compute_agent_registry_hash()
+        self.run_id = run_id or "deterministic-orch"
+        self._rsa = get_run_state_authority()
+        # Initialize state in RSA
+        agent_registry_hash = self._compute_agent_registry_hash()
+        self._rsa.commit("agent_registry_hash", agent_registry_hash, run_id=self.run_id)
 
     def _compute_agent_registry_hash(self) -> str:
         """Compute hash of agent execution profile registry."""
@@ -215,12 +220,18 @@ class DeterministicOrchestrator:
         # Compute determinism digest
         tool_key_hash = self._compute_tool_key_hash(config.allowed_tools)
         handshake_sequence_hash = self.handshake_machine.get_sequence_hash()
+        # Read agent_registry_hash from RSA
+        agent_registry_hash, _ = self._rsa.read("agent_registry_hash")
         determinism_digest = compute_determinism_digest(
             plan_hash=plan_hash,
-            agent_registry_hash=self._agent_registry_hash,
+            agent_registry_hash=agent_registry_hash,
             tool_key_hash=tool_key_hash,
             handshake_sequence_hash=handshake_sequence_hash,
         )
+        # Commit orchestration state to RSA
+        self._rsa.commit("plan_hash", plan_hash, run_id=self.run_id)
+        self._rsa.commit("determinism_digest", determinism_digest, run_id=self.run_id)
+        self._rsa.snapshot("path_b_complete", run_id=self.run_id)
         digest_line = f"W5-DETERMINISM-DIGEST: {determinism_digest}"
 
         return OrchestrationResult(
@@ -273,13 +284,18 @@ class DeterministicOrchestrator:
         # Compute determinism digest
         tool_key_hash = self._compute_tool_key_hash(config.allowed_tools)
         handshake_sequence_hash = self.handshake_machine.get_sequence_hash()
+        # Read agent_registry_hash from RSA
+        agent_registry_hash, _ = self._rsa.read("agent_registry_hash")
         determinism_digest = compute_determinism_digest(
             plan_hash=plan_hash,
-            agent_registry_hash=self._agent_registry_hash,
+            agent_registry_hash=agent_registry_hash,
             tool_key_hash=tool_key_hash,
             handshake_sequence_hash=handshake_sequence_hash,
         )
-        digest_line = f"W5-DETERMINISM-DIGEST: {determinism_digest}"
+        # Commit orchestration state to RSA
+        self._rsa.commit("plan_hash", plan_hash, run_id=self.run_id)
+        self._rsa.commit("determinism_digest", determinism_digest, run_id=self.run_id)
+        self._rsa.snapshot("path_c_complete", run_id=self.run_id)
 
         return OrchestrationResult(
             success=True,
@@ -292,7 +308,7 @@ class DeterministicOrchestrator:
                 "tool_execution_detected": has_tool_intent,
                 "certification_required": has_tool_intent,
                 "sealed": True,
-                "digest_output": digest_line,
+                "digest_output": f"W5-DETERMINISM-DIGEST: {determinism_digest}",
             },
         )
 
@@ -328,13 +344,19 @@ class DeterministicOrchestrator:
         # Compute determinism digest
         tool_key_hash = self._compute_tool_key_hash(config.allowed_tools)
         handshake_sequence_hash = self.handshake_machine.get_sequence_hash()
+        # Read agent_registry_hash from RSA
+        agent_registry_hash, _ = self._rsa.read("agent_registry_hash")
         determinism_digest = compute_determinism_digest(
             plan_hash=plan_hash,
-            agent_registry_hash=self._agent_registry_hash,
+            agent_registry_hash=agent_registry_hash,
             tool_key_hash=tool_key_hash,
             handshake_sequence_hash=handshake_sequence_hash,
         )
-        digest_line = f"W5-DETERMINISM-DIGEST: {determinism_digest}"
+        # Commit orchestration state to RSA
+        self._rsa.commit("plan_hash", plan_hash, run_id=self.run_id)
+        self._rsa.commit("determinism_digest", determinism_digest, run_id=self.run_id)
+        self._rsa.commit("human_decision_artifact", human_artifact.to_dict(), run_id=self.run_id)
+        self._rsa.snapshot("path_d_complete", run_id=self.run_id)
 
         return OrchestrationResult(
             success=True,
@@ -348,7 +370,7 @@ class DeterministicOrchestrator:
                 "human_review_required": True,
                 "dispatched_to_l2": False,
                 "awaiting_human_decision": True,
-                "digest_output": digest_line,
+                "digest_output": f"W5-DETERMINISM-DIGEST: {determinism_digest}",
             },
         )
 
