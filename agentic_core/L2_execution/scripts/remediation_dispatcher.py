@@ -79,6 +79,11 @@ OUTPUT_FILENAME = "combined_heal_result.json"
 # sets needs_llm_escalation=True.  Extend this list as healers mature.
 # Allowlist of (check_id, healer_identity) pairs that can escalate
 # healer_identity is computed from the registry function __name__ attribute
+# gated_by_confidence: minimum confidence score required before tier-2/3 LLM dispatch.
+# Healing operations below this threshold are downgraded to PLAN-ONLY to prevent
+# low-confidence mutations from propagating through the pipeline.
+MINIMUM_HEAL_CONFIDENCE: float = 0.30  # P(fix_correct) floor — tune via healing_tier_config
+
 HEALER_ESCALATION_ALLOWLIST: frozenset[tuple[str, str]] = frozenset(
     {
         ("guardian_drift_detection", "heal_guardian_drift_detection"),
@@ -562,6 +567,15 @@ def _tier_escalate(
         invoker=invoker,
         agent_name="remediation_dispatcher",
     )
+
+    # gated_by_confidence: block dispatch when confidence is below floor
+    if decision.heal_confidence < MINIMUM_HEAL_CONFIDENCE:
+        return (
+            f"tier_escalation_skipped: check_id={check_id} "
+            f"reason=confidence_below_floor "
+            f"confidence={decision.heal_confidence:.4f} "
+            f"floor={MINIMUM_HEAL_CONFIDENCE}"
+        )
 
     # Determine decision reason
     if ctx.retry_count >= 2:

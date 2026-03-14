@@ -144,7 +144,7 @@ class CodeValidatorAgent(SovereignBaseAgent):
             return violations
 
         try:
-            with open(file_path, encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:  # validator: read-only open
                 content = f.read()
 
             # Parse AST to check syntax
@@ -176,7 +176,7 @@ class CodeValidatorAgent(SovereignBaseAgent):
             return violations
 
         try:
-            with open(file_path, encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:  # validator: read-only open
                 content = f.read()
 
             lines = content.split("\n")
@@ -227,7 +227,7 @@ class CodeValidatorAgent(SovereignBaseAgent):
             return violations
 
         try:
-            with open(file_path, encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:  # validator: read-only open
                 content = f.read()
 
             lines = content.split("\n")
@@ -279,7 +279,7 @@ class CodeValidatorAgent(SovereignBaseAgent):
             return violations
 
         try:
-            with open(file_path, encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:  # validator: read-only open
                 content = f.read()
 
             lines = content.split("\n")
