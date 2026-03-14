@@ -15,7 +15,8 @@ from enum import Enum
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L0_routing.engines.assembly_stage import GovernedPayload
+from agentic_core.L0_routing.types.governance_types import GovernedPayload
+from agentic_core.runtime.trace_context import get_trace_context
 from agentic_core.L3_orchestration.engines.handshake_state_machine import (
     HandshakeState,
     HandshakeStateMachine,
@@ -151,23 +152,28 @@ class DeterministicOrchestrator:
         Returns:
             OrchestrationResult with deterministic outcome
         """
-        config = OrchestrationConfig(
-            trace_id=trace_id,
-            policy_hash=policy_hash,
-            allowed_tools=allowed_tools,
-            route_mode=RouteMode(route_mode),
-            governed_payload=governed_payload,
-        )
+        with get_trace_context().run_frame(
+            layer="L3",
+            module="deterministic_orchestrator",
+            operation="orchestrate",
+        ):
+            config = OrchestrationConfig(
+                trace_id=trace_id,
+                policy_hash=policy_hash,
+                allowed_tools=allowed_tools,
+                route_mode=RouteMode(route_mode),
+                governed_payload=governed_payload,
+            )
 
-        # Route-specific orchestration
-        if config.route_mode == RouteMode.B:
-            return self._orchestrate_path_b(config)
-        elif config.route_mode == RouteMode.C:
-            return self._orchestrate_path_c(config)
-        elif config.route_mode == RouteMode.D:
-            return self._orchestrate_path_d(config)
-        else:
-            raise ValueError(f"Unsupported route_mode '{route_mode}'. Must be B, C, or D.")
+            # Route-specific orchestration
+            if config.route_mode == RouteMode.B:
+                return self._orchestrate_path_b(config)
+            elif config.route_mode == RouteMode.C:
+                return self._orchestrate_path_c(config)
+            elif config.route_mode == RouteMode.D:
+                return self._orchestrate_path_d(config)
+            else:
+                raise ValueError(f"Unsupported route_mode '{route_mode}'. Must be B, C, or D.")
 
     def _orchestrate_path_b(self, config: OrchestrationConfig) -> OrchestrationResult:
         """

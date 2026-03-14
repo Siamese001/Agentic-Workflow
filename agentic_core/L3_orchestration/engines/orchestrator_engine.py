@@ -46,7 +46,8 @@ from agentic_core.L0_routing.config import (
     get_validated_project_root,
 )
 from agentic_core.L0_routing.config.path_constants import DEFAULT_TIMEOUT
-from agentic_core.L0_routing.enforcement.runtime_guard import runtime_guard
+from agentic_core.L2_execution.enforcement.runtime_guard import runtime_guard
+from agentic_core.runtime.trace_context import get_trace_context
 from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
 from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
     OrchestrationResult,
@@ -80,27 +81,32 @@ class L3OrchestrationStrategy(OrchestrationStrategy):
     @runtime_guard("A.execute.orchestrator_engine")
     async def execute(self, agent: UnifiedAgent, **kwargs: Any) -> OrchestrationResult:
         """Execute orchestration logic via unified strategy."""
-        agent.log_info(f"Executing L3 orchestration in {self.mode} mode...")
-        workflow_steps = self.workflow_steps
-        completed_steps: list[str] = []
-        signals: list[str] = []
-        current_stage = "not_started"
-        for step in workflow_steps:
-            step_name = step.get("name", "unnamed")
-            step_type = step.get("type", "unknown")
-            current_stage = step_name
-            completed_steps.append(step_name)
-            if step_type == "validation":
-                signals.append("validation_completed")
-            elif step_type == "agent_call":
-                signals.append(f"{step_name}_completed")
-        return OrchestrationResult(
-            completed=True,
-            stage=current_stage if workflow_steps else "not_started",
-            next_actions=[],
-            signals=signals,
-            metadata={"mode": self.mode, "completed_steps": completed_steps, "agent": "Orchestrator"},
-        )
+        with get_trace_context().run_frame(
+            layer="L3",
+            module="orchestrator_engine",
+            operation="execute",
+        ):
+            agent.log_info(f"Executing L3 orchestration in {self.mode} mode...")
+            workflow_steps = self.workflow_steps
+            completed_steps: list[str] = []
+            signals: list[str] = []
+            current_stage = "not_started"
+            for step in workflow_steps:
+                step_name = step.get("name", "unnamed")
+                step_type = step.get("type", "unknown")
+                current_stage = step_name
+                completed_steps.append(step_name)
+                if step_type == "validation":
+                    signals.append("validation_completed")
+                elif step_type == "agent_call":
+                    signals.append(f"{step_name}_completed")
+            return OrchestrationResult(
+                completed=True,
+                stage=current_stage if workflow_steps else "not_started",
+                next_actions=[],
+                signals=signals,
+                metadata={"mode": self.mode, "completed_steps": completed_steps, "agent": "Orchestrator"},
+            )
 
     def get_available_agents(self) -> list[str]:
         """Get list of agents this orchestrator can coordinate."""

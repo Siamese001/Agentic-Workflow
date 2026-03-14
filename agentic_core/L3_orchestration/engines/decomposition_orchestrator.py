@@ -23,9 +23,8 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L0_routing.enforcement.runtime_guard import (
-    runtime_guard,
-)
+from agentic_core.L2_execution.enforcement.runtime_guard import runtime_guard
+from agentic_core.runtime.trace_context import get_trace_context
 from agentic_core.utils.timeout_decorator_util import timeout
 
 _logger = logging.getLogger(__name__)
@@ -274,20 +273,25 @@ class DecompositionOrchestrator(SovereignBaseAgent):
         Returns:
             Execution results dictionary
         """
-        results = {
-            "mission_id": plan.mission_id,
-            "dry_run": dry_run,
-            "tasks_executed": 0,
-            "tasks_skipped": 0,
-            "errors": [],
-        }
-        for task in plan.tasks:
-            if dry_run:
-                results["tasks_skipped"] += 1
-            else:
-                results["tasks_executed"] += 1
-                task.status = "completed"
-        return results
+        with get_trace_context().run_frame(
+            layer="L3",
+            module="decomposition_orchestrator",
+            operation="execute",
+        ):
+            results = {
+                "mission_id": plan.mission_id,
+                "dry_run": dry_run,
+                "tasks_executed": 0,
+                "tasks_skipped": 0,
+                "errors": [],
+            }
+            for task in plan.tasks:
+                if dry_run:
+                    results["tasks_skipped"] += 1
+                else:
+                    results["tasks_executed"] += 1
+                    task.status = "completed"
+            return results
 
     @timeout(300)
     # guardian: allow-magic-config

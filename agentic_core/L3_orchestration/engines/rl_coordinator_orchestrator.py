@@ -3,8 +3,12 @@ from __future__ import annotations
 "\nSpecialized Coordinators for Unified Workflow Engine\n\n10 coordinators replacing 35+ overlapping orchestrators:\n1. RLCoordinatorOrchestrator - RL strategies (PPO, Q-learning, A2C)\n2. TerritoryCoordinator - Territory management\n3. MCPCoordinator - Tool management\n4. MissionCoordinator - Mission execution\n5. ModelCoordinator - Provider management\n6. HealthCoordinator - System health\n7. GovernanceCoordinator - Policy enforcement\n8. UtilityCoordinator - Support functions\n9. CachingCoordinator - Optimization\n10. SecurityCoordinator - Hardening\n"
 from typing import Any
 
-from .base_coordinator import CoordinatorCapability, WorkflowCoordinator
-from .execution import ExecutionStatus, WorkflowContext, WorkflowResult
+from agentic_core.L3_orchestration.engines.coordinator_capability_orchestrator import (
+    CoordinatorCapability,
+    WorkflowContext,
+    WorkflowResult,
+)
+from agentic_core.runtime.trace_context import get_trace_context
 
 
 class RLCoordinatorOrchestrator(WorkflowCoordinator):
@@ -24,22 +28,27 @@ class RLCoordinatorOrchestrator(WorkflowCoordinator):
 
     async def coordinate(self, context: WorkflowContext) -> WorkflowResult:
         """Execute RL-based coordination."""
-        strategy = context.input_data.get("rl_strategy", "ppo")
-        action_space = context.input_data.get("action_space", [])
-        state = context.input_data.get("state", {})
-        action = await self._select_action(strategy, state, action_space)
-        reward = context.input_data.get("reward", 0.0)
-        self.reward_history.append(reward)
-        return WorkflowResult(
-            workflow_id=context.workflow_id,
-            status=ExecutionStatus.COMPLETED,
-            output={
-                "strategy": strategy,
-                "action": action,
-                "reward": reward,
-                "cumulative_reward": sum(self.reward_history),
-            },
-        )
+        with get_trace_context().run_frame(
+            layer="L3",
+            module="rl_coordinator_orchestrator",
+            operation="coordinate",
+        ):
+            strategy = context.input_data.get("rl_strategy", "ppo")
+            action_space = context.input_data.get("action_space", [])
+            state = context.input_data.get("state", {})
+            action = await self._select_action(strategy, state, action_space)
+            reward = context.input_data.get("reward", 0.0)
+            self.reward_history.append(reward)
+            return WorkflowResult(
+                workflow_id=context.workflow_id,
+                status=ExecutionStatus.COMPLETED,
+                output={
+                    "strategy": strategy,
+                    "action": action,
+                    "reward": reward,
+                    "cumulative_reward": sum(self.reward_history),
+                },
+            )
 
     async def _select_action(self, strategy: str, state: dict, actions: list) -> Any:
         """Select action using RL strategy."""
