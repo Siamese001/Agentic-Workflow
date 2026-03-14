@@ -48,6 +48,11 @@ import logging
 from dataclasses import dataclass, field
 from typing import Any
 
+from agentic_core.L2_execution.enforcement.guardrail_gate import (
+    GuardrailGate,
+    GuardrailViolationError,
+    get_guardrail_gate,
+)
 from agentic_core.L3_orchestration.registry.agent_capability_registry import (
     AgentCapabilityRegistry,
     get_agent_capability_registry,
@@ -56,6 +61,7 @@ from agentic_core.L3_orchestration.registry.agent_capability_registry import (
 logger = logging.getLogger(__name__)
 
 _ADG_EDGE_LOGGER = logging.getLogger("adg.agent_executes_agent")
+_SAFETY_LOGGER = logging.getLogger("adg.reenters_safety")
 
 
 class DispatchDeniedError(PermissionError):
@@ -76,6 +82,7 @@ class DispatchRecord:
     capability_token_id: str
     permitted: bool
     shim_mode: bool
+    guardrail_verdict: str = ""
     error: str = ""
     result_type: str = ""
 
@@ -108,9 +115,22 @@ class AgentDispatchRegistry:
         self,
         capability_registry: AgentCapabilityRegistry | None = None,
         shim_mode: bool = True,
+        guardrail_gate: GuardrailGate | None = None,
+        guardrail_mode: str = "warn",
     ) -> None:
+        """Initialise the dispatch registry.
+
+        Args:
+            capability_registry: Capability registry for handoff validation.
+            shim_mode: If True, capability failures warn but do not block.
+            guardrail_gate: Pre-execution guardrail gate. Defaults to process-level gate.
+            guardrail_mode: ``"warn"`` (log only) or ``"enforce"`` (raise on DENY).
+                            Wave 3 hardening: start ``warn``, switch to ``enforce`` per sublayer.
+        """
         self._cap_registry = capability_registry or get_agent_capability_registry()
         self.shim_mode = shim_mode
+        self._guardrail_gate = guardrail_gate or get_guardrail_gate()
+        self.guardrail_mode = guardrail_mode
         self._instances: dict[str, _RegisteredInstance] = {}
         self._dispatch_ledger: list[DispatchRecord] = []
 
@@ -171,6 +191,48 @@ class AgentDispatchRegistry:
         target_class = type(target_instance).__name__
         token_id = _extract_token_id(capability_token)
 
+        # --- Wave 3: Guardrail pre-check (applies_guardrail ADG edge) ---
+        guardrail_op = f"dispatch:{caller}->{target_class}.{method}"
+        guardrail_verdict = "allow"
+        try:
+            gr_result = self._guardrail_gate.check(
+                operation=guardrail_op,
+                target=f"{target_class}.{method}",
+                metadata={"caller": caller, "token_id": token_id},
+            )
+            guardrail_verdict = gr_result.verdict.value
+        except GuardrailViolationError as gve:
+            guardrail_verdict = "deny"
+            _SAFETY_LOGGER.warning(
+                "reenters_safety caller=%s target=%s method=%s reason=%s",
+                caller,
+                target_class,
+                method,
+                str(gve),
+            )
+            record = DispatchRecord(
+                caller=caller,
+                target_class=target_class,
+                method=method,
+                capability_token_id=token_id,
+                permitted=False,
+                shim_mode=self.shim_mode,
+                guardrail_verdict="deny",
+                error=f"guardrail_deny:{gve}",
+            )
+            self._dispatch_ledger.append(record)
+            if self.guardrail_mode == "enforce":
+                raise DispatchDeniedError(
+                    f"AgentDispatchRegistry: guardrail denied dispatch. "
+                    f"caller={caller} target={target_class}.{method}"
+                ) from gve
+            logger.warning(
+                "DISPATCH_REGISTRY guardrail_blocked (warn mode: continuing) "
+                "caller=%s target=%s method=%s",
+                caller, target_class, method,
+            )
+
+        # --- Capability check ---
         permitted, denial_reason = self._check_capability(
             caller=caller,
             target_class=target_class,
@@ -186,6 +248,7 @@ class AgentDispatchRegistry:
                 capability_token_id=token_id,
                 permitted=False,
                 shim_mode=self.shim_mode,
+                guardrail_verdict=guardrail_verdict,
                 error=denial_reason,
             )
             self._dispatch_ledger.append(record)
@@ -220,17 +283,19 @@ class AgentDispatchRegistry:
             capability_token_id=token_id,
             permitted=True,
             shim_mode=self.shim_mode,
+            guardrail_verdict=guardrail_verdict,
             result_type=result_type,
         )
         self._dispatch_ledger.append(record)
 
         _ADG_EDGE_LOGGER.debug(
-            "agent_executes_agent caller=%s target=%s method=%s token=%s result_type=%s",
+            "agent_executes_agent caller=%s target=%s method=%s token=%s result_type=%s guardrail=%s",
             caller,
             target_class,
             method,
             token_id,
             result_type,
+            guardrail_verdict,
         )
         return result
 
@@ -308,6 +373,11 @@ class AgentDispatchRegistry:
         """Disable shim fallback — enable at Wave 2 acceptance gate."""
         self.shim_mode = False
         logger.info("DISPATCH_REGISTRY enforce mode enabled — shim disabled")
+
+    def set_guardrail_enforce(self) -> None:
+        """Switch guardrail from warn to enforce — enable at Wave 3 acceptance gate."""
+        self.guardrail_mode = "enforce"
+        logger.info("DISPATCH_REGISTRY guardrail enforce mode enabled")
 
 
 def _extract_token_id(capability_token: Any) -> str:
