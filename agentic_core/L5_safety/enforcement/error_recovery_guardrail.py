@@ -1,5 +1,12 @@
 from agentic_core.L0_routing.providers.clock_provider import ClockProvider as clock_provider
 from __future__ import annotations
+
+# Configuration constants
+DEFAULT_TIMEOUT = 300
+MAX_ERRORS = 1000
+SUCCESS_RATE_MULTIPLIER = 100
+DEFAULT_ERROR_LOG_LIMIT = 100
+
 '\nError Recovery Guardrail - Consolidated Error Handling & Self-Healing\n\nMerges:\n- SecureErrorHandler\n- TerritoryHealer\n- SelfUpdatingSafetyEngine\n\nComposable Rules:\n- error_classification: Categorize error types\n- recovery_strategy: Select appropriate recovery\n- self_healing: Auto-recovery mechanisms\n'
 import time
 import traceback
@@ -151,8 +158,8 @@ class ErrorRecoveryGuardrail:
 
     def get_statistics(self) -> dict[str, Any]:
         """Get error handling statistics."""
-        return {'errors_handled': self.errors_handled, 'recoveries_successful': self.recoveries_successful, 'recoveries_failed': self.recoveries_failed, 'success_rate': self.recoveries_successful / self.errors_handled * 100 if self.errors_handled > 0 else 0, 'error_log_size': len(self.error_log)}
+        return {'errors_handled': self.errors_handled, 'recoveries_successful': self.recoveries_successful, 'recoveries_failed': self.recoveries_failed, 'success_rate': self.recoveries_successful / self.errors_handled * SUCCESS_RATE_MULTIPLIER if self.errors_handled > 0 else 0, 'error_log_size': len(self.error_log)}
 
-    def get_error_log(self, limit: int=100) -> list[dict[str, Any]]:
+    def get_error_log(self, limit: int=DEFAULT_ERROR_LOG_LIMIT) -> list[dict[str, Any]]:
         """Get recent error log."""
         return [{'type': e.error_type, 'message': e.message, 'category': e.category.value, 'severity': e.severity, 'recoverable': e.recoverable, 'timestamp': e.timestamp} for e in self.error_log[-limit:]]

@@ -73,6 +73,7 @@ class EnhancedRedisMCPClient:
                 return result
             except Exception as exc:
                 logger.warning(f"Direct Redis HASH get failed for {key}: {exc}")
+                return None
         
         logger.error(f"Cannot retrieve HASH {key}: both MCP and direct Redis failed")
         return None
@@ -88,6 +89,7 @@ class EnhancedRedisMCPClient:
                 return result
             except Exception as exc:
                 logger.warning(f"Direct Redis SET get failed for {key}: {exc}")
+                return None
         
         logger.error(f"Cannot retrieve SET {key}: both MCP and direct Redis failed")
         return None
