@@ -13,6 +13,11 @@ Exit codes:
     2 - Timeout or critical error
 """
 from agentic_core.L0_routing.providers.clock_provider import ClockProvider as clock_provider
+
+# Configuration constants
+DEFAULT_TIMEOUT = 300
+DEFAULT_REPORT_INTERVAL = 30
+
 import argparse
 import json
 import subprocess
@@ -56,7 +61,7 @@ class GuardrailSuite:
 class GuardrailOrchestrator:
     """Orchestrates CI guardrail execution with timeout and RCA."""
 
-    def __init__(self, default_timeout: int=300, verbose: bool=False):
+    def __init__(self, default_timeout: int=DEFAULT_TIMEOUT, verbose: bool=False):
         self.default_timeout = default_timeout
         self.verbose = verbose
         self.results: List[GuardrailResult] = []
@@ -198,7 +203,7 @@ class GuardrailOrchestrator:
 def main() -> int:
     """Main entry point."""
     parser = argparse.ArgumentParser(description='Run all CI guardrails with timeout protection')
-    parser.add_argument('--timeout', type=int, default=300, help='Default timeout in seconds')
+    parser.add_argument('--timeout', type=int, default=DEFAULT_TIMEOUT, help='Default timeout in seconds')
     parser.add_argument('--verbose', action='store_true', help='Verbose output')
     parser.add_argument('--report', type=str, help='Save JSON report to file')
     args = parser.parse_args()
