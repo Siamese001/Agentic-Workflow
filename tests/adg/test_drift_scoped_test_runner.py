@@ -326,6 +326,45 @@ class TestRun:
             code = run()
         assert code == 1
 
+# ---------------------------------------------------------------------------
+# Hardening tests (B4–B5)
+# ---------------------------------------------------------------------------
+
+
+class TestHardening:
+    def test_pytest_timeout_returns_exit_2(self, tmp_path):
+        """B4: pytest timeout → _run_pytest returns 2 instead of hanging."""
+        import subprocess
+
+        test_file = tmp_path / "tests" / "slow_test.py"
+        test_file.parent.mkdir(parents=True)
+        test_file.write_text("def test_slow(): pass\n")
+
+        with patch("subprocess.run", side_effect=subprocess.TimeoutExpired("pytest", 300)):
+            with patch.object(runner, "PROJECT_ROOT", tmp_path):
+                code = _run_pytest(["tests/slow_test.py"])
+        assert code == 2
+
+    def test_redis_connection_error_returns_exit_2(self):
+        """B5: Redis down → run() returns 2 instead of raising."""
+        import redis as redis_lib
+
+        with patch.object(runner, "_connect", side_effect=redis_lib.ConnectionError("down")):
+            code = run()
+        assert code == 2
+
+    def test_redis_ping_failure_returns_exit_2(self):
+        """B5: Redis connects but ping raises → run() returns 2."""
+        import redis as redis_lib
+
+        r = MagicMock()
+        r.ping.side_effect = redis_lib.ConnectionError("ping failed")
+        with patch.object(runner, "_connect", return_value=r):
+            code = run()
+        assert code == 2
+
+
+class TestMultipleChangedFiles:
     def test_multiple_changed_files_aggregates_test_paths(self, tmp_path):
         covers = {
             "apps_rg/reasoning/Foo.py": ["tests/unit/test_Foo.py"],

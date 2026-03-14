@@ -273,3 +273,75 @@ class TestCheck:
         with patch.object(ratchet, "_connect", return_value=r):
             code = check()
         assert code == 0
+
+
+# ---------------------------------------------------------------------------
+# Hardening tests (B1–B3)
+# ---------------------------------------------------------------------------
+
+
+class TestHardening:
+    def test_corrupt_blast_top_entry_is_skipped_not_raised(self):
+        """B1: corrupt JSON in blast_top must not crash _read_current."""
+        r = _mock_redis_with_state(
+            blast_top=["NOT_VALID_JSON", json.dumps({"path": "foo.py", "fan_out": 5})]
+        )
+        result = _read_current(r)
+        assert result is not None
+        _, _, blast_top, _ = result
+        # corrupt entry skipped; valid entry present
+        assert len(blast_top) == 1
+        assert blast_top[0]["path"] == "foo.py"
+
+    def test_all_corrupt_blast_top_returns_empty_list(self):
+        """B1: all corrupt entries → empty blast_top, no crash."""
+        r = _mock_redis_with_state(blast_top=["BAD", "WORSE"])
+        result = _read_current(r)
+        assert result is not None
+        _, _, blast_top, _ = result
+        assert blast_top == []
+
+    def test_redis_connection_error_returns_exit_2(self):
+        """B2: Redis down → check() returns 2 instead of raising."""
+        import redis as redis_lib
+
+        with patch.object(ratchet, "_connect", side_effect=redis_lib.ConnectionError("down")):
+            code = check()
+        assert code == 2
+
+    def test_redis_ping_failure_returns_exit_2(self):
+        """B2: Redis connects but ping raises → check() returns 2."""
+        import redis as redis_lib
+
+        r = MagicMock()
+        r.ping.side_effect = redis_lib.ConnectionError("ping failed")
+        with patch.object(ratchet, "_connect", return_value=r):
+            code = check()
+        assert code == 2
+
+    def test_improvement_exactly_epsilon_does_not_update_baseline(self):
+        """B3: score improvement of exactly EPSILON does NOT trigger baseline update."""
+        prior = 0.749
+        current = prior - EPSILON  # exactly epsilon improvement
+        baseline = json.dumps(
+            {"score": prior, "uncovered_modules": [], "timestamp": 1000.0}
+        )
+        r = _mock_redis_with_state(score=str(current), uncovered=[], baseline=baseline)
+        with patch.object(ratchet, "_connect", return_value=r):
+            code = check()
+        assert code == 0
+        # baseline NOT updated (current == prior - EPSILON, condition is strict <)
+        r.set.assert_not_called()
+
+    def test_improvement_beyond_epsilon_updates_baseline(self):
+        """B3: score improvement beyond EPSILON DOES update baseline."""
+        prior = 0.749
+        current = prior - EPSILON - 0.001
+        baseline = json.dumps(
+            {"score": prior, "uncovered_modules": [], "timestamp": 1000.0}
+        )
+        r = _mock_redis_with_state(score=str(current), uncovered=[], baseline=baseline)
+        with patch.object(ratchet, "_connect", return_value=r):
+            code = check()
+        assert code == 0
+        r.set.assert_called_once()

@@ -94,7 +94,12 @@ def _read_current(r: redis.Redis) -> tuple[float, list[str], list[dict], float] 
     ts = float(subscores.get("timestamp", 0))
     uncovered = r.lrange("adg:drift:uncovered", 0, -1)
     blast_raw = r.lrange("adg:drift:blast_top", 0, 0)  # just the top entry
-    blast_top = [json.loads(x) for x in blast_raw]
+    blast_top: list[dict] = []
+    for x in blast_raw:
+        try:
+            blast_top.append(json.loads(x))
+        except Exception:
+            pass
     return float(score_raw), list(uncovered), blast_top, ts
 
 
@@ -136,7 +141,12 @@ def check(promote: bool = False) -> int:
     Returns:
         Exit code (0=pass, 1=fail, 2=error).
     """
-    r = _connect()
+    try:
+        r = _connect()
+        r.ping()
+    except Exception as exc:
+        print(f"[drift-ratchet] ERROR: cannot connect to Redis: {exc}")
+        return 2
 
     # Read current drift state
     state = _read_current(r)
@@ -205,7 +215,7 @@ def check(promote: bool = False) -> int:
             print(f"[drift-ratchet] FAIL: highest blast module newly uncovered: {blast_top[0]}")
             return 1
 
-    # Pass — update baseline if score improved
+    # Pass — update baseline if score improved beyond epsilon
     if current_score < prior_score - EPSILON:
         _write_baseline(r, current_score, uncovered)
         print(f"[drift-ratchet] baseline improved: {prior_score:.4f} → {current_score:.4f}")

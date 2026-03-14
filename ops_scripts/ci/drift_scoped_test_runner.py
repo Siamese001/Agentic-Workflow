@@ -123,19 +123,24 @@ def _run_pytest(test_paths: list[str]) -> int:
         print("[drift-ci] WARNING: no resolvable test paths to run")
         return 0
 
-    proc = subprocess.run(
-        [
-            sys.executable,
-            "-m",
-            "pytest",
-            *abs_paths,
-            "--tb=short",
-            "-q",
-            "--no-header",
-        ],
-        cwd=str(PROJECT_ROOT),
-    )
-    return proc.returncode
+    try:
+        proc = subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "pytest",
+                *abs_paths,
+                "--tb=short",
+                "-q",
+                "--no-header",
+            ],
+            cwd=str(PROJECT_ROOT),
+            timeout=300,
+        )
+        return proc.returncode
+    except subprocess.TimeoutExpired:
+        print("[drift-ci] ERROR: pytest timed out after 300s")
+        return 2
 
 
 def _write_ci_run_result(
@@ -178,7 +183,12 @@ def run(base_ref: str = "origin/main", dry_run: bool = False) -> int:
     Returns:
         Exit code.
     """
-    r = _connect()
+    try:
+        r = _connect()
+        r.ping()
+    except Exception as exc:
+        print(f"[drift-ci] ERROR: cannot connect to Redis: {exc}")
+        return 2
 
     # 1. Get changed prod files
     changed_files = _changed_prod_files(base_ref)

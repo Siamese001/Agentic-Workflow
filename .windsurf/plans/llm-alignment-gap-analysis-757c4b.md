@@ -1,207 +1,197 @@
-# LLM Alignment Architecture Gap Analysis & Implementation Plan
+# RLHF & Supervised Fine-Tuning Gap Analysis
 
-Query of the ADG (8,141 nodes, 221,154 edges) reveals that RLHF, SFT, and related LLM alignment concepts are **partially present as surface-level terms but completely absent as first-class architectural abstractions**, with 4 critical dead-import seams in the LLM gateway layer.
-
----
-
-## ADG Query Findings
-
-### Concept Presence/Absence (PROD nodes only)
-
-**ABSENT — zero nodes anywhere in prod:**
-- Fine-Tuning / SFT
-- Honesty constraint
-- Safety Filter
-- Toxicity Detection
-- Uncertainty Estimation
-- Refusal Policy
-- Content Moderation
-- Jailbreak Prevention
-
-**PRESENT but shallow (term appears in names, not as dedicated abstractions):**
-
-| Concept | Node Count | Notes |
-|---|---|---|
-| RLHF | 15 | Scattered across L_SL embedders + L5 DDD checks |
-| Reward Modeling | 5 | Only in L_SL preference embedder names |
-| DPO | 43 | Mostly test stubs, L0 routing types |
-| PPO | 11 | Routing config only |
-| Constitutional AI | 45 | `DDDAlignmentAgent` (L5) — DDD structural, NOT LLM constitutional AI |
-| Preference Data | 31 | `path_d_preference_embedder` in L_SL |
-| Guardrails | 172 | `guardrails_util.py` in L1 — **most mature alignment surface** |
-| Human Feedback | 45 | Comments/doc strings, no dedicated module |
-| Hallucination Detection | 17 | Scattered, no dedicated module |
-| Grounding/Factuality | 12 | RAG orchestrator in L_PG |
-
-> **Critical insight:** "alignment" in this codebase means *structural/DDD alignment* (file location, naming conventions), NOT LLM behavioral alignment. `DDDAlignmentAgent` validates domain-driven design rules, not model outputs.
+Redis hot-cache query (live, `adg:snapshot` digest `475fba08`, 8,141 nodes) shows RLHF optimizer and reward model modules exist in `L_SL` but are **islands — nobody calls them from outside L_SL, no SFT pipeline exists anywhere, and the feedback loop from LLM outputs back to training is completely absent**.
 
 ---
 
-### Existing LLM Infrastructure (foundation to build on)
+## What Redis Says EXISTS (RLHF-adjacent)
 
-**L2 Execution — LLM Gateway:**
-- `agentic_core/L2_execution/enforcement/SovereignLLMGateway.py` — single choke-point for all LLM calls
-- `agentic_core/L2_execution/healers/qwen_vllm_inference.py` — local vLLM (Qwen) inference
-- `agentic_core/L2_execution/healers/vllm_process_manager.py` — vLLM process lifecycle
-- `agentic_core/L2_execution/types/llm_replay_types.py` — replay/determinism modes
-- `agentic_core/L2_execution/types/vllm_*` — backpressure, serving profiles, token budgets
+### `system_learning/engines/rlhf_optimizer.py` — L_SL
 
-**L1 Cognition — closest existing alignment logic:**
-- `agentic_core/L1_cognition/utils/guardrails_util.py` — runtime guardrails ✓
-- `agentic_core/L1_cognition/utils/filter_inappropriate_content_util.py` — content filter ✓
-- `agentic_core/L1_cognition/validators/truth_keeper_validator.py` — factuality ✓
-- `agentic_core/L1_cognition/validators/dark_reasoning_visitor_validator.py` — dark reasoning detection ✓
-- `agentic_core/L1_cognition/validators/semantic_gatekeeper_validator.py` ✓
-- **Missing:** reward signal, preference collection, fine-tuning loop, RLHF trainer
+| Symbol | Imported by |
+|---|---|
+| `RLHFOptimizer` | `meta_learning_pipeline.py` (L_SL only) |
+| `DefaultDeterministicRLHFOptimizer` | `pipeline_factory.py` (L_SL only) + 2 test files |
 
-**L5 Safety:**
-- `agentic_core/L5_safety/reasoning/DDDAlignmentAgent.py` — structural, not behavioral alignment
-- `agentic_core/L5_safety/types/heal_llm_seam_types.py` — LLM healing seam contracts
+- The module file itself (`rlhf_optimizer.py`) is imported by **nobody** at module level
+- `RLHFOptimizer` feeds into `meta_learning_pipeline` — but only within L_SL
+- **No `covers` edges** on the module node itself
 
-**L_SL System Learning (closest to RLHF infrastructure):**
-- `system_learning/engines/path_d_preference_embedder.py` — `PathDPreferenceEmbedder` ✓
-- `system_learning/engines/openai_embedder.py` — `OpenAIEmbedder`, `BGEEmbedder` ✓
-- `system_learning/engines/prompt_outcome_embedder.py` — `PromptOutcomeEmbedder` ✓
-- `system_learning/arbitration/engine.py` — arbitration engine ✓
-- `system_learning/confidence/engine.py` — confidence scoring ✓
+### `system_learning/engines/rlhf_optimizer_impl.py` — L_SL
 
-**L_PG Prompt Governance:**
-- `agentic_core/knowledge/engine/rag_orchestrator.py` — `SovereignRagOrchestrator` ✓
-- `agentic_core/prompt_governance/` — prompt contracts ✓
+- Contains `DefaultRLHFOptimizer`, `RLHFChangePackage`
+- Imported by **nobody** (module level)
+- All symbol importers are a single ADG test file only
+- **No `covers` edges**
+
+### `system_learning/engines/governance_reward_model.py` — L_SL
+
+- Contains `GovernanceRewardModel`, `RewardModelConfig`, `score_proposal`
+- `GovernanceRewardModel` imported only by `meta_learning_bus.py` (L_SL)
+- `score_proposal` imported only by 2 test files
+- Scores `cfg.weight_policy_compliance`, `s.policy_compliance` — **governance/policy scoring, not LLM output quality**
+- **No `covers` edges** on module node
+
+### `agentic_core/L6_observability/engines/hitl_dpo_pair_generator.py` — L6
+
+- Has `produces_preference_pair` edge → `DPOPair`
+- Imported by **nobody**
+- No `covers` edges
+
+### `agentic_core/utils/workflow_engines/dpo_batch_builder.py` — L_SHARED
+
+- Has `builds_dpo_batch` → `DPOBatch` and `produces_preference_pair` → `DPOPair`
+- Module imported by **nobody**
+- All symbol importers are a single ADG test file
+- No `covers` edges
+
+### `system_learning/engines/meta_learning_bus.py` — L_SL
+
+- Imports `GovernanceRewardModel` + `OptimizationProposalEngine`
+- Has `builds_dpo_batch` edges (43 total in snapshot)
+- **No `covers` edges** on module node
+- This is the closest thing to an RLHF loop — but it scores *governance policy compliance*, not human preference alignment
 
 ---
 
-### Dead Import Seams (Broken LLM Wiring)
+## What is COMPLETELY ABSENT (Redis file index scan)
 
-| Layer | File | Dead Symbol |
-|---|---|---|
-| L_RUNTIME | `agentic_core/runtime/exceptions/workflow_exceptions.py` | `LLMResponse` (core_contracts_types) |
-| L_SHARED | `agentic_core/interfaces/execution_agents.py` | `EmbeddingSovereignAgent` |
-| L_SHARED | `agentic_core/interfaces/gateway.py` | `SovereignLLMGateway` |
-| L_TOOLS | `tools/canonical_hash.py` | `vllm_boundary_client.canonical_hash` |
+Every pattern returned **zero keys** in `adg:nodes:by_file:*`:
 
-The `interfaces/gateway.py` dead import of `SovereignLLMGateway` is most critical — the shared interface layer cannot reach the L2 gateway.
+| Pattern | Meaning |
+|---|---|
+| `*sft*` | Supervised Fine-Tuning pipeline |
+| `*fine_tun*` | Fine-tuning in any form |
+| `*finetune*` | Fine-tuning in any form |
+| `*trainer*` | Training loop / trainer class |
+| `*training*` | Training data or training runner |
+| `*feedback_collect*` | Human feedback collection |
+| `*human_feedback*` | Human feedback ingestion |
+| `*annotation*` | Labeling / annotation pipeline |
 
 ---
 
-### LLM Import Fan-Out (Dependency Heat Map)
+## Gap Diagnosis
+
+### The Core Problem: The RLHF Loop Is Broken in 3 Places
 
 ```
-L2   → L2:          43 imports  (self-contained vLLM stack)
-TOOLS→ L2:          15 imports
-APP  → SHARED:       8 imports
-SHARED→ L5:          7 imports
-SHARED→ L2:          4 imports
-L0   → L2:           2 imports
-L3   → L2:           1 import
-L1   → L2:           0 imports  ← L1 has NO direct LLM imports (all through L2 gateway)
+[LLM generates output]
+        │
+        │  ← GAP 1: no feedback capture from live LLM outputs
+        ▼
+[Human/auto preference labeling]
+        │
+        │  ← GAP 2: no annotation / labeling pipeline exists
+        ▼
+[Preference dataset]  ←  hitl_dpo_pair_generator exists but is imported by NOBODY
+        │
+        │  ← GAP 3: dpo_batch_builder is imported by NOBODY;
+        │            rlhf_optimizer_impl is imported by NOBODY
+        ▼
+[RLHF / SFT training]  ← no trainer, no training loop, no SFT pipeline
+        │
+        ▼
+[Updated model weights]  ← no fine-tune infra, no model versioning
+        │
+        ▼
+[SovereignLLMGateway]  ← existing, but receives no signal from the above
 ```
 
-L1 has zero direct LLM imports — cognition calls all route through L2 gateway. This is correct per layer gravity but means alignment logic must also route through L2.
+### The Reward Model Is Misaligned
+
+`GovernanceRewardModel` scores **policy compliance** (whether an optimization proposal follows governance rules), not **LLM output quality / human preference**. This is a governance reward model, not an RLHF reward model. The naming conflates the two.
+
+### `meta_learning_bus` is a Governance Loop, not an RLHF Loop
+
+`meta_learning_bus.py` imports `GovernanceRewardModel` + `OptimizationProposalEngine` and builds DPO batches — but these are for *agentic code proposals* evaluated against governance policy, not for fine-tuning language model weights based on human preference feedback.
 
 ---
 
-## Gap Summary
+## Precise Gap Table
 
-### Tier 1 — Completely Absent (No Architecture Support)
-
-1. **RLHF training loop** — No reward model, no human feedback collection, no policy gradient
-2. **Supervised Fine-Tuning (SFT)** — No fine-tuning pipeline, dataset management, or training config
-3. **Preference dataset collection** — `PathDPreferenceEmbedder` exists but no pipeline to generate/store preference pairs from live agent outputs
-4. **Refusal policy engine** — No dedicated module decides when/how to refuse; `guardrails_util` is closest but rule-based only
-5. **Safety classifier / content moderation** — `filter_inappropriate_content_util.py` exists but no toxicity model or moderation scorer
-6. **Uncertainty/calibration** — No calibration layer on vLLM outputs; L_SL confidence scoring is internal arbitration, not model calibration
-7. **Jailbreak / prompt injection defense** — `sovereign_precommit_no_raw_prompts_util.py` is pre-commit only; no runtime defense
-
-### Tier 2 — Partial / Shallow (Needs Depth)
-
-8. **Constitutional AI** — `DDDAlignmentAgent` does structural validation only; no principles-based self-critique loop
-9. **Hallucination detection** — 17 nodes but no dedicated hallucination scorer; scattered logic
-10. **Grounding** — `SovereignRagOrchestrator` provides retrieval but no grounding verifier against retrieved docs
-11. **Human feedback integration** — `PromptOutcomeEmbedder` and `PathDPreferenceEmbedder` exist but no ingestion pipeline tying agent outputs → preference dataset → L_SL
-12. **LLM gateway dead seams** — `interfaces/gateway.py` cannot reach `SovereignLLMGateway` (dead import must be fixed first)
+| RLHF/SFT Component | Status | Evidence |
+|---|---|---|
+| **Reward model (LLM output quality)** | **ABSENT** | `governance_reward_model` scores policy, not LLM output |
+| **Human preference collection** | **ABSENT** | No `human_feedback`, `annotation`, `feedback_collect` files |
+| **Preference dataset store** | **ABSENT** | `hitl_dpo_pair_generator` exists but wired to nobody |
+| **DPO training batch pipeline** | **ABSENT** | `dpo_batch_builder` imported by nobody |
+| **RLHF policy optimizer (weights)** | **ABSENT** | `rlhf_optimizer_impl` imported by nobody; no training runner |
+| **SFT dataset builder** | **ABSENT** | Zero `sft`/`fine_tun`/`trainer` files |
+| **SFT training loop** | **ABSENT** | Zero `training`/`trainer` files |
+| **Feedback loop closure** | **ABSENT** | `SovereignLLMGateway` receives no signal from L_SL |
+| **RLHF optimizer** (interface) | Partial | `RLHFOptimizer` in `meta_learning_pipeline` — L_SL internal only |
+| **DPO pair types** | Partial | `dpo_types.py`, `BoundedDPOPair` exist in L6 |
+| **Governance reward model** | Present | Scores policy compliance only — wrong domain |
 
 ---
 
 ## Implementation Plan
 
-### Phase 0 — Fix Dead Seams (prerequisite, ~1 day)
+### Phase 1 — Human Preference Feedback Capture (~3 days)
 
-| # | Action | File |
-|---|---|---|
-| 0.1 | Fix `SovereignLLMGateway` dead import | `agentic_core/interfaces/gateway.py` |
-| 0.2 | Fix `EmbeddingSovereignAgent` dead import | `agentic_core/interfaces/execution_agents.py` |
-| 0.3 | Fix `LLMResponse` dead import | `agentic_core/runtime/exceptions/workflow_exceptions.py` |
-| 0.4 | Fix `vllm_boundary_client.canonical_hash` dead import | `tools/canonical_hash.py` |
+These modules capture LLM output quality signals from live inference — the entry point of RLHF.
 
-### Phase 1 — L2 Alignment Seam (~3 days)
+| # | New Module | Layer | Purpose |
+|---|---|---|---|
+| 1.1 | `system_learning/alignment/feedback_collector.py` | L_SL | Capture (prompt, chosen, rejected) triples from `SovereignLLMGateway` completions |
+| 1.2 | `system_learning/alignment/preference_pair_types.py` | L_SL | Types: `HumanPreferencePair`, `AutoPreferencePair`, `FeedbackSource` |
+| 1.3 | `system_learning/alignment/auto_labeler.py` | L_SL | Auto-label preference pairs using `GovernanceRewardModel` + heuristics |
+| 1.4 | Wire `SovereignLLMGateway` → `feedback_collector` | L2 | Post-completion hook emits feedback event |
 
-Add alignment hooks into `SovereignLLMGateway`:
+### Phase 2 — SFT Dataset Builder (~3 days)
 
-| # | New Module | Purpose |
-|---|---|---|
-| 1.1 | `agentic_core/L2_execution/alignment/alignment_seam_types.py` | Types: `AlignmentSignal`, `RewardSignal`, `RefusalDecision` |
-| 1.2 | `agentic_core/L2_execution/alignment/refusal_policy.py` | Pluggable refusal engine; wraps `guardrails_util` |
-| 1.3 | `agentic_core/L2_execution/alignment/output_classifier.py` | Post-generation safety classification hook |
-| 1.4 | `agentic_core/L2_execution/alignment/alignment_telemetry.py` | Emit alignment signals to L6 observability |
-| 1.5 | Wire into `SovereignLLMGateway.py` | Pre/post-generation hooks call alignment seam |
+No SFT infrastructure exists at all.
 
-### Phase 2 — L1 Cognition Alignment Validators (~2 days)
+| # | New Module | Layer | Purpose |
+|---|---|---|---|
+| 2.1 | `system_learning/alignment/sft_dataset_builder.py` | L_SL | Build (instruction, response) pairs from accepted completions |
+| 2.2 | `system_learning/alignment/sft_dataset_store.py` | L_SL | Persist SFT examples to structured store (JSONL) |
+| 2.3 | `system_learning/alignment/sft_quality_filter.py` | L_SL | Filter by `governance_reward_model` score + dedup |
+| 2.4 | `system_learning/alignment/sft_pipeline_runner.py` | L_SL | Orchestrator: collect → filter → write dataset |
 
-| # | New/Modified Module | Purpose |
-|---|---|---|
-| 2.1 | `agentic_core/L1_cognition/validators/hallucination_validator.py` | Grounding check against retrieved context |
-| 2.2 | `agentic_core/L1_cognition/validators/uncertainty_validator.py` | Calibration/confidence threshold gate |
-| 2.3 | `agentic_core/L1_cognition/utils/constitutional_filter_util.py` | Principles-based self-critique (extends DDD pattern) |
-| 2.4 | Extend `guardrails_util.py` | Add toxicity scoring hook (pluggable classifier) |
+### Phase 3 — Wire the DPO Batch Loop (~2 days)
 
-### Phase 3 — L_SL Preference Pipeline (~4 days)
+`dpo_batch_builder` and `hitl_dpo_pair_generator` exist but are imported by nobody.
 
-Connect existing embedders into a coherent feedback loop:
+| # | Action | File | Purpose |
+|---|---|---|---|
+| 3.1 | Import `hitl_dpo_pair_generator` | `system_learning/alignment/feedback_collector.py` | Route preference pairs to HITL generator |
+| 3.2 | Import `dpo_batch_builder` | `system_learning/alignment/sft_pipeline_runner.py` | Close DPO batch loop |
+| 3.3 | Import `rlhf_optimizer_impl` | `system_learning/alignment/sft_pipeline_runner.py` | Wire `DefaultRLHFOptimizer` into pipeline |
+| 3.4 | Extend `meta_learning_pipeline.py` | L_SL | Add alignment pipeline step alongside existing healing pipeline |
 
-| # | New Module | Purpose |
-|---|---|---|
-| 3.1 | `system_learning/alignment/__init__.py` | New sub-package |
-| 3.2 | `system_learning/alignment/preference_collector.py` | Capture agent output pairs for preference labeling |
-| 3.3 | `system_learning/alignment/reward_model_client.py` | Interface to reward model (local or API) |
-| 3.4 | `system_learning/alignment/sft_dataset_builder.py` | Build SFT training datasets from `PromptOutcomeEmbedder` |
-| 3.5 | `system_learning/alignment/rlhf_signal_aggregator.py` | Aggregate preference signals → RLHF training batches |
-| 3.6 | Wire `PathDPreferenceEmbedder` → `preference_collector` | Close the feedback loop |
+### Phase 4 — LLM-Quality Reward Model (~3 days)
 
-### Phase 4 — L5 Safety Constitutional Layer (~2 days)
+`governance_reward_model` scores policy compliance. A separate LLM-output-quality reward model is needed.
 
-| # | New/Modified Module | Purpose |
-|---|---|---|
-| 4.1 | `agentic_core/L5_safety/reasoning/LLMAlignmentAgent.py` | New agent: behavioral (not DDD) alignment checks |
-| 4.2 | `agentic_core/L5_safety/config/alignment_principles_config.py` | Constitutional principles registry |
-| 4.3 | `agentic_core/L5_safety/validators/jailbreak_validator.py` | Runtime prompt injection / jailbreak defense |
-| 4.4 | `agentic_core/L5_safety/validators/content_moderation_validator.py` | Toxicity/moderation scoring validator |
+| # | New Module | Layer | Purpose |
+|---|---|---|---|
+| 4.1 | `system_learning/alignment/llm_reward_model.py` | L_SL | Score LLM output on helpfulness, harmlessness, honesty |
+| 4.2 | `system_learning/alignment/reward_model_types.py` | L_SL | Types: `LLMRewardScore`, `RewardDimension` (helpfulness/harmlessness/honesty) |
+| 4.3 | `system_learning/alignment/reward_model_config.py` | L_SL | Config: dimension weights, score thresholds |
 
-### Phase 5 — Tests & ADG Re-ingest (~2 days)
+### Phase 5 — Tests (~2 days)
 
-Minimum new test targets (all need ADG `covers` edges):
-- `test_refusal_policy.py`
-- `test_hallucination_validator.py`
-- `test_preference_collector.py`
-- `test_llm_alignment_agent.py`
-- `test_jailbreak_validator.py`
+Each new module needs ADG `covers` edges. Minimum:
 
-After each phase: `python tools/adg/adg_redis_ingest.py --force` to refresh ADG.
+| Test File | Covers |
+|---|---|
+| `tests/unit/system_learning/alignment/test_feedback_collector.py` | Phase 1.1 |
+| `tests/unit/system_learning/alignment/test_sft_dataset_builder.py` | Phase 2.1–2.3 |
+| `tests/unit/system_learning/alignment/test_sft_pipeline_runner.py` | Phase 2.4 + 3.x |
+| `tests/unit/system_learning/alignment/test_llm_reward_model.py` | Phase 4.1 |
+| `tests/unit/system_learning/engines/test_rlhf_optimizer_impl.py` | Existing uncovered module |
+
+After Phase 5: `python tools/adg/adg_redis_ingest.py --force`
 
 ---
 
-## Layer Assignment Rationale
+## Execution Order
 
 ```
-L2 Execution  → Gateway-level alignment seam (refusal, output classification)
-L1 Cognition  → Reasoning-level validators (hallucination, uncertainty, constitutional)
-L_SL          → Learning loop (preference collection, reward model, SFT dataset)
-L5 Safety     → Enforcement-level alignment (constitutional principles, jailbreak)
-L_PG          → Prompt governance (RAG grounding; extend for factuality verification)
+Phase 1  →  Phase 2  →  Phase 3  →  Phase 4  →  Phase 5
+(capture)   (SFT data)  (wire DPO)  (reward)    (coverage)
 ```
 
-All alignment logic must either:
-1. **Pre-generation** — run in L1 validators before the LLM call, or
-2. **Post-generation** — hook into L2 gateway's output pipeline
-
-This respects existing layer-gravity rules: `L_APP → L_SHARED → L5 → L2 → L1 → L0`.
+Total: ~13 dev-days. Phase 3 has zero new files — it's pure wiring of existing dead modules.

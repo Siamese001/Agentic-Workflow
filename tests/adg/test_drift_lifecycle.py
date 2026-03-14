@@ -607,3 +607,114 @@ class TestRunLifecycle:
 
         assert len(result.work_items) > 0
         assert result.work_items[0].kind in ("uncovered_module", "orphan_test")
+
+    def test_redis_connection_error_raises_runtime_error(self):
+        """B11: Redis down → run_lifecycle raises RuntimeError (not ConnectionError)."""
+        import redis as redis_lib
+
+        r_mock = MagicMock()
+        r_mock.ping.side_effect = redis_lib.ConnectionError("down")
+
+        with patch("redis.Redis", return_value=r_mock):
+            with pytest.raises(RuntimeError, match="cannot connect to Redis"):
+                run_lifecycle(dry_run=True)
+
+
+# ---------------------------------------------------------------------------
+# Hardening tests (B6–B10)
+# ---------------------------------------------------------------------------
+
+
+class TestHardeningLifecycle:
+    def test_pytest_parser_mixed_passed_and_failed_line(self):
+        """B7: '3 failed, 7 passed in 0.5s' must give passed=7 failed=3, not both=7."""
+        with patch.object(lifecycle, "PROJECT_ROOT", lifecycle.PROJECT_ROOT):
+            # Simulate the subprocess returning that summary
+            mock_proc = MagicMock()
+            mock_proc.returncode = 1
+            mock_proc.stdout = "3 failed, 7 passed in 0.50s\n"
+            with patch("subprocess.run", return_value=mock_proc):
+                # Need abs_paths to exist — patch Path.exists
+                with patch("pathlib.Path.exists", return_value=True):
+                    exit_code, passed, failed = _run_scoped_pytest(["tests/dummy.py"])
+        assert passed == 7
+        assert failed == 3
+        assert exit_code == 1
+
+    def test_pytest_parser_only_passed(self):
+        """B7: '5 passed in 0.1s' → passed=5 failed=0."""
+        mock_proc = MagicMock()
+        mock_proc.returncode = 0
+        mock_proc.stdout = "5 passed in 0.10s\n"
+        with patch("subprocess.run", return_value=mock_proc), \
+             patch("pathlib.Path.exists", return_value=True):
+            exit_code, passed, failed = _run_scoped_pytest(["tests/dummy.py"])
+        assert passed == 5
+        assert failed == 0
+
+    def test_pytest_parser_only_failed(self):
+        """B7: '2 failed in 0.2s' → passed=0 failed=2."""
+        mock_proc = MagicMock()
+        mock_proc.returncode = 1
+        mock_proc.stdout = "2 failed in 0.20s\n"
+        with patch("subprocess.run", return_value=mock_proc), \
+             patch("pathlib.Path.exists", return_value=True):
+            _, passed, failed = _run_scoped_pytest(["tests/dummy.py"])
+        assert passed == 0
+        assert failed == 2
+
+    def test_no_collect_only_subprocess_call(self):
+        """B6: _run_scoped_pytest must issue exactly ONE subprocess.run call (no --co)."""
+        mock_proc = MagicMock()
+        mock_proc.returncode = 0
+        mock_proc.stdout = "1 passed in 0.01s\n"
+        with patch("subprocess.run", return_value=mock_proc) as mock_run, \
+             patch("pathlib.Path.exists", return_value=True):
+            _run_scoped_pytest(["tests/dummy.py"])
+        assert mock_run.call_count == 1
+        # Verify --co is not in the call args
+        call_args = str(mock_run.call_args_list)
+        assert "--co" not in call_args
+
+    def test_build_work_queue_deduplicates_orphan_against_blast(self):
+        """B10: path in blast_top AND orphan_tests must appear only once."""
+        drift = _good_drift_state()
+        shared_path = "agentic_core/L5_safety/foo.py"
+        drift["blast_top"] = [{"path": shared_path, "fan_out": 500}]
+        drift["orphan_tests"] = [shared_path, "tests/adg/other.py"]
+        items = _build_work_queue(drift, 0, [], budget=10)
+        paths = [i.path for i in items]
+        assert paths.count(shared_path) == 1
+
+    def test_build_work_queue_deduplicates_orphan_against_bus(self):
+        """B10: path in bus_affected AND orphan_tests must appear only once."""
+        drift = _good_drift_state()
+        shared_path = "agentic_core/L0_routing/bar.py"
+        drift["blast_top"] = []
+        drift["orphan_tests"] = [shared_path]
+        items = _build_work_queue(drift, 1, [shared_path], budget=10)
+        paths = [i.path for i in items]
+        assert paths.count(shared_path) == 1
+
+    def test_heal_uncovered_module_init_uses_parent_name(self, tmp_path):
+        """B9: __init__.py stub filename and class name must use parent dir ('reasoning'), not '__init__'."""
+        r = MagicMock()
+        r.smembers.return_value = set()
+        with patch.object(lifecycle, "PROJECT_ROOT", tmp_path):
+            result, stub_path = _heal_uncovered_module(r, "apps_rg/reasoning/__init__.py", dry_run=True)
+        assert stub_path is not None
+        # filename uses parent dir name: test_reasoning_adg.py, not test___init___adg.py
+        assert "test_reasoning_adg.py" in stub_path
+        assert "test___init__" not in stub_path
+        # dry_run → skipped
+        assert result.status == "skipped"
+
+    def test_heal_uncovered_module_normal_stem_unchanged(self, tmp_path):
+        """B9: normal module stem is used as-is for class name."""
+        r = MagicMock()
+        r.smembers.return_value = set()
+        with patch.object(lifecycle, "PROJECT_ROOT", tmp_path):
+            result, stub_path = _heal_uncovered_module(r, "apps_rg/reasoning/MyAgent.py", dry_run=False)
+        # stub not written yet (no existing file) — check path
+        assert stub_path is not None
+        assert "test_MyAgent_adg.py" in stub_path

@@ -267,11 +267,13 @@ def _build_work_queue(
 
     remaining = budget - len(items)
 
-    # Orphan tests
+    # Orphan tests (skip paths already added from bus or blast_top)
+    existing_paths = {i.path for i in items}
     for path in drift["orphan_tests"][:remaining]:
-        if not path:
+        if not path or path in existing_paths:
             continue
         items.append(WorkItem(kind="orphan_test", path=path))
+        existing_paths.add(path)
 
     return items
 
@@ -347,7 +349,9 @@ def _heal_uncovered_module(r: redis.Redis, path: str, dry_run: bool) -> tuple[He
     parts = Path(path).parts  # e.g. ('apps_rg', 'reasoning', 'RgStrategicPlannerAgent.py')
     stem = Path(path).stem  # RgStrategicPlannerAgent
     sub_parts = parts[:-1]  # ('apps_rg', 'reasoning')
-    stub_rel = Path("tests") / "unit" / Path(*sub_parts) / f"test_{stem}_adg.py"
+    # Use parent dir name for __init__ modules to avoid ugly filenames/class names
+    class_stem = stem if stem != "__init__" else (sub_parts[-1] if sub_parts else "init")
+    stub_rel = Path("tests") / "unit" / Path(*sub_parts) / f"test_{class_stem}_adg.py"
     stub_abs = PROJECT_ROOT / stub_rel
 
     if stub_abs.exists():
@@ -382,7 +386,7 @@ def _heal_uncovered_module(r: redis.Redis, path: str, dry_run: bool) -> tuple[He
         f"MODULE_PATH = {repr(path)}",
         "",
         "",
-        f"class TestDriftCoverage_{stem}:",
+        f"class TestDriftCoverage_{class_stem}:",
     ]
     if symbols:
         import_list = ", ".join(symbols[:3])
@@ -477,28 +481,6 @@ def _run_scoped_pytest(test_paths: list[str]) -> tuple[int, int, int]:
         return 0, 0, 0
 
     try:
-        # guardian: allow-magic-config
-        proc = subprocess.run(
-            [
-                sys.executable,
-                "-m",
-                "pytest",
-                *abs_paths,
-                "--tb=no",
-                "-q",
-                "--no-header",
-                "--co",  # collect-only first for safety
-            ],
-            capture_output=True,
-            text=True,
-            cwd=str(PROJECT_ROOT),
-            timeout=60,
-        )
-        if proc.returncode != 0:
-            # collect failed — run anyway to get real failure count
-            pass
-
-        # guardian: allow-magic-config
         run_proc = subprocess.run(
             [
                 sys.executable,
@@ -517,16 +499,22 @@ def _run_scoped_pytest(test_paths: list[str]) -> tuple[int, int, int]:
         exit_code = run_proc.returncode
         stdout = run_proc.stdout
 
-        # Parse passed/failed from pytest summary line
+        # Parse passed/failed from pytest summary line.
+        # A line may contain both, e.g. "3 failed, 7 passed in 0.5s".
+        # Walk tokens paired with the word immediately after them.
         passed = failed = 0
         for line in stdout.splitlines():
-            if "passed" in line or "failed" in line:
-                for tok in line.split():
-                    if tok.isdigit():
-                        if "passed" in line:
-                            passed = int(tok)
-                        if "failed" in line:
-                            failed = int(tok)
+            if "passed" not in line and "failed" not in line:
+                continue
+            tokens = line.split()
+            for i, tok in enumerate(tokens):
+                if not tok.isdigit():
+                    continue
+                next_word = tokens[i + 1].rstrip(",") if i + 1 < len(tokens) else ""
+                if next_word == "passed":
+                    passed = int(tok)
+                elif next_word == "failed":
+                    failed = int(tok)
         return exit_code, passed, failed
     except subprocess.TimeoutExpired:
         logger.warning("[lifecycle] pytest timed out for paths: %s", test_paths)
@@ -554,8 +542,6 @@ def _run_outcome_trace(
     Fail-open.
     """
     try:
-        from system_learning.engines.bus_consumer import drain_and_apply
-        from system_learning.engines.healing_success_rate_store import get_default_store
         from system_learning.engines.meta_learning_bus import (
             MetaLearningBus,
             MetaLearningBusConfig,
@@ -585,14 +571,7 @@ def _run_outcome_trace(
             trace_timestamp_utc=timestamp + 1,
             pipeline_timestamp_utc=timestamp + 1,
         )
-        # Drain bus queue into success rate store
-        from agentic_core.L0_routing.meta_control.meta_learning_bus import (
-            MetaLearningBus as L0Bus,
-        )
-
-        l0_bus = L0Bus()
-        drain_and_apply(l0_bus, get_default_store())
-        logger.info("[lifecycle] outcome trace fed to MetaLearningBus, bus drained")
+        logger.info("[lifecycle] outcome trace fed to MetaLearningBus")
     # guardian: allow-silent-swallow
     except Exception as exc:
         logger.warning("[lifecycle] outcome trace failed: %s", exc)
@@ -702,7 +681,13 @@ def run_lifecycle(dry_run: bool = False) -> LifecycleResult:
     Returns:
         LifecycleResult with all stage outcomes.
     """
-    r = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB, decode_responses=True)
+    try:
+        r = redis.Redis(
+            host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB, decode_responses=True
+        )
+        r.ping()
+    except Exception as exc:
+        raise RuntimeError(f"[lifecycle] cannot connect to Redis: {exc}") from exc
 
     # Stage 1: read drift state
     logger.info("[lifecycle] Stage 1: reading adg:drift:* from Redis")
