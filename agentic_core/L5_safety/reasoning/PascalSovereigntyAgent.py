@@ -1,0 +1,705 @@
+"""
+File: agentic_core/L5_safety/reasoning/PascalSovereigntyAgent.py
+Rationale:
+    Canonizes the PascalSovereigntyFixer as a first-class L5 healer agent.
+    Relocated from validators/ to reasoning/ (healer territory) because it
+    performs direct filesystem mutations (renames, deletes, import rewrites).
+
+    Integration Features:
+    - Inherits from SovereignBaseAgent for full infrastructure support
+    - Implements standard agent interface for execute_ssot.py orchestration
+    - Preserves all original PascalSovereigntyFixer functionality
+    - Adds heal_repository() method for standard healing chain integration
+"""
+
+import ast
+import os
+import platform
+import re
+import sys
+import time
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Any, Literal
+
+# Optional: Import SovereignBaseAgent if available for full integration
+try:
+    from agentic_core.L5_safety.validators.decorators import standard_heal
+
+    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+
+    HAS_SOVEREIGN_BASE = True
+except ImportError:
+    HAS_SOVEREIGN_BASE = False
+    SovereignBaseAgent = object
+
+    def standard_heal(func):
+        """Fallback decorator when full infrastructure unavailable."""
+        return func
+
+
+# SSOT Integration with fast-fail pruning
+def get_python_files_fast(root: Path) -> list[Path]:
+    """
+    Optimized repository scanner that prunes heavy/irrelevant directories
+    before they enter the pipeline.
+    """
+    python_files = []
+    exclude_dirs = {".git", "archives", "__pycache__", "node_modules", "venv", ".env"}
+
+    for dirpath, dirnames, filenames in os.walk(root):
+        dirnames[:] = [d for d in dirnames if d not in exclude_dirs]
+        for filename in filenames:
+            if filename.endswith(".py"):
+                python_files.append(Path(dirpath) / filename)
+    return python_files
+
+
+FileType = Literal[
+    "AGENT",
+    "CLASS",
+    "MIXIN",
+    "UTILITY",
+    "PROTOCOL",
+    "ENGINE",
+    "STUB",
+    "TEST",
+    "GATEWAY",
+    "IGNORE",
+]
+
+
+@dataclass
+class PascalSovereigntyAgent(SovereignBaseAgent):
+    """
+    Enforces strict file naming conventions and resolves SSOT collisions.
+
+    This agent canonizes the PascalSovereigntyFixer functionality as a
+    first-class L5 healer agent with full orchestration capabilities.
+    """
+
+    project_root: Path = field(default_factory=Path.cwd)
+    dry_run: bool = False
+    verbose: bool = False
+    validate_only: bool = False
+
+    def __post_init__(self):
+        if HAS_SOVEREIGN_BASE and hasattr(super(), "__post_init__"):
+            super().__post_init__()
+        # [HARDENING] Ensure path is absolute for resolve() calls
+        self.project_root = self.project_root.resolve()
+        self.stats = {
+            "analyzed": 0,
+            "compliant": 0,
+            "renamed": 0,
+            "imports_fixed": 0,
+            "collisions_resolved": 0,
+            "violations": {
+                "AGENT": 0,
+                "CLASS": 0,
+                "MIXIN": 0,
+                "UTILITY": 0,
+                "PROTOCOL": 0,
+                "ENGINE": 0,
+                "STUB": 0,
+                "TEST": 0,
+                "GATEWAY": 0,
+            },
+        }
+        # CACHE: Track file paths in memory to avoid repetitive disk scanning (O(1) lookups)
+        self.file_registry: list[Path] = []
+
+    # guardian: allow-type-erasure
+    def run(self) -> dict[str, Any]:
+        """Entry point for execute_ssot.py orchestration."""
+        print(f"[SOVEREIGNTY] Executing Pascal Sovereignty Audit at {self.project_root}")
+        success = self._orchestrate_audit(self.project_root)
+        return {
+            "success": success == 0,
+            "stats": self.stats,
+            "summary": f"Renamed: {self.stats['renamed']}, Collisions: {self.stats['collisions_resolved']}",
+        }
+
+    def _orchestrate_audit(self, root: Path) -> int:
+        """Original core logic from PascalSovereigntyFixer.py."""
+        print(f"[SOVEREIGNTY] {'DRY RUN' if self.dry_run else 'EXECUTE'} MODE")
+        print("=" * 60)
+
+        if not self.verify_environment():
+            return 1
+
+        print("Scanning repository (Fast One-Time Pass)...")
+        self.file_registry = get_python_files_fast(root)
+        self.stats["analyzed"] = len(self.file_registry)
+
+        # Iterating over a copy to allow registry updates during renames
+        for idx, path in enumerate(list(self.file_registry)):
+            if not path.exists():
+                continue
+            ftype = self.classify_file(path)
+            if ftype == "IGNORE":
+                continue
+
+            new_name = self.get_compliant_name(path, ftype)
+            if new_name and new_name != path.name:
+                self.stats["violations"][ftype] += 1
+                print(f"\n[DETECT] {path.name} ({ftype}) -> {new_name}")
+                if self.resolve_collision_and_rename(path, new_name):
+                    if not self.dry_run:
+                        self.stats["renamed"] += 1
+                        self.stats["collisions_resolved"] += 1
+
+                        dest = path.parent / new_name
+
+                        if dest.exists():
+                            self.file_registry[idx] = dest
+                            self.stats["imports_fixed"] += self.update_imports(path.name, new_name)
+                        else:
+                            self.file_registry[idx] = None
+            else:
+                self.stats["compliant"] += 1
+
+        print("\n" + "=" * 60)
+        print(f"Total files analyzed: {self.stats['analyzed']}")
+        print(f"Compliant files:      {self.stats['compliant']}")
+        total_violations = sum(self.stats["violations"].values())
+        print(f"Violations detected:  {total_violations}")
+        print(f"  - Agents:  {self.stats['violations']['AGENT']}")
+        print(f"  - Classes: {self.stats['violations']['CLASS']}")
+        print(f"  - Utils:   {self.stats['violations']['UTILITY']}")
+        print(f"  - Mixins:  {self.stats['violations']['MIXIN']}")
+        print(f"  - Protocols: {self.stats['violations']['PROTOCOL']}")
+        print(f"  - Engines: {self.stats['violations']['ENGINE']}")
+        print(f"  - Stubs:   {self.stats['violations']['STUB']}")
+        print(f"  - Tests:   {self.stats['violations']['TEST']}")
+        print(f"  - Gateways: {self.stats['violations']['GATEWAY']}")
+        if not self.dry_run:
+            print(f"Files Renamed:        {self.stats['renamed']}")
+            print(f"Imports Fixed:        {self.stats['imports_fixed']}")
+            print(f"Collisions Resolved:  {self.stats['collisions_resolved']}")
+
+        return 0 if (not self.validate_only or total_violations == 0) else 1
+
+    def classify_file(self, path: Path) -> FileType:
+        """
+        Analyze file AST to determine architectural role with STRICT PRIORITY ORDERING.
+
+        PRIORITY QUEUE (First Match Wins):
+        1. STUB     - File contains NOT_AN_AGENT marker (MUST preempt AGENT)
+        2. TEST     - Path contains tests/ OR name starts with test_
+        3. PROTOCOL - Class inherits from typing.Protocol
+        4. GATEWAY  - Class name contains "Gateway"
+        5. ENGINE   - Path contains engines/ AND has class
+        6. MIXIN    - Class name ends in "Mixin"
+        7. AGENT    - Inherits *Agent OR path in agents/validators
+        8. CLASS    - Any other class
+        9. UTILITY  - No class definitions
+        """
+        if path.name == "conftest.py" or path.name == "__init__.py":
+            return "IGNORE"
+
+        critical_ssot_files = {
+            "structure_blueprint.py",
+            "tool_registry.py",
+            "execute_ssot.py",
+        }
+        if path.name in critical_ssot_files:
+            return "IGNORE"
+
+        try:
+            if not path.exists() or path.stat().st_size == 0:
+                return "IGNORE"
+            content = path.read_text(encoding="utf-8")
+
+            if "NOT_AN_AGENT" in content or "# NOT_AN_AGENT" in content:
+                return "STUB"
+
+            tree = ast.parse(content)
+        except (SyntaxError, UnicodeDecodeError, OSError):
+            return "IGNORE"
+
+        is_structural_test = "tests" in path.parts or path.name.startswith("test_")
+        if is_structural_test:
+            if path.name.startswith("test_") or path.name.endswith("_test.py"):
+                return "IGNORE"
+            return "TEST"
+
+        has_class = False
+        is_agent = False
+        is_protocol = False
+        is_gateway = False
+        is_mixin = False
+
+        is_structural_agent = "agents" in path.parts or "validators" in path.parts
+        is_engine = "engines" in path.parts
+
+        for node in ast.walk(tree):
+            if isinstance(node, ast.ClassDef):
+                has_class = True
+                name = node.name
+
+                for base in node.bases:
+                    if (isinstance(base, ast.Name) and base.id == "Protocol") or (
+                        isinstance(base, ast.Attribute) and base.attr == "Protocol"
+                    ):
+                        is_protocol = True
+
+                if "Gateway" in name:
+                    is_gateway = True
+                if name.endswith("Mixin"):
+                    is_mixin = True
+                if name.endswith("Agent"):
+                    is_agent = True
+
+                if not is_agent:
+                    for base in node.bases:
+                        if (isinstance(base, ast.Name) and "Agent" in base.id) or (
+                            isinstance(base, ast.Attribute) and "Agent" in base.attr
+                        ):
+                            is_agent = True
+
+        if is_protocol:
+            return "PROTOCOL"
+        elif is_gateway:
+            return "GATEWAY"
+        elif is_engine and has_class:
+            return "ENGINE"
+        elif is_mixin:
+            return "MIXIN"
+        elif is_agent:
+            return "AGENT"
+        elif has_class:
+            if is_structural_agent:
+                return "AGENT"
+            return "CLASS"
+        else:
+            return "UTILITY"
+
+    def update_imports(self, old_name: str, new_name: str) -> int:
+        """Refactors imports using the in-memory registry to avoid O(N²) disk hits."""
+        count = 0
+        old_mod, new_mod = old_name.replace(".py", ""), new_name.replace(".py", "")
+
+        regex_from = re.compile(
+            # guardian: allow-path-string
+            r"(?P<prefix>from\s+\.*)" + re.escape(old_mod) + r"(?P<suffix>\s+import)"
+        )
+        regex_import = re.compile(
+            rf"(?P<prefix>import\s+){re.escape(old_mod)}(?P<suffix>(\s+as\s+\w+)?(\s*,|\s|$))"
+        )
+
+        for i, path in enumerate(self.file_registry):
+            if path.name == new_name or not path.exists():
+                continue
+            try:
+                content = path.read_text(encoding="utf-8")
+                if old_mod not in content:
+                    continue
+
+                # guardian: allow-path-string
+                new_content = regex_from.sub(r"\g<prefix>" + new_mod + r"\g<suffix>", content)
+                # guardian: allow-path-string
+                new_content = regex_import.sub(r"\g<prefix>" + new_mod + r"\g<suffix>", new_content)
+
+                if new_content != content:
+                    if not self.dry_run:
+                        path.write_text(new_content, encoding="utf-8")
+                    count += 1
+            # guardian: allow-silent-swallow
+            except:
+                continue
+        return count
+
+    def verify_environment(self) -> bool:
+        """Checks for LongPathsEnabled on Windows."""
+        if platform.system() == "Windows":
+            try:
+                import winreg
+
+                key = winreg.OpenKey(
+                    winreg.HKEY_LOCAL_MACHINE, r"SYSTEM\CurrentControlSet\Control\FileSystem"
+                )
+                value, _ = winreg.QueryValueEx(key, "LongPathsEnabled")
+                if value != 1:
+                    print("[WARNING] Windows LongPathsEnabled is NOT set to 1.")
+                    if not self.dry_run:
+                        return False
+            # guardian: allow-silent-swallow
+            except:
+                pass
+        return True
+
+    def resolve_collision_and_rename(self, src: Path, dest_name: str) -> bool:
+        """
+        Handles renaming with intelligent collision resolution.
+        Returns True if the VIOLATION was resolved (either by rename, delete, or move).
+        """
+        dest = src.parent / dest_name
+
+        if src.name == dest_name:
+            return False
+
+        if self.dry_run:
+            print(f"  [PLAN] Rename {src.name} -> {dest_name}")
+            return True
+
+        if not src.exists():
+            print(f"  [ERROR] Source file {src.name} does not exist")
+            return False
+
+        is_collision = False
+        if dest.exists():
+            try:
+                src_resolved = src.resolve()
+                dest_resolved = dest.resolve()
+
+                if src_resolved == dest_resolved:
+                    print("  [INFO] Source and destination are the same file (case-insensitive match)")
+                    return False
+                else:
+                    is_collision = True
+            except OSError as e:
+                print(f"  [WARNING] Could not resolve paths for comparison: {e}")
+                is_collision = True
+
+        if is_collision:
+            print(f"  [COLLISION] Target {dest_name} already exists. Analyzing content...")
+            try:
+                if not src.exists():
+                    print("  [ERROR] Source file disappeared during collision analysis")
+                    return False
+                if not dest.exists():
+                    print("  [ERROR] Destination file disappeared during collision analysis")
+                    return False
+
+                src_content = src.read_bytes()
+                dest_content = dest.read_bytes()
+
+                if src_content == dest_content:
+                    print("  [ANALYSIS] Files are IDENTICAL. Remediation: Deleting redundant violator.")
+                    print(f"  [ACTION] DELETE {src.name}")
+
+                    src.unlink()
+
+                    if src.exists():
+                        print(f"  [ERROR] Failed to delete {src.name} - file still exists")
+                        return False
+
+                    print(f"  [SUCCESS] {src.name} deleted successfully")
+                    return True
+
+                else:
+                    print(
+                        "  [ANALYSIS] Files are DIFFERENT. Remediation: Preserving data via conflict rename."
+                    )
+                    timestamp = int(time.time())
+                    conflict_name = f"{dest_name}.CONFLICT_{timestamp}"
+                    conflict_path = src.parent / conflict_name
+
+                    if conflict_path.exists():
+                        timestamp = int(time.time() * 1000000)
+                        conflict_name = f"{dest_name}.CONFLICT_{timestamp}"
+                        conflict_path = src.parent / conflict_name
+
+                    print(f"  [ACTION] RENAME {src.name} -> {conflict_name}")
+
+                    src.rename(conflict_path)
+
+                    if src.exists():
+                        print(f"  [ERROR] Failed to rename {src.name} - source still exists")
+                        return False
+                    if not conflict_path.exists():
+                        print(f"  [ERROR] Failed to rename {src.name} - conflict file not found")
+                        return False
+
+                    print(f"  [SUCCESS] {src.name} renamed to {conflict_name}")
+                    return True
+
+            # guardian: allow-silent-swallow
+            except Exception as e:
+                print(f"  [ERROR] Failed to resolve collision: {e}")
+                return False
+
+        temp_path = None
+        try:
+            temp = src.parent / f"__temp_{int(time.time() * 1000000)}_{src.name}"
+            temp_path = temp
+
+            src.rename(temp)
+
+            if not temp.exists():
+                print(f"  [ERROR] Failed to move {src.name} to temp location")
+                return False
+            if src.exists():
+                print(f"  [ERROR] Source {src.name} still exists after temp move")
+                return False
+
+            temp.rename(dest)
+
+            if not dest.exists():
+                print(f"  [ERROR] Failed to move temp to {dest_name}")
+                if temp.exists():
+                    temp.rename(src)
+                    print(f"  [ROLLBACK] Restored {src.name} from temp")
+                return False
+            if temp.exists():
+                print("  [WARNING] Temp file still exists after rename - cleaning up")
+                try:
+                    temp.unlink()
+                # guardian: allow-silent-swallow
+                except:
+                    pass
+
+            print(f"  [SUCCESS] {src.name} -> {dest_name}")
+            return True
+
+        # guardian: allow-silent-swallow
+        except Exception as e:
+            print(f"  [ERROR] Rename failed: {e}")
+
+            if temp_path and temp_path.exists():
+                try:
+                    temp_path.rename(src)
+                    print(f"  [ROLLBACK] Restored {src.name} from temp")
+                # guardian: allow-silent-swallow
+                except Exception as rollback_error:
+                    print(f"  [CRITICAL] Rollback failed: {rollback_error}")
+                    print(f"  [CRITICAL] Manual intervention required - file may be at {temp_path}")
+
+            return False
+
+    def get_compliant_name(self, path: Path, file_type: FileType) -> str | None:
+        """Calculates the target filename based on the primary class definition."""
+        if file_type == "IGNORE":
+            return None
+
+        if file_type == "MIXIN":
+            stem = path.stem
+            s1 = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", stem)
+            clean_stem = re.sub("([a-z0-9])([A-Z])", r"\1_\2", s1).lower()
+
+            if not clean_stem.endswith("_mixin"):
+                clean_stem += "_mixin"
+
+            target = f"{clean_stem}.py"
+            return target if target != path.name else None
+
+        if file_type == "UTILITY":
+            return None
+
+        if file_type == "TEST":
+            name = path.stem
+            s1 = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", name)
+            snake_name = re.sub("([a-z0-9])([A-Z])", r"\1_\2", s1).lower()
+
+            if not snake_name.startswith("test_"):
+                snake_name = f"test_{snake_name}"
+
+            return f"{snake_name}.py"
+
+        try:
+            tree = ast.parse(path.read_text(encoding="utf-8"))
+            classes = [n.name for n in ast.walk(tree) if isinstance(n, ast.ClassDef)]
+            if not classes:
+                return None
+            primary = classes[0]
+            stem_clean = path.stem.replace("_", "").lower()
+            for cls_name in classes:
+                if cls_name.lower() == stem_clean:
+                    primary = cls_name
+                    break
+            target_name = primary
+
+            if file_type == "AGENT":
+                if not target_name.endswith("Agent"):
+                    target_name += "Agent"
+            elif file_type in ("PROTOCOL", "ENGINE", "GATEWAY"):
+                pass
+            elif file_type == "STUB":
+                target_name = target_name.replace("Agent", "")
+                if not target_name.endswith("Stub"):
+                    target_name += "Stub"
+
+            return f"{target_name}.py"
+        # guardian: allow-silent-swallow
+        except:
+            return None
+
+    # guardian: allow-type-erasure
+    def heal(self, violation: dict) -> dict:
+        """Heal Pascal naming violations."""
+        from agentic_core.base_agents.decorators import standard_heal
+
+        @standard_heal
+        # guardian: allow-type-erasure
+        def _heal_pascal_violation(self, violation: dict) -> dict:
+            """Internal heal method with standard_heal decorator."""
+            import logging
+
+            Logger = logging.getLogger(__name__)
+            violation_type = violation.get("type", "naming")
+            path = violation.get("path", "")
+
+            Logger.info(f"[PASCAL] Healing {violation_type} violation at {path}")
+
+            if violation_type == "naming":
+                file_path = Path(path)
+
+                if file_path.suffix == ".py":
+                    stem = file_path.stem
+
+                    if not stem.endswith("Agent"):
+                        try:
+                            with open(file_path, encoding="utf-8") as f:
+                                content = f.read()
+
+                            if "class " in content and "Agent" in content:
+                                import re
+
+                                class_match = re.search(r"class (\w+Agent)", content)
+                                if class_match:
+                                    class_name = class_match.group(1)
+                                    new_path = file_path.parent / f"{class_name}.py"
+
+                                    if not new_path.exists():
+                                        file_path.rename(new_path)
+                                        Logger.info(f"  Renamed {path} -> {new_path}")
+                                        return {
+                                            "violations_fixed": 1,
+                                            "violations_found": 1,
+                                            "errors": 0,
+                                            "skipped": 0,
+                                        }
+                                    else:
+                                        Logger.warning(f"  Target {new_path} already exists")
+                                        return {
+                                            "violations_fixed": 0,
+                                            "violations_found": 1,
+                                            "errors": 0,
+                                            "skipped": 1,
+                                        }
+                                else:
+                                    new_path = file_path.parent / f"{stem}Agent.py"
+                                    if not new_path.exists():
+                                        file_path.rename(new_path)
+                                        Logger.info(f"  Renamed {path} -> {new_path}")
+                                        return {
+                                            "violations_fixed": 1,
+                                            "violations_found": 1,
+                                            "errors": 0,
+                                            "skipped": 0,
+                                        }
+                                    else:
+                                        Logger.warning(f"  Target {new_path} already exists")
+                                        return {
+                                            "violations_fixed": 0,
+                                            "violations_found": 1,
+                                            "errors": 0,
+                                            "skipped": 1,
+                                        }
+                            else:
+                                Logger.info(f"  File {path} is not an agent, skipping")
+                                return {
+                                    "violations_fixed": 0,
+                                    "violations_found": 1,
+                                    "errors": 0,
+                                    "skipped": 1,
+                                }
+                        # guardian: allow-silent-swallow
+                        except Exception as e:
+                            Logger.error(f"  Error processing {path}: {e}")
+                            return {
+                                "violations_fixed": 0,
+                                "violations_found": 1,
+                                "errors": 1,
+                                "skipped": 0,
+                            }
+                else:
+                    Logger.info(f"  Non-Python file {path}, skipping")
+                    return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}
+            else:
+                import logging
+
+                logging.getLogger(__name__).warning(f"  Unknown violation type: {violation_type}")
+                return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}
+
+        return _heal_pascal_violation(self, violation)
+
+    @standard_heal
+    # guardian: allow-magic-config
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set[str] | None = None,
+        target_territory: str | None = None,
+        auto_approve: bool = True,
+        **kwargs,
+    ) -> dict[str, int]:
+        """
+        Standard healing interface for execute_ssot.py integration.
+        """
+        if _call_path is None:
+            _call_path = set()
+
+        agent_id = f"PascalSovereigntyAgent@{self.project_root}"
+        if agent_id in _call_path:
+            return {"violations_found": 0, "violations_fixed": 0, "errors": 0, "skipped": 0}
+        _call_path.add(agent_id)
+
+        self.dry_run = dry_run and not execute
+
+        if target_territory:
+            if (self.project_root / "agentic_core" / target_territory).exists():
+                scan_root = self.project_root / "agentic_core" / target_territory
+            elif (self.project_root / target_territory).exists():
+                scan_root = self.project_root / target_territory
+            else:
+                print(f"[WARNING] Territory path does not exist: {target_territory}")
+                return {"violations_found": 0, "violations_fixed": 0, "errors": 0, "skipped": 1}
+            print(f"[SOVEREIGNTY] Scoped to territory: {target_territory}")
+        else:
+            scan_root = self.project_root
+
+        try:
+            exit_code = self._orchestrate_audit(scan_root)
+
+            total_violations = sum(self.stats["violations"].values())
+            violations_fixed = self.stats["renamed"] + self.stats["collisions_resolved"]
+
+            return {
+                "violations_found": total_violations,
+                "violations_fixed": violations_fixed,
+                "errors": 0 if exit_code == 0 else 1,
+                "skipped": 0,
+            }
+
+        # guardian: allow-silent-swallow
+        except Exception as e:
+            print(f"[ERROR] PascalSovereigntyAgent healing failed: {e}")
+            return {"violations_found": 0, "violations_fixed": 0, "errors": 1, "skipped": 0}
+        finally:
+            _call_path.discard(agent_id)
+
+
+def main():
+    """Standalone execution for testing."""
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Pascal Sovereignty Agent")
+    parser.add_argument("--dry-run", action="store_true", help="Preview changes")
+    parser.add_argument("--validate", action="store_true", help="Check compliance only")
+    args = parser.parse_args()
+
+    is_dry_run = args.dry_run or args.validate
+
+    agent = PascalSovereigntyAgent(project_root=Path("."), dry_run=is_dry_run, validate_only=args.validate)
+
+    result = agent.run()
+    sys.exit(0 if result["success"] else 1)
+
+
+if __name__ == "__main__":
+    main()

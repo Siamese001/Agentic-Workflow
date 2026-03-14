@@ -196,7 +196,7 @@ class HealingStrategy:
 
                 return AutonomyGuardianAgent(project_root=self.project_root)
             elif agent_name == "CodeJanitorAgent":
-                from agentic_core.L5_safety.validators.CodeJanitorAgent import CodeJanitorAgent
+                from agentic_core.L5_safety.reasoning.CodeJanitorAgent import CodeJanitorAgent
 
                 return CodeJanitorAgent()
             else:
