@@ -1,0 +1,174 @@
+"""
+agentic_core/L4_state/versioning/state_version_manager.py
+
+StateVersionManager — P2-L4 gap remediation.
+
+Immutable versioned state chain for L4. Every state mutation appends a
+new version; rollback and diff are first-class operations. Closes the
+gap where 1,827 reads_from / 50 writes_to produce no version history,
+snapshot_state, or rollback_vector evidence.
+
+ADG edges emitted: snapshots_state, rollback_vector, version_chain_appended
+"""
+
+from __future__ import annotations
+
+import hashlib
+import logging
+import time
+from dataclasses import dataclass, field
+from typing import Any
+
+logger = logging.getLogger(__name__)
+
+
+@dataclass(frozen=True)
+class StateVersion:
+    """Single immutable version in the state chain."""
+
+    version_id: str
+    parent_id: str
+    state_hash: str
+    keys_changed: tuple[str, ...]
+    author: str
+    timestamp: float
+    metadata: dict[str, Any] = field(default_factory=dict)
+
+
+def _hash_state(state: dict[str, Any]) -> str:
+    payload = repr(sorted(state.items()))
+    return hashlib.sha256(payload.encode()).hexdigest()[:32]
+
+
+class StateVersionManager:
+    """Immutable versioned state chain.
+
+    Usage::
+
+        mgr = StateVersionManager("campaign-brief-run")
+        mgr.commit({"context": "..."}, author="ResearchAgent")
+        mgr.commit({"context": "...", "budget": 500}, author="PlannerAgent")
+
+        v = mgr.current_version()
+        print(v.version_id, v.state_hash)
+
+        # rollback to previous version
+        mgr.rollback(v.parent_id)
+    """
+
+    def __init__(self, run_id: str) -> None:
+        self._run_id = run_id
+        self._versions: list[StateVersion] = []
+        self._current_state: dict[str, Any] = {}
+
+    def commit(
+        self,
+        state: dict[str, Any],
+        author: str = "",
+        metadata: dict[str, Any] | None = None,
+    ) -> StateVersion:
+        """Commit a new state version to the chain.
+
+        Emits ``snapshots_state`` + ``version_chain_appended`` ADG edges.
+        """
+        ts = time.monotonic()
+        parent_id = self._versions[-1].version_id if self._versions else ""
+        old_keys = set(self._current_state.keys())
+        new_keys = set(state.keys())
+        changed = tuple(
+            sorted(
+                (old_keys | new_keys)
+                - (
+                    old_keys
+                    & new_keys
+                    - {k for k in old_keys & new_keys if self._current_state.get(k) != state.get(k)}
+                )
+            )
+        )
+
+        version_payload = f"{self._run_id}:{parent_id}:{_hash_state(state)}:{ts:.6f}"
+        version_id = hashlib.sha256(version_payload.encode()).hexdigest()[:24]
+
+        version = StateVersion(
+            version_id=version_id,
+            parent_id=parent_id,
+            state_hash=_hash_state(state),
+            keys_changed=tuple(
+                sorted(k for k in (old_keys | new_keys) if self._current_state.get(k) != state.get(k))
+            ),
+            author=author,
+            timestamp=ts,
+            metadata=metadata or {},
+        )
+        self._versions.append(version)
+        self._current_state = dict(state)
+        logger.info(
+            "VERSION_MGR snapshots_state version_chain_appended run=%s vid=%s author=%s changed=%s",
+            self._run_id,
+            version_id,
+            author,
+            version.keys_changed,
+        )
+        return version
+
+    def current_version(self) -> StateVersion | None:
+        return self._versions[-1] if self._versions else None
+
+    def rollback(self, target_version_id: str) -> StateVersion | None:
+        """Rollback to a previous version by version_id.
+
+        Emits ``rollback_vector`` ADG edge.
+        """
+        idx = next((i for i, v in enumerate(self._versions) if v.version_id == target_version_id), None)
+        if idx is None:
+            logger.warning("VERSION_MGR rollback_vector FAILED: version %s not found", target_version_id)
+            return None
+        target = self._versions[idx]
+        self._versions = self._versions[: idx + 1]
+        logger.info(
+            "VERSION_MGR rollback_vector run=%s target_vid=%s",
+            self._run_id,
+            target_version_id,
+        )
+        return target
+
+    def diff(self, v1_id: str, v2_id: str) -> dict[str, Any]:
+        """Return changed keys between two versions."""
+        v1 = next((v for v in self._versions if v.version_id == v1_id), None)
+        v2 = next((v for v in self._versions if v.version_id == v2_id), None)
+        if not v1 or not v2:
+            return {}
+        changed_in_v1 = set(v1.keys_changed)
+        changed_in_v2 = set(v2.keys_changed)
+        return {
+            "v1_only": sorted(changed_in_v1 - changed_in_v2),
+            "v2_only": sorted(changed_in_v2 - changed_in_v1),
+            "shared_changed": sorted(changed_in_v1 & changed_in_v2),
+        }
+
+    def history(self) -> list[StateVersion]:
+        return list(self._versions)
+
+    def version_count(self) -> int:
+        return len(self._versions)
+
+
+_version_managers: dict[str, StateVersionManager] = {}
+
+
+def get_version_manager(run_id: str) -> StateVersionManager:
+    if run_id not in _version_managers:
+        _version_managers[run_id] = StateVersionManager(run_id)
+    return _version_managers[run_id]
+
+
+def release_version_manager(run_id: str) -> None:
+    _version_managers.pop(run_id, None)
+
+
+__all__ = [
+    "StateVersion",
+    "StateVersionManager",
+    "get_version_manager",
+    "release_version_manager",
+]

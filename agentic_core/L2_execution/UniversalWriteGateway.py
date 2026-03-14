@@ -13,6 +13,9 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L2_execution.enforcement.guardrail_gate import (
+    GuardrailGate,
+)
 from agentic_core.L2_execution.types.instruction_packet_types import InstructionPacket
 
 Logger = logging.getLogger(__name__)
@@ -54,7 +57,7 @@ class UniversalWriteGateway:
     for deterministic simulation.
     """
 
-    def __init__(self, replay_mode: bool = False):
+    def __init__(self, replay_mode: bool = False, policy_hash: str = ""):
         self.replay_mode = replay_mode
         self._frozen: bool = False
         self._write_permissions: dict[str, bool] = {}
@@ -66,6 +69,7 @@ class UniversalWriteGateway:
             "file_system.write",
             "code_interpreter.run_python",
         }
+        self._guardrail_gate: GuardrailGate = GuardrailGate(policy_hash=policy_hash, strict_mode=False)
 
     def check_write_permission(self, path: str, operation: str = "write") -> bool:
         """Check if write operation is permitted."""
@@ -163,6 +167,10 @@ class UniversalWriteGateway:
             ToolNotAllowedError: If the tool is not in the allowlist.
         """
         tool_name = instruction.metadata.get("tool_name")
+        self._guardrail_gate.check(
+            operation="execute_instruction",
+            target=f"tool_execution/{tool_name or 'unknown'}",
+        )
         if not tool_name or tool_name not in self._allowed_tools:
             self.record_mutation(
                 path=f"tool_execution/{tool_name or 'unknown'}",
@@ -181,6 +189,7 @@ class UniversalWriteGateway:
         - replay_mode=True: returns SimulationResult (no real write).
         - replay_mode=False: raises ToolNotAllowedError on blocked paths/extensions.
         """
+        self._guardrail_gate.check(operation="write_file", target=path)
         if self.replay_mode:
             return self.simulate_write(path, "write", data)
         if not self.check_write_permission(path, "write"):
@@ -201,6 +210,7 @@ class UniversalWriteGateway:
 
         Same blocking semantics as write_file.
         """
+        self._guardrail_gate.check(operation="append_file", target=path)
         if self.replay_mode:
             return self.simulate_write(path, "append", data)
         if not self.check_write_permission(path, "append"):
@@ -219,6 +229,7 @@ class UniversalWriteGateway:
 
         Same blocking semantics: replay_mode returns SimulationResult; live raises on disallowed.
         """
+        self._guardrail_gate.check(operation="delete_file", target=path)
         if self.replay_mode:
             return self.simulate_write(path, "delete")
         if not self.check_write_permission(path, "delete"):
@@ -283,12 +294,14 @@ class UniversalWriteGateway:
         """REQ-019/177/354: signature-before-side-effect write gate.
 
         Enforces three sequential checks before delegating to store.write():
-        1. Signature verification — payload must be signed.
-        2. Replay hash verification — payload hash must match replay_key.
-        3. Plan hash verification — mutation must originate from an authorised plan.
+        1. Guardrail pre-check — applies_guardrail before any mutation.
+        2. Signature verification — payload must be signed.
+        3. Replay hash verification — payload hash must match replay_key.
+        4. Plan hash verification — mutation must originate from an authorised plan.
 
-        All three checks must pass.  store is never touched on any failure.
+        All checks must pass.  store is never touched on any failure.
         """
+        self._guardrail_gate.check(operation="write", target="store")
         if self._frozen:
             raise PermissionError("REQ-091: UWG write blocked — gateway is frozen.")
         if not self._verify_signature(signature):

@@ -1,0 +1,279 @@
+"""
+agentic_core/L4_state/authority/run_scoped_state_authority.py
+
+RunScopedStateAuthority — P0-L4 gap remediation.
+
+Single authoritative run-scoped state object governing all L4 reads,
+writes, and memory. Replaces the fragmented 19-write-target pattern
+(1,827 reads_from / 50 writes_to with no unification) identified by
+ADG analysis. All L4 state access routes through this authority.
+
+ADG edges emitted: stamps_work_contract, snapshots_state,
+                   freezes_context, unfreezes_context
+"""
+
+from __future__ import annotations
+
+import hashlib
+import logging
+import threading
+import time
+from dataclasses import dataclass
+from typing import Any
+
+from agentic_core.runtime.execution_trace import get_active_execution_trace
+
+logger = logging.getLogger(__name__)
+
+
+@dataclass(frozen=True)
+class StateSnapshot:
+    """Immutable point-in-time snapshot of the run-scoped state."""
+
+    run_id: str
+    trace_id: str
+    snapshot_key: str
+    keys: tuple[str, ...]
+    value_hashes: dict[str, str]
+    timestamp_monotonic: float
+    frozen: bool
+
+    @classmethod
+    def capture(
+        cls,
+        run_id: str,
+        trace_id: str,
+        state: dict[str, Any],
+        frozen: bool = False,
+    ) -> StateSnapshot:
+        ts = time.monotonic()
+        value_hashes = {k: hashlib.sha256(repr(v).encode()).hexdigest()[:16] for k, v in state.items()}
+        snap_payload = f"{run_id}:{trace_id}:{sorted(value_hashes.items())}:{ts:.6f}"
+        snapshot_key = hashlib.sha256(snap_payload.encode()).hexdigest()[:24]
+        return cls(
+            run_id=run_id,
+            trace_id=trace_id,
+            snapshot_key=snapshot_key,
+            keys=tuple(sorted(state.keys())),
+            value_hashes=value_hashes,
+            timestamp_monotonic=ts,
+            frozen=frozen,
+        )
+
+
+@dataclass(frozen=True)
+class WorkContract:
+    """Immutable work contract stamped at run start."""
+
+    run_id: str
+    trace_id: str
+    contract_hash: str
+    task_description: str
+    created_at: float
+
+    @classmethod
+    def stamp(cls, run_id: str, trace_id: str, task_description: str = "") -> WorkContract:
+        ts = time.monotonic()
+        payload = f"{run_id}:{trace_id}:{task_description}:{ts:.6f}"
+        contract_hash = hashlib.sha256(payload.encode()).hexdigest()[:24]
+        return cls(
+            run_id=run_id,
+            trace_id=trace_id,
+            contract_hash=contract_hash,
+            task_description=task_description,
+            created_at=ts,
+        )
+
+
+class FrozenStateError(RuntimeError):
+    """Raised when a write is attempted on a frozen state."""
+
+
+class RunScopedStateAuthority:
+    """Single authoritative state ledger for one execution run.
+
+    All L4 state reads and writes must route through this authority.
+    Provides freezing (critical section), snapshots, and a work contract
+    anchoring the run identity.
+
+    Usage::
+
+        auth = RunScopedStateAuthority(run_id="run-abc")
+        auth.stamp_work_contract("Summarise campaign brief")
+
+        auth.write("context.prompt", prompt_text)
+        value = auth.read("context.prompt")
+
+        with auth.frozen_section():
+            # no writes permitted inside
+            result = read_only_operation()
+
+        snap = auth.snapshot()
+    """
+
+    def __init__(self, run_id: str = "") -> None:
+        self._run_id = run_id or f"run-{int(time.monotonic() * 1e6)}"
+        self._state: dict[str, Any] = {}
+        self._lock = threading.RLock()
+        self._frozen = False
+        self._work_contract: WorkContract | None = None
+        self._snapshots: list[StateSnapshot] = []
+
+    @property
+    def run_id(self) -> str:
+        return self._run_id
+
+    @property
+    def is_frozen(self) -> bool:
+        return self._frozen
+
+    def _trace_id(self) -> str:
+        active = get_active_execution_trace()
+        return active.trace_id if active else "no-active-trace"
+
+    def stamp_work_contract(self, task_description: str = "") -> WorkContract:
+        """Stamp an immutable work contract anchoring this run's identity.
+
+        Emits ``stamps_work_contract`` ADG edge.
+        """
+        with self._lock:
+            if self._work_contract is not None:
+                logger.warning("AUTHORITY work_contract already stamped for run=%s", self._run_id)
+                return self._work_contract
+            contract = WorkContract.stamp(self._run_id, self._trace_id(), task_description)
+            self._work_contract = contract
+            logger.info(
+                "AUTHORITY stamps_work_contract run=%s contract_hash=%s",
+                self._run_id,
+                contract.contract_hash,
+            )
+            return contract
+
+    def write(self, key: str, value: Any) -> None:
+        """Write a value under ``key``.
+
+        Raises :class:`FrozenStateError` if the authority is currently frozen.
+        """
+        with self._lock:
+            if self._frozen:
+                raise FrozenStateError(
+                    f"RunScopedStateAuthority.write blocked: state is frozen (run={self._run_id}, key={key})"
+                )
+            self._state[key] = value
+            logger.debug("AUTHORITY write run=%s key=%s", self._run_id, key)
+
+    def read(self, key: str, default: Any = None) -> Any:
+        """Read a value by ``key`` (returns ``default`` if absent)."""
+        with self._lock:
+            return self._state.get(key, default)
+
+    def delete(self, key: str) -> None:
+        """Remove ``key`` from state."""
+        with self._lock:
+            if self._frozen:
+                raise FrozenStateError(
+                    f"RunScopedStateAuthority.delete blocked: state is frozen (run={self._run_id}, key={key})"
+                )
+            self._state.pop(key, None)
+
+    def keys(self) -> list[str]:
+        with self._lock:
+            return list(self._state.keys())
+
+    def snapshot(self) -> StateSnapshot:
+        """Capture an immutable snapshot of the current state.
+
+        Emits ``snapshots_state`` ADG edge.
+        """
+        with self._lock:
+            snap = StateSnapshot.capture(
+                self._run_id,
+                self._trace_id(),
+                self._state,
+                frozen=self._frozen,
+            )
+            self._snapshots.append(snap)
+            logger.debug(
+                "AUTHORITY snapshots_state run=%s key=%s keys=%d",
+                self._run_id,
+                snap.snapshot_key,
+                len(snap.keys),
+            )
+            return snap
+
+    def freeze(self) -> None:
+        """Freeze state — all writes blocked until ``unfreeze()``.
+
+        Emits ``freezes_context`` ADG edge.
+        """
+        with self._lock:
+            self._frozen = True
+            logger.info("AUTHORITY freezes_context run=%s", self._run_id)
+
+    def unfreeze(self) -> None:
+        """Unfreeze state — writes permitted again.
+
+        Emits ``unfreezes_context`` ADG edge.
+        """
+        with self._lock:
+            self._frozen = False
+            logger.info("AUTHORITY unfreezes_context run=%s", self._run_id)
+
+    class frozen_section:
+        """Context manager: freeze state for the duration of the block."""
+
+        def __init__(self, authority: RunScopedStateAuthority) -> None:
+            self._auth = authority
+
+        def __enter__(self) -> RunScopedStateAuthority.frozen_section:
+            self._auth.freeze()
+            return self
+
+        def __exit__(self, exc_type, exc_val, exc_tb) -> bool:
+            self._auth.unfreeze()
+            return False
+
+    def frozen_critical_section(self) -> RunScopedStateAuthority.frozen_section:
+        """Return a context manager that freezes state for a critical section."""
+        return RunScopedStateAuthority.frozen_section(self)
+
+    def work_contract(self) -> WorkContract | None:
+        return self._work_contract
+
+    def snapshot_history(self) -> list[StateSnapshot]:
+        with self._lock:
+            return list(self._snapshots)
+
+
+_registry: dict[str, RunScopedStateAuthority] = {}
+_registry_lock = threading.Lock()
+
+
+def get_state_authority(run_id: str) -> RunScopedStateAuthority:
+    """Get or create a :class:`RunScopedStateAuthority` for ``run_id``."""
+    with _registry_lock:
+        if run_id not in _registry:
+            _registry[run_id] = RunScopedStateAuthority(run_id=run_id)
+        return _registry[run_id]
+
+
+def release_state_authority(run_id: str) -> None:
+    """Release the authority for ``run_id`` (call at run end)."""
+    with _registry_lock:
+        _registry.pop(run_id, None)
+
+
+def active_run_ids() -> list[str]:
+    with _registry_lock:
+        return list(_registry.keys())
+
+
+__all__ = [
+    "StateSnapshot",
+    "WorkContract",
+    "FrozenStateError",
+    "RunScopedStateAuthority",
+    "get_state_authority",
+    "release_state_authority",
+    "active_run_ids",
+]
