@@ -14,6 +14,7 @@ import logging
 import os
 from pathlib import Path
 from typing import Any
+from agentic_core.L2_execution.enforcement.guardrail_gate import get_guardrail_gate
 
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
@@ -299,7 +300,13 @@ class ValidationOrchestrator(SovereignBaseAgent):
     def execute(self) -> None:
         """
         Execute validation checks.
+        """
+        # Wave 3: Guardrail pre-check
+        guardrail = get_guardrail_gate()
+        guardrail.check(operation="execute_validation", target="validation_orchestrator")
+        print("\n[VALIDATION] Starting validation orchestrator...", flush=True)
 
+        """
         Must be overridden in subclass to implement specific checks.
 
         Raises:

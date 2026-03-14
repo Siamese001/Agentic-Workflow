@@ -16,6 +16,7 @@ import hashlib
 import json
 from dataclasses import dataclass, field
 from typing import Any, Literal
+from agentic_core.L2_execution.enforcement.guardrail_gate import get_guardrail_gate
 
 
 class MLWriteEnvelopeViolation(Exception):
@@ -102,10 +103,10 @@ class MLWriteIntentExecutor:
     def execute(self, intent: MLWriteIntent) -> dict[str, Any]:
         """
         Execute an MLWriteIntent inside the L2.2 sandbox.
-
-        Raises MLWriteEnvelopeViolation if called outside the sandbox.
-        Returns a result dict with intent_hash and kind for audit.
         """
+        # Wave 3: Guardrail pre-check
+        guardrail = get_guardrail_gate()
+        guardrail.check(operation="execute_ml_write", target=intent.target_path)
         if not _SANDBOX_ACTIVE:
             raise MLWriteEnvelopeViolation(
                 f"execute() called outside L2.2 commit sandbox for kind={intent.kind!r}"

@@ -21,7 +21,8 @@ from __future__ import annotations
 import importlib
 import logging
 from types import ModuleType
-from typing import Any, Callable
+from typing import Any
+from agentic_core.L2_execution.enforcement.guardrail_gate import get_guardrail_gate, Callable
 
 Logger = logging.getLogger(__name__)
 
@@ -85,6 +86,9 @@ class StaticDispatchRegistry:
             UnregisteredDispatchError: if *key* has not been registered.
             ImportError: if the registered module cannot be imported.
         """
+        # Wave 3: Guardrail pre-check
+        guardrail = get_guardrail_gate()
+        guardrail.check(operation="static_dispatch", target=key)
         if key not in self._registry:
             raise UnregisteredDispatchError(
                 f"[StaticDispatchRegistry] No module registered for key '{key}'. "

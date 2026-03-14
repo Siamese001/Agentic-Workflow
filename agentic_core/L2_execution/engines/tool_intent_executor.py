@@ -12,7 +12,8 @@ import hashlib
 import json
 from contextlib import contextmanager
 from dataclasses import dataclass, field
-from typing import Any, Callable, Generator
+from typing import Any, Callable
+from agentic_core.L2_execution.enforcement.guardrail_gate import get_guardrail_gate, Generator
 
 from agentic_core.L2_execution.types.ml_write_intent_types import is_commit_sandbox_active
 from agentic_core.L2_execution.types.tool_intent_types import ToolIntent, ToolViolation

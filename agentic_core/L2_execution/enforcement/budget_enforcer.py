@@ -15,6 +15,7 @@ import signal
 import threading
 from contextlib import contextmanager
 from typing import Any, Callable
+from agentic_core.L2_execution.enforcement.guardrail_gate import get_guardrail_gate
 
 try:
     import resource
@@ -85,8 +86,12 @@ class BudgetEnforcer:
         """Execute tool_fn under budget caps.
 
         Returns (exit_code, stdout_bytes) per PTC ToolResult contract [3].
-        Raises BudgetExceeded on any cap breach.
         """
+        # Wave 3: Guardrail pre-check
+        guardrail = get_guardrail_gate()
+        guardrail.check(operation="run_budget_enforcer", target=envelope.tool_name)
+        if envelope.max_stdout_bytes <= 0:
+            raise BudgetExceeded(f"stdout_bytes cap ({envelope.max_stdout_bytes}) exceeded")
         budget = envelope.budget
         if _HAS_RESOURCE:
             try:

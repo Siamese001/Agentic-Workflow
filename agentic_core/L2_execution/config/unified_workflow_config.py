@@ -26,7 +26,7 @@ Implements single entrypoint with specialized coordinators for different mission
 from abc import ABC, abstractmethod
 from enum import Enum
 from typing import Any
-
+from agentic_core.L2_execution.enforcement.guardrail_gate import get_guardrail_gate
 from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
 from agentic_core.L2_execution.enforcement.capability_chokepoint import (
     authorize_and_execute,
@@ -101,6 +101,9 @@ class ReasoningCoordinator(Coordinator):
 
     def execute(self, mission: dict[str, Any]) -> dict[str, Any]:
         """Execute reasoning mission."""
+        # Wave 3: Guardrail pre-check
+        guardrail = get_guardrail_gate()
+        guardrail.check(operation="execute_reasoning_mission", target=mission.get("mission_id", "unknown"))
         try:
             # Consolidated reasoning orchestration logic
             problem = mission.get("problem", "")
@@ -140,6 +143,9 @@ class ExecutionCoordinator(Coordinator):
 
     def execute(self, mission: dict[str, Any]) -> dict[str, Any]:
         """Execute execution mission."""
+        # Wave 3: Guardrail pre-check
+        guardrail = get_guardrail_gate()
+        guardrail.check(operation="execute_execution_mission", target=mission.get("mission_id", "unknown"))
         try:
             # Consolidated execution orchestration logic
             action = mission.get("action", "")
@@ -173,6 +179,9 @@ class SafetyCoordinator(Coordinator):
 
     def execute(self, mission: dict[str, Any]) -> dict[str, Any]:
         """Execute safety mission."""
+        # Wave 3: Guardrail pre-check
+        guardrail = get_guardrail_gate()
+        guardrail.check(operation="execute_safety_mission", target=mission.get("mission_id", "unknown"))
         try:
             # Consolidated safety orchestration logic
             violations = mission.get("violations", [])
@@ -247,6 +256,9 @@ class HealingCoordinator(Coordinator):
 
     def execute(self, mission: dict[str, Any]) -> dict[str, Any]:
         """Execute healing mission."""
+        # Wave 3: Guardrail pre-check
+        guardrail = get_guardrail_gate()
+        guardrail.check(operation="execute_healing_mission", target=mission.get("mission_id", "unknown"))
         try:
             # Consolidated healing orchestration logic
             violations = mission.get("violations", [])
