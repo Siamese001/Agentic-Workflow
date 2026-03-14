@@ -212,14 +212,27 @@ class UtilitySilentSwallowerDetector(AntiPatternDetector):
     def _has_guardian_annotation(self, handler: ast.ExceptHandler, source_lines: list[str]) -> bool:
         """Check if handler has guardian annotation (hyphens or underscores accepted)."""
         try:
+            # Check the line of the except handler
             line_idx = handler.lineno - 1
             if 0 <= line_idx < len(source_lines):
                 line = source_lines[line_idx]
-                return (
+                if (
                     "guardian: allow-silent-swallower" in line
                     or "guardian: allow-silent_swallower" in line
                     or "guardian: allow_silent_swallower" in line
-                )
+                ):
+                    return True
+            
+            # Check the line before the except handler
+            line_idx = handler.lineno - 2
+            if 0 <= line_idx < len(source_lines):
+                line = source_lines[line_idx]
+                if (
+                    "guardian: allow-silent-swallower" in line
+                    or "guardian: allow-silent_swallower" in line
+                    or "guardian: allow_silent_swallower" in line
+                ):
+                    return True
         except (IndexError, TypeError):
             pass
         return False
