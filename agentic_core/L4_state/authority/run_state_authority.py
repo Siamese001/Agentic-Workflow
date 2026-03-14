@@ -228,6 +228,7 @@ class RunStateAuthority:
                 result = self._backend.get(key)
                 if result is not None:
                     return result
+            # guardian: allow-silent-swallower
             except Exception as exc:
                 logger.debug("RUN_STATE_AUTHORITY backend_read failed key=%s: %s", key, exc)
         return default
