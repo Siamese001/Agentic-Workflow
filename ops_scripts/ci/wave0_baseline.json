@@ -3,7 +3,7 @@
   "_wave": 0,
   "gate_modes": {
     "M1": "warn",
-    "M2": "warn",
+    "M2": "enforce",
     "M3": "enforce",
     "M4": "warn",
     "M5": "warn",
