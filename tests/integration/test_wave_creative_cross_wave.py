@@ -436,7 +436,8 @@ class TestW5TraceContextCreative:
             def recorder(i):
                 try:
                     ctx.record(layer='L3', module=f'Mod{i}', operation=f'op_{i}')
-                except Exception as e:
+                # guardian: allow-silent-swallower
+                except Exception as e:  # guardian: legitimate exception handling
                     errors.append(str(e))
             threads = [threading.Thread(target=recorder, args=(i,)) for i in range(30)]
             for t in threads:

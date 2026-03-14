@@ -80,6 +80,7 @@ def _get_adg_counts() -> dict[str, int]:
         if raw:
             snap = json.loads(raw)
             return snap.get("graph_plane_counts", {})
+    # guardian: allow-silent-swallower
     except Exception as exc:
         print(f"  [WARN] Failed to get ADG snapshot from Redis: {exc}", file=sys.stderr)
     return {}
@@ -105,6 +106,7 @@ def _count_ruff_violations(layer: str) -> int:
             violations = json.loads(result.stdout)
             return len(violations)
         return 0
+    # guardian: allow-silent-swallower
     except Exception as exc:
         print(f"  [WARN] ruff scan failed for {layer}: {exc}", file=sys.stderr)
         return -1
