@@ -31,19 +31,19 @@ AUTHORITY: [ZERO] Unprivileged -> [INFORMATIONAL] Data -> [GOVERNED] Caps -> [BI
 ------------------------------------------------------------------------------------------------------------------------
 SLOT | AUTHORITY | PURPOSE (Source) & EXAMPLES                          | ADG / EDGE DATA             | FEEDBACK LOOP
 -----|-----------|------------------------------------------------------|-----------------------------|------------------
-S0   | ABSOLUTE  | Constitutions/Invariants (L4 State/L5 Policy).       | reads_policy_state (1,317)  | Meta-learn failure -> 
+S0   | ABSOLUTE  | Constitutions/Invariants (L4 State/L5 Policy).       | reads_policy_state (1,317)  | Meta-learn failure ->
      |           | e.g., "Layer gravity", "Writes via UWG".             | Anchor for all reasoning.   | Update S0 policy.
 -----|-----------|------------------------------------------------------|-----------------------------|------------------
-I0   | GOVERNED  | Identity/Mixins (L4 State/Cap Defs).                 | prompt_template_used_by (45)| Low success -> 
+I0   | GOVERNED  | Identity/Mixins (L4 State/Cap Defs).                 | prompt_template_used_by (45)| Low success ->
      |           | e.g., HealMixin, ValidateMixin, MCPHardened.         | Defines "How" agent acts.   | Revise/AB test.
 -----|-----------|------------------------------------------------------|-----------------------------|------------------
-D0   | BINDING   | Semantic Fences (L5 Active Guardian).                | applies_guardrail (68)      | High rejection -> 
+D0   | BINDING   | Semantic Fences (L5 Active Guardian).                | applies_guardrail (68)      | High rejection ->
      |           | e.g., "Max file: 10KB", "No os.system".              | Constraints before commit.  | Relax/Tune thresholds.
 -----|-----------|------------------------------------------------------|-----------------------------|------------------
-C0   | INFO      | Grounding/RAG (L4 Index/L2.1 Snapshot).              | retrieves_via (52)          | Low groundedness -> 
+C0   | INFO      | Grounding/RAG (L4 Index/L2.1 Snapshot).              | retrieves_via (52)          | Low groundedness ->
      |           | e.g., "ImportError resolved", AST snapshots.         | Grounding; no execution auth| Tune RAG/reranking.
 -----|-----------|------------------------------------------------------|-----------------------------|------------------
-U0   | ZERO      | Raw Intent (L1 Thinking/NL Input).                   | generates_prompt (215)      | Injection detected -> 
+U0   | ZERO      | Raw Intent (L1 Thinking/NL Input).                   | generates_prompt (215)      | Injection detected ->
      |           | e.g., "Fix module X", "Analyze coverage".            | Scanned for S0/I0 overrides | Strengthen S0 rules.
 
 ------------------------------------------------------------------------------------------------------------------------
@@ -57,7 +57,7 @@ U0   | ZERO      | Raw Intent (L1 Thinking/NL Input).                   | genera
 ------------------------------------------------------------------------------------------------------------------------
 6. SOVEREIGN LLM GATEWAY (THE OUTBOUND SEAM)
 ------------------------------------------------------------------------------------------------------------------------
-• RESPONSIBILITIES: Consume signed artifact, translate S0/I0/U0 to provider API (OpenAI/Gemini/Anthropic), 
+• RESPONSIBILITIES: Consume signed artifact, translate S0/I0/U0 to provider API (OpenAI/Gemini/Anthropic),
   map tool schemas, inject D0 stop-sequences, log final payload to Telemetry Ledger (determinism/replay).
 • ENFORCEMENT: Single seam (prevents leakage), Signature verification (no tampering), Provider abstraction.
 

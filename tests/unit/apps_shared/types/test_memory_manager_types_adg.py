@@ -34,8 +34,7 @@ class TestContextItem:
     def test_is_dataclass(self):
         import dataclasses; assert dataclasses.is_dataclass(ContextItem)
     def test_creates(self):
-        import time
-        item = ContextItem(key="k1", value="data", size_bytes=100, last_accessed=time.time())
+        item = ContextItem(key="k1", value="data", size_bytes=100, last_accessed=1735689600.0)
         assert item.priority == 0; assert item.access_count == 0
 
 @pytest.mark.skipif(not _AVAIL, reason="deps unavailable")

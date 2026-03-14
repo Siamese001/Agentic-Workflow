@@ -1,7 +1,8 @@
 """ADG contract tests for apps_shared/types/feedback_loop_orchestrator_types.py."""
 from __future__ import annotations
 import pytest
-from datetime import datetime
+from datetime import datetime, timezone
+_FIXED_DT = datetime(2026, 1, 1, tzinfo=timezone.utc)
 pytestmark = pytest.mark.unit
 try:
     from apps_shared.types.feedback_loop_orchestrator_types import (
@@ -27,13 +28,13 @@ class TestRegenerationCheckpoint:
         import dataclasses; assert dataclasses.is_dataclass(RegenerationCheckpoint)
     def test_creates(self):
         cp = RegenerationCheckpoint(
-            attempt=1, timestamp=datetime.now(), content="text",
+            attempt=1, timestamp=_FIXED_DT, content="text",
             validation_result=None, temperature=0.7,
         )
         assert cp.attempt == 1; assert cp.score == 0.0
     def test_to_dict(self):
         cp = RegenerationCheckpoint(
-            attempt=2, timestamp=datetime.now(), content="v2",
+            attempt=2, timestamp=_FIXED_DT, content="v2",
             validation_result=None, temperature=0.9,
             failure_type=ConstraintFailureType.CREATIVE,
         )

@@ -5,6 +5,8 @@ import time
 
 import pytest
 
+_FIXED_TS = 9999999999.0  # far-future: ensures is_expired() returns False
+
 pytestmark = pytest.mark.unit
 
 from agentic_core.L5_safety.validators.context_validator import CacheEntry
@@ -15,7 +17,7 @@ class TestCacheEntry:
         entry = CacheEntry(
             key="test:key",
             value={"result": True},
-            timestamp=time.time(),
+            timestamp=_FIXED_TS,
             ttl=60,
             agent="TestAgent",
         )
@@ -25,7 +27,7 @@ class TestCacheEntry:
         entry = CacheEntry(
             key="k",
             value="v",
-            timestamp=time.time(),
+            timestamp=_FIXED_TS,
             ttl=60,
             agent="A",
         )
@@ -45,7 +47,7 @@ class TestCacheEntry:
         entry = CacheEntry(
             key="k",
             value={"data": [1, 2, 3]},
-            timestamp=time.time(),
+            timestamp=_FIXED_TS,
             ttl=30,
             agent="B",
         )

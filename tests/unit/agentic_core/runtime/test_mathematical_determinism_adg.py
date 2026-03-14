@@ -26,11 +26,10 @@ class TestDeterministicArtifact:
 
 class TestDeterminismProof:
     def test_creates(self):
-        import time
         proof = DeterminismProof(
             core_digest="digest",
             run_id="run-1",
-            creation_timestamp=time.time(),
+            creation_timestamp=1735689600.0,
             artifact_count=3,
             policy_hash="ph",
             hierarchy_hash="hh",
@@ -40,11 +39,10 @@ class TestDeterminismProof:
         assert proof.artifact_count == 3
 
     def test_is_frozen(self):
-        import time
         proof = DeterminismProof(
             core_digest="d",
             run_id="r",
-            creation_timestamp=time.time(),
+            creation_timestamp=1735689600.0,
             artifact_count=0,
             policy_hash="p",
             hierarchy_hash="h",

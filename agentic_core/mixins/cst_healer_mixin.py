@@ -254,6 +254,17 @@ class SurgicalCSTHealerMixin:
             source_code = context.file_path.read_text(encoding="utf-8")
             cst_tree = cst.parse_module(source_code)
 
+            # Import factory functions
+            (
+                create_bare_except_fixer,
+                create_blank_line_normalizer,
+                create_docstring_inserter,
+                create_future_import_inserter,
+                create_import_remover,
+                create_trailing_whitespace_fixer,
+                create_type_hint_inserter,
+            ) = _get_cst_transformers()
+
             # Determine which transformer to use based on violations
             total_modifications = 0
 

@@ -7,7 +7,7 @@ using CST-based transformers while preserving comments and formatting.
 
 import ast
 import tempfile
-from datetime import datetime
+_FIXED_TS = "2026-01-01T00:00:00"
 from pathlib import Path
 
 import libcst as cst
@@ -70,7 +70,7 @@ def test():
                 target_coordinates=[coordinate],
                 detector_agent="CodeHealerAgent",
                 detection_method="heal_canon",
-                detection_timestamp=datetime.now().isoformat(),
+                detection_timestamp=_FIXED_TS,
                 violation_id="future_import_test",
             )
 
@@ -129,7 +129,7 @@ def risky():
                 target_coordinates=[coordinate],
                 detector_agent="CodeHealerAgent",
                 detection_method="heal_canon",
-                detection_timestamp=datetime.now().isoformat(),
+                detection_timestamp=_FIXED_TS,
                 violation_id="bare_except_test",
             )
 
@@ -187,7 +187,7 @@ class MyClass:
                 target_coordinates=[coordinate],
                 detector_agent="CodeHealerAgent",
                 detection_method="heal_canon",
-                detection_timestamp=datetime.now().isoformat(),
+                detection_timestamp=_FIXED_TS,
                 violation_id="docstring_test",
             )
 
@@ -263,7 +263,7 @@ class MyClass:
                 target_coordinates=coordinates,
                 detector_agent="CodeHealerAgent",
                 detection_method="heal_canon",
-                detection_timestamp=datetime.now().isoformat(),
+                detection_timestamp=_FIXED_TS,
                 violation_id="combined_canon_test",
             )
 
@@ -307,7 +307,7 @@ import os
                 target_coordinates=[],
                 detector_agent="CodeHealerAgent",
                 detection_method="heal_canon",
-                detection_timestamp=datetime.now().isoformat(),
+                detection_timestamp=_FIXED_TS,
                 violation_id="no_violations",
             )
 

@@ -2,6 +2,7 @@
 from __future__ import annotations
 import pytest
 from datetime import datetime
+_FIXED_DT = datetime(2099, 12, 31, 23, 59, 59)
 pytestmark = pytest.mark.unit
 try:
     from apps_shared.types.vector_similarity_result_types import (
@@ -19,7 +20,7 @@ class TestVectorSimilarityResult:
     def test_creates(self):
         r = VectorSimilarityResult(
             cache_key="k1", similarity_score=0.92,
-            cached_content="resume text", metadata={}, timestamp=datetime.now(),
+            cached_content="resume text", metadata={}, timestamp=_FIXED_DT,
         )
         assert r.similarity_score == 0.92; assert r.cache_key == "k1"
 
@@ -30,12 +31,12 @@ class TestCacheEntry:
     def test_creates(self):
         e = CacheEntry(
             key="k1", content="text", embedding=[0.1, 0.2],
-            metadata={}, timestamp=datetime.now(),
+            metadata={}, timestamp=_FIXED_DT,
         )
         assert e.ttl_seconds == 3600
     def test_not_expired_fresh(self):
         e = CacheEntry(
-            key="k", content="c", embedding=[], metadata={}, timestamp=datetime.now(),
+            key="k", content="c", embedding=[], metadata={}, timestamp=_FIXED_DT,
         )
         assert e.is_expired() is False
 

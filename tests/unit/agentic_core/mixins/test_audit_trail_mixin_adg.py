@@ -1,9 +1,9 @@
 """ADG-driven tests for mixins/audit_trail_mixin.py — fan_in=1."""
 from __future__ import annotations
 
-import time
-
 import pytest
+
+_FIXED_TS = 1735689600.0  # 2026-01-01T00:00:00Z
 
 pytestmark = pytest.mark.unit
 
@@ -16,7 +16,7 @@ class TestAuditProof:
             action_id="act-1",
             prev_hash="abc123",
             curr_hash="def456",
-            timestamp=time.time(),
+            timestamp=_FIXED_TS,
         )
         assert proof.action_id == "act-1"
 
@@ -36,7 +36,7 @@ class TestAuditProof:
             action_id="act-3",
             prev_hash="prev",
             curr_hash="curr",
-            timestamp=time.time(),
+            timestamp=_FIXED_TS,
         )
         assert proof.verify_chain_link("prev") is True
 
@@ -45,7 +45,7 @@ class TestAuditProof:
             action_id="act-4",
             prev_hash="prev",
             curr_hash="curr",
-            timestamp=time.time(),
+            timestamp=_FIXED_TS,
         )
         assert proof.verify_chain_link("wrong") is False
 
