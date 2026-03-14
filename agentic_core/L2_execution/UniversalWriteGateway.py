@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import hashlib
 import logging
-import os
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -27,15 +26,58 @@ class ToolNotAllowedError(PermissionError):
 
 @dataclass(frozen=True)
 class MutationRecord:
-    """Immutable record of a write operation for audit trails."""
+    """Immutable record of a write operation for audit trails.
 
-    timestamp: str
+    Wave 1 hardening: mutation_hash is sha256(actor_id + run_id + operation + path + data_hash).
+    This makes the record deterministically reproducible and tamper-evident.
+    The timestamp field is a deterministic digest, NOT os.urandom or datetime.now.
+    """
+
+    mutation_hash: str
+    actor_id: str
+    run_id: str
     operation: str
     path: str
+    replay_key: str = ""
     data_hash: str | None = None
     size_bytes: int | None = None
     permitted: bool = True
     replay_mode: bool = False
+
+    @classmethod
+    def build(
+        cls,
+        *,
+        actor_id: str,
+        run_id: str,
+        operation: str,
+        path: str,
+        data: str | bytes | None = None,
+        replay_key: str = "",
+        permitted: bool = True,
+        replay_mode: bool = False,
+    ) -> "MutationRecord":
+        """Construct a MutationRecord with a deterministic mutation_hash."""
+        data_hash: str | None = None
+        size_bytes: int | None = None
+        if data is not None:
+            data_bytes = data.encode("utf-8") if isinstance(data, str) else data
+            data_hash = hashlib.sha256(data_bytes).hexdigest()
+            size_bytes = len(data_bytes)
+        raw = f"{actor_id}:{run_id}:{operation}:{path}:{data_hash or ''}:{replay_key}"
+        mutation_hash = hashlib.sha256(raw.encode("utf-8")).hexdigest()
+        return cls(
+            mutation_hash=mutation_hash,
+            actor_id=actor_id,
+            run_id=run_id,
+            operation=operation,
+            path=str(Path(path).as_posix()),
+            replay_key=replay_key,
+            data_hash=data_hash,
+            size_bytes=size_bytes,
+            permitted=permitted,
+            replay_mode=replay_mode,
+        )
 
 
 @dataclass
@@ -57,11 +99,20 @@ class UniversalWriteGateway:
     for deterministic simulation.
     """
 
-    def __init__(self, replay_mode: bool = False, policy_hash: str = ""):
+    def __init__(
+        self,
+        replay_mode: bool = False,
+        policy_hash: str = "",
+        actor_id: str = "uwg",
+        run_id: str = "",
+    ):
         self.replay_mode = replay_mode
+        self.actor_id = actor_id
+        self.run_id = run_id
         self._frozen: bool = False
         self._write_permissions: dict[str, bool] = {}
         self._mutation_ledger: list[MutationRecord] = []
+        self._state_snapshots: list[dict] = []
         self._allowed_paths: set[str] = {"artifacts/", "docs/reports/", "logs/", "temp/", ".cache/"}
         self._blocked_extensions = {".exe", ".dll", ".so", ".dylib", ".py", ".js", ".ts", ".jsx", ".tsx"}
         self._allowed_tools: set[str] = {
@@ -85,31 +136,135 @@ class UniversalWriteGateway:
         return self._write_permissions.get(path_normalized, False)
 
     def record_mutation(
-        self, path: str, operation: str, data: str | bytes | None = None, permitted: bool | None = None
+        self,
+        path: str,
+        operation: str,
+        data: str | bytes | None = None,
+        permitted: bool | None = None,
+        replay_key: str = "",
     ) -> MutationRecord:
-        """Record mutation for audit trail."""
+        """Record mutation for audit trail with deterministic mutation_hash."""
         if permitted is None:
             permitted = self.check_write_permission(path, operation)
-        data_hash = None
-        size_bytes = None
-        if data is not None:
-            if isinstance(data, str):
-                data_bytes = data.encode("utf-8")
-            else:
-                data_bytes = data
-            data_hash = hashlib.sha256(data_bytes).hexdigest()
-            size_bytes = len(data_bytes)
-        record = MutationRecord(
-            timestamp=hashlib.sha256(os.urandom(16)).hexdigest()[:16],
+        record = MutationRecord.build(
+            actor_id=self.actor_id,
+            run_id=self.run_id,
             operation=operation,
-            path=str(Path(path).as_posix()),
-            data_hash=data_hash,
-            size_bytes=size_bytes,
+            path=path,
+            data=data,
+            replay_key=replay_key,
             permitted=permitted,
             replay_mode=self.replay_mode,
         )
         self._mutation_ledger.append(record)
         return record
+
+    def write_through(
+        self,
+        path: str,
+        data: str | bytes,
+        *,
+        replay_key: str = "",
+        actor_id: str | None = None,
+        run_id: str | None = None,
+    ) -> "MutationRecord | SimulationResult":
+        """Sovereign write path — all governed writes MUST use this method.
+
+        This is the only method that produces a ``writes_through`` ADG edge.
+        Direct ``writes_to`` callers must be migrated to this entry point.
+        """
+        self._guardrail_gate.check(operation="write_through", target=path)
+        if self._frozen:
+            raise PermissionError("REQ-091: UWG write_through blocked — gateway is frozen.")
+        effective_actor = actor_id or self.actor_id
+        effective_run = run_id or self.run_id
+        if self.replay_mode:
+            return self.simulate_write(path, "write_through", data)
+        if not self.check_write_permission(path, "write"):
+            record = MutationRecord.build(
+                actor_id=effective_actor,
+                run_id=effective_run,
+                operation="write_through_blocked",
+                path=path,
+                data=data,
+                replay_key=replay_key,
+                permitted=False,
+                replay_mode=self.replay_mode,
+            )
+            self._mutation_ledger.append(record)
+            raise ToolNotAllowedError(
+                f"UWG write_through blocked: path '{path}' is not in the allowed write set."
+            )
+        data_bytes = data.encode("utf-8") if isinstance(data, str) else data
+        if replay_key and not self._verify_replay_hash(data_bytes, replay_key):
+            raise PermissionError(
+                "REQ-354: UWG write_through blocked — replay hash mismatch."
+            )
+        record = MutationRecord.build(
+            actor_id=effective_actor,
+            run_id=effective_run,
+            operation="write_through",
+            path=path,
+            data=data,
+            replay_key=replay_key,
+            permitted=True,
+            replay_mode=self.replay_mode,
+        )
+        self._mutation_ledger.append(record)
+        Logger.debug("UWG write_through: %s actor=%s run=%s hash=%s", path, effective_actor, effective_run, record.mutation_hash[:12])
+        return record
+
+    def snapshot_state(
+        self,
+        label: str,
+        state: dict,
+        *,
+        actor_id: str | None = None,
+        run_id: str | None = None,
+    ) -> dict:
+        """Record a versioned state snapshot into the UWG ledger.
+
+        Produces a ``snapshots_state`` ADG edge. Each snapshot is append-only
+        and carries a deterministic content hash so it can be verified during replay.
+        """
+        import json as _json
+
+        effective_actor = actor_id or self.actor_id
+        effective_run = run_id or self.run_id
+        version = len(self._state_snapshots)
+        raw = _json.dumps(state, sort_keys=True, default=str)
+        content_hash = hashlib.sha256(raw.encode("utf-8")).hexdigest()
+        snapshot = {
+            "version": version,
+            "label": label,
+            "actor_id": effective_actor,
+            "run_id": effective_run,
+            "content_hash": content_hash,
+            "state": state,
+        }
+        self._state_snapshots.append(snapshot)
+        self.record_mutation(
+            path=f"snapshot://{label}/{version}",
+            operation="snapshot_state",
+            data=raw,
+            permitted=True,
+        )
+        Logger.debug("UWG snapshot_state: %s v%d hash=%s", label, version, content_hash[:12])
+        return snapshot
+
+    def get_state_snapshots(self) -> list[dict]:
+        """Return append-only copy of all state snapshots."""
+        return list(self._state_snapshots)
+
+    @staticmethod
+    def verify_mutation_record(record: MutationRecord) -> bool:
+        """Verify that a MutationRecord's mutation_hash matches its fields.
+
+        Returns True if the record is internally consistent (not tampered).
+        """
+        raw = f"{record.actor_id}:{record.run_id}:{record.operation}:{record.path}:{record.data_hash or ''}:{record.replay_key}"
+        expected = hashlib.sha256(raw.encode("utf-8")).hexdigest()
+        return expected == record.mutation_hash
 
     def simulate_write(self, path: str, operation: str, data: str | bytes | None = None) -> SimulationResult:
         """Simulate write operation in replay mode."""
@@ -322,11 +477,18 @@ class UniversalWriteGateway:
         """Return statistics about write operations."""
         total = len(self._mutation_ledger)
         permitted = sum(1 for r in self._mutation_ledger if r.permitted)
+        write_through_count = sum(
+            1 for r in self._mutation_ledger if r.operation == "write_through"
+        )
         return {
             "total_mutations": total,
             "permitted_mutations": permitted,
             "blocked_mutations": total - permitted,
+            "write_through_count": write_through_count,
+            "snapshot_count": len(self._state_snapshots),
             "replay_mode": self.replay_mode,
+            "actor_id": self.actor_id,
+            "run_id": self.run_id,
             "allowed_paths": sorted(self._allowed_paths),
             "write_permissions": dict(self._write_permissions),
         }

@@ -4,7 +4,7 @@
   "gate_modes": {
     "M1": "warn",
     "M2": "warn",
-    "M3": "warn",
+    "M3": "enforce",
     "M4": "warn",
     "M5": "warn",
     "M6": "warn"
