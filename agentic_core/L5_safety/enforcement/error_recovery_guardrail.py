@@ -6,6 +6,7 @@ DEFAULT_TIMEOUT = 300
 MAX_ERRORS = 1000
 SUCCESS_RATE_MULTIPLIER = 100
 DEFAULT_ERROR_LOG_LIMIT = 100
+MILLISECONDS_MULTIPLIER = 1000
 
 '\nError Recovery Guardrail - Consolidated Error Handling & Self-Healing\n\nMerges:\n- SecureErrorHandler\n- TerritoryHealer\n- SelfUpdatingSafetyEngine\n\nComposable Rules:\n- error_classification: Categorize error types\n- recovery_strategy: Select appropriate recovery\n- self_healing: Auto-recovery mechanisms\n'
 import time
@@ -96,7 +97,7 @@ class ErrorRecoveryGuardrail:
         self.error_log.append(error_ctx)
         strategy = self._select_strategy(error_ctx)
         result = await self._execute_recovery(error_ctx, strategy, max_retries)
-        result.duration_ms = (clock_provider.time() - start_time) * 1000
+        result.duration_ms = (clock_provider.time() - start_time) * MILLISECONDS_MULTIPLIER
         if result.success:
             self.recoveries_successful += 1
         else:
