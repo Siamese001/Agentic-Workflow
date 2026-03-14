@@ -14,7 +14,7 @@ Gates
   M3 — Mutation Sovereignty  : writes_to_delta > 0  →  FAIL
                                 (unless writes_through_delta > 0)
   M4 — Guardrail Coverage    : applies_guardrail / calls < GUARDRAIL_COVERAGE_THRESHOLD  →  FAIL (enforce after W3)
-  M5 — Trace Coverage        : records_execution_trace / (calls + invokes_eval) < 0.05  →  FAIL (enforce after W5)
+  M5 — Trace Coverage        : records_execution_trace / (calls + invokes_eval) < TRACE_COVERAGE_THRESHOLD  →  FAIL (enforce after W5)
   M6 — Replay Key Gate       : emits_replay_key_delta == 0 for routing PRs  →  FAIL (enforce after W4)
 
 Mode
@@ -78,7 +78,7 @@ GATE_DEFS: dict[str, dict] = {
     },
     "M5": {
         "label": "Trace Coverage Gate",
-        "description": "records_execution_trace / (calls + invokes_eval) must be >= 0.05",
+        "description": f"records_execution_trace / (calls + invokes_eval) must be >= {TRACE_COVERAGE_THRESHOLD}",
     },
     "M6": {
         "label": "Replay Key Gate",
@@ -221,7 +221,7 @@ def _eval_m5(cur: dict, base: dict) -> tuple[bool, str]:
     inv_eval = cur.get("invokes_eval", 0)
     denom = calls + inv_eval
     ratio = ret / denom if denom > 0 else 0.0
-    threshold = 0.05
+    threshold = TRACE_COVERAGE_THRESHOLD
     if ratio < threshold:
         return False, f"trace_coverage = {ret}/{denom} = {ratio:.4f} < {threshold} required"
     return True, f"OK: trace coverage = {ratio:.4f} ({ret}/{denom})"
