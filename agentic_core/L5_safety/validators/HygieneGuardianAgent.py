@@ -451,7 +451,7 @@ class HygieneGuardianAgent(SovereignBaseAgent):
                         fixed_count += 1
                     else:
                         print(f"   [ERROR] Failed to archive {violation.file_path}: {result.error}")
-            # guardian: allow-silent-swallow
+            # guardian: allow-silent-swallower
             except Exception as e:
                 print(f"   [ERROR] Failed to fix {violation.file_path}: {e}")
 
