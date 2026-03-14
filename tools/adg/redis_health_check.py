@@ -207,6 +207,9 @@ def main() -> None:
 
         if cache_status["hot"]:
             print(f"[Redis Health] ✓ ADG {cache_status['reason']}")
+            drift_score = r.get("adg:drift:score")
+            if drift_score:
+                print(f"[Redis Health] ✓ Drift score: {drift_score} (run drift_score.py to refresh)")
             sys.exit(0)
         else:
             print(f"[Redis Health] ✗ ADG cache cold: {cache_status['reason']}")
