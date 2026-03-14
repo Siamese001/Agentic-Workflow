@@ -22,6 +22,9 @@ Design invariants
 
 from __future__ import annotations
 
+# Configuration constants
+TOKEN_APPROXIMATION_RATIO = 4  # 1 token ≈ 4 chars
+
 import hashlib
 from dataclasses import dataclass
 from typing import Callable
@@ -71,8 +74,8 @@ def _classify_budget(total_tokens: int) -> str:
 
 
 def _default_tokenizer(text: str) -> int:
-    """Approximate token count: 1 token ≈ 4 chars."""
-    return max(1, len(text) // 4) if text else 0
+    """Approximate token count: 1 token ≈ TOKEN_APPROXIMATION_RATIO chars."""
+    return max(1, len(text) // TOKEN_APPROXIMATION_RATIO) if text else 0
 
 
 # ---------------------------------------------------------------------------
