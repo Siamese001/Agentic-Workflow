@@ -1,188 +1,144 @@
 ==========================================================================================================================================================================
-                                                      🗺️ AGENTIC SYSTEM — PROCESS MAP v4 (SVP ENGINEERING EDITION) 🗺️
-                                   LAYER SOVEREIGNTY: Upward mutation FORBIDDEN · Dynamic runtime mutation (monkeypatch/setattr/reload) FORBIDDEN
-                                   ADG-VERIFIED: 48,777 import edges · 18,504 call edges · 7,859 test coverage edges · 4,401 dead imports detected
+                                                      🗺️ AGENTIC SYSTEM — PRODUCTION PROCESS MAP 🗺️
+                                   LAYER SOVEREIGNTY: Upward mutation FORBIDDEN · Dynamic runtime mutation FORBIDDEN
 ==========================================================================================================================================================================
- [ I/O BUS ROUTING PROTOCOLS ]   -- Explicit cross-layer dependencies are declared via Pub/Sub ports below. --
-
- ◄ LEFT BUS (CONTROL & SAFETY) ►                                      ◄ RIGHT BUS (TELEMETRY & META-LEARNING) ►
- [C] Immediate Vigilance Re-route (L6 -> L0)                          [T] Telemetry: Metrics/reads to ML Engine
- [D] Safety Fail Re-entry (L5 -> L1)                                  [P] Proposals: DPO/Drift/Eval to ML Engine
- [E] Broadcast Drift (L6 -> Stall + Force Path D)                     [U] Updates: ML Commits to L0/L1 Parameters
+ ◄ LEFT BUS: CONTROL & SAFETY ►                                                        ◄ RIGHT BUS: TELEMETRY & LEARNING ►
+ [C] Vigilance re-route    L6 anomaly detected → immediately re-enters L0              [T] Metrics / evaluation reads  → ML engine
+ [D] Safety fail re-entry  L5 violation → re-enters L1 (plan discarded)                [P] DPO pairs / drift proposals → ML engine
+ [E] Drift broadcast       forces stall + locks execution to human-review path          [U] ML parameter commits        → L0 routing + L1 weights
 ==========================================================================================================================================================================
 
-[1] 🤖 DOMAIN APPS (Zero Internal Authority)
-  +-------------------------------------------+  +-------------------------------------------+  +-------------------------------------------+
-  | 🏢 apps_lic (1,266 modules)               |  | 📄 apps_rg (1,380 modules)                |  | � apps_research (33 modules)             |
-  | InMail campaign orchestration             |  | Resume generation & optimization          |  | Research synthesis & analysis             |
-  |-------------------------------------------|  |-------------------------------------------|  |-------------------------------------------|
-  | 📋 apps_exec (39 modules)                 |  | 📊 apps_eval (36 modules)                 |  | 📝 apps_rfp (34 modules)                  |
-  | Execution planning & coordination         |  | Evaluation & metrics pipelines            |  | RFP response generation                   |
-  +-------------------------------------------+  +-------------------------------------------+  +-------------------------------------------+
-                                                      |
-  +-----------------------------------------------------------------------------------------------------------+
-  | 🌐 apps_shared (Cross-Domain Orchestrators)                                                               |
-  |-----------------------------------------------------------------------------------------------------------|
-  | Agents emit intent deltas, NOT executable commands. Zero mutation authority. Sovereignty enforced via     |
-  | dependency graph validation. Authority delegation flows DOWN through layers, never UP.                    |
-  +-----------------------------------------------------------------------------------------------------------+
-                                                      v (Raw requests — No authority)
+[1] DOMAIN APPS  —  agents have zero execution authority; they propose, they never act
+  +-------------------------------------+  +-------------------------------------+  +-------------------------------------+
+  | apps_lic  InMail Campaigns          |  | apps_rg   Resume Generation         |  | apps_research / apps_rfp / apps_exec|
+  | Intent deltas surface through a     |  | Multi-step reasoning chain. Each    |  | Domain-isolated orchestrators.      |
+  | shared orchestration contract.      |  | agent scoped to a single concern.   |  | No cross-domain write authority.    |
+  | No agent can approve its own output.|  | Evaluation wired to every hop.      |  | Proposals only; sovereignty DOWN.   |
+  +-------------------------------------+  +-------------------------------------+  +-------------------------------------+
+                                                    v  (raw intent — no authority passes this boundary)
+==========================================================================================================================================================================
+
+[2] COGNITIVE ENTRY  —  reasoning is separated from routing; L1 cannot dispatch itself
+  +-----------------------------------------------+      +-----------------------------------------------+  +-------------------------------+
+  | L1: COGNITIVE STUDIO              [pulls: U]   |      | L6: OBSERVABILITY & ANOMALY DETECTION         |  | L4: STATE & MEMORY            |
+  |-----------------------------------------------|      |-----------------------------------------------|  |-------------------------------|
+  | Priming → Orchestration → Synthesis            |      | Tiered vigilance: signal → score → re-route   |  | Capability + CID registries   |
+  | Emits a U0 query intent — nothing more.        |<--[E]| Anomaly RCA engine. Execution transcripts.    |  | Workflow memory + checkpoints |
+  | Cannot approve. Cannot dispatch. Cannot write. |      | Detects drift and fires [E] stall if needed.  |  | Semantic cache. Telemetry.    |
+  | RAG context is informational only (C0).        |      +---------------------------+-------------------+  +---------------+---------------+
+  +---------------------+-------------------------+                                  |                                       |
+                        | U0 query                                                   v                                       v (feeds ML)
+                        v                                        +---------------------------------------------+
+                                                                 | EVALUATION SPINE                            |
+                                                                 | P@K · MRR · NDCG · Groundedness  [emits: T] |
+                                                                 | DPOBatchBuilder → preference pairs[emits: P] |
+                                                                 | EvalSnap → L4 · DriftAlert → L6             |
+                                                                 +---------------------------------------------+
+==========================================================================================================================================================================
+
+[3] C0 RAG PIPELINE  —  retrieval is informational; it cannot alter routing, safety thresholds, or policies
+  +----------+   +----------+   +----------------+   +----------+   +----------+   +----------+   +----------+
+  | 0. CACHE |-->| 1. EMBED |-->| 2a. VECTOR     |-->| 3. FUSE  |-->| 4. P-C   |-->| 5. SCORE |-->| 6. WRITE |
+  | Redis    |   | ephemeral|   | FAISS/Pinecone |   | RRF/dedup|   | siblings |   | complete.|   | TTL/LRU  |
+  +----------+   +----------+   +----------------+   +----------+   +----------+   +----------+   +----------+
+                             \->| 2b. LEXICAL    |--/
+                                | BM25/ASTAware  |
+                                +----------------+
+  C0 context flows directly to [6] Assembly — it bypasses routing entirely.
+  RAG cannot mutate routing decisions, safety thresholds, execution tiers, or policy state.
+==========================================================================================================================================================================
+
+[4] L5 SAFETY ENFORCEMENT  —  four independent validators; all must pass before routing proceeds
+  +------------------------------+  +------------------------------+  +------------------------------+  +------------------------------+
+  | [1] CLASSIFICATION KERNEL    |  | [2] STRUCTURAL BLUEPRINT     |  | [3] AGENT REGISTRY           |  | [4] SOVEREIGN LLM GATEWAY    |
+  | AST-based filetype analysis  |  | Territory + path validation  |  | Profile + registry digest    |  | Sole egress to AI providers  |
+  | 19-priority queue, zero deps |  | SSOT-enforced boundaries     |  | Allowlist + exec mode check  |  | Hash audit / injection detect|
+  +------------------------------+  +------------------------------+  +------------------------------+  +------------------------------+
+              |                                  |                                  |                                  |
+  [D] <-------+----------------------------------+-----(FAIL)----------------------+----------------------------------+
+                                                                 | PASS
+                                                                 v
+==========================================================================================================================================================================
+
+[5] L0 ROUTING + META-LEARNING BUS  —  routing is deterministic; ML improves it but never bypasses it
+  +--------------------------------------------------+   +----------------------------------------------------------+
+  | L0: ROUTING                          [pulls: C]  |   | META-LEARNING BUS                          [pulls: T, P] |
+  |--------------------------------------------------|   |----------------------------------------------------------|
+  | Classify intent against L4 state                 |   | IMMUTABLE STAGE ORDER:                                   |
+  | Assign TraceID + PolicyHash                      |   | S1 Audit → S2 Telemetry → S3 Config → S4 Snapshot        |
+  | Deterministic agent election                     |-->| S5 RCA → S6 Propose (DPO/RLHF/HITL) → S7 Validate       |
+  | Tool budget arbitration                          |   | S8 Intake (HealingOutcome) → S9 Commit (proposal_only)   |
+  | Seal + dispatch cryptographically signed plan    |   | ApprovalGate → VersionStore → dual-inject activation     |
+  | Cannot evaluate. Cannot execute.                 |   +----------------------------------------------------------+
+  | Unregistered agent → hard fail.                  |                        | [emits: U] (L0 rules + L1 weights)
+  +--------------------------------------------------+                        v
+                         | (dispatches signed execution plan)
+                         v
+==========================================================================================================================================================================
+
+[6] ASSEMBLY  —  prompt is a governed payload; constitution is immutable, injections are fenced
+  C0 RAG context ──┐
+  Signed L0 plan ──+──> [ S0: System prompt (constitutional, hard-coded) ]
+                        [ D0: Injection fences / tool fences              ]
+                        [ C0: RAG-injected knowledge (informational only) ]
+                        [ U0: Raw user intent from L1                     ]
+                        [ PROMPT GOVERNANCE: template validation, hostile input block, split → governed payload ]
+                                                       | governed payload
+                                                       v
+==========================================================================================================================================================================
+
+[7] EXECUTION PATHS  —  path selected by L0; [E] stall collapses all paths to D
+  +---------------------+  +---------------------+  +---------------------+  +---------------------+
+  | PATH A  Read-Only   |  | PATH B  Policy-First |  | PATH C  Direct      |  | PATH D  Human-First |
+  | No mutation.        |  | L3 orchestrator with |  | L3 DAG engine.      |  | Human reviews diff. |
+  | Logged + audited.   |  | conflict arbitration,|  | Multi-agent coord.  |  | Zero authority.     |
+  |                     |  | HSM state machine,   |  | MCP tool routing.   |  | DPO pair generated. |
+  |                     |  | hallucination gate.  |  | Escalation routing. |  | [E] always lands    |
+  +---------------------+  +---------------------+  +---------------------+  | here if drift active|
+           |                         |                         |              +---------------------+
+           v                         v                         v                         |
+  +---------------------------------------------------------------------------------------------+
+  | L5: CROSS-PATH SAFETY GUARD                                                                 |
+  | Risk tier · compliance hash · proposal vs policy · Approve / Remediate / Reject  [emits: P] |
+  | RE-CLEAR mandatory after any human MODIFY_DIFF                                              |
+  +---------------------------------------------------------------------------------------------+
+           | PASS → stamp work contract → sandbox permission
+  [D] <----+ FAIL → re-route to L1 (plan discarded, trace preserved)
+           v
+==========================================================================================================================================================================
+
+[8] L2 EXECUTION CORE  —  every capability call is authorized; mutation has exactly one exit point
+  +---------------------------------------------------------------------------------------------+
+  | authorize_and_execute() is the single chokepoint — no capability runs without it            |
+  | Sandbox isolation (Docker/Firecracker) · SovereignLLMGateway (no direct HTTP to providers) |
+  | Protocol: pre_commit → validate → execute → heal · Circuit breakers + timeout enforcement  |
+  +---------------------------------------------------------------------------------------------+
+  +-------------------+  +-------------------+  +-------------------+  +-------------------+
+  | P1: INIT          |  | P2: EXECUTE        |  | P3: HEAL          |  | P4: SYNTHESIZE    |
+  | Validate plan     |->| Enforce ToolCall   |->| Tiered escalation |->| Aggregate outputs |
+  | Freeze clean state|  | Structured stdout  |  | LOCAL→QWEN→GEMINI |  | Validate schema   |
+  | Claim write access|  | CEIL on stuck loops|  | HealingOutcome    |  | ToolTranscript    |
+  +-------------------+  +-------------------+  +-------------------+  +-------------------+
+
+  UNIVERSAL WRITE GATEWAY (UWG) — sole exit point for all durable state mutation
+  Agents · orchestrators · routers cannot write directly. UWG enforces replay-diff audit on every write.
+  Dependency graph validation continuously verifies no component has acquired a bypass path.
+==========================================================================================================================================================================
+
+[9] OUTCOME  —  every execution is a training signal; the system learns from its own traces
+  +---------------------------------------------------------------------------------------------+
+  | Answer via signed ExecutionTrace · RCA artifacts · Compliance records · Audit trail        |
+  | Metrics feed [T] bus · Preference pairs feed [P] bus · L4 state committed                 |
+  | Deterministic replay: every trace is reproducible — supports debugging, audit, fine-tuning |
+  +---------------------------------------------------------------------------------------------+
+                         v  (L4 Activity Ledger + Redis Cache + ML intake)
 
 ==========================================================================================================================================================================
-[2] 📥 ENTRY PRODUCERS            👤 User Request / ⚙️ System Event / 🔑 Admin Request
-                                                      |
-  +-------------------------------------------+       v       +-------------------------------------------+  +-------------------------+
-  | 🧠 L1: COGNITIVE STUDIO        [📥 PULL: U]               | 👁️ L6: OBSERVABILITY & ANOMALY DETECT     |  | 💾 L4: STATE & PERSIST  |
-  |-------------------------------------------|               |-------------------------------------------|  |-------------------------|
-  | * P1: Priming      * P2: Orchestrate      |               | * TieredVigilance -> DetectSignal         |  | * Cog/Cap/CID register  |
-  | * P3: PTC Calib.   * P4: Synthesis        | [📥 PULL: E]  | * Anomaly scoring & RCA engine            |--| * Telemetry ledger      |
-  | * Emits U0 prompt              [📡 EMIT: C]               | * Ingest metrics & Logging infra.         |  | * L4A: Det * L4E: ParC  |
-  | * Cannot approve/execute       [📥 PULL: D]               | * Trace collection                        |  | * L4B: Hea * L4F: RetE  |
-  | * [C0 RAG] seed lookup (read, top20)      |               | * Exec. transcripts & WRITE: Telemetry    |  | * L4C: Dri * L4G: Comp  |
-  | * C0 = Info only                          |               +---------------------+---------------------+  +------------+------------+
-  +------------------+------------------------+                                     |
-                     | (U0 query)                                                   v
-                     v                                        +-------------------------------------------------------+
-                                                              | ⚖️ EVALUATION SPINE (Quality+Optim)                   |
-                                                              |-------------------------------------------------------|
-                                                              | * P@K, MRR, NDCG, Groundedness             [📡 EMIT: T]
-                                                              | * EvalSnap->L4, DriftAlert->L6                        |
-                                                              | * DPOBatchBuilder, ImprovProposal          [📡 EMIT: P]
-                                                              +-------------------------------------------------------+
-
-==========================================================================================================================================================================
-[3] 🔍 C0 RAG PIPELINE (Informational Only - Left-to-Right Flow)
-  +------------+   +------------+   +-----------------+   +------------+   +------------+   +------------+   +------------+   +------------+
-  | ⚡ 0. CACHE|-->| 🔢 1. EMBED|-->| 📈 2a. VECTOR   |-->| 🧬 3. CAND |-->| 🌳 4. P-C  |-->| 🎯 5. SCORE|-->| ✅ 6. VALID|-->| 💾 7. WRITE|
-  | Redis Sem. |   | Ephemeral  |   | FAISS / Pinecone|   | RRF / Score|   | Siblings   |   | ContextComp|   | IAnswerSup |   | TTL / LRU  |
-  +------------+   +------------+   +-----------------+   +------------+   +------------+   +------------+   +------------+   +------------+
-                                 \-->| 🔤 2b. LEXICAL   |--/                                       |                 [📡 EMIT: T]
-                                     | BM25/ASTAwareTok|                                           v
-                                     +-----------------+
-                     | (C0 Context -> Bypasses routing logic -> Drops down to [6] Assembly Stage)  +---------------------------------------------+
-                     v                                                                             | RAG INFORMATIONAL BOUNDARY                  |
-                                                                                                   | Context may assist planning but CANNOT      |
-                                                                                                   | mutate routing, safety, tiers, or policies. |
-                                                                                                   +---------------------------------------------+
-
-==========================================================================================================================================================================
-[4] 🛡️ L5 SAFETY ENFORCEMENT PLANE
-  +--------------------------------+  +--------------------------------+  +--------------------------------+  +----------------------+
-  | 🗂️ [1] CLASSIF. KERNEL         |<>| 🗺️ [2] STRUCT. BLUEPRINT       |<>| 📜 [3] AGENT REGISTRY          |<>| 🧱 [4] SOVR. LLM GW  |
-  | * FileType AST / 19-pri Q      |  | * Territory Path / 62 compon.  |  | * Profiles / reg_digest        |  | * Egress / Prov Abst |
-  +--------------------------------+  +--------------------------------+  +--------------------------------+  +----------------------+
-                  |                                   |                                   |                           |
-  [🚨 TRIG: D] <--+-----------------------------------+-----(PASS)------------------------+---------------------------+
-                                                                      |
-                                                                      v
-==========================================================================================================================================================================
-[5] 🚦 L0 ROUTING & 🧠 META-LEARNING BUS
-  +-------------------------------------------------------------------+  +-------------------------------------------------------------------+
-  | 🚦 L0 – ROUTING (Central Traffic)                      [📥 PULL: C]  | 🧠 META-LEARNING & OPTIM. BUS                             [📥 PULL: T, P]
-  |-------------------------------------------------------------------|  |-------------------------------------------------------------------|
-  | * Classify intent vs L4 state                                     |  | [IMMUTABLE STAGE ORDER] S1 AUDIT -> S2 TELEM -> S3 CFG -> S4 SNAP |
-  | * P1: Assign TraceID + PolicyHash                                 |  |---------------------------------+---------------------------------|
-  | * P2: Deterministic election                                      |  | * S1 AUDIT: read audit slice    | * S6 PROP: L0/RAG/L1/L5 order   |
-  | * P3: Tool budget arbitration                                     |  | * S2 TELEMETRY: read events     |     - DPO/RLHF (BoundDPOPair)   |
-  | * P4: Seal + dispatch signed plan                                 |->| * S3 CONFIG: get configs        | * S7 VAL: Replay+Shadow+Damp    |
-  | * Cannot eval / cannot execute                                    |  | * S4 SNAPSHOT: engine+cfg+clock | * S8 INTAKE: HealingOutcome+    |
-  | * JIT context via Elevator Shaft                                  |  | * S5 RCA: analyze failures      | * S9 COMMIT: proposal_only=True |
-  | * Exec Profile Enforcement: LOW=det / HIGH=LLM-only               |  +---------------------------------+---------------------------------+
-  | * Registry hash in determinism digest / Unregistered->HARD FAIL   |                                                      | [📡 EMIT: U]
-  +-------------------------------------------------------------------+                                                      v
-                                     | (Dispatches signed plan)
-                                     v
-==========================================================================================================================================================================
-[6] 🧩 ASSEMBLY STAGE
-  C0 RAG context (from [3]) ──┐
-  Signed plan from L0 ────────+──> +----------------------+ +----------------------+ +----------------------+ +--------------------------+
-                                   | 📜 [S0] Sys prompt   | | 🚧 [D0] Injections   | | 📚 [C0] Dependency   | | ⚙️ PROMPT GOVERNANCE     |
-                                   | hard-coded constit.  | | fences / tool fences | | RAG injected know.   | | Template val / BLOCK     |
-                                   +----------------------+ +----------------------+ +----------------------+ | SPLIT -> Governed Payload|
-                                                                                                            +--------------------------+
-                                                                                                                         | (Governed)
-                                                                                                                         v
-==========================================================================================================================================================================
-[7] 🛤️ EXECUTION PATHS A / B / C / D
-  [🚨 TRIG: E] (STALL trigger limits execution to Path D if active)
-  +--------------------------------+ +--------------------------------+ +--------------------------------+ +--------------------------------+
-  | 📖 PATH A (Read-Only)          | | 🛡️ PATH B (Policy 1st)         | | ⚡ PATH C (Direct)             | | 👤 PATH D (Human 1st)          |
-  +--------------------------------+ +--------------------------------+ +--------------------------------+ +--------------------------------+
-                 |                                  |                                  |                                  |
-                 v                                  v                                  v                                  v
-  +--------------------------------+ +--------------------------------+ +--------------------------------+ +--------------------------------+
-  | 📝 Final Resp                  | | 🎼 L3: ORCHESTRATOR            | | 🎼 L3: ORCHESTRATOR            | | 👤 HUMAN REVIEW                |
-  |--------------------------------| |--------------------------------| |--------------------------------| |--------------------------------|
-  | * No mutation                  | | * Conflict Arb / Gate halluc   | | * DAG Engine / Pipeline Orch   | | * MODIFY_DIFF                  |
-  | * Logged                       | | * HSM states / NervousSystem   | | * Coord agents / Route/escal   | | * Zero auth / Policy Mon.      | [📡 EMIT: P]
-  |                                | | * MCPRegistrar                 | | * MCP tools                    | | * Drift Mon. / DPO pair->RLHF  |
-  +--------------------------------+ +--------------------------------+ +--------------------------------+ +--------------------------------+
-                 |                                  |                                  |                                  |
-                 v                                  v                                  v                                  v
-  +-----------------------------------------------------------------------------------------------------------------------------------------+
-  | 🛡️ L5: SAFETY (Cross-Path Guard)                                                                                                        |
-  |-----------------------------------------------------------------------------------------------------------------------------------------|
-  | * Risk tier classify · Compliance hash · Validate proposal vs policy · Enforce -> Approve / Remediate / Reject                          |
-  | * RE-CLEAR mandatory for human MODIFY_DIFF               * ML optimization signal                                            [📡 EMIT: P]
-  +-----------------------------------------------------------------------------------------------------------------------------------------+
-                 | (Pass) [STAMP WORK CONTRACT] -> [Sandbox Permission]
-  [🚨 TRIG: D] <-+ (Fail) 🛑 RE-ROUTE TO L1 (Flows UP)
-                 v
-==========================================================================================================================================================================
-[8] ⚙️ L2 UNIFIED EXECUTION CORE (PTC Sandbox)
-  +-----------------------------------------------------------------------------------------------------------------------------------------+
-  | ⚙️ L2 – UNIFIED EXECUTION CORE                                                                                                          |
-  |-----------------------------------------------------------------------------------------------------------------------------------------|
-  | * CAPABILITY CHOKEPOINT: authorize_and_execute() on EVERY call        * ISOLATION: DockerSandbox.run_code() / FirecrackerManager      |
-  | * PROTOCOL: pre_commit -> validate -> execute -> heal                 * NETWORK EGRESS: SovereignLLMGateway -> AI Providers           |
-  | * Circuit breakers · Backoff · Timeout · Rate limits · Health checks · Readiness/Liveness probes                                      |
-  +-----------------------------------------------------------------------------------------------------------------------------------------+
-  +--------------------------------+ +--------------------------------+ +--------------------------------+ +--------------------------------+
-  | 🟢 [P1: INIT]                  | | 🛠️ [P2: EXECUTE]               | | 🏥 [P3: EVALUATE / HEAL]       | | 📦 [P4: SYNTHESIZE]            |
-  | Validate plan / CapToken       |->| Enforce ToolCall -> sch.       |->| Result --(Pass)--------------->|->| Aggregate outputs             |
-  | FREEZE clean state             |  | STDOUT: structured / CEIL stuck|  |        --(Fail)--> L2.3 HEAL  |  | Validate schema               |
-  | CLAIM write access             |  | 🔍 C0 RAG: BLAS lck, SHA256    |  | LOCAL/QWEN/GEMINI Outcome     |  | EMIT ToolTranscript ONLY      |
-  +--------------------------------+ +--------------------------------+ +--------------------------------+ +--------------------------------+
-  +--------------------------------------------------+ +-----------------------------------+
-  | MUTATION SOVEREIGNTY                             | | 🚪 UWG (Sidecar)                  |
-  | All durable state mutations must pass through    | | Sole mut, replay->diffs           |
-  | the Universal Write Gateway (UWG). Direct writes | | Non-UWG -> Error                  |
-  | from agents or layers are strictly prohibited.   | +-----------------------------------+
-  | Dependency graph ensures no bypasses occur.      | | 📡 ML Feedback Signals            | [📡 EMIT: P] (ExecutionTrace -> L4/L6)
-  +--------------------------------------------------+ +-----------------------------------+
-==========================================================================================================================================================================
-[9] 🏁 OUTCOME
-  +-----------------------------------------------------------------------------------------------------------------------------------------+
-  | 📋 OUTCOME / LOGGING                                                                                                                    |
-  |-----------------------------------------------------------------------------------------------------------------------------------------|
-  | * Answer via Transcript          * RCA artifacts             * Update team memory        * Metrics: latency, cost, accuracy  [📡 EMIT: T]
-  | * ExecutionTrace envelope        * Audit trails              * Reconcile data/reality    * Cache performance stats                      |
-  | * Dependency graph verification  * Compliance records        * Deterministic replay capability for debugging and optimization           |
-  +-----------------------------------------------------------------------------------------------------------------------------------------+
-                                     v  (Commits final state -> 💾 L4 Activity Ledger + ⚡ Redis Cache)
-
-==========================================================================================================================================================================
-[ ADG-VERIFIED ARCHITECTURAL INVARIANTS ]
-
-GRAPH PLANE COVERAGE (Redis Hot Cache)
-• 48,777 import edges          • 18,504 call edges            • 7,859 test coverage edges      • 4,401 dead imports detected
-• 66,680 reads_from edges      • 4,882 writes_to edges        • 36,449 export edges             • 2,142 implements edges
-• 1,531 antipattern signals    • 819 reads_env edges          • 884 uses_wall_clock edges    • 361 accesses_credential edges
-
-HIGH-SIGNAL EDGE SEMANTICS (Agentic Patterns)
-• execution_terminates_at_uwg (44)     — Mutation sovereignty enforcement: all writes funnel through Universal Write Gateway
-• vigilance_reroute (7)                — Fail-closed safety: L6 anomaly detection triggers immediate L0 re-routing ([C] flow)
-• reenters_safety (3)                  — Safety re-entry protocol: failed execution returns to L5 validation ([D] flow)
-• validated_by_safety_plane (18)       — Cross-path safety guard: all execution paths validated before mutation
-• orchestrates_healing (75)            — Self-healing capability: automated recovery from execution failures
-• escalates_to_human (15)              — Human-in-the-loop: critical decisions escalate to Path D (human review)
-• proposal_commits_routing (42)        — Meta-learning feedback: ML proposals update L0 routing parameters ([U] flow)
-• produces_preference_pair (13)        — DPO/RLHF integration: execution outcomes generate training signals ([P] flow)
-• validates_blast_radius (19)          — Impact analysis: dependency graph limits scope of changes
-• verifies_boundary (33)               — Layer sovereignty: architectural boundaries enforced at runtime
-
-ARCHITECTURE PRINCIPLES
-• Separation of intent from execution (agents propose, never mutate)    • Fail-closed safety with upward re-routing on violation
-• Deterministic routing via dependency graph analysis                   • Meta-learning bus for continuous optimization (DPO/RLHF)
-• Architecture-as-code: diagram verified against AST in CI/CD           • Universal Write Gateway: single mutation chokepoint
+ WHAT THIS DEMONSTRATES
+ • Agents that propose, never act — authority is structurally impossible to acquire, not just discouraged
+ • Fail-closed safety — violation triggers upward re-routing; the system cannot proceed through a failed check
+ • Deterministic routing with ML improvement — L0 is rule-based; the learning bus improves rules, never replaces them
+ • Self-healing at scale — tiered recovery (local → external model) with automated DPO pair generation from failures
+ • Mutation sovereignty — one write gateway, verified by dependency graph in CI; bypasses are structurally detectable
+ • Architecture-as-code — this diagram's boundaries are continuously verified against the live AST dependency graph
 ==========================================================================================================================================================================
