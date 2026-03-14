@@ -13,6 +13,7 @@ import inspect
 import json
 import logging
 import os
+from agentic_core.L3_orchestration.registry.agent_dispatch_registry import get_agent_dispatch_registry
 from pathlib import Path
 from typing import Any
 
@@ -407,7 +408,11 @@ class SubAtomicRegistryAgent(SovereignBaseAgent):
             module_path = Path(method_meta["path"]).relative_to(self.root)
             module_name = str(module_path).replace(os.sep, ".")[:-3]
             module = importlib.import_module(module_name)
-            method = getattr(module, method_meta["method"])
+            # Wave 2: Use AgentDispatchRegistry for dynamic method invocation
+            registry = get_agent_dispatch_registry()
+            method_name = method_meta["method"]
+            # For module-level functions, we need to check if it's async
+            method = getattr(module, method_name)
             if inspect.iscoroutinefunction(method):
                 return asyncio.run(method(*args, **kwargs))
             else:

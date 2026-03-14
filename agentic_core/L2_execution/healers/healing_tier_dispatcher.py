@@ -29,6 +29,7 @@ from agentic_core.L2_execution.healers.healing_tier_types import (
     HealingInput,
     HealingTier,
 )
+from agentic_core.L3_orchestration.registry.agent_dispatch_registry import get_agent_dispatch_registry
 
 if TYPE_CHECKING:
     from agentic_core.L2_execution.engines.resource_predictor import ResourcePredictor
@@ -286,12 +287,20 @@ def dispatch_healing(
         _emit_rollback_refinement(rollback_refiner, healing_input, agent_name, timestamp_utc)
 
     method_name = _TIER_TO_METHOD[decision.tier]
-    method = getattr(invoker, method_name)
-
+    # Wave 2: Use AgentDispatchRegistry instead of raw getattr
+    registry = get_agent_dispatch_registry()
+    
     success = False
     record: InvocationRecord | None = None
     try:
-        record = method(healing_input, decision, config, agent_name=agent_name)
+        record = registry.dispatch(
+            caller="healing_tier_dispatcher",
+            target_class=invoker.__class__.__name__,
+            method=method_name,
+            target_instance=invoker,
+            args=(healing_input, decision, config),
+            kwargs={"agent_name": agent_name}
+        )
         success = True
     # guardian: allow-silent-swallow
     except Exception:
@@ -512,10 +521,17 @@ def invoke_qwen_with_oom_protection(
         if "out of memory" in str(exc).lower():
             # Route through choke point - router handles retry_count >= 3 -> GEMINI escalation
             escalated_decision = handle_qwen_oom_via_router(healing_input, config)
-            # Retry with escalated tier
+            # Retry with escalated tier using AgentDispatchRegistry
             method_name = _TIER_TO_METHOD[escalated_decision.tier]
-            method = getattr(invoker, method_name)
-            return method(healing_input, escalated_decision, config, agent_name=agent_name)
+            registry = get_agent_dispatch_registry()
+            return registry.dispatch(
+                caller="healing_tier_dispatcher",
+                target_class=invoker.__class__.__name__,
+                method=method_name,
+                target_instance=invoker,
+                args=(healing_input, escalated_decision, config),
+                kwargs={"agent_name": agent_name}
+            )
         raise
 
 

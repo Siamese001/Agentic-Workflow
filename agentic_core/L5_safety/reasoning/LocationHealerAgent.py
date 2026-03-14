@@ -36,7 +36,9 @@ from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
     APPS_SHARED_DIR,
     ARCHIVES_DIR,
+    get_validated_project_root,
 )
+from agentic_core.L3_orchestration.registry.agent_dispatch_registry import get_agent_dispatch_registry
 from agentic_core.L5_safety.config.structure_blueprint import (
     APP_SPECIFIC_TARGET_SUBFOLDER,
     AST_DOMAIN_HIT_THRESHOLD,
@@ -928,10 +930,23 @@ class LocationHealerAgent(SovereignBaseAgent):
         # Check dispatch table for matching strategy
         for pattern, method_name in HEALING_STRATEGY_MAP.items():
             if pattern in msg:
-                method = getattr(self, method_name)
+                # Wave 2: Use AgentDispatchRegistry instead of raw getattr
+                registry = get_agent_dispatch_registry()
                 if method_name == "_heal_broken_backup":
-                    return method(file_path, dry_run, affected_paths)
-                return method(file_path, msg, dry_run, affected_paths, import_touched_paths)
+                    return registry.dispatch(
+                        caller="LocationHealerAgent",
+                        target_class=self.__class__.__name__,
+                        method=method_name,
+                        target_instance=self,
+                        args=(file_path, dry_run, affected_paths)
+                    )
+                return registry.dispatch(
+                    caller="LocationHealerAgent",
+                    target_class=self.__class__.__name__,
+                    method=method_name,
+                    target_instance=self,
+                    args=(file_path, msg, dry_run, affected_paths, import_touched_paths)
+                )
 
         # Block archiving for depth violations — these must never fall through to archive
         if "DEEP VIOLATION" in msg or "SHALLOW VIOLATION" in msg:

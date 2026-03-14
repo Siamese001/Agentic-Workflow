@@ -8,7 +8,8 @@ import json
 import logging
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import Any, Callable
+from agentic_core.L3_orchestration.registry.agent_dispatch_registry import get_agent_dispatch_registry
 
 if TYPE_CHECKING:
     from ._ssot_phases import RuntimeStateManager
@@ -242,8 +243,15 @@ def run_pipeline(
             state_mgr.update_agent(agent_id, subphase_name)
             effective_ctx = scan_ctx if not is_mutating else ctx
             try:
-                method = getattr(adapter, subphase_name)
-                result: SubphaseResult = method(territory, effective_ctx)
+                # Wave 2: Use AgentDispatchRegistry instead of raw getattr
+                registry = get_agent_dispatch_registry()
+                result: SubphaseResult = registry.dispatch(
+                    caller="ssot_pipeline",
+                    target_class=adapter.__class__.__name__,
+                    method=subphase_name,
+                    target_instance=adapter,
+                    args=(territory, effective_ctx)
+                )
             except (ImportError, AttributeError, TypeError, ValueError, RuntimeError) as exc:
                 result = SubphaseResult(error=str(exc), skipped=True, skip_reason=f"exception: {exc}")
                 run_result.error = str(exc)

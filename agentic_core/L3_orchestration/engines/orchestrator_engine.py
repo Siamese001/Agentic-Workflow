@@ -48,6 +48,7 @@ from agentic_core.L0_routing.config import (
 from agentic_core.L0_routing.config.path_constants import DEFAULT_TIMEOUT
 from agentic_core.L2_execution.enforcement.runtime_guard import runtime_guard
 from agentic_core.runtime.trace_context import get_trace_context
+from agentic_core.L3_orchestration.registry.agent_dispatch_registry import get_agent_dispatch_registry
 from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
 from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
     OrchestrationResult,
@@ -221,8 +222,15 @@ class Orchestrator(SovereignBaseAgent):
             self.logger.error(error_msg)
             return {"status": "error", "message": error_msg}
         try:
-            method = getattr(strategy, action)
-            result = method(payload)
+            # Wave 2: Use AgentDispatchRegistry instead of raw getattr
+            registry = get_agent_dispatch_registry()
+            result = registry.dispatch(
+                caller="orchestrator_engine",
+                target_class=strategy.__class__.__name__,
+                method=action,
+                target_instance=strategy,
+                args=(payload,)
+            )
             self.logger.info(f"Dispatched {domain}.{action} successfully.")
             return {"status": "success", "data": result}
         # guardian: allow-silent-swallow

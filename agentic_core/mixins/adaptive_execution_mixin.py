@@ -3,6 +3,7 @@ from __future__ import annotations
 "\nAdaptiveExecutionMixin – Sovereign Agent Role Mixin (Phase 29 – Dec 30, 2025)\n\nPurpose:\n  Enable agents to dynamically select execution mode based on real-time context:\n    - standard: normal operation\n    - conservative: high failure rate → safer, more verification\n    - aggressive: urgent → faster, riskier\n    - minimal: high system load → skip non-essential work\n\nConstitutional Alignment:\n  - Prevents resource exhaustion\n  - Adapts to sovereignty health\n  - Enables self-preservation under stress\n"
 import logging
 from typing import Any
+from agentic_core.L3_orchestration.registry.agent_dispatch_registry import get_agent_dispatch_registry
 
 
 class AdaptiveExecutionMixin:
@@ -65,9 +66,26 @@ class AdaptiveExecutionMixin:
         self.Logger.info(f"Executing in '{self._current_mode}' mode")
         mode_method = f"_execute_{self._current_mode}"
         if hasattr(self, mode_method):
-            return await getattr(self, mode_method)(ctx, **full_context)
+            # Wave 2: Use AgentDispatchRegistry instead of raw getattr
+            registry = get_agent_dispatch_registry()
+            return await registry.dispatch(
+                caller="AdaptiveExecutionMixin",
+                target_class=self.__class__.__name__,
+                method=mode_method,
+                target_instance=self,
+                args=(ctx,),
+                kwargs=full_context
+            )
         if hasattr(self, "_execute_standard"):
-            return await self._execute_standard(ctx, **full_context)
+            registry = get_agent_dispatch_registry()
+            return await registry.dispatch(
+                caller="AdaptiveExecutionMixin",
+                target_class=self.__class__.__name__,
+                method="_execute_standard",
+                target_instance=self,
+                args=(ctx,),
+                kwargs=full_context
+            )
         raise NotImplementedError(
             f"{self.__class__.__name__} must implement either mode-specific _execute_* or _execute_standard"
         )

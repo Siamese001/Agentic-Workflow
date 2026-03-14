@@ -4,6 +4,7 @@ import sys
 import traceback
 from datetime import datetime
 from pathlib import Path
+from agentic_core.L3_orchestration.registry.agent_dispatch_registry import get_agent_dispatch_registry
 
 from agentic_core.L0_routing.config.path_constants import MAX_DEPTH
 
@@ -453,9 +454,16 @@ def main():
                 )
                 sys.exit(1)
             print(f"   [AGENT] {agent.__class__.__name__}.{method_name}()\n")
-            method = getattr(agent, method_name)
+            # Wave 2: Use AgentDispatchRegistry instead of raw getattr
+            registry = get_agent_dispatch_registry()
             if method_name == "heal_repository":
-                result = method(dry_run=not execute, execute=execute, depth=0, max_depth=MAX_DEPTH)
+                result = registry.dispatch(
+                    caller="colors_script",
+                    target_class=agent.__class__.__name__,
+                    method=method_name,
+                    target_instance=agent,
+                    kwargs={"dry_run": not execute, "execute": execute, "depth": 0, "max_depth": MAX_DEPTH}
+                )
                 print("\n[AGENT COMPLETE]")
                 print(f"   Renamed: {result.get('renamed', 0)}")
                 print(f"   Errors: {result.get('errors', 0)}")

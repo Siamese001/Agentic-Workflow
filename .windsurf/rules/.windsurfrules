@@ -12,6 +12,7 @@ trigger: always_on
 > 5. **No agent deletion without authorization.** Deleting *Agent.py files requires AGENT-DELETION-AUTHORIZED marker, justification, replacement, deprecation period (90 days), and zero references. §1.6.
 > 6. **CI enforces all of this.** `python ops_scripts/ci/run_contract_gates.py`
 > 7. **ADG ARTIFACTS MUST BE FULLY INGESTED BEFORE ANY QUERY OR REFACTORING.** The directory `artifacts/adg` contains the canonical ADG artifacts. ALL operating modes MUST ingest these before any query, analysis, or code change: (1) `adg_indexed_<timestamp>.sqlite` — PRIMARY queryable DB; (2) `adg_snapshot_<timestamp>.json` — metrics/counts; (3) `adg_file_graph_<timestamp>.json` + `adg_symbol_graph_<timestamp>.json` — import/call chains; (4) `adg_governance_graph_<timestamp>.json` — layer violations. NEVER begin work without loading these. Regenerate after refactoring: `python tools/generate_full_adg.py`.
+> 8. **HITL (Human-In-The-Loop) DISCIPLINE.** When facing decisions with multiple valid approaches, STOP and present 2-4 concrete options with trade-offs. Wait for explicit user selection (A/B/C/D) before proceeding. NEVER assume defaults, proceed with "best" option, or ask for permission instead of choice. Workflow: `/hitl-decision-gate`. Rule: `.windsurf/rules/hitl-enforcement.md`.
 
 ---
 
@@ -488,6 +489,75 @@ Layer inversion detection MUST be AST-based. Cycles = HARD FAIL. Duplicate mixin
 ### 8.4 Agent Discipline
 
 Agents invoked via canonical Python functions only. One canonical agent class per file. Semantic duplicate agents forbidden.
+
+---
+
+## §8.5 HITL (Human-In-The-Loop) Framework
+
+**ENFORCEMENT:** Workflow `/hitl-decision-gate` for ALL significant decisions.
+
+### 8.5.1 Core Principle
+
+When facing a decision point with multiple valid approaches, Windsurf MUST:
+1. **STOP** before taking action
+2. **Present 2-4 concrete options** with trade-offs
+3. **Wait** for explicit user selection (A/B/C/D)
+4. **Execute** only the chosen option
+
+### 8.5.2 Mandatory HITL Triggers
+
+HITL is REQUIRED for:
+- Multiple architectural approaches (inheritance vs composition, layer placement, pattern selection)
+- Refactoring scope affecting >3 files or crossing layer boundaries
+- Anti-pattern introduction (see `/antipattern-hitl-gate`)
+- Test failures with multiple valid repair classes (§2.5)
+- Adding external dependencies (PyPI packages, system deps, MCP servers)
+- File/module deletion (especially *Agent.py per §1.6)
+- Governance/policy configuration changes (thresholds, timeouts, boundaries)
+- Error handling strategy with trade-offs (fail-closed vs fail-open vs retry)
+- Performance optimization involving complexity increase
+- ADG regeneration timing when impact is ambiguous
+
+### 8.5.3 Option Presentation Format
+
+Every HITL prompt MUST include:
+- **Context**: Brief description of decision point
+- **Options**: 2-4 concrete alternatives labeled A, B, C, D
+- **Trade-offs**: Honest pros/cons or impact for each
+- **Question**: Explicit "Which approach/option/strategy?"
+
+**FORBIDDEN**: Single option + confirmation request, proceeding with "default", open-ended questions without options, hiding trade-offs, biased presentation.
+
+### 8.5.4 Execution Discipline
+
+After presenting options:
+1. **STOP** — do not proceed with any option
+2. **WAIT** — user must explicitly select A/B/C/D
+3. **CONFIRM** — acknowledge selection
+4. **EXECUTE** — only the chosen option
+
+**FORBIDDEN**: "I'll proceed with A unless you object", "B seems best so I'll do that", implementing multiple options, guessing intent.
+
+### 8.5.5 Bypass Conditions
+
+HITL may be bypassed ONLY for:
+- Trivial changes (typos, formatting, whitespace)
+- Deterministic fixes (syntax errors, single correct solution)
+- Explicit user directive ("just do X" with no ambiguity)
+- Emergency rollback
+- Auto-fixable violations (ruff, trailing whitespace)
+
+### 8.5.6 Evidence Requirements
+
+When HITL is invoked, evidence MUST include:
+```markdown
+## HITL_DECISION_RECORD
+**Decision Point**: <description>
+**Options Presented**: A, B, C, D
+**User Selection**: <A|B|C|D>
+**Rationale**: <user's stated reason>
+**Executed Action**: <what was done>
+```
 
 ---
 
