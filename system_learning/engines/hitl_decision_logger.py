@@ -87,3 +87,77 @@ def reset_for_testing() -> None:
     global _decision_counter
     with _lock:
         _decision_counter = 0
+
+
+def log_routing_correction(
+    user_input: str,
+    wrong_target: str,
+    correct_target: str,
+    confidence: float = 0.0,
+    extra: dict[Any, Any] | None = None,
+) -> int:
+    """Log a HITL routing correction and emit a DPO pair to the RLHF optimizer.
+
+    Called when a human operator overrides an AgenticRouter decision by
+    selecting the correct target.  Emits a DPO pair
+    ``(user_input, wrong_target, correct_target)`` into
+    ``DefaultDeterministicRLHFOptimizer`` for bounded threshold adjustment.
+
+    Args:
+        user_input:    The original user or task input string.
+        wrong_target:  The target incorrectly selected by the router.
+        correct_target: The correct target as determined by the human.
+        confidence:    The router's confidence score at decision time (0–1).
+        extra:         Optional additional key-value pairs for the audit record.
+
+    Returns:
+        The sequential decision number (1-based).
+    """
+    import json as _json
+
+    merged_extra: dict[Any, Any] = {
+        "decision_type": "routing_correction",
+        "wrong_target": wrong_target,
+        "correct_target": correct_target,
+        "confidence": str(round(confidence, 6)),
+    }
+    if extra:
+        merged_extra.update(extra)
+
+    decision_n = log_hitl_decision(
+        agent="AgenticRouter",
+        file_path="agentic_core/L0_routing/engines/agentic_router.py",
+        violation="ROUTING_MISCLASSIFICATION",
+        proposed=f"route_to={wrong_target}",
+        decision=f"corrected_to={correct_target}",
+        extra=merged_extra,
+    )
+
+    try:
+        from system_learning.engines.rlhf_optimizer_impl import DefaultRLHFOptimizer
+
+        dpo_batch = _json.dumps(
+            {
+                "pairs": [
+                    {
+                        "input": user_input[:512],
+                        "chosen": correct_target,
+                        "rejected": wrong_target,
+                        "surface": "routing_min_confidence",
+                    }
+                ]
+            },
+            sort_keys=True,
+            separators=(",", ":"),
+        )
+        snapshot_id = f"hitl_routing_{decision_n}"
+        optimizer = DefaultRLHFOptimizer()
+        optimizer.propose_from_dpo(
+            dpo_batch_bytes=dpo_batch.encode("utf-8"),
+            snapshot_id=snapshot_id,
+        )
+    # guardian: allow-silent-swallow
+    except Exception:
+        pass
+
+    return decision_n

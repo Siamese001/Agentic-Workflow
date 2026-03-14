@@ -129,6 +129,8 @@ class FeatureBundle:
     timestamp_utc: int
     adg_entity_name: str
     adg_relation_ids: tuple[str, ...]
+    routing_confidence: float = 0.0
+    routing_target: str = ""
     influence_class: str = "C0_INFORMATIONAL"
 
     def __post_init__(self) -> None:
@@ -141,9 +143,10 @@ class FeatureBundle:
             )
         if not 0.0 <= self.retrieval_groundedness_score <= 1.0:
             raise ValueError(
-                f"retrieval_groundedness_score must be in [0.0, 1.0], "
-                f"got {self.retrieval_groundedness_score}"
+                f"retrieval_groundedness_score must be in [0.0, 1.0], got {self.retrieval_groundedness_score}"
             )
+        if not 0.0 <= self.routing_confidence <= 1.0:
+            raise ValueError(f"routing_confidence must be in [0.0, 1.0], got {self.routing_confidence}")
         if self.influence_class != "C0_INFORMATIONAL":
             raise ValueError("influence_class must be C0_INFORMATIONAL")
 
@@ -164,14 +167,14 @@ class FeatureBundle:
             "retrieval_groundedness_score": round(self.retrieval_groundedness_score, 6),
             "retrieval_path": self.retrieval_path,
             "route_selected": self.route_selected,
+            "routing_confidence": round(self.routing_confidence, 6),
+            "routing_target": self.routing_target,
             "timestamp_utc": self.timestamp_utc,
             "trace_id": self.trace_id,
         }
 
     def stable_hash(self) -> str:
-        return hashlib.sha256(
-            deterministic_json(self._canonical_dict()).encode("utf-8")
-        ).hexdigest()
+        return hashlib.sha256(deterministic_json(self._canonical_dict()).encode("utf-8")).hexdigest()
 
     def to_dict(self) -> dict:
         return self._canonical_dict()
@@ -247,8 +250,7 @@ class TraceFeatureRecord:
             raise ValueError("trace_id must not be empty")
         if self.outcome_class not in _VALID_OUTCOME_CLASSES:
             raise ValueError(
-                f"outcome_class must be one of {sorted(_VALID_OUTCOME_CLASSES)}, "
-                f"got {self.outcome_class!r}"
+                f"outcome_class must be one of {sorted(_VALID_OUTCOME_CLASSES)}, got {self.outcome_class!r}"
             )
 
     def _canonical_dict(self) -> dict:
@@ -271,9 +273,7 @@ class TraceFeatureRecord:
         }
 
     def stable_hash(self) -> str:
-        return hashlib.sha256(
-            deterministic_json(self._canonical_dict()).encode("utf-8")
-        ).hexdigest()
+        return hashlib.sha256(deterministic_json(self._canonical_dict()).encode("utf-8")).hexdigest()
 
     def to_dict(self) -> dict:
         return self._canonical_dict()
@@ -282,7 +282,7 @@ class TraceFeatureRecord:
         return deterministic_json(self._canonical_dict())
 
     @staticmethod
-    def from_bundle(bundle: FeatureBundle) -> "TraceFeatureRecord":
+    def from_bundle(bundle: FeatureBundle) -> TraceFeatureRecord:
         """Construct a TraceFeatureRecord from a FeatureBundle.
 
         record_id is set to the bundle's stable_hash so the ADG entity
@@ -396,9 +396,7 @@ class RCACluster:
         }
 
     def stable_hash(self) -> str:
-        return hashlib.sha256(
-            deterministic_json(self._canonical_dict()).encode("utf-8")
-        ).hexdigest()
+        return hashlib.sha256(deterministic_json(self._canonical_dict()).encode("utf-8")).hexdigest()
 
     def to_dict(self) -> dict:
         return self._canonical_dict()
@@ -469,8 +467,7 @@ class FailurePattern:
     def __post_init__(self) -> None:
         if self.source_type not in self._VALID_SOURCE_TYPES:
             raise ValueError(
-                f"source_type must be one of {sorted(self._VALID_SOURCE_TYPES)}, "
-                f"got {self.source_type!r}"
+                f"source_type must be one of {sorted(self._VALID_SOURCE_TYPES)}, got {self.source_type!r}"
             )
         if self.occurrence_count < 1:
             raise ValueError("occurrence_count must be >= 1")
@@ -488,9 +485,7 @@ class FailurePattern:
         }
 
     def stable_hash(self) -> str:
-        return hashlib.sha256(
-            deterministic_json(self._canonical_dict()).encode("utf-8")
-        ).hexdigest()
+        return hashlib.sha256(deterministic_json(self._canonical_dict()).encode("utf-8")).hexdigest()
 
     def to_dict(self) -> dict:
         return self._canonical_dict()

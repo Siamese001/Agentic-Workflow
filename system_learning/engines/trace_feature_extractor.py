@@ -191,6 +191,13 @@ class TraceFeatureExtractor:
         hitl = bool(signal.get("human_escalation_flag", False))
         mutation = bool(signal.get("mutation_presence", False))
 
+        try:
+            routing_conf = float(signal.get("routing_confidence", 0.0))
+        except (TypeError, ValueError):
+            routing_conf = 0.0
+        routing_conf = max(0.0, min(1.0, routing_conf))
+        routing_target = str(signal.get("routing_target") or "")
+
         outcome = _classify_outcome(signal)
 
         adg_entity = str(signal.get("adg_entity_name") or "ADG::Unknown")
@@ -213,6 +220,8 @@ class TraceFeatureExtractor:
             timestamp_utc=timestamp_utc,
             adg_entity_name=adg_entity,
             adg_relation_ids=adg_rels,
+            routing_confidence=routing_conf,
+            routing_target=routing_target,
         )
 
     def extract_record(

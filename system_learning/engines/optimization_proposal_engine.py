@@ -121,6 +121,12 @@ _PROPOSAL_RULES: tuple[tuple[str, str, str, str], ...] = (
         "LOW",
         "Reduce over-escalation by recalibrating confidence gate",
     ),
+    (
+        "ROUTING_MISCLASSIFICATION",
+        "ROUTING_RULE_ADJUSTMENT",
+        "LOW",
+        "Update intent prototype embedding for consistently misrouted target",
+    ),
 )
 
 
@@ -180,12 +186,14 @@ def _build_proposal_id(
     affected_component: str,
     timestamp_utc: int,
 ) -> str:
-    payload = deterministic_json({
-        "affected_component": affected_component,
-        "change_type": change_type,
-        "cluster_id": cluster_id,
-        "timestamp_utc": timestamp_utc,
-    })
+    payload = deterministic_json(
+        {
+            "affected_component": affected_component,
+            "change_type": change_type,
+            "cluster_id": cluster_id,
+            "timestamp_utc": timestamp_utc,
+        }
+    )
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
 
@@ -261,10 +269,7 @@ class OptimizationProposalEngine:
         change_type, risk_class, outcome_template = rule
 
         # Downgrade HIGH risk to MEDIUM if cluster is too small
-        if (
-            risk_class == "HIGH"
-            and cluster.member_count < cfg.min_cluster_members_for_high_risk
-        ):
+        if risk_class == "HIGH" and cluster.member_count < cfg.min_cluster_members_for_high_risk:
             risk_class = "MEDIUM"
 
         # Block CRITICAL proposals unless explicitly allowed
@@ -281,9 +286,7 @@ class OptimizationProposalEngine:
 
         proposals: list[OptimizationProposal] = []
         for agent in agents:
-            proposal_id = _build_proposal_id(
-                cluster.cluster_id, change_type, agent, timestamp_utc
-            )
+            proposal_id = _build_proposal_id(cluster.cluster_id, change_type, agent, timestamp_utc)
             change_spec = _build_change_spec(cluster, change_type)
             evidence_hashes = (cluster.stable_hash(),)
             expected = f"{outcome_template} [{agent}]"

@@ -11,7 +11,10 @@ from __future__ import annotations
 import logging
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from agentic_core.L0_routing.engines.intent_embedding_classifier import IntentEmbeddingClassifier
 
 Logger = logging.getLogger(__name__)
 
@@ -61,10 +64,12 @@ class AgenticRouter:
         self,
         fallback_handler: Callable[[str, dict[str, Any]], Awaitable[Any]] | None = None,
         min_confidence: float = 0.2,
+        classifier: IntentEmbeddingClassifier | None = None,
     ) -> None:
         self._targets: dict[str, RouteTarget] = {}
         self._fallback = fallback_handler
         self.min_confidence = min_confidence
+        self._classifier = classifier
 
     def register(
         self,
@@ -81,6 +86,12 @@ class AgenticRouter:
             description=description,
         )
         Logger.debug("agentic_router_register", extra={"target": name, "keywords": intent_keywords})
+        if self._classifier is not None:
+            texts = [kw.lower() for kw in (intent_keywords or [])]
+            if description:
+                texts.append(description.lower())
+            if texts:
+                self._classifier.encode_prototype(name, texts)
 
     def register_mad(
         self,
@@ -157,10 +168,27 @@ class AgenticRouter:
         return decision
 
     def _classify(self, user_input: str) -> tuple[str, str, float]:
-        """Keyword-based intent classification.
+        """Intent classification — embedding similarity with keyword fallback.
+
+        Tries the injected IntentEmbeddingClassifier first.  Falls back to
+        keyword hit-ratio when the classifier is absent or returns None.
 
         Returns (intent_label, best_target_name, confidence_score).
         """
+        if self._classifier is not None and self._classifier.prototype_count() > 0:
+            try:
+                result = self._classifier.classify(user_input)
+                if result is not None:
+                    target_name, confidence = result
+                    Logger.debug(
+                        "agentic_router_embedding_classify",
+                        extra={"target": target_name, "confidence": confidence},
+                    )
+                    return (target_name, target_name, confidence)
+            # guardian: allow-silent-swallow
+            except Exception as exc:
+                Logger.warning("agentic_router_embedding_fallback: %s", exc)
+
         text = user_input.lower()
         scores: dict[str, float] = {}
 
