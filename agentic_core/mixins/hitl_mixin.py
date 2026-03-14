@@ -17,6 +17,12 @@ SSOT PRINCIPLE:
 """
 from agentic_core.L0_routing.providers.clock_provider import ClockProvider as clock_provider
 from __future__ import annotations
+
+# Configuration constants
+DEFAULT_HITL_TIMEOUT = 300.0
+MAX_PENDING_APPROVALS = 100
+DEFAULT_HISTORY_LIMIT = 100
+
 import logging
 import threading
 import time
@@ -55,7 +61,7 @@ class ApprovalRequest:
     resolved_at: float | None = None
     resolved_by: str | None = None
     resolution_notes: str | None = None
-    timeout_seconds: float = 300.0
+    timeout_seconds: float = DEFAULT_HITL_TIMEOUT
     escalation_chain: list[str] = field(default_factory=list)
     current_escalation_level: int = 0
 
@@ -71,13 +77,13 @@ class ApprovalRequest:
 class HITLConfig:
     """Configuration for HITL behavior."""
     enabled: bool = True
-    default_timeout_seconds: float = 300.0
+    default_timeout_seconds: float = DEFAULT_HITL_TIMEOUT
     auto_approve_low_risk: bool = True
     require_notes_on_rejection: bool = True
     escalation_timeout_seconds: float = 600.0
     max_escalation_levels: int = 3
     default_escalation_chain: list[str] = field(default_factory=lambda: ['team_lead', 'manager', 'director'])
-    max_pending_approvals: int = 100
+    max_pending_approvals: int = MAX_PENDING_APPROVALS
     max_history_size: int = 10000
 
 class ApprovalRequiredError(Exception):
@@ -388,7 +394,7 @@ class HITLMixin:
                 Logger.warning(f'[HITL] Request {req_id} TIMEOUT')
             return [req.to_dict() for req in self._pending_approvals.values()]
 
-    def get_approval_history(self, limit: int=100, operation_name: str | None=None) -> list[dict[str, Any]]:
+    def get_approval_history(self, limit: int=DEFAULT_HISTORY_LIMIT, operation_name: str | None=None) -> list[dict[str, Any]]:
         """
         Get approval history.
 
