@@ -1,7 +1,7 @@
 from agentic_core.L0_routing.providers.clock_provider import ClockProvider as clock_provider
 from __future__ import annotations
 
-# guardian: allow-magic-configuration
+# guardian: allow-magic-config
 # Configuration constants
 DEFAULT_TIMEOUT = 300
 MAX_ERRORS = 1000
