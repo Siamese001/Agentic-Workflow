@@ -53,6 +53,7 @@ from agentic_core.L2_execution.enforcement.guardrail_gate import (
     GuardrailViolationError,
     get_guardrail_gate,
 )
+from agentic_core.L2_execution.trace_context import get_trace_context
 from agentic_core.L3_orchestration.registry.agent_capability_registry import (
     AgentCapabilityRegistry,
     get_agent_capability_registry,
@@ -296,6 +297,21 @@ class AgentDispatchRegistry:
             token_id,
             result_type,
             guardrail_verdict,
+        )
+
+        # Wave 5: emit records_execution_trace into active TraceContext
+        get_trace_context().record(
+            layer="L3",
+            module="AgentDispatchRegistry",
+            operation=f"dispatch:{caller}->{target_class}.{method}",
+            metadata={
+                "caller": caller,
+                "target_class": target_class,
+                "method": method,
+                "token_id": token_id,
+                "guardrail_verdict": guardrail_verdict,
+                "result_type": result_type,
+            },
         )
         return result
 
