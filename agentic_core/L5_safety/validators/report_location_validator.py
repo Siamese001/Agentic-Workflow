@@ -26,11 +26,10 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Final
 
-from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR
 from agentic_core.L5_safety.config.structure_blueprint import (
     get_validated_project_root,
 )
-from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR
 
 Logger = logging.getLogger(__name__)
 
@@ -309,41 +308,6 @@ class ReportLocationValidator:
             inventory.compliance_percentage = (inventory.compliant_reports / inventory.total_reports) * 100
 
         return inventory
-
-    def save_inventory(self, output_path: Path | None = None) -> Path:
-        """
-        Save the report inventory to a JSON file.
-
-        Args:
-            output_path: Path to save the inventory.
-                Defaults to docs/reports/report_location_inventory.json.
-
-        Returns:
-            Path to the saved inventory file.
-        """
-        if output_path is None:
-            output_path = self.project_root / SSOT_REPORTS_DIR / "report_location_inventory.json"
-
-        inventory = self.generate_inventory()
-
-        _wg.ensure_dir(output_path.parent)
-
-        _wg.write_json(
-            output_path,
-            {
-                "timestamp": inventory.timestamp,
-                "total_reports": inventory.total_reports,
-                "compliant_reports": inventory.compliant_reports,
-                "misplaced_reports": inventory.misplaced_reports,
-                "compliance_percentage": round(inventory.compliance_percentage, 2),
-                "reports_by_location": inventory.reports_by_location,
-                "misplaced_files": inventory.misplaced_files,
-            },
-            indent=2,
-        )
-
-        Logger.info(f"[SSOT] Report inventory saved to {output_path}")
-        return output_path
 
 
 def validate_report_location(file_path: Path, project_root: Path | None = None) -> bool:

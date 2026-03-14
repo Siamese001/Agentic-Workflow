@@ -101,7 +101,7 @@ def main() -> int:
     if args.update:
         # Update golden manifest
         manifest = generate_structure_manifest()
-        from agentic_core.L5_safety.validators.structure_drift_validator import save_manifest
+        from agentic_core.L5_safety.utils.structure_drift_writer import save_manifest
 
         save_manifest(manifest, args.manifest)
         print(f"Updated golden manifest at: {args.manifest}")

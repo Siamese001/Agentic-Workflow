@@ -11,8 +11,6 @@ import json
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L2_execution.tools import write_gateway as _wg
-
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
 
 
@@ -52,17 +50,6 @@ def generate_structure_manifest() -> dict[str, Any]:
     return manifest
 
 
-def save_manifest(manifest: dict[str, Any], output_path: Path) -> None:
-    """Save the structure manifest to a file.
-
-    Args:
-        manifest: The structure manifest to save
-        output_path: Path where to save the manifest
-    """
-    _wg.ensure_dir(output_path.parent)
-    _wg.write_json(output_path, manifest, indent=2)
-
-
 def load_manifest(manifest_path: Path) -> dict[str, Any]:
     """Load a structure manifest from a file.
 
@@ -77,8 +64,11 @@ def load_manifest(manifest_path: Path) -> dict[str, Any]:
 
 
 if __name__ == "__main__":
+    import json as _json
+
     manifest = generate_structure_manifest()
     output_file = PROJECT_ROOT / "artifacts" / "structure" / "structure_manifest.json"
-    save_manifest(manifest, output_file)
+    output_file.parent.mkdir(parents=True, exist_ok=True)
+    output_file.write_text(_json.dumps(manifest, indent=2), encoding="utf-8")
     print(f"Structure manifest saved to: {output_file}")
     print(f"Manifest hash: {manifest['hash']}")

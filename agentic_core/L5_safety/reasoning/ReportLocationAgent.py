@@ -302,7 +302,27 @@ class ReportLocationAgent(AtomicExecutionMixin):
         Returns:
             Path to the saved inventory file.
         """
-        return self._validator.save_inventory(output_path)
+        if output_path is None:
+            output_path = self._validator.project_root / SSOT_REPORTS_DIR / "report_location_inventory.json"
+
+        inventory = self._validator.generate_inventory()
+
+        _wg.ensure_dir(output_path.parent)
+        _wg.write_json(
+            output_path,
+            {
+                "timestamp": inventory.timestamp,
+                "total_reports": inventory.total_reports,
+                "compliant_reports": inventory.compliant_reports,
+                "misplaced_reports": inventory.misplaced_reports,
+                "compliance_percentage": round(inventory.compliance_percentage, 2),
+                "reports_by_location": inventory.reports_by_location,
+                "misplaced_files": inventory.misplaced_files,
+            },
+            indent=2,
+        )
+        Logger.info(f"[SSOT] Report inventory saved to {output_path}")
+        return output_path
 
     def heal_repository(self, *args, **kwargs) -> dict[str, Any]:
         """heal_repository() not implemented for ReportLocationAgent."""

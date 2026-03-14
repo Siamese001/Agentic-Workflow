@@ -5,10 +5,10 @@ from __future__ import annotations
 import tempfile
 from pathlib import Path
 
+from agentic_core.L5_safety.utils.structure_drift_writer import save_manifest
 from agentic_core.L5_safety.validators.structure_drift_validator import (
     generate_structure_manifest,
     load_manifest,
-    save_manifest,
 )
 
 
