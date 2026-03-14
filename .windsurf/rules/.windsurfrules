@@ -13,8 +13,7 @@ trigger: always_on
 > 6. **CI enforces all of this.** `python ops_scripts/ci/run_contract_gates.py`
 > 7. **ADG ARTIFACTS MUST BE FULLY INGESTED BEFORE ANY QUERY OR REFACTORING.** The directory `artifacts/adg` contains the canonical ADG artifacts. ALL operating modes MUST ingest these before any query, analysis, or code change: (1) `adg_indexed_<timestamp>.sqlite` — PRIMARY queryable DB; (2) `adg_snapshot_<timestamp>.json` — metrics/counts; (3) `adg_file_graph_<timestamp>.json` + `adg_symbol_graph_<timestamp>.json` — import/call chains; (4) `adg_governance_graph_<timestamp>.json` — layer violations. NEVER begin work without loading these. Regenerate after refactoring: `python tools/generate_full_adg.py`.
 > 8. **HITL (Human-In-The-Loop) DISCIPLINE.** When facing decisions with multiple valid approaches, STOP and present 2-4 concrete options with trade-offs. Wait for explicit user selection (A/B/C/D) before proceeding. NEVER assume defaults, proceed with "best" option, or ask for permission instead of choice. Workflow: `/hitl-decision-gate`. Rule: `.windsurf/rules/hitl-enforcement.md`.
-
----
+> 9. **RCA AUTO-CLOSURE.** When creating an RCA document, AUTOMATICALLY execute corrective actions and update RCA status to RESOLVED with evidence artifacts. NEVER create RCA and leave it unresolved. User should not have to ask for closure.
 
 ## §0. DEFAULT ANALYSIS MODE
 
@@ -317,6 +316,49 @@ All plans, evidence, and reports MUST reside in: `docs/reports/plans/`
 
 All Python file I/O MUST use `encoding="utf-8"`. Evidence files are raw execution captures, ASCII-only.
 
+### 3.7 RCA Auto-Closure Discipline
+
+**When creating an RCA document, Cascade MUST:**
+
+1. **Document the violation** — incident summary, root cause, impact
+2. **Execute corrective actions IMMEDIATELY** — do not wait for user prompt
+3. **Update RCA status** — mark as RESOLVED with timestamp
+4. **Document evidence** — link to corrective action artifacts
+5. **Update preventive measures** — mark completed items with [x]
+
+**RCA Status Lifecycle:**
+- ❌ `Status: OPEN` — violation documented, corrective actions NOT executed
+- 🔄 `Status: IN PROGRESS` — corrective actions partially executed
+- ✅ `Status: RESOLVED` — all immediate corrective actions completed with evidence
+
+**FORBIDDEN:**
+- Creating RCA and leaving status blank or OPEN
+- Documenting corrective actions without executing them
+- Waiting for user to ask "was this fixed?"
+- Marking preventive measures as incomplete when they can be automated
+
+**Example RCA Header:**
+```markdown
+# RCA: <Title>
+
+**Incident ID**: `<id>`
+**Timestamp**: <violation time>
+**Resolved**: <resolution time>
+**Status**: ✅ RESOLVED
+**Severity**: <severity level>
+```
+
+**Evidence Section (required):**
+```markdown
+### **Immediate** ✅ COMPLETED
+- [x] Corrective action 1
+- [x] Corrective action 2
+
+**Evidence**:
+- Created `<artifact_path>` - <description>
+- Executed `<command>` - <result>
+```
+
 ---
 
 ## §4. SCOPE & DETERMINISM
@@ -521,22 +563,33 @@ HITL is REQUIRED for:
 ### 8.5.3 Option Presentation Format
 
 Every HITL prompt MUST include:
-- **Context**: Brief description of decision point
-- **Options**: 2-4 concrete alternatives labeled A, B, C, D
-- **Trade-offs**: Honest pros/cons or impact for each
-- **Question**: Explicit "Which approach/option/strategy?"
+- **Context**: Brief description of decision point and current state
+- **Options**: 2-4 concrete alternatives numbered 1, 2, 3, 4
+- **Trade-offs**: Honest pros/cons or impact for each option
+- **Recommendation**: Explicit recommendation marked with ⭐ emoji
+- **Question**: Clear "Which option do you choose?"
 
-**FORBIDDEN**: Single option + confirmation request, proceeding with "default", open-ended questions without options, hiding trade-offs, biased presentation.
+**REQUIRED FORMAT TEMPLATE**:
+```markdown
+**Context**: <clear explanation of decision point>
+**Options**:
+1. <Option 1 description> - <trade-offs>
+2. <Option 2 description> - <trade-offs> ⭐ RECOMMENDED
+3. <Option 3 description> - <trade-offs>
+4. <Option 4 description> - <trade-offs>
+```
+
+**FORBIDDEN**: Single option + confirmation request, proceeding with "default", open-ended questions without options, hiding trade-offs, biased presentation, missing ⭐ recommendation, unnumbered options.
 
 ### 8.5.4 Execution Discipline
 
 After presenting options:
 1. **STOP** — do not proceed with any option
-2. **WAIT** — user must explicitly select A/B/C/D
-3. **CONFIRM** — acknowledge selection
+2. **WAIT** — user must explicitly select 1/2/3/4
+3. **CONFIRM** — acknowledge selection with option number
 4. **EXECUTE** — only the chosen option
 
-**FORBIDDEN**: "I'll proceed with A unless you object", "B seems best so I'll do that", implementing multiple options, guessing intent.
+**FORBIDDEN**: "I'll proceed with 1 unless you object", "2 seems best so I'll do that", implementing multiple options, guessing intent, proceeding without explicit selection.
 
 ### 8.5.5 Bypass Conditions
 
@@ -553,11 +606,38 @@ When HITL is invoked, evidence MUST include:
 ```markdown
 ## HITL_DECISION_RECORD
 **Decision Point**: <description>
-**Options Presented**: A, B, C, D
-**User Selection**: <A|B|C|D>
+**Options Presented**: 1, 2, 3, 4
+**User Selection**: <1|2|3|4>
 **Rationale**: <user's stated reason>
 **Executed Action**: <what was done>
+**Format Compliance**: ✅ Context, numbered options, trade-offs, ⭐ recommendation
 ```
+
+---
+
+## §8.6 RCA Auto-Closure Discipline
+
+**ENFORCEMENT**: Constitutional Rule #9 - RCAs must be auto-closed with evidence.
+
+### 8.6.1 RCA Status Lifecycle
+
+- ❌ **OPEN** — violation documented, corrective actions NOT executed
+- 🔄 **IN PROGRESS** — corrective actions partially executed
+- ✅ **RESOLVED** — all immediate corrective actions completed with evidence
+
+### 8.6.2 Required RCA Sections
+
+1. **Document the violation** - Clear description of what went wrong
+2. **Execute corrective actions IMMEDIATELY** - Don't just document, fix it
+3. **Update RCA status to RESOLVED** with timestamp and evidence
+4. **Document evidence artifacts** - What was created/changed
+5. **Mark completed preventive measures** with [x]
+
+### 8.6.3 Auto-Closure Mandate
+
+**NEVER** create RCA and leave it unresolved. User should not have to ask for closure.
+
+**FORBIDDEN**: Open RCAs without immediate corrective actions, documenting without fixing, leaving status as OPEN or IN PROGRESS.
 
 ---
 

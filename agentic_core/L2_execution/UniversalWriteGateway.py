@@ -56,7 +56,7 @@ class MutationRecord:
         replay_key: str = "",
         permitted: bool = True,
         replay_mode: bool = False,
-    ) -> "MutationRecord":
+    ) -> MutationRecord:
         """Construct a MutationRecord with a deterministic mutation_hash."""
         data_hash: str | None = None
         size_bytes: int | None = None
@@ -167,7 +167,7 @@ class UniversalWriteGateway:
         replay_key: str = "",
         actor_id: str | None = None,
         run_id: str | None = None,
-    ) -> "MutationRecord | SimulationResult":
+    ) -> MutationRecord | SimulationResult:
         """Sovereign write path — all governed writes MUST use this method.
 
         This is the only method that produces a ``writes_through`` ADG edge.
@@ -197,9 +197,7 @@ class UniversalWriteGateway:
             )
         data_bytes = data.encode("utf-8") if isinstance(data, str) else data
         if replay_key and not self._verify_replay_hash(data_bytes, replay_key):
-            raise PermissionError(
-                "REQ-354: UWG write_through blocked — replay hash mismatch."
-            )
+            raise PermissionError("REQ-354: UWG write_through blocked — replay hash mismatch.")
         record = MutationRecord.build(
             actor_id=effective_actor,
             run_id=effective_run,
@@ -211,7 +209,13 @@ class UniversalWriteGateway:
             replay_mode=self.replay_mode,
         )
         self._mutation_ledger.append(record)
-        Logger.debug("UWG write_through: %s actor=%s run=%s hash=%s", path, effective_actor, effective_run, record.mutation_hash[:12])
+        Logger.debug(
+            "UWG write_through: %s actor=%s run=%s hash=%s",
+            path,
+            effective_actor,
+            effective_run,
+            record.mutation_hash[:12],
+        )
         return record
 
     def snapshot_state(
@@ -477,9 +481,7 @@ class UniversalWriteGateway:
         """Return statistics about write operations."""
         total = len(self._mutation_ledger)
         permitted = sum(1 for r in self._mutation_ledger if r.permitted)
-        write_through_count = sum(
-            1 for r in self._mutation_ledger if r.operation == "write_through"
-        )
+        write_through_count = sum(1 for r in self._mutation_ledger if r.operation == "write_through")
         return {
             "total_mutations": total,
             "permitted_mutations": permitted,
@@ -563,3 +565,155 @@ def reset_write_gateway() -> None:
     """Reset the global write gateway (for testing)."""
     global _global_gateway
     _global_gateway = None
+
+
+# Wave 6: Convenience methods for enhanced write governance
+# These methods make UWG adoption easier and encourage organic migration
+
+
+def write_json(path: str, data: dict, **kwargs) -> MutationRecord | SimulationResult:
+    """Convenience method for JSON writes through UWG.
+
+    Args:
+        path: Target file path
+        data: Dictionary to serialize as JSON
+        **kwargs: Additional arguments for write_through
+
+    Returns:
+        MutationRecord or SimulationResult from write_through
+    """
+    import json
+
+    json_content = json.dumps(data, indent=2, ensure_ascii=False)
+    return get_write_gateway().write_through(path, json_content, **kwargs)
+
+
+def write_text(path: str, content: str, **kwargs) -> MutationRecord | SimulationResult:
+    """Convenience method for text writes through UWG.
+
+    Args:
+        path: Target file path
+        content: Text content to write
+        **kwargs: Additional arguments for write_through
+
+    Returns:
+        MutationRecord or SimulationResult from write_through
+    """
+    return get_write_gateway().write_through(path, content, **kwargs)
+
+
+def append_to_file(path: str, content: str, **kwargs) -> MutationRecord | SimulationResult:
+    """Safe append operations through UWG.
+
+    Args:
+        path: Target file path
+        content: Content to append
+        **kwargs: Additional arguments for write_through
+
+    Returns:
+        MutationRecord or SimulationResult from write_through
+    """
+    gateway = get_write_gateway()
+
+    # Read existing content if file exists
+    try:
+        if gateway.replay_mode:
+            # In replay mode, simulate the append
+            return gateway.record_mutation(
+                operation="append_to_file",
+                path=path,
+                data=content,
+                permitted=True,
+            )
+
+        existing_path = Path(path)
+        if existing_path.exists():
+            existing_content = existing_path.read_text(encoding="utf-8")
+            new_content = existing_content + content
+        else:
+            new_content = content
+
+        return gateway.write_through(path, new_content, **kwargs)
+    except Exception as e:
+        Logger.error(f"Append operation failed for {path}: {e}")
+        raise
+
+
+def atomic_write(path: str, data: Any, **kwargs) -> MutationRecord | SimulationResult:
+    """Atomic write with temp file + rename through UWG.
+
+    Args:
+        path: Target file path
+        data: Data to write (will be converted to string)
+        **kwargs: Additional arguments for write_through
+
+    Returns:
+        MutationRecord or SimulationResult from write_through
+    """
+    gateway = get_write_gateway()
+
+    if gateway.replay_mode:
+        # In replay mode, simulate the atomic write
+        return gateway.record_mutation(
+            operation="atomic_write",
+            path=path,
+            data=str(data),
+            permitted=True,
+        )
+
+    # Convert data to string if needed
+    if not isinstance(data, str):
+        if isinstance(data, (dict, list)):
+            import json
+
+            content = json.dumps(data, indent=2, ensure_ascii=False)
+        else:
+            content = str(data)
+    else:
+        content = data
+
+    # Write to temp file first, then rename
+    target_path = Path(path)
+    temp_path = target_path.with_suffix(f"{target_path.suffix}.tmp")
+
+    try:
+        # Write to temp file
+        temp_result = gateway.write_through(str(temp_path), content, **kwargs)
+
+        # Rename to target (atomic operation)
+        temp_path.rename(target_path)
+
+        # Record the atomic operation
+        return gateway.record_mutation(
+            operation="atomic_write",
+            path=path,
+            data=content,
+            permitted=True,
+        )
+    except Exception as e:
+        Logger.error(f"Atomic write failed for {path}: {e}")
+        # Clean up temp file if it exists
+        if temp_path.exists():
+            temp_path.unlink()
+        raise
+
+
+def write_pickle(path: str, obj: Any, **kwargs) -> MutationRecord | SimulationResult:
+    """Pickle serialization with governance through UWG.
+
+    Args:
+        path: Target file path
+        obj: Python object to pickle
+        **kwargs: Additional arguments for write_through
+
+    Returns:
+        MutationRecord or SimulationResult from write_through
+    """
+    import pickle
+
+    try:
+        pickle_data = pickle.dumps(obj)
+        return get_write_gateway().write_through(path, pickle_data, **kwargs)
+    except Exception as e:
+        Logger.error(f"Pickle write failed for {path}: {e}")
+        raise

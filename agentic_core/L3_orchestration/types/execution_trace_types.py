@@ -13,6 +13,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from agentic_core.L0_routing.engines.assembly_stage import GovernedPayload
+from agentic_core.L0_routing.providers.clock_provider import ClockProvider as clock_provider
 
 
 def canonical_json(data: dict[str, Any]) -> str:
@@ -88,7 +89,7 @@ def create_execution_trace_skeleton(
     Returns:
         ExecutionTrace with populated skeleton
     """
-    from datetime import datetime, timezone
+    from datetime import timezone
 
     payload_dict = {
         "s0_system": governed_payload.s0_system,
@@ -105,7 +106,7 @@ def create_execution_trace_skeleton(
         actor=actor,
         target=target,
         governed_payload_hash=governed_payload_hash,
-        timestamp=datetime.now(timezone.utc).isoformat(),
+        timestamp=clock_provider.now(timezone.utc).isoformat(),
     )
     return trace
 

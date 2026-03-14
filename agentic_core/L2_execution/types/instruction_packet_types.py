@@ -17,7 +17,9 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
 from typing import Any
 
+from agentic_core.L0_routing.providers.clock_provider import ClockProvider as clock_provider
 from agentic_core.L2_execution.enforcement.key_source import get_current_secret
+from agentic_core.L5_safety.enforcement.credential_guard import get_credential_guard as credential_guard
 
 
 def _canonical_bytes(data: dict[str, Any]) -> bytes:
@@ -71,6 +73,8 @@ class InstructionPacket:
     def __post_init__(self) -> None:
         """Enforce mandatory signing at construction."""
         if not self.signature:
+            credential_guard.check(operation="credential_access", target="get_current_secret")
+            get_credential_guard().check(operation="credential_access", target="get_current_secret")
             secret = get_current_secret()
             mac = hmac.new(secret, self.canonical_bytes(), hashlib.sha256)
             object.__setattr__(self, "signature", mac.hexdigest().lower())
@@ -132,7 +136,7 @@ class InstructionPacket:
         Returns:
             New InstructionPacket with L5 certification fields populated
         """
-        now = datetime.now(timezone.utc)
+        now = clock_provider.now(timezone.utc)
         expiration = now + timedelta(hours=expiration_hours)
         certified = InstructionPacket.__new__(InstructionPacket)
         object.__setattr__(certified, "instruction_id", self.instruction_id)
@@ -172,7 +176,7 @@ class InstructionPacket:
         if self.expiration_timestamp:
             try:
                 expiration = datetime.fromisoformat(self.expiration_timestamp.replace("Z", "+00:00"))
-                if datetime.now(timezone.utc) > expiration:
+                if clock_provider.now(timezone.utc) > expiration:
                     raise SignatureVerificationError("InstructionPacket L5 certification has expired")
             except ValueError as e:
                 raise SignatureVerificationError(f"Invalid expiration timestamp format: {e}")

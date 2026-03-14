@@ -5,14 +5,34 @@ package directory. This __init__ loads it via importlib and re-exports its
 public API so that existing `from agentic_core.L2_execution.determinism import ...`
 calls continue to work.
 """
+
 from __future__ import annotations
+
 import importlib.util
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
-_STANDALONE = Path(__file__).resolve().parent.parent / 'determinism.py'
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+from agentic_core.L5_safety.enforcement.import_guard import get_import_guard
+
+_STANDALONE = Path(__file__).resolve().parent.parent / "determinism.py"
 if _STANDALONE.exists():
-    _spec = importlib.util.spec_from_file_location('agentic_core.L2_execution._determinism_standalone', _STANDALONE)
+    get_import_guard().check(
+        operation="spec_from_file_location", module_name="agentic_core.L2_execution._determinism_standalone"
+    )
+    _spec = importlib.util.spec_from_file_location(
+        "agentic_core.L2_execution._determinism_standalone", _STANDALONE
+    )
     _mod = importlib.util.module_from_spec(_spec)
+    get_import_guard().check(operation="exec_module", module_name=_mod.__name__)
     _spec.loader.exec_module(_mod)
     build_agent_2x2_inventory = _mod.build_agent_2x2_inventory
     compute_p5_determinism_digest = _mod.compute_p5_determinism_digest
