@@ -13,18 +13,15 @@ Guardrails Implemented:
 7. Rate Limiting - Prevents API abuse
 8. Fallback Mechanisms - Graceful degradation on failures
 """
-
+from agentic_core.L0_routing.providers.clock_provider import ClockProvider as clock_provider
 from __future__ import annotations
-
 import hashlib
 import json
 import logging
 import time
 from dataclasses import dataclass, field
 from typing import Any
-
 Logger = logging.getLogger(__name__)
-
 
 @dataclass
 class CacheGuardrails:
@@ -33,7 +30,6 @@ class CacheGuardrails:
 
     Enforces limits on cache operations to prevent abuse and ensure system stability.
     """
-
     max_cache_entries: int = 10000
     max_entry_size_kb: int = 100
     default_ttl: int = 3600
@@ -50,7 +46,6 @@ class CacheGuardrails:
     _pattern_counts: dict[str, list[float]] = field(default_factory=dict)
     _depth_trackers: dict[str, dict[str, Any]] = field(default_factory=dict)
 
-
 class MetaLearningGuardrails:
     """
     Comprehensive guardrails for meta-learning operations.
@@ -59,7 +54,7 @@ class MetaLearningGuardrails:
     or abuse the cache and implements strict validation.
     """
 
-    def __init__(self, guardrails: CacheGuardrails | None = None):
+    def __init__(self, guardrails: CacheGuardrails | None=None):
         self.guardrails = guardrails or CacheGuardrails()
         self.logger = Logger
 
@@ -76,15 +71,14 @@ class MetaLearningGuardrails:
         if not key or not isinstance(key, str):
             return False
         if len(key) > 256:
-            self.logger.warning(f"Cache key too long: {len(key)} chars")
+            self.logger.warning(f'Cache key too long: {len(key)} chars')
             return False
-        if ".." in key or key.startswith("/"):
-            self.logger.warning(f"Potentially unsafe cache key: {key}")
+        if '..' in key or key.startswith('/'):
+            self.logger.warning(f'Potentially unsafe cache key: {key}')
             return False
         import re
-
-        if not re.match("^[a-zA-Z0-9_:-]+$", key):
-            self.logger.warning(f"Invalid characters in cache key: {key}")
+        if not re.match('^[a-zA-Z0-9_:-]+$', key):
+            self.logger.warning(f'Invalid characters in cache key: {key}')
             return False
         return True
 
@@ -102,19 +96,19 @@ class MetaLearningGuardrails:
             return True
         try:
             value_str = json.dumps(value)
-            size_kb = len(value_str.encode("utf-8")) / 1024
+            size_kb = len(value_str.encode('utf-8')) / 1024
             if size_kb > self.guardrails.max_entry_size_kb:
-                self.logger.warning(f"Cache value too large: {size_kb:.1f}KB")
+                self.logger.warning(f'Cache value too large: {size_kb:.1f}KB')
                 return False
             if self._has_circular_refs(value):
-                self.logger.warning("Circular reference detected in cache value")
+                self.logger.warning('Circular reference detected in cache value')
                 return False
             return True
         except (TypeError, ValueError) as e:
-            self.logger.error(f"Cache value serialization failed: {e}")
+            self.logger.error(f'Cache value serialization failed: {e}')
             return False
 
-    def _has_circular_refs(self, obj: Any, visited: list[int] | None = None) -> bool:
+    def _has_circular_refs(self, obj: Any, visited: list[int] | None=None) -> bool:
         """Check for circular references in object."""
         if visited is None:
             visited = []
@@ -148,13 +142,13 @@ class MetaLearningGuardrails:
         if ttl is None:
             return self.guardrails.default_ttl
         if not isinstance(ttl, int) or ttl < 0:
-            self.logger.warning(f"Invalid TTL: {ttl}, using default")
+            self.logger.warning(f'Invalid TTL: {ttl}, using default')
             return self.guardrails.default_ttl
         if ttl > self.guardrails.max_ttl:
-            self.logger.warning(f"TTL too large: {ttl}s, capping at {self.guardrails.max_ttl}s")
+            self.logger.warning(f'TTL too large: {ttl}s, capping at {self.guardrails.max_ttl}s')
             return self.guardrails.max_ttl
         if ttl < self.guardrails.min_ttl:
-            self.logger.warning(f"TTL too small: {ttl}s, using minimum {self.guardrails.min_ttl}s")
+            self.logger.warning(f'TTL too small: {ttl}s, using minimum {self.guardrails.min_ttl}s')
             return self.guardrails.min_ttl
         return ttl
 
@@ -170,7 +164,7 @@ class MetaLearningGuardrails:
         """
         current_size = self.guardrails._cache_sizes.get(domain, 0)
         if current_size >= self.guardrails.max_cache_entries:
-            self.logger.warning(f"Cache size limit reached for domain: {domain}")
+            self.logger.warning(f'Cache size limit reached for domain: {domain}')
             return False
         return True
 
@@ -179,7 +173,7 @@ class MetaLearningGuardrails:
         current = self.guardrails._cache_sizes.get(domain, 0)
         self.guardrails._cache_sizes[domain] = max(0, current + delta)
 
-    def check_rate_limit(self, domain: str, operation: str = "request") -> bool:
+    def check_rate_limit(self, domain: str, operation: str='request') -> bool:
         """
         Check rate limits for operations.
 
@@ -190,9 +184,9 @@ class MetaLearningGuardrails:
         Returns:
             True if operation allowed, False if rate limited
         """
-        now = time.time()
+        now = clock_provider.time()
         one_minute_ago = now - 60
-        if operation == "pattern":
+        if operation == 'pattern':
             counts = self.guardrails._pattern_counts
             limit = self.guardrails.max_patterns_per_minute
         else:
@@ -202,7 +196,7 @@ class MetaLearningGuardrails:
             counts[domain] = []
         counts[domain] = [t for t in counts[domain] if t > one_minute_ago]
         if len(counts[domain]) >= limit:
-            self.logger.warning(f"Rate limit exceeded for {domain} {operation}s")
+            self.logger.warning(f'Rate limit exceeded for {domain} {operation}s')
             return False
         counts[domain].append(now)
         return True
@@ -220,13 +214,13 @@ class MetaLearningGuardrails:
         if threshold is None:
             return self.guardrails.default_similarity_threshold
         if not isinstance(threshold, int | float):
-            self.logger.warning(f"Invalid similarity threshold: {threshold}")
+            self.logger.warning(f'Invalid similarity threshold: {threshold}')
             return self.guardrails.default_similarity_threshold
         if threshold > 1.0:
-            self.logger.warning(f"Similarity threshold > 1.0: {threshold}, using 1.0")
+            self.logger.warning(f'Similarity threshold > 1.0: {threshold}, using 1.0')
             return 1.0
         if threshold < self.guardrails.min_similarity_threshold:
-            self.logger.warning(f"Similarity threshold too low: {threshold}, using minimum")
+            self.logger.warning(f'Similarity threshold too low: {threshold}, using minimum')
             return self.guardrails.min_similarity_threshold
         return float(threshold)
 
@@ -241,23 +235,17 @@ class MetaLearningGuardrails:
         Returns:
             True if healing can proceed, False if depth limit reached
         """
-        now = time.time()
+        now = clock_provider.time()
         if agent_name not in self.guardrails._depth_trackers:
             self.guardrails._depth_trackers[agent_name] = {}
         agent_tracker = self.guardrails._depth_trackers[agent_name]
-        agent_tracker = {
-            vid: data
-            for vid, data in agent_tracker.items()
-            if now - data["last_reset"] < self.guardrails.depth_reset_timeout
-        }
+        agent_tracker = {vid: data for vid, data in agent_tracker.items() if now - data['last_reset'] < self.guardrails.depth_reset_timeout}
         self.guardrails._depth_trackers[agent_name] = agent_tracker
         if violation_id not in agent_tracker:
-            agent_tracker[violation_id] = {"depth": 0, "last_reset": now}
-        depth = agent_tracker[violation_id]["depth"]
+            agent_tracker[violation_id] = {'depth': 0, 'last_reset': now}
+        depth = agent_tracker[violation_id]['depth']
         if depth >= self.guardrails.max_healing_depth:
-            self.logger.warning(
-                f"Healing depth limit reached for {agent_name}:{violation_id} (depth={depth}, max={self.guardrails.max_healing_depth})"
-            )
+            self.logger.warning(f'Healing depth limit reached for {agent_name}:{violation_id} (depth={depth}, max={self.guardrails.max_healing_depth})')
             return False
         return True
 
@@ -276,9 +264,9 @@ class MetaLearningGuardrails:
             self.guardrails._depth_trackers[agent_name] = {}
         agent_tracker = self.guardrails._depth_trackers[agent_name]
         if violation_id not in agent_tracker:
-            agent_tracker[violation_id] = {"depth": 0, "last_reset": time.time()}
-        agent_tracker[violation_id]["depth"] += 1
-        return agent_tracker[violation_id]["depth"]
+            agent_tracker[violation_id] = {'depth': 0, 'last_reset': clock_provider.time()}
+        agent_tracker[violation_id]['depth'] += 1
+        return agent_tracker[violation_id]['depth']
 
     def reset_healing_depth(self, agent_name: str, violation_id: str) -> None:
         """
@@ -303,15 +291,13 @@ class MetaLearningGuardrails:
         Returns:
             True if pattern is valid for domain, False otherwise
         """
-        if "domain" in pattern and pattern["domain"] != domain:
-            self.logger.warning(
-                f"Cross-domain pattern rejected: pattern_domain={pattern['domain']}, target_domain={domain}"
-            )
+        if 'domain' in pattern and pattern['domain'] != domain:
+            self.logger.warning(f"Cross-domain pattern rejected: pattern_domain={pattern['domain']}, target_domain={domain}")
             return False
-        required_fields = ["violation_type", "healing_strategy"]
+        required_fields = ['violation_type', 'healing_strategy']
         for req_field in required_fields:
             if req_field not in pattern:
-                self.logger.warning(f"Pattern missing required field: {req_field}")
+                self.logger.warning(f'Pattern missing required field: {req_field}')
                 return False
         return True
 
@@ -326,21 +312,11 @@ class MetaLearningGuardrails:
             Sanitized violation data
         """
         sanitized = {}
-        safe_fields = {
-            "type",
-            "path",
-            "file_path",
-            "import_statement",
-            "file_layer",
-            "import_layer",
-            "violation_type",
-            "line_number",
-            "message",
-        }
+        safe_fields = {'type', 'path', 'file_path', 'import_statement', 'file_layer', 'import_layer', 'violation_type', 'line_number', 'message'}
         for key, value in violation.items():
             if key in safe_fields:
                 if isinstance(value, str):
-                    value = value.replace("\x00", "")
+                    value = value.replace('\x00', '')
                     value = value[:1000]
                 sanitized[key] = value
         return sanitized
@@ -356,28 +332,14 @@ class MetaLearningGuardrails:
         Returns:
             Safe cache key
         """
-        sorted_data = json.dumps(data, sort_keys=True, separators=(",", ":"))
+        sorted_data = json.dumps(data, sort_keys=True, separators=(',', ':'))
         hash_digest = hashlib.sha256(sorted_data.encode()).hexdigest()[:16]
-        return f"{prefix}:{hash_digest}"
+        return f'{prefix}:{hash_digest}'
 
     def get_stats(self) -> dict[str, Any]:
         """Get guardrails statistics."""
-        return {
-            "cache_sizes": self.guardrails._cache_sizes.copy(),
-            "request_rates": {
-                domain: len(timestamps) for domain, timestamps in self.guardrails._request_counts.items()
-            },
-            "pattern_rates": {
-                domain: len(timestamps) for domain, timestamps in self.guardrails._pattern_counts.items()
-            },
-            "depth_trackers": {
-                agent: len(tracker) for agent, tracker in self.guardrails._depth_trackers.items()
-            },
-        }
-
-
+        return {'cache_sizes': self.guardrails._cache_sizes.copy(), 'request_rates': {domain: len(timestamps) for domain, timestamps in self.guardrails._request_counts.items()}, 'pattern_rates': {domain: len(timestamps) for domain, timestamps in self.guardrails._pattern_counts.items()}, 'depth_trackers': {agent: len(tracker) for agent, tracker in self.guardrails._depth_trackers.items()}}
 _guardrails_instance = None
-
 
 def get_guardrails() -> MetaLearningGuardrails:
     """Get or create global guardrails instance."""
@@ -385,7 +347,6 @@ def get_guardrails() -> MetaLearningGuardrails:
     if _guardrails_instance is None:
         _guardrails_instance = MetaLearningGuardrails()
     return _guardrails_instance
-
 
 def reset_guardrails() -> None:
     """Reset guardrails state (for testing)."""

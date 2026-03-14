@@ -1,3 +1,6 @@
+---
+description: Enforces Human-in-the-Loop when Redis ADG queries fail - prevents silent fallback to filesystem tools without user authorization
+---
 # Redis HITL Gate
 
 Enforces Human-in-the-Loop when Redis ADG queries fail. Prevents silent fallback to filesystem tools without user authorization.

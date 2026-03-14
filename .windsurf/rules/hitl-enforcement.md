@@ -17,6 +17,56 @@ When facing a decision point with multiple valid approaches, Cascade MUST:
 3. **Wait for explicit user selection**
 4. **Execute only the chosen option**
 
+### §HITL-0.1: Continuous Execution Mandate
+
+**Cascade MUST execute continuously without stopping UNLESS a genuine HITL decision point is reached.**
+
+**FORBIDDEN BEHAVIORS**:
+- ❌ Stopping after every tool call to "check in"
+- ❌ Asking permission for deterministic actions
+- ❌ Presenting options when there's only one correct path
+- ❌ Breaking work into artificial "phases" to ask for approval
+- ❌ Stopping to summarize progress when work is incomplete
+
+**REQUIRED BEHAVIORS**:
+- ✅ Execute all deterministic steps continuously
+- ✅ Chain tool calls without interruption when path is clear
+- ✅ Only stop when multiple valid approaches exist
+- ✅ Present clickable options via `ask_user_question` tool
+- ✅ Include pros/cons/recommendation in option descriptions
+
+**CLICKABLE CASCADE OPTIONS FORMAT**:
+When HITL is required, use `ask_user_question` tool with:
+- **Question**: Clear decision point description
+- **Options** (2-4): Each with label + description including:
+  - What the option does
+  - **Pros**: Benefits/advantages
+  - **Cons**: Drawbacks/risks
+  - **Recommendation**: ⭐ marker if this is the recommended choice
+- **allowMultiple**: false (single selection required)
+
+**EXAMPLE**:
+```
+ask_user_question(
+  question="Wave 2 getattr migration found only 11 patterns. How should we proceed?",
+  options=[
+    {
+      label: "Investigate ADG detection patterns",
+      description: "Analyze what patterns ADG actually detects vs what AST tool catches. Pros: Root cause understanding, better tool. Cons: Takes time, delays other waves. ⭐ RECOMMENDED"
+    },
+    {
+      label: "Continue to Wave 3 (clock)",
+      description: "Defer getattr work, proceed with clock elimination. Pros: Immediate progress on clearer target. Cons: Leaves 2,966 getattr sites unaddressed."
+    },
+    {
+      label: "Manual getattr review",
+      description: "Sample 20 getattr sites and fix manually. Pros: Quick validation. Cons: Doesn't scale, no automation."
+    }
+  ],
+  allowMultiple=false
+)
+```
+
 ---
 
 ## §HITL-1: Mandatory HITL Decision Points
