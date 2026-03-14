@@ -3,9 +3,7 @@ from agentic_core.L2_execution.tools import write_gateway as _wg
 "\nStructuralValidatorAgent - Facade Shell for Zero-Loss Consolidation.\n\nL5 Sovereign Guardian for Structural Enforcement.\nConverted to Facade: 2026-01-31 (Phase 2 Deprecation Implementation)\n\nFACADE PATTERN: Delegates to UnifiedAgent while preserving 100% legacy compatibility.\nAll original imports and signatures work without modification.\n\nRationale:\n    - Canonizes the legacy 'StructureEnforcerAgent' into 'StructuralValidatorAgent'.\n    - Implements Atomic Writes for safe refactoring.\n    - Enforces Layer Gravity (L0-L6) and Naming Laws.\n    - Integrates with ArchitectureGovernorAgent.\n"
 import ast
 import logging
-import os
 import re
-import tempfile
 import threading
 from dataclasses import dataclass
 from datetime import datetime
@@ -213,17 +211,10 @@ class StructuralValidatorAgent(SovereignBaseAgent):
             if dry_run:
                 Logger.info(f"[PLAN] Rename class {old_name} -> {new_name} in {file_path.name}")
                 return {"applied": False}
-            temp_fd, temp_path = tempfile.mkstemp(dir=file_path.parent, text=True)
-            try:
-                with os.fdopen(temp_fd, "w", encoding="utf-8") as tf:
-                    tf.write(new_content)
-                backup_path = file_path.with_suffix(f".bak.{int(datetime.now().timestamp())}")
-                _wg.copy_file(file_path, backup_path)
-                os.replace(temp_path, file_path)
-                return {"applied": True, "backup": str(backup_path)}
-            except Exception as write_err:
-                _wg.remove_file(temp_path)
-                raise write_err
+            backup_path = file_path.with_suffix(f".bak.{int(datetime.now().timestamp())}")
+            _wg.copy_file(file_path, backup_path)
+            _wg.write_text(file_path, new_content)
+            return {"applied": True, "backup": str(backup_path)}
         # guardian: allow-silent-swallow
         except Exception as e:
             Logger.error(f"Rename failed: {e}")
