@@ -131,6 +131,8 @@ def _load_baseline() -> dict:
 
 
 def _write_baseline(data: dict) -> None:
+    """Write baseline data to file with atomic replace."""
+    # guardian: allow-global-mutation
     content = json.dumps(data, indent=2, sort_keys=True) + "\n"
     fd, tmp = tempfile.mkstemp(dir=str(BASELINE_FILE.parent), prefix=".wave0_baseline_", suffix=".tmp")
     try:

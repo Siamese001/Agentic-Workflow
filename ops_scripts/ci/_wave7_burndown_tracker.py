@@ -16,6 +16,9 @@ Usage:
 
 from __future__ import annotations
 
+# Configuration constants
+DEFAULT_TIMEOUT = 60
+
 import argparse
 import json
 import subprocess
@@ -77,8 +80,8 @@ def _get_adg_counts() -> dict[str, int]:
         if raw:
             snap = json.loads(raw)
             return snap.get("graph_plane_counts", {})
-    except Exception:
-        pass
+    except Exception as exc:
+        print(f"  [WARN] Failed to get ADG snapshot from Redis: {exc}", file=sys.stderr)
     return {}
 
 
@@ -96,7 +99,7 @@ def _count_ruff_violations(layer: str) -> int:
             cwd=str(_REPO_ROOT),
             capture_output=True,
             text=True,
-            timeout=60,
+            timeout=DEFAULT_TIMEOUT,
         )
         if result.stdout.strip():
             violations = json.loads(result.stdout)
