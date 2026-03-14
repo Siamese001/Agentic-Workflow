@@ -55,7 +55,7 @@ class SafetyAgentFactory:
 
                 return StructuralHealerAgent(project_root=self.project_root)
             elif agent_name == "GovernanceAgent":
-                from agentic_core.L5_safety.validators.GovernanceAgent import GovernanceAgent
+                from agentic_core.L5_safety.reasoning.GovernanceAgent import GovernanceAgent
 
                 return GovernanceAgent(project_root=self.project_root)
             elif agent_name == "HierarchyAgent":

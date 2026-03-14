@@ -10,10 +10,11 @@ import sys
 import time
 from pathlib import Path
 
+from agentic_core.utils.security_util import safe_git_execute
+
 from agentic_core.L0_routing.config.path_constants import DEFAULT_SLEEP, DEFAULT_TIMEOUT
 from agentic_core.L0_routing.enforcement.runtime_guard import runtime_guard
 from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
-from agentic_core.utils.security_util import safe_git_execute
 
 Logger = logging.getLogger(__name__)
 try:
@@ -49,7 +50,7 @@ def _get_imports():
     """
     from agentic_core.InterventionServer import FASTAPI_AVAILABLE, approval_event, start_intervention_server
 
-    from agentic_core.L5_safety.validators.GovernanceAgent import GovernanceAgent as ArchitectureGovernor
+    from agentic_core.L5_safety.reasoning.GovernanceAgent import GovernanceAgent as ArchitectureGovernor
 
     return {
         "ValidationContext": None,
