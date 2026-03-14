@@ -1,0 +1,35 @@
+{
+  "_description": "Wave 0 ADG CI gates baseline \u2014 frozen from live Redis.",
+  "_wave": 0,
+  "gate_modes": {
+    "M1": "warn",
+    "M2": "warn",
+    "M3": "warn",
+    "M4": "warn",
+    "M5": "warn",
+    "M6": "warn"
+  },
+  "snapshot": {
+    "agent_executes_agent": 2,
+    "antipattern": 1528,
+    "applies_guardrail": 68,
+    "calls": 18499,
+    "dead_imports": 4409,
+    "emits_determinism_digest": 3,
+    "emits_replay_key": 2,
+    "invokes_eval": 501,
+    "invokes_getattr_dynamic": 2978,
+    "observes_runtime_state": 3,
+    "proposal_commits_routing": 42,
+    "reads_policy_state": 1317,
+    "records_execution_trace": 64,
+    "registers_antipattern": 11,
+    "routes_path": 48,
+    "seeds_rng": 14,
+    "signs_execution_trace": 21,
+    "uses_random": 59,
+    "uses_wall_clock": 884,
+    "writes_through": 80,
+    "writes_to": 4875
+  }
+}

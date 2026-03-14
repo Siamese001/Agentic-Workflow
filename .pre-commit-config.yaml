@@ -160,6 +160,18 @@ repos:
   # ============================================================================
   - repo: local
     hooks:
+      # -- T3a-gates: Wave 0 ADG CI Delta Gates (M1-M6) -------------------------
+      # Six delta gates from Plan Hardening Addendum. Warn mode by default;
+      # flip to enforce via: python ops_scripts/ci/_adg_ci_gates.py --set-enforce M1,M2,M3
+      - id: adg-ci-gates
+        name: "T3a-gates: ADG CI Delta Gates (Wave 0 M1-M6)"
+        entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/_adg_ci_gates.py"
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+        stages: [manual]
+
       # -- T3a: Unified ADG Anti-Pattern Burndown Ratchet -----------------------
       # Single scan enforces both Rule 1 (no new file+category pairs) and
       # Rule 2 (existing counts may only decrease). Supersedes check_anti_patterns.py.

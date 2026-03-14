@@ -1,0 +1,174 @@
+name: ADG CI Gates (Wave 0)
+
+on:
+  push:
+    branches: ["**"]
+    paths:
+      - 'agentic_core/**'
+      - 'apps_shared/**'
+      - 'apps_lic/**'
+      - 'apps_rg/**'
+      - 'apps_exec/**'
+      - 'apps_eval/**'
+      - 'apps_rfp/**'
+      - 'apps_research/**'
+      - 'ops_scripts/**'
+      - 'tools/**'
+      - 'tests/**'
+      - 'system_learning/**'
+  pull_request:
+    branches: ["**"]
+
+jobs:
+  adg-ci-gates:
+    name: ADG CI Gates — Delta Enforcement (Wave 0)
+    runs-on: ubuntu-latest
+
+    services:
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          pip install redis
+          pip install -e . --no-deps 2>/dev/null || pip install -r requirements.txt --quiet 2>/dev/null || true
+
+      - name: Ingest ADG into Redis
+        run: python tools/adg/adg_redis_ingest.py --force
+        env:
+          PYTHONPATH: .
+
+      - name: M1 — Determinism Gate (warn mode until W4 exit)
+        run: |
+          python -c "
+          import sys, os
+          sys.path.insert(0, '.')
+          os.environ.setdefault('ADG_CI_GATES_WARN_ALL', '0')
+          from ops_scripts.ci._adg_ci_gates import cmd_check
+          # Individual gate check via status print
+          from ops_scripts.ci._adg_ci_gates import _get_gpc, _load_baseline, _eval_m1
+          cur = _get_gpc()
+          bl = _load_baseline()
+          passed, msg = _eval_m1(cur, bl.get('snapshot', {}))
+          mode = bl.get('gate_modes', {}).get('M1', 'warn')
+          print(f'M1 [{mode}]: {\"PASS\" if passed else \"FAIL/WARN\"} — {msg}')
+          if not passed and mode == 'enforce':
+              sys.exit(1)
+          "
+        env:
+          PYTHONPATH: .
+
+      - name: M2 — Dispatch Visibility Gate (warn mode until W2 exit)
+        run: |
+          python -c "
+          import sys
+          sys.path.insert(0, '.')
+          from ops_scripts.ci._adg_ci_gates import _get_gpc, _load_baseline, _eval_m2
+          cur = _get_gpc()
+          bl = _load_baseline()
+          passed, msg = _eval_m2(cur, bl.get('snapshot', {}))
+          mode = bl.get('gate_modes', {}).get('M2', 'warn')
+          print(f'M2 [{mode}]: {\"PASS\" if passed else \"FAIL/WARN\"} — {msg}')
+          if not passed and mode == 'enforce':
+              sys.exit(1)
+          "
+        env:
+          PYTHONPATH: .
+
+      - name: M3 — Mutation Sovereignty Gate (warn mode until W1 exit)
+        run: |
+          python -c "
+          import sys
+          sys.path.insert(0, '.')
+          from ops_scripts.ci._adg_ci_gates import _get_gpc, _load_baseline, _eval_m3
+          cur = _get_gpc()
+          bl = _load_baseline()
+          passed, msg = _eval_m3(cur, bl.get('snapshot', {}))
+          mode = bl.get('gate_modes', {}).get('M3', 'warn')
+          print(f'M3 [{mode}]: {\"PASS\" if passed else \"FAIL/WARN\"} — {msg}')
+          if not passed and mode == 'enforce':
+              sys.exit(1)
+          "
+        env:
+          PYTHONPATH: .
+
+      - name: M4 — Guardrail Coverage Gate (warn mode until W3 exit)
+        run: |
+          python -c "
+          import sys
+          sys.path.insert(0, '.')
+          from ops_scripts.ci._adg_ci_gates import _get_gpc, _load_baseline, _eval_m4
+          cur = _get_gpc()
+          bl = _load_baseline()
+          passed, msg = _eval_m4(cur, bl.get('snapshot', {}))
+          mode = bl.get('gate_modes', {}).get('M4', 'warn')
+          print(f'M4 [{mode}]: {\"PASS\" if passed else \"FAIL/WARN\"} — {msg}')
+          if not passed and mode == 'enforce':
+              sys.exit(1)
+          "
+        env:
+          PYTHONPATH: .
+
+      - name: M5 — Trace Coverage Gate (warn mode until W5 exit)
+        run: |
+          python -c "
+          import sys
+          sys.path.insert(0, '.')
+          from ops_scripts.ci._adg_ci_gates import _get_gpc, _load_baseline, _eval_m5
+          cur = _get_gpc()
+          bl = _load_baseline()
+          passed, msg = _eval_m5(cur, bl.get('snapshot', {}))
+          mode = bl.get('gate_modes', {}).get('M5', 'warn')
+          print(f'M5 [{mode}]: {\"PASS\" if passed else \"FAIL/WARN\"} — {msg}')
+          if not passed and mode == 'enforce':
+              sys.exit(1)
+          "
+        env:
+          PYTHONPATH: .
+
+      - name: M6 — Replay Key Gate (warn mode until W4 exit)
+        run: |
+          python -c "
+          import sys
+          sys.path.insert(0, '.')
+          from ops_scripts.ci._adg_ci_gates import _get_gpc, _load_baseline, _eval_m6
+          cur = _get_gpc()
+          bl = _load_baseline()
+          passed, msg = _eval_m6(cur, bl.get('snapshot', {}))
+          mode = bl.get('gate_modes', {}).get('M6', 'warn')
+          print(f'M6 [{mode}]: {\"PASS\" if passed else \"FAIL/WARN\"} — {msg}')
+          if not passed and mode == 'enforce':
+              sys.exit(1)
+          "
+        env:
+          PYTHONPATH: .
+
+      - name: Full gate summary (exit 1 if any enforce-mode gate fails)
+        run: python ops_scripts/ci/_adg_ci_gates.py
+        env:
+          PYTHONPATH: .
+
+      - name: Upload wave0 baseline artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wave0-baseline-${{ github.sha }}
+          path: ops_scripts/ci/wave0_baseline.json
+          if-no-files-found: warn
