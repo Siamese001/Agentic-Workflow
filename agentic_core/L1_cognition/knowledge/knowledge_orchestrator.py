@@ -32,6 +32,7 @@ from agentic_core.L5_safety.enforcement.policy_action_contract import (
     PolicyEnforcementError,
     enforce_policy_before_action,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 _KNOWLEDGE_LOG = logging.getLogger("adg.pattern_stored")
@@ -167,6 +168,9 @@ def capture_reasoning_pattern(
     Raises:
         ReasoningKnowledgeError: If pattern capture fails (Gate A/E)
     """
+    _emit_records_execution_trace(
+        reasoning_trace.trace_id, LayerSegment.L1_COGNITION, "capture_reasoning_pattern"
+    )
     _registry = registry or get_reasoning_knowledge_registry()
     _gw = get_routing_gateway(reasoning_context.run_id if hasattr(reasoning_context, 'run_id') else "")
     try:
