@@ -45,6 +45,7 @@ import logging
 from dataclasses import dataclass
 from typing import Any, Sequence
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from system_learning.enforcement.determinism import deterministic_json
 from system_learning.engines.governance_reward_model import (
     GovernanceRewardModel,
@@ -304,6 +305,10 @@ class MetaLearningBus:
         -------
         BusPipelineResult
         """
+        import uuid  # noqa: PLC0415
+
+        _trace_id = str(uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "MetaLearningBus.process_traces")
         adg_relations: list[tuple[str, str, str]] = []
 
         # Stage 1 — Feature extraction

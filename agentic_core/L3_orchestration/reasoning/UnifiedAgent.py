@@ -695,10 +695,41 @@ class UnifiedAgent(SovereignBaseAgent):
         strategy_class = STRATEGY_MAP.get(self._category, GenericStrategy)
         return strategy_class(self._unified_config)
 
+    def _get_trace_id(self) -> str:
+        """Return the active trace_id or generate a fresh UUID."""
+        import uuid  # noqa: PLC0415
+
+        from agentic_core.runtime.execution_trace import get_active_execution_trace  # noqa: PLC0415
+
+        active = get_active_execution_trace()
+        return active.trace_id if (active and active.trace_id) else str(uuid.uuid4())
+
     async def execute(
         self, **kwargs: Any
     ) -> ValidationResult | OrchestrationResult | HealingResult | dict[str, Any]:
         """Unified execute method delegating to category strategy."""
+        from agentic_core.runtime.lifecycle_trace_contract import (  # noqa: PLC0415
+            LayerSegment,
+            _emit_records_execution_trace,
+        )
+
+        _trace_id = self._get_trace_id()
+        _emit_records_execution_trace(
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            f"UnifiedAgent.execute:{self._category.value}",
+        )
+        if self._category == AgentCategory.ORCHESTRATOR:
+            from agentic_core.L3_orchestration.contracts.orchestration_handoff_contract import (  # noqa: PLC0415
+                emit_agent_executes_agent,
+            )
+
+            emit_agent_executes_agent(
+                parent_agent_id=self.__class__.__name__,
+                child_agent_id=self._config_name,
+                run_id=_trace_id,
+                stage="execute",
+            )
         if self._strategy is None:
             self._strategy = self._create_strategy()
         return await self._strategy.execute(self, **kwargs)

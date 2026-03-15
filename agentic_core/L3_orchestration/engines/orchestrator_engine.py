@@ -343,6 +343,7 @@ class Orchestrator(SovereignBaseAgent):
         get_run_state_authority().observe_runtime_state(
             "run_agent_dispatch", stage=agent_name, actor_id="orchestrator_engine"
         )
+        get_run_state_authority().snapshot_state(f"run_agent:{agent_name}", run_id="orchestrator_engine")
         try:
             enforce_policy_before_action(
                 action_name=agent_name,

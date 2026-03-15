@@ -6,6 +6,7 @@ from typing import Any
 from agentic_core.runtime.trace_context import get_trace_context
 
 from agentic_core.L2_execution.determinism.execution_proof_emitter import ExecutionProofEmitter
+from agentic_core.L3_orchestration.contracts.orchestration_handoff_contract import emit_agent_executes_agent
 from agentic_core.L3_orchestration.engines.coordinator_capability_orchestrator import (
     CoordinatorCapability,
     WorkflowContext,
@@ -39,6 +40,12 @@ class RLCoordinatorOrchestrator(WorkflowCoordinator):
             module="rl_coordinator_orchestrator",
             operation="coordinate",
         ):
+            emit_agent_executes_agent(
+                parent_agent_id="RLCoordinatorOrchestrator",
+                child_agent_id=context.input_data.get("rl_strategy", "ppo"),
+                run_id=context.workflow_id,
+                stage="coordinate",
+            )
             strategy = context.input_data.get("rl_strategy", "ppo")
             action_space = context.input_data.get("action_space", [])
             state = context.input_data.get("state", {})
@@ -94,6 +101,12 @@ class TerritoryCoordinator(WorkflowCoordinator):
 
     async def coordinate(self, context: WorkflowContext) -> WorkflowResult:
         """Execute territory-based coordination."""
+        emit_agent_executes_agent(
+            parent_agent_id="TerritoryCoordinator",
+            child_agent_id=context.input_data.get("territory", "territory"),
+            run_id=context.workflow_id,
+            stage="coordinate",
+        )
         operation = context.input_data.get("operation", "map")
         territory = context.input_data.get("territory", "")
         if operation == "map":
@@ -153,6 +166,12 @@ class MCPCoordinator(WorkflowCoordinator):
 
     async def coordinate(self, context: WorkflowContext) -> WorkflowResult:
         """Execute MCP-based coordination."""
+        emit_agent_executes_agent(
+            parent_agent_id="MCPCoordinator",
+            child_agent_id=context.input_data.get("tool", "mcp"),
+            run_id=context.workflow_id,
+            stage="coordinate",
+        )
         operation = context.input_data.get("operation", "route")
         tool_name = context.input_data.get("tool", "")
         if operation == "route":
@@ -211,6 +230,12 @@ class MissionCoordinator(WorkflowCoordinator):
 
     async def coordinate(self, context: WorkflowContext) -> WorkflowResult:
         """Execute mission-based coordination."""
+        emit_agent_executes_agent(
+            parent_agent_id="MissionCoordinator",
+            child_agent_id=context.input_data.get("mission_id", "mission"),
+            run_id=context.workflow_id,
+            stage="coordinate",
+        )
         operation = context.input_data.get("operation", "run")
         mission_id = context.input_data.get("mission_id", context.workflow_id)
         if operation == "run":
@@ -281,6 +306,12 @@ class ModelCoordinator(WorkflowCoordinator):
 
     async def coordinate(self, context: WorkflowContext) -> WorkflowResult:
         """Execute model-based coordination."""
+        emit_agent_executes_agent(
+            parent_agent_id="ModelCoordinator",
+            child_agent_id=context.input_data.get("model", "model_router"),
+            run_id=context.workflow_id,
+            stage="coordinate",
+        )
         operation = context.input_data.get("operation", "route")
         model = context.input_data.get("model", "")
         if operation == "route":
@@ -340,6 +371,12 @@ class HealthCoordinator(WorkflowCoordinator):
 
     async def coordinate(self, context: WorkflowContext) -> WorkflowResult:
         """Execute health-based coordination."""
+        emit_agent_executes_agent(
+            parent_agent_id="HealthCoordinator",
+            child_agent_id="health_monitor",
+            run_id=context.workflow_id,
+            stage="coordinate",
+        )
         operation = context.input_data.get("operation", "check")
         if operation == "check":
             result = await self._health_check(context)
@@ -404,6 +441,12 @@ class GovernanceCoordinator(WorkflowCoordinator):
 
     async def coordinate(self, context: WorkflowContext) -> WorkflowResult:
         """Execute governance-based coordination."""
+        emit_agent_executes_agent(
+            parent_agent_id="GovernanceCoordinator",
+            child_agent_id="governance_enforcer",
+            run_id=context.workflow_id,
+            stage="coordinate",
+        )
         operation = context.input_data.get("operation", "validate")
         if operation == "validate":
             result = await self._validate_registry(context)
@@ -462,6 +505,12 @@ class UtilityCoordinator(WorkflowCoordinator):
 
     async def coordinate(self, context: WorkflowContext) -> WorkflowResult:
         """Execute utility coordination."""
+        emit_agent_executes_agent(
+            parent_agent_id="UtilityCoordinator",
+            child_agent_id="utility_handler",
+            run_id=context.workflow_id,
+            stage="coordinate",
+        )
         operation = context.input_data.get("operation", "handshake")
         if operation == "repair":
             result = await self._conversation_repair(context)

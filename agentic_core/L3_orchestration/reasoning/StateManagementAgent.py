@@ -249,6 +249,7 @@ class StateManagementAgent(WriteGovernorMixin, SovereignBaseAgent):
             return ""
         _rsa = get_run_state_authority()
         _rsa.commit(key, data, actor_id="StateManagementAgent", reason_code="set_state")
+        _rsa.snapshot_state(f"state_set:{key}", run_id="StateManagementAgent")
         with self._lock:
             file_path = self.memory_root / "state" / f"{key}.json"
             data_json = json.dumps(data, sort_keys=True, default=str)

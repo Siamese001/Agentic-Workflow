@@ -7,7 +7,10 @@ It exposes a narrow run_llm interface used by runtime_utils.
 from __future__ import annotations
 
 import os
+import uuid
 from typing import Any
+
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 def run_llm_google(
@@ -29,6 +32,9 @@ def run_llm_google(
         timeout_s: Request timeout in seconds
         use_interactions_api: Force use of new v1beta Interactions API
     """
+    _emit_records_execution_trace(
+        str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "run_llm_google"
+    )
     if use_interactions_api:
         try:
             from google import genai

@@ -3,6 +3,7 @@ import asyncio
 
 from agentic_core.interfaces.gateway import GenerationRequest, SovereignLLMGateway
 from agentic_core.L2_execution.providers import get_clock
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class GeminiLLMClient:
@@ -21,6 +22,10 @@ class GeminiLLMClient:
         self.circuit_breaker = circuit_breaker
 
     def generate(self, prompt: str) -> str:
+        import uuid  # noqa: PLC0415
+
+        _trace_id = str(uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "GeminiLLMClient.generate")
         request = GenerationRequest(
             agent_id=self._AGENT_ID, provider="google", model=self._MODEL, prompt=prompt
         )

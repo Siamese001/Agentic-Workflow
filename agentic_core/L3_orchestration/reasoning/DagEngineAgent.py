@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.L3_orchestration.contracts.orchestration_handoff_contract import emit_agent_executes_agent
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 "DAG Engine for Task Dependencies and Workflow Management.\n\nPhase 2 - Pillar 4: Workflow (DAGs)\nLightweight workflow engine for modeling Task dependencies and conditional branching.\n"
 import logging
@@ -242,6 +244,16 @@ class DagEngineAgent(SovereignBaseAgent):
         Returns:
             DAGExecutionResult with execution summary
         """
+        import uuid  # noqa: PLC0415
+
+        _trace_id = str(uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "DagEngineAgent.execute")
+        emit_agent_executes_agent(
+            parent_agent_id="DagEngineAgent",
+            child_agent_id="dag_executor",
+            run_id=_trace_id,
+            stage="execute",
+        )
         context: Any = context or {}
         execution_order: Any = self.topological_sort()
         completed_tasks: set[str] = set()

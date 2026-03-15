@@ -6,6 +6,8 @@ from typing import TYPE_CHECKING, Any
 
 from agentic_core.base_agents.L3OrchestrationBase import L3OrchestrationBase
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.L3_orchestration.contracts.orchestration_handoff_contract import emit_agent_executes_agent
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
 
@@ -84,6 +86,13 @@ class DomainPlannerAgent(L3OrchestrationBase):
     async def run_async(
         self, plan: StrategyPlan, job_context: dict[str, Any], workflow_id: str
     ) -> PlannerAssessment:
+        _emit_records_execution_trace(workflow_id, LayerSegment.L3_ORCHESTRATION, "DomainPlannerAgent.run_async")
+        emit_agent_executes_agent(
+            parent_agent_id="DomainPlannerAgent",
+            child_agent_id="domain_planner_strategy",
+            run_id=workflow_id,
+            stage="run_async",
+        )
         job_title = (job_context.get("job_title") or "").lower()
         company = (job_context.get("company") or "").lower()
         focus_matches = 0
