@@ -13,6 +13,8 @@ from enum import Enum
 from pathlib import Path
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
 logger = logging.getLogger(__name__)
 
 
@@ -113,6 +115,9 @@ class SchemaHistoryFetcher:
         Returns:
             SchemaHistoryResult: Query results with change records
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"SchemaHistoryRetriever.fetch_history:{query.schema_id}")
         self.logger.info(f"Fetching schema history: schema_id={query.schema_id}")
         try:
             all_records = []

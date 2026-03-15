@@ -14,6 +14,8 @@ from datetime import datetime
 from enum import Enum
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
 logger = logging.getLogger(__name__)
 
 
@@ -112,6 +114,9 @@ class ObservabilityToolExecutor:
             tool_def: Tool definition
             implementation: Tool implementation function
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"ExecutionToolRegistry.register_tool:{tool_def.tool_id}")
         self._registered_tools[tool_def.tool_id] = tool_def
         self._tool_implementations[tool_def.tool_id] = implementation
         self._tool_status[tool_def.tool_id] = ToolStatus.ACTIVE
