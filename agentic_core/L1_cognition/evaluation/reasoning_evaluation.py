@@ -48,6 +48,8 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
 logger = logging.getLogger(__name__)
 _EVAL_LOG = logging.getLogger("adg.invokes_eval")
 _TRACE_LOG = logging.getLogger("adg.records_execution_trace")
@@ -472,6 +474,9 @@ class ReasoningEvaluationStore:
         self._lock = threading.RLock()
 
     def ingest(self, record: ReasoningEvaluationRecord) -> None:
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"ReasoningEvaluationStore.ingest:{record.run_id}")
         with self._lock:
             self._records.append(record)
 

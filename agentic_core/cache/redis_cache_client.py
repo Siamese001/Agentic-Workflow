@@ -33,6 +33,8 @@ from dataclasses import dataclass
 from enum import IntEnum
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
 logger = logging.getLogger(__name__)
 _MAX_KEY_LEN: int = 512
 _MAX_VALUE_BYTES: int = 10 * 1024 * 1024
@@ -362,6 +364,9 @@ class DeterministicRedisCache:
         ValueError
             If holder_id, nonce are empty, semantic_clock_tick < 0, or TTL invalid.
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"RedisCacheClient.acquire_lease:{key}")
         self._validate_key(key)
         if not holder_id:
             raise ValueError("holder_id must be non-empty")

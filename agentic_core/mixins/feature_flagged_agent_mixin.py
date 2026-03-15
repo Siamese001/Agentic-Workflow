@@ -28,6 +28,7 @@ from agentic_core.utils.review_protocol_util import (
     ReviewResult,
     ReviewStatus,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.utils.verification_types_util import (
     VerificationGateProtocol,
     VerificationRequest,
@@ -150,6 +151,9 @@ class FeatureFlaggedAgentMixin:
         Returns:
             VerificationResult indicating success/failure
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, f"FeatureFlaggedAgentMixin.verify_action:{action_type}")
         if not self._is_flag_enabled("ENABLE_VERIFICATION_GATE"):
             logger.debug(f"[{self.__class__.__name__}] Verification gate disabled, allowing action")
             return VerificationResult(
