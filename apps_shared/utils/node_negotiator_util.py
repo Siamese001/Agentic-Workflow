@@ -16,7 +16,7 @@ from typing import Any
 
 from pydantic import BaseModel, Field, validator
 
-from agentic_core.L0_routing.config.path_constants import DEFAULT_SLEEP
+from agentic_core.interfaces.path_constants import DEFAULT_SLEEP
 
 logger = logging.getLogger(__name__)
 

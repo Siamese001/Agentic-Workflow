@@ -10,7 +10,7 @@ import re
 
 from pydantic import BaseModel, Field, confloat, validator
 
-from agentic_core.L0_routing.config.path_constants import THRESHOLD
+from agentic_core.interfaces.path_constants import THRESHOLD
 
 logger = logging.getLogger(__name__)
 

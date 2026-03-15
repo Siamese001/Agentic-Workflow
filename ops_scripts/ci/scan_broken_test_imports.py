@@ -23,6 +23,9 @@ from agentic_core.L0_routing.config.path_constants import (
     APPS_RG_DIR,
     APPS_SHARED_DIR,
     OPS_SCRIPTS_DIR,
+    SYSTEM_LEARNING_DIR,
+    TESTS_DIR as _TESTS_DIR_STR,
+    TOOLS_DIR,
 )
 from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     GLOBAL_EXCLUDED_DIRS,
@@ -30,7 +33,7 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import (
 )
 
 ROOT = Path(__file__).resolve().parents[2]
-TESTS_DIR = ROOT / TESTS_DIR
+TESTS_DIR = ROOT / _TESTS_DIR_STR
 PROJECT_PREFIXES = (
     AGENTIC_CORE_DIR,
     APPS_LIC_DIR,

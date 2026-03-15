@@ -16,7 +16,7 @@ from datetime import datetime
 from enum import Enum
 from typing import Any
 
-from agentic_core.L0_routing.config.path_constants import DEFAULT_SLEEP, DEFAULT_TIMEOUT, THRESHOLD
+from agentic_core.interfaces.path_constants import DEFAULT_SLEEP, DEFAULT_TIMEOUT, THRESHOLD
 
 logger = logging.getLogger(__name__)
 
