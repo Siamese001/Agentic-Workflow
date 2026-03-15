@@ -1,6 +1,7 @@
 # .pre-commit-config.yaml
 # STREAMLINED: Normalize -> Syntax Gate -> Auto-Fix -> Format -> Ratchets -> Structural -> ADG -> Cleanup
 # Order of operations:
+#   T0-guard  hitl     — commit-msg: require HITL-APPROVED when new guardian exemptions added
 #   T0   normalize    — CRLF/LF, trailing whitespace, EOF (deterministic, no churn)
 #   T1   py_compile   — fastest gate, catches broken syntax immediately
 #   T2a  ruff --fix   — auto-fix lint issues (imports, unused vars, etc.)
@@ -9,6 +10,7 @@
 #   T3a  burndown     — unified anti-pattern ratchet (new pairs blocked; counts only decrease)
 #   T3b  report-loc   — structural SSOT path check (no ADG dependency; fast)
 #   T3c  guard        — reject generated artifacts that got re-tracked (no ADG dependency; fast)
+#   T3d  tooling-bnd  — tooling/apps_* boundary guard, ops_scripts/ci must not import apps_* (no ADG dependency)
 #   T3f  module-coll  — architectural module collision check (no ADG dependency)
 #   T3g  adg-stale    — ADG Redis cache freshness warning
 #   T3h  grep-ban     — hard-fail if staged files use grep/rg as ADG substitute
@@ -104,6 +106,15 @@ repos:
         entry: python ops_scripts/ci/guard_no_verify.py
         language: system
         pass_filenames: false
+        always_run: true
+        require_serial: true
+        stages: [commit-msg]
+
+      - id: guard-guardian-hitl
+        name: "T0-guard: HITL Authorization for New Guardian Exemptions (§8.5.2)"
+        entry: python ops_scripts/ci/guard_guardian_hitl.py
+        language: system
+        pass_filenames: true
         always_run: true
         require_serial: true
         stages: [commit-msg]
@@ -294,6 +305,18 @@ repos:
         language: system
         pass_filenames: false
         always_run: true
+        require_serial: true
+
+      # -- T3d: Tooling/Apps Boundary Guard (§8.3) ---------------------------------
+      # tools/evidence and ops_scripts/ci must not import apps_* runtime modules.
+      # Tooling must remain pure — apps_* only referenced as strings/paths.
+      - id: check-tooling-apps-boundary
+        name: "T3d: Tooling/Apps Boundary Guard (§8.3)"
+        entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/check_tooling_apps_boundary.py"
+        language: system
+        pass_filenames: false
+        always_run: false
+        types: [python]
         require_serial: true
 
       # -- T3f: Module Collision Guard (architectural enforcement) ----------------

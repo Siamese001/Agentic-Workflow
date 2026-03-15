@@ -271,3 +271,110 @@ class TestADGMemoryAdapter:
         adapter = ADGMemoryAdapter()
         result = MockScanResult()
         adapter.ingest_snapshot(result, ts="20991231T000000Z")
+
+    def test_ingest_snapshot_entities_actually_persisted(self, tmp_path, monkeypatch):
+        """ingest_snapshot must write entities to SQLite — not silently succeed with 0 rows.
+
+        Previously this test did not exist. The old test called ingest_snapshot() and
+        asserted nothing about storage — so it passed even when data went to /dev/null.
+        This test is the primary regression guard for Bug B4.
+        """
+        import sqlite3
+        from dataclasses import dataclass, field
+        from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBridge
+
+        db = tmp_path / "kg_adapter_test.sqlite"
+        monkeypatch.setenv("MEMORY_DB", str(db))
+        GraphMemoryBridge.reset_instance()
+
+        @dataclass
+        class MockEdge:
+            from_name: str = "mod_a"
+            relation_type: str = "imports"
+            to_name: str = "mod_b"
+            edge_kind: str = "import"
+            source_file: str = "agentic_core/L4_state/foo.py"
+            line_no: int = 1
+            symbol: str = ""
+
+        @dataclass
+        class MockScanResult:
+            digest: str = "deadbeef" * 8
+            modules: list = field(
+                default_factory=lambda: [
+                    "agentic_core/L4_state/foo.py",
+                    "agentic_core/L0_routing/bar.py",
+                ]
+            )
+            edges: list = field(default_factory=lambda: [MockEdge()])
+
+        adapter = ADGMemoryAdapter()
+        adapter.ingest_snapshot(MockScanResult(), ts="20991231T000000Z")
+
+        conn = sqlite3.connect(str(db))
+        entity_count = conn.execute("SELECT COUNT(*) FROM entities").fetchone()[0]
+        conn.close()
+        GraphMemoryBridge.reset_instance()
+
+        assert entity_count > 0, (
+            f"ingest_snapshot must write entities to SQLite — got {entity_count}. "
+            "If this is 0, GraphMemoryBridge is silently dropping all data."
+        )
+
+    def test_snapshot_entity_exists_after_ingest(self, tmp_path, monkeypatch):
+        """ADGSnapshot entity must be queryable after ingest_snapshot completes."""
+        import sqlite3
+        from dataclasses import dataclass, field
+        from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBridge
+
+        db = tmp_path / "kg_snapshot_test.sqlite"
+        monkeypatch.setenv("MEMORY_DB", str(db))
+        GraphMemoryBridge.reset_instance()
+
+        @dataclass
+        class MockEdge:
+            from_name: str = "mod_x"
+            relation_type: str = "imports"
+            to_name: str = "mod_y"
+            edge_kind: str = "import"
+            source_file: str = "agentic_core/L0_routing/x.py"
+            line_no: int = 1
+            symbol: str = ""
+
+        @dataclass
+        class MockScanResult:
+            digest: str = "cafe1234" * 8
+            modules: list = field(default_factory=lambda: ["agentic_core/L0_routing/x.py"])
+            edges: list = field(default_factory=lambda: [MockEdge()])
+
+        ts = "20991231T120000Z"
+        adapter = ADGMemoryAdapter()
+        adapter.ingest_snapshot(MockScanResult(), ts=ts)
+
+        conn = sqlite3.connect(str(db))
+        row = conn.execute(
+            "SELECT name FROM entities WHERE name LIKE 'ADGSnapshot%'"
+        ).fetchone()
+        conn.close()
+        GraphMemoryBridge.reset_instance()
+
+        assert row is not None, f"ADGSnapshot entity must exist in SQLite after ingest_snapshot(ts={ts!r})"
+
+    def test_is_available_reflects_real_availability(self, tmp_path, monkeypatch):
+        """is_available must be True when SQLite is wired — not just 'any bool'.
+
+        Previously the test checked isinstance(adapter.is_available, bool) which
+        passes even when is_available=False (i.e. persistence is completely broken).
+        """
+        from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBridge
+
+        db = tmp_path / "kg_avail_test.sqlite"
+        monkeypatch.setenv("MEMORY_DB", str(db))
+        GraphMemoryBridge.reset_instance()
+        adapter = ADGMemoryAdapter()
+        GraphMemoryBridge.reset_instance()
+
+        assert adapter.is_available is True, (
+            "adapter.is_available must be True when SQLite store is wired. "
+            "False means the bridge fell through to no-op mode and will silently drop all data."
+        )

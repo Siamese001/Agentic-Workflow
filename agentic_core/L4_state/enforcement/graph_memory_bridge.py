@@ -14,6 +14,14 @@ try:
     _FALLBACK_AVAILABLE = True
 except ImportError:
     _FALLBACK_AVAILABLE = False
+
+try:
+    from tools.memory.sqlite_memory_store import SqliteMemoryStore as _SqliteMemoryStore
+
+    _SQLITE_STORE_AVAILABLE = True
+except ImportError:
+    _SqliteMemoryStore = None  # type: ignore[assignment,misc]
+    _SQLITE_STORE_AVAILABLE = False
 Logger = logging.getLogger(__name__)
 
 
@@ -80,6 +88,7 @@ class GraphMemoryBridge:
         """Initialize the Graph Memory Bridge."""
         self._lock = threading.RLock()
         self._mcp_available = False
+        self._sqlite_store: Any = None
         self._create_entities_fn: Callable | None = None
         self._create_relations_fn: Callable | None = None
         self._add_observations_fn: Callable | None = None
@@ -112,44 +121,74 @@ class GraphMemoryBridge:
             Logger.info("[GraphMemoryBridge] Initialized (live mcp11 MCP mode)")
         except ImportError:
             self._mcp_module = None
-            self._mcp_available = False
-            Logger.info("[GraphMemoryBridge] mcp11 not importable — resilient fallback mode")
+            # mcp11 unavailable (CLI context) — wire SQLite store as persistent fallback
+            if _SQLITE_STORE_AVAILABLE:
+                import os
+                from pathlib import Path as _Path
+
+                _db_path = _Path(
+                    os.environ.get("MEMORY_DB", "artifacts/memory/knowledge_graph.sqlite")
+                )
+                try:
+                    self._sqlite_store = _SqliteMemoryStore(_db_path)
+                    self._mcp_available = True
+                    Logger.info(
+                        "[GraphMemoryBridge] Initialized (SQLite fallback mode) db=%s", _db_path
+                    )
+                except Exception as _e:
+                    self._sqlite_store = None
+                    self._mcp_available = False
+                    Logger.warning(
+                        "[GraphMemoryBridge] SQLite store init failed: %s — no-op mode", _e
+                    )
+            else:
+                self._sqlite_store = None
+                self._mcp_available = False
+                Logger.info("[GraphMemoryBridge] mcp11 not importable, SQLite unavailable — no-op mode")
 
     def _call_mcp_create_entities(self, entities: list[dict]) -> Any:
-        """Call mcp11_create_entities; falls back to injected fn or fallback store."""
+        """Call mcp11_create_entities; falls back to injected fn, SQLite store, or in-memory stub."""
         if self._create_entities_fn is not None:
             return self._create_entities_fn(entities=entities)
         if self._mcp_module is not None:
             return self._mcp_module.create_entities(entities=entities)
+        if self._sqlite_store is not None:
+            return self._sqlite_store.create_entities(entities)
         if _FALLBACK_AVAILABLE:
             store = _MCPFallbackClient()
             for e in entities:
                 store.upsert_entity(e["name"], e.get("entityType", "Entity"), e.get("observations"))
-            return {"status": "ok", "source": "fallback"}
+            return {"status": "ok", "source": "in-memory-stub"}
         return None
 
     def _call_mcp_create_relations(self, relations: list[dict]) -> Any:
-        """Call mcp11_create_relations; falls back to injected fn or fallback store."""
+        """Call mcp11_create_relations; falls back to injected fn, SQLite store, or None."""
         if self._create_relations_fn is not None:
             return self._create_relations_fn(relations=relations)
         if self._mcp_module is not None:
             return self._mcp_module.create_relations(relations=relations)
+        if self._sqlite_store is not None:
+            return self._sqlite_store.create_relations(relations)
         return None
 
     def _call_mcp_add_observations(self, observations: list[dict]) -> Any:
-        """Call mcp11_add_observations; falls back to injected fn or fallback store."""
+        """Call mcp11_add_observations; falls back to injected fn, SQLite store, or None."""
         if self._add_observations_fn is not None:
             return self._add_observations_fn(observations=observations)
         if self._mcp_module is not None:
             return self._mcp_module.add_observations(observations=observations)
+        if self._sqlite_store is not None:
+            return self._sqlite_store.add_observations(observations)
         return None
 
     def _call_mcp_search_nodes(self, query: str) -> Any:
-        """Call mcp11_search_nodes; falls back to injected fn or empty list."""
+        """Call mcp11_search_nodes; falls back to injected fn, SQLite store, or empty list."""
         if self._search_nodes_fn is not None:
             return self._search_nodes_fn(query=query)
         if self._mcp_module is not None:
             return self._mcp_module.search_nodes(query=query)
+        if self._sqlite_store is not None:
+            return self._sqlite_store.search_nodes(query)
         return []
 
     def set_mcp_functions(
