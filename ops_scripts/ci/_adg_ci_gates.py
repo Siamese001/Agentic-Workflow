@@ -55,6 +55,18 @@ _REDIS_HOST = "localhost"
 _REDIS_PORT = 6379
 _REDIS_DB = 0
 
+# Coverage thresholds
+GUARDRAIL_COVERAGE_THRESHOLD = 0.10
+TRACE_COVERAGE_THRESHOLD = 0.05
+
+# Caller-count minimums — Wave 2.1 ratchet (GPC edge counts, not source counts)
+# routes_path: 183 edges currently; threshold set at 160 (~13% buffer)
+ROUTES_PATH_MIN_EDGES = 160
+# applies_guardrail: 154 edges (proxy for enforce_policy_before_action coverage); threshold 130
+POLICY_GUARDRAIL_MIN_EDGES = 130
+# records_execution_trace: 169 edges currently; threshold 150
+TRACE_MIN_EDGES = 150
+
 # ---------------------------------------------------------------------------
 # Gate definitions
 # ---------------------------------------------------------------------------
@@ -84,9 +96,22 @@ GATE_DEFS: dict[str, dict] = {
         "label": "Replay Key Gate",
         "description": "emits_replay_key must not regress (routing modules need replay key)",
     },
+    "M7": {
+        "label": "Routes Path Edge Count Gate",
+        "description": f"routes_path total edges must be >= {ROUTES_PATH_MIN_EDGES}",
+    },
+    "M8": {
+        "label": "Guardrail Coverage Min Gate",
+        "description": f"applies_guardrail edges must be >= {POLICY_GUARDRAIL_MIN_EDGES}",
+    },
+    "M9": {
+        "label": "Trace Min Edges Gate",
+        "description": f"records_execution_trace edges must be >= {TRACE_MIN_EDGES}",
+    },
 }
 
 _DEFAULT_MODES = dict.fromkeys(GATE_DEFS, "warn")
+
 
 
 # ---------------------------------------------------------------------------
@@ -237,6 +262,30 @@ def _eval_m6(cur: dict, base: dict) -> tuple[bool, str]:
     return True, f"OK: emits_replay_key {erk_base}→{erk_cur} (delta={delta})"
 
 
+def _eval_m7(cur: dict, base: dict) -> tuple[bool, str]:
+    """M7: routes_path total edges must stay >= ROUTES_PATH_MIN_EDGES."""
+    rp_cur = cur.get("routes_path", 0)
+    if rp_cur < ROUTES_PATH_MIN_EDGES:
+        return False, f"routes_path edges = {rp_cur} < {ROUTES_PATH_MIN_EDGES} minimum"
+    return True, f"OK: routes_path edges = {rp_cur} >= {ROUTES_PATH_MIN_EDGES}"
+
+
+def _eval_m8(cur: dict, base: dict) -> tuple[bool, str]:
+    """M8: applies_guardrail edges (policy enforcement proxy) >= POLICY_GUARDRAIL_MIN_EDGES."""
+    ag_cur = cur.get("applies_guardrail", 0)
+    if ag_cur < POLICY_GUARDRAIL_MIN_EDGES:
+        return False, f"applies_guardrail edges = {ag_cur} < {POLICY_GUARDRAIL_MIN_EDGES} minimum"
+    return True, f"OK: applies_guardrail edges = {ag_cur} >= {POLICY_GUARDRAIL_MIN_EDGES}"
+
+
+def _eval_m9(cur: dict, base: dict) -> tuple[bool, str]:
+    """M9: records_execution_trace total edges must stay >= TRACE_MIN_EDGES."""
+    ret_cur = cur.get("records_execution_trace", 0)
+    if ret_cur < TRACE_MIN_EDGES:
+        return False, f"records_execution_trace edges = {ret_cur} < {TRACE_MIN_EDGES} minimum"
+    return True, f"OK: records_execution_trace edges = {ret_cur} >= {TRACE_MIN_EDGES}"
+
+
 _EVALUATORS = {
     "M1": _eval_m1,
     "M2": _eval_m2,
@@ -244,6 +293,9 @@ _EVALUATORS = {
     "M4": _eval_m4,
     "M5": _eval_m5,
     "M6": _eval_m6,
+    "M7": _eval_m7,
+    "M8": _eval_m8,
+    "M9": _eval_m9,
 }
 
 # ---------------------------------------------------------------------------
