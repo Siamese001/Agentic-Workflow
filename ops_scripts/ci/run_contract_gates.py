@@ -108,6 +108,14 @@ def main():
             [sys.executable, "ops_scripts/ci/check_ci_integrity.py"],
             "CI Integrity Gates §22 (all 13 conditions)",
         ),
+        (
+            [sys.executable, "ops_scripts/ci/adg_grep_ban_gate.py", "--all-python"],
+            "ADG Grep-Ban Gate — no grep/rg as ADG query substitute (§2.6)",
+        ),
+        (
+            [sys.executable, "ops_scripts/ci/guardian_exemption_gate.py"],
+            "Guardian Exemption Ratchet — exemption quality + count gate (§2.6)",
+        ),
     ]
 
     print("Running contract gates in deterministic order...\n")
