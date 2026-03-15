@@ -9,14 +9,14 @@ import pytest
 
 try:
     from apps_shared.reasoning.BaseReflectionAgent import (  # noqa: F401
-        BaseReflectionAgent,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
         BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        BaseReflectionAgent,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     BaseReflectionAgent = None  # type: ignore[assignment,misc]
     MAX_RETRIES = None  # type: ignore[assignment,misc]
@@ -38,4 +38,3 @@ class TestBasereflectionagentImportability:
 
     def test_default_sleep_defined(self) -> None:
         assert DEFAULT_SLEEP is not None
-

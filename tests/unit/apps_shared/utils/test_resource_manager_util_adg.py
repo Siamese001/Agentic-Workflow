@@ -7,21 +7,21 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.utils.resource_manager_util import (  # noqa: F401
-        ResourceType,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        ConnectionPool,
         ResourceInfo,
         ResourceManager,
-        ConnectionPool,
+        ResourceType,
         get_resource_manager,
         shutdown_all_managers,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ResourceType = None  # type: ignore[assignment,misc]
     ResourceInfo = None  # type: ignore[assignment,misc]

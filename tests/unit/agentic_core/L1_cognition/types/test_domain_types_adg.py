@@ -1,11 +1,13 @@
 """ADG contract tests for agentic_core/L1_cognition/types/domain_types.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
-    from agentic_core.L1_cognition.types.domain_types import SharingPolicy, DomainContext
+    from agentic_core.L1_cognition.types.domain_types import DomainContext, SharingPolicy
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     SharingPolicy = DomainContext = None  # type: ignore[assignment,misc]
 

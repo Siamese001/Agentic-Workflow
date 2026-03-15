@@ -9,16 +9,16 @@ import pytest
 
 try:
     from system_learning.engines.policy_recommendation_engine import (  # noqa: F401
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        MemoryAwarePolicyRecommendationEngine,
         PolicyRecommendation,
         PolicyRecommendationEngine,
-        MemoryAwarePolicyRecommendationEngine,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     PolicyRecommendation = None  # type: ignore[assignment,misc]
     PolicyRecommendationEngine = None  # type: ignore[assignment,misc]
@@ -48,4 +48,3 @@ class TestPolicyRecommendationEngineImportability:
 
     def test_default_sleep_defined(self) -> None:
         assert DEFAULT_SLEEP is not None
-

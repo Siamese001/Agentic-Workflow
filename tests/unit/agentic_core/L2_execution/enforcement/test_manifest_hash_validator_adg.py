@@ -16,7 +16,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     REQUIRED_HASH_FIELDS = None  # type: ignore[assignment,misc]
     ManifestHashError = None  # type: ignore[assignment,misc]

@@ -7,18 +7,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.utils.workflow_engines.parent_child import (  # noqa: F401
-        ChunkEntry,
-        ParentChildRegistry,
-        ParentChildExpander,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        ChunkEntry,
+        ParentChildExpander,
+        ParentChildRegistry,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ChunkEntry = None  # type: ignore[assignment,misc]
     ParentChildRegistry = None  # type: ignore[assignment,misc]

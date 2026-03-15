@@ -7,23 +7,23 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.utils.observability_type_util import (  # noqa: F401
-        ObservabilityType,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         ExecutionLevel,
-        ObservabilityRequest,
-        ObservabilityResult,
         ObservabilityConfig,
         ObservabilityExecutionAdapter,
+        ObservabilityRequest,
+        ObservabilityResult,
+        ObservabilityType,
         create_observability_execution_adapter,
         execute_observability_execution,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ObservabilityType = None  # type: ignore[assignment,misc]
     ExecutionLevel = None  # type: ignore[assignment,misc]

@@ -12,20 +12,20 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.governance.lazy_seam_scanner import (  # noqa: F401
-        LazyUpwardImport,
-        LazySeamScanner,
-        layer_of_path,
-        extract_import_targets,
-        collect_lazy_upward_imports,
-        lazy_upward_import_metric,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        LazySeamScanner,
+        LazyUpwardImport,
+        collect_lazy_upward_imports,
+        extract_import_targets,
+        layer_of_path,
+        lazy_upward_import_metric,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     LazyUpwardImport = None  # type: ignore[assignment,misc]
     LazySeamScanner = None  # type: ignore[assignment,misc]

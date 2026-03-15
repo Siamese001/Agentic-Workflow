@@ -12,18 +12,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.enforcement.mutation_prohibition_enforcer import (  # noqa: F401
-        assert_no_persistent_write,
-        safe_write_text,
-        safe_write_bytes,
-        safe_json_dump,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        assert_no_persistent_write,
+        safe_json_dump,
+        safe_write_bytes,
+        safe_write_text,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     assert_no_persistent_write = None  # type: ignore[assignment,misc]
     safe_write_text = None  # type: ignore[assignment,misc]

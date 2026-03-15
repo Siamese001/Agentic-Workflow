@@ -1,15 +1,19 @@
 """ADG contract tests for apps_shared/types/feedback_loop_orchestrator_types.py."""
 from __future__ import annotations
-import pytest
+
 from datetime import datetime, timezone
+
+import pytest
+
 _FIXED_DT = datetime(2026, 1, 1, tzinfo=timezone.utc)
 pytestmark = pytest.mark.unit
 try:
     from apps_shared.types.feedback_loop_orchestrator_types import (
-        ConstraintFailureType, RegenerationCheckpoint,
+        ConstraintFailureType,
+        RegenerationCheckpoint,
     )
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     ConstraintFailureType = RegenerationCheckpoint = None  # type: ignore[assignment,misc]
 

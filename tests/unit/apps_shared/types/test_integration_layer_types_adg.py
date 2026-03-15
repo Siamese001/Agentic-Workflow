@@ -9,20 +9,20 @@ import pytest
 
 try:
     from apps_shared.types.integration_layer_types import (  # noqa: F401
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         AppDomain,
-        ServiceEndpoint,
-        IntegrationConfig,
-        ServiceRegistry,
         ConfigurationLoader,
         IntegrationBridge,
+        IntegrationConfig,
+        ServiceEndpoint,
+        ServiceRegistry,
         get_integration_bridge,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     AppDomain = None  # type: ignore[assignment,misc]
     ServiceEndpoint = None  # type: ignore[assignment,misc]
@@ -59,4 +59,3 @@ class TestIntegrationLayerTypesImportability:
 
     def test_default_sleep_defined(self) -> None:
         assert DEFAULT_SLEEP is not None
-

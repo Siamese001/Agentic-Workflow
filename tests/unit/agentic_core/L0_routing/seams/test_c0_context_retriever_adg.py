@@ -7,18 +7,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.seams.c0_context_retriever import (  # noqa: F401
-        ContentHash,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         C0ContextArtifact,
         C0ContextRetriever,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
+        ContentHash,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ContentHash = None  # type: ignore[assignment,misc]
     C0ContextArtifact = None  # type: ignore[assignment,misc]

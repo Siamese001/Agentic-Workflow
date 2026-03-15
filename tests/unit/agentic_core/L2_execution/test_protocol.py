@@ -12,20 +12,20 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L2_execution.protocol import (  # noqa: F401
-        SubphaseResult,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         AgentRunResult,
         L2AgentProtocol,
+        SubphaseResult,
         compute_pipeline_digest,
         emit_pipeline_digest,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     SubphaseResult = None  # type: ignore[assignment,misc]
     AgentRunResult = None  # type: ignore[assignment,misc]
@@ -162,4 +162,4 @@ class TestMaxDepthConstant:
 
 def test_module_importable():
     """Smoke: protocol importable or gracefully unavailable."""
-    assert True
+    pass

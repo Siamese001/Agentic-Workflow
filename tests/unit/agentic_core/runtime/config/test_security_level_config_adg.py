@@ -7,17 +7,17 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.runtime.config.security_level_config import (  # noqa: F401
-        SecurityLevel,
         AnalysisType,
-        RefactorType,
-        PhaseType,
-        SecurityIssue,
-        SemanticMatch,
-        RefactorProposal,
         PhaseResult,
+        PhaseType,
+        RefactorProposal,
+        RefactorType,
+        SecurityIssue,
+        SecurityLevel,
+        SemanticMatch,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     SecurityLevel = None  # type: ignore[assignment,misc]
     AnalysisType = None  # type: ignore[assignment,misc]

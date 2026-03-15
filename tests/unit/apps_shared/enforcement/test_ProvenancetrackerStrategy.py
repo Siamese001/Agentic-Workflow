@@ -12,21 +12,21 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.enforcement.ProvenancetrackerStrategy import (  # noqa: F401
-        SourceCitation,
-        ArtifactLineage,
-        ProvenanceTracker,
-        ProvenanceContext,
-        get_provenance_tracker,
-        track_provenance,
-        provenance_tracked,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        ArtifactLineage,
+        ProvenanceContext,
+        ProvenanceTracker,
+        SourceCitation,
+        get_provenance_tracker,
+        provenance_tracked,
+        track_provenance,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     SourceCitation = None  # type: ignore[assignment,misc]
     ArtifactLineage = None  # type: ignore[assignment,misc]

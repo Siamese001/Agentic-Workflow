@@ -7,18 +7,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from system_learning.runtime.isolation_monitor import (  # noqa: F401
-        get_forbidden_loaded_modules,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         assert_isolation,
         check_system_learning_runtime_isolation,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
+        get_forbidden_loaded_modules,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     get_forbidden_loaded_modules = None  # type: ignore[assignment,misc]
     assert_isolation = None  # type: ignore[assignment,misc]

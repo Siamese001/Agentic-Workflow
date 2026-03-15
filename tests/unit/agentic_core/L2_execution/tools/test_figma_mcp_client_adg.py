@@ -7,18 +7,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L2_execution.tools.figma_mcp_client import (  # noqa: F401
-        FigmaTools,
-        PineconeTools,
-        MemoryTools,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        FigmaTools,
+        MemoryTools,
+        PineconeTools,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     FigmaTools = None  # type: ignore[assignment,misc]
     PineconeTools = None  # type: ignore[assignment,misc]

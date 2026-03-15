@@ -7,20 +7,20 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.scripts.fix_syntax_errors import (  # noqa: F401
-        fix_multiline_strings,
-        fix_indentation_errors,
-        fix_fstring_errors,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         check_syntax,
         fix_file,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
+        fix_fstring_errors,
+        fix_indentation_errors,
+        fix_multiline_strings,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     fix_multiline_strings = None  # type: ignore[assignment,misc]
     fix_indentation_errors = None  # type: ignore[assignment,misc]

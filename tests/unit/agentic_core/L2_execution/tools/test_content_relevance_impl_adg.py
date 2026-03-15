@@ -7,18 +7,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L2_execution.tools.content_relevance_impl import (  # noqa: F401
-        AssessContentRelevance,
-        score,
-        compute_score,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        AssessContentRelevance,
+        compute_score,
+        score,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     AssessContentRelevance = None  # type: ignore[assignment,misc]
     score = None  # type: ignore[assignment,misc]

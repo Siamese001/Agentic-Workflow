@@ -9,14 +9,14 @@ import pytest
 
 try:
     from agentic_core.utils.meta_learning_storage_util import (  # noqa: F401
-        MetaLearningStorage,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
         BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        MetaLearningStorage,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     MetaLearningStorage = None  # type: ignore[assignment,misc]
     MAX_RETRIES = None  # type: ignore[assignment,misc]
@@ -38,4 +38,3 @@ class TestMetaLearningStorageUtilImportability:
 
     def test_default_sleep_defined(self) -> None:
         assert DEFAULT_SLEEP is not None
-

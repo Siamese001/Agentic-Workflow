@@ -7,16 +7,16 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_lic.scripts.purge_legacy_archive import (  # noqa: F401
-        purge_legacy_artifacts,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        purge_legacy_artifacts,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     purge_legacy_artifacts = None  # type: ignore[assignment,misc]
     MAX_RETRIES = None  # type: ignore[assignment,misc]

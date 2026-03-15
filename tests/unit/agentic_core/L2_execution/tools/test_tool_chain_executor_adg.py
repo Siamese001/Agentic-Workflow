@@ -7,18 +7,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L2_execution.tools.tool_chain_executor import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         ToolsUseATool,
         create_processor,
         validate_module_config,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ToolsUseATool = None  # type: ignore[assignment,misc]
     create_processor = None  # type: ignore[assignment,misc]

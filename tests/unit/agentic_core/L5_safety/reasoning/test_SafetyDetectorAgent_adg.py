@@ -9,20 +9,20 @@ import pytest
 
 try:
     from agentic_core.L5_safety.reasoning.SafetyDetectorAgent import (  # noqa: F401
-        SafetyThreatType,
-        ThreatSeverity,
-        SafetyThreat,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         SafetyConfig,
         SafetyDetectorAgent,
+        SafetyThreat,
+        SafetyThreatType,
+        ThreatSeverity,
         create_legacy_bias_detector,
         create_legacy_injection_detector,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     SafetyThreatType = None  # type: ignore[assignment,misc]
     ThreatSeverity = None  # type: ignore[assignment,misc]
@@ -62,4 +62,3 @@ class TestSafetydetectoragentImportability:
 
     def test_default_sleep_defined(self) -> None:
         assert DEFAULT_SLEEP is not None
-

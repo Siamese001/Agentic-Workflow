@@ -1,13 +1,17 @@
 """ADG contract tests for agentic_core/L5_safety/types/meta_learning_types.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
     from agentic_core.L5_safety.types.meta_learning_types import (
-        LearningContext, LearningResult, MetaLearningProtocol,
+        LearningContext,
+        LearningResult,
+        MetaLearningProtocol,
     )
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     LearningContext = LearningResult = MetaLearningProtocol = None  # type: ignore[assignment,misc]
 

@@ -12,21 +12,21 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L3_orchestration.engines.rl_coordinator_orchestrator import (  # noqa: F401
-        RLCoordinatorOrchestrator,
-        TerritoryCoordinator,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        HealthCoordinator,
         MCPCoordinator,
         MissionCoordinator,
         ModelCoordinator,
-        HealthCoordinator,
+        RLCoordinatorOrchestrator,
+        TerritoryCoordinator,
         register_all_coordinators,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     RLCoordinatorOrchestrator = None  # type: ignore[assignment,misc]
     TerritoryCoordinator = None  # type: ignore[assignment,misc]

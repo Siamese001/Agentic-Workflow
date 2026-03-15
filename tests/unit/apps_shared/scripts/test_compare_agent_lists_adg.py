@@ -7,19 +7,19 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.scripts.compare_agent_lists import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        find_agent_in_archives,
         get_agents_at_commit,
         get_current_agents,
-        find_agent_in_archives,
         main,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     get_agents_at_commit = None  # type: ignore[assignment,misc]
     get_current_agents = None  # type: ignore[assignment,misc]

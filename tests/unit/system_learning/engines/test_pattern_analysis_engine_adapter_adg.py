@@ -10,7 +10,7 @@ try:
         PatternAnalysisEngine,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     PatternAnalysisEngine = None  # type: ignore[assignment,misc]
 

@@ -709,7 +709,6 @@ class TestCommitProofInvariantCompleteness:
             commit_timestamp_utc=1,
         )
         proof.verify()  # must not raise
-        assert True  # no-exception contract
 
     def test_version_id_exactly_64_chars_valid_hex_passes(self):
         """A valid 64-char lowercase hex version_id must not fail the length/hex check."""
@@ -723,7 +722,6 @@ class TestCommitProofInvariantCompleteness:
             commit_timestamp_utc=100,
         )
         proof.verify()  # must not raise
-        assert True  # no-exception contract
 
     def test_version_id_65_chars_raises(self):
         """65-char version_id must raise (off-by-one boundary)."""
@@ -778,7 +776,6 @@ class TestCommitProofInvariantCompleteness:
         )
         proof.verify()
         proof.verify()  # second call must not raise
-        assert True  # no-exception contract
 
     def test_churn_hash_blocks_side_effects(self):
         """Churn hash verification failure must raise BEFORE any side-effects can occur."""

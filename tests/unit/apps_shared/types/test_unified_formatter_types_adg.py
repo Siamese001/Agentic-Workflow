@@ -1,11 +1,13 @@
 """ADG contract tests for apps_shared/types/unified_formatter_types.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
-    from apps_shared.types.unified_formatter_types import FormatType, FormatResult, FormatterStrategy
+    from apps_shared.types.unified_formatter_types import FormatResult, FormatterStrategy, FormatType
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     FormatType = FormatResult = FormatterStrategy = None  # type: ignore[assignment,misc]
 

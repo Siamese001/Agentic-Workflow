@@ -235,7 +235,6 @@ def test_required_methods() -> None:
     from HealerMixin.
     """
     pass
-    assert True  # no-exception contract
 
 
 if __name__ == "__main__":

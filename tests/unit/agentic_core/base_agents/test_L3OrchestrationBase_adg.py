@@ -9,14 +9,14 @@ import pytest
 
 try:
     from agentic_core.base_agents.L3OrchestrationBase import (  # noqa: F401
-        L3OrchestrationBase,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
         BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        L3OrchestrationBase,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     L3OrchestrationBase = None  # type: ignore[assignment,misc]
     MAX_RETRIES = None  # type: ignore[assignment,misc]
@@ -38,4 +38,3 @@ class TestL3OrchestrationbaseImportability:
 
     def test_default_sleep_defined(self) -> None:
         assert DEFAULT_SLEEP is not None
-

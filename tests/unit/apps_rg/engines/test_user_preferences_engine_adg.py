@@ -7,16 +7,16 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_rg.engines.user_preferences_engine import (  # noqa: F401
-        UserPreferencesEngine,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        UserPreferencesEngine,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     UserPreferencesEngine = None  # type: ignore[assignment,misc]
     MAX_RETRIES = None  # type: ignore[assignment,misc]

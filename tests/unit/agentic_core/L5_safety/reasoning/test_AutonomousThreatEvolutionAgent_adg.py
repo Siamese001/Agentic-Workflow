@@ -7,17 +7,17 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.reasoning.AutonomousThreatEvolutionAgent import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         AutonomousThreatEvolutionAgent,
         create_threat_evolution_agent,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     AutonomousThreatEvolutionAgent = None  # type: ignore[assignment,misc]
     create_threat_evolution_agent = None  # type: ignore[assignment,misc]

@@ -1,13 +1,17 @@
 """ADG contract tests for apps_shared/types/self_healing_formatter_types.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
     from apps_shared.types.self_healing_formatter_types import (
-        RepairStrategy, RepairResult, FormatRepair,
+        FormatRepair,
+        RepairResult,
+        RepairStrategy,
     )
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     RepairStrategy = RepairResult = FormatRepair = None  # type: ignore[assignment,misc]
 

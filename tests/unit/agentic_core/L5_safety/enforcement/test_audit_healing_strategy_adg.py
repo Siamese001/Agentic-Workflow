@@ -7,18 +7,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.enforcement.audit_healing_strategy import (  # noqa: F401
-        AuditHealingStrategy,
-        get_filesystem_client,
-        create_audit_healing_strategy,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        AuditHealingStrategy,
+        create_audit_healing_strategy,
+        get_filesystem_client,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     AuditHealingStrategy = None  # type: ignore[assignment,misc]
     get_filesystem_client = None  # type: ignore[assignment,misc]

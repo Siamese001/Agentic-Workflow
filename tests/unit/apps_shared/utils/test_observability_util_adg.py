@@ -7,11 +7,11 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.utils.observability_util import (  # noqa: F401
-        get_all_events,
         clear_events,
+        get_all_events,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     get_all_events = None  # type: ignore[assignment,misc]
     clear_events = None  # type: ignore[assignment,misc]

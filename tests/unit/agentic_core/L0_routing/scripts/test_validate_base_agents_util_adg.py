@@ -7,19 +7,19 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.scripts.validate_base_agents_util import (  # noqa: F401
-        find_base_agents,
-        validate_base_agents,
-        suggest_fixes,
-        main,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        find_base_agents,
+        main,
+        suggest_fixes,
+        validate_base_agents,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     find_base_agents = None  # type: ignore[assignment,misc]
     validate_base_agents = None  # type: ignore[assignment,misc]

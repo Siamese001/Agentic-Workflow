@@ -12,21 +12,21 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L4_state.reasoning.CheckpointManager import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         Checkpoint,
-        RecoveryResult,
         CheckpointManager,
-        timeout,
+        RecoveryResult,
+        get_autonomous_checkpoint_manager,
         get_checkpoint_manager,
         get_sync_checkpoint_manager,
-        get_autonomous_checkpoint_manager,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
+        timeout,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     Checkpoint = None  # type: ignore[assignment,misc]
     RecoveryResult = None  # type: ignore[assignment,misc]

@@ -7,16 +7,16 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.knowledge.document_loaders.pdf_document_loader_config import (  # noqa: F401
-        PDFDocumentLoader,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        PDFDocumentLoader,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     PDFDocumentLoader = None  # type: ignore[assignment,misc]
     MAX_RETRIES = None  # type: ignore[assignment,misc]

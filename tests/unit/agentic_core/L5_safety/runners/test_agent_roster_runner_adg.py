@@ -7,18 +7,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.runners.agent_roster_runner import (  # noqa: F401
-        get_project_root,
-        validate_agent_roster,
-        main,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        get_project_root,
+        main,
+        validate_agent_roster,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     get_project_root = None  # type: ignore[assignment,misc]
     validate_agent_roster = None  # type: ignore[assignment,misc]

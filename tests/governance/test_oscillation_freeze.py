@@ -32,17 +32,14 @@ class TestOscillationDetectorBasic:
 
     def test_single_change_no_freeze(self) -> None:
         self.detector.record_change("threshold_a", 0.7, cycle=1)
-        assert True  # no-exception contract
 
     def test_same_value_repeated_no_freeze(self) -> None:
         for i in range(5):
             self.detector.record_change("threshold_a", 0.7, cycle=i + 1)
-            assert True  # no-exception contract
 
     def test_two_different_values_no_freeze(self) -> None:
         self.detector.record_change("threshold_a", 0.7, cycle=1)
         self.detector.record_change("threshold_a", 0.5, cycle=2)
-        assert True  # no-exception contract
 
     def test_oscillation_triggers_freeze(self) -> None:
         self.detector.record_change("threshold_a", 0.7, cycle=1)
@@ -81,7 +78,6 @@ class TestOscillationDetectorBasic:
             pass
         # param_b unaffected
         self.detector.record_change("param_b", 0.9, cycle=3)
-        assert True  # no-exception contract
 
 
 class TestOscillationDetectorIsFrozen:
@@ -130,4 +126,3 @@ class TestOscillationDetectorConstructor:
         d.reset_for_testing()
         # after reset, should allow changes again
         d.record_change("p", 1, cycle=1)
-        assert True  # no-exception contract

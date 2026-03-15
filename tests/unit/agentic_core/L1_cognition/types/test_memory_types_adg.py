@@ -1,13 +1,17 @@
 """ADG contract tests for agentic_core/L1_cognition/types/memory_types.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
     from agentic_core.L1_cognition.types.memory_types import (
-        ViolationSignature, EMBEDDING_DIMENSION, MAX_TEXT_LENGTH,
+        EMBEDDING_DIMENSION,
+        MAX_TEXT_LENGTH,
+        ViolationSignature,
     )
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     ViolationSignature = EMBEDDING_DIMENSION = MAX_TEXT_LENGTH = None  # type: ignore[assignment,misc]
 

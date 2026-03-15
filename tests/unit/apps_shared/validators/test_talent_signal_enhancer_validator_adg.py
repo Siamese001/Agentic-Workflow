@@ -7,19 +7,19 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.validators.talent_signal_enhancer_validator import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         TalentMetrics,
         TalentSignalEnhancer,
         create_talent_signal_enhancer,
         enhance_talent_signals,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     TalentMetrics = None  # type: ignore[assignment,misc]
     TalentSignalEnhancer = None  # type: ignore[assignment,misc]

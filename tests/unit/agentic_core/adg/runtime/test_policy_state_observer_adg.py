@@ -18,7 +18,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     StateObservationKind = None  # type: ignore[assignment,misc]
     StateReadOutcome = None  # type: ignore[assignment,misc]

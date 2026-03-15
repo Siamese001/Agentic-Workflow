@@ -10,7 +10,7 @@ try:
         OfflineEvaluationRunner,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     OfflineEvaluationRunner = None  # type: ignore[assignment,misc]
 

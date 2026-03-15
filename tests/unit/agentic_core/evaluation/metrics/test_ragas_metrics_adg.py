@@ -17,7 +17,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     FaithfulnessMetric = None  # type: ignore[assignment,misc]
     AnswerRelevancyMetric = None  # type: ignore[assignment,misc]

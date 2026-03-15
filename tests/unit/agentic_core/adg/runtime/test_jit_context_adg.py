@@ -18,7 +18,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     FreezeState = None  # type: ignore[assignment,misc]
     ContextSnapshot = None  # type: ignore[assignment,misc]

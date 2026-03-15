@@ -1,13 +1,16 @@
 """ADG contract tests for L3_orchestration/types/workflow_loader_types.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
     from agentic_core.L3_orchestration.types.workflow_loader_types import (
-        WordCountConstraints, KNodeConfig,
+        KNodeConfig,
+        WordCountConstraints,
     )
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False; WordCountConstraints = KNodeConfig = None  # type: ignore[assignment,misc]
 
 @pytest.mark.skipif(not _AVAIL, reason="deps unavailable")

@@ -11,7 +11,7 @@ try:
         get_client,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     Provider = None  # type: ignore[assignment,misc]
     get_client = None  # type: ignore[assignment,misc]

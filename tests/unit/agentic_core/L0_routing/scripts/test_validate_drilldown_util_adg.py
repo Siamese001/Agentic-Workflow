@@ -7,18 +7,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.scripts.validate_drilldown_util import (  # noqa: F401
-        extract_dashboard_data,
-        validate_drilldown_infrastructure,
-        main,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        extract_dashboard_data,
+        main,
+        validate_drilldown_infrastructure,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     extract_dashboard_data = None  # type: ignore[assignment,misc]
     validate_drilldown_infrastructure = None  # type: ignore[assignment,misc]

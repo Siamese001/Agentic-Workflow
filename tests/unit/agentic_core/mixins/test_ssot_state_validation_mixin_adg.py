@@ -15,7 +15,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     SSOTStateValidationError = None  # type: ignore[assignment,misc]
     SSOTStateValidationMixin = None  # type: ignore[assignment,misc]

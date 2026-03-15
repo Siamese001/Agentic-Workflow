@@ -18,7 +18,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ApprovalDecision = None  # type: ignore[assignment,misc]
     ApprovalRecord = None  # type: ignore[assignment,misc]

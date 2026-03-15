@@ -12,19 +12,19 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.runtime.config.reasoning_types import (  # noqa: F401
-        ModelProvider,
-        ModelConfig,
-        RAGConfig,
-        GovernorConfig,
-        ReasoningConfig,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        GovernorConfig,
+        ModelConfig,
+        ModelProvider,
+        RAGConfig,
+        ReasoningConfig,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     ModelProvider = None  # type: ignore[assignment,misc]
     ModelConfig = None  # type: ignore[assignment,misc]

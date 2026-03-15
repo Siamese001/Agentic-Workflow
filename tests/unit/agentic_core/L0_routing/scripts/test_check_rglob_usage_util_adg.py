@@ -7,16 +7,16 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.scripts.check_rglob_usage_util import (  # noqa: F401
-        count_rglob_in_file,
-        should_exclude_path,
-        scan_for_rglob_usage,
-        main,
-        MAX_ALLOWED_RGLOB,
-        EXCLUDED_FILES,
         EXCLUDED_DIRS,
+        EXCLUDED_FILES,
+        MAX_ALLOWED_RGLOB,
+        count_rglob_in_file,
+        main,
+        scan_for_rglob_usage,
+        should_exclude_path,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     count_rglob_in_file = None  # type: ignore[assignment,misc]
     should_exclude_path = None  # type: ignore[assignment,misc]

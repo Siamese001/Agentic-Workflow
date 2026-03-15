@@ -12,19 +12,19 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.utils.prompt_enhancer_util import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         EnhancementConfig,
         PromptEnhancer,
-        get_prompt_enhancer,
         enhance_prompt,
         enhance_prompt_advanced,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
+        get_prompt_enhancer,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     EnhancementConfig = None  # type: ignore[assignment,misc]
     PromptEnhancer = None  # type: ignore[assignment,misc]

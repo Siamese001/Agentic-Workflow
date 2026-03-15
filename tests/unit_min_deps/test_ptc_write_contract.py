@@ -176,4 +176,3 @@ class TestPTCWriteContract:
 
         # Current state: no additional tools in L2_execution/tools
         # Test passes vacuously
-        assert True, "No tool modules found that bypass write_gateway"

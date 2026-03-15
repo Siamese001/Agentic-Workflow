@@ -12,13 +12,13 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.utils.fs_util import (  # noqa: F401
-        get_python_files_fast,
         calculate_file_hash,
         get_canonical_path,
+        get_python_files_fast,
         remove_duplicate_suffix_path,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     get_python_files_fast = None  # type: ignore[assignment,misc]
     calculate_file_hash = None  # type: ignore[assignment,misc]
@@ -69,4 +69,4 @@ class TestRemoveDuplicateSuffixPathFunction:
 
 def test_module_importable():
     """Smoke: fs_util importable or gracefully unavailable."""
-    assert True
+    pass

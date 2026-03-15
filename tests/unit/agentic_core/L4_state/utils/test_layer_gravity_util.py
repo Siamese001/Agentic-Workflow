@@ -12,18 +12,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L4_state.utils.layer_gravity_util import (  # noqa: F401
-        extract_layer_from_path,
-        extract_layer_from_module,
-        is_gravity_violation,
-        get_allowed_layers,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        extract_layer_from_module,
+        extract_layer_from_path,
+        get_allowed_layers,
+        is_gravity_violation,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     extract_layer_from_path = None  # type: ignore[assignment,misc]
     extract_layer_from_module = None  # type: ignore[assignment,misc]

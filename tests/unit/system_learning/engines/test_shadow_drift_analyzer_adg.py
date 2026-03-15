@@ -9,15 +9,15 @@ import pytest
 
 try:
     from system_learning.engines.shadow_drift_analyzer import (  # noqa: F401
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         DriftSummary,
         ShadowDriftAnalyzer,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     DriftSummary = None  # type: ignore[assignment,misc]
     ShadowDriftAnalyzer = None  # type: ignore[assignment,misc]
@@ -43,4 +43,3 @@ class TestShadowDriftAnalyzerImportability:
 
     def test_default_sleep_defined(self) -> None:
         assert DEFAULT_SLEEP is not None
-

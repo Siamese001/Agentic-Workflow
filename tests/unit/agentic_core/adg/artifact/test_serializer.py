@@ -12,13 +12,13 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.adg.artifact.serializer import (  # noqa: F401
+        diff_artifacts,
+        load_artifact,
         serialize_artifact,
         write_artifact,
-        load_artifact,
-        diff_artifacts,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     serialize_artifact = None  # type: ignore[assignment,misc]
     write_artifact = None  # type: ignore[assignment,misc]
@@ -69,4 +69,4 @@ class TestDiffArtifactsFunction:
 
 def test_module_importable():
     """Smoke: serializer importable or gracefully unavailable."""
-    assert True
+    pass

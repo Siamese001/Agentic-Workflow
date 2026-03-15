@@ -12,16 +12,16 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.adg.identity.normalizer import (  # noqa: F401
-        IdentityKind,
         IdentityConfidence,
+        IdentityKind,
+        IdentityNormalizer,
         IdentityRecord,
         NormalizationReport,
-        IdentityNormalizer,
-        normalize_identity,
         build_identity_index,
+        normalize_identity,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     IdentityKind = None  # type: ignore[assignment,misc]
     IdentityConfidence = None  # type: ignore[assignment,misc]
@@ -146,4 +146,4 @@ class TestBuildIdentityIndexFunction:
 
 def test_module_importable():
     """Smoke: normalizer importable or gracefully unavailable."""
-    assert True
+    pass

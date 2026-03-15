@@ -8,7 +8,7 @@ pytestmark = pytest.mark.unit
 try:
     from agentic_core.L1_cognition.engines.cache_manager import CacheStrategyManager
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     CacheStrategyManager = None  # type: ignore[assignment,misc]
 

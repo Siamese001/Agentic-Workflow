@@ -12,7 +12,7 @@ try:
         _guard_disabled,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     PROTECTED_ATTRIBUTES = None  # type: ignore[assignment]
     PROTECTED_LAYERS = None  # type: ignore[assignment]

@@ -12,18 +12,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from system_learning.engines.hitl_decision_logger import (  # noqa: F401
-        log_hitl_decision,
-        get_decision_count,
-        reset_for_testing,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        get_decision_count,
+        log_hitl_decision,
+        reset_for_testing,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     log_hitl_decision = None  # type: ignore[assignment,misc]
     get_decision_count = None  # type: ignore[assignment,misc]
@@ -117,4 +117,4 @@ class TestMaxDepthConstant:
 
 def test_module_importable():
     """Smoke: hitl_decision_logger importable or gracefully unavailable."""
-    assert True
+    pass

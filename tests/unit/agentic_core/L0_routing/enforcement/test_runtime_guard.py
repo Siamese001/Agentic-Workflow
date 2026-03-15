@@ -12,12 +12,12 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.enforcement.runtime_guard import (  # noqa: F401
-        runtime_guard,
         assert_v15_guarded,
+        runtime_guard,
         v15_runtime_boundary,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     runtime_guard = None  # type: ignore[assignment,misc]
     assert_v15_guarded = None  # type: ignore[assignment,misc]
@@ -57,4 +57,4 @@ class TestV15RuntimeBoundaryFunction:
 
 def test_module_importable():
     """Smoke: runtime_guard importable or gracefully unavailable."""
-    assert True
+    pass

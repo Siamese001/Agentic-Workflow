@@ -11,7 +11,7 @@ try:
         main,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     fix_file_imports = None  # type: ignore[assignment,misc]
     main = None  # type: ignore[assignment,misc]

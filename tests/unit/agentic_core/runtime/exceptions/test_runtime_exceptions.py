@@ -12,20 +12,20 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.runtime.exceptions.runtime_exceptions import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         AgentRuntimeError,
+        HealExecutionError,
+        MaxTurnsExceededError,
+        PatternExecutionError,
         ToolExecutionError,
         ToolNotFoundError,
-        HealExecutionError,
-        PatternExecutionError,
-        MaxTurnsExceededError,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     AgentRuntimeError = None  # type: ignore[assignment,misc]
     ToolExecutionError = None  # type: ignore[assignment,misc]

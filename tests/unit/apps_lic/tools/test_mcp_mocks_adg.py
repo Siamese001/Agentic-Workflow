@@ -7,20 +7,20 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_lic.tools.mcp_mocks import (  # noqa: F401
-        get_current_time,
-        convert_time,
-        issues_get_detail,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         browser_navigate,
         browser_type,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
+        convert_time,
+        get_current_time,
+        issues_get_detail,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     get_current_time = None  # type: ignore[assignment,misc]
     convert_time = None  # type: ignore[assignment,misc]

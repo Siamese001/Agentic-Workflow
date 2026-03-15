@@ -7,17 +7,17 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_lic.tools.SafetyProfile import (  # noqa: F401
-        SafetyProfile,
-        BudgetProfile,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        BudgetProfile,
+        SafetyProfile,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     SafetyProfile = None  # type: ignore[assignment,misc]
     BudgetProfile = None  # type: ignore[assignment,misc]

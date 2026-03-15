@@ -15,7 +15,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ReportLocationHealResult = None  # type: ignore[assignment,misc]
     ReportLocationAgent = None  # type: ignore[assignment,misc]

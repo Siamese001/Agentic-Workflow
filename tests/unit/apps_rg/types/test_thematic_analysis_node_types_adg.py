@@ -1,14 +1,18 @@
 """ADG contract tests for apps_rg/types/thematic_analysis_node_types.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
     from apps_rg.types.thematic_analysis_node_types import (
-        AuthenticityPatterns, CompetitiveIntelligence,
-        ThematicAnalysisOutput, ThematicAnalysisNode,
+        AuthenticityPatterns,
+        CompetitiveIntelligence,
+        ThematicAnalysisNode,
+        ThematicAnalysisOutput,
     )
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     AuthenticityPatterns = CompetitiveIntelligence = ThematicAnalysisOutput = ThematicAnalysisNode = None  # type: ignore[assignment,misc]
 

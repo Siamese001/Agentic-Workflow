@@ -7,16 +7,16 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L4_state.utils.get_existing_filenames_util import (  # noqa: F401
-        get_existing_filenames,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        get_existing_filenames,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     get_existing_filenames = None  # type: ignore[assignment,misc]
     MAX_RETRIES = None  # type: ignore[assignment,misc]

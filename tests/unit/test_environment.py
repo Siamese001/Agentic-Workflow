@@ -129,7 +129,6 @@ class TestEnvironmentValidator:
                 result = EnvironmentValidator.validate(raise_on_missing=False)
                 assert result.valid is True
                 # Check that at least one optional is detected as missing
-                assert len(result.missing_optional) >= 0  # Some may be set in env
             finally:
                 if github_token:
                     os.environ["GITHUB_TOKEN"] = github_token

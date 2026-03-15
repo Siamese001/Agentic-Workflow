@@ -7,18 +7,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.scripts.run_hardened_job import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         create_test_workflow_spec,
         main,
         run_sync,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     create_test_workflow_spec = None  # type: ignore[assignment,misc]
     main = None  # type: ignore[assignment,misc]

@@ -12,21 +12,21 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.interfaces.IValidatorProtocol import (  # noqa: F401
-        ValidatorProtocol,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         AdversarialValidator,
         BoundaryValidator,
+        ValidatorProtocol,
         get_adversarial_validator,
         get_boundary_validator,
-        register_red_team_validators,
         get_integration_status,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
+        register_red_team_validators,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     ValidatorProtocol = None  # type: ignore[assignment,misc]
     AdversarialValidator = None  # type: ignore[assignment,misc]

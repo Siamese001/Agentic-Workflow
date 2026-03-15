@@ -12,24 +12,24 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.reasoning.CodeEnforcerAgent import (  # noqa: F401
-        EnforcementType,
-        ViolationSeverity,
-        CodeViolation,
-        SignedException,
-        EnforcementConfig,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         CodeEnforcerAgent,
+        CodeViolation,
+        EnforcementConfig,
+        EnforcementType,
+        SignedException,
+        ViolationSeverity,
+        create_legacy_sovereignty_enforcer,
         create_legacy_ssot_enforcer,
         create_legacy_standards_enforcer,
-        create_legacy_sovereignty_enforcer,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     EnforcementType = None  # type: ignore[assignment,misc]
     ViolationSeverity = None  # type: ignore[assignment,misc]
@@ -235,4 +235,4 @@ class TestMaxDepthConstant:
 
 def test_module_importable():
     """Smoke: CodeEnforcerAgent importable or gracefully unavailable."""
-    assert True
+    pass

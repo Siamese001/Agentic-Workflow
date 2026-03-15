@@ -7,17 +7,17 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.governance.lazy_seam_enforcer import (  # noqa: F401
-        LazyUpwardImport,
+        IMPORT_LAYER_PATTERN,
+        LAYER_PATTERN,
         LazySeamEnforcer,
-        extract_import_targets,
+        LazyUpwardImport,
         collect_lazy_upward_imports,
+        extract_import_targets,
         lazy_upward_import_metric,
         main,
-        LAYER_PATTERN,
-        IMPORT_LAYER_PATTERN,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     LazyUpwardImport = None  # type: ignore[assignment,misc]
     LazySeamEnforcer = None  # type: ignore[assignment,misc]

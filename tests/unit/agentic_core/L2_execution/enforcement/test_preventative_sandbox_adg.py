@@ -15,7 +15,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     SandboxViolationError = None  # type: ignore[assignment,misc]
     PreventativeSandbox = None  # type: ignore[assignment,misc]

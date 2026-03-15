@@ -144,7 +144,6 @@ class TestPlaywrightVisual:
         try:
             from playwright.sync_api import sync_playwright  # noqa: F401
 
-            assert True
         except ImportError:
             pytest.fail("Playwright is not installed — install it: pip install playwright && playwright install")
 

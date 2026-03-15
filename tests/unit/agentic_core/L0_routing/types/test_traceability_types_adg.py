@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     TRACE_ID_PATTERN = None  # type: ignore[assignment,misc]
     validate_trace_id = None  # type: ignore[assignment,misc]

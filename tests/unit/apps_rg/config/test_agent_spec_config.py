@@ -12,20 +12,20 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_rg.config.agent_spec_config import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         AgentSpec,
-        OrchestrationTopology,
         ClerkExtractionConfig,
         EnrichmentConfig,
         GenerationConfig,
+        OrchestrationTopology,
         ValidationConfig,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     AgentSpec = None  # type: ignore[assignment,misc]
     OrchestrationTopology = None  # type: ignore[assignment,misc]

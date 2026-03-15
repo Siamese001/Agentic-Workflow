@@ -10,7 +10,7 @@ try:
         flatten_scripts,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     flatten_scripts = None  # type: ignore[assignment,misc]
 

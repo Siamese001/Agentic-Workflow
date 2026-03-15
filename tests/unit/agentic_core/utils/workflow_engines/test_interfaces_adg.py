@@ -18,7 +18,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     Document = None  # type: ignore[assignment,misc]
     IRetrieverLexical = None  # type: ignore[assignment,misc]

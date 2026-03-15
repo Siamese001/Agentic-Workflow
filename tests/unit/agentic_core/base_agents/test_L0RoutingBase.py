@@ -12,16 +12,16 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.base_agents.L0RoutingBase import (  # noqa: F401
-        L0RoutingBase,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        L0RoutingBase,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     L0RoutingBase = None  # type: ignore[assignment,misc]
     MAX_RETRIES = None  # type: ignore[assignment,misc]
@@ -98,4 +98,4 @@ class TestMaxDepthConstant:
 
 def test_module_importable():
     """Smoke: L0RoutingBase importable or gracefully unavailable."""
-    assert True
+    pass

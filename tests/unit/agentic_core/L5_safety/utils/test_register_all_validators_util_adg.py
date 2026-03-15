@@ -7,18 +7,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.utils.register_all_validators_util import (  # noqa: F401
-        initialize,
-        get_integration_status,
-        reset,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        get_integration_status,
+        initialize,
+        reset,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     initialize = None  # type: ignore[assignment,misc]
     get_integration_status = None  # type: ignore[assignment,misc]

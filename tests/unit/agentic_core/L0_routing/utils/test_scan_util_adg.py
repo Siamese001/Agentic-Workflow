@@ -7,15 +7,15 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.utils.scan_util import (  # noqa: F401
-        guarded_rglob,
-        guarded_glob,
-        deprecate_rglob,
-        count_rglob_calls_in_file,
-        audit_rglob_usage,
         DANGEROUS_DIRECTORIES,
+        audit_rglob_usage,
+        count_rglob_calls_in_file,
+        deprecate_rglob,
+        guarded_glob,
+        guarded_rglob,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     guarded_rglob = None  # type: ignore[assignment,misc]
     guarded_glob = None  # type: ignore[assignment,misc]

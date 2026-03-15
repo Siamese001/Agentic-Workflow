@@ -7,18 +7,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_rg.reasoning.ResumeEnhancementOrchestrator import (  # noqa: F401
-        ResumeEnhancementOrchestrator,
-        get_resume_enhancement_orchestrator,
-        enhance_resume,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        ResumeEnhancementOrchestrator,
+        enhance_resume,
+        get_resume_enhancement_orchestrator,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ResumeEnhancementOrchestrator = None  # type: ignore[assignment,misc]
     get_resume_enhancement_orchestrator = None  # type: ignore[assignment,misc]

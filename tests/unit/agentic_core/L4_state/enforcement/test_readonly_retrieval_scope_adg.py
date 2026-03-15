@@ -17,7 +17,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     RetrievalMutationViolation = None  # type: ignore[assignment,misc]
     is_read_only_retrieval_active = None  # type: ignore[assignment,misc]

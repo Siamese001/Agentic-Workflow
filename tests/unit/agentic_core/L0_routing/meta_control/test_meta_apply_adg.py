@@ -10,7 +10,7 @@ try:
         ROUTING_THRESHOLDS_ALLOWLIST,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ROUTING_THRESHOLDS_ALLOWLIST = None  # type: ignore[assignment]
 

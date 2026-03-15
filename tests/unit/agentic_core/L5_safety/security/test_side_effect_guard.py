@@ -12,20 +12,20 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.security.side_effect_guard import (  # noqa: F401
-        UnverifiedSideEffectError,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         SideEffectGuard,
+        UnverifiedSideEffectError,
+        clear_verification_context,
         get_side_effect_guard,
         require_verified,
         set_verification_context,
-        clear_verification_context,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     UnverifiedSideEffectError = None  # type: ignore[assignment,misc]
     SideEffectGuard = None  # type: ignore[assignment,misc]

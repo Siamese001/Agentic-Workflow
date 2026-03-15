@@ -7,15 +7,15 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.utils.stored_prompt_util import (  # noqa: F401
-        StoredPrompt,
         PromptStore,
-        get_store,
-        store_prompt,
-        retrieve_prompt,
+        StoredPrompt,
         get_prompt_version,
+        get_store,
+        retrieve_prompt,
+        store_prompt,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     StoredPrompt = None  # type: ignore[assignment,misc]
     PromptStore = None  # type: ignore[assignment,misc]

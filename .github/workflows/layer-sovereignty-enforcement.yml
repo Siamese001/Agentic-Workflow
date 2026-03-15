@@ -123,6 +123,11 @@ jobs:
               print('OK: Cross-layer import compliance clean')
           "
 
+      - name: Check C0 Informational Boundary (§21)
+        run: python ops_scripts/ci/check_c0_boundary.py
+        env:
+          PYTHONPATH: .
+
       - name: Generate Sovereignty Report
         run: |
           mkdir -p docs/reports/verification/sovereignty

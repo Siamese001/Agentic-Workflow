@@ -1,14 +1,20 @@
 """ADG contract tests for apps_shared/types/invocation_type_types.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
     from apps_shared.types.invocation_type_types import (
-        InvocationType, ResponseFormat, ToolEndpoint,
-        InvocationRequest, InvocationResponse, InvocationConfig,
+        InvocationConfig,
+        InvocationRequest,
+        InvocationResponse,
+        InvocationType,
+        ResponseFormat,
+        ToolEndpoint,
     )
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     InvocationType = ResponseFormat = ToolEndpoint = None  # type: ignore[assignment,misc]
     InvocationRequest = InvocationResponse = InvocationConfig = None  # type: ignore[assignment,misc]

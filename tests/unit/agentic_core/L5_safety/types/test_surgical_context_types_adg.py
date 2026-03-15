@@ -17,7 +17,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ASTCoordinate = None  # type: ignore[assignment,misc]
     ViolationConstraint = None  # type: ignore[assignment,misc]

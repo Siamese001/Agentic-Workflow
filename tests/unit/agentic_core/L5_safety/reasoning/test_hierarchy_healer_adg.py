@@ -15,7 +15,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     HierarchyAgent = None  # type: ignore[assignment,misc]
     get_hierarchy_agent = None  # type: ignore[assignment,misc]

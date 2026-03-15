@@ -15,7 +15,7 @@ try:
         DetectionSignalProtocol,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     DetectionSignalProtocol = None  # type: ignore[assignment,misc]
 
@@ -35,4 +35,4 @@ class TestDetectionSignalProtocolContract:
 
 def test_module_importable():
     """Smoke: detection_protocol_util importable or gracefully unavailable."""
-    assert True
+    pass

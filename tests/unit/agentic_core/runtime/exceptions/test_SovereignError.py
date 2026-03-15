@@ -12,15 +12,15 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.runtime.exceptions.SovereignError import (  # noqa: F401
-        SovereignError,
-        HealerError,
         CircularDependencyError,
         ConfigurationError,
-        StructuralError,
+        HealerError,
         HygieneError,
+        SovereignError,
+        StructuralError,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     SovereignError = None  # type: ignore[assignment,misc]
     HealerError = None  # type: ignore[assignment,misc]

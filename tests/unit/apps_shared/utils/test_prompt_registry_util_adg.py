@@ -7,19 +7,19 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.utils.prompt_registry_util import (  # noqa: F401
-        PromptCategory,
-        PromptTemplate,
-        PromptRegistry,
-        create_prompt_registry,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        PromptCategory,
+        PromptRegistry,
+        PromptTemplate,
+        create_prompt_registry,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     PromptCategory = None  # type: ignore[assignment,misc]
     PromptTemplate = None  # type: ignore[assignment,misc]

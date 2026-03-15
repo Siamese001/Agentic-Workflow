@@ -1,19 +1,23 @@
 """ADG contract tests for L3_orchestration/types/orchestrator_types.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
     from agentic_core.L3_orchestration.types.orchestrator_types import (
-        ExecutionPhase, ExecutionContext, AgentResult,
+        AgentResult,
+        ExecutionContext,
+        ExecutionPhase,
     )
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False; ExecutionPhase = ExecutionContext = AgentResult = None  # type: ignore[assignment,misc]
 
 @pytest.mark.skipif(not _AVAIL, reason="deps unavailable")
 class TestExecutionPhase:
     def test_is_str_enum(self):
-        import enum; assert issubclass(ExecutionPhase, str)
+        assert issubclass(ExecutionPhase, str)
     def test_has_planning(self): assert ExecutionPhase.PLANNING == "planning"
 
 @pytest.mark.skipif(not _AVAIL, reason="deps unavailable")

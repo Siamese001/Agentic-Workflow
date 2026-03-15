@@ -17,7 +17,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     TREE_SITTER_AVAILABLE = None  # type: ignore[assignment,misc]
     PlacementResult = None  # type: ignore[assignment,misc]

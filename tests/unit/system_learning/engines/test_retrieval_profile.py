@@ -12,15 +12,15 @@ pytestmark = pytest.mark.unit
 
 try:
     from system_learning.engines.retrieval_profile import (  # noqa: F401
-        RetrievalProfile,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        RetrievalProfile,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     RetrievalProfile = None  # type: ignore[assignment,misc]
     MAX_RETRIES = None  # type: ignore[assignment,misc]

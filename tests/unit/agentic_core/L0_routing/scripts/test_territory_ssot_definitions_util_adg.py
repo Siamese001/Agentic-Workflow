@@ -7,19 +7,19 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.scripts.territory_ssot_definitions_util import (  # noqa: F401
-        get_base_agent_territory,
-        get_territory_from_path,
-        get_territory_sort_key,
-        refine_territory_by_ast,
-        TERRITORY_SOVEREIGN_BASE,
         TERRITORY_L0_BASE,
         TERRITORY_L1_BASE,
         TERRITORY_L2_BASE,
         TERRITORY_L3_BASE,
         TERRITORY_L4_BASE,
+        TERRITORY_SOVEREIGN_BASE,
+        get_base_agent_territory,
+        get_territory_from_path,
+        get_territory_sort_key,
+        refine_territory_by_ast,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     get_base_agent_territory = None  # type: ignore[assignment,misc]
     get_territory_from_path = None  # type: ignore[assignment,misc]

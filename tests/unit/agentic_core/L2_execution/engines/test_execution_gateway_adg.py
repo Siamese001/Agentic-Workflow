@@ -15,7 +15,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     SignatureBoundaryError = None  # type: ignore[assignment,misc]
     ExecutionGateway = None  # type: ignore[assignment,misc]

@@ -10,7 +10,7 @@ try:
         PilotOrchestrator,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     PilotOrchestrator = None  # type: ignore[assignment,misc]
 

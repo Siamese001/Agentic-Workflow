@@ -7,14 +7,14 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.scripts.verify_intentional_variants_util import (  # noqa: F401
-        read_file_content,
-        extract_key_identifiers,
         analyze_variant_likelihood,
-        scan_for_duplicates,
+        extract_key_identifiers,
         main,
+        read_file_content,
+        scan_for_duplicates,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     read_file_content = None  # type: ignore[assignment,misc]
     extract_key_identifiers = None  # type: ignore[assignment,misc]

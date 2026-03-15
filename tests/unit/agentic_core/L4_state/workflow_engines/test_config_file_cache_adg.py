@@ -7,17 +7,17 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L4_state.workflow_engines.config_file_cache import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         ConfigFileCache,
         get_config_file_cache,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ConfigFileCache = None  # type: ignore[assignment,misc]
     get_config_file_cache = None  # type: ignore[assignment,misc]

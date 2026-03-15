@@ -12,20 +12,20 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.runtime.config.model_provider_config import (  # noqa: F401
-        ModelProvider,
-        ModelConfig,
-        RAGConfig,
-        GovernorConfig,
-        WorkflowConfig,
-        Config,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        Config,
+        GovernorConfig,
+        ModelConfig,
+        ModelProvider,
+        RAGConfig,
+        WorkflowConfig,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     ModelProvider = None  # type: ignore[assignment,misc]
     ModelConfig = None  # type: ignore[assignment,misc]

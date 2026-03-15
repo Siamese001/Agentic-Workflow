@@ -7,16 +7,16 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.utils.verify_no_mock_data_util import (  # noqa: F401
-        verify_no_mock_data,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        verify_no_mock_data,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     verify_no_mock_data = None  # type: ignore[assignment,misc]
     MAX_RETRIES = None  # type: ignore[assignment,misc]

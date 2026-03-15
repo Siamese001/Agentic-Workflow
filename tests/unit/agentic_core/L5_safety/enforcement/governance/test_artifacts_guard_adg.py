@@ -7,19 +7,19 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.enforcement.governance.artifacts_guard import (  # noqa: F401
-        is_forbidden_artifact_name,
-        scan_sensitive_content,
-        scan_artifacts_directory,
-        main,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        is_forbidden_artifact_name,
+        main,
+        scan_artifacts_directory,
+        scan_sensitive_content,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     is_forbidden_artifact_name = None  # type: ignore[assignment,misc]
     scan_sensitive_content = None  # type: ignore[assignment,misc]

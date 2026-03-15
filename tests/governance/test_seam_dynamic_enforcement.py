@@ -329,7 +329,6 @@ class TestSeamDynamicEnforcement:
         for vtype, vlist in sorted(by_type.items()):
             print(f"  {vtype}: {len(vlist)}")
 
-        assert True
 
 
 @pytest.mark.governance
@@ -349,17 +348,14 @@ class TestDynamicImportMutation:
         _ = detect_seam_static_upward_imports(test_file)
         # Note: This won't detect because layer_of_path uses global root
         # The test validates the detection logic structure
-        assert True  # Structure test
 
     def test_mutation_static_l2_to_l5(self, tmp_path):
         """Mutation: Static upward L2->L5 in regular file."""
         # Already covered in Wave 15.2 - this confirms integration
-        assert True
 
     def test_mutation_static_l3_to_l6(self, tmp_path):
         """Mutation: Static upward L3->L6 in regular file."""
         # Already covered in Wave 15.2 - this confirms integration
-        assert True
 
     def test_mutation_dynamic_importlib(self, tmp_path):
         """Mutation: Dynamic importlib.import_module targeting layer."""

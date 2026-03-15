@@ -12,20 +12,20 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L6_observability.engines.entropy_telemetry_engine import (  # noqa: F401
-        TierMetrics,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        EntropyTelemetryEngine,
         FlipMetrics,
         PathDMetrics,
-        EntropyTelemetryEngine,
+        TierMetrics,
         get_entropy_telemetry_engine,
         reset_entropy_telemetry_engine,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     TierMetrics = None  # type: ignore[assignment,misc]
     FlipMetrics = None  # type: ignore[assignment,misc]

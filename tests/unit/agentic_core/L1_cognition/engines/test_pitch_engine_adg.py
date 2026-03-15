@@ -7,17 +7,17 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L1_cognition.engines.pitch_engine import (  # noqa: F401
-        PitchResult,
-        PitchGenerator,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        PitchGenerator,
+        PitchResult,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     PitchResult = None  # type: ignore[assignment,misc]
     PitchGenerator = None  # type: ignore[assignment,misc]

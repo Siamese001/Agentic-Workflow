@@ -9,14 +9,14 @@ import pytest
 
 try:
     from agentic_core.L5_safety.enforcement.mcp_sovereign_authority_enforcer import (  # noqa: F401
-        MCPSovereignAuthority,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
         BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        MCPSovereignAuthority,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     MCPSovereignAuthority = None  # type: ignore[assignment,misc]
     MAX_RETRIES = None  # type: ignore[assignment,misc]
@@ -38,4 +38,3 @@ class TestMcpSovereignAuthorityEnforcerImportability:
 
     def test_default_sleep_defined(self) -> None:
         assert DEFAULT_SLEEP is not None
-

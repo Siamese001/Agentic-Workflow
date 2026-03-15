@@ -7,17 +7,17 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_lic.tools.PrepareOutreachContext import (  # noqa: F401
-        PrepareOutreachContext,
-        FormatData,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        FormatData,
+        PrepareOutreachContext,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     PrepareOutreachContext = None  # type: ignore[assignment,misc]
     FormatData = None  # type: ignore[assignment,misc]

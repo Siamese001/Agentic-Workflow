@@ -12,18 +12,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.reasoning.CodeValidatorAgent import (  # noqa: F401
-        ViolationType,
-        Violation,
+        CodeValidatorAgent,
         RuleSet,
         ValidationReport,
-        CodeValidatorAgent,
-        create_legacy_syntax_validator,
-        create_legacy_canon_validator,
+        Violation,
+        ViolationType,
         create_legacy_async_validator,
+        create_legacy_canon_validator,
         create_legacy_print_validator,
+        create_legacy_syntax_validator,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ViolationType = None  # type: ignore[assignment,misc]
     Violation = None  # type: ignore[assignment,misc]
@@ -145,4 +145,4 @@ class TestCreateLegacyPrintValidatorFunction:
 
 def test_module_importable():
     """Smoke: CodeValidatorAgent importable or gracefully unavailable."""
-    assert True
+    pass

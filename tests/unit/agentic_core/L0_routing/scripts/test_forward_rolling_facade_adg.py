@@ -7,12 +7,12 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.scripts.forward_rolling_facade import (  # noqa: F401
+        ForwardRollingFacade,
         ForwardRollingResult,
         OptimizationMetrics,
-        ForwardRollingFacade,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ForwardRollingResult = None  # type: ignore[assignment,misc]
     OptimizationMetrics = None  # type: ignore[assignment,misc]

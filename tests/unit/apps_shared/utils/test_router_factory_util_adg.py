@@ -7,18 +7,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.utils.router_factory_util import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        create_custom_router,
         get_resilient_router,
         reset_router,
-        create_custom_router,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     get_resilient_router = None  # type: ignore[assignment,misc]
     reset_router = None  # type: ignore[assignment,misc]

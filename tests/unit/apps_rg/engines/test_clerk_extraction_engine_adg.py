@@ -8,7 +8,7 @@ pytestmark = pytest.mark.unit
 try:
     from apps_rg.engines.clerk_extraction_engine import ClerkExtractionEngine
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ClerkExtractionEngine = None  # type: ignore[assignment,misc]
 

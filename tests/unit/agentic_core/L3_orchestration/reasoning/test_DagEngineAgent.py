@@ -12,20 +12,20 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L3_orchestration.reasoning.DagEngineAgent import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        DagEngineAgent,
+        DagExecutionResult,
+        Task,
         TaskStatus,
         TaskType,
-        Task,
-        DagExecutionResult,
-        DagEngineAgent,
         create_dag_from_config,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     TaskStatus = None  # type: ignore[assignment,misc]
     TaskType = None  # type: ignore[assignment,misc]

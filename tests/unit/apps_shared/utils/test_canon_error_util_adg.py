@@ -7,16 +7,16 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.utils.canon_error_util import (  # noqa: F401
+        SOVEREIGN_EXCEPTIONS,
+        AgentExecutionError,
         CanonError,
+        CanonTokenError,
         CanonViolationError,
         MemorySyncError,
         SwarmInitializationError,
-        AgentExecutionError,
-        CanonTokenError,
-        SOVEREIGN_EXCEPTIONS,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     CanonError = None  # type: ignore[assignment,misc]
     CanonViolationError = None  # type: ignore[assignment,misc]

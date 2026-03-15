@@ -9,17 +9,17 @@ import pytest
 
 try:
     from agentic_core.runtime.config.review_config import (  # noqa: F401
-        ReviewStatus,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        HumanReviewProtocol,
         ReviewRequest,
         ReviewResult,
-        HumanReviewProtocol,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
+        ReviewStatus,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ReviewStatus = None  # type: ignore[assignment,misc]
     ReviewRequest = None  # type: ignore[assignment,misc]
@@ -50,4 +50,3 @@ class TestReviewConfigImportability:
 
     def test_default_sleep_defined(self) -> None:
         assert DEFAULT_SLEEP is not None
-

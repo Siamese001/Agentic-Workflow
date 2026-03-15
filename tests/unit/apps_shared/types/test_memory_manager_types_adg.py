@@ -1,13 +1,18 @@
 """ADG contract tests for apps_shared/types/memory_manager_types.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
     from apps_shared.types.memory_manager_types import (
-        PruningStrategy, MemoryLimits, ContextItem, MemoryManager,
+        ContextItem,
+        MemoryLimits,
+        MemoryManager,
+        PruningStrategy,
     )
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     PruningStrategy = MemoryLimits = ContextItem = MemoryManager = None  # type: ignore[assignment,misc]
 

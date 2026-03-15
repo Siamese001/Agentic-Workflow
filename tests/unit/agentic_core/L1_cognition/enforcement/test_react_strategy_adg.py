@@ -14,7 +14,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ReActStrategy = None  # type: ignore[assignment,misc]
 

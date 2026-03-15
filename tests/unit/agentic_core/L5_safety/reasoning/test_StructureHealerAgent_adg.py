@@ -7,15 +7,15 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.reasoning.StructureHealerAgent import (  # noqa: F401
-        StructureHealingType,
-        StructureHealingAction,
-        StructureHealerConfig,
         StructureHealerAgent,
+        StructureHealerConfig,
+        StructureHealingAction,
+        StructureHealingType,
         create_legacy_gravity_healer,
         create_legacy_naming_healer,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     StructureHealingType = None  # type: ignore[assignment,misc]
     StructureHealingAction = None  # type: ignore[assignment,misc]

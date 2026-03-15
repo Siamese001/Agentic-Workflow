@@ -12,12 +12,12 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.utils.project_root_util import (  # noqa: F401
-        get_project_root,
         clear_project_root_cache,
+        get_project_root,
         get_validated_project_root,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     get_project_root = None  # type: ignore[assignment,misc]
     clear_project_root_cache = None  # type: ignore[assignment,misc]

@@ -9,13 +9,13 @@ import pytest
 
 try:
     from agentic_core.L0_routing.reasoning.RootCustomsAgent import (  # noqa: F401
-        RoutingDecision,
         ASTAnalyzer,
         RootCustomsAgent,
+        RoutingDecision,
         main,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     RoutingDecision = None  # type: ignore[assignment,misc]
     ASTAnalyzer = None  # type: ignore[assignment,misc]
@@ -39,4 +39,3 @@ class TestRootcustomsagentImportability:
 
     def test_main_callable(self) -> None:
         assert callable(main)
-

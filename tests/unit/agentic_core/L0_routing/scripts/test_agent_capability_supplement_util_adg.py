@@ -7,18 +7,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.scripts.agent_capability_supplement_util import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        analyze_supplementation,
         extract_capabilities_from_source,
         generate_markdown_report,
-        analyze_supplementation,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     extract_capabilities_from_source = None  # type: ignore[assignment,misc]
     generate_markdown_report = None  # type: ignore[assignment,misc]

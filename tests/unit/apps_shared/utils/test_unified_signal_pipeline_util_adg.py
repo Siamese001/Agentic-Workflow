@@ -7,26 +7,26 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.utils.unified_signal_pipeline_util import (  # noqa: F401
-        PipelineStageType,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        ContextEnrichmentStage,
+        InputProcessingStage,
+        OutputFormattingStage,
         PipelineContext,
         PipelineStage,
-        InputProcessingStage,
-        ContextEnrichmentStage,
-        SignalAugmentationStage,
+        PipelineStageType,
         QualityValidationStage,
-        OutputFormattingStage,
+        SignalAugmentationStage,
         get_unified_pipeline,
-        process_resume_signal,
         process_outreach_signal,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
+        process_resume_signal,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     PipelineStageType = None  # type: ignore[assignment,misc]
     PipelineContext = None  # type: ignore[assignment,misc]

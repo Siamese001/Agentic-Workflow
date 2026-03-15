@@ -7,18 +7,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_lic.reasoning.GovernanceShieldAgent import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         GovernanceShieldAgent,
         create_governance_shield_agent,
         sanitize_content,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     GovernanceShieldAgent = None  # type: ignore[assignment,misc]
     create_governance_shield_agent = None  # type: ignore[assignment,misc]

@@ -240,8 +240,13 @@ class TestSilentSkipDetector(AntiPatternDetector):
         return None
 
     def _has_whitelist(self, source_lines: list[str], lineno: int) -> bool:
-        """True when the guardian exemption comment appears within 3 lines above."""
-        for idx in range(lineno - 2, max(-1, lineno - 5), -1):
+        """True when the guardian exemption comment appears within 4 lines above.
+
+        4 lines covers the common try/except structure where the guardian comment
+        precedes the ``try:`` statement, which itself precedes 1-2 import lines
+        before the ``except`` handler.
+        """
+        for idx in range(lineno - 2, max(-1, lineno - 6), -1):
             if 0 <= idx < len(source_lines):
                 if self.WHITELIST_COMMENT in source_lines[idx]:
                     return True

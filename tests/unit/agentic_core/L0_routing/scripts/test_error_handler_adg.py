@@ -7,18 +7,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.scripts.error_handler import (  # noqa: F401
-        WorkflowMetrics,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         ErrorHandler,
         UnifiedWorkflowEngine,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
+        WorkflowMetrics,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     WorkflowMetrics = None  # type: ignore[assignment,misc]
     ErrorHandler = None  # type: ignore[assignment,misc]

@@ -7,19 +7,19 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.prompt_governance.scripts.audit_registry_linkages import (  # noqa: F401
-        load_registry,
-        extract_schema_from_template,
-        audit_registry_linkages,
-        main,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        audit_registry_linkages,
+        extract_schema_from_template,
+        load_registry,
+        main,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     load_registry = None  # type: ignore[assignment,misc]
     extract_schema_from_template = None  # type: ignore[assignment,misc]

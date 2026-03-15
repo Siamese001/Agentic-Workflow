@@ -10,7 +10,7 @@ try:
         PlaceholderDetectorAgent,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     PlaceholderDetectorAgent = None  # type: ignore[assignment,misc]
 

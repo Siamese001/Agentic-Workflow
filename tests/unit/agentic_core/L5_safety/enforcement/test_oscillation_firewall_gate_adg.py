@@ -17,7 +17,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     OscillationFirewallTripped = None  # type: ignore[assignment,misc]
     OscillationFirewallConfig = None  # type: ignore[assignment,misc]

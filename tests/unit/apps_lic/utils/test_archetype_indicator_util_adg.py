@@ -7,23 +7,23 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_lic.utils.archetype_indicator_util import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         ArchetypeIndicator,
         ProfileAnalysisConfig,
+        QAReportConfig,
         ResearchConfig,
-        SenderGroundingConfig,
         RouteConditions,
         RouteConstraints,
         RouteDef,
-        QAReportConfig,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
+        SenderGroundingConfig,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ArchetypeIndicator = None  # type: ignore[assignment,misc]
     ProfileAnalysisConfig = None  # type: ignore[assignment,misc]

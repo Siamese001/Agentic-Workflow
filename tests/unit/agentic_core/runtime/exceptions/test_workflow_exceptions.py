@@ -12,19 +12,19 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.runtime.exceptions.workflow_exceptions import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         AgenticWorkflowError,
-        HopExecutionError,
-        ValidationError,
         ApiError,
         CircuitBreakerOpenError,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
+        HopExecutionError,
+        ValidationError,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     AgenticWorkflowError = None  # type: ignore[assignment,misc]
     HopExecutionError = None  # type: ignore[assignment,misc]

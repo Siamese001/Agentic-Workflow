@@ -1,13 +1,17 @@
 """ADG contract tests for apps_shared/types/standard_type_types.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
     from apps_shared.types.standard_type_types import (
-        StandardType, QualityDimension, QualityStandard,
+        QualityDimension,
+        QualityStandard,
+        StandardType,
     )
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     StandardType = QualityDimension = QualityStandard = None  # type: ignore[assignment,misc]
 

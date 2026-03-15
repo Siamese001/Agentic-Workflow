@@ -12,15 +12,15 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.types.routing_artifact_types import (  # noqa: F401
-        RoutingRationale,
-        RoutePath,
-        RouteDecisionArtifact,
-        TokenGateResult,
-        TokenCapArtifact,
         PermsArtifact,
+        RouteDecisionArtifact,
+        RoutePath,
+        RoutingRationale,
+        TokenCapArtifact,
+        TokenGateResult,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     RoutingRationale = None  # type: ignore[assignment,misc]
     RoutePath = None  # type: ignore[assignment,misc]

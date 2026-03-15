@@ -12,19 +12,19 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.utils.gravity_visitor_util import (  # noqa: F401
-        GravityVisitor,
-        get_file_imports,
-        extract_layer_from_path,
-        extract_layer_from_import,
-        check_gravity_violation,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        GravityVisitor,
+        check_gravity_violation,
+        extract_layer_from_import,
+        extract_layer_from_path,
+        get_file_imports,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     GravityVisitor = None  # type: ignore[assignment,misc]
     get_file_imports = None  # type: ignore[assignment,misc]

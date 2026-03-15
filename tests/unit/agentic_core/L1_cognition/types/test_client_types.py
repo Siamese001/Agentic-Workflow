@@ -12,16 +12,16 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L1_cognition.types.client_types import (  # noqa: F401
-        HealingPattern,
-        CacheEntry,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        CacheEntry,
+        HealingPattern,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     HealingPattern = None  # type: ignore[assignment,misc]
     CacheEntry = None  # type: ignore[assignment,misc]

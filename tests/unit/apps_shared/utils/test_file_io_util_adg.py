@@ -7,19 +7,19 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.utils.file_io_util import (  # noqa: F401
-        calculate_file_hash,
-        is_excluded,
-        get_python_files,
-        write_compliant_file,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        calculate_file_hash,
+        get_python_files,
+        is_excluded,
+        write_compliant_file,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     calculate_file_hash = None  # type: ignore[assignment,misc]
     is_excluded = None  # type: ignore[assignment,misc]

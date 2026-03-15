@@ -9,15 +9,15 @@ import pytest
 
 try:
     from apps_lic.engines.hop_stage_registry import (  # noqa: F401
-        register_stage,
-        get_stage_handler,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
         BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        get_stage_handler,
+        register_stage,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     register_stage = None  # type: ignore[assignment,misc]
     get_stage_handler = None  # type: ignore[assignment,misc]
@@ -43,4 +43,3 @@ class TestHopStageRegistryImportability:
 
     def test_default_sleep_defined(self) -> None:
         assert DEFAULT_SLEEP is not None
-

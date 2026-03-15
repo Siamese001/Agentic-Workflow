@@ -12,19 +12,19 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.reasoning.GovernanceAgent import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         DependencyGraph,
         GovernanceAgent,
-        heal,
         create_architecture_governor,
         get_GovernanceAgent,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
+        heal,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     DependencyGraph = None  # type: ignore[assignment,misc]
     GovernanceAgent = None  # type: ignore[assignment,misc]

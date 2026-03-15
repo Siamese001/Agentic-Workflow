@@ -7,18 +7,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.validators.dependencygraph_validator import (  # noqa: F401
-        DependencyGraph,
-        BudgetManager,
-        ValidationContext,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        BudgetManager,
+        DependencyGraph,
+        ValidationContext,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     DependencyGraph = None  # type: ignore[assignment,misc]
     BudgetManager = None  # type: ignore[assignment,misc]

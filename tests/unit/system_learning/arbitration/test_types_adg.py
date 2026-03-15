@@ -9,16 +9,16 @@ import pytest
 
 try:
     from system_learning.arbitration.types import (  # noqa: F401
-        ArbitrationCandidate,
-        ArbitrationPolicy,
-        ArbitrationDecision,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
         BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        ArbitrationCandidate,
+        ArbitrationDecision,
+        ArbitrationPolicy,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ArbitrationCandidate = None  # type: ignore[assignment,misc]
     ArbitrationPolicy = None  # type: ignore[assignment,misc]
@@ -48,4 +48,3 @@ class TestTypesImportability:
 
     def test_default_sleep_defined(self) -> None:
         assert DEFAULT_SLEEP is not None
-

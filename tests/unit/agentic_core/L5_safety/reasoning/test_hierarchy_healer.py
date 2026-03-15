@@ -16,7 +16,7 @@ try:
         get_hierarchy_agent,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     HierarchyAgent = None  # type: ignore[assignment,misc]
     get_hierarchy_agent = None  # type: ignore[assignment,misc]
@@ -36,4 +36,4 @@ class TestGetHierarchyAgentFunction:
 
 def test_module_importable():
     """Smoke: hierarchy_healer importable or gracefully unavailable."""
-    assert True
+    pass

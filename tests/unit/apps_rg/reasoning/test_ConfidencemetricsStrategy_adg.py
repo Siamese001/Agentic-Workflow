@@ -7,14 +7,14 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_rg.reasoning.ConfidencemetricsStrategy import (  # noqa: F401
+        ConfidenceEstimator,
         ConfidenceMetrics,
         EarlyStoppingStrategy,
-        ConfidenceEstimator,
-        PathPruningStrategy,
         OptimizedReasoningEngine,
+        PathPruningStrategy,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ConfidenceMetrics = None  # type: ignore[assignment,misc]
     EarlyStoppingStrategy = None  # type: ignore[assignment,misc]

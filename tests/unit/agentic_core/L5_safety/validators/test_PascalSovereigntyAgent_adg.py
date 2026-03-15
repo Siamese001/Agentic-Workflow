@@ -14,7 +14,7 @@ try:
         main,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     PascalSovereigntyAgent = None  # type: ignore[assignment,misc]
     get_python_files_fast = None  # type: ignore[assignment,misc]
@@ -34,4 +34,3 @@ class TestPascalsovereigntyagentImportability:
 
     def test_main_callable(self) -> None:
         assert callable(main)
-

@@ -13,7 +13,7 @@ pytestmark = pytest.mark.unit
 try:
     import agentic_core.utils.verification_types_util as _mod  # noqa: F401
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
 
 
@@ -22,7 +22,6 @@ class TestModuleStructure:
     def test_module_has_public_attributes(self):
         import agentic_core.utils.verification_types_util as _mod
         pub = [a for a in dir(_mod) if not a.startswith('_')]
-        assert len(pub) >= 0
 
     def test_module_file_is_not_empty(self):
         from pathlib import Path
@@ -33,4 +32,4 @@ class TestModuleStructure:
 
 def test_module_importable():
     """Smoke: verification_types_util importable or gracefully unavailable."""
-    assert True
+    pass

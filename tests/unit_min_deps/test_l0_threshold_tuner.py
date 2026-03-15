@@ -69,7 +69,6 @@ class TestL0ThresholdTuner:
         # For now, this test documents the constraint exists
         # In production, this would be tested with actual over-delta scenarios
         pass
-        assert True  # no-exception contract
 
     def test_cooldown_violated_returns_none(self):
         """Cooldown violation returns None (no proposal)."""

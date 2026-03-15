@@ -12,21 +12,21 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_lic.reasoning.OutreachSignalRouterAgent import (  # noqa: F401
-        MCPHardenedMixin,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         HealerMixin,
-        OutreachHealingStrategy,
+        MCPHardenedMixin,
         OutreachCycleResult,
         OutreachHealingResult,
+        OutreachHealingStrategy,
         OutreachSignalRouterAgent,
         run_outreach_healing_mission,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     MCPHardenedMixin = None  # type: ignore[assignment,misc]
     HealerMixin = None  # type: ignore[assignment,misc]

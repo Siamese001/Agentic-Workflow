@@ -9,17 +9,17 @@ import pytest
 
 try:
     from agentic_core.runtime.config.detection_config import (  # noqa: F401
-        Severity,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         DetectionRequest,
         DetectionResult,
         DetectionSignalProtocol,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
+        Severity,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     Severity = None  # type: ignore[assignment,misc]
     DetectionRequest = None  # type: ignore[assignment,misc]
@@ -50,4 +50,3 @@ class TestDetectionConfigImportability:
 
     def test_default_sleep_defined(self) -> None:
         assert DEFAULT_SLEEP is not None
-

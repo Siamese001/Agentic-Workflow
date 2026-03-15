@@ -12,20 +12,20 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.runtime.config.signal_quality_config import (  # noqa: F401
-        SignalQuality,
-        QualityThresholds,
-        ClaimAnalysis,
-        SignalAssessment,
-        signal_enhancer,
-        get_signal_enhancer,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        ClaimAnalysis,
+        QualityThresholds,
+        SignalAssessment,
+        SignalQuality,
+        get_signal_enhancer,
+        signal_enhancer,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     SignalQuality = None  # type: ignore[assignment,misc]
     QualityThresholds = None  # type: ignore[assignment,misc]

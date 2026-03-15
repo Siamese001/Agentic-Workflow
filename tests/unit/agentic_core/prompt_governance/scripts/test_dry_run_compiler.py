@@ -12,18 +12,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.prompt_governance.scripts.dry_run_compiler import (  # noqa: F401
-        initialize_jinja_environment,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         compile_template,
         find_jinja_templates,
+        initialize_jinja_environment,
         verify_all_templates,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     initialize_jinja_environment = None  # type: ignore[assignment,misc]
     compile_template = None  # type: ignore[assignment,misc]

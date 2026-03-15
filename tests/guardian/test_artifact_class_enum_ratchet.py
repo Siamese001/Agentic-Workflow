@@ -138,7 +138,6 @@ def test_no_artifact_class_value_usage_in_construction():
             + "\n".join(violation_msgs)
             + "\n\nUse ArtifactClass enum directly, e.g., artifact_class=ArtifactClass.AGGREGATE",
         )
-        assert True  # no-exception contract
 
 
 def test_synthetic_value_usage_detected():

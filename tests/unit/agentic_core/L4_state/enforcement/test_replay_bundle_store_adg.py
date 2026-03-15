@@ -17,7 +17,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ReplayBundleStore = None  # type: ignore[assignment,misc]
     VerifiedReplay = None  # type: ignore[assignment,misc]

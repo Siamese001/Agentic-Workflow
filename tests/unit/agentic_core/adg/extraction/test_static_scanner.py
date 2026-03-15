@@ -12,14 +12,14 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.adg.extraction.static_scanner import (  # noqa: F401
+        ADGStaticScanner,
         Edge,
         ScanManifest,
         ScanResult,
-        ADGStaticScanner,
         run_scanner_self_test,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     Edge = None  # type: ignore[assignment,misc]
     ScanManifest = None  # type: ignore[assignment,misc]
@@ -110,4 +110,4 @@ class TestRunScannerSelfTestFunction:
 
 def test_module_importable():
     """Smoke: static_scanner importable or gracefully unavailable."""
-    assert True
+    pass

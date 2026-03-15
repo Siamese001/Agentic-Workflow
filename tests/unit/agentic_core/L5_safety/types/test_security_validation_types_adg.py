@@ -1,7 +1,10 @@
 """ADG contract tests for L5_safety/types/security_validation_types.py."""
 from __future__ import annotations
+
 import ast
+
 import pytest
+
 pytestmark = pytest.mark.unit
 
 MODULE_PATH = "agentic_core/L5_safety/types/security_validation_types.py"
@@ -23,11 +26,14 @@ def test_has_dataclasses():
 
 try:
     from agentic_core.L5_safety.types.security_validation_types import (
-        SecurityValidationResult, SecuritySuiteResult, RedTeamValidationSuite,
-        get_security_suite, run_security_validation,
+        RedTeamValidationSuite,
+        SecuritySuiteResult,
+        SecurityValidationResult,
+        get_security_suite,
+        run_security_validation,
     )
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     SecurityValidationResult = SecuritySuiteResult = RedTeamValidationSuite = None  # type: ignore[assignment,misc]
     get_security_suite = run_security_validation = None  # type: ignore[assignment,misc]

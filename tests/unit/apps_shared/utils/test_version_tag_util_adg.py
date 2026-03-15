@@ -7,19 +7,19 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.utils.version_tag_util import (  # noqa: F401
-        VersionTag,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         PromptVersion,
         PromptVersionManager,
+        VersionTag,
         create_version_manager,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     VersionTag = None  # type: ignore[assignment,misc]
     PromptVersion = None  # type: ignore[assignment,misc]

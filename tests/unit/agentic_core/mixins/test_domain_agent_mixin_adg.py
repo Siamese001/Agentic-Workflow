@@ -7,18 +7,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.mixins.domain_agent_mixin import (  # noqa: F401
-        DomainAgentMixin,
-        RGDomainMixin,
-        LICDomainMixin,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        DomainAgentMixin,
+        LICDomainMixin,
+        RGDomainMixin,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     DomainAgentMixin = None  # type: ignore[assignment,misc]
     RGDomainMixin = None  # type: ignore[assignment,misc]

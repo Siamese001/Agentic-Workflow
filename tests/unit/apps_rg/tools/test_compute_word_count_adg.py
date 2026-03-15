@@ -7,18 +7,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_rg.tools.compute_word_count import (  # noqa: F401
-        count_words_ms_word_style,
-        count_words_in_list_ms_word_style,
-        count_sentences,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        count_sentences,
+        count_words_in_list_ms_word_style,
+        count_words_ms_word_style,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     count_words_ms_word_style = None  # type: ignore[assignment,misc]
     count_words_in_list_ms_word_style = None  # type: ignore[assignment,misc]

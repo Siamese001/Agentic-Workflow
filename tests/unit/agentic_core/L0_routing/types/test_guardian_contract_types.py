@@ -12,23 +12,23 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.types.guardian_contract_types import (  # noqa: F401
-        V15EnforcementError,
-        V15SoftFailAbort,
-        V15HardFailAbort,
-        GuardianStatus,
-        CheckStatus,
-        ArtifactType,
+        GUARDIAN_SIGNING_KEY_ID,
         ArtifactClass,
+        ArtifactType,
+        CheckStatus,
+        GuardianStatus,
         ScanBudgetExceeded,
+        V15EnforcementError,
+        V15HardFailAbort,
+        V15SoftFailAbort,
+        get_artifact_filename,
+        guard_scan_budget,
         is_v15_enforced,
         is_v15_hard_fail,
         is_v15_soft_fail,
-        get_artifact_filename,
-        guard_scan_budget,
-        GUARDIAN_SIGNING_KEY_ID,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     V15EnforcementError = None  # type: ignore[assignment,misc]
     V15SoftFailAbort = None  # type: ignore[assignment,misc]
@@ -217,4 +217,4 @@ class TestGuardianSigningKeyIdConstant:
 
 def test_module_importable():
     """Smoke: guardian_contract_types importable or gracefully unavailable."""
-    assert True
+    pass

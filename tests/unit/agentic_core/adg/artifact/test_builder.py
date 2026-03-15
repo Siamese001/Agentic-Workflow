@@ -12,16 +12,16 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.adg.artifact.builder import (  # noqa: F401
+        ADGArtifact,
+        ADGArtifactBuilder,
+        BlindSpotReport,
         EntityRecord,
         RelationRecord,
         StructuralMetrics,
-        BlindSpotReport,
-        ADGArtifact,
-        ADGArtifactBuilder,
         build_artifact,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     EntityRecord = None  # type: ignore[assignment,misc]
     RelationRecord = None  # type: ignore[assignment,misc]
@@ -132,4 +132,4 @@ class TestBuildArtifactFunction:
 
 def test_module_importable():
     """Smoke: builder importable or gracefully unavailable."""
-    assert True
+    pass

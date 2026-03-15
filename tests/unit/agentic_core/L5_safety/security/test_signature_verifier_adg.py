@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     SignatureVerificationError = None  # type: ignore[assignment,misc]
     VerificationContext = None  # type: ignore[assignment,misc]

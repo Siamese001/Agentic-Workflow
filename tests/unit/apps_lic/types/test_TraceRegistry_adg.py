@@ -1,11 +1,13 @@
 """ADG contract tests for apps_lic/types/TraceRegistry.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
     from apps_lic.types.TraceRegistry import TraceRegistry
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     TraceRegistry = None  # type: ignore[assignment,misc]
 

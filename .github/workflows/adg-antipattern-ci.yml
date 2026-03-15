@@ -52,3 +52,22 @@ jobs:
           echo "$CHANGED" | tr '\n' '\0' | xargs -0 python tools/adg/adg_antipattern_fixer.py --check-only
         env:
           PYTHONPATH: .
+
+  guardian-exemption-ratchet:
+    name: Guardian Exemption Ratchet — Count Ceiling (Rule #10)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Check guardian exemption ratchet (Rule 2 — count ceiling)
+        run: python ops_scripts/ci/guardian_exemption_gate.py
+        env:
+          PYTHONPATH: .
+          ADG_EXEMPTION_DRY_RUN: "1"

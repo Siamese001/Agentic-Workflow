@@ -12,19 +12,19 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.enforcement.error_recovery_guardrail import (  # noqa: F401
-        ErrorCategory,
-        RecoveryStrategy,
-        ErrorContext,
-        RecoveryResult,
-        ErrorRecoveryGuardrail,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        ErrorCategory,
+        ErrorContext,
+        ErrorRecoveryGuardrail,
+        RecoveryResult,
+        RecoveryStrategy,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     ErrorCategory = None  # type: ignore[assignment,misc]
     RecoveryStrategy = None  # type: ignore[assignment,misc]

@@ -7,13 +7,13 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.scripts.drift import (  # noqa: F401
+        REQUIRED_BASE,
+        TARGET_VIOLATION,
         DriftDetector,
         scan_repository,
-        TARGET_VIOLATION,
-        REQUIRED_BASE,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     DriftDetector = None  # type: ignore[assignment,misc]
     scan_repository = None  # type: ignore[assignment,misc]

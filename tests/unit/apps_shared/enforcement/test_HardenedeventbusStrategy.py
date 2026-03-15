@@ -12,19 +12,19 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.enforcement.HardenedeventbusStrategy import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         HardenedEventBus,
         get_hardened_event_bus,
+        hardened_event_publisher,
         publish_hardened_event,
         subscribe_to_events,
-        hardened_event_publisher,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     HardenedEventBus = None  # type: ignore[assignment,misc]
     get_hardened_event_bus = None  # type: ignore[assignment,misc]

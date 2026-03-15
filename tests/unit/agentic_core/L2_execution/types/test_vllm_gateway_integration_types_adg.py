@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     select_serving_profile = None  # type: ignore[assignment,misc]
     VLLMLocalRequest = None  # type: ignore[assignment,misc]

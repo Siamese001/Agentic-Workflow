@@ -1,7 +1,10 @@
 """ADG contract tests for L4_state/types/validation_context_types.py."""
 from __future__ import annotations
+
 import ast
+
 import pytest
+
 pytestmark = pytest.mark.unit
 
 MODULE_PATH = "agentic_core/L4_state/types/validation_context_types.py"
@@ -26,7 +29,7 @@ try:
         IValidationContextProtocol,
     )
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     IValidationContextProtocol = None  # type: ignore[assignment,misc]
 

@@ -7,13 +7,13 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.scripts.investigate_overlaps_util import (  # noqa: F401
+        GROUPS,
+        PROJECT_ROOT,
         get_file_hash,
         investigate,
-        PROJECT_ROOT,
-        GROUPS,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     get_file_hash = None  # type: ignore[assignment,misc]
     investigate = None  # type: ignore[assignment,misc]

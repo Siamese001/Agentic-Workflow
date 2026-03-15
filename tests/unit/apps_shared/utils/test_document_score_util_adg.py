@@ -7,18 +7,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.utils.document_score_util import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         DocumentScore,
         RAGScorer,
         create_rag_scorer,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     DocumentScore = None  # type: ignore[assignment,misc]
     RAGScorer = None  # type: ignore[assignment,misc]

@@ -7,18 +7,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.reasoning.ConstitutionalReviewerAgent import (  # noqa: F401
-        ConstitutionalReviewResult,
-        ConstitutionalReviewerAgent,
-        track_metrics,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        ConstitutionalReviewerAgent,
+        ConstitutionalReviewResult,
+        track_metrics,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ConstitutionalReviewResult = None  # type: ignore[assignment,misc]
     ConstitutionalReviewerAgent = None  # type: ignore[assignment,misc]

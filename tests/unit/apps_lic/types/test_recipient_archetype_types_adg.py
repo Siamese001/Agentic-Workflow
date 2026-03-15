@@ -1,14 +1,19 @@
 """ADG contract tests for apps_lic/types/recipient_archetype_types.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
     from apps_lic.types.recipient_archetype_types import (
-        RecipientArchetype, CreativeBrief, ArchetypeTemplate,
-        ARCHETYPE_TEMPLATES, ArchetypeTemplateManager,
+        ARCHETYPE_TEMPLATES,
+        ArchetypeTemplate,
+        ArchetypeTemplateManager,
+        CreativeBrief,
+        RecipientArchetype,
     )
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     RecipientArchetype = CreativeBrief = ArchetypeTemplate = None  # type: ignore[assignment,misc]
     ARCHETYPE_TEMPLATES = ArchetypeTemplateManager = None  # type: ignore[assignment,misc]

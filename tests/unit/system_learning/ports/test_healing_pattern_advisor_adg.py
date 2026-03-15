@@ -9,16 +9,16 @@ import pytest
 
 try:
     from system_learning.ports.healing_pattern_advisor import (  # noqa: F401
-        PatternAdvice,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         HealingPatternAdvisor,
         NullHealingPatternAdvisor,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
+        PatternAdvice,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     PatternAdvice = None  # type: ignore[assignment,misc]
     HealingPatternAdvisor = None  # type: ignore[assignment,misc]
@@ -48,4 +48,3 @@ class TestHealingPatternAdvisorImportability:
 
     def test_default_sleep_defined(self) -> None:
         assert DEFAULT_SLEEP is not None
-

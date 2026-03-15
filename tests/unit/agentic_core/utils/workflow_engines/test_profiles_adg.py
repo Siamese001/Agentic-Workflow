@@ -7,15 +7,15 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.utils.workflow_engines.profiles import (  # noqa: F401
-        RetrievalProfileConfig,
-        RetrievalPipeline,
-        make_profile,
-        PROFILE_VECTOR_ONLY,
         PROFILE_HYBRID,
         PROFILE_HYBRID_RERANKED,
+        PROFILE_VECTOR_ONLY,
+        RetrievalPipeline,
+        RetrievalProfileConfig,
+        make_profile,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     RetrievalProfileConfig = None  # type: ignore[assignment,misc]
     RetrievalPipeline = None  # type: ignore[assignment,misc]

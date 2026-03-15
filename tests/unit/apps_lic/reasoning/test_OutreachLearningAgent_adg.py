@@ -7,23 +7,23 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_lic.reasoning.OutreachLearningAgent import (  # noqa: F401
-        OutreachEngineContext,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         HealerMixin,
         OutreachConfidenceLevel,
-        OutreachLearningExample,
-        OutreachInstruction,
-        OutreachLearningLoop,
         OutreachConfidenceScorer,
+        OutreachEngineContext,
+        OutreachInstruction,
+        OutreachLearningExample,
+        OutreachLearningLoop,
         OutreachMemoryPersistence,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     OutreachEngineContext = None  # type: ignore[assignment,misc]
     HealerMixin = None  # type: ignore[assignment,misc]

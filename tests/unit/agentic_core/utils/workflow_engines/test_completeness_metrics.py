@@ -12,20 +12,20 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.utils.workflow_engines.completeness_metrics import (  # noqa: F401
-        EvaluationMetricResult,
-        EvaluationReport,
-        EvaluationDeltaReport,
-        RetrievalExperimentReport,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         ChunkStrategyReport,
         CompletenessExperimentReport,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
+        EvaluationDeltaReport,
+        EvaluationMetricResult,
+        EvaluationReport,
+        RetrievalExperimentReport,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     EvaluationMetricResult = None  # type: ignore[assignment,misc]
     EvaluationReport = None  # type: ignore[assignment,misc]

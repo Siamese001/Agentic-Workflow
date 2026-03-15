@@ -13,7 +13,7 @@ try:
         ingest_and_build_indexes_with_embedder,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ingest_and_build_indexes = None  # type: ignore[assignment,misc]
     ingest_and_build_indexes_with_embedder = None  # type: ignore[assignment,misc]
@@ -29,4 +29,3 @@ class TestHistoricalIngestionOrchestratorImportability:
 
     def test_ingest_and_build_indexes_with_embedder_callable(self) -> None:
         assert callable(ingest_and_build_indexes_with_embedder)
-

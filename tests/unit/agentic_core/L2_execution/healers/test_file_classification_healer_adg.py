@@ -9,14 +9,14 @@ import pytest
 
 try:
     from agentic_core.L2_execution.healers.file_classification_healer import (  # noqa: F401
-        heal_file_classification,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
         BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        heal_file_classification,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     heal_file_classification = None  # type: ignore[assignment,misc]
     MAX_RETRIES = None  # type: ignore[assignment,misc]
@@ -38,4 +38,3 @@ class TestFileClassificationHealerImportability:
 
     def test_default_sleep_defined(self) -> None:
         assert DEFAULT_SLEEP is not None
-

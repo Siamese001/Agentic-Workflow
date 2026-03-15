@@ -1,14 +1,21 @@
 """ADG contract tests for apps_shared/types/config_format_types.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
     from apps_shared.types.config_format_types import (
-        ConfigFormat, ConversionMode, ConfigField, ConfigModel,
-        ConversionConfig, ConversionResult, ConfigModelConverter,
+        ConfigField,
+        ConfigFormat,
+        ConfigModel,
+        ConfigModelConverter,
+        ConversionConfig,
+        ConversionMode,
+        ConversionResult,
     )
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     ConfigFormat = ConversionMode = ConfigField = ConfigModel = None  # type: ignore[assignment,misc]
     ConversionConfig = ConversionResult = ConfigModelConverter = None  # type: ignore[assignment,misc]

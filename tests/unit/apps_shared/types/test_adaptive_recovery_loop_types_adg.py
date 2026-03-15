@@ -1,14 +1,20 @@
 """ADG contract tests for apps_shared/types/adaptive_recovery_loop_types.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
     from apps_shared.types.adaptive_recovery_loop_types import (
-        FailureType, RecoveryAction, FailureEvent, RecoveryResult,
-        AdaptiveRecoveryLoop, create_adaptive_recovery_loop,
+        AdaptiveRecoveryLoop,
+        FailureEvent,
+        FailureType,
+        RecoveryAction,
+        RecoveryResult,
+        create_adaptive_recovery_loop,
     )
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     FailureType = RecoveryAction = FailureEvent = RecoveryResult = None  # type: ignore[assignment,misc]
     AdaptiveRecoveryLoop = create_adaptive_recovery_loop = None  # type: ignore[assignment,misc]

@@ -12,20 +12,20 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.utils.ast_fuzzy_util import (  # noqa: F401
-        parse_ast_safe,
-        ast_dump_hash,
-        tokenize_simple,
-        similarity_score,
-        normalize_repo_path,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        ast_dump_hash,
+        normalize_repo_path,
+        parse_ast_safe,
+        similarity_score,
+        tokenize_simple,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     parse_ast_safe = None  # type: ignore[assignment,misc]
     ast_dump_hash = None  # type: ignore[assignment,misc]
@@ -141,4 +141,4 @@ class TestMaxDepthConstant:
 
 def test_module_importable():
     """Smoke: ast_fuzzy_util importable or gracefully unavailable."""
-    assert True
+    pass

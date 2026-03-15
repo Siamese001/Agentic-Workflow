@@ -12,20 +12,20 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.enforcement.agent_info_enforcer import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         AgentInfo,
         ASTNormalizer,
+        calculate_similarity,
         extract_layer,
         find_agent_classes,
         generate_fingerprint,
-        calculate_similarity,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     AgentInfo = None  # type: ignore[assignment,misc]
     ASTNormalizer = None  # type: ignore[assignment,misc]

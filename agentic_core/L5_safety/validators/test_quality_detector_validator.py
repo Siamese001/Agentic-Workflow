@@ -1,0 +1,467 @@
+"""
+TestQualityDetector — catches low-quality test assertions that pass even when
+the underlying functionality is completely broken.
+
+Three sub-patterns detected
+-----------------------------
+VACUOUS_ASSERT
+    ``assert True`` or any always-true expression in a test function body.
+    Unconditionally passes; provides zero signal about the system under test.
+    Enforcement: HARD_BLOCK — there is never a valid reason for this.
+
+SOLE_TYPE_CHECK
+    A test function where *every* assertion is one of:
+    - ``assert isinstance(x, T)``
+    - ``assert x is not None``
+    - ``assert hasattr(x, 'attr')``
+    These pass even when ``x = None``, ``x = []``, ``x = False``, or ``x``
+    is a mock/stub with the wrong internal state.
+    Not applied to ``*_adg.py`` importability stubs (those are intentionally
+    type-only by design).
+    Enforcement: WARNING — flags for review, does not block.
+
+WRITE_WITHOUT_READ
+    A test function that calls a write/create/save/add method but:
+      (a) never calls any corresponding read/get/search/query method, AND
+      (b) never asserts the return value of the write call directly.
+    Catches the "persistence vacuum" — tests that exercise write-path code
+    but never verify the data was actually stored.
+    Not applied to ``*_adg.py`` importability stubs.
+    Enforcement: WARNING — flags for review, does not block.
+
+Scope
+-----
+Only scans test_*.py and *_test.py files.
+Only applies SOLE_TYPE_CHECK and WRITE_WITHOUT_READ to files that are NOT
+*_adg.py importability stubs (those legitimately only check importability).
+"""
+
+from __future__ import annotations
+
+import ast
+from pathlib import Path
+
+from agentic_core.L5_safety.validators.base_detector_validator import (
+    AntiPatternCategory,
+    AntiPatternDetector,
+    AntiPatternViolation,
+    DetectionResult,
+    EnforcementLevel,
+)
+
+# ---------------------------------------------------------------------------
+# Constants
+# ---------------------------------------------------------------------------
+
+_WRITE_PREFIXES: tuple[str, ...] = (
+    "create_",
+    "write_",
+    "save_",
+    "insert_",
+    "put_",
+    "add_",
+    "store_",
+    "persist_",
+    "update_",
+    "upsert_",
+    "push_",
+)
+
+_WRITE_EXACT: frozenset[str] = frozenset(
+    {
+        "save",
+        "write",
+        "create",
+        "insert",
+        "put",
+        "add",
+        "store",
+        "persist",
+        "update",
+        "upsert",
+        "push",
+        "commit",
+        "flush",
+        "dump",
+    }
+)
+
+_READ_PREFIXES: tuple[str, ...] = (
+    "get_",
+    "read_",
+    "load_",
+    "find_",
+    "search_",
+    "fetch_",
+    "query_",
+    "lookup_",
+    "retrieve_",
+    "scan_",
+    "list_",
+    "open_",
+    "read_graph",
+    "fetchone",
+    "fetchall",
+    "execute",
+)
+
+_READ_SUBSTRINGS: tuple[str, ...] = ("SELECT", "fetchone", "fetchall")
+
+
+# ---------------------------------------------------------------------------
+# Weakness classifiers
+# ---------------------------------------------------------------------------
+
+
+def _is_weak_assert(node: ast.Assert) -> bool:
+    """
+    Return True when the assertion provides no meaningful signal about behavior.
+
+    Weak assertions:
+    - ``assert True``
+    - ``assert isinstance(x, T)``  — only checks type, not value
+    - ``assert x is not None``      — only checks not-None
+    - ``assert hasattr(x, 'attr')`` — only checks attribute existence
+    - Combinations of the above via ``and``
+    """
+    return _is_weak_expr(node.test)
+
+
+def _is_weak_expr(expr: ast.expr) -> bool:
+    # assert True
+    if isinstance(expr, ast.Constant) and expr.value is True:
+        return True
+
+    # assert isinstance(x, T)
+    if (
+        isinstance(expr, ast.Call)
+        and isinstance(expr.func, ast.Name)
+        and expr.func.id == "isinstance"
+    ):
+        return True
+
+    # assert hasattr(x, 'attr')
+    if (
+        isinstance(expr, ast.Call)
+        and isinstance(expr.func, ast.Name)
+        and expr.func.id == "hasattr"
+    ):
+        return True
+
+    # assert x is not None
+    if (
+        isinstance(expr, ast.Compare)
+        and len(expr.ops) == 1
+        and isinstance(expr.ops[0], ast.IsNot)
+        and isinstance(expr.comparators[0], ast.Constant)
+        and expr.comparators[0].value is None
+    ):
+        return True
+
+    # assert A and B  where both A and B are weak
+    if isinstance(expr, ast.BoolOp) and isinstance(expr.op, ast.And):
+        return all(_is_weak_expr(v) for v in expr.values)
+
+    return False
+
+
+def _is_vacuous_expr(expr: ast.expr) -> bool:
+    """Return True when the expression is unconditionally True (always passes)."""
+    # assert True
+    if isinstance(expr, ast.Constant) and expr.value is True:
+        return True
+    # assert len(x) >= 0  — length is never negative
+    if (
+        isinstance(expr, ast.Compare)
+        and isinstance(expr.left, ast.Call)
+        and isinstance(expr.left.func, ast.Name)
+        and expr.left.func.id == "len"
+        and len(expr.ops) == 1
+        and isinstance(expr.ops[0], (ast.GtE, ast.Eq))
+        and isinstance(expr.comparators[0], ast.Constant)
+        and expr.comparators[0].value == 0
+        and isinstance(expr.ops[0], ast.GtE)
+    ):
+        return True
+    # assert x or not x  — tautology (hard to detect reliably; skip for now)
+    return False
+
+
+# ---------------------------------------------------------------------------
+# Helpers for WRITE_WITHOUT_READ
+# ---------------------------------------------------------------------------
+
+
+def _call_name(node: ast.Call) -> str:
+    """Return the bare attribute or function name from a Call node."""
+    if isinstance(node.func, ast.Attribute):
+        return node.func.attr
+    if isinstance(node.func, ast.Name):
+        return node.func.id
+    return ""
+
+
+def _has_write_call(fn: ast.FunctionDef | ast.AsyncFunctionDef) -> str | None:
+    """Return the first write-like call name found, or None."""
+    for node in ast.walk(fn):
+        if not isinstance(node, ast.Call):
+            continue
+        name = _call_name(node)
+        if any(name.startswith(p) for p in _WRITE_PREFIXES):
+            return name
+        if name in _WRITE_EXACT:
+            return name
+    return None
+
+
+def _has_read_or_verify(fn: ast.FunctionDef | ast.AsyncFunctionDef) -> bool:
+    """Return True when there is any read-back or direct assertion on write result."""
+    for node in ast.walk(fn):
+        if isinstance(node, ast.Call):
+            name = _call_name(node)
+            if any(name.startswith(p) for p in _READ_PREFIXES):
+                return True
+            # execute("SELECT …")
+            for arg in node.args:
+                if isinstance(arg, ast.Constant) and isinstance(arg.value, str):
+                    if any(s in arg.value for s in _READ_SUBSTRINGS):
+                        return True
+        # assert <write_call>(...) — direct assertion on write return value
+        if isinstance(node, ast.Assert):
+            # if the assertion refers to the result of a write call, that counts
+            for child in ast.walk(node.test):
+                if isinstance(child, ast.Call) and any(
+                    _call_name(child).startswith(p) for p in _WRITE_PREFIXES
+                ):
+                    return True
+    return False
+
+
+# ---------------------------------------------------------------------------
+# Detector
+# ---------------------------------------------------------------------------
+
+
+class TestQualityDetector(AntiPatternDetector):
+    """
+    Detects low-quality test assertions in test files.
+
+    Only scans files named ``test_*.py`` or ``*_test.py``.
+    See module docstring for sub-pattern details.
+    """
+
+    WHITELIST_COMMENT = "# guardian: allow-test-quality"
+
+    def __init__(
+        self,
+        enforcement_level: EnforcementLevel = EnforcementLevel.WARNING,
+        whitelisted_patterns: list[str] | None = None,
+        whitelisted_files: list[str] | None = None,
+        skip_adg_stubs: bool = True,
+    ) -> None:
+        super().__init__(enforcement_level, whitelisted_patterns, whitelisted_files)
+        self._skip_adg_stubs = skip_adg_stubs
+
+    @property
+    def category(self) -> AntiPatternCategory:
+        return AntiPatternCategory.TEST_QUALITY
+
+    # ------------------------------------------------------------------
+    # scan_file override — test files only
+    # ------------------------------------------------------------------
+
+    def scan_file(self, file_path: Path) -> DetectionResult:
+        """Return empty result for non-test files; delegate to base for test files."""
+        name = file_path.name
+        if not (name.startswith("test_") or name.endswith("_test.py")):
+            return DetectionResult(file_path=file_path)
+        return super().scan_file(file_path)
+
+    # ------------------------------------------------------------------
+    # detect
+    # ------------------------------------------------------------------
+
+    def detect(self, file_path: Path, tree: ast.Module) -> list[AntiPatternViolation]:
+        violations: list[AntiPatternViolation] = []
+
+        try:
+            source_lines = file_path.read_text(encoding="utf-8").splitlines()
+        except Exception:
+            return violations
+
+        is_adg_stub = file_path.name.endswith("_adg.py")
+
+        for node in ast.walk(tree):
+            if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                continue
+            if not node.name.startswith("test_"):
+                continue
+
+            # VACUOUS_ASSERT — applies to all test files
+            v = self._check_vacuous(node, file_path, source_lines)
+            if v:
+                violations.append(v)
+
+            # SOLE_TYPE_CHECK — skip ADG stubs
+            if not (is_adg_stub and self._skip_adg_stubs):
+                v = self._check_sole_type(node, file_path, source_lines)
+                if v:
+                    violations.append(v)
+
+                # WRITE_WITHOUT_READ — skip ADG stubs
+                v = self._check_write_without_read(node, file_path, source_lines)
+                if v:
+                    violations.append(v)
+
+        return violations
+
+    # ------------------------------------------------------------------
+    # Sub-pattern: VACUOUS_ASSERT
+    # ------------------------------------------------------------------
+
+    def _check_vacuous(
+        self,
+        fn: ast.FunctionDef | ast.AsyncFunctionDef,
+        file_path: Path,
+        source_lines: list[str],
+    ) -> AntiPatternViolation | None:
+        """Detect any ``assert True`` / always-true assertion in a test function."""
+        for node in ast.walk(fn):
+            if not isinstance(node, ast.Assert):
+                continue
+            if not _is_vacuous_expr(node.test):
+                continue
+            if self._has_whitelist(source_lines, node.lineno):
+                continue
+            evidence = (
+                source_lines[node.lineno - 1].strip()
+                if node.lineno <= len(source_lines)
+                else "assert True"
+            )
+            return AntiPatternViolation(
+                file_path=file_path,
+                line_number=node.lineno,
+                category=self.category,
+                message=(
+                    f"Vacuous assertion in `{fn.name}`: `{evidence}` always passes "
+                    f"and provides zero signal about the system under test."
+                ),
+                evidence=evidence,
+                severity="error",
+                suggested_fix=(
+                    f"Replace `{evidence}` with an assertion that verifies "
+                    f"actual behavior: the return value, a side-effect, or "
+                    f"a specific property of the result."
+                ),
+                metadata={
+                    "sub_pattern": "VACUOUS_ASSERT",
+                    "test_function": fn.name,
+                },
+            )
+        return None
+
+    # ------------------------------------------------------------------
+    # Sub-pattern: SOLE_TYPE_CHECK
+    # ------------------------------------------------------------------
+
+    def _check_sole_type(
+        self,
+        fn: ast.FunctionDef | ast.AsyncFunctionDef,
+        file_path: Path,
+        source_lines: list[str],
+    ) -> AntiPatternViolation | None:
+        """Detect test methods where every assertion is a weak type/existence check."""
+        asserts = [n for n in ast.walk(fn) if isinstance(n, ast.Assert)]
+        if not asserts:
+            return None
+        if not all(_is_weak_assert(a) for a in asserts):
+            return None
+        # All are weak — flag the first assertion line
+        first = asserts[0]
+        if self._has_whitelist(source_lines, fn.lineno):
+            return None
+        examples = []
+        for a in asserts[:3]:
+            if a.lineno <= len(source_lines):
+                examples.append(source_lines[a.lineno - 1].strip())
+        evidence = "; ".join(examples)
+        return AntiPatternViolation(
+            file_path=file_path,
+            line_number=fn.lineno,
+            category=self.category,
+            message=(
+                f"`{fn.name}` has {len(asserts)} assertion(s) but ALL are weak "
+                f"type/existence checks (isinstance / is not None / hasattr). "
+                f"These pass even when the implementation is completely broken."
+            ),
+            evidence=evidence,
+            severity="warning",
+            suggested_fix=(
+                "Add at least one strong assertion that verifies actual behavior: "
+                "check a specific value, a non-empty collection, a concrete "
+                "property, or an expected side-effect."
+            ),
+            metadata={
+                "sub_pattern": "SOLE_TYPE_CHECK",
+                "test_function": fn.name,
+                "assertion_count": len(asserts),
+            },
+        )
+
+    # ------------------------------------------------------------------
+    # Sub-pattern: WRITE_WITHOUT_READ
+    # ------------------------------------------------------------------
+
+    def _check_write_without_read(
+        self,
+        fn: ast.FunctionDef | ast.AsyncFunctionDef,
+        file_path: Path,
+        source_lines: list[str],
+    ) -> AntiPatternViolation | None:
+        """
+        Detect tests that call a write/create method but never verify via read-back.
+        """
+        write_name = _has_write_call(fn)
+        if write_name is None:
+            return None
+        if _has_read_or_verify(fn):
+            return None
+        if self._has_whitelist(source_lines, fn.lineno):
+            return None
+        return AntiPatternViolation(
+            file_path=file_path,
+            line_number=fn.lineno,
+            category=self.category,
+            message=(
+                f"`{fn.name}` calls `{write_name}(...)` (a write operation) but "
+                f"never reads back the stored data to verify persistence. "
+                f"The write path may silently fail without this test detecting it."
+            ),
+            evidence=f"write: {write_name}(...) — no read-back found",
+            severity="warning",
+            suggested_fix=(
+                f"After calling `{write_name}(...)`, add a read-back call "
+                f"(get_*, search_*, read_*, execute('SELECT …')) and assert "
+                f"the stored value matches what was written."
+            ),
+            metadata={
+                "sub_pattern": "WRITE_WITHOUT_READ",
+                "test_function": fn.name,
+                "write_call": write_name,
+            },
+        )
+
+    # ------------------------------------------------------------------
+    # Whitelist
+    # ------------------------------------------------------------------
+
+    def _has_whitelist(self, source_lines: list[str], lineno: int) -> bool:
+        """True when guardian exemption appears within 3 lines above."""
+        for idx in range(lineno - 2, max(-1, lineno - 5), -1):
+            if 0 <= idx < len(source_lines):
+                if self.WHITELIST_COMMENT in source_lines[idx]:
+                    return True
+        return False
+
+
+__all__ = ["TestQualityDetector"]

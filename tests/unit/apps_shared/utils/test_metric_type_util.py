@@ -12,23 +12,23 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.utils.metric_type_util import (  # noqa: F401
-        MetricType,
-        LogLevel,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         AlertSeverity,
-        MetricDefinition,
         LogConfiguration,
+        LogLevel,
+        MetricDefinition,
+        MetricType,
         TraceConfiguration,
         create_observability_planning_orchestrator,
-        plan_observability,
         orchestrate_observability_planning,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
+        plan_observability,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     MetricType = None  # type: ignore[assignment,misc]
     LogLevel = None  # type: ignore[assignment,misc]

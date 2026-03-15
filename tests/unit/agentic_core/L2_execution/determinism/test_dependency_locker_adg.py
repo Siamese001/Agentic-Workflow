@@ -8,7 +8,7 @@ pytestmark = pytest.mark.unit
 try:
     from agentic_core.L2_execution.determinism.dependency_locker import DependencyLocker
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     DependencyLocker = None  # type: ignore[assignment,misc]
 
@@ -22,7 +22,6 @@ class TestDependencyLocker:
         assert hasattr(DependencyLocker, "generate_lock_hash")
 
     def test_generate_lock_hash_raises_for_missing_file(self, tmp_path):
-        from pathlib import Path
         missing = tmp_path / "requirements_nonexistent.txt"
         with pytest.raises(FileNotFoundError):
             DependencyLocker.generate_lock_hash(missing)

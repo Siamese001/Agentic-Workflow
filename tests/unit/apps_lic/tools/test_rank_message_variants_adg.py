@@ -7,18 +7,17 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_lic.tools.rank_message_variants import (  # noqa: F401
-        rank_message_variants,
-        process,
-        process,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        process,
+        rank_message_variants,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     rank_message_variants = None  # type: ignore[assignment,misc]
     process = None  # type: ignore[assignment,misc]

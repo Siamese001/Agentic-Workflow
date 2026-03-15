@@ -12,21 +12,21 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.runtime.utils.trait_system_util import (  # noqa: F401
-        Trait,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        BatchingTrait,
         CachingTrait,
         MetricsTrait,
-        BatchingTrait,
-        with_traits,
+        Trait,
         get_applied_traits,
         has_trait,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
+        with_traits,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     Trait = None  # type: ignore[assignment,misc]
     CachingTrait = None  # type: ignore[assignment,misc]

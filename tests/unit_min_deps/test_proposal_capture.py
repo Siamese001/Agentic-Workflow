@@ -170,5 +170,4 @@ class TestProposalCapture:
                     import logging as _log
 
                     _log.getLogger(__name__).warning("[MetaLearning] proposal write failed: %s", _prop_err)
-                    assert True  # no-exception contract
                 # No re-raise — must be silent to caller

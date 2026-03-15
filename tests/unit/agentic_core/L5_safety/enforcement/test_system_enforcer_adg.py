@@ -17,7 +17,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ValidationResult = None  # type: ignore[assignment,misc]
     ValidationReport = None  # type: ignore[assignment,misc]

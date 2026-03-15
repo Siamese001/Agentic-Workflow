@@ -13,7 +13,7 @@ try:
         get_specs_for_app,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     AppGuardianSpec = None  # type: ignore[assignment,misc]
     get_specs_for_app = None  # type: ignore[assignment,misc]
@@ -29,4 +29,3 @@ class TestAppGuardianRegistryImportability:
 
     def test_get_specs_for_app_callable(self) -> None:
         assert callable(get_specs_for_app)
-

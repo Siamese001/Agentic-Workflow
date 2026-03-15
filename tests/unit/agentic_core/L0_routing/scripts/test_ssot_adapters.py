@@ -12,21 +12,21 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.scripts.ssot_adapters import (  # noqa: F401
-        ReconcilerAdapter,
-        LocationAdapter,
-        FileClassAdapter,
-        HierarchyAdapter,
-        ArchGovAdapter,
-        GravityAdapter,
-        build_adapters,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        ArchGovAdapter,
+        FileClassAdapter,
+        GravityAdapter,
+        HierarchyAdapter,
+        LocationAdapter,
+        ReconcilerAdapter,
+        build_adapters,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     ReconcilerAdapter = None  # type: ignore[assignment,misc]
     LocationAdapter = None  # type: ignore[assignment,misc]

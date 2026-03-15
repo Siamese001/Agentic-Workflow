@@ -7,12 +7,12 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.scripts.emoji_fixer import (  # noqa: F401
+        EMOJI_MAP,
         fix_emojis_in_file,
         main,
-        EMOJI_MAP,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     fix_emojis_in_file = None  # type: ignore[assignment,misc]
     main = None  # type: ignore[assignment,misc]

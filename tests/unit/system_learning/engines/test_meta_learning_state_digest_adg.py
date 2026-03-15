@@ -9,15 +9,15 @@ import pytest
 
 try:
     from system_learning.engines.meta_learning_state_digest import (  # noqa: F401
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         compute_meta_learning_state_digest,
         emit_meta_learning_state_digest,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     compute_meta_learning_state_digest = None  # type: ignore[assignment,misc]
     emit_meta_learning_state_digest = None  # type: ignore[assignment,misc]
@@ -43,4 +43,3 @@ class TestMetaLearningStateDigestImportability:
 
     def test_default_sleep_defined(self) -> None:
         assert DEFAULT_SLEEP is not None
-

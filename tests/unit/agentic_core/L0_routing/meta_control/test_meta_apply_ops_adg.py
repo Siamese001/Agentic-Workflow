@@ -11,7 +11,7 @@ try:
         _check_no_schema_changes,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     InvariantCheckFn = None  # type: ignore[assignment]
     _check_no_schema_changes = None  # type: ignore[assignment]

@@ -12,14 +12,14 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.core_kernel.classification_kernel import (  # noqa: F401
-        get_classification_conflicts,
-        clear_classification_conflicts,
         classify_file_standalone,
+        clear_classification_conflicts,
+        get_classification_conflicts,
         is_agent_file,
         is_agent_or_orchestrator,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     get_classification_conflicts = None  # type: ignore[assignment,misc]
     clear_classification_conflicts = None  # type: ignore[assignment,misc]
@@ -81,4 +81,4 @@ class TestIsAgentOrOrchestratorFunction:
 
 def test_module_importable():
     """Smoke: classification_kernel importable or gracefully unavailable."""
-    assert True
+    pass

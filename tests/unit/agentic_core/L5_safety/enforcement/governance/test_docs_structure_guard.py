@@ -12,18 +12,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.enforcement.governance.docs_structure_guard import (  # noqa: F401
-        is_valid_extension,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         has_backup_suffix,
         has_h1_heading,
+        is_valid_extension,
         scan_docs_directory,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     is_valid_extension = None  # type: ignore[assignment,misc]
     has_backup_suffix = None  # type: ignore[assignment,misc]

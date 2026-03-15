@@ -1,11 +1,13 @@
 """ADG contract tests for apps_shared/types/event_bus_types.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
-    from apps_shared.types.event_bus_types import EventType, SystemEvent, MemoryEventBus
+    from apps_shared.types.event_bus_types import EventType, MemoryEventBus, SystemEvent
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     EventType = SystemEvent = MemoryEventBus = None  # type: ignore[assignment,misc]
 

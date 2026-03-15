@@ -16,7 +16,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     EntityDefinition = None  # type: ignore[assignment,misc]
     RelationDefinition = None  # type: ignore[assignment,misc]

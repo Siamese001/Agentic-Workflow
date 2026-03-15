@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ReplayMode = None  # type: ignore[assignment,misc]
     PRODUCTION_ALLOWED_MODES = None  # type: ignore[assignment,misc]

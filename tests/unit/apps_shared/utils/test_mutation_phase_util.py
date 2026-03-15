@@ -12,22 +12,22 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.utils.mutation_phase_util import (  # noqa: F401
-        MutationPhase,
-        StateSnapshot,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         DAGSafetyManager,
+        MutationPhase,
         SafeMutationContext,
+        StateSnapshot,
         validate_acyclic_hook,
         validate_connectivity_hook,
-        validate_node_attributes_hook,
         validate_depth_consistency_hook,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
+        validate_node_attributes_hook,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     MutationPhase = None  # type: ignore[assignment,misc]
     StateSnapshot = None  # type: ignore[assignment,misc]

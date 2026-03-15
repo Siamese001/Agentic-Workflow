@@ -1,14 +1,22 @@
 """ADG contract tests for apps_lic/types/message_route_types.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
     from apps_lic.types.message_route_types import (
-        MessageRoute, RecipientArchetype, SignatureFormat, CTAFormat,
-        RouteConditions, RouteConstraints, RouteConfig, ROUTE_CONFIGS,
+        ROUTE_CONFIGS,
+        CTAFormat,
+        MessageRoute,
+        RecipientArchetype,
+        RouteConditions,
+        RouteConfig,
+        RouteConstraints,
+        SignatureFormat,
     )
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     MessageRoute = RecipientArchetype = SignatureFormat = CTAFormat = None  # type: ignore[assignment,misc]
     RouteConditions = RouteConstraints = RouteConfig = ROUTE_CONFIGS = None  # type: ignore[assignment,misc]

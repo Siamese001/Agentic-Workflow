@@ -7,15 +7,15 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.utils.pre_deploy_check_util import (  # noqa: F401
+        PROJECT_ROOT,
+        check_data_freshness,
+        check_ssot_files_exist,
+        main,
         print_banner,
         run_e2e_tests,
-        check_ssot_files_exist,
-        check_data_freshness,
-        main,
-        PROJECT_ROOT,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     print_banner = None  # type: ignore[assignment,misc]
     run_e2e_tests = None  # type: ignore[assignment,misc]

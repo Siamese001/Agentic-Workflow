@@ -12,18 +12,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.seams.safety_reasoning_seam import (  # noqa: F401
-        load_naming_agent,
-        load_structure_enforcer_agent,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         load_cognitive_disposition_agent,
         load_file_classification_agent,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
+        load_naming_agent,
+        load_structure_enforcer_agent,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     load_naming_agent = None  # type: ignore[assignment,misc]
     load_structure_enforcer_agent = None  # type: ignore[assignment,misc]

@@ -12,17 +12,17 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.adg.runtime.cache_loader import (  # noqa: F401
-        load_or_scan,
-        invalidate_cache,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        invalidate_cache,
+        load_or_scan,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     load_or_scan = None  # type: ignore[assignment,misc]
     invalidate_cache = None  # type: ignore[assignment,misc]
@@ -105,4 +105,4 @@ class TestMaxDepthConstant:
 
 def test_module_importable():
     """Smoke: cache_loader importable or gracefully unavailable."""
-    assert True
+    pass

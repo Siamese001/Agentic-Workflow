@@ -9,19 +9,19 @@ import pytest
 
 try:
     from agentic_core.runtime.types.claim_type_types import (  # noqa: F401
-        ClaimType,
-        ConfidenceLevel,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         Claim,
         ClaimAnalysisResult,
         ClaimConfidenceScorer,
+        ClaimType,
+        ConfidenceLevel,
         create_claim_scorer,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ClaimType = None  # type: ignore[assignment,misc]
     ConfidenceLevel = None  # type: ignore[assignment,misc]
@@ -57,4 +57,3 @@ class TestClaimTypeTypesImportability:
 
     def test_default_sleep_defined(self) -> None:
         assert DEFAULT_SLEEP is not None
-

@@ -12,24 +12,24 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.types.heal_policy_types import (  # noqa: F401
-        ReasoningTier,
-        ScoreBand,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        HealEscalationDecision,
         HealEscalationInputs,
         LegacyHealEscalationInputs,
-        HealEscalationDecision,
-        classify_score,
+        ReasoningTier,
+        ScoreBand,
         classify_confidence,
+        classify_score,
         decide_heal_escalation,
         decide_reasoning_tier,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ReasoningTier = None  # type: ignore[assignment,misc]
     ScoreBand = None  # type: ignore[assignment,misc]
@@ -233,4 +233,4 @@ class TestMaxDepthConstant:
 
 def test_module_importable():
     """Smoke: heal_policy_types importable or gracefully unavailable."""
-    assert True
+    pass

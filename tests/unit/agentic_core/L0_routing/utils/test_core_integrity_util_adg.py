@@ -16,7 +16,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     CoreIntegrityVerifier = None  # type: ignore[assignment,misc]
     SovereignLockError = None  # type: ignore[assignment,misc]

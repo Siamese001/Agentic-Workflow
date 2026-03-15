@@ -1,15 +1,20 @@
 """ADG contract tests for apps_lic/types/SpecialistDraftPacket.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
     from apps_lic.types.SpecialistDraftPacket import (
-        SpecialistDraftPacket, EvidenceClarificationRecord,
-        EvidenceBriefRecord, EvidenceLiaisonPacket,
-        CritiqueFindingRecord, CritiquePanelPacket,
+        CritiqueFindingRecord,
+        CritiquePanelPacket,
+        EvidenceBriefRecord,
+        EvidenceClarificationRecord,
+        EvidenceLiaisonPacket,
+        SpecialistDraftPacket,
     )
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     SpecialistDraftPacket = EvidenceClarificationRecord = EvidenceBriefRecord = None  # type: ignore[assignment,misc]
     EvidenceLiaisonPacket = CritiqueFindingRecord = CritiquePanelPacket = None  # type: ignore[assignment,misc]

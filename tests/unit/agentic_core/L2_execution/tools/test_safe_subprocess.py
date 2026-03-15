@@ -12,20 +12,20 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L2_execution.tools.safe_subprocess import (  # noqa: F401
-        safe_subprocess_run,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         safe_subprocess_call,
         safe_subprocess_check_call,
         safe_subprocess_check_output,
         safe_subprocess_popen,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
+        safe_subprocess_run,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     safe_subprocess_run = None  # type: ignore[assignment,misc]
     safe_subprocess_call = None  # type: ignore[assignment,misc]
@@ -141,4 +141,4 @@ class TestMaxDepthConstant:
 
 def test_module_importable():
     """Smoke: safe_subprocess importable or gracefully unavailable."""
-    assert True
+    pass

@@ -419,7 +419,6 @@ class TestP5_5B_5C:
 
         # Must not raise even with empty list
         emit_alerts_to_registry([], source="retrieval")
-        assert True  # no-exception contract
 
     def test_emit_records_entry_in_registry(self):
         from agentic_core.utils.workflow_engines.drift_monitor import emit_alerts_to_registry
@@ -993,7 +992,6 @@ class TestG8SilentSwallowLogging:
             sample_size=5,
         )
         monitor._persist(snapshot)  # must not raise
-        assert True  # no-exception contract
 
 
 # ===========================================================================
@@ -1346,7 +1344,6 @@ class TestP6_1A_BusPublish:
             record=None,
             success=True,
         )  # must not raise
-        assert True  # no-exception contract
 
     def test_publish_outcome_package_hash_is_deterministic(self):
         """Same inputs produce same package_hash every time."""

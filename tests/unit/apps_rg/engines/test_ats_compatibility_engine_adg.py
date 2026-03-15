@@ -8,7 +8,7 @@ pytestmark = pytest.mark.unit
 try:
     from apps_rg.engines.ats_compatibility_engine import ATSCompatibilityEngine
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ATSCompatibilityEngine = None  # type: ignore[assignment,misc]
 

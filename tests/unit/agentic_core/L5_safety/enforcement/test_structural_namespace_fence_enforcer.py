@@ -12,20 +12,20 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.enforcement.structural_namespace_fence_enforcer import (  # noqa: F401
-        ProvenanceTracker,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         ProvenanceLoader,
+        ProvenanceTracker,
         StructuralNamespaceFinder,
+        get_provenance_tracker,
         install_structural_namespace_fence,
         uninstall_structural_namespace_fence,
-        get_provenance_tracker,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     ProvenanceTracker = None  # type: ignore[assignment,misc]
     ProvenanceLoader = None  # type: ignore[assignment,misc]

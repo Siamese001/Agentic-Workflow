@@ -7,14 +7,14 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.utils.injection_patterns_extended_util import (  # noqa: F401
-        get_resume_injection_patterns,
+        extend_injection_loader,
         get_message_injection_patterns,
         get_quality_boost_injections,
+        get_resume_injection_patterns,
         load_all_extended_patterns,
-        extend_injection_loader,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     get_resume_injection_patterns = None  # type: ignore[assignment,misc]
     get_message_injection_patterns = None  # type: ignore[assignment,misc]

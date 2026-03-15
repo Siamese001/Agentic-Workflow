@@ -1,13 +1,18 @@
 """ADG contract tests for apps_rg/types/routing_tier_types.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
     from apps_rg.types.routing_tier_types import (
-        RoutingTier, ProviderType, RouterConfig, RouteResult,
+        ProviderType,
+        RouterConfig,
+        RouteResult,
+        RoutingTier,
     )
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     RoutingTier = ProviderType = RouterConfig = RouteResult = None  # type: ignore[assignment,misc]
 

@@ -62,7 +62,6 @@ class TestFullMockIsolation:
         # Check that we have mock coverage for expected external systems
         interaction_types.intersection(expected_interactions)
         # At least some interactions should be tracked
-        assert len(external_interactions) >= 0, "Mock tracking is working"
 
     def test_no_external_dependencies_in_e2e(self):
         """Ensure e2e tests have no external dependencies"""

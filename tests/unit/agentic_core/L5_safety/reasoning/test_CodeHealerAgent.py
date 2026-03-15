@@ -12,16 +12,16 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.reasoning.CodeHealerAgent import (  # noqa: F401
-        CodeHealingStrategy,
-        HealingType,
-        HealingAction,
-        HealerConfig,
         CodeHealerAgent,
+        CodeHealingStrategy,
+        HealerConfig,
+        HealingAction,
+        HealingType,
         create_legacy_canon_healer,
         create_legacy_import_healer,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     CodeHealingStrategy = None  # type: ignore[assignment,misc]
     HealingType = None  # type: ignore[assignment,misc]
@@ -138,4 +138,4 @@ class TestCreateLegacyImportHealerFunction:
 
 def test_module_importable():
     """Smoke: CodeHealerAgent importable or gracefully unavailable."""
-    assert True
+    pass

@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     C0InterferenceViolation = None  # type: ignore[assignment,misc]
     assert_c0_context_clean = None  # type: ignore[assignment,misc]

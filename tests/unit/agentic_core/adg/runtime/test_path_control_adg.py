@@ -18,7 +18,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ExecutionPath = None  # type: ignore[assignment,misc]
     PathTransitionReason = None  # type: ignore[assignment,misc]

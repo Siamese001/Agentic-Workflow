@@ -12,18 +12,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.utils.path_util import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         get_validated_project_root,
-        validate_path_within_project,
         safe_path_join,
         safe_prefixed_filename,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
+        validate_path_within_project,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     get_validated_project_root = None  # type: ignore[assignment,misc]
     validate_path_within_project = None  # type: ignore[assignment,misc]

@@ -16,7 +16,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     PTCInvariantVisitor = None  # type: ignore[assignment,misc]
     scan_file_for_ptc_invariants = None  # type: ignore[assignment,misc]

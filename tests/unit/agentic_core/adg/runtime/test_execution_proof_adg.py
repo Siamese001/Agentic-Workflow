@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ProofComparisonOutcome = None  # type: ignore[assignment,misc]
     ExecutionTrace = None  # type: ignore[assignment,misc]

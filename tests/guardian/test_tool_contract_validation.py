@@ -11,7 +11,6 @@ from typing import Any
 
 import pytest
 
-
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
 THRESHOLD = 0.95
@@ -190,7 +189,6 @@ class TestToolContractValidation:
 
         # Should pass validation
         self._validate_tool_call(tool_call, expected_contract)  # Should not raise
-        assert True  # no-exception contract
 
     def _validate_tool_call(self, tool_call: dict[str, Any], contract: dict[str, Any]) -> None:
         """Validate tool call against contract."""

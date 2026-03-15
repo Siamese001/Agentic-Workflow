@@ -18,7 +18,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ReasoningBudgetExceeded = None  # type: ignore[assignment,misc]
     ReasoningModeViolation = None  # type: ignore[assignment,misc]

@@ -12,18 +12,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.utils.fix_inherited_invocation_util import (  # noqa: F401
-        load_inherited_agents,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        add_heal_repository,
         find_class_end,
         has_heal_repository,
-        add_heal_repository,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
+        load_inherited_agents,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     load_inherited_agents = None  # type: ignore[assignment,misc]
     find_class_end = None  # type: ignore[assignment,misc]

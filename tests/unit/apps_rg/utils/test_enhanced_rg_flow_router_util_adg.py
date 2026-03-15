@@ -7,17 +7,17 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_rg.utils.enhanced_rg_flow_router_util import (  # noqa: F401
-        EnhancedRGFlowRouter,
-        EnhancedResumeSectionNode,
-        EnhancedGapClosureEngine,
-        WordCountEnforcementEngine,
-        EnhancedResumePlanningEngine,
-        ComprehensiveValidationSuite,
-        example_enhanced_workflow,
         ENHANCED_CONFIG,
+        ComprehensiveValidationSuite,
+        EnhancedGapClosureEngine,
+        EnhancedResumePlanningEngine,
+        EnhancedResumeSectionNode,
+        EnhancedRGFlowRouter,
+        WordCountEnforcementEngine,
+        example_enhanced_workflow,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     EnhancedRGFlowRouter = None  # type: ignore[assignment,misc]
     EnhancedResumeSectionNode = None  # type: ignore[assignment,misc]

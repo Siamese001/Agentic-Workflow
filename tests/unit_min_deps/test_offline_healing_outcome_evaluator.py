@@ -609,7 +609,6 @@ print(json.dumps(result))
 
         # Verify deterministic rejection reasons
         # The exact reasons depend on implementation, but should be consistent
-        assert len(report.rejected_reasons) >= 0  # May have rejections
 
         # Run again to verify determinism
         report2 = evaluator.evaluate(intake, created_utc=2000, candidates=tuple(candidates))

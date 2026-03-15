@@ -114,7 +114,6 @@ class TestRedisKeyValidation:
     def test_exactly_512_char_key_is_valid(self):
         c = self._cache()
         c._validate_key("a" * 512)  # must not raise
-        assert True  # no-exception contract
 
 
 # ===========================================================================
@@ -326,7 +325,6 @@ class TestCanonicalJsonBytes:
         from agentic_core.cache.redis_cache_client import canonical_json_bytes
 
         canonical_json_bytes({"key": "value"}).decode("ascii")  # must not raise
-        assert True  # no-exception contract
 
     @pytest.mark.unit_min_deps
     def test_deterministic_across_calls(self):
@@ -349,7 +347,6 @@ class TestCanonicalJsonBytes:
 
         result = canonical_json_bytes({"k": "\u00e9"})
         result.decode("ascii")  # must be ASCII-safe (escaped)
-        assert True  # no-exception contract
 
     @pytest.mark.unit_min_deps
     def test_nested_structure(self):
@@ -592,7 +589,6 @@ class TestFAISSLoadFromDisk:
         art = _build_faiss_artifact(tmp_path, "idx")
         store2 = LocalFAISSStore(base_path=tmp_path / "load")
         store2.load_from_disk("idx", art)  # must not raise
-        assert True  # no-exception contract
 
     @pytest.mark.unit_min_deps
     def test_tampered_index_json_raises(self, tmp_path):
@@ -654,7 +650,6 @@ class TestFAISSLoadFromDisk:
         art = _build_faiss_artifact(tmp_path, "idx")
         store2 = LocalFAISSStore(base_path=tmp_path / "load")
         store2.load_from_disk("idx", art, expected_embedder_id="test-embedder")  # must not raise
-        assert True  # no-exception contract
 
 
 # ===========================================================================

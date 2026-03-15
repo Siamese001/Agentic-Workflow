@@ -7,17 +7,17 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_rg.tools.EvaluateResumeEffectiveness import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         EvaluateResumeEffectiveness,
         compute_score,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     EvaluateResumeEffectiveness = None  # type: ignore[assignment,misc]
     compute_score = None  # type: ignore[assignment,misc]

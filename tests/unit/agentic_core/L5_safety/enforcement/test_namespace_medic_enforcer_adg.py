@@ -7,19 +7,19 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.enforcement.namespace_medic_enforcer import (  # noqa: F401
-        find_missing_imports,
-        inject_imports,
-        heal_file,
-        main,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        find_missing_imports,
+        heal_file,
+        inject_imports,
+        main,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     find_missing_imports = None  # type: ignore[assignment,misc]
     inject_imports = None  # type: ignore[assignment,misc]

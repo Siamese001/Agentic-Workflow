@@ -12,18 +12,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.utils.canonical_truth_util import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         calculate_health_score,
         get_canonical_layer,
-        validate_health_components,
         get_health_weights,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
+        validate_health_components,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     calculate_health_score = None  # type: ignore[assignment,misc]
     get_canonical_layer = None  # type: ignore[assignment,misc]

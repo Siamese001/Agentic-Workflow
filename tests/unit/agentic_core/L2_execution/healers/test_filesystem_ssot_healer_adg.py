@@ -9,14 +9,14 @@ import pytest
 
 try:
     from agentic_core.L2_execution.healers.filesystem_ssot_healer import (  # noqa: F401
-        heal_filesystem_ssot_drift,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
         BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        heal_filesystem_ssot_drift,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     heal_filesystem_ssot_drift = None  # type: ignore[assignment,misc]
     MAX_RETRIES = None  # type: ignore[assignment,misc]
@@ -38,4 +38,3 @@ class TestFilesystemSsotHealerImportability:
 
     def test_default_sleep_defined(self) -> None:
         assert DEFAULT_SLEEP is not None
-

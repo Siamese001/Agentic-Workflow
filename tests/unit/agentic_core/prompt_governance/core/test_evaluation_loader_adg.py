@@ -16,7 +16,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     EvalLoadError = None  # type: ignore[assignment,misc]
     EvalSchemaError = None  # type: ignore[assignment,misc]

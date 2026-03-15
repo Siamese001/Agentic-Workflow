@@ -9,15 +9,15 @@ import pytest
 
 try:
     from apps_shared.spine.risk_gate_adapter import (  # noqa: F401
-        RiskResult,
-        RiskGateAdapter,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
         BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        RiskGateAdapter,
+        RiskResult,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     RiskResult = None  # type: ignore[assignment,misc]
     RiskGateAdapter = None  # type: ignore[assignment,misc]
@@ -43,4 +43,3 @@ class TestRiskGateAdapterImportability:
 
     def test_default_sleep_defined(self) -> None:
         assert DEFAULT_SLEEP is not None
-

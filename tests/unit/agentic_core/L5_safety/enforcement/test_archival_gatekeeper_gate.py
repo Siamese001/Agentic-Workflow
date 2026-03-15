@@ -12,17 +12,17 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.enforcement.archival_gatekeeper_gate import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        ArchivalGatekeeper,
         ArchivalOperation,
         ArchivalResult,
-        ArchivalGatekeeper,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ArchivalOperation = None  # type: ignore[assignment,misc]
     ArchivalResult = None  # type: ignore[assignment,misc]

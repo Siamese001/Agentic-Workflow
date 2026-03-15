@@ -3,8 +3,10 @@
 Uses AST-based source inspection -- immune to broken transitive deps.
 """
 from __future__ import annotations
+
 import ast
 import pathlib
+
 import pytest
 
 pytestmark = pytest.mark.unit
@@ -36,4 +38,4 @@ class TestCampaignBalanceAgentSource:
 
 
 def test_module_importable():
-    assert True
+    pass

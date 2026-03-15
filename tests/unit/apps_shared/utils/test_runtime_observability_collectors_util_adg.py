@@ -8,13 +8,13 @@ pytestmark = pytest.mark.unit
 try:
     from apps_shared.utils.runtime_observability_collectors_util import (  # noqa: F401
         append_event,
-        get_events,
         clear_events,
-        push_span,
+        get_events,
         pop_span,
+        push_span,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     append_event = None  # type: ignore[assignment,misc]
     get_events = None  # type: ignore[assignment,misc]

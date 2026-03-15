@@ -15,7 +15,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     JSONFormatter = None  # type: ignore[assignment,misc]
     setup_logging = None  # type: ignore[assignment,misc]

@@ -1,15 +1,16 @@
 """ADG-driven tests for L0_routing/scripts/agent_analysis_config.py — fan_in=0."""
 from __future__ import annotations
 
-import pytest
 from pathlib import Path
+
+import pytest
 
 pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.scripts.agent_analysis_config import AgentAnalysis
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     AgentAnalysis = None  # type: ignore[assignment,misc]
 

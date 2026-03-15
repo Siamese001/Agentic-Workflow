@@ -84,7 +84,7 @@ class SovereignRedisOrchestrator(SovereignBaseAgent):
         """Execute get operation (MCP-routed when REDIS_MCP_ENABLED)."""
         if self._use_mcp:
             result = self._mcp_call("redis_get", {"key": key})
-            if result is not None:
+            if result is not None and result != {}:
                 return result.get("value") if isinstance(result, dict) else result
         try:
             if not self.connection:
@@ -98,7 +98,7 @@ class SovereignRedisOrchestrator(SovereignBaseAgent):
         """Execute set operation (MCP-routed when REDIS_MCP_ENABLED)."""
         if self._use_mcp:
             result = self._mcp_call("redis_set", {"key": key, "value": value})
-            if result is not None:
+            if result is not None and result != {}:
                 return result
         try:
             if not self.connection:
@@ -111,7 +111,7 @@ class SovereignRedisOrchestrator(SovereignBaseAgent):
         """Delete a key from Redis (MCP-routed when REDIS_MCP_ENABLED)."""
         if self._use_mcp:
             result = self._mcp_call("redis_delete", {"key": key})
-            if result is not None:
+            if result is not None and result != {}:
                 return bool(result.get("deleted", False)) if isinstance(result, dict) else bool(result)
         try:
             if not self.connection:

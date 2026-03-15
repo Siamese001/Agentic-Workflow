@@ -7,19 +7,19 @@ pytestmark = pytest.mark.unit
 
 try:
     from system_learning.engines.l3_efficiency_tuner import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         EfficiencyBottleneck,
         EfficiencyReport,
         L3EfficiencyTuner,
         extract_timings_from_runtime_state,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     EfficiencyBottleneck = None  # type: ignore[assignment,misc]
     EfficiencyReport = None  # type: ignore[assignment,misc]

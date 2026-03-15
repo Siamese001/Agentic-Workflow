@@ -18,7 +18,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     AntipatternSeverity = None  # type: ignore[assignment,misc]
     AntipatternCategory = None  # type: ignore[assignment,misc]

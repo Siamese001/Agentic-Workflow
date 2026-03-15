@@ -12,20 +12,20 @@ pytestmark = pytest.mark.unit
 
 try:
     from system_learning.engines.local_faiss_store import (  # noqa: F401
-        IndexNotBuiltError,
-        IndexMetadataError,
-        ManifestIntegrityError,
-        EmbedderMismatchError,
-        LocalFAISSStore,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        EmbedderMismatchError,
+        IndexMetadataError,
+        IndexNotBuiltError,
+        LocalFAISSStore,
+        ManifestIntegrityError,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     IndexNotBuiltError = None  # type: ignore[assignment,misc]
     IndexMetadataError = None  # type: ignore[assignment,misc]
@@ -132,4 +132,4 @@ class TestMaxDepthConstant:
 
 def test_module_importable():
     """Smoke: local_faiss_store importable or gracefully unavailable."""
-    assert True
+    pass

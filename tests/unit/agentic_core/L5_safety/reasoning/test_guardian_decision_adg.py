@@ -16,7 +16,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     GuardianDecision = None  # type: ignore[assignment,misc]
     GuardianViolationError = None  # type: ignore[assignment,misc]

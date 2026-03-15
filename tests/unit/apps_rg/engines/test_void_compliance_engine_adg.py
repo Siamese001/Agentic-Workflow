@@ -12,7 +12,7 @@ try:
         VoidComplianceEngine,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     VoidComplianceEngine = None  # type: ignore[assignment,misc]
 
@@ -24,4 +24,3 @@ class TestVoidComplianceEngineImportability:
 
     def test_voidcomplianceengine_is_type(self) -> None:
         assert VoidComplianceEngine is not None
-

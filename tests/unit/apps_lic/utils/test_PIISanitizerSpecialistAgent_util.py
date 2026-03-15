@@ -12,20 +12,20 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_lic.utils.PIISanitizerSpecialistAgent_util import (  # noqa: F401
-        PII_SanitizerSpecialistAgent,
-        BiasDetectorSpecialist,
-        PromptInjectionDetectorSpecialist,
-        ConstitutionalReviewResult,
-        ConstitutionalReviewerAgent,
-        track_metrics,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        BiasDetectorSpecialist,
+        ConstitutionalReviewerAgent,
+        ConstitutionalReviewResult,
+        PII_SanitizerSpecialistAgent,
+        PromptInjectionDetectorSpecialist,
+        track_metrics,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     PII_SanitizerSpecialistAgent = None  # type: ignore[assignment,misc]
     BiasDetectorSpecialist = None  # type: ignore[assignment,misc]

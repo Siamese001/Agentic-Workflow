@@ -12,18 +12,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.prompt_governance.scripts.harden_templates import (  # noqa: F401
-        find_jinja_files,
-        is_already_hardened,
-        extract_variables,
-        generate_standardized_header,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        extract_variables,
+        find_jinja_files,
+        generate_standardized_header,
+        is_already_hardened,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     find_jinja_files = None  # type: ignore[assignment,misc]
     is_already_hardened = None  # type: ignore[assignment,misc]

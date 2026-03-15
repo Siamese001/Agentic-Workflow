@@ -11,7 +11,7 @@ try:
         render_app_component_config,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     load_app_component_config = None  # type: ignore[assignment,misc]
     render_app_component_config = None  # type: ignore[assignment,misc]

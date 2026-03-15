@@ -7,15 +7,15 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.scripts.ssot_audit_util import (  # noqa: F401
-        find_duplicates,
-        find_gravity_violations,
-        find_syntax_errors,
-        find_naming_violations,
         APPROVED_FOLDERS,
         ROOT,
+        find_duplicates,
+        find_gravity_violations,
+        find_naming_violations,
+        find_syntax_errors,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     find_duplicates = None  # type: ignore[assignment,misc]
     find_gravity_violations = None  # type: ignore[assignment,misc]

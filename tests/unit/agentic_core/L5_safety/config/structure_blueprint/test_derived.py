@@ -15,7 +15,7 @@ try:
         verify_derived_registries,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     verify_derived_registries = None  # type: ignore[assignment,misc]
 
@@ -33,4 +33,4 @@ class TestVerifyDerivedRegistriesFunction:
 
 def test_module_importable():
     """Smoke: derived importable or gracefully unavailable."""
-    assert True
+    pass

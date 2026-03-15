@@ -7,17 +7,17 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.utils.workflow_engines.evaluation_report_schema import (  # noqa: F401
-        SystemEvaluationSummary,
-        ComparativeEvaluationSummary,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        ComparativeEvaluationSummary,
+        SystemEvaluationSummary,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     SystemEvaluationSummary = None  # type: ignore[assignment,misc]
     ComparativeEvaluationSummary = None  # type: ignore[assignment,misc]

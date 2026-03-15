@@ -18,7 +18,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     GoldenStateTestCase = None  # type: ignore[assignment,misc]
     JudgeVerdict = None  # type: ignore[assignment,misc]

@@ -7,12 +7,12 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.scripts.hardened_anti_pattern_visitor import (  # noqa: F401
+        PROJECT_ROOT,
         HardenedAntiPatternVisitor,
         main,
-        PROJECT_ROOT,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     HardenedAntiPatternVisitor = None  # type: ignore[assignment,misc]
     main = None  # type: ignore[assignment,misc]

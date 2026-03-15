@@ -9,15 +9,15 @@ import pytest
 
 try:
     from apps_rg.reasoning.DispatchResumeToolsAgent import (  # noqa: F401
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         DispatchResumeToolsAgent,
         execute,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     DispatchResumeToolsAgent = None  # type: ignore[assignment,misc]
     execute = None  # type: ignore[assignment,misc]
@@ -43,4 +43,3 @@ class TestDispatchresumetoolsagentImportability:
 
     def test_default_sleep_defined(self) -> None:
         assert DEFAULT_SLEEP is not None
-

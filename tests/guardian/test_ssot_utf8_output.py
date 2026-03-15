@@ -93,7 +93,6 @@ class TestMaybeForceUtf8Console:
 
         fn = _import_console_fn()
         fn()  # must not raise
-        assert True  # no-exception contract
 
 
 class TestMaybeForceUtf8LoggingHandlers:
@@ -161,7 +160,6 @@ class TestMaybeForceUtf8LoggingHandlers:
             fn()  # must not raise
         finally:
             root_logger.handlers = original_handlers
-            assert True  # no-exception contract
 
     def test_handler_reconfigure_exception_swallowed(self, monkeypatch):
         """If stream.reconfigure raises, it is silently swallowed."""
@@ -182,7 +180,6 @@ class TestMaybeForceUtf8LoggingHandlers:
             fn()  # must not raise
         finally:
             root_logger.handlers = original_handlers
-            assert True  # no-exception contract
 
 
 class TestRuntimeStateEnsureAscii:

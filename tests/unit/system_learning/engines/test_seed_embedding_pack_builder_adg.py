@@ -9,12 +9,12 @@ import pytest
 
 try:
     from system_learning.engines.seed_embedding_pack_builder import (  # noqa: F401
-        Embedder,
         DeterministicHashEmbedder,
+        Embedder,
         build_seed_embedding_pack,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     Embedder = None  # type: ignore[assignment,misc]
     DeterministicHashEmbedder = None  # type: ignore[assignment,misc]
@@ -34,4 +34,3 @@ class TestSeedEmbeddingPackBuilderImportability:
 
     def test_build_seed_embedding_pack_callable(self) -> None:
         assert callable(build_seed_embedding_pack)
-

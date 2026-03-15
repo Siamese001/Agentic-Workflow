@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     CircuitState = None  # type: ignore[assignment,misc]
     CircuitBreakerConfig = None  # type: ignore[assignment,misc]

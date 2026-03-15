@@ -12,16 +12,16 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.prompt_governance.security.utils.injection_scan_util import (  # noqa: F401
-        scan_untrusted_text,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        scan_untrusted_text,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     scan_untrusted_text = None  # type: ignore[assignment,misc]
     MAX_RETRIES = None  # type: ignore[assignment,misc]
@@ -93,4 +93,4 @@ class TestMaxDepthConstant:
 
 def test_module_importable():
     """Smoke: injection_scan_util importable or gracefully unavailable."""
-    assert True
+    pass

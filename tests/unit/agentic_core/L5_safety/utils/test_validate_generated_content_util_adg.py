@@ -7,17 +7,17 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.utils.validate_generated_content_util import (  # noqa: F401
-        validate_generated_content,
-        get_validate_generated_content_config,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        get_validate_generated_content_config,
+        validate_generated_content,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     validate_generated_content = None  # type: ignore[assignment,misc]
     get_validate_generated_content_config = None  # type: ignore[assignment,misc]

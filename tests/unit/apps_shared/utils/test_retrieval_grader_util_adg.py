@@ -7,23 +7,23 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.utils.retrieval_grader_util import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         GradeStatus,
         RetrievalGrade,
         RetrievalGrader,
         WebSearchFallback,
+        fallback_web_search,
         get_retrieval_grader,
         get_web_search_fallback,
         grade_retrieval,
-        fallback_web_search,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     GradeStatus = None  # type: ignore[assignment,misc]
     RetrievalGrade = None  # type: ignore[assignment,misc]

@@ -8,7 +8,7 @@ pytestmark = pytest.mark.unit
 try:
     from agentic_core.L0_routing.enforcement.boot_sequence import BootSequence
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     BootSequence = None  # type: ignore[assignment,misc]
 

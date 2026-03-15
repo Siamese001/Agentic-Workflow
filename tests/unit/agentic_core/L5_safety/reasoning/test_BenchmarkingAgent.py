@@ -12,23 +12,23 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.reasoning.BenchmarkingAgent import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        BenchmarkContext,
+        BenchmarkingAgent,
         BenchmarkResult,
         BenchmarkResultActual,
         BenchmarkSuite,
-        BenchmarkingAgent,
-        BenchmarkContext,
-        get_benchmarking_agent,
-        initialize_benchmarking,
         benchmark,
         benchmark_async,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
+        get_benchmarking_agent,
+        initialize_benchmarking,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     BenchmarkResult = None  # type: ignore[assignment,misc]
     BenchmarkResultActual = None  # type: ignore[assignment,misc]

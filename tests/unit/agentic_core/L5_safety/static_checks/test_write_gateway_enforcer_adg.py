@@ -16,7 +16,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     WriteGatewayVisitor = None  # type: ignore[assignment,misc]
     scan_file_for_writes = None  # type: ignore[assignment,misc]

@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     RouteDecisionRef = None  # type: ignore[assignment,misc]
     PolicySnapshot = None  # type: ignore[assignment,misc]

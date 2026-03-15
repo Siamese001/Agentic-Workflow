@@ -85,7 +85,6 @@ class TestSealedRoutingContext:
         config = dict(SAMPLE_CONFIG)
         ctx = SealedRoutingContext(config, version="1.0")
         ctx.verify_or_raise(config)
-        assert True  # no-exception contract
 
     def test_mutation_raises(self):
         config = dict(SAMPLE_CONFIG)

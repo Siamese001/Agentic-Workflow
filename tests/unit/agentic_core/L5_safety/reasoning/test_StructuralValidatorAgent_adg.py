@@ -17,7 +17,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     StructureViolationType = None  # type: ignore[assignment,misc]
     StructureViolation = None  # type: ignore[assignment,misc]

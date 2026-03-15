@@ -17,7 +17,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ReasoningIntensity = None  # type: ignore[assignment,misc]
     ExecutionMode = None  # type: ignore[assignment,misc]

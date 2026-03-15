@@ -15,7 +15,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     get_redis_client = None  # type: ignore[assignment,misc]
     SovereignSemanticCache = None  # type: ignore[assignment,misc]

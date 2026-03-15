@@ -9,18 +9,18 @@ import pytest
 
 try:
     from apps_rg.utils.agent_executor_util import (  # noqa: F401
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         AgentConfig,
+        AgentExecutor,
         AgentMessage,
         AgentResponse,
-        AgentExecutor,
         create_agent_executor,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     AgentConfig = None  # type: ignore[assignment,misc]
     AgentMessage = None  # type: ignore[assignment,misc]
@@ -55,4 +55,3 @@ class TestAgentExecutorUtilImportability:
 
     def test_default_sleep_defined(self) -> None:
         assert DEFAULT_SLEEP is not None
-

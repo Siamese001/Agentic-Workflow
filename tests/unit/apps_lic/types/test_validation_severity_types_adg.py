@@ -1,15 +1,22 @@
 """ADG contract tests for apps_lic/types/validation_severity_types.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
     from apps_lic.types.validation_severity_types import (
-        ValidationSeverity, ErrorCode, ContentCleanlinessRule,
-        SignalQualityConfig, ClaimConfidenceConfig, LIC_ERROR_CODES,
-        FORBIDDEN_VERBS, LICValidator,
+        FORBIDDEN_VERBS,
+        LIC_ERROR_CODES,
+        ClaimConfidenceConfig,
+        ContentCleanlinessRule,
+        ErrorCode,
+        LICValidator,
+        SignalQualityConfig,
+        ValidationSeverity,
     )
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     ValidationSeverity = ErrorCode = ContentCleanlinessRule = None  # type: ignore[assignment,misc]
     SignalQualityConfig = ClaimConfidenceConfig = LIC_ERROR_CODES = None  # type: ignore[assignment,misc]

@@ -9,14 +9,14 @@ try:
     from agentic_core.L0_routing.scripts.code_entity import (  # noqa: F401
         CodeEntity,
         FileAnalysis,
-        extract_docstring,
-        classify_entity_type,
-        infer_domain,
         analyze_file,
         build_current_codebase_index,
+        classify_entity_type,
+        extract_docstring,
+        infer_domain,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     CodeEntity = None  # type: ignore[assignment,misc]
     FileAnalysis = None  # type: ignore[assignment,misc]

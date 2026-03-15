@@ -12,20 +12,20 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.types.hardening_errors import (  # noqa: F401
-        ExecutionTraceIntegrityError,
-        MutationReplayIntegrityViolation,
-        LedgerIntegrityViolation,
-        MutationCommitFailure,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         C0AuthorityLeakError,
         C0MutationViolation,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
+        ExecutionTraceIntegrityError,
+        LedgerIntegrityViolation,
+        MutationCommitFailure,
+        MutationReplayIntegrityViolation,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ExecutionTraceIntegrityError = None  # type: ignore[assignment,misc]
     MutationReplayIntegrityViolation = None  # type: ignore[assignment,misc]

@@ -12,24 +12,24 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.enforcement.circuit_breaker_gate import (  # noqa: F401
-        CircuitState,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        CircuitBreaker,
         CircuitBreakerConfig,
         CircuitBreakerMetrics,
         CircuitBreakerOpenError,
         CircuitBreakerTimeoutError,
-        CircuitBreaker,
-        get_breaker,
+        CircuitState,
         get_all_breakers,
+        get_breaker,
         reset_registry,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     CircuitState = None  # type: ignore[assignment,misc]
     CircuitBreakerConfig = None  # type: ignore[assignment,misc]
@@ -218,4 +218,4 @@ class TestMaxDepthConstant:
 
 def test_module_importable():
     """Smoke: circuit_breaker_gate importable or gracefully unavailable."""
-    assert True
+    pass

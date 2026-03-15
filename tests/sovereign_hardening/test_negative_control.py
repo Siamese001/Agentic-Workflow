@@ -88,7 +88,6 @@ class TestNegativeControl:
         if os.environ.get("W_HARDEN_NEGCTRL_TAMPER") == "1":
             pytest.xfail("Negative control tampering active: W_HARDEN_NEGCTRL_TAMPER=1")
         # Restore path: normal PASS
-        assert True
 
     @pytest.mark.negative_control
     def test_negative_control_marker(self):
@@ -100,7 +99,6 @@ class TestNegativeControl:
         if is_tampered:
             pytest.xfail("Negative control tampering active: W_HARDEN_NEGCTRL_TAMPER=1")
         # Normal mode - test should pass
-        assert True
 
     def test_tampering_affects_multiple_components(self):
         """Test that tampering affects all relevant components."""

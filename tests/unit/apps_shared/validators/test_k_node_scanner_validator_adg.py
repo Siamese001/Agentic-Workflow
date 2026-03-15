@@ -7,14 +7,14 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.validators.k_node_scanner_validator import (  # noqa: F401
-        KNodeScanner,
         KNodeMigrator,
+        KNodeScanner,
         MigrationValidator,
-        run_full_migration,
         migrate_project,
+        run_full_migration,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     KNodeScanner = None  # type: ignore[assignment,misc]
     KNodeMigrator = None  # type: ignore[assignment,misc]

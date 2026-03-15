@@ -46,6 +46,18 @@ jobs:
         env:
           PYTHONPATH: .
 
+      - name: G2 — Test integrity (zero-assert, count invariants) (§1.2, §1.5)
+        run: |
+          python ops_scripts/ci/check_test_integrity.py
+        env:
+          PYTHONPATH: .
+
+      - name: G3 — Utility silent swallowers in governance scripts (§1.2, §10)
+        run: |
+          python ops_scripts/ci/check_utility_silent_swallowers.py
+        env:
+          PYTHONPATH: .
+
       - name: Run ADG full invariant scan (H10 --include-tests --write-manifest)
         run: |
           python -m agentic_core.adg.cli \

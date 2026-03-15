@@ -15,7 +15,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     Path = None  # type: ignore[assignment,misc]
     PathRouter = None  # type: ignore[assignment,misc]

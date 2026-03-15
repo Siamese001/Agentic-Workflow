@@ -14,19 +14,19 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.utils.json_formatter_util import (  # noqa: F401
-        JSONFormatter,
-        setup_logging,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        DEFAULT_TIMEOUT,
         MAX_DEPTH,
         MAX_FILES,
-        DEFAULT_TIMEOUT,
+        MAX_RETRIES,
+        THRESHOLD,
+        JSONFormatter,
+        setup_logging,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     JSONFormatter = None  # type: ignore[assignment,misc]
     setup_logging = None  # type: ignore[assignment,misc]

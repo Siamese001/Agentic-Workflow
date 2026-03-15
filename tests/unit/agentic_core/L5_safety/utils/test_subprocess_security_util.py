@@ -12,19 +12,19 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.utils.subprocess_security_util import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         SecurityViolationError,
         safe_execute,
+        safe_git_execute,
         safe_popen,
         validate_command_whitelist,
-        safe_git_execute,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     SecurityViolationError = None  # type: ignore[assignment,misc]
     safe_execute = None  # type: ignore[assignment,misc]

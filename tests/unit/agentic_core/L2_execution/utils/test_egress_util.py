@@ -12,19 +12,19 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L2_execution.utils.egress_util import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         EgressResult,
         NetworkingUtility,
         get_networking_utility,
-        strict_egress_filter,
         send_email,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
+        strict_egress_filter,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     EgressResult = None  # type: ignore[assignment,misc]
     NetworkingUtility = None  # type: ignore[assignment,misc]

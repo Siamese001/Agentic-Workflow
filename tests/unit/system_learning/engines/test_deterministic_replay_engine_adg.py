@@ -9,15 +9,15 @@ import pytest
 
 try:
     from system_learning.engines.deterministic_replay_engine import (  # noqa: F401
-        ReplayResult,
-        DeterministicReplayEngine,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
         BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        DeterministicReplayEngine,
+        ReplayResult,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ReplayResult = None  # type: ignore[assignment,misc]
     DeterministicReplayEngine = None  # type: ignore[assignment,misc]
@@ -43,4 +43,3 @@ class TestDeterministicReplayEngineImportability:
 
     def test_default_sleep_defined(self) -> None:
         assert DEFAULT_SLEEP is not None
-

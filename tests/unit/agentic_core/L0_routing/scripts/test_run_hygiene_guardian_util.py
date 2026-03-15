@@ -12,18 +12,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.scripts.run_hygiene_guardian_util import (  # noqa: F401
-        scan_temp_artifacts,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        remove_artifacts,
         scan_empty_folders,
         scan_folders_with_only_init,
-        remove_artifacts,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
+        scan_temp_artifacts,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     scan_temp_artifacts = None  # type: ignore[assignment,misc]
     scan_empty_folders = None  # type: ignore[assignment,misc]

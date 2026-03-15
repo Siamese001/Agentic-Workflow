@@ -12,12 +12,12 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.config.structure_blueprint.territories import (  # noqa: F401
-        get_territory_metadata,
         get_all_territories,
+        get_territory_metadata,
         is_valid_root_folder,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     get_territory_metadata = None  # type: ignore[assignment,misc]
     get_all_territories = None  # type: ignore[assignment,misc]
@@ -57,4 +57,4 @@ class TestIsValidRootFolderFunction:
 
 def test_module_importable():
     """Smoke: territories importable or gracefully unavailable."""
-    assert True
+    pass

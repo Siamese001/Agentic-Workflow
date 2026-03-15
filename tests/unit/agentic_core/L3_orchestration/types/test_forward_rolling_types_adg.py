@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ExecutionMode = None  # type: ignore[assignment,misc]
     RolloutStage = None  # type: ignore[assignment,misc]

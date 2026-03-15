@@ -12,18 +12,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.scripts.gatekeeper_lock_util import (  # noqa: F401
-        get_staged_files,
-        get_commit_message,
-        check_env_bypass,
-        check_commit_message_override,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        check_commit_message_override,
+        check_env_bypass,
+        get_commit_message,
+        get_staged_files,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     get_staged_files = None  # type: ignore[assignment,misc]
     get_commit_message = None  # type: ignore[assignment,misc]

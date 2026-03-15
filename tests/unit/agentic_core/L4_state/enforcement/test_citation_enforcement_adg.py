@@ -16,7 +16,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     CitationEnforcementViolation = None  # type: ignore[assignment,misc]
     enforce_citations_for_retrieval = None  # type: ignore[assignment,misc]

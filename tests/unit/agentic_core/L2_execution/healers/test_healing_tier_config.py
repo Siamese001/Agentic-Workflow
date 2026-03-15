@@ -12,19 +12,19 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L2_execution.healers.healing_tier_config import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         HealingTierConfig,
+        is_vllm_process_running,
         load_default_healing_tier_config,
         validate_qwen_startup_state,
-        is_vllm_process_running,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     HealingTierConfig = None  # type: ignore[assignment,misc]
     load_default_healing_tier_config = None  # type: ignore[assignment,misc]
@@ -137,4 +137,4 @@ class TestMaxDepthConstant:
 
 def test_module_importable():
     """Smoke: healing_tier_config importable or gracefully unavailable."""
-    assert True
+    pass

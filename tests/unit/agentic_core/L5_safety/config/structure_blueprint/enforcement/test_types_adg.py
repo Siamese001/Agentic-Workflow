@@ -9,16 +9,16 @@ import pytest
 
 try:
     from agentic_core.L5_safety.config.structure_blueprint.enforcement.types import (  # noqa: F401
-        Violation,
-        EnforcementResult,
-        EnforcementReport,
-        make_result,
-        make_report,
-        emit_report_json,
         VERIFIER_VERSION,
+        EnforcementReport,
+        EnforcementResult,
+        Violation,
+        emit_report_json,
+        make_report,
+        make_result,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     Violation = None  # type: ignore[assignment,misc]
     EnforcementResult = None  # type: ignore[assignment,misc]
@@ -51,4 +51,3 @@ class TestTypesImportability:
 
     def test_verifier_version_defined(self) -> None:
         assert VERIFIER_VERSION is not None
-

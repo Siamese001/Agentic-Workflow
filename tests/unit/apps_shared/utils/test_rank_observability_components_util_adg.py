@@ -7,20 +7,20 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.utils.rank_observability_components_util import (  # noqa: F401
-        insert_entity,
-        insert_triplet,
-        insert_event,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         batch_process_invalidation,
         ingest_transcript,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
+        insert_entity,
+        insert_event,
+        insert_triplet,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     insert_entity = None  # type: ignore[assignment,misc]
     insert_triplet = None  # type: ignore[assignment,misc]

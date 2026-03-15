@@ -18,7 +18,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ConfigReadOutcome = None  # type: ignore[assignment,misc]
     ConfigSchemaStatus = None  # type: ignore[assignment,misc]

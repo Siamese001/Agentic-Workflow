@@ -1,13 +1,19 @@
 """ADG contract tests for apps_shared/types/tool_type_types.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
     from apps_shared.types.tool_type_types import (
-        ToolType, ExecutionMode, ToolDefinition, ToolExecutionContext, ToolExecutionConfig,
+        ExecutionMode,
+        ToolDefinition,
+        ToolExecutionConfig,
+        ToolExecutionContext,
+        ToolType,
     )
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     ToolType = ExecutionMode = ToolDefinition = ToolExecutionContext = ToolExecutionConfig = None  # type: ignore[assignment,misc]
 

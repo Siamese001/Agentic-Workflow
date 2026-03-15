@@ -7,16 +7,16 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_rg.engines.achievement_prioritizer_engine import (  # noqa: F401
-        AchievementPrioritizerEngine,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        AchievementPrioritizerEngine,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     AchievementPrioritizerEngine = None  # type: ignore[assignment,misc]
     MAX_RETRIES = None  # type: ignore[assignment,misc]

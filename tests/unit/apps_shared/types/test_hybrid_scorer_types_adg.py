@@ -1,11 +1,13 @@
 """ADG contract tests for apps_shared/types/hybrid_scorer_types.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
-    from apps_shared.types.hybrid_scorer_types import ScoringResult, HybridScorer
+    from apps_shared.types.hybrid_scorer_types import HybridScorer, ScoringResult
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     ScoringResult = HybridScorer = None  # type: ignore[assignment,misc]
 

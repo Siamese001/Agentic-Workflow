@@ -7,18 +7,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.validators.cache_validator import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         generate_llm_cache_key,
         generate_llm_cache_key_with_fingerprint,
         should_invalidate_cache,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     generate_llm_cache_key = None  # type: ignore[assignment,misc]
     generate_llm_cache_key_with_fingerprint = None  # type: ignore[assignment,misc]

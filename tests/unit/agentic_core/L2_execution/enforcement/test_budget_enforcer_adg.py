@@ -15,7 +15,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     BudgetExceeded = None  # type: ignore[assignment,misc]
     BudgetEnforcer = None  # type: ignore[assignment,misc]

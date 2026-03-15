@@ -1,14 +1,21 @@
 """ADG contract tests for apps_shared/types/k_node_type_types.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
     from apps_shared.types.k_node_type_types import (
-        KNodeType, ReasoningStrategy, RAGConfig, DecodingParams, KNodeConfig,
-        get_kx_registry, KXNodeRegistry,
+        DecodingParams,
+        KNodeConfig,
+        KNodeType,
+        KXNodeRegistry,
+        RAGConfig,
+        ReasoningStrategy,
+        get_kx_registry,
     )
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     KNodeType = ReasoningStrategy = RAGConfig = DecodingParams = KNodeConfig = None  # type: ignore[assignment,misc]
     get_kx_registry = KXNodeRegistry = None  # type: ignore[assignment,misc]

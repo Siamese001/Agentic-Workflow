@@ -12,6 +12,12 @@ Location                                                │ Location
 Inside the transformer model                            │ BGE = embedding model (The Reference Librarian)
                                                         │ FAISS = vector database (The Master Architectural Archive)
 
+Model Parameters (Delivered via Hugging Face)           │ Model Parameters (Delivered via Hugging Face)
+────────────────────────────────────────────────────────┼─────────────────────────────────────────────────────────────
+Mechanism: Downloaded from Hub to ~/.cache/huggingface/ │ Mechanism: Downloaded from Hub to ~/.cache/huggingface/
+Identity: These ARE the specific values in the matrix   │ Identity: These ARE the BGE model's trained neural network
+Role: They dictate exactly how tokens map to vectors    │ Role: They dictate how context is compressed into embeddings
+
 Pipeline                                                │ Pipeline
 ────────────────────────────────────────────────────────┼─────────────────────────────────────────────────────────────
                                                         │
@@ -23,7 +29,11 @@ tokenizer (the cataloging clerk)                        │ tokenizer
  ▼                                                      │  ▼
 tokens (discrete catalog entries)                       │ tokens
  │                                                      │  │
- ▼                                                      │  ▼
+ │  ┌──────────────────────────────────────────────┐    │  │  ┌────────────────────────────────────────────────────┐
+ │  │ TRAINED PARAMETERS (Delivered via HF Cache)  │    │  │  │ TRAINED PARAMETERS (Delivered via HF Cache)        │
+ │  └──────────────────────┬───────────────────────┘    │  │  └────────────────────────┬───────────────────────────┘
+ │                         │ instantiate the model      │  │                           │ instantiate the model
+ ▼                         ▼                            │  ▼                           ▼
 ┌──────────────────────────────────────────────────┐    │ ┌──────────────────────────────────────────────────────────┐
 │ TRANSFORMER MODEL                                │    │ │ EMBEDDING MODEL (BGE-M3 / The Librarian)                 │
 │                                                  │    │ │                                                          │

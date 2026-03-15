@@ -7,12 +7,12 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.scripts.script_bridge import (  # noqa: F401
-        ScriptResult,
         ScriptBridge,
+        ScriptResult,
         get_script_bridge,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ScriptResult = None  # type: ignore[assignment,misc]
     ScriptBridge = None  # type: ignore[assignment,misc]

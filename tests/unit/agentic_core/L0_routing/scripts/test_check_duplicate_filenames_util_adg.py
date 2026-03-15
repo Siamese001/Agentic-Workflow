@@ -10,7 +10,7 @@ try:
         check_for_duplicates,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     check_for_duplicates = None  # type: ignore[assignment,misc]
 

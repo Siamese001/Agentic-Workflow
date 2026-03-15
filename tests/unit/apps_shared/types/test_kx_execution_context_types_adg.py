@@ -1,11 +1,13 @@
 """ADG contract tests for apps_shared/types/kx_execution_context_types.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
     from apps_shared.types.kx_execution_context_types import KXExecutionResult
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     KXExecutionResult = None  # type: ignore[assignment,misc]
 

@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     hash_artifact_canonical = None  # type: ignore[assignment,misc]
     SigningError = None  # type: ignore[assignment,misc]

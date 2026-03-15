@@ -10,7 +10,7 @@ try:
         KeywordAnswerSupportValidator,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     KeywordAnswerSupportValidator = None  # type: ignore[assignment,misc]
 

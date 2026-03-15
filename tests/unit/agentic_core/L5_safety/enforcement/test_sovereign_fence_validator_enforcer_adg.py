@@ -7,18 +7,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.enforcement.sovereign_fence_validator_enforcer import (  # noqa: F401
-        SovereignFenceViolation,
-        FenceValidationResult,
-        validate,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        FenceValidationResult,
+        SovereignFenceViolation,
+        validate,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     SovereignFenceViolation = None  # type: ignore[assignment,misc]
     FenceValidationResult = None  # type: ignore[assignment,misc]

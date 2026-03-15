@@ -213,7 +213,6 @@ class TestSuffixHygiene:
             print(f"\n[WARNING] {len(all_violations)} stuttering violations found:")
             for v in all_violations[:10]:
                 print(f"  - {v}")
-                assert True  # no-exception contract
 
     def _find_stuttering_violations(self, project_root: Path, pattern: str) -> list:
         """Helper to find files matching a stuttering pattern."""

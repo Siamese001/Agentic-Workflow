@@ -9,18 +9,18 @@ import pytest
 
 try:
     from agentic_core.mixins.context_management_mixin import (  # noqa: F401
-        ContextPriority,
-        ContextItem,
-        ContextConfig,
-        ContextOverflowError,
-        ContextManagementMixin,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
         BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        ContextConfig,
+        ContextItem,
+        ContextManagementMixin,
+        ContextOverflowError,
+        ContextPriority,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ContextPriority = None  # type: ignore[assignment,misc]
     ContextItem = None  # type: ignore[assignment,misc]
@@ -52,4 +52,3 @@ class TestContextManagementMixinImportability:
 
     def test_default_sleep_defined(self) -> None:
         assert DEFAULT_SLEEP is not None
-

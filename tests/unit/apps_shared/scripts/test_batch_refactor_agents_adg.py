@@ -7,17 +7,17 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.scripts.batch_refactor_agents import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         get_agent_info,
         main,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     get_agent_info = None  # type: ignore[assignment,misc]
     main = None  # type: ignore[assignment,misc]

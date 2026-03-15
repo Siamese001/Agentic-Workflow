@@ -8,7 +8,7 @@ pytestmark = pytest.mark.unit
 try:
     import agentic_core.prompt_governance.security.__init__ as _mod  # noqa: F401
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _mod = None
     _AVAILABLE = False
 

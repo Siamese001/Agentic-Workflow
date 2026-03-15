@@ -12,7 +12,7 @@ try:
         RetrievalProfileProposalManager,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     RetrievalProfileProposalManager = None  # type: ignore[assignment,misc]
 
@@ -24,4 +24,3 @@ class TestRetrievalProfileProposalManagerImportability:
 
     def test_retrievalprofileproposalmanager_is_type(self) -> None:
         assert RetrievalProfileProposalManager is not None
-

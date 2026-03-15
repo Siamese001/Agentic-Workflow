@@ -7,22 +7,22 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.utils.sdk_category_util import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         SDKCategory,
         SDKEntry,
-        validate_sdk,
-        validate_all_sdks,
-        get_sdk_by_category,
         get_available_sdks,
+        get_sdk_by_category,
         reset_all_clients,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
+        validate_all_sdks,
+        validate_sdk,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     SDKCategory = None  # type: ignore[assignment,misc]
     SDKEntry = None  # type: ignore[assignment,misc]

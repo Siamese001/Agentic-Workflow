@@ -17,7 +17,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     AgentInfo = None  # type: ignore[assignment,misc]
     VerificationResult = None  # type: ignore[assignment,misc]

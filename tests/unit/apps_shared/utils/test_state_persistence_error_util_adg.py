@@ -7,17 +7,17 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.utils.state_persistence_error_util import (  # noqa: F401
-        StatePersistenceError,
-        AtomicStateManager,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        AtomicStateManager,
+        StatePersistenceError,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     StatePersistenceError = None  # type: ignore[assignment,misc]
     AtomicStateManager = None  # type: ignore[assignment,misc]

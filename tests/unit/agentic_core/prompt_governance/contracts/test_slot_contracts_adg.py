@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     SlotS0 = None  # type: ignore[assignment,misc]
     SlotD0 = None  # type: ignore[assignment,misc]

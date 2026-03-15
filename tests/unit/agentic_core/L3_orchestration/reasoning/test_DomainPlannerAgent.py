@@ -12,20 +12,20 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L3_orchestration.reasoning.DomainPlannerAgent import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        DomainPlannerAgent,
         DomainPlannerOutput,
         PlannerAssessment,
         ScenarioSimulationResult,
         StrategyPlan,
         WorkflowContext,
-        DomainPlannerAgent,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     DomainPlannerOutput = None  # type: ignore[assignment,misc]
     PlannerAssessment = None  # type: ignore[assignment,misc]

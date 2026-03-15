@@ -16,7 +16,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     SubfolderDefinition = None  # type: ignore[assignment,misc]
     TerritoryDefinition = None  # type: ignore[assignment,misc]

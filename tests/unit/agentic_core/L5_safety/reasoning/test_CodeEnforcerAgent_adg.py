@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     EnforcementType = None  # type: ignore[assignment,misc]
     ViolationSeverity = None  # type: ignore[assignment,misc]

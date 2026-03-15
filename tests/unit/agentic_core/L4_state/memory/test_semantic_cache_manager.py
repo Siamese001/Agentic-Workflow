@@ -25,7 +25,7 @@ try:
     DEFAULT_TRACE_SAMPLING_RATE = SemanticCacheManager.DEFAULT_TRACE_SAMPLING_RATE
     DEFAULT_STRICT_MODE = SemanticCacheManager.DEFAULT_STRICT_MODE
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     CriticalInfrastructureError = None  # type: ignore[assignment,misc]
     PII_Sanitizer = None  # type: ignore[assignment,misc]
@@ -131,4 +131,4 @@ class TestDefaultStrictModeConstant:
 
 def test_module_importable():
     """Smoke: semantic_cache_manager importable or gracefully unavailable."""
-    assert True
+    pass

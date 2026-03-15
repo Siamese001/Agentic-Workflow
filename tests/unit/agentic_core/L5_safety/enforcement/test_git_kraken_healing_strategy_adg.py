@@ -7,18 +7,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.enforcement.git_kraken_healing_strategy import (  # noqa: F401
-        GitKrakenHealingStrategy,
-        get_git_client,
-        create_gitkraken_healing_strategy,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        GitKrakenHealingStrategy,
+        create_gitkraken_healing_strategy,
+        get_git_client,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     GitKrakenHealingStrategy = None  # type: ignore[assignment,misc]
     get_git_client = None  # type: ignore[assignment,misc]

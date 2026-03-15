@@ -10,6 +10,7 @@ from typing import Any
 
 from agentic_core.cache.redis_cache_client import get_hot_cache
 from agentic_core.L3_orchestration.reasoning.mcp_manager import MCPConnectionManager, load_mcp_config
+from agentic_core.seams.contracts.authority import get_mcp_authority
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -36,7 +37,7 @@ class SovereignMcpRouter(SovereignBaseAgent):
             Logger.info(f"[L3 MCP] Sovereign router ARMED for role '{self.role}'")
         except Exception as e:
             Logger.critical(f"[L3 MCP BREACH] Initialization failed: {e}")
-            mcp_authority.record_breach(str(e))
+            get_mcp_authority().record_breach(str(e))
             raise
 
     @staticmethod
@@ -49,7 +50,7 @@ class SovereignMcpRouter(SovereignBaseAgent):
     # guardian: allow-type-erasure
     async def resolve_violation(self, key_id: int, file_path: str, violation_desc: str) -> dict[str, Any]:
         """Route canon key Violation to hardened MCP tool — L5 shielded"""
-        if not mcp_authority.is_authorized():
+        if not get_mcp_authority().is_authorized():
             return {"status": "blocked", "reason": "MCP sovereignty compromised"}
         if not self.initialized or not self.manager:
             return {"status": "error", "reason": "MCP router not initialized"}
@@ -73,8 +74,8 @@ class SovereignMcpRouter(SovereignBaseAgent):
                         "insight": "L5 shield tested against adversarial simulation",
                     }
                 except Exception as red_e:
-                    raise
                     Logger.error(f"[L5 MCP] RedTeam simulation failed: {red_e}")
+                    raise
             elif key_id in {21, 13}:
                 try:
                     memory_result: Any = await self.manager.call_tool(
@@ -87,8 +88,8 @@ class SovereignMcpRouter(SovereignBaseAgent):
                         "insight": "Pattern matched against eternal knowledge graph.",
                     }
                 except Exception as mem_e:
-                    raise
                     Logger.warning(f"[L4 MCP] Memory search failed: {mem_e}")
+                    raise
             elif key_id == 18:
                 redis_result: Any = await self.manager.call_tool(
                     "redis_recover", {"key_prefix": "mission:state", "operation": "restore_last_good"}
@@ -115,8 +116,8 @@ class SovereignMcpRouter(SovereignBaseAgent):
                                     "insight": "Applied internal repository guidance to healing round.",
                                 }
                             except Exception as wiki_e:
-                                raise
                                 Logger.warning(f"[L2 DEEPWIKI] Q&A failed: {wiki_e}")
+                                raise
                 except (ImportError, AttributeError) as e:
                     Logger.debug(f"DeepWiki MCP unavailable: {e}")
             elif key_id in {42, 49} and "ui" in violation_desc.lower():
@@ -134,8 +135,8 @@ class SovereignMcpRouter(SovereignBaseAgent):
                                     "tokens": tokens,
                                 }
                             except Exception as figma_e:
-                                raise
                                 Logger.warning(f"[L2 FIGMA] Token extraction failed: {figma_e}")
+                                raise
                 except (ImportError, AttributeError) as e:
                     Logger.debug(f"Figma MCP unavailable: {e}")
             if key_id in {40, 41, 42, 49}:
@@ -191,8 +192,8 @@ class SovereignMcpRouter(SovereignBaseAgent):
                         "cached": cached_template is not None,
                     }
                 except Exception as reasoning_e:
-                    raise
                     Logger.warning(f"[L1 MCP] Sequential thinking failed: {reasoning_e}")
+                    raise
                     PolicyResult: Any = await self.manager.call_tool(
                         "gemini_policy_enforcer",
                         {"key_id": key_id, "Violation": violation_desc, "file_context": file_path},
@@ -264,7 +265,7 @@ class SovereignMcpRouter(SovereignBaseAgent):
             return {"status": "no_route", "key_id": key_id}
         except Exception as e:
             Logger.error(f"[MCP FAILURE] Tool call failed for Key {key_id}: {e}")
-            mcp_authority.record_breach(str(e))
+            get_mcp_authority().record_breach(str(e))
             return {"status": "error", "exception": str(e)}
 
     # guardian: allow-type-erasure

@@ -12,18 +12,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.types.determinism_contracts_types import (  # noqa: F401
-        ForbiddenInputError,
-        WallClockViolation,
-        RollbackHashMismatch,
         EpisodicMemoryNotQueried,
-        validate_execution_input,
-        check_forbidden_input_type,
-        validate_manifest_emission,
-        require_manifest_hash_ok,
+        ForbiddenInputError,
+        RollbackHashMismatch,
+        WallClockViolation,
         canonical_ast_serialize,
+        check_forbidden_input_type,
+        require_manifest_hash_ok,
+        validate_execution_input,
+        validate_manifest_emission,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ForbiddenInputError = None  # type: ignore[assignment,misc]
     WallClockViolation = None  # type: ignore[assignment,misc]
@@ -121,4 +121,4 @@ class TestCanonicalAstSerializeFunction:
 
 def test_module_importable():
     """Smoke: determinism_contracts_types importable or gracefully unavailable."""
-    assert True
+    pass

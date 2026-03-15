@@ -9,15 +9,15 @@ import pytest
 
 try:
     from system_learning.engines.openai_embedder import (  # noqa: F401
-        OpenAIEmbedder,
-        BGEEmbedder,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
         BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        BGEEmbedder,
+        OpenAIEmbedder,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     OpenAIEmbedder = None  # type: ignore[assignment,misc]
     BGEEmbedder = None  # type: ignore[assignment,misc]
@@ -43,4 +43,3 @@ class TestOpenaiEmbedderImportability:
 
     def test_default_sleep_defined(self) -> None:
         assert DEFAULT_SLEEP is not None
-

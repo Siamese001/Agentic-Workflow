@@ -18,7 +18,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     CommitPhase = None  # type: ignore[assignment,misc]
     RFC6902Patch = None  # type: ignore[assignment,misc]

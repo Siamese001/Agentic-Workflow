@@ -12,18 +12,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.enforcement.module_collision_guardrail import (  # noqa: F401
-        compute_logical_import_path,
-        should_exclude,
-        scan_directory,
-        is_allowed_shim_pair,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        compute_logical_import_path,
+        is_allowed_shim_pair,
+        scan_directory,
+        should_exclude,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     compute_logical_import_path = None  # type: ignore[assignment,misc]
     should_exclude = None  # type: ignore[assignment,misc]

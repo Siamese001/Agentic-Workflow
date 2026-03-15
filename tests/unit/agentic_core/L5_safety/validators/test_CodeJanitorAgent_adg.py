@@ -7,11 +7,11 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.validators.CodeJanitorAgent import (  # noqa: F401
-        JanitorViolation,
         CodeJanitorAgent,
+        JanitorViolation,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     JanitorViolation = None  # type: ignore[assignment,misc]
     CodeJanitorAgent = None  # type: ignore[assignment,misc]

@@ -7,18 +7,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L3_orchestration.engines.coordinator_capability_orchestrator import (  # noqa: F401
-        CoordinatorCapability,
-        WorkflowCoordinator,
-        CoordinatorRegistry,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        CoordinatorCapability,
+        CoordinatorRegistry,
+        WorkflowCoordinator,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     CoordinatorCapability = None  # type: ignore[assignment,misc]
     WorkflowCoordinator = None  # type: ignore[assignment,misc]

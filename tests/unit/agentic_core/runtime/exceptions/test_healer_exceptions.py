@@ -12,20 +12,20 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.runtime.exceptions.healer_exceptions import (  # noqa: F401
-        HealerError,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         CircularDependencyError,
+        HealerError,
         HealingBudgetExceededError,
-        ValidationRegistryError,
         HealingTimeoutError,
         SovereignError,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
+        ValidationRegistryError,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     HealerError = None  # type: ignore[assignment,misc]
     CircularDependencyError = None  # type: ignore[assignment,misc]

@@ -7,20 +7,20 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_lic.reasoning.OutreachValidationExecutorAgent import (  # noqa: F401
-        ValidationGateExecutor,
-        RuleFailure,
-        MCPHardenedMixin,
-        HealerMixin,
-        OutreachValidationExecutorAgent,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        HealerMixin,
+        MCPHardenedMixin,
+        OutreachValidationExecutorAgent,
+        RuleFailure,
+        ValidationGateExecutor,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ValidationGateExecutor = None  # type: ignore[assignment,misc]
     RuleFailure = None  # type: ignore[assignment,misc]

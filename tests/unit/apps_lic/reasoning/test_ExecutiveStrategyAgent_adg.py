@@ -7,19 +7,19 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_lic.reasoning.ExecutiveStrategyAgent import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         ExecutiveStrategyAgent,
+        get_exec_interviewer_profile,
         get_exec_shadow_audit,
         get_exec_strategy_roadmap,
-        get_exec_interviewer_profile,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ExecutiveStrategyAgent = None  # type: ignore[assignment,misc]
     get_exec_shadow_audit = None  # type: ignore[assignment,misc]

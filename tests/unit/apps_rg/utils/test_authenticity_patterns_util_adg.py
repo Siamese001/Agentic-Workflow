@@ -7,25 +7,25 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_rg.utils.authenticity_patterns_util import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         AuthenticityPatterns,
-        CompetitiveIntelligence,
-        ThematicAnalysisOutput,
-        ThematicAnalysisNode,
         BulletGenerationOutput,
+        CompetitiveIntelligence,
         OverviewSynthesisOutput,
+        ThematicAnalysisNode,
+        ThematicAnalysisOutput,
         TwoPhaseGenerationNode,
         ValidationResult,
         example_two_phase_generation,
         example_validation_gates,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     AuthenticityPatterns = None  # type: ignore[assignment,misc]
     CompetitiveIntelligence = None  # type: ignore[assignment,misc]

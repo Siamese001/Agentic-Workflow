@@ -17,7 +17,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ProviderHealthState = None  # type: ignore[assignment,misc]
     SovereigntyViolation = None  # type: ignore[assignment,misc]

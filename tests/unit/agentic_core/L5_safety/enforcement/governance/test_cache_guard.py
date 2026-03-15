@@ -12,18 +12,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.enforcement.governance.cache_guard import (  # noqa: F401
-        is_cache_directory,
-        is_excluded_directory,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         estimate_directory_size,
         has_tracked_files,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
+        is_cache_directory,
+        is_excluded_directory,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     is_cache_directory = None  # type: ignore[assignment,misc]
     is_excluded_directory = None  # type: ignore[assignment,misc]

@@ -7,18 +7,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.runtime.utils.sovereign_dependency_error_util import (  # noqa: F401
-        SovereignDependencyError,
-        AgentPlan,
-        SubatomicHop,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        AgentPlan,
+        SovereignDependencyError,
+        SubatomicHop,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     SovereignDependencyError = None  # type: ignore[assignment,misc]
     AgentPlan = None  # type: ignore[assignment,misc]

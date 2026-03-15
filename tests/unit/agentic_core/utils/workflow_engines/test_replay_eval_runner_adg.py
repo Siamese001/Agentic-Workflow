@@ -7,11 +7,11 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.utils.workflow_engines.replay_eval_runner import (  # noqa: F401
-        SystemConfig,
         ReplayEvaluationRunner,
+        SystemConfig,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     SystemConfig = None  # type: ignore[assignment,misc]
     ReplayEvaluationRunner = None  # type: ignore[assignment,misc]

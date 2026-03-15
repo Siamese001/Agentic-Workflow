@@ -397,4 +397,3 @@ class TestBudgetAndSeamIntegration:
             # No exception = no network calls made
         finally:
             reset_heal_budget_counters()
-            assert True  # no-exception contract

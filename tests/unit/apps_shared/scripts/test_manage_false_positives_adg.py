@@ -7,20 +7,20 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.scripts.manage_false_positives import (  # noqa: F401
-        load_review_log,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         load_false_positives,
+        load_review_log,
+        mark_false_positive,
         save_false_positives,
         show_pending_reviews,
-        mark_false_positive,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     load_review_log = None  # type: ignore[assignment,misc]
     load_false_positives = None  # type: ignore[assignment,misc]

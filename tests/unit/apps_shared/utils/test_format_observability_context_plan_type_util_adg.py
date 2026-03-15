@@ -7,24 +7,24 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.utils.format_observability_context_plan_type_util import (  # noqa: F401
-        FormatObservabilityContextPlanType,
-        FormatObservabilityContextPlanConstraints,
-        FormatObservabilityContextPlanResult,
-        FormatObservabilityContextPlanProcessor,
-        FormatObservabilityContextPlanImpl,
-        SecurityError,
-        FormatObservabilityContextPlanInterface,
-        FormatObservabilityContextPlanFactory,
-        format_observability_context,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        FormatObservabilityContextPlanConstraints,
+        FormatObservabilityContextPlanFactory,
+        FormatObservabilityContextPlanImpl,
+        FormatObservabilityContextPlanInterface,
+        FormatObservabilityContextPlanProcessor,
+        FormatObservabilityContextPlanResult,
+        FormatObservabilityContextPlanType,
+        SecurityError,
+        format_observability_context,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     FormatObservabilityContextPlanType = None  # type: ignore[assignment,misc]
     FormatObservabilityContextPlanConstraints = None  # type: ignore[assignment,misc]

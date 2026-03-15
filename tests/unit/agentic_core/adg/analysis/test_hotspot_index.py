@@ -12,11 +12,11 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.adg.analysis.hotspot_index import (  # noqa: F401
-        ModuleCoupling,
         HotspotIndex,
+        ModuleCoupling,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ModuleCoupling = None  # type: ignore[assignment,misc]
     HotspotIndex = None  # type: ignore[assignment,misc]
@@ -46,4 +46,4 @@ class TestHotspotIndexContract:
 
 def test_module_importable():
     """Smoke: hotspot_index importable or gracefully unavailable."""
-    assert True
+    pass

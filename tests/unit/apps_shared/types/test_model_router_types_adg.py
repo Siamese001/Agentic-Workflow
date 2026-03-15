@@ -1,13 +1,19 @@
 """ADG contract tests for apps_shared/types/model_router_types.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
     from apps_shared.types.model_router_types import (
-        ModelTier, TaskType, ModelConfig, TaskProfile, ModelRouter,
+        ModelConfig,
+        ModelRouter,
+        ModelTier,
+        TaskProfile,
+        TaskType,
     )
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     ModelTier = TaskType = ModelConfig = TaskProfile = ModelRouter = None  # type: ignore[assignment,misc]
 

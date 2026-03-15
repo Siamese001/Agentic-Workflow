@@ -12,19 +12,19 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.prompt_governance.scripts.template_render_visitor import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         TemplateRenderVisitor,
+        audit_agent_compliance,
         extract_template_schema,
         find_python_files,
-        audit_agent_compliance,
         main,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     TemplateRenderVisitor = None  # type: ignore[assignment,misc]
     extract_template_schema = None  # type: ignore[assignment,misc]

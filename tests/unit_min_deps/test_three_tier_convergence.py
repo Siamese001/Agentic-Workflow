@@ -61,7 +61,6 @@ class TestTier1UWG:
         """Revoking a path that was never granted must not raise."""
         uwg = self._fresh_uwg()
         uwg.revoke_write_permission("nonexistent/territory/")  # must not raise
-        assert True  # no-exception contract
 
     def test_replay_mode_skips_permission_changes(self) -> None:
         from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway

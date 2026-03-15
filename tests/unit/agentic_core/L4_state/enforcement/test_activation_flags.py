@@ -12,22 +12,22 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L4_state.enforcement.activation_flags import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         ActivationFlags,
-        ActivationProof,
         ActivationFlagsStore,
         ActivationGate,
-        get_activation_flags,
-        update_activation_flags,
-        is_meta_learning_allowed,
+        ActivationProof,
         assert_meta_learning_allowed,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
+        get_activation_flags,
+        is_meta_learning_allowed,
+        update_activation_flags,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     ActivationFlags = None  # type: ignore[assignment,misc]
     ActivationProof = None  # type: ignore[assignment,misc]

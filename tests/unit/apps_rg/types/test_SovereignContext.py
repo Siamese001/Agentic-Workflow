@@ -12,18 +12,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_rg.types.SovereignContext import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         SimpleBuffer,
         SimpleTrace,
         SovereignContext,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     SimpleBuffer = None  # type: ignore[assignment,misc]
     SimpleTrace = None  # type: ignore[assignment,misc]
@@ -138,4 +138,4 @@ class TestMaxDepthConstant:
 
 def test_module_importable():
     """Smoke: SovereignContext importable or gracefully unavailable."""
-    assert True
+    pass

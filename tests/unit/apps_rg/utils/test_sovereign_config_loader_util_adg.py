@@ -7,20 +7,20 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_rg.utils.sovereign_config_loader_util import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         SovereignConfigLoader,
         get_config_path,
         load_rg_specs,
-        save_rg_specs,
         reload_config,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
+        save_rg_specs,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     SovereignConfigLoader = None  # type: ignore[assignment,misc]
     get_config_path = None  # type: ignore[assignment,misc]

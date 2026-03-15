@@ -7,17 +7,17 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.enforcement.import_boundary_check_enforcer import (  # noqa: F401
-        check_file_import_boundaries,
-        check_agentic_core_boundaries,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        check_agentic_core_boundaries,
+        check_file_import_boundaries,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     check_file_import_boundaries = None  # type: ignore[assignment,misc]
     check_agentic_core_boundaries = None  # type: ignore[assignment,misc]

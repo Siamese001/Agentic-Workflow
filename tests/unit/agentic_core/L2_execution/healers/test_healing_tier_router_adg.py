@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     WEIGHT_FAILURE_PRIOR = None  # type: ignore[assignment,misc]
     WEIGHT_BLAST_RADIUS = None  # type: ignore[assignment,misc]

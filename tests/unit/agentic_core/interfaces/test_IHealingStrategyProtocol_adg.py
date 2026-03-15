@@ -18,7 +18,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     IHealingStrategyProtocol = None  # type: ignore[assignment,misc]
     ChaosResilienceStrategy = None  # type: ignore[assignment,misc]

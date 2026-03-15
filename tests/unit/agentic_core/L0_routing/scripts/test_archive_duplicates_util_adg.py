@@ -7,14 +7,14 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.scripts.archive_duplicates_util import (  # noqa: F401
-        main,
-        PROJECT_ROOT,
-        TIMESTAMP,
         ARCHIVE_BASE,
+        PROJECT_ROOT,
         TARGETS,
+        TIMESTAMP,
+        main,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     main = None  # type: ignore[assignment,misc]
     PROJECT_ROOT = None  # type: ignore[assignment,misc]

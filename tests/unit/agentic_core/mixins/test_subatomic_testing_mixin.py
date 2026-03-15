@@ -12,17 +12,17 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.mixins.subatomic_testing_mixin import (  # noqa: F401
-        SubatomicTestingMixin,
-        L2SelfTestingMixin,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        L2SelfTestingMixin,
+        SubatomicTestingMixin,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     SubatomicTestingMixin = None  # type: ignore[assignment,misc]
     L2SelfTestingMixin = None  # type: ignore[assignment,misc]
@@ -108,4 +108,4 @@ class TestMaxDepthConstant:
 
 def test_module_importable():
     """Smoke: subatomic_testing_mixin importable or gracefully unavailable."""
-    assert True
+    pass

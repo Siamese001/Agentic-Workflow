@@ -9,15 +9,15 @@ import pytest
 
 try:
     from apps_shared.reasoning.BaseDispatchAgent import (  # noqa: F401
-        ExecutionResult,
-        BaseDispatchAgent,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
         BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        BaseDispatchAgent,
+        ExecutionResult,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ExecutionResult = None  # type: ignore[assignment,misc]
     BaseDispatchAgent = None  # type: ignore[assignment,misc]
@@ -43,4 +43,3 @@ class TestBasedispatchagentImportability:
 
     def test_default_sleep_defined(self) -> None:
         assert DEFAULT_SLEEP is not None
-

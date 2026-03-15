@@ -7,18 +7,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.enforcement.vector_healing_strategy import (  # noqa: F401
-        VectorHealingStrategy,
-        get_filesystem_client,
-        create_vector_healing_strategy,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        VectorHealingStrategy,
+        create_vector_healing_strategy,
+        get_filesystem_client,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     VectorHealingStrategy = None  # type: ignore[assignment,misc]
     get_filesystem_client = None  # type: ignore[assignment,misc]

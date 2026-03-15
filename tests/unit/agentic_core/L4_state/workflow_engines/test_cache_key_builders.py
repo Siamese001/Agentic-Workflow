@@ -12,18 +12,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L4_state.workflow_engines.cache_key_builders import (  # noqa: F401
-        build_routing_rule_surface_key,
-        build_route_decision_key,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         build_cap_registry_key,
         build_compiled_prompt_key,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
+        build_route_decision_key,
+        build_routing_rule_surface_key,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     build_routing_rule_surface_key = None  # type: ignore[assignment,misc]
     build_route_decision_key = None  # type: ignore[assignment,misc]

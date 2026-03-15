@@ -12,19 +12,19 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.utils.workflow_engines.late_chunking import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        LateChunkingPipelineConfig,
         LateChunkingProfile,
         LateChunkManifest,
-        LateChunkingPipelineConfig,
-        segment_document,
         build_late_chunk_manifests_for_corpus,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
+        segment_document,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     LateChunkingProfile = None  # type: ignore[assignment,misc]
     LateChunkManifest = None  # type: ignore[assignment,misc]

@@ -7,16 +7,16 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.utils.workflow_engines.completeness_monitors import (  # noqa: F401
+        ConditionLossDriftMonitor,
+        ConditionLossSnapshot,
+        HighSimilarityWrongAnswerMonitor,
+        ParentExpansionMissMonitor,
+        RetrievalCompletenessMonitor,
         RetrievalCompletenessSnapshot,
         SupportValidationSnapshot,
-        ConditionLossSnapshot,
-        RetrievalCompletenessMonitor,
-        ParentExpansionMissMonitor,
-        HighSimilarityWrongAnswerMonitor,
-        ConditionLossDriftMonitor,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     RetrievalCompletenessSnapshot = None  # type: ignore[assignment,misc]
     SupportValidationSnapshot = None  # type: ignore[assignment,misc]

@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     Provider = None  # type: ignore[assignment,misc]
     RoutingDecision = None  # type: ignore[assignment,misc]

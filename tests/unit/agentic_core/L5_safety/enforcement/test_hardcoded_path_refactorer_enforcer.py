@@ -12,18 +12,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.enforcement.hardcoded_path_refactorer_enforcer import (  # noqa: F401
-        should_exclude_path,
-        has_ssot_import,
-        add_ssot_import,
-        refactor_file,
-        PROJECT_ROOT,
         EXCLUDED_DIRS,
         EXCLUDED_FILES,
-        PATH_TO_SSOT_MAP,
         PATH_CONSTRUCTOR_MAP,
+        PATH_TO_SSOT_MAP,
+        PROJECT_ROOT,
+        add_ssot_import,
+        has_ssot_import,
+        refactor_file,
+        should_exclude_path,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     should_exclude_path = None  # type: ignore[assignment,misc]
     has_ssot_import = None  # type: ignore[assignment,misc]

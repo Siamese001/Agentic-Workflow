@@ -12,18 +12,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from system_learning.engines.healing_success_rate_store import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         HealingSuccessRateStore,
         get_default_store,
         reset_default_store,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     HealingSuccessRateStore = None  # type: ignore[assignment,misc]
     get_default_store = None  # type: ignore[assignment,misc]
@@ -128,4 +128,4 @@ class TestMaxDepthConstant:
 
 def test_module_importable():
     """Smoke: healing_success_rate_store importable or gracefully unavailable."""
-    assert True
+    pass

@@ -12,22 +12,22 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.enforcement.execution_strategy import (  # noqa: F401
-        ExecutionStrategy,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        ExecutionConfig,
+        ExecutionEnvironment,
         ExecutionPriority,
         ExecutionRequest,
-        ExecutionEnvironment,
-        ExecutionConfig,
         ExecutionResult,
+        ExecutionStrategy,
         create_observability_execution_engine,
         use_observability_execution,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     ExecutionStrategy = None  # type: ignore[assignment,misc]
     ExecutionPriority = None  # type: ignore[assignment,misc]

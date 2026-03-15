@@ -7,13 +7,13 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.scripts.disposition import (  # noqa: F401
-        Disposition,
         CoreAnalysisResult,
         CoreSynthesisAnalyzer,
+        Disposition,
         main,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     Disposition = None  # type: ignore[assignment,misc]
     CoreAnalysisResult = None  # type: ignore[assignment,misc]

@@ -110,7 +110,6 @@ class TestPullAuditDataValid:
         mock_store.read_audit_slice.return_value = b"data"
         pull_audit_data(mock_store, 1_700_000_000, 1_700_003_600)
         mock_store.read_audit_slice.assert_called_once_with(1_700_000_000, 1_700_003_600)
-        assert True  # no-exception contract
 
 
 # =============================================================================
@@ -148,7 +147,6 @@ class TestAuthorityGuardIntegration:
         with patch("system_learning.engines.l4_audit_reader.assert_read_only_audit_access") as mock_guard:
             pull_audit_data(store, 1_700_000_000, 1_700_003_600)
         mock_guard.assert_called_once()
-        assert True  # no-exception contract
 
     def test_assert_zero_execution_authority_is_called(self):
         """pull_audit_data must invoke assert_zero_execution_authority."""
@@ -156,7 +154,6 @@ class TestAuthorityGuardIntegration:
         with patch("system_learning.engines.l4_audit_reader.assert_zero_execution_authority") as mock_guard:
             pull_audit_data(store, 1_700_000_000, 1_700_003_600)
         mock_guard.assert_called_once()
-        assert True  # no-exception contract
 
     def test_authority_context_has_read_mode(self):
         """The AuthorityContext passed to guards must have mode='READ'."""

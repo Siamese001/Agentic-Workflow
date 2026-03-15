@@ -138,7 +138,6 @@ class TestSplitBrainDetection:
         ctx = SealedRoutingContext(config, version="1.0")
         # L5 receives the same config reference — must not raise
         ctx.verify_or_raise(config)
-        assert True  # no-exception contract
 
     def test_stale_config_at_l5_raises(self):
         """D1: L0 seals V1; L5 reads V2 (stale/advanced snapshot)."""
@@ -200,7 +199,6 @@ class TestSplitBrainDetection:
         ctx = SealedRoutingContext(config, version="1.0")
         for _ in range(5):
             ctx.verify_or_raise(config)  # must not raise
-            assert True  # no-exception contract
 
     def test_version_label_tracked_on_seal(self):
         """Version is carried on the seal for auditability even if not in hash."""
@@ -223,7 +221,6 @@ class TestStateTransitions:
         config = {"k": "v"}
         ctx = SealedRoutingContext(config, version="1.0")
         ctx.verify_or_raise(config)  # no exception
-        assert True  # no-exception contract
 
     def test_valid_seal_then_invalid_verify(self):
         config = {"k": "v"}
@@ -276,4 +273,3 @@ class TestMutationMatrix:
         config = copy.deepcopy(_CONFIG_V1)
         ctx = SealedRoutingContext(config, version=version)
         ctx.verify_or_raise(config)  # must not raise
-        assert True  # no-exception contract

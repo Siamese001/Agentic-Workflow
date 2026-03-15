@@ -1,14 +1,20 @@
 """ADG contract tests for apps_shared/types/tool_category_types.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
     from apps_shared.types.tool_category_types import (
-        ToolCategory, ToolProtocol, ToolSpecification,
-        ToolInvocationResult, ToolInvocationConfig, ObservabilityToolInvoker,
+        ObservabilityToolInvoker,
+        ToolCategory,
+        ToolInvocationConfig,
+        ToolInvocationResult,
+        ToolProtocol,
+        ToolSpecification,
     )
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     ToolCategory = ToolProtocol = ToolSpecification = None  # type: ignore[assignment,misc]
     ToolInvocationResult = ToolInvocationConfig = ObservabilityToolInvoker = None  # type: ignore[assignment,misc]

@@ -12,18 +12,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.utils.prompt_loader_util import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         PromptLoader,
-        load_prompt_for_agent,
         get_global_constraints,
         get_specialist_prompt,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
+        load_prompt_for_agent,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     PromptLoader = None  # type: ignore[assignment,misc]
     load_prompt_for_agent = None  # type: ignore[assignment,misc]

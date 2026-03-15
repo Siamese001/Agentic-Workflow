@@ -7,18 +7,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_rg.enforcement.HardenedanthropicexecutorStrategy import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         HardenedAnthropicConfig,
         HardenedAnthropicExecutor,
         create_hardened_anthropic_executor,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     HardenedAnthropicConfig = None  # type: ignore[assignment,misc]
     HardenedAnthropicExecutor = None  # type: ignore[assignment,misc]

@@ -17,7 +17,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     MAX_EVENTS = None  # type: ignore[assignment,misc]
     OutcomeRecord = None  # type: ignore[assignment,misc]

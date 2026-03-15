@@ -7,17 +7,17 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.scripts.fix_whitespace_in_container import (  # noqa: F401
-        fix_whitespace_in_file,
-        fix_all_files,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        fix_all_files,
+        fix_whitespace_in_file,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     fix_whitespace_in_file = None  # type: ignore[assignment,misc]
     fix_all_files = None  # type: ignore[assignment,misc]

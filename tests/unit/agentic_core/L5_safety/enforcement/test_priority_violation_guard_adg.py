@@ -17,7 +17,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     OptimizationPriority = None  # type: ignore[assignment,misc]
     PriorityViolationGuard = None  # type: ignore[assignment,misc]

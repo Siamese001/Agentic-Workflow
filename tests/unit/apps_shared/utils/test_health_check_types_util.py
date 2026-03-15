@@ -12,22 +12,22 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.utils.health_check_types_util import (  # noqa: F401
-        HealthStatus,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         CheckResult,
-        HealthReport,
-        HealthChecker,
         CommonChecks,
+        HealthChecker,
+        HealthReport,
+        HealthStatus,
         ReadinessGate,
         get_health_checker,
         get_readiness_gate,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     HealthStatus = None  # type: ignore[assignment,misc]
     CheckResult = None  # type: ignore[assignment,misc]

@@ -16,7 +16,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ShadowRoutingRationale = None  # type: ignore[assignment,misc]
     ShadowRoutingDecision = None  # type: ignore[assignment,misc]

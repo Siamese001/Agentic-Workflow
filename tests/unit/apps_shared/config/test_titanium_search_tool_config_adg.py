@@ -7,20 +7,20 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.config.titanium_search_tool_config import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        clear_cache,
+        get_pipeline_stats,
         get_titanium_search_tool,
         get_titanium_search_with_sources,
-        get_pipeline_stats,
-        clear_cache,
         sync_search,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     get_titanium_search_tool = None  # type: ignore[assignment,misc]
     get_titanium_search_with_sources = None  # type: ignore[assignment,misc]

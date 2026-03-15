@@ -1,13 +1,16 @@
 """ADG contract tests for apps_shared/types/pipeline_stage_status_types.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
     from apps_shared.types.pipeline_stage_status_types import (
-        PipelineStageStatus, StageResult,
+        PipelineStageStatus,
+        StageResult,
     )
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     PipelineStageStatus = StageResult = None  # type: ignore[assignment,misc]
 

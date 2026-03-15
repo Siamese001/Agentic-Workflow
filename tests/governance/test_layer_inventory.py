@@ -201,4 +201,3 @@ class TestLayerInventory:
         print(f"  Non-layer (utils/config/etc): {len(non_layer_files)} files")
 
         # This test always passes - it's for evidence output
-        assert True

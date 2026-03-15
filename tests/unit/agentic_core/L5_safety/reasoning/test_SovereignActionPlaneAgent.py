@@ -12,19 +12,19 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.reasoning.SovereignActionPlaneAgent import (  # noqa: F401
-        SovereignToolsmith,
-        SovereignSandbox,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         SovereignActionPlaneAgent,
+        SovereignSandbox,
+        SovereignToolsmith,
         create_sovereign_action_plane,
         get_sovereign_action_plane,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     SovereignToolsmith = None  # type: ignore[assignment,misc]
     SovereignSandbox = None  # type: ignore[assignment,misc]

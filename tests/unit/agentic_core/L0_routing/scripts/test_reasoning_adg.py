@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ReasoningStrategy = None  # type: ignore[assignment,misc]
     ChainOfThoughtStrategy = None  # type: ignore[assignment,misc]

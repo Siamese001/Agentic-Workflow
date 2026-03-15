@@ -7,18 +7,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.utils.orchestration_mixin_util import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        OrchestrationMixin,
         WorkflowStatus,
         WorkflowStep,
-        OrchestrationMixin,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     WorkflowStatus = None  # type: ignore[assignment,misc]
     WorkflowStep = None  # type: ignore[assignment,misc]

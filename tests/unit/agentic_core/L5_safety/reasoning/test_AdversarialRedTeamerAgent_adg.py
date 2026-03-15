@@ -17,7 +17,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     VulnerabilityTest = None  # type: ignore[assignment,misc]
     RedTeamResult = None  # type: ignore[assignment,misc]

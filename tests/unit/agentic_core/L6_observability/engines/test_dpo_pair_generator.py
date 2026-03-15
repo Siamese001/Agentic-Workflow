@@ -12,19 +12,19 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L6_observability.engines.dpo_pair_generator import (  # noqa: F401
-        BoundingViolation,
-        DPOPair,
-        BoundedDPOPair,
-        DPOBoundingPolicy,
-        create_bounded_dpo_pairs,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        BoundedDPOPair,
+        BoundingViolation,
+        DPOBoundingPolicy,
+        DPOPair,
+        create_bounded_dpo_pairs,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     BoundingViolation = None  # type: ignore[assignment,misc]
     DPOPair = None  # type: ignore[assignment,misc]

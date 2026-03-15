@@ -12,16 +12,16 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.knowledge.research_cache.cache_store_util import (  # noqa: F401
-        ResearchCache,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        ResearchCache,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ResearchCache = None  # type: ignore[assignment,misc]
     MAX_RETRIES = None  # type: ignore[assignment,misc]
@@ -104,4 +104,4 @@ class TestMaxDepthConstant:
 
 def test_module_importable():
     """Smoke: cache_store_util importable or gracefully unavailable."""
-    assert True
+    pass

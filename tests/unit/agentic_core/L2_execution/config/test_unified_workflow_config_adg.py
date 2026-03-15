@@ -8,7 +8,7 @@ pytestmark = pytest.mark.unit
 try:
     from agentic_core.L2_execution.config.unified_workflow_config import MissionFocus
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     MissionFocus = None  # type: ignore[assignment,misc]
 

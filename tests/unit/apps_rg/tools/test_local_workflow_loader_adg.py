@@ -7,19 +7,19 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_rg.tools.local_workflow_loader import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         LocalWorkflowLoader,
-        execute_resume_generation,
         create_local_workflow_loader,
         execute,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
+        execute_resume_generation,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     LocalWorkflowLoader = None  # type: ignore[assignment,misc]
     execute_resume_generation = None  # type: ignore[assignment,misc]

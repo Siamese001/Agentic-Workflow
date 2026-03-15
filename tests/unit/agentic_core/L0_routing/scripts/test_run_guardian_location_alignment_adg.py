@@ -7,14 +7,14 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.scripts.run_guardian_location_alignment import (  # noqa: F401
-        scan_missing_directories,
-        scan_misplaced_files,
-        run_location_alignment_guardian,
-        main,
         GUARDIAN_ID,
+        main,
+        run_location_alignment_guardian,
+        scan_misplaced_files,
+        scan_missing_directories,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     scan_missing_directories = None  # type: ignore[assignment,misc]
     scan_misplaced_files = None  # type: ignore[assignment,misc]

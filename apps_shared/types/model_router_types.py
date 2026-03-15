@@ -388,6 +388,67 @@ class ModelRouter:
         logger.info(f"Added task profile {profile.task_type.value}")
 
 
+class LLMClient:
+    """Abstract base for LLM provider clients."""
+
+    async def generate(self, prompt: str, **kwargs) -> str:
+        raise NotImplementedError
+
+
+class OpenAIClient(LLMClient):
+    """OpenAI provider client — reads OPENAI_API_KEY from environment."""
+
+    def __init__(self, config: ModelConfig):
+        self.config = config
+
+    async def generate(self, prompt: str, **kwargs) -> str:
+        import os
+
+        api_key = os.getenv("OPENAI_API_KEY")
+        if not api_key:
+            raise RuntimeError("OPENAI_API_KEY not set")
+        try:
+            import openai
+
+            client = openai.AsyncOpenAI(api_key=api_key)
+            response = await client.chat.completions.create(
+                model=self.config.model_name,
+                messages=[{"role": "user", "content": prompt}],
+                max_tokens=kwargs.get("max_tokens", self.config.max_tokens),
+                temperature=kwargs.get("temperature", self.config.temperature),
+            )
+            return response.choices[0].message.content or ""
+        except ImportError as exc:
+            raise RuntimeError("openai package not installed — pip install openai") from exc
+
+
+class AnthropicClient(LLMClient):
+    """Anthropic provider client — reads ANTHROPIC_API_KEY from environment."""
+
+    def __init__(self, config: ModelConfig):
+        self.config = config
+
+    async def generate(self, prompt: str, **kwargs) -> str:
+        import os
+
+        api_key = os.getenv("ANTHROPIC_API_KEY")
+        if not api_key:
+            raise RuntimeError("ANTHROPIC_API_KEY not set")
+        try:
+            import anthropic
+
+            client = anthropic.AsyncAnthropic(api_key=api_key)
+            response = await client.messages.create(
+                model=self.config.model_name,
+                max_tokens=kwargs.get("max_tokens", self.config.max_tokens),
+                temperature=kwargs.get("temperature", self.config.temperature),
+                messages=[{"role": "user", "content": prompt}],
+            )
+            return response.content[0].text if response.content else ""
+        except ImportError as exc:
+            raise RuntimeError("anthropic package not installed — pip install anthropic") from exc
+
+
 class FallbackClient:
     """LLM client with automatic fallback and retry logic."""
 
@@ -401,6 +462,34 @@ class FallbackClient:
         self.primary_config = primary_config
         self.router = router
         self._client_cache: dict[str, LLMClient] = {}
+
+    async def _get_client(self, config: ModelConfig) -> LLMClient:
+        """Get or create an LLM client for the given config."""
+        if config.model_name not in self._client_cache:
+            if config.provider == "openai":
+                self._client_cache[config.model_name] = OpenAIClient(config)
+            elif config.provider == "anthropic":
+                self._client_cache[config.model_name] = AnthropicClient(config)
+            else:
+                raise ValueError(f"Unknown provider: {config.provider}")
+        return self._client_cache[config.model_name]
+
+    def _get_fallback_tier(self, tier: ModelTier) -> ModelTier | None:
+        """Return the next-lower tier to fall back to, or None."""
+        fallback_map: dict[ModelTier, ModelTier | None] = {
+            ModelTier.REASONING: ModelTier.BALANCED,
+            ModelTier.BALANCED: ModelTier.FAST,
+            ModelTier.SEQUENTIAL: ModelTier.REASONING,
+            ModelTier.FAST: None,
+        }
+        return fallback_map.get(tier)
+
+    def _record_usage(self, client: LLMClient, prompt: str, result: str) -> None:
+        """Estimate and record token usage for budget tracking."""
+        input_est = len(prompt) // 4
+        output_est = len(result) // 4
+        cost = (input_est + output_est) / 1000 * self.primary_config.cost_per_1k_tokens
+        self.router.record_usage(self.primary_config.model_name, input_est, output_est, cost)
 
     async def generate(self, prompt: str, **kwargs) -> str:
         """Generate text with fallback logic.
@@ -436,7 +525,14 @@ class FallbackClient:
                     raise
             raise RuntimeError(f"All model attempts failed. Last error: {e}")
 
-    # guardian: allow-magic-config
+
+
+class SequentialThinkingClient:
+    """Routes generation through the sequential_thinking MCP tool."""
+
+    def __init__(self, router: ModelRouter):
+        self.router = router
+
     async def generate(self, prompt: str, goal: str = "", max_steps: int = 8, **kwargs) -> str:
         """Route prompt through sequential_thinking MCP with iterative thought processing.
 
@@ -449,6 +545,8 @@ class FallbackClient:
         Returns:
             Reasoning result as text
         """
+        if _MCPManager is None:
+            raise RuntimeError("MCPManager unavailable — cannot run sequential thinking")
         try:
             mcp_mgr = _MCPManager()
             await mcp_mgr.connect("sequential_thinking")
@@ -460,8 +558,10 @@ class FallbackClient:
             for idx in range(total):
                 is_last = idx == total - 1
                 thought_text = (
-                    initial if idx == 0
-                    else f"Final synthesis: {len(thoughts)} steps completed." if is_last
+                    initial
+                    if idx == 0
+                    else f"Final synthesis: {len(thoughts)} steps completed."
+                    if is_last
                     else f"Step {idx + 1}: continuing analysis."
                 )
                 step_result = await mcp_mgr.call_tool(

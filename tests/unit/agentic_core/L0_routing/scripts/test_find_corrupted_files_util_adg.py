@@ -12,7 +12,7 @@ try:
         main,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     find_corruption = None  # type: ignore[assignment,misc]
     is_valid_python = None  # type: ignore[assignment,misc]

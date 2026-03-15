@@ -7,18 +7,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_lic.tools.AssessMessageRelevance import (  # noqa: F401
-        AssessMessageRelevance,
-        score,
-        compute_score,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        AssessMessageRelevance,
+        compute_score,
+        score,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     AssessMessageRelevance = None  # type: ignore[assignment,misc]
     score = None  # type: ignore[assignment,misc]

@@ -7,20 +7,20 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.validators.resume_prompts_validator import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        build_librarian_memory_query_prompt,
         build_librarian_mission_extraction_prompt,
         build_librarian_strategic_analysis_prompt,
-        build_librarian_memory_query_prompt,
         build_phase1_prompt,
         build_phase2_prompt,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     build_librarian_mission_extraction_prompt = None  # type: ignore[assignment,misc]
     build_librarian_strategic_analysis_prompt = None  # type: ignore[assignment,misc]

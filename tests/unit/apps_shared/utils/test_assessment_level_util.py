@@ -12,19 +12,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.utils.assessment_level_util import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         AssessmentLevel,
         AssessmentResult,
         AssessScriptsRisk,
         assess,
-        assess,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     AssessmentLevel = None  # type: ignore[assignment,misc]
     AssessmentResult = None  # type: ignore[assignment,misc]

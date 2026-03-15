@@ -12,15 +12,15 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.config.core.registry_config import (  # noqa: F401
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     MAX_RETRIES = None  # type: ignore[assignment,misc]
     DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
@@ -81,4 +81,4 @@ class TestMaxDepthConstant:
 
 def test_module_importable():
     """Smoke: registry_config importable or gracefully unavailable."""
-    assert True
+    pass

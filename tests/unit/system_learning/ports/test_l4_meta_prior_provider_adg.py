@@ -7,17 +7,17 @@ pytestmark = pytest.mark.unit
 
 try:
     from system_learning.ports.l4_meta_prior_provider import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         L4MetaPriorProvider,
         wire_l4_prior_into_dispatcher,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     L4MetaPriorProvider = None  # type: ignore[assignment,misc]
     wire_l4_prior_into_dispatcher = None  # type: ignore[assignment,misc]

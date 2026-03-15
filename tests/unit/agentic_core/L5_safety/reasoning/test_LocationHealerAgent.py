@@ -15,7 +15,7 @@ try:
         LocationHealerAgent,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     LocationHealerAgent = None  # type: ignore[assignment,misc]
 

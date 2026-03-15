@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     MAX_WRITE_BYTES = None  # type: ignore[assignment,misc]
     MAX_GROWTH_RATIO = None  # type: ignore[assignment,misc]

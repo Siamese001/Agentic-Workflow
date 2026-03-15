@@ -16,7 +16,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     IOrchestratorProtocol = None  # type: ignore[assignment,misc]
     IHealable = None  # type: ignore[assignment,misc]

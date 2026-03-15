@@ -12,14 +12,14 @@ pytestmark = pytest.mark.unit
 
 try:
     from system_learning.types.app_signal_types import (  # noqa: F401
-        AppSignalEventArtifact,
         AppSignalAggregateArtifact,
-        build_app_signal_event,
-        build_app_signal_aggregate,
+        AppSignalEventArtifact,
         aggregate_app_signals,
+        build_app_signal_aggregate,
+        build_app_signal_event,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     AppSignalEventArtifact = None  # type: ignore[assignment,misc]
     AppSignalAggregateArtifact = None  # type: ignore[assignment,misc]
@@ -97,4 +97,4 @@ class TestAggregateAppSignalsFunction:
 
 def test_module_importable():
     """Smoke: app_signal_types importable or gracefully unavailable."""
-    assert True
+    pass

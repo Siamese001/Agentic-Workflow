@@ -209,7 +209,6 @@ class TestNegativeControlHarness:
         )
 
         assert_digest_differs("a" * 64, "b" * 64)
-        assert True  # no-exception contract
 
     @pytest.mark.unit_min_deps
     def test_assert_digest_stable_passes_on_equal(self):
@@ -219,7 +218,6 @@ class TestNegativeControlHarness:
 
         same = "c" * 64
         assert_digest_stable(same, same)
-        assert True  # no-exception contract
 
     @pytest.mark.unit_min_deps
     def test_assert_digest_stable_raises_on_unequal(self):
@@ -401,7 +399,6 @@ class TestEmbeddingNonInterferenceGuard:
 
         clean = {"tier": "DETERMINISTIC", "agent_id": "ssot_audit", "confidence": 0.9}
         assert_no_c0_influence(clean)
-        assert True  # no-exception contract
 
     @pytest.mark.unit_min_deps
     def test_c0_marker_key_raises(self):
@@ -487,7 +484,6 @@ class TestOscillationFirewall:
         fw = OscillationFirewall(cfg)
         for cycle, tier in enumerate(["DETERMINISTIC", "DETERMINISTIC", "DETERMINISTIC", "QWEN"]):
             fw.assert_no_oscillation(tier, cycle)
-            assert True  # no-exception contract
 
     @pytest.mark.unit_min_deps
     def test_oscillating_sequence_trips_firewall(self):

@@ -1,14 +1,19 @@
 """ADG contract tests for apps_shared/types/health_status_types.py."""
 from __future__ import annotations
-import pytest
+
 from datetime import datetime
+
+import pytest
+
 pytestmark = pytest.mark.unit
 try:
     from apps_shared.types.health_status_types import (
-        HealthStatus, ComponentType, HealthCheckResult,
+        ComponentType,
+        HealthCheckResult,
+        HealthStatus,
     )
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     HealthStatus = ComponentType = HealthCheckResult = None  # type: ignore[assignment,misc]
 

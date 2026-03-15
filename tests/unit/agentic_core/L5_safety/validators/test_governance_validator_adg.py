@@ -15,7 +15,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     GovernanceResult = None  # type: ignore[assignment,misc]
     GovernanceShieldValidator = None  # type: ignore[assignment,misc]

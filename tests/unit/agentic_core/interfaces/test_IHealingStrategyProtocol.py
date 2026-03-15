@@ -12,19 +12,19 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.interfaces.IHealingStrategyProtocol import (  # noqa: F401
-        IHealingStrategyProtocol,
-        ChaosResilienceStrategy,
-        get_chaos_strategy,
-        register_chaos_healing,
-        get_integration_status,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        ChaosResilienceStrategy,
+        IHealingStrategyProtocol,
+        get_chaos_strategy,
+        get_integration_status,
+        register_chaos_healing,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     IHealingStrategyProtocol = None  # type: ignore[assignment,misc]
     ChaosResilienceStrategy = None  # type: ignore[assignment,misc]

@@ -7,16 +7,16 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.utils.sleeping_giant_util import (  # noqa: F401
-        SleepingGiant,
+        DANGEROUS_IMPORTS,
+        EXCLUDED_DIRS,
+        MUTATION_PATTERNS,
         AgentAnalyzer,
+        SleepingGiant,
         analyze_file,
         main,
-        DANGEROUS_IMPORTS,
-        MUTATION_PATTERNS,
-        EXCLUDED_DIRS,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     SleepingGiant = None  # type: ignore[assignment,misc]
     AgentAnalyzer = None  # type: ignore[assignment,misc]

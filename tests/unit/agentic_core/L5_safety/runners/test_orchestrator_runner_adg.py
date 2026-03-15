@@ -7,18 +7,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.runners.orchestrator_runner import (  # noqa: F401
-        get_project_root,
-        run_orchestrator_mission,
-        main,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        get_project_root,
+        main,
+        run_orchestrator_mission,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     get_project_root = None  # type: ignore[assignment,misc]
     run_orchestrator_mission = None  # type: ignore[assignment,misc]

@@ -30,6 +30,9 @@ class AntiPatternCategory(str, Enum):
     """Categories of anti-patterns."""
 
     SILENT_SWALLOWER = "silent_swallower"
+    SILENT_DEGRADATION = "silent_degradation"
+    TEST_SILENT_SKIP = "test_silent_skip"
+    TEST_QUALITY = "test_quality"
     TYPE_ERASURE = "type_erasure"
     PATH_FRAGILITY = "path_fragility"
     MAGIC_CONFIGURATION = "magic_configuration"

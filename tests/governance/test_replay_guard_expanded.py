@@ -44,7 +44,6 @@ class TestReplayGuardSocket:
         # Should not raise outside context
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.close()
-        assert True  # no-exception contract
 
 
 class TestReplayGuardSubprocess:

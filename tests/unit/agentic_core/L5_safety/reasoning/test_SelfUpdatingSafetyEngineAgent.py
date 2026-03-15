@@ -12,21 +12,21 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.reasoning.SelfUpdatingSafetyEngineAgent import (  # noqa: F401
-        ThreatLevel,
-        RuleType,
-        ThreatPattern,
-        SafetyRule,
-        ThreatDetection,
-        SelfUpdatingSafetyEngineAgent,
-        create_self_updating_safety_engine,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        RuleType,
+        SafetyRule,
+        SelfUpdatingSafetyEngineAgent,
+        ThreatDetection,
+        ThreatLevel,
+        ThreatPattern,
+        create_self_updating_safety_engine,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     ThreatLevel = None  # type: ignore[assignment,misc]
     RuleType = None  # type: ignore[assignment,misc]

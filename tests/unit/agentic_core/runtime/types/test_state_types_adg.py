@@ -1,11 +1,13 @@
 """ADG contract tests for runtime/types/state_types.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
     from agentic_core.runtime.types.state_types import AgentMessage, AgentState
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False; AgentMessage = AgentState = None  # type: ignore[assignment,misc]
 
 @pytest.mark.skipif(not _AVAIL, reason="deps unavailable")

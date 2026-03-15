@@ -12,19 +12,19 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.reasoning.GravityLeakRepairAgent import (  # noqa: F401
-        GravityRepairProhibitedError,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         GravityFix,
         GravityLeakRepairAgent,
+        GravityRepairProhibitedError,
         get_GravityLeakRepairAgent,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     GravityRepairProhibitedError = None  # type: ignore[assignment,misc]
     GravityFix = None  # type: ignore[assignment,misc]
@@ -144,4 +144,4 @@ class TestMaxDepthConstant:
 
 def test_module_importable():
     """Smoke: GravityLeakRepairAgent importable or gracefully unavailable."""
-    assert True
+    pass

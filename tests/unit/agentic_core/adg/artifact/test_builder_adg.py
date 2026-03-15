@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     EntityRecord = None  # type: ignore[assignment,misc]
     RelationRecord = None  # type: ignore[assignment,misc]

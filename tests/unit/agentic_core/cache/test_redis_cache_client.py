@@ -12,23 +12,23 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.cache.redis_cache_client import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         CacheDB,
         CacheStats,
         DeterministicRedisCache,
         canonical_json_bytes,
         content_hash,
-        get_hot_cache,
         get_coordination_cache,
+        get_hot_cache,
         reset_cache_singletons,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     CacheDB = None  # type: ignore[assignment,misc]
     CacheStats = None  # type: ignore[assignment,misc]
@@ -203,4 +203,4 @@ class TestMaxDepthConstant:
 
 def test_module_importable():
     """Smoke: redis_cache_client importable or gracefully unavailable."""
-    assert True
+    pass

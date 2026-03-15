@@ -7,17 +7,17 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_lic.validators.PersonaPlannerValidator import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         PersonaPlan,
         PersonaPlanner,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     PersonaPlan = None  # type: ignore[assignment,misc]
     PersonaPlanner = None  # type: ignore[assignment,misc]

@@ -7,6 +7,7 @@ from datetime import datetime
 
 from agentic_core.cache.redis_cache_client import get_hot_cache
 from agentic_core.L0_routing.config.path_constants import PROJECT_ROOT_WHITELIST
+from agentic_core.seams.contracts.authority import get_mcp_authority
 from agentic_core.seams.contracts.mcp import MCPConnectionManager
 
 
@@ -79,7 +80,7 @@ class SovereignFilesystemMcp:
         except Exception as e:
             Logger.error(f"[L4 FS] Read failed: {e}")
             try:
-                mcp_authority.record_breach(f"FS Read Failure: {safe_path}")
+                get_mcp_authority().record_breach(f"FS Read Failure: {safe_path}")
             # guardian: allow-silent-swallow
             except Exception:
                 pass
@@ -140,7 +141,7 @@ class SovereignFilesystemMcp:
         except Exception as e:
             Logger.critical(f"[L4 FS BREACH] Fission write failed: {e}")
             try:
-                mcp_authority.record_breach(f"Fission Write Failure: {monolith_path}")
+                get_mcp_authority().record_breach(f"Fission Write Failure: {monolith_path}")
             # guardian: allow-silent-swallow
             except Exception:
                 pass

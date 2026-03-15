@@ -16,7 +16,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ToolContractViolation = None  # type: ignore[assignment,misc]
     ToolCall = None  # type: ignore[assignment,misc]

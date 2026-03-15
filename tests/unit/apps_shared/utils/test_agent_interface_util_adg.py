@@ -7,22 +7,22 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.utils.agent_interface_util import (  # noqa: F401
-        AgentStatus,
-        AgentContext,
-        AgentResult,
-        IAgent,
-        BaseAgent,
-        AgentRegistry,
-        get_agent_registry,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        AgentContext,
+        AgentRegistry,
+        AgentResult,
+        AgentStatus,
+        BaseAgent,
+        IAgent,
+        get_agent_registry,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     AgentStatus = None  # type: ignore[assignment,misc]
     AgentContext = None  # type: ignore[assignment,misc]

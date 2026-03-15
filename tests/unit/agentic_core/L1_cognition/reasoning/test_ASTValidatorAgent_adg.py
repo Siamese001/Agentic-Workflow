@@ -9,19 +9,19 @@ import pytest
 
 try:
     from agentic_core.L1_cognition.reasoning.ASTValidatorAgent import (  # noqa: F401
-        ASTValidatorBase,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         ASTValidatorAgent,
+        ASTValidatorBase,
         get_unified_ast_validator,
         validate_bare_except,
         validate_empty_except,
         validate_eval_exec,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ASTValidatorBase = None  # type: ignore[assignment,misc]
     ASTValidatorAgent = None  # type: ignore[assignment,misc]
@@ -57,4 +57,3 @@ class TestAstvalidatoragentImportability:
 
     def test_default_sleep_defined(self) -> None:
         assert DEFAULT_SLEEP is not None
-

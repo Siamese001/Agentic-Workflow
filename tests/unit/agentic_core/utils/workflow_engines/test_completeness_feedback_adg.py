@@ -7,17 +7,17 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.utils.workflow_engines.completeness_feedback import (  # noqa: F401
-        CompletenessReviewRubric,
-        CompletenessFeedbackExample,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        CompletenessFeedbackExample,
+        CompletenessReviewRubric,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     CompletenessReviewRubric = None  # type: ignore[assignment,misc]
     CompletenessFeedbackExample = None  # type: ignore[assignment,misc]

@@ -1,9 +1,6 @@
 """ADG-driven tests for L2_execution/utils/analysis_ops_util.py — fan_in=0."""
 from __future__ import annotations
 
-import tempfile
-import textwrap
-
 import pytest
 
 pytestmark = pytest.mark.unit
@@ -11,7 +8,7 @@ pytestmark = pytest.mark.unit
 try:
     from agentic_core.L2_execution.utils.analysis_ops_util import validate_python_syntax
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     validate_python_syntax = None  # type: ignore[assignment]
 

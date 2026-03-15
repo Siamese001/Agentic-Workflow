@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ForbiddenInputError = None  # type: ignore[assignment,misc]
     validate_execution_input = None  # type: ignore[assignment,misc]

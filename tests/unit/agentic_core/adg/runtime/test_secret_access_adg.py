@@ -18,7 +18,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     SecretAccessOutcome = None  # type: ignore[assignment,misc]
     SecretKind = None  # type: ignore[assignment,misc]

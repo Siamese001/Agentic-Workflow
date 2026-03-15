@@ -12,16 +12,16 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.prompt_governance.core.invariant_registry import (  # noqa: F401
-        validate_invariant_registry,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        validate_invariant_registry,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     validate_invariant_registry = None  # type: ignore[assignment,misc]
     MAX_RETRIES = None  # type: ignore[assignment,misc]
@@ -93,4 +93,4 @@ class TestMaxDepthConstant:
 
 def test_module_importable():
     """Smoke: invariant_registry importable or gracefully unavailable."""
-    assert True
+    pass

@@ -12,18 +12,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.seams.safety_validators_seam import (  # noqa: F401
-        load_hygiene_guardian,
-        load_autonomy_guardian,
-        load_healing_strategy,
-        load_canonical_truth_validator,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        load_autonomy_guardian,
+        load_canonical_truth_validator,
+        load_healing_strategy,
+        load_hygiene_guardian,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     load_hygiene_guardian = None  # type: ignore[assignment,misc]
     load_autonomy_guardian = None  # type: ignore[assignment,misc]

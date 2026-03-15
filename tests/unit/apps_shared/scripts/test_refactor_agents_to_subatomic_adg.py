@@ -7,20 +7,20 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.scripts.refactor_agents_to_subatomic import (  # noqa: F401
-        add_subatomic_imports,
-        remove_thinking_budget_over_limit,
-        add_engine_initialization,
-        process_agent_file,
-        main,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        add_engine_initialization,
+        add_subatomic_imports,
+        main,
+        process_agent_file,
+        remove_thinking_budget_over_limit,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     add_subatomic_imports = None  # type: ignore[assignment,misc]
     remove_thinking_budget_over_limit = None  # type: ignore[assignment,misc]

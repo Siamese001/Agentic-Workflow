@@ -7,15 +7,15 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.scripts.run_guardian_drift_detection import (  # noqa: F401
-        scan_forbidden_root_folders,
+        GUARDIAN_ID,
+        main,
+        run_drift_detection_guardian,
         scan_archived_files_at_root,
         scan_duplicate_ssot_folders,
-        run_drift_detection_guardian,
-        main,
-        GUARDIAN_ID,
+        scan_forbidden_root_folders,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     scan_forbidden_root_folders = None  # type: ignore[assignment,misc]
     scan_archived_files_at_root = None  # type: ignore[assignment,misc]

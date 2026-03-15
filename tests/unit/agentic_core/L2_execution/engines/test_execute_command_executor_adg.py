@@ -11,7 +11,7 @@ try:
         get_project_root,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ExecuteCommandArgs = None  # type: ignore[assignment,misc]
     get_project_root = None  # type: ignore[assignment]
@@ -20,7 +20,6 @@ except Exception:
 @pytest.mark.skipif(not _AVAILABLE, reason="execute_command_executor deps unavailable")
 class TestExecuteCommandArgs:
     def test_is_typed_dict(self):
-        import typing
         assert ExecuteCommandArgs is not None
 
     def test_has_command_key(self):

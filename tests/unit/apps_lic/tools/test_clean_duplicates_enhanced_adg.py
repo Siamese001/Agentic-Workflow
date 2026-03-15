@@ -7,20 +7,20 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_lic.tools.clean_duplicates_enhanced import (  # noqa: F401
-        aggressive_cleanup,
-        organize_structure,
-        get_file_hash,
-        extract_functions,
-        merge_validator_logic,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        aggressive_cleanup,
+        extract_functions,
+        get_file_hash,
+        merge_validator_logic,
+        organize_structure,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     aggressive_cleanup = None  # type: ignore[assignment,misc]
     organize_structure = None  # type: ignore[assignment,misc]

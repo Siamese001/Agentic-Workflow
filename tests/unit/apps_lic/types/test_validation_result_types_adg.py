@@ -1,14 +1,20 @@
 """ADG contract tests for apps_lic/types/validation_result_types.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
     from apps_lic.types.validation_result_types import (
-        ValidationResult, Draft, DraftPackage,
-        score_quality, validate_schema_policy, check_content_compliance,
+        Draft,
+        DraftPackage,
+        ValidationResult,
+        check_content_compliance,
+        score_quality,
+        validate_schema_policy,
     )
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     ValidationResult = Draft = DraftPackage = None  # type: ignore[assignment,misc]
     score_quality = validate_schema_policy = check_content_compliance = None  # type: ignore[assignment,misc]

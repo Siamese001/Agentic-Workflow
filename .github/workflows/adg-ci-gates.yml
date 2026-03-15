@@ -55,6 +55,11 @@ jobs:
         env:
           PYTHONPATH: .
 
+      - name: ADG Staleness Verify (blocking — confirms ingest against HEAD)
+        run: python tools/adg/adg_stale_guard.py
+        env:
+          PYTHONPATH: .
+
       - name: M1 — Determinism Gate (warn mode until W4 exit)
         run: |
           python -c "

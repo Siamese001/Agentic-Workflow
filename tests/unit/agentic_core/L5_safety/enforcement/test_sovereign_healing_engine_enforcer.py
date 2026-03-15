@@ -12,19 +12,19 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.enforcement.sovereign_healing_engine_enforcer import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         HealingTransaction,
         SovereignHealingEngine,
         get_filesystem_client,
         get_git_client,
         run_autonomous_healing,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     HealingTransaction = None  # type: ignore[assignment,misc]
     SovereignHealingEngine = None  # type: ignore[assignment,misc]

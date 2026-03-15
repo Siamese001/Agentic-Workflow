@@ -18,7 +18,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     VLLMQueueState = None  # type: ignore[assignment,misc]
     CircuitBreakerState = None  # type: ignore[assignment,misc]

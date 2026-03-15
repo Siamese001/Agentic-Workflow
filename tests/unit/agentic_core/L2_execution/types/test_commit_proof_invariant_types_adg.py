@@ -17,7 +17,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     DeterminismProofFailure = None  # type: ignore[assignment,misc]
     CommitProofInvariant = None  # type: ignore[assignment,misc]

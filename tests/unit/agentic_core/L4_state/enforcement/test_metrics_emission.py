@@ -12,24 +12,24 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L4_state.enforcement.metrics_emission import (  # noqa: F401
-        EmissionRecord,
-        BlastRadiusConfig,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         ActivationFlags,
-        MetricsEmissionEnforcer,
+        BlastRadiusConfig,
         BlastRadiusEnforcer,
+        EmissionRecord,
+        MetricsEmissionEnforcer,
         PhaseLockStore,
-        single_authoritative_emission,
-        validate_blast_radius,
         persist_phase_lock,
         restore_phase_lock,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
+        single_authoritative_emission,
+        validate_blast_radius,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     EmissionRecord = None  # type: ignore[assignment,misc]
     BlastRadiusConfig = None  # type: ignore[assignment,misc]

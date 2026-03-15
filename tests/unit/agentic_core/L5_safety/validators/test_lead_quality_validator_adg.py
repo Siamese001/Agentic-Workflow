@@ -15,7 +15,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     LeadQualityResult = None  # type: ignore[assignment,misc]
     LeadQualityValidator = None  # type: ignore[assignment,misc]

@@ -12,23 +12,23 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.utils.node_negotiator_util import (  # noqa: F401
-        NegotiationMessage,
-        NegotiationRound,
-        NegotiationConfig,
-        NegotiationResult,
-        NodeNegotiator,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         NegotiatingHop,
+        NegotiationConfig,
+        NegotiationMessage,
+        NegotiationResult,
+        NegotiationRound,
+        NodeNegotiator,
         get_node_negotiator,
         request_upstream_change,
         send_clarification,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     NegotiationMessage = None  # type: ignore[assignment,misc]
     NegotiationRound = None  # type: ignore[assignment,misc]

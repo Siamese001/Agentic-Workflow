@@ -1,10 +1,12 @@
 """ADG CI Invariant Scanner -- pre-merge policy enforcement.
 
-Implements three core invariant rules:
+Implements core invariant rules:
 
 RULE A: No LLM provider SDK import outside SovereignLLMGateway
 RULE B: No embedding instantiation outside EmbeddingFactory (EmbeddingSovereignAgent)
 RULE C: No upward mutation edges (layer boundary enforcement)
+RULE D: No duplicate method definitions within a class (RCA fix — catches FallbackClient.generate)
+RULE G: No unreachable code after raise (RCA fix — catches Logger.warning after raise)
 
 Each rule produces a list of Violation objects with offending edge,
 minimal path witness, and policy_id.
@@ -37,6 +39,8 @@ _POLICY_LLM_EGRESS = "ADG::Policy::LLM_EGRESS_SINGLETON"
 _POLICY_EMBEDDING_FACTORY = "ADG::Policy::EMBEDDING_FACTORY_SINGLETON"
 _POLICY_LAYER_BOUNDARY = "ADG::Policy::LAYER_BOUNDARY_DOWNWARD_ONLY"
 _POLICY_DYNAMIC_EXEC = "ADG::Policy::NO_DYNAMIC_EXECUTION"
+_POLICY_DUPLICATE_METHOD = "ADG::Policy::NO_DUPLICATE_METHOD"
+_POLICY_UNREACHABLE_AFTER_RAISE = "ADG::Policy::NO_UNREACHABLE_AFTER_RAISE"
 
 # S3: Allowlisted paths for dynamic execution (e.g. REPL, test harnesses)
 _DYNAMIC_EXEC_ALLOWLIST: frozenset[str] = frozenset(
@@ -140,6 +144,8 @@ class InvariantScanner:
         report.violations.extend(self._rule_b_no_embedding_bypass(result))
         report.violations.extend(self._rule_c_no_upward_layer_mutation(result))
         report.violations.extend(self._rule_f_dynamic_exec(result))
+        report.violations.extend(self._rule_d_duplicate_method(result))
+        report.violations.extend(self._rule_g_unreachable_after_raise(result))
         return report
 
     def _rule_a_no_llm_bypass(self, result: ScanResult) -> list[Violation]:
@@ -294,6 +300,71 @@ class InvariantScanner:
         return violations
 
 
+    def _rule_d_duplicate_method(self, result: ScanResult) -> list[Violation]:
+        """RULE D: No duplicate method definitions within the same class.
+
+        Catches the pattern:
+            class Foo:
+                def bar(self): ...   # first definition
+                def bar(self): ...   # duplicate — second silently shadows first
+        """
+        violations: list[Violation] = []
+        for edge in result.edges:
+            if edge.relation_type != "duplicate_method":
+                continue
+            from_rel = _module_rel(edge.from_name)
+            sym = edge.symbol
+            witness = (
+                f"{from_rel} contains duplicate method definition '{sym}'. "
+                f"The second definition at line {edge.line_no} silently shadows the first."
+            )
+            violations.append(
+                Violation(
+                    rule="RULE_D",
+                    policy_id=_POLICY_DUPLICATE_METHOD,
+                    offending_edge=f"{edge.from_name} --duplicate_method--> {edge.to_name}",
+                    from_module=from_rel,
+                    to_symbol=_symbol_name(edge.to_name),
+                    source_file=edge.source_file,
+                    line_no=edge.line_no,
+                    witness=witness,
+                )
+            )
+        return violations
+
+    def _rule_g_unreachable_after_raise(self, result: ScanResult) -> list[Violation]:
+        """RULE G: No unreachable statements after a bare raise in exception handlers.
+
+        Catches the pattern:
+            except Exception as e:
+                raise
+                Logger.warning(...)   # <-- unreachable dead code
+        """
+        violations: list[Violation] = []
+        for edge in result.edges:
+            if edge.relation_type != "unreachable_after_raise":
+                continue
+            from_rel = _module_rel(edge.from_name)
+            raise_line = edge.symbol.replace("raise_at_line_", "")
+            witness = (
+                f"{from_rel} has unreachable statement at line {edge.line_no} "
+                f"(follows unconditional raise at line {raise_line}). Dead code."
+            )
+            violations.append(
+                Violation(
+                    rule="RULE_G",
+                    policy_id=_POLICY_UNREACHABLE_AFTER_RAISE,
+                    offending_edge=f"{edge.from_name} --unreachable_after_raise--> {edge.to_name}",
+                    from_module=from_rel,
+                    to_symbol="unreachable_code",
+                    source_file=edge.source_file,
+                    line_no=edge.line_no,
+                    witness=witness,
+                )
+            )
+        return violations
+
+
 def run_ci_scan(
     repo_root: str = ".",
     diff_files: list[str] | None = None,
@@ -320,4 +391,12 @@ def run_ci_scan(
     return inv_scanner.scan(result)
 
 
-__all__ = ["InvariantScanner", "Violation", "ScanReport", "run_ci_scan", "_POLICY_DYNAMIC_EXEC"]
+__all__ = [
+    "InvariantScanner",
+    "Violation",
+    "ScanReport",
+    "run_ci_scan",
+    "_POLICY_DYNAMIC_EXEC",
+    "_POLICY_DUPLICATE_METHOD",
+    "_POLICY_UNREACHABLE_AFTER_RAISE",
+]

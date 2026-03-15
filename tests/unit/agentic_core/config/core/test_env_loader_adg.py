@@ -8,7 +8,7 @@ pytestmark = pytest.mark.unit
 try:
     from agentic_core.config.core.env_loader import SovereignEnv
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     SovereignEnv = None  # type: ignore[assignment,misc]
 

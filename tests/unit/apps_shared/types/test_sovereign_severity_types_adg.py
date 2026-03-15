@@ -1,14 +1,18 @@
 """ADG contract tests for apps_shared/types/sovereign_severity_types.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
     from apps_shared.types.sovereign_severity_types import (
-        sovereign_severity, sovereign_event_type,
-        sovereign_severities, severity_log_levels,
+        severity_log_levels,
+        sovereign_event_type,
+        sovereign_severities,
+        sovereign_severity,
     )
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     sovereign_severity = sovereign_event_type = None  # type: ignore[assignment,misc]
     sovereign_severities = severity_log_levels = None  # type: ignore[assignment,misc]

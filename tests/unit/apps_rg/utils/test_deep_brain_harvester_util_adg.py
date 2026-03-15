@@ -7,17 +7,17 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_rg.utils.deep_brain_harvester_util import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         DeepBrainHarvester,
         main,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     DeepBrainHarvester = None  # type: ignore[assignment,misc]
     main = None  # type: ignore[assignment,misc]

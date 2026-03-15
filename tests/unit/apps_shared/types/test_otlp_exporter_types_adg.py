@@ -1,11 +1,13 @@
 """ADG contract tests for apps_shared/types/otlp_exporter_types.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
-    from apps_shared.types.otlp_exporter_types import ExportResult, BaseExporter, OtlpExporter
+    from apps_shared.types.otlp_exporter_types import BaseExporter, ExportResult, OtlpExporter
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     ExportResult = BaseExporter = OtlpExporter = None  # type: ignore[assignment,misc]
 

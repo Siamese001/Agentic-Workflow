@@ -11,7 +11,7 @@ try:
         has_dataclass_import,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     has_dataclass_decorator = None  # type: ignore[assignment]
     has_dataclass_import = None  # type: ignore[assignment]

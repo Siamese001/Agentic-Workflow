@@ -7,19 +7,19 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_rg.scripts.rg_json_miner import (  # noqa: F401
-        mine_workflows,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         extract_k_nodes,
         extract_keys_recursive,
         extract_long_text_blocks,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
+        mine_workflows,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     mine_workflows = None  # type: ignore[assignment,misc]
     extract_k_nodes = None  # type: ignore[assignment,misc]

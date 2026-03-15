@@ -7,17 +7,17 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.enforcement.canary_token_defense_strategy import (  # noqa: F401
-        CanaryToken,
-        CanaryDefense,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        CanaryDefense,
+        CanaryToken,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     CanaryToken = None  # type: ignore[assignment,misc]
     CanaryDefense = None  # type: ignore[assignment,misc]

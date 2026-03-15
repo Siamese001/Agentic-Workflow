@@ -7,12 +7,12 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L6_observability.enforcement.agent_monitor import (  # noqa: F401
-        UnifiedAgentMonitor,
         ExecutionTimer,
+        UnifiedAgentMonitor,
         get_monitor,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     UnifiedAgentMonitor = None  # type: ignore[assignment,misc]
     ExecutionTimer = None  # type: ignore[assignment,misc]

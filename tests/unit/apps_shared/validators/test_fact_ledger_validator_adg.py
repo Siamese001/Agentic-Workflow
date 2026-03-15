@@ -7,23 +7,23 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.validators.fact_ledger_validator import (  # noqa: F401
-        FactStatus,
-        Fact,
-        VerificationResult,
-        ClaimExtractor,
-        FactLedger,
-        get_fact_ledger,
-        verify_claim,
-        load_profile_facts,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        ClaimExtractor,
+        Fact,
+        FactLedger,
+        FactStatus,
+        VerificationResult,
+        get_fact_ledger,
+        load_profile_facts,
+        verify_claim,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     FactStatus = None  # type: ignore[assignment,misc]
     Fact = None  # type: ignore[assignment,misc]

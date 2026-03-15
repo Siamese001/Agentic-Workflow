@@ -7,17 +7,17 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.scripts.fix_all_violations import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         fix_micro_fragments,
         split_large_types_files,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     fix_micro_fragments = None  # type: ignore[assignment,misc]
     split_large_types_files = None  # type: ignore[assignment,misc]

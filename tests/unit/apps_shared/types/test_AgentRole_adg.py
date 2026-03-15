@@ -1,11 +1,13 @@
 """ADG contract tests for apps_shared/types/AgentRole.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
-    from apps_shared.types.AgentRole import AgentRole, AgentCapability
+    from apps_shared.types.AgentRole import AgentCapability, AgentRole
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     AgentRole = AgentCapability = None  # type: ignore[assignment,misc]
 

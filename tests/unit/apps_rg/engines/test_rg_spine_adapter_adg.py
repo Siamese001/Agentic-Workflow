@@ -12,7 +12,7 @@ try:
         RgSpineAdapter,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     RgSpineAdapter = None  # type: ignore[assignment,misc]
 
@@ -24,4 +24,3 @@ class TestRgSpineAdapterImportability:
 
     def test_rgspineadapter_is_type(self) -> None:
         assert RgSpineAdapter is not None
-

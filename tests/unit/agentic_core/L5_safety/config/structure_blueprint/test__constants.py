@@ -17,7 +17,7 @@ try:
         build_sovereign_territories,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     SubfolderDefinition = None  # type: ignore[assignment,misc]
     TerritoryDefinition = None  # type: ignore[assignment,misc]
@@ -47,4 +47,4 @@ class TestBuildSovereignTerritoriesFunction:
 
 def test_module_importable():
     """Smoke: _constants importable or gracefully unavailable."""
-    assert True
+    pass

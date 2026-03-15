@@ -15,7 +15,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     SubatomicTestingMixin = None  # type: ignore[assignment,misc]
     L2SelfTestingMixin = None  # type: ignore[assignment,misc]

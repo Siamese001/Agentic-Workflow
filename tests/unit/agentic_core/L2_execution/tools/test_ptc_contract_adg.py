@@ -18,7 +18,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     PTCContractViolation = None  # type: ignore[assignment,misc]
     PTCBytesCapExceeded = None  # type: ignore[assignment,misc]

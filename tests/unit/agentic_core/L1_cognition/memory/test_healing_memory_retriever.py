@@ -12,21 +12,21 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L1_cognition.memory.healing_memory_retriever import (  # noqa: F401
-        VectorSourceMismatchError,
-        SovereigntyError,
-        SimilarIncident,
-        NullHealingMemoryRetriever,
-        HealingMemoryRetriever,
-        build_retriever,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        HealingMemoryRetriever,
+        NullHealingMemoryRetriever,
+        SimilarIncident,
+        SovereigntyError,
+        VectorSourceMismatchError,
+        build_retriever,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     VectorSourceMismatchError = None  # type: ignore[assignment,misc]
     SovereigntyError = None  # type: ignore[assignment,misc]
@@ -161,4 +161,4 @@ class TestMaxDepthConstant:
 
 def test_module_importable():
     """Smoke: healing_memory_retriever importable or gracefully unavailable."""
-    assert True
+    pass

@@ -1,8 +1,6 @@
 """ADG-driven tests for L5_safety/reasoning/gravity_validator.py — fan_in=1."""
 from __future__ import annotations
 
-from pathlib import Path
-
 import pytest
 
 pytestmark = pytest.mark.unit
@@ -13,7 +11,7 @@ try:
         GravityValidatorAgent,
     )
     _GRAVITY_VALIDATOR_AVAILABLE = True
-except (NameError, ImportError):
+except ImportError:
     _GRAVITY_VALIDATOR_AVAILABLE = False
     CHECK_ID = "gravity_violations"
     GravityValidatorAgent = None  # type: ignore[assignment,misc]

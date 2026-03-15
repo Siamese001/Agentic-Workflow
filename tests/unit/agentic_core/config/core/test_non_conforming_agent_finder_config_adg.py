@@ -7,15 +7,15 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.config.core.non_conforming_agent_finder_config import (  # noqa: F401
-        NonConformingAgentFinder,
-        main,
-        PROJECT_ROOT,
+        AGENT_LIKE_METHODS,
         AGENTIC_CORE,
         EXCLUDED_DIRS,
-        AGENT_LIKE_METHODS,
+        PROJECT_ROOT,
+        NonConformingAgentFinder,
+        main,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     NonConformingAgentFinder = None  # type: ignore[assignment,misc]
     main = None  # type: ignore[assignment,misc]

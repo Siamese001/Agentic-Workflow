@@ -7,12 +7,12 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.scripts.extract_unique_content_util import (  # noqa: F401
-        build_codebase_index,
         analyze_archive_file,
+        build_codebase_index,
         main,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     build_codebase_index = None  # type: ignore[assignment,misc]
     analyze_archive_file = None  # type: ignore[assignment,misc]

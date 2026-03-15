@@ -15,7 +15,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     get_sovereign_rag_orchestrator = None  # type: ignore[assignment,misc]
     SovereignRagOrchestrator = None  # type: ignore[assignment,misc]

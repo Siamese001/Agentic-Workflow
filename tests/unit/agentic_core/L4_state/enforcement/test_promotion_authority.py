@@ -12,19 +12,19 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L4_state.enforcement.promotion_authority import (  # noqa: F401
-        PromotionPointerUpdate,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         PromotionAuthority,
+        PromotionPointerUpdate,
         get_promotion_authority,
         update_pointer_via_gateway,
         validate_pointer_update_integrity,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     PromotionPointerUpdate = None  # type: ignore[assignment,misc]
     PromotionAuthority = None  # type: ignore[assignment,misc]

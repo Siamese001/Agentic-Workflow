@@ -17,7 +17,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     SovereigntyViolationError = None  # type: ignore[assignment,misc]
     IsolationViolationError = None  # type: ignore[assignment,misc]

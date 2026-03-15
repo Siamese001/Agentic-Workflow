@@ -271,7 +271,6 @@ def test_generate_report_is_valid_utf8():
         out = Path(tmpdir) / "report.md"
         analyzer.generate_report(out)
         out.read_text(encoding="utf-8")  # raises if not valid UTF-8
-        assert True  # no-exception contract
 
 
 @pytest.mark.architecture

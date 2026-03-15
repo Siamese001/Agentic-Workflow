@@ -1,7 +1,10 @@
 """ADG contract tests for L4_state/types/cycle_types.py."""
 from __future__ import annotations
+
 import ast
+
 import pytest
+
 pytestmark = pytest.mark.unit
 
 MODULE_PATH = "agentic_core/L4_state/types/cycle_types.py"
@@ -24,7 +27,7 @@ def test_has_think_act_observe():
 try:
     from agentic_core.L4_state.types.cycle_types import CycleConfig, CycleState
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     CycleConfig = CycleState = None  # type: ignore[assignment,misc]
 

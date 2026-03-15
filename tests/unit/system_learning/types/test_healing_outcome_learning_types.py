@@ -12,18 +12,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from system_learning.types.healing_outcome_learning_types import (  # noqa: F401
-        HealingOutcomeAggregateKey,
-        HealingOutcomeAggregate,
-        HealingOutcomeAggregateSnapshot,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        HealingOutcomeAggregate,
+        HealingOutcomeAggregateKey,
+        HealingOutcomeAggregateSnapshot,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     HealingOutcomeAggregateKey = None  # type: ignore[assignment,misc]
     HealingOutcomeAggregate = None  # type: ignore[assignment,misc]
@@ -141,4 +141,4 @@ class TestMaxDepthConstant:
 
 def test_module_importable():
     """Smoke: healing_outcome_learning_types importable or gracefully unavailable."""
-    assert True
+    pass

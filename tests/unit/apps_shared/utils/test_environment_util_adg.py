@@ -14,7 +14,7 @@ try:
         validate_environment,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     EnvironmentValidator = None  # type: ignore[assignment,misc]
     get_environment_config = None  # type: ignore[assignment,misc]
@@ -34,4 +34,3 @@ class TestEnvironmentUtilImportability:
 
     def test_validate_environment_callable(self) -> None:
         assert callable(validate_environment)
-

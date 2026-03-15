@@ -15,7 +15,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     QualityValidationResult = None  # type: ignore[assignment,misc]
     ContentQualityValidator = None  # type: ignore[assignment,misc]

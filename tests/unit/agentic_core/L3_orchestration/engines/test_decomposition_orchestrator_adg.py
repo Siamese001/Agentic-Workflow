@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     AtomicTask = None  # type: ignore[assignment,misc]
     MissionPlan = None  # type: ignore[assignment,misc]

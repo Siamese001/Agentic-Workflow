@@ -8,7 +8,7 @@ pytestmark = pytest.mark.unit
 try:
     from apps_rg.engines.content_optimizer_engine import ContentOptimizerEngine
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ContentOptimizerEngine = None  # type: ignore[assignment,misc]
 

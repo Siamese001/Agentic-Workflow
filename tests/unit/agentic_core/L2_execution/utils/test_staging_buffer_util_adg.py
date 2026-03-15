@@ -7,17 +7,17 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L2_execution.utils.staging_buffer_util import (  # noqa: F401
-        StagingBufferError,
-        ImmutableStagingBuffer,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        ImmutableStagingBuffer,
+        StagingBufferError,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     StagingBufferError = None  # type: ignore[assignment,misc]
     ImmutableStagingBuffer = None  # type: ignore[assignment,misc]

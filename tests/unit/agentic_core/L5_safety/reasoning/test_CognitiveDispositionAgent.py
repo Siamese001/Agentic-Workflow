@@ -12,17 +12,17 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.reasoning.CognitiveDispositionAgent import (  # noqa: F401
-        DispositionDecision,
-        CognitiveDispositionAgent,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        CognitiveDispositionAgent,
+        DispositionDecision,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     DispositionDecision = None  # type: ignore[assignment,misc]
     CognitiveDispositionAgent = None  # type: ignore[assignment,misc]
@@ -121,4 +121,4 @@ class TestMaxDepthConstant:
 
 def test_module_importable():
     """Smoke: CognitiveDispositionAgent importable or gracefully unavailable."""
-    assert True
+    pass

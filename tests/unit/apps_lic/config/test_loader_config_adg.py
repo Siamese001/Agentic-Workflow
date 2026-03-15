@@ -7,17 +7,17 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_lic.config.loader_config import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         get_config_path,
         load_agent_specs,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     get_config_path = None  # type: ignore[assignment,misc]
     load_agent_specs = None  # type: ignore[assignment,misc]

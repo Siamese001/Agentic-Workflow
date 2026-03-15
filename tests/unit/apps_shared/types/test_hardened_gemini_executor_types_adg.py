@@ -9,19 +9,19 @@ import pytest
 
 try:
     from apps_shared.types.hardened_gemini_executor_types import (  # noqa: F401
-        ContextOverflowError,
+        DEFAULT_TIMEOUT,
+        THRESHOLD,
+        CircuitBreaker,
         CircuitBreakerOpenError,
+        CircuitBreakerState,
+        ContextOverflowError,
         HardenedGeminiConfig,
         InteractionTelemetry,
-        CircuitBreakerState,
-        CircuitBreaker,
-        create_hardened_gemini_executor,
         create_agent_executor,
-        THRESHOLD,
-        DEFAULT_TIMEOUT,
+        create_hardened_gemini_executor,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ContextOverflowError = None  # type: ignore[assignment,misc]
     CircuitBreakerOpenError = None  # type: ignore[assignment,misc]
@@ -60,4 +60,3 @@ class TestHardenedGeminiExecutorTypesImportability:
 
     def test_default_timeout_defined(self) -> None:
         assert DEFAULT_TIMEOUT is not None
-

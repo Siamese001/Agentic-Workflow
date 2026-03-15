@@ -12,18 +12,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L4_state.memory.in_memory_vector_cache import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         InMemoryVectorCache,
         TieredVectorStore,
         create_memory_vector_cache,
         create_tiered_vector_store,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     InMemoryVectorCache = None  # type: ignore[assignment,misc]
     TieredVectorStore = None  # type: ignore[assignment,misc]

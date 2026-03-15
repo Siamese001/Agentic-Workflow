@@ -12,17 +12,17 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L4_state.types.memory_item_types import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         MemoryItem,
         MemoryQuery,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     MemoryItem = None  # type: ignore[assignment,misc]
     MemoryQuery = None  # type: ignore[assignment,misc]
@@ -102,4 +102,4 @@ class TestMaxDepthConstant:
 
 def test_module_importable():
     """Smoke: memory_item_types importable or gracefully unavailable."""
-    assert True
+    pass

@@ -12,7 +12,7 @@ try:
         STDLIB_PREFIXES,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     FORBIDDEN_IMPORT_PREFIXES = None  # type: ignore[assignment]
     ALLOWED_AGENTIC_CORE_PREFIXES = None  # type: ignore[assignment]

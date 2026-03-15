@@ -12,18 +12,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.utils.subprocess_runner_util import (  # noqa: F401
-        invoke_arch_governor,
-        invoke_orchestrator_mission,
-        invoke_agent_roster_validation,
-        invoke_hierarchy_agent,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        invoke_agent_roster_validation,
+        invoke_arch_governor,
+        invoke_hierarchy_agent,
+        invoke_orchestrator_mission,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     invoke_arch_governor = None  # type: ignore[assignment,misc]
     invoke_orchestrator_mission = None  # type: ignore[assignment,misc]

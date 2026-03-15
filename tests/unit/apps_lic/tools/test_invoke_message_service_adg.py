@@ -7,17 +7,17 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_lic.tools.invoke_message_service import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         InvokeMessageService,
         execute,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     InvokeMessageService = None  # type: ignore[assignment,misc]
     execute = None  # type: ignore[assignment,misc]

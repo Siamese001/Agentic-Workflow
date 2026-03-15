@@ -1,13 +1,17 @@
 """ADG contract tests for apps_shared/types/similarity_method_types.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
     from apps_shared.types.similarity_method_types import (
-        SimilarityMethod, CompatibilityLevel, SchemaSimilarityRequest,
+        CompatibilityLevel,
+        SchemaSimilarityRequest,
+        SimilarityMethod,
     )
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     SimilarityMethod = CompatibilityLevel = SchemaSimilarityRequest = None  # type: ignore[assignment,misc]
 

@@ -9,7 +9,6 @@ from unittest.mock import MagicMock
 
 import pytest
 
-
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
 THRESHOLD = 0.95
@@ -301,7 +300,6 @@ def test_agent_discovery_cache_invalidate_all_is_noop():
     fake = _make_fake_cache()
     cache = AgentDiscoveryCache(cache=fake)
     cache.invalidate_all()  # Must not raise
-    assert True  # no-exception contract
 
 
 # ---------------------------------------------------------------------------

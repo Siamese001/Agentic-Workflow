@@ -12,16 +12,16 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L1_cognition.types.cache_types import (  # noqa: F401
-        EvictionPolicy,
-        DomainConfig,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        DomainConfig,
+        EvictionPolicy,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     EvictionPolicy = None  # type: ignore[assignment,misc]
     DomainConfig = None  # type: ignore[assignment,misc]

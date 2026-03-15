@@ -12,23 +12,23 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.types.governance_types import (  # noqa: F401
-        RouteDecisionRef,
-        PolicySnapshot,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         EvidencePack,
         ExceptionScope,
-        PolicyExceptionArtifact,
-        ProposalStatus,
         HILOutcome,
         HILReviewOutcome,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
+        PolicyExceptionArtifact,
+        PolicySnapshot,
+        ProposalStatus,
+        RouteDecisionRef,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     RouteDecisionRef = None  # type: ignore[assignment,misc]
     PolicySnapshot = None  # type: ignore[assignment,misc]
@@ -247,4 +247,4 @@ class TestMaxDepthConstant:
 
 def test_module_importable():
     """Smoke: governance_types importable or gracefully unavailable."""
-    assert True
+    pass

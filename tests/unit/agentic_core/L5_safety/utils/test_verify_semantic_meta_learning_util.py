@@ -12,18 +12,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.utils.verify_semantic_meta_learning_util import (  # noqa: F401
-        check_gemini_embedder,
-        check_redis_cache,
-        check_pinecone_vector,
-        check_meta_learning_trigger,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        check_gemini_embedder,
+        check_meta_learning_trigger,
+        check_pinecone_vector,
+        check_redis_cache,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     check_gemini_embedder = None  # type: ignore[assignment,misc]
     check_redis_cache = None  # type: ignore[assignment,misc]

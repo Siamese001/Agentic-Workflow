@@ -7,18 +7,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from system_learning.enforcement.dual_injection_proposal_gate import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         ActivationBypassViolation,
         MetaLearningActivationDecision,
         decide_activation_mode,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ActivationBypassViolation = None  # type: ignore[assignment,misc]
     MetaLearningActivationDecision = None  # type: ignore[assignment,misc]

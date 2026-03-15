@@ -7,18 +7,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.utils.vector_memory_types_util import (  # noqa: F401
-        VectorMemoryConfig,
-        VectorSearchResult,
-        VectorMemoryStore,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        VectorMemoryConfig,
+        VectorMemoryStore,
+        VectorSearchResult,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     VectorMemoryConfig = None  # type: ignore[assignment,misc]
     VectorSearchResult = None  # type: ignore[assignment,misc]

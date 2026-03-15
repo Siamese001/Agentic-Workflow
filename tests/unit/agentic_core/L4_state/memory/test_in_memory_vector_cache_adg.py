@@ -17,7 +17,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     InMemoryVectorCache = None  # type: ignore[assignment,misc]
     TieredVectorStore = None  # type: ignore[assignment,misc]

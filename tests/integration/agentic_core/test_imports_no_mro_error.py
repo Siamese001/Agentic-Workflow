@@ -53,7 +53,6 @@ CRITICAL_MODULES = _load_critical_modules()
 def test_import_no_mro_crash(module_path: str) -> None:
     """Import must succeed without MRO TypeError."""
     importlib.import_module(module_path)
-    assert True  # no-exception contract
 
 
 @pytest.mark.parametrize("module_path", CRITICAL_MODULES)

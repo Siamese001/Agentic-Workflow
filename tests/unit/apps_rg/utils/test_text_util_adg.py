@@ -7,17 +7,17 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_rg.utils.text_util import (  # noqa: F401
-        sanitize_campaign_text,
-        extract_keywords,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        extract_keywords,
+        sanitize_campaign_text,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     sanitize_campaign_text = None  # type: ignore[assignment,misc]
     extract_keywords = None  # type: ignore[assignment,misc]

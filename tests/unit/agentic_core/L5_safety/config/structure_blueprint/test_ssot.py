@@ -12,14 +12,14 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.config.structure_blueprint.ssot import (  # noqa: F401
-        is_layer_root,
-        is_allowed_subfolder,
-        validate_no_nested_lcd,
         get_canonical_test_path,
         get_validated_project_root,
+        is_allowed_subfolder,
+        is_layer_root,
+        validate_no_nested_lcd,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     is_layer_root = None  # type: ignore[assignment,misc]
     is_allowed_subfolder = None  # type: ignore[assignment,misc]
@@ -81,4 +81,4 @@ class TestGetValidatedProjectRootFunction:
 
 def test_module_importable():
     """Smoke: ssot importable or gracefully unavailable."""
-    assert True
+    pass

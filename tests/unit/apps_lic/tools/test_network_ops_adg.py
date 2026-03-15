@@ -7,20 +7,20 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_lic.tools.network_ops import (  # noqa: F401
-        string_get,
-        string_set,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         incr,
         start_transaction,
+        string_get,
+        string_set,
         watch_key,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     string_get = None  # type: ignore[assignment,misc]
     string_set = None  # type: ignore[assignment,misc]

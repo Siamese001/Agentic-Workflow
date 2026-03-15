@@ -7,18 +7,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.prompt_governance.security.assembly_injection_neutralizer import (  # noqa: F401
-        NeutralizationResult,
-        InjectionPattern,
-        neutralize_prompt,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        InjectionPattern,
+        NeutralizationResult,
+        neutralize_prompt,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     NeutralizationResult = None  # type: ignore[assignment,misc]
     InjectionPattern = None  # type: ignore[assignment,misc]

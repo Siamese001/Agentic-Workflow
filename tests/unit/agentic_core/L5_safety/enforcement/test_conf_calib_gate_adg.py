@@ -16,7 +16,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     RiskLevel = None  # type: ignore[assignment,misc]
     RiskDecision = None  # type: ignore[assignment,misc]

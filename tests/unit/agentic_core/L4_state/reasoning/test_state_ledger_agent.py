@@ -94,4 +94,3 @@ class TestStateLayerIntegrity:
         # memory/ is optional but common for L4
         if memory_path.exists():
             py_files = list(memory_path.glob("*.py"))
-            assert len(py_files) >= 0  # Just verify structure

@@ -7,14 +7,14 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_rg.scripts.migration_executor import (  # noqa: F401
-        MigrationExecutor,
-        BASE_DIR,
         APPS_RG_DIR,
-        MANIFEST_PATH,
+        BASE_DIR,
         DIRS,
+        MANIFEST_PATH,
+        MigrationExecutor,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     MigrationExecutor = None  # type: ignore[assignment,misc]
     BASE_DIR = None  # type: ignore[assignment,misc]

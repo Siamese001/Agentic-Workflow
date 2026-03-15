@@ -7,17 +7,17 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.scripts.compare_ui_components_util import (  # noqa: F401
-        extract_components,
-        compare_components,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        compare_components,
+        extract_components,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     extract_components = None  # type: ignore[assignment,misc]
     compare_components = None  # type: ignore[assignment,misc]

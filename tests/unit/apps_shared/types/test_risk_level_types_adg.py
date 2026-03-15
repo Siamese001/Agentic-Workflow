@@ -1,14 +1,22 @@
 """ADG contract tests for apps_shared/types/risk_level_types.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
     from apps_shared.types.risk_level_types import (
-        RiskLevel, SentimentMood, DepthScore, MicroHook, SentimentProfile,
-        WarmthSetting, DepthScorer, MicroHookGenerator,
+        DepthScore,
+        DepthScorer,
+        MicroHook,
+        MicroHookGenerator,
+        RiskLevel,
+        SentimentMood,
+        SentimentProfile,
+        WarmthSetting,
     )
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     RiskLevel = SentimentMood = DepthScore = MicroHook = SentimentProfile = None  # type: ignore[assignment,misc]
     WarmthSetting = DepthScorer = MicroHookGenerator = None  # type: ignore[assignment,misc]

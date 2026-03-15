@@ -10,7 +10,7 @@ try:
         AgentEngine,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     AgentEngine = None  # type: ignore[assignment,misc]
 

@@ -7,21 +7,21 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.utils.provider_util import (  # noqa: F401
-        Provider,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         MultiProviderClient,
+        Provider,
         get_client,
+        get_default_model,
         get_instructor_client,
         get_litellm_completion,
-        get_default_model,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     Provider = None  # type: ignore[assignment,misc]
     MultiProviderClient = None  # type: ignore[assignment,misc]

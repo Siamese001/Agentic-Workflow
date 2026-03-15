@@ -13,7 +13,7 @@ try:
         get_rag_retrieval_cache,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     RagRetrievalCache = None  # type: ignore[assignment,misc]
     get_rag_retrieval_cache = None  # type: ignore[assignment,misc]
@@ -29,4 +29,3 @@ class TestRagRetrievalCacheImportability:
 
     def test_get_rag_retrieval_cache_callable(self) -> None:
         assert callable(get_rag_retrieval_cache)
-

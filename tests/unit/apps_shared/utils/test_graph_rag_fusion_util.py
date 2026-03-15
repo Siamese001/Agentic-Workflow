@@ -12,20 +12,20 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.utils.graph_rag_fusion_util import (  # noqa: F401
-        QueryType,
-        FusionResult,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         CypherQueryGenerator,
+        FusionResult,
         GraphRAGFusion,
+        QueryType,
         get_graphrag_fusion,
         graphrag_query,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     QueryType = None  # type: ignore[assignment,misc]
     FusionResult = None  # type: ignore[assignment,misc]

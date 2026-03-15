@@ -1,11 +1,13 @@
 """ADG contract tests for agentic_core/L1_cognition/types/validation_types.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
     from agentic_core.L1_cognition.types.validation_types import IValidationProtocol
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     IValidationProtocol = None  # type: ignore[assignment,misc]
 

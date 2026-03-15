@@ -55,7 +55,6 @@ def test_location_agent_heal_method():
         return False
 
     return True
-    assert True  # no-exception contract
 
 
 def test_heal_violations_method():
@@ -83,7 +82,6 @@ def test_heal_violations_method():
         return False
 
     return True
-    assert True  # no-exception contract
 
 
 if __name__ == "__main__":

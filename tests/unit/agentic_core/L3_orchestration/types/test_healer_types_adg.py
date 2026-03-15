@@ -1,13 +1,17 @@
 """ADG contract tests for L3_orchestration/types/healer_types.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
     from agentic_core.L3_orchestration.types.healer_types import (
-        IHealerProtocol, LegacyAgentAdapter, HEAL_RESULT_SCHEMA,
+        HEAL_RESULT_SCHEMA,
+        IHealerProtocol,
+        LegacyAgentAdapter,
     )
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     IHealerProtocol = LegacyAgentAdapter = HEAL_RESULT_SCHEMA = None  # type: ignore[assignment,misc]
 
@@ -20,7 +24,6 @@ class TestHealResultSchema:
 @pytest.mark.skipif(not _AVAIL, reason="deps unavailable")
 class TestIHealerProtocol:
     def test_is_runtime_checkable(self):
-        from typing import runtime_checkable
         assert hasattr(IHealerProtocol, "__protocol_attrs__") or hasattr(IHealerProtocol, "_is_protocol")
 
 @pytest.mark.skipif(not _AVAIL, reason="deps unavailable")

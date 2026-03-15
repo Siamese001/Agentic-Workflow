@@ -11,7 +11,7 @@ try:
         KeywordCompletenessScorer,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     CompletenessScorerConfig = None  # type: ignore[assignment,misc]
     KeywordCompletenessScorer = None  # type: ignore[assignment,misc]

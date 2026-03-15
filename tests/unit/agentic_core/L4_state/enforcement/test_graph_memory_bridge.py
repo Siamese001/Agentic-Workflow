@@ -29,7 +29,6 @@ from agentic_core.L4_state.enforcement.graph_memory_bridge import (
     RelationDefinition,
 )
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------

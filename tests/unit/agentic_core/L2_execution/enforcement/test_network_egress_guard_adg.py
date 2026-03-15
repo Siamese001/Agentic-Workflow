@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     LLM_ENDPOINT_PATTERNS = None  # type: ignore[assignment,misc]
     COMPILED_PATTERNS = None  # type: ignore[assignment,misc]

@@ -7,18 +7,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.prompt_governance.scripts.detect_template_drift import (  # noqa: F401
-        load_registry,
-        detect_template_drift,
-        main,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        detect_template_drift,
+        load_registry,
+        main,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     load_registry = None  # type: ignore[assignment,misc]
     detect_template_drift = None  # type: ignore[assignment,misc]

@@ -13,7 +13,7 @@ try:
         max_retry_attempts,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     max_complexity = max_func_lines = max_phase_time = max_retry_attempts = None
 

@@ -7,22 +7,22 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.utils.async_coordinator_util import (  # noqa: F401
-        TaskState,
-        TaskInfo,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         AsyncCoordinator,
+        TaskInfo,
+        TaskState,
         get_coordinator,
-        shutdown_all_coordinators,
         managed,
         safe_wait_for,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
+        shutdown_all_coordinators,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     TaskState = None  # type: ignore[assignment,misc]
     TaskInfo = None  # type: ignore[assignment,misc]

@@ -4,7 +4,6 @@ from pathlib import Path
 
 import pytest
 
-
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
 THRESHOLD = 0.95
@@ -74,7 +73,6 @@ class TestEnforcementLayerIntegrity:
         # Enforcement files should have enforcement-related names
 
         py_files = [f for f in enforcement_path.glob("*.py") if not f.name.startswith("__")]
-        assert len(py_files) >= 0  # directory is readable
 
     def test_no_agent_classes_in_enforcement(self):
         """Agent classes should not be in enforcement/ (should be in reasoning/)."""

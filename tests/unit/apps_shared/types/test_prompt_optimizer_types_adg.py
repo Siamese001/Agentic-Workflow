@@ -1,13 +1,17 @@
 """ADG contract tests for apps_shared/types/prompt_optimizer_types.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
     from apps_shared.types.prompt_optimizer_types import (
-        PromptTemplate, OptimizedPrompt, PromptOptimizer,
+        OptimizedPrompt,
+        PromptOptimizer,
+        PromptTemplate,
     )
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     PromptTemplate = OptimizedPrompt = PromptOptimizer = None  # type: ignore[assignment,misc]
 

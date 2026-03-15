@@ -135,7 +135,6 @@ class TestAtomicConcurrency:
         test_file = tmp_path / "concurrent_test.json"
         test_file.write_text(json.dumps({"counter": 0, "operations": []}))
         return test_file
-        assert True  # no-exception contract
 
     @pytest.fixture
     def atomic_mixin(self) -> MockAtomicExecutionMixin:

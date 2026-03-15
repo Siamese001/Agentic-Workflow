@@ -82,7 +82,6 @@ def test_import_and_signature():
 
     print("=" * 60)
     print("✅ All signature checks completed!")
-    assert True  # no-exception contract
 
 
 def test_method_source():
@@ -118,7 +117,6 @@ def test_method_source():
             print(f"❌ {class_name}: Error checking implementation - {e}")
 
     print("=" * 60)
-    assert True  # no-exception contract
 
 
 if __name__ == "__main__":

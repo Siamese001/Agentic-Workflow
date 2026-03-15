@@ -236,7 +236,6 @@ def test_no_direct_sdk_imports_in_agents():
             print(f"  {v}")
         if len(violations) > 10:
             print(f"  ... and {len(violations) - 10} more")
-            assert True  # no-exception contract
 
 
 def test_openai_embedder_is_exception():

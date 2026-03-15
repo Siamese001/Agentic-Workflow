@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     OUTPUT_SCHEMA_VERSION = None  # type: ignore[assignment,misc]
     AgentIntegrityReport = None  # type: ignore[assignment,misc]

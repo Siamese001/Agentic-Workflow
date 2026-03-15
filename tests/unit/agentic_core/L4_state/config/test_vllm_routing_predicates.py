@@ -12,21 +12,21 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L4_state.config.vllm_routing_predicates import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         Provider,
         RoutingDecision,
         RoutingPredicate,
-        requires_policy_read,
-        iteration_count_exceeded,
-        invalid_ast_detected,
         default_routing,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
+        invalid_ast_detected,
+        iteration_count_exceeded,
+        requires_policy_read,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     Provider = None  # type: ignore[assignment,misc]
     RoutingDecision = None  # type: ignore[assignment,misc]

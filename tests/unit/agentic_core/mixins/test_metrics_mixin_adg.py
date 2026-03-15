@@ -9,16 +9,16 @@ import pytest
 
 try:
     from agentic_core.mixins.metrics_mixin import (  # noqa: F401
-        PerformanceMetrics,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         MetricsConfig,
         MetricsMixin,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
+        PerformanceMetrics,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     PerformanceMetrics = None  # type: ignore[assignment,misc]
     MetricsConfig = None  # type: ignore[assignment,misc]
@@ -48,4 +48,3 @@ class TestMetricsMixinImportability:
 
     def test_default_sleep_defined(self) -> None:
         assert DEFAULT_SLEEP is not None
-

@@ -10,7 +10,7 @@ try:
         StrategicRecommendationAgent,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     StrategicRecommendationAgent = None  # type: ignore[assignment,misc]
 

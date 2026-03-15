@@ -9,16 +9,16 @@ import pytest
 
 try:
     from system_learning.constraints.delta_enforcer import (  # noqa: F401
-        ConstraintViolation,
-        ForbiddenSurface,
-        UnknownSurface,
         BoundsViolation,
+        ConstraintViolation,
         DeltaViolation,
+        ForbiddenSurface,
         TypeViolation,
+        UnknownSurface,
         validate_surface_change,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ConstraintViolation = None  # type: ignore[assignment,misc]
     ForbiddenSurface = None  # type: ignore[assignment,misc]
@@ -45,4 +45,3 @@ class TestDeltaEnforcerImportability:
 
     def test_validate_surface_change_callable(self) -> None:
         assert callable(validate_surface_change)
-

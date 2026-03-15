@@ -18,7 +18,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     GuardrailExecution = None  # type: ignore[assignment,misc]
     PolicyHashVerification = None  # type: ignore[assignment,misc]

@@ -16,7 +16,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ParallelMode = None  # type: ignore[assignment,misc]
     AggregationStrategy = None  # type: ignore[assignment,misc]

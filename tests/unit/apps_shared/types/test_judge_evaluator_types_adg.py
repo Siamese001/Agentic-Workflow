@@ -9,19 +9,19 @@ import pytest
 
 try:
     from apps_shared.types.judge_evaluator_types import (  # noqa: F401
-        JudgmentCriterion,
-        JudgmentScore,
-        JudgeVerdict,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         JudgeEvaluationResult,
         JudgeEvaluator,
+        JudgeVerdict,
+        JudgmentCriterion,
+        JudgmentScore,
         create_judge_evaluator,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     JudgmentCriterion = None  # type: ignore[assignment,misc]
     JudgmentScore = None  # type: ignore[assignment,misc]
@@ -57,4 +57,3 @@ class TestJudgeEvaluatorTypesImportability:
 
     def test_default_sleep_defined(self) -> None:
         assert DEFAULT_SLEEP is not None
-

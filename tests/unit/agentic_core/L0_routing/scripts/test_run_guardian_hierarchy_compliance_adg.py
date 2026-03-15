@@ -7,14 +7,14 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.scripts.run_guardian_hierarchy_compliance import (  # noqa: F401
+        GUARDIAN_ID,
+        main,
+        run_hierarchy_compliance_guardian,
         scan_missing_structure,
         scan_subfolder_compliance,
-        run_hierarchy_compliance_guardian,
-        main,
-        GUARDIAN_ID,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     scan_missing_structure = None  # type: ignore[assignment,misc]
     scan_subfolder_compliance = None  # type: ignore[assignment,misc]

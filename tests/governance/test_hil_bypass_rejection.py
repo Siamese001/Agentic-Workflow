@@ -150,7 +150,6 @@ class TestSignVerifyLifecycle:
     def test_sign_then_verify_passes(self):
         artifact = _make().sign(_SECRET)
         artifact.verify(_SECRET)  # must not raise
-        assert True  # no-exception contract
 
     def test_sign_produces_nonempty_sig(self):
         artifact = _make().sign(_SECRET)
@@ -232,7 +231,6 @@ class TestPlanHashMismatch:
     def test_correct_plan_hash_passes(self):
         artifact = _make(original_plan_hash="plan-aaa")
         artifact.assert_plan_hash_matches("plan-aaa")  # no raise
-        assert True  # no-exception contract
 
     def test_wrong_plan_hash_raises(self):
         artifact = _make(original_plan_hash="plan-aaa")
@@ -279,7 +277,6 @@ class TestActionMatrix:
     def test_signed_always_passes_verify(self, action):
         artifact = _make(action=action).sign(_SECRET)
         artifact.verify(_SECRET)  # no raise
-        assert True  # no-exception contract
 
 
 # ---------------------------------------------------------------------------

@@ -12,28 +12,28 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.types.cst_transformers_types import (  # noqa: F401
-        ImportTarget,
-        DocstringTarget,
-        BareExceptTarget,
-        SurgicalImportRemover,
-        SurgicalDocstringInserter,
-        SurgicalBareExceptFixer,
-        SurgicalFutureImportInserter,
-        SurgicalTrailingWhitespaceFixer,
-        create_type_hint_inserter,
-        create_trailing_whitespace_fixer,
-        create_blank_line_normalizer,
-        create_import_remover,
-        create_docstring_inserter,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        BareExceptTarget,
+        DocstringTarget,
+        ImportTarget,
+        SurgicalBareExceptFixer,
+        SurgicalDocstringInserter,
+        SurgicalFutureImportInserter,
+        SurgicalImportRemover,
+        SurgicalTrailingWhitespaceFixer,
+        create_blank_line_normalizer,
+        create_docstring_inserter,
+        create_import_remover,
+        create_trailing_whitespace_fixer,
+        create_type_hint_inserter,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ImportTarget = None  # type: ignore[assignment,misc]
     DocstringTarget = None  # type: ignore[assignment,misc]
@@ -280,4 +280,4 @@ class TestMaxDepthConstant:
 
 def test_module_importable():
     """Smoke: cst_transformers_types importable or gracefully unavailable."""
-    assert True
+    pass

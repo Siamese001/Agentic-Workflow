@@ -7,14 +7,14 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_rg.scripts.rg_final_audit import (  # noqa: F401
+        FORBIDDEN_IMPORTS,
+        REQUIRED_BASE,
+        ROOT,
         audit_file,
         main,
-        ROOT,
-        REQUIRED_BASE,
-        FORBIDDEN_IMPORTS,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     audit_file = None  # type: ignore[assignment,misc]
     main = None  # type: ignore[assignment,misc]

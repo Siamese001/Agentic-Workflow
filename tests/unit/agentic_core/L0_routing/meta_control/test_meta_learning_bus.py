@@ -12,17 +12,17 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.meta_control.meta_learning_bus import (  # noqa: F401
-        MetaLearningChangePackage,
-        MetaLearningBus,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        MetaLearningBus,
+        MetaLearningChangePackage,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     MetaLearningChangePackage = None  # type: ignore[assignment,misc]
     MetaLearningBus = None  # type: ignore[assignment,misc]
@@ -124,4 +124,4 @@ class TestMaxDepthConstant:
 
 def test_module_importable():
     """Smoke: meta_learning_bus importable or gracefully unavailable."""
-    assert True
+    pass

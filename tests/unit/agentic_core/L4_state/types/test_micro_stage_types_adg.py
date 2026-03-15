@@ -1,11 +1,18 @@
 """ADG contract tests for L4_state/types/micro_stage_types.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
-    from agentic_core.L4_state.types.micro_stage_types import MicroStage, HopState, RetryPolicy, MicroCheckpoint
+    from agentic_core.L4_state.types.micro_stage_types import (
+        HopState,
+        MicroCheckpoint,
+        MicroStage,
+        RetryPolicy,
+    )
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False; MicroStage = HopState = RetryPolicy = MicroCheckpoint = None  # type: ignore[assignment,misc]
 
 @pytest.mark.skipif(not _AVAIL, reason="deps unavailable")

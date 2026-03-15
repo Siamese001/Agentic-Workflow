@@ -12,19 +12,19 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.enforcement.traceability_contracts import (  # noqa: F401
-        TraceIDFormatError,
         ErrorSignatureError,
-        PolicyConfigPinError,
         ManifestHashError,
         PlanProvenanceError,
+        PolicyConfigPinError,
         RAGChainError,
-        generate_trace_id,
+        TraceIDFormatError,
         build_error_signature,
+        generate_trace_id,
         pin_policy_config,
         verify_policy_config_unchanged,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     TraceIDFormatError = None  # type: ignore[assignment,misc]
     ErrorSignatureError = None  # type: ignore[assignment,misc]

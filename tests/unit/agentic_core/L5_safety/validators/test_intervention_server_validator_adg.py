@@ -14,7 +14,7 @@ try:
         start_intervention_server,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     InterventionContext = None  # type: ignore[assignment,misc]
     InterventionServer = None  # type: ignore[assignment,misc]

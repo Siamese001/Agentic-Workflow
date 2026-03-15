@@ -12,19 +12,19 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.enforcement.execution_gateway import (  # noqa: F401
-        ExecutionGatewayError,
-        UnregisteredAgentError,
-        GatewayResult,
-        V15ExecutionGateway,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        ExecutionGatewayError,
+        GatewayResult,
+        UnregisteredAgentError,
+        V15ExecutionGateway,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ExecutionGatewayError = None  # type: ignore[assignment,misc]
     UnregisteredAgentError = None  # type: ignore[assignment,misc]
@@ -133,4 +133,4 @@ class TestMaxDepthConstant:
 
 def test_module_importable():
     """Smoke: execution_gateway importable or gracefully unavailable."""
-    assert True
+    pass

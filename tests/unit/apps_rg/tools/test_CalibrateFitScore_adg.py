@@ -7,18 +7,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_rg.tools.CalibrateFitScore import (  # noqa: F401
-        CalibrateFitScore,
-        score,
-        compute_score,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        CalibrateFitScore,
+        compute_score,
+        score,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     CalibrateFitScore = None  # type: ignore[assignment,misc]
     score = None  # type: ignore[assignment,misc]

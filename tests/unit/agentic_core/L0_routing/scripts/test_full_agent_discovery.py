@@ -12,17 +12,17 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.scripts.full_agent_discovery import (  # noqa: F401
+        OUTPUT_SCHEMA_VERSION,
         AgentIntegrityReport,
         DiscoveryError,
-        setup_logging,
-        sha256_file,
+        analyze_agent_integrity,
         get_git_commit,
         main,
-        analyze_agent_integrity,
-        OUTPUT_SCHEMA_VERSION,
+        setup_logging,
+        sha256_file,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     AgentIntegrityReport = None  # type: ignore[assignment,misc]
     DiscoveryError = None  # type: ignore[assignment,misc]
@@ -115,4 +115,4 @@ class TestOutputSchemaVersionConstant:
 
 def test_module_importable():
     """Smoke: full_agent_discovery importable or gracefully unavailable."""
-    assert True
+    pass

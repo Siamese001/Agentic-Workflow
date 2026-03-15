@@ -118,7 +118,6 @@ class HighConfidenceTestAgent:
             test_file.unlink()
         if test_dir.exists():
             test_dir.rmdir()
-            assert True  # no-exception contract
 
 
 def test_direct_heal_call():
@@ -182,7 +181,6 @@ class DirectTestAgent:
             test_file.unlink()
         if test_dir.exists():
             test_dir.rmdir()
-            assert True  # no-exception contract
 
 
 if __name__ == "__main__":

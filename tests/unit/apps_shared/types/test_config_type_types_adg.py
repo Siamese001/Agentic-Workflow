@@ -1,13 +1,19 @@
 """ADG contract tests for apps_shared/types/config_type_types.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
     from apps_shared.types.config_type_types import (
-        ConfigType, ConfigFormat, ConfigScope, ConfigSource, ConfigLoadPlan,
+        ConfigFormat,
+        ConfigLoadPlan,
+        ConfigScope,
+        ConfigSource,
+        ConfigType,
     )
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     ConfigType = ConfigFormat = ConfigScope = ConfigSource = ConfigLoadPlan = None  # type: ignore[assignment,misc]
 

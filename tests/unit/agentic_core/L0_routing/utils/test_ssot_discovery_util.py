@@ -12,14 +12,14 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.utils.ssot_discovery_util import (  # noqa: F401
-        resolve_canonical_class,
-        load_agent_discovery,
+        get_agent_by_name,
         get_agent_paths,
         get_agents_by_layer,
-        get_agent_by_name,
+        load_agent_discovery,
+        resolve_canonical_class,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     resolve_canonical_class = None  # type: ignore[assignment,misc]
     load_agent_discovery = None  # type: ignore[assignment,misc]
@@ -81,4 +81,4 @@ class TestGetAgentByNameFunction:
 
 def test_module_importable():
     """Smoke: ssot_discovery_util importable or gracefully unavailable."""
-    assert True
+    pass

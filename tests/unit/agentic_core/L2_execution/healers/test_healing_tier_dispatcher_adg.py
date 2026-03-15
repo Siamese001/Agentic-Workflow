@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     InvocationRecord = None  # type: ignore[assignment,misc]
     handle_qwen_oom_via_router = None  # type: ignore[assignment,misc]

@@ -7,14 +7,14 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L6_observability.utils.integrity_report_generator_util import (  # noqa: F401
+        AgentIntegrityReporter,
         GapAnalysisItem,
         IntegrityReportResult,
-        AgentIntegrityReporter,
-        validate_registry_coverage,
         generate_full_report,
+        validate_registry_coverage,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     GapAnalysisItem = None  # type: ignore[assignment,misc]
     IntegrityReportResult = None  # type: ignore[assignment,misc]

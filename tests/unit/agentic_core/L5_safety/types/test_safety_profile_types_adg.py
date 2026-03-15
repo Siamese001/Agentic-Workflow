@@ -1,11 +1,13 @@
 """ADG contract tests for L5_safety/types/safety_profile_types.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
     from agentic_core.L5_safety.types.safety_profile_types import SafetyProfile
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False; SafetyProfile = None  # type: ignore[assignment,misc]
 
 @pytest.mark.skipif(not _AVAIL, reason="deps unavailable")

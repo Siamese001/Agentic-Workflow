@@ -10,7 +10,7 @@ try:
         DataEnricher,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     DataEnricher = None  # type: ignore[assignment,misc]
 

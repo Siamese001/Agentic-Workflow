@@ -7,19 +7,19 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L3_orchestration.engines.bounded_task_decomposer import (  # noqa: F401
-        TaskBlastRadiusViolation,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         DecompositionPolicy,
         DecompositionResult,
+        TaskBlastRadiusViolation,
         decompose_task,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     TaskBlastRadiusViolation = None  # type: ignore[assignment,misc]
     DecompositionPolicy = None  # type: ignore[assignment,misc]

@@ -8,7 +8,7 @@ pytestmark = pytest.mark.unit
 try:
     from agentic_core.L1_cognition.engines.memory_embedder import HealingMemoryEmbedder
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     HealingMemoryEmbedder = None  # type: ignore[assignment,misc]
 

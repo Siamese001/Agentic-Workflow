@@ -7,17 +7,17 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_rg.tools.execute_message_generation import (  # noqa: F401
-        execute_message_generation,
-        execute,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        execute,
+        execute_message_generation,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     execute_message_generation = None  # type: ignore[assignment,misc]
     execute = None  # type: ignore[assignment,misc]

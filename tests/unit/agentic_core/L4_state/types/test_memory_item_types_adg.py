@@ -15,7 +15,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     MemoryItem = None  # type: ignore[assignment,misc]
     MemoryQuery = None  # type: ignore[assignment,misc]

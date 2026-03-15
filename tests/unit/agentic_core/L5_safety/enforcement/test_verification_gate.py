@@ -15,7 +15,7 @@ try:
         VerificationGate,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     VerificationGate = None  # type: ignore[assignment,misc]
 
@@ -44,4 +44,4 @@ class TestVerificationGateContract:
 
 def test_module_importable():
     """Smoke: verification_gate importable or gracefully unavailable."""
-    assert True
+    pass

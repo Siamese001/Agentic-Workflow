@@ -1,13 +1,16 @@
 """ADG contract tests for apps_lic/types/stack_modernization_agent_types.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
     from apps_lic.types.stack_modernization_agent_types import (
-        LegacyDiagnostic, MigrationThesis,
+        LegacyDiagnostic,
+        MigrationThesis,
     )
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     LegacyDiagnostic = MigrationThesis = None  # type: ignore[assignment,misc]
 

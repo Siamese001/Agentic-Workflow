@@ -1,15 +1,26 @@
 """ADG contract tests for apps_lic/types/lic_models_types.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
     from apps_lic.types.lic_models_types import (
-        Route, Archetype, EventType, AgentStatus, ValidationSeverity,
-        CircuitState, FailureClassification, FactualGapError, CircuitBreakerOpenError,
-        OutreachMission, ValidationResult, RAGResult,
+        AgentStatus,
+        Archetype,
+        CircuitBreakerOpenError,
+        CircuitState,
+        EventType,
+        FactualGapError,
+        FailureClassification,
+        OutreachMission,
+        RAGResult,
+        Route,
+        ValidationResult,
+        ValidationSeverity,
     )
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     Route = Archetype = EventType = AgentStatus = ValidationSeverity = None  # type: ignore[assignment,misc]
     CircuitState = FailureClassification = FactualGapError = CircuitBreakerOpenError = None  # type: ignore[assignment,misc]

@@ -12,20 +12,20 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.scripts.class_info import (  # noqa: F401
+        AGENTIC_CORE_DIR,
+        ARCHIVES_DIR,
+        EXCLUDE_DIRS,
+        PROJECT_ROOT,
+        TARGET_ARCHIVES,
         ClassInfo,
         FileAnalysis,
         compute_file_hash,
         count_lines,
         get_snippet,
         parse_python_file,
-        PROJECT_ROOT,
-        ARCHIVES_DIR,
-        AGENTIC_CORE_DIR,
-        TARGET_ARCHIVES,
-        EXCLUDE_DIRS,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     ClassInfo = None  # type: ignore[assignment,misc]
     FileAnalysis = None  # type: ignore[assignment,misc]

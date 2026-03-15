@@ -7,18 +7,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.enforcement.HumanReviewAdapter import (  # noqa: F401
-        ReviewStatus,
-        ReviewRequest,
-        HumanReviewAdapter,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        HumanReviewAdapter,
+        ReviewRequest,
+        ReviewStatus,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ReviewStatus = None  # type: ignore[assignment,misc]
     ReviewRequest = None  # type: ignore[assignment,misc]

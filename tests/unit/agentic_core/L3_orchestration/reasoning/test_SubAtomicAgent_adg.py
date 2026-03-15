@@ -9,17 +9,17 @@ import pytest
 
 try:
     from agentic_core.L3_orchestration.reasoning.SubAtomicAgent import (  # noqa: F401
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         SubAtomicAgent,
         SubAtomicAgent_impl,
-        nesting_depth_visitor,
         get_SubAtomicAgent,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
+        nesting_depth_visitor,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     SubAtomicAgent = None  # type: ignore[assignment,misc]
     SubAtomicAgent_impl = None  # type: ignore[assignment,misc]
@@ -53,4 +53,3 @@ class TestSubatomicagentImportability:
 
     def test_default_sleep_defined(self) -> None:
         assert DEFAULT_SLEEP is not None
-

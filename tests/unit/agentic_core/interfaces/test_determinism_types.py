@@ -13,7 +13,7 @@ pytestmark = pytest.mark.unit
 try:
     import agentic_core.interfaces.determinism_types as _mod  # noqa: F401
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
 
 

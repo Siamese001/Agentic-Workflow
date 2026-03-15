@@ -12,20 +12,20 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.cache.cache_key_builders import (  # noqa: F401
-        build_routing_rule_surface_key,
-        build_route_decision_key,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         build_cap_registry_key,
         build_compiled_prompt_key,
+        build_route_decision_key,
+        build_routing_rule_surface_key,
         build_template_render_key,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     build_routing_rule_surface_key = None  # type: ignore[assignment,misc]
     build_route_decision_key = None  # type: ignore[assignment,misc]
@@ -141,4 +141,4 @@ class TestMaxDepthConstant:
 
 def test_module_importable():
     """Smoke: cache_key_builders importable or gracefully unavailable."""
-    assert True
+    pass

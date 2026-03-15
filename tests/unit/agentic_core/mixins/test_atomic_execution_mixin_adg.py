@@ -17,7 +17,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     FileBackup = None  # type: ignore[assignment,misc]
     AtomicTransaction = None  # type: ignore[assignment,misc]

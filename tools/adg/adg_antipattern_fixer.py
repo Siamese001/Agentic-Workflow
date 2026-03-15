@@ -67,6 +67,34 @@ _CANONICAL_TYPES: dict[str, str] = {
     # string-path-concat
     "string-path-concat": "string-path-concat",
     "string_path_concat": "string-path-concat",
+    # silent-degradation (umbrella)
+    "silent-degradation": "silent-degradation",
+    "silent_degradation": "silent-degradation",
+    "silentdegradation": "silent-degradation",
+    # availability-guard-skip (sub-pattern 1)
+    "availability-guard-skip": "availability-guard-skip",
+    "availability_guard_skip": "availability-guard-skip",
+    "availabilityguardskip": "availability-guard-skip",
+    # silent-success-on-noop (sub-pattern 2)
+    "silent-success-on-noop": "silent-success-on-noop",
+    "silent_success_on_noop": "silent-success-on-noop",
+    "silentsuccessonnoop": "silent-success-on-noop",
+    # phantom-module-import (sub-pattern 3)
+    "phantom-module-import": "phantom-module-import",
+    "phantom_module_import": "phantom-module-import",
+    "phantommoduleimport": "phantom-module-import",
+    # except-import-pass (sub-pattern 4)
+    "except-import-pass": "except-import-pass",
+    "except_import_pass": "except-import-pass",
+    "exceptimportpass": "except-import-pass",
+    # log-and-return-mock (sub-pattern 5)
+    "log-and-return-mock": "log-and-return-mock",
+    "log_and_return_mock": "log-and-return-mock",
+    "logandreturnmock": "log-and-return-mock",
+    # skip-string-return (sub-pattern 6)
+    "skip-string-return": "skip-string-return",
+    "skip_string_return": "skip-string-return",
+    "skipstringreturn": "skip-string-return",
 }
 
 # Broad detection: any line that looks like a guardian comment (even malformed)

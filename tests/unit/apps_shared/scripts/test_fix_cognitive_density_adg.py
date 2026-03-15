@@ -7,17 +7,17 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.scripts.fix_cognitive_density import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         count_top_level_defs,
         split_file_by_type,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     count_top_level_defs = None  # type: ignore[assignment,misc]
     split_file_by_type = None  # type: ignore[assignment,misc]

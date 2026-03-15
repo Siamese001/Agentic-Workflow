@@ -1,11 +1,13 @@
 """ADG contract tests for apps_shared/types/reasoning_output.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
     from apps_shared.types.reasoning_output import ReasoningOutput, scan_for_violations
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     ReasoningOutput = scan_for_violations = None  # type: ignore[assignment,misc]
 

@@ -12,23 +12,23 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.reasoning.StructureEnforcerAgent import (  # noqa: F401
-        StructureViolationType,
-        StructureViolation,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         NamingRule,
         StructureConfig,
         StructureEnforcerAgent,
+        StructureViolation,
+        StructureViolationType,
+        create_legacy_doc_enforcer,
         create_legacy_gravity_enforcer,
         create_legacy_naming_enforcer,
-        create_legacy_doc_enforcer,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     StructureViolationType = None  # type: ignore[assignment,misc]
     StructureViolation = None  # type: ignore[assignment,misc]
@@ -198,4 +198,4 @@ class TestMaxDepthConstant:
 
 def test_module_importable():
     """Smoke: StructureEnforcerAgent importable or gracefully unavailable."""
-    assert True
+    pass

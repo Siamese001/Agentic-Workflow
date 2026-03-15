@@ -12,19 +12,19 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.prompt_governance.optimization.optimization_strategy import (  # noqa: F401
-        OptimizationStrategy,
-        OptimizationLevel,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         OptimizationConfig,
+        OptimizationLevel,
+        OptimizationStrategy,
         PromptOptimizer,
         create_prompt_optimizer,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     OptimizationStrategy = None  # type: ignore[assignment,misc]
     OptimizationLevel = None  # type: ignore[assignment,misc]

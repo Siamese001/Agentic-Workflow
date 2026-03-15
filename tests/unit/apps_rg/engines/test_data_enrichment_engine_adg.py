@@ -8,7 +8,7 @@ pytestmark = pytest.mark.unit
 try:
     from apps_rg.engines.data_enrichment_engine import DataEnrichmentEngine
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     DataEnrichmentEngine = None  # type: ignore[assignment,misc]
 

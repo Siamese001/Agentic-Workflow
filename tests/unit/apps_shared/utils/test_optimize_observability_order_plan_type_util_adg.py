@@ -7,24 +7,24 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.utils.optimize_observability_order_plan_type_util import (  # noqa: F401
-        OptimizeObservabilityOrderPlanType,
-        OptimizeObservabilityOrderPlanConstraints,
-        OptimizeObservabilityOrderPlanResult,
-        OptimizeObservabilityOrderPlanProcessor,
-        OptimizeObservabilityOrderPlanImpl,
-        SecurityError,
-        OptimizeObservabilityOrderPlanInterface,
-        OptimizeObservabilityOrderPlanFactory,
-        optimize_observability_order,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        OptimizeObservabilityOrderPlanConstraints,
+        OptimizeObservabilityOrderPlanFactory,
+        OptimizeObservabilityOrderPlanImpl,
+        OptimizeObservabilityOrderPlanInterface,
+        OptimizeObservabilityOrderPlanProcessor,
+        OptimizeObservabilityOrderPlanResult,
+        OptimizeObservabilityOrderPlanType,
+        SecurityError,
+        optimize_observability_order,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     OptimizeObservabilityOrderPlanType = None  # type: ignore[assignment,misc]
     OptimizeObservabilityOrderPlanConstraints = None  # type: ignore[assignment,misc]

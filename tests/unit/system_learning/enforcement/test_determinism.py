@@ -12,17 +12,17 @@ pytestmark = pytest.mark.unit
 
 try:
     from system_learning.enforcement.determinism import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        assert_no_nondeterminism,
         deterministic_json,
         stable_sha256_json,
-        assert_no_nondeterminism,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     deterministic_json = None  # type: ignore[assignment,misc]
     stable_sha256_json = None  # type: ignore[assignment,misc]

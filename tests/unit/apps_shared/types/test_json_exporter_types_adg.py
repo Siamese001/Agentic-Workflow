@@ -1,13 +1,17 @@
 """ADG contract tests for apps_shared/types/json_exporter_types.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
     from apps_shared.types.json_exporter_types import (
-        ExportResult, JsonExporter, export_data,
+        ExportResult,
+        JsonExporter,
+        export_data,
     )
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     ExportResult = JsonExporter = export_data = None  # type: ignore[assignment,misc]
 

@@ -7,11 +7,11 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.utils.workflow_engines.completeness_reranker import (  # noqa: F401
-        CompletenessRerankerConfig,
         CompletenessReranker,
+        CompletenessRerankerConfig,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     CompletenessRerankerConfig = None  # type: ignore[assignment,misc]
     CompletenessReranker = None  # type: ignore[assignment,misc]

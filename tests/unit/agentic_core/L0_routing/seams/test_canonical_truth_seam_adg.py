@@ -9,17 +9,17 @@ import pytest
 
 try:
     from agentic_core.L0_routing.seams.canonical_truth_seam import (  # noqa: F401
-        CanonicalTruthProvider,
-        get_canonical_truth_provider,
-        get_canonical_layer,
-        categorize_agent,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
         BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        CanonicalTruthProvider,
+        categorize_agent,
+        get_canonical_layer,
+        get_canonical_truth_provider,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     CanonicalTruthProvider = None  # type: ignore[assignment,misc]
     get_canonical_truth_provider = None  # type: ignore[assignment,misc]
@@ -50,4 +50,3 @@ class TestCanonicalTruthSeamImportability:
 
     def test_default_sleep_defined(self) -> None:
         assert DEFAULT_SLEEP is not None
-

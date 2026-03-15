@@ -16,7 +16,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     PowerShellBanVisitor = None  # type: ignore[assignment,misc]
     scan_file_for_powershell = None  # type: ignore[assignment,misc]

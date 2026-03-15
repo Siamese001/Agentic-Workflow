@@ -7,19 +7,19 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L3_orchestration.engines.orchestrator_engine import (  # noqa: F401
-        L3OrchestrationStrategy,
-        OrchestratorMode,
-        Orchestrator,
-        get_consolidated_orchestrator,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        L3OrchestrationStrategy,
+        Orchestrator,
+        OrchestratorMode,
+        get_consolidated_orchestrator,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     L3OrchestrationStrategy = None  # type: ignore[assignment,misc]
     OrchestratorMode = None  # type: ignore[assignment,misc]

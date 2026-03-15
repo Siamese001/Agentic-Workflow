@@ -7,17 +7,17 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_lic.reasoning.OutreachMessageAgent import (  # noqa: F401
-        OutreachTemplateError,
-        OutreachMessageAgent,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        OutreachMessageAgent,
+        OutreachTemplateError,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     OutreachTemplateError = None  # type: ignore[assignment,misc]
     OutreachMessageAgent = None  # type: ignore[assignment,misc]

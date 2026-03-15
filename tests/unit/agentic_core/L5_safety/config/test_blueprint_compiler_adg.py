@@ -8,12 +8,12 @@ pytestmark = pytest.mark.unit
 try:
     from agentic_core.L5_safety.config.blueprint_compiler import (  # noqa: F401
         CompiledBlueprint,
-        make_lcd_layer,
         compile_blueprint,
+        make_lcd_layer,
         verify_blueprint_consistency,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     CompiledBlueprint = None  # type: ignore[assignment,misc]
     make_lcd_layer = None  # type: ignore[assignment,misc]

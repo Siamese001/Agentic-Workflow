@@ -18,7 +18,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     extract_template_schema = None  # type: ignore[assignment,misc]
     TemplateRenderVisitor = None  # type: ignore[assignment,misc]

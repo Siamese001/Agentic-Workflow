@@ -18,7 +18,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     IBlobStorageProviderProtocol = None  # type: ignore[assignment,misc]
     LocalDiskAdapter = None  # type: ignore[assignment,misc]

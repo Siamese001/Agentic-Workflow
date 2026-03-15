@@ -1,0 +1,248 @@
+"""REQ-378/384: Forensic determinism.
+
+Prove ForensicTraceBuffer uses semantic clock only; TraceID deterministic under replay.
+"""
+
+from __future__ import annotations
+
+import pytest
+
+from agentic_core.L0_routing.enforcement.trace_id_generator import (
+    TraceIdGenerator,
+    generate_trace_id,
+    validate_trace_id,
+)
+from agentic_core.L0_routing.types.determinism_types import (
+    ForensicTraceBuffer,
+    SemanticClockSnapshot,
+)
+
+
+@pytest.mark.governance
+def test_req378_forensic_buffer_uses_semantic_clock():
+    """REQ-378: ForensicTraceBuffer uses semantic clock only."""
+    # Create buffer with semantic clock
+    clock = SemanticClockSnapshot(tick=42)
+    buffer = ForensicTraceBuffer(
+        trace_id="test-trace", semantic_clock_tick=clock.tick, velocity_threshold=THRESHOLD
+    )
+
+    # Verify semantic clock is used
+    assert buffer.semantic_clock_tick == 42
+    assert buffer.velocity_threshold == 100
+
+    # Buffer should be empty initially
+    assert len(buffer._buffer) == 0
+
+    # Add some signals
+    buffer._buffer.extend([{"signal": "test1", "value": 10}, {"signal": "test2", "value": 20}])
+
+    # Verify signals are stored
+    assert len(buffer._buffer) == 2
+    assert buffer._buffer[0]["signal"] == "test1"
+    assert buffer._buffer[1]["value"] == 20
+
+
+@pytest.mark.governance
+def test_req378_forensic_buffer_velocity_threshold():
+    """REQ-378: ForensicTraceBuffer enforces velocity threshold."""
+    from agentic_core.L0_routing.types.determinism_types import TRACE_BUFFER_VELOCITY_THRESHOLD
+
+    # Verify default threshold
+    buffer = ForensicTraceBuffer(trace_id="test-trace", semantic_clock_tick=42)
+
+    assert buffer.velocity_threshold == TRACE_BUFFER_VELOCITY_THRESHOLD
+
+    # Custom threshold
+    custom_buffer = ForensicTraceBuffer(trace_id="test-trace", semantic_clock_tick=42, velocity_threshold=THRESHOLD)
+
+    assert custom_buffer.velocity_threshold == 200
+
+
+@pytest.mark.governance
+def test_req384_trace_id_deterministic_format():
+    """REQ-384: TraceID follows deterministic format."""
+    generator = TraceIdGenerator(replay_mode=False)
+
+    clock = SemanticClockSnapshot(tick=42)
+    trace_id = generator.generate_trace_id(clock, "test_operation")
+
+    # Should match pattern ^CC3AL1-[0-9A-F]{8}$
+    assert generator.validate_trace_id(trace_id)
+    assert trace_id.startswith("CC3AL1-")
+    assert len(trace_id) == 15  # CC3AL1- + 8 hex chars (SHA-256 produces 8 chars)
+
+    # All characters after dash should be hex
+    suffix = trace_id[7:]
+    assert all(c in "0123456789ABCDEF" for c in suffix)
+    assert len(suffix) == 8
+
+
+@pytest.mark.governance
+def test_req384_trace_id_deterministic_under_replay():
+    """REQ-384: TraceID deterministic under replay."""
+    # Create two generators in replay mode
+    generator1 = TraceIdGenerator(replay_mode=True)
+    generator2 = TraceIdGenerator(replay_mode=True)
+
+    clock = SemanticClockSnapshot(tick=42)
+
+    # Generate IDs with same inputs
+    id1 = generator1.generate_trace_id(clock, "test_operation", "context")
+    id2 = generator2.generate_trace_id(clock, "test_operation", "context")
+
+    # Should be identical
+    assert id1 == id2
+
+    # Different inputs should produce different IDs
+    id3 = generator1.generate_trace_id(clock, "different_operation", "context")
+    assert id1 != id3
+
+
+@pytest.mark.governance
+def test_req384_trace_id_replay_determinism_check():
+    """REQ-384: TraceID replay determinism can be verified."""
+    # Use fresh generator for deterministic check
+    generator1 = TraceIdGenerator(replay_mode=True)
+    generator2 = TraceIdGenerator(replay_mode=True)
+    clock = SemanticClockSnapshot(tick=42)
+
+    # Generate IDs with same inputs
+    id1 = generator1.generate_trace_id(clock, "test_operation", "context")
+    id2 = generator2.generate_trace_id(clock, "test_operation", "context")
+
+    # Should be identical (deterministic)
+    assert id1 == id2
+
+    # Different operation should produce different ID
+    generator3 = TraceIdGenerator(replay_mode=True)
+    id3 = generator3.generate_trace_id(clock, "different_operation", "context")
+    assert id1 != id3
+
+
+@pytest.mark.governance
+def test_req384_trace_id_semantic_clock_dependency():
+    """REQ-384: TraceID depends on semantic clock."""
+    generator = TraceIdGenerator(replay_mode=True)
+
+    clock1 = SemanticClockSnapshot(tick=42)
+    clock2 = SemanticClockSnapshot(tick=43)
+
+    # Same operation, different clock ticks
+    id1 = generator.generate_trace_id(clock1, "test_operation")
+    id2 = generator.generate_trace_id(clock2, "test_operation")
+
+    # Should be different
+    assert id1 != id2
+
+    # Same clock should be deterministic (use same generator state)
+    generator.generate_trace_id(clock1, "another_operation")
+    # Note: Due to counter increment, this will be different but deterministic
+
+
+@pytest.mark.governance
+def test_req384_trace_id_operation_dependency():
+    """REQ-384: TraceID depends on operation."""
+    generator = TraceIdGenerator(replay_mode=True)
+    clock = SemanticClockSnapshot(tick=42)
+
+    # Different operations
+    id1 = generator.generate_trace_id(clock, "operation1")
+    id2 = generator.generate_trace_id(clock, "operation2")
+
+    # Should be different
+    assert id1 != id2
+
+    # Same operation with new generator should be deterministic
+    new_generator = TraceIdGenerator(replay_mode=True)
+    id1_again = new_generator.generate_trace_id(clock, "operation1")
+    # Should match first ID from fresh generator
+    assert id1_again == id1
+
+
+@pytest.mark.governance
+def test_req384_trace_id_context_dependency():
+    """REQ-384: TraceID depends on additional context."""
+    generator = TraceIdGenerator(replay_mode=True)
+    clock = SemanticClockSnapshot(tick=42)
+
+    # Different contexts
+    id1 = generator.generate_trace_id(clock, "operation", "context1")
+    id2 = generator.generate_trace_id(clock, "operation", "context2")
+
+    # Should be different
+    assert id1 != id2
+
+    # Same context with new generator should be deterministic
+    new_generator = TraceIdGenerator(replay_mode=True)
+    id1_again = new_generator.generate_trace_id(clock, "operation", "context1")
+    # Should match first ID from fresh generator
+    assert id1_again == id1
+
+
+@pytest.mark.governance
+def test_req384_global_generate_trace_id_function():
+    """REQ-384: Global generate_trace_id function works correctly."""
+    clock = SemanticClockSnapshot(tick=42)
+
+    # Normal mode
+    id1 = generate_trace_id(clock, "test_operation", replay_mode=False)
+    assert validate_trace_id(id1)
+
+    # Replay mode
+    id2 = generate_trace_id(clock, "test_operation", replay_mode=True)
+    assert validate_trace_id(id2)
+
+    # Replay mode should be deterministic
+    id3 = generate_trace_id(clock, "test_operation", replay_mode=True)
+    assert id2 == id3
+
+
+@pytest.mark.governance
+def test_req384_trace_id_collision_detection():
+    """REQ-384: TraceID collision detection and handling."""
+    generator = TraceIdGenerator(replay_mode=True)
+    clock = SemanticClockSnapshot(tick=42)
+
+    # Generate many IDs to check for collisions
+    generated_ids = set()
+    for i in range(100):
+        operation = f"operation_{i}"
+        trace_id = generator.generate_trace_id(clock, operation)
+
+        # Should be valid
+        assert generator.validate_trace_id(trace_id)
+
+        # Should not collide (very unlikely with SHA-256)
+        assert trace_id not in generated_ids
+        generated_ids.add(trace_id)
+
+    # Should have 100 unique IDs
+    assert len(generated_ids) == 100
+
+
+@pytest.mark.governance
+def test_req378_384_integration_forensic_trace():
+    """REQ-378/384: Integration test for forensic trace with deterministic IDs."""
+    # Create forensic buffer
+    clock = SemanticClockSnapshot(tick=42)
+    buffer = ForensicTraceBuffer(trace_id="CC3AL1-12345678", semantic_clock_tick=clock.tick)
+
+    # Generate matching deterministic trace ID
+    generator = TraceIdGenerator(replay_mode=True)
+    trace_id = generator.generate_trace_id(clock, "forensic_capture")
+
+    # Should be valid
+    assert generator.validate_trace_id(trace_id)
+
+    # Buffer and trace ID should be linked
+    assert buffer.semantic_clock_tick == clock.tick
+
+    # Add forensic data
+    forensic_data = {"event": "system_call", "timestamp": clock.tick, "data": "sample forensic evidence"}
+    buffer._buffer.append(forensic_data)
+
+    # Verify data integrity
+    assert len(buffer._buffer) == 1
+    assert buffer._buffer[0]["event"] == "system_call"
+    assert buffer._buffer[0]["timestamp"] == clock.tick

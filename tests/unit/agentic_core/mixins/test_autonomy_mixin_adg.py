@@ -8,7 +8,7 @@ try:
     import agentic_core.mixins.autonomy_mixin as _autonomy_mixin_mod  # noqa: F401
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _autonomy_mixin_mod = None  # type: ignore[assignment]
     _AVAILABLE = False
 

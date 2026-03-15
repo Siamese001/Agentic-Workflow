@@ -7,16 +7,16 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_lic.tools.GoogleSearchClient import (  # noqa: F401
-        GoogleSearchClient,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        GoogleSearchClient,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     GoogleSearchClient = None  # type: ignore[assignment,misc]
     MAX_RETRIES = None  # type: ignore[assignment,misc]

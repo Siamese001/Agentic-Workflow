@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     IBlackboardLeaseVerifier = None  # type: ignore[assignment,misc]
     SandboxViolationError = None  # type: ignore[assignment,misc]

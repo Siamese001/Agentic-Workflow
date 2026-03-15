@@ -7,17 +7,17 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_lic.validators.safety_validate_ethical_standards_validator import (  # noqa: F401
-        validate_ethical_standards,
-        get_validate_ethical_standards_config,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        get_validate_ethical_standards_config,
+        validate_ethical_standards,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     validate_ethical_standards = None  # type: ignore[assignment,misc]
     get_validate_ethical_standards_config = None  # type: ignore[assignment,misc]

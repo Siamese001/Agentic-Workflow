@@ -12,18 +12,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.mixins.safety_mixin import (  # noqa: F401
-        SafetyAnalysisMixin,
-        HealingMixin,
-        StateAnalysisMixin,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        HealingMixin,
+        SafetyAnalysisMixin,
+        StateAnalysisMixin,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     SafetyAnalysisMixin = None  # type: ignore[assignment,misc]
     HealingMixin = None  # type: ignore[assignment,misc]
@@ -116,4 +116,4 @@ class TestMaxDepthConstant:
 
 def test_module_importable():
     """Smoke: safety_mixin importable or gracefully unavailable."""
-    assert True
+    pass

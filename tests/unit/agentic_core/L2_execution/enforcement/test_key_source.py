@@ -12,21 +12,21 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L2_execution.enforcement.key_source import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        EnvKeySource,
         KeySource,
         TestKeySource,
-        EnvKeySource,
-        inject_key_source,
-        get_key_source,
         get_current_secret,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
+        get_key_source,
+        inject_key_source,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     KeySource = None  # type: ignore[assignment,misc]
     TestKeySource = None  # type: ignore[assignment,misc]
@@ -179,4 +179,4 @@ class TestMaxDepthConstant:
 
 def test_module_importable():
     """Smoke: key_source importable or gracefully unavailable."""
-    assert True
+    pass

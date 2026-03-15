@@ -7,20 +7,20 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_rg.scripts.test_input import (  # noqa: F401
-        validate_knowledge_base,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         validate_base_engine,
         validate_hop_engines,
+        validate_knowledge_base,
         validate_orchestrator,
         validate_void_compliance,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     validate_knowledge_base = None  # type: ignore[assignment,misc]
     validate_base_engine = None  # type: ignore[assignment,misc]

@@ -15,7 +15,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     EvictionPolicy = None  # type: ignore[assignment,misc]
     DomainConfig = None  # type: ignore[assignment,misc]

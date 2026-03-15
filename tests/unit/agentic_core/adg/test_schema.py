@@ -12,18 +12,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.adg.schema import (  # noqa: F401
-        canonical_name,
-        verify_layer_graph_consistency,
-        module_path_to_layer,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        canonical_name,
+        module_path_to_layer,
+        verify_layer_graph_consistency,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     canonical_name = None  # type: ignore[assignment,misc]
     verify_layer_graph_consistency = None  # type: ignore[assignment,misc]
@@ -117,4 +117,4 @@ class TestMaxDepthConstant:
 
 def test_module_importable():
     """Smoke: schema importable or gracefully unavailable."""
-    assert True
+    pass

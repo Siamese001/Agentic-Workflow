@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     GraphTransaction = None  # type: ignore[assignment,misc]
     MutationAction = None  # type: ignore[assignment,misc]

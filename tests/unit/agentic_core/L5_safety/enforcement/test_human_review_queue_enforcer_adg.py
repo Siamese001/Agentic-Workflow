@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ReviewStatus = None  # type: ignore[assignment,misc]
     ProposedDiff = None  # type: ignore[assignment,misc]

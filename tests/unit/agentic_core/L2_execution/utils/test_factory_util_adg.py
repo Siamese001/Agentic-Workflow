@@ -7,18 +7,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L2_execution.utils.factory_util import (  # noqa: F401
-        parse_mcp_client_specs,
-        instantiate_mcp_client,
-        create_mcp_registry,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        create_mcp_registry,
+        instantiate_mcp_client,
+        parse_mcp_client_specs,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     parse_mcp_client_specs = None  # type: ignore[assignment,misc]
     instantiate_mcp_client = None  # type: ignore[assignment,misc]

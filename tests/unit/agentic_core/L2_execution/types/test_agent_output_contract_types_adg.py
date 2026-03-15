@@ -16,7 +16,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     OutputContractViolation = None  # type: ignore[assignment,misc]
     AgentOutputContract = None  # type: ignore[assignment,misc]

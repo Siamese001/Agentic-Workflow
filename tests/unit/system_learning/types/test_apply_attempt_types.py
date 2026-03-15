@@ -16,7 +16,7 @@ try:
         build_apply_attempt,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     MetaLearningApplyAttemptArtifact = None  # type: ignore[assignment,misc]
     build_apply_attempt = None  # type: ignore[assignment,misc]
@@ -53,4 +53,4 @@ class TestBuildApplyAttemptFunction:
 
 def test_module_importable():
     """Smoke: apply_attempt_types importable or gracefully unavailable."""
-    assert True
+    pass

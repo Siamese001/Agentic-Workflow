@@ -15,7 +15,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ReconciliationViolation = None  # type: ignore[assignment,misc]
     FilesystemSSOTReconcilerAgent = None  # type: ignore[assignment,misc]

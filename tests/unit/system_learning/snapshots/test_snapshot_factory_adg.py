@@ -12,7 +12,7 @@ try:
         create_snapshot,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     create_snapshot = None  # type: ignore[assignment,misc]
 
@@ -24,4 +24,3 @@ class TestSnapshotFactoryImportability:
 
     def test_create_snapshot_callable(self) -> None:
         assert callable(create_snapshot)
-

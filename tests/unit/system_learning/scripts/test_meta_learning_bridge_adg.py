@@ -7,12 +7,12 @@ pytestmark = pytest.mark.unit
 
 try:
     from system_learning.scripts.meta_learning_bridge import (  # noqa: F401
+        emit_app_signal_aggregate,
         emit_app_signal_event,
         propose_from_signal_aggregate,
-        emit_app_signal_aggregate,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     emit_app_signal_event = None  # type: ignore[assignment,misc]
     propose_from_signal_aggregate = None  # type: ignore[assignment,misc]

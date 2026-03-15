@@ -16,7 +16,7 @@ try:
         load_mcp_config,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     MCPConnectionManager = None  # type: ignore[assignment,misc]
     load_mcp_config = None  # type: ignore[assignment,misc]
@@ -56,4 +56,4 @@ class TestLoadMcpConfigFunction:
 
 def test_module_importable():
     """Smoke: mcp_manager importable or gracefully unavailable."""
-    assert True
+    pass

@@ -18,7 +18,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     get_filesystem_client = None  # type: ignore[assignment,misc]
     get_git_client = None  # type: ignore[assignment,misc]

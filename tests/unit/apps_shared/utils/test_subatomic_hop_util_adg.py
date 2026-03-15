@@ -8,16 +8,16 @@ pytestmark = pytest.mark.unit
 try:
     from apps_shared.utils.subatomic_hop_util import (  # noqa: F401
         InputValidationError,
-        StageExecutionError,
-        QualityGateFailure,
         MutationRequired,
-        SubatomicHopConfig,
+        QualityGateFailure,
+        StageExecutionError,
         SubatomicHop,
+        SubatomicHopConfig,
         create_subatomic_hop,
         subatomic_hop,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     InputValidationError = None  # type: ignore[assignment,misc]
     StageExecutionError = None  # type: ignore[assignment,misc]

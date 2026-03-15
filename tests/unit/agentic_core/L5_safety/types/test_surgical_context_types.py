@@ -12,19 +12,19 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.types.surgical_context_types import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         ASTCoordinate,
-        ViolationConstraint,
         SurgicalContext,
         SurgicalContextBuilder,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
+        ViolationConstraint,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ASTCoordinate = None  # type: ignore[assignment,misc]
     ViolationConstraint = None  # type: ignore[assignment,misc]
@@ -146,4 +146,4 @@ class TestMaxDepthConstant:
 
 def test_module_importable():
     """Smoke: surgical_context_types importable or gracefully unavailable."""
-    assert True
+    pass

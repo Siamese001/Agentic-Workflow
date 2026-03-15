@@ -2,12 +2,14 @@
 Note: source file has syntax/naming issues so import may fail — skipif guards used.
 """
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
-    from apps_shared.types.prompt_type_types import PromptType, PromptSchema, ValidationResult
+    from apps_shared.types.prompt_type_types import PromptSchema, PromptType, ValidationResult
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     PromptType = PromptSchema = ValidationResult = None  # type: ignore[assignment,misc]
 

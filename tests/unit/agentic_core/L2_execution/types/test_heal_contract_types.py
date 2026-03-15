@@ -12,20 +12,20 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L2_execution.types.heal_contract_types import (  # noqa: F401
-        HealStatus,
-        HealCheckResult,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         CombinedHealResult,
+        HealCheckResult,
+        HealStatus,
         check_schema_compatibility,
         validate_against_json_schema,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     HealStatus = None  # type: ignore[assignment,misc]
     HealCheckResult = None  # type: ignore[assignment,misc]
@@ -167,4 +167,4 @@ class TestMaxDepthConstant:
 
 def test_module_importable():
     """Smoke: heal_contract_types importable or gracefully unavailable."""
-    assert True
+    pass

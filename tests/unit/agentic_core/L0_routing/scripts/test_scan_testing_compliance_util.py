@@ -12,18 +12,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.scripts.scan_testing_compliance_util import (  # noqa: F401
-        extract_bases,
-        has_method,
-        analyze_agent,
-        regenerate_discovery_json,
-        PROJECT_ROOT,
         AGENTIC_CORE,
         DISCOVERY_JSON,
         DISCOVERY_SCRIPT,
+        PROJECT_ROOT,
         SELF_TESTING_BASES,
+        analyze_agent,
+        extract_bases,
+        has_method,
+        regenerate_discovery_json,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     extract_bases = None  # type: ignore[assignment,misc]
     has_method = None  # type: ignore[assignment,misc]

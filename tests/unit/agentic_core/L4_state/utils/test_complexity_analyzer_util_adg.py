@@ -7,18 +7,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L4_state.utils.complexity_analyzer_util import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        analyze_file_complexity,
         calculate_mccabe_complexity,
         check_function_complexity,
-        analyze_file_complexity,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     calculate_mccabe_complexity = None  # type: ignore[assignment,misc]
     check_function_complexity = None  # type: ignore[assignment,misc]

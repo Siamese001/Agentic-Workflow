@@ -12,18 +12,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.seams.safety_enforcement_seam import (  # noqa: F401
-        load_code_deduplication_agent,
-        load_archival_gatekeeper,
-        load_ssot_scanner,
-        load_activation_gate,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        load_activation_gate,
+        load_archival_gatekeeper,
+        load_code_deduplication_agent,
+        load_ssot_scanner,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     load_code_deduplication_agent = None  # type: ignore[assignment,misc]
     load_archival_gatekeeper = None  # type: ignore[assignment,misc]

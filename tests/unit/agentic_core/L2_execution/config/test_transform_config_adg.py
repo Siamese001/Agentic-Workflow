@@ -10,7 +10,7 @@ try:
         TransformOperation,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     TransformOperation = None  # type: ignore[assignment,misc]
 

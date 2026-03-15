@@ -10,7 +10,7 @@ try:
         retrieve_with_readonly_guarantee,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     retrieve_with_readonly_guarantee = None  # type: ignore[assignment,misc]
 

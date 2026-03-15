@@ -9,16 +9,16 @@ import pytest
 
 try:
     from agentic_core.L0_routing.seams.vigilance_seam import (  # noqa: F401
-        load_vigilance_types,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         get_vigilance_event_artifact,
         get_vigilance_severity,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
+        load_vigilance_types,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     load_vigilance_types = None  # type: ignore[assignment,misc]
     get_vigilance_event_artifact = None  # type: ignore[assignment,misc]
@@ -45,4 +45,3 @@ class TestVigilanceSeamImportability:
 
     def test_default_sleep_defined(self) -> None:
         assert DEFAULT_SLEEP is not None
-

@@ -8,7 +8,7 @@ pytestmark = pytest.mark.unit
 try:
     from agentic_core.mixins.llm_provider_mixin import LLMProviderMixin, Provider
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     LLMProviderMixin = None  # type: ignore[assignment,misc]
     Provider = None  # type: ignore[assignment,misc]

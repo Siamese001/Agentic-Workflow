@@ -8,14 +8,14 @@ pytestmark = pytest.mark.unit
 try:
     from apps_shared.utils.unified_config_helper_util import (  # noqa: F401
         UnifiedConfigLoader,
-        get_category_defaults,
-        merge_with_defaults,
         deep_merge,
+        get_category_defaults,
         load_unified_config,
+        merge_with_defaults,
         validate_unified_config,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     UnifiedConfigLoader = None  # type: ignore[assignment,misc]
     get_category_defaults = None  # type: ignore[assignment,misc]

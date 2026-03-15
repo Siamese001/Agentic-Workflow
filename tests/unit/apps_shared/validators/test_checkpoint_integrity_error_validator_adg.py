@@ -7,18 +7,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.validators.checkpoint_integrity_error_validator import (  # noqa: F401
-        CheckpointIntegrityError,
-        SecureCheckpointManager,
-        CheckpointManagerFactory,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        CheckpointIntegrityError,
+        CheckpointManagerFactory,
+        SecureCheckpointManager,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     CheckpointIntegrityError = None  # type: ignore[assignment,misc]
     SecureCheckpointManager = None  # type: ignore[assignment,misc]

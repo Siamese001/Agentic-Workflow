@@ -12,21 +12,21 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.enforcement.context_session_manager_enforcer import (  # noqa: F401
-        RiskLevel,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         AttentionState,
         ContextSession,
         ContextSessionManager,
-        get_session_manager,
-        get_current_session,
+        RiskLevel,
         classify_risk,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
+        get_current_session,
+        get_session_manager,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     RiskLevel = None  # type: ignore[assignment,misc]
     AttentionState = None  # type: ignore[assignment,misc]

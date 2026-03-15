@@ -12,21 +12,21 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L3_orchestration.reasoning.StateManagementAgent import (  # noqa: F401
-        StateEntry,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         IntegrityReport,
+        StateEntry,
         StateManagementAgent,
-        get_state_manager,
         get_manifest_manager,
         get_memory_manager,
         get_state_guardian,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
+        get_state_manager,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     StateEntry = None  # type: ignore[assignment,misc]
     IntegrityReport = None  # type: ignore[assignment,misc]

@@ -195,7 +195,6 @@ class TestAdapterPersistRecord:
         record = adapter.build_record(agg, created_utc=1)
         adapter.persist_record(record)
         store_mock.write.assert_called_once_with(record)
-        assert True  # no-exception contract
 
 
 # ---------------------------------------------------------------------------

@@ -7,24 +7,24 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.utils.rank_data_components_plan_type_util import (  # noqa: F401
-        RankDataComponentsPlanType,
-        RankDataComponentsPlanConstraints,
-        RankDataComponentsPlanResult,
-        RankDataComponentsPlanProcessor,
-        RankDataComponentsPlanImpl,
-        SecurityError,
-        RankDataComponentsPlanInterface,
-        RankDataComponentsPlanFactory,
-        rank_data_components,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        RankDataComponentsPlanConstraints,
+        RankDataComponentsPlanFactory,
+        RankDataComponentsPlanImpl,
+        RankDataComponentsPlanInterface,
+        RankDataComponentsPlanProcessor,
+        RankDataComponentsPlanResult,
+        RankDataComponentsPlanType,
+        SecurityError,
+        rank_data_components,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     RankDataComponentsPlanType = None  # type: ignore[assignment,misc]
     RankDataComponentsPlanConstraints = None  # type: ignore[assignment,misc]

@@ -17,7 +17,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ToolCallStore = None  # type: ignore[assignment,misc]
     get_tool_call_store = None  # type: ignore[assignment,misc]

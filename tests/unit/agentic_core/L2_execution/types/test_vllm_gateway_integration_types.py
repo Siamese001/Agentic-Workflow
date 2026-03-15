@@ -12,23 +12,23 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L2_execution.types.vllm_gateway_integration_types import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        VLLMCircuitBreakerRegistry,
+        VLLMGatewayCallResult,
+        VLLMGatewayTelemetry,
         VLLMLocalRequest,
         VLLMQueueController,
-        VLLMCircuitBreakerRegistry,
-        VLLMGatewayTelemetry,
-        VLLMGatewayCallResult,
+        evaluate_gateway_call,
         select_serving_profile,
         shape_local_request,
-        evaluate_gateway_call,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     VLLMLocalRequest = None  # type: ignore[assignment,misc]
     VLLMQueueController = None  # type: ignore[assignment,misc]
@@ -220,4 +220,4 @@ class TestMaxDepthConstant:
 
 def test_module_importable():
     """Smoke: vllm_gateway_integration_types importable or gracefully unavailable."""
-    assert True
+    pass

@@ -1,13 +1,17 @@
 """ADG contract tests for apps_lic/types/code_quality_guardrail_types.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
     from apps_lic.types.code_quality_guardrail_types import (
-        CodeIssue, QualityResult, CodeQualityGuardrail,
+        CodeIssue,
+        CodeQualityGuardrail,
+        QualityResult,
     )
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     CodeIssue = QualityResult = CodeQualityGuardrail = None  # type: ignore[assignment,misc]
 

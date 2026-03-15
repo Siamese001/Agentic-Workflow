@@ -12,17 +12,17 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.seams.safety_kernel_seam import (  # noqa: F401
-        load_classification_kernel,
-        get_classification_cache_context,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        get_classification_cache_context,
+        load_classification_kernel,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     load_classification_kernel = None  # type: ignore[assignment,misc]
     get_classification_cache_context = None  # type: ignore[assignment,misc]
@@ -95,4 +95,4 @@ class TestMaxDepthConstant:
 
 def test_module_importable():
     """Smoke: safety_kernel_seam importable or gracefully unavailable."""
-    assert True
+    pass

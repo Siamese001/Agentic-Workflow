@@ -39,7 +39,6 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
-
 from agentic_core.L0_routing.types.guardian_registry_types import (
     ALL_GUARDIANS,
     GuardianTier,
@@ -259,7 +258,6 @@ class TestFilesystemDiagnostic:
                 f"Add them to guardian_registry.py or remove the scripts.",
                 stacklevel=1,
             )
-            assert True  # no-exception contract
         # Always passes — registry is SSOT, not filesystem
 
     def test_registry_covers_discovered_scripts(self):
@@ -274,7 +272,6 @@ class TestFilesystemDiagnostic:
                 f"Scripts may have been renamed or moved.",
                 stacklevel=1,
             )
-            assert True  # no-exception contract
         # Always passes — registry is SSOT
 
     def test_discovery_count_matches_registry(self):
@@ -290,7 +287,6 @@ class TestFilesystemDiagnostic:
                 f"Discovered: {sorted(discovered.keys())}",
                 stacklevel=1,
             )
-            assert True  # no-exception contract
 
 
 # ===================================================================

@@ -7,17 +7,17 @@ pytestmark = pytest.mark.unit
 
 try:
     from system_learning.engines.rlhf_optimizer_impl import (  # noqa: F401
-        RLHFChangePackage,
-        DefaultRLHFOptimizer,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        DefaultRLHFOptimizer,
+        RLHFChangePackage,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     RLHFChangePackage = None  # type: ignore[assignment,misc]
     DefaultRLHFOptimizer = None  # type: ignore[assignment,misc]

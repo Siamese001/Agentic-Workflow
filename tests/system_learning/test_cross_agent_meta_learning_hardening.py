@@ -1659,7 +1659,6 @@ class TestFaissTelemetryEvents:
             embedding_model_checksum="chk",
         )
         store.persist_to_disk("idx", tmp_path / "out", embedder_id="e", model_version="v1")
-        assert True  # no-exception contract
 
     @pytest.mark.unit_min_deps
     def test_rebuild_emits_rebuilt_event(self, tmp_path):

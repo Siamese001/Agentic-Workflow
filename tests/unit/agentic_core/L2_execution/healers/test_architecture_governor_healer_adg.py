@@ -9,11 +9,11 @@ import pytest
 
 try:
     from agentic_core.L2_execution.healers.architecture_governor_healer import (  # noqa: F401
-        heal_architecture_governance,
         CHECK_ID,
+        heal_architecture_governance,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     heal_architecture_governance = None  # type: ignore[assignment,misc]
     CHECK_ID = None  # type: ignore[assignment,misc]
@@ -29,4 +29,3 @@ class TestArchitectureGovernorHealerImportability:
 
     def test_check_id_defined(self) -> None:
         assert CHECK_ID is not None
-

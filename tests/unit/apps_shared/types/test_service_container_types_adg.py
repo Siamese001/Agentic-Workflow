@@ -1,11 +1,13 @@
 """ADG contract tests for apps_shared/types/service_container_types.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
-    from apps_shared.types.service_container_types import ServiceNotFoundError, ServiceContainer
+    from apps_shared.types.service_container_types import ServiceContainer, ServiceNotFoundError
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     ServiceNotFoundError = ServiceContainer = None  # type: ignore[assignment,misc]
 

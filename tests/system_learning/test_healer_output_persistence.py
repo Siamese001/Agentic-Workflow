@@ -19,6 +19,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import SYSTEM_LEARNING_DIR
 from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
 from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
 from system_learning.engines.healing_success_rate_store import (
@@ -34,7 +35,6 @@ from system_learning.engines.in_memory_healing_outcome_intake_store import (
 from system_learning.stores.version_store import FileBackedVersionStore, InMemoryVersionStore
 from system_learning.types.healing_outcome_intake_types import HealingOutcomeIntakeRecord
 from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeStats
-from agentic_core.L0_routing.config.path_constants import SYSTEM_LEARNING_DIR
 
 pytestmark = pytest.mark.system_learning
 
@@ -764,7 +764,6 @@ class TestFireMetaLearningIntakeFaultIsolation:
             mod._fire_meta_learning_intake(state_mgr, now_utc=0)  # Must not raise
         finally:
             builtins.__import__ = real_import
-            assert True  # no-exception contract
 
     def test_wave1_exception_does_not_block_wave2(self) -> None:
         """If Wave 1 raises, Wave 2 (in-memory store) still executes."""

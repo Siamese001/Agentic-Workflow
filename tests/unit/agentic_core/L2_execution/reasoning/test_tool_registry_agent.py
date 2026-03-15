@@ -95,4 +95,3 @@ class TestExecutionLayerIntegrity:
         # tools/ is optional but recommended for L2
         if tools_path.exists():
             py_files = list(tools_path.glob("*.py"))
-            assert len(py_files) >= 0  # Just verify structure

@@ -13,7 +13,7 @@ try:
         sanitize_legacy_prompt,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     PersonaTemplate = None  # type: ignore[assignment,misc]
     PromptSanitizer = None  # type: ignore[assignment,misc]

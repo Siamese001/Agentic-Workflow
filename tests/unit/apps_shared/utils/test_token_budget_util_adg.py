@@ -7,19 +7,19 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.utils.token_budget_util import (  # noqa: F401
-        BudgetExceededError,
-        TokenBudgetConfig,
-        TokenBudget,
-        enforce_token_budget,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        BudgetExceededError,
+        TokenBudget,
+        TokenBudgetConfig,
+        enforce_token_budget,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     BudgetExceededError = None  # type: ignore[assignment,misc]
     TokenBudgetConfig = None  # type: ignore[assignment,misc]

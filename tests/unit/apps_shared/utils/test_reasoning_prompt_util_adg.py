@@ -10,7 +10,7 @@ try:
         build_reasoning_prompt_addendum,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     build_reasoning_prompt_addendum = None  # type: ignore[assignment,misc]
 

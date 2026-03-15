@@ -7,27 +7,27 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_lic.config.retry_policy_config import (  # noqa: F401
-        RetryStrategy,
-        RetryableError,
-        NonRetryableError,
-        RetryConfig,
-        RetryAttempt,
-        RetryResult,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         DelayCalculator,
+        NonRetryableError,
+        RetryableError,
+        RetryAttempt,
+        RetryConfig,
         RetryPolicy,
+        RetryResult,
+        RetryStrategy,
         get_retry_executor,
+        init_default_policies,
         retry,
         retry_with_policy,
-        init_default_policies,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     RetryStrategy = None  # type: ignore[assignment,misc]
     RetryableError = None  # type: ignore[assignment,misc]

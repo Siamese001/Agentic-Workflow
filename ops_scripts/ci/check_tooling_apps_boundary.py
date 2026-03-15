@@ -9,7 +9,9 @@ Deterministic, pure read-only, exits nonzero on violations.
 import ast
 import sys
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR
+
 
 class ToolingAppsBoundaryChecker:
     """Checker for tooling/apps_* boundary violations."""
@@ -44,10 +46,10 @@ class ToolingAppsBoundaryChecker:
         for node in ast.walk(tree):
             if isinstance(node, ast.Import):
                 for alias in node.names:
-                    if any((alias.name.startswith(prefix) for prefix in self.FORBIDDEN_IMPORTS)):
+                    if any(alias.name.startswith(prefix) for prefix in self.FORBIDDEN_IMPORTS):
                         self.violations.append(f'{filepath}:{node.lineno}: Forbidden import: import {alias.name}')
             elif isinstance(node, ast.ImportFrom):
-                if node.module and any((node.module.startswith(prefix) for prefix in self.FORBIDDEN_IMPORTS)):
+                if node.module and any(node.module.startswith(prefix) for prefix in self.FORBIDDEN_IMPORTS):
                     self.violations.append(f'{filepath}:{node.lineno}: Forbidden import: from {node.module} import ...')
 
     def check(self) -> list[str]:

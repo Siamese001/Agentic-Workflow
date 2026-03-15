@@ -17,7 +17,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ARCHIVE_BATCH_ACCEPT_ENV = None  # type: ignore[assignment,misc]
     ArchivalOperation = None  # type: ignore[assignment,misc]

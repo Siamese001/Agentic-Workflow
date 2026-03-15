@@ -12,7 +12,7 @@ try:
         LicSpineAdapter,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     LicSpineAdapter = None  # type: ignore[assignment,misc]
 
@@ -24,4 +24,3 @@ class TestLicSpineAdapterImportability:
 
     def test_licspineadapter_is_type(self) -> None:
         assert LicSpineAdapter is not None
-

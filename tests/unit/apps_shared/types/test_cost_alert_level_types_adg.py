@@ -1,13 +1,18 @@
 """ADG contract tests for apps_shared/types/cost_alert_level_types.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
     from apps_shared.types.cost_alert_level_types import (
-        CostAlertLevel, CostMetrics, CostAlert, CostTracker,
+        CostAlert,
+        CostAlertLevel,
+        CostMetrics,
+        CostTracker,
     )
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     CostAlertLevel = CostMetrics = CostAlert = CostTracker = None  # type: ignore[assignment,misc]
 

@@ -12,18 +12,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.enforcement.governance.logs_guard import (  # noqa: F401
-        is_log_or_output_file,
-        is_log_or_output_directory,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         is_excluded_directory,
         is_in_excluded_directory,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
+        is_log_or_output_directory,
+        is_log_or_output_file,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     is_log_or_output_file = None  # type: ignore[assignment,misc]
     is_log_or_output_directory = None  # type: ignore[assignment,misc]

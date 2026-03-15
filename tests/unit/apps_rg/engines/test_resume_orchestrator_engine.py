@@ -12,17 +12,17 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_rg.engines.resume_orchestrator_engine import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         HopCheckpoint,
         ResumeOrchestratorEngine,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     HopCheckpoint = None  # type: ignore[assignment,misc]
     ResumeOrchestratorEngine = None  # type: ignore[assignment,misc]
@@ -115,4 +115,4 @@ class TestMaxDepthConstant:
 
 def test_module_importable():
     """Smoke: resume_orchestrator_engine importable or gracefully unavailable."""
-    assert True
+    pass

@@ -8,7 +8,7 @@ pytestmark = pytest.mark.unit
 try:
     from agentic_core.L1_cognition.engines.meta_observability import MetaLearningObservability
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     MetaLearningObservability = None  # type: ignore[assignment,misc]
 

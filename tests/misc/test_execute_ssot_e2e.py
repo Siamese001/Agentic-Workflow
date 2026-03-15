@@ -142,7 +142,6 @@ class InvalidLocationAgent:
             test_file.unlink()
         if test_dir.exists():
             test_dir.rmdir()
-            assert True  # no-exception contract
 
 
 def test_agent_validation():
@@ -192,7 +191,6 @@ def test_agent_validation():
     except Exception as e:  # guardian: allow-silent-swallower
         print(f"✗ Error during validation: {e}")
         return False
-        assert True  # no-exception contract
 
 
 if __name__ == "__main__":

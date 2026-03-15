@@ -7,18 +7,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.scripts.agent_validation_util import (  # noqa: F401
-        run_code_deduplication_check,
-        run_architecture_governance_check,
-        main,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        main,
+        run_architecture_governance_check,
+        run_code_deduplication_check,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     run_code_deduplication_check = None  # type: ignore[assignment,misc]
     run_architecture_governance_check = None  # type: ignore[assignment,misc]

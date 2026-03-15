@@ -8,7 +8,7 @@ pytestmark = pytest.mark.unit
 try:
     from apps_rg.engines.content_quality_engine import ContentQualityEngine
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ContentQualityEngine = None  # type: ignore[assignment,misc]
 

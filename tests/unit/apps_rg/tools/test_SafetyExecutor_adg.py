@@ -10,7 +10,7 @@ try:
         SafetyExecutor,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     SafetyExecutor = None  # type: ignore[assignment,misc]
 

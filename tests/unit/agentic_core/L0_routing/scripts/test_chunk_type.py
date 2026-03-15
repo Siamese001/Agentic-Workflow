@@ -12,20 +12,20 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.scripts.chunk_type import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         ChunkType,
         SemanticChunk,
-        load_text_file,
         chunk_python_ast,
-        chunk_text_fallback,
         chunk_text,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
+        chunk_text_fallback,
+        load_text_file,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     ChunkType = None  # type: ignore[assignment,misc]
     SemanticChunk = None  # type: ignore[assignment,misc]

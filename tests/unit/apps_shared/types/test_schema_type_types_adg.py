@@ -1,13 +1,17 @@
 """ADG contract tests for apps_shared/types/schema_type_types.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
     from apps_shared.types.schema_type_types import (
-        SchemaType, ConversionStrategy, FieldMapping,
+        ConversionStrategy,
+        FieldMapping,
+        SchemaType,
     )
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     SchemaType = ConversionStrategy = FieldMapping = None  # type: ignore[assignment,misc]
 

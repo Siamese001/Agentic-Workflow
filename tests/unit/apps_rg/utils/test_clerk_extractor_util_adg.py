@@ -10,7 +10,7 @@ try:
         ClerkExtractor,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ClerkExtractor = None  # type: ignore[assignment,misc]
 

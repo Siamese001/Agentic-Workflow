@@ -9,17 +9,17 @@ import pytest
 
 try:
     from agentic_core.L5_safety.enforcement.AdapterBase import (  # noqa: F401
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        AdapterBase,
         AdapterContext,
         AdapterResult,
-        AdapterBase,
         HealingAdapter,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     AdapterContext = None  # type: ignore[assignment,misc]
     AdapterResult = None  # type: ignore[assignment,misc]
@@ -50,4 +50,3 @@ class TestAdapterbaseImportability:
 
     def test_default_sleep_defined(self) -> None:
         assert DEFAULT_SLEEP is not None
-

@@ -11,7 +11,7 @@ try:
         _stable_args_hash,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ToolPolicyEnforcer = None  # type: ignore[assignment,misc]
     _stable_args_hash = None  # type: ignore[assignment]

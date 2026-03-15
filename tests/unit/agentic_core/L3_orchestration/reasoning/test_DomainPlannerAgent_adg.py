@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     DomainPlannerOutput = None  # type: ignore[assignment,misc]
     PlannerAssessment = None  # type: ignore[assignment,misc]

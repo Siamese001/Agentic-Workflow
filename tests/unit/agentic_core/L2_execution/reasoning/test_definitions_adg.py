@@ -7,12 +7,12 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L2_execution.reasoning.definitions import (
+        ListFilesArgs,
         ReadFileArgs,
         WriteFileArgs,
-        ListFilesArgs,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ReadFileArgs = None  # type: ignore[assignment,misc]
     WriteFileArgs = None  # type: ignore[assignment,misc]

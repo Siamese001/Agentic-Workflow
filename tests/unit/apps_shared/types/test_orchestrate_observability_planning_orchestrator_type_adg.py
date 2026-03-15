@@ -1,14 +1,16 @@
 """ADG contract tests for apps_shared/types/orchestrate_observability_planning_orchestrator_type.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
     from apps_shared.types.orchestrate_observability_planning_orchestrator_type import (
-        OrchestrateObservabilityPlanningOrchestratorType,
         OrchestrateObservabilityPlanningOrchestratorProcessor,
+        OrchestrateObservabilityPlanningOrchestratorType,
     )
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     OrchestrateObservabilityPlanningOrchestratorType = None  # type: ignore[assignment,misc]
     OrchestrateObservabilityPlanningOrchestratorProcessor = None  # type: ignore[assignment,misc]

@@ -12,7 +12,7 @@ try:
         main,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     file_hash = None  # type: ignore[assignment,misc]
     find_in_current = None  # type: ignore[assignment,misc]

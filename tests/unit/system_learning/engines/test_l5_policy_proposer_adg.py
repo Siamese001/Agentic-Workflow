@@ -9,16 +9,16 @@ import pytest
 
 try:
     from system_learning.engines.l5_policy_proposer import (  # noqa: F401
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         L5PolicyChangePackage,
         L5PolicyProposer,
         extract_l5_metrics_from_healing_actions,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     L5PolicyChangePackage = None  # type: ignore[assignment,misc]
     L5PolicyProposer = None  # type: ignore[assignment,misc]
@@ -48,4 +48,3 @@ class TestL5PolicyProposerImportability:
 
     def test_default_sleep_defined(self) -> None:
         assert DEFAULT_SLEEP is not None
-

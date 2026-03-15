@@ -7,19 +7,19 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.runtime.utils.file_cache_util import (  # noqa: F401
-        FileCache,
-        get_python_files,
-        get_all_files,
-        invalidate_cache,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        FileCache,
+        get_all_files,
+        get_python_files,
+        invalidate_cache,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     FileCache = None  # type: ignore[assignment,misc]
     get_python_files = None  # type: ignore[assignment,misc]

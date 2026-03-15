@@ -12,18 +12,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.utils.add_test_coverage_util import (  # noqa: F401
-        has_tests,
-        add_test_to_file,
-        main,
-        find_class_end,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        add_test_to_file,
+        find_class_end,
+        has_tests,
+        main,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     has_tests = None  # type: ignore[assignment,misc]
     add_test_to_file = None  # type: ignore[assignment,misc]

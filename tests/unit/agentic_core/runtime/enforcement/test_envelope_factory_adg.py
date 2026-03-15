@@ -7,17 +7,17 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.runtime.enforcement.envelope_factory import (  # noqa: F401
-        envelope,
-        EnvelopeFactory,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        EnvelopeFactory,
+        envelope,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     envelope = None  # type: ignore[assignment,misc]
     EnvelopeFactory = None  # type: ignore[assignment,misc]

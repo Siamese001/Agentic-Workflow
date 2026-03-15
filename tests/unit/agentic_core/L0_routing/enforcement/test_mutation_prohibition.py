@@ -12,18 +12,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.enforcement.mutation_prohibition import (  # noqa: F401
-        SourceMutationBlocked,
+        IMMUTABLE_ROOTS,
         ProtectedRootBlockEvent,
         ProtectedRootPolicy,
-        get_default_protected_root_policy,
-        enforce_protected_root,
+        SourceMutationBlocked,
         assert_no_persistent_write,
-        safe_write_text,
+        enforce_protected_root,
+        get_default_protected_root_policy,
         safe_write_bytes,
-        IMMUTABLE_ROOTS,
+        safe_write_text,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     SourceMutationBlocked = None  # type: ignore[assignment,misc]
     ProtectedRootBlockEvent = None  # type: ignore[assignment,misc]
@@ -129,4 +129,4 @@ class TestImmutableRootsConstant:
 
 def test_module_importable():
     """Smoke: mutation_prohibition importable or gracefully unavailable."""
-    assert True
+    pass

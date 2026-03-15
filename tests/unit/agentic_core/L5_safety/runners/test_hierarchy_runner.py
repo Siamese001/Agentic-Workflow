@@ -12,18 +12,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.runners.hierarchy_runner import (  # noqa: F401
-        get_project_root,
-        run_hierarchy_dry_run,
-        run_heal_violations,
-        verify_mro,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        get_project_root,
+        run_heal_violations,
+        run_hierarchy_dry_run,
+        verify_mro,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     get_project_root = None  # type: ignore[assignment,misc]
     run_hierarchy_dry_run = None  # type: ignore[assignment,misc]

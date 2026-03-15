@@ -15,7 +15,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     SovereignRedisOrchestrator = None  # type: ignore[assignment,misc]
     get_sovereign_redis_orchestrator = None  # type: ignore[assignment,misc]

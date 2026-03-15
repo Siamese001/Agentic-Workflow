@@ -23,6 +23,11 @@ jobs:
       - name: Install minimal deps
         run: pip install pytest --quiet
 
+      - name: PowerShell Ban (Rule #2, §3.2)
+        run: python ops_scripts/ci/check_powershell_ban.py
+        env:
+          PYTHONPATH: .
+
       - name: Run CI integrity gate (§22)
         run: |
           if [ -f "ops_scripts/ci/check_ci_integrity.py" ]; then

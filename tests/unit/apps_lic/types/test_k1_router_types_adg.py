@@ -1,13 +1,17 @@
 """ADG contract tests for apps_lic/types/k1_router_types.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
     from apps_lic.types.k1_router_types import (
-        ArchetypeClassificationResult, RouteSelectionResult, K1Output,
+        ArchetypeClassificationResult,
+        K1Output,
+        RouteSelectionResult,
     )
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     ArchetypeClassificationResult = RouteSelectionResult = K1Output = None  # type: ignore[assignment,misc]
 

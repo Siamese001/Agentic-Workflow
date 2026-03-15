@@ -9,14 +9,14 @@ import pytest
 
 try:
     from system_learning.engines.embedding_retention_scheduler import (  # noqa: F401
-        EmbeddingRetentionScheduler,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
         BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        EmbeddingRetentionScheduler,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     EmbeddingRetentionScheduler = None  # type: ignore[assignment,misc]
     MAX_RETRIES = None  # type: ignore[assignment,misc]
@@ -38,4 +38,3 @@ class TestEmbeddingRetentionSchedulerImportability:
 
     def test_default_sleep_defined(self) -> None:
         assert DEFAULT_SLEEP is not None
-

@@ -9,15 +9,15 @@ import pytest
 
 try:
     from apps_shared.utils.math_operations_util import (  # noqa: F401
-        ScoreResult,
-        MathProcessor,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
         BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        MathProcessor,
+        ScoreResult,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ScoreResult = None  # type: ignore[assignment,misc]
     MathProcessor = None  # type: ignore[assignment,misc]
@@ -43,4 +43,3 @@ class TestMathOperationsUtilImportability:
 
     def test_default_sleep_defined(self) -> None:
         assert DEFAULT_SLEEP is not None
-

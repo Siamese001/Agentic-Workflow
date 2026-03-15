@@ -13,7 +13,7 @@ pytestmark = pytest.mark.unit
 try:
     import agentic_core.interfaces.gateway as _mod  # noqa: F401
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
 
 

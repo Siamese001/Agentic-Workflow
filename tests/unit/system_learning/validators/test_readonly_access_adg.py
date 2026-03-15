@@ -7,17 +7,17 @@ pytestmark = pytest.mark.unit
 
 try:
     from system_learning.validators.readonly_access import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         check_file_readonly,
         check_system_learning_readonly,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     check_file_readonly = None  # type: ignore[assignment,misc]
     check_system_learning_readonly = None  # type: ignore[assignment,misc]

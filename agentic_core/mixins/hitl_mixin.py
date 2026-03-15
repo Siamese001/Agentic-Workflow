@@ -15,7 +15,6 @@ SSOT PRINCIPLE:
     All agents requiring human oversight should inherit from this mixin.
     This ensures consistent HITL patterns across the agent ecosystem.
 """
-from agentic_core.L0_routing.providers.clock_provider import ClockProvider as clock_provider
 from __future__ import annotations
 
 # Configuration constants
@@ -31,6 +30,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
+
 Logger = logging.getLogger(__name__)
 
 class ApprovalStatus(Enum):
@@ -67,7 +67,7 @@ class ApprovalRequest:
 
     def is_expired(self) -> bool:
         """Check if request has timed out."""
-        return clock_provider.time() - self.created_at > self.timeout_seconds
+        return time.time() - self.created_at > self.timeout_seconds
 
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization."""
@@ -233,7 +233,7 @@ class HITLMixin:
                 oldest_id = min(self._pending_approvals.keys(), key=lambda k: self._pending_approvals[k].created_at)
                 oldest = self._pending_approvals.pop(oldest_id)
                 oldest.status = ApprovalStatus.TIMEOUT
-                oldest.resolved_at = clock_provider.time()
+                oldest.resolved_at = time.time()
                 self._approval_history.append(oldest)
                 Logger.warning(f'[HITL] Evicted oldest pending request {oldest_id} due to limit')
             self._pending_approvals[request.request_id] = request
@@ -306,7 +306,7 @@ class HITLMixin:
             if request.status != ApprovalStatus.PENDING:
                 raise ValueError(f'Request already resolved: {request.status.value}')
             request.status = ApprovalStatus.APPROVED
-            request.resolved_at = clock_provider.time()
+            request.resolved_at = time.time()
             request.resolved_by = approved_by
             request.resolution_notes = notes
             del self._pending_approvals[request_id]
@@ -340,7 +340,7 @@ class HITLMixin:
             if self._hitl_config.require_notes_on_rejection and (not notes):
                 raise ValueError('Rejection notes are required')
             request.status = ApprovalStatus.REJECTED
-            request.resolved_at = clock_provider.time()
+            request.resolved_at = time.time()
             request.resolved_by = rejected_by
             request.resolution_notes = notes
             del self._pending_approvals[request_id]
@@ -389,7 +389,7 @@ class HITLMixin:
                     expired.append(req_id)
             for req_id in expired:
                 request = self._pending_approvals.pop(req_id)
-                request.resolved_at = clock_provider.time()
+                request.resolved_at = time.time()
                 self._approval_history.append(request)
                 Logger.warning(f'[HITL] Request {req_id} TIMEOUT')
             return [req.to_dict() for req in self._pending_approvals.values()]

@@ -141,7 +141,6 @@ def read_something():
 
         # Store findings for evidence
         self.scoped_findings = all_findings
-        assert True  # no-exception contract
 
     def test_detector_enforcement(self):
         """Test that detector enforcement fails when unsafe patterns are present."""

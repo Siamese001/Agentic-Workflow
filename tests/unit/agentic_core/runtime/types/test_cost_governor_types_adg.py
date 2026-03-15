@@ -9,19 +9,19 @@ import pytest
 
 try:
     from agentic_core.runtime.types.cost_governor_types import (  # noqa: F401
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         BudgetExceededError,
         CostGovernor,
-        UsageRecord,
         CostGovernorManager,
+        UsageRecord,
         get_global_cost_governor,
         track_api_call,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     BudgetExceededError = None  # type: ignore[assignment,misc]
     CostGovernor = None  # type: ignore[assignment,misc]
@@ -60,4 +60,3 @@ class TestCostGovernorTypesImportability:
 
     def test_default_sleep_defined(self) -> None:
         assert DEFAULT_SLEEP is not None
-

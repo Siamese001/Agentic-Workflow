@@ -322,7 +322,6 @@ class TestGap004NObservations:
 
         n = 10
         assert_min_sample_size(n_observations=n, sample_policy=SampleSizePolicy(min_observations=10))
-        assert True  # no-exception contract
 
     def test_boundary_one_below_min_raises(self):
         from system_learning.validators.dampening import (
@@ -338,7 +337,6 @@ class TestGap004NObservations:
         from system_learning.validators.dampening import SampleSizePolicy, assert_min_sample_size
 
         assert_min_sample_size(n_observations=11, sample_policy=SampleSizePolicy(min_observations=10))
-        assert True  # no-exception contract
 
 
 # ---------------------------------------------------------------------------
@@ -470,7 +468,6 @@ class TestGap010CommitProofInvariant:
             version_id=impl_hash, package=pkg, commit_timestamp_utc=1_000_000
         )
         proof.verify()
-        assert True  # no-exception contract
 
     def test_version_id_mismatch_raises(self):
         from system_learning.invariants.commit_proof_invariant import (

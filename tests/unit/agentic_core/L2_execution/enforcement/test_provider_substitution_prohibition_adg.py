@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ProviderRequest = None  # type: ignore[assignment,misc]
     ProviderSubstitutionViolation = None  # type: ignore[assignment,misc]

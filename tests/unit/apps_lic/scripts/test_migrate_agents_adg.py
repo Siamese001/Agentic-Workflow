@@ -7,16 +7,16 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_lic.scripts.migrate_agents import (  # noqa: F401
-        migrate_rescued_agents,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        migrate_rescued_agents,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     migrate_rescued_agents = None  # type: ignore[assignment,misc]
     MAX_RETRIES = None  # type: ignore[assignment,misc]

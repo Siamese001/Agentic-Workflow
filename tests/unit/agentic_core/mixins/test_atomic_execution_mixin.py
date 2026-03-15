@@ -12,19 +12,19 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.mixins.atomic_execution_mixin import (  # noqa: F401
-        FileBackup,
-        AtomicTransaction,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         AtomicExecutionError,
         AtomicExecutionMixin,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
+        AtomicTransaction,
+        FileBackup,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     FileBackup = None  # type: ignore[assignment,misc]
     AtomicTransaction = None  # type: ignore[assignment,misc]
@@ -149,4 +149,4 @@ class TestMaxDepthConstant:
 
 def test_module_importable():
     """Smoke: atomic_execution_mixin importable or gracefully unavailable."""
-    assert True
+    pass

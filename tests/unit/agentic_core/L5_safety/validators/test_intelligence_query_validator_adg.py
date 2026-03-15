@@ -15,7 +15,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     IntelligenceQueryResult = None  # type: ignore[assignment,misc]
     IntelligenceQueryValidator = None  # type: ignore[assignment,misc]

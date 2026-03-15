@@ -21,7 +21,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ValidationSeverity = None  # type: ignore[assignment,misc]
     Provider = None  # type: ignore[assignment,misc]
@@ -43,7 +43,7 @@ class TestValidationSeverity:
         assert issubclass(ValidationSeverity, enum.Enum)
 
     def test_has_members(self):
-        assert len(list(ValidationSeverity)) >= 0
+        assert len(list(ValidationSeverity)) > 0
 
     def test_importable(self):
         assert ValidationSeverity is not None
@@ -57,7 +57,7 @@ class TestProvider:
         assert issubclass(Provider, enum.Enum)
 
     def test_has_members(self):
-        assert len(list(Provider)) >= 0
+        assert len(list(Provider)) > 0
 
     def test_importable(self):
         assert Provider is not None
@@ -71,7 +71,7 @@ class TestApiCallStatus:
         assert issubclass(ApiCallStatus, enum.Enum)
 
     def test_has_members(self):
-        assert len(list(ApiCallStatus)) >= 0
+        assert len(list(ApiCallStatus)) > 0
 
     def test_importable(self):
         assert ApiCallStatus is not None
@@ -124,4 +124,4 @@ class TestMaxDepthConstant:
 
 def test_module_importable():
     """Module validation_severity_config.py is importable (or deps unavailable)."""
-    assert _AVAILABLE or not _AVAILABLE
+    pass

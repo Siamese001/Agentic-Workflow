@@ -622,7 +622,6 @@ class TestSideEffectSafety:
         v2 = validator.validate_agent(agent)
         # Mutating v1 does not affect v2
         v1.clear()
-        assert len(v2) >= 0  # v2 still has its own data
 
     @pytest.mark.governance
     def test_structure_validation_result_violations_list_independent_across_instances(self):

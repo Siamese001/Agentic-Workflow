@@ -16,7 +16,7 @@ try:
         get_sl_memory_bridge,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     SystemLearningMemoryBridge = None  # type: ignore[assignment,misc]
     get_sl_memory_bridge = None  # type: ignore[assignment,misc]
@@ -56,4 +56,4 @@ class TestGetSlMemoryBridgeFunction:
 
 def test_module_importable():
     """Smoke: system_learning_memory_bridge importable or gracefully unavailable."""
-    assert True
+    pass

@@ -7,19 +7,19 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.validators.evidence_ranker_validator import (  # noqa: F401
-        RankedEvidence,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         EvidenceRanker,
+        RankedEvidence,
         create_evidence_ranker,
         rank_evidence,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     RankedEvidence = None  # type: ignore[assignment,misc]
     EvidenceRanker = None  # type: ignore[assignment,misc]

@@ -252,7 +252,6 @@ class TestSkipFileRatchet:
 
     def test_ratchet_fails_when_count_exceeds_baseline(self) -> None:
         """If we add a fake skip-file file, the ratchet must fail."""
-        from ops_scripts.ci.adg_skip_file_ratchet import _load_baseline, _count_skip_files
 
         budget_data = json.loads(self._budget_file().read_text(encoding="utf-8"))
         actual_baseline = budget_data["baseline"]
@@ -306,7 +305,6 @@ class TestSkipFileRatchet:
         tmp.close()
         tmp_path = Path(tmp.name)
         try:
-            from ops_scripts.ci.adg_skip_file_ratchet import _count_skip_files
 
             with patch(
                 "subprocess.run",
@@ -369,7 +367,6 @@ class TestFailIfStaleMode:
         # --fail-if-stale must treat Redis-unavailable as exit 0
         # Note: actual behavior depends on whether local Redis is running.
         # We test via unit-level mock instead.
-        assert True  # covered by unit test below
 
     def test_fail_if_stale_exits_0_on_redis_connection_error_unit(self) -> None:
         """Unit test: ConnectionError with --fail-if-stale → exit 0."""

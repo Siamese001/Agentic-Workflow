@@ -7,18 +7,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_lic.tools.BuildMessageFilters import (  # noqa: F401
-        BuildMessageFilters,
-        format,
-        FormatData,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        BuildMessageFilters,
+        FormatData,
+        format,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     BuildMessageFilters = None  # type: ignore[assignment,misc]
     format = None  # type: ignore[assignment,misc]

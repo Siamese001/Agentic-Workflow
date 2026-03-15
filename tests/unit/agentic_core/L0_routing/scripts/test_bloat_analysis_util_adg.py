@@ -7,16 +7,16 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.scripts.bloat_analysis_util import (  # noqa: F401
-        get_file_stats,
-        find_large_files,
+        APPROVED,
+        ROOT,
+        find_deprecated_markers,
         find_duplicate_filenames,
         find_empty_or_stub_files,
-        find_deprecated_markers,
-        ROOT,
-        APPROVED,
+        find_large_files,
+        get_file_stats,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     get_file_stats = None  # type: ignore[assignment,misc]
     find_large_files = None  # type: ignore[assignment,misc]

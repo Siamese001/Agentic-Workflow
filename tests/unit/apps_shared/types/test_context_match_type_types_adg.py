@@ -1,11 +1,13 @@
 """ADG contract tests for apps_shared/types/context_match_type_types.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
     from apps_shared.types.context_match_type_types import ContextMatchType
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     ContextMatchType = None  # type: ignore[assignment,misc]
 

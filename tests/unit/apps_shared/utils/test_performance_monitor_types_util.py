@@ -12,22 +12,22 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.utils.performance_monitor_types_util import (  # noqa: F401
-        TimingMetric,
-        MetricsSummary,
-        MetricsCollector,
-        PerformanceThresholds,
-        PerformanceMonitor,
-        OperationTimer,
-        timed,
-        get_performance_monitor,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        MetricsCollector,
+        MetricsSummary,
+        OperationTimer,
+        PerformanceMonitor,
+        PerformanceThresholds,
+        TimingMetric,
+        get_performance_monitor,
+        timed,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     TimingMetric = None  # type: ignore[assignment,misc]
     MetricsSummary = None  # type: ignore[assignment,misc]

@@ -12,20 +12,20 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.seam.seam_audit import (  # noqa: F401
-        SeamAuditRecord,
-        SeamAuditLogger,
-        get_seam_audit_logger,
-        seam_audit_hook,
-        log_seam_operation,
-        get_seam_audit_digest,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        SeamAuditLogger,
+        SeamAuditRecord,
+        get_seam_audit_digest,
+        get_seam_audit_logger,
+        log_seam_operation,
+        seam_audit_hook,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     SeamAuditRecord = None  # type: ignore[assignment,misc]
     SeamAuditLogger = None  # type: ignore[assignment,misc]

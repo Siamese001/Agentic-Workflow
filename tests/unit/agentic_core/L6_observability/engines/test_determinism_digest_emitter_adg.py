@@ -17,7 +17,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     DuplicateEmissionError = None  # type: ignore[assignment,misc]
     DeterminismDigestEmitter = None  # type: ignore[assignment,misc]

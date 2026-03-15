@@ -17,7 +17,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ExternalKnowledgeAccessViolation = None  # type: ignore[assignment,misc]
     CitationBundle = None  # type: ignore[assignment,misc]

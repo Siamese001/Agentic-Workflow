@@ -7,19 +7,19 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.validators.knowledge_result_validator import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         KnowledgeResult,
         L5ConsolidatedKnowledge,
         get_consolidated_knowledge,
         search_profile_and_template,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     KnowledgeResult = None  # type: ignore[assignment,misc]
     L5ConsolidatedKnowledge = None  # type: ignore[assignment,misc]

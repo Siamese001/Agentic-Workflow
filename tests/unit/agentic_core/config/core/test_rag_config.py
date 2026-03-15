@@ -12,20 +12,20 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.config.core.rag_config import (  # noqa: F401
-        EmbeddingConfig,
-        VectorStoreConfig,
-        RetrievalConfig,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         CacheConfig,
+        EmbeddingConfig,
+        RetrievalConfig,
         SafetyConfig,
         SovereignRagConfig,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
+        VectorStoreConfig,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     EmbeddingConfig = None  # type: ignore[assignment,misc]
     VectorStoreConfig = None  # type: ignore[assignment,misc]

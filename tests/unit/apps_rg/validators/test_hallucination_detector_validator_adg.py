@@ -10,7 +10,7 @@ try:
         HallucinationDetector,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     HallucinationDetector = None  # type: ignore[assignment,misc]
 

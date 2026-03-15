@@ -7,18 +7,17 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_lic.tools.DiagnosePersonalizationIssues import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         DiagnosePersonalizationIssues,
         diagnose,
-        diagnose,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     DiagnosePersonalizationIssues = None  # type: ignore[assignment,misc]
     diagnose = None  # type: ignore[assignment,misc]

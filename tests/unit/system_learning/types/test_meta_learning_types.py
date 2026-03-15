@@ -12,21 +12,21 @@ pytestmark = pytest.mark.unit
 
 try:
     from system_learning.types.meta_learning_types import (  # noqa: F401
+        MetaLearningApprovalArtifact,
+        MetaLearningChangePackageArtifact,
+        MetaLearningDecisionArtifact,
+        MetaLearningEvaluationArtifact,
+        MetaLearningProposalArtifact,
         ObjectiveSignal,
         ProposedChange,
-        MetaLearningProposalArtifact,
-        MetaLearningEvaluationArtifact,
-        MetaLearningApprovalArtifact,
-        MetaLearningDecisionArtifact,
-        MetaLearningChangePackageArtifact,
-        build_meta_learning_proposal,
-        build_meta_learning_evaluation,
-        build_meta_learning_approval,
         apply_meta_learning_proposal,
+        build_meta_learning_approval,
         build_meta_learning_decision,
+        build_meta_learning_evaluation,
+        build_meta_learning_proposal,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ObjectiveSignal = None  # type: ignore[assignment,misc]
     ProposedChange = None  # type: ignore[assignment,misc]
@@ -221,4 +221,4 @@ class TestBuildMetaLearningDecisionFunction:
 
 def test_module_importable():
     """Smoke: meta_learning_types importable or gracefully unavailable."""
-    assert True
+    pass

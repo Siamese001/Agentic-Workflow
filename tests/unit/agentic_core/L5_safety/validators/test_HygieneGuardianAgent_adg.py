@@ -7,14 +7,14 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.validators.HygieneGuardianAgent import (  # noqa: F401
-        HygieneViolation,
-        HygieneGuardianAgent,
         MAX_FILENAME_WORDS,
         MAX_TEST_FILENAME_WORDS,
         REDUNDANT_TERMS,
+        HygieneGuardianAgent,
+        HygieneViolation,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     HygieneViolation = None  # type: ignore[assignment,misc]
     HygieneGuardianAgent = None  # type: ignore[assignment,misc]

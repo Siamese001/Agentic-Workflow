@@ -1,11 +1,13 @@
 """ADG contract tests for apps_lic/types/SpecialistDraftPacket.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
-    from apps_lic.types.SpecialistDraftPacket import SpecialistDraftPacket, EvidenceClarificationRecord
+    from apps_lic.types.SpecialistDraftPacket import EvidenceClarificationRecord, SpecialistDraftPacket
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     SpecialistDraftPacket = EvidenceClarificationRecord = None  # type: ignore[assignment,misc]
 

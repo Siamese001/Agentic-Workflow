@@ -7,18 +7,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.utils.autonomous_sovereign_core_util import (  # noqa: F401
-        TerritoryWatcher,
-        AutonomousSovereignCore,
-        main,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        AutonomousSovereignCore,
+        TerritoryWatcher,
+        main,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     TerritoryWatcher = None  # type: ignore[assignment,misc]
     AutonomousSovereignCore = None  # type: ignore[assignment,misc]

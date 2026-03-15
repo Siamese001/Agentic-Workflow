@@ -1,7 +1,10 @@
 """ADG contract tests for L5_safety/types/learning_types.py."""
 from __future__ import annotations
+
 import ast
+
 import pytest
+
 pytestmark = pytest.mark.unit
 
 MODULE_PATH = "agentic_core/L5_safety/types/learning_types.py"
@@ -23,10 +26,11 @@ def test_has_learning_engine():
 
 try:
     from agentic_core.L5_safety.types.learning_types import (
-        AdaptiveLearningEngine, create_adaptive_learning_engine,
+        AdaptiveLearningEngine,
+        create_adaptive_learning_engine,
     )
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     AdaptiveLearningEngine = create_adaptive_learning_engine = None  # type: ignore[assignment,misc]
 

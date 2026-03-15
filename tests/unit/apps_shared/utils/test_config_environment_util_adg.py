@@ -7,25 +7,25 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.utils.config_environment_util import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        ConfigDefinition,
         ConfigEnvironment,
         ConfigFormat,
-        DeploymentStrategy,
-        ConfigDefinition,
-        ConfigValidationRule,
-        DeploymentPlan,
         ConfigPlanningConfig,
         ConfigPlanningResult,
+        ConfigValidationRule,
+        DeploymentPlan,
+        DeploymentStrategy,
         create_config_planning_orchestrator,
         plan_config_deployment,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ConfigEnvironment = None  # type: ignore[assignment,misc]
     ConfigFormat = None  # type: ignore[assignment,misc]

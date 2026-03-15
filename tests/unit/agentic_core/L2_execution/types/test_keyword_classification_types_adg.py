@@ -11,7 +11,7 @@ try:
         RagHop,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     KeywordClassification = None  # type: ignore[assignment,misc]
     RagHop = None  # type: ignore[assignment,misc]

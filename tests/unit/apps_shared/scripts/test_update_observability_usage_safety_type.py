@@ -12,21 +12,21 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.scripts.update_observability_usage_safety_type import (  # noqa: F401
-        UpdateObservabilityUsageSafetyType,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        SecurityError,
         UpdateObservabilityUsageSafetyConstraints,
+        UpdateObservabilityUsageSafetyImpl,
         UpdateObservabilityUsageSafetyResult,
         UpdateObservabilityUsageSafetySafety,
-        UpdateObservabilityUsageSafetyImpl,
-        SecurityError,
+        UpdateObservabilityUsageSafetyType,
         update_observability_usage,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     UpdateObservabilityUsageSafetyType = None  # type: ignore[assignment,misc]
     UpdateObservabilityUsageSafetyConstraints = None  # type: ignore[assignment,misc]

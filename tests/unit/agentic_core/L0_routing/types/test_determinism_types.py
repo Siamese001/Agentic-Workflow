@@ -12,24 +12,24 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.types.determinism_types import (  # noqa: F401
-        FixConstraint,
-        SurgicalManifest,
-        CanonicalASTResult,
-        SemanticClock,
-        StateCommitInvalid,
-        SemanticClockSnapshot,
-        BoundarySnapshotArtifact,
-        EpisodicMemoryQueryResult,
-        validate_semantic_clock,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        BoundarySnapshotArtifact,
+        CanonicalASTResult,
+        EpisodicMemoryQueryResult,
+        FixConstraint,
+        SemanticClock,
+        SemanticClockSnapshot,
+        StateCommitInvalid,
+        SurgicalManifest,
+        validate_semantic_clock,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     FixConstraint = None  # type: ignore[assignment,misc]
     SurgicalManifest = None  # type: ignore[assignment,misc]
@@ -239,4 +239,4 @@ class TestMaxDepthConstant:
 
 def test_module_importable():
     """Smoke: determinism_types importable or gracefully unavailable."""
-    assert True
+    pass

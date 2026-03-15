@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ContextCompletenessScore = None  # type: ignore[assignment,misc]
     GroundedDocument = None  # type: ignore[assignment,misc]

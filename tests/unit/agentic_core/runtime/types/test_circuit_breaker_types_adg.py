@@ -9,16 +9,16 @@ import pytest
 
 try:
     from agentic_core.runtime.types.circuit_breaker_types import (  # noqa: F401
-        CircuitBreakerState,
-        CircuitBreakerOpenError,
-        get_breaker,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
         BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        CircuitBreakerOpenError,
+        CircuitBreakerState,
+        get_breaker,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     CircuitBreakerState = None  # type: ignore[assignment,misc]
     CircuitBreakerOpenError = None  # type: ignore[assignment,misc]
@@ -48,4 +48,3 @@ class TestCircuitBreakerTypesImportability:
 
     def test_default_sleep_defined(self) -> None:
         assert DEFAULT_SLEEP is not None
-

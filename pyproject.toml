@@ -173,7 +173,6 @@ ignore = [
     "B008",  # do not perform function calls in argument defaults
     "C901",  # too complex
     "S101",  # allow assert statements in tests
-    "F821",  # undefined-name: codebase uses lazy/conditional imports extensively
     "E402",  # import-not-at-top: intentional deferred imports in agents/validators
     "E501",  # line-too-long: ruff-format handles wrapping; remaining are strings/comments
     "E722",  # bare-except: used intentionally in resilience/healing code (guardian: allow-silent_swallower)
@@ -204,7 +203,6 @@ ignore = [
     "F811",  # redefined-while-unused: backward-compat aliases and decorator wrappers
     "F402",  # import-shadowed-by-loop-var: intentional in dynamic import patterns
     "F601",  # multi-value-repeated-key-literal: config dict overrides
-    "F823",  # undefined-local: lazy imports resolved at runtime
     "F722",  # forward-annotation-syntax-error: complex type annotations
     "E721",  # type-comparison: intentional isinstance vs type() checks
     "S102",  # exec-builtin: used in dynamic code generation
@@ -223,9 +221,9 @@ ignore = [
 [tool.ruff.lint.per-file-ignores]
 "tests/**/*.py" = ["S101", "S105", "S106", "S301", "S307", "B011", "B017", "E712", "F841"]  # Allow asserts and test-specific patterns
 "scripts/**/*.py" = ["S603", "S607"]  # Allow subprocess in scripts
-"ops_scripts/**/*.py" = ["S603", "S607", "F841", "F401"]  # Allow subprocess + pre-existing unused vars
-"tools/**/*.py" = ["B011", "E712", "F841"]  # Allow evidence runner patterns
-"system_learning/**/*.py" = ["E712", "F841"]  # Allow system_learning patterns
+"ops_scripts/**/*.py" = ["S603", "S607", "F841", "F401", "F821", "F823"]  # Allow subprocess + lazy dynamic patterns
+"tools/**/*.py" = ["B011", "E712", "F841", "F821", "F823"]  # Allow evidence runner + lazy dynamic patterns
+"system_learning/**/*.py" = ["E712", "F841", "F821", "F823"]  # Allow system_learning lazy patterns
 "agentic_core/**/*.py" = ["F841"]  # Allow pre-existing unused vars in complex agents
 "*.py" = ["F841"]  # Root-level scripts
 "agentic_core/**/scripts/*.py" = ["S603", "S607"]  # Allow subprocess in agent scripts

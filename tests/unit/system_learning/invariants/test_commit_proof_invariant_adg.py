@@ -9,16 +9,16 @@ import pytest
 
 try:
     from system_learning.invariants.commit_proof_invariant import (  # noqa: F401
-        CommitProofViolation,
-        CommitProofInvariant,
-        verify_commit_proof,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
         BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        CommitProofInvariant,
+        CommitProofViolation,
+        verify_commit_proof,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     CommitProofViolation = None  # type: ignore[assignment,misc]
     CommitProofInvariant = None  # type: ignore[assignment,misc]
@@ -48,4 +48,3 @@ class TestCommitProofInvariantImportability:
 
     def test_default_sleep_defined(self) -> None:
         assert DEFAULT_SLEEP is not None
-

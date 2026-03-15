@@ -1,14 +1,20 @@
 """ADG contract tests for apps_shared/types/feedback_loop_types.py."""
 from __future__ import annotations
-import pytest
+
 from datetime import datetime
+
+import pytest
+
 pytestmark = pytest.mark.unit
 try:
     from apps_shared.types.feedback_loop_types import (
-        FeedbackType, QualityFeedback, QualityTrend, FeedbackLoop,
+        FeedbackLoop,
+        FeedbackType,
+        QualityFeedback,
+        QualityTrend,
     )
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     FeedbackType = QualityFeedback = QualityTrend = FeedbackLoop = None  # type: ignore[assignment,misc]
 

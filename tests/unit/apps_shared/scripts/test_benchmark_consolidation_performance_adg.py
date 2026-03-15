@@ -7,15 +7,15 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.scripts.benchmark_consolidation_performance import (  # noqa: F401
+        PROJECT_ROOT,
+        count_archived_agents,
+        count_UnifiedAgents,
         measure_import_time,
         measure_memory_footprint,
         measure_registry_init,
-        count_UnifiedAgents,
-        count_archived_agents,
-        PROJECT_ROOT,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     measure_import_time = None  # type: ignore[assignment,misc]
     measure_memory_footprint = None  # type: ignore[assignment,misc]

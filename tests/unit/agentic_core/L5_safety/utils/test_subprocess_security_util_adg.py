@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     SHELL_METACHARACTERS = None  # type: ignore[assignment,misc]
     INJECTION_REGEX = None  # type: ignore[assignment,misc]

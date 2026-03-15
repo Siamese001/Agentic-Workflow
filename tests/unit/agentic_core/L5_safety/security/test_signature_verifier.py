@@ -12,22 +12,22 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.security.signature_verifier import (  # noqa: F401
-        SignatureVerificationError,
-        VerificationContext,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         InstructionPacket,
         SandboxEnvelope,
+        SignatureVerificationError,
         SignatureVerifier,
+        VerificationContext,
         get_signature_verifier,
         verify_instruction_packet,
         verify_sandbox_envelope,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     SignatureVerificationError = None  # type: ignore[assignment,misc]
     VerificationContext = None  # type: ignore[assignment,misc]

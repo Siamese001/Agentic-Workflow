@@ -7,17 +7,17 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L4_state.enforcement.telemetry_recorder_enforcer import (  # noqa: F401
-        TraceEvent,
-        TelemetryRecorder,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        TelemetryRecorder,
+        TraceEvent,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     TraceEvent = None  # type: ignore[assignment,misc]
     TelemetryRecorder = None  # type: ignore[assignment,misc]

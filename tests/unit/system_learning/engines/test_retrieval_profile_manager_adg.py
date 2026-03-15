@@ -9,16 +9,16 @@ import pytest
 
 try:
     from system_learning.engines.retrieval_profile_manager import (  # noqa: F401
-        RetrievalProfileManager,
-        get_retrieval_profile_manager,
-        get_active_retrieval_profile,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
         BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        RetrievalProfileManager,
+        get_active_retrieval_profile,
+        get_retrieval_profile_manager,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     RetrievalProfileManager = None  # type: ignore[assignment,misc]
     get_retrieval_profile_manager = None  # type: ignore[assignment,misc]
@@ -48,4 +48,3 @@ class TestRetrievalProfileManagerImportability:
 
     def test_default_sleep_defined(self) -> None:
         assert DEFAULT_SLEEP is not None
-

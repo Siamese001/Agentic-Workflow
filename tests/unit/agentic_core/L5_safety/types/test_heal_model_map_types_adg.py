@@ -1,14 +1,18 @@
 """ADG contract tests for L5_safety/types/heal_model_map_types.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
     from agentic_core.L5_safety.types.heal_model_map_types import (
-        LOW_MODEL_ID, HIGH_MODEL_ID, map_tier_to_model_id,
+        HIGH_MODEL_ID,
+        LOW_MODEL_ID,
+        map_tier_to_model_id,
     )
     from agentic_core.L5_safety.types.heal_policy_types import ReasoningTier
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     LOW_MODEL_ID = HIGH_MODEL_ID = map_tier_to_model_id = ReasoningTier = None  # type: ignore[assignment,misc]
 

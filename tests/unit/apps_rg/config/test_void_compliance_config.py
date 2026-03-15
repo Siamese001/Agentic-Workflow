@@ -12,18 +12,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_rg.config.void_compliance_config import (  # noqa: F401
-        validate_file_naming,
-        get_placement_guidance,
-        check_span_of_two_violation,
-        validate_import_conventions,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        check_span_of_two_violation,
+        get_placement_guidance,
+        validate_file_naming,
+        validate_import_conventions,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     validate_file_naming = None  # type: ignore[assignment,misc]
     get_placement_guidance = None  # type: ignore[assignment,misc]

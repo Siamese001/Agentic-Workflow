@@ -83,7 +83,6 @@ class TestFireMetaLearningTimestamps:
         mgr = self._make_state_mgr(healing_actions=[])
         # Should not raise
         _fire_meta_learning_intake(mgr, now_utc=12345)
-        assert True  # no-exception contract
 
     def test_now_utc_propagated_to_intake_record(self):
         """created_utc on the persisted record must equal the injected now_utc."""

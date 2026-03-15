@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     HealingRunPhase = None  # type: ignore[assignment,misc]
     HealingTrigger = None  # type: ignore[assignment,misc]

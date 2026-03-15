@@ -12,17 +12,17 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L2_execution.types.instruction_packet_types import (  # noqa: F401
-        SignatureVerificationError,
-        InstructionPacket,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        InstructionPacket,
+        SignatureVerificationError,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     SignatureVerificationError = None  # type: ignore[assignment,misc]
     InstructionPacket = None  # type: ignore[assignment,misc]
@@ -108,4 +108,4 @@ class TestMaxDepthConstant:
 
 def test_module_importable():
     """Smoke: instruction_packet_types importable or gracefully unavailable."""
-    assert True
+    pass

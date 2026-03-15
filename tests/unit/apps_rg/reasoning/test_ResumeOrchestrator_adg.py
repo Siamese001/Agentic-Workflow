@@ -11,7 +11,7 @@ try:
         orchestrate_resume,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ResumeOrchestrator = None  # type: ignore[assignment,misc]
     orchestrate_resume = None  # type: ignore[assignment,misc]

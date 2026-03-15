@@ -12,20 +12,20 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_lic.reasoning.LicCodeInterpreter import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        KeywordExtractionResult,
+        LICCodeInterpreter,
         ScoredCandidate,
         ScoringCriteria,
         SimilarityResult,
-        KeywordExtractionResult,
-        LICCodeInterpreter,
         create_code_interpreter,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     ScoredCandidate = None  # type: ignore[assignment,misc]
     ScoringCriteria = None  # type: ignore[assignment,misc]

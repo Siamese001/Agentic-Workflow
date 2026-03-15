@@ -1,11 +1,13 @@
 """ADG contract tests for apps_lic/types/ImmutableStagingBuffer.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
     from apps_lic.types.ImmutableStagingBuffer import ImmutableStagingBuffer
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     ImmutableStagingBuffer = None  # type: ignore[assignment,misc]
 

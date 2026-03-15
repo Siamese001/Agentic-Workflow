@@ -7,15 +7,15 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.scripts.aggressive_dedup_util import (  # noqa: F401
-        get_all_classes_in_codebase,
+        APPS_DIRS,
+        find_low_value_files,
         find_redundant_files,
         find_similar_named_files,
-        find_low_value_files,
+        get_all_classes_in_codebase,
         main,
-        APPS_DIRS,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     get_all_classes_in_codebase = None  # type: ignore[assignment,misc]
     find_redundant_files = None  # type: ignore[assignment,misc]

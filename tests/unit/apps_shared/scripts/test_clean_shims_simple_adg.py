@@ -7,11 +7,11 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.scripts.clean_shims_simple import (  # noqa: F401
-        clean_prompt_governance,
         clean_other_directories,
+        clean_prompt_governance,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     clean_prompt_governance = None  # type: ignore[assignment,misc]
     clean_other_directories = None  # type: ignore[assignment,misc]

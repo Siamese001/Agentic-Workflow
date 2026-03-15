@@ -18,12 +18,13 @@ from collections import defaultdict
 from pathlib import Path
 
 import pytest
+
 from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
-    APPS_SHARED_DIR,
-    ARCHIVES_DIR,
     APPS_LIC_DIR,
     APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    ARCHIVES_DIR,
     TESTS_DIR,
 )
 
@@ -156,7 +157,6 @@ class TestCodeQualityMetrics:
 
         if not oversized_files and not large_files:
             print("[OK] File sizes within acceptable limits")
-            assert True  # no-exception contract
 
     @pytest.mark.guardian
     def test_cyclomatic_complexity(self):
@@ -251,7 +251,6 @@ class TestCodeQualityMetrics:
             print(f"\nFunctions with complexity > {COMPLEXITY_THRESHOLD} should be refactored.")
         else:
             print("[OK] Cyclomatic complexity within acceptable limits")
-            assert True  # no-exception contract
 
     @pytest.mark.guardian
     def test_documentation_coverage(self):
@@ -382,7 +381,6 @@ class TestCodeQualityMetrics:
 
         if not undocumented_modules and not undocumented_classes and not undocumented_functions:
             print("[OK] Documentation coverage is complete")
-            assert True  # no-exception contract
 
     @pytest.mark.guardian
     def test_import_organization(self):
@@ -544,4 +542,3 @@ class TestCodeQualityMetrics:
                     print(f"    ... and {len(items) - 3} more")
         else:
             print("[OK] Import organization is acceptable")
-            assert True  # no-exception contract

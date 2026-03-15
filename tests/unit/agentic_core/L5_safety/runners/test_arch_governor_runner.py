@@ -12,18 +12,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.runners.arch_governor_runner import (  # noqa: F401
-        get_project_root,
-        run_ci_verification,
-        capture_golden_baseline,
-        run_audit,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        capture_golden_baseline,
+        get_project_root,
+        run_audit,
+        run_ci_verification,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     get_project_root = None  # type: ignore[assignment,misc]
     run_ci_verification = None  # type: ignore[assignment,misc]

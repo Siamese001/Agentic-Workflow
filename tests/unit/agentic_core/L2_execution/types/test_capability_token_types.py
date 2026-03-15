@@ -12,17 +12,17 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L2_execution.types.capability_token_types import (  # noqa: F401
-        CapabilityTokenSubject,
         CapabilityConstraints,
-        CapabilityTokenArtifact,
         CapabilityDecisionArtifact,
         CapabilityEnforcer,
-        build_capability_token,
+        CapabilityTokenArtifact,
+        CapabilityTokenSubject,
         build_capability_decision,
+        build_capability_token,
         issue_capability_token,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     CapabilityTokenSubject = None  # type: ignore[assignment,misc]
     CapabilityConstraints = None  # type: ignore[assignment,misc]

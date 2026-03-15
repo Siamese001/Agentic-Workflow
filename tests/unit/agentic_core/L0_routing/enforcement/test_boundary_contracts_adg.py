@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     SSOTBindingError = None  # type: ignore[assignment,misc]
     resolve_ssot_binding = None  # type: ignore[assignment,misc]

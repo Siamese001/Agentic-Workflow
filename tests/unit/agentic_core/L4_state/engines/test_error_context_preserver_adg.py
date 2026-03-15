@@ -7,18 +7,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L4_state.engines.error_context_preserver import (  # noqa: F401
-        PreservationResult,
-        ErrorContext,
-        preserve_error_context,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        ErrorContext,
+        PreservationResult,
+        preserve_error_context,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     PreservationResult = None  # type: ignore[assignment,misc]
     ErrorContext = None  # type: ignore[assignment,misc]

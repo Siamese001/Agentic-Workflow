@@ -7,18 +7,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.reasoning.TerritoryChangeHandlerAgent import (  # noqa: F401
-        TerritoryChangeHandlerAgent,
-        AutonomousRagDaemon,
-        timeout,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        AutonomousRagDaemon,
+        TerritoryChangeHandlerAgent,
+        timeout,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     TerritoryChangeHandlerAgent = None  # type: ignore[assignment,misc]
     AutonomousRagDaemon = None  # type: ignore[assignment,misc]

@@ -7,18 +7,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.runtime.boundary_validator import (  # noqa: F401
-        assert_no_apps_imports,
-        validate_layer_direction,
-        check_runtime_boundaries,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        assert_no_apps_imports,
+        check_runtime_boundaries,
+        validate_layer_direction,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     assert_no_apps_imports = None  # type: ignore[assignment,misc]
     validate_layer_direction = None  # type: ignore[assignment,misc]

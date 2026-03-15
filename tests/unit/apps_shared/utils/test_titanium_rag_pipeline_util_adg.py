@@ -11,7 +11,7 @@ try:
         create_titanium_pipeline,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     TitaniumRAGPipeline = None  # type: ignore[assignment,misc]
     create_titanium_pipeline = None  # type: ignore[assignment,misc]

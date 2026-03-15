@@ -37,19 +37,25 @@ _TOOL_DISPATCH: dict[str, str] = {
     "brave_search": "mcp1_brave_web_search",
     "brave_web_search": "mcp1_brave_web_search",
     "brave_local_search": "mcp1_brave_local_search",
-    # Playwright (mcp12_*)
-    "playwright_navigate": "mcp12_playwright_navigate",
-    "playwright_screenshot": "mcp12_playwright_screenshot",
-    "playwright_get_text": "mcp12_playwright_get_visible_text",
-    "playwright_click": "mcp12_playwright_click",
-    "playwright_fill": "mcp12_playwright_fill",
+    # Playwright (mcp8_* — current Windsurf registration prefix)
+    "playwright_navigate": "mcp8_playwright_navigate",
+    "playwright_screenshot": "mcp8_playwright_screenshot",
+    "playwright_get_text": "mcp8_playwright_get_visible_text",
+    "playwright_click": "mcp8_playwright_click",
+    "playwright_fill": "mcp8_playwright_fill",
+    "playwright_get_html": "mcp8_playwright_get_visible_html",
+    "playwright_press_key": "mcp8_playwright_press_key",
+    # Redis operations (adg_redis custom server)
+    "redis_get": "redis_get",
+    "redis_set": "redis_set",
+    "redis_delete": "redis_delete",
     # Fetch (mcp4_*)
     "fetch": "mcp4_fetch",
     # DeepWiki (mcp3_*)
     "deepwiki_ask": "mcp3_ask_question",
     "deepwiki_structure": "mcp3_read_wiki_structure",
-    # Sequential thinking (mcp12_*)
-    "sequential_thinking": "mcp12_sequentialthinking",
+    # Sequential thinking
+    "sequential_thinking": "mcp8_sequentialthinking",
 }
 
 

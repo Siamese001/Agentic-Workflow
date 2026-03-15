@@ -7,18 +7,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.config.operational_config import (  # noqa: F401
-        is_excluded_path,
-        is_allowed_duplicate,
-        should_scan_directory,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        is_allowed_duplicate,
+        is_excluded_path,
+        should_scan_directory,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     is_excluded_path = None  # type: ignore[assignment,misc]
     is_allowed_duplicate = None  # type: ignore[assignment,misc]

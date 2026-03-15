@@ -7,14 +7,14 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.config.refine_config_ranking_config import (  # noqa: F401
+        apply_strategy,
         bm25,
         dense,
-        hybrid,
-        apply_strategy,
         fuse_ranked_groups,
+        hybrid,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     bm25 = None  # type: ignore[assignment,misc]
     dense = None  # type: ignore[assignment,misc]

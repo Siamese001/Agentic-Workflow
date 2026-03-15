@@ -10,7 +10,7 @@ import pytest
 try:
     import agentic_core.L5_safety.reasoning.GravityLeakHealerAgent as _mod  # noqa: F401
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     _mod = None
 
@@ -19,4 +19,3 @@ class TestGravityleakhealeragentImportability:
     def test_module_importable(self) -> None:
         """ADG contract: GravityLeakHealerAgent.py must be importable."""
         assert _AVAILABLE
-

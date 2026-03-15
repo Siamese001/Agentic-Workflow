@@ -9,22 +9,22 @@ import pytest
 
 try:
     from agentic_core.L5_safety.reasoning.SecurityManagerAgent import (  # noqa: F401
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        AgentPermission,
         PermissionLevel,
         SecurityAction,
         SecurityAuditEntry,
-        AgentPermission,
-        secure_config,
-        secure_checkpoint,
-        create_legacy_permission_manager,
         create_legacy_checkpoint_manager,
         create_legacy_config_manager,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
+        create_legacy_permission_manager,
+        secure_checkpoint,
+        secure_config,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     PermissionLevel = None  # type: ignore[assignment,misc]
     SecurityAction = None  # type: ignore[assignment,misc]
@@ -66,4 +66,3 @@ class TestSecuritymanageragentImportability:
 
     def test_default_sleep_defined(self) -> None:
         assert DEFAULT_SLEEP is not None
-

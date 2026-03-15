@@ -7,19 +7,19 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_rg.reasoning.ResumeAssemblyAgent import (  # noqa: F401
-        ResumeTemplateError,
-        ResumeAssemblyAgent,
-        get_resume_skills_section,
-        get_resume_executive_summary,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        ResumeAssemblyAgent,
+        ResumeTemplateError,
+        get_resume_executive_summary,
+        get_resume_skills_section,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ResumeTemplateError = None  # type: ignore[assignment,misc]
     ResumeAssemblyAgent = None  # type: ignore[assignment,misc]

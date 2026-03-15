@@ -10,7 +10,7 @@ try:
         McpServerMode,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     McpServerMode = None  # type: ignore[assignment,misc]
 

@@ -12,16 +12,16 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_rg.engines.base_rg_engine import (  # noqa: F401
-        BaseRGEngine,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        BaseRGEngine,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     BaseRGEngine = None  # type: ignore[assignment,misc]
     MAX_RETRIES = None  # type: ignore[assignment,misc]
@@ -100,4 +100,4 @@ class TestMaxDepthConstant:
 
 def test_module_importable():
     """Smoke: base_rg_engine importable or gracefully unavailable."""
-    assert True
+    pass

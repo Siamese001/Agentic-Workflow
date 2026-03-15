@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     DeterminismViolationType = None  # type: ignore[assignment,misc]
     DeterminismViolation = None  # type: ignore[assignment,misc]

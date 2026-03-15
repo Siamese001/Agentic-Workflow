@@ -12,19 +12,19 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.scripts.forensic_discovery_prep import (  # noqa: F401
-        ForensicAgentRecord,
-        sha256_file,
-        extract_precise_mro,
-        build_class_bases_map,
-        resolve_full_mro,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        ForensicAgentRecord,
+        build_class_bases_map,
+        extract_precise_mro,
+        resolve_full_mro,
+        sha256_file,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     ForensicAgentRecord = None  # type: ignore[assignment,misc]
     sha256_file = None  # type: ignore[assignment,misc]

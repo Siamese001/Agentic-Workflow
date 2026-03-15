@@ -16,7 +16,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ToolBudgetExceededError = None  # type: ignore[assignment,misc]
     ToolBudget = None  # type: ignore[assignment,misc]

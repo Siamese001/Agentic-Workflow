@@ -9,16 +9,16 @@ import pytest
 
 try:
     from system_learning.ports.meta_outcome_bus_hook import (  # noqa: F401
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        DefaultMetaOutcomeBusHook,
         MetaOutcomeBusHook,
         NullMetaOutcomeBusHook,
-        DefaultMetaOutcomeBusHook,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     MetaOutcomeBusHook = None  # type: ignore[assignment,misc]
     NullMetaOutcomeBusHook = None  # type: ignore[assignment,misc]
@@ -48,4 +48,3 @@ class TestMetaOutcomeBusHookImportability:
 
     def test_default_sleep_defined(self) -> None:
         assert DEFAULT_SLEEP is not None
-

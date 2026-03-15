@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     PROJECT_ROOT = None  # type: ignore[assignment,misc]
     AGENTIC_CORE = None  # type: ignore[assignment,misc]

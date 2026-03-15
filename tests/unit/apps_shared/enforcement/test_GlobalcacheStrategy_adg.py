@@ -9,22 +9,22 @@ import pytest
 
 try:
     from apps_shared.enforcement.GlobalcacheStrategy import (  # noqa: F401
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         CacheEntry,
+        GlobalCache,
         L1MemoryCache,
         L2VectorStore,
         SimpleEmbedder,
-        GlobalCache,
-        get_global_cache,
-        cached,
         cache_get,
         cache_put,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
+        cached,
+        get_global_cache,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     CacheEntry = None  # type: ignore[assignment,misc]
     L1MemoryCache = None  # type: ignore[assignment,misc]
@@ -66,4 +66,3 @@ class TestGlobalcachestrategyImportability:
 
     def test_default_sleep_defined(self) -> None:
         assert DEFAULT_SLEEP is not None
-

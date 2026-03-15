@@ -7,18 +7,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from system_learning.engines.signal_grouping_engine import (  # noqa: F401
-        SignalGroup,
-        SignalGroupingReport,
-        SignalGroupingEngine,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        SignalGroup,
+        SignalGroupingEngine,
+        SignalGroupingReport,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     SignalGroup = None  # type: ignore[assignment,misc]
     SignalGroupingReport = None  # type: ignore[assignment,misc]

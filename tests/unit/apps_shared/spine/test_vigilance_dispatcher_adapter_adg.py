@@ -9,14 +9,14 @@ import pytest
 
 try:
     from apps_shared.spine.vigilance_dispatcher_adapter import (  # noqa: F401
-        VigilanceDispatcherAdapter,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
         BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        VigilanceDispatcherAdapter,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     VigilanceDispatcherAdapter = None  # type: ignore[assignment,misc]
     MAX_RETRIES = None  # type: ignore[assignment,misc]
@@ -38,4 +38,3 @@ class TestVigilanceDispatcherAdapterImportability:
 
     def test_default_sleep_defined(self) -> None:
         assert DEFAULT_SLEEP is not None
-

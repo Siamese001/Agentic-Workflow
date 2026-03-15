@@ -7,22 +7,22 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.utils.open_telemetry_tracing_adapter_util import (  # noqa: F401
-        SpanType,
-        SpanMetadata,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         CostMetrics,
-        ResilienceMetrics,
         OpenTelemetryTracingAdapter,
+        ResilienceMetrics,
+        SpanMetadata,
+        SpanType,
         get_tracer,
         reset_tracer,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     SpanType = None  # type: ignore[assignment,misc]
     SpanMetadata = None  # type: ignore[assignment,misc]

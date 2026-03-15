@@ -50,7 +50,6 @@ class TestValidateLineage:
         validator = LineageValidator(store)
         # Should not raise
         validator.validate_lineage(version_id)
-        assert True  # no-exception contract
 
     def test_valid_parent_child_chain(self):
         store = L4VersionStore()
@@ -65,7 +64,6 @@ class TestValidateLineage:
         validator = LineageValidator(store)
         # Should not raise
         validator.validate_lineage(child_id)
-        assert True  # no-exception contract
 
     def test_valid_three_generation_chain(self):
         store = L4VersionStore()
@@ -84,7 +82,6 @@ class TestValidateLineage:
         validator = LineageValidator(store)
         # Should not raise
         validator.validate_lineage(v3)
-        assert True  # no-exception contract
 
     def test_missing_parent_raises(self):
         store = L4VersionStore()

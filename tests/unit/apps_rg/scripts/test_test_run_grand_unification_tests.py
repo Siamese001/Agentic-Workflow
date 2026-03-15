@@ -12,18 +12,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_rg.scripts.test_run_grand_unification_tests import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        test_buffer_cryptography_and_lineage,
         test_full_system_lifecycle_happy_path,
         test_resilience_to_garbage_input,
-        test_buffer_cryptography_and_lineage,
         test_telemetry_fidelity_check,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     test_full_system_lifecycle_happy_path = None  # type: ignore[assignment,misc]
     test_resilience_to_garbage_input = None  # type: ignore[assignment,misc]

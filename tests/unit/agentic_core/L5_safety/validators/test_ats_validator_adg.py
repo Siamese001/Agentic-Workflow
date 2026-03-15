@@ -15,7 +15,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ATSValidationResult = None  # type: ignore[assignment,misc]
     AtsValidator = None  # type: ignore[assignment,misc]

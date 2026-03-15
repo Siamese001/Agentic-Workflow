@@ -11,7 +11,7 @@ try:
         check_git_health,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     GitHealthSensor = None  # type: ignore[assignment,misc]
     check_git_health = None  # type: ignore[assignment,misc]

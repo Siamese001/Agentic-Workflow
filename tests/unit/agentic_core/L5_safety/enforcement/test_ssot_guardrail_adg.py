@@ -7,16 +7,16 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.enforcement.ssot_guardrail import (  # noqa: F401
-        Violation,
+        KERNEL_PATH,
         ScanResult,
-        scan_shadow_functions,
+        Violation,
+        main,
         scan_endswith_agent,
         scan_repository,
-        main,
-        KERNEL_PATH,
+        scan_shadow_functions,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     Violation = None  # type: ignore[assignment,misc]
     ScanResult = None  # type: ignore[assignment,misc]

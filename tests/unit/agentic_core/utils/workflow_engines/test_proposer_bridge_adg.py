@@ -7,18 +7,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.utils.workflow_engines.proposer_bridge import (  # noqa: F401
-        ImprovementSignal,
-        ImprovementProposal,
-        EvaluatorProposerBridge,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        EvaluatorProposerBridge,
+        ImprovementProposal,
+        ImprovementSignal,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ImprovementSignal = None  # type: ignore[assignment,misc]
     ImprovementProposal = None  # type: ignore[assignment,misc]

@@ -7,17 +7,17 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_rg.reasoning.HeadlineOutputAgent import (  # noqa: F401
-        HeadlineOutput,
-        Executive_Title_Composer,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        Executive_Title_Composer,
+        HeadlineOutput,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     HeadlineOutput = None  # type: ignore[assignment,misc]
     Executive_Title_Composer = None  # type: ignore[assignment,misc]

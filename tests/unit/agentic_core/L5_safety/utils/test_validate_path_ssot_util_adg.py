@@ -7,17 +7,17 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.utils.validate_path_ssot_util import (  # noqa: F401
-        should_exclude_path,
-        validate_file,
-        validate_repository,
-        main,
-        PROJECT_ROOT,
         EXCLUDED_DIRS,
         EXCLUDED_FILES,
         HARDCODED_PATH_PATTERNS,
+        PROJECT_ROOT,
+        main,
+        should_exclude_path,
+        validate_file,
+        validate_repository,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     should_exclude_path = None  # type: ignore[assignment,misc]
     validate_file = None  # type: ignore[assignment,misc]

@@ -18,7 +18,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     StopSignal = None  # type: ignore[assignment,misc]
     EnvironmentToolSet = None  # type: ignore[assignment,misc]

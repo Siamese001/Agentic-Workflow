@@ -1,15 +1,21 @@
 """ADG contract tests for apps_shared/types/schema_search_mode_types.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
     from apps_shared.types.schema_search_mode_types import (
-        SchemaSearchMode, SchemaSimilarityType,
-        SchemaVectorEntry, SchemaSearchQuery, SchemaSearchResult,
-        SchemaVectorConfig, SchemaVectorSearcher,
+        SchemaSearchMode,
+        SchemaSearchQuery,
+        SchemaSearchResult,
+        SchemaSimilarityType,
+        SchemaVectorConfig,
+        SchemaVectorEntry,
+        SchemaVectorSearcher,
     )
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     SchemaSearchMode = SchemaSimilarityType = SchemaVectorEntry = None  # type: ignore[assignment,misc]
     SchemaSearchQuery = SchemaSearchResult = SchemaVectorConfig = SchemaVectorSearcher = None  # type: ignore[assignment,misc]

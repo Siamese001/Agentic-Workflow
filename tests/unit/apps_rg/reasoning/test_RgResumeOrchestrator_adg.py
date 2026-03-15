@@ -9,15 +9,15 @@ import pytest
 
 try:
     from apps_rg.reasoning.RgResumeOrchestrator import (  # noqa: F401
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         RgResumeOrchestrator,
         orchestrate_resume,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     RgResumeOrchestrator = None  # type: ignore[assignment,misc]
     orchestrate_resume = None  # type: ignore[assignment,misc]
@@ -43,4 +43,3 @@ class TestRgresumeorchestratorImportability:
 
     def test_default_sleep_defined(self) -> None:
         assert DEFAULT_SLEEP is not None
-

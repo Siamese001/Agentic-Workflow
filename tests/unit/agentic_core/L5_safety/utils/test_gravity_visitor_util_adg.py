@@ -18,7 +18,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     GravityVisitor = None  # type: ignore[assignment,misc]
     get_file_imports = None  # type: ignore[assignment,misc]

@@ -8,11 +8,11 @@ pytestmark = pytest.mark.unit
 try:
     from agentic_core.L5_safety.enforcement.governance.agent_heal_audit import (  # noqa: F401
         AgentHealAuditScanner,
-        main,
         generate_markdown_report,
+        main,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     AgentHealAuditScanner = None  # type: ignore[assignment,misc]
     main = None  # type: ignore[assignment,misc]

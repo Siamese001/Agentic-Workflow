@@ -7,16 +7,16 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.utils.configuration_service_util import (  # noqa: F401
-        ConfigurationService,
         ABOVE,
         ACTION,
         ADDENDUM,
         ADJACENCY,
-        AGENTS,
         AGENT_CAPABILITIES,
+        AGENTS,
+        ConfigurationService,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ConfigurationService = None  # type: ignore[assignment,misc]
     ABOVE = None  # type: ignore[assignment,misc]

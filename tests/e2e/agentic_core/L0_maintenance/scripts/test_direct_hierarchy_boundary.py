@@ -68,7 +68,6 @@ def test_structural_move():
         import traceback
 
         traceback.print_exc()
-        assert True  # no-exception contract
 
 
 def test_archival_move():
@@ -115,7 +114,6 @@ def test_archival_move():
         import traceback
 
         traceback.print_exc()
-        assert True  # no-exception contract
 
 
 def test_cli_flag_override():
@@ -157,7 +155,6 @@ def test_cli_flag_override():
     # Restore
     os.environ["ARCHIVE_BATCH_ACCEPT"] = "0"
     os.environ["SOVEREIGN_AUTO_APPROVE"] = "0"
-    assert True  # no-exception contract
 
 
 if __name__ == "__main__":

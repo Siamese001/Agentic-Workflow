@@ -18,7 +18,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     MAX_FILENAME_WORDS = None  # type: ignore[assignment,misc]
     MAX_TEST_FILENAME_WORDS = None  # type: ignore[assignment,misc]

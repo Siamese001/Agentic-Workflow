@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     LOGGER = None  # type: ignore[assignment,misc]
     SovereignToolsmith = None  # type: ignore[assignment,misc]

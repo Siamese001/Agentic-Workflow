@@ -8,7 +8,7 @@ pytestmark = pytest.mark.unit
 try:
     import agentic_core._compat.l5_safety_aliases as _mod  # noqa: F401
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _mod = None
     _AVAILABLE = False
 

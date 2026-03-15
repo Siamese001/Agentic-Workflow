@@ -17,7 +17,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     StaleDataViolation = None  # type: ignore[assignment,misc]
     FreshnessPolicy = None  # type: ignore[assignment,misc]

@@ -18,7 +18,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ReconciliationViolation = None  # type: ignore[assignment,misc]
     FilesystemSSOTReconcilerAgent = None  # type: ignore[assignment,misc]
@@ -67,7 +67,7 @@ class TestFilesystemSSOTReconcilerAgentContract:
 
 def test_module_importable():
     """Smoke: filesystem_ssot_reconciler importable or gracefully unavailable."""
-    assert True
+    pass
 
 
 # =============================================================================

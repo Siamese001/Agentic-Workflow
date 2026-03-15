@@ -12,7 +12,7 @@ try:
         dispatch,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     dispatch = None  # type: ignore[assignment,misc]
 
@@ -24,4 +24,3 @@ class TestAppRemediationDispatcherImportability:
 
     def test_dispatch_callable(self) -> None:
         assert callable(dispatch)
-

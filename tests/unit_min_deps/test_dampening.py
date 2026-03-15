@@ -20,7 +20,6 @@ class TestCooldownPolicy:
         last_update = 1700000000
         now = 1700003600
         assert_cooldown_ok(last_update, now, policy)
-        assert True  # no-exception contract
 
     def test_cooldown_not_elapsed_raises(self):
         policy = CooldownPolicy(min_seconds_between_updates=3600)
@@ -34,14 +33,12 @@ class TestCooldownPolicy:
         last_update = 1700000000
         now = 1700003600
         assert_cooldown_ok(last_update, now, policy)
-        assert True  # no-exception contract
 
 
 class TestSampleSizePolicy:
     def test_sufficient_samples_passes(self):
         policy = SampleSizePolicy(min_observations=1000)
         assert_min_sample_size(1500, policy)
-        assert True  # no-exception contract
 
     def test_insufficient_samples_raises(self):
         policy = SampleSizePolicy(min_observations=1000)
@@ -51,7 +48,6 @@ class TestSampleSizePolicy:
     def test_exactly_min_samples_passes(self):
         policy = SampleSizePolicy(min_observations=1000)
         assert_min_sample_size(1000, policy)
-        assert True  # no-exception contract
 
 
 class TestDeterminism:
@@ -59,10 +55,8 @@ class TestDeterminism:
         policy = CooldownPolicy(min_seconds_between_updates=3600)
         assert_cooldown_ok(1700000000, 1700003600, policy)
         assert_cooldown_ok(1700000000, 1700003600, policy)
-        assert True  # no-exception contract
 
     def test_sample_size_deterministic(self):
         policy = SampleSizePolicy(min_observations=1000)
         assert_min_sample_size(1500, policy)
         assert_min_sample_size(1500, policy)
-        assert True  # no-exception contract

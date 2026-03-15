@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ToolCapability = None  # type: ignore[assignment,misc]
     is_mutating = None  # type: ignore[assignment,misc]

@@ -12,18 +12,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.utils.golden_state_datasets_util import (  # noqa: F401
-        load_golden_inputs,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         load_baseline_scores,
         load_exemplar_prompts,
         load_golden_cases,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
+        load_golden_inputs,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     load_golden_inputs = None  # type: ignore[assignment,misc]
     load_baseline_scores = None  # type: ignore[assignment,misc]

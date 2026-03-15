@@ -1,15 +1,20 @@
 """ADG contract tests for apps_shared/types/vector_similarity_result_types.py."""
 from __future__ import annotations
-import pytest
+
 from datetime import datetime
+
+import pytest
+
 _FIXED_DT = datetime(2099, 12, 31, 23, 59, 59)
 pytestmark = pytest.mark.unit
 try:
     from apps_shared.types.vector_similarity_result_types import (
-        VectorSimilarityResult, CacheEntry, EnhancedSemanticCache,
+        CacheEntry,
+        EnhancedSemanticCache,
+        VectorSimilarityResult,
     )
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     VectorSimilarityResult = CacheEntry = EnhancedSemanticCache = None  # type: ignore[assignment,misc]
 

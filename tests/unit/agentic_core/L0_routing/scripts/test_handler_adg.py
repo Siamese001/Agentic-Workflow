@@ -10,7 +10,7 @@ try:
         debug_dashboard,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     debug_dashboard = None  # type: ignore[assignment,misc]
 

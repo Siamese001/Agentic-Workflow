@@ -9,11 +9,11 @@ import pytest
 
 try:
     from system_learning.engines.default_healing_pattern_advisor import (  # noqa: F401
-        HealingPattern,
         DefaultHealingPatternAdvisor,
+        HealingPattern,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     HealingPattern = None  # type: ignore[assignment,misc]
     DefaultHealingPatternAdvisor = None  # type: ignore[assignment,misc]
@@ -29,4 +29,3 @@ class TestDefaultHealingPatternAdvisorImportability:
 
     def test_defaulthealingpatternadvisor_is_type(self) -> None:
         assert DefaultHealingPatternAdvisor is not None
-

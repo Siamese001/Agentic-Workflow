@@ -12,21 +12,21 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L4_state.enforcement.blast_radius import (  # noqa: F401
-        BlastRadiusMetrics,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         BlastRadiusCalculator,
         BlastRadiusEnforcer,
+        BlastRadiusMetrics,
+        clear_proposal,
         enforce_blast_radius,
         get_proposal_metrics,
-        clear_proposal,
         validate_total_impact,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     BlastRadiusMetrics = None  # type: ignore[assignment,misc]
     BlastRadiusCalculator = None  # type: ignore[assignment,misc]

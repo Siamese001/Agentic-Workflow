@@ -18,7 +18,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     InterceptionOutcome = None  # type: ignore[assignment,misc]
     NetworkTranscript = None  # type: ignore[assignment,misc]

@@ -17,7 +17,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     MemoryDeadlockViolation = None  # type: ignore[assignment,misc]
     LockAcquisitionResult = None  # type: ignore[assignment,misc]

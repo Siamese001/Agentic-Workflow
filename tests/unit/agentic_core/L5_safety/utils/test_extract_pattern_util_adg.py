@@ -7,19 +7,19 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.utils.extract_pattern_util import (  # noqa: F401
-        extract_class_with_context,
-        create_pattern_enforcer_file,
-        update_source_file,
-        main,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        create_pattern_enforcer_file,
+        extract_class_with_context,
+        main,
+        update_source_file,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     extract_class_with_context = None  # type: ignore[assignment,misc]
     create_pattern_enforcer_file = None  # type: ignore[assignment,misc]

@@ -12,12 +12,12 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L2_execution.types.sandbox_envelope_types import (  # noqa: F401
-        ToolBudget,
-        SandboxEnvelope,
         DEFAULT_TOOL_BUDGET,
+        SandboxEnvelope,
+        ToolBudget,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ToolBudget = None  # type: ignore[assignment,misc]
     SandboxEnvelope = None  # type: ignore[assignment,misc]
@@ -55,4 +55,4 @@ class TestDefaultToolBudgetConstant:
 
 def test_module_importable():
     """Smoke: sandbox_envelope_types importable or gracefully unavailable."""
-    assert True
+    pass

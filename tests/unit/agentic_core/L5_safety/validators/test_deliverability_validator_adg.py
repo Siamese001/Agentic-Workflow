@@ -15,7 +15,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     DeliverabilityResult = None  # type: ignore[assignment,misc]
     DeliverabilityValidator = None  # type: ignore[assignment,misc]

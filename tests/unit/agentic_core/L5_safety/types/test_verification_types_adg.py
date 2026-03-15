@@ -1,13 +1,17 @@
 """ADG contract tests for agentic_core/L5_safety/types/verification_types.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
     from agentic_core.L5_safety.types.verification_types import (
-        VerificationRequest, VerificationResult, VerificationGateProtocol,
+        VerificationGateProtocol,
+        VerificationRequest,
+        VerificationResult,
     )
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     VerificationRequest = VerificationResult = VerificationGateProtocol = None  # type: ignore[assignment,misc]
 

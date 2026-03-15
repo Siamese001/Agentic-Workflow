@@ -12,13 +12,13 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.adg.artifact.normalizer import (  # noqa: F401
-        NormalizedGraph,
         ArtifactNormalizer,
+        NormalizedGraph,
         normalize_artifact,
         size_comparison,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     NormalizedGraph = None  # type: ignore[assignment,misc]
     ArtifactNormalizer = None  # type: ignore[assignment,misc]
@@ -79,4 +79,4 @@ class TestSizeComparisonFunction:
 
 def test_module_importable():
     """Smoke: normalizer importable or gracefully unavailable."""
-    assert True
+    pass

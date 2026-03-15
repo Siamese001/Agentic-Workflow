@@ -16,7 +16,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     StructuredOutputViolation = None  # type: ignore[assignment,misc]
     ToolRequest = None  # type: ignore[assignment,misc]

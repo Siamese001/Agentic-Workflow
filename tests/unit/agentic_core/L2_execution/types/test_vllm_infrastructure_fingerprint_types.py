@@ -12,18 +12,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint_types import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         VLLMInfrastructureFingerprint,
         canonical_json,
         sha256_hex,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     VLLMInfrastructureFingerprint = None  # type: ignore[assignment,misc]
     canonical_json = None  # type: ignore[assignment,misc]
@@ -125,4 +125,4 @@ class TestMaxDepthConstant:
 
 def test_module_importable():
     """Smoke: vllm_infrastructure_fingerprint_types importable or gracefully unavailable."""
-    assert True
+    pass

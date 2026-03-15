@@ -12,21 +12,21 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.utils.input_validator_util import (  # noqa: F401
-        ValidationType,
-        ValidationRule,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         InputValidationError,
         InputValidator,
         ValidatedInput,
+        ValidationRule,
+        ValidationType,
         create_default_validator,
         validate_with_pydantic,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     ValidationType = None  # type: ignore[assignment,misc]
     ValidationRule = None  # type: ignore[assignment,misc]

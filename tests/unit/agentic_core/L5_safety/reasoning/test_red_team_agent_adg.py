@@ -8,7 +8,7 @@ pytestmark = pytest.mark.unit
 try:
     from agentic_core.L5_safety.reasoning.RedTeamAgent import RedTeamAgent
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     RedTeamAgent = None  # type: ignore[assignment,misc]
 

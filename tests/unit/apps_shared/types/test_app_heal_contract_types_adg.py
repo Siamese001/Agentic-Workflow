@@ -9,11 +9,11 @@ import pytest
 
 try:
     from apps_shared.types.app_heal_contract_types import (  # noqa: F401
-        AppHealStatus,
         AppHealResult,
+        AppHealStatus,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     AppHealStatus = None  # type: ignore[assignment,misc]
     AppHealResult = None  # type: ignore[assignment,misc]
@@ -29,4 +29,3 @@ class TestAppHealContractTypesImportability:
 
     def test_apphealresult_is_type(self) -> None:
         assert AppHealResult is not None
-

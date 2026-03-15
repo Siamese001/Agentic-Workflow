@@ -1,15 +1,21 @@
 """ADG contract tests for apps_shared/types/operation_mode_types.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
     from apps_shared.types.operation_mode_types import (
-        OperationMode, OperationScope, ToolOperationDefinition,
-        OperationExecutionContext, OperationExecutionResult,
-        OperationExecutionConfig, ObservabilityOperationPerformer,
+        ObservabilityOperationPerformer,
+        OperationExecutionConfig,
+        OperationExecutionContext,
+        OperationExecutionResult,
+        OperationMode,
+        OperationScope,
+        ToolOperationDefinition,
     )
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     OperationMode = OperationScope = ToolOperationDefinition = None  # type: ignore[assignment,misc]
     OperationExecutionContext = OperationExecutionResult = OperationExecutionConfig = None  # type: ignore[assignment,misc]

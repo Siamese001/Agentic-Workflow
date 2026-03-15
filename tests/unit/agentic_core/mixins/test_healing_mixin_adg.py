@@ -10,7 +10,7 @@ try:
         HealingStrategyMixin,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     HealingStrategyMixin = None  # type: ignore[assignment,misc]
 

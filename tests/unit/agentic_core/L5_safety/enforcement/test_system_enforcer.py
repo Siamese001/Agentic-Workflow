@@ -12,18 +12,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.enforcement.system_enforcer import (  # noqa: F401
-        ValidationResult,
-        ValidationReport,
-        SystemValidator,
-        main,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        SystemValidator,
+        ValidationReport,
+        ValidationResult,
+        main,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     ValidationResult = None  # type: ignore[assignment,misc]
     ValidationReport = None  # type: ignore[assignment,misc]

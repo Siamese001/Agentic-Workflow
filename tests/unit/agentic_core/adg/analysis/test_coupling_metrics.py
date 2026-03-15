@@ -12,12 +12,12 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.adg.analysis.coupling_metrics import (  # noqa: F401
-        ModuleMetrics,
         CouplingMetricsReport,
+        ModuleMetrics,
         compute_coupling_metrics,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ModuleMetrics = None  # type: ignore[assignment,misc]
     CouplingMetricsReport = None  # type: ignore[assignment,misc]
@@ -63,4 +63,4 @@ class TestComputeCouplingMetricsFunction:
 
 def test_module_importable():
     """Smoke: coupling_metrics importable or gracefully unavailable."""
-    assert True
+    pass

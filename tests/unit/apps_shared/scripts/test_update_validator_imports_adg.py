@@ -7,18 +7,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.scripts.update_validator_imports import (  # noqa: F401
-        find_files_with_imports,
-        update_imports_in_file,
-        main,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        find_files_with_imports,
+        main,
+        update_imports_in_file,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     find_files_with_imports = None  # type: ignore[assignment,misc]
     update_imports_in_file = None  # type: ignore[assignment,misc]

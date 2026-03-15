@@ -7,15 +7,15 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.scripts.auto_remediate_signatures_util import (  # noqa: F401
-        has_kwargs_in_signature,
+        TARGET_DIR,
         find_heal_repository_methods,
+        has_kwargs_in_signature,
         inject_kwargs_in_signature,
         inject_kwargs_in_super_calls,
         remediate_file,
-        TARGET_DIR,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     has_kwargs_in_signature = None  # type: ignore[assignment,misc]
     find_heal_repository_methods = None  # type: ignore[assignment,misc]

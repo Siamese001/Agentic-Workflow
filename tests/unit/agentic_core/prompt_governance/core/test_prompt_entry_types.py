@@ -12,20 +12,20 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.prompt_governance.core.prompt_entry_types import (  # noqa: F401
-        PromptEntry,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         PromptConstitution,
+        PromptEntry,
         get_constitution,
+        get_persona,
         get_prompt,
         get_template,
-        get_persona,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     PromptEntry = None  # type: ignore[assignment,misc]
     PromptConstitution = None  # type: ignore[assignment,misc]

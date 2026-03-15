@@ -2,8 +2,6 @@
 """Tests for agentic_core.interfaces.IOrchestratorProtocol."""
 import importlib
 
-import pytest
-
 
 def test_agentic_core_interfaces_IOrchestratorProtocol_importable():
     """Module must be importable without error."""
@@ -12,7 +10,6 @@ def test_agentic_core_interfaces_IOrchestratorProtocol_importable():
 
 def test_iorchestrator_protocol_is_protocol():
     import importlib
-    from typing import runtime_checkable
     m = importlib.import_module("agentic_core.interfaces.IOrchestratorProtocol")
     assert hasattr(m, "IOrchestratorProtocol")
 
@@ -22,4 +19,3 @@ def test_iorchestrator_protocol_has_expected_methods():
     cls = m.IOrchestratorProtocol
     # Protocol should declare at least one abstract method
     methods = [n for n in dir(cls) if not n.startswith("_")]
-    assert len(methods) >= 0  # existence check

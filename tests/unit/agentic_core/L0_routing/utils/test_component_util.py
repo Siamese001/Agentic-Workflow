@@ -12,19 +12,19 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.utils.component_util import (  # noqa: F401
-        ComponentFactory,
-        get_verification_gate,
-        get_human_review_queue,
-        get_detection_emitter,
-        get_meta_learning_service,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        ComponentFactory,
+        get_detection_emitter,
+        get_human_review_queue,
+        get_meta_learning_service,
+        get_verification_gate,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     ComponentFactory = None  # type: ignore[assignment,misc]
     get_verification_gate = None  # type: ignore[assignment,misc]

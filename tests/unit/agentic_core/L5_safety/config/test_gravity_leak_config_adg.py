@@ -11,7 +11,7 @@ try:
         GravityLeakDetector,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     CORE_TERRITORY_KEYWORDS = None  # type: ignore[assignment]
     GravityLeakDetector = None  # type: ignore[assignment,misc]

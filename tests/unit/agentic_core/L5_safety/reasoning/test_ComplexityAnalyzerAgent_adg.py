@@ -17,7 +17,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ComplexityAnalyzerStrategy = None  # type: ignore[assignment,misc]
     ComplexityViolation = None  # type: ignore[assignment,misc]

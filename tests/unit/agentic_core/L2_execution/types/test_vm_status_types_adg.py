@@ -6,9 +6,9 @@ import pytest
 pytestmark = pytest.mark.unit
 
 try:
-    from agentic_core.L2_execution.types.vm_status_types import VmStatus, VmProvider
+    from agentic_core.L2_execution.types.vm_status_types import VmProvider, VmStatus
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     VmStatus = None  # type: ignore[assignment,misc]
     VmProvider = None  # type: ignore[assignment,misc]

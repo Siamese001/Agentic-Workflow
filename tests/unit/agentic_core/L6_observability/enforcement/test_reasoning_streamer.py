@@ -12,19 +12,19 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L6_observability.enforcement.reasoning_streamer import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         L5Streamer,
-        get_l5_streamer,
-        start_l5_stream,
         broadcast,
         broadcast_reasoning,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
+        get_l5_streamer,
+        start_l5_stream,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     L5Streamer = None  # type: ignore[assignment,misc]
     get_l5_streamer = None  # type: ignore[assignment,misc]

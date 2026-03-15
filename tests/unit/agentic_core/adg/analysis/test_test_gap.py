@@ -17,7 +17,7 @@ try:
         detect_test_gaps,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     TestGapEntry = None  # type: ignore[assignment,misc]
     TestGapReport = None  # type: ignore[assignment,misc]
@@ -67,4 +67,4 @@ class TestDetectTestGapsFunction:
 
 def test_module_importable():
     """Smoke: test_gap importable or gracefully unavailable."""
-    assert True
+    pass

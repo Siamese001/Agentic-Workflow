@@ -1,11 +1,13 @@
 """ADG contract tests for apps_shared/types/engine_type_types.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
     from apps_shared.types.engine_type_types import EngineType
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     EngineType = None  # type: ignore[assignment,misc]
 

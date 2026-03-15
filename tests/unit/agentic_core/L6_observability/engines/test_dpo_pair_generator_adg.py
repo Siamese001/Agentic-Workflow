@@ -18,7 +18,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     BoundingViolation = None  # type: ignore[assignment,misc]
     DPOPair = None  # type: ignore[assignment,misc]

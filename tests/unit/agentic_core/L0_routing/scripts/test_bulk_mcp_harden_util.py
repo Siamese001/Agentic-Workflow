@@ -12,18 +12,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.scripts.bulk_mcp_harden_util import (  # noqa: F401
-        load_discovery,
-        get_unhardened_external_agents,
-        add_mcp_mixin_to_file,
-        add_import,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        add_import,
+        add_mcp_mixin_to_file,
+        get_unhardened_external_agents,
+        load_discovery,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     load_discovery = None  # type: ignore[assignment,misc]
     get_unhardened_external_agents = None  # type: ignore[assignment,misc]

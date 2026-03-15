@@ -12,16 +12,16 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.adg.client.mcp_client import (  # noqa: F401
-        ADGMCPClient,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        ADGMCPClient,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ADGMCPClient = None  # type: ignore[assignment,misc]
     MAX_RETRIES = None  # type: ignore[assignment,misc]
@@ -104,4 +104,4 @@ class TestMaxDepthConstant:
 
 def test_module_importable():
     """Smoke: mcp_client importable or gracefully unavailable."""
-    assert True
+    pass

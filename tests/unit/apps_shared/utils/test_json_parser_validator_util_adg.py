@@ -9,15 +9,15 @@ import pytest
 
 try:
     from apps_shared.utils.json_parser_validator_util import (  # noqa: F401
-        ParseResult,
-        JsonParser,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
         BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        JsonParser,
+        ParseResult,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ParseResult = None  # type: ignore[assignment,misc]
     JsonParser = None  # type: ignore[assignment,misc]
@@ -43,4 +43,3 @@ class TestJsonParserValidatorUtilImportability:
 
     def test_default_sleep_defined(self) -> None:
         assert DEFAULT_SLEEP is not None
-

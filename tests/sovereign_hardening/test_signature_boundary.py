@@ -267,4 +267,3 @@ class TestNegativeControl:
         if os.environ.get("W_HARDEN_NEGCTRL_TAMPER") == "1":
             pytest.xfail("Negative control tampering active: W_HARDEN_NEGCTRL_TAMPER=1")
         # Restore path: normal PASS
-        assert True

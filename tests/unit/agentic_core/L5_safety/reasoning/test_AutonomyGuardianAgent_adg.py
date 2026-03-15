@@ -15,7 +15,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     AutonomyGuardianAgent = None  # type: ignore[assignment,misc]
     get_autonomy_guardian = None  # type: ignore[assignment,misc]

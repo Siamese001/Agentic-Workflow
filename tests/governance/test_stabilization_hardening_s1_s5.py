@@ -195,11 +195,9 @@ class TestC0ContextClean:
 
     def test_clean_context_passes(self):
         self._guard()({"rag_result": "some text", "score": 0.9})
-        assert True  # no-exception contract
 
     def test_empty_context_passes(self):
         self._guard()({})
-        assert True  # no-exception contract
 
     def test_route_mode_is_forbidden(self):
         from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
@@ -509,7 +507,6 @@ class TestUWGThreeGateWrite:
         store = self._make_store()
         uwg.write(b"payload", "valid-sig", store)
         store.write.assert_called_once_with(b"payload")
-        assert True  # no-exception contract
 
     # --- Gate 3a: replay_hash ---
 
@@ -520,7 +517,6 @@ class TestUWGThreeGateWrite:
         replay_key = hashlib.sha256(payload).hexdigest()
         uwg.write(payload, "sig", store, replay_key=replay_key)
         store.write.assert_called_once_with(payload)
-        assert True  # no-exception contract
 
     def test_wrong_replay_key_blocks_write(self):
         uwg = self._make_uwg()
@@ -537,7 +533,6 @@ class TestUWGThreeGateWrite:
         store = self._make_store()
         uwg.write(b"payload", "sig", store, replay_key="")
         store.write.assert_called_once()
-        assert True  # no-exception contract
 
     # --- Gate 3b: plan_hash ---
 
@@ -546,7 +541,6 @@ class TestUWGThreeGateWrite:
         store = self._make_store()
         uwg.write(b"payload", "sig", store, plan_hash="plan-abc")
         store.write.assert_called_once_with(b"payload")
-        assert True  # no-exception contract
 
     def test_empty_plan_hash_skips_check(self):
         """§1.5 boundary: empty plan_hash means check is skipped (opt-in gate)."""
@@ -554,7 +548,6 @@ class TestUWGThreeGateWrite:
         store = self._make_store()
         uwg.write(b"payload", "sig", store, plan_hash="")
         store.write.assert_called_once()
-        assert True  # no-exception contract
 
     # --- store never touched on any failure ---
 

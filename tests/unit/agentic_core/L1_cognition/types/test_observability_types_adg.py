@@ -1,11 +1,13 @@
 """ADG contract tests for agentic_core/L1_cognition/types/observability_types.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
-    from agentic_core.L1_cognition.types.observability_types import MetricPoint, HealthStatus
+    from agentic_core.L1_cognition.types.observability_types import HealthStatus, MetricPoint
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     MetricPoint = HealthStatus = None  # type: ignore[assignment,misc]
 

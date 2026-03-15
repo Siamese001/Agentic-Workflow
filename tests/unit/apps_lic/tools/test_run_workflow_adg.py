@@ -7,18 +7,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_lic.tools.run_workflow import (  # noqa: F401
-        load_mission_input,
-        create_orchestrator,
-        main,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        create_orchestrator,
+        load_mission_input,
+        main,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     load_mission_input = None  # type: ignore[assignment,misc]
     create_orchestrator = None  # type: ignore[assignment,misc]

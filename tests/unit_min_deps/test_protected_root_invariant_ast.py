@@ -17,7 +17,6 @@ from pathlib import Path
 
 import pytest
 
-
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
 THRESHOLD = 0.95
@@ -164,7 +163,6 @@ class TestProtectedRootEnforcementInvariant:
         This ensures the enforcement wiring cannot be accidentally removed.
         """
         # This test always passes - it's documentation of the negative case
-        assert True, "Regression guard is active via other tests in this suite"
 
     def test_negative_regression_guard_reordering_would_fail(self):
         """Test that reordering enforce_protected_root after write would fail.
@@ -177,7 +175,6 @@ class TestProtectedRootEnforcementInvariant:
         This ensures the enforcement ordering cannot be accidentally broken.
         """
         # This test always passes - it's documentation of the negative case
-        assert True, "Ordering guard is active via other tests in this suite"
 
 
 @pytest.mark.unit_min_deps

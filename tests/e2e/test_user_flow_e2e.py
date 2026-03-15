@@ -7,7 +7,6 @@ import pytest
 playwright = pytest.importorskip("playwright", reason="playwright not installed")
 from playwright.sync_api import Page  # noqa: E402
 
-
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
 THRESHOLD = 0.95
@@ -28,4 +27,3 @@ class TestUserFlowE2E:
         page.fill("#username", "testuser")
         page.click("#register-button")
         page.wait_for_url("**/dashboard")
-        assert True  # no-exception contract

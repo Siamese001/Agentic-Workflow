@@ -12,20 +12,20 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.scripts.reasoning import (  # noqa: F401
-        ReasoningStrategy,
-        ChainOfThoughtStrategy,
-        TreeOfThoughtsStrategy,
-        ReActStrategy,
-        ReflectionStrategy,
-        CritiqueStrategy,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        ChainOfThoughtStrategy,
+        CritiqueStrategy,
+        ReActStrategy,
+        ReasoningStrategy,
+        ReflectionStrategy,
+        TreeOfThoughtsStrategy,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     ReasoningStrategy = None  # type: ignore[assignment,misc]
     ChainOfThoughtStrategy = None  # type: ignore[assignment,misc]

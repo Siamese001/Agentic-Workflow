@@ -7,11 +7,11 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L3_orchestration.reasoning.GravityStateAgent import (  # noqa: F401
-        HealingRecord,
         GravityStateAgent,
+        HealingRecord,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     HealingRecord = None  # type: ignore[assignment,misc]
     GravityStateAgent = None  # type: ignore[assignment,misc]

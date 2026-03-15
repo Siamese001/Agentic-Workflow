@@ -11,7 +11,7 @@ try:
         check_system_learning_isolation,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     check_file_isolation = None  # type: ignore[assignment,misc]
     check_system_learning_isolation = None  # type: ignore[assignment,misc]

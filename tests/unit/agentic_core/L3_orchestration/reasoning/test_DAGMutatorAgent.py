@@ -12,20 +12,20 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L3_orchestration.reasoning.DAGMutatorAgent import (  # noqa: F401
-        GraphTransaction,
-        MutationAction,
-        HopSpec,
-        DAGMutation,
-        MutationResult,
-        DAGConfig,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        DAGConfig,
+        DAGMutation,
+        GraphTransaction,
+        HopSpec,
+        MutationAction,
+        MutationResult,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     GraphTransaction = None  # type: ignore[assignment,misc]
     MutationAction = None  # type: ignore[assignment,misc]

@@ -12,14 +12,14 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L2_execution.types.vllm_backpressure_types import (  # noqa: F401
-        VLLMQueueState,
+        BackpressureDecision,
         CircuitBreakerState,
         VLLMCircuitBreaker,
-        BackpressureDecision,
+        VLLMQueueState,
         evaluate_backpressure,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     VLLMQueueState = None  # type: ignore[assignment,misc]
     CircuitBreakerState = None  # type: ignore[assignment,misc]
@@ -112,4 +112,4 @@ class TestEvaluateBackpressureFunction:
 
 def test_module_importable():
     """Smoke: vllm_backpressure_types importable or gracefully unavailable."""
-    assert True
+    pass

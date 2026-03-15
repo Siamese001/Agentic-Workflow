@@ -9,15 +9,15 @@ import pytest
 
 try:
     from system_learning.engines.stage_barrier_enforcer import (  # noqa: F401
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         MetaLearningStage,
         StageBarrierEnforcer,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     MetaLearningStage = None  # type: ignore[assignment,misc]
     StageBarrierEnforcer = None  # type: ignore[assignment,misc]
@@ -43,4 +43,3 @@ class TestStageBarrierEnforcerImportability:
 
     def test_default_sleep_defined(self) -> None:
         assert DEFAULT_SLEEP is not None
-

@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     GuardianTier = None  # type: ignore[assignment,misc]
     GuardianSpec = None  # type: ignore[assignment,misc]

@@ -10,7 +10,7 @@ try:
         ARCHIVE_FILE_ACCESS_DEPRECATED,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ARCHIVE_FILE_ACCESS_DEPRECATED = None  # type: ignore[assignment,misc]
 

@@ -7,17 +7,17 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L3_orchestration.enforcement.knowledge_graph_healing_strategy import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         KnowledgeGraphHealingStrategy,
         create_kg_healing_strategy,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     KnowledgeGraphHealingStrategy = None  # type: ignore[assignment,misc]
     create_kg_healing_strategy = None  # type: ignore[assignment,misc]

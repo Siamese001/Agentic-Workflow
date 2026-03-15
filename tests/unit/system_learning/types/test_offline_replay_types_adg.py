@@ -10,12 +10,12 @@ import pytest
 try:
     from system_learning.types.offline_replay_types import (  # noqa: F401
         OfflineReplayBundle,
-        replay_app_signals_to_aggregate,
-        replay_aggregate_to_rollout,
         render_offline_replay_bundle,
+        replay_aggregate_to_rollout,
+        replay_app_signals_to_aggregate,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     OfflineReplayBundle = None  # type: ignore[assignment,misc]
     replay_app_signals_to_aggregate = None  # type: ignore[assignment,misc]
@@ -36,4 +36,3 @@ class TestOfflineReplayTypesImportability:
 
     def test_replay_aggregate_to_rollout_callable(self) -> None:
         assert callable(replay_aggregate_to_rollout)
-

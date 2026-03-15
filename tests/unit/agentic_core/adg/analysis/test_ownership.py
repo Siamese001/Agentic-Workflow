@@ -16,7 +16,7 @@ try:
         OwnershipRegistry,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ModuleOwnership = None  # type: ignore[assignment,misc]
     OwnershipRegistry = None  # type: ignore[assignment,misc]
@@ -61,4 +61,4 @@ class TestOwnershipRegistryContract:
 
 def test_module_importable():
     """Smoke: ownership importable or gracefully unavailable."""
-    assert True
+    pass

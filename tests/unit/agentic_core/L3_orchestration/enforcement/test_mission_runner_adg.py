@@ -7,18 +7,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L3_orchestration.enforcement.mission_runner import (  # noqa: F401
-        run_daemon_mode,
-        run_surgical_mode,
-        run_standard_mode,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        run_daemon_mode,
+        run_standard_mode,
+        run_surgical_mode,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     run_daemon_mode = None  # type: ignore[assignment,misc]
     run_surgical_mode = None  # type: ignore[assignment,misc]

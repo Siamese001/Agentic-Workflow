@@ -7,19 +7,19 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.prompt_governance.core.sovereign_prompt_renderer import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        SovereignPromptRenderer,
         TemplateSchema,
         TemplateValidationError,
-        SovereignPromptRenderer,
         get_sovereign_prompt_renderer,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     TemplateSchema = None  # type: ignore[assignment,misc]
     TemplateValidationError = None  # type: ignore[assignment,misc]

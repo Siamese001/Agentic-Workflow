@@ -8,7 +8,7 @@ pytestmark = pytest.mark.unit
 try:
     import apps_lic.engines.message_body_composer as _mod  # noqa: F401
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _mod = None
     _AVAILABLE = False
 

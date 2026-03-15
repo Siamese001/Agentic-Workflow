@@ -7,17 +7,17 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L4_state.memory.reasoning_memory import (  # noqa: F401
-        Thought,
-        ReasoningMemory,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        ReasoningMemory,
+        Thought,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     Thought = None  # type: ignore[assignment,misc]
     ReasoningMemory = None  # type: ignore[assignment,misc]

@@ -1,14 +1,18 @@
 """ADG contract tests for apps_shared/types/execution_orchestrator_types.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
     from apps_shared.types.execution_orchestrator_types import (
-        ExecutionArtifact, ExecutionTrace, ExecutionOrchestrator,
+        ExecutionArtifact,
+        ExecutionOrchestrator,
+        ExecutionTrace,
         create_execution_orchestrator,
     )
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     ExecutionArtifact = ExecutionTrace = ExecutionOrchestrator = None  # type: ignore[assignment,misc]
     create_execution_orchestrator = None  # type: ignore[assignment,misc]

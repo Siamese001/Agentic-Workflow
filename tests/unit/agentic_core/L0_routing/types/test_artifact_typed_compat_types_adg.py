@@ -12,7 +12,7 @@ try:
         RouteDecisionArtifact,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     HealingPlan = None  # type: ignore[assignment,misc]
     ResultArtifact = None  # type: ignore[assignment,misc]

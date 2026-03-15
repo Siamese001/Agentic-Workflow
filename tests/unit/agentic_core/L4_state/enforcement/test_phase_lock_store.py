@@ -12,21 +12,21 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L4_state.enforcement.phase_lock_store import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         PhaseLockRecord,
         PhaseLockStore,
         PhaseLockValidator,
+        get_phase_lock,
+        is_phase_locked,
         lock_phase,
         unlock_phase,
-        is_phase_locked,
-        get_phase_lock,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     PhaseLockRecord = None  # type: ignore[assignment,misc]
     PhaseLockStore = None  # type: ignore[assignment,misc]

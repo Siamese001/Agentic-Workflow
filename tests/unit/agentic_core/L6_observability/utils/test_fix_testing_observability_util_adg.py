@@ -7,19 +7,19 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L6_observability.utils.fix_testing_observability_util import (  # noqa: F401
-        load_agents,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         add_logging_to_file,
         add_testing_mixin_to_class,
+        load_agents,
         main,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     load_agents = None  # type: ignore[assignment,misc]
     add_logging_to_file = None  # type: ignore[assignment,misc]

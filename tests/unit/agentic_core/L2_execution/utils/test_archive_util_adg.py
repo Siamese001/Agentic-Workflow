@@ -8,7 +8,7 @@ pytestmark = pytest.mark.unit
 try:
     from agentic_core.L2_execution.utils.archive_util import parse_mcp_client_specs
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     parse_mcp_client_specs = None  # type: ignore[assignment]
 

@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     HumanAction = None  # type: ignore[assignment,misc]
     StructuredPatchSchema = None  # type: ignore[assignment,misc]

@@ -7,22 +7,22 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.enforcement.FewshotregistryStrategy import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         ContextType,
         FewShotExample,
         FewShotRegistry,
-        get_few_shot_registry,
-        get_examples_for_injection,
-        enhance_with_examples,
         create_custom_example,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
+        enhance_with_examples,
+        get_examples_for_injection,
+        get_few_shot_registry,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ContextType = None  # type: ignore[assignment,misc]
     FewShotExample = None  # type: ignore[assignment,misc]

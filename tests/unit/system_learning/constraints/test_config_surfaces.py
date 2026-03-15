@@ -12,17 +12,17 @@ pytestmark = pytest.mark.unit
 
 try:
     from system_learning.constraints.config_surfaces import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         FloatConstraint,
         IntConstraint,
         PointerConstraint,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     FloatConstraint = None  # type: ignore[assignment,misc]
     IntConstraint = None  # type: ignore[assignment,misc]

@@ -12,19 +12,19 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.types.healing_orchestration_types import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        HealingOrchestrationSuite,
         HealingResult,
         HealingSuiteResult,
-        HealingOrchestrationSuite,
         get_healing_suite,
         run_healing_operation,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     HealingResult = None  # type: ignore[assignment,misc]
     HealingSuiteResult = None  # type: ignore[assignment,misc]

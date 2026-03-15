@@ -12,22 +12,22 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.types.routing_contracts_types import (  # noqa: F401
+        ArtifactAbsenceFailure,
+        GuardrailGuard,
+        HealingTransactionBoundary,
         LawSlotHandler,
+        MetaGuardianResult,
+        PolicyAlignmentResult,
         PolicyConfigGuard,
         PolicyMutationIncident,
-        PolicyAlignmentResult,
-        GuardrailGuard,
-        ArtifactAbsenceFailure,
-        MetaGuardianResult,
-        HealingTransactionBoundary,
-        static_policy_alignment_check,
+        aggregate_gate_check,
         enforce_artifact_presence,
         enforce_route_decision_presence,
         meta_guardian_check,
-        aggregate_gate_check,
+        static_policy_alignment_check,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     LawSlotHandler = None  # type: ignore[assignment,misc]
     PolicyConfigGuard = None  # type: ignore[assignment,misc]
@@ -213,4 +213,4 @@ class TestAggregateGateCheckFunction:
 
 def test_module_importable():
     """Smoke: routing_contracts_types importable or gracefully unavailable."""
-    assert True
+    pass

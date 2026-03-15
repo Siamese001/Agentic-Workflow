@@ -3,6 +3,8 @@ from __future__ import annotations
 "L3 Orchestration: Sovereign MCP Marketplace Integration\nSafe discovery and registration of marketplace MCPs with L5 sovereignty enforcement.\nGEMINI-ONLY policy — forbidden providers auto-blocked.\n"
 import logging
 
+from agentic_core.seams.contracts.authority import get_mcp_authority
+
 Logger = logging.getLogger(__name__)
 sovereign_safe_mcps = {
     "Filesystem",
@@ -33,17 +35,17 @@ class SovereignMcpMarketplace:
         for mcp in installed + available:
             name = mcp.get("name", "")
             Provider = mcp.get("Provider", "")
-            if any(forbidden in Provider for forbidden in FORBIDDEN_PROVIDERS):
+            if any(forbidden in Provider for forbidden in forbidden_providers):
                 Logger.critical(f"[L5 MCP BREACH] Forbidden Provider detected: {Provider} — blocked.")
-                mcp_authority.record_breach(f"Attempted Marketplace Load: {Provider}")
+                get_mcp_authority().record_breach(f"Attempted Marketplace Load: {Provider}")
                 continue
-            if name in SOVEREIGN_SAFE_MCPS:
+            if name in sovereign_safe_mcps:
                 try:
                     self.safe_tools.append(name)
                     Logger.info(f"[L3 MARKETPLACE] Sovereign MCP validated and armed: {name}")
                 except Exception as e:
-                    raise
                     Logger.warning(f"Failed to register {name}: {e}")
+                    raise
         if not self.safe_tools:
             Logger.warning("[L3 MARKETPLACE] No safe MCPs found. Running in LLM-only mode.")
 

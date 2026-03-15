@@ -7,18 +7,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L3_orchestration.engines.call_formatting_router import (  # noqa: F401
-        CallFormattingApi,
-        format,
-        FormatData,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        CallFormattingApi,
+        FormatData,
+        format,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     CallFormattingApi = None  # type: ignore[assignment,misc]
     format = None  # type: ignore[assignment,misc]

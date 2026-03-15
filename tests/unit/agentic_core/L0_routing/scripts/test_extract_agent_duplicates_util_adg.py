@@ -7,17 +7,17 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.scripts.extract_agent_duplicates_util import (  # noqa: F401
-        is_agent_file,
-        infer_rationale,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        infer_rationale,
+        is_agent_file,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     is_agent_file = None  # type: ignore[assignment,misc]
     infer_rationale = None  # type: ignore[assignment,misc]

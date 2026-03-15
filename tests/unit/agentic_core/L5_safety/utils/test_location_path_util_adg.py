@@ -7,17 +7,17 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.utils.location_path_util import (  # noqa: F401
-        is_path_compliant,
-        get_location_agent,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        get_location_agent,
+        is_path_compliant,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     is_path_compliant = None  # type: ignore[assignment,misc]
     get_location_agent = None  # type: ignore[assignment,misc]

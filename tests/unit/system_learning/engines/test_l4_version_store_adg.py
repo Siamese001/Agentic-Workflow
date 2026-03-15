@@ -9,17 +9,17 @@ import pytest
 
 try:
     from system_learning.engines.l4_version_store import (  # noqa: F401
-        ParentVersionNotFound,
-        VersionNotFound,
-        VersionedPackage,
-        L4VersionStore,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
         BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        L4VersionStore,
+        ParentVersionNotFound,
+        VersionedPackage,
+        VersionNotFound,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ParentVersionNotFound = None  # type: ignore[assignment,misc]
     VersionNotFound = None  # type: ignore[assignment,misc]
@@ -50,4 +50,3 @@ class TestL4VersionStoreImportability:
 
     def test_default_sleep_defined(self) -> None:
         assert DEFAULT_SLEEP is not None
-

@@ -149,7 +149,6 @@ class TestIncrementAndCheck:
     def test_allows_calls_up_to_budget_minus_one(self, detector, budget_3):
         for i in range(3):
             detector.increment_and_check("trace-a", "tool_x", budget_3)
-            assert True  # no-exception contract
 
     def test_raises_exactly_at_max_steps(self, detector, budget_3):
         for _ in range(3):

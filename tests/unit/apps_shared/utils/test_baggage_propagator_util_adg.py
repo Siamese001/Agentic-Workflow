@@ -7,18 +7,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.utils.baggage_propagator_util import (  # noqa: F401
-        BaggagePropagator,
-        inject_context,
-        extract_context,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        BaggagePropagator,
+        extract_context,
+        inject_context,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     BaggagePropagator = None  # type: ignore[assignment,misc]
     inject_context = None  # type: ignore[assignment,misc]

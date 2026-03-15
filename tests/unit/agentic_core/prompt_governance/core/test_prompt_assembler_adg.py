@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     InputSanitizer = None  # type: ignore[assignment,misc]
     SecurityIntegrityError = None  # type: ignore[assignment,misc]

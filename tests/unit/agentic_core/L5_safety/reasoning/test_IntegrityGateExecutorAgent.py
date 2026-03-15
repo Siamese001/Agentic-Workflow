@@ -12,21 +12,21 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.reasoning.IntegrityGateExecutorAgent import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        FinancialProofPoint,
+        IntegrityGateResult,
+        KeyExecutive,
+        KeyTechnology,
         ValidationRejectionReason,
         Violation,
-        IntegrityGateResult,
-        FinancialProofPoint,
-        KeyTechnology,
-        KeyExecutive,
         validate_research_output,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     ValidationRejectionReason = None  # type: ignore[assignment,misc]
     Violation = None  # type: ignore[assignment,misc]

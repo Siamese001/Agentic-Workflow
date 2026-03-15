@@ -12,7 +12,7 @@ try:
         MCPOperationMixin,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     MCPOperationMixin = None  # type: ignore[assignment,misc]
 
@@ -24,4 +24,3 @@ class TestMcpOperationMixinImportability:
 
     def test_mcpoperationmixin_is_type(self) -> None:
         assert MCPOperationMixin is not None
-

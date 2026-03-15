@@ -54,3 +54,8 @@ jobs:
       - name: "Gate 5: Import Graph Snapshot"
         run: |
           pytest tests/unit_min_deps/test_import_graph_contract.py -v --tb=short
+
+      - name: "Gate 6: Tooling/Apps Boundary (§8.3)"
+        run: python ops_scripts/ci/check_tooling_apps_boundary.py
+        env:
+          PYTHONPATH: .

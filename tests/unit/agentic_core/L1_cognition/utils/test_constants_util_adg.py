@@ -13,7 +13,7 @@ try:
         min_lines,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     depth_map = excluded_dirs = max_lines = min_lines = None
 

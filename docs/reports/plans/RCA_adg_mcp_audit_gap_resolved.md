@@ -1,7 +1,7 @@
 # RCA: ADG Failed to Catch MCP Errors and Stubs
 
-**Status:** ✅ RESOLVED  
-**Resolved:** 2025 (this session)  
+**Status:** ✅ RESOLVED
+**Resolved:** 2025 (this session)
 **Scope:** ADG static scanner, ADG invariant scanner, ruff lint configuration
 
 ---
@@ -16,41 +16,41 @@ Six classes of bugs were manually fixed in the MCP layer. The ADG static analysi
 
 ### Bug 1 — `mcp_authority` used without import (undefined name)
 
-**Files:** `sovereign_mcp_router.py`, `sovereign_filesystem_mcp.py`, `sovereign_mcp_marketplace.py`  
-**Error class:** `NameError` at runtime — `mcp_authority` used as a bare name with no import  
-**Rule that should catch it:** ruff `F821` (undefined-name)  
+**Files:** `sovereign_mcp_router.py`, `sovereign_filesystem_mcp.py`, `sovereign_mcp_marketplace.py`
+**Error class:** `NameError` at runtime — `mcp_authority` used as a bare name with no import
+**Rule that should catch it:** ruff `F821` (undefined-name)
 **Root cause:** `F821` was in the **global `ignore` list** in `pyproject.toml` with comment *"codebase uses lazy/conditional imports extensively"*. This blanket suppression silenced real undefined-name bugs alongside intentional lazy patterns.
 
 ### Bug 2 — `HardenedRouter` referenced but never defined/imported
 
-**File:** `apps_shared/utils/router_factory_util.py`  
-**Error class:** `NameError` — `HardenedRouter` had no binding anywhere in the module  
+**File:** `apps_shared/utils/router_factory_util.py`
+**Error class:** `NameError` — `HardenedRouter` had no binding anywhere in the module
 **Root cause:** Same — F821 globally suppressed.
 
 ### Bug 3 — `LLMClient`, `SequentialThinkingClient` used before definition
 
-**File:** `apps_shared/types/model_router_types.py`  
-**Error class:** `NameError` — class bodies referenced names not yet defined  
+**File:** `apps_shared/types/model_router_types.py`
+**Error class:** `NameError` — class bodies referenced names not yet defined
 **Root cause:** Same — F821 globally suppressed.
 
 ### Bug 4 — `FallbackClient.generate` defined twice (duplicate method)
 
-**File:** `apps_shared/types/model_router_types.py`  
-**Error class:** Silent bug — second definition silently shadows first  
-**Rule that should catch it:** ruff `F811` (redefined-while-unused); ADG Rule D (new)  
+**File:** `apps_shared/types/model_router_types.py`
+**Error class:** Silent bug — second definition silently shadows first
+**Rule that should catch it:** ruff `F811` (redefined-while-unused); ADG Rule D (new)
 **Root cause:** F811 was globally suppressed with comment *"backward-compat aliases and decorator wrappers"*. ADG had no duplicate-method detection rule.
 
 ### Bug 5 — Unreachable code after `raise` in exception handlers
 
-**Files:** `sovereign_mcp_router.py`, `sovereign_mcp_marketplace.py`  
-**Error class:** Dead code — `Logger.warning(...)` after `raise` is never executed  
-**Rule that should catch it:** ADG Rule G (new) — no prior check existed  
+**Files:** `sovereign_mcp_router.py`, `sovereign_mcp_marketplace.py`
+**Error class:** Dead code — `Logger.warning(...)` after `raise` is never executed
+**Rule that should catch it:** ADG Rule G (new) — no prior check existed
 **Root cause:** ADG had no control-flow analysis plane. Neither ruff nor ADG detected this pattern.
 
 ### Bug 6 — Wrong MCP tool prefix (`mcp12_*` instead of `mcp8_*`)
 
-**File:** `agentic_core/L3_orchestration/reasoning/mcp_manager.py`  
-**Error class:** Silent misconfiguration — dispatched calls went to non-existent tools  
+**File:** `agentic_core/L3_orchestration/reasoning/mcp_manager.py`
+**Error class:** Silent misconfiguration — dispatched calls went to non-existent tools
 **Root cause:** No ADG dispatch-table validation rule exists. Addressed by manual fix only.
 
 ---
@@ -71,7 +71,7 @@ Six classes of bugs were manually fixed in the MCP layer. The ADG static analysi
 
 ### [x] Fix 1 — Re-enable ruff F821 for `agentic_core/**` and `apps_*/`
 
-**File:** `pyproject.toml`  
+**File:** `pyproject.toml`
 **Change:** Removed `F821` and `F823` from global `ignore` list. Added both only to per-file-ignores for `ops_scripts/**`, `tools/**`, and `system_learning/**` — the only directories where lazy/dynamic import patterns are legitimately used.
 
 ```toml
@@ -91,22 +91,22 @@ ignore = [
 
 ### [x] Fix 2 — Add `_DuplicateMethodVisitor` (Rule D) to static scanner
 
-**File:** `agentic_core/adg/extraction/static_scanner.py`  
+**File:** `agentic_core/adg/extraction/static_scanner.py`
 **Change:** Added `_is_property_accessor()` helper and `_DuplicateMethodVisitor` class. Emits `duplicate_method` edges for any `FunctionDef`/`AsyncFunctionDef` name appearing more than once in the immediate body of a `ClassDef`. Property `setter`/`deleter`/`getter` decorators are exempt.
 
 ### [x] Fix 3 — Add `_UnreachableCodeAfterRaiseVisitor` (Rule G) to static scanner
 
-**File:** `agentic_core/adg/extraction/static_scanner.py`  
+**File:** `agentic_core/adg/extraction/static_scanner.py`
 **Change:** Added `_UnreachableCodeAfterRaiseVisitor` class. Emits `unreachable_after_raise` edges for any statement that immediately follows a `raise` statement in the same block (exception handlers, function bodies, if/while/for branches).
 
 ### [x] Fix 4 — Wire both new visitors into `_scan_file`
 
-**File:** `agentic_core/adg/extraction/static_scanner.py`  
+**File:** `agentic_core/adg/extraction/static_scanner.py`
 **Change:** Added `GH` and `GU` visitor calls after the `G16` eval spine visitor in `_scan_file`.
 
 ### [x] Fix 5 — Add Rule D and Rule G to `InvariantScanner`
 
-**File:** `agentic_core/adg/ci/invariant_scanner.py`  
+**File:** `agentic_core/adg/ci/invariant_scanner.py`
 **Change:**
 - Added `_POLICY_DUPLICATE_METHOD` and `_POLICY_UNREACHABLE_AFTER_RAISE` constants
 - Added `_rule_d_duplicate_method()` method — reports `duplicate_method` edges as `RULE_D` violations
@@ -116,7 +116,7 @@ ignore = [
 
 ### [x] Fix 6 — Write regression tests
 
-**File:** `tests/adg/test_adg_mcp_audit_rules.py`  
+**File:** `tests/adg/test_adg_mcp_audit_rules.py`
 **Change:** Added 24 tests covering:
 - `_is_property_accessor` (positive/negative)
 - `_DuplicateMethodVisitor` (positive: plain dup, async dup, 3x dup, nested class)

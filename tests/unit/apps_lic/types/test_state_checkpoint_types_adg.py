@@ -1,13 +1,17 @@
 """ADG contract tests for apps_lic/types/state_checkpoint_types.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
     from apps_lic.types.state_checkpoint_types import (
-        StateCheckpoint, StateValidationResult, LICStateManager,
+        LICStateManager,
+        StateCheckpoint,
+        StateValidationResult,
     )
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     StateCheckpoint = StateValidationResult = LICStateManager = None  # type: ignore[assignment,misc]
 

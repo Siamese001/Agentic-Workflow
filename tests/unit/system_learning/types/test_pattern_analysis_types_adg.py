@@ -9,17 +9,17 @@ import pytest
 
 try:
     from system_learning.types.pattern_analysis_types import (  # noqa: F401
-        PatternSourceIds,
-        PatternFindingKey,
-        PatternFinding,
-        PatternFindingReport,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
         BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        PatternFinding,
+        PatternFindingKey,
+        PatternFindingReport,
+        PatternSourceIds,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     PatternSourceIds = None  # type: ignore[assignment,misc]
     PatternFindingKey = None  # type: ignore[assignment,misc]
@@ -50,4 +50,3 @@ class TestPatternAnalysisTypesImportability:
 
     def test_default_sleep_defined(self) -> None:
         assert DEFAULT_SLEEP is not None
-

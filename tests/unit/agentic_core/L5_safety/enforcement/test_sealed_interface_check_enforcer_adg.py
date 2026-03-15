@@ -7,16 +7,16 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.enforcement.sealed_interface_check_enforcer import (  # noqa: F401
-        check_file,
-        run_check,
-        main,
-        REPO_ROOT,
         APPS_ROOTS,
         FORBIDDEN_IMPORT_PATTERNS,
         FORBIDDEN_LAYER_PREFIXES,
+        REPO_ROOT,
+        check_file,
+        main,
+        run_check,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     check_file = None  # type: ignore[assignment,misc]
     run_check = None  # type: ignore[assignment,misc]

@@ -7,18 +7,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.utils.sovereign_lock_util import (  # noqa: F401
-        enforce_gravity,
-        enforce_depth,
-        check_airlocks,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        check_airlocks,
+        enforce_depth,
+        enforce_gravity,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     enforce_gravity = None  # type: ignore[assignment,misc]
     enforce_depth = None  # type: ignore[assignment,misc]

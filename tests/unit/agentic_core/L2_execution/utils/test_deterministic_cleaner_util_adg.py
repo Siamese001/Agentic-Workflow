@@ -8,7 +8,7 @@ pytestmark = pytest.mark.unit
 try:
     from agentic_core.L2_execution.utils.deterministic_cleaner_util import DeterministicCleaner
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     DeterministicCleaner = None  # type: ignore[assignment,misc]
 

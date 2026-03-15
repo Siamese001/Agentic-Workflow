@@ -138,7 +138,7 @@ CONTRACT_GATE_TEST_MODULES: tuple[str, ...] = tuple(
             "test_conftest_ignore_policy",
             "test_contract_compatibility",
             "test_core_components",
-            "test_execute_ssot_v15_contract",
+            "test_execute_ssot_contract",
             "test_guardian_aggregation",
             "test_guardian_contract",
             "test_guardian_contract_gate_scope",

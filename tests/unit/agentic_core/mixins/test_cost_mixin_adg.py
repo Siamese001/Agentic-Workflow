@@ -9,18 +9,18 @@ import pytest
 
 try:
     from agentic_core.mixins.cost_mixin import (  # noqa: F401
-        TokenUsage,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         BudgetConfig,
         BudgetExceededError,
-        RecursionLimitError,
         CostGuardrailMixin,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
+        RecursionLimitError,
+        TokenUsage,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     TokenUsage = None  # type: ignore[assignment,misc]
     BudgetConfig = None  # type: ignore[assignment,misc]
@@ -52,4 +52,3 @@ class TestCostMixinImportability:
 
     def test_default_sleep_defined(self) -> None:
         assert DEFAULT_SLEEP is not None
-

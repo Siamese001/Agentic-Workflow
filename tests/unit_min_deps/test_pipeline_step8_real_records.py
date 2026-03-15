@@ -68,7 +68,6 @@ class TestPipelineStep8RealRecords:
             )
         except Exception:  # guardian: allow-silent-swallower
             pass  # pipeline may raise on missing deps; that is acceptable here
-            assert True  # no-exception contract
             # What we verify is the source AST invariant above
 
     def test_empty_store_yields_intake_record_none(self):

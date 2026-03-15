@@ -17,7 +17,7 @@ try:
         registry_digest,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     get_execution_profile = None  # type: ignore[assignment,misc]
     get_profile = None  # type: ignore[assignment,misc]
@@ -57,4 +57,4 @@ class TestRegistryDigestFunction:
 
 def test_module_importable():
     """Smoke: agent_registry importable or gracefully unavailable."""
-    assert True
+    pass

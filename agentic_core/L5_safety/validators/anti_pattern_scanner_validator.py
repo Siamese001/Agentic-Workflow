@@ -45,6 +45,9 @@ from agentic_core.L5_safety.validators.magic_validator import (
 from agentic_core.L5_safety.validators.path_fragility_validator import (
     PathFragilityDetector,
 )
+from agentic_core.L5_safety.validators.silent_degradation_validator import (
+    SilentDegradationDetector,
+)
 from agentic_core.L5_safety.validators.silent_swallower_validator import (
     SilentSwallowerDetector,
 )
@@ -168,6 +171,7 @@ class AntiPatternScanner:
         self.composite = CompositeDetector(
             [
                 SilentSwallowerDetector(enforcement_level=enforcement_level),
+                SilentDegradationDetector(enforcement_level=enforcement_level),
                 TypeErasureDetector(enforcement_level=enforcement_level),
                 PathFragilityDetector(enforcement_level=enforcement_level),
                 MagicConfigDetector(enforcement_level=enforcement_level),

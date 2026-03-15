@@ -42,19 +42,19 @@ from agentic_core.L0_routing.config.path_constants import (
     APPS_LIC_DIR,
     APPS_RG_DIR,
     APPS_SHARED_DIR,
+    ARCHIVES_DIR,
     L0_ROUTING_DIR,
     L1_COGNITION_DIR,
     L2_EXECUTION_DIR,
     L3_ORCHESTRATION_DIR,
     L4_STATE_DIR,
     L6_OBSERVABILITY_DIR,
-    ARCHIVES_DIR,
 )
 from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     DISCOVERY_EXCLUDED_TERRITORIES,
     GLOBAL_EXCLUDED_DIRS,
-    SOVEREIGN_EXCLUDED_FOLDERS,
     REPORTS_DIR,
+    SOVEREIGN_EXCLUDED_FOLDERS,
 )
 
 MAX_RETRIES = 3
@@ -249,7 +249,6 @@ class TestSSOTAlignment:
                 raise AssertionError(error_msg)
 
         print("\n[OK] Blueprint reality check complete")
-        assert True  # no-exception contract
 
     def test_file_naming_convention(self):
         """
@@ -359,7 +358,6 @@ class TestSSOTAlignment:
                 raise AssertionError(error_msg)
 
         print("\n[OK] File naming convention check complete")
-        assert True  # no-exception contract
 
     def test_orphan_file_detection(self):
         """
@@ -462,7 +460,6 @@ class TestSSOTAlignment:
                 raise AssertionError(error_msg)
 
         print("\n[OK] Orphan file detection complete")
-        assert True  # no-exception contract
 
     def test_path_depth_limit(self):
         """
@@ -542,7 +539,6 @@ class TestSSOTAlignment:
                 raise AssertionError(error_msg)
 
         print("\n[OK] Path depth limit check complete")
-        assert True  # no-exception contract
 
     def test_layer_directory_structure(self):
         """
@@ -649,7 +645,6 @@ class TestSSOTAlignment:
                 raise AssertionError(error_msg)
 
         print("\n[OK] Constitutional base agent location check complete")
-        assert True  # no-exception contract
 
 
 # =============================================================================

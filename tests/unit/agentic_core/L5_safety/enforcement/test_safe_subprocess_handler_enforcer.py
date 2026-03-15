@@ -12,18 +12,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.enforcement.safe_subprocess_handler_enforcer import (  # noqa: F401
-        safe_run,
-        safe_popen,
-        safe_communicate,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        safe_communicate,
+        safe_popen,
+        safe_run,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     safe_run = None  # type: ignore[assignment,misc]
     safe_popen = None  # type: ignore[assignment,misc]
@@ -117,4 +117,4 @@ class TestMaxDepthConstant:
 
 def test_module_importable():
     """Smoke: safe_subprocess_handler_enforcer importable or gracefully unavailable."""
-    assert True
+    pass

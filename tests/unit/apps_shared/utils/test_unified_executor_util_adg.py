@@ -7,26 +7,26 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.utils.unified_executor_util import (  # noqa: F401
-        ExecutionStatus,
-        ExecutionContext,
-        ExecutionResult,
-        ExecutionStrategy,
-        LLMExecutionStrategy,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         APIExecutionStrategy,
         BatchExecutionStrategy,
+        ExecutionContext,
+        ExecutionResult,
+        ExecutionStatus,
+        ExecutionStrategy,
+        LLMExecutionStrategy,
         UnifiedExecutor,
-        get_engine_executor,
-        execute_resume_generation,
         execute_outreach_generation,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
+        execute_resume_generation,
+        get_engine_executor,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ExecutionStatus = None  # type: ignore[assignment,misc]
     ExecutionContext = None  # type: ignore[assignment,misc]

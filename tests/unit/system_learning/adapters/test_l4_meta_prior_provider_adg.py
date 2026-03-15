@@ -12,7 +12,7 @@ try:
         L4MetaPriorProvider,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     L4MetaPriorProvider = None  # type: ignore[assignment,misc]
 
@@ -24,4 +24,3 @@ class TestL4MetaPriorProviderImportability:
 
     def test_l4metapriorprovider_is_type(self) -> None:
         assert L4MetaPriorProvider is not None
-

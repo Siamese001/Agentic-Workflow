@@ -12,19 +12,19 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.runtime.config.capability_gap_types import (  # noqa: F401
-        CapabilityGapType,
-        RecommendationType,
-        CapabilityGap,
-        Recommendation,
-        AnalysisReport,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        AnalysisReport,
+        CapabilityGap,
+        CapabilityGapType,
+        Recommendation,
+        RecommendationType,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     CapabilityGapType = None  # type: ignore[assignment,misc]
     RecommendationType = None  # type: ignore[assignment,misc]

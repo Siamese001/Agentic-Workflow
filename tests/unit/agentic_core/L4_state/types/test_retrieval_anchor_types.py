@@ -12,19 +12,19 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L4_state.types.retrieval_anchor_types import (  # noqa: F401
-        RetrievalAnchor,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         AnchoredResult,
         AnchorViolationError,
+        RetrievalAnchor,
         enforce_anchor_coverage,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     RetrievalAnchor = None  # type: ignore[assignment,misc]
     AnchoredResult = None  # type: ignore[assignment,misc]
@@ -138,4 +138,4 @@ class TestMaxDepthConstant:
 
 def test_module_importable():
     """Smoke: retrieval_anchor_types importable or gracefully unavailable."""
-    assert True
+    pass

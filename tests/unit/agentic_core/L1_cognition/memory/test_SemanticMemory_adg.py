@@ -10,12 +10,12 @@ import pytest
 try:
     from agentic_core.L1_cognition.memory.SemanticMemory import (  # noqa: F401
         EmbeddingProvider,
-        VectorIndex,
         SemanticEntry,
         SemanticMemory,
+        VectorIndex,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     EmbeddingProvider = None  # type: ignore[assignment,misc]
     VectorIndex = None  # type: ignore[assignment,misc]
@@ -36,4 +36,3 @@ class TestSemanticmemoryImportability:
 
     def test_semanticentry_is_type(self) -> None:
         assert SemanticEntry is not None
-

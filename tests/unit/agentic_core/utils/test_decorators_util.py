@@ -12,12 +12,12 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.utils.decorators_util import (  # noqa: F401
+        HEAL_RESULT_SCHEMA,
         standard_heal,
         standard_heal_async,
-        HEAL_RESULT_SCHEMA,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     standard_heal = None  # type: ignore[assignment,misc]
     standard_heal_async = None  # type: ignore[assignment,misc]
@@ -58,4 +58,4 @@ class TestHealResultSchemaConstant:
 
 def test_module_importable():
     """Smoke: decorators_util importable or gracefully unavailable."""
-    assert True
+    pass

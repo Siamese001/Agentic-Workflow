@@ -9,16 +9,16 @@ import pytest
 
 try:
     from system_learning.engines.faiss_startup_integrity import (  # noqa: F401
-        StartupIntegrityError,
-        IndexVerificationResult,
-        verify_all_indexes_in_dir,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
         BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        IndexVerificationResult,
+        StartupIntegrityError,
+        verify_all_indexes_in_dir,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     StartupIntegrityError = None  # type: ignore[assignment,misc]
     IndexVerificationResult = None  # type: ignore[assignment,misc]
@@ -48,4 +48,3 @@ class TestFaissStartupIntegrityImportability:
 
     def test_default_sleep_defined(self) -> None:
         assert DEFAULT_SLEEP is not None
-

@@ -12,19 +12,19 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.enforcement.mock_context_enforcer import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         MockContext,
-        validate_l2_l3_structure,
         validate_depth_precision,
+        validate_l2_l3_structure,
         validate_tests_depth,
         validate_universal_depth,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     MockContext = None  # type: ignore[assignment,misc]
     validate_l2_l3_structure = None  # type: ignore[assignment,misc]

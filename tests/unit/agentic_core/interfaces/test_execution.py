@@ -12,17 +12,17 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.interfaces.execution import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         ExecutionProposal,
         new_execution_cycle,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ExecutionProposal = None  # type: ignore[assignment,misc]
     new_execution_cycle = None  # type: ignore[assignment,misc]
@@ -113,4 +113,4 @@ class TestMaxDepthConstant:
 
 def test_module_importable():
     """Smoke: execution importable or gracefully unavailable."""
-    assert True
+    pass

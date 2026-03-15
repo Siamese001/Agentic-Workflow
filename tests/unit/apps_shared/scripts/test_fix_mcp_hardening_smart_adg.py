@@ -7,17 +7,17 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.scripts.fix_mcp_hardening_smart import (  # noqa: F401
-        find_agent_class_in_file,
-        add_mcp_import,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        add_mcp_import,
+        find_agent_class_in_file,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     find_agent_class_in_file = None  # type: ignore[assignment,misc]
     add_mcp_import = None  # type: ignore[assignment,misc]

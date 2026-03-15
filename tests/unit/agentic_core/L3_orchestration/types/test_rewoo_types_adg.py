@@ -17,7 +17,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     RewooTaskStatus = None  # type: ignore[assignment,misc]
     RewooTask = None  # type: ignore[assignment,misc]

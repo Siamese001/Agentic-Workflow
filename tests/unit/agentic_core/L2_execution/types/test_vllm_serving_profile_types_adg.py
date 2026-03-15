@@ -18,7 +18,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     VLLMServingProfile = None  # type: ignore[assignment,misc]
     VLLMServingProfileInvalid = None  # type: ignore[assignment,misc]

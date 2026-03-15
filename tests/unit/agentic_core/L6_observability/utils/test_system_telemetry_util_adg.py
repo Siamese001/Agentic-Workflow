@@ -9,12 +9,12 @@ import pytest
 
 try:
     from agentic_core.L6_observability.utils.system_telemetry_util import (  # noqa: F401
-        SystemTelemetry,
         OperationStatus,
+        SystemTelemetry,
         get_telemetry,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     SystemTelemetry = None  # type: ignore[assignment,misc]
     OperationStatus = None  # type: ignore[assignment,misc]
@@ -34,4 +34,3 @@ class TestSystemTelemetryUtilImportability:
 
     def test_get_telemetry_callable(self) -> None:
         assert callable(get_telemetry)
-

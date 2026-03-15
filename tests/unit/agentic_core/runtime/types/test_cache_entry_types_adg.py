@@ -9,18 +9,18 @@ import pytest
 
 try:
     from agentic_core.runtime.types.cache_entry_types import (  # noqa: F401
-        CacheEntry,
-        SemanticCacheHit,
-        CacheMiss,
-        semantic_cache,
-        create_semantic_cache,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
         BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        CacheEntry,
+        CacheMiss,
+        SemanticCacheHit,
+        create_semantic_cache,
+        semantic_cache,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     CacheEntry = None  # type: ignore[assignment,misc]
     SemanticCacheHit = None  # type: ignore[assignment,misc]
@@ -55,4 +55,3 @@ class TestCacheEntryTypesImportability:
 
     def test_default_sleep_defined(self) -> None:
         assert DEFAULT_SLEEP is not None
-

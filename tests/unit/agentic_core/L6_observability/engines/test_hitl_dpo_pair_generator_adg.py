@@ -15,7 +15,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     DPOPairGenerator = None  # type: ignore[assignment,misc]
     DefaultDeterministicDPOPairGenerator = None  # type: ignore[assignment,misc]

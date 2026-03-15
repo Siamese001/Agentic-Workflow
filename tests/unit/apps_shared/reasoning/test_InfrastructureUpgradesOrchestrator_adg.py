@@ -7,20 +7,20 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.reasoning.InfrastructureUpgradesOrchestrator import (  # noqa: F401
-        InfrastructureUpgradesOrchestrator,
-        get_infrastructure_upgrades_orchestrator,
-        generate_with_consistency,
-        verify_claims,
-        audit_tone,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        InfrastructureUpgradesOrchestrator,
+        audit_tone,
+        generate_with_consistency,
+        get_infrastructure_upgrades_orchestrator,
+        verify_claims,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     InfrastructureUpgradesOrchestrator = None  # type: ignore[assignment,misc]
     get_infrastructure_upgrades_orchestrator = None  # type: ignore[assignment,misc]

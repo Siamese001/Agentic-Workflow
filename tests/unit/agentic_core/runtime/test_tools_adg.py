@@ -12,7 +12,7 @@ try:
     import agentic_core.runtime.tools  # noqa: F401
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
 
 

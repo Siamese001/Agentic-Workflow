@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     HOPValidationResult = None  # type: ignore[assignment,misc]
     HOP1ProfileDeterministic = None  # type: ignore[assignment,misc]

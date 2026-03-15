@@ -7,18 +7,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.reasoning.DDDAlignmentAgent import (  # noqa: F401
-        DDDViolation,
-        DDDAlignmentAgent,
-        validate_ddd_alignment,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        DDDAlignmentAgent,
+        DDDViolation,
+        validate_ddd_alignment,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     DDDViolation = None  # type: ignore[assignment,misc]
     DDDAlignmentAgent = None  # type: ignore[assignment,misc]

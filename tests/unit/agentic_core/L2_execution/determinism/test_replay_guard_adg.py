@@ -15,7 +15,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ReplayViolation = None  # type: ignore[assignment,misc]
     ReplayGuard = None  # type: ignore[assignment,misc]

@@ -8,14 +8,14 @@ pytestmark = pytest.mark.unit
 try:
     from agentic_core.L0_routing.scripts.file_analysis import (  # noqa: F401
         FileAnalysis,
-        extract_docstring,
         analyze_class,
         analyze_function,
+        extract_docstring,
         infer_domain,
         infer_purpose,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     FileAnalysis = None  # type: ignore[assignment,misc]
     extract_docstring = None  # type: ignore[assignment,misc]

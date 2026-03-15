@@ -1,14 +1,19 @@
 """ADG contract tests for apps_lic/types/lic_vector_memory_types.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
     from apps_lic.types.lic_vector_memory_types import (
-        VectorDocument, QueryResult, MemoryStats,
-        MockVectorMemory, create_vector_memory,
+        MemoryStats,
+        MockVectorMemory,
+        QueryResult,
+        VectorDocument,
+        create_vector_memory,
     )
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     VectorDocument = QueryResult = MemoryStats = MockVectorMemory = create_vector_memory = None  # type: ignore[assignment,misc]
 

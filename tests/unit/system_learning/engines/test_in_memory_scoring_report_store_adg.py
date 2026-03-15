@@ -9,14 +9,14 @@ import pytest
 
 try:
     from system_learning.engines.in_memory_scoring_report_store import (  # noqa: F401
-        InMemoryScoringReportStore,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
         BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        InMemoryScoringReportStore,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     InMemoryScoringReportStore = None  # type: ignore[assignment,misc]
     MAX_RETRIES = None  # type: ignore[assignment,misc]
@@ -38,4 +38,3 @@ class TestInMemoryScoringReportStoreImportability:
 
     def test_default_sleep_defined(self) -> None:
         assert DEFAULT_SLEEP is not None
-

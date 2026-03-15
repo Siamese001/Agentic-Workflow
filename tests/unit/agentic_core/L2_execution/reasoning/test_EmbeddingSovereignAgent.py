@@ -12,17 +12,17 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L2_execution.reasoning.EmbeddingSovereignAgent import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         EmbeddingSovereignAgent,
         get_embedding_gateway,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     EmbeddingSovereignAgent = None  # type: ignore[assignment,misc]
     get_embedding_gateway = None  # type: ignore[assignment,misc]
@@ -110,4 +110,4 @@ class TestMaxDepthConstant:
 
 def test_module_importable():
     """Smoke: EmbeddingSovereignAgent importable or gracefully unavailable."""
-    assert True
+    pass

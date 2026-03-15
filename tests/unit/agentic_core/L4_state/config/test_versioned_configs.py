@@ -12,23 +12,23 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L4_state.config.versioned_configs import (  # noqa: F401
-        PolicyConfig,
-        RoutingConfig,
-        ModelConfig,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
         BudgetConfig,
         L4ActiveConfigs,
         MLCacheConfig,
+        ModelConfig,
+        PolicyConfig,
+        RoutingConfig,
         get_active_configs,
         get_ml_cache_config,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     PolicyConfig = None  # type: ignore[assignment,misc]
     RoutingConfig = None  # type: ignore[assignment,misc]
@@ -207,4 +207,4 @@ class TestMaxDepthConstant:
 
 def test_module_importable():
     """Smoke: versioned_configs importable or gracefully unavailable."""
-    assert True
+    pass

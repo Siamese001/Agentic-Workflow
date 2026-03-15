@@ -1,14 +1,20 @@
 """ADG contract tests for apps_shared/types/history_action_types.py."""
 from __future__ import annotations
-import pytest
+
 from datetime import datetime
+
+import pytest
+
 pytestmark = pytest.mark.unit
 try:
     from apps_shared.types.history_action_types import (
-        HistoryAction, SchemaChangeRecord, SchemaHistoryResult, SchemaHistoryQuery,
+        HistoryAction,
+        SchemaChangeRecord,
+        SchemaHistoryQuery,
+        SchemaHistoryResult,
     )
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     HistoryAction = SchemaChangeRecord = SchemaHistoryResult = SchemaHistoryQuery = None  # type: ignore[assignment,misc]
 

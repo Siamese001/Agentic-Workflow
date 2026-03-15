@@ -12,19 +12,19 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.utils.secure_config_manager_util import (  # noqa: F401
-        SecureConfigManager,
-        get_config_manager,
-        get_config,
-        set_config,
-        get_encryption_key,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        SecureConfigManager,
+        get_config,
+        get_config_manager,
+        get_encryption_key,
+        set_config,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     SecureConfigManager = None  # type: ignore[assignment,misc]
     get_config_manager = None  # type: ignore[assignment,misc]

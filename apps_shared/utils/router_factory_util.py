@@ -8,11 +8,13 @@ Phase 2 - Resilient Routing Layer
 
 import logging
 
+from apps_shared.types.model_router_types import ModelRouter
+
 logger = logging.getLogger(__name__)
-_router_instance: HardenedRouter | None = None
+_router_instance: ModelRouter | None = None
 
 
-def get_resilient_router() -> HardenedRouter:
+def get_resilient_router() -> ModelRouter:
     """Get or create the singleton resilient router instance.
 
     Returns a configured HardenedRouter with default routing tiers:
@@ -27,8 +29,9 @@ def get_resilient_router() -> HardenedRouter:
     global _router_instance
     if _router_instance is None:
         logger.info("Initializing resilient router with default configurations")
-        _router_instance = HardenedRouter(configs=None)
-        logger.info(f"router initialized with tiers: {list(_router_instance.configs.keys())}")
+        _router_instance = ModelRouter()
+        tiers = list(_router_instance.get_stats()["available_models"].keys())
+        logger.info(f"router initialized with tiers: {tiers}")
     return _router_instance
 
 
@@ -44,17 +47,23 @@ def reset_router() -> None:
         _router_instance = None
 
 
-def create_custom_router(configs: dict) -> HardenedRouter:
+def create_custom_router(configs: dict) -> ModelRouter:
     """Create a custom router with specific configurations.
 
     This does NOT affect the singleton instance returned by get_resilient_router().
     Use this when you need a router with custom routing configurations.
 
     Args:
-        configs: Dictionary mapping tier names to RouteConfig instances
+        configs: Dictionary of extra model names to ModelConfig instances
 
     Returns:
-        New HardenedRouter instance with custom configs
+        New ModelRouter instance with custom models added
     """
+    from apps_shared.types.model_router_types import ModelConfig  # noqa: PLC0415
+
     logger.info(f"Creating custom router with tiers: {list(configs.keys())}")
-    return HardenedRouter(configs=configs)
+    router = ModelRouter()
+    for name, cfg in configs.items():
+        if isinstance(cfg, ModelConfig):
+            router.add_model(name, cfg)
+    return router

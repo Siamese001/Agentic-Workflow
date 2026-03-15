@@ -15,7 +15,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     MetaLearningWriteRejected = None  # type: ignore[assignment,misc]
     SSOTMetaLearningMixin = None  # type: ignore[assignment,misc]

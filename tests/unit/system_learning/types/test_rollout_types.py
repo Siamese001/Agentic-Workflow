@@ -12,15 +12,15 @@ pytestmark = pytest.mark.unit
 
 try:
     from system_learning.types.rollout_types import (  # noqa: F401
-        MetaLearningRolloutPlanArtifact,
-        MetaLearningRollbackArtifact,
-        build_meta_learning_rollout_plan,
-        build_meta_learning_rollback,
-        ROLLOUT_STRATEGIES,
         ROLLBACK_REASONS,
+        ROLLOUT_STRATEGIES,
+        MetaLearningRollbackArtifact,
+        MetaLearningRolloutPlanArtifact,
+        build_meta_learning_rollback,
+        build_meta_learning_rollout_plan,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     MetaLearningRolloutPlanArtifact = None  # type: ignore[assignment,misc]
     MetaLearningRollbackArtifact = None  # type: ignore[assignment,misc]
@@ -99,4 +99,4 @@ class TestRollbackReasonsConstant:
 
 def test_module_importable():
     """Smoke: rollout_types importable or gracefully unavailable."""
-    assert True
+    pass

@@ -7,18 +7,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.utils.cache_invalidation_util import (  # noqa: F401
-        heal_invalidate_cache,
-        invalidate_on_file_change,
-        invalidate_all_caches,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        heal_invalidate_cache,
+        invalidate_all_caches,
+        invalidate_on_file_change,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     heal_invalidate_cache = None  # type: ignore[assignment,misc]
     invalidate_on_file_change = None  # type: ignore[assignment,misc]

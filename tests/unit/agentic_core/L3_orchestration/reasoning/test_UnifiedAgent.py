@@ -12,23 +12,23 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (  # noqa: F401
-        AgentCategory,
-        ValidationResult,
-        OrchestrationResult,
-        HealingResult,
-        BaseStrategy,
-        ValidatorStrategy,
-        OrchestrationStrategy,
-        HealingStrategy,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        AgentCategory,
+        BaseStrategy,
+        HealingResult,
+        HealingStrategy,
+        OrchestrationResult,
+        OrchestrationStrategy,
+        ValidationResult,
+        ValidatorStrategy,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     AgentCategory = None  # type: ignore[assignment,misc]
     ValidationResult = None  # type: ignore[assignment,misc]
@@ -215,4 +215,4 @@ class TestMaxDepthConstant:
 
 def test_module_importable():
     """Smoke: UnifiedAgent importable or gracefully unavailable."""
-    assert True
+    pass

@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ToolSpec = None  # type: ignore[assignment,misc]
     GeneratedTool = None  # type: ignore[assignment,misc]

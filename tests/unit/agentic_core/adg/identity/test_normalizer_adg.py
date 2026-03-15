@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     IdentityKind = None  # type: ignore[assignment,misc]
     IdentityConfidence = None  # type: ignore[assignment,misc]

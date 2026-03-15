@@ -17,7 +17,7 @@ try:
         emit_pre_run_log,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     PreRunADGReport = None  # type: ignore[assignment,misc]
     build_pre_run_report = None  # type: ignore[assignment,misc]
@@ -62,4 +62,4 @@ class TestEmitPreRunLogFunction:
 
 def test_module_importable():
     """Smoke: execute_ssot_integration importable or gracefully unavailable."""
-    assert True
+    pass

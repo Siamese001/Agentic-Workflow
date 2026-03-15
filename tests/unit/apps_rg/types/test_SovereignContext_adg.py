@@ -1,11 +1,13 @@
 """ADG contract tests for apps_rg/types/SovereignContext.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
-    from apps_rg.types.SovereignContext import SovereignContext, SimpleBuffer, SimpleTrace
+    from apps_rg.types.SovereignContext import SimpleBuffer, SimpleTrace, SovereignContext
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     SovereignContext = SimpleBuffer = SimpleTrace = None  # type: ignore[assignment,misc]
 

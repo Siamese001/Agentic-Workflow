@@ -12,19 +12,19 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.enforcement.registry_verification_enforcer import (  # noqa: F401
-        AgentInfo,
-        VerificationResult,
-        RegistryVerifier,
-        run_verification,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        AgentInfo,
+        RegistryVerifier,
+        VerificationResult,
+        run_verification,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     AgentInfo = None  # type: ignore[assignment,misc]
     VerificationResult = None  # type: ignore[assignment,misc]
@@ -150,4 +150,4 @@ class TestMaxDepthConstant:
 
 def test_module_importable():
     """Smoke: registry_verification_enforcer importable or gracefully unavailable."""
-    assert True
+    pass

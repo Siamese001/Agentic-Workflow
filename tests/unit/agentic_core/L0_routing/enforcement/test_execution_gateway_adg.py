@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     MUTATION_COUNTER = None  # type: ignore[assignment,misc]
     CURRENT_PHASE = None  # type: ignore[assignment,misc]

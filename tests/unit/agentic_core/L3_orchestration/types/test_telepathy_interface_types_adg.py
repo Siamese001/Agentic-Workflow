@@ -1,7 +1,10 @@
 """ADG contract tests for L3_orchestration/types/telepathy_interface_types.py."""
 from __future__ import annotations
+
 import ast
+
 import pytest
+
 pytestmark = pytest.mark.unit
 
 MODULE_PATH = "agentic_core/L3_orchestration/types/telepathy_interface_types.py"
@@ -26,7 +29,7 @@ try:
         TelepathyInterface,
     )
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     TelepathyInterface = None  # type: ignore[assignment,misc]
 

@@ -1,8 +1,9 @@
 """ADG-driven tests for L0_routing/reasoning/RootCustomsAgent.py — fan_in=0."""
 from __future__ import annotations
 
-import pytest
 from pathlib import Path
+
+import pytest
 
 pytestmark = pytest.mark.unit
 
@@ -12,7 +13,7 @@ try:
         RoutingDecision,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ASTAnalyzer = None  # type: ignore[assignment,misc]
     RoutingDecision = None  # type: ignore[assignment,misc]

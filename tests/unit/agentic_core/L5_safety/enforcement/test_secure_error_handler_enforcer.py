@@ -12,22 +12,22 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.enforcement.secure_error_handler_enforcer import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        ConfigurationError,
+        ErrorSanitizer,
+        ExecutionError,
         SecureError,
         SecurityError,
-        ConfigurationError,
         ValidationError,
-        ExecutionError,
-        ErrorSanitizer,
-        secure_exception,
         handle_secure_error,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
+        secure_exception,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     SecureError = None  # type: ignore[assignment,misc]
     SecurityError = None  # type: ignore[assignment,misc]

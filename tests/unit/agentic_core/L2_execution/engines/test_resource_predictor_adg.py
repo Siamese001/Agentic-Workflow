@@ -15,7 +15,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ResourcePredictor = None  # type: ignore[assignment,misc]
     DefaultDeterministicResourcePredictor = None  # type: ignore[assignment,misc]

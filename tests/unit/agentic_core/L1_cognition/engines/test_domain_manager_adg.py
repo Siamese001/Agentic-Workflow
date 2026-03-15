@@ -8,7 +8,7 @@ pytestmark = pytest.mark.unit
 try:
     from agentic_core.L1_cognition.engines.domain_manager import DomainContextManager
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     DomainContextManager = None  # type: ignore[assignment,misc]
 

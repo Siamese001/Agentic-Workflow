@@ -1,14 +1,18 @@
 """ADG contract tests for apps_rg/types/resume_section_node_types.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
     from apps_rg.types.resume_section_node_types import (
-        RoleExtractionResult, IndustryExtractionResult,
-        SectionAnalysisResult, ResumeSectionOutput,
+        IndustryExtractionResult,
+        ResumeSectionOutput,
+        RoleExtractionResult,
+        SectionAnalysisResult,
     )
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     RoleExtractionResult = IndustryExtractionResult = SectionAnalysisResult = ResumeSectionOutput = None  # type: ignore[assignment,misc]
 

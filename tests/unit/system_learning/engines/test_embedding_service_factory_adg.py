@@ -9,19 +9,19 @@ import pytest
 
 try:
     from system_learning.engines.embedding_service_factory import (  # noqa: F401
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         EmbeddingDisabledError,
         EmbeddingForkViolationError,
         EmbeddingIntegrityError,
         EmbeddingReplayViolationError,
         EmbeddingResult,
         EmbeddingServiceFactory,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     EmbeddingDisabledError = None  # type: ignore[assignment,misc]
     EmbeddingForkViolationError = None  # type: ignore[assignment,misc]
@@ -54,4 +54,3 @@ class TestEmbeddingServiceFactoryImportability:
 
     def test_default_sleep_defined(self) -> None:
         assert DEFAULT_SLEEP is not None
-

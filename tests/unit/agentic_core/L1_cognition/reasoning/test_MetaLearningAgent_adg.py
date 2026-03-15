@@ -15,7 +15,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ExperienceRecord = None  # type: ignore[assignment,misc]
     MetaLearningAgent = None  # type: ignore[assignment,misc]

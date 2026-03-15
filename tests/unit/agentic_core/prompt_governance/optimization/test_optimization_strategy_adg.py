@@ -18,7 +18,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     OptimizationStrategy = None  # type: ignore[assignment,misc]
     OptimizationLevel = None  # type: ignore[assignment,misc]

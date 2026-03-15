@@ -9,14 +9,14 @@ import pytest
 
 try:
     from system_learning.engines.in_memory_healing_outcome_intake_store import (  # noqa: F401
-        InMemoryHealingOutcomeIntakeStore,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
         BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        InMemoryHealingOutcomeIntakeStore,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     InMemoryHealingOutcomeIntakeStore = None  # type: ignore[assignment,misc]
     MAX_RETRIES = None  # type: ignore[assignment,misc]
@@ -38,4 +38,3 @@ class TestInMemoryHealingOutcomeIntakeStoreImportability:
 
     def test_default_sleep_defined(self) -> None:
         assert DEFAULT_SLEEP is not None
-

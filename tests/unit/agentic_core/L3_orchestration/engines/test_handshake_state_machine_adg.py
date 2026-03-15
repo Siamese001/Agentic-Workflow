@@ -17,7 +17,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     HandshakeState = None  # type: ignore[assignment,misc]
     StateTransition = None  # type: ignore[assignment,misc]

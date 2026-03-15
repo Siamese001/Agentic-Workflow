@@ -12,18 +12,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.scripts.verify_mro_util import (  # noqa: F401
-        print_mro,
-        verify_sovereign_base_agent,
-        verify_meta_learning_agent,
-        verify_location_validator_agent,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        print_mro,
+        verify_location_validator_agent,
+        verify_meta_learning_agent,
+        verify_sovereign_base_agent,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     print_mro = None  # type: ignore[assignment,misc]
     verify_sovereign_base_agent = None  # type: ignore[assignment,misc]

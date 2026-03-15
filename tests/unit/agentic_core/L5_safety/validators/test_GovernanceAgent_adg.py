@@ -7,15 +7,15 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L5_safety.validators.GovernanceAgent import (  # noqa: F401
+        LOGGER,
         DependencyGraph,
         GovernanceAgent,
-        heal,
         create_architecture_governor,
         get_governance_agent,
-        LOGGER,
+        heal,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     DependencyGraph = None  # type: ignore[assignment,misc]
     GovernanceAgent = None  # type: ignore[assignment,misc]

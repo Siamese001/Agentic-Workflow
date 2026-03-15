@@ -7,11 +7,11 @@ pytestmark = pytest.mark.unit
 
 try:
     from system_learning.scripts.meta_learning_operator import (  # noqa: F401
-        run_meta_learning_operator,
         render_meta_learning_audit_pack,
+        run_meta_learning_operator,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     run_meta_learning_operator = None  # type: ignore[assignment,misc]
     render_meta_learning_audit_pack = None  # type: ignore[assignment,misc]

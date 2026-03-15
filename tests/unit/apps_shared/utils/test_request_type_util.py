@@ -12,23 +12,23 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.utils.request_type_util import (  # noqa: F401
-        RequestType,
-        DataSource,
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         AggregationType,
-        MetricDefinition,
+        DataSource,
         LogQuery,
+        MetricDefinition,
+        RequestType,
         TraceQuery,
         create_observability_load_planner,
-        plan_observability_load,
         load_data_planning,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
+        plan_observability_load,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     RequestType = None  # type: ignore[assignment,misc]
     DataSource = None  # type: ignore[assignment,misc]

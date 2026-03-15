@@ -7,18 +7,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L2_execution.healers.qwen_health import (  # noqa: F401
-        MockVLLMProcessManager,
-        get_qwen_health_status,
-        get_gpu_memory_usage,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        MockVLLMProcessManager,
+        get_gpu_memory_usage,
+        get_qwen_health_status,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     MockVLLMProcessManager = None  # type: ignore[assignment,misc]
     get_qwen_health_status = None  # type: ignore[assignment,misc]

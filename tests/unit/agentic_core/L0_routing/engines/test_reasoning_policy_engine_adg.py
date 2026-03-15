@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     PROFILE_VERSION = None  # type: ignore[assignment,misc]
     RequestStructureFeatures = None  # type: ignore[assignment,misc]

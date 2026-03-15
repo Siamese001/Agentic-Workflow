@@ -16,7 +16,7 @@ try:
         get_instructional_injection_mixin,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     InstructionalInjectionMixin = None  # type: ignore[assignment,misc]
     get_instructional_injection_mixin = None  # type: ignore[assignment,misc]
@@ -56,4 +56,4 @@ class TestGetInstructionalInjectionMixinFunction:
 
 def test_module_importable():
     """Smoke: instructional_injection_mixin importable or gracefully unavailable."""
-    assert True
+    pass

@@ -12,18 +12,18 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.L0_routing.utils.complexity_visitor_util import (  # noqa: F401
-        should_exclude_path,
-        should_exclude_file,
-        validate_agent_count,
-        get_previous_agent_count,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
+        get_previous_agent_count,
+        should_exclude_file,
+        should_exclude_path,
+        validate_agent_count,
     )
     _AVAILABLE = True
-except Exception as _exc:
+except ImportError as _exc:
     _AVAILABLE = False
     should_exclude_path = None  # type: ignore[assignment,misc]
     should_exclude_file = None  # type: ignore[assignment,misc]

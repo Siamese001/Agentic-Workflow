@@ -1,11 +1,17 @@
 """ADG contract tests for L3_orchestration/types/route_type_types.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
-    from agentic_core.L3_orchestration.types.route_type_types import RouteType, ArchetypeType, RouteClassifierConfig
+    from agentic_core.L3_orchestration.types.route_type_types import (
+        ArchetypeType,
+        RouteClassifierConfig,
+        RouteType,
+    )
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False; RouteType = ArchetypeType = RouteClassifierConfig = None  # type: ignore[assignment,misc]
 
 @pytest.mark.skipif(not _AVAIL, reason="deps unavailable")

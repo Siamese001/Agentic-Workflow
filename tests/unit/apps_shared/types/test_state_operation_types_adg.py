@@ -1,13 +1,17 @@
 """ADG contract tests for apps_shared/types/state_operation_types.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
     from apps_shared.types.state_operation_types import (
-        StateOperation, StateEventType, StatePath,
+        StateEventType,
+        StateOperation,
+        StatePath,
     )
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     StateOperation = StateEventType = StatePath = None  # type: ignore[assignment,misc]
 

@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     T = None  # type: ignore[assignment,misc]
     Trait = None  # type: ignore[assignment,misc]

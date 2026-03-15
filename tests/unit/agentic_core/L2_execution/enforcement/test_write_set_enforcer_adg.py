@@ -15,7 +15,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     WriteSetViolation = None  # type: ignore[assignment,misc]
     WriteSetEnforcer = None  # type: ignore[assignment,misc]

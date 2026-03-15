@@ -7,21 +7,21 @@ pytestmark = pytest.mark.unit
 
 try:
     from apps_shared.utils.metric_augmenter_util import (  # noqa: F401
-        ImpactCategory,
-        BusinessImpact,
-        AugmentedBullet,
-        MetricAugmenter,
-        create_metric_augmenter,
-        augment_metrics,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
         BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
         MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        AugmentedBullet,
+        BusinessImpact,
+        ImpactCategory,
+        MetricAugmenter,
+        augment_metrics,
+        create_metric_augmenter,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ImpactCategory = None  # type: ignore[assignment,misc]
     BusinessImpact = None  # type: ignore[assignment,misc]

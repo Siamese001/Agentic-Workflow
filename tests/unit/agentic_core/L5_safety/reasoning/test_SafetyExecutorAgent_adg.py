@@ -9,21 +9,21 @@ import pytest
 
 try:
     from agentic_core.L5_safety.reasoning.SafetyExecutorAgent import (  # noqa: F401
-        ExecutionStatus,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_RETRIES,
+        THRESHOLD,
         BlockReason,
         ExecutionResult,
-        SafetyGate,
+        ExecutionStatus,
         ExecutorConfig,
         SafetyExecutorAgent,
+        SafetyGate,
         create_legacy_integrity_executor,
         create_legacy_safety_executor,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ExecutionStatus = None  # type: ignore[assignment,misc]
     BlockReason = None  # type: ignore[assignment,misc]
@@ -64,4 +64,3 @@ class TestSafetyexecutoragentImportability:
 
     def test_default_sleep_defined(self) -> None:
         assert DEFAULT_SLEEP is not None
-

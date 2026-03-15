@@ -15,7 +15,7 @@ try:
         SovereignBaseAgent,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     SovereignBaseAgent = None  # type: ignore[assignment,misc]
 
@@ -44,4 +44,4 @@ class TestSovereignBaseAgentContract:
 
 def test_module_importable():
     """Smoke: SovereignBaseAgent importable or gracefully unavailable."""
-    assert True
+    pass

@@ -18,7 +18,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     HealStatus = None  # type: ignore[assignment,misc]
     HealCheckResult = None  # type: ignore[assignment,misc]

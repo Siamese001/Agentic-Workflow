@@ -1,13 +1,18 @@
 """ADG contract tests for apps_rg/types/PromptTemplate.py."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 try:
     from apps_rg.types.PromptTemplate import (
-        PromptTemplate, ThresholdConfig, KNodeDefinition, SovereignKnowledge,
+        KNodeDefinition,
+        PromptTemplate,
+        SovereignKnowledge,
+        ThresholdConfig,
     )
     _AVAIL = True
-except Exception:
+except ImportError:
     _AVAIL = False
     PromptTemplate = ThresholdConfig = KNodeDefinition = SovereignKnowledge = None  # type: ignore[assignment,misc]
 

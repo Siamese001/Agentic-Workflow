@@ -16,7 +16,7 @@ try:
     )
 
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     DeterminismVisitor = None  # type: ignore[assignment,misc]
     scan_file_for_determinism = None  # type: ignore[assignment,misc]

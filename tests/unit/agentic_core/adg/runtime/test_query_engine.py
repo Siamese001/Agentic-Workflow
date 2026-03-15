@@ -12,19 +12,19 @@ pytestmark = pytest.mark.unit
 
 try:
     from agentic_core.adg.runtime.query_engine import (  # noqa: F401
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        ADGRuntimeQueryEngine,
         AgentCapability,
         DependencyPath,
-        ADGRuntimeQueryEngine,
         get_runtime_query_engine,
-        MAX_RETRIES,
-        DEFAULT_SLEEP,
-        THRESHOLD,
-        BUFFER_SIZE,
-        BATCH_SIZE,
-        MAX_DEPTH,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     AgentCapability = None  # type: ignore[assignment,misc]
     DependencyPath = None  # type: ignore[assignment,misc]
@@ -150,4 +150,4 @@ class TestMaxDepthConstant:
 
 def test_module_importable():
     """Smoke: query_engine importable or gracefully unavailable."""
-    assert True
+    pass

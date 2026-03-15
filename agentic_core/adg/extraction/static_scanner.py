@@ -3337,6 +3337,114 @@ def _sym_of(node: ast.expr) -> str:
     return ""
 
 
+def _is_property_accessor(node: ast.FunctionDef | ast.AsyncFunctionDef) -> bool:
+    """Return True if a function is decorated as a property getter, setter, or deleter."""
+    for dec in node.decorator_list:
+        if isinstance(dec, ast.Name) and dec.id == "property":
+            return True
+        if isinstance(dec, ast.Attribute) and dec.attr in ("setter", "deleter", "getter"):
+            return True
+    return False
+
+
+class _DuplicateMethodVisitor(ast.NodeVisitor):
+    """GH: Detect duplicate method definitions in the same class body (Rule D).
+
+    Emits `duplicate_method` edges when a FunctionDef / AsyncFunctionDef name
+    appears more than once in the **immediate** body of a ClassDef.
+    Property setter / deleter / getter decorators are exempt because those are
+    intentional overloads of the descriptor protocol.
+
+    Recursively descends into nested class definitions.
+    """
+
+    def __init__(self, module_adg_name: str, source_file: str) -> None:
+        self.module_adg_name = module_adg_name
+        self.source_file = source_file
+        self.edges: list[Edge] = []
+
+    def visit_ClassDef(self, node: ast.ClassDef) -> None:
+        seen: dict[str, int] = {}
+        for stmt in node.body:
+            if isinstance(stmt, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                if _is_property_accessor(stmt):
+                    continue
+                if stmt.name in seen:
+                    self.edges.append(
+                        Edge(
+                            from_name=self.module_adg_name,
+                            relation_type="duplicate_method",
+                            to_name=canonical_name("Symbol", f"{node.name}.{stmt.name}"),
+                            edge_kind="duplicate_method",
+                            source_file=self.source_file,
+                            line_no=stmt.lineno,
+                            symbol=f"{node.name}.{stmt.name}",
+                        )
+                    )
+                else:
+                    seen[stmt.name] = stmt.lineno
+            elif isinstance(stmt, ast.ClassDef):
+                self.visit_ClassDef(stmt)
+
+
+class _UnreachableCodeAfterRaiseVisitor(ast.NodeVisitor):
+    """GU: Detect statements placed after an unconditional `raise` (Rule G).
+
+    Walks all statement-containing blocks (except handler bodies, function bodies,
+    if/while/for bodies) and emits `unreachable_after_raise` edges for any
+    statement that immediately follows a bare `raise` or `raise <expr>`.
+
+    This catches the exact MCP bug pattern:
+        except Exception as e:
+            raise
+            Logger.warning(...)   # <-- unreachable
+    """
+
+    def __init__(self, module_adg_name: str, source_file: str) -> None:
+        self.module_adg_name = module_adg_name
+        self.source_file = source_file
+        self.edges: list[Edge] = []
+
+    def _check_body(self, body: list[ast.stmt]) -> None:
+        for i, stmt in enumerate(body):
+            if isinstance(stmt, ast.Raise) and i < len(body) - 1:
+                next_stmt = body[i + 1]
+                self.edges.append(
+                    Edge(
+                        from_name=self.module_adg_name,
+                        relation_type="unreachable_after_raise",
+                        to_name=canonical_name("Symbol", "unreachable_code"),
+                        edge_kind="unreachable_after_raise",
+                        source_file=self.source_file,
+                        line_no=next_stmt.lineno,
+                        symbol=f"raise_at_line_{stmt.lineno}",
+                    )
+                )
+
+    def visit_ExceptHandler(self, node: ast.ExceptHandler) -> None:
+        self._check_body(node.body)
+        self.generic_visit(node)
+
+    def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
+        self._check_body(node.body)
+        self.generic_visit(node)
+
+    visit_AsyncFunctionDef = visit_FunctionDef  # type: ignore[assignment]
+
+    def visit_If(self, node: ast.If) -> None:
+        self._check_body(node.body)
+        self._check_body(node.orelse)
+        self.generic_visit(node)
+
+    def visit_While(self, node: ast.While) -> None:
+        self._check_body(node.body)
+        self.generic_visit(node)
+
+    def visit_For(self, node: ast.For) -> None:
+        self._check_body(node.body)
+        self.generic_visit(node)
+
+
 def _iter_python_files(repo_root: Path) -> Iterator[Path]:
     """Yield all .py files under SCAN_ROOTS, deterministic (sorted) order."""
     all_files: list[Path] = []
@@ -3531,6 +3639,16 @@ def _scan_file(
     eval_visitor = _EvalSpineVisitor(module_adg, rel)
     eval_visitor.visit(tree)
     edges.extend(eval_visitor.edges)
+
+    # GH (RCA Rule D): Duplicate method definition detection
+    dup_visitor = _DuplicateMethodVisitor(module_adg, rel)
+    dup_visitor.visit(tree)
+    edges.extend(dup_visitor.edges)
+
+    # GU (RCA Rule G): Unreachable code after raise detection
+    unreach_visitor = _UnreachableCodeAfterRaiseVisitor(module_adg, rel)
+    unreach_visitor.visit(tree)
+    edges.extend(unreach_visitor.edges)
 
     # G17 (gap): Secret / credential access (reads_secret_vault, accesses_credential, rotates_secret)
     secret_visitor = _SecretAccessVisitor(module_adg, rel)
@@ -3912,4 +4030,7 @@ __all__ = [
     "_DecoratorVisitor",
     "_ImportVisitor",
     "_TypeAnnotationVisitor",
+    "_DuplicateMethodVisitor",
+    "_UnreachableCodeAfterRaiseVisitor",
+    "_is_property_accessor",
 ]

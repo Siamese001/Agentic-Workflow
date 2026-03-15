@@ -13,12 +13,12 @@ pytestmark = pytest.mark.unit
 try:
     from agentic_core.L2_execution.enforcement.SovereignLLMGateway import (  # noqa: F401
         ProviderHealthState,
-        SovereigntyViolation,
         SovereignLLMGateway,
+        SovereigntyViolation,
         get_llm_gateway,
     )
     _AVAILABLE = True
-except Exception:
+except ImportError:
     _AVAILABLE = False
     ProviderHealthState = None  # type: ignore[assignment,misc]
     SovereigntyViolation = None  # type: ignore[assignment,misc]
@@ -89,4 +89,4 @@ class TestGetLlmGatewayFunction:
 
 def test_module_importable():
     """Smoke: SovereignLLMGateway importable or gracefully unavailable."""
-    assert True
+    pass
