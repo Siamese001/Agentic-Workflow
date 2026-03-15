@@ -18,6 +18,7 @@ import logging
 import sys
 from dataclasses import dataclass, field
 from datetime import datetime
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from typing import Any
 
 Logger = logging.getLogger(__name__)
@@ -106,6 +107,9 @@ class ContextPruningStrategy:
         Returns:
             True if pruning should be triggered
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "ContextPruner.should_prune")
         current_size = self._estimate_context_size(context)
         return current_size > self.max_context_size
 

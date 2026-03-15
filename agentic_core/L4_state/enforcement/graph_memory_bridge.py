@@ -6,6 +6,7 @@ import logging
 import threading
 from collections.abc import Callable
 from dataclasses import dataclass, field
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from typing import Any
 
 try:
@@ -207,6 +208,9 @@ class GraphMemoryBridge:
             add_observations: Function matching mcp7_add_observations signature
             search_nodes: Function matching mcp7_search_nodes signature
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "GraphMemoryBridge.set_mcp_functions")
         self._create_entities_fn = create_entities
         self._create_relations_fn = create_relations
         self._add_observations_fn = add_observations
