@@ -16,6 +16,7 @@ from datetime import datetime
 from enum import Enum
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.interfaces.path_constants import DEFAULT_SLEEP, DEFAULT_TIMEOUT, THRESHOLD
 
 logger = logging.getLogger(__name__)
@@ -123,6 +124,9 @@ class LLMExecutionStrategy(ExecutionStrategy):
         Returns:
             Execution result
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "LLMExecutor.execute")
         start_time = time.time()
         try:
             if not self.rate_limiter.can_proceed():

@@ -30,6 +30,8 @@ from typing import Any
 
 from pydantic import BaseModel, Field
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
 Logger = logging.getLogger(__name__)
 
 
@@ -117,6 +119,9 @@ class SymbolRenamer(ast.NodeTransformer):
 
     def visit_FunctionDef(self, node: ast.FunctionDef) -> ast.FunctionDef:
         """Handle function definitions with scope tracking."""
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"SymbolRenamer.visit_FunctionDef:{node.name}")
         if node.name == self.old_name:
             self.changes.append(
                 f"Renamed function '{self.old_name}' to '{self.new_name}' at line {node.lineno}",

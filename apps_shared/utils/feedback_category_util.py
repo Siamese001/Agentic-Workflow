@@ -12,6 +12,8 @@ from datetime import datetime, timedelta
 from enum import Enum
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
 logger = logging.getLogger(__name__)
 
 
@@ -85,6 +87,9 @@ class FeedbackAggregator:
         Args:
             feedback: Feedback to add
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"CrossEngineFeedbackAggregator.add_feedback:{feedback.category.value}")
         with self._lock:
             self._feedback.append(feedback)
             self._category_counts[feedback.category.value] += 1
