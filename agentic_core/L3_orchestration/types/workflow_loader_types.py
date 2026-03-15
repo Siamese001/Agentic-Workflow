@@ -8,6 +8,7 @@ from dataclasses import dataclass
 import json
 import logging
 from pathlib import Path
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from typing import Any
 
 from agentic_core.L0_routing.config import TESTS_DIR
@@ -189,6 +190,9 @@ class WorkflowLoader:
 
     def get_metadata(self) -> dict[str, Any]:
         """Get the metadata section."""
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "WorkflowLoader.get_metadata")
         if self._cached_metadata is None:
             self._cached_metadata = self._workflow_data.get("metadata", {})
         return self._cached_metadata

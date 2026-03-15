@@ -12,6 +12,7 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from typing import Any
 
 from agentic_core.L0_routing.config.path_constants import DEFAULT_SLEEP
@@ -41,6 +42,9 @@ class HealingPattern:
 
     def update_confidence(self) -> Any:
         """Update confidence score based on success rate and usage."""
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "HealingPattern.update_confidence")
         base_confidence: Any = self.success_rate
         usage_factor: Any = min(1.0, (self.success_count + self.failure_count) / 10)
         recency_factor: Any = 1.0
