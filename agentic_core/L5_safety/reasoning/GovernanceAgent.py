@@ -25,6 +25,7 @@ from agentic_core.L5_safety.enforcement.policy_action_contract import (
     enforce_policy_before_action,
 )
 from agentic_core.L5_safety.enforcement.policy_enforcement_point import get_policy_enforcement_point
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 _guardrail = get_guardrail_gate()
 _pep = get_policy_enforcement_point()
@@ -123,6 +124,9 @@ class DependencyGraph:
             files: List of Python file paths
             root_dir: Root directory for relative path calculation
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "GovernanceAgent.build")
         LOGGER.info(f"🕸️ Building Holistic Code Graph from {len(files)} files...")
         if root_dir:
             root_path: Any = Path(root_dir).resolve()

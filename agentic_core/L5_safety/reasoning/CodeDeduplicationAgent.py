@@ -5,6 +5,7 @@ from pathlib import Path
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 "Brief description of functionality and purpose."
 import difflib
@@ -113,6 +114,9 @@ class CodeDeduplicationAgent(SovereignBaseAgent):
         Returns:
             Dict with keys: status, details, artifacts, errors
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "CodeDeduplicationAgent.heal")
         try:
             violation_type = violation.get("type", "")
             file_path = violation.get("file")

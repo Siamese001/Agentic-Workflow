@@ -25,6 +25,7 @@ except ImportError:
 from agentic_core.base_agents.L0RoutingBase import L0RoutingBase as L0RoutingBaseAgent
 from agentic_core.mixins.autonomy_mixin import AutonomyMixin
 from agentic_core.mixins.self_diagnosis_mixin import SelfDiagnosisMixin
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.utils.timeout_decorator_util import timeout
 
 try:
@@ -97,6 +98,9 @@ class ReconciliationViolation:
         _call_path: set | None = None,
     ) -> dict[str, int]:
         """L0 maintenance agent - operational only."""
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "FilesystemSSOTReconciler.heal_repository")
         super().heal_repository()
         if _call_path is None:
             _call_path = set()
