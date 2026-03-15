@@ -4,6 +4,7 @@ from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBridge
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class OutreachEngineContext:
@@ -109,6 +110,9 @@ class OutreachLearningLoop:
         self, TaskType: str, input_context: str, output_result: str, confidence: float = 0.8
     ) -> Any:
         """Record a successful outreach pattern."""
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"OutreachLearningLoop.record_success:{TaskType}")
         example_id = hashlib.sha256(f"{TaskType}:{input_context}:{output_result}".encode()).hexdigest()[:12]
         example = OutreachLearningExample(
             example_id=example_id,

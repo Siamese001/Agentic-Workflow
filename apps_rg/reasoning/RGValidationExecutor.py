@@ -10,6 +10,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Callable
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from apps_shared.reasoning.ParameterizedValidator import ParameterizedValidator
 
 _RULE_REGISTRY: dict[str, Callable] = {}
@@ -138,6 +139,9 @@ class RGValidationExecutor(ParameterizedValidator):
     # guardian: allow-type-erasure
     def execute(self, resume_data: dict, job_data: dict | None = None, **kwargs) -> dict:
         """Execute validation and return results."""
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"RGValidationExecutor.execute:{self.rule_set}")
         issues = self.collect_issues(resume_data, job_data)
         return {
             "rule_set": self.rule_set,

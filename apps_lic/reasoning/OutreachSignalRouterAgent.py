@@ -17,6 +17,7 @@ from typing import TYPE_CHECKING
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 try:
     from agentic_core.mixins.mcp_hardened_mixin import mcp_hardened_mixin
@@ -135,6 +136,9 @@ class OutreachSignalRouterAgent(SubatomicTestingMixin, SovereignBaseAgent):
         Returns:
             List of agent names that should handle these signals
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "OutreachSignalRouterAgent.get_agents_for_signals")
         agents: set[str] = set()
         for signal in signals:
             if signal in cls.SIGNAL_TO_AGENTS:
