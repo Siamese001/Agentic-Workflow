@@ -34,6 +34,7 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
     CodeValidatorStrategy,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger = logging.getLogger(__name__)
 
@@ -138,6 +139,9 @@ class CodeValidatorAgent(SovereignBaseAgent):
 
     def validate_syntax(self, file_path: Path) -> list[Violation]:
         """Validate Python syntax for a file."""
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, f"CodeValidatorAgent.validate_syntax:{file_path.name}")
         violations = []
 
         if not self.ruleset.check_syntax:

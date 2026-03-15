@@ -11,6 +11,8 @@ from datetime import datetime
 from enum import Enum
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
 logger = logging.getLogger(__name__)
 
 
@@ -146,6 +148,9 @@ class ObservabilityLoadPlanner:
         Returns:
             ObservabilityLoadResult: Complete planning result with load plan
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "ObservabilityPlanner.plan_load")
         self.logger.info(
             f"Starting observability load planning for: {load_request.get('plan_name', 'unknown')}"
         )

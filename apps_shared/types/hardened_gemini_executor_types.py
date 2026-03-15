@@ -13,6 +13,8 @@ import time
 from dataclasses import dataclass, field
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
 from tenacity import (
     retry,
     retry_if_exception_type,
@@ -156,6 +158,9 @@ class CircuitBreaker:
 
     def call_allowed(self) -> bool:
         """Check if a call is allowed through the circuit breaker."""
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "CircuitBreaker.call_allowed")
         now = time.time()
 
         if self.state.state == "CLOSED":

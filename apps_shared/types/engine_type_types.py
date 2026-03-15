@@ -11,6 +11,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from ..core.quality.feedback_loop import FeedbackLoop
 from ..core.quality.signal_enhancer import QualityThresholds, SignalAssessment, signal_enhancer
 
@@ -79,6 +80,9 @@ class ResumeValidator(DomainValidator):
 
     def validate_domain_content(self, content: str, context: dict[str, Any]) -> dict[str, Any]:
         """Validate resume content."""
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "ResumeValidator.validate_domain_content")
         results = {
             "has_achievements": self._has_achievements(content),
             "has_metrics": self._has_metrics(content),
