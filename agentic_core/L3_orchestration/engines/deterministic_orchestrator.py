@@ -35,6 +35,7 @@ from agentic_core.L5_safety.enforcement.policy_action_contract import (
     PolicyEnforcementError,
     enforce_policy_before_action,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.seams.orchestration_protocols import OrchestrationResult
 
 
@@ -164,6 +165,9 @@ class DeterministicOrchestrator:
         Returns:
             OrchestrationResult with deterministic outcome
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"DeterministicOrchestrator.orchestrate:{route_mode}")
         with get_trace_context().run_frame(
             layer="L3",
             module="deterministic_orchestrator",

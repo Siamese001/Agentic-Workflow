@@ -31,6 +31,7 @@ from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapsho
 from agentic_core.L2_execution.enforcement.capability_chokepoint import (
     authorize_and_execute,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.L2_execution.types.capability_token_types import (
     CapabilityTokenArtifact,
 )
@@ -85,6 +86,9 @@ class Coordinator(ABC):
 
     def record_execution(self, success: bool):
         """Record mission execution."""
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "WorkflowMetrics.record_execution")
         self.missions_executed += 1
         if success:
             self.missions_succeeded += 1

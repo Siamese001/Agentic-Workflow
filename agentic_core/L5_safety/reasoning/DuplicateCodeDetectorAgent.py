@@ -18,6 +18,7 @@ from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
 
 Logger: logging.Logger = logging.getLogger(__name__)
 UTILS_DIR = "agentic_core/utils"
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR
 
 try:
@@ -129,6 +130,9 @@ class DuplicateCodeDetectorAgent(AtomicExecutionMixin, SubatomicTestingMixin, He
         Returns:
             Dict with duplicate findings and deletion recommendations
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "DuplicateCodeDetectorAgent.execute")
         file_types = file_types or self.SUPPORTED_EXTENSIONS
         Logger.info(f"[DUPE SCAN] Scanning for duplicates in {len(file_types)} file types...")
         _adg_antipatterns: list = []
