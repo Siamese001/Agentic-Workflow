@@ -55,10 +55,13 @@ for f in sorted(unguarded_llm)[:20]:
     print(f"    BYPASS-LLM: {f}")
 
 # --- Tool execution bypass candidates ---
-tool_callers = (sym_files("%tool_chain_executor%") | sym_files("%invoke_typed_tool%")
-                | sym_files("%ToolChainExecutor%") | sym_files("%execute_command%"))
+tool_callers_raw = (sym_files("%tool_chain_executor%") | sym_files("%invoke_typed_tool%")
+                    | sym_files("%ToolChainExecutor%") | sym_files("%execute_command%"))
+# Exclude __init__ re-export files and pure type definition files (false positives)
+tool_false_pos = {f for f in tool_callers_raw if f.endswith('__init__.py') or '/types/' in f or '\\types\\' in f}
+tool_callers = tool_callers_raw - tool_false_pos
 unguarded_tools = tool_callers - guardrail_callers
-print(f"\nTool callers total:       {len(tool_callers)}")
+print(f"\nTool callers total:       {len(tool_callers)} (excl. {len(tool_false_pos)} init/type false positives)")
 print(f"  unguarded (no guardrail): {len(unguarded_tools)}")
 for f in sorted(unguarded_tools)[:15]:
     print(f"    BYPASS-TOOL: {f}")

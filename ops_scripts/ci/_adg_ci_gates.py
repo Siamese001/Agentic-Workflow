@@ -59,13 +59,13 @@ _REDIS_DB = 0
 GUARDRAIL_COVERAGE_THRESHOLD = 0.10
 TRACE_COVERAGE_THRESHOLD = 0.05
 
-# Caller-count minimums — Wave 2.1 ratchet (GPC edge counts, not source counts)
-# routes_path: 183 edges currently; threshold set at 160 (~13% buffer)
-ROUTES_PATH_MIN_EDGES = 160
+# Caller-count minimums — Wave 6 ratchet (GPC edge counts, not source counts)
+# routes_path: 183 edges currently; threshold ratcheted 160→180
+ROUTES_PATH_MIN_EDGES = 180
 # applies_guardrail: 154 edges (proxy for enforce_policy_before_action coverage); threshold 130
 POLICY_GUARDRAIL_MIN_EDGES = 130
-# records_execution_trace: 169 edges currently; threshold 150
-TRACE_MIN_EDGES = 150
+# records_execution_trace: 176 edges currently; threshold ratcheted 150→175
+TRACE_MIN_EDGES = 175
 
 # ---------------------------------------------------------------------------
 # Gate definitions
