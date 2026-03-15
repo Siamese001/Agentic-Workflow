@@ -13,6 +13,7 @@ from enum import Enum
 from typing import Any
 
 from agentic_core.interfaces.path_constants import BATCH_SIZE, THRESHOLD
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -138,6 +139,9 @@ class ObservabilityPlanningOrchestrator:
         Returns:
             ObservabilityPlanningResult: Complete planning result with observability setup
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "ObservabilityOrchestrator.execute")
         self.logger.info(
             f"Starting observability planning for service: {observability_request.get('service_name', 'unknown')}"
         )

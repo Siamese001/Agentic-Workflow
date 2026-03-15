@@ -13,6 +13,7 @@ from agentic_core.L2_execution.reasoning.base import SubAtomicAgent
 
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -74,6 +75,9 @@ class AdversarialRedTeamerAgent(SovereignBaseAgent, SubAtomicAgent):
 
         Runs in pre-deployment phase to find vulnerabilities before production.
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "AdversarialRedTeamerAgent.execute")
         Logger.info("🔴 Adversarial Red-Teamer: Initiating vulnerability scan...")
         await self._test_preservation_boundaries()
         await self._test_sandbox_escapes()

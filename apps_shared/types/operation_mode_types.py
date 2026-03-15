@@ -13,6 +13,8 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
 logger = logging.getLogger(__name__)
 
 
@@ -107,6 +109,9 @@ class ObservabilityOperationPerformer:
             operation_def: Operation definition
             handler: Operation handler function
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"OperationRegistry.register_operation:{operation_def.operation_id}")
         self._registered_operations[operation_def.operation_id] = operation_def
         self._operation_handlers[operation_def.operation_id] = handler
         self.logger.info(f"Registered operation: {operation_def.operation_id}")
