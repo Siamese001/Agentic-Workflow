@@ -11,6 +11,8 @@ from datetime import datetime
 from enum import Enum
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
 THRESHOLD = 0.95
@@ -154,6 +156,9 @@ class ConfigLoadPlanner:
         Returns:
             ConfigLoadResult: Complete planning result with load plan
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "ConfigLoadPlanner.plan_load")
         self.logger.info(
             f"Starting config load planning for: {load_request.get('plan_name', 'unknown')}",
         )

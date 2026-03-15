@@ -16,6 +16,8 @@ from typing import Any
 
 from pydantic import BaseModel
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
 logger = logging.getLogger(__name__)
 
 
@@ -100,6 +102,9 @@ class JSONRepairStrategy(FormatRepair):
         Returns:
             Repair result
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "SelfHealingFormatter.repair")
         original_error = None
         attempts = 0
         try:
