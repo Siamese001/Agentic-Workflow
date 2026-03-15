@@ -12,6 +12,7 @@ from typing import Any
 from agentic_core.utils.file_cache import FileCache
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR
 
 logger = logging.getLogger(__name__)
@@ -159,6 +160,9 @@ class CredentialScannerAgent(SovereignBaseAgent):
         Returns:
             Dict with keys: status, details, artifacts, errors
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "CredentialScannerAgent.heal")
         try:
             violation.get("type", "")
             file_path = violation.get("file")

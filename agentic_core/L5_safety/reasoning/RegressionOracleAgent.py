@@ -11,6 +11,7 @@ from typing import Any
 
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass
@@ -73,6 +74,9 @@ class RegressionOracleAgent(SovereignBaseAgent):
 
         Listens for FILE_MODIFIED signals and generates tests.
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "RegressionOracleAgent.execute")
         Logger.info("🔮 Regression Oracle: Monitoring for FILE_MODIFIED signals...")
         modified_files_to_process: Any = []
         if hasattr(self.ctx, "signals"):

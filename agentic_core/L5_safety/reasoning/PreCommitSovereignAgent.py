@@ -12,6 +12,7 @@ from typing import Any
 from agentic_core.L5_safety.enforcement.unified_validator import UnifiedSSOTValidator
 
 from agentic_core.base_agents.L0RoutingBase import L0RoutingBase
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 
@@ -74,6 +75,9 @@ class PreCommitSovereignAgent(SovereignBaseAgent, L0RoutingBase):
         Returns:
             Dict with healing summary
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "PreCommitSovereignAgent.heal_repository")
         super().heal_repository(**kwargs)
         if hasattr(self, "validate_staged_files"):
             try:
