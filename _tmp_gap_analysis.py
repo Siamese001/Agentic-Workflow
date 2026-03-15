@@ -57,8 +57,11 @@ for f in sorted(unguarded_llm)[:20]:
 # --- Tool execution bypass candidates ---
 tool_callers_raw = (sym_files("%tool_chain_executor%") | sym_files("%invoke_typed_tool%")
                     | sym_files("%ToolChainExecutor%") | sym_files("%execute_command%"))
-# Exclude __init__ re-export files and pure type definition files (false positives)
-tool_false_pos = {f for f in tool_callers_raw if f.endswith('__init__.py') or '/types/' in f or '\\types\\' in f}
+# Exclude __init__ re-export files, pure type definition files, and known contract-definition false positives
+_TOOL_FALSE_POS_NAMES = {'typed_tool_contract.py', 'sovereign_severity_types.py'}
+tool_false_pos = {f for f in tool_callers_raw
+                  if f.endswith('__init__.py') or '/types/' in f or '\\types\\' in f
+                  or any(f.endswith(n) for n in _TOOL_FALSE_POS_NAMES)}
 tool_callers = tool_callers_raw - tool_false_pos
 unguarded_tools = tool_callers - guardrail_callers
 print(f"\nTool callers total:       {len(tool_callers)} (excl. {len(tool_false_pos)} init/type false positives)")
