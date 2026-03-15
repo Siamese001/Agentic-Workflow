@@ -22,6 +22,7 @@ import re
 import tempfile
 from dataclasses import dataclass
 from pathlib import Path
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from typing import Any
 
 try:
@@ -205,6 +206,9 @@ class HybridRetriever:
 
     async def rebuild_from_ingestion(self) -> Any:
         """Rebuild local index from latest ingestion artifacts"""
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "HybridRetrieverConfig.rebuild_from_ingestion")
         try:
             from agentic_core.L0_routing.scripts.sovereign_ingestion_mission import (
                 load_latest_ingested_chunks,

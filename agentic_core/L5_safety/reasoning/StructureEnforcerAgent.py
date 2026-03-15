@@ -13,6 +13,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.L0_routing.config import ARCHIVES_DIR
 
 Logger = logging.getLogger(__name__)
@@ -125,6 +126,9 @@ class StructureEnforcerAgent(SovereignBaseAgent):
 
     def validate_file(self, file_path: Path) -> list[StructureViolation]:
         """Validate a file for all structure rules."""
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, f"StructureEnforcerAgent.validate_file:{file_path.name}")
         violations = []
         if not file_path.exists():
             return violations
