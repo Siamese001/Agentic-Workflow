@@ -11,6 +11,7 @@ import logging
 from dataclasses import dataclass
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.runtime.types.reasoning_config import ReasoningConfig
 from apps_rg.utils.RGAgentBase import RGAgentBase
 
@@ -64,4 +65,7 @@ class StrategistBioWriter(RGAgentBase):
         self.reasoning = reasoning
 
     async def run(self, input_data: dict) -> dict:
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "ExecutiveSummaryOutputAgent.run")
         return {"bio": "Draft content..."}

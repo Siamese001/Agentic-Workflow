@@ -18,6 +18,7 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.L2_execution.providers import get_clock
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from apps_shared.reasoning.BaseHealingOrchestrator import BaseHealingOrchestrator
 
 Logger = logging.getLogger(__name__)
@@ -64,6 +65,7 @@ class LicHealingOrchestrator(BaseHealingOrchestrator):
         """
         Evaluate LIC domain health status.
         """
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "LicHealingOrchestrator.assess_system_health")
         status = "healthy"
         if telemetry.get("error_rate", 0) > 0.05:
             status = "degraded"

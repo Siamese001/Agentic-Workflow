@@ -7,7 +7,10 @@ Emits a HealingAttemptEvent for every cycle (Addendum 1.3).
 from __future__ import annotations
 
 import logging
+import uuid
 from typing import Any
+
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger = logging.getLogger(__name__)
 
@@ -28,6 +31,7 @@ class HealingCycle:
 
         Returns a result dict compatible with RgHealingOrchestrator.run().
         """
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"HealingCycle.execute:cycle_{self.cycle_num}")
         try:
             from agentic_core.L2_execution.healers.healing_event_emitter import get_healing_emitter
 

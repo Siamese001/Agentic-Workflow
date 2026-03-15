@@ -19,6 +19,7 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.prompt_governance import PromptLoader
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class OutreachTemplateError(Exception):
@@ -53,6 +54,9 @@ class OutreachMessageAgent:
         Raises:
             OutreachTemplateError: If template file cannot be found or read
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "OutreachMessageAgent.generate_connection_request")
         template_path = self.prompt_root / "shared" / "connection_request.md"
         return self._load_markdown_template(template_path, payload)
 

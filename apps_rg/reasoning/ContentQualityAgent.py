@@ -21,6 +21,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from apps_rg.utils.RGAgentBase import RGAgentBase
 
 from apps_rg.types.skill_extractor_node_types import SkillExtractorNode
@@ -82,6 +83,9 @@ class ContentQualityAgent(RGAgentBase):
         Raises:
             QUALITY_FAILURE signal if quality issues found
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "ContentQualityAgent.execute")
         self.log("Analyzing content quality using logic nodes...")
         resume = self.ctx.current_resume
         if not resume:
