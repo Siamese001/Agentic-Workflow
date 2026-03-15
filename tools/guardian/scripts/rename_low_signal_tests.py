@@ -1,0 +1,450 @@
+"""
+tools/guardian/scripts/rename_low_signal_tests.py
+
+Low-signal test filename renamer — ADG-only, no grep.
+
+A "low-signal" test filename contains a chronological wave/phase number prefix
+that encodes *when* the test was written rather than *what* it tests.  These
+names are hostile to navigation and CI reporting.
+
+Detection rule (ADG-backed, no filesystem scan beyond path normalisation):
+    A test module is low-signal if its stem matches the pattern
+        test_wave<N>* or test_wave<N>_phase<M>*
+    AND the word "wave" or "phase" does NOT appear in the production module
+    path(s) the file covers (via ADG ``covers`` edges).
+    Files whose "phase/wave" token comes from the production module they test
+    (e.g. test_two_phase_commit.py -> two_phase_coordinator.py) are excluded.
+
+Rename strategy:
+    1. Query ADG ``covers`` edges to find the primary production module covered.
+    2. Derive a canonical name from that module's stem:
+           test_<production_stem>.py
+       Placed in the same directory as the original file.
+    3. If multiple production modules are covered, pick the one whose stem is
+       most informative (longest, non-path_constants fallback).
+    4. If no covers edges exist, fall back to stripping the wave/phase prefix
+       and keeping the remainder:
+           test_wave1_phase1_2_sovereignty.py  -> test_sovereignty.py
+    5. Conflict resolution: if the target name already exists, append ``_v2``,
+       ``_v3``, ... until a free slot is found.
+
+Usage:
+    # Dry-run (default) — print proposed renames, exit 0
+    python tools/guardian/scripts/rename_low_signal_tests.py
+
+    # Show JSON output
+    python tools/guardian/scripts/rename_low_signal_tests.py --json
+
+    # Execute renames (moves files on disk + updates git mv)
+    python tools/guardian/scripts/rename_low_signal_tests.py --execute
+
+    # Restrict to a sub-directory
+    python tools/guardian/scripts/rename_low_signal_tests.py --root tests/architecture
+
+Exit codes:
+    0  — success (dry-run: proposals computed; execute: all renames applied)
+    1  — ADG unavailable or fatal error
+    2  — one or more renames skipped due to conflicts (only with --execute)
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import re
+import sqlite3
+import subprocess
+import sys
+from dataclasses import dataclass, field
+from pathlib import Path
+
+# ---------------------------------------------------------------------------
+# Repo root bootstrap
+# ---------------------------------------------------------------------------
+_SCRIPT_DIR = Path(__file__).resolve()
+ROOT = _SCRIPT_DIR.parents[3]  # tools/guardian/scripts -> ROOT
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from agentic_core.L0_routing.config.path_constants import (
+    TESTS_DIR,
+    get_validated_project_root,
+)
+
+# ---------------------------------------------------------------------------
+# Constants
+# ---------------------------------------------------------------------------
+
+#: Regex that identifies a chronological wave/phase prefix in a test filename.
+#: Matches: test_wave1_*, test_wave2_phase3_*, test_wave1_phase1_2_*, etc.
+_LOW_SIGNAL_RE = re.compile(
+    r"^test_wave\d+(?:_phase[\d_]+)?_?(.*)$",
+    re.IGNORECASE,
+)
+
+#: Production modules that are too generic to derive a meaningful name from.
+_UNINFORMATIVE_MODULES: frozenset[str] = frozenset(
+    {
+        "path_constants",
+        "semantic_gap_analyzer",
+        "__init__",
+    }
+)
+
+#: If the covered production module stem contains any of these tokens, the
+#: file is NOT low-signal (the wave/phase token came from the production code).
+_PRODUCTION_PHASE_TOKENS = re.compile(r"phase|wave", re.IGNORECASE)
+
+
+# ---------------------------------------------------------------------------
+# Data structures
+# ---------------------------------------------------------------------------
+
+
+@dataclass
+class RenameProposal:
+    original_path: str
+    proposed_path: str
+    reason: str
+    covered_modules: list[str] = field(default_factory=list)
+    conflict: bool = False
+
+
+# ---------------------------------------------------------------------------
+# ADG helpers
+# ---------------------------------------------------------------------------
+
+
+def _open_adg(adg_dir: Path) -> sqlite3.Connection:
+    """Open the most-recent ADG SQLite.  Fail-closed if none found."""
+    dbs = sorted(adg_dir.glob("adg_indexed_*.sqlite"))
+    if not dbs:
+        raise RuntimeError(
+            f"No ADG SQLite found in {adg_dir}. "
+            "Run: python tools/adg/adg_redis_ingest.py --force"
+        )
+    return sqlite3.connect(str(dbs[-1]))
+
+
+def _query_low_signal_files(
+    conn: sqlite3.Connection,
+    tests_root: str,
+) -> list[tuple[int, str, str]]:
+    """Return (node_id, adg_name, resolved_path) for all low-signal test modules.
+
+    Low-signal = resolved_path stem matches ``_LOW_SIGNAL_RE``.
+    Only module-level nodes whose resolved_path starts with tests_root are returned.
+    Nodes that are class/function-level sub-entities of a file are excluded.
+    """
+    rows = conn.execute(
+        "SELECT id, adg_name, resolved_path FROM nodes "
+        "WHERE entity_type='module' "
+        "AND resolved_path LIKE ? "
+        "ORDER BY resolved_path",
+        (tests_root.rstrip("/") + "/%",),
+    ).fetchall()
+
+    results = []
+    for nid, adg_name, rpath in rows:
+        stem = Path(rpath).stem
+        if _LOW_SIGNAL_RE.match(stem):
+            results.append((nid, adg_name, rpath))
+    return results
+
+
+def _covers_edges(conn: sqlite3.Connection, node_id: int) -> list[str]:
+    """Return resolved_paths of all production modules covered by node_id."""
+    rows = conn.execute(
+        "SELECT n.resolved_path FROM edges e "
+        "JOIN nodes n ON n.id = e.dst_id "
+        "WHERE e.src_id=? AND e.relation_type='covers'",
+        (node_id,),
+    ).fetchall()
+    return [r[0] for r in rows if r[0] and not r[0].startswith("tests/")]
+
+
+def _imports_edges(conn: sqlite3.Connection, node_id: int) -> list[str]:
+    """Return resolved_paths of all production modules imported by node_id."""
+    rows = conn.execute(
+        "SELECT n.resolved_path FROM edges e "
+        "JOIN nodes n ON n.id = e.dst_id "
+        "WHERE e.src_id=? AND e.relation_type='imports'",
+        (node_id,),
+    ).fetchall()
+    return [r[0] for r in rows if r[0] and not r[0].startswith("tests/")]
+
+
+# ---------------------------------------------------------------------------
+# Name derivation
+# ---------------------------------------------------------------------------
+
+
+def _stem_from_production(prod_paths: list[str]) -> str | None:
+    """Pick the most informative stem from a list of production module paths.
+
+    Preference order:
+      1. Longest stem not in _UNINFORMATIVE_MODULES and not containing
+         phase/wave tokens (those would indicate the file is NOT low-signal).
+      2. Any non-uninformative stem.
+      3. None — caller will fall back to stripping the wave/phase prefix.
+    """
+    stems = []
+    for p in prod_paths:
+        stem = Path(p).stem
+        if stem in _UNINFORMATIVE_MODULES:
+            continue
+        # Exclude stems from modules whose name itself contains phase/wave —
+        # those mean the production module is named that way (not an artefact).
+        if _PRODUCTION_PHASE_TOKENS.search(stem):
+            continue
+        stems.append(stem)
+
+    if not stems:
+        return None
+
+    # Prefer the longest (most specific) name.
+    return max(stems, key=len)
+
+
+def _strip_wave_prefix(stem: str) -> str:
+    """Remove the wave/phase prefix from a stem, returning remainder.
+
+    Examples:
+        test_wave1_phase1_2_sovereignty  -> sovereignty
+        test_wave3_phase3_1_cache_wirings -> cache_wirings
+        test_wave4_wave5_wave6_guardrails -> guardrails
+    """
+    m = _LOW_SIGNAL_RE.match(stem)
+    if m:
+        remainder = m.group(1).strip("_")
+        return remainder if remainder else stem
+    return stem
+
+
+def _free_name(directory: Path, stem: str) -> Path:
+    """Return a free Path for ``test_<stem>.py`` in *directory*.
+
+    Appends ``_v2``, ``_v3``, ... if the plain name is taken.
+    """
+    candidate = directory / f"test_{stem}.py"
+    if not candidate.exists():
+        return candidate
+    n = 2
+    while True:
+        candidate = directory / f"test_{stem}_v{n}.py"
+        if not candidate.exists():
+            return candidate
+        n += 1
+
+
+# ---------------------------------------------------------------------------
+# Core logic
+# ---------------------------------------------------------------------------
+
+
+def build_proposals(
+    conn: sqlite3.Connection,
+    repo_root: Path,
+    tests_subdir: str,
+) -> list[RenameProposal]:
+    """Build rename proposals for all low-signal test files.
+
+    Uses ADG covers/imports edges exclusively — no filesystem scanning,
+    no grep, no regex over file contents.
+    """
+    rows = _query_low_signal_files(conn, tests_subdir)
+    proposals: list[RenameProposal] = []
+
+    for node_id, adg_name, rpath in rows:
+        orig = repo_root / rpath
+
+        # --- Collect covered production paths via ADG edges ---
+        covered = _covers_edges(conn, node_id)
+        if not covered:
+            # Fall back to imports edges for files with no explicit covers edges
+            covered = _imports_edges(conn, node_id)
+
+        # --- Check: is this really low-signal, or does prod module use phase/wave? ---
+        # If EVERY covered prod module contains phase/wave in its path, the
+        # file is testing phase-named production code — exclude it.
+        if covered:
+            all_prod_phase = all(
+                _PRODUCTION_PHASE_TOKENS.search(Path(p).stem) for p in covered if p
+            )
+            if all_prod_phase:
+                continue  # Not a low-signal name — production module uses phase/wave
+
+        # --- Derive canonical name ---
+        prod_stem = _stem_from_production(covered)
+        if prod_stem:
+            new_stem = prod_stem
+            reason = f"derives from covered module stem '{prod_stem}'"
+        else:
+            remainder = _strip_wave_prefix(Path(rpath).stem)
+            if not remainder or remainder == Path(rpath).stem:
+                continue  # Could not derive a better name — skip
+            new_stem = remainder
+            reason = "wave/phase prefix stripped (no covers edges)"
+
+        # --- Resolve target path ---
+        target = _free_name(orig.parent, new_stem)
+        conflict = False
+
+        # If target == orig (already well-named somehow) skip
+        if target == orig:
+            continue
+
+        # Record whether a non-versioned collision exists
+        plain_target = orig.parent / f"test_{new_stem}.py"
+        if plain_target.exists() and plain_target != orig:
+            conflict = True
+
+        proposals.append(
+            RenameProposal(
+                original_path=rpath,
+                proposed_path=str(target.relative_to(repo_root)).replace("\\", "/"),
+                reason=reason,
+                covered_modules=[c for c in covered[:4] if c],
+                conflict=conflict,
+            )
+        )
+
+    return proposals
+
+
+def execute_renames(
+    proposals: list[RenameProposal],
+    repo_root: Path,
+) -> tuple[int, int]:
+    """Apply renames via ``git mv``.  Returns (applied, skipped)."""
+    applied = skipped = 0
+    for p in proposals:
+        src = repo_root / p.original_path
+        dst = repo_root / p.proposed_path
+        if not src.exists():
+            print(f"  SKIP (src missing): {p.original_path}", file=sys.stderr)
+            skipped += 1
+            continue
+        if dst.exists():
+            print(f"  SKIP (dst exists):  {p.proposed_path}", file=sys.stderr)
+            skipped += 1
+            continue
+        result = subprocess.run(
+            ["git", "mv", str(src), str(dst)],
+            cwd=str(repo_root),
+            capture_output=True,
+            text=True,
+        )
+        if result.returncode != 0:
+            print(
+                f"  FAIL: git mv {p.original_path} -> {p.proposed_path}\n"
+                f"        {result.stderr.strip()}",
+                file=sys.stderr,
+            )
+            skipped += 1
+        else:
+            print(f"  RENAMED: {p.original_path}")
+            print(f"       ->  {p.proposed_path}")
+            applied += 1
+    return applied, skipped
+
+
+# ---------------------------------------------------------------------------
+# CLI
+# ---------------------------------------------------------------------------
+
+
+def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
+    p = argparse.ArgumentParser(
+        description="Rename low-signal (wave/phase-numbered) test files using ADG coverage data."
+    )
+    p.add_argument(
+        "--execute",
+        action="store_true",
+        help="Apply renames via git mv (default: dry-run only).",
+    )
+    p.add_argument(
+        "--json",
+        action="store_true",
+        help="Emit JSON array of proposals to stdout.",
+    )
+    p.add_argument(
+        "--root",
+        default=None,
+        metavar="SUBDIR",
+        help="Restrict scan to a sub-directory of tests/ (e.g. tests/architecture).",
+    )
+    return p.parse_args(argv)
+
+
+def main(argv: list[str] | None = None) -> int:
+    args = _parse_args(argv)
+
+    repo_root = get_validated_project_root()
+    adg_dir = repo_root / "artifacts" / "adg"
+
+    try:
+        conn = _open_adg(adg_dir)
+    except RuntimeError as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return 1
+
+    tests_subdir = args.root if args.root else TESTS_DIR
+    # Normalise to forward slashes, strip leading slash
+    tests_subdir = tests_subdir.replace("\\", "/").lstrip("/")
+
+    proposals = build_proposals(conn, repo_root, tests_subdir)
+    conn.close()
+
+    if not proposals:
+        if not args.json:
+            print(f"OK: no low-signal test filenames found under '{tests_subdir}'")
+        else:
+            print("[]")
+        return 0
+
+    if args.json:
+        print(
+            json.dumps(
+                [
+                    {
+                        "original": p.original_path,
+                        "proposed": p.proposed_path,
+                        "reason": p.reason,
+                        "covered_modules": p.covered_modules,
+                        "conflict": p.conflict,
+                    }
+                    for p in proposals
+                ],
+                indent=2,
+            )
+        )
+        return 0
+
+    # --- Human-readable output ---
+    print(f"Low-signal test filenames detected: {len(proposals)}")
+    print(f"Scan root: {tests_subdir}")
+    print()
+    for p in proposals:
+        flag = " [CONFLICT — versioned]" if p.conflict else ""
+        print(f"  {p.original_path}")
+        print(f"    -> {p.proposed_path}{flag}")
+        print(f"       reason: {p.reason}")
+        if p.covered_modules:
+            print(f"       covers: {', '.join(p.covered_modules[:3])}")
+        print()
+
+    if not args.execute:
+        print("Dry-run complete.  Pass --execute to apply renames via git mv.")
+        return 0
+
+    # --- Execute ---
+    print("Applying renames...")
+    applied, skipped = execute_renames(proposals, repo_root)
+    print()
+    print(f"Done: {applied} renamed, {skipped} skipped.")
+    return 2 if skipped else 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
