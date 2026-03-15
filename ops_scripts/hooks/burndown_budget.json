@@ -210,6 +210,9 @@
   "ops_scripts/ci/_adg_ci_gates.py": {
     "global_mutation": 1
   },
+  "ops_scripts/ci/adg_grep_ban_gate.py": {
+    "magic_configuration": 2
+  },
   "ops_scripts/ci/_capability_registry_gate.py": {
     "silent_swallower": 1
   },
@@ -255,6 +258,10 @@
   "ops_scripts/ci/_typed_tool_gate.py": {
     "silent_swallower": 1
   },
+  "ops_scripts/ci/guardian_exemption_gate.py": {
+    "global_mutation": 1,
+    "silent_swallower": 1
+  },
   "ops_scripts/ci/run_all_guardrails.py": {
     "global_mutation": 1
   },
@@ -288,9 +295,13 @@
     "global_mutation": 1,
     "magic_configuration": 1
   },
+  "tools/adg/adg_redis_query.py": {
+    "global_mutation": 1
+  },
   "tools/adg/adg_stale_guard.py": {
     "global_mutation": 1,
-    "magic_configuration": 2
+    "magic_configuration": 2,
+    "silent_swallower": 1
   },
   "tools/adg/adg_test_selector.py": {
     "global_mutation": 1,

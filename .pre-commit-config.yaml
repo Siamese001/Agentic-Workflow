@@ -190,6 +190,20 @@ repos:
         require_serial: true
         stages: [manual]
 
+      # -- T3a-exemption: Guardian Exemption Quality Ratchet --------------------
+      # Closes the scanner blind spot: burndown gate only counts unwhitelisted
+      # violations; once a guardian comment is added the violation is invisible.
+      # Rule 1 (zero-tolerance): every guardian comment MUST have -- <justification>.
+      # Rule 2 (ratchet): exemption counts in production code may only decrease.
+      # Init:  ADG_EXEMPTION_INIT=1 python ops_scripts/ci/guardian_exemption_gate.py
+      - id: guardian-exemption-gate
+        name: "T3a-exemption: Guardian Exemption Quality Ratchet"
+        entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/guardian_exemption_gate.py"
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+
       # -- T3a: Unified ADG Anti-Pattern Burndown Ratchet -----------------------
       # Single scan enforces both Rule 1 (no new file+category pairs) and
       # Rule 2 (existing counts may only decrease). Supersedes check_anti_patterns.py.

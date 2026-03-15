@@ -10,6 +10,8 @@ Key schema:
   adg:edge:<src>:<rel>        SET   {target_id, ...}   fan-out lookup
   adg:edge:in:<tgt>:<rel>     SET   {source_id, ...}   fan-in lookup
   adg:snapshot                STRING (raw JSON of snapshot file)
+  adg:status                  STRING (JSON sentinel: timestamp, node_count, edge_count, ingested_at)
+                                     ← only STRING key; readable via mcp9_get for MCP-level freshness check
   adg:violations              LIST  (JSON-encoded violation dicts)
 """
 
@@ -25,11 +27,6 @@ import redis
 # Config
 # ---------------------------------------------------------------------------
 ADG_DIR = r"c:\Git\Agentic-Workflow\artifacts\adg"
-SNAPSHOT_SUFFIX = "03142026_0834"
-# guardian: allow-path-string
-SQLITE_PATH = os.path.join(ADG_DIR, f"adg_indexed_{SNAPSHOT_SUFFIX}.sqlite")
-# guardian: allow-path-string
-SNAPSHOT_PATH = os.path.join(ADG_DIR, f"adg_snapshot_{SNAPSHOT_SUFFIX}.json")
 REDIS_HOST = "localhost"
 REDIS_PORT = 6379
 REDIS_DB = 0
@@ -38,6 +35,21 @@ BATCH_SIZE = 500
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
+
+def _ts_from_sqlite_path(path: str) -> str:
+    """Extract timestamp string from adg_indexed_<ts>.sqlite filename.
+
+    Always returns the actual timestamp of the file being ingested — never a
+    hardcoded constant.  Handles current format MMDDYYYY_HHMM and legacy forms.
+    """
+    from pathlib import Path as _Path
+
+    stem = _Path(path).stem  # "adg_indexed_03152026_0512" (no extension)
+    prefix = "adg_indexed_"
+    if stem.startswith(prefix):
+        return stem[len(prefix) :]  # e.g. "03152026_0512"
+    return "unknown"
 
 
 def get_latest_sqlite(adg_dir: str) -> str:
@@ -81,6 +93,7 @@ def ingest(force: bool = False) -> None:
     sqlite_path = get_latest_sqlite(ADG_DIR)
     snapshot_path = get_latest_snapshot(ADG_DIR)
     sqlite_mtime = os.path.getmtime(sqlite_path)
+    ts_from_file = _ts_from_sqlite_path(sqlite_path)
 
     r = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB, decode_responses=True)
     r.ping()
@@ -203,19 +216,41 @@ def ingest(force: bool = False) -> None:
     print("[redis] snapshot stored")
 
     # -- Meta sentinel --
+    ingested_at = str(time.time())
+    node_count_str = str(snap.get("counts", {}).get("module_count", 0))
+    edge_count_str = str(snap.get("counts", {}).get("total_relations", 0))
+    digest = snap.get("artifact_digest", "")
     r.hmset(
         "adg:meta",
         {
             "sqlite_path": sqlite_path,
             "sqlite_mtime": str(sqlite_mtime),
-            "timestamp": SNAPSHOT_SUFFIX,
-            "ingested_at": str(time.time()),
-            "node_count": str(snap.get("counts", {}).get("module_count", 0)),
-            "edge_count": str(snap.get("counts", {}).get("total_relations", 0)),
-            "digest": snap.get("artifact_digest", ""),
+            "timestamp": ts_from_file,
+            "ingested_at": ingested_at,
+            "node_count": node_count_str,
+            "edge_count": edge_count_str,
+            "digest": digest,
         },
     )
     print("[redis] meta written")
+
+    # STRING sentinel — readable via mcp9_get.
+    # adg:meta is a HASH (mcp9_get returns WRONGTYPE on it). adg:status is a plain
+    # STRING so Windsurf MCP can confirm cache hotness without redis-py HGETALL.
+    r.set(
+        "adg:status",
+        json.dumps(
+            {
+                "timestamp": ts_from_file,
+                "node_count": node_count_str,
+                "edge_count": edge_count_str,
+                "ingested_at": ingested_at,
+                "sqlite_path": sqlite_path,
+                "digest": digest[:16] if digest else "",
+            }
+        ),
+    )
+    print(f"[redis] adg:status sentinel written (timestamp={ts_from_file})")
 
     conn.close()
     print("[done] ADG -> Redis ingest complete")

@@ -80,19 +80,40 @@ Expected output:
 [redis] edges done
 [redis] snapshot stored
 [redis] meta written
+[redis] adg:status sentinel written (timestamp=MMDDYYYY_HHMM)
 [done] ADG -> Redis ingest complete
 ```
+
+**Verify the timestamp** in `adg:status sentinel written (timestamp=...)` matches the `adg_indexed_<ts>.sqlite` filename — this confirms the ingest used the correct (fresh) artifact, not a hardcoded stale value.
 
 ---
 
 ## STEP 4: Verify cache health
 
+Use the canonical health check script (uses redis-py HGETALL — correct for HASH types):
+
 // turbo
 ```
-python -c "import redis, json; r = redis.Redis(host='localhost', port=6379, db=0, decode_responses=True); meta = r.hgetall('adg:meta'); print('=== ADG REDIS HEALTH ==='); [print(f'  {k}: {v}') for k, v in meta.items()]; print(f'  total_keys: {r.dbsize()}')"
+python tools/adg/redis_health_check.py --verbose
 ```
 
-**Gate:** Must see `node_count` >= 8000 and `total_keys` >= 100000 before proceeding with any analysis.
+**Gate:** Must see `cache HOT` with `node_count` >= 8000 before proceeding with any analysis.
+
+**MCP-accessible verification (STRING sentinel — use this to confirm hotness from MCP context):**
+```
+mcp9_get("adg:status")
+```
+Returns JSON with `timestamp`, `node_count`, `edge_count`, `ingested_at`. Verify `timestamp` matches the latest `adg_indexed_<ts>.sqlite` filename.
+
+> ⚠️ **CRITICAL: MCP Redis type limitation.** `mcp9_get` is STRING-only.
+> - `mcp9_get("adg:meta")` → ❌ WRONGTYPE error (adg:meta is a HASH)
+> - `mcp9_get("adg:node:*")` → ❌ WRONGTYPE error (HASH)
+> - `mcp9_get("adg:edge:*")` → ❌ WRONGTYPE error (SET)
+> - `mcp9_get("adg:status")` → ✅ STRING sentinel (freshness check only)
+> - `mcp9_get("adg:snapshot")` → ✅ STRING (full snapshot JSON)
+>
+> A WRONGTYPE error from `mcp9_get` does NOT mean the cache is cold. Use
+> `adg_redis_query.py` for all node/edge queries (redis-py, supports HASH/SET).
 
 ---
 
