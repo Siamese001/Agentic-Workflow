@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass, field
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from typing import Any
 
 Logger = logging.getLogger(__name__)
@@ -119,6 +120,9 @@ class RGPlanner:
         Returns:
             Complete resume processing plan for K1-K8 pipeline
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "ResumePlanner.plan_resume_processing")
         processing_options = processing_options or {}
         job_analysis = self._analyze_job_requirements(job_input)
         resume_analysis = self._analyze_resume_structure(resume_input)

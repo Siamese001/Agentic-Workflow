@@ -4,6 +4,7 @@ from __future__ import annotations
 import logging
 from collections.abc import Callable
 from dataclasses import dataclass, field
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from typing import Any
 
 from agentic_core.L0_routing.enforcement.runtime_guard import runtime_guard
@@ -84,6 +85,9 @@ class MCPToolServer:
         Raises:
             ValueError: If legacy capability enforcer is disabled (default).
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "MCPServerConfig.set_capability_enforcer")
         if not self._allow_legacy_capability_enforcer:
             raise ValueError(
                 "legacy capability enforcer is disabled. Use allow_legacy_capability_enforcer=True at construction or pass capability_token= per call."

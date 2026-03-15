@@ -8,7 +8,9 @@ import asyncio
 import logging
 import random
 import time
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from datetime import datetime
+from typing import Any
 
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
@@ -76,6 +78,9 @@ class RetryConfig:
         Returns:
             True if should retry
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "RetryPolicy.should_retry")
         # Check attempt limit
         if attempt >= self.max_attempts:
             return False

@@ -12,6 +12,7 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from typing import Any
 
 logger = logging.getLogger(__name__)
@@ -84,6 +85,9 @@ class AdaptiveThresholds:
         Returns:
             Updated thresholds
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "AdaptiveFeedbackLoop.adjust_thresholds")
         if not quality_scores:
             return self.thresholds
         acceptance_gap = target_acceptance - acceptance_rate
