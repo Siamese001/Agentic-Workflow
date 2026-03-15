@@ -1,3 +1,4 @@
+# adg-grep-ban: skip-file
 """Novel edge-case tests for all ADG accelerators — flush out boundary conditions.
 
 Sections:

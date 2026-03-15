@@ -90,30 +90,35 @@ Expected output:
 
 ## STEP 4: Verify cache health
 
-Use the canonical health check script (uses redis-py HGETALL — correct for HASH types):
+**Option A — script (fastest, no MCP restart needed):**
 
 // turbo
 ```
 python tools/adg/redis_health_check.py --verbose
 ```
 
-**Gate:** Must see `cache HOT` with `node_count` >= 8000 before proceeding with any analysis.
+**Gate:** Must see `cache HOT` with `node_count` >= 8000 before proceeding.
 
-**MCP-accessible verification (STRING sentinel — use this to confirm hotness from MCP context):**
-```
-mcp9_get("adg:status")
-```
-Returns JSON with `timestamp`, `node_count`, `edge_count`, `ingested_at`. Verify `timestamp` matches the latest `adg_indexed_<ts>.sqlite` filename.
+**Option B — custom `adg_redis` MCP tools (preferred after Windsurf restart picks up the server):**
 
-> ⚠️ **CRITICAL: MCP Redis type limitation.** `mcp9_get` is STRING-only.
-> - `mcp9_get("adg:meta")` → ❌ WRONGTYPE error (adg:meta is a HASH)
-> - `mcp9_get("adg:node:*")` → ❌ WRONGTYPE error (HASH)
-> - `mcp9_get("adg:edge:*")` → ❌ WRONGTYPE error (SET)
-> - `mcp9_get("adg:status")` → ✅ STRING sentinel (freshness check only)
-> - `mcp9_get("adg:snapshot")` → ✅ STRING (full snapshot JSON)
->
-> A WRONGTYPE error from `mcp9_get` does NOT mean the cache is cold. Use
-> `adg_redis_query.py` for all node/edge queries (redis-py, supports HASH/SET).
+Call `adg_status` — returns structured JSON with `is_fresh`, `timestamp`, `node_count`,
+`edge_count`, `age_seconds`, `verdict`, and `sqlite_disk_mtime` comparison.
+Response also includes `cache_meta` footer on every tool call so freshness is always visible.
+
+For an authoritative disk+Redis verdict (reads HGETALL adg:meta AND stats the SQLite file):
+```
+adg_assert_fresh()
+```
+
+> **Why the custom server?** The marketplace `@modelcontextprotocol/server-redis` was
+> disabled — it exposes only `get/set/delete/list` (STRING-only).  All ADG cache keys
+> are HASH or SET types, making 99% of the cache inaccessible.  The custom server at
+> `tools/adg/adg_mcp_server.py` (wired as `adg_redis` in `mcp_config.json`) provides:
+> - HGETALL (`adg_meta`, `adg_node`)
+> - SMEMBERS (`adg_nodes_by_layer`, `adg_nodes_by_file`, `adg_edge_fanout`, `adg_edge_fanin`)
+> - LRANGE (`adg_violations`)
+> - TYPE / TTL / SCAN (`redis_type`, `redis_ttl`, `redis_scan`)
+> - Freshness validation baked into every response (`cache_meta` footer)
 
 ---
 

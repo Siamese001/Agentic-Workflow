@@ -1,14 +1,18 @@
 # .pre-commit-config.yaml
-# STREAMLINED: Normalize -> Syntax Gate -> Auto-Fix -> Format -> Analysis -> Structural -> Cleanup
+# STREAMLINED: Normalize -> Syntax Gate -> Auto-Fix -> Format -> Ratchets -> Structural -> ADG -> Cleanup
 # Order of operations:
-#   T0  normalize     — CRLF/LF, trailing whitespace, EOF (deterministic, no churn)
-#   T1  py_compile    — fastest gate, catches broken syntax immediately
-#   T2a ruff --fix    — auto-fix lint issues (imports, unused vars, etc.)
-#   T2b ruff-format   — normalize style on clean code
-#   T3a  burndown      — unified anti-pattern ratchet (new pairs blocked; counts only decrease)
-#   T3b  report-loc    — structural SSOT check (independent of code content)
-#   T3c  guard         — reject generated artifacts that got re-tracked
-#   T3d  purge-cache   — cleanup, always last
+#   T0   normalize    — CRLF/LF, trailing whitespace, EOF (deterministic, no churn)
+#   T1   py_compile   — fastest gate, catches broken syntax immediately
+#   T2a  ruff --fix   — auto-fix lint issues (imports, unused vars, etc.)
+#   T2b  ruff-format  — normalize style on clean code (separate from lint; both required)
+#   T2c  guardian-fix — canonicalize guardian comment format in staged files
+#   T3a  burndown     — unified anti-pattern ratchet (new pairs blocked; counts only decrease)
+#   T3b  report-loc   — structural SSOT path check (no ADG dependency; fast)
+#   T3c  guard        — reject generated artifacts that got re-tracked (no ADG dependency; fast)
+#   T3f  module-coll  — architectural module collision check (no ADG dependency)
+#   T3g  adg-stale    — ADG Redis cache freshness warning
+#   T3h  grep-ban     — hard-fail if staged files use grep/rg as ADG substitute
+#   T5   purge-cache  — cleanup, always last
 #
 # NOTE: T3a–T3d share a single `repo: local` block. Tier labels in comments
 #       are logical groupings; YAML structure groups them under one repo entry.
@@ -271,30 +275,6 @@ repos:
         require_serial: true
         stages: [manual]
 
-      # -- T3g: ADG Staleness Guard (Accelerator #2) ----------------------------
-      # Warns when ADG Redis cache is stale vs. latest Python commits.
-      # --warn mode: always exits 0 (non-blocking); works without Redis in CI.
-      # Developers: run without --warn to get exit-1 enforcement locally.
-      - id: adg-stale-guard
-        name: "T3g: ADG Staleness Guard (Accelerator #2)"
-        entry: python tools/adg/adg_stale_guard.py --warn
-        language: system
-        pass_filenames: false
-        always_run: true
-        require_serial: true
-
-      # -- T3h: ADG Grep-Ban Gate (Accelerator enforcement) ---------------------
-      # Hard-fail if staged Python files use grep/rg/ripgrep as ADG substitutes.
-      # Exempt a specific line with: # guardian: allow-grep -- <justification>
-      - id: adg-grep-ban-gate
-        name: "T3h: ADG Grep-Ban Gate — no grep/rg as ADG fallback"
-        entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/adg_grep_ban_gate.py --staged"
-        language: system
-        pass_filenames: false
-        always_run: false
-        types: [python]
-        require_serial: true
-
       # -- T3b: Report location SSOT (staged-only, structural) ------------------
       - id: check-report-location
         name: "T3b: Report Location SSOT Check"
@@ -325,6 +305,31 @@ repos:
         language: system
         pass_filenames: false
         always_run: true
+        require_serial: true
+
+      # -- T3g: ADG Staleness Guard (Accelerator #2) ----------------------------
+      # Warns when ADG Redis cache is stale vs. latest Python commits.
+      # --warn mode: always exits 0 (non-blocking); works without Redis in CI.
+      # Developers: run without --warn to get exit-1 enforcement locally.
+      - id: adg-stale-guard
+        name: "T3g: ADG Staleness Guard (Accelerator #2)"
+        entry: python tools/adg/adg_stale_guard.py --warn
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+
+      # -- T3h: ADG Grep-Ban Gate (Accelerator enforcement) ---------------------
+      # Hard-fail if staged Python files use grep/rg/ripgrep as ADG substitutes.
+      # Exempt a specific line with: # guardian: allow-grep -- <justification>
+      # Exempt an entire file with: # adg-grep-ban: skip-file (first 5 lines)
+      - id: adg-grep-ban-gate
+        name: "T3h: ADG Grep-Ban Gate — no grep/rg as ADG fallback"
+        entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/adg_grep_ban_gate.py --staged"
+        language: system
+        pass_filenames: false
+        always_run: false
+        types: [python]
         require_serial: true
 
       # -- T5: Pycache purge (FINAL CLEANUP - runs last) ------------------------

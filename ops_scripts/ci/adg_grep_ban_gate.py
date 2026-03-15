@@ -56,6 +56,11 @@ _BANNED_PATTERNS: list[re.Pattern[str]] = [
 # Guardian exemption — if present on the same line the violation is waived
 _EXEMPTION_RE = re.compile(r"#\s*guardian:\s*allow-grep\s+--\s+\S")
 
+# File-level skip directive — checked in first 5 lines only.
+# Use in test files that contain banned patterns as string literals (fixtures).
+# Format: # adg-grep-ban: skip-file
+_FILE_SKIP_RE = re.compile(r"#\s*adg-grep-ban:\s*skip-file")
+
 
 # ---------------------------------------------------------------------------
 # Core scanner
@@ -70,6 +75,10 @@ def scan_file(path: Path) -> list[tuple[int, str]]:
     except OSError as exc:
         print(f"WARNING: could not read {path}: {exc}", file=sys.stderr)
         return violations
+
+    for header_line in lines[:5]:
+        if _FILE_SKIP_RE.search(header_line):
+            return violations
 
     for line_no, line in enumerate(lines, start=1):
         stripped = line.lstrip()

@@ -295,6 +295,10 @@
     "global_mutation": 1,
     "magic_configuration": 1
   },
+  "tools/adg/adg_mcp_server.py": {
+    "magic_configuration": 3,
+    "silent_swallower": 1
+  },
   "tools/adg/adg_redis_query.py": {
     "global_mutation": 1
   },

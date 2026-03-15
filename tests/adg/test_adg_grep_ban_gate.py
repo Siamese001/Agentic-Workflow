@@ -1,3 +1,4 @@
+# adg-grep-ban: skip-file
 """Tests for the ADG Grep-Ban Gate and enforcement hardenings.
 
 Coverage:
@@ -15,8 +16,8 @@ from __future__ import annotations
 import subprocess
 import sys
 import tempfile
-from pathlib import Path
 from contextlib import redirect_stderr
+from pathlib import Path
 from unittest.mock import MagicMock, create_autospec, patch
 
 import pytest
@@ -77,9 +78,7 @@ class TestGrepBanScanner:
 
     def test_pure_comment_line_not_flagged_by_scan_file(self):
         """scan_file() must skip pure comment lines even if they contain banned patterns."""
-        with tempfile.NamedTemporaryFile(
-            suffix=".py", mode="w", encoding="utf-8", delete=False
-        ) as f:
+        with tempfile.NamedTemporaryFile(suffix=".py", mode="w", encoding="utf-8", delete=False) as f:
             f.write("# os.popen('grep -r ClassName .')  -- do not use this\n")
             tmp = Path(f.name)
         try:
@@ -118,9 +117,7 @@ class TestGrepBanExemption:
         assert _EXEMPTION_RE.search(line), "Canonical allow-grep exemption must match"
 
     def test_exemption_suppresses_scan_file_violation(self):
-        with tempfile.NamedTemporaryFile(
-            suffix=".py", mode="w", encoding="utf-8", delete=False
-        ) as f:
+        with tempfile.NamedTemporaryFile(suffix=".py", mode="w", encoding="utf-8", delete=False) as f:
             f.write(
                 '    result = subprocess.run(["grep", "-r", "x"])  '
                 "# guardian: allow-grep -- used in wrapper around legacy shell script\n"
@@ -128,26 +125,18 @@ class TestGrepBanExemption:
             tmp = Path(f.name)
         try:
             vs = scan_file(tmp)
-            assert vs == [], (
-                "Exempted line must produce zero violations; got: %r" % vs
-            )
+            assert vs == [], f"Exempted line must produce zero violations; got: {vs!r}"
         finally:
             tmp.unlink()
 
     def test_non_canonical_exemption_does_not_suppress(self):
         """'# allow-grep' without 'guardian:' prefix is NOT a valid exemption."""
-        with tempfile.NamedTemporaryFile(
-            suffix=".py", mode="w", encoding="utf-8", delete=False
-        ) as f:
-            f.write(
-                '    subprocess.run(["grep", "-r", "foo"])  # allow-grep -- test\n'
-            )
+        with tempfile.NamedTemporaryFile(suffix=".py", mode="w", encoding="utf-8", delete=False) as f:
+            f.write('    subprocess.run(["grep", "-r", "foo"])  # allow-grep -- test\n')
             tmp = Path(f.name)
         try:
             vs = scan_file(tmp)
-            assert len(vs) == 1, (
-                "Non-canonical exemption must NOT suppress the violation"
-            )
+            assert len(vs) == 1, "Non-canonical exemption must NOT suppress the violation"
         finally:
             tmp.unlink()
 
@@ -204,9 +193,7 @@ class TestGrepBanNegative:
 
     def test_scan_file_on_clean_file_returns_empty(self):
         """A file with only ADG calls must produce zero violations."""
-        with tempfile.NamedTemporaryFile(
-            suffix=".py", mode="w", encoding="utf-8", delete=False
-        ) as f:
+        with tempfile.NamedTemporaryFile(suffix=".py", mode="w", encoding="utf-8", delete=False) as f:
             f.write(
                 "from tools.adg.adg_redis_query import ADGRedisClient\n"
                 "adg = ADGRedisClient()\n"
@@ -229,9 +216,7 @@ class TestGrepBanScanFiles:
     """Full-file scanning: multiple violations, mixed exemptions."""
 
     def test_scan_detects_multiple_violations_in_one_file(self):
-        with tempfile.NamedTemporaryFile(
-            suffix=".py", mode="w", encoding="utf-8", delete=False
-        ) as f:
+        with tempfile.NamedTemporaryFile(suffix=".py", mode="w", encoding="utf-8", delete=False) as f:
             f.write(
                 '    subprocess.run(["grep", "-r", "foo"])\n'
                 '    subprocess.run(["rg", "bar"])\n'
@@ -251,26 +236,20 @@ class TestGrepBanScanFiles:
             "    adg.search_nodes('x')\n",
             '    subprocess.run(["rg", "y"])\n',
         ]:
-            f = tempfile.NamedTemporaryFile(
-                suffix=".py", mode="w", encoding="utf-8", delete=False
-            )
+            f = tempfile.NamedTemporaryFile(suffix=".py", mode="w", encoding="utf-8", delete=False)
             f.write(content)
             f.close()
             tmps.append(Path(f.name))
         try:
             result = scan_files(tmps)
-            assert len(result) == 2, (
-                f"Expected violations in 2 files (not the clean one), got {len(result)}"
-            )
+            assert len(result) == 2, f"Expected violations in 2 files (not the clean one), got {len(result)}"
         finally:
             for p in tmps:
                 p.unlink()
 
     def test_exit_code_1_on_violation(self):
         """Gate CLI exits 1 when violations are present."""
-        with tempfile.NamedTemporaryFile(
-            suffix=".py", mode="w", encoding="utf-8", delete=False
-        ) as f:
+        with tempfile.NamedTemporaryFile(suffix=".py", mode="w", encoding="utf-8", delete=False) as f:
             f.write('    subprocess.run(["grep", "-r", "MyClass", "."])\n')
             tmp = Path(f.name)
         try:
@@ -285,20 +264,14 @@ class TestGrepBanScanFiles:
                 errors="replace",
                 timeout=15,
             )
-            assert r.returncode == 1, (
-                f"Gate must exit 1 on violation; got {r.returncode}"
-            )
-            assert "grep-ban violation" in r.stderr.lower(), (
-                "Stderr must mention 'grep-ban violation'"
-            )
+            assert r.returncode == 1, f"Gate must exit 1 on violation; got {r.returncode}"
+            assert "grep-ban violation" in r.stderr.lower(), "Stderr must mention 'grep-ban violation'"
         finally:
             tmp.unlink()
 
     def test_exit_code_0_on_clean_file(self):
         """Gate CLI exits 0 on a clean file."""
-        with tempfile.NamedTemporaryFile(
-            suffix=".py", mode="w", encoding="utf-8", delete=False
-        ) as f:
+        with tempfile.NamedTemporaryFile(suffix=".py", mode="w", encoding="utf-8", delete=False) as f:
             f.write("adg = ADGRedisClient()\nnodes = adg.search_nodes('X')\n")
             tmp = Path(f.name)
         try:
@@ -314,8 +287,7 @@ class TestGrepBanScanFiles:
                 timeout=15,
             )
             assert r.returncode == 0, (
-                f"Gate must exit 0 on clean file; got {r.returncode}. "
-                f"stderr={r.stderr!r}"
+                f"Gate must exit 0 on clean file; got {r.returncode}. stderr={r.stderr!r}"
             )
         finally:
             tmp.unlink()
@@ -330,10 +302,7 @@ class TestGrepBanScanFiles:
             errors="replace",
             timeout=15,
         )
-        assert r.returncode == 0, (
-            f"adg_grep_ban_gate.py must pass its own check; "
-            f"stderr={r.stderr!r}"
-        )
+        assert r.returncode == 0, f"adg_grep_ban_gate.py must pass its own check; stderr={r.stderr!r}"
 
 
 # ===========================================================================
@@ -348,18 +317,21 @@ class TestConnectionErrorHandling:
     and deterministic regardless of whether a local Redis instance is running.
     """
 
-    def _assert_cli_exits_1_on_connection_error(
-        self, cli_fn, argv: list[str]
-    ) -> None:
+    def _assert_cli_exits_1_on_connection_error(self, cli_fn, argv: list[str]) -> None:
         """Call cli_fn() with patched ping() -> ConnectionError, assert exit 1."""
         import io
+
         import redis as _redis
 
         err_buf = io.StringIO()
-        with patch(
-            "tools.adg.adg_redis_query.ADGRedisClient.ping",
-            side_effect=_redis.ConnectionError("Connection refused"),
-        ), patch("sys.argv", argv), redirect_stderr(err_buf):
+        with (
+            patch(
+                "tools.adg.adg_redis_query.ADGRedisClient.ping",
+                side_effect=_redis.ConnectionError("Connection refused"),
+            ),
+            patch("sys.argv", argv),
+            redirect_stderr(err_buf),
+        ):
             with pytest.raises(SystemExit) as exc_info:
                 cli_fn()
         assert exc_info.value.code == 1, (
@@ -373,34 +345,33 @@ class TestConnectionErrorHandling:
     def test_adg_redis_query_exits_1_on_connection_error(self):
         from tools.adg.adg_redis_query import _cli
 
-        self._assert_cli_exits_1_on_connection_error(
-            _cli, ["adg_redis_query", "meta"]
-        )
+        self._assert_cli_exits_1_on_connection_error(_cli, ["adg_redis_query", "meta"])
 
     def test_adg_test_selector_exits_1_on_connection_error(self):
         from tools.adg.adg_test_selector import _cli
 
-        self._assert_cli_exits_1_on_connection_error(
-            _cli, ["adg_test_selector", "some_file.py"]
-        )
+        self._assert_cli_exits_1_on_connection_error(_cli, ["adg_test_selector", "some_file.py"])
 
     def test_adg_type_check_exits_1_on_connection_error(self):
         from tools.adg.adg_type_check import _cli
 
-        self._assert_cli_exits_1_on_connection_error(
-            _cli, ["adg_type_check", "some_file.py"]
-        )
+        self._assert_cli_exits_1_on_connection_error(_cli, ["adg_type_check", "some_file.py"])
 
     def test_adg_test_selector_runtime_error_also_exits_1(self):
         """RuntimeError (cache not loaded) also exits 1 cleanly."""
         import io
+
         from tools.adg.adg_test_selector import _cli
 
         err_buf = io.StringIO()
-        with patch(
-            "tools.adg.adg_redis_query.ADGRedisClient.ping",
-            side_effect=RuntimeError("ADG Redis cache is not loaded"),
-        ), patch("sys.argv", ["adg_test_selector", "some_file.py"]), redirect_stderr(err_buf):
+        with (
+            patch(
+                "tools.adg.adg_redis_query.ADGRedisClient.ping",
+                side_effect=RuntimeError("ADG Redis cache is not loaded"),
+            ),
+            patch("sys.argv", ["adg_test_selector", "some_file.py"]),
+            redirect_stderr(err_buf),
+        ):
             with pytest.raises(SystemExit) as exc_info:
                 _cli()
         assert exc_info.value.code == 1
@@ -409,19 +380,23 @@ class TestConnectionErrorHandling:
     def test_error_message_mentions_adg_redis(self):
         """The clean error message must identify the problem clearly."""
         import io
+
         import redis as _redis
+
         from tools.adg.adg_redis_query import _cli
 
         err_buf = io.StringIO()
-        with patch(
-            "tools.adg.adg_redis_query.ADGRedisClient.ping",
-            side_effect=_redis.ConnectionError("Connection refused"),
-        ), patch("sys.argv", ["adg_redis_query", "meta"]), redirect_stderr(err_buf):
+        with (
+            patch(
+                "tools.adg.adg_redis_query.ADGRedisClient.ping",
+                side_effect=_redis.ConnectionError("Connection refused"),
+            ),
+            patch("sys.argv", ["adg_redis_query", "meta"]),
+            redirect_stderr(err_buf),
+        ):
             with pytest.raises(SystemExit):
                 _cli()
-        assert "ERROR" in err_buf.getvalue(), (
-            "Error message must start with ERROR: ..."
-        )
+        assert "ERROR" in err_buf.getvalue(), "Error message must start with ERROR: ..."
 
 
 # ===========================================================================
@@ -545,9 +520,7 @@ class TestPreCommitT3hContract:
         t3g_pos = cfg.find("adg-stale-guard")
         t3h_pos = cfg.find("adg-grep-ban-gate")
         assert t3g_pos != -1 and t3h_pos != -1
-        assert t3g_pos < t3h_pos, (
-            "T3h grep-ban must appear after T3g stale-guard in .pre-commit-config.yaml"
-        )
+        assert t3g_pos < t3h_pos, "T3h grep-ban must appear after T3g stale-guard in .pre-commit-config.yaml"
 
 
 # ===========================================================================

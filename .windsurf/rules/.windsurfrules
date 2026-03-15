@@ -292,31 +292,45 @@ These five tools MUST be used as the primary default for their respective tasks.
 - ❌ `python -m mypy <entire_package>` → use `adg_type_check.py --from-diff`
 - ❌ `pytest tests/` (broad) before convergence → use `adg_test_selector.py --from-diff`
 - ❌ Manually editing guardian comments → let pre-commit T2c fix them automatically
-- ❌ `mcp9_get("adg:meta")` or `mcp9_get("adg:node:*")` or `mcp9_get("adg:edge:*")` → these are HASH/SET types; MCP Redis `mcp9_get` is STRING-only and returns WRONGTYPE error on all ADG cache keys
+- ❌ `mcp9_get("adg:meta")` or `mcp9_get("adg:node:*")` or `mcp9_get("adg:edge:*")` → marketplace Redis MCP is STRING-only; use the custom `adg_redis` MCP server tools instead
 
-**MCP Redis type discipline (MANDATORY):**
+**Custom ADG Redis MCP server — `adg_redis` (MANDATORY, replaces marketplace Redis):**
 
-The Windsurf MCP Redis server (`mcp9_get`/`mcp9_set`/`mcp9_list`/`mcp9_delete`) **only supports STRING operations**. The ADG hot cache uses HASH and SET types exclusively:
+`tools/adg/adg_mcp_server.py` is wired in `mcp_config.json` as `adg_redis`. The marketplace
+`@modelcontextprotocol/server-redis` is **disabled** — it was STRING-only and could not access
+any ADG cache keys (HASH/SET types). The custom server provides:
 
-| Redis key pattern | Type | MCP accessible? |
+| Tool | Redis op | Use for |
 |---|---|---|
-| `adg:meta` | HASH | ❌ WRONGTYPE error |
-| `adg:node:<id>` | HASH | ❌ WRONGTYPE error |
-| `adg:nodes:by_layer:<l>` | SET | ❌ WRONGTYPE error |
-| `adg:edge:<src>:<rel>` | SET | ❌ WRONGTYPE error |
-| `adg:snapshot` | STRING | ✅ readable via `mcp9_get` |
-| `adg:status` | STRING | ✅ readable via `mcp9_get` — **PRIMARY MCP freshness check** |
+| `adg_status` | GET adg:status | **PRIMARY freshness check — call first** |
+| `adg_meta` | HGETALL adg:meta | Full metadata: timestamp, node/edge counts, digest |
+| `adg_assert_fresh` | HGETALL adg:meta + disk stat | Authoritative freshness verdict vs SQLite mtime |
+| `adg_snapshot` | GET adg:snapshot | Full snapshot JSON (large — use adg_meta for counts) |
+| `adg_node` | HGETALL adg:node:\<id\> | Single node attributes |
+| `adg_nodes_by_layer` | SMEMBERS adg:nodes:by_layer:\<l\> | Paginated node IDs by layer |
+| `adg_nodes_by_file` | SMEMBERS adg:nodes:by_file:\<p\> | Node IDs for all symbols in a file |
+| `adg_edge_fanout` | SMEMBERS adg:edge:\<src\>:\<rel\> | Outgoing edges from a node |
+| `adg_edge_fanin` | SMEMBERS adg:edge:in:\<tgt\>:\<rel\> | Incoming edges to a node |
+| `adg_violations` | LRANGE adg:violations | All anti-pattern violations |
+| `redis_type` | TYPE \<key\> | Determine key type before reading |
+| `redis_hgetall` | HGETALL \<key\> | Read any HASH key |
+| `redis_smembers` | SMEMBERS \<key\> | Read any SET key |
+| `redis_scan` | SCAN cursor | Safe key pattern search (replaces O(N) KEYS \*) |
+| `redis_ttl` | TTL \<key\> | Inspect key expiry |
+
+**Every response includes `cache_meta`** — `{timestamp, node_count, edge_count, ingested_at, age_seconds, is_fresh}` — so freshness is always visible without a separate call.
 
 **Rules:**
-- ✅ Use `mcp9_get("adg:status")` to verify cache hotness from MCP context — this returns a JSON string with `timestamp`, `node_count`, `edge_count`, `ingested_at`
-- ✅ Use `mcp9_get("adg:snapshot")` to read the full snapshot JSON from MCP context
-- ✅ Use `tools/adg/adg_redis_query.py` (redis-py, supports HASH/SET) for all node/edge queries
-- ✅ Use `tools/adg/adg_stale_guard.py` for authoritative freshness assertion (uses redis-py `hget`)
-- ❌ NEVER use `mcp9_get` on HASH/SET keys — it will always return WRONGTYPE error
-- ❌ NEVER interpret a WRONGTYPE error or empty `mcp9_get` result as "Redis is cold/empty" — the cache may be fully hot but the key is not STRING type
-- ❌ NEVER fall back to SQLite after a `mcp9_get` WRONGTYPE failure — use `adg_redis_query.py` instead
+- ✅ Call `adg_status` first on every session to confirm cache is HOT before any analysis
+- ✅ Use `adg_assert_fresh` (reads HASH + disk) when you need an authoritative freshness verdict
+- ✅ Use `adg_meta` for metadata, `adg_nodes_by_layer` / `adg_nodes_by_file` for structure queries
+- ✅ Use `redis_type` when unsure which read tool to use for an arbitrary key
+- ❌ NEVER use `mcp9_get` on HASH/SET keys — marketplace server is disabled; use `adg_redis` tools
+- ❌ NEVER interpret a WRONGTYPE or empty result as "cache cold" — always call `adg_status` to check
+- ❌ NEVER fall back to SQLite after any Redis read failure — fix the cache, do not bypass it
 
-**`adg:status` sentinel** is written by `adg_redis_ingest.py` on every ingest. If `mcp9_get("adg:status")` returns a non-empty JSON with a `timestamp` matching the current run's `adg_indexed_<ts>.sqlite`, the cache is confirmed HOT.
+**`adg:status` STRING sentinel** is still written by `adg_redis_ingest.py` on every ingest.
+It is the lowest-overhead freshness probe: `adg_status` reads it + validates against SQLite mtime.
 
 ---
 
