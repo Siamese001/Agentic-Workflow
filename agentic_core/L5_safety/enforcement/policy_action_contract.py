@@ -376,6 +376,7 @@ def enforce_policy_before_action(
     """
     meta = metadata or {}
     trace_id = _get_trace_id()
+    _emit_records_execution_trace(trace_id or run_id, LayerSegment.L5_POLICY, f"enforce_policy:{action_name}")
 
     # Step 1 — Resolve policy hash (references_policy_hash edge)
     resolved_hash = _resolve_policy_hash(policy_hash, actor_id)
