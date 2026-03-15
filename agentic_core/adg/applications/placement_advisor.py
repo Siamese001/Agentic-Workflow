@@ -19,6 +19,7 @@ from __future__ import annotations
 import logging
 from dataclasses import dataclass, field
 from pathlib import Path
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -229,6 +230,8 @@ class PlacementAdvisor:
 
     def suggest_placement(self, kind: str, name: str) -> PlacementSuggestion:
         """Suggest canonical placement for a new file/symbol of the given kind."""
+        import uuid  # noqa: PLC0415
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"PlacementAdvisor.suggest_placement:{kind}/{name}")
         from agentic_core.adg.schema import ALLOWED_LAYER_EDGES, module_path_to_layer
 
         self._build_deps()

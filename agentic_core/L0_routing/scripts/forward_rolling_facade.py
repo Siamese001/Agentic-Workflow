@@ -19,6 +19,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from agentic_core.L2_execution.providers import get_clock
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.seams.contracts.forward_rolling import (
     AdaptiveDepthManager,
     ContextPruningStrategy,
@@ -158,6 +159,9 @@ class ForwardRollingFacade:
         Returns:
             ForwardRollingResult with execution details
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"ForwardRollingFacade.execute:{agent_name}")
         start_time = get_clock().now_epoch()
         self._metrics.total_executions += 1
 
@@ -376,17 +380,9 @@ class ForwardRollingFacade:
             return self._monitor.get_overall_health()
         return HealthStatus.HEALTHY
 
-    def run_health_checks(self) -> list[dict[str, Any]]:
-        """Run all health checks."""
-        if self._monitor:
-            checks = self._monitor.run_health_checks()
-            return [
-                {
-                    "name": c.name,
-                    "status": c.status.value,
-                    "message": c.message,
-                    "duration_ms": c.duration_ms,
-                }
+def rollback(self) -> bool:
+    """Rollback to previous configuration."""
+    return self._config.rollback()
                 for c in checks
             ]
         return []

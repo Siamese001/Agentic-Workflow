@@ -23,6 +23,7 @@ import logging
 from typing import TYPE_CHECKING, Any
 
 from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBridge
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 if TYPE_CHECKING:
     pass
@@ -71,6 +72,9 @@ class ADGMemoryAdapter:
             ts: ISO timestamp string (e.g. "20260311T193725Z")
             diff_edges: Net edge delta vs previous snapshot (for observations)
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"MemoryMCPAdapter.ingest_snapshot:{ts}")
         snapshot_name = f"ADGSnapshot_{ts}"
         violation_edges = [e for e in result.edges if getattr(e, "relation_type", "") == "violates"]
         violation_count = len(violation_edges)

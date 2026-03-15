@@ -14,6 +14,7 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.utils.decorators_compat_util import standard_heal
 
 
@@ -27,6 +28,9 @@ class ASTValidatorBase(ast.NodeVisitor):
 
     def report(self, message: str, node: ast.AST) -> None:
         """Report a violation found during AST traversal."""
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, f"ASTValidatorBase.report:{self._current_file}")
         self.violations.append(
             {
                 "message": message,
