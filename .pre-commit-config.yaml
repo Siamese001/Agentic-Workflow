@@ -1,22 +1,31 @@
 # .pre-commit-config.yaml
 # STREAMLINED: Normalize -> Syntax Gate -> Auto-Fix -> Format -> Ratchets -> Structural -> ADG -> Cleanup
 # Order of operations:
-#   T0-guard  hitl     — commit-msg: require HITL-APPROVED when new guardian exemptions added
-#   T0   normalize    — CRLF/LF, trailing whitespace, EOF (deterministic, no churn)
-#   T1   py_compile   — fastest gate, catches broken syntax immediately
-#   T2a  ruff --fix   — auto-fix lint issues (imports, unused vars, etc.)
-#   T2b  ruff-format  — normalize style on clean code (separate from lint; both required)
-#   T2c  guardian-fix — canonicalize guardian comment format in staged files
-#   T3a  burndown     — unified anti-pattern ratchet (new pairs blocked; counts only decrease)
-#   T3b  report-loc   — structural SSOT path check (no ADG dependency; fast)
-#   T3c  guard        — reject generated artifacts that got re-tracked (no ADG dependency; fast)
-#   T3d  tooling-bnd  — tooling/apps_* boundary guard, ops_scripts/ci must not import apps_* (no ADG dependency)
-#   T3f  module-coll  — architectural module collision check (no ADG dependency)
-#   T3g  adg-stale    — ADG Redis cache freshness warning
-#   T3h  grep-ban     — hard-fail if staged files use grep/rg as ADG substitute
-#   T5   purge-cache  — cleanup, always last
+#   T0   guards/normalize — no-verify guard, HITL, agent-deletion, whitespace/LF/EOF/merge-conflict
+#   T1   py_compile       — fastest gate, catches broken syntax immediately
+#   T2   ruff --fix       — auto-fix lint issues (imports, unused vars, etc.)
+#   T3   ruff-format      — normalize style on clean code (separate from lint; both required)
+#   T4   guardian-fix     — canonicalize guardian comment format in staged files
+#   T5   adg-ci-gates     — Wave 0 ADG CI delta gates M1-M6 (manual only)
+#   T6   burndown         — unified anti-pattern ratchet (new pairs blocked; counts only decrease)
+#   T7   c0-sovereignty   — embedding must not drive routing (manual only)
+#   T8   dedup-guard      — prevent duplicate symbols (manual only)
+#   T9   script-sprawl    — block new runner scripts (manual only)
+#   T10  shim-discipline  — backward-compatibility enforcement (manual only)
+#   T11  rollback-gate    — multi-file phase checkpoints (manual only)
+#   T12  report-loc       — structural SSOT path check (no ADG dependency; fast)
+#   T13  guard            — reject generated artifacts that got re-tracked (no ADG dependency; fast)
+#   T14  tooling-bnd      — tooling/apps_* boundary guard, ops_scripts/ci must not import apps_* (no ADG dependency)
+#   T15  module-coll      — architectural module collision check (no ADG dependency)
+#   T16  adg-stale        — ADG Redis cache freshness warning
+#   T17  grep-ban         — hard-fail if staged files use grep/rg as ADG substitute
+#   T18  mypy-ban         — hard-fail if staged files invoke mypy directly via subprocess
+#   T19  pytest-ban       — hard-fail if staged files invoke pytest broadly
+#   T20  yaml-grep-ban    — hard-fail if staged YAML workflows use grep/rg in run: steps
+#   T21  skip-ratchet     — enforce skip-file directive count ceiling
+#   T22  purge-cache      — cleanup, always last
 #
-# NOTE: T3a–T3d share a single `repo: local` block. Tier labels in comments
+# NOTE: T6–T21 share a single `repo: local` block. Tier labels in comments
 #       are logical groupings; YAML structure groups them under one repo entry.
 #
 # NOTE: `default_language_version` applies to hooks with `language: python`
@@ -156,31 +165,31 @@ repos:
         require_serial: true
 
   # ============================================================================
-  # TIER 2: Auto-Fixers & Formatters (clean code before analysis)
+  # TIER 2-3: Auto-Fixers & Formatters (clean code before analysis)
   # ============================================================================
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.14.13
     hooks:
       - id: ruff
-        name: "T2a: Ruff Lint & Auto-Fix"
+        name: "T2: Ruff Lint & Auto-Fix"
         args: [--fix]
         exclude: ops_scripts/ci/check_anti_patterns\.py
       - id: ruff-format
-        name: "T2b: Ruff Format"
+        name: "T3: Ruff Format"
         exclude: ops_scripts/ci/check_anti_patterns\.py
 
   # ============================================================================
-  # TIER 2 (continued): ADG Accelerator Auto-Fixers
+  # TIER 4: ADG Accelerator Auto-Fixers
   # Runs after ruff-format so formatting is canonical before guardian fixes.
   # ============================================================================
   - repo: local
     hooks:
-      # -- T2c: Guardian Comment Auto-Fix (Accelerator #1) ----------------------
+      # -- T4: Guardian Comment Auto-Fix (Accelerator #1) -----------------------
       # Fixes non-canonical guardian comment format in staged files.
       # Canonical form: # guardian: allow-<type> -- <justification>
       # No Redis dependency — runs on raw source. Always exit 0 (auto-fixer).
       - id: guardian-comment-fixer
-        name: "T2c: Guardian Comment Auto-Fix (Accelerator #1)"
+        name: "T4: Guardian Comment Auto-Fix (Accelerator #1)"
         entry: python tools/adg/adg_antipattern_fixer.py --staged
         language: system
         pass_filenames: false
@@ -188,16 +197,16 @@ repos:
         require_serial: true
 
   # ============================================================================
-  # TIER 3: Logic Analysis, Structural Checks, Guard & Cleanup (local hooks)
+  # TIER 5+: Logic Analysis, Structural Checks, Guard & Cleanup (local hooks)
   # All hooks below share this single `repo: local` block.
   # ============================================================================
   - repo: local
     hooks:
-      # -- T3a-gates: Wave 0 ADG CI Delta Gates (M1-M6) -------------------------
+      # -- T5: Wave 0 ADG CI Delta Gates (M1-M6) ----------------------------------
       # Six delta gates from Plan Hardening Addendum. Warn mode by default;
       # flip to enforce via: python ops_scripts/ci/_adg_ci_gates.py --set-enforce M1,M2,M3
       - id: adg-ci-gates
-        name: "T3a-gates: ADG CI Delta Gates (Wave 0 M1-M6)"
+        name: "T5: ADG CI Delta Gates (Wave 0 M1-M6)"
         entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/_adg_ci_gates.py"
         language: system
         pass_filenames: false
@@ -205,25 +214,25 @@ repos:
         require_serial: true
         stages: [manual]
 
-      # -- T3a-exemption: Guardian Exemption Quality Ratchet --------------------
+      # -- T6: Guardian Exemption Quality Ratchet ----------------------------------
       # Closes the scanner blind spot: burndown gate only counts unwhitelisted
       # violations; once a guardian comment is added the violation is invisible.
       # Rule 1 (zero-tolerance): every guardian comment MUST have -- <justification>.
       # Rule 2 (ratchet): exemption counts in production code may only decrease.
       # Init:  ADG_EXEMPTION_INIT=1 python ops_scripts/ci/guardian_exemption_gate.py
       - id: guardian-exemption-gate
-        name: "T3a-exemption: Guardian Exemption Quality Ratchet"
+        name: "T6: Guardian Exemption Quality Ratchet"
         entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/guardian_exemption_gate.py"
         language: system
         pass_filenames: false
         always_run: true
         require_serial: true
 
-      # -- T3a: Unified ADG Anti-Pattern Burndown Ratchet -----------------------
+      # -- T7: Unified ADG Anti-Pattern Burndown Ratchet ---------------------------
       # Single scan enforces both Rule 1 (no new file+category pairs) and
       # Rule 2 (existing counts may only decrease). Supersedes check_anti_patterns.py.
       - id: adg-burndown-gate
-        name: "T3a: ADG Anti-Pattern Burndown Ratchet"
+        name: "T7: ADG Anti-Pattern Burndown Ratchet"
         entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/adg_burndown_gate.py"
         language: system
         pass_filenames: false
@@ -231,10 +240,10 @@ repos:
         require_serial: true
         exclude: (ops_scripts/ci/adg_burndown_gate\.py|ops_scripts/.*|tests/.*|__pycache__/.*|\.nox/.*|archives/.*|\.backup/.*)
 
-      # -- T3a-c0: C0 Sovereignty Guardian (embedding must not drive routing) -----
+      # -- T8: C0 Sovereignty Guardian (embedding must not drive routing) ----------
       # OPTIMIZED: Run manually or in CI only - not needed for every local commit
       - id: check-c0-sovereignty
-        name: "T3a-c0: C0 Sovereignty — Embedding Boundary Enforcement"
+        name: "T8: C0 Sovereignty — Embedding Boundary Enforcement"
         entry: cmd /c "set PYTHONPATH=.&& python agentic_core/L0_routing/scripts/run_guardian_c0_sovereignty.py"
         language: system
         pass_filenames: false
@@ -242,10 +251,10 @@ repos:
         require_serial: true
         stages: [manual]
 
-      # -- T3a-dedup: Dedup Guard (prevent duplicate symbols) -------------------
+      # -- T9: Dedup Guard (prevent duplicate symbols) ----------------------------
       # OPTIMIZED: Run manually or in CI only - not needed for every local commit
       - id: check-dedup-violations
-        name: "T3a-dedup: Dedup Guard — Prevent Duplicate Symbols"
+        name: "T9: Dedup Guard — Prevent Duplicate Symbols"
         entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/check_dedup_violations.py"
         language: system
         pass_filenames: false
@@ -253,10 +262,10 @@ repos:
         require_serial: true
         stages: [manual]
 
-      # -- T3a-sprawl: Script Sprawl Guard (block new runner scripts) -----------
+      # -- T10: Script Sprawl Guard (block new runner scripts) --------------------
       # OPTIMIZED: Run manually or in CI only - not needed for every local commit
       - id: check-script-sprawl
-        name: "T3a-sprawl: Script Sprawl Guard — Block New Runners"
+        name: "T10: Script Sprawl Guard — Block New Runners"
         entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/check_script_sprawl.py"
         language: system
         pass_filenames: false
@@ -264,10 +273,10 @@ repos:
         require_serial: true
         stages: [manual]
 
-      # -- T3a-shim: Shim Discipline (backward-compatibility enforcement) -------
+      # -- T11: Shim Discipline (backward-compatibility enforcement) --------------
       # OPTIMIZED: Run manually or in CI only - not needed for every local commit
       - id: check-shim-discipline
-        name: "T3a-shim: Shim Discipline — Backward-Compatibility"
+        name: "T11: Shim Discipline — Backward-Compatibility"
         entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/check_shim_discipline.py"
         language: system
         pass_filenames: false
@@ -275,10 +284,10 @@ repos:
         require_serial: true
         stages: [manual]
 
-      # -- T3a-rollback: Rollback Gate (multi-file phase checkpoints) -----------
+      # -- T12: Rollback Gate (multi-file phase checkpoints) ----------------------
       # OPTIMIZED: Run manually or in CI only - not needed for every local commit
       - id: check-rollback-checkpoints
-        name: "T3a-rollback: Rollback Gate — Phase Checkpoints"
+        name: "T12: Rollback Gate — Phase Checkpoints"
         entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/check_rollback_checkpoints.py"
         language: system
         pass_filenames: false
@@ -286,32 +295,32 @@ repos:
         require_serial: true
         stages: [manual]
 
-      # -- T3b: Report location SSOT (staged-only, structural) ------------------
+      # -- T13: Report location SSOT (staged-only, structural) -------------------
       - id: check-report-location
-        name: "T3b: Report Location SSOT Check"
+        name: "T13: Report Location SSOT Check"
         entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/hooks/validate_report_location.py --staged-only"
         language: system
         pass_filenames: false
         always_run: true
         require_serial: true
 
-      # -- T3c: Generated-artifact tracking guard -------------------------------
+      # -- T14: Generated-artifact tracking guard ----------------------------------
       # Rejects commits if git tracks any of:
       #   **/guardian_report.json, **/.core_golden_seal, v15_d_evidence_*.json
       # On failure: prints tracked paths + exact `git rm --cached` fix.
       - id: reject-generated-artifacts-tracked
-        name: "T3c: Reject Tracked Generated Artifacts"
+        name: "T14: Reject Tracked Generated Artifacts"
         entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/hooks/reject_tracked_generated_artifacts.py"
         language: system
         pass_filenames: false
         always_run: true
         require_serial: true
 
-      # -- T3d: Tooling/Apps Boundary Guard (§8.3) ---------------------------------
+      # -- T15: Tooling/Apps Boundary Guard (§8.3) ----------------------------------
       # tools/evidence and ops_scripts/ci must not import apps_* runtime modules.
       # Tooling must remain pure — apps_* only referenced as strings/paths.
       - id: check-tooling-apps-boundary
-        name: "T3d: Tooling/Apps Boundary Guard (§8.3)"
+        name: "T15: Tooling/Apps Boundary Guard (§8.3)"
         entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/check_tooling_apps_boundary.py"
         language: system
         pass_filenames: false
@@ -319,35 +328,35 @@ repos:
         types: [python]
         require_serial: true
 
-      # -- T3f: Module Collision Guard (architectural enforcement) ----------------
+      # -- T16: Module Collision Guard (architectural enforcement) -----------------
       # Scope: Detect duplicate modules, logical import paths, case collisions
       # Blocks commits that violate architectural module integrity
       - id: module-collision-guard
-        name: "T3f: Module Collision Guard"
+        name: "T16: Module Collision Guard"
         entry: cmd /c "set PYTHONPATH=.&& python agentic_core/L5_safety/enforcement/module_collision_guardrail.py"
         language: system
         pass_filenames: false
         always_run: true
         require_serial: true
 
-      # -- T3g: ADG Staleness Guard (Accelerator #2) ----------------------------
+      # -- T17: ADG Staleness Guard (Accelerator #2) -------------------------------
       # Warns when ADG Redis cache is stale vs. latest Python commits.
       # --warn mode: always exits 0 (non-blocking); works without Redis in CI.
       # Developers: run without --warn to get exit-1 enforcement locally.
       - id: adg-stale-guard
-        name: "T3g: ADG Staleness Guard (Accelerator #2)"
+        name: "T17: ADG Staleness Guard (Accelerator #2)"
         entry: python tools/adg/adg_stale_guard.py --warn
         language: system
         pass_filenames: false
         always_run: true
         require_serial: true
 
-      # -- T3h: ADG Grep-Ban Gate (Accelerator enforcement) ---------------------
+      # -- T18: ADG Grep-Ban Gate (Accelerator enforcement) ------------------------
       # Hard-fail if staged Python files use grep/rg/ripgrep as ADG substitutes.
       # Exempt a specific line with: # guardian: allow-grep -- <justification>
       # Exempt an entire file with: # adg-grep-ban: skip-file (first 5 lines)
       - id: adg-grep-ban-gate
-        name: "T3h: ADG Grep-Ban Gate — no grep/rg as ADG fallback"
+        name: "T18: ADG Grep-Ban Gate — no grep/rg as ADG fallback"
         entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/adg_grep_ban_gate.py --staged"
         language: system
         pass_filenames: false
@@ -355,13 +364,13 @@ repos:
         types: [python]
         require_serial: true
 
-      # -- T3i: ADG Mypy-Ban Gate (Accelerator enforcement) ---------------------
+      # -- T19: ADG Mypy-Ban Gate (Accelerator enforcement) ------------------------
       # Hard-fail if staged Python files invoke mypy directly via subprocess.
       # Only adg_type_check.py (via sys.executable) is allowed to call mypy.
       # Exempt a specific line with: # guardian: allow-mypy -- <justification>
       # Exempt an entire file with: # adg-mypy-ban: skip-file (first 5 lines)
       - id: adg-mypy-ban-gate
-        name: "T3i: ADG Mypy-Ban Gate — no broad mypy; use adg_type_check.py"
+        name: "T19: ADG Mypy-Ban Gate — no broad mypy; use adg_type_check.py"
         entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/adg_mypy_ban_gate.py --staged"
         language: system
         pass_filenames: false
@@ -369,12 +378,12 @@ repos:
         types: [python]
         require_serial: true
 
-      # -- T3k: ADG Pytest-Ban Gate (Accelerator enforcement) -------------------
+      # -- T20: ADG Pytest-Ban Gate (Accelerator enforcement) ----------------------
       # Hard-fail if staged Python files invoke pytest broadly (directory/no files).
       # Use adg_test_selector.py --from-diff --pytest-args to select via ADG.
       # Exempt a specific line with: # guardian: allow-pytest -- <justification>
       - id: adg-pytest-ban-gate
-        name: "T3k: ADG Pytest-Ban Gate — no broad pytest; use adg_test_selector.py"
+        name: "T20: ADG Pytest-Ban Gate — no broad pytest; use adg_test_selector.py"
         entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/adg_pytest_ban_gate.py --staged"
         language: system
         pass_filenames: false
@@ -382,12 +391,12 @@ repos:
         types: [python]
         require_serial: true
 
-      # -- T3l: ADG YAML Grep-Ban Gate ------------------------------------------
+      # -- T21: ADG YAML Grep-Ban Gate -------------------------------------------
       # Hard-fail if staged YAML workflow files invoke grep/rg in run: steps.
       # Use Python-based ADG accelerators or explicit Python scripts instead.
       # Exempt a line with: # guardian: allow-grep-yaml -- <justification>
       - id: adg-yaml-grep-ban-gate
-        name: "T3l: ADG YAML Grep-Ban Gate — no grep/rg in GitHub Actions run: steps"
+        name: "T21: ADG YAML Grep-Ban Gate — no grep/rg in GitHub Actions run: steps"
         entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/adg_yaml_grep_ban_gate.py --staged"
         language: system
         pass_filenames: false
@@ -395,24 +404,24 @@ repos:
         types: [yaml]
         require_serial: true
 
-      # -- T3j: Skip-File Ratchet -----------------------------------------------
+      # -- T22: Skip-File Ratchet ------------------------------------------------
       # Hard-fail if new # adg-grep-ban: skip-file directives were added without
       # updating the baseline in ops_scripts/hooks/skip_file_budget.json.
       # To legitimately add: run python ops_scripts/ci/adg_skip_file_ratchet.py --update
       - id: adg-skip-file-ratchet
-        name: "T3j: ADG Skip-File Ratchet — enforce skip-file directive count ceiling"
+        name: "T22: ADG Skip-File Ratchet — enforce skip-file directive count ceiling"
         entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/adg_skip_file_ratchet.py"
         language: system
         pass_filenames: false
         always_run: true
         require_serial: true
 
-      # -- T5: Pycache purge (FINAL CLEANUP - runs last) ------------------------
+      # -- T23: Pycache purge (FINAL CLEANUP - runs last) -----------------------
       # Scope: rglob("__pycache__") from repo root, skips .venv/env/.git.
       # CRITICAL: Must run AFTER all Python hooks to prevent __pycache__ litter.
       # Idempotent: deleting absent dirs is a no-op; --quiet suppresses output.
       - id: purge-cache
-        name: "T5: Pycache Purge (Final Cleanup)"
+        name: "T23: Pycache Purge (Final Cleanup)"
         entry: python ops_scripts/maintenance/purge_cache.py --quiet --all
         language: system
         pass_filenames: false
