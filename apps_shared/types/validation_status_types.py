@@ -17,6 +17,8 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
 try:
     import numpy as np
 except ImportError as _err:
@@ -129,6 +131,9 @@ class ValidationGateExecutor:
         Returns:
             ValidationResult with status, failures, and action
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, f"ValidationGateRegistry.execute_gate:{gate_id}")
         context = context or {}
         gate = self.validation_gates.get(gate_id)
         if not gate:

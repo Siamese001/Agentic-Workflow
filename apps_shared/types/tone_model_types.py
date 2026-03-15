@@ -13,6 +13,8 @@ from enum import Enum
 
 from pydantic import BaseModel, Field, confloat, validator
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
 logger = logging.getLogger(__name__)
 
 
@@ -145,6 +147,9 @@ class ToneAnalyzer:
         Returns:
             StyleProfile with detected characteristics
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "StyleAnalyzer.analyze_style")
         try:
             if not content_samples or not isinstance(content_samples, list):
                 logger.warning("Empty or invalid content samples, returning neutral profile")
