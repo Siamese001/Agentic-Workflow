@@ -17,6 +17,7 @@ class IHealerProtocol(Protocol):
 
 
 from agentic_core.mixins.healer_agent_mixin import HealerAgentMixin
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class LegacyAgentAdapter:
@@ -33,6 +34,10 @@ class LegacyAgentAdapter:
         """
         Smartly routes the heal request to known legacy signatures.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "LegacyAgentAdapter.heal")
+
         file_path = violation.get("file") or violation.get("file_path")
         try:
             if hasattr(self.agent, "fix"):

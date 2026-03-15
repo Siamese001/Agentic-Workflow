@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 LIMIT: int = 300
 
@@ -284,6 +285,10 @@ class LICRouter:
         Returns:
             Determined MessageRoute
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "LICRouter.determine_route")
+
         if route_override is not None:
             return route_override
 

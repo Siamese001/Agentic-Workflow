@@ -11,6 +11,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from .agent_executor import AgentExecutor, AgentMessage, AgentResponse
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -66,6 +67,10 @@ class KXNodeExecutor:
         Returns:
             KXExecutionResult with generated content
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "KXNodeExecutor.execute_node")
+
         config = context.node_config
         with create_span(f"kx_node.{config.node_id}.{config.element}"):
             set_span_attribute("kx.node_id", config.node_id)

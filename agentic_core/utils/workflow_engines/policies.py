@@ -11,6 +11,7 @@ import re
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass
@@ -115,6 +116,10 @@ class FixedTokenChunkPolicy(ChunkPolicy):
         return "fixed_token"
 
     def chunk(self, document: str, doc_id: str = "doc") -> list[Chunk]:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "FixedTokenChunkPolicy.chunk")
+
         words = document.split()
         chunks: list[Chunk] = []
         for idx, start in enumerate(range(0, len(words), self.chunk_size)):
@@ -152,6 +157,10 @@ class OverlapWindowChunkPolicy(ChunkPolicy):
         return "overlap_window"
 
     def chunk(self, document: str, doc_id: str = "doc") -> list[Chunk]:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "OverlapWindowChunkPolicy.chunk")
+
         words = document.split()
         step = self.chunk_size - self.overlap
         if step <= 0:
@@ -193,6 +202,10 @@ class SectionAwareChunkPolicy(ChunkPolicy):
         return "section_aware"
 
     def chunk(self, document: str, doc_id: str = "doc") -> list[Chunk]:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SectionAwareChunkPolicy.chunk")
+
         sections = re.split("(?m)^#{1,3}\\s+", document)
         chunks: list[Chunk] = []
         char_offset = 0
@@ -238,6 +251,10 @@ class SemanticChunkPolicy(ChunkPolicy):
         return "semantic"
 
     def chunk(self, document: str, doc_id: str = "doc") -> list[Chunk]:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SemanticChunkPolicy.chunk")
+
         sentences = re.split("(?<=[.!?])\\s+", document.strip())
         sentences = [s for s in sentences if s.strip()]
         groups: list[list[str]] = []

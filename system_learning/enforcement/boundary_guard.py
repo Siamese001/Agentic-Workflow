@@ -38,6 +38,10 @@ class _BoundaryVisitor(ast.NodeVisitor):
             )
 
     def visit_Import(self, node: ast.Import) -> None:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "_BoundaryVisitor.visit_Import")
+
         for alias in node.names:
             self._check_module(alias.name, node.lineno)
         self.generic_visit(node)
@@ -85,3 +89,4 @@ if __name__ == "__main__":
     import sys
 
     sys.exit(0 if check_system_learning_isolation() else 1)
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace

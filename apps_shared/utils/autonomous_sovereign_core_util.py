@@ -10,6 +10,7 @@ from pathlib import Path
 from watchdog.observers import Observer
 
 from agentic_core.L0_routing.config.path_constants import DEFAULT_SLEEP
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class TerritoryWatcher(FileSystemEventHandler):
@@ -20,6 +21,10 @@ class TerritoryWatcher(FileSystemEventHandler):
         super().__init__()
 
     def on_modified(self, event):
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "TerritoryWatcher.on_modified")
+
         if event.is_directory or any(x in event.src_path for x in ["pycache", ".git", ".idx"]):
             return
         self.core.loop.call_soon_threadsafe(
@@ -129,6 +134,10 @@ class AutonomousSovereignCore:
 
     async def eternal_watch(self):
         """L3: Eternal monitoring loop"""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "AutonomousSovereignCore.eternal_watch")
+
         asyncio.create_task(self.sovereign_executive_worker())
         observer = Observer()
         handler = TerritoryWatcher(self)

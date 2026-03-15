@@ -11,6 +11,7 @@ No external services. Pure in-memory store backed by a sorted list.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 def _get_detection_signal_class():
@@ -51,6 +52,10 @@ class DetectionSignalStore:
         Raises ValueError if commit_tick is not strictly greater than the
         last stored tick (monotonicity enforcement).
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "DetectionSignalStore.store")
+
         if self._entries and commit_tick <= self._entries[-1].commit_tick:
             raise ValueError(
                 f"commit_tick {commit_tick} must be strictly greater than last stored tick {self._entries[-1].commit_tick}"

@@ -1,7 +1,7 @@
 # RCA: Untracked Files Never Committed
 
-**Date:** 2026-03-13  
-**Incident:** Untracked files remained uncommitted after git commit operation  
+**Date:** 2026-03-13
+**Incident:** Untracked files remained uncommitted after git commit operation
 **Severity:** Low (documentation/archive files)
 
 ## Root Cause
@@ -50,9 +50,9 @@ The `??` prefix indicates **untracked** files.
 ```
 Untracked → Staged → Committed
    ??         M         [committed]
-   
+
    ↓ git add
-   
+
 Untracked → Staged → Committed
             A         [committed]
 ```

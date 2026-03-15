@@ -50,6 +50,7 @@ except ImportError:
     def enqueue(task_payload: dict) -> Any:
         """Execute enqueue operation."""
         print(f"[CoverageAgent] Task enqueued (stub): {task_payload['task_id']}")
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass
@@ -146,6 +147,10 @@ class CoverageAgent(SovereignBaseAgent):
     @layer_entry("observability", subterritory="metrics")
     def act(self) -> str:
         """Primary actuation method — call periodically from orchestrator/metrics coordinator."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "CoverageAgent.act")
+
         counts = self._fetch_metrics()
         if not counts:
             return f"{self.name}: No metrics available."

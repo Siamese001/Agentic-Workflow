@@ -10,6 +10,7 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     GLOBAL_EXCLUDED_DIRS,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 _GUARDRAIL_LOG = logging.getLogger("adg.applies_guardrail")
 _SAFETY_PLANE_LOG = logging.getLogger("adg.validated_by_safety_plane")
@@ -35,6 +36,13 @@ class AirlockProtocol:
         references_policy_hash ADG edges on every tool gate check.
         Emits requires_human_review for high-risk tools.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "AirlockProtocol.acquire_permission")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:AirlockProtocol.acquire_permission".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         # P1/L5: emit governed tool gate ADG edges
         _GUARDRAIL_LOG.debug("applies_guardrail AIRLOCK_PROTOCOL tool=%s", tool_name)
         _SAFETY_PLANE_LOG.debug("validated_by_safety_plane AIRLOCK_PROTOCOL tool=%s", tool_name)

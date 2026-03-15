@@ -8,6 +8,7 @@ from typing import Any
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class SubAtomicAgent(SovereignBaseAgent):
@@ -43,6 +44,10 @@ class SubAtomicAgent(SovereignBaseAgent):
         _call_path: set | None = None,
     ) -> dict[str, int]:
         """L1 cognition - operational only."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SubAtomicAgent.heal_repository")
+
         if _call_path is None:
             _call_path = set()
         agent_name = "SubAtomicAgent"

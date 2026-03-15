@@ -1,4 +1,5 @@
 """Action Call Generator Agent - CTA Generator (K.5)
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 # NAMING FIXED: LOGGER → Logger
@@ -107,6 +108,10 @@ class ActionCallGenerator:
         Returns:
             CTAResult with CTA and validation details
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ActionCallGenerator.generate_cta")
+
         self.recovery_loop.reset(self.config.TEMPERATURE)
         validation_results: Any = []
         for attempt in range(1, self.config.max_attempts + 1):

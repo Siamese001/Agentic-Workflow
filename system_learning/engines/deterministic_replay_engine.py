@@ -12,6 +12,7 @@ from dataclasses import dataclass
 import numpy as np
 
 from system_learning.engines.retrieval_profile import RetrievalProfile
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass(frozen=True, slots=True)
@@ -97,6 +98,10 @@ class DeterministicReplayEngine:
         Returns:
             ReplayResult with deterministic digest
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "DeterministicReplayEngine.replay")
+
         base_outputs = self._run_replay_cases(base_profile)
         candidate_outputs = self._run_replay_cases(candidate_profile)
         changed_cases = sum(

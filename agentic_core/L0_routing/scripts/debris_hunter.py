@@ -20,6 +20,7 @@ from agentic_core.L0_routing.config.path_constants import SOVEREIGN_EXCLUDED_FOL
 
 # SSOT Integration
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, emit_replay_key, emit_determinism_digest
 
 
 class DebrisHunter:
@@ -33,6 +34,12 @@ class DebrisHunter:
         Finds directories containing both 'snake_case.py' and 'PascalCase.py'
         where one is likely the ancestor of the other.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "DebrisHunter.scan_for_collisions")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         print(f"Scanning for collision debris in {self.root}...")
 
         # Walk manually to group by directory

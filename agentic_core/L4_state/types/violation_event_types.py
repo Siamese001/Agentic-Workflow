@@ -11,6 +11,7 @@ import hashlib
 import json
 from dataclasses import dataclass, field
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 _VALID_DECISIONS: frozenset[str] = frozenset({"allow", "block", "escalate"})
 _SCHEMA_VERSION: int = 1
@@ -73,6 +74,10 @@ class ViolationEvent:
         Deterministic serialisation excluding event_hash (self-referential).
         Keys sorted, violation_codes sorted list.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "ViolationEvent.canonical_bytes")
+
         doc: dict[str, Any] = {
             "commit_tick": self.commit_tick,
             "created_at_utc": self.created_at_utc,

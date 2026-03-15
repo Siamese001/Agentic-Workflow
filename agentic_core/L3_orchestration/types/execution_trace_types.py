@@ -14,6 +14,7 @@ from typing import Any
 
 from agentic_core.L0_routing.engines.assembly_stage import GovernedPayload
 from agentic_core.L0_routing.providers.clock_provider import ClockProvider as clock_provider
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 def canonical_json(data: dict[str, Any]) -> str:
@@ -50,6 +51,10 @@ class ExecutionTrace:
         Returns:
             Replay key for deterministic replay verification
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ExecutionTrace.compute_replay_key")
+
         replay_data = f"{self.trace_id}{self.plan_hash}{transcript_hash}"
         return hashlib.sha256(replay_data.encode("utf-8")).hexdigest()
 

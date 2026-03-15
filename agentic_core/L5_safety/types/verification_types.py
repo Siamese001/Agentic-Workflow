@@ -9,6 +9,7 @@ circular dependencies.
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 
 @dataclass
@@ -83,6 +84,13 @@ class VerificationGateProtocol(ABC):
         Returns:
             Error message if invalid, None if valid
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "VerificationGateProtocol.validate_request")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:VerificationGateProtocol.validate_request".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         if not request.file_path:
             return "file_path is required"
         if not request.action_type:

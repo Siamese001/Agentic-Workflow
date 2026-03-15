@@ -11,6 +11,7 @@ from typing import Any
 
 from system_learning.engines.local_faiss_store import LocalFAISSStore
 from system_learning.types.index_build_metadata_types import IndexBuildMetadata
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class EmbeddingRetentionScheduler:
@@ -40,6 +41,10 @@ class EmbeddingRetentionScheduler:
         Returns:
             Mapping of index_id to rebuilt IndexBuildMetadata for pruned indexes.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "EmbeddingRetentionScheduler.run_once")
+
         results = {}
         for index_id, store in stores.items():
             if index_id not in policies:

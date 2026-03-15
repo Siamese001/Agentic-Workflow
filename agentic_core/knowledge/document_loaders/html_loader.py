@@ -7,6 +7,7 @@ import logging
 import re
 from html.parser import HTMLParser
 from pathlib import Path
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 log = logging.getLogger(__name__)
 
@@ -102,6 +103,10 @@ class HTMLDocumentLoader:
         Returns:
             Visible text content with tags stripped, or "" on any failure.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HTMLDocumentLoader.load_file")
+
         text = _try_load_text(file_path)
         return text if text is not None else ""
 

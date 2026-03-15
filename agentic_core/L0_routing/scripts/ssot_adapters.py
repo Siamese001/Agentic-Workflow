@@ -20,6 +20,7 @@ from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from agentic_core.L2_execution.protocol import SubphaseResult
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, emit_replay_key, emit_determinism_digest
 
 
 def _to_result(raw: Any, *, fixed: list[dict] | None = None) -> SubphaseResult:
@@ -64,6 +65,12 @@ class ReconcilerAdapter:
         self._agent = agent
 
     def pre_commit(self, territory: str, ctx: Any) -> SubphaseResult:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "ReconcilerAdapter.pre_commit")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         raw = self._agent.detect_root_drift()
         return _to_result(raw)
 
@@ -92,6 +99,12 @@ class LocationAdapter:
         self._scan_violations: list[dict] = []
 
     def pre_commit(self, territory: str, ctx: Any) -> SubphaseResult:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "LocationAdapter.pre_commit")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         raw = self._agent.run(files=None)
         result = _to_result(raw)
         self._scan_violations = result.violations
@@ -120,6 +133,12 @@ class FileClassAdapter:
         self._agent = agent
 
     def pre_commit(self, territory: str, ctx: Any) -> SubphaseResult:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "FileClassAdapter.pre_commit")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         raw = self._agent.run()
         return _to_result(raw)
 
@@ -144,6 +163,12 @@ class HierarchyAdapter:
         self._agent = agent
 
     def pre_commit(self, territory: str, ctx: Any) -> SubphaseResult:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "HierarchyAdapter.pre_commit")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         raw = self._agent.scan_root_violations(target_territory=territory)
         return _to_result(raw)
 
@@ -175,6 +200,12 @@ class ArchGovAdapter:
         self._plan: dict | None = None
 
     def pre_commit(self, territory: str, ctx: Any) -> SubphaseResult:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "ArchGovAdapter.pre_commit")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         raw = self._agent.run_audit(target_territories=[territory])
         self._audit_report = raw if isinstance(raw, dict) else {}
         return _to_result(raw)
@@ -206,6 +237,12 @@ class GravityAdapter:
         self._agent = agent
 
     def pre_commit(self, territory: str, ctx: Any) -> SubphaseResult:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "GravityAdapter.pre_commit")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         raw = self._agent.heal_repository(dry_run=True)
         return _to_result(raw)
 
@@ -234,6 +271,12 @@ class SysArchAdapter:
         self._agent = agent
 
     def pre_commit(self, territory: str, ctx: Any) -> SubphaseResult:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "SysArchAdapter.pre_commit")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         raw = self._agent.validate_core_architecture(f"agentic_core/{territory}")
         return _to_result(raw)
 
@@ -258,6 +301,12 @@ class ObsProbeAdapter:
         self._agent = agent
 
     def pre_commit(self, territory: str, ctx: Any) -> SubphaseResult:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "ObsProbeAdapter.pre_commit")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         raw = self._agent.scan_violations(target_territory=territory)
         return _to_result(raw)
 
@@ -283,6 +332,12 @@ class RootHygieneAdapter:
         self._agent = agent
 
     def pre_commit(self, territory: str, ctx: Any) -> SubphaseResult:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "RootHygieneAdapter.pre_commit")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         raw = self._agent.scan_root_violations()
         return _to_result(raw)
 

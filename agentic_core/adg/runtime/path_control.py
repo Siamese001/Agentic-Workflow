@@ -13,6 +13,7 @@ import uuid
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class ExecutionPath(str, Enum):
@@ -89,6 +90,10 @@ class PathControlReport:
         return len(self.transitions)
 
     def path_visit_counts(self) -> dict[str, int]:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PathControlReport.path_visit_counts")
+
         counts: dict[str, int] = {}
         for t in self.transitions:
             key = t.to_path.value

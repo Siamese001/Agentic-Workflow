@@ -13,6 +13,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 Logger = logging.getLogger(__name__)
 
@@ -141,6 +142,13 @@ class AntiPatternDetector(ABC):
         Returns:
             DetectionResult with violations and metadata
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "AntiPatternDetector.scan_file")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:AntiPatternDetector.scan_file".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         import time
 
         start_time = time.time()
@@ -321,6 +329,13 @@ class CompositeDetector:
 
     def scan_file(self, file_path: Path) -> list[DetectionResult]:
         """Scan file with all detectors."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "CompositeDetector.scan_file")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:CompositeDetector.scan_file".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         results = []
         for detector in self.detectors:
             result = detector.scan_file(file_path)

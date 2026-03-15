@@ -14,6 +14,7 @@ from agentic_core.L2_execution.types.rollback_refinement_types import (
     RollbackRefinementRequest,
     RollbackStrategyId,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 
 class RollbackRefiner(Protocol):
@@ -51,6 +52,13 @@ class DefaultDeterministicRollbackRefiner:
         request: RollbackRefinementRequest,
     ) -> RollbackRefinementDecision:
         """Refine rollback strategy selection deterministically."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "DefaultDeterministicRollbackRefiner.refine")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:DefaultDeterministicRollbackRefiner.refine".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         # Parse history to get outcome statistics
         strategy_stats = self._parse_history_stats(request.history_bytes)
 

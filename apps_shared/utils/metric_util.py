@@ -9,6 +9,7 @@ import logging
 import time
 from collections import defaultdict
 from dataclasses import dataclass, field
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -33,6 +34,10 @@ class MetricConfig:
 
     def record(self, name: str, value: float, labels: dict[str, str] | None = None) -> None:
         """Record a metric."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "MetricConfig.record")
+
         metric = Metric(name=name, value=value, labels=labels or {})
         self.metrics[name].append(metric)
         logger.debug(f"Recorded metric {name}={value}")

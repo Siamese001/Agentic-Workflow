@@ -14,6 +14,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -64,6 +65,10 @@ class ServiceRegistry:
 
     def register(self, endpoint: ServiceEndpoint) -> None:
         """Register a service endpoint."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ServiceRegistry.register")
+
         key = f"{endpoint.domain.value}:{endpoint.name}"
         self._services[key] = endpoint
         if key not in self._domain_services[endpoint.domain]:
@@ -116,6 +121,10 @@ class ConfigurationLoader:
 
     def load(self, config_name: str, domain: AppDomain = AppDomain.SHARED) -> dict[str, Any]:
         """Load a configuration file."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ConfigurationLoader.load")
+
         cache_key = f"{domain.value}:{config_name}"
         if self.config.enable_caching and cache_key in self._loaded_configs:
             return self._loaded_configs[cache_key]
@@ -196,6 +205,10 @@ class IntegrationBridge:
 
     def initialize(self) -> None:
         """Initialize the integration bridge."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "IntegrationBridge.initialize")
+
         if self._initialized:
             return
         logger.info("Initializing integration bridge...")

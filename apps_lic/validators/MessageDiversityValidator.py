@@ -2,6 +2,7 @@ from dataclasses import dataclass
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 "\nMessageDiversityValidator - Extracted for one-class-per-file pattern.\n\nOriginally from: ContentCleanlinessValidatorAgent.py\nExtracted: 2026-01-06 (Surgical Extraction)\n"
 
@@ -38,6 +39,10 @@ class MessageDiversityValidator(SubatomicTestingMixin, SovereignBaseAgent):
         Returns:
             (is_diverse, max_similarity, most_similar_message)
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "MessageDiversityValidator.check_diversity")
+
         if not self.message_history:
             return (True, 0.0, "")
         all_messages = self.message_history + [new_message]

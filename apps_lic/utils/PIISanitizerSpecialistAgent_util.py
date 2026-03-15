@@ -13,6 +13,7 @@ from pydantic import BaseModel, Field
 from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 from apps_lic.types.ImmutableStagingBuffer import ImmutableStagingBuffer
 from apps_lic.types.TraceRegistry import TraceRegistry
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 def track_metrics(name):
@@ -48,6 +49,10 @@ class PII_SanitizerSpecialistAgent(LICAgentBase):
 
     @track_metrics("run_pii_sanitizer")
     def run(self, resume: dict[str, Any]) -> dict[str, Any]:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PII_SanitizerSpecialistAgent.run")
+
         self.log_info("Sanitizing PII (local regex processing)...")
         sanitized_resume = json.loads(json.dumps(resume))
 
@@ -87,6 +92,10 @@ class BiasDetectorSpecialist(LICAgentBase, SubatomicTestingMixin):
 
     def _process(self, buffer: ImmutableStagingBuffer, registry: TraceRegistry) -> None:
         """Execute bias detection on buffer content."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "BiasDetectorSpecialist._process")
+
         registry.add_trace("PHASE_START", {"agent": self.__class__.__name__})
         mission_input = buffer.read("mission_input") or {}
         text = mission_input.get("text", "")
@@ -135,6 +144,10 @@ class PromptInjectionDetectorSpecialist(LICAgentBase, SubatomicTestingMixin):
 
     @track_metrics("run_pi_detector")
     async def run_async(self, user_input: str, workflow_id: str) -> dict[str, Any]:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PromptInjectionDetectorSpecialist.run_async")
+
         self.log_info("Detecting prompt injection...")
         if not self.config.agent_stacks.enable_prompt_injection_detection:
             self.log_warning("Prompt injection detection is disabled.")
@@ -188,6 +201,10 @@ class ConstitutionalReviewerAgent(LICAgentBase, SubatomicTestingMixin):
 
     @track_metrics("run_constitutional_review")
     async def run_async(self, final_draft: str, workflow_id: str) -> ConstitutionalReviewResult:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ConstitutionalReviewerAgent.run_async")
+
         self.log_info("Running final constitutional review...")
         if not self.config.agent_stacks.enable_constitutional_review:
             self.log_warning("Constitutional review is disabled. Passing by default.")

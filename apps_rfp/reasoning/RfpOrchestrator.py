@@ -28,6 +28,7 @@ from apps_rfp.types.rfp_types import (
     RfpRunSummary,
 )
 from apps_rfp.validators.proposal_gate_validator import ProposalGateValidator
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 _log = logging.getLogger(__name__)
 
@@ -57,6 +58,10 @@ class RfpOrchestrator:
 
     def run(self, request: RfpRequest) -> RfpResult:
         """Execute full proposal generation pipeline."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RfpOrchestrator.run")
+
         trace_id = request.trace_id or self._make_trace_id(request)
         _log.info(
             "[RfpOrchestrator] Starting trace=%s industry=%s dry_run=%s",

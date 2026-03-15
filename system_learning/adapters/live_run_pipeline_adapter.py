@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import logging
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -66,6 +67,10 @@ class LiveRunPipelineAdapter:
         Returns:
             PipelineDependencies ready for run_pipeline().
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "LiveRunPipelineAdapter.build_pipeline_deps")
+
         from system_learning.pipelines.pipeline_factory import build_pipeline_deps
 
         return build_pipeline_deps(

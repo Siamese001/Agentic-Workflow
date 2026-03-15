@@ -13,6 +13,7 @@ from enum import Enum
 from typing import Any
 
 from agentic_core.L0_routing.config.path_constants import DEFAULT_SLEEP
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -64,6 +65,10 @@ class AsyncCoordinator:
 
     async def start(self) -> None:
         """Start the coordinator and cleanup task."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "AsyncCoordinator.start")
+
         if self._running:
             return
         self._running = True

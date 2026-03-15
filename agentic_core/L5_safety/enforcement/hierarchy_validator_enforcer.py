@@ -12,6 +12,7 @@ import hashlib
 import json
 from pathlib import Path
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 
 class HierarchyValidator:
@@ -36,6 +37,13 @@ class HierarchyValidator:
 
     def get_layer_level(self, module_name: str) -> int:
         """Return numeric hierarchy level for module_name (-1 = external/unknown)."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "HierarchyValidator.get_layer_level")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:HierarchyValidator.get_layer_level".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         for pattern, level in self.hierarchy["layers"].items():
             if pattern.endswith("*"):
                 if module_name.startswith(pattern[:-1]):

@@ -22,6 +22,7 @@ from contextlib import contextmanager
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -199,6 +200,10 @@ class AtomicExecutionMixin:
         Raises:
             AtomicExecutionError: If operation fails (after rollback)
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "AtomicExecutionMixin.atomic_transaction")
+
         txn_id = self._generate_transaction_id()
         txn = AtomicTransaction(transaction_id=txn_id)
         self._active_transactions[txn_id] = txn

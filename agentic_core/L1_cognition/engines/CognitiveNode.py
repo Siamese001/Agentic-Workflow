@@ -6,6 +6,7 @@ from typing import Any
 
 from agentic_core.L0_routing.config.path_constants import BATCH_SIZE
 from agentic_core.L2_execution.providers import get_clock
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 def _get_reason_and_record():
@@ -79,6 +80,10 @@ class ReasoningNode:
 
     async def reason_async(self, perceived: dict) -> dict:
         """Generate reasoning with adaptive strategy selection."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L1_REASONING, "ReasoningNode.reason_async")
+
         strategy_bias = perceived.get("strategy_bias", {})
         thought_type = self._biased_select(strategy_bias)
         memory_patterns = perceived.get("memory", [])
@@ -138,6 +143,10 @@ class PlanningCoordinator:
 
     def plan(self, goal: str, domain: str, context: dict) -> dict[str, Any]:
         """Create plan from reasoning."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L1_REASONING, "PlanningCoordinator.plan")
+
         memory_patterns = context.get("memory", [])
         plan = {
             "goal": goal,
@@ -173,6 +182,10 @@ class ActionNode:
 
     def act(self, reasoned: dict) -> str:
         """Execute action based on reasoning."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L1_REASONING, "ActionNode.act")
+
         goal = reasoned.get("goal", "")
         reasoned.get("reasoning", {})
         if "2+2" in goal or "2 + 2" in goal:
@@ -230,6 +243,10 @@ class CognitiveNode:
         Returns:
             CognitiveResult with output and metadata
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L1_REASONING, "CognitiveNode.process_async")
+
         start_time = get_clock().now_epoch()
         self.missions_processed += 1
         _rctx = _make_reasoning_context(

@@ -10,6 +10,7 @@ import shutil
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass
@@ -75,6 +76,10 @@ class LICStateManager:
         Returns:
             Path to written file
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "LICStateManager.write_state")
+
         filename = self._sanitize_filename(hop_id)
         if not filename.endswith(".json"):
             filename += ".json"
@@ -240,6 +245,10 @@ class StateValidator:
 
     def validate_hop_chain(self, hop_ids: list[str]) -> StateValidationResult:
         """Validate a chain of HOPs for consistency."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "StateValidator.validate_hop_chain")
+
         result = StateValidationResult(is_valid=True)
         for hop_id in hop_ids:
             hop_result = self.state_manager.validate_state(hop_id)

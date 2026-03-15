@@ -10,6 +10,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
@@ -135,6 +136,10 @@ class ConfigPlanningOrchestrator:
         Returns:
             ConfigPlanningResult: Complete planning result with validated configs and deployment plan
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ConfigPlanningOrchestrator.execute")
+
         self.logger.info(
             f"Starting config planning for: {config_request.get('service', 'unknown')}",
         )

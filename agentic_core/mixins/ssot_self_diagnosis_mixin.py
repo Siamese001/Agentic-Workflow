@@ -15,6 +15,7 @@ from __future__ import annotations
 import logging
 import time
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 _logger = logging.getLogger("SSOTSelfDiagnosis")
 
@@ -48,6 +49,10 @@ class SSOTSelfDiagnosisMixin:
         dict
             The health check record.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SSOTSelfDiagnosisMixin.run_health_check")
+
         record = {
             "check_name": check_name,
             "passed": passed,

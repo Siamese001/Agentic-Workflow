@@ -12,6 +12,7 @@ from agentic_core.L1_cognition.planning.capability_analyzer_types import (
 )
 
 from agentic_core.L2_execution.providers import get_clock
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 LOGGER = logging.getLogger(__name__)
 Logger: Any = logging.getLogger(__name__)
@@ -78,6 +79,10 @@ class CapabilityAnalyzer:
         Returns:
             List of identified capability gaps
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L1_REASONING, "CapabilityAnalyzer.analyze_failures")
+
         gaps: list[CapabilityGap] = []
         failure_patterns: Any = self._identify_failure_patterns(failure_reports)
         for pattern_type, pattern_failures in failure_patterns.items():

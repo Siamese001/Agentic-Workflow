@@ -9,6 +9,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from agentic_core.L5_safety.config.structure_blueprint import AGENT_DISCOVERY_JSON
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 Logger = logging.getLogger(__name__)
@@ -41,6 +42,13 @@ class ValidationReport:
     results: list[ValidationResult] = field(default_factory=list)
 
     def add_result(self, result: ValidationResult):
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "ValidationReport.add_result")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:ValidationReport.add_result".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         self.results.append(result)
         if result.testing_pass:
             self.testing_pass += 1
@@ -64,6 +72,13 @@ class SystemValidator:
 
     def load_discovery(self) -> list[dict]:
         """Load agent discovery JSON."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "SystemValidator.load_discovery")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:SystemValidator.load_discovery".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         if not self.discovery_path.exists():
             Logger.error("agent_discovery_full.json not found. Run full_agent_discovery.py first.")
             sys.exit(1)

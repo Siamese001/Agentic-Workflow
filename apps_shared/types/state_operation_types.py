@@ -11,6 +11,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, TypeVar
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 T = TypeVar("T")
 
@@ -90,6 +91,10 @@ class StateSnapshot(Generic[T]):
 
     def get_hash(self) -> str:
         """Generate a deterministic hash of this snapshot."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "StateSnapshot.get_hash")
+
         data = {
             "state_id": self.state_id,
             "data": self.data,

@@ -48,119 +48,119 @@ plugins: anyio-4.12.1, asyncio-1.3.0, cov-7.0.0
 asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
 collected 44 items
 
-tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_l2_validator_cache_in_name_skipped 
+tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_l2_validator_cache_in_name_skipped
 -------------------------------- live log call --------------------------------
 2026-03-05 23:40:27 [    INFO] tools.semantic_gap_analyzer: Analyzing L2 Execution Layer...
 PASSED                                                                   [  2%]
-tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_l2_validator_parse_fail_skipped 
+tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_l2_validator_parse_fail_skipped
 -------------------------------- live log call --------------------------------
 2026-03-05 23:40:27 [    INFO] tools.semantic_gap_analyzer: Analyzing L2 Execution Layer...
 PASSED                                                                   [  4%]
-tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_l2_validator_no_cache_import_generates_gap 
+tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_l2_validator_no_cache_import_generates_gap
 -------------------------------- live log call --------------------------------
 2026-03-05 23:40:27 [    INFO] tools.semantic_gap_analyzer: Analyzing L2 Execution Layer...
 PASSED                                                                   [  6%]
-tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_l2_validator_with_cache_module_no_gap 
+tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_l2_validator_with_cache_module_no_gap
 -------------------------------- live log call --------------------------------
 2026-03-05 23:40:27 [    INFO] tools.semantic_gap_analyzer: Analyzing L2 Execution Layer...
 PASSED                                                                   [  9%]
-tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_l2_validator_with_symbol_cache_no_gap 
+tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_l2_validator_with_symbol_cache_no_gap
 -------------------------------- live log call --------------------------------
 2026-03-05 23:40:27 [    INFO] tools.semantic_gap_analyzer: Analyzing L2 Execution Layer...
 PASSED                                                                   [ 11%]
-tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_l2_no_validator_files_no_gap 
+tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_l2_no_validator_files_no_gap
 -------------------------------- live log call --------------------------------
 2026-03-05 23:40:27 [    INFO] tools.semantic_gap_analyzer: Analyzing L2 Execution Layer...
 PASSED                                                                   [ 13%]
-tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_l3_orchestrator_parse_fail_no_gap 
+tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_l3_orchestrator_parse_fail_no_gap
 -------------------------------- live log call --------------------------------
 2026-03-05 23:40:27 [    INFO] tools.semantic_gap_analyzer: Analyzing L3 Orchestration Layer...
 PASSED                                                                   [ 15%]
-tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_l3_orchestrator_no_cache_generates_gap 
+tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_l3_orchestrator_no_cache_generates_gap
 -------------------------------- live log call --------------------------------
 2026-03-05 23:40:27 [    INFO] tools.semantic_gap_analyzer: Analyzing L3 Orchestration Layer...
 PASSED                                                                   [ 18%]
-tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_l3_orchestrator_with_cache_module_no_gap 
+tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_l3_orchestrator_with_cache_module_no_gap
 -------------------------------- live log call --------------------------------
 2026-03-05 23:40:27 [    INFO] tools.semantic_gap_analyzer: Analyzing L3 Orchestration Layer...
 PASSED                                                                   [ 20%]
-tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_l3_orchestrator_file_missing_no_gap 
+tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_l3_orchestrator_file_missing_no_gap
 -------------------------------- live log call --------------------------------
 2026-03-05 23:40:27 [    INFO] tools.semantic_gap_analyzer: Analyzing L3 Orchestration Layer...
 PASSED                                                                   [ 22%]
-tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_l4_blob_parse_fail_no_gap 
+tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_l4_blob_parse_fail_no_gap
 -------------------------------- live log call --------------------------------
 2026-03-05 23:40:27 [    INFO] tools.semantic_gap_analyzer: Analyzing L4 State Layer...
 PASSED                                                                   [ 25%]
-tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_l4_blob_exactly_ten_accesses_no_gap 
+tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_l4_blob_exactly_ten_accesses_no_gap
 -------------------------------- live log call --------------------------------
 2026-03-05 23:40:27 [    INFO] tools.semantic_gap_analyzer: Analyzing L4 State Layer...
 PASSED                                                                   [ 27%]
-tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_l4_blob_eleven_accesses_generates_gap 
+tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_l4_blob_eleven_accesses_generates_gap
 -------------------------------- live log call --------------------------------
 2026-03-05 23:40:27 [    INFO] tools.semantic_gap_analyzer: Analyzing L4 State Layer...
 PASSED                                                                   [ 29%]
-tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_l4_blob_file_missing_no_gap 
+tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_l4_blob_file_missing_no_gap
 -------------------------------- live log call --------------------------------
 2026-03-05 23:40:27 [    INFO] tools.semantic_gap_analyzer: Analyzing L4 State Layer...
 PASSED                                                                   [ 31%]
-tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_l5_enforcement_cache_in_name_skipped 
+tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_l5_enforcement_cache_in_name_skipped
 -------------------------------- live log call --------------------------------
 2026-03-05 23:40:27 [    INFO] tools.semantic_gap_analyzer: Analyzing L5 Safety Layer...
 PASSED                                                                   [ 34%]
-tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_l5_enforcement_parse_fail_skipped 
+tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_l5_enforcement_parse_fail_skipped
 -------------------------------- live log call --------------------------------
 2026-03-05 23:40:27 [    INFO] tools.semantic_gap_analyzer: Analyzing L5 Safety Layer...
 PASSED                                                                   [ 36%]
-tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_l5_enforcement_policy_in_name_no_cache_generates_gap 
+tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_l5_enforcement_policy_in_name_no_cache_generates_gap
 -------------------------------- live log call --------------------------------
 2026-03-05 23:40:27 [    INFO] tools.semantic_gap_analyzer: Analyzing L5 Safety Layer...
 PASSED                                                                   [ 38%]
-tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_l5_enforcement_no_policy_in_name_no_gap 
+tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_l5_enforcement_no_policy_in_name_no_gap
 -------------------------------- live log call --------------------------------
 2026-03-05 23:40:27 [    INFO] tools.semantic_gap_analyzer: Analyzing L5 Safety Layer...
 PASSED                                                                   [ 40%]
-tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_l5_enforcement_with_cache_import_no_gap 
+tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_l5_enforcement_with_cache_import_no_gap
 -------------------------------- live log call --------------------------------
 2026-03-05 23:40:27 [    INFO] tools.semantic_gap_analyzer: Analyzing L5 Safety Layer...
 PASSED                                                                   [ 43%]
-tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_l5_no_enforcement_files_no_gap 
+tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_l5_no_enforcement_files_no_gap
 -------------------------------- live log call --------------------------------
 2026-03-05 23:40:27 [    INFO] tools.semantic_gap_analyzer: Analyzing L5 Safety Layer...
 PASSED                                                                   [ 45%]
-tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_l6_telemetry_parse_fail_skipped 
+tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_l6_telemetry_parse_fail_skipped
 -------------------------------- live log call --------------------------------
 2026-03-05 23:40:27 [    INFO] tools.semantic_gap_analyzer: Analyzing L6 Observability Layer...
 PASSED                                                                   [ 47%]
-tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_l6_telemetry_no_cache_import_generates_gap 
+tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_l6_telemetry_no_cache_import_generates_gap
 -------------------------------- live log call --------------------------------
 2026-03-05 23:40:27 [    INFO] tools.semantic_gap_analyzer: Analyzing L6 Observability Layer...
 PASSED                                                                   [ 50%]
-tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_l6_telemetry_with_cache_module_no_gap 
+tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_l6_telemetry_with_cache_module_no_gap
 -------------------------------- live log call --------------------------------
 2026-03-05 23:40:27 [    INFO] tools.semantic_gap_analyzer: Analyzing L6 Observability Layer...
 PASSED                                                                   [ 52%]
-tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_l6_telemetry_with_symbol_cache_no_gap 
+tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_l6_telemetry_with_symbol_cache_no_gap
 -------------------------------- live log call --------------------------------
 2026-03-05 23:40:27 [    INFO] tools.semantic_gap_analyzer: Analyzing L6 Observability Layer...
 PASSED                                                                   [ 54%]
-tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_l6_no_telemetry_files_no_gap 
+tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_l6_no_telemetry_files_no_gap
 -------------------------------- live log call --------------------------------
 2026-03-05 23:40:27 [    INFO] tools.semantic_gap_analyzer: Analyzing L6 Observability Layer...
 PASSED                                                                   [ 56%]
-tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_arch_component_missing_file_generates_missing_gap 
+tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_arch_component_missing_file_generates_missing_gap
 -------------------------------- live log call --------------------------------
 2026-03-05 23:40:27 [    INFO] tools.semantic_gap_analyzer: Analyzing Architecture Component Presence...
 PASSED                                                                   [ 59%]
-tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_arch_component_parse_fail_no_gap 
+tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_arch_component_parse_fail_no_gap
 -------------------------------- live log call --------------------------------
 2026-03-05 23:40:27 [    INFO] tools.semantic_gap_analyzer: Analyzing Architecture Component Presence...
 PASSED                                                                   [ 61%]
-tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_arch_component_signals_present_no_gap 
+tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_arch_component_signals_present_no_gap
 -------------------------------- live log call --------------------------------
 2026-03-05 23:40:27 [    INFO] tools.semantic_gap_analyzer: Analyzing Architecture Component Presence...
 PASSED                                                                   [ 63%]
-tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_arch_component_no_signals_generates_weak_gap 
+tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_arch_component_no_signals_generates_weak_gap
 -------------------------------- live log call --------------------------------
 2026-03-05 23:40:27 [    INFO] tools.semantic_gap_analyzer: Analyzing Architecture Component Presence...
 PASSED                                                                   [ 65%]
@@ -168,47 +168,47 @@ tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_dedupe_gaps_e
 tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_dedupe_gaps_no_duplicates_all_retained PASSED [ 70%]
 tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_dedupe_gaps_duplicate_key_keeps_higher_priority PASSED [ 72%]
 tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_dedupe_gaps_sorted_by_priority PASSED [ 75%]
-tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_analyze_l2_execution_returns_list 
+tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_analyze_l2_execution_returns_list
 -------------------------------- live log call --------------------------------
 2026-03-05 23:40:27 [    INFO] tools.semantic_gap_analyzer: Analyzing L2 Execution Layer...
 PASSED                                                                   [ 77%]
-tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_analyze_l3_orchestration_returns_list 
+tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_analyze_l3_orchestration_returns_list
 -------------------------------- live log call --------------------------------
 2026-03-05 23:40:27 [    INFO] tools.semantic_gap_analyzer: Analyzing L3 Orchestration Layer...
 PASSED                                                                   [ 79%]
-tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_analyze_l4_state_returns_list 
+tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_analyze_l4_state_returns_list
 -------------------------------- live log call --------------------------------
 2026-03-05 23:40:27 [    INFO] tools.semantic_gap_analyzer: Analyzing L4 State Layer...
 PASSED                                                                   [ 81%]
-tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_analyze_l5_safety_returns_list 
+tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_analyze_l5_safety_returns_list
 -------------------------------- live log call --------------------------------
 2026-03-05 23:40:27 [    INFO] tools.semantic_gap_analyzer: Analyzing L5 Safety Layer...
 PASSED                                                                   [ 84%]
-tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_analyze_l6_observability_returns_list 
+tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_analyze_l6_observability_returns_list
 -------------------------------- live log call --------------------------------
 2026-03-05 23:40:28 [    INFO] tools.semantic_gap_analyzer: Analyzing L6 Observability Layer...
 PASSED                                                                   [ 86%]
-tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_analyze_architecture_component_presence_returns_list 
+tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_analyze_architecture_component_presence_returns_list
 -------------------------------- live log call --------------------------------
 2026-03-05 23:40:28 [    INFO] tools.semantic_gap_analyzer: Analyzing Architecture Component Presence...
 PASSED                                                                   [ 88%]
-tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_l2_validator_gaps_are_high_priority 
+tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_l2_validator_gaps_are_high_priority
 -------------------------------- live log call --------------------------------
 2026-03-05 23:40:28 [    INFO] tools.semantic_gap_analyzer: Analyzing L2 Execution Layer...
 PASSED                                                                   [ 90%]
-tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_l3_gap001_is_medium_if_present 
+tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_l3_gap001_is_medium_if_present
 -------------------------------- live log call --------------------------------
 2026-03-05 23:40:28 [    INFO] tools.semantic_gap_analyzer: Analyzing L3 Orchestration Layer...
 PASSED                                                                   [ 93%]
-tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_l4_gap001_is_high_if_present 
+tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_l4_gap001_is_high_if_present
 -------------------------------- live log call --------------------------------
 2026-03-05 23:40:28 [    INFO] tools.semantic_gap_analyzer: Analyzing L4 State Layer...
 PASSED                                                                   [ 95%]
-tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_l5_policy_gaps_are_medium_if_present 
+tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_l5_policy_gaps_are_medium_if_present
 -------------------------------- live log call --------------------------------
 2026-03-05 23:40:28 [    INFO] tools.semantic_gap_analyzer: Analyzing L5 Safety Layer...
 PASSED                                                                   [ 97%]
-tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_l6_config_gaps_are_low_if_present 
+tests/architecture/test_wave3_phase3_2_boundary_hardening.py::test_l6_config_gaps_are_low_if_present
 -------------------------------- live log call --------------------------------
 2026-03-05 23:40:28 [    INFO] tools.semantic_gap_analyzer: Analyzing L6 Observability Layer...
 PASSED                                                                   [100%]
@@ -304,4 +304,3 @@ collected 44 / executed 44
 | ARCH-COMPONENT-WEAK gap generated despite signals present | test_arch_component_signals_present_no_gap |
 | _dedupe_gaps drops lower-priority duplicate instead of higher-priority | test_dedupe_gaps_duplicate_key_keeps_higher_priority |
 | _dedupe_gaps output not sorted by priority | test_dedupe_gaps_sorted_by_priority |
-

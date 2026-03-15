@@ -23,6 +23,7 @@ Key examples::
 from __future__ import annotations
 
 import re
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 _LAYER_NAMES = frozenset(
     {
@@ -221,6 +222,10 @@ class NS:  # noqa: N801 — intentionally short namespace class
         Returns:
             Governed Redis key.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "NS.build")
+
         layer, component = spec
         return build_key(layer, component, entity_type, content_hash, mission_id=mission_id)
 

@@ -4,6 +4,7 @@ from __future__ import annotations
 import time
 from dataclasses import dataclass
 from enum import Enum
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class CircuitBreakerState(Enum):
@@ -54,6 +55,10 @@ class CircuitBreaker:
         Returns:
             True if execution is allowed, False if circuit is open
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "CircuitBreaker.can_execute")
+
         now = time.time()
         if self.state == CircuitBreakerState.OPEN:
             if now - self.opened_at >= self.reset_after_s:

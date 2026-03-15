@@ -16,6 +16,7 @@ from agentic_core.utils.ssot_discovery_validator import get_python_files
 
 from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
 from agentic_core.L5_safety.core_kernel.classification_kernel import is_agent_file
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -48,6 +49,10 @@ class AgentRegistry:
         Returns:
             List of discovered agents
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "AgentRegistry.discover_all")
+
         agents = []
         python_files = get_python_files(self.project_root)
         for file_path in python_files:

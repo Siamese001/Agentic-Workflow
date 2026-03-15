@@ -15,6 +15,7 @@ from system_learning.types.pattern_analysis_types import (
     PatternFindingReport,
     PatternSourceIds,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class PatternAnalysisEngine(BaseEngine):
@@ -34,6 +35,10 @@ class PatternAnalysisEngine(BaseEngine):
         format expected by the base engine, then generates findings based on the
         healing outcomes.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PatternAnalysisEngine.analyze")
+
         # Parse healing snapshot
         healing_snapshot = HealingOutcomeAggregateSnapshot.from_bytes(healing_snapshot_bytes)
         healing_data = json.loads(healing_snapshot.canonical_bytes().decode("utf-8"))

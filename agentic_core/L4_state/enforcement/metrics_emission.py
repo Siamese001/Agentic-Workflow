@@ -12,6 +12,7 @@ import time
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Optional
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger = logging.getLogger(__name__)
 
@@ -74,6 +75,10 @@ class MetricsEmissionEnforcer:
             RuntimeError: If duplicate emission detected
             ValueError: If blast radius exceeded
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "MetricsEmissionEnforcer.single_authoritative_emission")
+
         emission_key = f"{trace_id}:{artifact_type}"
         if emission_key in self._emissions:
             existing = self._emissions[emission_key]
@@ -158,6 +163,10 @@ class BlastRadiusEnforcer:
         Raises:
             ValueError: If blast radius exceeds limits
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "BlastRadiusEnforcer.validate_blast_radius")
+
         if state_surface_bytes > self.config.max_state_surface_bytes:
             raise ValueError(
                 f"State surface {state_surface_bytes} bytes exceeds maximum {self.config.max_state_surface_bytes} bytes"
@@ -196,6 +205,10 @@ class PhaseLockStore:
             locked: Whether the phase is locked
             metadata: Optional metadata to store with lock
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "PhaseLockStore.persist")
+
         import json
         import os
 
@@ -250,6 +263,10 @@ class ActivationFlagsStore:
         Args:
             flags: Activation flags to persist
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "ActivationFlagsStore.persist_flags")
+
         import json
         import os
 

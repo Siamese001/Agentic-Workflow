@@ -20,6 +20,7 @@ from agentic_core.L0_routing.types.shadow_routing_types import (
     ShadowRoutingRationale,
     ShadowRoutingTelemetry,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, emit_replay_key, emit_determinism_digest
 
 
 def _get_canonical_json():
@@ -69,6 +70,12 @@ class ShadowRouterClassifier:
         Returns:
             Dictionary of deterministic routing features
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "ShadowRouterClassifier.compute_routing_features")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         features = {
             "trace_id": route_decision.trace_id,
             "observed_route": route_decision.route_path.value,

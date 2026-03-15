@@ -7,6 +7,7 @@ Generated: 2025-12-07T13:29:00.515392
 
 import logging
 import time
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class LocalWorkflowLoader:
@@ -53,6 +54,10 @@ class execute_resume_generation:
 
     def execute(self, action: str, params: dict[str, object]) -> ExecutionResult:
         """Execute action."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "execute_resume_generation.execute")
+
         START: Any = time.time()
         try:
             self._perform_action(action, params)

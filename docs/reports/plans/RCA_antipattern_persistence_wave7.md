@@ -1,7 +1,7 @@
 # RCA: Antipattern Persistence Despite Removal Commits
 
-**Date**: March 14, 2026  
-**Investigator**: Cascade AI  
+**Date**: March 14, 2026
+**Investigator**: Cascade AI
 **Severity**: High - Misleading metrics causing incorrect Wave 7 scope
 
 ## Executive Summary

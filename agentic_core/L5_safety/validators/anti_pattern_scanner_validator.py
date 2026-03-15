@@ -54,6 +54,7 @@ from agentic_core.L5_safety.validators.silent_swallower_validator import (
 from agentic_core.L5_safety.validators.type_erasure_validator import (
     TypeErasureDetector,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 Logger = logging.getLogger(__name__)
 
@@ -73,6 +74,13 @@ class ScanReport:
 
     def summary(self) -> str:
         """Generate human-readable summary."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "ScanReport.summary")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:ScanReport.summary".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         lines = [
             "=" * 60,
             "Anti-Pattern Scan Report",
@@ -188,6 +196,13 @@ class AntiPatternScanner:
         Returns:
             ScanReport with all findings
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "AntiPatternScanner.scan_repository")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:AntiPatternScanner.scan_repository".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         import time
 
         start_time = time.time()

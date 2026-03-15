@@ -1,7 +1,7 @@
 # ADG-Backed Territory Simplification Analysis
 
-**Date:** 2026-03-11  
-**Method:** AST consumer counting + ADG import/violation graph  
+**Date:** 2026-03-11
+**Method:** AST consumer counting + ADG import/violation graph
 **Scope:** All `.py` files across `agentic_core`, `apps_*`, `tests`, `ops_scripts`, `tools`, `system_learning`
 
 ---
@@ -32,7 +32,7 @@
 
 ### Overlap
 ```
-SEF ∩ GED = 13 items  (.git, __pycache__, .venv, archives, build, dist, env, node_modules, 
+SEF ∩ GED = 13 items  (.git, __pycache__, .venv, archives, build, dist, env, node_modules,
                         .mypy_cache, .pytest_cache, .sovereign_healing_backup, .healing_backups, venv)
 SEF ∩ DET =  4 items  (archives, legacy_code, legacy_engines, stubs)
 GED ∩ DET =  1 item   (archives)

@@ -32,6 +32,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBridge
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 def _get_determinism_fns():
@@ -114,6 +115,10 @@ class MemoryCard:
 
     def to_observations(self) -> list[str]:
         """Build the observation list stored on the Memory MCP entity."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "MemoryCard.to_observations")
+
         obs = [
             f"layer:{self.layer}",
             f"territory:{self.territory or 'NONE'}",
@@ -184,6 +189,10 @@ class GraphNeighborhoodMemory:
 
         Returns True on successful write or no-op, False on bridge error.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "GraphNeighborhoodMemory.upsert_card")
+
         if not card.adg_entity_name:
             logger.warning("[GraphNeighborhoodMemory] adg_entity_name must not be empty")
             return False

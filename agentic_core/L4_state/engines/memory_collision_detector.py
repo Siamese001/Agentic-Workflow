@@ -4,6 +4,7 @@ import threading
 import time
 from dataclasses import dataclass
 from typing import NamedTuple, Sequence
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class MemoryDeadlockViolation(Exception):
@@ -51,6 +52,10 @@ class MemoryCollisionDetector:
         Returns:
             A LockAcquisitionResult indicating the outcome.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "MemoryCollisionDetector.acquire_locks")
+
         try:
             sorted_locks = sorted(required_locks, key=lambda name: self._lock_order[name])
         except KeyError as e:

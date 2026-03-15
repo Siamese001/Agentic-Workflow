@@ -43,6 +43,7 @@ from agentic_core.adg.schema import (
 
 if TYPE_CHECKING:
     from agentic_core.adg.extraction.static_scanner import ScanResult
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 _MODULE_PREFIX = "ADG::Module::"
 
@@ -107,6 +108,10 @@ class MutationPathReport:
 
     @property
     def compliance_rate(self) -> float:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "MutationPathReport.compliance_rate")
+
         total = self.violation_count + len(self.compliant_modules)
         if total == 0:
             return 1.0

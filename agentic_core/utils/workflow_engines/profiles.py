@@ -21,6 +21,7 @@ from .interfaces import (
     IRetrieverVector,
 )
 from .reranker import HeuristicReranker
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 PROFILE_VECTOR_ONLY = "vector_only"
 PROFILE_HYBRID = "hybrid"
@@ -58,6 +59,10 @@ class RetrievalProfileConfig:
     @classmethod
     def load_from_file(cls, path: Path) -> RetrievalProfileConfig:
         """Load profile config from JSON file."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RetrievalProfileConfig.load_from_file")
+
         with open(path, encoding="utf-8") as f:
             data = json.load(f)
         return cls.from_dict(data)
@@ -92,6 +97,10 @@ class RetrievalPipeline:
         Returns:
             Ranked list of Document objects
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RetrievalPipeline.retrieve")
+
         mode = self.config.mode
 
         if mode == PROFILE_VECTOR_ONLY:

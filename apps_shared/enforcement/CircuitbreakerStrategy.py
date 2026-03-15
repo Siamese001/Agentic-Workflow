@@ -13,6 +13,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -94,6 +95,10 @@ class CircuitBreaker:
             CriticalServiceFailure: If service fails and circuit is open
             The original exception if call fails and circuit is not open
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "CircuitBreaker.call")
+
         self.stats["total_calls"] += 1
         if self.state == CircuitState.OPEN:
             if self._should_attempt_reset():
@@ -230,6 +235,10 @@ class CircuitBreakerFactory:
         Returns:
             CircuitBreaker instance
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "CircuitBreakerFactory.get")
+
         factory = cls()
         if name not in factory._breakers:
             with factory._breakers_lock:

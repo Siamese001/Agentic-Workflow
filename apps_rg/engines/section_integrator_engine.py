@@ -9,6 +9,7 @@ import logging
 from typing import Any
 
 from apps_rg.engines.base_rg_engine import BaseRGEngine
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger = logging.getLogger(__name__)
 
@@ -25,6 +26,10 @@ class SectionIntegratorEngine(BaseRGEngine):
         """
         Integrate sections and remove cross-section redundancy.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SectionIntegratorEngine.execute")
+
         self._mcp_audit("integration_start")
         all_text = []
         for section in sections:

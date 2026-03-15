@@ -14,6 +14,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, emit_replay_key, emit_determinism_digest
 
 SCHEMA_VERSION = "1.0.0"
 
@@ -28,6 +29,12 @@ class Finding:
     context: dict | None = None
 
     def to_ordered_dict(self) -> dict:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "Finding.to_ordered_dict")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         d: dict = {
             "code": self.code,
             "context": self.context if self.context is not None else {},
@@ -50,6 +57,12 @@ class ResultEnvelope:
     @property
     def status(self) -> str:
         """Derive status from exit_code and findings."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "ResultEnvelope.status")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         has_error = any(f.severity == "ERROR" for f in self.findings)
         has_warn = any(f.severity == "WARN" for f in self.findings)
         if self.exit_code != 0 or has_error:

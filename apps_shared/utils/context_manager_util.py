@@ -8,6 +8,7 @@ from __future__ import annotations
 from collections import deque
 from dataclasses import dataclass
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass
@@ -61,6 +62,10 @@ class ContextManager:
         Returns:
             ContextWindow with messages and token info
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ContextManager.get_context_window")
+
         messages = []
         if self.system_message:
             messages.append({"role": "system", "content": self.system_message})

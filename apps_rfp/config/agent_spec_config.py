@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any
 
 from pydantic import BaseModel, Field, model_validator
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 _log = logging.getLogger(__name__)
 
@@ -168,6 +169,10 @@ class RfpAgentSpecs(BaseModel):
 
     @model_validator(mode="after")
     def validate_required_sections_present(self) -> RfpAgentSpecs:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RfpAgentSpecs.validate_required_sections_present")
+
         required_ids = {s.section_id for s in self.sections if s.required}
         must_have = {"executive_summary", "implementation_roadmap", "risk_and_governance", "value_case"}
         missing = must_have - required_ids

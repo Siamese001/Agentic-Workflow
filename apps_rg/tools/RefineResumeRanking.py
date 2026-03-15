@@ -6,6 +6,7 @@ Generated: 2025-12-07T13:28:54.238560
 """
 
 import logging
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger = logging.getLogger(__name__)
 
@@ -20,6 +21,10 @@ class RefineResumeRanking:
 
     def refine(self, data: str | dict, adjustments: dict | None = None) -> RefinementResult:
         """Refine input data by applying adjustment transformations."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RefineResumeRanking.refine")
+
         changes = []
         refined = data
         if adjustments and isinstance(data, dict):

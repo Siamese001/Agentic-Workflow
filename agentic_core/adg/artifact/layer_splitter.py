@@ -57,6 +57,7 @@ from agentic_core.adg.artifact.normalizer import NormalizedGraph
 
 if TYPE_CHECKING:
     from agentic_core.adg.artifact.builder import ADGArtifact
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 # ---------------------------------------------------------------------------
 # Edge-type sets per plane
@@ -259,6 +260,10 @@ class SplitArtifact:
 
     def write_all(self, out_dir: Path) -> dict[str, Path]:
         """Write all three planes to out_dir. Returns {plane: path}."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SplitArtifact.write_all")
+
         out_dir.mkdir(parents=True, exist_ok=True)
         paths = {}
         for plane, graph, fname in (

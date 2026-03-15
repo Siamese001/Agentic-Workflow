@@ -18,6 +18,7 @@ Composable Rules:
 from dataclasses import dataclass
 from enum import Enum
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 
 class ResourceType(Enum):
@@ -123,6 +124,13 @@ class ResourceManagementGuardrail:
         Returns:
             ResourceCheckResult
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "ResourceManagementGuardrail.check_resource")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:ResourceManagementGuardrail.check_resource".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         self.checks_performed += 1
 
         if "resource_quotas" not in self.enabled_rules:

@@ -34,6 +34,7 @@ except ImportError:
         """Fallback HealerMixin when not available."""
 
         pass
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass
@@ -102,6 +103,10 @@ class AppBase(MetaLearningMixin, SovereignBaseAgent, HealerMixin):
         Returns:
             True if configuration is valid
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "AppBase.validate_app_config")
+
         # guardian: allow-config-with-logic
         if not self.domain_root.exists():
             return False

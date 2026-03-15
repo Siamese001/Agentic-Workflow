@@ -1,7 +1,7 @@
 # RCA: SOVEREIGN_TERRITORIES Architectural Flaw - System Directories Should Not Have Validation Metadata
 
-**Date:** 2026-03-11  
-**Severity:** Critical - Architectural Design Flaw  
+**Date:** 2026-03-11
+**Severity:** Critical - Architectural Design Flaw
 **Status:** Identified
 
 ## Executive Summary
@@ -36,7 +36,7 @@ These directories are gitignored, transient, or system-managed and should be **c
 **Should NEVER be validated:**
 - `.backup`, `.github`, `.gravity_state`, `artifacts`, `logs`, `archives`
 - **Current state**: Have full `TerritoryDefinition` with depth, subfolders, purpose
-- **Reality**: 
+- **Reality**:
   - `.backup` - Gitignored healing backups
   - `artifacts` - Gitignored build outputs
   - `.gravity_state` - Gitignored runtime state
@@ -125,7 +125,7 @@ Every change to system directory structure requires updating `SOVEREIGN_TERRITOR
 # ============================================================================
 PROJECT_ROOT_WHITELIST: Final[frozenset[str]] = frozenset({
     # Code territories
-    "agentic_core", "apps_rg", "apps_lic", "apps_shared", 
+    "agentic_core", "apps_rg", "apps_lic", "apps_shared",
     "tests", "ops_scripts", "system_learning", "tools",
     # Data/docs territories
     "data", "docs",
@@ -184,7 +184,7 @@ SYSTEM_DIRECTORIES: Final[frozenset[str]] = frozenset({
 # ENFORCED TERRITORIES - Subset of CODE_TERRITORIES with active enforcement
 # ============================================================================
 ENFORCED_TERRITORIES: Final[dict[str, TerritoryDefinition]] = {
-    k: v for k, v in CODE_TERRITORIES.items() 
+    k: v for k, v in CODE_TERRITORIES.items()
     if not v.get("enforcement_level") == "relaxed"
 }
 ```

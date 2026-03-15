@@ -52,6 +52,7 @@ except ImportError as e:
             _call_path: set | None = None,
         ) -> dict[str, int]:
             return {"violations": 0, "fixed": 0, "errors": 0, "skipped": 0}
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 logger = logging.getLogger(__name__)
@@ -99,6 +100,10 @@ class BaseRGEngine(MCPHardenedMixin, HealerMixin, ABC):
 
     def record_fail(self, message: str, *, signal: str = "", data: dict | None = None) -> None:
         """Record a failure event."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "BaseRGEngine.record_fail")
+
         self.logger.warning(f"FAIL [{self.name}]: {message}")
         if hasattr(self.ctx, "trace") and self.ctx is not None:
             self.ctx.trace.add_trace(f"{self.name}_FAIL", {"message": message, "signal": signal})

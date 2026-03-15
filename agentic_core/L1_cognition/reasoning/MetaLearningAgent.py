@@ -14,6 +14,7 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 TelemetryCallback = Callable[[str, dict[str, Any]], None]
 _STRICT_WEIGHTS_ENV = "META_LEARNING_STRICT_WEIGHTS"
@@ -74,6 +75,10 @@ class MetaLearningAgent(SovereignBaseAgent):
         self, state: dict[str, Any], thought_type: str, outcome: dict[str, Any], reward: float
     ) -> str:
         """Stores a new experience in the replay buffer with reward signal."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L1_REASONING, "MetaLearningAgent.store_experience")
+
         exp = ExperienceRecord(state=state, thought_type=thought_type, outcome=outcome, reward=reward)
         if len(self.replay_buffer) >= self.replay_capacity:
             self.replay_buffer.pop(0)

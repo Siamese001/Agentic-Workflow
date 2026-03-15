@@ -24,6 +24,7 @@ import hashlib
 import json
 import logging
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -91,6 +92,10 @@ class SystemLearningMemoryBridge:
 
     @classmethod
     def get_instance(cls) -> SystemLearningMemoryBridge:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SystemLearningMemoryBridge.get_instance")
+
         if cls._instance is None:
             cls._instance = cls()
         return cls._instance

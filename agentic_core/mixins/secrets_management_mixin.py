@@ -2,6 +2,7 @@ import logging
 import os
 import re
 import time
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class SecretAccessError(Exception):
@@ -51,6 +52,10 @@ class SecretsManagementMixin:
         Raises:
             SecretAccessError: If secret is missing and no default provided.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SecretsManagementMixin.get_secret")
+
         if not self._is_valid_secret_key(key):
             self._audit_access(key, success=False)
             raise SecretAccessError(f"Invalid secret key format: {key}")

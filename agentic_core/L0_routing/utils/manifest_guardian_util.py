@@ -2,6 +2,7 @@ import hashlib
 import logging
 import os
 from pathlib import Path
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, emit_replay_key, emit_determinism_digest
 
 logger = logging.getLogger(__name__)
 
@@ -22,6 +23,12 @@ class ManifestGuardian:
     @staticmethod
     def calculate_checksum(file_path: Path = MANIFEST_PATH) -> str:
         """Calculates the SHA-256 checksum of the manifest file."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "ManifestGuardian.calculate_checksum")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         if not file_path.exists():
             raise FileNotFoundError(f"SSOT Blueprint missing: {file_path}")
         sha256_hash = hashlib.sha256()

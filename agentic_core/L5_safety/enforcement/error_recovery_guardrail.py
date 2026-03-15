@@ -1,5 +1,6 @@
-from agentic_core.L0_routing.providers.clock_provider import ClockProvider as clock_provider
 from __future__ import annotations
+
+from agentic_core.L0_routing.providers.clock_provider import ClockProvider as clock_provider
 
 # guardian: allow-magic-config
 # Configuration constants
@@ -15,6 +16,7 @@ import traceback
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 class ErrorCategory(Enum):
     """Error categories for classification."""
@@ -92,6 +94,13 @@ class ErrorRecoveryGuardrail:
         Returns:
             RecoveryResult with outcome
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "ErrorRecoveryGuardrail.handle_error")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:ErrorRecoveryGuardrail.handle_error".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         start_time = clock_provider.time()
         self.errors_handled += 1
         error_ctx = self._classify_error(error, context or {})

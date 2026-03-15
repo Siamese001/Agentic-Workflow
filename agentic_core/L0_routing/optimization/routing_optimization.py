@@ -12,6 +12,7 @@ from __future__ import annotations
 import logging
 import threading
 from dataclasses import dataclass
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, emit_replay_key, emit_determinism_digest
 
 logger = logging.getLogger(__name__)
 _OPTIMIZATION_LOG = logging.getLogger("adg.routing_optimization_persisted")
@@ -130,6 +131,12 @@ class RoutingOptimizationRegistry:
     @classmethod
     def get_instance(cls) -> RoutingOptimizationRegistry:
         """Singleton accessor."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "RoutingOptimizationRegistry.get_instance")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         if cls._instance is None:
             with cls._lock:
                 if cls._instance is None:

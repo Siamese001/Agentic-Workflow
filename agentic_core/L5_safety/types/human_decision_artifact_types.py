@@ -11,6 +11,7 @@ import hmac
 import json
 from dataclasses import dataclass, field
 from typing import Literal
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 ReviewAction = Literal["APPROVE", "MODIFY_DIFF", "REJECT"]
 
@@ -49,6 +50,13 @@ class HumanDecisionArtifact:
         }
 
     def sign(self, secret: bytes) -> HumanDecisionArtifact:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "HumanDecisionArtifact.sign")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:HumanDecisionArtifact.sign".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         mac = hmac.new(
             secret,
             json.dumps(self._signable_dict(), sort_keys=True, separators=(",", ":")).encode("ascii"),

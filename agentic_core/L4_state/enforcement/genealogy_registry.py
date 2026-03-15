@@ -9,6 +9,7 @@ from typing import Any
 
 from agentic_core.L2_execution.determinism.execution_proof_emitter import ExecutionProofEmitter
 from agentic_core.L2_execution.enforcement.write_governor_mixin import WriteGovernorMixin
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 _proof_emitter = ExecutionProofEmitter("L4.GenealogyRegistry")
 
@@ -25,6 +26,10 @@ class GenealogyRegistry(WriteGovernorMixin):
 
     def register_attempt(self, trace_id: str, Task: str, context_hash: str) -> Any:
         """Records a mission attempt in the sovereign ledger."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "GenealogyRegistry.register_attempt")
+
         with _proof_emitter.proof_op(f"register_attempt:{trace_id[:8]}"):
             pass
         entry: Any = {

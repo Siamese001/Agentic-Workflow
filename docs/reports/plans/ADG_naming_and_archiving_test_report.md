@@ -1,6 +1,6 @@
 # ADG Naming & Archiving System - Test Report
 
-**Date:** 2026-03-12  
+**Date:** 2026-03-12
 **Status:** ✅ ALL TESTS PASSED
 
 ## Executive Summary
@@ -47,8 +47,8 @@ python C:\Git\Agentic-Workflow\tools\generate_full_adg.py
 ✓ adg_LATEST_governance_graph.json (8.6 MB)
 ```
 
-**Expected:** 7 LATEST files  
-**Actual:** 7 LATEST files (plus 1 legacy `adg_latest.json`)  
+**Expected:** 7 LATEST files
+**Actual:** 7 LATEST files (plus 1 legacy `adg_latest.json`)
 **Status:** ✅ PASS
 
 **Notes:**
@@ -127,16 +127,16 @@ artifacts/adg/
 └── _archive/2026-03/: 145 files (198.1 MB compressed)
 ```
 
-**Active timestamped files:** 34  
-**Expected:** ~40 (5 runs × 8 files)  
+**Active timestamped files:** 34
+**Expected:** ~40 (5 runs × 8 files)
 **Status:** ✅ PASS (some runs have 7 files instead of 8)
 
-**LATEST files:** 8  
-**Expected:** 7-8  
+**LATEST files:** 8
+**Expected:** 7-8
 **Status:** ✅ PASS
 
-**Archived files:** 145  
-**Expected:** ~145 (47 runs × ~3 files avg)  
+**Archived files:** 145
+**Expected:** ~145 (47 runs × ~3 files avg)
 **Status:** ✅ PASS
 
 ### Space Savings
@@ -176,7 +176,7 @@ artifacts/adg/_archive/2026-03/
 sqlite3 artifacts/adg/adg_LATEST.sqlite "SELECT COUNT(*) FROM nodes"
 ```
 
-**Result:** 47905 nodes  
+**Result:** 47905 nodes
 **Status:** ✅ PASS
 
 ### Test: Read LATEST Full JSON
@@ -188,7 +188,7 @@ data = json.loads(Path("artifacts/adg/adg_LATEST_full.json").read_text())
 print(f"Entities: {len(data['entities'])}")
 ```
 
-**Result:** 47905 entities  
+**Result:** 47905 entities
 **Status:** ✅ PASS
 
 ## Test 7: Documentation Completeness
@@ -269,15 +269,15 @@ print(f"Entities: {len(data['entities'])}")
 ## Issues Found
 
 ### Issue 1: Legacy File Confusion
-**Problem:** Old `adg_latest.json` file exists alongside new `adg_LATEST_*` files  
-**Impact:** Minor - doesn't break functionality but adds confusion  
-**Resolution:** Can be manually deleted or ignored  
+**Problem:** Old `adg_latest.json` file exists alongside new `adg_LATEST_*` files
+**Impact:** Minor - doesn't break functionality but adds confusion
+**Resolution:** Can be manually deleted or ignored
 **Status:** Non-blocking
 
 ### Issue 2: Dry Run Compression Estimate
-**Problem:** Dry run estimated 85% compression, actual was 91.6%  
-**Impact:** None - conservative estimate is better  
-**Resolution:** Working as intended  
+**Problem:** Dry run estimated 85% compression, actual was 91.6%
+**Impact:** None - conservative estimate is better
+**Resolution:** Working as intended
 **Status:** Not an issue
 
 ## Recommendations
@@ -322,8 +322,8 @@ The ADG naming streamlining and archiving system is fully functional and ready f
 
 ---
 
-**Test Execution Time:** ~5 minutes  
-**Total Space Saved:** 2.1 GB  
-**Compression Ratio:** 91.6%  
-**Files Archived:** 145  
+**Test Execution Time:** ~5 minutes
+**Total Space Saved:** 2.1 GB
+**Compression Ratio:** 91.6%
+**Files Archived:** 145
 **Documentation Pages:** 4

@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import logging
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 _NEUTRAL_PRIOR: float = 0.5
@@ -50,6 +51,10 @@ class L4MetaPriorProvider:
 
         Returns float in [0.0, 1.0]. Returns 0.50 (neutral) when unknown.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "L4MetaPriorProvider.get_prior")
+
         if self._store is None:
             return _NEUTRAL_PRIOR
         try:

@@ -16,6 +16,7 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, OPS_SCRIPTS_DIR
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 CHECK_ID = "gravity_violations"
 _LAYER_DIR_PATTERN = re.compile("^L[0-6]_")
@@ -45,6 +46,13 @@ class GravityValidatorAgent:
         Returns:
             List of violation objects in the sovereign scope.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "GravityValidatorAgent.scan")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:GravityValidatorAgent.scan".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         try:
             from agentic_core.L5_safety.reasoning.StructuralValidatorAgent import (
                 StructuralValidatorAgent,

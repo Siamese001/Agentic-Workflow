@@ -28,6 +28,7 @@ from agentic_core.L1_cognition.types.memory_types import (
     MAX_TEXT_LENGTH,
     ViolationSignature,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger = logging.getLogger(__name__)
 _embedder_singleton: Any = None
@@ -76,6 +77,10 @@ class HealingMemoryEmbedder:
     @classmethod
     def reset_instance(cls) -> None:
         """[TESTING ONLY] Reset singleton state."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L1_REASONING, "HealingMemoryEmbedder.reset_instance")
+
         global _embedder_singleton
         _embedder_singleton = None
 

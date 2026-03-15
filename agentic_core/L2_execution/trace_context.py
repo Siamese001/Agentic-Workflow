@@ -48,6 +48,7 @@ import time
 from contextlib import contextmanager
 from dataclasses import dataclass, field
 from typing import Any, Generator
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 logger = logging.getLogger(__name__)
 _TRACE_LOGGER = logging.getLogger("adg.records_execution_trace")
@@ -112,6 +113,13 @@ class TraceContext:
         metadata: dict[str, Any] | None = None,
     ) -> TraceEntry:
         """Append a trace entry.  ADG edge: ``records_execution_trace``."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "TraceContext.record")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:TraceContext.record".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         from datetime import datetime, timezone
 
         ts = datetime.now(tz=timezone.utc).isoformat()

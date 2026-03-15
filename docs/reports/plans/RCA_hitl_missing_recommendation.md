@@ -1,8 +1,8 @@
 # RCA: HITL Missing Recommendation in ask_user_question
 
-**Date**: 2026-03-14  
-**Status**: ✅ RESOLVED  
-**Severity**: LOW  
+**Date**: 2026-03-14
+**Status**: ✅ RESOLVED
+**Severity**: LOW
 **Category**: Process Violation - HITL Output Format
 
 ---
@@ -77,7 +77,7 @@ Re-presented HITL decision with proper format including:
 
 **User Selection**: Option A - Full EvalGuard Migration
 
-**Evidence**: 
+**Evidence**:
 - Proper HITL format used in `ask_user_question` tool call
 - User successfully selected Option A via clickable button
 - Recommendation clearly stated in question parameter

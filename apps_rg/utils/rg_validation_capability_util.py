@@ -31,6 +31,7 @@ from __future__ import annotations
 
 import json
 from typing import Any, ClassVar
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class RGValidationCapability:
@@ -61,6 +62,10 @@ class RGValidationCapability:
         Calls self.log(), self.record_pass(), self.record_fail(),
         self.add_signal(), self.remove_signal() — all provided by RGAgentBase.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RGValidationCapability.run_validation")
+
         if not self.VALIDATION_SIGNAL:
             raise ValueError(f"{self.__class__.__name__} must set VALIDATION_SIGNAL")
         self.log(self.VALIDATION_LOG_PREFIX)

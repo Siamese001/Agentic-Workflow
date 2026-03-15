@@ -15,6 +15,7 @@ import uuid
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class CommitPhase(str, Enum):
@@ -107,6 +108,10 @@ class MutationTransportReport:
         return len(self.packets)
 
     def phases_distribution(self) -> dict[str, int]:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "MutationTransportReport.phases_distribution")
+
         counts: dict[str, int] = {}
         for p in self.packets:
             key = p.phase.value
@@ -144,6 +149,10 @@ class MutationTransport:
         self.report = MutationTransportReport(agent_id=agent_id, run_id=run_id)
 
     def package_diff(self, patches: list[dict[str, Any]]) -> MutationPacket:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "MutationTransport.package_diff")
+
         packet = MutationPacket(run_id=self.report.run_id, agent_id=self.report.agent_id)
         for p in patches:
             packet.patches.append(

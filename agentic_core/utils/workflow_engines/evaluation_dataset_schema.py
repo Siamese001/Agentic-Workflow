@@ -8,6 +8,7 @@ import json
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass
@@ -75,6 +76,10 @@ class EvaluationDataset:
     @classmethod
     def load_from_file(cls, file_path: Path) -> "EvaluationDataset":
         """Load dataset from JSON file."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "EvaluationDataset.load_from_file")
+
         with open(file_path, encoding="utf-8") as f:
             data = json.load(f)
         return cls.from_dict(data)

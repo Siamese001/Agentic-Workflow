@@ -24,6 +24,7 @@ from typing import Any, Final
 
 from agentic_core.runtime.exceptions.healer_exceptions import CircularDependencyError, HealerError
 from agentic_core.utils.decorators_compat_util import standard_heal
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger = logging.getLogger(__name__)
 
@@ -66,6 +67,10 @@ class HealingPolicyMixin:
         Autonomous diagnostic and healing loop.
         HARDENED: Circular dependency protection + budget enforcement.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HealingPolicyMixin.heal_repository")
+
         if _call_path is None:
             _call_path = set()
         if self.name in _call_path:

@@ -21,6 +21,7 @@ from enum import Enum
 from typing import Any, Protocol, runtime_checkable
 
 from agentic_core.L3_orchestration.contracts.orchestration_handoff_contract import emit_agent_executes_agent
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger = logging.getLogger(__name__)
 
@@ -126,6 +127,10 @@ class AutonomousWorkflowEngine:
         Returns:
             WorkflowResult with the full step trace and stop signal.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "AutonomousWorkflowEngine.run")
+
         result = WorkflowResult(goal=goal)
         last_obs: dict[str, Any] = initial_context or {}
         consecutive_failures = 0

@@ -25,6 +25,7 @@ from agentic_core.L1_cognition.types.domain_types import (
     DomainContext,
     SharingPolicy,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger = logging.getLogger(__name__)
 
@@ -105,6 +106,10 @@ class DomainContextManager:
         Returns:
             DomainContext or None if not found
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L1_REASONING, "DomainContextManager.get_context")
+
         self.stats["context_lookups"] += 1
         return self._contexts.get(domain)
 

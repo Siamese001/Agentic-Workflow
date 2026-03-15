@@ -7,6 +7,7 @@ and containment for meta-learning proposals.
 import logging
 from dataclasses import dataclass
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger = logging.getLogger(__name__)
 
@@ -41,6 +42,10 @@ class BlastRadiusCalculator:
         Raises:
             ValueError: If blast radius exceeds limits
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "BlastRadiusCalculator.calculate_blast_radius")
+
         affected_objects = self._count_affected_objects(proposal)
         state_bytes = self._estimate_state_surface(proposal)
         mutation_depth = self._calculate_mutation_depth(proposal)
@@ -182,6 +187,10 @@ class BlastRadiusEnforcer:
             ValueError: If blast radius exceeds limits
             RuntimeError: If proposal already exists
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "BlastRadiusEnforcer.enforce_blast_radius")
+
         if proposal_id in self._active_proposals:
             raise RuntimeError(f"Proposal {proposal_id} already exists")
         metrics = self.calculator.calculate_blast_radius(proposal)

@@ -17,6 +17,7 @@ import json
 from dataclasses import dataclass, field
 from typing import Any, Literal
 from agentic_core.L2_execution.enforcement.guardrail_gate import get_guardrail_gate
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 
 class MLWriteEnvelopeViolation(Exception):
@@ -67,6 +68,13 @@ class MLWriteIntent:
         return hashlib.sha256(raw).hexdigest()
 
     def canonical_bytes(self) -> bytes:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "MLWriteIntent.canonical_bytes")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:MLWriteIntent.canonical_bytes".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         doc = {"kind": self.kind, "payload": self.payload, "requires_commit": self.requires_commit}
         return json.dumps(doc, sort_keys=True, separators=(",", ":"), default=str).encode()
 
@@ -104,6 +112,13 @@ class MLWriteIntentExecutor:
         """
         Execute an MLWriteIntent inside the L2.2 sandbox.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "MLWriteIntentExecutor.execute")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:MLWriteIntentExecutor.execute".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         # Wave 3: Guardrail pre-check
         guardrail = get_guardrail_gate()
         guardrail.check(operation="execute_ml_write", target=intent.target_path)

@@ -14,6 +14,7 @@ try:
 except ImportError as _err:
     raise ImportError("numpy is required for this module. Install with: pip install -e '.[infra]'") from _err
 from pydantic import BaseModel, Field, validator
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -31,6 +32,10 @@ class CacheEntry(BaseModel):
     @validator("embedding")
     def validate_embedding(cls, v):
         """Ensure embedding is a list of floats."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "CacheEntry.validate_embedding")
+
         if not isinstance(v, list):
             raise ValueError("Embedding must be a list")
         if len(v) == 0:
@@ -82,6 +87,10 @@ class ContrastiveSemanticCache:
     @property
     def is_available(self) -> bool:
         """Check if the cache is available (model loaded or can be loaded)."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ContrastiveSemanticCache.is_available")
+
         if self._model_loaded:
             return not self._fallback_mode
         if self._fallback_mode:

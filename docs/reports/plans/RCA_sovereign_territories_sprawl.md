@@ -1,7 +1,7 @@
 # RCA: SOVEREIGN_TERRITORIES Sprawl and Encapsulation Violation
 
-**Date:** 2026-03-11  
-**Severity:** Critical  
+**Date:** 2026-03-11
+**Severity:** Critical
 **Status:** In Progress
 
 ## Executive Summary

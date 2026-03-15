@@ -16,6 +16,7 @@ from __future__ import annotations
 import logging
 from dataclasses import dataclass
 from typing import Any, Protocol, runtime_checkable
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 _WRITES_THROUGH_LOG = logging.getLogger("adg.writes_through")
@@ -92,6 +93,10 @@ class UnifiedMemoryFacade:
 
     def register_backend(self, name: str, backend: MemoryBackend) -> None:
         """Register a memory backend under ``name``."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "UnifiedMemoryFacade.register_backend")
+
         self._backends[name] = backend
         logger.debug("MEMORY_FACADE register backend=%s", name)
 

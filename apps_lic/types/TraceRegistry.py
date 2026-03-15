@@ -21,6 +21,7 @@ except ImportError:
 
     class MCPHardenedMixin:
         pass
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass
@@ -72,6 +73,10 @@ class TraceRegistry(MCPHardenedMixin):
             event_type: Category of the event (e.g., 'DECISION', 'ERROR').
             details: Contextual data for the event.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "TraceRegistry.add_trace")
+
         entry = {"timestamp": datetime.utcnow().isoformat(), "type": event_type, "details": details}
         self._traces.append(entry)
         if self.persistence_path:

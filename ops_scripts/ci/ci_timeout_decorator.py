@@ -7,7 +7,7 @@ on failures. Prevents CI hangs and provides diagnostic context for debugging.
 
 Usage:
     from ops_scripts.ci.ci_timeout_decorator import ci_timeout, generate_rca
-    
+
     @ci_timeout(seconds=60, operation_name="Anti-Pattern Scan")
     def run_scanner():
         # CI operation code
@@ -41,11 +41,11 @@ def timeout_handler(signum, frame):
 def ci_timeout(seconds: int = 300, operation_name: str = "CI Operation"):
     """
     Decorator to add timeout protection to CI operations.
-    
+
     Args:
         seconds: Timeout in seconds (default: 5 minutes)
         operation_name: Name of the operation for RCA reporting
-    
+
     Returns:
         Decorated function with timeout protection
     """
@@ -53,28 +53,28 @@ def ci_timeout(seconds: int = 300, operation_name: str = "CI Operation"):
         @functools.wraps(func)
         def wrapper(*args, **kwargs) -> Any:
             start_time = time.time()
-            
+
             # Set up timeout signal (Unix-like systems)
             if sys.platform != "win32":
                 old_handler = signal.signal(signal.SIGALRM, timeout_handler)
                 signal.alarm(seconds)
-            
+
             try:
                 result = func(*args, **kwargs)
-                
+
                 # Cancel timeout
                 if sys.platform != "win32":
                     signal.alarm(0)
                     signal.signal(signal.SIGALRM, old_handler)
-                
+
                 elapsed = time.time() - start_time
                 print(f"✅ {operation_name} completed in {elapsed:.2f}s")
-                
+
                 return result
-                
+
             except TimeoutError as e:
                 elapsed = time.time() - start_time
-                
+
                 # Generate RCA for timeout
                 rca_path = generate_rca(
                     operation_name=operation_name,
@@ -88,20 +88,20 @@ def ci_timeout(seconds: int = 300, operation_name: str = "CI Operation"):
                         "kwargs": str(kwargs)[:200]
                     }
                 )
-                
+
                 print(f"❌ {operation_name} TIMEOUT after {elapsed:.2f}s")
                 print(f"📄 RCA generated: {rca_path}")
-                
+
                 # Cancel timeout
                 if sys.platform != "win32":
                     signal.alarm(0)
                     signal.signal(signal.SIGALRM, old_handler)
-                
+
                 raise
-                
+
             except Exception as e:
                 elapsed = time.time() - start_time
-                
+
                 # Generate RCA for error
                 rca_path = generate_rca(
                     operation_name=operation_name,
@@ -115,17 +115,17 @@ def ci_timeout(seconds: int = 300, operation_name: str = "CI Operation"):
                         "kwargs": str(kwargs)[:200]
                     }
                 )
-                
+
                 print(f"❌ {operation_name} FAILED after {elapsed:.2f}s")
                 print(f"📄 RCA generated: {rca_path}")
-                
+
                 # Cancel timeout
                 if sys.platform != "win32":
                     signal.alarm(0)
                     signal.signal(signal.SIGALRM, old_handler)
-                
+
                 raise
-        
+
         return wrapper
     return decorator
 
@@ -140,7 +140,7 @@ def generate_rca(
 ) -> Path:
     """
     Generate RCA (Root Cause Analysis) report for CI failures.
-    
+
     Args:
         operation_name: Name of the failed operation
         error_type: Type of error (TIMEOUT, Exception name, etc.)
@@ -148,7 +148,7 @@ def generate_rca(
         elapsed_time: Time elapsed before failure
         traceback_info: Full traceback if available
         context: Additional context information
-    
+
     Returns:
         Path to generated RCA file
     """
@@ -156,17 +156,17 @@ def generate_rca(
     safe_name = operation_name.lower().replace(" ", "_").replace("/", "_")
     rca_filename = f"RCA_ci_{safe_name}_{error_type.lower()}_{timestamp}.md"
     rca_path = RCA_DIR / rca_filename
-    
+
     # Ensure RCA directory exists
     RCA_DIR.mkdir(parents=True, exist_ok=True)
-    
+
     # Generate RCA content
     rca_content = f"""# CI Failure RCA: {operation_name}
 
-**Timestamp**: {datetime.now().isoformat()}  
-**Operation**: {operation_name}  
-**Error Type**: {error_type}  
-**Elapsed Time**: {elapsed_time:.2f}s  
+**Timestamp**: {datetime.now().isoformat()}
+**Operation**: {operation_name}
+**Error Type**: {error_type}
+**Elapsed Time**: {elapsed_time:.2f}s
 
 ## Error Summary
 
@@ -175,11 +175,11 @@ def generate_rca(
 ## Context
 
 """
-    
+
     if context:
         for key, value in context.items():
             rca_content += f"- **{key}**: {value}\n"
-    
+
     if traceback_info:
         rca_content += f"""
 ## Full Traceback
@@ -188,7 +188,7 @@ def generate_rca(
 {traceback_info}
 ```
 """
-    
+
     rca_content += f"""
 ## Diagnostic Steps
 
@@ -201,7 +201,7 @@ def generate_rca(
 ## Recommended Actions
 
 """
-    
+
     if error_type == "TIMEOUT":
         rca_content += """
 ### Timeout-Specific Actions
@@ -236,7 +236,7 @@ def generate_rca(
 - Implement graceful degradation
 - Add unit tests for error paths
 """
-    
+
     rca_content += f"""
 ## Related Documentation
 
@@ -255,17 +255,17 @@ def generate_rca(
 ---
 *Auto-generated RCA by CI timeout decorator*
 """
-    
+
     # Write RCA file
     rca_path.write_text(rca_content, encoding='utf-8')
-    
+
     return rca_path
 
 
 def ci_progress_reporter(total: int, operation_name: str = "Processing"):
     """
     Context manager for progress reporting in CI operations.
-    
+
     Usage:
         with ci_progress_reporter(total=1000, operation_name="Scanning files") as reporter:
             for i, item in enumerate(items):
@@ -278,29 +278,29 @@ def ci_progress_reporter(total: int, operation_name: str = "Processing"):
             self.operation_name = operation_name
             self.start_time = time.time()
             self.last_report = 0
-            
+
         def update(self, current: int):
             """Update progress and report every 10%."""
             if current == 0:
                 return
-                
+
             percent = (current / self.total) * 100
-            
+
             # Report every 10%
             if percent >= self.last_report + 10:
                 elapsed = time.time() - self.start_time
                 rate = current / elapsed if elapsed > 0 else 0
                 eta = (self.total - current) / rate if rate > 0 else 0
-                
+
                 print(f"📊 {self.operation_name}: {current}/{self.total} ({percent:.1f}%) - "
                       f"{rate:.1f} items/s - ETA: {eta:.1f}s")
-                
+
                 self.last_report = int(percent / 10) * 10
-        
+
         def __enter__(self):
             print(f"🚀 Starting {self.operation_name} ({self.total} items)")
             return self
-        
+
         def __exit__(self, exc_type, exc_val, exc_tb):
             elapsed = time.time() - self.start_time
             if exc_type is None:
@@ -308,5 +308,5 @@ def ci_progress_reporter(total: int, operation_name: str = "Processing"):
             else:
                 print(f"❌ {self.operation_name} failed after {elapsed:.2f}s")
             return False
-    
+
     return ProgressReporter(total, operation_name)

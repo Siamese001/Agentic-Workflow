@@ -12,6 +12,7 @@ import logging
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -29,6 +30,10 @@ class InMemoryVersionStore:
         The package must have a ``canonical_bytes()`` method for
         content-hash computation.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "InMemoryVersionStore.commit_change_package")
+
         if hasattr(pkg, "canonical_bytes"):
             payload = pkg.canonical_bytes()
         else:
@@ -76,6 +81,10 @@ class FileBackedVersionStore:
 
     def commit_change_package(self, pkg: Any) -> str:
         """Commit a change package and return its version_id."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "FileBackedVersionStore.commit_change_package")
+
         if hasattr(pkg, "canonical_bytes"):
             payload = pkg.canonical_bytes()
         else:

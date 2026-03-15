@@ -32,6 +32,7 @@ from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
 from typing import Callable, Sequence
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 Logger = logging.getLogger(__name__)
 
@@ -140,6 +141,13 @@ class HitlGate:
         HITL is mandatory — always prompts when a TTY is present.
         Raises HitlRequiredError when no TTY is available (no silent skip).
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "HitlGate.request")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:HitlGate.request".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         protected = _is_protected(req.affected_paths, self._repo_root)
         interactive = self._tty_override or sys.stdin.isatty()
 

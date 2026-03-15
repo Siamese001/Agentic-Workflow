@@ -25,6 +25,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from agentic_core.adg.artifact.builder import ADGArtifact
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -102,6 +103,10 @@ class ADGHealthReport:
 
     @property
     def summary(self) -> str:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ADGHealthReport.summary")
+
         status = "PASS" if self.trust_passed else "FAIL"
         return (
             f"ADG health [{status}] "

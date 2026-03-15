@@ -4,6 +4,7 @@ import json
 from dataclasses import dataclass
 
 from system_learning.types.healing_outcome_types import HealingOutcomeProposal, HealingOutcomeStats
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass(frozen=True, slots=True)
@@ -42,6 +43,10 @@ class HealingOutcomeIntakeRecord:
         Non-semantic fields (run_id, trace_id) are excluded from the hash
         so that re-runs of the same data do not create duplicate entries.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HealingOutcomeIntakeRecord.canonical_bytes")
+
         payload = {
             "schema_version": self.schema_version,
             "created_utc": self.created_utc,

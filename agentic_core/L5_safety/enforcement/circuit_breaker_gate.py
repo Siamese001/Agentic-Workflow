@@ -17,6 +17,7 @@ import time
 from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -216,6 +217,13 @@ class CircuitBreaker:
 
     def get_time_until_retry(self) -> float:
         """Get seconds until retry is allowed (for OPEN state)."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "CircuitBreaker.get_time_until_retry")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:CircuitBreaker.get_time_until_retry".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         if self._state != CircuitState.OPEN:
             return 0.0
         if self._last_failure_time is None:

@@ -14,6 +14,7 @@ import uuid
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class AntipatternSeverity(str, Enum):
@@ -113,6 +114,10 @@ class AntipatternRegistryReport:
 
     @property
     def by_category(self) -> dict[str, int]:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "AntipatternRegistryReport.by_category")
+
         result: dict[str, int] = {}
         for r in self.records:
             result[r.category.value] = result.get(r.category.value, 0) + 1
@@ -172,6 +177,10 @@ class AntipatternRegistry:
         severity: AntipatternSeverity | None = None,
     ) -> AntipatternRecord:
         """Register a detected anti-pattern."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "AntipatternRegistry.register")
+
         resolved_severity = severity or _SEVERITY_MAP.get(category, AntipatternSeverity.MEDIUM)
         record = AntipatternRecord(
             agent_id=self._agent_id,

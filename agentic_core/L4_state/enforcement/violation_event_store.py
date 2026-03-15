@@ -15,6 +15,7 @@ Same-cycle events (commit_tick == before_tick) are structurally invisible.
 from __future__ import annotations
 
 from agentic_core.L4_state.types.violation_event_types import ViolationEvent
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class ViolationEventStore:
@@ -33,6 +34,10 @@ class ViolationEventStore:
         Persist a ViolationEvent. Returns event_hash.
         Idempotent: duplicate hashes are silently ignored.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "ViolationEventStore.store_violation_event")
+
         if not isinstance(event, ViolationEvent):
             raise TypeError(
                 f"ViolationEventStore.store_violation_event: expected ViolationEvent, got {type(event).__name__}"

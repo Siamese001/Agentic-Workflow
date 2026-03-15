@@ -19,6 +19,7 @@ from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBridge
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger = logging.getLogger(__name__)
 
@@ -71,6 +72,10 @@ class BaseHealingOrchestrator(SovereignBaseAgent):
 
     def heal(self, violation: dict[str, Any], **kwargs: Any) -> dict[str, Any]:
         """Heal a single violation. Override in subclasses."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "BaseHealingOrchestrator.heal")
+
         violation_type = violation.get("type", "unknown")
         return {
             "status": "skipped",

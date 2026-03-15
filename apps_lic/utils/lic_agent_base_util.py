@@ -63,6 +63,7 @@ except ImportError:
 
     class EmbeddingMixin:
         pass
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass
@@ -128,6 +129,10 @@ class LICAgentBase(SemanticCacheMixin, EmbeddingMixin, MetaLearningMixin, AppBas
         Returns:
             Pattern ID if stored successfully, None otherwise
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "LICAgentBase.store_healing_pattern")
+
         if self._meta_client is None:
             self._initialize_meta_client()
         if not self.validate_domain_pattern({"domain": APPS_LIC_DIR, **violation}):

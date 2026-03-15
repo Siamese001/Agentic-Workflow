@@ -11,6 +11,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class RewooTaskStatus(Enum):
@@ -48,6 +49,10 @@ class RewooTaskList:
 
     def ready_tasks(self) -> list[RewooTask]:
         """Return tasks whose dependencies are all completed."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RewooTaskList.ready_tasks")
+
         completed_ids = {t.task_id for t in self.tasks if t.status == RewooTaskStatus.COMPLETED}
         return [
             t

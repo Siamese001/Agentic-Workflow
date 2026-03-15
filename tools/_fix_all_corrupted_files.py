@@ -27,15 +27,15 @@ def fix_python_file(file_path: Path) -> bool:
         content = file_path.read_text(encoding="utf-8", errors="ignore")
     except (UnicodeDecodeError, OSError):
         return False
-    
+
     original_content = content
-    
+
     # Remove config constants from import statements
     lines = content.splitlines()
     fixed_lines = []
     extracted_constants = []
     in_multiline_import = False
-    
+
     for line in lines:
         # Check if this is a config constant line
         if any(const in line for const in CONFIG_CONSTANTS):
@@ -46,13 +46,13 @@ def fix_python_file(file_path: Path) -> bool:
                 fixed_lines.append(line)
         else:
             fixed_lines.append(line)
-        
+
         # Track multiline imports
         if line.startswith("from ") and "(" in line and not line.endswith(")"):
             in_multiline_import = True
         elif in_multiline_import and line.strip() == ")":
             in_multiline_import = False
-    
+
     # If we extracted constants, add them at the top
     if extracted_constants:
         # Find where to insert (after docstring/shebang)
@@ -68,7 +68,7 @@ def fix_python_file(file_path: Path) -> bool:
             elif line.startswith("import ") or line.startswith("from "):
                 insert_pos = i
                 break
-        
+
         # Insert config constants
         new_lines = (
             fixed_lines[:insert_pos] +
@@ -77,39 +77,39 @@ def fix_python_file(file_path: Path) -> bool:
             [""] +
             fixed_lines[insert_pos:]
         )
-        
+
         content = "\n".join(new_lines) + "\n"
-    
+
     # Write back if changed
     if content != original_content:
         file_path.write_text(content, encoding="utf-8")
         return True
-    
+
     return False
 
 
 def main() -> None:
     """Fix all corrupted Python files."""
     print("Fixing all corrupted Python files...")
-    
+
     python_files = list(REPO.rglob("*.py"))
-    
+
     # Skip certain directories
     skip_dirs = {
         ".git", ".venv", "venv", "__pycache__", ".pytest_cache",
         "node_modules", ".nox", "archives", ".backup"
     }
-    
+
     fixed_count = 0
     for py_file in python_files:
         # Skip if in excluded directory
         if any(skip in py_file.parts for skip in skip_dirs):
             continue
-        
+
         if fix_python_file(py_file):
             print(f"  Fixed: {py_file.relative_to(REPO)}")
             fixed_count += 1
-    
+
     print(f"\nFixed {fixed_count} Python files")
 
 

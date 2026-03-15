@@ -13,6 +13,7 @@ from typing import Any
 
 from agentic_core.cache.cache_key_builders import _require_hash_segment
 from agentic_core.cache.redis_cache_client import DeterministicRedisCache, get_hot_cache
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 _DEFAULT_SCHEMA_TTL = 3600 * 24
@@ -46,6 +47,10 @@ class SchemaValidatorCache:
         Raises:
             ValueError: If schema is empty
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SchemaValidatorCache.get_or_fetch")
+
         if not schema:
             raise ValueError("Schema dict must not be empty")
         if not replay_mode:

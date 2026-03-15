@@ -13,6 +13,7 @@ from __future__ import annotations
 import logging
 import os
 from dataclasses import dataclass
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
@@ -78,6 +79,10 @@ class SovereignConfigManager:
 
     def get_int(self, key: str, default: int = 0) -> int:
         """Get int env var."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SovereignConfigManager.get_int")
+
         val = os.environ.get(key)
         if val is None:
             return default

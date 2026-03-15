@@ -11,6 +11,7 @@ This module provides unified access to:
 import logging
 from dataclasses import dataclass
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -112,6 +113,10 @@ class L5ConsolidatedKnowledge:
         Returns:
             KnowledgeResult with retrieved data
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "L5ConsolidatedKnowledge.search_knowledge")
+
         if types is None:
             types: Any = ["profile", "template"]
         result: Any = KnowledgeResult(

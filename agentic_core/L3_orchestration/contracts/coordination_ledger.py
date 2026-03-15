@@ -30,6 +30,7 @@ from enum import Enum
 from typing import Any
 
 from agentic_core.L2_execution.providers import get_clock
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 _COORD_LOG = logging.getLogger("adg.agent_executes_agent")
@@ -83,6 +84,10 @@ class TaskRecord:
     metadata: dict[str, Any] = field(default_factory=dict)
 
     def transition(self, new_status: TaskStatus) -> None:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "TaskRecord.transition")
+
         self.status = new_status
         self.updated_tick = get_clock().now_epoch()
         if new_status == TaskStatus.COMPLETED:

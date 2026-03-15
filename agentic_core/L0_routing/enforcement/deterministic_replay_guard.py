@@ -24,6 +24,7 @@ from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import (
     RoutingArtifact,
     get_routing_gateway,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, emit_replay_key, emit_determinism_digest
 
 logger = logging.getLogger(__name__)
 
@@ -43,6 +44,12 @@ class ReplayVerificationResult:
 
     @property
     def mismatch_summary(self) -> str:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "ReplayVerificationResult.mismatch_summary")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         if self.passed:
             return "PASS"
         return f"MISMATCH expected={self.expected_replay_key[:16]} actual={self.actual_replay_key[:16]}"
@@ -81,6 +88,12 @@ class DeterministicReplayGuard:
 
         ADG edge: guards_replay
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "DeterministicReplayGuard.verify_routing_replay")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         gw: DeterministicRoutingGateway = get_routing_gateway(artifact.policy_config_hash)
         gw.stamp_decision(
             str(artifact.route_path), metadata={"guard": "replay_verify", "trace_id": artifact.trace_id}

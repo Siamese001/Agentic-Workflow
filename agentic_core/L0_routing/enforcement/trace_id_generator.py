@@ -9,6 +9,7 @@ import hashlib
 import re
 
 from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, emit_replay_key, emit_determinism_digest
 
 
 class TraceIdGenerator:
@@ -38,6 +39,12 @@ class TraceIdGenerator:
         Returns:
             TraceID matching pattern ^CC3AL1-[0-9A-F]{8}$
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "TraceIdGenerator.generate_trace_id")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         input_parts = ["CC3AL1", str(semantic_clock.tick), operation, additional_context or ""]
         if self.replay_mode:
             input_parts.append(f"replay_{self._seed_counter}")

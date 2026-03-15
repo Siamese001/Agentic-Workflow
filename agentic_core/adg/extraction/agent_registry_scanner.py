@@ -33,6 +33,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from agentic_core.adg.schema import canonical_name
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -74,6 +75,10 @@ class AgentRegistryResult:
         return len(self.agent_names)
 
     def edge_counts_by_relation(self) -> dict[str, int]:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "AgentRegistryResult.edge_counts_by_relation")
+
         counts: dict[str, int] = {}
         for edge in self.edges:
             counts[edge.relation_type] = counts.get(edge.relation_type, 0) + 1

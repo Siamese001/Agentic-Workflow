@@ -11,6 +11,7 @@ import re
 from typing import Callable
 
 from .interfaces import Document, IReranker
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 def _query_term_overlap(query: str, content: str) -> float:
@@ -49,6 +50,10 @@ class HeuristicReranker(IReranker):
         Returns:
             Top-k documents sorted by descending rerank score
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HeuristicReranker.rerank")
+
         if not candidates:
             return []
         scored = []

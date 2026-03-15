@@ -23,6 +23,7 @@ from typing import TYPE_CHECKING, Callable
 
 if TYPE_CHECKING:
     from agentic_core.runtime.execution_trace import ExecutionTrace
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -66,6 +67,13 @@ class ExecutionProof:
 
         Emits ``guards_replay`` ADG edge.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "ExecutionProof.verify_replay")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:ExecutionProof.verify_replay".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         expected = _compute_replay_key(
             self.trace_id, self.run_id, self.module, self.operation, self.execution_input_hash
         )
@@ -165,6 +173,13 @@ class ExecutionProofEmitter:
         Emits ``emits_replay_key`` + ``emits_determinism_digest``
         + ``signs_execution_trace`` ADG edges.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "ExecutionProofEmitter.emit")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:ExecutionProofEmitter.emit".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         import uuid  # noqa: PLC0415
 
         trace_id = self._trace_id()

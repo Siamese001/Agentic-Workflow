@@ -26,6 +26,7 @@ except ImportError:
 
     class HealerMixin:
         pass
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass
@@ -53,6 +54,10 @@ class ImmutableStagingBuffer(MCPHardenedMixin, HealerMixin):
         Raises:
             ValueError: If the key has already been written to.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ImmutableStagingBuffer.write_once")
+
         if key in self._locked_keys:
             raise ValueError(f"Key '{key}' is immutable - already written.")
         self._buffer[key] = value

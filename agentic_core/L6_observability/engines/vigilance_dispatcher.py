@@ -7,6 +7,7 @@ L6 has ZERO authority: no decisions, no direct L4 mutation, no L2/L5 coupling.
 
 from dataclasses import dataclass
 from typing import Callable
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass(frozen=True)
@@ -30,6 +31,10 @@ class VigilanceEventArtifact:
         Returns:
             New VigilanceEventArtifact with sorted unique signals
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L6_OBSERVABILITY, "VigilanceEventArtifact.create")
+
         unique_signals = tuple(sorted(set(signals)))
         return cls(trace_id=trace_id, signals=unique_signals, summary=summary)
 

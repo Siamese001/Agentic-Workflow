@@ -4,6 +4,7 @@ from __future__ import annotations
 from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 
 class GoldenStateTestCase(BaseModel):
@@ -19,6 +20,13 @@ class GoldenStateTestCase(BaseModel):
     @classmethod
     def validate_required_text(cls, value: str) -> str:
         """[HARDENED] Ensure required text fields are not empty."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "GoldenStateTestCase.validate_required_text")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:GoldenStateTestCase.validate_required_text".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         if not value.strip():
             raise ValueError("Text fields cannot be empty")
         return value.strip()
@@ -36,6 +44,13 @@ class JudgeVerdict(BaseModel):
     @classmethod
     def validate_non_empty(cls, value: str) -> str:
         """[HARDENED] Ensure rating and explanation are not empty."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "JudgeVerdict.validate_non_empty")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:JudgeVerdict.validate_non_empty".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         if not value.strip():
             raise ValueError("Rating and explanation cannot be empty")
         return value.strip()

@@ -14,6 +14,7 @@ from __future__ import annotations
 import logging
 from dataclasses import dataclass
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -69,6 +70,10 @@ class RiskGateAdapter:
             RiskResult with allow, level, and reasons from the real gate,
             or RiskResult(allow=True) when gate unavailable.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RiskGateAdapter.evaluate")
+
         if not self._real:
             return RiskResult(allow=True)
         d0_str = d0_injections if isinstance(d0_injections, str) else str(d0_injections)

@@ -8,6 +8,7 @@ from __future__ import annotations
 import logging
 from dataclasses import dataclass
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -102,6 +103,10 @@ class K1Router:
         Returns:
             str: Next hop identifier
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "K1Router.determine_next_hop")
+
         if not state:
             raise ValueError("Routing state cannot be empty")
         result = self.execute_routing(state)

@@ -18,6 +18,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from agentic_core.adg.extraction.static_scanner import ScanResult
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 logger = logging.getLogger(__name__)
 _SINGLETON: ADGRuntimeQueryEngine | None = None
 
@@ -139,6 +140,10 @@ class ADGRuntimeQueryEngine:
 
         Speedup vs full codebase scan: 50-500x.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ADGRuntimeQueryEngine.compute_blast_radius")
+
         from agentic_core.adg.schema import canonical_name
 
         frontier: list[tuple[str, int]] = []

@@ -3,6 +3,7 @@ from __future__ import annotations
 "\nRAG Telemetry Collector - L6 observability\nTracks RAG performance metrics for dashboard visualization\n"
 from collections import defaultdict
 from dataclasses import dataclass, field
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass
@@ -61,6 +62,10 @@ class RagTelemetryCollector:
         namespace: str = "sovereign-core",
     ) -> None:
         """Record a RAG query execution."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L6_OBSERVABILITY, "RagTelemetryCollector.record_query")
+
         self.metrics.total_queries += 1
         if cached:
             self.metrics.cache_hits += 1

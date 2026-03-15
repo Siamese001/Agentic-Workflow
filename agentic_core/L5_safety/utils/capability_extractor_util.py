@@ -2,6 +2,7 @@ from __future__ import annotations
 
 "\nCapability Extractor - AST-based capability analysis for agent classes.\nExtracted from agent_capability_supplement.py for single responsibility.\n"
 import ast
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 
 class CapabilityExtractor:
@@ -33,6 +34,13 @@ class CapabilityExtractor:
         Returns:
             Dictionary with semantic_tags, unique_methods, patterns, and valuable_methods
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "CapabilityExtractor.extract_capabilities")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:CapabilityExtractor.extract_capabilities".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         caps = {"semantic_tags": set(), "unique_methods": set(), "patterns": set(), "valuable_methods": []}
         for item in class_node.body:
             if not isinstance(item, ast.FunctionDef | ast.AsyncFunctionDef):

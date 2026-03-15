@@ -33,6 +33,7 @@ from apps_eval.types.eval_types import (
     RegressionVerdict,
 )
 from apps_eval.validators.eval_gate_validator import EvalGateValidator
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 _log = logging.getLogger(__name__)
 
@@ -90,6 +91,10 @@ class EvalOrchestrator:
         Returns:
             EvalResult with scorecard, regression records, and artifacts.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "EvalOrchestrator.run")
+
         trace_id = request.trace_id or self._make_trace_id(request)
         _log.info(
             "[EvalOrchestrator] trace=%s suites=%s dry_run=%s",

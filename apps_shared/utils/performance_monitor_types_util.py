@@ -15,6 +15,7 @@ import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import Any, TypeVar
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 F = TypeVar("F", bound=Callable[..., Any])
@@ -59,6 +60,10 @@ class MetricsCollector:
 
     def stop_timer(self, operation: str, metadata: dict[str, Any] | None = None) -> float:
         """Stop a timer and record the metric."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "MetricsCollector.stop_timer")
+
         if operation not in self._start_times:
             logger.warning(f"Timer not started for: {operation}")
             return 0.0
@@ -172,6 +177,10 @@ class PerformanceThresholds:
 
     def check_threshold(self, operation: str, duration_ms: float) -> bool:
         """Check if duration is within threshold."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PerformanceThresholds.check_threshold")
+
         threshold = self.get_threshold(operation)
         return duration_ms <= threshold
 
@@ -208,6 +217,10 @@ class PerformanceMonitor:
 
     def get_report(self) -> dict[str, Any]:
         """Generate a performance report."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PerformanceMonitor.get_report")
+
         summaries = self.collector.get_all_summaries()
         violations = self.thresholds.get_violations(self.collector)
         return {

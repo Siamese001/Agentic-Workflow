@@ -14,6 +14,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Generic, TypeVar
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 InputT = TypeVar("InputT")
@@ -203,6 +204,10 @@ class BaseAgent(IAgent[InputT, OutputT]):
 
     def execute(self, input_data: InputT, context: AgentContext) -> AgentResult[OutputT]:
         """Execute with timing, error handling, and retry logic."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "BaseAgent.execute")
+
         start_time = time.time()
         is_valid, error_msg = self.validate_input(input_data)
         if not is_valid:
@@ -269,6 +274,10 @@ class AgentRegistry:
 
     def register(self, agent: IAgent) -> None:
         """Register an agent."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "AgentRegistry.register")
+
         key = f"{agent.name}:{agent.version}"
         self._agents[key] = agent
         logger.info(f"Registered agent: {key}")

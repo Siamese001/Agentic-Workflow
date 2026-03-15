@@ -10,6 +10,7 @@ from collections.abc import Callable
 from typing import Any
 
 from agentic_core.utils.feature_flags import FeatureFlagManager
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -64,6 +65,10 @@ class DomainAgentMixin(FeatureFlaggedAgentMixin):
         Returns:
             Healing result with domain context
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "DomainAgentMixin.domain_heal_with_verification")
+
         violation_with_domain = {
             **violation,
             "_domain": self._domain_prefix,
@@ -148,6 +153,10 @@ class RGDomainMixin(DomainAgentMixin):
         Returns:
             True if stored successfully
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RGDomainMixin.store_resume_pattern")
+
         key = self.get_namespaced_key(f"resume_pattern:{pattern_id}")
         self.domain_log_audit_event("pattern_stored", {"pattern_id": pattern_id, "key": key})
         return True
@@ -181,6 +190,10 @@ class LICDomainMixin(DomainAgentMixin):
         Returns:
             True if stored successfully
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "LICDomainMixin.store_campaign_pattern")
+
         key = self.get_namespaced_key(f"campaign_pattern:{campaign_id}")
         self.domain_log_audit_event("pattern_stored", {"campaign_id": campaign_id, "key": key})
         return True

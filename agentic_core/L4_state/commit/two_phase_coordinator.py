@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import logging
 from typing import Any, Callable
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -38,6 +39,10 @@ class TwoPhaseCoordinator:
         Returns (resource_result, ledger_result) on success.
         Raises MutationCommitFailure if either ACK fails.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "TwoPhaseCoordinator.execute_commit")
+
         from agentic_core.L5_safety.types.hardening_errors import MutationCommitFailure
 
         ctx_str = str(context or {})

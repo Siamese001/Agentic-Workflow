@@ -12,6 +12,7 @@ COGNITIVE HARDENING (Feb 2026):
 
 import logging
 from typing import Any, Final
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 GOLDEN_CONTEXT_SUMMARY: Final[str] = (
@@ -36,6 +37,10 @@ class GoldenContextMixin:
         Returns:
             The SSOT law summary string.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "GoldenContextMixin.get_golden_context")
+
         if self._golden_context_cache is None:
             self._golden_context_cache = GOLDEN_CONTEXT_SUMMARY.strip()
         return self._golden_context_cache

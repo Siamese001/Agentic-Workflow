@@ -7,6 +7,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, emit_replay_key, emit_determinism_digest
 
 
 class ExecutionStatus(Enum):
@@ -85,6 +86,12 @@ class DAGStrategy(ExecutionStrategy):
 
     async def execute(self, context: WorkflowContext, steps: list[WorkflowStep]) -> WorkflowResult:
         """Execute workflow as DAG."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "DAGStrategy.execute")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         completed = set()
         results = {}
         steps_executed = 0
@@ -154,6 +161,12 @@ class StateMachineStrategy(ExecutionStrategy):
 
     async def execute(self, context: WorkflowContext, steps: list[WorkflowStep]) -> WorkflowResult:
         """Execute workflow as state machine."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "StateMachineStrategy.execute")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         current_state = "start"
         steps_executed = 0
         results = {}
@@ -224,6 +237,12 @@ class EventDrivenStrategy(ExecutionStrategy):
 
     async def execute(self, context: WorkflowContext, steps: list[WorkflowStep]) -> WorkflowResult:
         """Execute workflow using event-driven pattern."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "EventDrivenStrategy.execute")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         event_queue = asyncio.Queue()
         results = {}
         steps_executed = 0
@@ -290,6 +309,12 @@ class ReactiveStrategy(ExecutionStrategy):
 
     async def execute(self, context: WorkflowContext, steps: list[WorkflowStep]) -> WorkflowResult:
         """Execute workflow using reactive streams."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "ReactiveStrategy.execute")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         results = {}
         steps_executed = 0
         current_value = context.input_data

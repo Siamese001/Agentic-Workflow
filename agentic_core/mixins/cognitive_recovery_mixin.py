@@ -1,6 +1,7 @@
 import logging
 import traceback
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -44,6 +45,10 @@ class CognitiveRecoveryMixin:
         When an error occurs, this method queries the 'healing-patterns' namespace
         to see if this specific error has a known fix or RCA document.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "CognitiveRecoveryMixin.perform_cognitive_rca")
+
         error_msg = f"{type(exception).__name__}: {str(exception)}"
         tb = traceback.format_exc()
         query = f"Fix for error: {error_msg} Context: {tb[:200]}"

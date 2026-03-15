@@ -24,6 +24,7 @@ import logging
 from functools import cached_property
 from pathlib import Path
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -99,6 +100,10 @@ class ADGBehavioralMixin:
     @cached_property
     def adg_behavioral_score(self) -> float:
         """Behavioral score [0.0–1.0]. >0.7 agent-like, <0.4 script-like. Default 0.5."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ADGBehavioralMixin.adg_behavioral_score")
+
         profile = self._adg_load_profile()
         return profile.behavioral_score if profile is not None else 0.5
 

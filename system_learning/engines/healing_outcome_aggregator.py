@@ -19,6 +19,7 @@ from system_learning.types.healing_outcome_types import (
     HealingOutcomeProposal,
     HealingOutcomeStats,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class HealingOutcomeAggregator:
@@ -61,6 +62,10 @@ class HealingOutcomeAggregator:
 
         Returns a list sorted by (healer_id, tier, failure_type).
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HealingOutcomeAggregator.snapshot")
+
         # Accumulate counts per composite key
         counts: dict[tuple[str, str, str], tuple[int, int]] = {}
         for ev in self._buffer:

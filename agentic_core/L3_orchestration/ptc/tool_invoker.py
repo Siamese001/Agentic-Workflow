@@ -16,6 +16,7 @@ from .tool_contract import (
     canonical_json,
     hash_result_data,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class ToolInvoker:
@@ -48,6 +49,10 @@ class ToolInvoker:
         Raises:
             ValueError: If validation fails
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ToolInvoker.invoke")
+
         # Get tool specification and handler
         spec, handler = registry.get(call.tool_id)
 

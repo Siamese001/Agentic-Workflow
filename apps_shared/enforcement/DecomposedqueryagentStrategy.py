@@ -7,6 +7,7 @@ that can be answered by the retrieval system.
 import asyncio
 import logging
 import re
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -22,6 +23,10 @@ class DecomposedQuery(BaseModel):
     @validator("sub_queries")
     def validate_sub_queries(cls, v):
         """Ensure sub-queries are valid."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "DecomposedQuery.validate_sub_queries")
+
         if not v:
             raise ValueError("At least one sub-query is required")
         if len(v) > 4:
@@ -142,6 +147,10 @@ class QueryDecomposer(SimpleAgentBase):
         Returns:
             DecomposedQuery with sub-queries and reasoning
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "QueryDecomposer.decompose")
+
         if self.gate:
             decision = self.gate.should_retrieve(query)
             if decision.query_type in ["CONVERSATIONAL", "FACTUAL"] and (not decision.should_retrieve):

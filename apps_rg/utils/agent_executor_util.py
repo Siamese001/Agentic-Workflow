@@ -14,6 +14,7 @@ from apps_shared.utils.observability_clients import create_span, record_exceptio
 from apps_shared.utils.Provider import Provider, get_client, get_instructor_client, get_litellm_completion
 
 from agentic_core.L2_execution.providers import get_clock
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -91,6 +92,10 @@ class AgentExecutor:
         Returns:
             AgentResponse with completion
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "AgentExecutor.execute")
+
         span_name = f"agent.execute.{self.config.provider.value}"
         if self.config.enable_tracing:
             with create_span(span_name):

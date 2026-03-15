@@ -44,6 +44,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from agentic_core.adg.extraction.static_scanner import ScanResult
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass
@@ -94,6 +95,10 @@ class HealerValidatorReport:
 
     @property
     def summary(self) -> str:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HealerValidatorReport.summary")
+
         lines = [
             f"Healer/Validator Graph: {self.healer_count} healers, "
             f"{self.validator_count} validators, {self.pair_count} pairs",

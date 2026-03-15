@@ -4,6 +4,7 @@ from __future__ import annotations
 import logging
 from pathlib import Path
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 Logger: Any = logging.getLogger("ActionNode.CoreExecutor")
 
@@ -48,6 +49,13 @@ class ActionNodeCore:
             Dict[str, Any]: A dictionary containing the overall status and results
                             of each executed step.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "ActionNodeCore.execute_plan")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:ActionNodeCore.execute_plan".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         Logger.info(f"⚙️ Action Node received plan for goal: {plan.get('goal', 'N/A')}")
         results: list[dict[str, Any]] = []
         steps: list[dict[str, Any]] = plan.get("steps") or plan.get("plan", {}).get("steps", [])

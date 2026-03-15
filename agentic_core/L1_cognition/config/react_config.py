@@ -30,6 +30,7 @@ try:
     from agentic_core.L1_cognition.reasoning.trace_models import ReasoningTraceModel
 except ImportError:
     ReasoningTraceModel = None  # type: ignore[misc,assignment]
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger = logging.getLogger(__name__)
 
@@ -79,6 +80,10 @@ class ReActTrace:
 
     def to_reasoning_trace(self) -> ReasoningTraceModel:
         """Convert to formal Pydantic ReasoningTraceModel."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L1_REASONING, "ReActTrace.to_reasoning_trace")
+
         trace = ReasoningTraceModel(
             trace_id=self.trace_id,
             Task=self.Task,
@@ -151,6 +156,10 @@ class ReActEngine:
         Returns:
             ReActTrace containing all steps and final result
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L1_REASONING, "ReActEngine.run")
+
         trace_id = str(uuid.uuid4())
         trace = ReActTrace(trace_id=trace_id, Task=Task, metadata=context or {})
 

@@ -19,6 +19,7 @@ Seam contract:
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 _DEFAULT_QUEUE: VLLMQueueController | None = None
 _DEFAULT_REGISTRY: VLLMCircuitBreakerRegistry | None = None
@@ -87,6 +88,13 @@ class VLLMGatewayAdapter:
         Returns:
             VLLMGatewayCallResult with routing decision + telemetry + violations (if any).
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "VLLMGatewayAdapter.evaluate")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:VLLMGatewayAdapter.evaluate".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         from agentic_core.L2_execution.types.vllm_gateway_integration_types import (
             VLLMGatewayCallResult,
             evaluate_gateway_call,

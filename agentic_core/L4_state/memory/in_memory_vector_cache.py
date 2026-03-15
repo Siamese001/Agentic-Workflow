@@ -10,6 +10,7 @@ except ImportError as _err:
     raise ImportError(
         "chromadb is required for this module. Install with: pip install -e '.[infra]'"
     ) from _err
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 Logger: Any = logging.getLogger(__name__)
 
 
@@ -202,6 +203,10 @@ class TieredVectorStore:
         Returns:
             Search results from hot cache or warm storage
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "TieredVectorStore.search")
+
         if try_hot_first:
             hot_results: Any = await self.hot_cache.search(query_embeddings=query_embeddings, top_k=top_k)
             if hot_results.get("ids") and len(hot_results["ids"][0]) >= top_k:

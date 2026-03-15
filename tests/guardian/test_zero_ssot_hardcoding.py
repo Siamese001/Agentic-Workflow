@@ -50,12 +50,12 @@ USAGE:
 EXPECTED RESULT:
 ----------------
     PASS - Zero fixable SSOT hardcoding violations
-    
+
 FAILURE INDICATES:
 ------------------
     New hardcoded path literals introduced in safe contexts that must be
     replaced with SSOT constants using the automated fixer:
-    
+
     python ops_scripts/ci/_fix_hardcoded_ssot_literals.py
 """
 
@@ -276,16 +276,16 @@ def _scan_file_for_violations(fpath: Path) -> list[dict[str, Any]]:
 def test_zero_ssot_hardcoding_violations():
     """
     GUARDIAN: Assert zero fixable SSOT hardcoding violations across all enforced territories.
-    
+
     This test scans all Python files in the 10 enforced sovereign territories and
     validates that no hardcoded path literals exist in safe contexts where they
     should be replaced with SSOT constants.
-    
+
     FAILURE INDICATES:
         New hardcoded path literals have been introduced. Run the automated fixer:
-        
+
         python ops_scripts/ci/_fix_hardcoded_ssot_literals.py
-        
+
     LEGITIMATE EXCLUSIONS:
         - Dict keys/values in data schemas
         - Module name prefix checks (e.g., module.startswith("agentic_core"))
@@ -354,7 +354,7 @@ def test_zero_ssot_hardcoding_violations():
 def test_ssot_constants_are_defined():
     """
     GUARDIAN: Verify all SSOT constants used in the hardcoding check are properly defined.
-    
+
     This ensures the test itself is valid and all expected constants exist.
     """
     for const_name, const_value, source in CONST_DEFS:

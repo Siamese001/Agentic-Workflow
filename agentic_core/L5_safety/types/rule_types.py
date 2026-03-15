@@ -7,6 +7,7 @@ import time
 from collections import defaultdict
 from dataclasses import dataclass
 from enum import Enum
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 Logger = logging.getLogger(__name__)
 
@@ -102,6 +103,13 @@ class ConstitutionalAISystem:
         Args:
             rule: Rule to add
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "ConstitutionalAISystem.add_rule")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:ConstitutionalAISystem.add_rule".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         self.rules[rule.rule_id] = rule
         self.rule_patterns[rule.RuleType].append(rule)
         if self.enable_logging:

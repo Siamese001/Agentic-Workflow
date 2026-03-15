@@ -8,6 +8,7 @@ from typing import Any
 from agentic_core.L2_execution.providers import get_clock
 
 from .execution import ExecutionStatus, WorkflowContext, WorkflowResult
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass
@@ -86,6 +87,10 @@ class WorkflowCoordinator(ABC):
         Returns:
             Workflow result
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "WorkflowCoordinator.safe_coordinate")
+
         start_time = get_clock().now_epoch()
         self.coordinations += 1
         try:
@@ -150,6 +155,10 @@ class CoordinatorRegistry:
 
     def get_for_workflow(self, workflow_type: str) -> WorkflowCoordinator | None:
         """Get coordinator that can handle workflow type."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "CoordinatorRegistry.get_for_workflow")
+
         for coordinator in self.coordinators.values():
             if coordinator.enabled and coordinator.can_handle(workflow_type):
                 return coordinator

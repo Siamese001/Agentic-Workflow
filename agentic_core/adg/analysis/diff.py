@@ -17,6 +17,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from agentic_core.adg.analysis.snapshot import CanonicalSnapshot
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass
@@ -54,6 +55,10 @@ class GraphDiff:
 
     @property
     def summary(self) -> str:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "GraphDiff.summary")
+
         if self.is_identical:
             return f"ADG unchanged (hash={self.hash_after[:12]})"
         parts = []

@@ -11,6 +11,7 @@ import hashlib
 import json
 from dataclasses import dataclass
 from enum import Enum
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class HandshakeState(Enum):
@@ -61,6 +62,10 @@ class HandshakeStateMachine:
 
     def reset(self) -> None:
         """Reset state machine to INIT state."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HandshakeStateMachine.reset")
+
         self._current_state = HandshakeState.INIT
         self._transition_history.clear()
         self._sequence_hash = None

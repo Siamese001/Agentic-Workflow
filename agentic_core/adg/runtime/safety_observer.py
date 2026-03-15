@@ -44,6 +44,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from agentic_core.adg.runtime.event_graph import RuntimeGraph, RuntimeGraphCollector
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass(frozen=True)
@@ -158,6 +159,10 @@ class RuntimeSafetyReport:
 
     @property
     def guardrail_pass_rate(self) -> float:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RuntimeSafetyReport.guardrail_pass_rate")
+
         if not self.guardrail_executions:
             return 1.0
         passed = sum(1 for g in self.guardrail_executions if g.passed)
@@ -217,6 +222,10 @@ class RuntimeSafetyObserver(RuntimeGraphCollector):
         reason: str = "",
     ) -> None:
         """Record a guardrail execution and emit a RuntimeEdge."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RuntimeSafetyObserver.guardrail_check")
+
         record = GuardrailExecution(
             guardrail=guardrail,
             agent_id=self._agent_id,

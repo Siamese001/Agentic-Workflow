@@ -5,6 +5,7 @@ import hashlib
 import logging
 from datetime import datetime
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 
 def get_filesystem_client():
@@ -43,6 +44,13 @@ class VectorHealingStrategy:
         Returns:
             List of fix dictionaries with action details
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "VectorHealingStrategy.diagnose")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:VectorHealingStrategy.diagnose".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         fixes: Any = []
         if not config.PINECONE_VECTOR_HEALING_ENABLED:
             Logger.info("[L0 VECTOR HEALING] Vector healing disabled in config")

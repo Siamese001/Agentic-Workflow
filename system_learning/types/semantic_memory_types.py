@@ -18,6 +18,7 @@ import hashlib
 import json
 from dataclasses import dataclass, field
 from typing import Literal
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 def _sha256_json(obj: dict) -> str:
@@ -78,6 +79,10 @@ class IncidentBundle:
 
     def to_embedding_text(self) -> str:
         """Canonical flat text for embedding — deterministic field order."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "IncidentBundle.to_embedding_text")
+
         parts = [
             f"trace:{self.trace_summary}",
             f"violations:{' | '.join(sorted(self.violations))}",
@@ -141,6 +146,10 @@ class MutationDiffRecord:
 
     def to_embedding_text(self) -> str:
         """Canonical flat text for embedding."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "MutationDiffRecord.to_embedding_text")
+
         parts = [
             f"mutation:{self.mutation_id}",
             f"resource:{self.target_resource}",
@@ -205,6 +214,10 @@ class HealerOutcomeRecord:
 
     def to_embedding_text(self) -> str:
         """Canonical flat text for embedding."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HealerOutcomeRecord.to_embedding_text")
+
         parts = [
             f"healer:{self.healer_id}",
             f"failure:{self.failure_type}",
@@ -266,6 +279,10 @@ class PathDPreferencePair:
 
     def to_embedding_text(self) -> str:
         """Canonical flat text for embedding."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PathDPreferencePair.to_embedding_text")
+
         parts = [
             f"plan:{self.original_plan}",
             f"patch:{self.human_patch}",
@@ -326,6 +343,10 @@ class GraphNeighborhood:
 
     def to_embedding_text(self) -> str:
         """Canonical flat text for embedding."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "GraphNeighborhood.to_embedding_text")
+
         parts = [
             f"node:{self.node_id}",
             f"type:{self.node_type}",
@@ -391,6 +412,10 @@ class PolicyGuardrailCase:
 
     def to_embedding_text(self) -> str:
         """Canonical flat text for embedding."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PolicyGuardrailCase.to_embedding_text")
+
         parts = [
             f"payload:{self.blocked_payload_summary}",
             f"remediation:{self.remediation_text}",
@@ -464,6 +489,10 @@ class ReplayFailureRecord:
         IDs (replay_key, determinism_digest, trace_id) are metadata only;
         they do NOT appear in the embedded text.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ReplayFailureRecord.to_embedding_text")
+
         parts = [
             f"summary:{self.failure_summary}",
             f"nondeterminism:{self.nondeterminism_type}",
@@ -556,6 +585,10 @@ class PromptOutcomeEmbeddingRecord:
         IDs (prompt_hash, template_id, route, model, policy_hash, trace_id)
         are metadata only; they do NOT appear in the embedded text.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PromptOutcomeEmbeddingRecord.to_embedding_text")
+
         parts = [
             f"s0:{self.slot_s0_summary}",
             f"d0:{self.slot_d0_summary}",
@@ -647,6 +680,10 @@ class RetrievalCaseRecord:
 
         query_id and chunk_ids are metadata only; they do NOT appear in text.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RetrievalCaseRecord.to_embedding_text")
+
         chunks_text = " | ".join(sorted(self.chunk_summaries))
         parts = [
             f"query:{self.query_summary}",

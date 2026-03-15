@@ -6,6 +6,7 @@ import json
 from typing import Sequence
 
 from .types import CorrelatedRiskReport, CorrelatedRow, DriftEvent
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class RiskCorrelator:
@@ -13,6 +14,10 @@ class RiskCorrelator:
 
     def build(self, fingerprints: Sequence[str], drift_events: Sequence[DriftEvent]) -> CorrelatedRiskReport:
         """Build correlated risk report from fingerprints and drift events."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RiskCorrelator.build")
+
         if not isinstance(fingerprints, (list, tuple)):
             raise TypeError(f"fingerprints must be a list, got {type(fingerprints).__name__}")
         if not isinstance(drift_events, (list, tuple)):

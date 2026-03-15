@@ -18,6 +18,7 @@ except ImportError:
 
     def get_healing_orchestrator():
         return None
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class HealingStrategyMixin:
@@ -35,6 +36,10 @@ class HealingStrategyMixin:
     @property
     def healing_orchestrator(self) -> HealingSovereignOrchestrator:
         """Lazy-load healing orchestrator singleton."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HealingStrategyMixin.healing_orchestrator")
+
         if self._healing_orchestrator is None:
             self._healing_orchestrator = get_healing_orchestrator()
         return self._healing_orchestrator

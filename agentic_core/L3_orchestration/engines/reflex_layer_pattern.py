@@ -2,6 +2,7 @@ from __future__ import annotations
 
 "Reflex Layer for Nervous System."
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class ReflexLayer:
@@ -13,6 +14,10 @@ class ReflexLayer:
 
     def register_reflex(self, trigger: str, action: callable) -> Any:
         """Register a reflex action."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ReflexLayer.register_reflex")
+
         self.reflexes.append({"trigger": trigger, "action": action})
         return True
 

@@ -24,6 +24,7 @@ import logging
 import time
 import uuid
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -51,6 +52,10 @@ class MCPOperationMixin:
     @property
     def mcp_gateway(self):
         """Lazy-load MCP gateway singleton."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "MCPOperationMixin.mcp_gateway")
+
         if self._mcp_gateway is None:
             from agentic_core.L2_execution.enforcement.SovereignMCPGateway import get_mcp_gateway
 

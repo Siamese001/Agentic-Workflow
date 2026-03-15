@@ -8,6 +8,7 @@ from typing import Any
 import networkx as nx
 
 from agentic_core.utils.decorators_compat_util import standard_heal
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class DAGManager(
@@ -50,6 +51,10 @@ class DAGManager(
             name: Function name
             function: The function to register
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "DAGManager.register_function")
+
         self.function_registry[name] = function
         Logger.debug(f"Registered function: {name}")
 

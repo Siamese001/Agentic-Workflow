@@ -13,6 +13,7 @@ import hashlib
 import json
 import logging
 from dataclasses import dataclass
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 _PREFERENCE_SIGNAL_THRESHOLD = 0.6
@@ -35,6 +36,10 @@ class RLHFChangePackage:
     preference_strength: float
 
     def canonical_bytes(self) -> bytes:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RLHFChangePackage.canonical_bytes")
+
         data = {
             "surface_name": self.surface_name,
             "parameter": self.parameter,
@@ -82,6 +87,10 @@ class DefaultRLHFOptimizer:
         RLHFChangePackage | None
             Proposal or None if preferences are weak/insufficient.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "DefaultRLHFOptimizer.propose_from_dpo")
+
         try:
             batch = json.loads(dpo_batch_bytes.decode("utf-8"))
         except (json.JSONDecodeError, UnicodeDecodeError):

@@ -12,6 +12,7 @@ from agentic_core.config.core.constants_config import (
     GRACEFUL_DEGRADATION,
     USE_REDIS_CACHE,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 def get_cache_metrics():
@@ -34,6 +35,10 @@ class CircuitBreaker:
         self.state = "CLOSED"
 
     def record_failure(self) -> None:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "CircuitBreaker.record_failure")
+
         self.failure_count += 1
         self.last_failure_time = time.time()
         if self.failure_count >= self.failure_threshold:
@@ -77,6 +82,10 @@ class RedisCacheMixin:
         [PHASE 2 MIGRATION] Now routes through the canonical DeterministicRedisCache
         to ensure connection pool reuse and centralized auditing.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RedisCacheMixin.redis")
+
         if not self.redis_enabled:
             return None
         if self._redis_client is None:

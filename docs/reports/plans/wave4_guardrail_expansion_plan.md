@@ -77,7 +77,7 @@
 
 ## Target Metrics
 
-**Wave 4 Goal**: 
+**Wave 4 Goal**:
 - `applies_guardrail`: 68 → **1,100+ edges** (65% of high-risk operations)
 - Files with guardrails: 21 → **300+ files**
 

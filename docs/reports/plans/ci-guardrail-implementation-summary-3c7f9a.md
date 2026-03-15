@@ -1,6 +1,6 @@
 # CI Guardrail Implementation Summary
 
-**Date**: 2026-03-10  
+**Date**: 2026-03-10
 **Status**: Phase 1 Complete - Critical Guardrails Operational
 
 ## 🎯 **Objective**
@@ -132,7 +132,7 @@ repos:
         entry: python ops_scripts/ci/check_utility_silent_swallowers.py
         language: python
         pass_filenames: false
-        
+
       - id: check-plan-location
         name: Check Plan Location Compliance
         entry: python ops_scripts/ci/check_plan_location_compliance.py
@@ -152,10 +152,10 @@ jobs:
     steps:
       - name: Check Utility Silent Swallowers
         run: python ops_scripts/ci/check_utility_silent_swallowers.py
-        
+
       - name: Check Plan Location Compliance
         run: python ops_scripts/ci/check_plan_location_compliance.py
-        
+
       - name: Check Anti-Patterns
         run: python ops_scripts/ci/check_anti_patterns.py
 ```

@@ -19,6 +19,7 @@ from agentic_core.L0_routing.types.determinism_types import (
     SemanticClockSnapshot,
     validate_semantic_clock,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 # =============================================================================
 # §B — Canonical Permission Codes (single mapping table)
@@ -331,6 +332,13 @@ class CapabilityEnforcer:
         Raises:
             PermissionError: If decision is DENY.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "CapabilityEnforcer.check")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:CapabilityEnforcer.check".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         deny_reason: str | None = None
 
         # 1) Check permission present

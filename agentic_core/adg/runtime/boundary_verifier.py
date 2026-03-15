@@ -13,6 +13,7 @@ import uuid
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class VerificationOutcome(str, Enum):
@@ -100,6 +101,10 @@ class BoundaryVerifierReport:
 
     @property
     def acceptance_rate(self) -> float:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "BoundaryVerifierReport.acceptance_rate")
+
         if not self.results:
             return 1.0
         return self.accepted_count / len(self.results)
@@ -139,6 +144,10 @@ class L2BoundaryVerifier:
         self.report = BoundaryVerifierReport(agent_id=agent_id, run_id=run_id)
 
     def verify(self, packet: BoundaryPacket) -> BoundaryVerificationResult:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "L2BoundaryVerifier.verify")
+
         result = BoundaryVerificationResult(packet_id=packet.packet_id)
 
         if not packet.packet_id:
@@ -201,6 +210,10 @@ class CapabilityChokepoint:
         self._rejected_tokens: set[str] = set()
 
     def certify(self, token_id: str, l5_cert_hash: str) -> bool:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "CapabilityChokepoint.certify")
+
         if not token_id or not l5_cert_hash:
             self._rejected_tokens.add(token_id)
             return False

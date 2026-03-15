@@ -9,6 +9,7 @@ from __future__ import annotations
 from typing import Any
 
 from .base import RetrievalMetric
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class RecallAtK(RetrievalMetric):
@@ -34,6 +35,10 @@ class RecallAtK(RetrievalMetric):
         Returns:
             Fraction of relevant docs found in top-k, in [0, 1]
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RecallAtK.compute")
+
         if not ground_truth:
             return 0.0
         if not prediction:

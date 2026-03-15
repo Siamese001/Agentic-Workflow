@@ -9,6 +9,7 @@ import logging
 from collections import defaultdict
 from dataclasses import dataclass, field
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -33,6 +34,10 @@ class BaseCollector:
 
     def collect(self, source: str, data: object) -> None:
         """Collect data from source."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "BaseCollector.collect")
+
         item = CollectedItem(source=source, data=data)
         self.items[source].append(item)
         if len(self.items[source]) > self.max_items:

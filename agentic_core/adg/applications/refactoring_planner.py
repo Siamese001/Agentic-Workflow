@@ -38,6 +38,7 @@ if TYPE_CHECKING:
     from agentic_core.adg.analysis.hotspot_index import HotspotIndex
     from agentic_core.adg.analysis.test_gap import TestGapReport
     from agentic_core.adg.extraction.static_scanner import ScanResult
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 RefactoringOp = Literal[
     "EXTRACT_MODULE",
@@ -96,6 +97,10 @@ class RefactoringPlan:
 
     @property
     def summary(self) -> str:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RefactoringPlan.summary")
+
         op_counts: dict[str, int] = {}
         for s in self.steps:
             op_counts[s.operation] = op_counts.get(s.operation, 0) + 1

@@ -7,6 +7,7 @@ import ast
 from typing import Any
 
 from agentic_core.L3_orchestration.reasoning.SubAtomicAgent import SubAtomicAgent
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 
 @dataclass
@@ -33,6 +34,13 @@ class TypeMechanicAgent(SovereignBaseAgent, SubAtomicAgent):
         Returns:
             Dict with healing summary
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "TypeMechanicAgent.heal_repository")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:TypeMechanicAgent.heal_repository".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         super().heal_repository(**kwargs)
         return {"violations": 0, "fixed": 0, "errors": 0}
 

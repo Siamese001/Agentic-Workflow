@@ -9,6 +9,7 @@ import json
 import logging
 from pathlib import Path
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -31,6 +32,10 @@ class FileOperations:
             FileNotFoundError: If file doesn't exist
             json.JSONDecodeError: If file is not valid JSON
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "FileOperations.read_json")
+
         path = Path(file_path)
         if not path.exists():
             raise FileNotFoundError(f"File not found: {file_path}")
@@ -150,6 +155,10 @@ class DataCollectionOperations:
         Returns:
             Dictionary mapping metric keys to collected values
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "DataCollectionOperations.collect_metrics")
+
         metrics = {key: [] for key in metric_keys}
         for point in data_points:
             for key in metric_keys:
@@ -232,6 +241,10 @@ class MonitoringOperations:
             event_type: Type of event
             event_data: Event data
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "MonitoringOperations.record_event")
+
         import datetime
 
         event = {"timestamp": datetime.datetime.now().isoformat(), "type": event_type, "data": event_data}

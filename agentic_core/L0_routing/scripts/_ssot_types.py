@@ -15,6 +15,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, emit_replay_key, emit_determinism_digest
 
 
 @dataclass
@@ -27,6 +28,12 @@ class ConfidenceScore:
 
     @property
     def is_high_confidence(self) -> bool:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "ConfidenceScore.is_high_confidence")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         from agentic_core.L2_execution.healers.healing_tier_config import HEALING_CONFIDENCE_X
         return self.value > HEALING_CONFIDENCE_X
 
@@ -114,6 +121,12 @@ class RoutingDecision:
     determinism_digest: str
 
     def as_log_line(self) -> str:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "RoutingDecision.as_log_line")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         f = self.factors
         i = self.inputs
         return f"[ROUTING] tier={self.tier.value} S={self.score} gate={self.gate_applied} model={self.model_id} C={f.get('C', 0)} B={f.get('B', 0)} A={f.get('A', 0)} N={f.get('N', 0)} F={f.get('F', 0)} L={f.get('L', 0)} replay={i.replay_mode} retry={i.retry_count} playbook={i.playbook_match} det_cov={i.deterministic_coverage} digest={self.determinism_digest}"
@@ -159,6 +172,12 @@ class ReconciliationManifest:
     confidence_scores: list[float] = field(default_factory=list)
 
     def add_modification(self, modification: dict[str, Any]) -> None:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "ReconciliationManifest.add_modification")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         self.modifications.append(modification)
         self.violations_attempted += 1
         if modification.get("success", False):
@@ -226,6 +245,12 @@ class ASTCodeQualityValidator:
     # guardian: allow-type-erasure
     def check_file_quality(self, file_path: Path) -> dict:
         """Check file for code quality issues (missing types, etc)."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "ASTCodeQualityValidator.check_file_quality")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         violations = []
         tree, error = self._read_and_parse_file(str(file_path))
         if error:
@@ -292,6 +317,12 @@ class HealContext:
           --interactive    => auto_approve is always True under --heal
           --apply-proposals => meta-learning always on under --heal
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "HealContext.from_args")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         if getattr(args, "dry_run", False):
             warnings.warn(
                 "--dry-run is deprecated. Omit --heal for scan-only mode.", DeprecationWarning, stacklevel=2

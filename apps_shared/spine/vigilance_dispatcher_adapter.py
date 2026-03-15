@@ -17,6 +17,7 @@ from __future__ import annotations
 import logging
 from collections import deque
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 _EVENT_QUEUE: deque = deque(maxlen=256)
@@ -69,6 +70,10 @@ class VigilanceDispatcherAdapter:
 
         Falls back to no-op if any step fails.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "VigilanceDispatcherAdapter.dispatch")
+
         if not self._real:
             return
         try:

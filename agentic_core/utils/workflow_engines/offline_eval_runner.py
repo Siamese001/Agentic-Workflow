@@ -24,6 +24,7 @@ from ..schemas.evaluation_result_schema import (
     EvaluationResult,
     EvaluationSnapshot,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 RetrievalFn = Callable[[str], list[str]]
 GenerationFn = Callable[[str, list[str]], str]
@@ -69,6 +70,10 @@ class OfflineEvaluationRunner:
         Returns:
             EvaluationReport with per-example results and aggregate scores
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "OfflineEvaluationRunner.run")
+
         run_id = str(uuid.uuid4())
         timestamp = datetime.utcnow().isoformat() + "Z"
         per_example_results: list[EvaluationResult] = []

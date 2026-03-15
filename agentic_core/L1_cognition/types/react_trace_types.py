@@ -17,6 +17,7 @@ import hashlib
 import json
 from dataclasses import dataclass, field
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 # ---------------------------------------------------------------------------
 # C0 Forbidden mutation fields — RAG context must not carry these
@@ -82,6 +83,10 @@ class ReasonTraceEnvelope:
     envelope_hash: str = ""
 
     def canonical_bytes(self) -> bytes:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L1_REASONING, "ReasonTraceEnvelope.canonical_bytes")
+
         d = {
             "trace_id": self.trace_id,
             "plan_hash": self.plan_hash,
@@ -154,6 +159,10 @@ class PromptProvenanceRecord:
     model_id: str
 
     def canonical_bytes(self) -> bytes:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L1_REASONING, "PromptProvenanceRecord.canonical_bytes")
+
         d = {
             "prompt_hash": self.prompt_hash,
             "prompt_template_id": self.prompt_template_id,
@@ -217,6 +226,10 @@ class ReplayGuard:
         return self.semantic_clock_vector[0] if self.semantic_clock_vector else 0
 
     def record_violation(self, source: str) -> None:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L1_REASONING, "ReplayGuard.record_violation")
+
         self._violations.append(source)
         if self.strict:
             raise NonDeterministicCallDetected(

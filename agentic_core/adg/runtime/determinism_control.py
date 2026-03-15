@@ -18,6 +18,7 @@ import uuid
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class DeterminismViolationType(str, Enum):
@@ -61,6 +62,10 @@ class DeterminismDigest:
     emitted_at: float = field(default_factory=time.time)
 
     def compute_hash(self, events: list[str]) -> str:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "DeterminismDigest.compute_hash")
+
         payload = f"{self.run_id}:{self.rng_seed}:{self.clock_start}:{':'.join(events)}"
         self.digest_hash = hashlib.sha256(payload.encode()).hexdigest()
         return self.digest_hash
@@ -138,6 +143,10 @@ class DeterminismControlReport:
         return len(self.violations) == 0 and self.rng_seed is not None
 
     def violations_by_type(self) -> dict[str, int]:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "DeterminismControlReport.violations_by_type")
+
         counts: dict[str, int] = {}
         for v in self.violations:
             key = v.violation_type.value
@@ -173,6 +182,10 @@ class SemanticClock:
         self.readings: list[SemanticClockReading] = []
 
     def now(self) -> SemanticClockReading:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SemanticClock.now")
+
         self._seq += 1
         reading = SemanticClockReading(
             monotonic_ns=time.time_ns() - self._start_ns,
@@ -197,6 +210,10 @@ class ReplayGuard:
         self.patches: list[ReplayPatchRecord] = []
 
     def install_replay_patches(self, symbols: list[str] | None = None) -> list[ReplayPatchRecord]:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ReplayGuard.install_replay_patches")
+
         targets = symbols or list(self._PATCHABLE)
         new_patches = []
         for sym in targets:
@@ -233,6 +250,10 @@ class DeterminismController:
         self.guard = ReplayGuard(run_id=run_id)
 
     def seed_rng(self, seed: int) -> None:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "DeterminismController.seed_rng")
+
         self.report.rng_seed = seed
         self.guard.seed_rng(seed)
 

@@ -74,6 +74,10 @@ class EnhancedSemanticCache:
         Returns:
             List of similar cached entries
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "EnhancedSemanticCache.get")
+
         if not query_embedding:
             query_embedding = self._get_embedding(query)
         results = []
@@ -281,3 +285,4 @@ class EnhancedSemanticCache:
 
 
 import math
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace

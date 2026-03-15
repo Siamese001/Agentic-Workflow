@@ -17,6 +17,7 @@ from datetime import datetime, timezone
 from agentic_core.utils.canonical_serializer_util import (
     canonical_bytes,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, emit_replay_key, emit_determinism_digest
 
 
 class RoutingConfigSealViolation(RuntimeError):
@@ -43,6 +44,12 @@ class RoutingConfigSeal:
         version: str,
     ) -> RoutingConfigSeal:
         """Seal a routing config snapshot."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "RoutingConfigSeal.create")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         sealed_at = datetime.now(timezone.utc).isoformat(timespec="microseconds")
         ch = hashlib.sha256(canonical_bytes(config)).hexdigest()
         return RoutingConfigSeal(

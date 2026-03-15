@@ -19,6 +19,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from agentic_core.evaluation.feedback.schemas import ReviewRubric
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass
@@ -95,6 +96,10 @@ class CompletenessReviewRubric(ReviewRubric):
     @property
     def quality_score(self) -> float:
         """Extended quality score including completeness penalty."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "CompletenessReviewRubric.quality_score")
+
         base_dimensions = [self.grounded, self.useful, self.correct, self.safe]
         base_raw = sum(1 for d in base_dimensions if d) / len(base_dimensions)
         context_penalty = 0.1 if self.missing_context else 0.0

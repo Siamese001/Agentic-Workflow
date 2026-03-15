@@ -23,6 +23,7 @@ from dataclasses import dataclass, field
 from typing import Literal
 
 from system_learning.enforcement.determinism import deterministic_json
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 # ---------------------------------------------------------------------------
 # Outcome class literals
@@ -289,6 +290,10 @@ class TraceFeatureRecord:
         name for this record is deterministically derived from feature
         content.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "TraceFeatureRecord.from_bundle")
+
         bundle_hash = bundle.stable_hash()
         # Build a temporary record to compute the stable record_id
         temp = TraceFeatureRecord(

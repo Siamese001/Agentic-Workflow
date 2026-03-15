@@ -8,6 +8,7 @@ from __future__ import annotations
 import statistics
 from dataclasses import dataclass
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass
@@ -36,6 +37,10 @@ class MathProcessor:
         Returns:
             Percentage value
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "MathProcessor.calculate_percentage")
+
         if total == 0:
             return 0.0
         return round(value / total * 100, decimals)

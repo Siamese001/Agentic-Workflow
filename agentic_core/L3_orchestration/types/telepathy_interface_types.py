@@ -6,6 +6,7 @@ from agentic_core.L2_execution.tools import write_gateway as _wg
 import logging
 from pathlib import Path
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -41,6 +42,10 @@ class TelepathyInterface:
         Returns:
             Instruction text if found, None otherwise
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "TelepathyInterface.check_instructions")
+
         self._cycle = cycle
         if not self.instructions_path.exists():
             return None

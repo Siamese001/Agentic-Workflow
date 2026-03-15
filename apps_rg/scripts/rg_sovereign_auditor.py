@@ -8,6 +8,7 @@ Analyzes actual code structure, not just file names.
 import ast
 import json
 from pathlib import Path
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class RGSovereignAuditor:
@@ -239,6 +240,10 @@ class RGSovereignAuditor:
 
     def audit_directory(self) -> dict:
         """Perform comprehensive audit of apps_rg directory."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RGSovereignAuditor.audit_directory")
+
         if not self.base_path.exists():
             return {"error": f"Directory {self.base_path} does not exist"}
         print("🔍 APPS_RG SOVEREIGN STRUCTURAL AUDIT")

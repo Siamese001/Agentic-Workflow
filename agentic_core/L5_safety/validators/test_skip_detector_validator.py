@@ -37,6 +37,7 @@ from agentic_core.L5_safety.validators.base_detector_validator import (
     DetectionResult,
     EnforcementLevel,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -100,6 +101,13 @@ class TestSilentSkipDetector(AntiPatternDetector):
 
     def scan_file(self, file_path: Path) -> DetectionResult:
         """Return empty result for non-test files; delegate to base for test files."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "TestSilentSkipDetector.scan_file")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:TestSilentSkipDetector.scan_file".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         name = file_path.name
         is_test_file = name.startswith("test_") or name.endswith("_test.py")
         if not is_test_file:

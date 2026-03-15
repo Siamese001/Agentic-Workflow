@@ -19,6 +19,7 @@ from __future__ import annotations
 import logging
 import time
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 _logger = logging.getLogger("SSOTMetaLearning")
 
@@ -64,6 +65,10 @@ class SSOTMetaLearningMixin:
         list[dict]
             Matching patterns, newest first.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SSOTMetaLearningMixin.ml_read_patterns")
+
         scoped_ns = self._scoped_namespace(domain)
         patterns = self._ssot_ml_patterns.get(scoped_ns, [])
         return list(reversed(patterns[-limit:]))

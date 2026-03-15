@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass(frozen=True, slots=True)
@@ -35,6 +36,10 @@ class IndexBuildMetadata:
         Uses canonical JSON: keys sorted ASC, no whitespace, ASCII encoding.
         Result is suitable for hashing and replay determinism.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "IndexBuildMetadata.to_canonical_json_bytes")
+
         data = {
             "index_id": self.index_id,
             "faiss_version": self.faiss_version,

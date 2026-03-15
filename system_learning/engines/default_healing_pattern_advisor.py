@@ -21,6 +21,7 @@ from system_learning.ports.healing_pattern_advisor import (
     NullHealingPatternAdvisor,
     PatternAdvice,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 # MetaLearningClient import removed until implemented
 # Optional: from system_learning.ports.meta_learning_client import MetaLearningClient
@@ -56,6 +57,10 @@ class DefaultHealingPatternAdvisor:
         - Does NOT mutate heal_confidence
         - Only provides metadata for audit
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "DefaultHealingPatternAdvisor.advise")
+
         if self._ml_client is None:
             return NullHealingPatternAdvisor().advise(healing_input)
 

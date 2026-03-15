@@ -1,4 +1,5 @@
 """Clerk extraction for resume generation HOP-1."""
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class ClerkExtractor:
@@ -20,6 +21,10 @@ class ClerkExtractor:
 
     def extract(self) -> tuple[dict, list[ValidationResult]]:
         """Extract and validate structured data from master resume."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ClerkExtractor.extract")
+
         experience_sections: Any = self._build_experience_sections()
         all_bullets: Any = []
         for section in experience_sections:

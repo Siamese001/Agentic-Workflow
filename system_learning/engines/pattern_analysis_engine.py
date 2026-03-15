@@ -14,6 +14,7 @@ import json
 import math
 from dataclasses import asdict, dataclass, field
 from typing import Any, Protocol, runtime_checkable
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @runtime_checkable
@@ -90,6 +91,10 @@ class PatternAnalysisReport:
 
     def canonical_bytes(self) -> bytes:
         """Canonical byte representation for hashing."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PatternAnalysisReport.canonical_bytes")
+
         data = {
             "findings": [
                 {
@@ -161,6 +166,10 @@ class PatternAnalysisEngine:
         2. New API: analyze(healing_snapshot_bytes=..., detection_signal_bytes=...,
                             drift_snapshot_bytes=..., now_utc=...) -> PatternAnalysisReport
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PatternAnalysisEngine.analyze")
+
         if healing_snapshot_bytes is not None or now_utc is not None:
             return self._analyze_from_snapshots(
                 healing_snapshot_bytes=healing_snapshot_bytes,

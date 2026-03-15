@@ -29,6 +29,7 @@ from typing import Any
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -56,6 +57,10 @@ class RetryContext:
 
     def add_failure(self, reason: str, context: dict[str, Any] | None = None) -> None:
         """Record a failure attempt."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RetryContext.add_failure")
+
         self.failure_reasons.append(reason)
         if context:
             self.accumulated_context.update(context)
@@ -131,6 +136,10 @@ class RecursiveOrchestrator(SovereignBaseAgent):
         Returns:
             Dict with action taken and result
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RecursiveOrchestrator.handle_task_status")
+
         if status == TaskStatus.SUCCESS:
             self._cleanup_retry_context(node_id)
             return {"action": "none", "status": "success", "node_id": node_id}

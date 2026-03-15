@@ -3,6 +3,7 @@ from __future__ import annotations
 "\nGit Tools - Atomic Module\nExtracted from action_registry.py via Atomic Fission Protocol\nTool ID Prefix: ACT-010\n"
 import logging
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 _LOGGER_NAME = "ActionRegistry.GitTools"
 _DEFAULT_LOG_ENTRIES = 10
@@ -30,6 +31,13 @@ class GitTools:
         Returns:
             str: A success message or an error message.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "GitTools.commit")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:GitTools.commit".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         Logger.info(f"➕ Committing file '{file_path}' with message: '{message}'")
         try:
             from mcp0_git_add_or_commit import mcp0_git_add_or_commit

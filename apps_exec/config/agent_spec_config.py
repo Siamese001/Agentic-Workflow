@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any
 
 from pydantic import BaseModel, Field, model_validator
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 _log = logging.getLogger(__name__)
 
@@ -131,6 +132,10 @@ class ExecAgentSpecs(BaseModel):
 
     @model_validator(mode="after")
     def validate_personas_non_empty(self) -> ExecAgentSpecs:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ExecAgentSpecs.validate_personas_non_empty")
+
         if not self.personas:
             raise ValueError("ExecAgentSpecs.personas must define at least one persona")
         return self

@@ -14,6 +14,7 @@ from system_learning.types.healing_outcome_scoring_types import (
     _stable_round,
 )
 from system_learning.types.healing_outcome_types import HealingOutcomeProposal
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class OfflineHealingOutcomeEvaluator:
@@ -43,6 +44,10 @@ class OfflineHealingOutcomeEvaluator:
         Returns:
             Deterministic scoring report with sorted recommendations
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "OfflineHealingOutcomeEvaluator.evaluate")
+
         # Compute aggregate success rate from intake snapshot
         total_success = sum(stat.success_count for stat in intake.snapshot)
         total_events = sum(stat.total_count for stat in intake.snapshot)

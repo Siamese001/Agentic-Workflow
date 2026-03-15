@@ -42,6 +42,7 @@ except ImportError as _exc:
 
     def clear_embedding_cache() -> None:
         pass
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class SovereignRagOrchestrator:
@@ -90,6 +91,10 @@ class SovereignRagOrchestrator:
 
                 # guardian: allow-magic-config
                 def query(self, query_emb, top_k=5):
+                    import uuid as _uuid  # noqa: PLC0415
+                    _trace_id = str(_uuid.uuid4())
+                    _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "_InMemVectorStore.query")
+
                     import numpy as np
 
                     if not self._store or query_emb is None:
@@ -125,6 +130,10 @@ class SovereignRagOrchestrator:
 
     def ingest(self, file_path: Path):
         """Routes ingestion to the appropriate loader based on suffix."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SovereignRagOrchestrator.ingest")
+
         suffix = file_path.suffix.lower()
         if suffix in {".txt", ".md", ".markdown"}:
             if TextDocumentLoader:

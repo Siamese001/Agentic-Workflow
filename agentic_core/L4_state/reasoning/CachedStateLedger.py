@@ -9,6 +9,7 @@ import time
 from pathlib import Path
 
 from agentic_core.runtime.types.anomaly_report import AnomalyReport
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class CachedStateLedger(SovereignBaseAgent):
@@ -58,6 +59,10 @@ class CachedStateLedger(SovereignBaseAgent):
 
     def cache_validation_context(self, key: str, context: dict):
         """cache validation context for instant access"""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "CachedStateLedger.cache_validation_context")
+
         full_key = f"{self.prefix_context}:{key}"
         try:
             if self.redis:

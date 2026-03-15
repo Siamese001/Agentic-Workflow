@@ -25,6 +25,7 @@ import logging
 from abc import ABC, abstractmethod
 from collections.abc import Callable
 from typing import Any, TypeVar
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger = logging.getLogger(__name__)
 T = TypeVar("T")
@@ -68,6 +69,10 @@ class CachingTrait(Trait):
     @classmethod
     def apply(cls, target_cls: type) -> type:
         """Apply caching capabilities to target class."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "CachingTrait.apply")
+
         import threading
         from collections import OrderedDict
 
@@ -132,6 +137,10 @@ class MetricsTrait(Trait):
     @classmethod
     def apply(cls, target_cls: type) -> type:
         """Apply metrics capabilities to target class."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "MetricsTrait.apply")
+
         import threading
 
         from agentic_core.mixins.metrics_mixin import MetricsConfig, PerformanceMetrics
@@ -191,6 +200,10 @@ class BatchingTrait(Trait):
     @classmethod
     def apply(cls, target_cls: type) -> type:
         """Apply batching capabilities to target class."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "BatchingTrait.apply")
+
         import asyncio
         import threading
 

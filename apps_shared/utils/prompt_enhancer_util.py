@@ -12,6 +12,7 @@ from .cognitive_contracts import enforce_cognitive_contract, get_contract_manage
 from .few_shot_registry import get_few_shot_registry
 from .prompt_assembler import get_prompt_assembler
 from .prompt_injection_loader import InjectionMatch, get_injection_loader
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -72,6 +73,10 @@ class PromptEnhancer:
         Returns:
             Tuple of (enhanced_prompt, enhancement_metadata)
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PromptEnhancer.enhance_prompt")
+
         metadata = {
             "strategies_applied": [],
             "injections_count": 0,

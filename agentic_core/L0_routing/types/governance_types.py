@@ -14,6 +14,7 @@ from dataclasses import dataclass
 from enum import Enum
 
 from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, emit_replay_key, emit_determinism_digest
 
 
 @dataclass(frozen=True)
@@ -123,6 +124,12 @@ class PolicyExceptionArtifact:
         If ttl_ticks == 0 the exception has no TTL and never expires.
         Expired when now_tick > semantic_clock_tick + ttl_ticks.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "PolicyExceptionArtifact.is_expired")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         if self.ttl_ticks == 0:
             return False
         return now_tick > self.semantic_clock_tick + self.ttl_ticks

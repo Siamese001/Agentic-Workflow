@@ -16,6 +16,7 @@ import contextvars
 import logging
 from contextlib import contextmanager
 from typing import Any, Generator
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 _logger = logging.getLogger("SSOTContextPropagation")
 _TRACE_ID_VAR: contextvars.ContextVar[str] = contextvars.ContextVar("ssot_trace_id", default="unknown")
@@ -71,6 +72,10 @@ class SSOTContextPropagationMixin:
 
         Useful when entering a new execution boundary (thread, async task).
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SSOTContextPropagationMixin.propagation_scope")
+
         old_trace = _TRACE_ID_VAR.get()
         old_policy = _POLICY_HASH_VAR.get()
         old_replay = _REPLAY_MODE_VAR.get()

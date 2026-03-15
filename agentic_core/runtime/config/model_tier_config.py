@@ -16,6 +16,7 @@ from enum import Enum
 from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -57,6 +58,10 @@ class ModelConfig(BaseModel):
     @classmethod
     def validate_capabilities(cls, value: list[str]) -> list[str]:
         """[HARDENED] Ensure capability entries are non-empty."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ModelConfig.validate_capabilities")
+
         for capability in value:
             if not capability.strip():
                 raise ValueError("Capability entries cannot be empty")

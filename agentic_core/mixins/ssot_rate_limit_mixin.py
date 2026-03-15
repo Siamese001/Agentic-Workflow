@@ -15,6 +15,7 @@ from __future__ import annotations
 import logging
 import time
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 _logger = logging.getLogger("SSOTRateLimit")
 
@@ -64,6 +65,10 @@ class SSOTRateLimitMixin:
         RateLimitExceeded
             If the rate limit is exceeded (non-replay mode only).
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SSOTRateLimitMixin.rate_check")
+
         if getattr(self, "is_replay_mode", False):
             return True
         scoped_key = self._scoped_rate_key(bucket)

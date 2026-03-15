@@ -15,6 +15,7 @@ import json
 import logging
 from dataclasses import dataclass
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -66,6 +67,10 @@ class L1MetaAdapter:
             Telemetry events suitable for ingestion into the central
             ``TelemetryStore``.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "L1MetaAdapter.extract_telemetry")
+
         events: list[L1TelemetryEvent] = []
         for outcome in l1_state.get("recall_outcomes", []):
             if not isinstance(outcome, dict):

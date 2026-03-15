@@ -17,6 +17,7 @@ from pathlib import Path
 from typing import Any, Callable
 
 from system_learning.types.index_build_metadata_types import IndexBuildMetadata
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 def _faiss_available() -> bool:
@@ -114,6 +115,10 @@ class LocalFAISSStore:
             IndexNotBuiltError: If index has not been built or needs rebuild.
             IndexMetadataError: If metadata is missing or invalid.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "LocalFAISSStore.open")
+
         if self._rebuild_required.get(index_id, False):
             raise IndexNotBuiltError(f"Index {index_id} requires rebuild after pruning")
         if index_id not in self._indexes:

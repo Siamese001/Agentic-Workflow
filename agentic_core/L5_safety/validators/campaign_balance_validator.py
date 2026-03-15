@@ -15,6 +15,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 
 @dataclass
@@ -61,6 +62,13 @@ class CampaignBalanceValidator:
         Returns:
             BalanceResult with deterministic findings
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "CampaignBalanceValidator.validate_campaign_balance")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:CampaignBalanceValidator.validate_campaign_balance".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         issues: list[str] = []
         ratio = self._calculate_lead_message_ratio(leads, messages)
         if ratio is not None:

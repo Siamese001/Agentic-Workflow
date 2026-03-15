@@ -8,6 +8,7 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass
 from typing import Literal
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass(frozen=True, slots=True)
@@ -36,6 +37,10 @@ class SeedEmbeddingPackManifest:
         Returns:
             ASCII-only canonical JSON bytes.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SeedEmbeddingPackManifest.to_canonical_json_bytes")
+
         canonical_data = {
             "namespace": self.namespace,
             "bootstrap_mode": self.bootstrap_mode,

@@ -1,7 +1,7 @@
 # Phase 0 Validation Findings
-**Coverage Gap Discrepancy: SQLite (1,997) vs Accelerator (1,051)**  
-**Date**: 2026-03-12  
-**Scripts**: `tools/evidence/_phase0_validation.py`, `tools/evidence/_phase0_deep_analysis.py`  
+**Coverage Gap Discrepancy: SQLite (1,997) vs Accelerator (1,051)**
+**Date**: 2026-03-12
+**Scripts**: `tools/evidence/_phase0_validation.py`, `tools/evidence/_phase0_deep_analysis.py`
 **Raw data**: `docs/reports/plans/phase0_validation_findings.json`, `docs/reports/plans/phase0_deep_analysis.json`
 
 ---

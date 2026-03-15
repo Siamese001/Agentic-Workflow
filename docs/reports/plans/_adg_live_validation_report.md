@@ -1,8 +1,8 @@
 # ADG Live Validation Report: SOVEREIGN_TERRITORIES Refactor
-**Generated:** 2026-03-11  
-**ADG File:** `adg_indexed_20260311T171158Z.sqlite`  
-**Nodes:** 45,524  **Edges:** 150,189  
-**Method:** ADG SQLite graph traversal — zero grep/string search (§3.5 compliant)  
+**Generated:** 2026-03-11
+**ADG File:** `adg_indexed_20260311T171158Z.sqlite`
+**Nodes:** 45,524  **Edges:** 150,189
+**Method:** ADG SQLite graph traversal — zero grep/string search (§3.5 compliant)
 **Constitutional Compliance:** §3.4 (AST PRIMARY), §3.5 (NO GREP), §3.6 (FAIL CLOSED), §3.7 (DEPENDENCY_GRAPH)
 
 ---
@@ -52,7 +52,7 @@ Production imports of SOVEREIGN_TERRITORIES: 0
 ✅ ZERO production imports
 ```
 
-**Every one of the 27 import edges is correctly scoped to either the definition layer or tests.**  
+**Every one of the 27 import edges is correctly scoped to either the definition layer or tests.**
 No production code imports `SOVEREIGN_TERRITORIES` directly.
 
 ---
@@ -120,7 +120,7 @@ agentic_core/L2_execution/enforcement/sovereign_filesystem_mcp.py
 Evidence:
 - Graph-wide L0/L1/L2→L5 violations: **30 total**
 - These 7 files = 3.2% of a pre-existing pattern
-- The graph shows 23 OTHER L0→L5 violations in files not touched by this refactor  
+- The graph shows 23 OTHER L0→L5 violations in files not touched by this refactor
   (e.g., `c0_guard.py`, `execution_gateway.py`, `SSOTFolderCleanupAgent.py`, etc.)
 - These violations existed before the refactor because `structure_blueprint_config`
   has always been at L5, and L0/L1/L2 scripts have always imported from it

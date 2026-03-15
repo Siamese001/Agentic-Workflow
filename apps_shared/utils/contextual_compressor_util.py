@@ -9,6 +9,7 @@ import re
 import time
 
 from pydantic import BaseModel, Field
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -193,6 +194,10 @@ class ContextualCompressor:
         Returns:
             CompressionResult with compressed text and metrics
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ContextualCompressor.compress")
+
         original_text = " ".join(chunks)
         original_length = len(original_text)
         should_use_llm = use_llm if use_llm is not None else self.use_llm

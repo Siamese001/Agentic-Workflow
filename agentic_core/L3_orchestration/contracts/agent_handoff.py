@@ -47,6 +47,7 @@ from agentic_core.L3_orchestration.visualization.visualization_updater import (
     record_workflow_completion,
 )
 from agentic_core.runtime.execution_trace import get_active_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -93,6 +94,10 @@ class AgentHandoff:
         metadata: dict[str, Any] | None = None,
     ) -> AgentHandoff:
         """Factory: create a new handoff with computed trace linkage."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "AgentHandoff.create")
+
         active = get_active_execution_trace()
         trace_id = active.trace_id if active else "no-active-trace"
         ts = time.monotonic()
@@ -136,6 +141,10 @@ class HandoffRecord:
         self.status = HandoffStatus.DISPATCHED
 
     def mark_completed(self, result: Any = None) -> None:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HandoffRecord.mark_completed")
+
         self.status = HandoffStatus.COMPLETED
         self.result = result
 
@@ -164,6 +173,10 @@ class HandoffDispatcher:
 
     def register(self, agent_name: str, executor: Callable) -> None:
         """Register a named agent executor."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HandoffDispatcher.register")
+
         self._registry[agent_name] = executor
         logger.debug("HANDOFF_REGISTER agent=%s", agent_name)
 

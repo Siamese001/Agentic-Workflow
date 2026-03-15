@@ -20,6 +20,7 @@ except ImportError:
 
     def get_validator_orchestrator():
         return None
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class ValidatorMixin:
@@ -32,6 +33,10 @@ class ValidatorMixin:
     @property
     def validator_orchestrator(self) -> ValidatorOrchestrator:
         """Lazy-load validator orchestrator singleton."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ValidatorMixin.validator_orchestrator")
+
         if self._validator_orchestrator is None:
             self._validator_orchestrator = get_validator_orchestrator()
         return self._validator_orchestrator

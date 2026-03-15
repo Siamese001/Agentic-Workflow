@@ -13,6 +13,7 @@ import json
 import logging
 from dataclasses import dataclass
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -97,6 +98,10 @@ class ThematicAnalysisNode:
         - LinkedIn authenticity pattern mining
         - Competitive intelligence gathering
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ThematicAnalysisNode.analyze_thematic_resonance")
+
         logger.info(f"Starting thematic analysis for {company_name}")
         primary_theme, secondary_themes = self._extract_themes(job_description)
         related_concepts = self._extract_related_concepts(job_description)
@@ -234,6 +239,10 @@ class TwoPhaseGenerationNode:
         - Word count constraints
         - Thematic alignment
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "TwoPhaseGenerationNode.generate_unify_bullets_phase_a")
+
         logger.info("Starting Phase A: Unify bullet generation")
         bullets = self._generate_bullets_with_provenance(
             company_type="unify",
@@ -369,6 +378,10 @@ class WordCountEnforcementEngine:
         Returns:
             ValidationResult with validation details
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "WordCountEnforcementEngine.validate_content")
+
         constraints = self.constraints.get(content_type, {})
         word_count = len(content.split())
         if not constraints:
@@ -502,6 +515,10 @@ class ValidationGate:
         Returns:
             Cryptographic signature
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ValidationGate.execute_and_sign")
+
         validation_result = self._execute_validation(execution_data)
         signature = self._create_signature(validation_result)
         self._log_execution(execution_data, validation_result, signature)

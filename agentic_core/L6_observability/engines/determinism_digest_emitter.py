@@ -15,6 +15,7 @@ from __future__ import annotations
 import hashlib
 import threading
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class DuplicateEmissionError(RuntimeError):
@@ -63,6 +64,10 @@ class DeterminismDigestEmitter:
         Raises:
             ValueError: if any component is not a 64-char hex string.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L6_OBSERVABILITY, "DeterminismDigestEmitter.compute")
+
         components = {
             "config_surface_hash": config_surface_hash,
             "dependency_lock_hash": dependency_lock_hash,
@@ -149,6 +154,10 @@ def _canonical_json_bytes(data: Any) -> bytes:
 
     class _Encoder(json.JSONEncoder):
         def default(self, o: Any) -> Any:
+            import uuid as _uuid  # noqa: PLC0415
+            _trace_id = str(_uuid.uuid4())
+            _emit_records_execution_trace(_trace_id, LayerSegment.L6_OBSERVABILITY, "_Encoder.default")
+
             if isinstance(o, float):
                 return round(o, 12)
             return super().default(o)

@@ -6,6 +6,7 @@ import hashlib
 import json
 from dataclasses import dataclass
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass(frozen=True)
@@ -20,6 +21,10 @@ class FailureEvent:
 
     def canonical_bytes(self) -> bytes:
         """Canonical byte representation for deterministic fingerprinting."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "FailureEvent.canonical_bytes")
+
         data = {
             "exc_type": self.exc_type,
             "error_code": self.error_code,
@@ -40,5 +45,9 @@ class FailureFingerprint:
     @classmethod
     def from_canonical_bytes(cls, canonical_bytes: bytes) -> FailureFingerprint:
         """Create fingerprint from canonical bytes."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "FailureFingerprint.from_canonical_bytes")
+
         fingerprint_sha256 = hashlib.sha256(canonical_bytes).hexdigest()
         return cls(fingerprint_sha256=fingerprint_sha256, canonical_bytes=canonical_bytes)

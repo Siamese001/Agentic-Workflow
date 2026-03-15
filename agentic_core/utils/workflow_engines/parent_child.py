@@ -14,6 +14,7 @@ from typing import Any
 
 from agentic_core.evaluation.retrieval.completeness import GroundedDocument, IParentChildExpander
 from agentic_core.evaluation.retrieval.interfaces import Document
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass(frozen=True)
@@ -51,6 +52,10 @@ class ParentChildRegistry:
 
     def register_chunk(self, entry: ChunkEntry, parent_content: str = "") -> None:
         """Register a chunk entry and its parent section content."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ParentChildRegistry.register_chunk")
+
         self._chunks[entry.chunk_id] = entry
         if entry.parent_section_id and parent_content:
             self._parent_content[entry.parent_section_id] = parent_content
@@ -83,6 +88,10 @@ class ParentChildExpander(IParentChildExpander):
 
     def expand(self, child: Document, neighbor_window: int = 1) -> GroundedDocument:
         """Expand child chunk to include parent section and sibling context."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ParentChildExpander.expand")
+
         entry = self._registry.get_chunk(child.doc_id)
         if entry is None:
             return GroundedDocument(

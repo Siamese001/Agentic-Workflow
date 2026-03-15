@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any
 
 import yaml
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class PromptLoadError(Exception):
@@ -59,6 +60,10 @@ class PromptLoader:
             PromptLoadError: If file cannot be loaded
             PromptSchemaError: If schema is invalid
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PromptLoader.load_prompt")
+
         if not domain or not isinstance(domain, str):
             raise ValueError("domain must be a non-empty string")
         if not name or not isinstance(name, str):

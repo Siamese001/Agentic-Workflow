@@ -11,6 +11,7 @@ import re
 from dataclasses import dataclass, field
 from re import Pattern
 from typing import Final
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
@@ -178,6 +179,10 @@ class LegacyArtifacts:
     @classmethod
     def get_weak_opening_match(cls, text: str) -> str | None:
         """Scan text for any weak opening patterns without instance overhead."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "LegacyArtifacts.get_weak_opening_match")
+
         for name, pattern in WEAK_OPENING_PATTERNS.items():
             if pattern.search(text):
                 return name

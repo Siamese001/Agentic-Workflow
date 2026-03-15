@@ -16,6 +16,7 @@ from agentic_core.L2_execution.types.instruction_packet_types import (
     SignatureVerificationError,
 )
 from agentic_core.L2_execution.types.sandbox_envelope_types import SandboxEnvelope
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 
 class L2BoundaryVerifier:
@@ -43,6 +44,13 @@ class L2BoundaryVerifier:
 
     def verify_instruction_packet(self, packet: InstructionPacket) -> None:
         """Verify InstructionPacket signature.  Raises SignatureVerificationError on failure."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "L2BoundaryVerifier.verify_instruction_packet")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:L2BoundaryVerifier.verify_instruction_packet".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         if not isinstance(packet, InstructionPacket):
             raise TypeError(f"Expected InstructionPacket, got {type(packet).__name__}")
         secret = get_current_secret()

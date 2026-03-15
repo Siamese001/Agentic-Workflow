@@ -8,6 +8,7 @@ and trend tracking across autonomous healing cycles.
 import json
 from datetime import datetime
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class SovereignHealthMonitor:
@@ -43,6 +44,10 @@ class SovereignHealthMonitor:
             score: Compliance score (0-100)
             fixes: Number of fixes applied in this healing cycle
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L6_OBSERVABILITY, "SovereignHealthMonitor.log_snapshot")
+
         timestamp = datetime.now().isoformat()
         _adg_trust_score: float = 1.0
         try:

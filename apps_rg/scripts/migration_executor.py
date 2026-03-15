@@ -17,6 +17,7 @@ from agentic_core.L0_routing.config import (
 )
 from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
 from agentic_core.L0_routing.config.path_constants import TOOLS_DIR
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 # Configure logging
 logging.basicConfig(
@@ -94,6 +95,10 @@ class MigrationExecutor:
 
     def process_quarantine(self):
         """Move broken files to legacy/quarantine."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "MigrationExecutor.process_quarantine")
+
         broken = self.manifest.get("actions", {}).get("fix_syntax_errors", [])
         logger.info(f"Processing {len(broken)} broken files...")
         for f in broken:

@@ -7,6 +7,7 @@ except ImportError:
     GraphDatabase = None
 import os
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class Neo4jGraphStore:
@@ -37,6 +38,10 @@ class Neo4jGraphStore:
         """
         MERGE an Entity node with basic fields + arbitrary metadata.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "Neo4jGraphStore.upsert_entity")
+
         CYPHER = "\n        MERGE (e:Entity {id: $id})\n        SET e.type = $type,\n            E.NAME = $name\n        WITH e\n        CALL apoc.create.addProperties(e, $metadata) YIELD node\n        RETURN node\n        "
         try:
             self.run(CYPHER, {"id": entity_id, "type": etype, "name": name, "metadata": metadata or {}})

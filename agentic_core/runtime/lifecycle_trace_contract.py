@@ -27,6 +27,7 @@ from __future__ import annotations
 
 import hashlib
 import logging
+import os
 import threading
 import time
 import uuid
@@ -195,19 +196,21 @@ def _emit_records_execution_trace(root_trace_id: str, layer: str, operation: str
     )
 
     # P3/L6: Trigger dashboard aggregation on execution trace emission
-    try:
-        # Aggregate dashboard metrics for current telemetry window
-        from agentic_core.L6_observability.dashboard.dashboard_orchestrator import aggregate_simple_dashboard  # noqa: PLC0415
-        snapshot = aggregate_simple_dashboard(window_duration_seconds=300)  # 5-minute window
-        _LOG.debug(
-            "DASHBOARD_AGGREGATION_TRIGGERED root_trace_id=%s layer=%s snapshot_id=%s",
-            root_trace_id,
-            layer,
-            snapshot.dashboard_snapshot_id,
-        )
-    except Exception as _dashboard_exc:
-        _LOG.warning("DASHBOARD_AGGREGATION_ERROR: %s", _dashboard_exc)
-        # Continue - dashboard aggregation failure should not block trace emission
+    # Guarded: skip during ADG scan / static analysis to avoid recursion overhead
+    if not os.environ.get("ADG_SCAN_ACTIVE"):
+        try:
+            # Aggregate dashboard metrics for current telemetry window
+            from agentic_core.L6_observability.dashboard.dashboard_orchestrator import aggregate_simple_dashboard  # noqa: PLC0415
+            snapshot = aggregate_simple_dashboard(window_duration_seconds=300)  # 5-minute window
+            _LOG.debug(
+                "DASHBOARD_AGGREGATION_TRIGGERED root_trace_id=%s layer=%s snapshot_id=%s",
+                root_trace_id,
+                layer,
+                snapshot.dashboard_snapshot_id,
+            )
+        except Exception as _dashboard_exc:
+            _LOG.warning("DASHBOARD_AGGREGATION_ERROR: %s", _dashboard_exc)
+            # Continue - dashboard aggregation failure should not block trace emission
 
 
 def _emit_signs_execution_trace(

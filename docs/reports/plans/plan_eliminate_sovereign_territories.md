@@ -1,7 +1,7 @@
 # Plan: Eliminate SOVEREIGN_TERRITORIES
 
-**Date:** 2026-03-11  
-**Status:** ACTIVE  
+**Date:** 2026-03-11
+**Status:** ACTIVE
 **Priority:** High — 6 runtime type bugs exist today
 
 ---
@@ -114,7 +114,7 @@ Complete migration of 4 remaining files that still import `SOVEREIGN_TERRITORIES
 Once no application code imports `SOVEREIGN_TERRITORIES`, remove it from the internal SSOT package:
 
 1. Delete `build_sovereign_territories()` function (~1400 lines)
-2. Delete `SOVEREIGN_TERRITORIES = _deep_freeze(build_sovereign_territories())` 
+2. Delete `SOVEREIGN_TERRITORIES = _deep_freeze(build_sovereign_territories())`
 3. Keep `TerritoryDefinition`, `SubfolderDefinition` TypedDicts only if still used by `DEPTH_RULES`-style consumers
 4. Update `__init__.py` to remove the re-export
 5. Update `structure_blueprint_config.py` shim accordingly
@@ -123,7 +123,7 @@ Once no application code imports `SOVEREIGN_TERRITORIES`, remove it from the int
 
 `derived.py` currently builds `CORE_SUBFOLDER_MAP`, `APPS_*_SUBFOLDER_MAP` by parsing `SOVEREIGN_TERRITORIES`. Once the registry is gone, these must either:
 
-- **Option A (preferred):** Discover from the filesystem at import time using `os.listdir()`  
+- **Option A (preferred):** Discover from the filesystem at import time using `os.listdir()`
 - **Option B (fallback):** Inline the ~10 relevant subfolder names as simple frozensets
 
 `CORE_SUBFOLDER_MAP` is used by gravity_validator and hierarchy_healer to validate L1 layer folder names. The L1 names are just `L0_routing`, `L1_cognition`, … — they're already captured in `LAYER_ROOTS` in `ssot.py`. Use that instead.

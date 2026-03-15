@@ -6,6 +6,7 @@ import os
 from datetime import datetime
 from pathlib import Path
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -63,6 +64,10 @@ class ProactiveFissionScanner:
         Returns:
             List of candidate files with metadata
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ProactiveFissionScanner.scan_repository")
+
         Logger.info(f"[SCAN] Scanning repository: {target_dir}")
         candidates: Any = []
         for root, dirs, files in os.walk(target_dir):

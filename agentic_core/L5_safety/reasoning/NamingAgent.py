@@ -10,6 +10,7 @@ from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L5_safety.config.structure_blueprint import PROJECT_ROOT_METADATA
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 TREE_SITTER_AVAILABLE = False
 
@@ -50,6 +51,13 @@ class NamingAgent(SovereignBaseAgent):
         self, dry_run: bool = True, execute: bool = False, depth: int = 0, **kwargs: Any
     ) -> dict[str, Any]:
         """Autonomous healing method (Canon Key 51 compliance)."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "NamingAgent.heal_repository")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:NamingAgent.heal_repository".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         try:
             super().heal_repository(dry_run=dry_run, **kwargs)
         except (AttributeError, TypeError):

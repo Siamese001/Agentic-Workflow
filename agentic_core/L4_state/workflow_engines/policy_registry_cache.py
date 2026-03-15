@@ -10,6 +10,7 @@ import logging
 from typing import Any
 
 from agentic_core.cache.redis_cache_client import DeterministicRedisCache, get_hot_cache
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 _DEFAULT_POLICY_TTL = 3600 * 24 * 30
@@ -40,6 +41,10 @@ class PolicyRegistryCache:
         Returns:
             Policy definition dict
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "PolicyRegistryCache.get_or_fetch")
+
         if not policy_id or not policy_id.strip():
             raise ValueError("Policy ID must not be empty")
         if not replay_mode:

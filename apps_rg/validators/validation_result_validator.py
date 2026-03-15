@@ -11,6 +11,7 @@ from typing import Any
 
 from .regeneration_validator import RegenerationEngine
 from .validation_gate import ValidationGate
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -40,6 +41,10 @@ class WordCountEnforcementEngine:
         }
 
     def validate_content(self, content: str, content_type: str) -> ValidationResult:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "WordCountEnforcementEngine.validate_content")
+
         constraints = self.constraints.get(content_type)
         if not constraints:
             return ValidationResult(True, len(content.split()), 0, 9999, None)

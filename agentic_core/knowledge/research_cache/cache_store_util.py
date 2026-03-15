@@ -14,6 +14,7 @@ import json
 import logging
 from pathlib import Path
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger = logging.getLogger(__name__)
 
@@ -74,6 +75,10 @@ class ResearchCache:
         Returns:
             True if cached, False otherwise
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ResearchCache.exists")
+
         query_hash = self._hash_query(query)
         return query_hash in self._index
 

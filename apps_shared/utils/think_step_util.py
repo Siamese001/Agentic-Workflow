@@ -8,6 +8,7 @@ from datetime import datetime
 from typing import Any
 
 from pydantic import BaseModel, Field
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class ThinkStep(BaseModel):
@@ -87,6 +88,10 @@ class ReasoningTraceModel(BaseModel):
 
     def add_think(self, thought: str, **kwargs: object) -> None:
         """Add a thinking step to the trace."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ReasoningTraceModel.add_think")
+
         step = ThinkStep(thought=thought, **kwargs)
         self.steps.append(step)
         self.total_steps += 1

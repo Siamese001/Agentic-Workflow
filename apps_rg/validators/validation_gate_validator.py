@@ -9,6 +9,7 @@ import hmac
 import json
 import os
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class ValidationGate:
@@ -24,6 +25,10 @@ class ValidationGate:
         """
         Generates an HMAC-SHA256 signature for the given payload.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ValidationGate.sign_payload")
+
         signing_data = {"gate_id": self.gate_id, "payload": payload}
         serialized = json.dumps(signing_data, sort_keys=True).encode()
         signature = hmac.new(self._secret, serialized, hashlib.sha256).hexdigest()

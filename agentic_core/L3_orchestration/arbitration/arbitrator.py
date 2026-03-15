@@ -12,6 +12,7 @@ from .arbitration_contract import (
     ArbitrationDecision,
     ArbitrationInput,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class Arbitrator:
@@ -36,6 +37,10 @@ class Arbitrator:
         Returns:
             Calculated score
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "Arbitrator.calculate_score")
+
         score = proposal.confidence
 
         # Add rationale bonus (capped at 10)

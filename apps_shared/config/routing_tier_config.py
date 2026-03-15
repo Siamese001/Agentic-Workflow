@@ -7,6 +7,7 @@ Phase 2 - Resilient Routing Layer
 
 from dataclasses import dataclass
 from enum import Enum
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 MAX_RETRIES = 3
@@ -72,6 +73,10 @@ class RouteConfig:
 
     def get_model_for_provider(self, provider: Provider) -> str | None:
         """Get model override for a specific provider."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RouteConfig.get_model_for_provider")
+
         if self.model_overrides:
             return self.model_overrides.get(provider.value)
         return None

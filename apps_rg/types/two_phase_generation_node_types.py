@@ -10,6 +10,7 @@ from typing import Any
 
 from apps_rg.types.thematic_analysis_node import ThematicAnalysisOutput
 from apps_rg.validators.word_count_enforcer import WordCountEnforcementEngine
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass
@@ -45,6 +46,10 @@ class TwoPhaseGenerationNode:
         """
         Phase A: Generate provenance-backed bullets based on themes.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "TwoPhaseGenerationNode.generate_bullets_phase_a")
+
         themes = thematic_output.secondary_themes
         patterns = thematic_output.authenticity_patterns.achievement_verb_patterns
         bullets = []

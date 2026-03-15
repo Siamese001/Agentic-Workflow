@@ -26,6 +26,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from agentic_core.adg.extraction.static_scanner import ScanResult
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 _MODULE_PREFIX = "ADG::Module::"
 _SYMBOL_PREFIX = "ADG::Symbol::"
@@ -57,6 +58,10 @@ class SymbolIndex:
     @classmethod
     def build(cls, result: ScanResult) -> SymbolIndex:
         """Build the index from all ``exports`` edges in *result*."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SymbolIndex.build")
+
         idx = cls()
         for edge in result.edges:
             if edge.relation_type != "exports":

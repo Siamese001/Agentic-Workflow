@@ -28,6 +28,7 @@ from agentic_core.L0_routing.types.reasoning_intensity_types import (
     ReasoningIntensityProfile,
     SignedExecutionEnvelope,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -137,6 +138,10 @@ class ReasoningIntensityEnforcer:
         Recomputes envelope_hash and profile_hash; raises InvalidEnvelopeError
         on any mismatch. Must be called exactly once before enforce_pre_stage.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ReasoningIntensityEnforcer.validate_envelope")
+
         from agentic_core.L0_routing.types.reasoning_intensity_types import (
             build_envelope_hash,
             build_profile_hash,

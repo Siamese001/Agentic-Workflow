@@ -13,6 +13,7 @@ import hashlib
 import json
 from dataclasses import dataclass
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 
 def _sha256(data: bytes) -> str:
@@ -83,6 +84,13 @@ class MLPatternRecord:
 
     def canonical_bytes(self) -> bytes:
         """Deterministic serialization excluding record_hash."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "MLPatternRecord.canonical_bytes")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:MLPatternRecord.canonical_bytes".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         doc = {
             "domain_hash": self.domain_hash,
             "domain_id": self.domain_id,

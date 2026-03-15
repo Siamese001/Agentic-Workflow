@@ -13,15 +13,18 @@ Guardrails Implemented:
 7. Rate Limiting - Prevents API abuse
 8. Fallback Mechanisms - Graceful degradation on failures
 """
-from agentic_core.L0_routing.providers.clock_provider import ClockProvider as clock_provider
 from __future__ import annotations
+
 import hashlib
 import json
 import logging
 import time
 from dataclasses import dataclass, field
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from typing import Any
+
+from agentic_core.L0_routing.providers.clock_provider import ClockProvider as clock_provider
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
 Logger = logging.getLogger(__name__)
 
 @dataclass

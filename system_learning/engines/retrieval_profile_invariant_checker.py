@@ -7,6 +7,7 @@ Validates RetrievalProfile invariants before activation.
 from dataclasses import dataclass
 
 from system_learning.engines.retrieval_profile import RetrievalProfile
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass(frozen=True, slots=True)
@@ -45,6 +46,10 @@ class RetrievalProfileInvariantChecker:
         Raises:
             ValueError: If any invariant is violated
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RetrievalProfileInvariantChecker.validate")
+
         violations = []
         if not 0.0 < profile.similarity_cutoff <= 1.0:
             violations.append(

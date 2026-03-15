@@ -14,6 +14,7 @@ import logging
 from collections import defaultdict
 from dataclasses import dataclass
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -31,6 +32,10 @@ class SignalGroup:
     sample_payloads: tuple[bytes, ...]
 
     def canonical_bytes(self) -> bytes:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SignalGroup.canonical_bytes")
+
         data = {
             "group_key": self.group_key,
             "signal_type": self.signal_type,
@@ -56,6 +61,10 @@ class SignalGroupingReport:
     total_groups: int
 
     def canonical_bytes(self) -> bytes:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SignalGroupingReport.canonical_bytes")
+
         data = {
             "snapshot_id": self.snapshot_id,
             "total_signals": self.total_signals,
@@ -99,6 +108,10 @@ class SignalGroupingEngine:
         -------
         SignalGroupingReport
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SignalGroupingEngine.group_signals")
+
         buckets: dict[str, list[dict[str, Any]]] = defaultdict(list)
         for sig in signals:
             sig_type = sig.get("signal_type", "unknown")

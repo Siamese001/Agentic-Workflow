@@ -5,6 +5,7 @@ import hashlib
 import time
 from dataclasses import dataclass, field
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass
@@ -54,6 +55,10 @@ class EpisodicMemory:
     @property
     def semantic_index(self):
         """Lazy load semantic memory."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L1_REASONING, "EpisodicMemory.semantic_index")
+
         if self._semantic_memory is None and self.embed_index:
             try:
                 from .semantic_manager import semantic_memory

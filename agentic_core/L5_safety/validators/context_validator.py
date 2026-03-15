@@ -33,6 +33,7 @@ import time
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 
 @dataclass
@@ -86,6 +87,13 @@ class L4ContextManager:
     @classmethod
     def get_instance(cls, project_root: Path) -> L4ContextManager:
         """Get or create singleton instance."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "L4ContextManager.get_instance")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:L4ContextManager.get_instance".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         if cls._instance is None:
             cls._instance = cls(project_root)
         return cls._instance

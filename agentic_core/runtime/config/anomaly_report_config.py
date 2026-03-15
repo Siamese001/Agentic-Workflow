@@ -23,6 +23,7 @@ from enum import Enum
 from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class AnomalySeverity(Enum):
@@ -66,6 +67,10 @@ class AnomalyReport(BaseModel):
     @classmethod
     def validate_description(cls, v: str) -> str:
         """[HARDENED] Ensure description is not empty."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "AnomalyReport.validate_description")
+
         if not v.strip():
             raise ValueError("Description cannot be empty")
         return v.strip()

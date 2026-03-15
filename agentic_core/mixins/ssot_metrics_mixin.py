@@ -15,6 +15,7 @@ from __future__ import annotations
 import logging
 import time
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 _logger = logging.getLogger("SSOTMetrics")
 
@@ -48,6 +49,10 @@ class SSOTMetricsMixin:
         dict
             The recorded metric entry.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SSOTMetricsMixin.record_metric")
+
         policy_hash = getattr(self, "active_policy_hash", "unknown")
         scoped_key = f"{policy_hash}:{name}"
         entry = {

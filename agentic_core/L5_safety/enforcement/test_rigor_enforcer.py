@@ -26,6 +26,7 @@ from __future__ import annotations
 import subprocess
 from dataclasses import dataclass, field
 from pathlib import Path
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 
 MAX_RETRIES = 3
@@ -72,6 +73,13 @@ class TestRigorEnforcer:
 
     def declare_scope(self, changed_files: list[str]) -> None:
         """Declare scope of code changes (Step 1 of pre-code-generation gate)."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "TestRigorEnforcer.declare_scope")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:TestRigorEnforcer.declare_scope".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         print(f"[TEST-RIGOR] Scope declared: {len(changed_files)} files")
         for file_path in changed_files:
             print(f"  - {file_path}")

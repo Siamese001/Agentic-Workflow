@@ -24,6 +24,10 @@ class _ReadOnlyVisitor(ast.NodeVisitor):
         self.violations: list[str] = []
 
     def visit_Assign(self, node: ast.Assign) -> None:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "_ReadOnlyVisitor.visit_Assign")
+
         for target in node.targets:
             if isinstance(target, ast.Attribute):
                 val = ast.unparse(target.value) if hasattr(ast, "unparse") else ""
@@ -78,3 +82,4 @@ if __name__ == "__main__":
     import sys
 
     sys.exit(0 if check_system_learning_readonly() else 1)
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace

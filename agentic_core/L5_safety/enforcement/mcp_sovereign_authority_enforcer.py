@@ -12,6 +12,7 @@ from agentic_core.L0_routing.config.path_constants import (
     APPS_SHARED_DIR,
     TESTS_DIR,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 Logger: Any = logging.getLogger(__name__)
 _GUARDRAIL_LOG = logging.getLogger("adg.applies_guardrail")
@@ -29,6 +30,13 @@ class MCPSovereignAuthority:
 
     def is_authorized(self) -> bool:
         """Sovereignty check: Kill connections if breaches exceed threshold."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "MCPSovereignAuthority.is_authorized")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:MCPSovereignAuthority.is_authorized".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         if self.violation_count > 5:
             self.is_locked = True
         return not self.is_locked

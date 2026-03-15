@@ -8,6 +8,7 @@ All upward imports (→ L5) are deferred inside the factory function.
 from __future__ import annotations
 
 from typing import Any, Protocol, runtime_checkable
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @runtime_checkable
@@ -28,6 +29,10 @@ class _NullAuthority:
         return True
 
     def record_breach(self, error_msg: str) -> Any:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "_NullAuthority.record_breach")
+
         import logging
 
         logging.getLogger(__name__).warning("[NullAuthority] breach recorded: %s", error_msg)

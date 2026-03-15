@@ -7,6 +7,7 @@ from pathlib import Path
 
 from agentic_core.L5_safety.config.structure_blueprint import AGENTIC_CORE_DIR
 from agentic_core.utils.security_util import safe_execute
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 
 class HealingInvocationAudit:
@@ -32,6 +33,13 @@ class HealingInvocationAudit:
         Returns:
             Audit results dictionary
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "HealingInvocationAudit.audit_all_methods")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:HealingInvocationAudit.audit_all_methods".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         grep_cmd = ["grep", "-r", "def heal_repository(", str(self.agentic_core), "--include=*.py"]
         try:
             result = safe_execute(grep_cmd, capture_output=True, text=True, check=False)

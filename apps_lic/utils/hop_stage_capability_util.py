@@ -23,6 +23,7 @@ from typing import Any, ClassVar
 
 from apps_lic.types.ImmutableStagingBuffer import ImmutableStagingBuffer
 from apps_lic.types.TraceRegistry import TraceRegistry
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class HOPStageCapability:
@@ -55,6 +56,10 @@ class HOPStageCapability:
         Raises:
             RuntimeError: If any required input is missing from the buffer.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HOPStageCapability.read_required_inputs")
+
         inputs: dict[str, Any] = {}
         agent_name = self.__class__.__name__
         for key in self.REQUIRED_INPUTS:

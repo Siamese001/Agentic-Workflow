@@ -38,6 +38,7 @@ except ImportError:
 
         def set(self, key: str, value) -> None:
             self._cache[key] = value
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class query_planner:
@@ -63,6 +64,10 @@ class query_planner:
         """
         L1: Generate diverse query variants to maximize vector recall.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L1_REASONING, "query_planner.multi_query_generation")
+
         cache_key: Any = f"mq_expand:{hash(original_query)}"
         cached: Any = self.cache.get(cache_key)
         if cached:

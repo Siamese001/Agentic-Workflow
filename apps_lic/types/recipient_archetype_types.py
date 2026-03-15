@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class RecipientArchetype(Enum):
@@ -283,6 +284,10 @@ class ArchetypeTemplateManager:
 
     def get_system_instructions(self, Archetype: RecipientArchetype) -> str:
         """Get system instructions for an Archetype."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ArchetypeTemplateManager.get_system_instructions")
+
         template = self.get_template(Archetype)
         return template.system_instructions
 

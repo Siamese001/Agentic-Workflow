@@ -14,6 +14,7 @@ import json
 import logging
 from dataclasses import dataclass
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 _SLOW_TERRITORY_THRESHOLD_MS = 30000
@@ -32,6 +33,10 @@ class EfficiencyBottleneck:
     recommendation: str
 
     def canonical_bytes(self) -> bytes:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "EfficiencyBottleneck.canonical_bytes")
+
         data = {
             "component": self.component,
             "metric_name": self.metric_name,
@@ -54,6 +59,10 @@ class EfficiencyReport:
     avg_territory_time_ms: float
 
     def canonical_bytes(self) -> bytes:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "EfficiencyReport.canonical_bytes")
+
         data = {
             "snapshot_id": self.snapshot_id,
             "bottlenecks": [json.loads(b.canonical_bytes().decode("utf-8")) for b in self.bottlenecks],
@@ -109,6 +118,10 @@ class L3EfficiencyTuner:
         EfficiencyReport
             Advisory report with identified bottlenecks.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "L3EfficiencyTuner.analyze")
+
         bottlenecks: list[EfficiencyBottleneck] = []
         total_agents = 0
         for territory, time_ms in sorted(territory_timings.items()):

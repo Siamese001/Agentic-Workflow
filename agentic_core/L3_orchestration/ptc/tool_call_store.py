@@ -19,6 +19,7 @@ from .tool_contract import (
     tool_call_to_json,
     tool_spec_to_json,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class ToolCallStore:
@@ -55,6 +56,10 @@ class ToolCallStore:
         Returns:
             Reference to stored artifact
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ToolCallStore.record_call")
+
         # Create deterministic payload (no timestamp)
         payload = {
             "call": json.loads(tool_call_to_json(call)),

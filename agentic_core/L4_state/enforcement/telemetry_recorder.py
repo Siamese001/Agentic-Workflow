@@ -13,6 +13,7 @@ from dataclasses import asdict, dataclass
 from typing import Any
 
 from agentic_core.L2_execution.determinism.execution_proof_emitter import ExecutionProofEmitter
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 MAX_EVENTS = 100
 _proof_emitter = ExecutionProofEmitter("L4.TelemetryRecorder")
@@ -67,6 +68,10 @@ class TelemetryRecorder:
         Returns:
             Event ID (SHA-256 of event content)
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "TelemetryRecorder.record")
+
         with _proof_emitter.proof_op(f"record:{event_type}"):
             pass
         event = {"event_type": event_type, "data": data, "commit_tick": commit_tick}

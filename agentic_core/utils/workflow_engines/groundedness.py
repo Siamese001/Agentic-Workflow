@@ -13,6 +13,7 @@ import re
 from typing import Callable
 
 from .base import GenerationMetric
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 def _tokenize(text: str) -> list[str]:
@@ -63,6 +64,10 @@ class Groundedness(GenerationMetric):
         Returns:
             Groundedness score in [0, 1]
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "Groundedness.compute")
+
         if not prediction:
             return 0.0
         if context is None:

@@ -9,6 +9,7 @@ import hashlib
 import json
 from pathlib import Path
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class DeterminismViolationError(Exception):
@@ -31,6 +32,10 @@ class ReplayValidator:
         Raises:
             DeterminismViolationError: If any validation fails
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ReplayValidator.validate_seed_pack")
+
         base = Path(base_path)
         pack_dir = base / "seed_packs" / namespace / seed_index_version_hash
         manifest_path = pack_dir / "seed_manifest.json"

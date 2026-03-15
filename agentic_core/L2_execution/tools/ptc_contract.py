@@ -19,6 +19,7 @@ from agentic_core.L2_execution.types.instruction_packet_types import (
     SignatureVerificationError,
 )
 from agentic_core.L2_execution.types.sandbox_envelope_types import SandboxEnvelope
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -106,6 +107,13 @@ class PTCContractEnforcer:
 
         Raises PTCUnsignedEnvelopeError or SignatureVerificationError on failure.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "PTCContractEnforcer.pre_execute")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:PTCContractEnforcer.pre_execute".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         if not isinstance(envelope, SandboxEnvelope):
             raise TypeError(
                 f"PTCContractEnforcer.pre_execute: expected SandboxEnvelope, got {type(envelope).__name__}"

@@ -16,17 +16,17 @@ def fix_init_file(file_path: Path) -> bool:
         content = file_path.read_text(encoding="utf-8", errors="ignore")
     except (UnicodeDecodeError, OSError):
         return False
-    
+
     # Check if file has the corruption pattern
     if "from " in content and "=" in content and "Configuration constants" in content:
         lines = content.splitlines()
-        
+
         # Find the corrupted import
         fixed_lines = []
         config_constants = []
         in_import = False
         import_start = None
-        
+
         for i, line in enumerate(lines):
             if line.startswith("from ") and "(" in line and not line.endswith(")"):
                 in_import = True
@@ -50,46 +50,46 @@ def fix_init_file(file_path: Path) -> bool:
                     fixed_lines.append(line)
             else:
                 fixed_lines.append(line)
-        
+
         # If we found config constants, fix the file
         if config_constants and import_start is not None:
             # Insert config constants at the beginning
             new_lines = []
-            
+
             # Add docstring if present
             for line in fixed_lines[:import_start]:
                 new_lines.append(line)
-            
+
             # Add config constants
             new_lines.append("")
             new_lines.append("# Configuration constants")
             for const in config_constants:
                 new_lines.append(const)
             new_lines.append("")
-            
+
             # Add the rest
             for line in fixed_lines[import_start:]:
                 new_lines.append(line)
-            
+
             # Write fixed content
             file_path.write_text("\n".join(new_lines) + "\n", encoding="utf-8")
             return True
-    
+
     return False
 
 
 def main() -> None:
     """Fix all corrupted __init__.py files."""
     print("Fixing corrupted __init__.py files...")
-    
+
     init_files = list(REPO.rglob("__init__.py"))
-    
+
     fixed_count = 0
     for init_file in init_files:
         if fix_init_file(init_file):
             print(f"  Fixed: {init_file.relative_to(REPO)}")
             fixed_count += 1
-    
+
     print(f"\nFixed {fixed_count} __init__.py files")
 
 

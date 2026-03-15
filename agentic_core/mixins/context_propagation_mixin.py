@@ -3,6 +3,7 @@ import logging
 import uuid
 import weakref
 from functools import wraps
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 trace_id_var = contextvars.ContextVar("trace_id", default=None)
 span_id_var = contextvars.ContextVar("span_id", default=None)
@@ -25,6 +26,10 @@ class ContextPropagationMixin:
 
     def set_context(self, trace_id: str, span_id: str | None = None):
         """Manually sets the tracing context for the current execution flow."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ContextPropagationMixin.set_context")
+
         trace_id_var.set(trace_id)
         if span_id:
             span_id_var.set(span_id)

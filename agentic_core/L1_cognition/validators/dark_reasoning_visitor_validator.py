@@ -3,6 +3,7 @@ from __future__ import annotations
 '\nSovereign Guardian: observability Footprint (Dark Reasoning Check)\nEnsures every L1 reasoning step leaves an L6 observability trail.\n\nThe Governance Cycle:\n1. L0 (Auditor) defines what is "Legal."\n2. L1-L5 perform the actual agentic operations.\n3. L6 (observability) records the ground truth of those operations.\n4. L0 (Auditor) periodically sweeps L6 to ensure L1-L5 behaved, flagging Dark Reasoning if an agent "thought" without telling the system.\n\nPhase 9C: Dark Reasoning Guardian (Dec 26, 2025)\n'
 import ast
 from pathlib import Path
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 def check_dark_reasoning(filepath: Path) -> list[str]:
@@ -32,6 +33,10 @@ def check_dark_reasoning(filepath: Path) -> list[str]:
                 self.reasoning_methods = {"think", "plan", "decide", "reason", "validate", "execute_plan"}
 
             def visit_Call(self, node):
+                import uuid as _uuid  # noqa: PLC0415
+                _trace_id = str(_uuid.uuid4())
+                _emit_records_execution_trace(_trace_id, LayerSegment.L1_REASONING, "DarkReasoningVisitor.visit_Call")
+
                 if isinstance(node.func, ast.Attribute) and node.func.attr.lower() in self.reasoning_methods:
                     self.issues.append(
                         f"Dark Reasoning Violation: Unobserved reasoning call '{node.func.attr}' at line {node.lineno}"

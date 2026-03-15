@@ -10,6 +10,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from system_learning.engines.retrieval_profile import RetrievalProfile
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass(frozen=True, slots=True)
@@ -55,6 +56,10 @@ class RetrievalProfileReplayChecker:
         Returns:
             ReplayCheckResult with deterministic digest
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RetrievalProfileReplayChecker.replay_check_profile_change")
+
         base_output = self._run_deterministic_retrieval(base_profile)
         proposed_output = self._run_deterministic_retrieval(proposed_profile)
         digest = self._compute_replay_digest(

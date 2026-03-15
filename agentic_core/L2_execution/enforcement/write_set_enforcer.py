@@ -10,6 +10,7 @@ Lives in L2 (execution enforcement) per gravity rules.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 
 class WriteSetViolation(RuntimeError):
@@ -39,6 +40,13 @@ class WriteSetEnforcer:
         Raises WriteSetViolation if key is not in the
         declared write set.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "WriteSetEnforcer.record_write")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:WriteSetEnforcer.record_write".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         if self._aborted:
             raise WriteSetViolation("Execution aborted due to prior write-set violation.")
         if key not in self.declared_write_set:

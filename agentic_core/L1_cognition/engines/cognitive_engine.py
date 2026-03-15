@@ -55,6 +55,7 @@ try:
     from .ReasoningNode import ReasoningNode
 except ImportError:
     ReasoningNode = None
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class CognitiveNodeRefactored:
@@ -98,6 +99,10 @@ class CognitiveNodeRefactored:
         Returns:
             Final output
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L1_REASONING, "CognitiveNodeRefactored.process")
+
         self.total_processes += 1
         cache_key = self._make_cache_key(raw_input, context)
         if cache_key in self.cache:

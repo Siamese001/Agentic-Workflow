@@ -44,6 +44,7 @@ from agentic_core.adg.artifact.normalizer import ArtifactNormalizer
 
 if TYPE_CHECKING:
     from agentic_core.adg.artifact.builder import ADGArtifact
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 # ---------------------------------------------------------------------------
@@ -280,6 +281,10 @@ class ArtifactPaths:
     governance_graph: Path
 
     def size_report(self) -> dict[str, str]:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ArtifactPaths.size_report")
+
         result = {}
         for name, path in (
             ("snapshot", self.snapshot),

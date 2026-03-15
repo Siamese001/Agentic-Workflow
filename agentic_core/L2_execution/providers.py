@@ -42,6 +42,7 @@ import time
 from abc import ABC, abstractmethod
 from datetime import datetime, timezone
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 logger = logging.getLogger(__name__)
 _DETERMINISM_LOGGER = logging.getLogger("adg.emits_determinism_digest")
@@ -146,6 +147,13 @@ class WallClock(ClockProvider):
         self._trace_context = trace_context
 
     def now(self) -> datetime:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "WallClock.now")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:WallClock.now".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         ts = datetime.now(tz=timezone.utc)
         _PATCHES_TIME_LOGGER.debug("patches_time wall_clock ts=%s", ts.isoformat())
         if self._trace_context is not None and hasattr(self._trace_context, "record_clock"):
@@ -264,6 +272,13 @@ class MonotonicSequenceClock(ClockProvider):
         self._call_count = 0
 
     def now(self) -> datetime:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "MonotonicSequenceClock.now")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:MonotonicSequenceClock.now".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         from datetime import timedelta
 
         result = self._current

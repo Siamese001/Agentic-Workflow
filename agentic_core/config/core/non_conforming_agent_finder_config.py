@@ -43,6 +43,7 @@ try:
 except ImportError:
     AGENTIC_CORE_DIR = AGENTIC_CORE_DIR
     ARCHIVES_DIR = ".sovereign_healing_backup"
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 AGENTIC_CORE = PROJECT_ROOT / AGENTIC_CORE_DIR
@@ -73,6 +74,10 @@ class NonConformingAgentFinder(ast.NodeVisitor):
         self.excluded_classes: list[dict] = []
 
     def visit_ClassDef(self, node: ast.ClassDef):
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "NonConformingAgentFinder.visit_ClassDef")
+
         class_name = node.name
 
         # Skip if already canon-compliant

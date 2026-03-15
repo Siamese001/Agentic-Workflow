@@ -8,6 +8,7 @@ golden patterns from Pinecone to Redis.
 import logging
 import os
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -44,6 +45,10 @@ class ETLPipeline:
         Returns:
             Statistics about the hydration process
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ETLPipeline.hydrate_cache")
+
         logger.info(f"Starting cache hydration with up to {max_patterns} golden patterns")
         golden_patterns = self._fetch_golden_patterns(
             min_success_count=min_success_count, max_patterns=max_patterns, project_filter=project_filter

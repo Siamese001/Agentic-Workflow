@@ -11,6 +11,7 @@ import json
 from dataclasses import asdict, dataclass, field
 
 from system_learning.types.healing_outcome_intake_types import HealingOutcomeIntakeRecord
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 def _validate_weight(value: float, name: str) -> None:
@@ -127,6 +128,10 @@ class ScoringReport:
         Returns:
             Stable byte representation using sorted JSON keys and stable rounding
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ScoringReport.canonical_bytes")
+
         data = asdict(self)
         canonical_json = json.dumps(data, sort_keys=True, separators=(",", ":"))
         return canonical_json.encode("utf-8")

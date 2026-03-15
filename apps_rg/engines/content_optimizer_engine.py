@@ -13,6 +13,7 @@ import logging
 from typing import Any
 
 from apps_rg.engines.base_rg_engine import BaseRGEngine
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger = logging.getLogger(__name__)
 
@@ -31,6 +32,10 @@ class ContentOptimizerEngine(BaseRGEngine):
         """
         Reorder resume content based on impact scoring and weights.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ContentOptimizerEngine.execute")
+
         data = self.ctx.buffer.read("hop2_enrichment")
         weights = self.ctx.buffer.read("adjusted_weights", default={})
         if not data:

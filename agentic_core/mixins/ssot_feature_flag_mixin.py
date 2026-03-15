@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import logging
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 _logger = logging.getLogger("SSOTFeatureFlags")
 
@@ -63,6 +64,10 @@ class SSOTFeatureFlagMixin:
         bool
             True if flag was set, False if rejected (replay mode).
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SSOTFeatureFlagMixin.flag_set")
+
         if self._ssot_flags_frozen:
             _logger.warning("[SSOTFlags] Flag change rejected (frozen): %s=%s", flag_name, value)
             return False

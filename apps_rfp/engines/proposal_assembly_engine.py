@@ -22,6 +22,7 @@ from apps_rfp.types.rfp_types import (
     RiskSeverity,
     RoadmapPhase,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 _log = logging.getLogger(__name__)
 
@@ -134,6 +135,10 @@ class ProposalAssemblyEngine:
         Returns:
             ProposalAssemblyResult with sections, roadmap, risks.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ProposalAssemblyEngine.execute")
+
         assumptions: list[AssumptionItem] = self._build_assumptions(request)
         sections = self._build_sections(request, assumptions)
         roadmap = self._build_roadmap(request)

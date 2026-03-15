@@ -10,6 +10,7 @@ import logging
 import time
 from dataclasses import asdict, dataclass
 from pathlib import Path
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger = logging.getLogger(__name__)
 
@@ -115,6 +116,10 @@ class ActivationFlagsStore:
         Raises:
             RuntimeError: If signature verification fails
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "ActivationFlagsStore.update_flags")
+
         previous_hash = ""
         if self._current_proof:
             previous_hash = self._current_proof.flags_hash
@@ -213,6 +218,10 @@ class ActivationGate:
         Returns:
             True if P0 requirements are met
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "ActivationGate.check_p0_ready")
+
         flags = self.store.get_current_flags()
         if not flags:
             return False

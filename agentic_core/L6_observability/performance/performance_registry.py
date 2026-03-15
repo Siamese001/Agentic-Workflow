@@ -18,6 +18,7 @@ from enum import Enum
 from typing import Any
 
 from agentic_core.L2_execution.providers import get_clock
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 _PERF_LOG = logging.getLogger("adg.performance_record_emitted")
@@ -108,6 +109,10 @@ class PerformanceRecord:
         budget_class: BudgetClass = None,
     ) -> PerformanceRecord:
         """Factory to create PerformanceRecord with computed fields."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L6_OBSERVABILITY, "PerformanceRecord.create")
+
         performance_record_id = str(uuid.uuid4())
         duration_ms = (end_tick - start_tick) * 1000.0
 
@@ -175,6 +180,10 @@ class PerformanceRegistry:
     @classmethod
     def get_instance(cls) -> PerformanceRegistry:
         """Singleton accessor."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L6_OBSERVABILITY, "PerformanceRegistry.get_instance")
+
         if cls._instance is None:
             with cls._lock:
                 if cls._instance is None:

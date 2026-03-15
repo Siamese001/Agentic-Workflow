@@ -17,6 +17,7 @@ from typing import Any
 from pydantic import BaseModel, Field
 
 from agentic_core.mixins.context_propagation_mixin import span_id_var, trace_id_var
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class SovereignEvent(BaseModel):
@@ -67,6 +68,10 @@ class event_emission_mixin:
         Returns:
             SovereignEvent: The emitted event object
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "event_emission_mixin.emit_event")
+
         active_trace = trace_id or trace_id_var.get()
         active_span = span_id_var.get()
         event_payload = payload or {}

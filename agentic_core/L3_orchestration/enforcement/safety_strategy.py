@@ -8,6 +8,7 @@ from typing import Any
 
 from agentic_core.L2_execution.providers import get_clock
 from agentic_core.seams.contracts.safety_agents import SafetyAgentFactory
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger = logging.getLogger(__name__)
 
@@ -77,6 +78,10 @@ class SafetyStrategy:
                         return self._invoke(action="validate", project_root=self.project_root)
 
                     def heal_repository(self, directory=None, **kwargs):
+                        import uuid as _uuid  # noqa: PLC0415
+                        _trace_id = str(_uuid.uuid4())
+                        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "CodeValidatorAgentProxy.heal_repository")
+
                         if directory:
                             return self._invoke(
                                 action="validate_directory",
@@ -110,6 +115,10 @@ class SafetyStrategy:
         Returns:
             Dictionary with execution results
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SafetyStrategy.execute_agent")
+
         start_time = get_clock().now_epoch()
         try:
             if hasattr(agent, "heal_repository"):

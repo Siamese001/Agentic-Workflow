@@ -29,6 +29,7 @@ from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
 )
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.L0_routing.config.path_constants import TESTS_DIR
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 Logger = logging.getLogger(__name__)
 
@@ -50,6 +51,13 @@ class ComplexityAnalyzerStrategy(ValidatorStrategy):
 
     async def execute(self, agent: Any, **kwargs: Any) -> ValidationResult:
         """Execute complexity analysis via unified strategy."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "ComplexityAnalyzerStrategy.execute")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:ComplexityAnalyzerStrategy.execute".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         agent.log_info("Executing complexity analysis...")
 
         # Delegate to the actual analyzer methods on the agent
@@ -119,6 +127,13 @@ class ComplexityAnalyzerAgent(SovereignBaseAgent):
     # guardian: allow-type-erasure
     def analyze_repository(self, target_path: Path = None) -> dict[str, Any]:
         """Entry point for full scan."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "ComplexityAnalyzerAgent.analyze_repository")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:ComplexityAnalyzerAgent.analyze_repository".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         target = target_path or self.project_root
         self._violations = []
 

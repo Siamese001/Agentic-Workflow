@@ -14,6 +14,7 @@ import logging
 from dataclasses import dataclass, field
 
 from apps_eval.types.eval_types import ScorecardRow, SuiteResult
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 _log = logging.getLogger(__name__)
 
@@ -57,6 +58,10 @@ class ScorecardEngine:
         Returns:
             ScorecardResult with rows and overall weighted score.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ScorecardEngine.compute")
+
         suite_scores: dict[str, float] = {sr.suite_id: sr.pass_rate for sr in suite_results}
 
         dim_scores: dict[str, list[float]] = {}

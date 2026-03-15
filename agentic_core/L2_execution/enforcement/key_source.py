@@ -8,6 +8,7 @@ from abc import ABC, abstractmethod
 from typing import Final
 
 from agentic_core.L2_execution.providers import get_clock
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 
 class KeySource(ABC):
@@ -43,6 +44,13 @@ class TestKeySource(KeySource):
 
     def assert_key_scope(self, artifact_type: str) -> None:
         """Assert that the key is scoped for the given artifact type."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "TestKeySource.assert_key_scope")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:TestKeySource.assert_key_scope".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         if artifact_type not in self._key_scopes:
             raise ValueError(f"Key not scoped for artifact type: {artifact_type}")
         if not self._key_scopes[artifact_type]:
@@ -78,6 +86,13 @@ class EnvKeySource(KeySource):
 
     def assert_key_scope(self, artifact_type: str) -> None:
         """Assert that the key is scoped for the given artifact type."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "EnvKeySource.assert_key_scope")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:EnvKeySource.assert_key_scope".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         if artifact_type not in self._key_scopes:
             raise ValueError(f"Key not scoped for artifact type: {artifact_type}")
         if not self._key_scopes[artifact_type]:

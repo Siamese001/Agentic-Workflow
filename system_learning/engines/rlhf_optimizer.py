@@ -9,6 +9,7 @@ import json
 from typing import Protocol
 
 from system_learning.engines.change_package_impl import ChangePackage
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class RLHFOptimizer(Protocol):
@@ -76,6 +77,10 @@ class DefaultDeterministicRLHFOptimizer:
         Returns:
             ChangePackage with proposal-only adjustments.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "DefaultDeterministicRLHFOptimizer.propose_from_dpo")
+
         try:
             dpo_data = json.loads(dpo_batch_bytes.decode("utf-8"))
         except (json.JSONDecodeError, UnicodeDecodeError):

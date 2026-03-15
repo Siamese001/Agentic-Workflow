@@ -1,4 +1,5 @@
 """
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 Optimization Strategies for Reasoning Engines
 
 Implements early stopping, path pruning, and convergence detection
@@ -48,6 +49,10 @@ class EarlyStoppingStrategy:
         Returns:
             (should_stop, reason)
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "EarlyStoppingStrategy.should_stop_early")
+
         # Minimum steps check
         if current_step < self.min_steps:
             return False, "minimum_steps_not_reached"
@@ -144,6 +149,10 @@ class ConfidenceEstimator:
         Returns:
             Confidence score (0.0 to 1.0)
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ConfidenceEstimator.estimate_step_confidence")
+
         score = 0.0
 
         # Check for reasoning content
@@ -221,6 +230,10 @@ class PathPruningStrategy:
         Returns:
             True if path should be pruned
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PathPruningStrategy.should_prune")
+
         self.total_paths += 1
 
         if confidence < self.min_confidence:
@@ -258,6 +271,10 @@ class OptimizedReasoningEngine:
         Returns:
             Optimized reasoning result
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "OptimizedReasoningEngine.reason_with_optimization")
+
         steps = []
         current = problem
         step_count = 0

@@ -47,6 +47,7 @@ from enum import Enum
 from typing import Any
 
 from agentic_core.adg.runtime.event_graph import RuntimeGraph, RuntimeGraphCollector
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class HITLDecisionType(str, Enum):
@@ -129,6 +130,10 @@ class HITLGraph:
         return sum(1 for cp in self.checkpoints if cp.resolved)
 
     def checkpoint_by_id(self, checkpoint_id: str) -> HITLCheckpoint | None:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HITLGraph.checkpoint_by_id")
+
         for cp in self.checkpoints:
             if cp.checkpoint_id == checkpoint_id:
                 return cp
@@ -178,6 +183,10 @@ class HITLRuntimeRecorder(RuntimeGraphCollector):
 
         Returns the generated checkpoint_id.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HITLRuntimeRecorder.checkpoint")
+
         cp_id = _make_checkpoint_id(self._agent_id, violation_id)
         cp = HITLCheckpoint(
             checkpoint_id=cp_id,

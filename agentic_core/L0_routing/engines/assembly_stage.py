@@ -12,6 +12,7 @@ import hashlib
 import json
 from dataclasses import dataclass
 from typing import Any, Literal
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, emit_replay_key, emit_determinism_digest
 
 
 def canonical_bytes(data: dict[str, Any]) -> bytes:
@@ -164,6 +165,12 @@ class AirlockAssembler:
         Returns:
             GovernedPayload with deterministic manifest hash
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "AirlockAssembler.assemble")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         sanitized_prompt = AirlockAssembler._sanitize(u0_user_prompt)
         sanitized = sanitized_prompt != u0_user_prompt
         check_ids = AirlockAssembler._shred(sanitized_prompt)

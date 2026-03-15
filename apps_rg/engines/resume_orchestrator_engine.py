@@ -23,6 +23,7 @@ from apps_rg.engines.data_enrichment_engine import DataEnrichmentEngine
 from apps_rg.engines.gap_closure_engine import GapClosureEngine
 from apps_rg.engines.section_ranker_engine import SectionRankerEngine
 from apps_rg.types.trace_registry_types import TraceRegistry
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger = logging.getLogger(__name__)
 
@@ -59,6 +60,10 @@ class ResumeOrchestratorEngine(BaseRGEngine):
             self.ctx.trace = TraceRegistry(persistence_path=trace_path)
 
     async def execute(self, job_description: str) -> dict[str, Any]:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ResumeOrchestratorEngine.execute")
+
         self._mcp_audit("workflow_start")
         mission_input = {
             "job_description": job_description,

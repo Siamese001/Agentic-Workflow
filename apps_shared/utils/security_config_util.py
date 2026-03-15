@@ -15,6 +15,7 @@ import secrets
 from dataclasses import dataclass
 from enum import Enum
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -62,6 +63,10 @@ class InputSanitizer:
         cls, value: str, max_length: int = 10000, strip_html: bool = True, strip_scripts: bool = True
     ) -> str:
         """Sanitize a string input."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "InputSanitizer.sanitize_string")
+
         if not isinstance(value, str):
             return str(value)
         result = value[:max_length]
@@ -97,6 +102,10 @@ class InputValidator:
     @classmethod
     def validate_email(cls, email: str) -> ValidationResult:
         """Validate an email address."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "InputValidator.validate_email")
+
         if not email or not isinstance(email, str):
             return ValidationResult.failure(["Email is required"])
         email = email.strip().lower()
@@ -168,6 +177,10 @@ class SecureTokenGenerator:
     @staticmethod
     def generate_api_key(prefix: str = "ak") -> str:
         """Generate an API key with prefix."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SecureTokenGenerator.generate_api_key")
+
         token = secrets.token_urlsafe(32)
         return f"{prefix}_{token}"
 
@@ -201,6 +214,10 @@ class RateLimiter:
 
     def is_allowed(self, key: str) -> bool:
         """Check if a request is allowed for the given key."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RateLimiter.is_allowed")
+
         import time
 
         current_time = time.time()
@@ -243,6 +260,10 @@ class SecurityAuditLog:
         self, event_type: str, message: str, severity: str = "info", metadata: dict[str, Any] | None = None
     ) -> None:
         """Log a security event."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SecurityAuditLog.log_event")
+
         import time
 
         event = {

@@ -1,7 +1,7 @@
 # RCA: Coverage Gap Discrepancy Analysis
 
-**Date**: 2026-03-12  
-**Incident**: Discrepancy between SQLite-based coverage analysis (1,997 entries) and ADG accelerator report (1,051 modules)  
+**Date**: 2026-03-12
+**Incident**: Discrepancy between SQLite-based coverage analysis (1,997 entries) and ADG accelerator report (1,051 modules)
 **Impact**: Potential misalignment in coverage gap prioritization and test planning
 
 ---
@@ -12,7 +12,7 @@ Two different coverage analysis methods produced significantly different results
 - **SQLite-based analysis** (`tools/evidence/_coverage_analysis.py`): 1,997 uncovered entries
 - **ADG accelerator report** (`docs/reports/plans/adg_coverage_report_03122026.json`): 1,051 covered modules (49.76% coverage rate)
 
-**⚠️ UPDATED 2026-03-12 — Phase 0 Validation**: The original root cause hypothesis (filter scope) was **incorrect**. See §Root Cause Correction below.  
+**⚠️ UPDATED 2026-03-12 — Phase 0 Validation**: The original root cause hypothesis (filter scope) was **incorrect**. See §Root Cause Correction below.
 Authoritative findings: `docs/reports/plans/phase0_validation_findings.md`
 
 ---
@@ -186,6 +186,6 @@ The discrepancy is explained by **coverage edge semantics**, not filter scope.
 SQLite's direct-edge-only approach misses 1,031 modules that are transitively
 covered in the accelerator. The 966 agreed true gaps are all real production files.
 
-**Authoritative source**: `docs/reports/plans/phase0_validation_findings.md`  
-**True actionable gap**: 966 production modules with zero coverage in both systems  
+**Authoritative source**: `docs/reports/plans/phase0_validation_findings.md`
+**True actionable gap**: 966 production modules with zero coverage in both systems
 **Priority order**: `apps_lic/reasoning` (30) → `apps_rg/engines` (33) → `L5_safety` (167) → `system_learning` (31)

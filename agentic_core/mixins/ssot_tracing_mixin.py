@@ -17,6 +17,7 @@ import logging
 import time
 from contextlib import contextmanager
 from typing import Any, Generator
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 _logger = logging.getLogger("SSOTTracing")
 
@@ -52,6 +53,10 @@ class SSOTTracingMixin:
         dict
             The span dict (mutable — caller can add tags).
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SSOTTracingMixin.trace_span")
+
         trace_id = getattr(self, "trace_id", "unknown")
         policy_hash = getattr(self, "active_policy_hash", "unknown")
         span = {

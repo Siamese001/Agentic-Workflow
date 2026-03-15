@@ -31,6 +31,7 @@ from apps_exec.types.exec_types import (
     RunSummary,
 )
 from apps_exec.validators.style_gate_validator import StyleGateValidator
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 _log = logging.getLogger(__name__)
 
@@ -74,6 +75,10 @@ class ExecOrchestrator:
         Returns:
             ExecBriefResult with all sections, artifacts, and provenance.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ExecOrchestrator.run")
+
         trace_id = request.trace_id or self._make_trace_id(request)
         audience_key = request.audience.value if hasattr(request.audience, "value") else str(request.audience)
 

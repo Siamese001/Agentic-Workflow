@@ -12,6 +12,7 @@ import json
 from dataclasses import dataclass, field
 
 from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 def _sha256(data: bytes) -> str:
@@ -37,6 +38,10 @@ class PolicyConfig:
     token_budget: int = 1000000
 
     def canonical_bytes(self) -> bytes:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "PolicyConfig.canonical_bytes")
+
         doc = {
             "version": self.version,
             "tool_allowlist": sorted(self.tool_allowlist),
@@ -65,6 +70,10 @@ class RoutingConfig:
     escalation_mode: str = "normal"
 
     def canonical_bytes(self) -> bytes:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "RoutingConfig.canonical_bytes")
+
         doc = {
             "version": self.version,
             "anomaly_routing_threshold": self.anomaly_routing_threshold,
@@ -93,6 +102,10 @@ class ModelConfig:
     embedding_dimensions: int = 1536
 
     def canonical_bytes(self) -> bytes:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "ModelConfig.canonical_bytes")
+
         doc = {
             "version": self.version,
             "cognition_model": self.cognition_model,
@@ -117,6 +130,10 @@ class BudgetConfig:
     backoff_base_seconds: float = 1.0
 
     def canonical_bytes(self) -> bytes:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "BudgetConfig.canonical_bytes")
+
         doc = {
             "version": self.version,
             "token_budget": self.token_budget,
@@ -163,6 +180,10 @@ class MLCacheConfig:
     eviction_mode: str = "lru"
 
     def canonical_bytes(self) -> bytes:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "MLCacheConfig.canonical_bytes")
+
         doc = {
             "version": self.version,
             "default_ttl_seconds": self.default_ttl_seconds,

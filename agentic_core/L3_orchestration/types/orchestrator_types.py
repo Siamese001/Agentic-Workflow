@@ -23,6 +23,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import TYPE_CHECKING, Any, Protocol, runtime_checkable
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 if TYPE_CHECKING:
     pass
@@ -100,6 +101,10 @@ class ExecutionContext:
 
     def with_accumulated_context(self, new_context: dict[str, Any]) -> ExecutionContext:
         """Create new context with merged accumulated_context for DNA preservation."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ExecutionContext.with_accumulated_context")
+
         merged = self.accumulated_context.copy()
         merged.update(new_context)
         return ExecutionContext(

@@ -13,7 +13,7 @@ Plan to transform passive structural artifacts into active control-plane intelli
 - Status: Functional but underutilized
 - Capabilities: Blast radius, dependencies, layer violations, cycles, fan-in/out analysis
 
-**Structure Blueprint Config** ✅ ACTIVE  
+**Structure Blueprint Config** ✅ ACTIVE
 - Location: `agentic_core/L5_safety/config/structure_blueprint/`
 - Components: Territory definitions, artifact patterns, SSOT rules, sovereign territories
 - Current usage: Guardian enforcement, CI validation
@@ -526,7 +526,7 @@ adg-diff-check --baseline
 ### Performance Overhead
 **Risk**: Graph construction and analysis may slow down CI
 **Current Assets**: Existing AST graph and ADG are performant
-**Mitigation**: 
+**Mitigation**:
 - Cache graphs between runs in `artifacts/`
 - Incremental updates only for changed files
 - Parallel analysis using existing infrastructure

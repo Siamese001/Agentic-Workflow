@@ -881,6 +881,7 @@ from agentic_core.L0_routing.config.path_constants import (
     TESTS_DIR,
     TOOLS_DIR,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, emit_replay_key, emit_determinism_digest
 
 
 class FailureType(_enum.Enum):
@@ -959,6 +960,12 @@ class RoutingDecision:
     determinism_digest: str
 
     def as_log_line(self) -> str:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "RoutingDecision.as_log_line")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         f = self.factors
         i = self.inputs
         return f"[ROUTING] tier={self.tier.value} S={self.score} gate={self.gate_applied} model={self.model_id} C={f.get('C', 0)} B={f.get('B', 0)} A={f.get('A', 0)} N={f.get('N', 0)} F={f.get('F', 0)} L={f.get('L', 0)} replay={i.replay_mode} retry={i.retry_count} playbook={i.playbook_match} det_cov={i.deterministic_coverage} adg_score={i.adg_behavioral_score:.3f} digest={self.determinism_digest}"
@@ -1097,6 +1104,12 @@ class ReconciliationManifest:
     confidence_scores: list[float] = field(default_factory=list)
 
     def add_modification(self, modification: dict[str, Any]) -> None:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "ReconciliationManifest.add_modification")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         self.modifications.append(modification)
         self.violations_attempted += 1
         if modification.get("success", False):
@@ -1164,6 +1177,12 @@ class ASTCodeQualityValidator:
     # guardian: allow-type-erasure
     def check_file_quality(self, file_path: Path) -> dict:
         """Check file for code quality issues (missing types, etc)."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "ASTCodeQualityValidator.check_file_quality")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         violations = []
         tree, error = self._read_and_parse_file(str(file_path))
         if error:
@@ -1440,6 +1459,12 @@ class HealContext:
           --interactive    => auto_approve is always True under --heal
           --apply-proposals => meta-learning always on under --heal
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "HealContext.from_args")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         import warnings
 
         if getattr(args, "dry_run", False):
@@ -1823,6 +1848,12 @@ class SovereignDecisionEngine:
           >0.7  agent-like:  -0.05 confidence penalty (adaptive agents require more caution)
           0.5   unknown:     no adjustment
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "SovereignDecisionEngine.calculate_healing_confidence")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         if violations_count == 0:
             return ConfidenceScore(value=1.0, reasoning="Zero violations")
         if getattr(self, "auto_approve", False):
@@ -2144,6 +2175,12 @@ class PreFlightValidator:
         self.dry_run = dry_run
 
     def run_checks(self) -> tuple[bool, list[str]]:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "PreFlightValidator.run_checks")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         errors = []
         if platform.system() == "Windows":
             try:
@@ -2551,6 +2588,12 @@ class RuntimeStateManager:
         self._persistence_disabled: bool = False
 
     def start_mission(self, mission_type: str, agents_order: list[str]):
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "RuntimeStateManager.start_mission")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         self.state["status"] = "running"
         self.state["start_time"] = datetime.now().isoformat()
         self.state["agents_order"] = agents_order
@@ -7145,6 +7188,12 @@ class GracefulExitHandler:
 
     def exit_gracefully(self, signum: int, frame: FrameType | None):
         """Signal handler."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "GracefulExitHandler.exit_gracefully")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         if self.kill_now:
             logging.critical("Force quitting on second signal...")
             sys.exit(1)

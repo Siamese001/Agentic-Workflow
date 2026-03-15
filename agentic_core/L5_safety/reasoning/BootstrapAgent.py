@@ -6,6 +6,7 @@ from pathlib import Path
 
 from agentic_core.base_agents.L0RoutingBase import L0RoutingBase
 from agentic_core.utils.decorators_compat_util import standard_heal
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 
 @dataclass
@@ -28,6 +29,13 @@ class BootstrapAgent(L0RoutingBase):
             return False
 
     def run_bootstrap(self) -> bool:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "BootstrapAgent.run_bootstrap")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:BootstrapAgent.run_bootstrap".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         print("[BOOT] Verifying Sovereign Systems...")
         return self._verify_redis_connection()
 

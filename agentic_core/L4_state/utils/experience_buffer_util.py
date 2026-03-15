@@ -17,6 +17,7 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class ExperienceBuffer:
@@ -50,6 +51,10 @@ class ExperienceBuffer:
         Record a new experience outcome.
         Appends to file and enforces size limit.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "ExperienceBuffer.record")
+
         entry["timestamp"] = datetime.utcnow().isoformat() + "Z"
         entry["entry_id"] = int(time.time() * 1000000)
         _get_write_gateway().write_json(self.path, entry, indent=2)

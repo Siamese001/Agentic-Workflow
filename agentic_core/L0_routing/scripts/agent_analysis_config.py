@@ -35,6 +35,7 @@ from agentic_core.L0_routing.config import (
     REPORTS_DIR,
 )
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, emit_replay_key, emit_determinism_digest
 
 
 @dataclass
@@ -53,6 +54,12 @@ class AgentAnalysis:
 
     def needs_hardening(self) -> bool:
         """Check if this agent needs cache-first hardening."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "AgentAnalysis.needs_hardening")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         # If it has LLM calls but no cache checks, it needs hardening
         if self.has_llm_calls and not self.has_cache_checks:
             return True

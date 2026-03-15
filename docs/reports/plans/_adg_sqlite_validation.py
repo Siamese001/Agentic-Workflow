@@ -181,7 +181,7 @@ FIXED_FILES = [
 
 print(f"\n  Checking {len(FIXED_FILES)} fixed files:")
 for fname in FIXED_FILES:
-    # Check import edges from this file to structure_blueprint* 
+    # Check import edges from this file to structure_blueprint*
     sbc_edges = q("""
         SELECT e.source_file, n_dst.adg_name as dst_name, e.symbol
         FROM edges e

@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.utils.decorators_compat_util import standard_heal
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger = logging.getLogger(__name__)
 
@@ -34,6 +35,10 @@ class PerformanceAnalystAgentSimple:
 
     def stop_tracking(self, agent_name: str) -> dict[str, Any]:
         """Stop tracking and return metrics for an agent."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L6_OBSERVABILITY, "PerformanceAnalystAgentSimple.stop_tracking")
+
         if agent_name in self.start_times:
             duration = time.time() - self.start_times[agent_name]
             self.metrics[agent_name] = {"duration": duration, "timestamp": time.time()}

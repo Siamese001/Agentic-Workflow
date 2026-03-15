@@ -10,6 +10,7 @@ from dataclasses import dataclass
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger = logging.getLogger(__name__)
 
@@ -38,6 +39,10 @@ class FissionManagerAgent(SovereignBaseAgent):
         self.max_rounds = max_rounds
 
     async def execute_fission(self, file_path: str, content: str, reason: str) -> FissionResult:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "FissionManagerAgent.execute_fission")
+
         Logger.info(f"FISSION TRIGGERED: {file_path} ({reason})")
         prompt = self._get_fission_prompt(file_path, content)
         try:

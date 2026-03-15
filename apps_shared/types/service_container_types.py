@@ -9,6 +9,7 @@ import logging
 from abc import ABC
 from collections.abc import Callable
 from typing import Any, TypeVar
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 T = TypeVar("T")
@@ -60,6 +61,10 @@ class ServiceContainer:
         Raises:
             ValueError: If neither implementation nor factory is provided
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ServiceContainer.register")
+
         if implementation is None and factory is None:
             raise ValueError("Must provide either implementation or factory")
         if lifecycle not in ["singleton", "transient"]:

@@ -17,6 +17,7 @@ from __future__ import annotations
 import hashlib
 import re
 from dataclasses import dataclass
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 _HEX_RE = re.compile("^[0-9a-f]+$")
 _EMPTY_CONTENT_HASH = hashlib.sha256(b"").hexdigest()
@@ -49,6 +50,10 @@ class CommitProofInvariant:
 
     def verify(self) -> None:
         """Verify all invariant conditions.  Raises CommitProofViolation on any failure."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "CommitProofInvariant.verify")
+
         if not isinstance(self.version_id, str) or len(self.version_id) != 64:
             raise CommitProofViolation(
                 f"COMMIT_PROOF_VIOLATION: version_id must be 64-char hex, got {self.version_id!r}"

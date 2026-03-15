@@ -10,6 +10,7 @@ from typing import Any
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.knowledge.document_loaders.pdf_loader import PDFDocumentLoader
 from agentic_core.knowledge.document_loaders.text_loader import TextDocumentLoader
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class SovereignRAGManager(SovereignBaseAgent):
@@ -46,6 +47,10 @@ class SovereignRAGManager(SovereignBaseAgent):
                         self._store[vec_id] = {"id": vec_id, "embedding": emb, "metadata": meta}
 
                 def query(self, query_emb, top_k=5):
+                    import uuid as _uuid  # noqa: PLC0415
+                    _trace_id = str(_uuid.uuid4())
+                    _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "_InMemVectorStore.query")
+
                     import numpy as np
 
                     if not self._store or query_emb is None:
@@ -72,6 +77,10 @@ class SovereignRAGManager(SovereignBaseAgent):
         return {"action_verbs": [], "skill_taxonomy": {}}
 
     def ingest(self, file_path: Path) -> bool:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SovereignRAGManager.ingest")
+
         suffix = Path(file_path).suffix.lower()
         loader: TextDocumentLoader | PDFDocumentLoader | None = None
         if suffix == ".txt":

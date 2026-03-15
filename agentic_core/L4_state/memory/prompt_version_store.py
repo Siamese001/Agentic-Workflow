@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import hashlib
 from typing import Literal
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 _versions: dict[str, str] = {}
 
@@ -33,6 +34,10 @@ class PromptVersionStore:
         Raises:
             ValueError: If prompt_type is not "S0" or "I0"
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "PromptVersionStore.commit_version")
+
         if prompt_type not in ("S0", "I0"):
             raise ValueError(f"prompt_type must be 'S0' or 'I0', got {prompt_type!r}")
         version_id = hashlib.sha256(content.encode("utf-8")).hexdigest()

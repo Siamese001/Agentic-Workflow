@@ -15,6 +15,7 @@ from dataclasses import dataclass
 from typing import Any, Literal
 
 from agentic_core.evaluation.metrics.base import ClassificationMetric
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 # ---------------------------------------------------------------------------
 # ConfusionMatrix
@@ -41,6 +42,10 @@ class ConfusionMatrix:
 
     def precision(self) -> float:
         """TP / (TP + FP). Returns 0.0 when denominator is zero."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ConfusionMatrix.precision")
+
         denom = self.tp + self.fp
         return round(self.tp / denom, 6) if denom > 0 else 0.0
 
@@ -145,6 +150,10 @@ class BinaryClassificationMetric(ClassificationMetric):
         Returns:
             Float score in [0.0, 1.0].
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "BinaryClassificationMetric.compute")
+
         if not prediction or not ground_truth:
             return 0.0
         cm = self.confusion(prediction, ground_truth)
@@ -209,6 +218,10 @@ class MultiClassF1Metric(ClassificationMetric):
 
     def confusion(self, prediction: list, ground_truth: list) -> ConfusionMatrix:
         """Return micro-aggregate ConfusionMatrix (sum of per-class TP/FP/TN/FN)."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "MultiClassF1Metric.confusion")
+
         classes = self._classes(prediction, ground_truth)
         tp = fp = tn = fn = 0
         for label in classes:

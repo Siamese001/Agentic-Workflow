@@ -12,6 +12,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from agentic_core.L0_routing.config.path_constants import BATCH_SIZE
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 _DEFAULT_DRIFT_THRESHOLD = 0.92
 
@@ -35,6 +36,10 @@ class DriftSummary:
 
     def to_canonical_json(self) -> str:
         """Convert to canonical JSON for deterministic serialization."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "DriftSummary.to_canonical_json")
+
         data = {
             "profile_id": self.profile_id,
             "batch_size": self.batch_size,
@@ -65,6 +70,10 @@ class ShadowDriftAnalyzer:
         Returns:
             DriftSummary with deterministic digest
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ShadowDriftAnalyzer.analyze_batch")
+
         if not shadow_records:
             return DriftSummary(
                 profile_id=profile_id,

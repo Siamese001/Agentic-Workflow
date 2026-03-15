@@ -68,6 +68,7 @@ except ImportError:
 
     def get_validated_project_root() -> Path:
         return _root
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 
 EXCLUDED_DIRS = list(GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS)
@@ -102,6 +103,13 @@ class GenerativeGuardAgent(SovereignBaseAgent, HealerMixin, CanonBaseAgentInterf
     # guardian: allow-type-erasure
     async def execute(self, goal: str = None, context: dict[str, Any] = None) -> dict[str, Any]:
         """Execute guard checks - maintains backward compatibility."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "GenerativeGuardAgent.execute")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:GenerativeGuardAgent.execute".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         await self._execute_guard()
         return {"status": "completed", "agent": self.name}
 

@@ -4,6 +4,7 @@ from __future__ import annotations
 import logging
 from dataclasses import dataclass, field
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -36,6 +37,10 @@ class semantic_cache:
 
     def check_sufficiency(self, query: str) -> CacheSufficiencyResult:
         """Check if cached response is sufficient for query."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "semantic_cache.check_sufficiency")
+
         cached: Any = self.get(query)
         if cached:
             return CacheSufficiencyResult(
@@ -70,6 +75,10 @@ class SelfRagProcessor:
 
     def identify_gaps(self, query: str, context: str) -> list[KnowledgeGap]:
         """Identify knowledge gaps in the context."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "SelfRagProcessor.identify_gaps")
+
         gaps: Any = []
         Logger.debug(f"Analyzing knowledge gaps for query: {query}")
         return gaps
@@ -133,6 +142,10 @@ class KnowledgeGraphInjector:
 
     def inject_context(self, query: str, context: KGContext) -> str:
         """Inject KG context into query."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "KnowledgeGraphInjector.inject_context")
+
         if not context.entities:
             return query
         entity_str: Any = ", ".join(context.entities)
@@ -166,6 +179,10 @@ class FewShotInjector:
 
     def inject_examples(self, prompt: str, examples: list[FewShotExample]) -> str:
         """Inject examples into prompt."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "FewShotInjector.inject_examples")
+
         if not examples:
             return prompt
         example_str: Any = "\n\n".join(

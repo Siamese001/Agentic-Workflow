@@ -21,6 +21,7 @@ try:
     from agentic_core.L3_orchestration.reasoning.mcp_manager import MCPConnectionManager as _MCPManager
 except ImportError:
     _MCPManager = None
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass
@@ -82,6 +83,10 @@ class SovereignRedisOrchestrator(SovereignBaseAgent):
     # guardian: allow-type-erasure
     def get(self, key: str) -> Any:
         """Execute get operation (MCP-routed when REDIS_MCP_ENABLED)."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SovereignRedisOrchestrator.get")
+
         if self._use_mcp:
             result = self._mcp_call("redis_get", {"key": key})
             if result is not None and result != {}:

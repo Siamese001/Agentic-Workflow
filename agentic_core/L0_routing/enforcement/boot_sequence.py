@@ -23,6 +23,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 from agentic_core.discovery import AgentRegistry
 from agentic_core.L0_routing.enforcement.manifest_guardian_util import ManifestGuardian
 from agentic_core.L0_routing.scripts.compliance_gate_validator import check_compliance
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, emit_replay_key, emit_determinism_digest
 
 logger = logging.getLogger(__name__)
 
@@ -45,6 +46,12 @@ class BootSequence:
         Returns:
             Dict containing boot status, metrics, and any violations
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "BootSequence.execute_boot")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         boot_result = {
             "status": "success",
             "phases_completed": [],

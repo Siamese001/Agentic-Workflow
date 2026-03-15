@@ -13,6 +13,7 @@ import json
 import logging
 from dataclasses import dataclass
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 _LOW_RECALL_THRESHOLD = 0.6
@@ -37,6 +38,10 @@ class RAGChangePackage:
     snapshot_id: str
 
     def canonical_bytes(self) -> bytes:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RAGChangePackage.canonical_bytes")
+
         data = {
             "surface_name": self.surface_name,
             "parameter": self.parameter,
@@ -68,6 +73,10 @@ class RAGParameterProposer:
         config : dict
             Current RAG config with ``"similarity_cutoff"`` and ``"top_k"``.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RAGParameterProposer.propose")
+
         if not isinstance(metrics, dict) or not isinstance(config, dict):
             return None
         recall = metrics.get("rag_recall", 1.0)

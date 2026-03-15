@@ -20,6 +20,7 @@ from agentic_core.L0_routing.seams.layer_emission_seam import (
     assert_layer_may_emit,
 )
 from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, emit_replay_key, emit_determinism_digest
 
 # =============================================================================
 # §3.1 — RouteDecision Typed Artifact
@@ -249,6 +250,12 @@ class CapabilityDepletionTracker:
 
     @property
     def depletion_rate(self) -> float:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "CapabilityDepletionTracker.depletion_rate")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         if self.total_slots == 0:
             return 1.0
         return self.used_slots / self.total_slots

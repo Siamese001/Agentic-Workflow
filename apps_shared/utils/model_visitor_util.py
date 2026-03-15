@@ -7,6 +7,7 @@ Signal-based filtering with timestamped, prefixed logging
 import ast
 import logging
 import sys
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger = logging.getLogger("sovereign.models")
 handler = logging.StreamHandler(sys.stderr)
@@ -21,6 +22,10 @@ class ModelVisitor(ast.NodeVisitor):
     """Brief description of functionality and purpose."""
 
     def visit_ClassDef(self, node):
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ModelVisitor.visit_ClassDef")
+
         is_pydantic = any(
             isinstance(base, ast.Name) and base.id in {"BaseModel", "RootModel"} for base in node.bases
         )

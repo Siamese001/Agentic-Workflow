@@ -6,6 +6,7 @@ from typing import Any
 from agentic_core.interfaces.write_gateway import get_write_gateway
 from agentic_core.L0_routing.config import RUNTIME_STATE_JSON
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 def _get_write_gateway():
@@ -65,6 +66,10 @@ class RuntimeStateGuard:
         Updates metric.
         Persists immediately UNLESS inside a batch context.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "RuntimeStateGuard.increment_metric")
+
         metrics = self._state_cache.get("shared_alignment_metrics", {})
         current = metrics.get(key, 0)
         metrics[key] = current + value

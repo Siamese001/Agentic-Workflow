@@ -9,6 +9,7 @@ import logging
 from typing import Any
 
 from apps_rg.engines.base_resume_engine import BaseRGEngine
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger = logging.getLogger(__name__)
 
@@ -25,6 +26,10 @@ class SkillSimilarityTool(BaseRGEngine):
         """
         Calculate Jaccard similarity between skill sets.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SkillSimilarityTool.execute")
+
         set_a = {s.lower() for s in skills_a}
         set_b = {s.lower() for s in skills_b}
         if not set_a or not set_b:

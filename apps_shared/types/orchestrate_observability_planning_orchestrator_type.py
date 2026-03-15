@@ -10,6 +10,7 @@ import logging
 from abc import ABC, abstractmethod
 from dataclasses import field
 from enum import Enum
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -68,6 +69,10 @@ class OrchestrateObservabilityPlanningOrchestratorImpl(OrchestrateObservabilityP
 
     def process(self, input_data: dict[str, object]) -> OrchestrateObservabilityPlanningOrchestratorResult:
         """Process input following L5 architecture principles"""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "OrchestrateObservabilityPlanningOrchestratorImpl.process")
+
         self.logger.info(f"Processing {input_data}")
         self._validate_input(input_data)
         if not self.validate_safety(input_data):
@@ -154,6 +159,10 @@ class OrchestrateObservabilityPlanningOrchestratorFactory:
         safety_level: str = "strict",
     ) -> OrchestrateObservabilityPlanningOrchestratorInterface:
         """Create configured engine"""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "OrchestrateObservabilityPlanningOrchestratorFactory.create_processor")
+
         constraints = OrchestrateObservabilityPlanningOrchestratorConstraints(safety_level=safety_level)
         engine = OrchestrateObservabilityPlanningOrchestratorImpl(constraints)
         return OrchestrateObservabilityPlanningOrchestratorInterface(engine)

@@ -26,6 +26,7 @@ try:
 except ImportError:
     WEBSOCKETS_AVAILABLE: Any = False
     LOGGER.warning("websockets not available - live browser updates disabled")
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class L5Streamer:
@@ -57,6 +58,10 @@ class L5Streamer:
 
     async def start_streamer(self) -> Any:
         """Initialize the non-blocking stream worker and WebSocket server."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L6_OBSERVABILITY, "L5Streamer.start_streamer")
+
         if self._streamer_initialized:
             return
         _wg.ensure_dir(self.stream_dir)

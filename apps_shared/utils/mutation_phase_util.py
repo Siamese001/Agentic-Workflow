@@ -13,6 +13,7 @@ from enum import Enum
 from typing import Any
 
 import networkx as nx
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -43,6 +44,10 @@ class StateSnapshot:
         Args:
             target_graph: Graph to restore state to
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "StateSnapshot.restore_to")
+
         target_graph.clear()
         target_graph.add_nodes_from(self.graph_copy.nodes(data=True))
         target_graph.add_edges_from(self.graph_copy.edges(data=True))
@@ -78,6 +83,10 @@ class DAGSafetyManager:
             phase: Phase to attach hook to
             hook: Validation function
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "DAGSafetyManager.add_validation_hook")
+
         self._validation_hooks[phase].append(hook)
         logger.debug(f"Added validation hook for phase: {phase.value}")
 

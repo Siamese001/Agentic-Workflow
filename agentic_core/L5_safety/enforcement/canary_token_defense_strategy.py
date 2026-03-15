@@ -10,6 +10,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from agentic_core.prompt_governance.security.utils.injection_scan_util import scan_untrusted_text
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 LOGGER = logging.getLogger(__name__)
 Logger: Any = logging.getLogger(__name__)
@@ -50,6 +51,13 @@ class CanaryDefense:
         Returns:
             CanaryToken instance
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "CanaryDefense.generate_canary")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:CanaryDefense.generate_canary".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         token: Any = f"[CANARY_{secrets.token_hex(4)}]"
         canary: Any = CanaryToken(
             token=token,

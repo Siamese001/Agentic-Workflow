@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class SharingPolicy(Enum):
@@ -41,6 +42,10 @@ class DomainContext:
 
     def can_read_from(self, source_domain: str) -> bool:
         """Check if this domain can read patterns from source domain."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L1_REASONING, "DomainContext.can_read_from")
+
         if self.sharing_policy == SharingPolicy.NONE:
             return False
         if self.sharing_policy == SharingPolicy.BIDIRECTIONAL:

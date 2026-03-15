@@ -24,6 +24,7 @@ from agentic_core.L2_execution.UniversalWriteGateway import (
     UniversalWriteGateway,
     get_write_gateway,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 Logger = logging.getLogger(__name__)
 
@@ -59,6 +60,13 @@ class WriteGovernorMixin:
         Raises:
             ToolNotAllowedError: if the path/extension is blocked by the UWG.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "WriteGovernorMixin.governed_write")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:WriteGovernorMixin.governed_write".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         raw = data.encode("utf-8") if isinstance(data, str) else data
         result = self._get_uwg().write_file(str(path), raw)
         Logger.debug("[WriteGovernorMixin] governed_write: %s -> %s", path, type(result).__name__)

@@ -8,6 +8,7 @@ to prevent circular dependencies and architectural violations.
 import ast
 import sys
 from pathlib import Path
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 FORBIDDEN_IMPORTS = {
     "agentic_core.L1_cognition",
@@ -28,6 +29,10 @@ class ImportViolationVisitor(ast.NodeVisitor):
 
     def visit_Import(self, node):
         """Check 'import x.y.z' statements."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ImportViolationVisitor.visit_Import")
+
         for alias in node.names:
             import_path = alias.name
             self._check_import(import_path, node.lineno)

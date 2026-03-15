@@ -8,6 +8,7 @@ from __future__ import annotations
 import statistics
 from dataclasses import dataclass
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass
@@ -40,6 +41,10 @@ class AnalysisMixin:
         Returns:
             Dictionary with statistical analysis of metrics
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "AnalysisMixin.analyze_metrics")
+
         results = {}
         for key in metric_keys:
             values = [item.get(key) for item in data if key in item and item[key] is not None]

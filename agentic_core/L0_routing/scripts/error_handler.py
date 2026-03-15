@@ -17,6 +17,7 @@ from .execution import (
     WorkflowStep,
     get_strategy,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, emit_replay_key, emit_determinism_digest
 
 
 @dataclass
@@ -48,6 +49,12 @@ class ErrorHandler:
         self, error: Exception, context: WorkflowContext, recovery_type: str = "retry"
     ) -> WorkflowResult:
         """Handle workflow error with recovery strategy."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "ErrorHandler.handle_error")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         strategy = self.recovery_strategies.get(recovery_type, self._abort_strategy)
         return await strategy(error, context)
 
@@ -126,6 +133,12 @@ class UnifiedWorkflowEngine:
         Returns:
             Workflow result
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "UnifiedWorkflowEngine.execute")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         workflow_id = str(uuid.uuid4())
         start_time = get_clock().now_epoch()
         self.metrics.total_workflows += 1

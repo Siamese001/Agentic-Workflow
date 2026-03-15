@@ -4,6 +4,7 @@ ValidationContextManager - L4 State Context with cache-First Reflex
 
 from pathlib import Path
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class ValidationContextManager(CachedStateLedger):
@@ -20,6 +21,10 @@ class ValidationContextManager(CachedStateLedger):
         Get validation context with cache-first optimization.
         Returns cached context if available, computes and caches otherwise.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ValidationContextManager.get_context")
+
         cached: Any = self.get_cached_validation_context(key)
         if cached:
             print(f"   [CACHE HIT] Validation context '{key}'")

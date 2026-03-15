@@ -12,6 +12,7 @@ from typing import Any, Callable
 
 from .base import GenerationMetric
 from .groundedness import _token_f1, _tokenize
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class AnswerCorrectness(GenerationMetric):
@@ -39,6 +40,10 @@ class AnswerCorrectness(GenerationMetric):
         Returns:
             Correctness score in [0, 1]
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "AnswerCorrectness.compute")
+
         if not prediction:
             return 0.0
         if not ground_truth:

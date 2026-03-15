@@ -380,13 +380,6 @@ class ForwardRollingFacade:
             return self._monitor.get_overall_health()
         return HealthStatus.HEALTHY
 
-def rollback(self) -> bool:
-    """Rollback to previous configuration."""
-    return self._config.rollback()
-                for c in checks
-            ]
-        return []
-
     def get_metrics(self) -> dict[str, Any]:
         """Get comprehensive metrics from all components."""
         metrics = {

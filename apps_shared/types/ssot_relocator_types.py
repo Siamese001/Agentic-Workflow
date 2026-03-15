@@ -23,6 +23,7 @@ from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
     ARCHIVES_DIR,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -62,6 +63,10 @@ class EnforcementReport:
     @property
     def success_rate(self) -> float:
         """Calculate success rate percentage."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "EnforcementReport.success_rate")
+
         if self.total_operations == 0:
             return 100.0
         return (self.successful / self.total_operations) * 100
@@ -118,6 +123,10 @@ class SSOTRelocator:
         Returns:
             EnforcementReport with operation results
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SSOTRelocator.relocate_orphans")
+
         report = EnforcementReport()
 
         logger.info(f"{'[DRY-RUN] ' if self.dry_run else ''}Starting orphan relocation")

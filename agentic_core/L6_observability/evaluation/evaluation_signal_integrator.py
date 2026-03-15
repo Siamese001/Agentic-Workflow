@@ -24,6 +24,7 @@ from agentic_core.L6_observability.evaluation.evaluation_record import (
     evaluate_and_attach,
 )
 from agentic_core.runtime.execution_trace import get_active_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -91,6 +92,10 @@ class EvaluationSignalIntegrator:
 
     def subscribe(self, layer: str, callback: Callable[[EvalSignal], None]) -> None:
         """Register a callback to receive signals destined for ``layer``."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L6_OBSERVABILITY, "EvaluationSignalIntegrator.subscribe")
+
         self._subscribers.setdefault(layer, []).append(callback)
         logger.debug("EVAL_INTEGRATOR subscribe layer=%s", layer)
 

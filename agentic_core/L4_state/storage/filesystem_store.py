@@ -20,6 +20,7 @@ from .persistent_store import (
     _canonicalize_payload,
     _sanitize_id,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class FileSystemStore:
@@ -94,6 +95,10 @@ class FileSystemStore:
             ValueError: If artifact validation fails
             OSError: If filesystem operation fails
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "FileSystemStore.put")
+
         self._validate_artifact(artifact)
 
         # Get artifact directory and next version

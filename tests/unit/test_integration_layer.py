@@ -264,7 +264,7 @@ class TestIntegrationBridge:
 
         def test_handler(x, y):
             return x + y
-    
+
         endpoint = ServiceEndpoint(
             name="adder",
             domain=AppDomain.LIC,

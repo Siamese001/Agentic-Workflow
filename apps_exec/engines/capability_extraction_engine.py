@@ -16,6 +16,7 @@ from dataclasses import dataclass, field
 from apps_exec.engines.base_exec_engine import BaseExecEngine
 from apps_exec.engines.ingestion_engine import IngestionResult
 from apps_exec.types.exec_types import CapabilityEvidence
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 _log = logging.getLogger(__name__)
 
@@ -77,6 +78,10 @@ class CapabilityExtractionEngine(BaseExecEngine):
         Returns:
             ExtractionResult with deduplicated capabilities and anchors.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "CapabilityExtractionEngine.execute")
+
         seen_labels: set[str] = set()
         capabilities: list[CapabilityEvidence] = []
         all_anchors: list[str] = []

@@ -10,6 +10,7 @@ VIOLATION: NO MAGIC STRINGS. ALL PROMPTS/CONFIGS MUST BE ACCESSED VIA THIS REGIS
 """
 
 from pydantic import BaseModel, Field, field_validator
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class PromptTemplate(BaseModel):
@@ -20,6 +21,10 @@ class PromptTemplate(BaseModel):
     @field_validator("template")
     @classmethod
     def validate_placeholders(cls, v):
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PromptTemplate.validate_placeholders")
+
         if "{" in v and "}" not in v:
             raise ValueError(f"Potentially broken placeholder in prompt: {v[:50]}...")
         return v

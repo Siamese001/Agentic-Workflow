@@ -8,6 +8,7 @@ retrieval results into a single ranked candidate list.
 from __future__ import annotations
 
 from .interfaces import Document, ICandidateFusion
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class ReciprocalRankFusion(ICandidateFusion):
@@ -32,6 +33,10 @@ class ReciprocalRankFusion(ICandidateFusion):
         Returns:
             Merged list sorted by descending RRF score
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ReciprocalRankFusion.merge")
+
         rrf_scores: dict[str, float] = {}
         doc_map: dict[str, Document] = {}
         for rank, doc in enumerate(lexical_results, start=1):
@@ -68,6 +73,10 @@ class ScoreFusion(ICandidateFusion):
         Returns:
             Merged list sorted by descending average score
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ScoreFusion.merge")
+
 
         def _normalize(docs: list[Document]) -> dict[str, float]:
             if not docs:

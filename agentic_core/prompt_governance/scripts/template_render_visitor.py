@@ -8,6 +8,7 @@ Uses AST analysis to detect template rendering calls and validate context variab
 import ast
 import sys
 from pathlib import Path
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 def extract_template_schema(template_path: Path, base_dir: Path) -> dict[str, list[str]]:
@@ -42,6 +43,10 @@ class TemplateRenderVisitor(ast.NodeVisitor):
         self.current_class = None
 
     def visit_FunctionDef(self, node):
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "TemplateRenderVisitor.visit_FunctionDef")
+
         old_function = self.current_function
         self.current_function = node.name
         self.generic_visit(node)

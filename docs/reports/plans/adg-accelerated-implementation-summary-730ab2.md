@@ -36,7 +36,7 @@
 
 ## Next Steps
 - Implement ADG acceleration for Duplicate SSOT Guardian
-- Implement ADG acceleration for Classification Compliance Guardian  
+- Implement ADG acceleration for Classification Compliance Guardian
 - Implement ADG acceleration for Self-Integrity Guardian
 - Add performance benchmarking tests
 - Update documentation

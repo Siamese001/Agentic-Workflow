@@ -6,6 +6,7 @@ import hashlib
 import json
 from collections import OrderedDict
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class ReasoningCache:
@@ -47,6 +48,10 @@ class ReasoningCache:
         Returns:
             Cached result or None
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L1_REASONING, "ReasoningCache.get")
+
         key = self._make_key(problem, context, params)
         if key in self.cache:
             self.cache.move_to_end(key)
@@ -125,6 +130,10 @@ class ObservationCache:
         Returns:
             Cached observation or None
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L1_REASONING, "ObservationCache.get")
+
         key = self._make_key(action, context_hash)
         if key in self.cache:
             self.cache.move_to_end(key)

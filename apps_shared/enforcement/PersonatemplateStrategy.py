@@ -1,4 +1,5 @@
 """Functional Persona Templates - Clean prompts without legacy K-node references.
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 This module provides sanitized prompt templates that use functional personas
 instead of numbered nodes. All references to K.X have been eliminated.
@@ -182,6 +183,10 @@ Remember: Your resumes open doors to opportunities. Every word must serve the ca
         Returns:
             Formatted prompt string
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PersonaTemplate.get_prompt")
+
         persona = cls.PERSONAS.get(role)
         if not persona:
             raise ValueError(f"No persona defined for role: {role}")
@@ -294,6 +299,10 @@ class PromptSanitizer:
         Returns:
             Sanitized prompt
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PromptSanitizer.sanitize_prompt")
+
         import re
 
         sanitized = prompt

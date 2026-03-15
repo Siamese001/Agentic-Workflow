@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import hashlib
 from dataclasses import dataclass
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class ParentVersionNotFound(Exception):
@@ -72,6 +73,10 @@ class L4VersionStore:
         ParentVersionNotFound
             If ``parent_version_id`` is not ``None`` and not in the store.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "L4VersionStore.commit_change_package")
+
         raw = package.canonical_bytes()
         version_id = hashlib.sha256(raw).hexdigest()
         if version_id in self._versions:

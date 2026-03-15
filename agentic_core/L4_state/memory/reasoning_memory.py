@@ -5,6 +5,7 @@ import hashlib
 import time
 from dataclasses import dataclass, field
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass
@@ -54,6 +55,10 @@ class ReasoningMemory:
     @property
     def semantic_memory(self):
         """Lazy load semantic memory."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "ReasoningMemory.semantic_memory")
+
         if self._semantic_memory is None and self.semantic_offload:
             try:
                 from .SemanticMemory import semantic_memory

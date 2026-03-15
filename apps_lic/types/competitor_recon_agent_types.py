@@ -12,6 +12,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -146,6 +147,10 @@ class MockIntelProvider(IntelProvider):
 
     def get_competitors(self, target_company: str, industry: str) -> list[str]:
         """Get mock competitors for target company."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "MockIntelProvider.get_competitors")
+
         industry_lower = industry.lower()
         return self.mock_competitors.get(
             industry_lower, ["Market Leader A", "Market Leader B", "Market Leader C"]

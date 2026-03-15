@@ -14,6 +14,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from agentic_core.L4_state.types.retrieval_anchor_types import RetrievalAnchor
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 _SCHEMA_VERSION: int = 1
 
@@ -62,6 +63,10 @@ class CitationBundle:
         Anchors sorted by (source_doc_id, chunk_id, char_start).
         Volatile fields (retrieved_at_utc) excluded from hash computation.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "CitationBundle.canonical_bytes")
+
         doc: dict[str, Any] = {
             "anchors": [
                 {

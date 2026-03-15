@@ -4,6 +4,7 @@ from __future__ import annotations
 import logging
 from datetime import datetime
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class SelfDiagnosisMixin:
@@ -24,6 +25,10 @@ class SelfDiagnosisMixin:
         Perform full self-diagnostic cycle.
         Returns structured report for L6 observability and proactive healing.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SelfDiagnosisMixin.self_diagnose")
+
         diagnosis = {
             "diagnosis_timestamp": datetime.utcnow().isoformat() + "Z",
             "agent": self.__class__.__name__,

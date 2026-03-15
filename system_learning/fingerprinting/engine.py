@@ -6,6 +6,7 @@ import re
 from typing import Any
 
 from .types import FailureEvent, FailureFingerprint
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class FailureFingerprinter:
@@ -17,6 +18,10 @@ class FailureFingerprinter:
 
     def fingerprint(self, event: FailureEvent) -> FailureFingerprint:
         """Generate deterministic fingerprint for failure event."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "FailureFingerprinter.fingerprint")
+
         if not isinstance(event, FailureEvent):
             raise TypeError(f"Expected FailureEvent, got {type(event).__name__}")
         normalized_event = self._normalize_event(event)

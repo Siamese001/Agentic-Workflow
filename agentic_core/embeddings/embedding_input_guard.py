@@ -7,6 +7,7 @@ is passed to an embedding model.
 import hashlib
 import re
 from dataclasses import dataclass
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class EmbeddingInputViolation(ValueError):
@@ -48,6 +49,10 @@ class EmbeddingInputGuard:
     @classmethod
     def guard(cls, text: str, field_name: str) -> GuardedText:
         """Guard and redact input text before embedding."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "EmbeddingInputGuard.guard")
+
         if field_name not in cls.ALLOWED_FIELDS:
             raise EmbeddingInputViolation(f"Field '{field_name}' is not allowed for embedding.")
 

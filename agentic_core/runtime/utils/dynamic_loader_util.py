@@ -8,6 +8,7 @@ between base agents and L5 components.
 import importlib
 import logging
 from typing import Any, TypeVar
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 T = TypeVar("T")
@@ -49,6 +50,10 @@ class DynamicLoader:
         Returns:
             Class type or None if loading fails
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "DynamicLoader.load_class")
+
         cache_key = f"{module_path}:{class_name}"
         if cache_key in cls._cache:
             return cls._cache[cache_key]

@@ -17,6 +17,7 @@ from .circuit_breaker import CircuitBreakerConfig, get_circuit_breaker_registry
 from .core.event_bus import EventBus, EventType, SystemEvent, get_event_bus
 from .dead_letter_queue import FailureReason, get_dead_letter_queue
 from .retry_policy import RetryConfig, get_retry_executor
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -43,6 +44,10 @@ class HardenedEventBus:
 
     async def initialize(self) -> None:
         """Initialize all components."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HardenedEventBus.initialize")
+
         if not self.event_bus:
             self.event_bus = await get_event_bus()
         if not self.bulkhead_manager:

@@ -5,6 +5,7 @@ semantic_cache_mixin - Unified Semantic cache Access
 """
 
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class SemanticCacheMixin:
@@ -31,6 +32,10 @@ class SemanticCacheMixin:
     @property
     def semantic_cache(self):
         """Return canonical SemanticCacheManager singleton (no instance caching)."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SemanticCacheMixin.semantic_cache")
+
         from agentic_core.L4_state.memory.semantic_cache_manager import SemanticCacheManager
 
         return SemanticCacheManager.get_instance()

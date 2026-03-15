@@ -15,6 +15,7 @@ try:
 except ImportError:
     openai = None
     OpenAI = None
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 _MODEL_DIMENSIONS = {
     "text-embedding-3-large": 1536,
     "text-embedding-3-small": 1536,
@@ -59,6 +60,10 @@ class OpenAIEmbedder:
         Returns:
             List of embedding vectors as lists of floats.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "OpenAIEmbedder.embed_batch")
+
         normalized = [t.replace("\r\n", " ").replace("\n", " ").replace("\r", " ") for t in texts]
         response = self._client.embeddings.create(model=self.model, input=normalized)
         return [item.embedding for item in response.data]
@@ -93,6 +98,10 @@ class BGEEmbedder:
         Returns:
             List of embedding vectors as lists of floats.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "BGEEmbedder.embed_batch")
+
         from agentic_core.L2_execution.healers.bmg_embedding_similarity import bmg_embed_text
 
         results = []

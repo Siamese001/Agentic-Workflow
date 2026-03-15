@@ -20,6 +20,7 @@ from collections.abc import Awaitable, Callable
 from typing import Any
 
 from agentic_core.L3_orchestration.types.reflexion_types import ReflexionCritique, ReflexionMemory
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger = logging.getLogger(__name__)
 
@@ -65,6 +66,10 @@ class ReflexionEngine:
                 ``iterations`` — number of iterations taken
                 ``memory``     — ReflexionMemory instance with full critique history
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ReflexionEngine.run")
+
         memory = ReflexionMemory(task=task)
         response: str | None = None
         final_critique: ReflexionCritique | None = None

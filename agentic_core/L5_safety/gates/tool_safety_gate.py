@@ -27,6 +27,7 @@ from agentic_core.L5_safety.enforcement.policy_enforcement_point import (
     get_policy_enforcement_point,
 )
 from agentic_core.runtime.execution_trace import get_active_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -122,6 +123,13 @@ class ToolSafetyGate:
         Performs policy enforcement point check and sandbox validation.
         Returns a :class:`ToolInvocationRecord`.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "ToolSafetyGate.check_tool")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:ToolSafetyGate.check_tool".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         effective_risk = self._classify(tool_name, risk_level)
         trace_id = self._trace_id()
 

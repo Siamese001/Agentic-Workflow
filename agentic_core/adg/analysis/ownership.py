@@ -15,6 +15,7 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass
 from typing import Literal
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Owner = Literal["platform", "apps_rg", "apps_lic", "apps_shared", "safety", "observability", "unknown"]
 Criticality = Literal["low", "medium", "high"]
@@ -88,6 +89,10 @@ class OwnershipRegistry:
     @classmethod
     def from_scan_result(cls, result: object) -> OwnershipRegistry:
         """Build registry from a ScanResult's module list."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "OwnershipRegistry.from_scan_result")
+
         reg = cls()
         for mod in getattr(result, "modules", []):
             reg._map[mod] = _infer_ownership(mod)

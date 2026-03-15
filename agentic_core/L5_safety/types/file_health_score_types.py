@@ -10,6 +10,7 @@ from typing import Any
 from agentic_core.runtime.types.anomaly_report import AnomalyReport
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 
 @dataclass
@@ -69,6 +70,13 @@ class AtomicBlackboard(SovereignBaseAgent):
         self.redis_fallback: dict[str, Any] = {}
 
     def acquire_lease(self, file_path: str, agent_name: str) -> HealingLease | None:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "AtomicBlackboard.acquire_lease")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:AtomicBlackboard.acquire_lease".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         lock_key = f"lock:{file_path}"
         lease_id = f"{agent_name}:{time.time()}"
         acquired_at = time.time()

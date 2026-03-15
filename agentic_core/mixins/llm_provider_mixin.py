@@ -10,6 +10,7 @@ from typing import TYPE_CHECKING, Any, Literal
 
 if TYPE_CHECKING:
     from agentic_core.L2_execution.enforcement.SovereignLLMGateway import SovereignLLMGateway
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Provider = Literal["openai", "anthropic", "google"]
 
@@ -38,6 +39,10 @@ class LLMProviderMixin:
     @property
     def llm_gateway(self) -> SovereignLLMGateway:
         """Lazy-load LLM gateway singleton."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "LLMProviderMixin.llm_gateway")
+
         if self._llm_gateway is None:
             self._llm_gateway = _get_llm_gateway()
         return self._llm_gateway

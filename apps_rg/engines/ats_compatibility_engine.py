@@ -15,6 +15,7 @@ import re
 from typing import Any
 
 from apps_rg.engines.base_rg_engine import BaseRGEngine
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger = logging.getLogger(__name__)
 
@@ -39,6 +40,10 @@ class ATSCompatibilityEngine(BaseRGEngine):
         """
         Validate final content against ATS parsing rules.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ATSCompatibilityEngine.execute")
+
         data = (
             self.ctx.buffer.read("ranked_content")
             or self.ctx.buffer.read("optimized_content")

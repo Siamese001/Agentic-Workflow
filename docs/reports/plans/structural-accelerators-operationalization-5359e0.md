@@ -12,7 +12,7 @@ Plan to transform passive structural artifacts into active control-plane intelli
 - Current usage: CLI queries, some guardian scripts
 - Status: Functional but underutilized
 
-**Structure Blueprint Config** ✅ ACTIVE  
+**Structure Blueprint Config** ✅ ACTIVE
 - Location: `agentic_core/L5_safety/config/structure_blueprint/`
 - Components: Territory definitions, artifact patterns, SSOT rules
 - Current usage: Guardian enforcement, CI validation
@@ -463,7 +463,7 @@ execution-validator --critical-only
 
 ### Performance Overhead
 **Risk**: Graph construction and analysis may slow down CI
-**Mitigation**: 
+**Mitigation**:
 - Cache graphs between runs
 - Incremental updates only
 - Parallel analysis

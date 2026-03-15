@@ -19,6 +19,7 @@ from ..schemas.evaluation_result_schema import (
     EvaluationReport,
 )
 from .offline_eval_runner import GenerationFn, OfflineEvaluationRunner, RetrievalFn
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class SystemConfig:
@@ -70,6 +71,10 @@ class ReplayEvaluationRunner:
         Returns:
             DeltaReport with metric_deltas = scores_b - scores_a
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ReplayEvaluationRunner.run")
+
         runner_a = OfflineEvaluationRunner(
             metrics=self.metrics,
             retrieval_fn=config_a.retrieval_fn,

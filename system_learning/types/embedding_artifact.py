@@ -9,6 +9,7 @@ import hashlib
 import json
 from dataclasses import dataclass, field
 from typing import Literal
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass(frozen=True)
@@ -57,6 +58,10 @@ class EmbeddingArtifact:
         Returns:
             Canonical bytes representation of the artifact.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "EmbeddingArtifact.canonical_bytes")
+
         data = {
             "namespace": self.namespace,
             "seed_index_version_hash": self.seed_index_version_hash,

@@ -6,6 +6,7 @@ safety domain agents while preserving stateful orchestration locally.
 """
 
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class SafetyAnalysisMixin:
@@ -87,6 +88,10 @@ class SafetyAnalysisMixin:
         Returns:
             True if pattern matches target
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SafetyAnalysisMixin.matches")
+
         if not pattern or not target:
             return False
         if "*" in pattern:
@@ -114,6 +119,10 @@ class HealingMixin:
         Returns:
             Healing result dictionary
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HealingMixin.standard_heal")
+
         result = {
             "file_path": file_path,
             "issue_type": issue_type,

@@ -10,6 +10,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 from typing import Protocol
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class FreezeStateReader(Protocol):
@@ -38,6 +39,10 @@ class JsonFileBackedFreezeReader:
 
     def is_frozen(self) -> bool:
         """Return True if the runtime state file declares a freeze."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "JsonFileBackedFreezeReader.is_frozen")
+
         try:
             text = self._path.read_text(encoding="utf-8", errors="replace")
             data: dict = json.loads(text)

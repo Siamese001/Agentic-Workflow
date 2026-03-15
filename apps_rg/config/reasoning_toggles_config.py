@@ -13,6 +13,7 @@ overrides or a get_toggles() factory here.
 from __future__ import annotations
 
 from pydantic import BaseModel, Field, field_validator
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 MAX_RETRIES = 3
@@ -51,6 +52,10 @@ class ReasoningToggles(BaseModel):
     @field_validator("tot_branches")
     @classmethod
     def validate_branches(cls, v: int) -> int:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ReasoningToggles.validate_branches")
+
         if not 1 <= v <= 5:
             raise ValueError(f"tot_branches must be between 1 and 5. Got {v}.")
         return v

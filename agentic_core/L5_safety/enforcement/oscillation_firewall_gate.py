@@ -20,6 +20,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 
 class OscillationFirewallTripped(RuntimeError):
@@ -71,6 +72,13 @@ class OscillationFirewall:
 
         This is the non-raising variant — use for observation only.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "OscillationFirewall.record_tier_decision")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:OscillationFirewall.record_tier_decision".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         if tier not in self._tier_histories:
             self._tier_histories[tier] = []
         self._tier_histories[tier].append(cycle)

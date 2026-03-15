@@ -19,6 +19,7 @@ import time
 from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger = logging.getLogger(__name__)
 
@@ -39,6 +40,10 @@ class PerformanceMetrics:
     @property
     def avg_time_ms(self) -> float:
         """Calculate average execution time."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PerformanceMetrics.avg_time_ms")
+
         if self.call_count == 0:
             return 0.0
         return self.total_time_ms / self.call_count
@@ -110,6 +115,10 @@ class MetricsMixin:
 
     def record_timing(self, operation_name: str, duration_ms: float, error: bool = False) -> None:
         """Record timing for an operation."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "MetricsMixin.record_timing")
+
         if not self._metrics_config.enabled:
             return
         with self._metrics_lock:

@@ -112,7 +112,7 @@ gravity_violations = scan_layer_gravity_adg(adg_query_engine)
 ## 🎯 Success Criteria Met
 
 ✅ **Eliminated filesystem grunt work** - No more `os.walk()` or individual `ast.parse()` calls
-✅ **Improved accuracy** - ADG finds more violations than standard approach  
+✅ **Improved accuracy** - ADG finds more violations than standard approach
 ✅ **ADG API integration** - Uses pre-built indexes (G1, G3)
 ✅ **Fail-fast design** - ADG failures fail guardian tests (no fallback)
 ✅ **Deterministic results** - All evidence properly sorted and canonical

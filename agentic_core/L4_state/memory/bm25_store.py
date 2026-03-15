@@ -16,6 +16,7 @@ except ImportError as _err:
         "rank-bm25 is required for this module. Install with: pip install -e '.[infra]'"
     ) from _err
 from agentic_core.L2_execution.config.hybrid_retriever_config import ASTAwareTokenizer
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 _tokenizer = ASTAwareTokenizer()
 
@@ -30,6 +31,10 @@ class Bm25Store:
 
     def add_documents(self, docs: list[dict]) -> None:
         """Add or update documents."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "Bm25Store.add_documents")
+
         self.documents.extend(docs)
         self._build_index()
 

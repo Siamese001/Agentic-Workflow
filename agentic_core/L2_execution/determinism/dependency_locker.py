@@ -17,6 +17,7 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.utils.canonical_json_util import CanonicalJSON
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 _REQUIREMENTS_PATH = Path("requirements.txt")
 _LOCK_FILE_PATH = Path("data/dependencies/lock_hash.json")
@@ -28,6 +29,13 @@ class DependencyLocker:
     @classmethod
     def generate_lock_hash(cls, requirements_path: Path = _REQUIREMENTS_PATH) -> str:
         """Return SHA-256 hash of pinned dependencies from *requirements_path*."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "DependencyLocker.generate_lock_hash")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:DependencyLocker.generate_lock_hash".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         if not requirements_path.exists():
             raise FileNotFoundError(f"DependencyLocker: requirements file not found: {requirements_path}")
         dependencies: dict[str, str] = {}

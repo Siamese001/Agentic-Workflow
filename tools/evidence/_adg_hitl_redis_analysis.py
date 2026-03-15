@@ -5,9 +5,9 @@ import json
 
 def query_redis():
     """Query ADG Redis cache for HITL and system_learning integration points."""
-    
+
     r = redis.Redis(host='localhost', port=6379, db=0, decode_responses=True)
-    
+
     # Check cache status
     meta = r.hgetall('adg:meta')
     print("="*80)
@@ -17,7 +17,7 @@ def query_redis():
     print(f"Nodes: {meta.get('node_count')}")
     print(f"Edges: {meta.get('edge_count')}")
     print()
-    
+
     # Query 1: Find HITLMixin node
     print("="*80)
     print("QUERY 1: HITLMixin Node")
@@ -30,7 +30,7 @@ def query_redis():
             print(f"  {node.get('adg_name')} | {node.get('entity_type')} | {node.get('layer')}")
             print(f"    Path: {node.get('resolved_path')}")
     print(f"Found {len(hitl_nodes)} HITL nodes\n")
-    
+
     # Query 2: Find system_learning confidence/scoring classes
     print("="*80)
     print("QUERY 2: System Learning Confidence/Scoring Classes")
@@ -46,7 +46,7 @@ def query_redis():
                 print(f"  {adg_name}")
                 print(f"    Type: {node.get('entity_type')} | Path: {node.get('resolved_path')}")
     print(f"Found {len(sl_confidence_nodes)} confidence/scoring classes\n")
-    
+
     # Query 3: Find system_learning adapter patterns
     print("="*80)
     print("QUERY 3: System Learning Adapter Patterns")
@@ -60,7 +60,7 @@ def query_redis():
             print(f"  {adg_name}")
             print(f"    Path: {node.get('resolved_path')}")
     print(f"Found {len(sl_adapter_nodes)} adapter classes\n")
-    
+
     # Query 4: Find system_learning proposer patterns
     print("="*80)
     print("QUERY 4: System Learning Proposer Patterns")
@@ -74,7 +74,7 @@ def query_redis():
             print(f"  {adg_name}")
             print(f"    Path: {node.get('resolved_path')}")
     print(f"Found {len(sl_proposer_nodes)} proposer classes\n")
-    
+
     # Query 5: Find Approval/Risk types
     print("="*80)
     print("QUERY 5: HITL Approval/Risk Types")
@@ -87,7 +87,7 @@ def query_redis():
             approval_nodes.append(node)
             print(f"  {adg_name} | {node.get('entity_type')} | {node.get('layer')}")
     print(f"Found {len(approval_nodes)} approval/risk types\n")
-    
+
     # Query 6: Find system_learning outcome/feedback patterns
     print("="*80)
     print("QUERY 6: System Learning Outcome/Feedback Patterns")
@@ -102,7 +102,7 @@ def query_redis():
                 print(f"  {adg_name}")
                 print(f"    Type: {node.get('entity_type')} | Path: {node.get('resolved_path')}")
     print(f"Found {len(sl_outcome_nodes)} outcome/feedback classes\n")
-    
+
     # Query 7: Find ChangePackage patterns (for recalibration proposals)
     print("="*80)
     print("QUERY 7: System Learning ChangePackage Patterns")
@@ -117,11 +117,11 @@ def query_redis():
                 print(f"  {adg_name}")
                 print(f"    Path: {node.get('resolved_path')}")
     print(f"Found {len(change_package_nodes)} change package classes\n")
-    
+
     print("="*80)
     print("ANALYSIS COMPLETE")
     print("="*80)
-    
+
     return {
         'hitl_nodes': hitl_nodes,
         'sl_confidence_nodes': sl_confidence_nodes,

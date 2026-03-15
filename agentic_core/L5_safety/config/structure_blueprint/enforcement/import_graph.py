@@ -12,6 +12,7 @@ from __future__ import annotations
 import ast
 import os
 from pathlib import Path
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 # Internal roots that constitute "our code" for import resolution.
 INTERNAL_ROOTS: frozenset[str] = frozenset(
@@ -88,6 +89,13 @@ class ImportGraph:
 
     def files_importing_module(self, module_prefix: str) -> set[str]:
         """All files that import from a module matching the prefix."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "ImportGraph.files_importing_module")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:ImportGraph.files_importing_module".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         result: set[str] = set()
         for mod, files in self._reverse.items():
             if mod == module_prefix or mod.startswith(module_prefix + "."):

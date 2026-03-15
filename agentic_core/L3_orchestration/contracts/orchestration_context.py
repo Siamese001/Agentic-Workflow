@@ -20,6 +20,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from agentic_core.L2_execution.providers import get_clock
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -61,6 +62,10 @@ class OrchestrationContext:
         metadata: dict[str, Any] | None = None,
     ) -> OrchestrationContext:
         """Factory: create a context with deterministic routing_decision_id."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "OrchestrationContext.create")
+
         if not parent_trace_id:
             try:
                 from agentic_core.runtime.trace_context import get_trace_context

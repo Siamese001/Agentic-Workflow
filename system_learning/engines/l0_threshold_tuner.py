@@ -23,6 +23,7 @@ from system_learning.validators.dampening import (
     assert_cooldown_ok,
     assert_min_sample_size,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -68,6 +69,10 @@ class L0ThresholdChangePackage:
 
     def canonical_bytes(self) -> bytes:
         """Return deterministic canonical byte representation."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "L0ThresholdChangePackage.canonical_bytes")
+
         data = {
             "surface_name": self.surface_name,
             "old_value": self.old_value,
@@ -212,6 +217,10 @@ class L0ProposerAdapter:
         Extracts ``snapshot_id`` from the snapshot object and delegates
         to ``propose_l0_threshold_changes()``.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "L0ProposerAdapter.propose")
+
         snapshot_id = getattr(snapshot, "snapshot_id", "unknown")
 
         # Normalise metrics: must be dict[str, float]

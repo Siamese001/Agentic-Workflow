@@ -16,6 +16,7 @@ import re
 from typing import Any
 
 from agentic_core.evaluation.metrics.base import EvaluationMetric
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 _FAITHFULNESS_THRESHOLD = 0.75
 _DEFAULT_EMBED_DIM = 1024
@@ -72,6 +73,10 @@ class FaithfulnessMetric(EvaluationMetric):
         return "faithfulness"
 
     def compute(self, prediction: str, ground_truth: Any = None, context: list[str] | None = None) -> float:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "FaithfulnessMetric.compute")
+
         if not prediction or not context:
             return 0.0
         sentences = _split_sentences(prediction)
@@ -106,6 +111,10 @@ class AnswerRelevancyMetric(EvaluationMetric):
             ground_truth: The query string (repurposed as query for relevancy scoring).
             context: Ignored.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "AnswerRelevancyMetric.compute")
+
         if not prediction or not ground_truth:
             return 0.0
         query_emb = self._embed(ground_truth)
@@ -134,6 +143,10 @@ class ContextPrecisionMetric(EvaluationMetric):
             ground_truth: Ground-truth relevant chunk IDs.
             context: Ignored.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ContextPrecisionMetric.compute")
+
         if not prediction:
             return 0.0
         retrieved = list(prediction)
@@ -160,6 +173,10 @@ class GroundednessMetric(EvaluationMetric):
         return "groundedness"
 
     def compute(self, prediction: str, ground_truth: Any = None, context: list[str] | None = None) -> float:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "GroundednessMetric.compute")
+
         if not prediction or not context:
             return 0.0
         claims = _split_sentences(prediction)

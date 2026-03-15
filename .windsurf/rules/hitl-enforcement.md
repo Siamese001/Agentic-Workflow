@@ -1,8 +1,8 @@
 # HITL (Human-In-The-Loop) Enforcement Rule
 
-**Trigger**: always_on  
-**Layer**: Windsurf (AI-time behavioral)  
-**Type**: Behavioural  
+**Trigger**: always_on
+**Layer**: Windsurf (AI-time behavioral)
+**Type**: Behavioural
 **Priority**: Constitutional
 
 ---
@@ -77,11 +77,11 @@ ask_user_question(
 
 **REQUIRED PROMPT**:
 > I've identified N approaches for `<task>`:
-> 
-> **Option A**: `<approach>` — `<trade-offs>`  
-> **Option B**: `<approach>` — `<trade-offs>`  
-> **Option C**: `<approach>` — `<trade-offs>`  
-> 
+>
+> **Option A**: `<approach>` — `<trade-offs>`
+> **Option B**: `<approach>` — `<trade-offs>`
+> **Option C**: `<approach>` — `<trade-offs>`
+>
 > Which approach should I use?
 
 **EXAMPLES**:
@@ -96,11 +96,11 @@ ask_user_question(
 
 **REQUIRED PROMPT**:
 > This refactoring can be scoped in N ways:
-> 
-> **Option A**: Minimal — `<files>` — `<risk level>`  
-> **Option B**: Moderate — `<files>` — `<risk level>`  
-> **Option C**: Comprehensive — `<files>` — `<risk level>`  
-> 
+>
+> **Option A**: Minimal — `<files>` — `<risk level>`
+> **Option B**: Moderate — `<files>` — `<risk level>`
+> **Option C**: Comprehensive — `<files>` — `<risk level>`
+>
 > Which scope should I target?
 
 **EXAMPLES**:
@@ -115,12 +115,12 @@ ask_user_question(
 
 **REQUIRED PROMPT** (per existing `/antipattern-hitl-gate`):
 > This change will introduce N new `<category>` instance(s) in `<file>`.
-> 
-> **Option A**: Narrow the exception type — no guardian comment needed  
-> **Option B**: Add `# guardian: allow-<category>` — exempt from blocking  
-> **Option C**: Restructure to avoid the pattern entirely  
-> **Option D**: Proceed as-is and accept the ratchet increase  
-> 
+>
+> **Option A**: Narrow the exception type — no guardian comment needed
+> **Option B**: Add `# guardian: allow-<category>` — exempt from blocking
+> **Option C**: Restructure to avoid the pattern entirely
+> **Option D**: Proceed as-is and accept the ratchet increase
+>
 > Which approach?
 
 **EXAMPLES**:
@@ -135,12 +135,12 @@ ask_user_question(
 
 **REQUIRED PROMPT**:
 > Test `<nodeid>` is failing. I've identified N potential fixes:
-> 
-> **Option A**: `<production_bug_fix>` — `<description>`  
-> **Option B**: `<stale_reference_fix>` — `<description>`  
-> **Option C**: `<broken_test_fix>` — `<description>` (semantic equivalence preserved)  
-> **Option D**: `<policy_regression_fix>` — `<description>`  
-> 
+>
+> **Option A**: `<production_bug_fix>` — `<description>`
+> **Option B**: `<stale_reference_fix>` — `<description>`
+> **Option C**: `<broken_test_fix>` — `<description>` (semantic equivalence preserved)
+> **Option D**: `<policy_regression_fix>` — `<description>`
+>
 > Which repair class should I apply?
 
 **EXAMPLES**:
@@ -155,11 +155,11 @@ ask_user_question(
 
 **REQUIRED PROMPT**:
 > To implement `<feature>`, I can:
-> 
-> **Option A**: Add dependency `<package>` — `<pros/cons>`  
-> **Option B**: Implement in-house — `<pros/cons>`  
-> **Option C**: Use existing `<alternative>` — `<pros/cons>`  
-> 
+>
+> **Option A**: Add dependency `<package>` — `<pros/cons>`
+> **Option B**: Implement in-house — `<pros/cons>`
+> **Option C**: Use existing `<alternative>` — `<pros/cons>`
+>
 > Which approach?
 
 **EXAMPLES**:
@@ -174,12 +174,12 @@ ask_user_question(
 
 **REQUIRED PROMPT**:
 > File `<path>` can be handled as:
-> 
-> **Option A**: Delete immediately — `<references>` migrated, `<deprecation_period>` elapsed  
-> **Option B**: Deprecate first — add deprecation warning, set 90-day timer  
-> **Option C**: Keep as shim — redirect to `<replacement>`, document in shim registry  
-> **Option D**: Cancel deletion — `<reason>`  
-> 
+>
+> **Option A**: Delete immediately — `<references>` migrated, `<deprecation_period>` elapsed
+> **Option B**: Deprecate first — add deprecation warning, set 90-day timer
+> **Option C**: Keep as shim — redirect to `<replacement>`, document in shim registry
+> **Option D**: Cancel deletion — `<reason>`
+>
 > Which approach?
 
 **EXAMPLES**:
@@ -194,11 +194,11 @@ ask_user_question(
 
 **REQUIRED PROMPT**:
 > Configuration `<config_file>` can be updated as:
-> 
-> **Option A**: `<change>` — affects `<scope>`  
-> **Option B**: `<change>` — affects `<scope>`  
-> **Option C**: Keep current — `<reason>`  
-> 
+>
+> **Option A**: `<change>` — affects `<scope>`
+> **Option B**: `<change>` — affects `<scope>`
+> **Option C**: Keep current — `<reason>`
+>
 > Which option?
 
 **EXAMPLES**:
@@ -213,12 +213,12 @@ ask_user_question(
 
 **REQUIRED PROMPT**:
 > Error `<error_type>` can be handled as:
-> 
-> **Option A**: Fail-closed — raise immediately, no fallback  
-> **Option B**: Fail-open with logging — log + continue with degraded behavior  
-> **Option C**: Retry with backoff — `<retry_config>`  
-> **Option D**: Escalate to user — prompt for manual intervention  
-> 
+>
+> **Option A**: Fail-closed — raise immediately, no fallback
+> **Option B**: Fail-open with logging — log + continue with degraded behavior
+> **Option C**: Retry with backoff — `<retry_config>`
+> **Option D**: Escalate to user — prompt for manual intervention
+>
 > Which strategy?
 
 **EXAMPLES**:
@@ -233,11 +233,11 @@ ask_user_question(
 
 **REQUIRED PROMPT**:
 > Performance can be improved via:
-> 
-> **Option A**: `<optimization>` — `<speedup>`, `<complexity_increase>`  
-> **Option B**: `<optimization>` — `<speedup>`, `<complexity_increase>`  
-> **Option C**: Keep current — prioritize simplicity  
-> 
+>
+> **Option A**: `<optimization>` — `<speedup>`, `<complexity_increase>`
+> **Option B**: `<optimization>` — `<speedup>`, `<complexity_increase>`
+> **Option C**: Keep current — prioritize simplicity
+>
 > Which approach?
 
 **EXAMPLES**:
@@ -252,11 +252,11 @@ ask_user_question(
 
 **REQUIRED PROMPT**:
 > ADG may be stale after these changes. I can:
-> 
-> **Option A**: Regenerate now — blocks current work for ~30s  
-> **Option B**: Defer to end of session — faster now, risk of stale analysis  
-> **Option C**: Skip — changes don't affect dependency graph  
-> 
+>
+> **Option A**: Regenerate now — blocks current work for ~30s
+> **Option B**: Defer to end of session — faster now, risk of stale analysis
+> **Option C**: Skip — changes don't affect dependency graph
+>
 > Which timing?
 
 **EXAMPLES**:
@@ -404,7 +404,7 @@ HITL complements but does not replace:
 - **§2 ADG FRAMEWORK** — still use graph, but let user choose scope
 - **§9 EXECUTION MODALITY** — still work in phases, but let user choose phase boundaries
 
-**HITL adds**: User choice at decision points  
+**HITL adds**: User choice at decision points
 **HITL does not remove**: Technical requirements and quality gates
 
 ---

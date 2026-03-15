@@ -6,6 +6,7 @@ import hashlib
 import json
 from dataclasses import dataclass
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass(frozen=True)
@@ -22,6 +23,10 @@ class ArbitrationCandidate:
 
     def canonical_bytes(self) -> bytes:
         """Canonical byte representation for deterministic fingerprinting."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ArbitrationCandidate.canonical_bytes")
+
         data = {
             "id": self.id,
             "kind": self.kind,
@@ -44,6 +49,10 @@ class ArbitrationPolicy:
 
     def canonical_bytes(self) -> bytes:
         """Canonical byte representation for deterministic fingerprinting."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ArbitrationPolicy.canonical_bytes")
+
         data = {
             "weights": self.weights,
             "caps": self.caps,
@@ -64,6 +73,10 @@ class ArbitrationDecision:
 
     def canonical_bytes(self) -> bytes:
         """Canonical byte representation for deterministic fingerprinting."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ArbitrationDecision.canonical_bytes")
+
         data = {
             "winner_ids": self.winner_ids,
             "merged_payload": self.merged_payload,

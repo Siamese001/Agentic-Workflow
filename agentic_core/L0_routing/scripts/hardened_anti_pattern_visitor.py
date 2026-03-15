@@ -13,6 +13,7 @@ from agentic_core.L0_routing.config import (
     APPS_SHARED_DIR,
     ARCHIVES_DIR,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, emit_replay_key, emit_determinism_digest
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 # guardian: allow-global-mutation
@@ -56,6 +57,12 @@ class HardenedAntiPatternVisitor(ast.NodeVisitor):
 
     def visit_Import(self, node: ast.Import):
         """TODO: Add documentation for visit_Import."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "HardenedAntiPatternVisitor.visit_Import")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         for name in node.names:
             real_name = name.name
             alias = name.asname or name.name

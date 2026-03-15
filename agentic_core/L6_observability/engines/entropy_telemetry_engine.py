@@ -14,6 +14,7 @@ from collections import defaultdict, deque
 from dataclasses import dataclass
 
 from agentic_core.L2_execution.healers.healing_tier_types import HealingTier
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -82,6 +83,10 @@ class EntropyTelemetryEngine:
             tier: The selected healing tier.
             confidence: The confidence score for the decision.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L6_OBSERVABILITY, "EntropyTelemetryEngine.record_tier_decision")
+
         timestamp = int(time.time())
         self._tier_decisions.append((tier, confidence, timestamp))
         if self._previous_tier is not None and self._previous_tier != tier:

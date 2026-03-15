@@ -14,6 +14,7 @@ import os
 from dataclasses import dataclass
 from enum import Enum
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -56,6 +57,10 @@ class ResourceKey:
     @classmethod
     def parse(cls, key_string: str) -> ResourceKey:
         """Parse a key string into a ResourceKey."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ResourceKey.parse")
+
         parts = key_string.split(":")
         if len(parts) != 4:
             raise ValueError(f"Invalid resource key format: {key_string}")
@@ -139,6 +144,10 @@ class ResourceManager:
         Returns:
             True if successful
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ResourceManager.set")
+
         self._ensure_initialized()
         key = self._get_key(namespace, category, identifier)
         key_str = str(key)

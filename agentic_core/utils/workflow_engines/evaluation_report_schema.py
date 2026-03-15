@@ -11,6 +11,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from .evaluation_result_schema import DeltaReport, EvaluationReport
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass(frozen=True)
@@ -52,6 +53,10 @@ class SystemEvaluationSummary:
     @classmethod
     def from_report(cls, report: EvaluationReport) -> SystemEvaluationSummary:
         """Build summary from aggregate scores in an EvaluationReport."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SystemEvaluationSummary.from_report")
+
         scores = report.aggregate_scores
         return cls(
             system_version=report.system_version,
@@ -97,6 +102,10 @@ class ComparativeEvaluationSummary:
         cls, delta: DeltaReport, baseline_version: str, candidate_version: str
     ) -> ComparativeEvaluationSummary:
         """Build comparative summary from a DeltaReport."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ComparativeEvaluationSummary.from_delta_report")
+
         improvements = {k: v for k, v in delta.metric_deltas.items() if v > 0}
         regressions = {k: v for k, v in delta.metric_deltas.items() if v < 0}
         net_delta = sum(delta.metric_deltas.values())

@@ -22,6 +22,7 @@ from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.utils.decorators_compat_util import standard_heal
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass
@@ -64,6 +65,10 @@ class L3OrchestrationBase(SovereignBaseAgent):
         **kwargs,
     ) -> dict[str, Any]:
         """Invoke shared healing chain then allow subclass override."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "L3OrchestrationBase.heal_repository")
+
         if _call_path is None:
             _call_path = set()
         agent_name = self.__class__.__name__

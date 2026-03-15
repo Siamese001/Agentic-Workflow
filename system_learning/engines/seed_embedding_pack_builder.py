@@ -17,6 +17,7 @@ from system_learning.types.seed_embedding_pack_types import (
     SeedEmbeddingPackConfig,
     SeedEmbeddingPackManifest,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class Embedder(Protocol):
@@ -57,6 +58,10 @@ class DeterministicHashEmbedder:
         Returns:
             List of deterministic embedding vectors.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "DeterministicHashEmbedder.embed_batch")
+
         vectors = []
         for text in texts:
             # Use SHA-256 of text to generate deterministic float32 values

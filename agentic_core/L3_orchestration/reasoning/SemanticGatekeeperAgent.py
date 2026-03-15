@@ -15,6 +15,7 @@ from agentic_core.utils.timeout_decorator_util import timeout
 
 Logger: Any = logging.getLogger(__name__)
 from agentic_core.utils.decorators_compat_util import standard_heal
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass
@@ -55,6 +56,10 @@ class SemanticGatekeeperAgent(SovereignBaseAgent):
         _call_path: set | None = None,
     ) -> dict[str, int]:
         """L3 orchestration agent - operational only."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SemanticGatekeeperAgent.heal_repository")
+
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:
             _call_path = set()

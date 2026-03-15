@@ -11,6 +11,7 @@ import os
 from dataclasses import dataclass
 from enum import Enum
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -51,6 +52,10 @@ class SDKEntry:
 
     def has_api_key(self) -> bool:
         """Check if required API key is set."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SDKEntry.has_api_key")
+
         if not self.env_var:
             return True
         return bool(os.getenv(self.env_var))
@@ -312,6 +317,10 @@ def get_vector_store(config: dict[str, Any] | None = None) -> Any:
             self.documents = documents or []
 
         def add(self, documents: list, ids: list = None):
+            import uuid as _uuid  # noqa: PLC0415
+            _trace_id = str(_uuid.uuid4())
+            _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "MockCollection.add")
+
             self.documents.extend(documents)
             return ids or list(range(len(documents)))
 
@@ -324,6 +333,10 @@ def get_vector_store(config: dict[str, Any] | None = None) -> Any:
             self.collections = {}
 
         def add_documents(self, collection_name: str, documents: list, ids: list = None):
+            import uuid as _uuid  # noqa: PLC0415
+            _trace_id = str(_uuid.uuid4())
+            _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "MockVectorStore.add_documents")
+
             if collection_name not in self.collections:
                 self.collections[collection_name] = []
             self.collections[collection_name].extend(documents)

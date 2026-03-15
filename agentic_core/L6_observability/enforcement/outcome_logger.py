@@ -15,6 +15,7 @@ from agentic_core.L6_observability.evaluation.evaluation_record import (
     EvaluationStage,
     evaluate_and_attach,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 _proof_emitter = ExecutionProofEmitter("L6.OutcomeLogger")
 
@@ -43,6 +44,10 @@ class OutcomeRecord:
         Returns:
             New OutcomeRecord with computed record_hash
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L6_OBSERVABILITY, "OutcomeRecord.create")
+
         canonical_data = {"trace_id": trace_id, "cid": cid, "status": status, "manifest_hash": manifest_hash}
         canonical_json = json.dumps(canonical_data, sort_keys=True, separators=(",", ":"))
         record_hash = hashlib.sha256(canonical_json.encode("utf-8")).hexdigest()
@@ -75,6 +80,10 @@ class OutcomeLogger:
         Returns:
             Created OutcomeRecord (immutable)
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L6_OBSERVABILITY, "OutcomeLogger.append")
+
         with _proof_emitter.proof_op(f"outcome_log:{trace_id[:8]}"):
             pass
         record = OutcomeRecord.create(trace_id, cid, status, manifest_hash)
@@ -132,6 +141,10 @@ class OutcomeReconciler:
         Returns:
             ReconcileResult with missing/extra hashes and ok status
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L6_OBSERVABILITY, "OutcomeReconciler.reconcile")
+
         observed_hashes = tuple(record.record_hash for record in observed)
         missing_set = set(expected_hashes) - set(observed_hashes)
         missing = tuple(sorted(missing_set))

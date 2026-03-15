@@ -20,6 +20,7 @@ from agentic_core.L0_routing.config.path_constants import (
     SYSTEM_LEARNING_DIR,
     APPS_SHARED_DIR,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 # ---------------------------------------------------------------------------
 # Layer hierarchy: higher number = higher authority.
@@ -95,6 +96,13 @@ class EnforcementReport:
         return len(self.violations) == 0
 
     def summary(self) -> str:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "EnforcementReport.summary")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:EnforcementReport.summary".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         lines = [
             f"Files scanned : {self.files_scanned}",
             f"Files skipped : {self.files_skipped}",
@@ -142,6 +150,13 @@ class LayerSovereigntyEnforcer:
 
     def run(self) -> EnforcementReport:
         """Run the full sovereignty scan and return an EnforcementReport."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "LayerSovereigntyEnforcer.run")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:LayerSovereigntyEnforcer.run".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         report = EnforcementReport()
         for root_name in self.scan_roots:
             root_path = self.repo_root / root_name

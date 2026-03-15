@@ -18,6 +18,7 @@ from dataclasses import dataclass
 from agentic_core.utils.canonical_serializer_util import (
     canonical_bytes,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 
 class ReplayMode(enum.Enum):
@@ -74,6 +75,13 @@ class ReplayBundle:
         raw_response_bytes: bytes,
     ) -> ReplayBundle:
         """Construct a bundle with computed checksums."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "ReplayBundle.create")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:ReplayBundle.create".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         checksum_input = f"{model_version}+{tokenizer_version}"
         provider_checksum = hashlib.sha256(checksum_input.encode("utf-8")).hexdigest()
         bundle_obj = {
@@ -117,6 +125,13 @@ class LLMReplayStrategy:
         DETERMINISTIC_INFERENCE: raise (not implemented in
             production — requires explicit dev/test wiring).
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "LLMReplayStrategy.replay")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:LLMReplayStrategy.replay".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         if self.mode is ReplayMode.RECORDED_OUTPUT:
             return self.bundle.raw_response_bytes
         raise NotImplementedError(

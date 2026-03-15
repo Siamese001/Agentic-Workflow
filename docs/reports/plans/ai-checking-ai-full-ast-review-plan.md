@@ -1,7 +1,7 @@
 # AI-Checking-AI: Full AST Review — Gap Inventory & Implementation Plan
 
-**Date**: 2026-03-09  
-**Scope**: Full repository AST + behavioral review  
+**Date**: 2026-03-09
+**Scope**: Full repository AST + behavioral review
 **Objective**: Identify every location where an LLM evaluates another AI system's output without deterministic or human-validated safeguards, catalogue gaps, and provide a prioritised remediation plan.
 
 ---
@@ -18,10 +18,10 @@
 ## 2. Confirmed "AI-Checking-AI" Locations
 
 ### GAP-01 — `JudgeEvaluator` (LM-as-a-Judge)
-**File**: `apps_shared/types/judge_evaluator_types.py`  
-**Severity**: HIGH  
-**Pattern**: `llm_client` callable scores agent outputs against 7+ `JudgmentCriterion` values (accuracy, completeness, relevance, coherence, factuality, safety, helpfulness). Score ≥ `pass_threshold` (default 0.7) passes the output downstream.  
-**Existing fallback**: `_heuristic_evaluation` (keyword density, length checks) when `llm_client=None`.  
+**File**: `apps_shared/types/judge_evaluator_types.py`
+**Severity**: HIGH
+**Pattern**: `llm_client` callable scores agent outputs against 7+ `JudgmentCriterion` values (accuracy, completeness, relevance, coherence, factuality, safety, helpfulness). Score ≥ `pass_threshold` (default 0.7) passes the output downstream.
+**Existing fallback**: `_heuristic_evaluation` (keyword density, length checks) when `llm_client=None`.
 **Gaps**:
 - LLM judge verdicts are trusted unconditionally; no cross-validation against ground-truth references.
 - `pass_threshold=0.7` is an arbitrary floating-point gate with no deterministic rationale.
@@ -32,10 +32,10 @@
 ---
 
 ### GAP-02 — `ReflectionEngine` LLM critique path
-**File**: `agentic_core/config/core/reflection_config.py`  
-**Severity**: HIGH  
-**Pattern**: `_llm_path_evaluate` sends agent output to `gpt-4o-mini` (role: "QA Auditor") when built-in regex criteria are insufficient. The LLM's JSON response (`is_valid`, `confidence`, `reasoning`) is returned directly as the gate verdict.  
-**Existing fallback**: Circuit breaker (`CircuitBreakerFactory`) — but configured **fail-open** (`is_valid=True`, `confidence_score=0.3`).  
+**File**: `agentic_core/config/core/reflection_config.py`
+**Severity**: HIGH
+**Pattern**: `_llm_path_evaluate` sends agent output to `gpt-4o-mini` (role: "QA Auditor") when built-in regex criteria are insufficient. The LLM's JSON response (`is_valid`, `confidence`, `reasoning`) is returned directly as the gate verdict.
+**Existing fallback**: Circuit breaker (`CircuitBreakerFactory`) — but configured **fail-open** (`is_valid=True`, `confidence_score=0.3`).
 **Gaps**:
 - `_call_llm` is a **mock implementation** (simulates network delay + heuristic branches) — NOT wired to `SovereignLLMGateway`. Production will silently use the mock.
 - Circuit-breaker trips produce `is_valid=True` — a dangerous fail-open posture for safety-critical content.
@@ -46,9 +46,9 @@
 ---
 
 ### GAP-03 — `ConstitutionalReviewerAgent`
-**File**: `agentic_core/L5_safety/reasoning/ConstitutionalReviewerAgent.py`  
-**Severity**: HIGH  
-**Pattern**: A single `chat_completion_async` call reviews the full `final_draft` against JSON-encoded constitution rules. The LLM decides whether violations exist.  
+**File**: `agentic_core/L5_safety/reasoning/ConstitutionalReviewerAgent.py`
+**Severity**: HIGH
+**Pattern**: A single `chat_completion_async` call reviews the full `final_draft` against JSON-encoded constitution rules. The LLM decides whether violations exist.
 **Gaps**:
 - Single LLM call — no consensus, no cross-validation with a second model.
 - `enable_constitutional_review=False` causes **silent pass-through** (`review_passed=True`) with only a warning log; no alert or escalation.
@@ -59,9 +59,9 @@
 ---
 
 ### GAP-04 — `SafetyInspectorAgent` Socratic Judge
-**File**: `agentic_core/L5_safety/reasoning/SafetyInspectorAgent.py`  
-**Severity**: HIGH  
-**Pattern**: `_socratic_verify` sends a 2000-character code snippet plus a natural-language question to `llm_router_mcp_client.validate_content`. The LLM's "YES"/"NO" response decides whether a regex-detected security violation is real or suppressed as false positive.  
+**File**: `agentic_core/L5_safety/reasoning/SafetyInspectorAgent.py`
+**Severity**: HIGH
+**Pattern**: `_socratic_verify` sends a 2000-character code snippet plus a natural-language question to `llm_router_mcp_client.validate_content`. The LLM's "YES"/"NO" response decides whether a regex-detected security violation is real or suppressed as false positive.
 **Gaps**:
 - **Adversarial prompt injection risk**: a malicious file can embed text that causes the LLM to answer "NO", suppressing real violations.
 - No audit log of Socratic Judge verdicts — suppressed violations leave no trace.
@@ -72,9 +72,9 @@
 ---
 
 ### GAP-05 — `RegressionOracleAgent` / `RegressionTestGenerator`
-**File**: `agentic_core/L5_safety/reasoning/RegressionOracleAgent.py`  
-**Severity**: MEDIUM  
-**Pattern**: `RegressionTestGenerator` uses Gemini 2.5 (`genai.Client`) to generate `pytest` cases for changed methods. A self-correction loop (`run_and_correct_test`) re-invokes the LLM when generated tests fail.  
+**File**: `agentic_core/L5_safety/reasoning/RegressionOracleAgent.py`
+**Severity**: MEDIUM
+**Pattern**: `RegressionTestGenerator` uses Gemini 2.5 (`genai.Client`) to generate `pytest` cases for changed methods. A self-correction loop (`run_and_correct_test`) re-invokes the LLM when generated tests fail.
 **Gaps**:
 - LLM-generated test code is executed without static analysis or sandboxing (code injection risk).
 - Self-correction loop has no hard iteration cap visible at orchestration level; infinite retry is possible.
@@ -85,9 +85,9 @@
 ---
 
 ### GAP-06 — `AnswerCorrectness` / `Groundedness` optional judge
-**Files**: `agentic_core/utils/workflow_engines/answer_correctness.py`, `groundedness.py`  
-**Severity**: MEDIUM  
-**Pattern**: Both metrics accept an optional `judge: Callable[[str, str], float]` at construction. When provided, the judge's float replaces the deterministic token-F1 score unconditionally.  
+**Files**: `agentic_core/utils/workflow_engines/answer_correctness.py`, `groundedness.py`
+**Severity**: MEDIUM
+**Pattern**: Both metrics accept an optional `judge: Callable[[str, str], float]` at construction. When provided, the judge's float replaces the deterministic token-F1 score unconditionally.
 **Gaps**:
 - No type-level enforcement that `judge` is deterministic; an LLM callable can be injected silently.
 - No circuit breaker or exception handling if `judge` callable raises — propagates unhandled to caller.
@@ -96,9 +96,9 @@
 ---
 
 ### GAP-07 — `AgentGym` LLM-driven self-evolution
-**File**: `agentic_core/L3_orchestration/engines/agent_gym_engine.py`  
-**Severity**: MEDIUM  
-**Pattern**: `AgentGym` accepts a `JudgeEvaluator` instance that gates agent performance benchmarking. Benchmark results drive "capability gap identification" and "improvement recommendations" — i.e., LLM judge drives agent self-modification decisions.  
+**File**: `agentic_core/L3_orchestration/engines/agent_gym_engine.py`
+**Severity**: MEDIUM
+**Pattern**: `AgentGym` accepts a `JudgeEvaluator` instance that gates agent performance benchmarking. Benchmark results drive "capability gap identification" and "improvement recommendations" — i.e., LLM judge drives agent self-modification decisions.
 **Gaps**:
 - The LLM judge feeding self-evolution decisions creates a closed feedback loop with no human checkpoint.
 - No deterministic baseline (golden-state majority vote) required before judge score triggers improvement.
@@ -107,9 +107,9 @@
 ---
 
 ### GAP-08 — `TruthKeeper` latent LLM path
-**File**: `agentic_core/L1_cognition/validators/truth_keeper_validator.py`  
-**Severity**: LOW  
-**Pattern**: Constructor accepts `llm_client` for docstring-code consistency validation. The current implementation only uses AST (checks for missing docstrings). The LLM path is structurally present but inactive.  
+**File**: `agentic_core/L1_cognition/validators/truth_keeper_validator.py`
+**Severity**: LOW
+**Pattern**: Constructor accepts `llm_client` for docstring-code consistency validation. The current implementation only uses AST (checks for missing docstrings). The LLM path is structurally present but inactive.
 **Gaps**:
 - `llm_client` field is stored but never called — the intended LLM validation path is unimplemented, leaving a false sense of coverage.
 - If activated in future, there is no governance contract specifying what the LLM may assert.
@@ -117,9 +117,9 @@
 ---
 
 ### GAP-09 — `sprawl_gate.py` embedding similarity in CI
-**File**: `artifacts/dedup/sprawl_gate.py` (invoked from `.github/workflows/agent-sprawl-check.yml`)  
-**Severity**: MEDIUM  
-**Pattern**: CI step passes `--max-code-sim 0.85 --max-prompt-sim 0.85`. If `sprawl_gate.py` uses embedding similarity (LLM-derived vectors), CI gate outcomes depend on an AI model.  
+**File**: `artifacts/dedup/sprawl_gate.py` (invoked from `.github/workflows/agent-sprawl-check.yml`)
+**Severity**: MEDIUM
+**Pattern**: CI step passes `--max-code-sim 0.85 --max-prompt-sim 0.85`. If `sprawl_gate.py` uses embedding similarity (LLM-derived vectors), CI gate outcomes depend on an AI model.
 **Gaps**:
 - Implementation of similarity computation is not confirmed deterministic (needs verification).
 - Embedding models change over time; CI results would be non-reproducible.
@@ -128,9 +128,9 @@
 ---
 
 ### GAP-10 — `InjectionDetector` implementation unknown
-**File**: `agentic_core/L2_execution/enforcement/SovereignLLMGateway.py`  
-**Severity**: MEDIUM  
-**Pattern**: `SovereignLLMGateway.__init__` instantiates `InjectionDetector()`. If this uses an ML classifier, it is AI-checking-AI in the security path.  
+**File**: `agentic_core/L2_execution/enforcement/SovereignLLMGateway.py`
+**Severity**: MEDIUM
+**Pattern**: `SovereignLLMGateway.__init__` instantiates `InjectionDetector()`. If this uses an ML classifier, it is AI-checking-AI in the security path.
 **Gaps**:
 - `InjectionDetector` implementation not reviewed — must be verified to use only deterministic pattern matching.
 - If ML-based: model version, update cadence, and fallback behaviour must be documented.
@@ -138,8 +138,8 @@
 ---
 
 ### GAP-11 — No unified audit trail for AI-check decisions
-**Severity**: HIGH (cross-cutting)  
-**Pattern**: Each AI-checking-AI component (JudgeEvaluator, ReflectionEngine, ConstitutionalReviewerAgent, Socratic Judge) maintains independent logging or no logging at all.  
+**Severity**: HIGH (cross-cutting)
+**Pattern**: Each AI-checking-AI component (JudgeEvaluator, ReflectionEngine, ConstitutionalReviewerAgent, Socratic Judge) maintains independent logging or no logging at all.
 **Gaps**:
 - No central store correlating which LLM call produced which validation verdict.
 - No replay capability for auditing why a specific output was passed or failed.
@@ -168,8 +168,8 @@ The following components are correctly implemented without AI-checking-AI:
 ## 4. Implementation Plan
 
 ### Phase 1 — Audit & Harden `JudgeEvaluator` (GAP-01)
-**Priority**: CRITICAL  
-**Effort**: 1 session  
+**Priority**: CRITICAL
+**Effort**: 1 session
 
 **Steps**:
 1. Add `judge_model_id: str` field to `JudgeEvaluator` constructor (required when `llm_client` is provided).
@@ -182,8 +182,8 @@ The following components are correctly implemented without AI-checking-AI:
 ---
 
 ### Phase 2 — Fix `ReflectionEngine` (GAP-02)
-**Priority**: CRITICAL  
-**Effort**: 1 session  
+**Priority**: CRITICAL
+**Effort**: 1 session
 
 **Steps**:
 1. Replace mock `_call_llm` with a real call routed through `SovereignLLMGateway.route_generation`, passing a registered `agent_id`.
@@ -195,8 +195,8 @@ The following components are correctly implemented without AI-checking-AI:
 ---
 
 ### Phase 3 — Harden `ConstitutionalReviewerAgent` (GAP-03)
-**Priority**: HIGH  
-**Effort**: 1 session  
+**Priority**: HIGH
+**Effort**: 1 session
 
 **Steps**:
 1. Add a **deterministic pre-filter** before the LLM call: scan `final_draft` for regex patterns derived from the constitution rules (fast-reject path). If pre-filter finds a clear violation, skip LLM and return `review_passed=False`.
@@ -208,8 +208,8 @@ The following components are correctly implemented without AI-checking-AI:
 ---
 
 ### Phase 4 — Harden `SafetyInspectorAgent` Socratic Judge (GAP-04)
-**Priority**: HIGH  
-**Effort**: 1 session  
+**Priority**: HIGH
+**Effort**: 1 session
 
 **Steps**:
 1. Add structured audit log for every Socratic Judge call: file path, pattern matched, LLM verdict, timestamp.
@@ -222,8 +222,8 @@ The following components are correctly implemented without AI-checking-AI:
 ---
 
 ### Phase 5 — Harden `RegressionOracleAgent` (GAP-05)
-**Priority**: MEDIUM  
-**Effort**: 1 session  
+**Priority**: MEDIUM
+**Effort**: 1 session
 
 **Steps**:
 1. Add a `max_correction_iterations: int = 3` cap to `run_and_correct_test` — hard-stop after 3 LLM correction attempts, emit `REGRESSION_CHECK_FAIL` signal.
@@ -236,8 +236,8 @@ The following components are correctly implemented without AI-checking-AI:
 ---
 
 ### Phase 6 — Harden `AnswerCorrectness` / `Groundedness` (GAP-06)
-**Priority**: MEDIUM  
-**Effort**: 0.5 session  
+**Priority**: MEDIUM
+**Effort**: 0.5 session
 
 **Steps**:
 1. Add `judge_is_deterministic: bool = True` parameter to both constructors. If `False`, require explicit `audit_logger` parameter.
@@ -248,8 +248,8 @@ The following components are correctly implemented without AI-checking-AI:
 ---
 
 ### Phase 7 — Harden `AgentGym` self-evolution loop (GAP-07)
-**Priority**: MEDIUM  
-**Effort**: 1 session  
+**Priority**: MEDIUM
+**Effort**: 1 session
 
 **Steps**:
 1. Require `require_golden_consensus: bool = True` flag — before a `JudgeEvaluator` score triggers an improvement recommendation, at least 3 golden cases must agree.
@@ -260,8 +260,8 @@ The following components are correctly implemented without AI-checking-AI:
 ---
 
 ### Phase 8 — Verify `sprawl_gate.py` and `InjectionDetector` (GAP-09, GAP-10)
-**Priority**: MEDIUM  
-**Effort**: 0.5 session  
+**Priority**: MEDIUM
+**Effort**: 0.5 session
 
 **Steps**:
 1. Read `artifacts/dedup/sprawl_gate.py` fully; if similarity is embedding-based, replace with deterministic Jaccard or AST structural diff.
@@ -271,8 +271,8 @@ The following components are correctly implemented without AI-checking-AI:
 ---
 
 ### Phase 9 — Unified AI-Check Audit Trail (GAP-11)
-**Priority**: HIGH (cross-cutting)  
-**Effort**: 1 session  
+**Priority**: HIGH (cross-cutting)
+**Effort**: 1 session
 
 **Steps**:
 1. Create `agentic_core/L5_safety/audit/ai_check_audit.py` — a singleton audit log emitter writing structured JSON records to `observability/audit/ai_check_decisions.jsonl`.
@@ -284,8 +284,8 @@ The following components are correctly implemented without AI-checking-AI:
 ---
 
 ### Phase 10 — Add AST-Based CI Governance Check (new invariant)
-**Priority**: HIGH  
-**Effort**: 0.5 session  
+**Priority**: HIGH
+**Effort**: 0.5 session
 
 **Steps**:
 1. Create `ops_scripts/ci/scan_llm_validator_calls.py` — AST walker that identifies every function where an LLM callable is invoked inside a validation/scoring/enforcement path.

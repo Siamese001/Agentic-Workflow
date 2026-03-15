@@ -36,6 +36,7 @@ from agentic_core.cache.redis_cache_client import (
     DeterministicRedisCache,
     get_coordination_cache,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -91,6 +92,13 @@ class LeaseCoordinator:
         ``replay_mode=True`` — callers should treat replay as lease-free
         (no coordination needed for read-only transcript reconstruction).
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "LeaseCoordinator.acquire")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:LeaseCoordinator.acquire".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         if replay_mode:
             return False
 
@@ -166,6 +174,13 @@ class IdempotencyStore:
         replay_mode: bool = False,
     ) -> bytes | None:
         """Return stored tool-output bytes or ``None`` on miss/bypass."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "IdempotencyStore.get")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:IdempotencyStore.get".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         key = build_tool_result_key(tool_call_hash)
         return self._cache.get(key, replay_mode=replay_mode)
 

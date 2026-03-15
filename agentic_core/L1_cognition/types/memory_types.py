@@ -13,6 +13,7 @@ from dataclasses import dataclass, field
 from typing import Any, Final
 
 from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 EMBEDDING_DIMENSION: Final[int] = 1024
 MAX_TEXT_LENGTH: Final[int] = 8000
@@ -39,6 +40,10 @@ class ViolationSignature:
 
     def to_text(self) -> str:
         """Convert signature to text for embedding."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L1_REASONING, "ViolationSignature.to_text")
+
         parts = [
             f"violation_type: {self.violation_type}",
             f"path: {self.path}",

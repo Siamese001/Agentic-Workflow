@@ -5,6 +5,7 @@ Loads prompts from modularized markdown files based on agent role.
 """
 
 from pathlib import Path
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class PromptLoader:
@@ -22,6 +23,10 @@ class PromptLoader:
 
     def load_global_constraints(self) -> str:
         """Load global constraints that apply to all agents."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PromptLoader.load_global_constraints")
+
         if self._global_constraints is not None:
             return self._global_constraints
         constraints_path = self.prompts_dir / "global" / "constraints.md"

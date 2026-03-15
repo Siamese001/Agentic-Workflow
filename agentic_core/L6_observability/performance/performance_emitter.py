@@ -30,6 +30,7 @@ from agentic_core.L6_observability.performance.performance_registry import (
     StageStatus,
     get_performance_registry,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 _PERF_LOG = logging.getLogger("adg.performance_record_emitted")
@@ -117,6 +118,10 @@ class LatencyBudget:
     @classmethod
     def for_stage(cls, stage_name: str) -> LatencyBudget:
         """Create appropriate latency budget for a stage."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L6_OBSERVABILITY, "LatencyBudget.for_stage")
+
         stage_lower = stage_name.lower()
         if "routing" in stage_lower or "route" in stage_lower:
             return cls(BudgetClass.ROUTING, 5.0, 10.0)

@@ -6,6 +6,7 @@ import ast
 from pathlib import Path
 
 from agentic_core.L5_safety.config.structure_blueprint import SEMANTIC_L2_REGISTRY
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 try:
     project_root = Path(__file__).resolve().parents[3]
@@ -28,6 +29,10 @@ class AstRelocator(ast.NodeVisitor):
 
     def visit_ClassDef(self, node: ast.ClassDef):
         """Capture top-level classes."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "AstRelocator.visit_ClassDef")
+
         self.entities.append(
             {
                 "type": "class",

@@ -9,7 +9,7 @@ def run_query(description, query):
     print(f"\n{'='*80}")
     print(f"QUERY: {description}")
     print(f"{'='*80}")
-    
+
     cmd = [
         sys.executable,
         "tools/adg/adg_redis_query.py",
@@ -18,14 +18,14 @@ def run_query(description, query):
         "--query",
         query
     ]
-    
+
     result = subprocess.run(cmd, capture_output=True, text=True)
-    
+
     if result.returncode == 0:
         print(result.stdout)
     else:
         print(f"ERROR: {result.stderr}")
-    
+
     return result.stdout
 
 # Query 1: Find all modules importing HITLMixin
@@ -110,7 +110,7 @@ ORDER BY adg_name
 if __name__ == "__main__":
     print("ADG ANALYSIS: HITL Mixin + System Learning Confidence Integration")
     print("="*80)
-    
+
     run_query("1. Modules importing HITLMixin", q1)
     run_query("2. System Learning Confidence/Scoring Classes", q2)
     run_query("3. System Learning Adapter Patterns", q3)
@@ -118,7 +118,7 @@ if __name__ == "__main__":
     run_query("5. Existing HITL → System Learning Connections", q5)
     run_query("6. HITL Approval/Risk Types", q6)
     run_query("7. System Learning Outcome/Feedback Patterns", q7)
-    
+
     print("\n" + "="*80)
     print("ANALYSIS COMPLETE")
     print("="*80)

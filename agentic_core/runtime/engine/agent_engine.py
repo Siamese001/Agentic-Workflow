@@ -11,6 +11,7 @@ from agentic_core.patterns.base import BaseReasoningPattern
 from agentic_core.runtime.exceptions import ToolExecutionError, ToolNotFoundError
 from agentic_core.runtime.state import AgentState
 from agentic_core.runtime.tools import ToolRegistry
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -69,6 +70,10 @@ class AgentEngine:
         """
         Executes the agent loop until completion or max_turns.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "AgentEngine.run")
+
         # §8.1b — V15 manifest construction at engine entry boundary
         manifest = self._v15_build_operation_manifest("run")
         if manifest is not None:

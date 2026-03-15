@@ -10,6 +10,7 @@ import json
 from dataclasses import dataclass
 
 from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 
 @dataclass(frozen=True)
@@ -20,6 +21,13 @@ class RollbackStrategyId:
 
     def canonical_bytes(self) -> bytes:
         """Canonical byte representation for hashing."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "RollbackStrategyId.canonical_bytes")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:RollbackStrategyId.canonical_bytes".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         data = {"name": self.name}
         return json.dumps(data, separators=(",", ":"), sort_keys=True).encode("ascii")
 
@@ -37,6 +45,13 @@ class RollbackOutcomeStats:
 
     def canonical_bytes(self) -> bytes:
         """Canonical byte representation for hashing."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "RollbackOutcomeStats.canonical_bytes")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:RollbackOutcomeStats.canonical_bytes".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         data = {"success": self.success, "fail": self.fail}
         return json.dumps(data, separators=(",", ":"), sort_keys=True).encode("ascii")
 
@@ -55,6 +70,13 @@ class RollbackRefinementRequest:
 
     def canonical_bytes(self) -> bytes:
         """Canonical byte representation for hashing."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "RollbackRefinementRequest.canonical_bytes")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:RollbackRefinementRequest.canonical_bytes".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         data = {
             "failure_signature": self.failure_signature.canonical_bytes().decode("ascii"),
             "candidates": tuple(sorted(c.name for c in self.candidates)),
@@ -77,6 +99,13 @@ class RollbackRefinementDecision:
 
     def canonical_bytes(self) -> bytes:
         """Canonical byte representation for hashing."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "RollbackRefinementDecision.canonical_bytes")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:RollbackRefinementDecision.canonical_bytes".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         data = {
             "chosen": self.chosen.name,
             "ranked": tuple(s.name for s in self.ranked),

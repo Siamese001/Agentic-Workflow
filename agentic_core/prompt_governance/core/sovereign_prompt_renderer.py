@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any
 
 from jinja2 import Environment, FileSystemLoader, StrictUndefined, TemplateNotFound, select_autoescape
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass
@@ -104,6 +105,10 @@ class SovereignPromptRenderer:
         Raises:
             TemplateValidationError: If required variables are missing
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SovereignPromptRenderer.validate_context")
+
         schema = self._parse_template_schema(template_name)
         provided_vars = set(context.keys())
         missing_vars = schema.required_vars - provided_vars

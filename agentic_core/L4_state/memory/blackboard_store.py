@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Any, Literal
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass(frozen=True)
@@ -82,6 +83,10 @@ class BlackboardStore:
         Returns:
             LeaseResult with success status and expiry tick
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "BlackboardStore.lease")
+
         if ttl_ticks <= 0:
             return LeaseResult(success=False, expiry_tick=0, reason="TTL must be positive")
         current = _leases.get(key)

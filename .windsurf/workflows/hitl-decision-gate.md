@@ -57,19 +57,19 @@ Aim for 2-4 options. More than 4 = analysis paralysis.
 **REQUIRED FORMAT**:
 
 > I've identified N approaches for `<task>`:
-> 
-> **Option A**: `<approach>`  
-> - Impact: `<what changes>`  
-> - Trade-offs: `<pros/cons>`  
-> 
-> **Option B**: `<approach>`  
-> - Impact: `<what changes>`  
-> - Trade-offs: `<pros/cons>`  
-> 
-> **Option C**: `<approach>`  
-> - Impact: `<what changes>`  
-> - Trade-offs: `<pros/cons>`  
-> 
+>
+> **Option A**: `<approach>`
+> - Impact: `<what changes>`
+> - Trade-offs: `<pros/cons>`
+>
+> **Option B**: `<approach>`
+> - Impact: `<what changes>`
+> - Trade-offs: `<pros/cons>`
+>
+> **Option C**: `<approach>`
+> - Impact: `<what changes>`
+> - Trade-offs: `<pros/cons>`
+>
 > Which approach should I use?
 
 **CRITICAL**: STOP after presenting options. Do NOT proceed with any option.
@@ -124,19 +124,19 @@ Add to evidence file or commit message:
 ### Template: Architecture Choice
 
 > I've identified N approaches for `<feature>`:
-> 
-> **Option A**: Inheritance-based — extend `<BaseClass>`  
-> - Impact: Single file change, tight coupling to base  
-> - Trade-offs: Simple, but harder to test in isolation  
-> 
-> **Option B**: Composition-based — inject `<Dependency>`  
-> - Impact: 2 files (interface + impl), loose coupling  
-> - Trade-offs: More flexible, but additional abstraction  
-> 
-> **Option C**: Mixin-based — add `<Mixin>` to existing class  
-> - Impact: Modify existing class + new mixin file  
-> - Trade-offs: Reusable, but multiple inheritance complexity  
-> 
+>
+> **Option A**: Inheritance-based — extend `<BaseClass>`
+> - Impact: Single file change, tight coupling to base
+> - Trade-offs: Simple, but harder to test in isolation
+>
+> **Option B**: Composition-based — inject `<Dependency>`
+> - Impact: 2 files (interface + impl), loose coupling
+> - Trade-offs: More flexible, but additional abstraction
+>
+> **Option C**: Mixin-based — add `<Mixin>` to existing class
+> - Impact: Modify existing class + new mixin file
+> - Trade-offs: Reusable, but multiple inheritance complexity
+>
 > Which approach?
 
 ---
@@ -144,19 +144,19 @@ Add to evidence file or commit message:
 ### Template: Refactoring Scope
 
 > This refactoring can be scoped as:
-> 
-> **Option A**: Minimal — `<3 files>`  
-> - Impact: Fix immediate issue only  
-> - Trade-offs: Fast, low risk, but leaves technical debt  
-> 
-> **Option B**: Moderate — `<8 files>`  
-> - Impact: Fix issue + related duplicates  
-> - Trade-offs: Balanced risk/reward, 2x effort  
-> 
-> **Option C**: Comprehensive — `<20+ files>`  
-> - Impact: Full consolidation across codebase  
-> - Trade-offs: Eliminates debt, but high risk, 5x effort  
-> 
+>
+> **Option A**: Minimal — `<3 files>`
+> - Impact: Fix immediate issue only
+> - Trade-offs: Fast, low risk, but leaves technical debt
+>
+> **Option B**: Moderate — `<8 files>`
+> - Impact: Fix issue + related duplicates
+> - Trade-offs: Balanced risk/reward, 2x effort
+>
+> **Option C**: Comprehensive — `<20+ files>`
+> - Impact: Full consolidation across codebase
+> - Trade-offs: Eliminates debt, but high risk, 5x effort
+>
 > Which scope?
 
 ---
@@ -164,23 +164,23 @@ Add to evidence file or commit message:
 ### Template: Test Repair Strategy
 
 > Test `<nodeid>` is failing. Possible fixes:
-> 
-> **Option A**: Fix production code — `<bug description>`  
-> - Repair class: `production_bug_fix`  
-> - Impact: `<affected modules>`  
-> 
-> **Option B**: Update stale reference — `<old_path>` → `<new_path>`  
-> - Repair class: `stale_reference_fix`  
-> - Impact: Test file only  
-> 
-> **Option C**: Fix broken test assertion — `<what's wrong>`  
-> - Repair class: `broken_test_fix` (semantic equivalence preserved)  
-> - Impact: Test file only  
-> 
-> **Option D**: Restore policy contract — `<policy drift>`  
-> - Repair class: `policy_regression_fix`  
-> - Impact: Governance config + production code  
-> 
+>
+> **Option A**: Fix production code — `<bug description>`
+> - Repair class: `production_bug_fix`
+> - Impact: `<affected modules>`
+>
+> **Option B**: Update stale reference — `<old_path>` → `<new_path>`
+> - Repair class: `stale_reference_fix`
+> - Impact: Test file only
+>
+> **Option C**: Fix broken test assertion — `<what's wrong>`
+> - Repair class: `broken_test_fix` (semantic equivalence preserved)
+> - Impact: Test file only
+>
+> **Option D**: Restore policy contract — `<policy drift>`
+> - Repair class: `policy_regression_fix`
+> - Impact: Governance config + production code
+>
 > Which repair class?
 
 ---
@@ -188,19 +188,19 @@ Add to evidence file or commit message:
 ### Template: Dependency Addition
 
 > To implement `<feature>`, I can:
-> 
-> **Option A**: Add `<package>` from PyPI  
-> - Impact: New dependency in requirements.txt  
-> - Trade-offs: Battle-tested, but external dependency  
-> 
-> **Option B**: Implement in-house  
-> - Impact: New module in `<layer>`  
-> - Trade-offs: Full control, but maintenance burden  
-> 
-> **Option C**: Use existing `<alternative>`  
-> - Impact: No new dependencies  
-> - Trade-offs: May not be perfect fit, requires adaptation  
-> 
+>
+> **Option A**: Add `<package>` from PyPI
+> - Impact: New dependency in requirements.txt
+> - Trade-offs: Battle-tested, but external dependency
+>
+> **Option B**: Implement in-house
+> - Impact: New module in `<layer>`
+> - Trade-offs: Full control, but maintenance burden
+>
+> **Option C**: Use existing `<alternative>`
+> - Impact: No new dependencies
+> - Trade-offs: May not be perfect fit, requires adaptation
+>
 > Which approach?
 
 ---
@@ -208,22 +208,22 @@ Add to evidence file or commit message:
 ### Template: File Deletion
 
 > File `<path>` can be handled as:
-> 
-> **Option A**: Delete immediately  
-> - Preconditions: `<N>` references migrated, 90-day deprecation elapsed  
-> - Impact: Permanent removal  
-> 
-> **Option B**: Deprecate first  
-> - Impact: Add deprecation warning, set 90-day timer  
-> - Trade-offs: Safe transition, but delays cleanup  
-> 
-> **Option C**: Keep as shim  
-> - Impact: Redirect to `<replacement>`, document in registry  
-> - Trade-offs: Zero breakage, but maintains legacy path  
-> 
-> **Option D**: Cancel deletion  
-> - Reason: `<why file is still needed>`  
-> 
+>
+> **Option A**: Delete immediately
+> - Preconditions: `<N>` references migrated, 90-day deprecation elapsed
+> - Impact: Permanent removal
+>
+> **Option B**: Deprecate first
+> - Impact: Add deprecation warning, set 90-day timer
+> - Trade-offs: Safe transition, but delays cleanup
+>
+> **Option C**: Keep as shim
+> - Impact: Redirect to `<replacement>`, document in registry
+> - Trade-offs: Zero breakage, but maintains legacy path
+>
+> **Option D**: Cancel deletion
+> - Reason: `<why file is still needed>`
+>
 > Which approach?
 
 ---
@@ -231,23 +231,23 @@ Add to evidence file or commit message:
 ### Template: Error Handling
 
 > Error `<error_type>` can be handled as:
-> 
-> **Option A**: Fail-closed — raise immediately  
-> - Impact: Operation blocks on error  
-> - Trade-offs: Safe, but may block legitimate work  
-> 
-> **Option B**: Fail-open with logging — log + continue  
-> - Impact: Degraded behavior on error  
-> - Trade-offs: Resilient, but may hide issues  
-> 
-> **Option C**: Retry with backoff — `<retry_config>`  
-> - Impact: Automatic recovery attempt  
-> - Trade-offs: Handles transient failures, but delays  
-> 
-> **Option D**: Escalate to user — prompt for intervention  
-> - Impact: User must decide  
-> - Trade-offs: Correct decision, but requires user attention  
-> 
+>
+> **Option A**: Fail-closed — raise immediately
+> - Impact: Operation blocks on error
+> - Trade-offs: Safe, but may block legitimate work
+>
+> **Option B**: Fail-open with logging — log + continue
+> - Impact: Degraded behavior on error
+> - Trade-offs: Resilient, but may hide issues
+>
+> **Option C**: Retry with backoff — `<retry_config>`
+> - Impact: Automatic recovery attempt
+> - Trade-offs: Handles transient failures, but delays
+>
+> **Option D**: Escalate to user — prompt for intervention
+> - Impact: User must decide
+> - Trade-offs: Correct decision, but requires user attention
+>
 > Which strategy?
 
 ---
@@ -255,19 +255,19 @@ Add to evidence file or commit message:
 ### Template: Performance Optimization
 
 > Performance can be improved via:
-> 
-> **Option A**: Add caching — `<cache_strategy>`  
-> - Impact: 10x speedup, +50 lines, memory overhead  
-> - Trade-offs: Fast, but cache invalidation complexity  
-> 
-> **Option B**: Batch processing — `<batch_size>`  
-> - Impact: 3x speedup, +20 lines, latency increase  
-> - Trade-offs: Efficient, but delayed results  
-> 
-> **Option C**: Keep current — prioritize simplicity  
-> - Impact: No change  
-> - Trade-offs: Maintainable, but slower  
-> 
+>
+> **Option A**: Add caching — `<cache_strategy>`
+> - Impact: 10x speedup, +50 lines, memory overhead
+> - Trade-offs: Fast, but cache invalidation complexity
+>
+> **Option B**: Batch processing — `<batch_size>`
+> - Impact: 3x speedup, +20 lines, latency increase
+> - Trade-offs: Efficient, but delayed results
+>
+> **Option C**: Keep current — prioritize simplicity
+> - Impact: No change
+> - Trade-offs: Maintainable, but slower
+>
 > Which approach?
 
 ---

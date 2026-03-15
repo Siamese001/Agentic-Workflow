@@ -16,6 +16,7 @@ from apps_shared.config.environment_config import (
     EnvironmentConfig,
     EnvironmentValidationResult,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 __all__ = [
     "EnvironmentConfig",
@@ -61,6 +62,10 @@ class EnvironmentValidator:
         Raises:
             EnvironmentError: If required variables are missing and raise_on_missing=True
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "EnvironmentValidator.validate")
+
         missing_required = []
         missing_optional = []
         errors = []

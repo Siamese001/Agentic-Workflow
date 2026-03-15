@@ -23,6 +23,7 @@ import re
 from dataclasses import dataclass
 from dataclasses import field as Field
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger = logging.getLogger(__name__)
 
@@ -47,6 +48,10 @@ class AdaptiveRecoveryLoop:
         self.temperature_log = []
 
     def reset(self, temp):
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "AdaptiveRecoveryLoop.reset")
+
         self.current_temperature = temp
         self.temperature_log = []
 
@@ -143,6 +148,10 @@ class SectionScopeIntegrator:
         Returns:
             SectionIntegratorResult with overview and validation details
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SectionScopeIntegrator.generate_overview")
+
         self.recovery_loop.reset(self.config.TEMPERATURE)
         validation_results = []
         for attempt in range(1, self.config.max_attempts + 1):

@@ -68,6 +68,7 @@ except ImportError:
 
         def cache_set(self, key, value, ttl=None):
             pass
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 
 EmbeddingProvider = Literal["gemini", "openai", "bge-m3"]
@@ -170,6 +171,13 @@ class EmbeddingSovereignAgent(RedisCacheMixin, SovereignBaseAgent):
 
         [PHASE 4] Unified interface for all embedding providers.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "EmbeddingSovereignAgent.get_embedding")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:EmbeddingSovereignAgent.get_embedding".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         _ectx = _make_execution_context(content, "EmbeddingSovereignAgent.get_embedding")
         _invoke_authorize_and_execute(
             _ectx,

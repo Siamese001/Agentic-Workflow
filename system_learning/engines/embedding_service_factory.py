@@ -23,6 +23,7 @@ from typing import Any
 
 import numpy as np
 import psutil
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 # guardian: allow-global-mutation
 os.environ["OMP_NUM_THREADS"] = "1"
@@ -128,6 +129,10 @@ class EmbeddingServiceFactory:
         Returns:
             EmbeddingServiceFactory instance or _DisabledEmbeddingService.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "EmbeddingServiceFactory.get_or_disabled")
+
         if not cls._is_embedding_enabled():
             if cls._INSTANCE is not None:
                 raise EmbeddingIntegrityError(

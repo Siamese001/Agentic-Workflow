@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import logging
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class HealerAgentMixin:
@@ -24,6 +25,10 @@ class HealerAgentMixin:
         Template method that handles validation and error wrapping.
         Subclasses should implement `_heal_impl`.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HealerAgentMixin.heal")
+
         if not isinstance(violation, dict):
             return {"status": "failed", "errors": ["Violation must be a dictionary"]}
         try:

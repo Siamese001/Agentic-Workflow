@@ -30,6 +30,7 @@ import hashlib
 import json
 from dataclasses import dataclass, field
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass(frozen=True)
@@ -146,6 +147,10 @@ class EvaluationReport:
         )
 
     def canonical_bytes(self) -> bytes:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "EvaluationReport.canonical_bytes")
+
         d = self.to_dict()
         d.pop("metadata", None)
         return json.dumps(d, sort_keys=True, separators=(",", ":")).encode("utf-8")
@@ -207,6 +212,10 @@ class EvaluationDeltaReport:
         cls, delta_report_id: str, baseline: EvaluationReport, candidate: EvaluationReport
     ) -> EvaluationDeltaReport:
         """Compute a delta report from two EvaluationReport instances."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "EvaluationDeltaReport.from_reports")
+
         better = (
             candidate.context_completeness_score > baseline.context_completeness_score
             or candidate.support_score > baseline.support_score

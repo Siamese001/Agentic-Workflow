@@ -12,6 +12,7 @@ from __future__ import annotations
 
 from enum import Enum
 from typing import Any, Protocol
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class ApprovalDecision(Enum):
@@ -115,6 +116,10 @@ class DefaultRuleBasedGate:
         ApprovalDecision
             APPROVE or REJECT.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "DefaultRuleBasedGate.decide")
+
         risk_tier = self.risk_classifier.classify(pkg)
         if risk_tier >= self.high_impact_threshold:
             if self.allow_high_impact:
@@ -173,6 +178,10 @@ class DefaultRiskClassifier:
         int
             Risk tier (0-4).
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "DefaultRiskClassifier.classify")
+
         num_surfaces = getattr(pkg, "num_surfaces", 1)
         max_delta = getattr(pkg, "max_delta", 0.0)
         affects_l5 = getattr(pkg, "affects_l5", False)

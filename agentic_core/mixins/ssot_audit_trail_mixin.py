@@ -20,6 +20,7 @@ import json
 import logging
 import time
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 _logger = logging.getLogger("SSOTAuditTrail")
 
@@ -62,6 +63,10 @@ class SSOTAuditTrailMixin:
         dict
             The complete audit entry (also appended to state["audit_chain"]).
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SSOTAuditTrailMixin.emit_ssot_audit_entry")
+
         policy_hash = getattr(self, "active_policy_hash", "unknown")
         trace_id = getattr(self, "trace_id", "unknown")
         actor = self.__class__.__name__

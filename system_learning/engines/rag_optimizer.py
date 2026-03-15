@@ -20,6 +20,7 @@ from system_learning.validators.dampening import (
     assert_cooldown_ok,
     assert_min_sample_size,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 # =============================================================================
 # ChangePackage (Minimal Implementation for Phase 3)
@@ -52,6 +53,10 @@ class RAGChangePackage:
 
     def canonical_bytes(self) -> bytes:
         """Return deterministic canonical byte representation."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RAGChangePackage.canonical_bytes")
+
         # Canonical concatenation with delimiter
         parts = [
             self.surface_name.encode("utf-8"),

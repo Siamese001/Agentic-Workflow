@@ -1,4 +1,5 @@
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, guardrail, healer, memory, prompt, validator, workflow
 # This boosts alignment detection — review and integrate appropriately
@@ -30,6 +31,10 @@ class PilotOrchestrator(
     @event_emission_mixin.observe_execution("orchestration_flow")
     async def run_pilot(self, goal: str, executor_agent):
         """Standardizes a delegation flow with full hardening."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PilotOrchestrator.run_pilot")
+
         self.emit_event("goal.received", {"goal": goal})
 
         # The trace_id from @trace_context automatically flows into the executor

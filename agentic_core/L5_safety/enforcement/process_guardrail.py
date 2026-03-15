@@ -21,6 +21,7 @@ import signal
 import threading
 from pathlib import Path
 from typing import Final
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 logger = logging.getLogger(__name__)
 BLOCKED_COMMANDS: Final[frozenset[str]] = frozenset(
@@ -129,6 +130,13 @@ class ProcessGuard:
         Returns:
             Dict with 'terminated' and 'failed' PID lists.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "ProcessGuard.terminate_all")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:ProcessGuard.terminate_all".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         result = {"terminated": [], "failed": []}
         with self._pid_lock:
             pids_to_kill = self._pids.copy()

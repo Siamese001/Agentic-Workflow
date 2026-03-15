@@ -13,6 +13,7 @@ from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from agentic_core.adg.runtime.query_engine import ADGRuntimeQueryEngine
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 logger = logging.getLogger(__name__)
 
 
@@ -31,6 +32,10 @@ class GraphAwareCache:
 
     def get(self, key: str) -> Any | None:
         """Return cached value or None if not present."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "GraphAwareCache.get")
+
         entry = self._cache.get(key)
         if entry is not None:
             self._hits += 1

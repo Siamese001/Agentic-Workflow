@@ -21,6 +21,7 @@ import hmac
 import logging
 from dataclasses import dataclass
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, emit_replay_key, emit_determinism_digest
 
 _log = logging.getLogger(__name__)
 
@@ -51,6 +52,12 @@ class PolicyHashValidationResult:
     policy_id: str = _POLICY_ID
 
     def format(self) -> str:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "PolicyHashValidationResult.format")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         status = "PASS" if self.passed else "FAIL"
         return (
             f"[{self.policy_id}] {status} packet='{self.packet_id}' "
@@ -128,6 +135,12 @@ class PolicyHashEnforcer:
             When the packet's policy_hash is missing or does not match the
             active Merkle root, AND mode is ``"HARD_FAIL"``.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "PolicyHashEnforcer.enforce")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         result = self.validate(packet)
         if not result.passed:
             _log.error("[L0-PolicyHash] %s", result.format())

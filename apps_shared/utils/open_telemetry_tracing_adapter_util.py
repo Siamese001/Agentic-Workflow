@@ -22,6 +22,7 @@ try:
     OTEL_AVAILABLE = True
 except ImportError:
     OTEL_AVAILABLE = False
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 logger = logging.getLogger(__name__)
 
 
@@ -161,6 +162,10 @@ class OpenTelemetryTracingAdapter:
         Yields:
             Span context
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "OpenTelemetryTracingAdapter.trace_orchestrator")
+
         span_metadata = SpanMetadata(
             span_type=SpanType.ORCHESTRATOR,
             component="NervousSystem",

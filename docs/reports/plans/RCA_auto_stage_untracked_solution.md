@@ -1,8 +1,8 @@
 # RCA: Auto-Stage Untracked Files Solution
 
-**Date:** 2026-03-13  
-**Issue:** Untracked files never committed, requiring manual `git add` before each commit  
-**Solution:** Pre-commit hook to automatically stage untracked files  
+**Date:** 2026-03-13
+**Issue:** Untracked files never committed, requiring manual `git add` before each commit
+**Solution:** Pre-commit hook to automatically stage untracked files
 **Status:** Implemented
 
 ## Problem Statement
@@ -58,16 +58,16 @@ def should_auto_stage(filepath: str) -> bool:
     # Exclude ADG archives (intentionally local-only)
     if "artifacts/adg/_archive/" in filepath:
         return False
-    
+
     # Exclude compressed files in ADG directory
     if filepath.endswith(".gz") and "artifacts/adg/" in filepath:
         return False
-    
+
     # Exclude temporary files
     temp_patterns = ["_temp_", "tmp", ".tmp", "_out_", "_capture_"]
     if any(pattern in filepath for pattern in temp_patterns):
         return False
-    
+
     # Auto-stage everything else
     return True
 ```
@@ -131,23 +131,23 @@ git commit -m "Add documentation"
 ## Edge Cases Handled
 
 ### Case 1: ADG Archives
-**Scenario:** ADG generation creates compressed archives  
-**Behavior:** Excluded by `artifacts/adg/_archive/` pattern  
+**Scenario:** ADG generation creates compressed archives
+**Behavior:** Excluded by `artifacts/adg/_archive/` pattern
 **Result:** Archives remain local-only ✅
 
 ### Case 2: Documentation Files
-**Scenario:** User creates `docs/technical/Error & Exception Handling.md`  
-**Behavior:** Auto-staged (not in exclusion list)  
+**Scenario:** User creates `docs/technical/Error & Exception Handling.md`
+**Behavior:** Auto-staged (not in exclusion list)
 **Result:** File committed automatically ✅
 
 ### Case 3: Temporary Files
-**Scenario:** Test creates `_temp_output.txt`  
-**Behavior:** Excluded by `_temp_` pattern  
+**Scenario:** Test creates `_temp_output.txt`
+**Behavior:** Excluded by `_temp_` pattern
 **Result:** File remains untracked ✅
 
 ### Case 4: Current ADG Artifacts
-**Scenario:** ADG generation creates `adg_indexed_03132026_1902.sqlite`  
-**Behavior:** Auto-staged (not in `_archive/` directory)  
+**Scenario:** ADG generation creates `adg_indexed_03132026_1902.sqlite`
+**Behavior:** Auto-staged (not in `_archive/` directory)
 **Result:** Current ADG committed ✅
 
 ## Verification

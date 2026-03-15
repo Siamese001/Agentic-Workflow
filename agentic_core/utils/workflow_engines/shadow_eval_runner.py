@@ -17,6 +17,7 @@ from ..schemas.evaluation_dataset_schema import EvaluationDataset
 from ..schemas.evaluation_result_schema import DeltaReport, EvaluationReport
 from .drift_monitor import AnswerQualityMonitor, RetrievalDriftMonitor
 from .snapshots import RetrievalDriftSnapshot
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class ShadowEvaluationRunner:
@@ -57,6 +58,10 @@ class ShadowEvaluationRunner:
         Returns:
             ShadowEvaluationResult with delta report and monitoring snapshots
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ShadowEvaluationRunner.run")
+
         replay_runner = ReplayEvaluationRunner(metrics=self.metrics, l4_store=self.l4_store)
         delta_report = replay_runner.run(
             dataset=dataset, config_a=self.baseline_config, config_b=self.candidate_config

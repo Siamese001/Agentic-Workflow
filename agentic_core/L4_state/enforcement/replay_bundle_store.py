@@ -11,6 +11,7 @@ import hashlib
 from dataclasses import dataclass, field
 
 from agentic_core.L4_state.types.replay_bundle_types import ReplayBundle
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 def _sha256(data: bytes) -> str:
@@ -33,6 +34,10 @@ class ReplayBundleStore:
         Persist a ReplayBundle. Returns replay_hash.
         Idempotent: storing the same bundle twice is a no-op.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "ReplayBundleStore.store_replay_bundle")
+
         self._store[bundle.replay_hash] = bundle
         return bundle.replay_hash
 
@@ -138,6 +143,10 @@ class ReplayVerifier:
         ------
         ReplayVerificationError on any failure.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "ReplayVerifier.verify")
+
         checks: list[str] = []
         recomputed = _sha256(bundle.canonical_bytes())
         if recomputed != bundle.replay_hash:

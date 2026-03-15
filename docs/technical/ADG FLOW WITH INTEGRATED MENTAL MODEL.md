@@ -1,7 +1,7 @@
 =========================================================================================================================
                                      ADG + RUNTIME FLOW WITH INTEGRATED MENTAL MODEL
 =========================================================================================================================
-Goal: Show in one view [1] What is INSIDE the ADG, [2] What consumes the ADG catalog, 
+Goal: Show in one view [1] What is INSIDE the ADG, [2] What consumes the ADG catalog,
       [3] Where runtime behavior fits, and [4] How static structure and runtime behavior differ.
 
 STATIC VIEW (The Expected Structure)                                RUNTIME VIEW (The Observed Behavior)
@@ -30,7 +30,7 @@ Mental Model:                                                       Mental Model
 ║ ModuleA ──imports──> ModuleB                     ║======(queries)======>----------------------------------------------
 ║ ModuleC ──calls──> OpenAI                        ║      for rules   Programs that inspect runtime behavior.
 ║ ModuleD ──writes──> L4_state                     ║                  They cross-reference telemetry against the ADG!
-║ Mental Model: Library catalog database. Shows    ║                  Mental Model: Librarians watching the cameras 
+║ Mental Model: Library catalog database. Shows    ║                  Mental Model: Librarians watching the cameras
 ║ organization. Does NOT enforce rules/behavior.   ║                  and comparing reader actions to the master catalog
 ╚══════════════════════════════════════════════════╝                  to check if procedures are followed.
       │                                                                   │
@@ -61,6 +61,6 @@ HOW THEY WORK TOGETHER
 ADG provides EXPECTED structure (Catalog says where a book should be).
 Runtime provides OBSERVED behavior (Observation says what people actually did with it).
 
-ONE-LINE MENTAL MODEL: 
+ONE-LINE MENTAL MODEL:
 ADG = Library Catalog │ Analyzers = Librarians reading catalog │ Runtime = Readers using library │ Telemetry = Log
 =========================================================================================================================

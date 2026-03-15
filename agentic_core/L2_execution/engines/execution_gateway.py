@@ -17,6 +17,7 @@ from agentic_core.L2_execution.providers import get_clock
 from agentic_core.L2_execution.types.execution_trace_types import ExecutionTrace, ExecutionTraceBuilder
 from agentic_core.L2_execution.types.ptc_tool_contracts_types import ToolContractViolation, ToolResult
 from agentic_core.L2_execution.types.sandbox_envelope_types import SandboxEnvelope, SignatureVerificationError
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 _guardrail = get_guardrail_gate()
 _proof_emitter = ExecutionProofEmitter("L2.execution_gateway")
@@ -74,6 +75,13 @@ class ExecutionGateway:
             BudgetExceeded: if any budget cap is breached
             SignatureBoundaryError: if envelope signature verification fails (fail-closed)
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "ExecutionGateway.execute_with_trace")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:ExecutionGateway.execute_with_trace".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         with _proof_emitter.proof_op(f"execute_with_trace:{envelope.tool_name}"):
             pass
         with _guardrail.applies_guardrail("execute", envelope.tool_name):

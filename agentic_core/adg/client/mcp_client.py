@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import json
 import logging
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -28,6 +29,10 @@ class _InMemoryStore:
         self._relations: set[tuple[str, str, str]] = set()
 
     def upsert_entity(self, name: str, entity_type: str, observations: list[str]) -> None:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "_InMemoryStore.upsert_entity")
+
         if name not in self._entities:
             self._entities[name] = {"name": name, "entityType": entity_type, "observations": []}
         existing_obs = set(self._entities[name]["observations"])
@@ -100,6 +105,10 @@ class ADGMCPClient:
 
     def upsert_entity(self, name: str, entity_type: str, observations: list[str] | None = None) -> None:
         """Create or update an entity. Idempotent."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ADGMCPClient.upsert_entity")
+
         obs = sorted(set(observations or []))
         self._store.upsert_entity(name, entity_type, obs)
 

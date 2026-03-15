@@ -1,8 +1,8 @@
 # RCA: HITL Violation - Wave 4 Implementation Without User Choice
 
-**Date**: 2026-03-14  
-**Status**: ✅ RESOLVED  
-**Severity**: MEDIUM  
+**Date**: 2026-03-14
+**Status**: ✅ RESOLVED
+**Severity**: MEDIUM
 **Category**: Process Violation - HITL Discipline
 
 ---
@@ -145,7 +145,7 @@ Then **WAIT** for user selection before proceeding.
 
 Before proceeding with Wave 4 Phase 2 (EvalGuard), will present:
 - Option A: Decorator-based eval guard
-- Option B: Context manager eval guard  
+- Option B: Context manager eval guard
 - Option C: Direct call eval guard
 - Option D: Skip eval guard, proceed to Wave 5
 
@@ -164,7 +164,7 @@ Before proceeding with Wave 4 Phase 2 (EvalGuard), will present:
 
 ## Sign-off
 
-**RCA Status**: ✅ RESOLVED  
-**Corrective Actions**: COMPLETE  
-**Preventive Measures**: IN PLACE  
+**RCA Status**: ✅ RESOLVED
+**Corrective Actions**: COMPLETE
+**Preventive Measures**: IN PLACE
 **User Action Required**: Select approach for Phase 2 (if proceeding)

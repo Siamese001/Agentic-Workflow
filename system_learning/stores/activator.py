@@ -10,6 +10,7 @@ import json
 import logging
 from dataclasses import dataclass, field
 from pathlib import Path
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -22,6 +23,10 @@ class InMemoryActivator:
 
     def activate(self, component: str, version_id: str) -> None:
         """Activate a specific version for a component."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "InMemoryActivator.activate")
+
         logger.info("Activating component=%s version=%s", component, version_id)
         self._active[component] = version_id
 
@@ -54,6 +59,10 @@ class FileBackedActivator:
 
     def activate(self, component: str, version_id: str) -> None:
         """Activate a specific version for a component."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "FileBackedActivator.activate")
+
         logger.info("Activating component=%s version=%s", component, version_id)
         self._active[component] = version_id
         self._save()

@@ -15,6 +15,7 @@ from typing import Any
 from apps_rg.config.ReasoningToggles import ReasoningToggles, get_toggles
 
 from apps_rg.types.SovereignContext import ImmutableStagingBuffer, TraceRegistry
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass
@@ -32,6 +33,10 @@ class SovereignContext:
 
     def add_signal(self, signal: str) -> None:
         """Add a signal to the context and log it."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SovereignContext.add_signal")
+
         self.signals.add(signal)
         self.trace.add_trace("signal_fired", {"signal": signal})
 

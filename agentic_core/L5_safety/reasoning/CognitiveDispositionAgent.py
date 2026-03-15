@@ -10,6 +10,7 @@ from pathlib import Path
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L5_safety.config.structure_blueprint import LAYER_ROOTS
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 Logger = logging.getLogger(__name__)
 
@@ -58,6 +59,13 @@ class CognitiveDispositionAgent(SovereignBaseAgent):
         self, file_path: Path, violation_type: str, context: dict = None
     ) -> DispositionDecision:
         """Analyze violation using Native LLM Gateway."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "CognitiveDispositionAgent.analyze_violation_async")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:CognitiveDispositionAgent.analyze_violation_async".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         context = context or {}
         self.analytics["analyses_performed"] += 1
         cache_key = f"cda:{file_path.name}:{violation_type}"

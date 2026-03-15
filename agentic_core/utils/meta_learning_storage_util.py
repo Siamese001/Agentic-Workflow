@@ -16,6 +16,7 @@ import json
 import logging
 import threading
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger = logging.getLogger(__name__)
 
@@ -35,6 +36,10 @@ class MetaLearningStorage:
     @classmethod
     def ensure_memory_connection(cls, agent_name: str) -> None:
         """Connect to SemanticCacheManager singleton (thread-safe, circuit-breaker)."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "MetaLearningStorage.ensure_memory_connection")
+
         if cls._lobotomized:
             return
         if cls._memory is None:

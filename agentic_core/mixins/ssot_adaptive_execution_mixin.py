@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import logging
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 _logger = logging.getLogger("SSOTAdaptiveExecution")
 EXECUTION_MODES = ("standard", "aggressive", "conservative", "minimal")
@@ -33,6 +34,10 @@ class SSOTAdaptiveExecutionMixin:
     @property
     def execution_mode(self) -> str:
         """Current execution mode. Locked to 'standard' under replay."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SSOTAdaptiveExecutionMixin.execution_mode")
+
         if getattr(self, "is_replay_mode", False):
             return "standard"
         return self._ssot_execution_mode

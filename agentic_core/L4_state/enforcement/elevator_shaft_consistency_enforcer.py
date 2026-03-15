@@ -31,6 +31,7 @@ from agentic_core.L0_routing.types.determinism_types import (
     SemanticClockSnapshot,
     validate_semantic_clock,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger = logging.getLogger(__name__)
 
@@ -141,6 +142,10 @@ class ElevatorShaftConsistencyEnforcer:
         Raises:
             MonotonicityViolation: if the new tick is less than the last recorded tick.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "ElevatorShaftConsistencyEnforcer.record_advance")
+
         validate_semantic_clock(snapshot, context=f"layer={layer}")
         record = self._layer_records.setdefault(layer, LayerClockRecord(layer=layer))
         if snapshot.tick < record.last_tick:

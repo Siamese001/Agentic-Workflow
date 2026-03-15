@@ -12,6 +12,7 @@ from functools import wraps
 from typing import Any
 
 from agentic_core.L2_execution.providers import get_clock
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, emit_replay_key, emit_determinism_digest
 
 Logger = logging.getLogger(__name__)
 
@@ -45,6 +46,12 @@ class SeamAuditLogger:
 
     def enable(self):
         """Enable audit logging."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "SeamAuditLogger.enable")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         self._enabled = True
         Logger.info("Seam audit logging enabled")
 

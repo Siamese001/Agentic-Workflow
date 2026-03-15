@@ -26,8 +26,8 @@ print("=" * 80)
 
 # Find all Redis-related nodes
 cursor.execute("""
-    SELECT adg_name, entity_type, layer, confidence 
-    FROM nodes 
+    SELECT adg_name, entity_type, layer, confidence
+    FROM nodes
     WHERE adg_name LIKE '%redis%' OR adg_name LIKE '%cache%'
     ORDER BY layer, adg_name
     LIMIT 50

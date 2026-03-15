@@ -8,6 +8,7 @@ from typing import Any
 from uuid import UUID, uuid4
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 MAX_RETRIES = 3
@@ -117,6 +118,10 @@ class AgentConfig(BaseEntity):
         Validate agent name format.
         HARDENED: Added validation to prevent injection.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "AgentConfig.validate_name")
+
         import re
 
         from pydantic_core import PydanticCustomError

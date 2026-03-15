@@ -32,6 +32,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from agentic_core.L2_execution.providers import get_clock
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 _log = logging.getLogger(__name__)
 _OBSERVE_LOG = logging.getLogger("adg.observes_runtime_state")
@@ -149,6 +150,10 @@ class RunScopedStateLedger:
 
     def record_read(self, key: str, state_version: int) -> ReadEntry:
         """Record a state read and emit reads_runtime_state."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "RunScopedStateLedger.record_read")
+
         entry = ReadEntry(
             run_id=self._run_id,
             trace_id=self._trace_id,

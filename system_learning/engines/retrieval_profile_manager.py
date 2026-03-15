@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from system_learning.engines.l4_state_writer import L4StateWriter
 from system_learning.engines.retrieval_profile import RetrievalProfile
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class RetrievalProfileManager:
@@ -52,6 +53,10 @@ class RetrievalProfileManager:
         Raises:
             ValueError: If no active profile can be loaded or bootstrapped.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RetrievalProfileManager.load_active_profile")
+
         if self._active_profile_cache is not None:
             return self._active_profile_cache
         profile_id = self.get_active_profile_id()

@@ -3,6 +3,7 @@ from typing import Any
 from pydantic import BaseModel, Field, field_validator
 
 from agentic_core.config.core.base_entity_config import BaseEntity
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class MemoryItem(BaseEntity):
@@ -18,6 +19,10 @@ class MemoryItem(BaseEntity):
     @field_validator("embedding")
     @classmethod
     def check_vector_integrity(cls, v: list[float]) -> list[float]:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "MemoryItem.check_vector_integrity")
+
         if not v:
             raise ValueError("Embedding vector cannot be empty")
         return v

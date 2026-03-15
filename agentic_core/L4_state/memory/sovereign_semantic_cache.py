@@ -23,6 +23,7 @@ def get_redis_client():
 
 
 from agentic_core.utils.decorators_compat_util import standard_heal
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger: Any = logging.getLogger(__name__)
 redis_cache_ttl: Any = 60 * 60 * 24 * 7
@@ -81,6 +82,10 @@ class SovereignSemanticCache(SovereignBaseAgent):
 
     def cache_file(self, file_path: str, code: str, metadata: dict) -> None:
         """Embed and cache with dual-store synchronization."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "SovereignSemanticCache.cache_file")
+
         key: Any = self._cache_key(file_path)
         if self.redis:
             try:

@@ -19,6 +19,7 @@ from collections import OrderedDict
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger = logging.getLogger(__name__)
 
@@ -72,6 +73,10 @@ class CachingMixin:
         self, enabled: bool | None = None, max_size: int | None = None, default_ttl: float | None = None
     ) -> None:
         """Configure caching settings."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "CachingMixin.configure_cache")
+
         if max_size is not None and max_size <= 0:
             raise ValueError("max_size must be positive")
         if default_ttl is not None and default_ttl <= 0:

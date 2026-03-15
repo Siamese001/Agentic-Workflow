@@ -15,6 +15,7 @@ from agentic_core.utils.detection_protocol_util import DetectionSignalProtocol
 from agentic_core.utils.meta_learning_types_util import MetaLearningProtocol
 from agentic_core.utils.review_protocol_util import HumanReviewProtocol
 from agentic_core.utils.verification_types_util import VerificationGateProtocol
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, emit_replay_key, emit_determinism_digest
 
 logger = logging.getLogger(__name__)
 
@@ -38,6 +39,12 @@ class ComponentFactory:
         Returns:
             VerificationGateProtocol instance or None if disabled
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "ComponentFactory.get_verification_gate")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         if not FeatureFlagManager.is_enabled("ENABLE_VERIFICATION_GATE"):
             logger.debug("ComponentFactory: Verification gate disabled")
             return None

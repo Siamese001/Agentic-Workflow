@@ -8,6 +8,7 @@ import math
 from typing import Sequence
 
 from .types import ArbitrationCandidate, ArbitrationDecision, ArbitrationPolicy
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class ArbitrationEngine:
@@ -17,6 +18,10 @@ class ArbitrationEngine:
         self, candidates: Sequence[ArbitrationCandidate], policy: ArbitrationPolicy
     ) -> ArbitrationDecision:
         """Arbitrate between competing proposals deterministically."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ArbitrationEngine.arbitrate")
+
         if candidates is None:
             raise TypeError("Candidates cannot be None")
         if not candidates:

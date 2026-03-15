@@ -17,6 +17,7 @@ from datetime import datetime
 from typing import Any, TypeVar
 
 from apps_rg.utils.mixins import HealerMixin, MCPHardenedMixin
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger = logging.getLogger(__name__)
 T = TypeVar("T")
@@ -79,6 +80,10 @@ class ImmutableStagingBuffer(MCPHardenedMixin, HealerMixin):
         Raises:
             PermissionError: If the key has already been written to.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ImmutableStagingBuffer.write")
+
         if key in self._locked_keys:
             self._mcp_audit("write_violation", {"key": key, "agent": source_agent})
             raise PermissionError(f"Key '{key}' is LOCKED. Immutable violation by {source_agent}.")

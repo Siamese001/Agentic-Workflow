@@ -91,7 +91,7 @@ tests/architecture/test_wave1_phase1_2_sovereignty.py::test_detect_upward_import
 tests/architecture/test_wave1_phase1_2_sovereignty.py::test_detect_upward_imports_l2_importing_l3_is_not_flagged PASSED [ 79%]
 tests/architecture/test_wave1_phase1_2_sovereignty.py::test_direct_provider_patterns_are_top_level_package_names PASSED [ 83%]
 tests/architecture/test_wave1_phase1_2_sovereignty.py::test_direct_provider_patterns_does_not_contain_agentic_core PASSED [ 87%]
-tests/architecture/test_wave1_phase1_2_sovereignty.py::test_no_real_provider_imports_outside_l2 
+tests/architecture/test_wave1_phase1_2_sovereignty.py::test_no_real_provider_imports_outside_l2
 -------------------------------- live log call --------------------------------
 2026-03-05 23:12:33 [ WARNING] tools.semantic_gap_analyzer: Failed to parse C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\FileClassificationAgent.py: unexpected indent (FileClassificationAgent.py, line 2075)
 PASSED                                                                   [ 91%]
@@ -157,4 +157,3 @@ collected 24 / executed 24
 | Off-by-one: same-layer imports wrongly flagged as upward | test_detect_upward_imports_same_layer_not_upward |
 | Hidden fallback: missing layer returns non-empty violation list | test_detect_upward_imports_no_layer_returns_empty |
 | Duplicate mutation: non-L2 provider SDK imports go undetected | test_no_real_provider_imports_outside_l2 |
-

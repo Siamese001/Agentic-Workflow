@@ -13,6 +13,7 @@ import logging
 from typing import Any
 
 from apps_rg.engines.base_rg_engine import BaseRGEngine
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger = logging.getLogger(__name__)
 
@@ -44,6 +45,10 @@ class SectionRankerEngine(BaseRGEngine):
         """
         Reorder sections based on Role Archetype.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SectionRankerEngine.execute")
+
         content = self.ctx.buffer.read("optimized_content")
         if not content:
             content = self.ctx.buffer.read("hop2_enrichment")

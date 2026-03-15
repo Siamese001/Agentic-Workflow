@@ -47,6 +47,7 @@ from system_learning.engines.incident_bundle_embedder import IncidentBundleEmbed
 from system_learning.engines.mutation_diff_embedder import MutationDiffEmbedder
 from system_learning.engines.path_d_preference_embedder import PathDPreferenceEmbedder
 from system_learning.engines.policy_guardrail_embedder import PolicyGuardrailEmbedder
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -88,6 +89,10 @@ class SemanticMemoryRegistry:
         Returns:
             The singleton SemanticMemoryRegistry instance.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SemanticMemoryRegistry.get")
+
         global _REGISTRY_INSTANCE
         with _REGISTRY_LOCK:
             if _REGISTRY_INSTANCE is None:

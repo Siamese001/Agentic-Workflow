@@ -63,6 +63,7 @@ except ImportError:
     InjectionScope = str
     InjectionType = str
     MicroStage = str
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -202,6 +203,10 @@ class PromptInjectionLoader:
 
     def save_injection(self, injection_id: str, injection: InjectionPattern) -> None:
         """Save an injection pattern to file."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PromptInjectionLoader.save_injection")
+
         file_path = self.config.injection_dir / f"{injection_id}.json"
         with open(file_path, "w", encoding="utf-8") as f:
             json.dump(injection, f, indent=2, default=str)

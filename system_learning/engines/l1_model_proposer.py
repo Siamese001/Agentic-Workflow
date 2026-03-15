@@ -13,6 +13,7 @@ import json
 import logging
 from dataclasses import dataclass
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 _CONFIDENCE_DRIFT_THRESHOLD = 0.15
@@ -34,6 +35,10 @@ class L1ModelChangePackage:
     snapshot_id: str
 
     def canonical_bytes(self) -> bytes:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "L1ModelChangePackage.canonical_bytes")
+
         data = {
             "surface_name": self.surface_name,
             "parameter": self.parameter,
@@ -64,6 +69,10 @@ class L1ModelProposer:
         config : dict
             Current L1 config with ``"temperature"``.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "L1ModelProposer.propose")
+
         if not isinstance(metrics, dict) or not isinstance(config, dict):
             return None
         confidence_drift = metrics.get("l1_confidence_drift", 0.0)

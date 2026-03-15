@@ -6,6 +6,7 @@ Provides foundational classes for tool registration and execution.
 
 import logging
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, emit_replay_key, emit_determinism_digest
 
 logger = logging.getLogger(__name__)
 
@@ -43,6 +44,12 @@ class tool_registry:
 
     def register(self, tool: BaseTool) -> None:
         """Register a tool."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "tool_registry.register")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         self._tools[tool.name] = tool
         logger.debug(f"Registered tool: {tool.name}")
 

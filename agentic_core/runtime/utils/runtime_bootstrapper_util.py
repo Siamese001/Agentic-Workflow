@@ -20,6 +20,7 @@ from agentic_core.L5_safety.validators.cost_governor_validator import CostGovern
 from agentic_core.runtime.P1_core.SubatomicHop import SubatomicHop
 
 from agentic_core.L5_safety.enforcement.pii_vault_enforcer import PIIVault
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 LOGGER = logging.getLogger(__name__)
 Logger: Any = logging.getLogger(__name__)
@@ -37,6 +38,10 @@ class runtime_bootstrapper:
 
     def assemble_hop(self, role: str) -> SubatomicHop:
         """Assembles a 100% Gravity-Compliant Hop with all 13 injected tools."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "runtime_bootstrapper.assemble_hop")
+
         LOGGER.info(f"Bootstrapper: Assembling Sovereign Hop for role -> {role}")
         return SubatomicHop(
             role=role,

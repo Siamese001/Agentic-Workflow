@@ -13,6 +13,7 @@ from __future__ import annotations
 import hashlib
 import json
 from dataclasses import dataclass
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 def _sha256(data: bytes) -> str:
@@ -61,6 +62,10 @@ class DetectionSignal:
 
     def canonical_bytes(self) -> bytes:
         """Deterministic serialization excluding signal_hash (used to compute it)."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L6_OBSERVABILITY, "DetectionSignal.canonical_bytes")
+
         doc = {
             "anomaly_score": self.anomaly_score,
             "created_at_utc": self.created_at_utc,

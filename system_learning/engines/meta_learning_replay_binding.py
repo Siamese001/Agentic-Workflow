@@ -29,6 +29,7 @@ from __future__ import annotations
 import hashlib
 import json
 from dataclasses import dataclass
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass(frozen=True)
@@ -70,6 +71,10 @@ class MetaLearningReplayBinding:
 
     def to_line(self) -> str:
         """Serialise to the canonical ``REPLAY-BINDING: <json>`` log line."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "MetaLearningReplayBinding.to_line")
+
         payload = json.dumps(self.to_dict(), separators=(",", ":"), sort_keys=True, ensure_ascii=True)
         return f"REPLAY-BINDING: {payload}"
 

@@ -21,6 +21,7 @@ Success Metrics: 41% line reduction, 50% nesting reduction, 103% preservation
 """
 import ast
 from dataclasses import dataclass
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass
@@ -104,6 +105,10 @@ class FlatteningPattern:
         Returns:
             Tuple of (complexity metrics, extraction candidates)
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "FlatteningPattern.analyze_method")
+
         try:
             tree = ast.parse(method_code)
         except SyntaxError:

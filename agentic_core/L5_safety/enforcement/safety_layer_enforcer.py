@@ -10,6 +10,7 @@ if TYPE_CHECKING:
     from agentic_core.governor import create_cost_governor
     from agentic_core.overseer import create_overseer
     from agentic_core.PiiVault import create_pii_vault
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 LOGGER = logging.getLogger(__name__)
 Logger: Any = logging.getLogger(__name__)
 
@@ -41,6 +42,13 @@ class L5SafetyLayer:
         Returns:
             True if action is safe and approved, False otherwise
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "L5SafetyLayer.validate_action")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:L5SafetyLayer.validate_action".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         self.validation_count += 1
         try:
             Violation: Any = await self.overseer.validate_action(request)

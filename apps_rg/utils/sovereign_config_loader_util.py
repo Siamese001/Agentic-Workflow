@@ -15,6 +15,7 @@ import logging
 from pathlib import Path
 
 from .AgentSpec import AgentSpec, OrchestrationTopology, RGAgentSpecs
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger = logging.getLogger(__name__)
 _RG_SPECS_CACHE: RGAgentSpecs | None = None
@@ -86,6 +87,10 @@ class SovereignConfigLoader:
     @classmethod
     def load_topology(cls, path: Path = None) -> OrchestrationTopology:
         """Load the orchestration topology from JSON or return cached version."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SovereignConfigLoader.load_topology")
+
         if path is None:
             path = Path("apps_rg/domain/config/agent_specs.json")
         if cls._topology:

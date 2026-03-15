@@ -15,6 +15,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from typing import Any, TypeVar
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 T = TypeVar("T")
@@ -85,6 +86,10 @@ class CircuitBreakerMixin:
             recovery_timeout: Seconds before recovery attempt
             success_threshold: Successes needed to close circuit
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "CircuitBreakerMixin.configure_circuit_breaker")
+
         self._failure_threshold = failure_threshold
         self._recovery_timeout = recovery_timeout
         self._success_threshold = success_threshold

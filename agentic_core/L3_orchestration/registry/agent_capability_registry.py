@@ -16,6 +16,7 @@ from __future__ import annotations
 import logging
 from dataclasses import dataclass, field
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -65,6 +66,10 @@ class AgentCapabilityRegistry:
 
         Emits ``declares_capability`` ADG edge.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "AgentCapabilityRegistry.register")
+
         self._registry[spec.agent_name] = spec
         logger.debug(
             "CAPABILITY_REGISTRY declares_capability agent=%s layer=%s caps=%s handoffs=%s",

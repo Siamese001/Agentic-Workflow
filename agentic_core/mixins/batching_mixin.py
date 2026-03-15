@@ -19,6 +19,7 @@ from dataclasses import dataclass
 from typing import Any, TypeVar
 
 from agentic_core.L0_routing.config.path_constants import DEFAULT_TIMEOUT
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 T = TypeVar("T")
 Logger = logging.getLogger(__name__)
@@ -72,6 +73,10 @@ class BatchingMixin:
         lazy_init_enabled: bool | None = None,
     ) -> None:
         """Configure batching settings."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "BatchingMixin.configure_batching")
+
         if batch_size is not None and batch_size <= 0:
             raise ValueError("batch_size must be positive")
         if async_pool_size is not None and async_pool_size <= 0:

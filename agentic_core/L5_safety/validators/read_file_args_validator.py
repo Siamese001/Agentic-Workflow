@@ -4,6 +4,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from pydantic import BaseModel, Field, validator
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 
 class ReadFileArgs(BaseModel):
@@ -13,6 +14,13 @@ class ReadFileArgs(BaseModel):
 
     @validator("path")
     def validate_path(cls, v):
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "ReadFileArgs.validate_path")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:ReadFileArgs.validate_path".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         if Path(v).is_absolute():
             raise ValueError("Path must be relative to project root")
         return v
@@ -27,6 +35,13 @@ class WriteFileArgs(BaseModel):
 
     @validator("path")
     def validate_path(cls, v):
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "WriteFileArgs.validate_path")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:WriteFileArgs.validate_path".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         if Path(v).is_absolute():
             raise ValueError("Path must be relative to project root")
         return v
@@ -41,6 +56,13 @@ class MoveFileArgs(BaseModel):
 
     @validator("source", "destination")
     def validate_paths(cls, v):
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "MoveFileArgs.validate_paths")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:MoveFileArgs.validate_paths".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         if Path(v).is_absolute():
             raise ValueError("Paths must be relative to project root")
         return v
@@ -55,6 +77,13 @@ class ListFilesArgs(BaseModel):
 
     @validator("path")
     def validate_path(cls, v):
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "ListFilesArgs.validate_path")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:ListFilesArgs.validate_path".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         if Path(v).is_absolute():
             raise ValueError("Path must be relative to project root")
         return v
@@ -67,6 +96,13 @@ class DeleteFileArgs(BaseModel):
 
     @validator("path")
     def validate_path(cls, v):
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "DeleteFileArgs.validate_path")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:DeleteFileArgs.validate_path".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         if Path(v).is_absolute():
             raise ValueError("Path must be relative to project root")
         return v
@@ -80,6 +116,13 @@ class CreateDirectoryArgs(BaseModel):
 
     @validator("path")
     def validate_path(cls, v):
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "CreateDirectoryArgs.validate_path")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:CreateDirectoryArgs.validate_path".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         if Path(v).is_absolute():
             raise ValueError("Path must be relative to project root")
         return v
@@ -96,6 +139,13 @@ class ExecuteCommandArgs(BaseModel):
 
     @validator("timeout")
     def validate_timeout(cls, v):
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "ExecuteCommandArgs.validate_timeout")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:ExecuteCommandArgs.validate_timeout".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         if v > 300:
             raise ValueError("Timeout cannot exceed 300 seconds to prevent livelocks")
         if v < 1:

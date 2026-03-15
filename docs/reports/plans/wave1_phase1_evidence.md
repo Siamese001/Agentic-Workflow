@@ -91,19 +91,19 @@ tests/architecture/test_wave1_phase1_parse_failures_and_ssot_paths.py::test_writ
 tests/architecture/test_wave1_phase1_parse_failures_and_ssot_paths.py::test_meta_learning_wrong_path_does_not_exist PASSED [ 59%]
 tests/architecture/test_wave1_phase1_parse_failures_and_ssot_paths.py::test_all_architecture_component_rule_paths_exist PASSED [ 63%]
 tests/architecture/test_wave1_phase1_parse_failures_and_ssot_paths.py::test_all_architecture_component_rule_paths_parse_cleanly PASSED [ 68%]
-tests/architecture/test_wave1_phase1_parse_failures_and_ssot_paths.py::test_analyzer_reports_no_missing_component_files 
+tests/architecture/test_wave1_phase1_parse_failures_and_ssot_paths.py::test_analyzer_reports_no_missing_component_files
 -------------------------------- live log call --------------------------------
 2026-03-05 23:07:04 [    INFO] tools.semantic_gap_analyzer: Analyzing Architecture Component Presence...
 PASSED                                                                   [ 72%]
-tests/architecture/test_wave1_phase1_parse_failures_and_ssot_paths.py::test_analyzer_write_gateway_finding_shows_present 
+tests/architecture/test_wave1_phase1_parse_failures_and_ssot_paths.py::test_analyzer_write_gateway_finding_shows_present
 -------------------------------- live log call --------------------------------
 2026-03-05 23:07:04 [    INFO] tools.semantic_gap_analyzer: Analyzing Architecture Component Presence...
 PASSED                                                                   [ 77%]
-tests/architecture/test_wave1_phase1_parse_failures_and_ssot_paths.py::test_analyzer_meta_learning_pipeline_finding_shows_present 
+tests/architecture/test_wave1_phase1_parse_failures_and_ssot_paths.py::test_analyzer_meta_learning_pipeline_finding_shows_present
 -------------------------------- live log call --------------------------------
 2026-03-05 23:07:04 [    INFO] tools.semantic_gap_analyzer: Analyzing Architecture Component Presence...
 PASSED                                                                   [ 81%]
-tests/architecture/test_wave1_phase1_parse_failures_and_ssot_paths.py::test_analyzer_no_component_finding_shows_missing_file 
+tests/architecture/test_wave1_phase1_parse_failures_and_ssot_paths.py::test_analyzer_no_component_finding_shows_missing_file
 -------------------------------- live log call --------------------------------
 2026-03-05 23:07:04 [    INFO] tools.semantic_gap_analyzer: Analyzing Architecture Component Presence...
 PASSED                                                                   [ 86%]
@@ -184,4 +184,3 @@ Analyzing Architecture Component Presence...
 | Stale path reuse: analyzer uses stale system_learning path | test_meta_learning_wrong_path_does_not_exist |
 | Hidden fallback: 'missing file' reported despite file existing at correct path | test_analyzer_write_gateway_finding_shows_present, test_analyzer_meta_learning_pipeline_finding_shows_present |
 | Order instability: import placement at wrong AST depth | test_ssot_folder_cleanup_agent_import_is_inside_method, test_forensic_discovery_prep_import_is_inside_try, test_run_guardian_hierarchy_compliance_import_is_inside_function |
-

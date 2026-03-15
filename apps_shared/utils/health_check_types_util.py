@@ -17,6 +17,7 @@ from enum import Enum
 from typing import Any
 
 from agentic_core.L0_routing.config.path_constants import DEFAULT_TIMEOUT
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -98,6 +99,10 @@ class HealthChecker:
             check_fn: Function that performs the check
             critical: If True, failure makes entire app unhealthy
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HealthChecker.register_check")
+
         self._checks[name] = (check_fn, critical)
         logger.info(f"Registered health check: {name} (critical={critical})")
 
@@ -160,6 +165,10 @@ class CommonChecks:
     @staticmethod
     def env_var_check(var_name: str, required: bool = True) -> Callable[[], CheckResult]:
         """Create a check for an environment variable."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "CommonChecks.env_var_check")
+
 
         def check() -> CheckResult:
             value = os.getenv(var_name)
@@ -282,6 +291,10 @@ class ReadinessGate:
 
     def set_ready(self) -> None:
         """Mark application as ready."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ReadinessGate.set_ready")
+
         self._ready = True
         self._reason = "Ready"
         logger.info("Application marked as ready")

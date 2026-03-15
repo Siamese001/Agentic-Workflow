@@ -4,6 +4,7 @@ from __future__ import annotations
 import logging
 from typing import Any
 from agentic_core.L3_orchestration.registry.agent_dispatch_registry import get_agent_dispatch_registry
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class AdaptiveExecutionMixin:
@@ -29,6 +30,10 @@ class AdaptiveExecutionMixin:
         Constitutional decision engine for mode selection.
         Override or extend for agent-specific logic.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "AdaptiveExecutionMixin.select_execution_mode")
+
         system_load = context.get("system_load", 0.0)
         if system_load > 0.85:
             self.Logger.warning(f"High system load ({system_load:.1%}) → switching to minimal mode")

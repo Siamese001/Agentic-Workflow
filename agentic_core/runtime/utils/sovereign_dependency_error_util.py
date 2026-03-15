@@ -9,6 +9,7 @@ from pydantic import BaseModel
 from services.configuration import ConfigurationService
 
 from runtime.core.telemetry import TraceEvent
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 if TYPE_CHECKING:
     pass
@@ -139,6 +140,10 @@ class SubatomicHop:
 
     async def run(self, context: dict) -> Any:
         """Execute the hop with zero-trust protections."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SubatomicHop.run")
+
         trace_id = context.get("trace_id", self.id)
         return await self._run_with_zero_trust(context, trace_id)
 

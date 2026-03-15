@@ -32,6 +32,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 # =============================================================================
 # CORE CONSTANTS
@@ -91,6 +92,10 @@ class ModelConfig(BaseModel):
     @classmethod
     def validate_model_name(cls, value: str) -> str:
         """[HARDENED] Ensure model name is not empty."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ModelConfig.validate_model_name")
+
         if not value.strip():
             raise ValueError("model_name cannot be empty")
         return value.strip()

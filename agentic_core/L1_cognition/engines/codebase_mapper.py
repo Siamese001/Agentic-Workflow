@@ -12,6 +12,7 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     GLOBAL_EXCLUDED_DIRS,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 LOGGER = logging.getLogger(__name__)
 Logger: Any = logging.getLogger(__name__)
@@ -68,6 +69,10 @@ class TheCartographer:
         Returns:
             Dictionary with mapping results
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L1_REASONING, "TheCartographer.map_all_repositories")
+
         LOGGER.info("🗺️  TheCartographer: Beginning semantic mapping")
         results: dict[str, Any] = {
             "primary_root": str(self.primary_root),

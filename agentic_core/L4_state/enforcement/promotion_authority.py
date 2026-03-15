@@ -8,6 +8,7 @@ import hashlib
 import logging
 import time
 from dataclasses import dataclass
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger = logging.getLogger(__name__)
 
@@ -37,6 +38,10 @@ class PromotionAuthority:
 
     def update_pointer_via_gateway(self, new_pointer: str, capability_token) -> PromotionPointerUpdate:
         """Update pointer via gateway with capability token validation."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "PromotionAuthority.update_pointer_via_gateway")
+
         if not self._write_gateway:
             raise RuntimeError("Write gateway not configured")
         if not hasattr(capability_token, "validate_scope_and_use"):

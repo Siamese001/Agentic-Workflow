@@ -13,6 +13,7 @@ All agents should use BackupManager for backup operations.
 import shutil
 from datetime import datetime
 from pathlib import Path
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class BackupManager:
@@ -38,6 +39,10 @@ class BackupManager:
         Returns:
             Path: The fully resolved, created directory path
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "BackupManager.get_backup_dir")
+
         root = Path(project_root) if project_root else Path.cwd()
         base_path = root / cls.BACKUP_ROOT / category
         if timestamped:

@@ -8,6 +8,7 @@ from __future__ import annotations
 import logging
 
 from .signature_verifier import VerificationContext
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -27,6 +28,13 @@ class SideEffectGuard:
 
     def set_context(self, context: VerificationContext) -> None:
         """Set the active verification context."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "SideEffectGuard.set_context")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:SideEffectGuard.set_context".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         if not context.is_verified:
             raise UnverifiedSideEffectError("ATTEMPT_TO_SET_UNVERIFIED_CONTEXT: Context must be verified")
         self._active_context = context

@@ -11,6 +11,7 @@ import builtins
 from typing import Callable
 
 from .tool_contract import ToolSpec
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class ToolRegistry:
@@ -31,6 +32,10 @@ class ToolRegistry:
         Raises:
             ValueError: If tool_id already exists or validation fails
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ToolRegistry.register")
+
         if spec.tool_id in self._specs:
             raise ValueError(f"Tool '{spec.tool_id}' already registered")
         valid_side_effects = {"PURE", "READONLY", "WRITE_FS", "SUBPROCESS"}

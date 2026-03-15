@@ -20,6 +20,7 @@ if TYPE_CHECKING:
     from agentic_core.L0_routing.meta_control.meta_learning_bus import MetaLearningBus
     from agentic_core.L2_execution.healers.healing_tier_dispatcher import InvocationRecord
     from agentic_core.L2_execution.healers.healing_tier_types import HealingDecision, HealingInput
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 logger = logging.getLogger(__name__)
 
 
@@ -67,6 +68,10 @@ class DefaultMetaOutcomeBusHook:
         self._bus = bus
 
     def publish_outcome(self, *, healing_input, decision, record, success: bool) -> None:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "DefaultMetaOutcomeBusHook.publish_outcome")
+
         if self._bus is None:
             return
         try:

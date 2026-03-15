@@ -8,6 +8,7 @@ from __future__ import annotations
 import logging
 from dataclasses import dataclass
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -285,6 +286,10 @@ class SkillExtractorNode:
         Returns:
             SkillAnalysisOutput with extraction, gap, and match analysis
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SkillExtractorNode.analyze_skills")
+
         logger.info("Analyzing skills from job description and candidate profile")
         jd_skills = self._extract_skills_from_text(job_description)
         logger.info(

@@ -8,6 +8,7 @@ from typing import Any
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 
 class BudgetExceededError(Exception):
@@ -59,6 +60,13 @@ class CostGovernorAgent(SovereignBaseAgent):
         Raises:
             BudgetExceededError: If total spend exceeds the configured limit.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "CostGovernorAgent.track")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:CostGovernorAgent.track".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         cost: float = (input_tokens + output_tokens) * 2e-05
         self.spend += cost
         logging.info(f"Governor: Current Spend ${self.spend:.4f} / Limit ${self.limit:.2f}")

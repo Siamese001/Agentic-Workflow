@@ -19,6 +19,7 @@ from pydantic import BaseModel
 from redis import asyncio as aioredis
 
 from .envelope import SignalEnvelope
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -600,6 +601,10 @@ class CheckpointManager:
         Returns:
             envelope with completed stages marked
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "CheckpointManager.resume_from_checkpoint")
+
         envelope = await self.load_checkpoint(trace_id)
         if not envelope:
             return None

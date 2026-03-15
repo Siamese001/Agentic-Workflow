@@ -15,6 +15,7 @@ from typing import Any, Protocol
 from system_learning.engines.embedding_service_factory import EmbeddingServiceFactory
 from system_learning.engines.retrieval_profile import RetrievalProfile
 from system_learning.types.embedding_artifact import EmbeddingArtifact
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class Embedder(Protocol):
@@ -93,6 +94,10 @@ class MetaLearningEmbeddingService:
         Raises:
             IntegrityError: If pack integrity validation fails.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "MetaLearningEmbeddingService.retrieve")
+
         if self.embedder is None:
             return None
         if not self._embedder_injected and self._factory.is_disabled():

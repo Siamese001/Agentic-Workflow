@@ -13,6 +13,7 @@ from system_learning.engines.deterministic_replay_engine import DeterministicRep
 from system_learning.engines.l4_state_writer import L4StateWriter
 from system_learning.engines.retrieval_profile import RetrievalProfile
 from system_learning.engines.retrieval_profile_invariant_checker import RetrievalProfileInvariantChecker
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass(frozen=True, slots=True)
@@ -54,6 +55,10 @@ class RetrievalProfileActivationGate:
         Returns:
             ActivationResult with deterministic digest
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RetrievalProfileActivationGate.activate_if_approved")
+
         proposal = self._load_proposal_from_l4(proposal_digest)
         if proposal is None:
             return self._create_failure_result(

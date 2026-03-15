@@ -14,6 +14,7 @@ def _get_write_gateway():
 "Brief description of functionality and purpose."
 from pathlib import Path
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class LocalDiskAdapter:
@@ -32,6 +33,10 @@ class LocalDiskAdapter:
 
     async def write_blob(self, key: str, data: bytes, METADATA: dict = None) -> Any:
         """Writes data to the sovereign storage area."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "LocalDiskAdapter.write_blob")
+
         safe_path = self.root / key.lstrip("/")
         _get_write_gateway().ensure_dir(safe_path.parent)
         _get_write_gateway().open_write(safe_path, data)

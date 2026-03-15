@@ -18,6 +18,7 @@ import importlib
 import logging
 import types
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, emit_replay_key, emit_determinism_digest
 
 Logger = logging.getLogger(__name__)
 _original_setattr = setattr
@@ -210,6 +211,12 @@ class RuntimeMutationGuard:
 
     def install(self) -> None:
         """Install the runtime mutation guard (REQ-417)."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "RuntimeMutationGuard.install")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         global _guard_disabled
         _guard_disabled = True
         self._original_setattr = builtins.setattr

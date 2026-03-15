@@ -6,6 +6,7 @@ from typing import Any
 
 from agentic_core.L5_safety.config.structure_blueprint import SOVEREIGN_EXCLUDED_FOLDERS
 from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent as HierarchyHealerAgent
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 
 class MissionPreflight:
@@ -76,6 +77,13 @@ class MissionPreflight:
         Returns:
             Dict with compliance results and Violation counts
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "MissionPreflight.run_preflight")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:MissionPreflight.run_preflight".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         print(f"\n[*] L6 PRE-FLIGHT: Enforcing Void Compliance on {target_sector}...")
         results = {"compliant": True, "Span": 0, "hierarchy": 0, "naming": 0, "gravity": 0}
         rules_path = self.project_root / "windsurfrules.md"

@@ -14,6 +14,7 @@ import logging
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
@@ -102,6 +103,13 @@ class CognitiveContractValidatorSchema(SovereignBaseAgent):
 
     def add_contract(self, contract: CognitiveContract) -> None:
         """Add a contract to the validator schema."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "CognitiveContractValidatorSchema.add_contract")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:CognitiveContractValidatorSchema.add_contract".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         self.contracts.append(contract)
         self.enforcer.add_contract(contract)
 

@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from pathlib import Path
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 CHECK_ID = "architecture_governance"
 
@@ -29,6 +30,13 @@ class ArchitectureGovernorValidatorAgent:
         Returns:
             Raw governance report dict from heal_repository(dry_run=True).
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "ArchitectureGovernorValidatorAgent.scan")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:ArchitectureGovernorValidatorAgent.scan".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import ArchitectureGovernorAgent
 
         agent = ArchitectureGovernorAgent(project_root=self.project_root)

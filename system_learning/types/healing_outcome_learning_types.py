@@ -9,6 +9,7 @@ from __future__ import annotations
 import hashlib
 import json
 from dataclasses import dataclass, field
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass(frozen=True, slots=True)
@@ -69,6 +70,10 @@ class HealingOutcomeAggregate:
     @property
     def success_rate(self) -> float:
         """Compute success rate with deterministic rounding."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HealingOutcomeAggregate.success_rate")
+
         if self.total_count == 0:
             return 0.0
         raw_rate = self.success_count / self.total_count
@@ -123,6 +128,10 @@ class HealingOutcomeAggregateSnapshot:
 
     def canonical_bytes(self) -> bytes:
         """Generate canonical byte representation for hashing."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HealingOutcomeAggregateSnapshot.canonical_bytes")
+
         aggregates_data = []
         for key, aggregate in self.aggregates:
             key_data = {"healer_name": key.healer_name, "tier": key.tier, "failure_type": key.failure_type}

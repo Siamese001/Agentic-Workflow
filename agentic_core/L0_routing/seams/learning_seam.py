@@ -20,6 +20,7 @@ from typing import Protocol
 from agentic_core.utils.canonical_serializer_util import (
     canonical_bytes,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, emit_replay_key, emit_determinism_digest
 
 
 def _intent_canonical_bytes(
@@ -76,6 +77,12 @@ class LearningArtifactIntent:
         ``__init__`` is allowed but callers are responsible for
         providing a correct ``intent_hash``.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "LearningArtifactIntent.create")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         cb = _intent_canonical_bytes(
             agent_id=agent_id,
             execution_id=execution_id,

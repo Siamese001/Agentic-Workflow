@@ -1,4 +1,5 @@
 """
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 Data enrichment for resume generation HOP-2.
 
 Enriches bullet pool with canonical verbs and deduplication.
@@ -20,6 +21,10 @@ class DataEnricher:
         orchestrator: object | None = None,
     ) -> tuple[dict, list[ValidationResult]]:
         """Enrich extracted data with additional metadata."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "DataEnricher.enrich")
+
         validation_results: list[ValidationResult] = []
         if orchestrator is not None:
             orchestrator.dup_detector = self.duplicate_detector

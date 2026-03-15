@@ -29,6 +29,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from agentic_core.adg.extraction.static_scanner import ScanResult
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 _MODULE_PREFIX = "ADG::Module::"
 
@@ -81,6 +82,10 @@ class HotspotIndex:
         counts reflect real structural coupling even when edges use
         symbol-level addressing.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HotspotIndex.build")
+
         idx = cls()
         module_set = set(result.modules)
         idx._all_modules = module_set

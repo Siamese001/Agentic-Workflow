@@ -10,6 +10,7 @@ from agentic_core.runtime.shared_runtime import log_event
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L4_state.memory import ValidationContext
 from agentic_core.utils.decorators_compat_util import standard_heal
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -49,6 +50,13 @@ class AdversarialProbeAgent(SovereignBaseAgent):
     # guardian: allow-type-erasure
     async def act(self) -> dict[str, Any]:
         """Execute adversarial probing."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "AdversarialProbeAgent.act")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:AdversarialProbeAgent.act".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         logger.info(f"[{self.name}] Starting adversarial attack simulation")
         results = {
             "agent": self.name,

@@ -65,7 +65,7 @@ Anti-pattern scanner must ignore:
 ### 5. UTILITY SCRIPT CLASSIFICATION
 Utility scripts must declare operational category:
 - `RUNTIME_CRITICAL`
-- `GOVERNANCE_CRITICAL` 
+- `GOVERNANCE_CRITICAL`
 - `DIAGNOSTIC_ONLY`
 - `LOCAL_DEV_ONLY`
 
@@ -100,7 +100,7 @@ Only `LOCAL_DEV_ONLY` scripts may contain allowed swallowers.
 ## Expected Outcome
 
 - **Runtime code**: ✅ Zero silent swallowers (already achieved)
-- **Governance/CI scripts**: ✅ Zero silent swallowers 
+- **Governance/CI scripts**: ✅ Zero silent swallowers
 - **Retry loops**: ✅ Allowed with mandatory rethrow
 - **Local dev scripts**: ✅ Explicitly annotated exceptions only
 

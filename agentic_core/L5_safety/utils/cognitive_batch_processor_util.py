@@ -8,6 +8,7 @@ import logging
 import time
 from pathlib import Path
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 Logger = logging.getLogger(__name__)
 
@@ -97,6 +98,13 @@ class CognitiveBatchProcessor:
         Returns:
             Statistics dictionary with counts
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "CognitiveBatchProcessor.process_batch")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:CognitiveBatchProcessor.process_batch".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         stats = {"PROCESSED": 0, "SKIPPED": 0, "ERRORS": 0, "TOTAL": len(violations)}
         Logger.info("=" * 60)
         Logger.info("[BATCH] Starting Cognitive Batch Processing")

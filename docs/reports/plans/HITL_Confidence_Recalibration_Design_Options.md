@@ -1,7 +1,7 @@
 # HITL Confidence Recalibration Design Options
 
-**Analysis Date**: 2026-03-14  
-**ADG Evidence**: `tools/evidence/_adg_hitl_redis_analysis.py`  
+**Analysis Date**: 2026-03-14
+**ADG Evidence**: `tools/evidence/_adg_hitl_redis_analysis.py`
 **Methodology**: ADG-first dependency graph analysis per §0 DEFAULT ANALYSIS MODE
 
 ---
@@ -70,7 +70,7 @@ class HITLOutcome:
     resolved_by: str
     created_at: float
     resolved_at: float
-    
+
     def canonical_bytes(self) -> bytes:
         """Deterministic serialization for fingerprinting."""
         data = {
@@ -87,7 +87,7 @@ class HITLOutcome:
 ```python
 class HITLConfidenceScorer:
     """Scores HITL operations to detect risk level miscalibration."""
-    
+
     def __init__(self):
         # guardian: allow-magic-config
         self._approval_rate_threshold = 0.95  # Downgrade if > 95% approved
@@ -97,11 +97,11 @@ class HITLConfidenceScorer:
         self._timeout_rate_threshold = 0.20   # Escalate if > 20% timeout
         # guardian: allow-magic-config
         self._min_observations = 10  # Minimum samples before recalibration
-    
+
     def score(self, outcomes: Sequence[HITLOutcome]) -> HITLConfidenceReport:
         """
         Analyze HITL outcomes and generate recalibration recommendations.
-        
+
         Returns:
             HITLConfidenceReport with per-operation confidence scores
             and risk level adjustment proposals.
@@ -117,12 +117,12 @@ class HITLConfidenceScorer:
 @dataclass(frozen=True, slots=True)
 class HITLRiskChangePackage:
     """Immutable risk level recalibration proposal."""
-    
+
     operation_name: str
     old_risk_level: RiskLevel
     new_risk_level: RiskLevel
     justification: str
-    
+
     # Evidence metrics
     approval_rate: float
     rejection_rate: float
@@ -130,7 +130,7 @@ class HITLRiskChangePackage:
     avg_response_time_seconds: float
     observation_count: int
     snapshot_id: str
-    
+
     def canonical_bytes(self) -> bytes:
         data = {
             "operation_name": self.operation_name,
@@ -144,7 +144,7 @@ class HITLRiskChangePackage:
             "snapshot_id": self.snapshot_id,
         }
         return json.dumps(data, separators=(",", ":"), sort_keys=True).encode("utf-8")
-    
+
     def content_hash(self) -> str:
         return hashlib.sha256(self.canonical_bytes()).hexdigest()
 ```
@@ -153,7 +153,7 @@ class HITLRiskChangePackage:
 ```python
 class HITLRiskProposerAdapter:
     """Proposes HITL risk level adjustments based on approval patterns."""
-    
+
     def propose(
         self,
         snapshot: Any,
@@ -166,7 +166,7 @@ class HITLRiskProposerAdapter:
     ) -> list[HITLRiskChangePackage]:
         """
         Propose risk level adjustments for operations with miscalibrated risk.
-        
+
         Recalibration Rules:
         - MEDIUM → LOW: approval_rate > 0.95, avg_response_time < 30s
         - LOW → MEDIUM: rejection_rate > 0.40 or timeout_rate > 0.20
@@ -181,7 +181,7 @@ class HITLRiskProposerAdapter:
 ```python
 def approve(self, request_id: str, approved_by: str, notes: str='') -> ApprovalRequest:
     # ... existing approval logic ...
-    
+
     # NEW: Emit outcome to system_learning
     outcome = HITLOutcome(
         operation_name=request.operation_name,
@@ -195,7 +195,7 @@ def approve(self, request_id: str, approved_by: str, notes: str='') -> ApprovalR
         resolved_at=request.resolved_at,
     )
     self._emit_hitl_outcome(outcome)  # NEW method
-    
+
     return request
 ```
 
@@ -203,7 +203,7 @@ def approve(self, request_id: str, approved_by: str, notes: str='') -> ApprovalR
 ```python
 def reject(self, request_id: str, rejected_by: str, notes: str='') -> ApprovalRequest:
     # ... existing rejection logic ...
-    
+
     # NEW: Emit outcome to system_learning
     outcome = HITLOutcome(
         operation_name=request.operation_name,
@@ -217,7 +217,7 @@ def reject(self, request_id: str, rejected_by: str, notes: str='') -> ApprovalRe
         resolved_at=request.resolved_at,
     )
     self._emit_hitl_outcome(outcome)  # NEW method
-    
+
     return request
 ```
 
@@ -337,18 +337,18 @@ def require_approval(self, operation_name: str, context: dict) -> ApprovalReques
         self._pattern_based_risk_assessment(operation_name, context),
         self._embedding_based_risk_assessment(operation_name, context),
     ]
-    
+
     # Arbitrate
     decision = ArbitrationEngine().arbitrate(candidates, policy)
-    
+
     # Use winning risk level
     winning_payload = candidates[decision.winner_ids[0]].payload
     risk_level = winning_payload["risk_level"]
-    
+
     # Create approval request with arbitrated risk level
     request = self.create_approval_request(operation_name, context)
     request.risk_level = risk_level  # Override with arbitrated value
-    
+
     if self.check_approval_required(operation_name):
         raise ApprovalRequiredError(request)
     return request
@@ -366,7 +366,7 @@ Minimal extension to `HITLConfig` with auto-tuning based on approval history.
 @dataclass
 class HITLConfig:
     # ... existing fields ...
-    
+
     # NEW: Auto-tuning configuration
     enable_auto_tuning: bool = False
     auto_tune_window_size: int = 20  # Last N approvals per operation
@@ -380,26 +380,26 @@ def _auto_tune_risk_level(self, operation_name: str) -> None:
     """Auto-tune risk level based on recent approval history."""
     if not self._hitl_config.enable_auto_tuning:
         return
-    
+
     # Get last N outcomes for this operation
     recent_outcomes = self._get_recent_outcomes(
         operation_name,
         limit=self._hitl_config.auto_tune_window_size
     )
-    
+
     if len(recent_outcomes) < self._hitl_config.auto_tune_window_size:
         return  # Not enough data
-    
+
     approval_rate = sum(1 for o in recent_outcomes if o.status == ApprovalStatus.APPROVED) / len(recent_outcomes)
     rejection_rate = sum(1 for o in recent_outcomes if o.status == ApprovalStatus.REJECTED) / len(recent_outcomes)
-    
+
     current_risk = self._sensitive_operations[operation_name]["risk_level"]
-    
+
     # Downgrade if consistently approved
     if approval_rate >= self._hitl_config.auto_downgrade_approval_threshold:
         if current_risk == RiskLevel.MEDIUM:
             self._propose_risk_downgrade(operation_name, RiskLevel.LOW, approval_rate)
-    
+
     # Upgrade if frequently rejected
     if rejection_rate >= self._hitl_config.auto_upgrade_rejection_threshold:
         if current_risk == RiskLevel.LOW:

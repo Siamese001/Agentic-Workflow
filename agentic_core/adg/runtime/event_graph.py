@@ -41,6 +41,7 @@ import time
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class RuntimePhase(str, Enum):
@@ -154,6 +155,10 @@ class RuntimeGraph:
 
     def edges_by_relation(self) -> dict[str, list[RuntimeEdge]]:
         """Group edges by relation_type."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RuntimeGraph.edges_by_relation")
+
         groups: dict[str, list[RuntimeEdge]] = {}
         for edge in self.edges:
             groups.setdefault(edge.relation_type, []).append(edge)
@@ -259,6 +264,10 @@ class AgentLoopRecorder(RuntimeGraphCollector):
         )
 
     def act(self, tool: str = "", output_hash: str = "", **kwargs: Any) -> None:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "AgentLoopRecorder.act")
+
         self._emit_event(
             "act",
             phase=RuntimePhase.ACT,
@@ -310,6 +319,10 @@ class HealerLoopRecorder(RuntimeGraphCollector):
     """
 
     def detect(self, violation_type: str = "", violation_id: str = "", **kwargs: Any) -> None:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HealerLoopRecorder.detect")
+
         self._emit_event(
             "detect",
             phase=HealerPhase.DETECT,

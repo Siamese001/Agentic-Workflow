@@ -14,6 +14,7 @@ from typing import Any, NamedTuple
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBridge
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger = logging.getLogger(__name__)
 _DEFAULT_TIMEOUT_S = 30.0
@@ -82,6 +83,10 @@ class BaseDispatchAgent(SovereignBaseAgent):
 
     def execute(self, action: str, params: dict[str, Any]) -> ExecutionResult:
         """Execute action with parameters, returning a timed ExecutionResult."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "BaseDispatchAgent.execute")
+
         start = time.time()
         try:
             output = self._perform_action(action, params)

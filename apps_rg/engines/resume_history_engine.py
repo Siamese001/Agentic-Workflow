@@ -9,6 +9,7 @@ import logging
 from typing import Any
 
 from apps_rg.engines.base_rg_engine import BaseRGEngine
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger = logging.getLogger(__name__)
 
@@ -25,6 +26,10 @@ class ResumeHistoryEngine(BaseRGEngine):
         """
         Retrieve resume history for user.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ResumeHistoryEngine.execute")
+
         self._mcp_audit("resume_history_retrieval", {"user_id": user_id})
         history = []
         if hasattr(self.ctx, "resume_history"):

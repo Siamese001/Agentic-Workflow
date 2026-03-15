@@ -12,6 +12,7 @@ Provides input validation utilities for safety checks.
 import logging
 import re
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
@@ -38,6 +39,13 @@ class InputValidator:
 
     def validate(self, input_data: Any) -> bool:
         """Validate input against all rules."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "InputValidator.validate")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:InputValidator.validate".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         for rule in self._rules:
             if not rule(input_data):
                 return False

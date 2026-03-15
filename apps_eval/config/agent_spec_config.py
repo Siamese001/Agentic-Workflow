@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any
 
 from pydantic import BaseModel, Field, model_validator
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 _log = logging.getLogger(__name__)
 
@@ -161,6 +162,10 @@ class EvalAgentSpecs(BaseModel):
 
     @model_validator(mode="after")
     def validate_weights_sum(self) -> EvalAgentSpecs:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "EvalAgentSpecs.validate_weights_sum")
+
         total = sum(d.weight for d in self.scorecard_dimensions)
         if total <= 0:
             raise ValueError("Scorecard dimension weights must sum to > 0")

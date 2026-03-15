@@ -17,6 +17,7 @@ Provides shared infrastructure services and domain configuration.
 import logging
 from dataclasses import dataclass
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -40,6 +41,10 @@ class SharedInfrastructure:
 
     def create_domain_config(self, engine_type: str) -> DomainConfig:
         """Create domain configuration for engine type."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SharedInfrastructure.create_domain_config")
+
         config: Any = DomainConfig(engine_type=engine_type, settings={}, metadata={})
         self._configs[engine_type] = config
         Logger.debug(f"Domain config created for: {engine_type}")

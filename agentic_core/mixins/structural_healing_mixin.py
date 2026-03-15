@@ -18,6 +18,7 @@ from typing import Any
 
 from agentic_core.mixins import structural_healing_engine as engine
 from agentic_core.runtime.exceptions.SovereignError import StructuralError
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass
@@ -51,6 +52,10 @@ class StructuralHealingMixin:
 
     def heal_structural_issues(self, dry_run: bool = True) -> dict[str, Any]:
         """Heal structural issues across the project."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "StructuralHealingMixin.heal_structural_issues")
+
         results: dict[str, Any] = {
             "files_analyzed": 0,
             "issues_found": 0,

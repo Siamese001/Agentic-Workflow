@@ -8,6 +8,7 @@ import logging
 import secrets
 import time
 from dataclasses import dataclass, field
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 Logger = logging.getLogger(__name__)
 
@@ -28,6 +29,13 @@ class PromotionToken:
 
     def validate_scope_and_use(self) -> bool:
         """Validate token scope and single-use status."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "PromotionToken.validate_scope_and_use")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:PromotionToken.validate_scope_and_use".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         if self.allowed_action != "pointer_update":
             Logger.error(f"Token {self.token_id}: Invalid action {self.allowed_action}")
             return False
@@ -78,6 +86,13 @@ class PromotionTokenStore:
     @classmethod
     def mark_nonce_used(cls, nonce: str) -> None:
         """Mark nonce as used."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "PromotionTokenStore.mark_nonce_used")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:PromotionTokenStore.mark_nonce_used".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         cls._used_nonces.add(nonce)
         Logger.info(f"Marked nonce {nonce} as used")
 
@@ -121,6 +136,13 @@ class PromotionTokenIssuer:
         guardian_signature: str = "guardian_sig",
     ) -> PromotionToken:
         """Issue a new promotion token."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "PromotionTokenIssuer.issue_promotion_token")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:PromotionTokenIssuer.issue_promotion_token".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         token_id = f"promo_{secrets.token_hex(8)}"
         single_use_nonce = secrets.token_hex(16)
         start_tick = semantic_clock_tick

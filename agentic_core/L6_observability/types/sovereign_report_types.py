@@ -4,6 +4,7 @@ from __future__ import annotations
 import logging
 import re
 from datetime import datetime
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class SovereignReport:
@@ -20,6 +21,10 @@ class SovereignReport:
 
     def get_overall_score(self) -> float:
         """Calculate overall health score across all dimensions."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L6_OBSERVABILITY, "SovereignReport.get_overall_score")
+
         if not self.scores:
             return 0.0
         return sum(self.scores.values()) / len(self.scores)
@@ -50,6 +55,10 @@ class SovereignReport:
             self, name: str, score: float, issues: list[str] = None
         ) -> SovereignReport.Builder:
             """Sets a validated dimension score."""
+            import uuid as _uuid  # noqa: PLC0415
+            _trace_id = str(_uuid.uuid4())
+            _emit_records_execution_trace(_trace_id, LayerSegment.L6_OBSERVABILITY, "Builder.with_dimension")
+
             if name not in self._dimensions:
                 raise ValueError(f"Sovereignty Violation: Unknown dimension: {name}")
             if not 0 <= score <= 100:

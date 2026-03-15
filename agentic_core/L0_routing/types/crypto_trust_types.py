@@ -14,6 +14,7 @@ import hashlib
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from enum import Enum
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, emit_replay_key, emit_determinism_digest
 
 
 class KeyStatus(Enum):
@@ -75,6 +76,12 @@ class TrustRoot:
 
     def get_key(self, key_id: str) -> KeyRecord | None:
         """Look up a key by ID. Returns None if not found."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "TrustRoot.get_key")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         for k in self.keys:
             if k.key_id == key_id:
                 return k
@@ -218,6 +225,12 @@ class HashMismatchTracker:
 
     def record_mismatch(self) -> bool:
         """Record a mismatch. Returns True if escalation is now required."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "HashMismatchTracker.record_mismatch")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         self.mismatch_count += 1
         if self.mismatch_count >= self.escalation_threshold:
             self.escalated = True
@@ -255,6 +268,12 @@ class DeterministicTestEnclave(SignatureEnclave):
 
     def sign(self, artifact_bytes: bytes, key_id: str) -> str:
         """HMAC-SHA256 sign using the key's public_key as the HMAC secret."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "DeterministicTestEnclave.sign")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         import hmac
 
         key_record = self._trust_root.get_key(key_id)

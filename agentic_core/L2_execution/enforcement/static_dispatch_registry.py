@@ -23,6 +23,7 @@ import logging
 from types import ModuleType
 from typing import Any
 from agentic_core.L2_execution.enforcement.guardrail_gate import get_guardrail_gate, Callable
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 Logger = logging.getLogger(__name__)
 
@@ -60,6 +61,13 @@ class StaticDispatchRegistry:
             module_path: Fully-qualified Python module path (e.g.
                 ``"agentic_core.L0_routing.scripts.run_guardian_hygiene"``).
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "StaticDispatchRegistry.register")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:StaticDispatchRegistry.register".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         if key in self._registry and self._registry[key] != module_path:
             Logger.warning(
                 "[StaticDispatchRegistry] Overwriting key '%s': %s -> %s",

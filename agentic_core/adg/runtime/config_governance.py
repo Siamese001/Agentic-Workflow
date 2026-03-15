@@ -15,6 +15,7 @@ import uuid
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class ConfigReadOutcome(str, Enum):
@@ -93,6 +94,10 @@ class ConfigGovernanceReport:
 
     @property
     def by_outcome(self) -> dict[str, int]:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ConfigGovernanceReport.by_outcome")
+
         result: dict[str, int] = {}
         for e in self.events:
             result[e.outcome.value] = result.get(e.outcome.value, 0) + 1
@@ -138,6 +143,10 @@ class ConfigGovernor:
         outcome: ConfigReadOutcome = ConfigReadOutcome.HIT,
     ) -> ConfigReadEvent:
         """Record a config read event."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ConfigGovernor.read_config")
+
         cached = config_key in self._cache
         # guardian: allow-config-with-logic
         if cached:

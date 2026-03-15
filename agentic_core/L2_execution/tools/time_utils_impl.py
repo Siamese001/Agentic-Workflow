@@ -3,6 +3,7 @@ from __future__ import annotations
 "\nTime Tools - Atomic Module\nExtracted from action_registry.py via Atomic Fission Protocol\nTool ID Prefix: ACT-008\n"
 import logging
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 Logger: Any = logging.getLogger("ActionRegistry.TimeTools")
 
@@ -57,6 +58,13 @@ class TimeTools:
         Returns:
             str: The current time in ISO 8601 format or an error message.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "TimeTools.get_current_time")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:TimeTools.get_current_time".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         Logger.info(f"⏰ Getting current time for timezone: '{timezone}'")
         try:
             from mcp_time_client import get_current_time as mcp_get_time

@@ -14,6 +14,7 @@ def _get_convergence_engine():
 
 
 from agentic_core.L0_routing.config import L0_MAINTENANCE_DIR
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, emit_replay_key, emit_determinism_digest
 
 # guardian: allow-global-mutation
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -27,6 +28,12 @@ class CoverageValidator:
 
     async def validate(self) -> list[dict[str, Any]]:
         """Identify modules with coverage below target."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "CoverageValidator.validate")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         violations = []
         from agentic_core.utils.ssot_discovery_validator import get_python_files
 
@@ -51,6 +58,12 @@ class CoverageHealer:
 
     async def heal(self, violation: dict[str, Any]) -> bool:
         """Attempt to heal a coverage violation."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "CoverageHealer.heal")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         file_path = Path(violation["path"])
         print(f"  🔧 Healing: {file_path.name}")
         try:

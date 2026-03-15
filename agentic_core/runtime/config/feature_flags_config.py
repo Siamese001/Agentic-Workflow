@@ -9,6 +9,7 @@ import logging
 import os
 from dataclasses import dataclass
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
@@ -92,6 +93,10 @@ class FeatureFlagManager:
         Returns:
             True if flag is enabled, False otherwise
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "FeatureFlagManager.is_enabled")
+
         # Check override cache first
         if flag_name in cls._override_cache:
             return cls._override_cache[flag_name]

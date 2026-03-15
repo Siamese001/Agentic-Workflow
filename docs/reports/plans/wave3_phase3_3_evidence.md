@@ -49,7 +49,7 @@ plugins: anyio-4.12.1, asyncio-1.3.0, cov-7.0.0
 asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
 collected 41 items
 
-tests/architecture/test_wave3_phase3_3_finalization.py::test_run_analysis_returns_dict 
+tests/architecture/test_wave3_phase3_3_finalization.py::test_run_analysis_returns_dict
 -------------------------------- live log call --------------------------------
 2026-03-05 23:48:53 [    INFO] tools.semantic_gap_analyzer: Starting Semantic Gap Analysis...
 2026-03-05 23:48:53 [    INFO] tools.semantic_gap_analyzer: Analyzing Architecture Component Presence...
@@ -68,7 +68,7 @@ tests/architecture/test_wave3_phase3_3_finalization.py::test_run_analysis_return
 2026-03-05 23:49:01 [    INFO] tools.semantic_gap_analyzer: Analyzing L4 State Layer...
 2026-03-05 23:49:01 [    INFO] tools.semantic_gap_analyzer: Analyzing L5 Safety Layer...
 2026-03-05 23:49:01 [    INFO] tools.semantic_gap_analyzer: Analyzing L6 Observability Layer...
-2026-03-05 23:49:01 [    INFO] tools.semantic_gap_analyzer: 
+2026-03-05 23:49:01 [    INFO] tools.semantic_gap_analyzer:
 Analysis Complete:
 2026-03-05 23:49:01 [    INFO] tools.semantic_gap_analyzer:   Total Gaps: 1231
 2026-03-05 23:49:01 [    INFO] tools.semantic_gap_analyzer:   HIGH Priority: 585
@@ -76,7 +76,7 @@ Analysis Complete:
 2026-03-05 23:49:01 [    INFO] tools.semantic_gap_analyzer:   LOW Priority: 12
 2026-03-05 23:49:01 [    INFO] tools.semantic_gap_analyzer:   Parse Failures: 3
 PASSED                                                                   [  2%]
-tests/architecture/test_wave3_phase3_3_finalization.py::test_run_analysis_has_all_required_keys 
+tests/architecture/test_wave3_phase3_3_finalization.py::test_run_analysis_has_all_required_keys
 -------------------------------- live log call --------------------------------
 2026-03-05 23:49:01 [    INFO] tools.semantic_gap_analyzer: Starting Semantic Gap Analysis...
 2026-03-05 23:49:01 [    INFO] tools.semantic_gap_analyzer: Analyzing Architecture Component Presence...
@@ -95,7 +95,7 @@ tests/architecture/test_wave3_phase3_3_finalization.py::test_run_analysis_has_al
 2026-03-05 23:49:09 [    INFO] tools.semantic_gap_analyzer: Analyzing L4 State Layer...
 2026-03-05 23:49:09 [    INFO] tools.semantic_gap_analyzer: Analyzing L5 Safety Layer...
 2026-03-05 23:49:09 [    INFO] tools.semantic_gap_analyzer: Analyzing L6 Observability Layer...
-2026-03-05 23:49:09 [    INFO] tools.semantic_gap_analyzer: 
+2026-03-05 23:49:09 [    INFO] tools.semantic_gap_analyzer:
 Analysis Complete:
 2026-03-05 23:49:09 [    INFO] tools.semantic_gap_analyzer:   Total Gaps: 1231
 2026-03-05 23:49:09 [    INFO] tools.semantic_gap_analyzer:   HIGH Priority: 585
@@ -103,7 +103,7 @@ Analysis Complete:
 2026-03-05 23:49:09 [    INFO] tools.semantic_gap_analyzer:   LOW Priority: 12
 2026-03-05 23:49:09 [    INFO] tools.semantic_gap_analyzer:   Parse Failures: 3
 PASSED                                                                   [  4%]
-tests/architecture/test_wave3_phase3_3_finalization.py::test_run_analysis_total_gaps_equals_len_gaps 
+tests/architecture/test_wave3_phase3_3_finalization.py::test_run_analysis_total_gaps_equals_len_gaps
 -------------------------------- live log call --------------------------------
 2026-03-05 23:49:09 [    INFO] tools.semantic_gap_analyzer: Starting Semantic Gap Analysis...
 2026-03-05 23:49:09 [    INFO] tools.semantic_gap_analyzer: Analyzing Architecture Component Presence...
@@ -122,7 +122,7 @@ tests/architecture/test_wave3_phase3_3_finalization.py::test_run_analysis_total_
 2026-03-05 23:49:17 [    INFO] tools.semantic_gap_analyzer: Analyzing L4 State Layer...
 2026-03-05 23:49:17 [    INFO] tools.semantic_gap_analyzer: Analyzing L5 Safety Layer...
 2026-03-05 23:49:17 [    INFO] tools.semantic_gap_analyzer: Analyzing L6 Observability Layer...
-2026-03-05 23:49:17 [    INFO] tools.semantic_gap_analyzer: 
+2026-03-05 23:49:17 [    INFO] tools.semantic_gap_analyzer:
 Analysis Complete:
 2026-03-05 23:49:17 [    INFO] tools.semantic_gap_analyzer:   Total Gaps: 1231
 2026-03-05 23:49:17 [    INFO] tools.semantic_gap_analyzer:   HIGH Priority: 585
@@ -130,7 +130,7 @@ Analysis Complete:
 2026-03-05 23:49:17 [    INFO] tools.semantic_gap_analyzer:   LOW Priority: 12
 2026-03-05 23:49:17 [    INFO] tools.semantic_gap_analyzer:   Parse Failures: 3
 PASSED                                                                   [  7%]
-tests/architecture/test_wave3_phase3_3_finalization.py::test_run_analysis_priority_counts_sum_to_total 
+tests/architecture/test_wave3_phase3_3_finalization.py::test_run_analysis_priority_counts_sum_to_total
 -------------------------------- live log call --------------------------------
 2026-03-05 23:49:17 [    INFO] tools.semantic_gap_analyzer: Starting Semantic Gap Analysis...
 2026-03-05 23:49:17 [    INFO] tools.semantic_gap_analyzer: Analyzing Architecture Component Presence...
@@ -149,7 +149,7 @@ tests/architecture/test_wave3_phase3_3_finalization.py::test_run_analysis_priori
 2026-03-05 23:49:25 [    INFO] tools.semantic_gap_analyzer: Analyzing L4 State Layer...
 2026-03-05 23:49:25 [    INFO] tools.semantic_gap_analyzer: Analyzing L5 Safety Layer...
 2026-03-05 23:49:26 [    INFO] tools.semantic_gap_analyzer: Analyzing L6 Observability Layer...
-2026-03-05 23:49:26 [    INFO] tools.semantic_gap_analyzer: 
+2026-03-05 23:49:26 [    INFO] tools.semantic_gap_analyzer:
 Analysis Complete:
 2026-03-05 23:49:26 [    INFO] tools.semantic_gap_analyzer:   Total Gaps: 1231
 2026-03-05 23:49:26 [    INFO] tools.semantic_gap_analyzer:   HIGH Priority: 585
@@ -157,7 +157,7 @@ Analysis Complete:
 2026-03-05 23:49:26 [    INFO] tools.semantic_gap_analyzer:   LOW Priority: 12
 2026-03-05 23:49:26 [    INFO] tools.semantic_gap_analyzer:   Parse Failures: 3
 PASSED                                                                   [  9%]
-tests/architecture/test_wave3_phase3_3_finalization.py::test_run_analysis_gaps_are_semantic_gap_instances 
+tests/architecture/test_wave3_phase3_3_finalization.py::test_run_analysis_gaps_are_semantic_gap_instances
 -------------------------------- live log call --------------------------------
 2026-03-05 23:49:26 [    INFO] tools.semantic_gap_analyzer: Starting Semantic Gap Analysis...
 2026-03-05 23:49:26 [    INFO] tools.semantic_gap_analyzer: Analyzing Architecture Component Presence...
@@ -176,7 +176,7 @@ tests/architecture/test_wave3_phase3_3_finalization.py::test_run_analysis_gaps_a
 2026-03-05 23:49:34 [    INFO] tools.semantic_gap_analyzer: Analyzing L4 State Layer...
 2026-03-05 23:49:34 [    INFO] tools.semantic_gap_analyzer: Analyzing L5 Safety Layer...
 2026-03-05 23:49:34 [    INFO] tools.semantic_gap_analyzer: Analyzing L6 Observability Layer...
-2026-03-05 23:49:34 [    INFO] tools.semantic_gap_analyzer: 
+2026-03-05 23:49:34 [    INFO] tools.semantic_gap_analyzer:
 Analysis Complete:
 2026-03-05 23:49:34 [    INFO] tools.semantic_gap_analyzer:   Total Gaps: 1231
 2026-03-05 23:49:34 [    INFO] tools.semantic_gap_analyzer:   HIGH Priority: 585
@@ -184,7 +184,7 @@ Analysis Complete:
 2026-03-05 23:49:34 [    INFO] tools.semantic_gap_analyzer:   LOW Priority: 12
 2026-03-05 23:49:34 [    INFO] tools.semantic_gap_analyzer:   Parse Failures: 3
 PASSED                                                                   [ 12%]
-tests/architecture/test_wave3_phase3_3_finalization.py::test_run_analysis_parse_failures_is_list 
+tests/architecture/test_wave3_phase3_3_finalization.py::test_run_analysis_parse_failures_is_list
 -------------------------------- live log call --------------------------------
 2026-03-05 23:49:34 [    INFO] tools.semantic_gap_analyzer: Starting Semantic Gap Analysis...
 2026-03-05 23:49:34 [    INFO] tools.semantic_gap_analyzer: Analyzing Architecture Component Presence...
@@ -203,7 +203,7 @@ tests/architecture/test_wave3_phase3_3_finalization.py::test_run_analysis_parse_
 2026-03-05 23:49:42 [    INFO] tools.semantic_gap_analyzer: Analyzing L4 State Layer...
 2026-03-05 23:49:42 [    INFO] tools.semantic_gap_analyzer: Analyzing L5 Safety Layer...
 2026-03-05 23:49:42 [    INFO] tools.semantic_gap_analyzer: Analyzing L6 Observability Layer...
-2026-03-05 23:49:42 [    INFO] tools.semantic_gap_analyzer: 
+2026-03-05 23:49:42 [    INFO] tools.semantic_gap_analyzer:
 Analysis Complete:
 2026-03-05 23:49:42 [    INFO] tools.semantic_gap_analyzer:   Total Gaps: 1231
 2026-03-05 23:49:42 [    INFO] tools.semantic_gap_analyzer:   HIGH Priority: 585
@@ -211,7 +211,7 @@ Analysis Complete:
 2026-03-05 23:49:42 [    INFO] tools.semantic_gap_analyzer:   LOW Priority: 12
 2026-03-05 23:49:42 [    INFO] tools.semantic_gap_analyzer:   Parse Failures: 3
 PASSED                                                                   [ 14%]
-tests/architecture/test_wave3_phase3_3_finalization.py::test_run_analysis_prompt_taxonomy_findings_is_list 
+tests/architecture/test_wave3_phase3_3_finalization.py::test_run_analysis_prompt_taxonomy_findings_is_list
 -------------------------------- live log call --------------------------------
 2026-03-05 23:49:42 [    INFO] tools.semantic_gap_analyzer: Starting Semantic Gap Analysis...
 2026-03-05 23:49:42 [    INFO] tools.semantic_gap_analyzer: Analyzing Architecture Component Presence...
@@ -230,7 +230,7 @@ tests/architecture/test_wave3_phase3_3_finalization.py::test_run_analysis_prompt
 2026-03-05 23:49:50 [    INFO] tools.semantic_gap_analyzer: Analyzing L4 State Layer...
 2026-03-05 23:49:50 [    INFO] tools.semantic_gap_analyzer: Analyzing L5 Safety Layer...
 2026-03-05 23:49:50 [    INFO] tools.semantic_gap_analyzer: Analyzing L6 Observability Layer...
-2026-03-05 23:49:50 [    INFO] tools.semantic_gap_analyzer: 
+2026-03-05 23:49:50 [    INFO] tools.semantic_gap_analyzer:
 Analysis Complete:
 2026-03-05 23:49:50 [    INFO] tools.semantic_gap_analyzer:   Total Gaps: 1231
 2026-03-05 23:49:50 [    INFO] tools.semantic_gap_analyzer:   HIGH Priority: 585
@@ -238,7 +238,7 @@ Analysis Complete:
 2026-03-05 23:49:50 [    INFO] tools.semantic_gap_analyzer:   LOW Priority: 12
 2026-03-05 23:49:50 [    INFO] tools.semantic_gap_analyzer:   Parse Failures: 3
 PASSED                                                                   [ 17%]
-tests/architecture/test_wave3_phase3_3_finalization.py::test_run_analysis_architecture_component_findings_is_list 
+tests/architecture/test_wave3_phase3_3_finalization.py::test_run_analysis_architecture_component_findings_is_list
 -------------------------------- live log call --------------------------------
 2026-03-05 23:49:50 [    INFO] tools.semantic_gap_analyzer: Starting Semantic Gap Analysis...
 2026-03-05 23:49:50 [    INFO] tools.semantic_gap_analyzer: Analyzing Architecture Component Presence...
@@ -257,7 +257,7 @@ tests/architecture/test_wave3_phase3_3_finalization.py::test_run_analysis_archit
 2026-03-05 23:49:58 [    INFO] tools.semantic_gap_analyzer: Analyzing L4 State Layer...
 2026-03-05 23:49:58 [    INFO] tools.semantic_gap_analyzer: Analyzing L5 Safety Layer...
 2026-03-05 23:49:58 [    INFO] tools.semantic_gap_analyzer: Analyzing L6 Observability Layer...
-2026-03-05 23:49:58 [    INFO] tools.semantic_gap_analyzer: 
+2026-03-05 23:49:58 [    INFO] tools.semantic_gap_analyzer:
 Analysis Complete:
 2026-03-05 23:49:58 [    INFO] tools.semantic_gap_analyzer:   Total Gaps: 1231
 2026-03-05 23:49:58 [    INFO] tools.semantic_gap_analyzer:   HIGH Priority: 585
@@ -265,7 +265,7 @@ Analysis Complete:
 2026-03-05 23:49:58 [    INFO] tools.semantic_gap_analyzer:   LOW Priority: 12
 2026-03-05 23:49:58 [    INFO] tools.semantic_gap_analyzer:   Parse Failures: 3
 PASSED                                                                   [ 19%]
-tests/architecture/test_wave3_phase3_3_finalization.py::test_run_analysis_layer_connection_findings_is_list 
+tests/architecture/test_wave3_phase3_3_finalization.py::test_run_analysis_layer_connection_findings_is_list
 -------------------------------- live log call --------------------------------
 2026-03-05 23:49:58 [    INFO] tools.semantic_gap_analyzer: Starting Semantic Gap Analysis...
 2026-03-05 23:49:58 [    INFO] tools.semantic_gap_analyzer: Analyzing Architecture Component Presence...
@@ -284,7 +284,7 @@ tests/architecture/test_wave3_phase3_3_finalization.py::test_run_analysis_layer_
 2026-03-05 23:50:07 [    INFO] tools.semantic_gap_analyzer: Analyzing L4 State Layer...
 2026-03-05 23:50:07 [    INFO] tools.semantic_gap_analyzer: Analyzing L5 Safety Layer...
 2026-03-05 23:50:07 [    INFO] tools.semantic_gap_analyzer: Analyzing L6 Observability Layer...
-2026-03-05 23:50:07 [    INFO] tools.semantic_gap_analyzer: 
+2026-03-05 23:50:07 [    INFO] tools.semantic_gap_analyzer:
 Analysis Complete:
 2026-03-05 23:50:07 [    INFO] tools.semantic_gap_analyzer:   Total Gaps: 1231
 2026-03-05 23:50:07 [    INFO] tools.semantic_gap_analyzer:   HIGH Priority: 585
@@ -292,7 +292,7 @@ Analysis Complete:
 2026-03-05 23:50:07 [    INFO] tools.semantic_gap_analyzer:   LOW Priority: 12
 2026-03-05 23:50:07 [    INFO] tools.semantic_gap_analyzer:   Parse Failures: 3
 PASSED                                                                   [ 21%]
-tests/architecture/test_wave3_phase3_3_finalization.py::test_run_analysis_self_gaps_populated_after_call 
+tests/architecture/test_wave3_phase3_3_finalization.py::test_run_analysis_self_gaps_populated_after_call
 -------------------------------- live log call --------------------------------
 2026-03-05 23:50:07 [    INFO] tools.semantic_gap_analyzer: Starting Semantic Gap Analysis...
 2026-03-05 23:50:07 [    INFO] tools.semantic_gap_analyzer: Analyzing Architecture Component Presence...
@@ -311,7 +311,7 @@ tests/architecture/test_wave3_phase3_3_finalization.py::test_run_analysis_self_g
 2026-03-05 23:50:15 [    INFO] tools.semantic_gap_analyzer: Analyzing L4 State Layer...
 2026-03-05 23:50:15 [    INFO] tools.semantic_gap_analyzer: Analyzing L5 Safety Layer...
 2026-03-05 23:50:15 [    INFO] tools.semantic_gap_analyzer: Analyzing L6 Observability Layer...
-2026-03-05 23:50:15 [    INFO] tools.semantic_gap_analyzer: 
+2026-03-05 23:50:15 [    INFO] tools.semantic_gap_analyzer:
 Analysis Complete:
 2026-03-05 23:50:15 [    INFO] tools.semantic_gap_analyzer:   Total Gaps: 1231
 2026-03-05 23:50:15 [    INFO] tools.semantic_gap_analyzer:   HIGH Priority: 585
@@ -319,7 +319,7 @@ Analysis Complete:
 2026-03-05 23:50:15 [    INFO] tools.semantic_gap_analyzer:   LOW Priority: 12
 2026-03-05 23:50:15 [    INFO] tools.semantic_gap_analyzer:   Parse Failures: 3
 PASSED                                                                   [ 24%]
-tests/architecture/test_wave3_phase3_3_finalization.py::test_run_analysis_self_parse_failures_sorted_after_call 
+tests/architecture/test_wave3_phase3_3_finalization.py::test_run_analysis_self_parse_failures_sorted_after_call
 -------------------------------- live log call --------------------------------
 2026-03-05 23:50:15 [    INFO] tools.semantic_gap_analyzer: Starting Semantic Gap Analysis...
 2026-03-05 23:50:15 [    INFO] tools.semantic_gap_analyzer: Analyzing Architecture Component Presence...
@@ -338,7 +338,7 @@ tests/architecture/test_wave3_phase3_3_finalization.py::test_run_analysis_self_p
 2026-03-05 23:50:23 [    INFO] tools.semantic_gap_analyzer: Analyzing L4 State Layer...
 2026-03-05 23:50:23 [    INFO] tools.semantic_gap_analyzer: Analyzing L5 Safety Layer...
 2026-03-05 23:50:23 [    INFO] tools.semantic_gap_analyzer: Analyzing L6 Observability Layer...
-2026-03-05 23:50:23 [    INFO] tools.semantic_gap_analyzer: 
+2026-03-05 23:50:23 [    INFO] tools.semantic_gap_analyzer:
 Analysis Complete:
 2026-03-05 23:50:23 [    INFO] tools.semantic_gap_analyzer:   Total Gaps: 1231
 2026-03-05 23:50:23 [    INFO] tools.semantic_gap_analyzer:   HIGH Priority: 585
@@ -346,7 +346,7 @@ Analysis Complete:
 2026-03-05 23:50:23 [    INFO] tools.semantic_gap_analyzer:   LOW Priority: 12
 2026-03-05 23:50:23 [    INFO] tools.semantic_gap_analyzer:   Parse Failures: 3
 PASSED                                                                   [ 26%]
-tests/architecture/test_wave3_phase3_3_finalization.py::test_run_analysis_high_priority_count_correct 
+tests/architecture/test_wave3_phase3_3_finalization.py::test_run_analysis_high_priority_count_correct
 -------------------------------- live log call --------------------------------
 2026-03-05 23:50:23 [    INFO] tools.semantic_gap_analyzer: Starting Semantic Gap Analysis...
 2026-03-05 23:50:23 [    INFO] tools.semantic_gap_analyzer: Analyzing Architecture Component Presence...
@@ -365,7 +365,7 @@ tests/architecture/test_wave3_phase3_3_finalization.py::test_run_analysis_high_p
 2026-03-05 23:50:31 [    INFO] tools.semantic_gap_analyzer: Analyzing L4 State Layer...
 2026-03-05 23:50:31 [    INFO] tools.semantic_gap_analyzer: Analyzing L5 Safety Layer...
 2026-03-05 23:50:31 [    INFO] tools.semantic_gap_analyzer: Analyzing L6 Observability Layer...
-2026-03-05 23:50:31 [    INFO] tools.semantic_gap_analyzer: 
+2026-03-05 23:50:31 [    INFO] tools.semantic_gap_analyzer:
 Analysis Complete:
 2026-03-05 23:50:31 [    INFO] tools.semantic_gap_analyzer:   Total Gaps: 1231
 2026-03-05 23:50:31 [    INFO] tools.semantic_gap_analyzer:   HIGH Priority: 585
@@ -373,7 +373,7 @@ Analysis Complete:
 2026-03-05 23:50:31 [    INFO] tools.semantic_gap_analyzer:   LOW Priority: 12
 2026-03-05 23:50:31 [    INFO] tools.semantic_gap_analyzer:   Parse Failures: 3
 PASSED                                                                   [ 29%]
-tests/architecture/test_wave3_phase3_3_finalization.py::test_run_analysis_medium_priority_count_correct 
+tests/architecture/test_wave3_phase3_3_finalization.py::test_run_analysis_medium_priority_count_correct
 -------------------------------- live log call --------------------------------
 2026-03-05 23:50:31 [    INFO] tools.semantic_gap_analyzer: Starting Semantic Gap Analysis...
 2026-03-05 23:50:31 [    INFO] tools.semantic_gap_analyzer: Analyzing Architecture Component Presence...
@@ -392,7 +392,7 @@ tests/architecture/test_wave3_phase3_3_finalization.py::test_run_analysis_medium
 2026-03-05 23:50:39 [    INFO] tools.semantic_gap_analyzer: Analyzing L4 State Layer...
 2026-03-05 23:50:39 [    INFO] tools.semantic_gap_analyzer: Analyzing L5 Safety Layer...
 2026-03-05 23:50:40 [    INFO] tools.semantic_gap_analyzer: Analyzing L6 Observability Layer...
-2026-03-05 23:50:40 [    INFO] tools.semantic_gap_analyzer: 
+2026-03-05 23:50:40 [    INFO] tools.semantic_gap_analyzer:
 Analysis Complete:
 2026-03-05 23:50:40 [    INFO] tools.semantic_gap_analyzer:   Total Gaps: 1231
 2026-03-05 23:50:40 [    INFO] tools.semantic_gap_analyzer:   HIGH Priority: 585
@@ -400,7 +400,7 @@ Analysis Complete:
 2026-03-05 23:50:40 [    INFO] tools.semantic_gap_analyzer:   LOW Priority: 12
 2026-03-05 23:50:40 [    INFO] tools.semantic_gap_analyzer:   Parse Failures: 3
 PASSED                                                                   [ 31%]
-tests/architecture/test_wave3_phase3_3_finalization.py::test_run_analysis_low_priority_count_correct 
+tests/architecture/test_wave3_phase3_3_finalization.py::test_run_analysis_low_priority_count_correct
 -------------------------------- live log call --------------------------------
 2026-03-05 23:50:40 [    INFO] tools.semantic_gap_analyzer: Starting Semantic Gap Analysis...
 2026-03-05 23:50:40 [    INFO] tools.semantic_gap_analyzer: Analyzing Architecture Component Presence...
@@ -419,7 +419,7 @@ tests/architecture/test_wave3_phase3_3_finalization.py::test_run_analysis_low_pr
 2026-03-05 23:50:48 [    INFO] tools.semantic_gap_analyzer: Analyzing L4 State Layer...
 2026-03-05 23:50:48 [    INFO] tools.semantic_gap_analyzer: Analyzing L5 Safety Layer...
 2026-03-05 23:50:48 [    INFO] tools.semantic_gap_analyzer: Analyzing L6 Observability Layer...
-2026-03-05 23:50:48 [    INFO] tools.semantic_gap_analyzer: 
+2026-03-05 23:50:48 [    INFO] tools.semantic_gap_analyzer:
 Analysis Complete:
 2026-03-05 23:50:48 [    INFO] tools.semantic_gap_analyzer:   Total Gaps: 1231
 2026-03-05 23:50:48 [    INFO] tools.semantic_gap_analyzer:   HIGH Priority: 585
@@ -427,107 +427,107 @@ Analysis Complete:
 2026-03-05 23:50:48 [    INFO] tools.semantic_gap_analyzer:   LOW Priority: 12
 2026-03-05 23:50:48 [    INFO] tools.semantic_gap_analyzer:   Parse Failures: 3
 PASSED                                                                   [ 34%]
-tests/architecture/test_wave3_phase3_3_finalization.py::test_generate_report_creates_file 
+tests/architecture/test_wave3_phase3_3_finalization.py::test_generate_report_creates_file
 -------------------------------- live log call --------------------------------
 2026-03-05 23:50:48 [    INFO] tools.semantic_gap_analyzer: Generating report: C:\Users\amita\AppData\Local\Temp\tmp0qc0_jld\report.md
 2026-03-05 23:50:48 [    INFO] tools.semantic_gap_analyzer: Report written to C:\Users\amita\AppData\Local\Temp\tmp0qc0_jld\report.md
 PASSED                                                                   [ 36%]
-tests/architecture/test_wave3_phase3_3_finalization.py::test_generate_report_creates_parent_dirs 
+tests/architecture/test_wave3_phase3_3_finalization.py::test_generate_report_creates_parent_dirs
 -------------------------------- live log call --------------------------------
 2026-03-05 23:50:48 [    INFO] tools.semantic_gap_analyzer: Generating report: C:\Users\amita\AppData\Local\Temp\tmpv6crt78u\nested\deep\report.md
 2026-03-05 23:50:48 [    INFO] tools.semantic_gap_analyzer: Report written to C:\Users\amita\AppData\Local\Temp\tmpv6crt78u\nested\deep\report.md
 PASSED                                                                   [ 39%]
-tests/architecture/test_wave3_phase3_3_finalization.py::test_generate_report_file_is_nonempty 
+tests/architecture/test_wave3_phase3_3_finalization.py::test_generate_report_file_is_nonempty
 -------------------------------- live log call --------------------------------
 2026-03-05 23:50:48 [    INFO] tools.semantic_gap_analyzer: Generating report: C:\Users\amita\AppData\Local\Temp\tmpzg3zf3c8\report.md
 2026-03-05 23:50:48 [    INFO] tools.semantic_gap_analyzer: Report written to C:\Users\amita\AppData\Local\Temp\tmpzg3zf3c8\report.md
 PASSED                                                                   [ 41%]
-tests/architecture/test_wave3_phase3_3_finalization.py::test_generate_report_is_valid_utf8 
+tests/architecture/test_wave3_phase3_3_finalization.py::test_generate_report_is_valid_utf8
 -------------------------------- live log call --------------------------------
 2026-03-05 23:50:48 [    INFO] tools.semantic_gap_analyzer: Generating report: C:\Users\amita\AppData\Local\Temp\tmp9gpbgzch\report.md
 2026-03-05 23:50:48 [    INFO] tools.semantic_gap_analyzer: Report written to C:\Users\amita\AppData\Local\Temp\tmp9gpbgzch\report.md
 PASSED                                                                   [ 43%]
-tests/architecture/test_wave3_phase3_3_finalization.py::test_generate_report_has_executive_summary 
+tests/architecture/test_wave3_phase3_3_finalization.py::test_generate_report_has_executive_summary
 -------------------------------- live log call --------------------------------
 2026-03-05 23:50:48 [    INFO] tools.semantic_gap_analyzer: Generating report: C:\Users\amita\AppData\Local\Temp\tmp8cs593kr\report.md
 2026-03-05 23:50:48 [    INFO] tools.semantic_gap_analyzer: Report written to C:\Users\amita\AppData\Local\Temp\tmp8cs593kr\report.md
 PASSED                                                                   [ 46%]
-tests/architecture/test_wave3_phase3_3_finalization.py::test_generate_report_has_analysis_methodology 
+tests/architecture/test_wave3_phase3_3_finalization.py::test_generate_report_has_analysis_methodology
 -------------------------------- live log call --------------------------------
 2026-03-05 23:50:48 [    INFO] tools.semantic_gap_analyzer: Generating report: C:\Users\amita\AppData\Local\Temp\tmpw3tczp7i\report.md
 2026-03-05 23:50:48 [    INFO] tools.semantic_gap_analyzer: Report written to C:\Users\amita\AppData\Local\Temp\tmpw3tczp7i\report.md
 PASSED                                                                   [ 48%]
-tests/architecture/test_wave3_phase3_3_finalization.py::test_generate_report_has_next_steps 
+tests/architecture/test_wave3_phase3_3_finalization.py::test_generate_report_has_next_steps
 -------------------------------- live log call --------------------------------
 2026-03-05 23:50:48 [    INFO] tools.semantic_gap_analyzer: Generating report: C:\Users\amita\AppData\Local\Temp\tmpzbqa0gzz\report.md
 2026-03-05 23:50:48 [    INFO] tools.semantic_gap_analyzer: Report written to C:\Users\amita\AppData\Local\Temp\tmpzbqa0gzz\report.md
 PASSED                                                                   [ 51%]
-tests/architecture/test_wave3_phase3_3_finalization.py::test_generate_report_has_validation 
+tests/architecture/test_wave3_phase3_3_finalization.py::test_generate_report_has_validation
 -------------------------------- live log call --------------------------------
 2026-03-05 23:50:48 [    INFO] tools.semantic_gap_analyzer: Generating report: C:\Users\amita\AppData\Local\Temp\tmp0lwdk6nr\report.md
 2026-03-05 23:50:48 [    INFO] tools.semantic_gap_analyzer: Report written to C:\Users\amita\AppData\Local\Temp\tmp0lwdk6nr\report.md
 PASSED                                                                   [ 53%]
-tests/architecture/test_wave3_phase3_3_finalization.py::test_generate_report_has_priority_matrix_when_gaps 
+tests/architecture/test_wave3_phase3_3_finalization.py::test_generate_report_has_priority_matrix_when_gaps
 -------------------------------- live log call --------------------------------
 2026-03-05 23:50:48 [    INFO] tools.semantic_gap_analyzer: Generating report: C:\Users\amita\AppData\Local\Temp\tmpgbu304z_\report.md
 2026-03-05 23:50:48 [    INFO] tools.semantic_gap_analyzer: Report written to C:\Users\amita\AppData\Local\Temp\tmpgbu304z_\report.md
 PASSED                                                                   [ 56%]
-tests/architecture/test_wave3_phase3_3_finalization.py::test_generate_report_no_arch_section_when_empty 
+tests/architecture/test_wave3_phase3_3_finalization.py::test_generate_report_no_arch_section_when_empty
 -------------------------------- live log call --------------------------------
 2026-03-05 23:50:48 [    INFO] tools.semantic_gap_analyzer: Generating report: C:\Users\amita\AppData\Local\Temp\tmpr92lex66\report.md
 2026-03-05 23:50:48 [    INFO] tools.semantic_gap_analyzer: Report written to C:\Users\amita\AppData\Local\Temp\tmpr92lex66\report.md
 PASSED                                                                   [ 58%]
-tests/architecture/test_wave3_phase3_3_finalization.py::test_generate_report_arch_section_present_when_findings 
+tests/architecture/test_wave3_phase3_3_finalization.py::test_generate_report_arch_section_present_when_findings
 -------------------------------- live log call --------------------------------
 2026-03-05 23:50:48 [    INFO] tools.semantic_gap_analyzer: Generating report: C:\Users\amita\AppData\Local\Temp\tmpggsx38k0\report.md
 2026-03-05 23:50:48 [    INFO] tools.semantic_gap_analyzer: Report written to C:\Users\amita\AppData\Local\Temp\tmpggsx38k0\report.md
 PASSED                                                                   [ 60%]
-tests/architecture/test_wave3_phase3_3_finalization.py::test_generate_report_no_taxonomy_section_when_empty 
+tests/architecture/test_wave3_phase3_3_finalization.py::test_generate_report_no_taxonomy_section_when_empty
 -------------------------------- live log call --------------------------------
 2026-03-05 23:50:48 [    INFO] tools.semantic_gap_analyzer: Generating report: C:\Users\amita\AppData\Local\Temp\tmp0dvpkhkr\report.md
 2026-03-05 23:50:48 [    INFO] tools.semantic_gap_analyzer: Report written to C:\Users\amita\AppData\Local\Temp\tmp0dvpkhkr\report.md
 PASSED                                                                   [ 63%]
-tests/architecture/test_wave3_phase3_3_finalization.py::test_generate_report_taxonomy_section_present_when_findings 
+tests/architecture/test_wave3_phase3_3_finalization.py::test_generate_report_taxonomy_section_present_when_findings
 -------------------------------- live log call --------------------------------
 2026-03-05 23:50:48 [    INFO] tools.semantic_gap_analyzer: Generating report: C:\Users\amita\AppData\Local\Temp\tmpqo7hnpu1\report.md
 2026-03-05 23:50:48 [    INFO] tools.semantic_gap_analyzer: Report written to C:\Users\amita\AppData\Local\Temp\tmpqo7hnpu1\report.md
 PASSED                                                                   [ 65%]
-tests/architecture/test_wave3_phase3_3_finalization.py::test_generate_report_no_layer_connection_section_when_empty 
+tests/architecture/test_wave3_phase3_3_finalization.py::test_generate_report_no_layer_connection_section_when_empty
 -------------------------------- live log call --------------------------------
 2026-03-05 23:50:48 [    INFO] tools.semantic_gap_analyzer: Generating report: C:\Users\amita\AppData\Local\Temp\tmpvyasmk9u\report.md
 2026-03-05 23:50:48 [    INFO] tools.semantic_gap_analyzer: Report written to C:\Users\amita\AppData\Local\Temp\tmpvyasmk9u\report.md
 PASSED                                                                   [ 68%]
-tests/architecture/test_wave3_phase3_3_finalization.py::test_generate_report_layer_connection_present_when_findings 
+tests/architecture/test_wave3_phase3_3_finalization.py::test_generate_report_layer_connection_present_when_findings
 -------------------------------- live log call --------------------------------
 2026-03-05 23:50:48 [    INFO] tools.semantic_gap_analyzer: Generating report: C:\Users\amita\AppData\Local\Temp\tmpwhafjpki\report.md
 2026-03-05 23:50:48 [    INFO] tools.semantic_gap_analyzer: Report written to C:\Users\amita\AppData\Local\Temp\tmpwhafjpki\report.md
 PASSED                                                                   [ 70%]
-tests/architecture/test_wave3_phase3_3_finalization.py::test_generate_report_no_parse_failures_section_when_empty 
+tests/architecture/test_wave3_phase3_3_finalization.py::test_generate_report_no_parse_failures_section_when_empty
 -------------------------------- live log call --------------------------------
 2026-03-05 23:50:48 [    INFO] tools.semantic_gap_analyzer: Generating report: C:\Users\amita\AppData\Local\Temp\tmpdwm00_nf\report.md
 2026-03-05 23:50:48 [    INFO] tools.semantic_gap_analyzer: Report written to C:\Users\amita\AppData\Local\Temp\tmpdwm00_nf\report.md
 PASSED                                                                   [ 73%]
-tests/architecture/test_wave3_phase3_3_finalization.py::test_generate_report_parse_failures_section_present 
+tests/architecture/test_wave3_phase3_3_finalization.py::test_generate_report_parse_failures_section_present
 -------------------------------- live log call --------------------------------
 2026-03-05 23:50:48 [    INFO] tools.semantic_gap_analyzer: Generating report: C:\Users\amita\AppData\Local\Temp\tmpjymw2sxx\report.md
 2026-03-05 23:50:48 [    INFO] tools.semantic_gap_analyzer: Report written to C:\Users\amita\AppData\Local\Temp\tmpjymw2sxx\report.md
 PASSED                                                                   [ 75%]
-tests/architecture/test_wave3_phase3_3_finalization.py::test_generate_report_per_layer_gap_section 
+tests/architecture/test_wave3_phase3_3_finalization.py::test_generate_report_per_layer_gap_section
 -------------------------------- live log call --------------------------------
 2026-03-05 23:50:48 [    INFO] tools.semantic_gap_analyzer: Generating report: C:\Users\amita\AppData\Local\Temp\tmpmtoavxmt\report.md
 2026-03-05 23:50:48 [    INFO] tools.semantic_gap_analyzer: Report written to C:\Users\amita\AppData\Local\Temp\tmpmtoavxmt\report.md
 PASSED                                                                   [ 78%]
-tests/architecture/test_wave3_phase3_3_finalization.py::test_generate_report_executive_summary_counts_accurate 
+tests/architecture/test_wave3_phase3_3_finalization.py::test_generate_report_executive_summary_counts_accurate
 -------------------------------- live log call --------------------------------
 2026-03-05 23:50:48 [    INFO] tools.semantic_gap_analyzer: Generating report: C:\Users\amita\AppData\Local\Temp\tmpxrmm6gdv\report.md
 2026-03-05 23:50:48 [    INFO] tools.semantic_gap_analyzer: Report written to C:\Users\amita\AppData\Local\Temp\tmpxrmm6gdv\report.md
 PASSED                                                                   [ 80%]
-tests/architecture/test_wave3_phase3_3_finalization.py::test_generate_report_gap_id_appears_in_report 
+tests/architecture/test_wave3_phase3_3_finalization.py::test_generate_report_gap_id_appears_in_report
 -------------------------------- live log call --------------------------------
 2026-03-05 23:50:48 [    INFO] tools.semantic_gap_analyzer: Generating report: C:\Users\amita\AppData\Local\Temp\tmp1_w0sslw\report.md
 2026-03-05 23:50:48 [    INFO] tools.semantic_gap_analyzer: Report written to C:\Users\amita\AppData\Local\Temp\tmp1_w0sslw\report.md
 PASSED                                                                   [ 82%]
-tests/architecture/test_wave3_phase3_3_finalization.py::test_real_run_analysis_and_generate_report_e2e 
+tests/architecture/test_wave3_phase3_3_finalization.py::test_real_run_analysis_and_generate_report_e2e
 -------------------------------- live log call --------------------------------
 2026-03-05 23:50:48 [    INFO] tools.semantic_gap_analyzer: Starting Semantic Gap Analysis...
 2026-03-05 23:50:48 [    INFO] tools.semantic_gap_analyzer: Analyzing Architecture Component Presence...
@@ -546,7 +546,7 @@ tests/architecture/test_wave3_phase3_3_finalization.py::test_real_run_analysis_a
 2026-03-05 23:50:56 [    INFO] tools.semantic_gap_analyzer: Analyzing L4 State Layer...
 2026-03-05 23:50:56 [    INFO] tools.semantic_gap_analyzer: Analyzing L5 Safety Layer...
 2026-03-05 23:50:56 [    INFO] tools.semantic_gap_analyzer: Analyzing L6 Observability Layer...
-2026-03-05 23:50:56 [    INFO] tools.semantic_gap_analyzer: 
+2026-03-05 23:50:56 [    INFO] tools.semantic_gap_analyzer:
 Analysis Complete:
 2026-03-05 23:50:56 [    INFO] tools.semantic_gap_analyzer:   Total Gaps: 1231
 2026-03-05 23:50:56 [    INFO] tools.semantic_gap_analyzer:   HIGH Priority: 585
@@ -556,7 +556,7 @@ Analysis Complete:
 2026-03-05 23:50:56 [    INFO] tools.semantic_gap_analyzer: Generating report: C:\Users\amita\AppData\Local\Temp\tmpn27r27mf\report.md
 2026-03-05 23:50:56 [    INFO] tools.semantic_gap_analyzer: Report written to C:\Users\amita\AppData\Local\Temp\tmpn27r27mf\report.md
 PASSED                                                                   [ 85%]
-tests/architecture/test_wave3_phase3_3_finalization.py::test_real_run_analysis_result_totals_consistent 
+tests/architecture/test_wave3_phase3_3_finalization.py::test_real_run_analysis_result_totals_consistent
 -------------------------------- live log call --------------------------------
 2026-03-05 23:50:56 [    INFO] tools.semantic_gap_analyzer: Starting Semantic Gap Analysis...
 2026-03-05 23:50:56 [    INFO] tools.semantic_gap_analyzer: Analyzing Architecture Component Presence...
@@ -575,7 +575,7 @@ tests/architecture/test_wave3_phase3_3_finalization.py::test_real_run_analysis_r
 2026-03-05 23:51:04 [    INFO] tools.semantic_gap_analyzer: Analyzing L4 State Layer...
 2026-03-05 23:51:04 [    INFO] tools.semantic_gap_analyzer: Analyzing L5 Safety Layer...
 2026-03-05 23:51:04 [    INFO] tools.semantic_gap_analyzer: Analyzing L6 Observability Layer...
-2026-03-05 23:51:04 [    INFO] tools.semantic_gap_analyzer: 
+2026-03-05 23:51:04 [    INFO] tools.semantic_gap_analyzer:
 Analysis Complete:
 2026-03-05 23:51:04 [    INFO] tools.semantic_gap_analyzer:   Total Gaps: 1231
 2026-03-05 23:51:04 [    INFO] tools.semantic_gap_analyzer:   HIGH Priority: 585
@@ -583,7 +583,7 @@ Analysis Complete:
 2026-03-05 23:51:04 [    INFO] tools.semantic_gap_analyzer:   LOW Priority: 12
 2026-03-05 23:51:04 [    INFO] tools.semantic_gap_analyzer:   Parse Failures: 3
 PASSED                                                                   [ 87%]
-tests/architecture/test_wave3_phase3_3_finalization.py::test_all_gap_evidence_files_nonempty 
+tests/architecture/test_wave3_phase3_3_finalization.py::test_all_gap_evidence_files_nonempty
 -------------------------------- live log call --------------------------------
 2026-03-05 23:51:04 [    INFO] tools.semantic_gap_analyzer: Starting Semantic Gap Analysis...
 2026-03-05 23:51:04 [    INFO] tools.semantic_gap_analyzer: Analyzing Architecture Component Presence...
@@ -602,7 +602,7 @@ tests/architecture/test_wave3_phase3_3_finalization.py::test_all_gap_evidence_fi
 2026-03-05 23:51:12 [    INFO] tools.semantic_gap_analyzer: Analyzing L4 State Layer...
 2026-03-05 23:51:12 [    INFO] tools.semantic_gap_analyzer: Analyzing L5 Safety Layer...
 2026-03-05 23:51:13 [    INFO] tools.semantic_gap_analyzer: Analyzing L6 Observability Layer...
-2026-03-05 23:51:13 [    INFO] tools.semantic_gap_analyzer: 
+2026-03-05 23:51:13 [    INFO] tools.semantic_gap_analyzer:
 Analysis Complete:
 2026-03-05 23:51:13 [    INFO] tools.semantic_gap_analyzer:   Total Gaps: 1231
 2026-03-05 23:51:13 [    INFO] tools.semantic_gap_analyzer:   HIGH Priority: 585
@@ -610,7 +610,7 @@ Analysis Complete:
 2026-03-05 23:51:13 [    INFO] tools.semantic_gap_analyzer:   LOW Priority: 12
 2026-03-05 23:51:13 [    INFO] tools.semantic_gap_analyzer:   Parse Failures: 3
 PASSED                                                                   [ 90%]
-tests/architecture/test_wave3_phase3_3_finalization.py::test_all_gaps_have_valid_priority 
+tests/architecture/test_wave3_phase3_3_finalization.py::test_all_gaps_have_valid_priority
 -------------------------------- live log call --------------------------------
 2026-03-05 23:51:13 [    INFO] tools.semantic_gap_analyzer: Starting Semantic Gap Analysis...
 2026-03-05 23:51:13 [    INFO] tools.semantic_gap_analyzer: Analyzing Architecture Component Presence...
@@ -629,7 +629,7 @@ tests/architecture/test_wave3_phase3_3_finalization.py::test_all_gaps_have_valid
 2026-03-05 23:51:20 [    INFO] tools.semantic_gap_analyzer: Analyzing L4 State Layer...
 2026-03-05 23:51:20 [    INFO] tools.semantic_gap_analyzer: Analyzing L5 Safety Layer...
 2026-03-05 23:51:21 [    INFO] tools.semantic_gap_analyzer: Analyzing L6 Observability Layer...
-2026-03-05 23:51:21 [    INFO] tools.semantic_gap_analyzer: 
+2026-03-05 23:51:21 [    INFO] tools.semantic_gap_analyzer:
 Analysis Complete:
 2026-03-05 23:51:21 [    INFO] tools.semantic_gap_analyzer:   Total Gaps: 1231
 2026-03-05 23:51:21 [    INFO] tools.semantic_gap_analyzer:   HIGH Priority: 585
@@ -637,7 +637,7 @@ Analysis Complete:
 2026-03-05 23:51:21 [    INFO] tools.semantic_gap_analyzer:   LOW Priority: 12
 2026-03-05 23:51:21 [    INFO] tools.semantic_gap_analyzer:   Parse Failures: 3
 PASSED                                                                   [ 92%]
-tests/architecture/test_wave3_phase3_3_finalization.py::test_all_gaps_have_valid_layer 
+tests/architecture/test_wave3_phase3_3_finalization.py::test_all_gaps_have_valid_layer
 -------------------------------- live log call --------------------------------
 2026-03-05 23:51:21 [    INFO] tools.semantic_gap_analyzer: Starting Semantic Gap Analysis...
 2026-03-05 23:51:21 [    INFO] tools.semantic_gap_analyzer: Analyzing Architecture Component Presence...
@@ -656,7 +656,7 @@ tests/architecture/test_wave3_phase3_3_finalization.py::test_all_gaps_have_valid
 2026-03-05 23:51:29 [    INFO] tools.semantic_gap_analyzer: Analyzing L4 State Layer...
 2026-03-05 23:51:29 [    INFO] tools.semantic_gap_analyzer: Analyzing L5 Safety Layer...
 2026-03-05 23:51:29 [    INFO] tools.semantic_gap_analyzer: Analyzing L6 Observability Layer...
-2026-03-05 23:51:29 [    INFO] tools.semantic_gap_analyzer: 
+2026-03-05 23:51:29 [    INFO] tools.semantic_gap_analyzer:
 Analysis Complete:
 2026-03-05 23:51:29 [    INFO] tools.semantic_gap_analyzer:   Total Gaps: 1231
 2026-03-05 23:51:29 [    INFO] tools.semantic_gap_analyzer:   HIGH Priority: 585
@@ -664,7 +664,7 @@ Analysis Complete:
 2026-03-05 23:51:29 [    INFO] tools.semantic_gap_analyzer:   LOW Priority: 12
 2026-03-05 23:51:29 [    INFO] tools.semantic_gap_analyzer:   Parse Failures: 3
 PASSED                                                                   [ 95%]
-tests/architecture/test_wave3_phase3_3_finalization.py::test_all_gaps_have_nonempty_intent 
+tests/architecture/test_wave3_phase3_3_finalization.py::test_all_gaps_have_nonempty_intent
 -------------------------------- live log call --------------------------------
 2026-03-05 23:51:29 [    INFO] tools.semantic_gap_analyzer: Starting Semantic Gap Analysis...
 2026-03-05 23:51:29 [    INFO] tools.semantic_gap_analyzer: Analyzing Architecture Component Presence...
@@ -683,7 +683,7 @@ tests/architecture/test_wave3_phase3_3_finalization.py::test_all_gaps_have_nonem
 2026-03-05 23:51:37 [    INFO] tools.semantic_gap_analyzer: Analyzing L4 State Layer...
 2026-03-05 23:51:37 [    INFO] tools.semantic_gap_analyzer: Analyzing L5 Safety Layer...
 2026-03-05 23:51:37 [    INFO] tools.semantic_gap_analyzer: Analyzing L6 Observability Layer...
-2026-03-05 23:51:37 [    INFO] tools.semantic_gap_analyzer: 
+2026-03-05 23:51:37 [    INFO] tools.semantic_gap_analyzer:
 Analysis Complete:
 2026-03-05 23:51:37 [    INFO] tools.semantic_gap_analyzer:   Total Gaps: 1231
 2026-03-05 23:51:37 [    INFO] tools.semantic_gap_analyzer:   HIGH Priority: 585
@@ -691,7 +691,7 @@ Analysis Complete:
 2026-03-05 23:51:37 [    INFO] tools.semantic_gap_analyzer:   LOW Priority: 12
 2026-03-05 23:51:37 [    INFO] tools.semantic_gap_analyzer:   Parse Failures: 3
 PASSED                                                                   [ 97%]
-tests/architecture/test_wave3_phase3_3_finalization.py::test_all_gaps_have_nonempty_recommended_fix 
+tests/architecture/test_wave3_phase3_3_finalization.py::test_all_gaps_have_nonempty_recommended_fix
 -------------------------------- live log call --------------------------------
 2026-03-05 23:51:37 [    INFO] tools.semantic_gap_analyzer: Starting Semantic Gap Analysis...
 2026-03-05 23:51:37 [    INFO] tools.semantic_gap_analyzer: Analyzing Architecture Component Presence...
@@ -710,7 +710,7 @@ tests/architecture/test_wave3_phase3_3_finalization.py::test_all_gaps_have_nonem
 2026-03-05 23:51:45 [    INFO] tools.semantic_gap_analyzer: Analyzing L4 State Layer...
 2026-03-05 23:51:45 [    INFO] tools.semantic_gap_analyzer: Analyzing L5 Safety Layer...
 2026-03-05 23:51:45 [    INFO] tools.semantic_gap_analyzer: Analyzing L6 Observability Layer...
-2026-03-05 23:51:45 [    INFO] tools.semantic_gap_analyzer: 
+2026-03-05 23:51:45 [    INFO] tools.semantic_gap_analyzer:
 Analysis Complete:
 2026-03-05 23:51:45 [    INFO] tools.semantic_gap_analyzer:   Total Gaps: 1231
 2026-03-05 23:51:45 [    INFO] tools.semantic_gap_analyzer:   HIGH Priority: 585
@@ -805,4 +805,3 @@ collected 41 / executed 41
 | Gap with invalid layer passes through | test_all_gaps_have_valid_layer |
 | Gap with empty evidence_files | test_all_gap_evidence_files_nonempty |
 | Gap with empty intent or recommended_fix | test_all_gaps_have_nonempty_intent, test_all_gaps_have_nonempty_recommended_fix |
-

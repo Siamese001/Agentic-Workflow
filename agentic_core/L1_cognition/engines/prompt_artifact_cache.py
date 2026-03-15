@@ -33,6 +33,7 @@ from agentic_core.cache.cache_key_builders import (
     build_compiled_prompt_key,
     build_template_render_key,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 def _get_hot_cache() -> Any:
@@ -95,6 +96,10 @@ class CompiledPromptCache:
         replay_mode: bool = False,
     ) -> dict[str, Any] | None:
         """Return the cached artifact dict or ``None`` on miss/bypass."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L1_REASONING, "CompiledPromptCache.get")
+
         key = build_compiled_prompt_key(prompt_bom_hash, s0_hash, i0_hash, d0_hash, c0_hash)
         return self._cache.get_json(key, replay_mode=replay_mode)
 
@@ -195,6 +200,10 @@ class TemplateRenderCache:
         replay_mode: bool = False,
     ) -> str | None:
         """Return the cached rendered string or ``None`` on miss/bypass."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L1_REASONING, "TemplateRenderCache.get")
+
         key = build_template_render_key(template_id, template_version, args_hash)
         raw = self._cache.get(key, replay_mode=replay_mode)
         if raw is None:

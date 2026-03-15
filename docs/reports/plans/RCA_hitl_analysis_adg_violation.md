@@ -1,9 +1,9 @@
 # RCA: HITL Analysis ADG Violation
 
-**Incident ID**: `hitl-analysis-adg-violation-03142026`  
-**Timestamp**: 2026-03-14 11:05 UTC-04:00  
-**Resolved**: 2026-03-14 11:11 UTC-04:00  
-**Status**: ✅ RESOLVED  
+**Incident ID**: `hitl-analysis-adg-violation-03142026`
+**Timestamp**: 2026-03-14 11:05 UTC-04:00
+**Resolved**: 2026-03-14 11:11 UTC-04:00
+**Status**: ✅ RESOLVED
 **Severity**: Constitutional Violation (§0 DEFAULT ANALYSIS MODE)
 
 ---

@@ -13,6 +13,7 @@ from datetime import datetime
 from typing import Any
 
 from .schemas import DPOBatch, DPOPair, FeedbackExample
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 def _utcnow() -> str:
@@ -53,6 +54,10 @@ class DPOBatchBuilder:
         Returns:
             DPOBatch containing all valid preference pairs
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "DPOBatchBuilder.generate_pairs")
+
         if not human_decisions:
             return DPOBatch(
                 batch_id=str(uuid.uuid4()),

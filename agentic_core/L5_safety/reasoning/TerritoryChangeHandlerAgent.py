@@ -20,6 +20,7 @@ except ImportError:
     Observer = object
     FileSystemEventHandler = object
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 
 def timeout(seconds: int):
@@ -50,6 +51,13 @@ class TerritoryChangeHandlerAgent(SovereignBaseAgent, FileSystemEventHandler):
 
     def on_modified(self, event: Any) -> None:
         """Execute on_modified operation when files change."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "TerritoryChangeHandlerAgent.on_modified")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:TerritoryChangeHandlerAgent.on_modified".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         if event.is_directory:
             return
         if event.src_path.endswith((".py", ".json", ".yaml", ".md", ".txt")):
@@ -93,6 +101,13 @@ class AutonomousRagDaemon:
 
     async def start(self) -> None:
         """Start the autonomous monitoring and reindexing cycle."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "AutonomousRagDaemon.start")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:AutonomousRagDaemon.start".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         watch_path = Path(AGENTIC_CORE_DIR)
         if watch_path.exists():
             self.observer.schedule(self.handler, str(watch_path), recursive=True)

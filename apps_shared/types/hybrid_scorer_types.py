@@ -8,6 +8,7 @@ import re
 from collections import Counter
 from dataclasses import dataclass
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass
@@ -66,6 +67,10 @@ class BM25Scorer:
         Args:
             documents: List of document texts
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "BM25Scorer.build_index")
+
         all_terms = []
         for doc in documents:
             terms = self._tokenize(doc)
@@ -132,6 +137,10 @@ class HybridScorer:
         Args:
             documents: List of document dictionaries with 'id' and 'content'
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HybridScorer.index_documents")
+
         self.documents = documents
         doc_texts = [doc["content"] for doc in documents]
         self.bm25_scorer.build_index(doc_texts)

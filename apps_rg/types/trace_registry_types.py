@@ -19,6 +19,7 @@ from pathlib import Path
 from typing import Any
 
 from apps_rg.utils.rg_core_mixins import MCPHardenedMixin
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger = logging.getLogger(__name__)
 
@@ -39,6 +40,10 @@ class AgentTrace:
 
     @property
     def duration_ms(self) -> float:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "AgentTrace.duration_ms")
+
         end = self.end_time if self.end_time > 0 else time.time()
         return (end - self.start_time) * 1000
 
@@ -72,6 +77,10 @@ class TraceRegistry(MCPHardenedMixin):
 
     def start_span(self, trace_id: str, agent_name: str, action: str) -> str:
         """Begin tracking an action."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "TraceRegistry.start_span")
+
         span_key = f"{trace_id}:{agent_name}:{action}:{time.time()}"
         trace = AgentTrace(trace_id=trace_id, agent_name=agent_name, action=action, start_time=time.time())
         self._traces.append(trace)

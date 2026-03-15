@@ -174,20 +174,20 @@ tests/architecture/test_architecture_drift_diff.py
 3. **Export** them from `__init__.py` and `structure_blueprint_config.py` shim
 
 ### Slice 1 — `AcceleratorSpec` TypedDict + `ACCELERATOR_REGISTRY` dict
-**File:** `agentic_core/L5_safety/config/structure_blueprint/accelerator_registry.py`  
-- Define `AcceleratorSpec` TypedDict  
-- Define full `ACCELERATOR_REGISTRY` with all 11 entries  
-- `get_accelerator(key)` — returns spec or raises `KeyError` with clear message  
-- `resolve_canonical_path(key, repo_root)` — returns `Path`, raises `AcceleratorArtifactMissingError` if `required_for_ci=True` and file absent  
+**File:** `agentic_core/L5_safety/config/structure_blueprint/accelerator_registry.py`
+- Define `AcceleratorSpec` TypedDict
+- Define full `ACCELERATOR_REGISTRY` with all 11 entries
+- `get_accelerator(key)` — returns spec or raises `KeyError` with clear message
+- `resolve_canonical_path(key, repo_root)` — returns `Path`, raises `AcceleratorArtifactMissingError` if `required_for_ci=True` and file absent
 - `validate_accelerator_registry()` — checks all required fields present, no duplicate keys
 
 ### Slice 2 — Wire SSOT exports
-**Files:** `__init__.py` cold-path block + `structure_blueprint_config.py` shim  
-- Add `accelerator_registry` to the cold-path `__getattr__` block  
+**Files:** `__init__.py` cold-path block + `structure_blueprint_config.py` shim
+- Add `accelerator_registry` to the cold-path `__getattr__` block
 - Re-export `ACCELERATOR_REGISTRY`, `AcceleratorSpec`, `get_accelerator`, `resolve_canonical_path` from shim
 
 ### Slice 3 — Fix hardcoded path violations + bootstrap constant documentation
-**Files:** `tools/dep_graph_db.py`, `ops_scripts/ci/dump_adg_to_file.py`, `agentic_core/L0_routing/scripts/execute_ssot.py`  
+**Files:** `tools/dep_graph_db.py`, `ops_scripts/ci/dump_adg_to_file.py`, `agentic_core/L0_routing/scripts/execute_ssot.py`
 
 **A. `tools/dep_graph_db.py`**
 - Replace `DB_PATH = ROOT / "artifacts" / "dep_graph.sqlite"` with import from SSOT `ADG_SQLITE_PATH`

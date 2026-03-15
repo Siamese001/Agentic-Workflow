@@ -15,6 +15,7 @@ import uuid
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class HealingRunPhase(str, Enum):
@@ -136,6 +137,10 @@ class HealingOrchestratorReport:
 
     @property
     def success_rate(self) -> float:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HealingOrchestratorReport.success_rate")
+
         terminal = [r for r in self.healing_runs if r.is_terminal]
         if not terminal:
             return 0.0
@@ -187,6 +192,10 @@ class HealingOrchestrator:
         trigger: HealingTrigger = HealingTrigger.VIOLATION_DETECTED,
     ) -> HealingRun:
         """Dispatch a new healing run."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HealingOrchestrator.dispatch")
+
         run = HealingRun(
             agent_id=self._agent_id,
             orchestrator_run_id=self._run_id,

@@ -17,6 +17,7 @@ import uuid
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class DynamicInvocationKind(str, Enum):
@@ -113,6 +114,10 @@ class DynamicInvocationReport:
 
     @property
     def by_kind(self) -> dict[str, int]:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "DynamicInvocationReport.by_kind")
+
         result: dict[str, int] = {}
         for r in self.records:
             result[r.kind.value] = result.get(r.kind.value, 0) + 1
@@ -166,6 +171,10 @@ class DynamicInvocationTracker:
         suppressed: bool = False,
     ) -> DynamicInvocationRecord:
         """Record a dynamic invocation of any kind."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "DynamicInvocationTracker.record")
+
         rec = DynamicInvocationRecord(
             agent_id=self._agent_id,
             run_id=self._run_id,

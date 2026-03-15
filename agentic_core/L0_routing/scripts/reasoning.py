@@ -4,6 +4,7 @@ from __future__ import annotations
 import logging
 from abc import ABC, abstractmethod
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, emit_replay_key, emit_determinism_digest
 
 Logger = logging.getLogger(__name__)
 
@@ -47,6 +48,12 @@ class ChainOfThoughtStrategy(ReasoningStrategy):
 
     def execute(self, problem: str, context: dict[str, Any]) -> list[str]:
         """Execute CoT reasoning."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "ChainOfThoughtStrategy.execute")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         if not self._validate_input(problem, context):
             return ["Invalid input for CoT"]
         steps = []
@@ -63,6 +70,12 @@ class TreeOfThoughtsStrategy(ReasoningStrategy):
 
     def execute(self, problem: str, context: dict[str, Any]) -> list[str]:
         """Execute ToT reasoning with branching."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "TreeOfThoughtsStrategy.execute")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         if not self._validate_input(problem, context):
             return ["Invalid input for ToT"]
         steps = []
@@ -81,6 +94,12 @@ class ReActStrategy(ReasoningStrategy):
 
     def execute(self, problem: str, context: dict[str, Any]) -> list[str]:
         """Execute ReAct reasoning with actions."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "ReActStrategy.execute")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         if not self._validate_input(problem, context):
             return ["Invalid input for ReAct"]
         steps = []
@@ -98,6 +117,12 @@ class ReflectionStrategy(ReasoningStrategy):
 
     def execute(self, problem: str, context: dict[str, Any]) -> list[str]:
         """Execute reflection reasoning."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "ReflectionStrategy.execute")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         if not self._validate_input(problem, context):
             return ["Invalid input for Reflection"]
         steps = []
@@ -114,6 +139,12 @@ class CritiqueStrategy(ReasoningStrategy):
 
     def execute(self, problem: str, context: dict[str, Any]) -> list[str]:
         """Execute critique reasoning."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "CritiqueStrategy.execute")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         if not self._validate_input(problem, context):
             return ["Invalid input for Critique"]
         steps = []
@@ -131,6 +162,12 @@ class MultiPathStrategy(ReasoningStrategy):
 
     def execute(self, problem: str, context: dict[str, Any]) -> list[str]:
         """Execute multi-path reasoning."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "MultiPathStrategy.execute")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         if not self._validate_input(problem, context):
             return ["Invalid input for MultiPath"]
         steps = []
@@ -177,6 +214,12 @@ class ReasoningStrategyFactory:
         Raises:
             ValueError: If strategy type unknown
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "ReasoningStrategyFactory.create")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         strategy_class = cls._strategies.get(strategy_type.lower())
         if not strategy_class:
             raise ValueError(

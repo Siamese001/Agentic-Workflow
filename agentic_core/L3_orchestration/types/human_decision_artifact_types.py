@@ -13,6 +13,7 @@ from enum import Enum
 from typing import Any, Literal
 
 from agentic_core.L0_routing.engines.assembly_stage import GovernedPayload
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class HumanAction(Enum):
@@ -83,6 +84,10 @@ class HumanDecisionArtifact:
             modified_plan: Modified plan content
             rationale: Rationale for the modifications
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HumanDecisionArtifact.apply_modify_diff")
+
         import hashlib
         from datetime import datetime
 

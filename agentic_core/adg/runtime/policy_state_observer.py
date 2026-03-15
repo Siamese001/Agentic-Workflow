@@ -15,6 +15,7 @@ import uuid
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class StateObservationKind(str, Enum):
@@ -94,6 +95,10 @@ class StateObservationReport:
 
     @property
     def by_kind(self) -> dict[str, int]:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "StateObservationReport.by_kind")
+
         result: dict[str, int] = {}
         for e in self.events:
             result[e.kind.value] = result.get(e.kind.value, 0) + 1
@@ -139,6 +144,10 @@ class PolicyStateObserver:
         staleness_seconds: float = 0.0,
     ) -> StateObservationEvent:
         """Record a policy-state observation."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PolicyStateObserver.observe_policy")
+
         event = StateObservationEvent(
             agent_id=self._agent_id,
             run_id=self._run_id,

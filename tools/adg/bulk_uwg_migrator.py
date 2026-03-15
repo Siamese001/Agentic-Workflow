@@ -34,18 +34,18 @@ from agentic_core.L5_safety.config.structure_blueprint_config import (
 class UWGMigrationRewriter(ast.NodeTransformer):
     """
     Rewrites file write patterns to route through UniversalWriteGateway.
-    
+
     Patterns detected:
     - Path.write_text(content) -> uwg.write_through(path, content)
     - Path.write_bytes(data) -> uwg.write_through(path, data, binary=True)
     - open(path, 'w').write() -> uwg.write_through(path, content)
     - json.dump(data, open(path, 'w')) -> uwg.write_through(path, json.dumps(data))
     """
-    
+
     def __init__(self):
         self.mutations = []
         self.uwg_imported = False
-        
+
     def visit_Call(self, node: ast.Call) -> Any:
         # Detect Path.write_text(content)
         if isinstance(node.func, ast.Attribute):
@@ -68,7 +68,7 @@ class UWGMigrationRewriter(ast.NodeTransformer):
                     args=[path_expr, content_expr],
                     keywords=[]
                 )
-            
+
             # Detect Path.write_bytes(data)
             elif node.func.attr == 'write_bytes' and len(node.args) >= 1:
                 path_expr = node.func.value
@@ -88,7 +88,7 @@ class UWGMigrationRewriter(ast.NodeTransformer):
                     args=[path_expr, data_expr],
                     keywords=[ast.keyword(arg='binary', value=ast.Constant(value=True))]
                 )
-        
+
         # Continue traversal
         self.generic_visit(node)
         return node
@@ -101,18 +101,18 @@ def inject_uwg_import(tree: ast.Module) -> ast.Module:
         names=[ast.alias(name='UniversalWriteGateway', asname='uwg')],
         level=0
     )
-    
+
     # Check if already imported
     for node in tree.body:
         if isinstance(node, ast.ImportFrom):
             if node.module == 'agentic_core.L2_execution.UniversalWriteGateway':
                 return tree  # Already imported
-    
+
     # Insert after docstring if present
     insert_idx = 0
     if tree.body and isinstance(tree.body[0], ast.Expr) and isinstance(tree.body[0].value, ast.Constant):
         insert_idx = 1
-    
+
     tree.body.insert(insert_idx, uwg_import)
     return tree
 
@@ -124,25 +124,25 @@ def migrate_file(filepath: Path, dry_run: bool = True) -> dict[str, Any]:
         tree = ast.parse(source, filename=str(filepath))
     except Exception as e:
         return {'status': 'parse_error', 'error': str(e), 'mutations': 0}
-    
+
     rewriter = UWGMigrationRewriter()
     new_tree = rewriter.visit(tree)
-    
+
     if not rewriter.mutations:
         return {'status': 'no_mutations', 'mutations': 0}
-    
+
     # Inject UWG import if mutations were made
     if rewriter.uwg_imported:
         new_tree = inject_uwg_import(new_tree)
-    
+
     new_source = ast.unparse(new_tree)
-    
+
     if not dry_run:
         filepath.write_text(new_source, encoding='utf-8')
         status = 'migrated'
     else:
         status = 'dry_run'
-    
+
     return {
         'status': status,
         'mutations': len(rewriter.mutations),
@@ -160,16 +160,16 @@ def get_layer_files(layer: str) -> list[Path]:
         'L4': [Path(AGENTIC_CORE_DIR) / 'L4_state'],
         'L5': [Path(AGENTIC_CORE_DIR) / 'L5_safety'],
     }
-    
+
     if layer not in layer_map:
         raise ValueError(f"Unknown layer: {layer}")
-    
+
     files = []
     for base_dir in layer_map[layer]:
         base_dir = base_dir.resolve()  # Make absolute
         if base_dir.exists():
             files.extend(base_dir.rglob('*.py'))
-    
+
     return [f.resolve() for f in files if f.is_file() and not f.name.startswith('_')]
 
 
@@ -179,45 +179,45 @@ def main():
     parser.add_argument('--all', action='store_true', help='Migrate all layers')
     parser.add_argument('--dry-run', action='store_true', help='Dry run (no writes)')
     parser.add_argument('--execute', action='store_true', help='Execute migration (write files)')
-    
+
     args = parser.parse_args()
-    
+
     if not args.layer and not args.all:
         parser.error('Must specify --layer or --all')
-    
+
     if args.execute and args.dry_run:
         parser.error('Cannot specify both --execute and --dry-run')
-    
+
     dry_run = not args.execute
-    
+
     layers = ['L_APP', 'L3', 'L0'] if args.all else [args.layer]
-    
+
     total_files = 0
     total_mutations = 0
     migrated_files = 0
-    
+
     for layer in layers:
         print(f"\n{'='*60}")
         print(f"Layer: {layer}")
         print(f"{'='*60}")
-        
+
         files = get_layer_files(layer)
         print(f"Found {len(files)} Python files")
-        
+
         for filepath in files:
             result = migrate_file(filepath, dry_run=dry_run)
             total_files += 1
-            
+
             if result['mutations'] > 0:
                 total_mutations += result['mutations']
                 migrated_files += 1
                 rel_path = filepath.relative_to(ROOT)
                 print(f"  {result['status']:12s} {rel_path} ({result['mutations']} mutations)")
-                
+
                 if dry_run and result['details']:
                     for detail in result['details'][:3]:  # Show first 3
                         print(f"    L{detail['line']}: {detail['type']} - {detail['original'][:80]}")
-    
+
     print(f"\n{'='*60}")
     print(f"Summary:")
     print(f"  Total files scanned: {total_files}")
@@ -225,7 +225,7 @@ def main():
     print(f"  Total mutations: {total_mutations}")
     print(f"  Mode: {'DRY RUN' if dry_run else 'EXECUTED'}")
     print(f"{'='*60}")
-    
+
     if dry_run:
         print("\nRe-run with --execute to apply changes")
 

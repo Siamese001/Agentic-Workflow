@@ -10,6 +10,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 from .policies import Chunk, ChunkManifest
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass
@@ -92,6 +93,10 @@ class OverlapSanityValidator:
 
     def validate(self, chunks: list[Chunk]) -> int:
         """Return number of consecutive identical-content chunk pairs."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "OverlapSanityValidator.validate")
+
         violations = 0
         for i in range(len(chunks) - 1):
             if chunks[i].content.strip() == chunks[i + 1].content.strip():
@@ -104,6 +109,10 @@ class DuplicateChunkDetector:
 
     def detect(self, chunks: list[Chunk]) -> list[str]:
         """Return list of chunk_ids whose content is a duplicate of an earlier chunk."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "DuplicateChunkDetector.detect")
+
         seen: set[str] = set()
         duplicates: list[str] = []
         for chunk in chunks:
@@ -143,6 +152,10 @@ class ChunkManifestValidator:
         Returns:
             ChunkQualityReport with all detected violations
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ChunkManifestValidator.validate")
+
         chunks = manifest.chunks
         messages: list[str] = []
         oversized = self.max_validator.validate(chunks)

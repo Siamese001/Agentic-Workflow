@@ -10,6 +10,7 @@ import json
 from dataclasses import dataclass
 
 from system_learning.engines.retrieval_profile import RetrievalProfile
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass(frozen=True, slots=True)
@@ -33,6 +34,10 @@ class RetrievalProfileProposal:
 
     def to_canonical_json(self) -> str:
         """Convert to canonical JSON for deterministic serialization."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RetrievalProfileProposal.to_canonical_json")
+
         data = {
             "base_profile_id": self.base_profile_id,
             "proposed_profile": json.loads(self.proposed_profile.to_canonical_json()),

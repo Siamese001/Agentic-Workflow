@@ -6,6 +6,7 @@ import os
 "Brief description of functionality and purpose."
 "Brief description of functionality and purpose."
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger: Any = logging.getLogger("ConsensusEngine")
 if not logging.root.handlers:
@@ -149,6 +150,10 @@ class ConsensusEngine:
             A dictionary containing the overall status ("PASS" or "FAIL"),
             the consensus score, and a list of individual juror votes.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L1_REASONING, "ConsensusEngine.judge_artifact")
+
         Logger.info(f"🔔 Convening Supreme Court ({', '.join(self.providers)})...")
         votes: Any = []
         prompt: Any = f"Context: {context}.\nAnalyze the following Artifact. Use your full reasoning capabilities to detect subtle logic bugs, security vulnerabilities, or hallucinations.\nArtifact:\n---\n{artifact_content}\n---\nVerdict (YES/NO)?"

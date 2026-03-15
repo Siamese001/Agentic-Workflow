@@ -1,4 +1,5 @@
 """
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 PlaceholderDetectorAgent - Extracted for one-class-per-file pattern.
 
 Originally from: ContentCleanlinessValidatorAgent.py
@@ -31,6 +32,10 @@ class PlaceholderDetectorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMi
 
     def detect_placeholders(self, text: str) -> list[str]:
         """Detect ALL placeholder patterns"""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PlaceholderDetectorAgent.detect_placeholders")
+
         found = []
 
         for pattern in self.PLACEHOLDER_PATTERNS:

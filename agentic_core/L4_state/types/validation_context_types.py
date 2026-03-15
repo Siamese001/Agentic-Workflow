@@ -16,6 +16,7 @@ import logging
 from datetime import datetime
 from pathlib import Path
 from typing import Protocol
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 LOGGER = logging.getLogger(__name__)
 
@@ -137,6 +138,10 @@ class Historian:
         Returns:
             True if file should be skipped (unchanged)
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "Historian.should_skip_file")
+
         rel_path = str(file_path.relative_to(Path.cwd()))
         current_hash = self.calculate_file_hash(file_path)
         if not current_hash:

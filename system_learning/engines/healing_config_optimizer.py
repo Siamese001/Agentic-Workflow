@@ -17,6 +17,7 @@ from system_learning.types.healing_outcome_learning_types import (
 from system_learning.types.pattern_analysis_types import (
     PatternFindingReport,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class HealingConfigOptimizer:
@@ -71,6 +72,10 @@ class HealingConfigOptimizer:
         Returns:
             Aggregate snapshot for threshold optimization.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HealingConfigOptimizer.create_snapshot_from_intake")
+
         # Convert intake snapshot to aggregate format
         aggregate_pairs = []
 
@@ -461,6 +466,10 @@ class ThresholdAdjustment:
 
     def canonical_bytes(self) -> bytes:
         """Generate canonical byte representation."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ThresholdAdjustment.canonical_bytes")
+
         data = {
             "healer_name": self.healer_name,
             "tier": self.tier,
@@ -492,6 +501,10 @@ class ThresholdAdjustmentProposal:
 
     def canonical_bytes(self) -> bytes:
         """Generate canonical byte representation."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ThresholdAdjustmentProposal.canonical_bytes")
+
         adjustments_data = []
         for adj in self.adjustments:
             adjustments_data.append(

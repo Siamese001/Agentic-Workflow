@@ -13,6 +13,7 @@ Usage:
 
 import os
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 MAX_RETRIES = 3
@@ -81,6 +82,10 @@ class AgentDefaults:
         Returns:
             Configuration value (env var override takes precedence)
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "AgentDefaults.get")
+
         # Check environment variable first
         env_value = os.environ.get(key)
         if env_value is not None:

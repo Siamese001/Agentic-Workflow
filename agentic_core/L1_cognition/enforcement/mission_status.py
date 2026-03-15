@@ -3,6 +3,7 @@ from __future__ import annotations
 "Core Agentic module."
 from enum import Enum
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class MissionStatus(Enum):
@@ -33,6 +34,10 @@ class MissionPlan:
 
     async def execute(self) -> Any:
         """Execute mission plan asynchronously."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L1_REASONING, "MissionPlan.execute")
+
         self.status = "running"
         return {"status": "executed", "steps_completed": len(self.steps)}
 

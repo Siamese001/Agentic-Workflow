@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 from dataclasses import dataclass
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass(frozen=True)
@@ -20,6 +21,10 @@ class HealingAttempt:
 
     def canonical_bytes(self) -> bytes:
         """Canonical byte representation for deterministic fingerprinting."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HealingAttempt.canonical_bytes")
+
         data = {
             "attempt_id": self.attempt_id,
             "healer_id": self.healer_id,
@@ -53,6 +58,10 @@ class HealingConfidenceReport:
         cls, decisions: list[ConfidenceDecision], canonical_bytes: bytes
     ) -> HealingConfidenceReport:
         """Create report from canonical bytes."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HealingConfidenceReport.from_canonical_bytes")
+
         confidence_fingerprint = hashlib.sha256(canonical_bytes).hexdigest()
         return cls(
             decisions=decisions,

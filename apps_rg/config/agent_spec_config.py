@@ -11,6 +11,7 @@ This prevents "Schema Drift" where JSON files get out of sync with code expectat
 from __future__ import annotations
 
 from pydantic import BaseModel, Field, model_validator
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
@@ -51,6 +52,10 @@ class OrchestrationTopology(BaseModel):
     @model_validator(mode="after")
     def validate_agents_exist(self) -> OrchestrationTopology:
         """Ensure all agents listed in phases exist in the agent registry."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "OrchestrationTopology.validate_agents_exist")
+
         known_agents = set(self.agents.keys())
         for phase, agent_list in self.phases.items():
             for agent in agent_list:

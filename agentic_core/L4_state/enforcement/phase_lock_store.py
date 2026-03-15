@@ -10,6 +10,7 @@ import logging
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 _SEQUENCE_COUNTER: list[int] = [0]
 
@@ -96,6 +97,10 @@ class PhaseLockStore:
         Raises:
             RuntimeError: If phase is already locked
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "PhaseLockStore.lock_phase")
+
         if phase in self._locks and self._locks[phase].locked:
             raise RuntimeError(f"Phase {phase} is already locked")
         seq = _next_sequence()
@@ -214,6 +219,10 @@ class PhaseLockValidator:
         Raises:
             RuntimeError: If sequence is invalid
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "PhaseLockValidator.validate_phase_sequence")
+
         for phase in range(1, current_phase):
             if not self.store.is_locked(phase):
                 raise RuntimeError(f"Phase {phase} must be locked before phase {current_phase}")

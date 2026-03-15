@@ -16,6 +16,7 @@ Replaces fragmented configs across L1, L3, apps_shared
 """
 import os
 from dataclasses import dataclass, field
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass
@@ -105,6 +106,10 @@ class SovereignRagConfig:
     @classmethod
     def from_env(cls) -> SovereignRagConfig:
         """Load configuration from environment variables."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SovereignRagConfig.from_env")
+
         config = cls()
         config.vector_store.dimension = int(os.getenv("EMBEDDING_DIMENSION", "1024"))
         config.embedding.dimension = config.vector_store.dimension

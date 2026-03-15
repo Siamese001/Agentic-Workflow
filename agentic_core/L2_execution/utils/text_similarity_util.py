@@ -12,6 +12,7 @@ try:
 except ImportError:
     TfidfVectorizer = None
     SKLEARN_AVAILABLE: Any = False
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 
 class TextSimilarityCalculator:
@@ -25,6 +26,13 @@ class TextSimilarityCalculator:
 
     def calculate(self, text1: str, text2: str) -> float:
         """Calculate cosine similarity between two texts."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "TextSimilarityCalculator.calculate")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:TextSimilarityCalculator.calculate".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         if SKLEARN_AVAILABLE:
             return self._calculate_sklearn(text1, text2)
         return self._calculate_fallback(text1, text2)

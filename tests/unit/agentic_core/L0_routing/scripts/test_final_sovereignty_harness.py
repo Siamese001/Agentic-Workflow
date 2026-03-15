@@ -74,7 +74,7 @@ class TestFinalSovereignty(unittest.TestCase):
                 "IGNORE",
                 "Agent files should not be ignored when they exist and contain agent classes.",
             )
-    
+
     def test_windows_registry_validation_100_percent_pass(self):
         """Confirm environment verification logic remains active for Windows safety."""
         #

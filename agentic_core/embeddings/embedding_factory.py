@@ -17,6 +17,7 @@ from typing import Any, Literal, Protocol, runtime_checkable
 
 from agentic_core.embeddings.embedding_input_guard import GuardedText
 from agentic_core.replay.replay_envelope import create_deterministic_cache_key
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -130,6 +131,10 @@ def create_embedding_client(
                 }
 
             async def get_embedding(self, guarded_text: GuardedText) -> list[float]:
+                import uuid as _uuid  # noqa: PLC0415
+                _trace_id = str(_uuid.uuid4())
+                _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "OpenAIEmbeddingClient.get_embedding")
+
                 # W11: Use deterministic cache key with embedder identity
                 cache_key = create_deterministic_cache_key(guarded_text.redacted_text, self.embedder_identity)
                 if cache_key in self._cache:

@@ -6,6 +6,7 @@ Ported from: archives/legacy_lic/Agentic LIC/memory_LIC.py
 
 import hashlib
 from dataclasses import dataclass
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass
@@ -102,6 +103,10 @@ class LICVectorMemory:
         document_id: str | None = None,
     ) -> str:
         """Module implementation."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "LICVectorMemory.add_document")
+
         if document_id is None:
             id_string = f"{metadata.get('source_url', '')}_{metadata.get('extracted_at', '')}"
             document_id = hashlib.md5(id_string.encode()).hexdigest()
@@ -225,6 +230,10 @@ class MockVectorMemory(LICVectorMemory):
 
     def initialize(self) -> bool:
         """Mock initialization always succeeds."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "MockVectorMemory.initialize")
+
         self._initialized = True
         return True
 

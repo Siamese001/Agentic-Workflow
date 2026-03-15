@@ -16,6 +16,7 @@ import uuid
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class SecretAccessOutcome(str, Enum):
@@ -92,6 +93,10 @@ class SecretAccessReport:
 
     @property
     def by_kind(self) -> dict[str, int]:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SecretAccessReport.by_kind")
+
         result: dict[str, int] = {}
         for e in self.events:
             result[e.secret_kind.value] = result.get(e.secret_kind.value, 0) + 1
@@ -142,6 +147,10 @@ class SecretAccessRecorder:
         raw_value: str = "",
     ) -> SecretAccessEvent:
         """Record a secret access and return the event."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SecretAccessRecorder.record_access")
+
         masked_hash = ""
         if raw_value:
             masked_hash = hashlib.sha256(raw_value.encode()).hexdigest()[:16]

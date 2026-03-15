@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.L0_routing.config.path_constants import DEFAULT_TIMEOUT
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 
 def _invoke_authorize_and_execute(execution_context, target_callable, capability_token, payload, **kw):
@@ -85,6 +86,13 @@ class SecureToolsImpl:
         Returns:
             str: A success message.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "SecureToolsImpl.tool_write_file")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:SecureToolsImpl.tool_write_file".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         _ectx = _make_execution_context(filename, "secure_tools.tool_write_file")
         _invoke_authorize_and_execute(
             _ectx,

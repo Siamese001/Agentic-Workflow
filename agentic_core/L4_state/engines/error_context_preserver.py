@@ -4,6 +4,7 @@ import hashlib
 import json
 from dataclasses import dataclass, field
 from typing import Any, NamedTuple
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 ExecutionTrace = Any
 AgentState = Any
@@ -44,6 +45,10 @@ class ErrorContext:
 
     def with_chain(self, prev_hash: str) -> ErrorContext:
         """Attaches the previous hash to form a chain, returning a new instance."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "ErrorContext.with_chain")
+
         new_instance = ErrorContext(
             error_type=self.error_type,
             error_message=self.error_message,

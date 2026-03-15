@@ -7,6 +7,7 @@ Validates:
 """
 
 from __future__ import annotations
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class LineageValidationError(Exception):
@@ -55,6 +56,10 @@ class LineageValidator:
         CycleDetected
             If a cycle is detected in the lineage chain.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "LineageValidator.validate_lineage")
+
         visited: set[str] = set()
         current = version_id
         while current is not None:

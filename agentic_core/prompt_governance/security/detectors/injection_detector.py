@@ -6,6 +6,7 @@ from typing import Any
 
 from agentic_core.prompt_governance.security.utils.normalization_util import normalize_and_decode
 from agentic_core.runtime.exceptions.SovereignError import SecurityViolationError
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger = logging.getLogger(__name__)
 INJECTION_SIGNATURES_V2: list[tuple[str, str]] = [
@@ -131,6 +132,10 @@ class InjectionDetector:
         form so that obfuscated payloads (Unicode tricks, URL-encoding, Base64,
         leetspeak) are detected.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "InjectionDetector.scan")
+
         if not text:
             return True
         original_lower = text.lower()

@@ -27,6 +27,7 @@ from agentic_core.L2_execution.providers import get_clock
 from agentic_core.L3_orchestration.contracts.orchestration_handoff_contract import (
     OrchestrationHandoffContract,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 _ADG_LOGGER = logging.getLogger("adg.agent_executes_agent")
@@ -59,6 +60,10 @@ class StageOwnershipRecord:
         self.status = StageStatus.ACTIVE
 
     def mark_completed(self, continuation: str = "") -> None:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "StageOwnershipRecord.mark_completed")
+
         self.status = StageStatus.COMPLETED
         self.continuation_signal = continuation
         self.completed_epoch = get_clock().now_epoch()
@@ -102,6 +107,10 @@ class RunScopedOrchestrationLedger:
 
         Emits ``agent_executes_agent`` ADG edge signal.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RunScopedOrchestrationLedger.record_handoff")
+
         self._handoffs.append(contract)
         # Update task ownership
         if contract.current_work_item_id if hasattr(contract, "current_work_item_id") else False:

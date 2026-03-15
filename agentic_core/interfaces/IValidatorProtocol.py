@@ -13,6 +13,7 @@ from __future__ import annotations
 import asyncio
 import logging
 from typing import Any, Protocol
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger = logging.getLogger(__name__)
 
@@ -66,6 +67,10 @@ class AdversarialValidator:
         Returns:
             dict with keys: valid, errors, threat_assessment
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "AdversarialValidator.validate")
+
         self._ensure_initialized()
         if self._agent is None:
             return {"valid": True, "errors": [], "threat_assessment": {"status": "agent_unavailable"}}
@@ -136,6 +141,10 @@ class BoundaryValidator:
         Returns:
             dict with keys: valid, errors, recommendations
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "BoundaryValidator.validate")
+
         self._ensure_initialized()
         if self._agent is None:
             return {"valid": True, "errors": [], "recommendations": []}

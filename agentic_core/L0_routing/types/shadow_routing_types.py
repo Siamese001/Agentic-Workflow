@@ -15,6 +15,7 @@ from typing import Any
 
 from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
 from agentic_core.L0_routing.types.routing_artifact_types import RoutePath
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, emit_replay_key, emit_determinism_digest
 
 
 def _get_canonical_json():
@@ -66,6 +67,12 @@ class ShadowRoutingDecision:
         Returns:
             64-character lowercase hex SHA256 digest
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "ShadowRoutingDecision.compute_canonical_fingerprint")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         canonical_features = canonical_json(features)
         return hashlib.sha256(canonical_features.encode("utf-8")).hexdigest()
 

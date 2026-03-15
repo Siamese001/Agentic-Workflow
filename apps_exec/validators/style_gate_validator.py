@@ -18,6 +18,7 @@ import re
 from dataclasses import dataclass, field
 
 from apps_exec.types.exec_types import BriefSection, StyleViolation
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 _log = logging.getLogger(__name__)
 
@@ -59,6 +60,10 @@ class StyleGateResult:
     sections_checked: int = 0
 
     def first_failure(self) -> StyleViolation | None:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "StyleGateResult.first_failure")
+
         for v in self.violations:
             if v.severity == "BLOCK":
                 return v
@@ -88,6 +93,10 @@ class StyleGateValidator:
         Returns:
             StyleGateResult with all violations.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "StyleGateValidator.validate_sections")
+
         violations: list[StyleViolation] = []
 
         for section in sections:

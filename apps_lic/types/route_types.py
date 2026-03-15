@@ -11,6 +11,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 LIMIT: int = 5
 THRESHOLD: float = 0.95
@@ -54,6 +55,10 @@ class CharLimitConstraint:
 
     def validate(self, count: int) -> bool:
         """Validate character count against constraints."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "CharLimitConstraint.validate")
+
         if self.min is not None and count < self.min:
             return False
         if self.max is not None and count > self.max:
@@ -70,6 +75,10 @@ class WordLimitConstraint:
 
     def validate(self, count: int) -> bool:
         """Validate word count against constraints."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "WordLimitConstraint.validate")
+
         if self.min is not None and count < self.min:
             return False
         if self.max is not None and count > self.max:

@@ -109,6 +109,10 @@ class SovereignMetaLearningClient:
 
     def retrieve_healing_pattern(self, violation_type: str, error_signature: str) -> dict[str, Any] | None:
         """Read-only pattern retrieval — delegates to inner client."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SovereignMetaLearningClient.retrieve_healing_pattern")
+
         inner = object.__getattribute__(self, "_sealed_client")
         if hasattr(inner, "retrieve_pattern"):
             return inner.retrieve_pattern(violation_type, error_signature)
@@ -203,6 +207,7 @@ try:
 except ImportError:
     HealingPattern = None
     MetaLearningGuardrails = None
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 __all__ = [
     "ChangePackage",
     "SovereignMetaLearningClient",

@@ -139,7 +139,7 @@ agentic_core/L2_execution/determinism.py  # Canonical
 - Day 1-2: Fix all syntax errors blocking scanners
 - Day 3-5: Implement core infrastructure fixes (silent swallowers, magic config)
 
-### Week 2: Architecture Cleanup  
+### Week 2: Architecture Cleanup
 - Day 1-3: Path migration and type erasure fixes
 - Day 4-5: Config logic separation and import standardization
 
@@ -174,7 +174,7 @@ agentic_core/L2_execution/determinism.py  # Canonical
 
 ### Quantitative Targets
 - Anti-pattern violations: 1889 → 0 (100% reduction)
-- Collision groups: 25 → 0 (100% reduction)  
+- Collision groups: 25 → 0 (100% reduction)
 - Syntax errors: 88+ → 0 (100% reduction)
 - Test coverage: Maintain >95%
 

@@ -11,6 +11,7 @@ from system_learning.engines.retrieval_profile_proposal import (
     RetrievalProfileProposal,
     create_proposal_digest,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class RetrievalProfileProposalManager:
@@ -33,6 +34,10 @@ class RetrievalProfileProposalManager:
         Returns:
             RetrievalProfileProposal with deterministic digest
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RetrievalProfileProposalManager.create_proposal")
+
         # Apply recommended changes to create proposed profile
         proposed_profile = self._apply_recommendation_to_profile(
             recommendation=recommendation,

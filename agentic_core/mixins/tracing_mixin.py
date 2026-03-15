@@ -36,6 +36,7 @@ from collections.abc import Generator
 from contextlib import contextmanager
 from dataclasses import dataclass, field
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 _CTR: list[int] = [0]
 
@@ -183,6 +184,10 @@ class TracingMixin:
                 # Your code here
                 pass
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "TracingMixin.start_span")
+
         if not self._trace_enabled:
             yield SpanContext(operation_name=operation_name)
             return

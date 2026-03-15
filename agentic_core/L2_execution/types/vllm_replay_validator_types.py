@@ -17,6 +17,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 
 def canonical_prompt_hash(prompt: str) -> str:
@@ -168,6 +169,13 @@ class VLLMReplayArtifact:
         Returns:
             64-character lowercase hex SHA256 digest of the canonical payload.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "VLLMReplayArtifact.canonical_payload_hash")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:VLLMReplayArtifact.canonical_payload_hash".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint_types import sha256_hex
 
         combined = self.prompt_hash + self.local_request_hash + self.fingerprint_hash + self.response_hash
@@ -212,6 +220,13 @@ class VLLMReplayValidator:
         Returns:
             Dict with validation result and hash details.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "VLLMReplayValidator.validate_and_report")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:VLLMReplayValidator.validate_and_report".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         is_valid = self.validate(artifact)
         if not is_valid:
             current_replay_hash = compute_replay_hash(

@@ -21,6 +21,7 @@ from apps_research.types.research_types import (
     ResearchSection,
     SourceEntry,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 _log = logging.getLogger(__name__)
 
@@ -99,6 +100,10 @@ class ResearchAssemblyEngine:
         Returns:
             ResearchAssemblyResult with sections, matrix, source register.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ResearchAssemblyEngine.execute")
+
         mode = request.mode if isinstance(request.mode, ArtifactMode) else ArtifactMode(request.mode)
         sources = self._build_source_register(request)
         sections = self._build_sections(request, mode, sources)

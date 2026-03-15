@@ -8,6 +8,7 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 from re import Pattern
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass
@@ -36,6 +37,10 @@ class TextProcessor:
         Returns:
             TextMatch with all matches and positions
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "TextProcessor.extract_patterns")
+
         if isinstance(pattern, str):
             compiled_pattern = re.compile(pattern, flags)
         else:

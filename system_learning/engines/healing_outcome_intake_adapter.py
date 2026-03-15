@@ -3,6 +3,7 @@
 from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
 from system_learning.ports.healing_outcome_intake_store import HealingOutcomeIntakeStore
 from system_learning.types.healing_outcome_intake_types import HealingOutcomeIntakeRecord
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class HealingOutcomeIntakeAdapter:
@@ -33,6 +34,10 @@ class HealingOutcomeIntakeAdapter:
         Returns:
             Immutable intake record with deterministically sorted snapshot
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HealingOutcomeIntakeAdapter.build_record")
+
         snapshot_tuple = aggregator.snapshot()
         proposal = aggregator.build_proposal()
         sorted_snapshot = tuple(sorted(snapshot_tuple, key=lambda s: (s.healer_id, s.tier, s.failure_type)))

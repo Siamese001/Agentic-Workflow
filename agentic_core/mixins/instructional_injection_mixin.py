@@ -18,6 +18,7 @@ from agentic_core.config.core.injection_layer_config import (
     InjectionLayer,
     InstructionalPattern,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 def _get_scan_untrusted_text():
@@ -53,6 +54,10 @@ class InstructionalInjectionMixin:
 
     def inject_pattern(self, prompt: str, pattern_id: int, **kwargs) -> str:
         """Inject a specific pattern into a prompt."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "InstructionalInjectionMixin.inject_pattern")
+
         pattern = self.get_pattern(pattern_id)
         if not pattern or not pattern.enabled:
             return prompt

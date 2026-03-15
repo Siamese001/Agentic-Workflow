@@ -18,6 +18,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Sequence
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 EPSILON: float = 0.01
 
@@ -91,6 +92,10 @@ class ShadowReplayValidator:
             RegressionError: If any regression exceeds EPSILON or safety degrades.
             ValueError: If *replay_results* is empty.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ShadowReplayValidator.validate")
+
         if not replay_results:
             raise ValueError("ShadowReplayValidator.validate: replay_results must not be empty")
         regression_count = 0

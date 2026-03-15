@@ -10,6 +10,7 @@ import logging
 from abc import ABC, abstractmethod
 from dataclasses import field
 from enum import Enum
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -68,6 +69,10 @@ class FormatObservabilityContextPlanImpl(FormatObservabilityContextPlanProcessor
 
     def process(self, input_data: dict[str, object]) -> FormatObservabilityContextPlanResult:
         """Process input following L5 architecture principles"""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "FormatObservabilityContextPlanImpl.process")
+
         self.logger.info(f"Processing {input_data}")
         self._validate_input(input_data)
         if not self.validate_safety(input_data):
@@ -152,6 +157,10 @@ class FormatObservabilityContextPlanFactory:
     @staticmethod
     def create_processor(safety_level: str = "strict") -> FormatObservabilityContextPlanInterface:
         """Create configured engine"""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "FormatObservabilityContextPlanFactory.create_processor")
+
         constraints = FormatObservabilityContextPlanConstraints(safety_level=safety_level)
         engine = FormatObservabilityContextPlanImpl(constraints)
         return FormatObservabilityContextPlanInterface(engine)

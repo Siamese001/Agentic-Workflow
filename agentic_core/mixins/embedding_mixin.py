@@ -5,6 +5,7 @@ EmbeddingMixin - Unified Embedding Access for Agents
 """
 
 from typing import Any, Literal
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 EmbeddingProvider = Literal["gemini", "openai", "bge-m3"]
 
@@ -27,6 +28,10 @@ class EmbeddingMixin:
     @property
     def embedding_gateway(self) -> Any:
         """Lazy-load embedding gateway singleton."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "EmbeddingMixin.embedding_gateway")
+
         if self._embedding_gateway is None:
             try:
                 from agentic_core.L2_execution.reasoning.EmbeddingSovereignAgent import get_embedding_gateway

@@ -17,6 +17,7 @@ from typing import Any, Callable
 from agentic_core.L2_execution.enforcement.guardrail_gate import Generator
 from agentic_core.L2_execution.types.ml_write_intent_types import is_commit_sandbox_active
 from agentic_core.L2_execution.types.tool_intent_types import ToolIntent, ToolViolation
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 
 def _invoke_authorize_and_execute(execution_context, target_callable, capability_token, payload, **kw):
@@ -90,6 +91,13 @@ class ToolResult:
 
     def canonical_bytes(self) -> bytes:
         """Deterministic serialisation excluding result_hash (self-referential)."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "ToolResult.canonical_bytes")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:ToolResult.canonical_bytes".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         doc: dict[str, Any] = {
             "anchor_ids": sorted(self.anchor_ids),
             "args_hash": self.args_hash,
@@ -151,6 +159,13 @@ class ToolIntentExecutor:
         ToolViolation(code="TOOL_WRITE_OUTSIDE_SANDBOX")
             If intent.requires_commit and sandbox is not active.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "ToolIntentExecutor.execute")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:ToolIntentExecutor.execute".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         if intent.requires_commit and (not is_commit_sandbox_active()):
             raise ToolViolation(
                 code="TOOL_WRITE_OUTSIDE_SANDBOX",

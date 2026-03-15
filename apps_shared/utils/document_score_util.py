@@ -7,6 +7,7 @@ import math
 import re
 from dataclasses import dataclass
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass
@@ -62,6 +63,10 @@ class RAGScorer:
         Returns:
             List of DocumentScore objects
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RAGScorer.score_documents")
+
         scores = []
         for i, doc in enumerate(documents):
             relevance = self._calculate_relevance(doc["content"], query)

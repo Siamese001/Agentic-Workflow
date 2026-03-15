@@ -24,6 +24,7 @@ import logging
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -158,6 +159,10 @@ class IdentityNormalizer:
           6. Inferred symbol (parent resolves but final segment is a class/fn name)
           7. Unresolved import
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "IdentityNormalizer.normalize")
+
         if raw_name in self._cache:
             return self._cache[raw_name]
 

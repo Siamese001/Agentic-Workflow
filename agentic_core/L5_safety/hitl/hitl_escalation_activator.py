@@ -24,6 +24,7 @@ from agentic_core.L5_safety.hitl.decision_logger import (
     get_decision_logger,
 )
 from agentic_core.runtime.execution_trace import get_active_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -51,6 +52,13 @@ class EscalationRequest:
     resolution: str = ""
 
     def resolve(self, decision: str) -> None:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "EscalationRequest.resolve")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:EscalationRequest.resolve".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         self.resolved = True
         self.resolution = decision
 
@@ -102,6 +110,13 @@ class HITLEscalationActivator:
         Emits ``hitl_escalation_activation`` + ``reenters_safety`` ADG edges.
         Logs via HITLDecisionLogger.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "HITLEscalationActivator.escalate")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:HITLEscalationActivator.escalate".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         req = EscalationRequest(
             trace_id=self._trace_id(),
             agent=agent,

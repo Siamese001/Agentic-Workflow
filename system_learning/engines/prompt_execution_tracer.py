@@ -44,6 +44,7 @@ from system_learning.types.prompt_artifact_types import (
     PromptExecutionRecord,
     PromptOutcomeRecord,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -210,6 +211,10 @@ class PromptExecutionTracer:
         -------
         ExecutionTraceResult
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PromptExecutionTracer.trace")
+
         sig = signal or {}
 
         route = str(sig.get("route_selected") or "UNKNOWN")

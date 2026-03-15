@@ -33,6 +33,7 @@ from agentic_core.cache.redis_cache_client import (
     DeterministicRedisCache,
     get_hot_cache,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -103,6 +104,10 @@ class RagRetrievalCache:
         - Redis is unreachable and the fallback store has no entry.
         - ``replay_mode=True``.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RagRetrievalCache.get")
+
         key = build_rag_topk_key(u0_hash, embedder_version, seed_pack_manifest_hash, k, cutoff)
         result = self._cache.get_json(key, replay_mode=replay_mode)
         if result is None:

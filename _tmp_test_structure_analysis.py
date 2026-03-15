@@ -37,7 +37,7 @@ for layer in sorted(by_layer.keys()):
 cursor.execute("""
     SELECT adg_name
     FROM nodes
-    WHERE entity_type = 'repo_module' 
+    WHERE entity_type = 'repo_module'
     AND adg_name LIKE '%test%adg%'
     ORDER BY adg_name
 """)
@@ -53,7 +53,7 @@ if len(adg_tests) > 30:
 cursor.execute("""
     SELECT adg_name
     FROM nodes
-    WHERE entity_type = 'repo_module' 
+    WHERE entity_type = 'repo_module'
     AND adg_name LIKE '%guardian%'
     ORDER BY adg_name
 """)

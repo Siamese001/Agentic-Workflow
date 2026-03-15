@@ -160,20 +160,20 @@ Test Execution:
   Passed:    18 tests
   Failed:    0 tests
   Skipped:   0 tests
-  
+
   Collection/Execution Match: ✅ PASS (§1.12)
 
 Test Coverage:
   Declared minimum: 18 tests
   Actual coverage:  18 tests
   Coverage gap:     0 tests
-  
+
   Coverage Match: ✅ PASS (§1.1)
 
 Determinism:
   Runs: 3
   Consistent results: ✅ YES
-  
+
   Determinism: ✅ PASS (§1.3)
 
 Edge Cases:
@@ -185,18 +185,18 @@ Edge Cases:
   dependency failure: ✅ 1 test
   negative control: ✅ 2 tests
   recovery: ✅ 1 test
-  
+
   Edge Coverage: ✅ PASS (§1.5)
 
 Fail-Closed:
   Invalid preconditions block: ✅ 3 tests
   No side-effects before block: ✅ 3 tests
-  
+
   Fail-Closed: ✅ PASS (§1.8)
 
 Mock Bypass Check:
   Integration seam mocks: ✅ NONE
-  
+
   Mock Discipline: ✅ PASS (§1.4)
 
 VALIDATION STATUS: ✅ APPROVED FOR COMMIT

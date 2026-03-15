@@ -18,6 +18,7 @@ import random as _random_module
 import time as _time_module
 import uuid as _uuid_module
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 _ACTIVE_TRACE_ID: str | None = None
 _PATCHED: bool = False
@@ -51,6 +52,13 @@ class FixedTimeProvider:
 
     def sleep(self, seconds: float) -> None:
         """Advance virtual clock instead of blocking."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "FixedTimeProvider.sleep")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:FixedTimeProvider.sleep".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         if seconds < 0:
             raise ValueError("sleep duration must be non-negative")
         self._offset += seconds
@@ -93,6 +101,13 @@ class DeterministicRandomSource:
 
     def shuffle(self, seq: list) -> list:
         """Shuffle sequence deterministically in-place and return it."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "DeterministicRandomSource.shuffle")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:DeterministicRandomSource.shuffle".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         self._rng.shuffle(seq)
         return seq
 
@@ -111,6 +126,13 @@ class DeterministicUUIDProvider:
 
     def uuid4(self) -> _uuid_module.UUID:
         """Return deterministic UUID."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "DeterministicUUIDProvider.uuid4")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:DeterministicUUIDProvider.uuid4".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         raw = self._base_int + self._counter & (1 << 128) - 1
         self._counter += 1
         raw = raw & ~(15 << 76) | 4 << 76

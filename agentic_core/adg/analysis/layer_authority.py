@@ -37,6 +37,7 @@ from agentic_core.adg.schema import (
 
 if TYPE_CHECKING:
     from agentic_core.adg.extraction.static_scanner import ScanResult
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 _MODULE_PREFIX = "ADG::Module::"
 _SYMBOL_PREFIX = "ADG::Symbol::"
@@ -112,6 +113,10 @@ class LayerAuthorityReport:
 
     @property
     def summary(self) -> str:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "LayerAuthorityReport.summary")
+
         by_layer: dict[str, int] = {}
         for v in self.violations:
             by_layer[v.layer] = by_layer.get(v.layer, 0) + 1

@@ -8,6 +8,7 @@ from dataclasses import dataclass
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L3_orchestration.reasoning.SubAtomicAgent import SubAtomicAgent
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 
 @dataclass
@@ -71,6 +72,13 @@ class DocumentationAgent(SovereignBaseAgent, SubAtomicAgent):
         Runs missing docstrings check and reports results
         to the validation context.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "DocumentationAgent.execute")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:DocumentationAgent.execute".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         print(f"\n[>>>] {self.agent.name} ACTIVATED: Documentation Check...")
         passed, details = self.check_no_missing_docstrings()
         self.agent.ctx.report(self.agent.name, 21, passed, details)

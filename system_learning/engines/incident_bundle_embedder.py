@@ -24,6 +24,7 @@ from system_learning.engines.embedding_corpus_extraction import (
     compute_content_hash,
 )
 from system_learning.types.semantic_memory_types import IncidentBundle
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -75,6 +76,10 @@ class IncidentBundleEmbedder:
         Returns:
             The generated CorpusRecord.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "IncidentBundleEmbedder.ingest")
+
         text = bundle.to_embedding_text()
         content_hash = compute_content_hash(text.encode("utf-8"))
         record = CorpusRecord(

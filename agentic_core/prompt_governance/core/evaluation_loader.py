@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any
 
 import yaml
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class EvalLoadError(Exception):
@@ -64,6 +65,10 @@ class EvaluationLoader:
             EvalLoadError: If the file is missing, unreadable, or YAML is malformed.
             EvalSchemaError: If the top-level value is not a dict.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "EvaluationLoader.load_eval_set")
+
         if not name or not isinstance(name, str):
             raise ValueError("name must be a non-empty string")
         if name not in self._cache:

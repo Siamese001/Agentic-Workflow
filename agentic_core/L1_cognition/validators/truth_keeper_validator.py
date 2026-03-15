@@ -6,6 +6,7 @@ import ast
 "Brief description of functionality and purpose."
 import logging
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 LOGGER = logging.getLogger(__name__)
 Logger: Any = logging.getLogger(__name__)
@@ -41,6 +42,10 @@ class TruthKeeper:
         Returns:
             Dictionary with consistency violations and fixes
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L1_REASONING, "TruthKeeper.check_file_consistency")
+
         violations: Any = []
         fixes: Any = []
         if "test" in file_path.lower() or file_path.endswith("_test.py"):

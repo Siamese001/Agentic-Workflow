@@ -33,6 +33,7 @@ try:
     YAML_AVAILABLE = True
 except ImportError:
     YAML_AVAILABLE = False
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass
@@ -78,6 +79,10 @@ class ConfigLoader:
         Returns:
             ConfigLoadResult with loaded configuration or errors
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ConfigLoader.load_config")
+
         cache_key = f"{agent_name}:{config_file or 'default'}"
 
         # Check cache first

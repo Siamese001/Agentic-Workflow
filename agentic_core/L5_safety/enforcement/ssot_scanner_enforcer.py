@@ -17,6 +17,7 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
 from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 
 @dataclass
@@ -38,6 +39,13 @@ class AgentMetadata:
 
         Only L0-L5 layers can have violations. APP and UNKNOWN are not violations.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "AgentMetadata.has_gravity_violation")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:AgentMetadata.has_gravity_violation".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         # Skip if either layer is APP or UNKNOWN (not subject to gravity rules)
         if self.layer in ("APP", "UNKNOWN") or self.assigned_layer in ("APP", "UNKNOWN"):
             return False
@@ -112,6 +120,13 @@ class SSOTScanner:
         Returns:
             List of agent metadata
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "SSOTScanner.scan_agents")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:SSOTScanner.scan_agents".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         if use_cache and self._cache:
             return list(self._cache.values())
 

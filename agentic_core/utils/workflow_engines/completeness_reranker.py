@@ -19,6 +19,7 @@ from agentic_core.evaluation.retrieval.completeness import (
     IContextCompletenessScorer,
 )
 from agentic_core.evaluation.retrieval.interfaces import Document, IReranker
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass(frozen=True)
@@ -67,6 +68,10 @@ class CompletenessReranker(IReranker):
             Top-K reranked list, highest blended score first.
             Deterministic tie-break: doc_id ascending.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "CompletenessReranker.rerank")
+
         if not candidates:
             return []
 

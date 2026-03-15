@@ -46,89 +46,89 @@ plugins: anyio-4.12.1, asyncio-1.3.0, cov-7.0.0
 asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
 collected 22 items
 
-tests/architecture/test_wave2_phase2_2_embedding_sovereignty.py::test_no_embedding_mentions_produces_no_gap 
+tests/architecture/test_wave2_phase2_2_embedding_sovereignty.py::test_no_embedding_mentions_produces_no_gap
 -------------------------------- live log call --------------------------------
 2026-03-05 23:27:05 [    INFO] tools.semantic_gap_analyzer: Analyzing RAG and Embedding Sovereignty...
 PASSED                                                                   [  4%]
-tests/architecture/test_wave2_phase2_2_embedding_sovereignty.py::test_embedding_in_path_name_no_gap 
+tests/architecture/test_wave2_phase2_2_embedding_sovereignty.py::test_embedding_in_path_name_no_gap
 -------------------------------- live log call --------------------------------
 2026-03-05 23:27:05 [    INFO] tools.semantic_gap_analyzer: Analyzing RAG and Embedding Sovereignty...
 PASSED                                                                   [  9%]
-tests/architecture/test_wave2_phase2_2_embedding_sovereignty.py::test_rag_in_path_name_no_gap 
+tests/architecture/test_wave2_phase2_2_embedding_sovereignty.py::test_rag_in_path_name_no_gap
 -------------------------------- live log call --------------------------------
 2026-03-05 23:27:05 [    INFO] tools.semantic_gap_analyzer: Analyzing RAG and Embedding Sovereignty...
 PASSED                                                                   [ 13%]
-tests/architecture/test_wave2_phase2_2_embedding_sovereignty.py::test_factory_in_path_name_no_gap 
+tests/architecture/test_wave2_phase2_2_embedding_sovereignty.py::test_factory_in_path_name_no_gap
 -------------------------------- live log call --------------------------------
 2026-03-05 23:27:05 [    INFO] tools.semantic_gap_analyzer: Analyzing RAG and Embedding Sovereignty...
 PASSED                                                                   [ 18%]
-tests/architecture/test_wave2_phase2_2_embedding_sovereignty.py::test_memory_in_path_name_no_gap 
+tests/architecture/test_wave2_phase2_2_embedding_sovereignty.py::test_memory_in_path_name_no_gap
 -------------------------------- live log call --------------------------------
 2026-03-05 23:27:05 [    INFO] tools.semantic_gap_analyzer: Analyzing RAG and Embedding Sovereignty...
 PASSED                                                                   [ 22%]
-tests/architecture/test_wave2_phase2_2_embedding_sovereignty.py::test_seed_in_path_name_no_gap 
+tests/architecture/test_wave2_phase2_2_embedding_sovereignty.py::test_seed_in_path_name_no_gap
 -------------------------------- live log call --------------------------------
 2026-03-05 23:27:05 [    INFO] tools.semantic_gap_analyzer: Analyzing RAG and Embedding Sovereignty...
 PASSED                                                                   [ 27%]
-tests/architecture/test_wave2_phase2_2_embedding_sovereignty.py::test_l1_layer_file_with_embedding_no_gap 
+tests/architecture/test_wave2_phase2_2_embedding_sovereignty.py::test_l1_layer_file_with_embedding_no_gap
 -------------------------------- live log call --------------------------------
 2026-03-05 23:27:05 [    INFO] tools.semantic_gap_analyzer: Analyzing RAG and Embedding Sovereignty...
 PASSED                                                                   [ 31%]
-tests/architecture/test_wave2_phase2_2_embedding_sovereignty.py::test_l4_layer_file_with_embedding_no_gap 
+tests/architecture/test_wave2_phase2_2_embedding_sovereignty.py::test_l4_layer_file_with_embedding_no_gap
 -------------------------------- live log call --------------------------------
 2026-03-05 23:27:05 [    INFO] tools.semantic_gap_analyzer: Analyzing RAG and Embedding Sovereignty...
 PASSED                                                                   [ 36%]
-tests/architecture/test_wave2_phase2_2_embedding_sovereignty.py::test_l0_file_no_allowed_token_generates_embedding_gap 
+tests/architecture/test_wave2_phase2_2_embedding_sovereignty.py::test_l0_file_no_allowed_token_generates_embedding_gap
 -------------------------------- live log call --------------------------------
 2026-03-05 23:27:05 [    INFO] tools.semantic_gap_analyzer: Analyzing RAG and Embedding Sovereignty...
 PASSED                                                                   [ 40%]
-tests/architecture/test_wave2_phase2_2_embedding_sovereignty.py::test_l2_file_no_allowed_token_generates_embedding_gap 
+tests/architecture/test_wave2_phase2_2_embedding_sovereignty.py::test_l2_file_no_allowed_token_generates_embedding_gap
 -------------------------------- live log call --------------------------------
 2026-03-05 23:27:05 [    INFO] tools.semantic_gap_analyzer: Analyzing RAG and Embedding Sovereignty...
 PASSED                                                                   [ 45%]
-tests/architecture/test_wave2_phase2_2_embedding_sovereignty.py::test_l3_file_no_allowed_token_generates_embedding_gap 
+tests/architecture/test_wave2_phase2_2_embedding_sovereignty.py::test_l3_file_no_allowed_token_generates_embedding_gap
 -------------------------------- live log call --------------------------------
 2026-03-05 23:27:05 [    INFO] tools.semantic_gap_analyzer: Analyzing RAG and Embedding Sovereignty...
 PASSED                                                                   [ 50%]
-tests/architecture/test_wave2_phase2_2_embedding_sovereignty.py::test_unknown_layer_file_no_allowed_token_generates_embedding_gap 
+tests/architecture/test_wave2_phase2_2_embedding_sovereignty.py::test_unknown_layer_file_no_allowed_token_generates_embedding_gap
 -------------------------------- live log call --------------------------------
 2026-03-05 23:27:05 [    INFO] tools.semantic_gap_analyzer: Analyzing RAG and Embedding Sovereignty...
 PASSED                                                                   [ 54%]
-tests/architecture/test_wave2_phase2_2_embedding_sovereignty.py::test_parse_failed_file_skipped_no_embedding_gap 
+tests/architecture/test_wave2_phase2_2_embedding_sovereignty.py::test_parse_failed_file_skipped_no_embedding_gap
 -------------------------------- live log call --------------------------------
 2026-03-05 23:27:05 [    INFO] tools.semantic_gap_analyzer: Analyzing RAG and Embedding Sovereignty...
 PASSED                                                                   [ 59%]
-tests/architecture/test_wave2_phase2_2_embedding_sovereignty.py::test_allowed_token_in_path_overrides_bad_layer 
+tests/architecture/test_wave2_phase2_2_embedding_sovereignty.py::test_allowed_token_in_path_overrides_bad_layer
 -------------------------------- live log call --------------------------------
 2026-03-05 23:27:05 [    INFO] tools.semantic_gap_analyzer: Analyzing RAG and Embedding Sovereignty...
 PASSED                                                                   [ 63%]
-tests/architecture/test_wave2_phase2_2_embedding_sovereignty.py::test_l4_layer_without_allowed_token_still_no_gap 
+tests/architecture/test_wave2_phase2_2_embedding_sovereignty.py::test_l4_layer_without_allowed_token_still_no_gap
 -------------------------------- live log call --------------------------------
 2026-03-05 23:27:05 [    INFO] tools.semantic_gap_analyzer: Analyzing RAG and Embedding Sovereignty...
 PASSED                                                                   [ 68%]
 tests/architecture/test_wave2_phase2_2_embedding_sovereignty.py::test_embedding_hint_patterns_non_empty PASSED [ 72%]
 tests/architecture/test_wave2_phase2_2_embedding_sovereignty.py::test_embedding_hint_patterns_contains_expected_entries PASSED [ 77%]
-tests/architecture/test_wave2_phase2_2_embedding_sovereignty.py::test_embedding_sovereignty_returns_list 
+tests/architecture/test_wave2_phase2_2_embedding_sovereignty.py::test_embedding_sovereignty_returns_list
 -------------------------------- live log call --------------------------------
 2026-03-05 23:27:05 [    INFO] tools.semantic_gap_analyzer: Analyzing RAG and Embedding Sovereignty...
 2026-03-05 23:27:07 [ WARNING] tools.semantic_gap_analyzer: Failed to parse C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\FileClassificationAgent.py: unexpected indent (FileClassificationAgent.py, line 2075)
 PASSED                                                                   [ 81%]
-tests/architecture/test_wave2_phase2_2_embedding_sovereignty.py::test_all_embedding_gaps_are_high_priority 
+tests/architecture/test_wave2_phase2_2_embedding_sovereignty.py::test_all_embedding_gaps_are_high_priority
 -------------------------------- live log call --------------------------------
 2026-03-05 23:27:08 [    INFO] tools.semantic_gap_analyzer: Analyzing RAG and Embedding Sovereignty...
 2026-03-05 23:27:09 [ WARNING] tools.semantic_gap_analyzer: Failed to parse C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\FileClassificationAgent.py: unexpected indent (FileClassificationAgent.py, line 2075)
 PASSED                                                                   [ 86%]
-tests/architecture/test_wave2_phase2_2_embedding_sovereignty.py::test_all_embedding_gaps_have_evidence_files 
+tests/architecture/test_wave2_phase2_2_embedding_sovereignty.py::test_all_embedding_gaps_have_evidence_files
 -------------------------------- live log call --------------------------------
 2026-03-05 23:27:10 [    INFO] tools.semantic_gap_analyzer: Analyzing RAG and Embedding Sovereignty...
 2026-03-05 23:27:12 [ WARNING] tools.semantic_gap_analyzer: Failed to parse C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\FileClassificationAgent.py: unexpected indent (FileClassificationAgent.py, line 2075)
 PASSED                                                                   [ 90%]
-tests/architecture/test_wave2_phase2_2_embedding_sovereignty.py::test_l1_files_not_in_embedding_gaps 
+tests/architecture/test_wave2_phase2_2_embedding_sovereignty.py::test_l1_files_not_in_embedding_gaps
 -------------------------------- live log call --------------------------------
 2026-03-05 23:27:13 [    INFO] tools.semantic_gap_analyzer: Analyzing RAG and Embedding Sovereignty...
 2026-03-05 23:27:14 [ WARNING] tools.semantic_gap_analyzer: Failed to parse C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\FileClassificationAgent.py: unexpected indent (FileClassificationAgent.py, line 2075)
 PASSED                                                                   [ 95%]
-tests/architecture/test_wave2_phase2_2_embedding_sovereignty.py::test_l4_files_not_in_embedding_gaps 
+tests/architecture/test_wave2_phase2_2_embedding_sovereignty.py::test_l4_files_not_in_embedding_gaps
 -------------------------------- live log call --------------------------------
 2026-03-05 23:27:15 [    INFO] tools.semantic_gap_analyzer: Analyzing RAG and Embedding Sovereignty...
 2026-03-05 23:27:17 [ WARNING] tools.semantic_gap_analyzer: Failed to parse C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\FileClassificationAgent.py: unexpected indent (FileClassificationAgent.py, line 2075)
@@ -200,4 +200,3 @@ OK: EMBEDDING_HINT_PATTERNS has 5 hints
 | Gap with empty evidence_files (unverifiable) | test_all_embedding_gaps_have_evidence_files |
 | EMBEDDING_HINT_PATTERNS emptied (detection silenced) | test_embedding_hint_patterns_non_empty |
 | Critical hint removed from EMBEDDING_HINT_PATTERNS | test_embedding_hint_patterns_contains_expected_entries |
-

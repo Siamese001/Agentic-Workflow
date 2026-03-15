@@ -6,6 +6,7 @@ Provides semantic memory capabilities with embedding-based retrieval.
 
 import logging
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -17,6 +18,10 @@ class EmbeddingProvider:
         self.model = model
 
     def embed(self, text: str) -> list[float]:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L1_REASONING, "EmbeddingProvider.embed")
+
         try:
             from agentic_core.L2_execution.healers.bmg_embedding_similarity import bmg_embed_text
 
@@ -39,6 +44,10 @@ class VectorIndex:
         self._vectors[key] = vector
 
     def search(self, query: list[float], top_k: int = 5) -> list[str]:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L1_REASONING, "VectorIndex.search")
+
         if not self._vectors:
             return []
         try:
@@ -77,6 +86,10 @@ class SemanticMemory:
 
     def store(self, key: str, value: Any, embedding: list[float] | None = None) -> None:
         """Store a memory with optional embedding."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L1_REASONING, "SemanticMemory.store")
+
         self._memories[key] = {"value": value, "metadata": {}}
         if embedding:
             self._embeddings[key] = embedding

@@ -109,94 +109,94 @@ def _get_archive_month_dir(ts: str) -> Path:
 
 def discover_runs() -> dict[str, list[Path]]:
     """Discover all ADG runs by grouping files by timestamp.
-    
+
     Returns:
         Dict mapping timestamp -> list of artifact paths for that run
     """
     runs = defaultdict(list)
-    
+
     for pattern in ["adg_*.json", "adg_*.sqlite", "adg_*.md"]:
         for path in ADG_DIR.glob(pattern):
             # Skip LATEST files
             if "LATEST" in path.name:
                 continue
-            
+
             # Skip archived files
             if path.is_relative_to(ARCHIVE_DIR):
                 continue
-            
+
             ts = _extract_timestamp(path.name)
             if ts:
                 runs[ts].append(path)
-    
+
     return dict(runs)
 
 
 def identify_runs_to_archive(runs: dict[str, list[Path]], keep_runs: int) -> list[str]:
     """Identify which runs should be archived based on retention policy.
-    
+
     Args:
         runs: Dict mapping timestamp -> list of artifact paths
         keep_runs: Number of recent runs to keep
-    
+
     Returns:
         List of timestamps to archive (oldest first)
     """
     if len(runs) <= keep_runs:
         return []
-    
+
     # Sort timestamps by actual datetime (newest first)
     sorted_timestamps = sorted(runs.keys(), key=_parse_timestamp, reverse=True)
-    
+
     # Keep the newest N runs, archive the rest
     to_archive = sorted_timestamps[keep_runs:]
-    
+
     # Return oldest first (for archive processing order)
     return sorted(to_archive, key=_parse_timestamp)
 
 
 def archive_run(ts: str, files: list[Path], compress: bool, dry_run: bool) -> dict:
     """Archive a single ADG run.
-    
+
     Args:
         ts: Timestamp of the run
         files: List of artifact paths for this run
         compress: Whether to compress archived files
         dry_run: If True, only show what would be done
-    
+
     Returns:
         Dict with statistics: files_archived, bytes_saved, etc.
     """
     archive_dir = _get_archive_month_dir(ts)
-    
+
     stats = {
         "timestamp": ts,
         "files_archived": 0,
         "bytes_original": 0,
         "bytes_archived": 0,
     }
-    
+
     if not dry_run:
         archive_dir.mkdir(parents=True, exist_ok=True)
-    
+
     for file_path in files:
         if not file_path.exists():
             continue
-        
+
         original_size = file_path.stat().st_size
         stats["bytes_original"] += original_size
-        
+
         if compress and file_path.suffix in [".json", ".sqlite", ".md"]:
             # Compress and archive
             archive_path = archive_dir / f"{file_path.name}.gz"
-            
+
             if not dry_run:
                 with open(file_path, "rb") as f_in:
                     with gzip.open(archive_path, "wb") as f_out:
                         shutil.copyfileobj(f_in, f_out)
-                
+
                 file_path.unlink()
-            
+
             if archive_path.exists():
                 stats["bytes_archived"] += archive_path.stat().st_size
             else:
@@ -205,54 +205,54 @@ def archive_run(ts: str, files: list[Path], compress: bool, dry_run: bool) -> di
         else:
             # Move without compression
             archive_path = archive_dir / file_path.name
-            
+
             if not dry_run:
                 shutil.move(str(file_path), str(archive_path))
-            
+
             stats["bytes_archived"] += original_size
-        
+
         stats["files_archived"] += 1
-    
+
     return stats
 
 
 def cleanup_old_archives(archive_months: int, dry_run: bool) -> dict:
     """Remove archives older than specified months.
-    
+
     Args:
         archive_months: Keep archives for this many months
         dry_run: If True, only show what would be deleted
-    
+
     Returns:
         Dict with statistics
     """
     if not ARCHIVE_DIR.exists():
         return {"dirs_removed": 0, "bytes_freed": 0}
-    
+
     cutoff_date = datetime.now() - timedelta(days=archive_months * 30)
-    
+
     stats = {"dirs_removed": 0, "bytes_freed": 0}
-    
+
     for month_dir in ARCHIVE_DIR.iterdir():
         if not month_dir.is_dir():
             continue
-        
+
         # Parse directory name: YYYY-MM
         try:
             dir_date = datetime.strptime(month_dir.name, "%Y-%m")
         except ValueError:
             continue
-        
+
         if dir_date < cutoff_date:
             # Calculate size before deletion
             dir_size = sum(f.stat().st_size for f in month_dir.rglob("*") if f.is_file())
             stats["bytes_freed"] += dir_size
-            
+
             if not dry_run:
                 shutil.rmtree(month_dir)
-            
+
             stats["dirs_removed"] += 1
-    
+
     return stats
 
 
@@ -300,34 +300,34 @@ def main() -> None:
         action="store_true",
         help="Also cleanup archives older than --archive-months",
     )
-    
+
     args = parser.parse_args()
-    
+
     compress = args.compress and not args.no_compress
     dry_run = not args.execute
-    
+
     if dry_run:
         print("[DRY RUN] No files will be modified. Use --execute to actually archive.")
         print()
-    
+
     # Discover all runs
     print(f"[ADG Archive] Scanning {ADG_DIR}...")
     runs = discover_runs()
     print(f"[ADG Archive] Found {len(runs)} timestamped runs")
     print()
-    
+
     # Identify runs to archive
     to_archive = identify_runs_to_archive(runs, args.keep_runs)
-    
+
     if not to_archive:
         print(f"[ADG Archive] All runs are within retention policy (keep {args.keep_runs} runs)")
         print("[ADG Archive] Nothing to archive")
         return
-    
+
     print(f"[ADG Archive] Retention policy: keep {args.keep_runs} most recent runs")
     print(f"[ADG Archive] Runs to archive: {len(to_archive)}")
     print()
-    
+
     # Archive each run
     total_stats = {
         "runs_archived": 0,
@@ -335,40 +335,40 @@ def main() -> None:
         "bytes_original": 0,
         "bytes_archived": 0,
     }
-    
+
     for ts in to_archive:
         files = runs[ts]
         print(f"[ADG Archive] Archiving run {ts} ({len(files)} files)...")
-        
+
         stats = archive_run(ts, files, compress, dry_run)
-        
+
         total_stats["runs_archived"] += 1
         total_stats["files_archived"] += stats["files_archived"]
         total_stats["bytes_original"] += stats["bytes_original"]
         total_stats["bytes_archived"] += stats["bytes_archived"]
-        
+
         archive_dir = _get_archive_month_dir(ts)
         print(f"    → {archive_dir.relative_to(ROOT)}")
         print(f"    → {stats['files_archived']} files, {format_bytes(stats['bytes_original'])} → {format_bytes(stats['bytes_archived'])}")
-    
+
     print()
     print("[ADG Archive] Summary:")
     print(f"    Runs archived: {total_stats['runs_archived']}")
     print(f"    Files archived: {total_stats['files_archived']}")
     print(f"    Original size: {format_bytes(total_stats['bytes_original'])}")
     print(f"    Archived size: {format_bytes(total_stats['bytes_archived'])}")
-    
+
     if compress:
         savings = total_stats['bytes_original'] - total_stats['bytes_archived']
         pct = (savings / total_stats['bytes_original'] * 100) if total_stats['bytes_original'] > 0 else 0
         print(f"    Space saved: {format_bytes(savings)} ({pct:.1f}%)")
-    
+
     # Cleanup old archives if requested
     if args.cleanup_old:
         print()
         print(f"[ADG Archive] Cleaning up archives older than {args.archive_months} months...")
         cleanup_stats = cleanup_old_archives(args.archive_months, dry_run)
-        
+
         if cleanup_stats["dirs_removed"] > 0:
             print(f"    Removed {cleanup_stats['dirs_removed']} archive directories")
             print(f"    Freed {format_bytes(cleanup_stats['bytes_freed'])}")

@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from system_learning.ports.scoring_report_store import ScoringReportStore
 from system_learning.types.healing_outcome_scoring_types import ScoringReport
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class InMemoryScoringReportStore(ScoringReportStore):
@@ -27,6 +28,10 @@ class InMemoryScoringReportStore(ScoringReportStore):
         Args:
             report: The scoring report to persist
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "InMemoryScoringReportStore.write")
+
         content_hash = report.content_hash()
         if content_hash not in self._reports_by_hash:
             self._reports_by_hash[content_hash] = report

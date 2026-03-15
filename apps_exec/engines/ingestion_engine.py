@@ -16,6 +16,7 @@ from pathlib import Path
 from typing import Any
 
 from apps_exec.engines.base_exec_engine import BaseExecEngine
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 _log = logging.getLogger(__name__)
 
@@ -63,6 +64,10 @@ class IngestionEngine(BaseExecEngine):
         Returns:
             IngestionResult with all ingested documents.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "IngestionEngine.execute")
+
         source_dirs: list[str] = []
         if hasattr(input_data, "source_dirs"):
             source_dirs = input_data.source_dirs

@@ -22,6 +22,7 @@ from enum import Enum
 from typing import Any
 
 from agentic_core.runtime.execution_trace import get_active_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -99,6 +100,10 @@ class PerformanceMetricsEmitter:
         Emits ``emits_performance_metric`` + ``records_execution_trace``
         ADG edges.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L6_OBSERVABILITY, "PerformanceMetricsEmitter.emit")
+
         sample = MetricSample(
             trace_id=self._trace_id(),
             layer=layer,

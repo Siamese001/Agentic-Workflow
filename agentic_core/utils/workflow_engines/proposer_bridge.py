@@ -23,6 +23,7 @@ from typing import Any
 from ..monitoring.snapshots import AnswerQualitySnapshot, RetrievalDriftSnapshot
 from ..schemas.evaluation_result_schema import EvaluationReport
 from .schemas import DPOBatch
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 def _utcnow() -> str:
@@ -130,6 +131,10 @@ class EvaluatorProposerBridge:
         Returns:
             ImprovementProposal for the Meta Learning Pipeline
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "EvaluatorProposerBridge.propose")
+
         signals: list[ImprovementSignal] = []
         if eval_report is not None:
             signals.extend(self._signals_from_eval(eval_report))

@@ -13,6 +13,7 @@ from typing import Any
 
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 
 @dataclass
@@ -35,6 +36,13 @@ class AutonomousThreatEvolutionAgent(SovereignBaseAgent):
     # guardian: allow-type-erasure
     async def run(self) -> dict[str, Any]:
         """Standardized entry point for L6 Coordinator"""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "AutonomousThreatEvolutionAgent.run")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:AutonomousThreatEvolutionAgent.run".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         print("   [L5] Threat Evolution Agent: Online")
         await self.threat_evolution_loop()
 

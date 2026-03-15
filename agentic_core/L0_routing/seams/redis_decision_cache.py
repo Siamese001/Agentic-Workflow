@@ -38,6 +38,7 @@ from agentic_core.cache.redis_cache_client import (
     DeterministicRedisCache,
     get_hot_cache,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, emit_replay_key, emit_determinism_digest
 
 logger = logging.getLogger(__name__)
 
@@ -78,6 +79,12 @@ class RouteDecisionCache:
         replay_mode: bool = False,
     ) -> dict[str, Any] | None:
         """Return the cached route-decision dict or ``None`` on miss/bypass."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "RouteDecisionCache.get")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         key = build_route_decision_key(intent_hash, policy_hash, routing_state_hash)
         return self._cache.get_json(key, replay_mode=replay_mode)
 
@@ -175,6 +182,12 @@ class RoutingRuleSurfaceCache:
         replay_mode: bool = False,
     ) -> dict[str, Any] | None:
         """Return the cached ruleset dict or ``None`` on miss/bypass."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "RoutingRuleSurfaceCache.get")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         key = build_routing_rule_surface_key(routing_state_hash)
         return self._cache.get_json(key, replay_mode=replay_mode)
 
@@ -247,6 +260,12 @@ class CapabilityRegistryCache:
         replay_mode: bool = False,
     ) -> dict[str, Any] | None:
         """Return the cached capability registry or ``None`` on miss/bypass."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "CapabilityRegistryCache.get")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         key = build_cap_registry_key(cap_registry_hash)
         return self._cache.get_json(key, replay_mode=replay_mode)
 

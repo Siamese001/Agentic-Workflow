@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import decimal
 from dataclasses import dataclass, field
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 _ROUND_CTX = decimal.Context(rounding=decimal.ROUND_HALF_UP)
 _QUANT = decimal.Decimal("0.0001")
@@ -130,6 +131,10 @@ class HealingOutcomeStats:
         healer_id: str, tier: str, failure_type: str, success_count: int, failure_count: int
     ) -> HealingOutcomeStats:
         """Build stats from raw counts with stable rounding."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HealingOutcomeStats.from_counts")
+
         total = success_count + failure_count
         return HealingOutcomeStats(
             healer_id=healer_id,

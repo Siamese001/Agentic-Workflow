@@ -1,7 +1,7 @@
 # Windsurf Rules & CI Gate Cross-Check Audit
 
-**Date**: 2026-03-11  
-**Status**: COMPREHENSIVE AUDIT COMPLETE  
+**Date**: 2026-03-11
+**Status**: COMPREHENSIVE AUDIT COMPLETE
 **Scope**: All `.windsurf/` rules, skills, and corresponding CI enforcement gates
 
 ---
@@ -51,7 +51,7 @@
 
 #### 3. Import Hygiene
 - **Rule**: `.windsurf/skills/import-hygiene/`
-- **CI Gates**: 
+- **CI Gates**:
   - Ruff F401 (dead imports)
   - `ops_scripts/ci/validate_import_dependencies.py` (T4a)
 - **Pre-commit Hook**: T2a (ruff), T4a (import validation)
@@ -291,8 +291,8 @@ T5: purge-cache
 
 ## Conclusion
 
-**Current State**: 6/16 rules have automated CI enforcement (37.5%)  
-**Target State**: 16/16 rules with pre-commit gates (100%)  
+**Current State**: 6/16 rules have automated CI enforcement (37.5%)
+**Target State**: 16/16 rules with pre-commit gates (100%)
 **Gap**: 10 critical rules lack automated enforcement
 
 **Next Steps**: Implement Priority 1 gates to close critical gaps and achieve full constitutional rule enforcement.

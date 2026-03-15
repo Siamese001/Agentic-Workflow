@@ -9,6 +9,7 @@ do not count as upward seams in the gravity scanner.
 from __future__ import annotations
 
 from typing import Any, Protocol, runtime_checkable
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @runtime_checkable
@@ -33,6 +34,10 @@ class SafetyAgentFactory:
 
     def get(self, agent_name: str) -> HealingAgentProtocol | None:
         """Return an agent instance by name, or None if unavailable."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SafetyAgentFactory.get")
+
         try:
             if agent_name == "HygieneGuardianAgent":
                 from agentic_core.L5_safety.validators.HygieneGuardianAgent import HygieneGuardianAgent

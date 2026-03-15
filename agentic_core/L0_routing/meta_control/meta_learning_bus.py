@@ -10,6 +10,7 @@ import json
 from collections import deque
 from dataclasses import dataclass
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, emit_replay_key, emit_determinism_digest
 
 
 @dataclass(frozen=True)
@@ -34,6 +35,12 @@ class MetaLearningChangePackage:
         Returns:
             New MetaLearningChangePackage with computed hash
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "MetaLearningChangePackage.create")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         canonical_data = {"kind": kind, "payload": payload}
         canonical_json = json.dumps(canonical_data, sort_keys=True, separators=(",", ":"))
         package_hash = hashlib.sha256(canonical_json.encode("utf-8")).hexdigest()
@@ -68,6 +75,12 @@ class MetaLearningBus:
         Returns:
             Next package or None if queue is empty
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "MetaLearningBus.dequeue")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         if not self._queue:
             return None
         return self._queue.popleft()

@@ -22,6 +22,7 @@ from dataclasses import dataclass, field
 from typing import Any, Callable
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass
@@ -41,6 +42,10 @@ class ParameterizedValidator(SovereignBaseAgent):
     @classmethod
     def register_rule(cls, name: str) -> Callable:
         """Decorator to register a collect_issues implementation under `name`."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ParameterizedValidator.register_rule")
+
 
         def decorator(func: Callable) -> Callable:
             cls._RULE_REGISTRY[name] = func

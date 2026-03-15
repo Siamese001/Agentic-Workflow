@@ -144,6 +144,10 @@ class EnhancedResumeSectionNode(ResumeSectionNode):
 
         Returns structured output with bullets and overviews.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "EnhancedResumeSectionNode.generate_experience_section")
+
         # Phase A: Generate bullets
         bullet_output = self.two_phase_node.generate_unify_bullets_phase_a(
             thematic_output,
@@ -194,6 +198,10 @@ class EnhancedGapClosureEngine(GapClosureEngine):
         """
         Generate gap-closing competencies with thematic analysis.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "EnhancedGapClosureEngine.execute")
+
         # Read dependencies
         enrichment = self.ctx.buffer.read("hop2_enrichment")
         mission = self.ctx.buffer.read("mission_input")
@@ -303,6 +311,10 @@ class EnhancedResumePlanningEngine(ResumePlanningEngine):
         """
         Enhanced planning with thematic analysis and validation.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "EnhancedResumePlanningEngine.execute")
+
         # Step 1: K.0 thematic analysis
         company_name = candidate_profile.get("target_company", "Unknown")
         thematic_output = self.thematic_node(job_description, company_name)
@@ -460,6 +472,10 @@ class ComprehensiveValidationSuite:
         - Structural integrity
         - Content quality
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ComprehensiveValidationSuite.validate_resume_output")
+
         validation_results = {}
 
         # Word count validation
@@ -533,3 +549,4 @@ if __name__ == "__main__":
     import asyncio
 
     asyncio.run(example_enhanced_workflow())
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace

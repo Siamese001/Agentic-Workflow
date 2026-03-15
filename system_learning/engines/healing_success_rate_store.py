@@ -22,6 +22,7 @@ import json
 import logging
 import os
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 _NEUTRAL_PRIOR: float = 0.5
@@ -58,6 +59,10 @@ class HealingSuccessRateStore:
         Returns _NEUTRAL_PRIOR when fewer than _MIN_SAMPLE_SIZE outcomes
         are recorded (dampening to avoid over-weighting early noisy data).
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HealingSuccessRateStore.get_prior")
+
         count = self._counts.get(error_signature, 0)
         if count < _MIN_SAMPLE_SIZE:
             return _NEUTRAL_PRIOR

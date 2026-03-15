@@ -21,6 +21,7 @@ from agentic_core.L0_routing.types.crypto_trust_types import (
     SigningAlgorithm,
     TrustRoot,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, emit_replay_key, emit_determinism_digest
 
 # =============================================================================
 # Canonical Hashing
@@ -149,6 +150,12 @@ class ReplayGuardStore:
         current_tick: int,
     ) -> ReplayGuardRecord:
         """Record an artifact hash. Raises on replay (second sighting)."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "ReplayGuardStore.check_and_record")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         if artifact_hash in self._records:
             record = self._records[artifact_hash]
             record.seen_count += 1

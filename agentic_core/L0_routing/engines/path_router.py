@@ -21,6 +21,7 @@ from agentic_core.L0_routing.telemetry.routing_telemetry import (
 )
 
 from ..engines.assembly_stage import GovernedPayload
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, emit_replay_key, emit_determinism_digest
 
 _log = logging.getLogger(__name__)
 
@@ -73,6 +74,12 @@ class PathRouter:
         Returns:
             Selected Path enum value
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "PathRouter.select_path")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         from agentic_core.L2_execution.providers import get_clock as _get_clock  # noqa: PLC0415
 
         _path_start_tick = _get_clock().now_epoch()

@@ -10,6 +10,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger = logging.getLogger("SovereignBlackBox")
 
@@ -120,6 +121,10 @@ class AuditTrailMixin:
             details: Additional context data for the event
             level: Log level (INFO, WARNING, ERROR)
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "AuditTrailMixin.log_sovereign_event")
+
         if not self._audit_enabled:
             return
         payload = {

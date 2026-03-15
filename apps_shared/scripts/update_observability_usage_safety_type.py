@@ -11,6 +11,7 @@ import re
 from abc import ABC, abstractmethod
 from dataclasses import field
 from enum import Enum
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -71,6 +72,10 @@ class UpdateObservabilityUsageSafetyImpl(UpdateObservabilityUsageSafetySafety):
 
     def apply_safety(self, data: dict[str, object]) -> UpdateObservabilityUsageSafetyResult:
         """Apply safety checks following L5 architecture principles"""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "UpdateObservabilityUsageSafetyImpl.apply_safety")
+
         self.logger.info("Applying safety checks to data")
         self._validate_input(data)
         if not self.validate_safety(data):
@@ -265,6 +270,10 @@ class UpdateObservabilityUsageSafetyFactory:
     @staticmethod
     def create_safety(safety_level: str = "strict") -> UpdateObservabilityUsageSafetyInterface:
         """Create configured safety executor"""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "UpdateObservabilityUsageSafetyFactory.create_safety")
+
         constraints = UpdateObservabilityUsageSafetyConstraints(safety_level=safety_level)
         safety = UpdateObservabilityUsageSafetyImpl(constraints)
         return UpdateObservabilityUsageSafetyInterface(safety)

@@ -40,6 +40,7 @@ except ImportError:
 
     def safe_run(*args, **kwargs):
         return None
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 logger = logging.getLogger(__name__)
@@ -135,6 +136,10 @@ class RuntimeSafetyMixin:
         Returns:
             Dict with 'terminated' and 'failed' PID lists.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RuntimeSafetyMixin.cleanup_processes")
+
         result = self._process_guard.cleanup()
         if result["terminated"]:
             logger.info(f"RuntimeSafetyMixin: Cleaned up {len(result['terminated'])} processes")

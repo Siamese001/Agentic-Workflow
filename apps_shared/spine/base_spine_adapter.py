@@ -12,6 +12,7 @@ from typing import Any
 
 from agentic_core.interfaces.execution import CIDRegistry, ExecutionCycle
 from apps_shared.utils.determinism_util import canonical_hash, strip_nondeterministic
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class BaseSpineAdapter:
@@ -101,6 +102,10 @@ class BaseSpineAdapter:
         Returns:
             Result dict from orchestrator augmented with CID
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "BaseSpineAdapter.execute")
+
         cid = self._derive_cid(intent_input)
         cycle: ExecutionCycle = self._cid_registry.new_cycle(cid)
         enriched = self._enrich_intent_input(intent_input, cid, cycle.attempt)

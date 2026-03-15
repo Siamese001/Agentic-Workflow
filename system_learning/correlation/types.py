@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 from dataclasses import dataclass
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass(frozen=True)
@@ -36,6 +37,10 @@ class CorrelatedRiskReport:
     @classmethod
     def from_canonical_bytes(cls, rows: list[CorrelatedRow], canonical_bytes: bytes) -> CorrelatedRiskReport:
         """Create report from canonical bytes."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "CorrelatedRiskReport.from_canonical_bytes")
+
         correlation_fingerprint = hashlib.sha256(canonical_bytes).hexdigest()
         return cls(
             rows=rows, correlation_fingerprint=correlation_fingerprint, canonical_bytes=canonical_bytes

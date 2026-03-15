@@ -16,6 +16,7 @@ from agentic_core.prompt_governance.version_registry.prompt_registry_config impo
 
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 TEMPLATE_ROOT = Path(__file__).parents[3] / "templates"
 red_team_gov_path = TEMPLATE_ROOT / "red_team_governance.jinja"
@@ -63,6 +64,13 @@ class RedTeamAgent(SovereignBaseAgent):
         """
         Phase 2 batch entry point — controlled red-team sweep.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "RedTeamAgent.execute")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:RedTeamAgent.execute".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         if not hasattr(ctx, "mission_type") or ctx.mission_type != "red_team_validation":
             print("   [INFO] RedTeamAgent: Inactive — not in red_team_validation mission")
             return

@@ -29,6 +29,7 @@ import hashlib
 import json
 from dataclasses import dataclass
 from typing import Any, Literal
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 LateChunkingMode = Literal[
     "standard_chunked", "late_chunked", "late_chunked_hybrid", "late_chunked_hybrid_reranked"
@@ -95,6 +96,10 @@ class LateChunkingProfile:
         )
 
     def canonical_bytes(self) -> bytes:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "LateChunkingProfile.canonical_bytes")
+
         d = self.to_dict()
         d.pop("artifact_hash", None)
         return json.dumps(d, sort_keys=True, separators=(",", ":")).encode("utf-8")
@@ -259,6 +264,10 @@ class EmbeddingLifecycleEvent:
     vector_index_id: str
 
     def canonical_bytes(self) -> bytes:
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "EmbeddingLifecycleEvent.canonical_bytes")
+
         d = {
             "chunk_id": self.chunk_id,
             "embedding_model": self.embedding_model,

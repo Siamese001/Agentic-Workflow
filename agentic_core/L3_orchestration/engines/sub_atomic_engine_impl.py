@@ -6,6 +6,7 @@ import os
 
 from agentic_core.L2_execution.enforcement.SovereignLLMGateway import get_llm_gateway
 from agentic_core.mixins.instructional_injection_mixin import get_instructional_injection_mixin
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 def _get_prompt_assembler():
@@ -44,6 +45,10 @@ class SubAtomicEngineImpl:
 
     async def resilient_mutation(self, *args, **kwargs) -> str:
         """Gateway-backed mutation."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SubAtomicEngineImpl.resilient_mutation")
+
         prompt = kwargs.get("prompt", "") or (args[0] if args else "")
         system_prompt = kwargs.get("system_prompt", None)
         fission_active = kwargs.get("fission_active", False)

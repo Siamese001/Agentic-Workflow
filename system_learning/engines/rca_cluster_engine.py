@@ -33,6 +33,7 @@ from system_learning.types.trace_feature_types import (
     RCACluster,
     TraceFeatureRecord,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -265,6 +266,10 @@ class RCAClusterEngine:
         list[RCACluster]
             Deterministically ordered list (sorted by cluster_id).
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RCAClusterEngine.cluster")
+
         cfg = self._config
 
         # Build grouping dict: (failure_pattern, sub_key) → [records]

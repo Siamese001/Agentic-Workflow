@@ -11,6 +11,7 @@ from typing import Any
 
 from agentic_core.runtime.exceptions.SovereignError import HygieneError
 from agentic_core.utils.decorators_compat_util import standard_heal
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass
@@ -174,6 +175,10 @@ class HygieneMixin:
         Validate hygiene of a specific file.
         SALVAGED: Individual file validation from legacy hygiene validators.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HygieneMixin.validate_file_hygiene")
+
         if not file_path.exists():
             raise HygieneError(f"File not found: {file_path}")
         try:

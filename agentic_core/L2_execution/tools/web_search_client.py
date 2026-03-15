@@ -4,6 +4,7 @@ from __future__ import annotations
 import json
 import logging
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 Logger: Any = logging.getLogger("ActionRegistry.WebSearch")
 
@@ -31,6 +32,13 @@ class WebSearchTools:
         Returns:
             str: A formatted string of search results or an error message.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "WebSearchTools.search_web")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:WebSearchTools.search_web".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         if not config.BRAVE_SEARCH_MCP_ENABLED:
             return "Error: Brave Search MCP disabled in sovereign config"
         Logger.info(f"🌐 Sovereign Web Search: '{query}'")

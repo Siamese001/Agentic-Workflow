@@ -6,6 +6,7 @@ Location: agentic_core/L0_routing/scripts/
 import ast
 import sys
 from pathlib import Path
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 ssot_target = "agentic_core/schemas/models/core_contracts_types.py"
 
@@ -18,6 +19,10 @@ class UnderscoreVisitor(ast.NodeVisitor):
         self.violations = []
 
     def visit_AnnAssign(self, node):
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "UnderscoreVisitor.visit_AnnAssign")
+
         if isinstance(node.target, ast.Name) and node.target.id.startswith("_"):
             if not node.target.id.startswith("__"):
                 self.violations.append((node.lineno, node.target.id))

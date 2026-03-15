@@ -28,6 +28,7 @@ try:
 except ImportError:
     HAS_PANDAS = False
     pd = None
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class CsvDocumentLoader:
@@ -50,6 +51,10 @@ class CsvDocumentLoader:
         Returns:
             List of row dictionaries
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "CsvDocumentLoader.load")
+
         if not HAS_PANDAS:
             raise ImportError("pandas is required for CsvDocumentLoader")
 

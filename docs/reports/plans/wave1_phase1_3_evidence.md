@@ -64,27 +64,27 @@ tests/architecture/test_wave1_phase1_3_governance.py::test_has_any_marker_true_v
 tests/architecture/test_wave1_phase1_3_governance.py::test_has_any_marker_false_when_all_empty PASSED [ 54%]
 tests/architecture/test_wave1_phase1_3_governance.py::test_has_any_marker_true_via_used_names PASSED [ 57%]
 tests/architecture/test_wave1_phase1_3_governance.py::test_has_any_marker_case_insensitive PASSED [ 60%]
-tests/architecture/test_wave1_phase1_3_governance.py::test_elevator_gap_generated_for_control_spine_file_without_hints 
+tests/architecture/test_wave1_phase1_3_governance.py::test_elevator_gap_generated_for_control_spine_file_without_hints
 -------------------------------- live log call --------------------------------
 2026-03-05 23:17:17 [    INFO] tools.semantic_gap_analyzer: Analyzing Elevator Shaft and Governance Wiring...
 PASSED                                                                   [ 63%]
-tests/architecture/test_wave1_phase1_3_governance.py::test_elevator_gap_not_generated_when_hints_present 
+tests/architecture/test_wave1_phase1_3_governance.py::test_elevator_gap_not_generated_when_hints_present
 -------------------------------- live log call --------------------------------
 2026-03-05 23:17:17 [    INFO] tools.semantic_gap_analyzer: Analyzing Elevator Shaft and Governance Wiring...
 PASSED                                                                   [ 66%]
-tests/architecture/test_wave1_phase1_3_governance.py::test_governance_gap_generated_for_enforcement_file_without_stamps 
+tests/architecture/test_wave1_phase1_3_governance.py::test_governance_gap_generated_for_enforcement_file_without_stamps
 -------------------------------- live log call --------------------------------
 2026-03-05 23:17:17 [    INFO] tools.semantic_gap_analyzer: Analyzing Elevator Shaft and Governance Wiring...
 PASSED                                                                   [ 69%]
-tests/architecture/test_wave1_phase1_3_governance.py::test_governance_gap_not_generated_when_stamps_present 
+tests/architecture/test_wave1_phase1_3_governance.py::test_governance_gap_not_generated_when_stamps_present
 -------------------------------- live log call --------------------------------
 2026-03-05 23:17:17 [    INFO] tools.semantic_gap_analyzer: Analyzing Elevator Shaft and Governance Wiring...
 PASSED                                                                   [ 72%]
-tests/architecture/test_wave1_phase1_3_governance.py::test_non_control_spine_file_produces_no_gap 
+tests/architecture/test_wave1_phase1_3_governance.py::test_non_control_spine_file_produces_no_gap
 -------------------------------- live log call --------------------------------
 2026-03-05 23:17:17 [    INFO] tools.semantic_gap_analyzer: Analyzing Elevator Shaft and Governance Wiring...
 PASSED                                                                   [ 75%]
-tests/architecture/test_wave1_phase1_3_governance.py::test_parse_failure_file_skipped_no_gap 
+tests/architecture/test_wave1_phase1_3_governance.py::test_parse_failure_file_skipped_no_gap
 -------------------------------- live log call --------------------------------
 2026-03-05 23:17:17 [    INFO] tools.semantic_gap_analyzer: Analyzing Elevator Shaft and Governance Wiring...
 PASSED                                                                   [ 78%]
@@ -92,17 +92,17 @@ tests/architecture/test_wave1_phase1_3_governance.py::test_capability_chokepoint
 tests/architecture/test_wave1_phase1_3_governance.py::test_governance_hints_tuple_non_empty PASSED [ 84%]
 tests/architecture/test_wave1_phase1_3_governance.py::test_elevator_shaft_hints_tuple_non_empty PASSED [ 87%]
 tests/architecture/test_wave1_phase1_3_governance.py::test_path_d_hints_tuple_non_empty PASSED [ 90%]
-tests/architecture/test_wave1_phase1_3_governance.py::test_governance_wiring_produces_gaps_from_real_codebase 
+tests/architecture/test_wave1_phase1_3_governance.py::test_governance_wiring_produces_gaps_from_real_codebase
 -------------------------------- live log call --------------------------------
 2026-03-05 23:17:17 [    INFO] tools.semantic_gap_analyzer: Analyzing Elevator Shaft and Governance Wiring...
 2026-03-05 23:17:18 [ WARNING] tools.semantic_gap_analyzer: Failed to parse C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\FileClassificationAgent.py: unexpected indent (FileClassificationAgent.py, line 2075)
 PASSED                                                                   [ 93%]
-tests/architecture/test_wave1_phase1_3_governance.py::test_governance_gap_priority_is_high 
+tests/architecture/test_wave1_phase1_3_governance.py::test_governance_gap_priority_is_high
 -------------------------------- live log call --------------------------------
 2026-03-05 23:17:19 [    INFO] tools.semantic_gap_analyzer: Analyzing Elevator Shaft and Governance Wiring...
 2026-03-05 23:17:20 [ WARNING] tools.semantic_gap_analyzer: Failed to parse C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\FileClassificationAgent.py: unexpected indent (FileClassificationAgent.py, line 2075)
 PASSED                                                                   [ 96%]
-tests/architecture/test_wave1_phase1_3_governance.py::test_elevator_gap_priority_is_medium 
+tests/architecture/test_wave1_phase1_3_governance.py::test_elevator_gap_priority_is_medium
 -------------------------------- live log call --------------------------------
 2026-03-05 23:17:21 [    INFO] tools.semantic_gap_analyzer: Analyzing Elevator Shaft and Governance Wiring...
 2026-03-05 23:17:22 [ WARNING] tools.semantic_gap_analyzer: Failed to parse C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\FileClassificationAgent.py: unexpected indent (FileClassificationAgent.py, line 2075)
@@ -187,4 +187,3 @@ OK: PATH_D_HINTS has 5 hints
 | Elevator gap has wrong priority (not MEDIUM) | test_elevator_gap_priority_is_medium |
 | Hint tuple becomes empty (silently disables all detection) | test_governance_hints_tuple_non_empty, test_elevator_shaft_hints_tuple_non_empty, test_path_d_hints_tuple_non_empty |
 | _has_any_marker returns True for empty analysis (false positive) | test_has_any_marker_false_when_all_empty |
-

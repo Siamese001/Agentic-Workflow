@@ -24,6 +24,7 @@ import math
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, emit_replay_key, emit_determinism_digest
 
 logger = logging.getLogger(__name__)
 
@@ -151,6 +152,12 @@ class IntentEmbeddingClassifier:
         Returns:
             True if prototype was stored, False if embedding unavailable.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "IntentEmbeddingClassifier.encode_prototype")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         if not texts:
             logger.warning("IntentEmbeddingClassifier.encode_prototype: empty texts for %r", target_name)
             return False

@@ -8,6 +8,7 @@ from typing import Any
 from agentic_core.L0_routing.P1_core.filesystem_mcp_client_1 import get_filesystem_client
 
 from agentic_core.L0_routing.config import AGENTIC_CORE_DIR
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -41,6 +42,10 @@ class DeepWikiHealingStrategy:
         Returns:
             List of fix dictionaries with action details
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "DeepWikiHealingStrategy.diagnose")
+
         fixes: Any = []
         if not config.DEEPWIKI_HEALING_ENABLED:
             Logger.info("[L0 DEEPWIKI HEALING] DeepWiki healing disabled in config")

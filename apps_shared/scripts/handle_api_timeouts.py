@@ -8,6 +8,7 @@ Generated: 2025-12-07T13:28:54.250342
 import logging
 from collections.abc import Callable
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -23,6 +24,10 @@ class HandleApiTimeouts:
 
     def execute(self, func: Callable, *args, **kwargs: dict[str, object]) -> RetryResult:
         """Execute with retry."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HandleApiTimeouts.execute")
+
         last_error: Any = None
         for attempt in range(self.max_retries):
             try:

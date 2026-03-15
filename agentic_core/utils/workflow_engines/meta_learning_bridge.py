@@ -18,6 +18,7 @@ import hashlib
 import json
 from dataclasses import dataclass
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass(frozen=True)
@@ -165,6 +166,10 @@ class CompletenessRAGProposer:
         Returns an empty list if observations are insufficient or no
         proposal is warranted.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "CompletenessRAGProposer.propose")
+
         if signals.observation_count < _MIN_OBSERVATIONS:
             return []
         proposals: list[CompletenessChangePackage] = []

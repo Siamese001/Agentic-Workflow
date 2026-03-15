@@ -28,6 +28,7 @@ from typing import Any
 
 from runtime.shared.adaptive_recovery_loop import AdaptiveRecoveryLoop
 from runtime.shared.integrity_gate_executor import IntegrityGateExecutor
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass
@@ -88,6 +89,10 @@ class ExecutionOrchestrator:
         Start new execution with silent mode.
         Returns run_sha for tracking.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ExecutionOrchestrator.start_execution")
+
         run_sha = self._generate_run_sha(context)
         self.current_trace = ExecutionTrace(
             run_sha=run_sha,

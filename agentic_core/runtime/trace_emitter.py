@@ -21,6 +21,7 @@ from agentic_core.runtime.execution_trace import (
     ExecutionTrace,
     get_active_execution_trace,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -85,6 +86,10 @@ class TraceEmitter:
         metadata: dict[str, Any] | None = None,
     ) -> TraceRecord:
         """Emit a structured trace record for this module's operation."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "TraceEmitter.emit_trace_record")
+
         active = self._current_trace()
         trace_id = active.trace_id if active else "no-active-trace"
         digest = self._make_digest(operation, elapsed_ms)

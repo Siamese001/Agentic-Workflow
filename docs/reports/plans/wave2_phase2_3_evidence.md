@@ -68,63 +68,63 @@ tests/architecture/test_wave2_phase2_3_prompt_taxonomy.py::test_i0_slot_detected
 tests/architecture/test_wave2_phase2_3_prompt_taxonomy.py::test_c0_slot_detected_from_context_literal PASSED [ 52%]
 tests/architecture/test_wave2_phase2_3_prompt_taxonomy.py::test_u0_slot_detected_from_user_prompt_literal PASSED [ 55%]
 tests/architecture/test_wave2_phase2_3_prompt_taxonomy.py::test_no_slot_hit_for_unrelated_content PASSED [ 58%]
-tests/architecture/test_wave2_phase2_3_prompt_taxonomy.py::test_parse_failed_file_skipped_no_taxonomy_gap 
+tests/architecture/test_wave2_phase2_3_prompt_taxonomy.py::test_parse_failed_file_skipped_no_taxonomy_gap
 -------------------------------- live log call --------------------------------
 2026-03-05 23:30:57 [    INFO] tools.semantic_gap_analyzer: Analyzing Prompt Taxonomy Coverage...
 PASSED                                                                   [ 61%]
-tests/architecture/test_wave2_phase2_3_prompt_taxonomy.py::test_non_assembler_file_skipped_no_taxonomy_gap 
+tests/architecture/test_wave2_phase2_3_prompt_taxonomy.py::test_non_assembler_file_skipped_no_taxonomy_gap
 -------------------------------- live log call --------------------------------
 2026-03-05 23:30:57 [    INFO] tools.semantic_gap_analyzer: Analyzing Prompt Taxonomy Coverage...
 PASSED                                                                   [ 63%]
-tests/architecture/test_wave2_phase2_3_prompt_taxonomy.py::test_missing_critical_slots_generates_high_priority_taxonomy_gap 
+tests/architecture/test_wave2_phase2_3_prompt_taxonomy.py::test_missing_critical_slots_generates_high_priority_taxonomy_gap
 -------------------------------- live log call --------------------------------
 2026-03-05 23:30:57 [    INFO] tools.semantic_gap_analyzer: Analyzing Prompt Taxonomy Coverage...
 PASSED                                                                   [ 66%]
-tests/architecture/test_wave2_phase2_3_prompt_taxonomy.py::test_missing_non_critical_slots_generates_medium_priority_taxonomy_gap 
+tests/architecture/test_wave2_phase2_3_prompt_taxonomy.py::test_missing_non_critical_slots_generates_medium_priority_taxonomy_gap
 -------------------------------- live log call --------------------------------
 2026-03-05 23:30:57 [    INFO] tools.semantic_gap_analyzer: Analyzing Prompt Taxonomy Coverage...
 PASSED                                                                   [ 69%]
-tests/architecture/test_wave2_phase2_3_prompt_taxonomy.py::test_all_slots_present_no_taxonomy_gap 
+tests/architecture/test_wave2_phase2_3_prompt_taxonomy.py::test_all_slots_present_no_taxonomy_gap
 -------------------------------- live log call --------------------------------
 2026-03-05 23:30:57 [    INFO] tools.semantic_gap_analyzer: Analyzing Prompt Taxonomy Coverage...
 PASSED                                                                   [ 72%]
-tests/architecture/test_wave2_phase2_3_prompt_taxonomy.py::test_no_manifest_hash_generates_manifest_gap 
+tests/architecture/test_wave2_phase2_3_prompt_taxonomy.py::test_no_manifest_hash_generates_manifest_gap
 -------------------------------- live log call --------------------------------
 2026-03-05 23:30:57 [    INFO] tools.semantic_gap_analyzer: Analyzing Prompt Taxonomy Coverage...
 PASSED                                                                   [ 75%]
-tests/architecture/test_wave2_phase2_3_prompt_taxonomy.py::test_manifest_hash_present_no_manifest_gap 
+tests/architecture/test_wave2_phase2_3_prompt_taxonomy.py::test_manifest_hash_present_no_manifest_gap
 -------------------------------- live log call --------------------------------
 2026-03-05 23:30:57 [    INFO] tools.semantic_gap_analyzer: Analyzing Prompt Taxonomy Coverage...
 PASSED                                                                   [ 77%]
-tests/architecture/test_wave2_phase2_3_prompt_taxonomy.py::test_no_boundary_snapshot_generates_validator_gap 
+tests/architecture/test_wave2_phase2_3_prompt_taxonomy.py::test_no_boundary_snapshot_generates_validator_gap
 -------------------------------- live log call --------------------------------
 2026-03-05 23:30:57 [    INFO] tools.semantic_gap_analyzer: Analyzing Prompt Taxonomy Coverage...
 PASSED                                                                   [ 80%]
-tests/architecture/test_wave2_phase2_3_prompt_taxonomy.py::test_boundary_snapshot_present_no_validator_gap 
+tests/architecture/test_wave2_phase2_3_prompt_taxonomy.py::test_boundary_snapshot_present_no_validator_gap
 -------------------------------- live log call --------------------------------
 2026-03-05 23:30:57 [    INFO] tools.semantic_gap_analyzer: Analyzing Prompt Taxonomy Coverage...
 PASSED                                                                   [ 83%]
-tests/architecture/test_wave2_phase2_3_prompt_taxonomy.py::test_deduplication_prevents_double_gaps 
+tests/architecture/test_wave2_phase2_3_prompt_taxonomy.py::test_deduplication_prevents_double_gaps
 -------------------------------- live log call --------------------------------
 2026-03-05 23:30:57 [    INFO] tools.semantic_gap_analyzer: Analyzing Prompt Taxonomy Coverage...
 PASSED                                                                   [ 86%]
-tests/architecture/test_wave2_phase2_3_prompt_taxonomy.py::test_taxonomy_finding_added_to_prompt_taxonomy_findings 
+tests/architecture/test_wave2_phase2_3_prompt_taxonomy.py::test_taxonomy_finding_added_to_prompt_taxonomy_findings
 -------------------------------- live log call --------------------------------
 2026-03-05 23:30:57 [    INFO] tools.semantic_gap_analyzer: Analyzing Prompt Taxonomy Coverage...
 PASSED                                                                   [ 88%]
-tests/architecture/test_wave2_phase2_3_prompt_taxonomy.py::test_prompt_taxonomy_coverage_returns_list 
+tests/architecture/test_wave2_phase2_3_prompt_taxonomy.py::test_prompt_taxonomy_coverage_returns_list
 -------------------------------- live log call --------------------------------
 2026-03-05 23:30:57 [    INFO] tools.semantic_gap_analyzer: Analyzing Prompt Taxonomy Coverage...
 PASSED                                                                   [ 91%]
-tests/architecture/test_wave2_phase2_3_prompt_taxonomy.py::test_all_taxonomy_gaps_have_layer_l1 
+tests/architecture/test_wave2_phase2_3_prompt_taxonomy.py::test_all_taxonomy_gaps_have_layer_l1
 -------------------------------- live log call --------------------------------
 2026-03-05 23:30:58 [    INFO] tools.semantic_gap_analyzer: Analyzing Prompt Taxonomy Coverage...
 PASSED                                                                   [ 94%]
-tests/architecture/test_wave2_phase2_3_prompt_taxonomy.py::test_all_manifest_gaps_are_medium_priority 
+tests/architecture/test_wave2_phase2_3_prompt_taxonomy.py::test_all_manifest_gaps_are_medium_priority
 -------------------------------- live log call --------------------------------
 2026-03-05 23:30:59 [    INFO] tools.semantic_gap_analyzer: Analyzing Prompt Taxonomy Coverage...
 PASSED                                                                   [ 97%]
-tests/architecture/test_wave2_phase2_3_prompt_taxonomy.py::test_all_validator_gaps_are_low_priority 
+tests/architecture/test_wave2_phase2_3_prompt_taxonomy.py::test_all_validator_gaps_are_low_priority
 -------------------------------- live log call --------------------------------
 2026-03-05 23:31:00 [    INFO] tools.semantic_gap_analyzer: Analyzing Prompt Taxonomy Coverage...
 PASSED                                                                   [100%]
@@ -204,4 +204,3 @@ collected 36 / executed 36
 | Duplicate file processed multiple times generating duplicate gaps | test_deduplication_prevents_double_gaps |
 | PROMPT_SLOT_ORDER missing canonical slots | test_prompt_slot_order_contains_all_canonical_slots |
 | Taxonomy finding dict missing required keys | test_taxonomy_finding_added_to_prompt_taxonomy_findings |
-

@@ -28,6 +28,7 @@ except ImportError:
 
     class HealerMixin:
         pass
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass
@@ -76,6 +77,10 @@ class ManifestManager(MCPHardenedMixin, HealerMixin):
         Raises:
             FileNotFoundError: If the manifest does not exist.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ManifestManager.load_manifest")
+
         target_file = self.base_path / f"{manifest_id}.json"
         if not target_file.exists():
             raise FileNotFoundError(f"Manifest not found: {target_file}")

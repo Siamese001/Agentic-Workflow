@@ -13,6 +13,7 @@ Phase 3.2: Mathematically-Sealed Sovereignty Hardening
 from __future__ import annotations
 
 from dataclasses import dataclass
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 
 class MonotonicityViolation(RuntimeError):
@@ -70,6 +71,13 @@ class EscalationContext:
                 (should never happen via this factory, but guards against
                  injection of a tampered *previous*).
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "EscalationContext.from_result")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:EscalationContext.from_result".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         new_count = previous.retry_count + 1
         return cls(
             trace_id=previous.trace_id,

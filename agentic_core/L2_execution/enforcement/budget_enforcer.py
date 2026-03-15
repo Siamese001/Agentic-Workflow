@@ -26,6 +26,7 @@ except ImportError:
     _HAS_RESOURCE = False
 _HAS_SIGALRM = hasattr(signal, "SIGALRM")
 from agentic_core.L2_execution.types.sandbox_envelope_types import SandboxEnvelope
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 
 class BudgetExceeded(RuntimeError):
@@ -87,6 +88,13 @@ class BudgetEnforcer:
 
         Returns (exit_code, stdout_bytes) per PTC ToolResult contract [3].
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "BudgetEnforcer.run")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:BudgetEnforcer.run".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         # Wave 3: Guardrail pre-check
         guardrail = get_guardrail_gate()
         guardrail.check(operation="run_budget_enforcer", target=envelope.tool_name)

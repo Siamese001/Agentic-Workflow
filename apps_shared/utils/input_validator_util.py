@@ -13,6 +13,7 @@ from enum import Enum
 from typing import Any, Final
 
 from pydantic import BaseModel, validator
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 HOP_ID_MAX_LENGTH: Final[int] = 100
@@ -96,6 +97,10 @@ class InputValidator:
             field: Field name
             rule: Validation rule
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "InputValidator.add_rule")
+
         self._rules[field] = rule
         logger.debug(f"Added validation rule for field: {field}")
 
@@ -402,6 +407,10 @@ class ValidatedInput(BaseModel):
     @validator("*")
     def sanitize_strings(cls, v):
         """Sanitize string fields."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ValidatedInput.sanitize_strings")
+
         if isinstance(v, str):
             v = "".join(char for char in v if ord(char) >= 32 or char in "\n\r\t")
             v = v.strip()

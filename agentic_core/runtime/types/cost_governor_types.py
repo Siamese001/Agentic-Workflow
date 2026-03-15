@@ -9,6 +9,7 @@ import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -129,6 +130,10 @@ class CostGovernor:
 
     def update_pricing(self, model: str, input_price: float, output_price: float) -> Any:
         """Update pricing for a model."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "CostGovernor.update_pricing")
+
         self.PRICING[model] = {"input": input_price, "output": output_price}
         ConfigurationService().Logger.info(
             f"Updated pricing for {model}: ${input_price}/1k in, ${output_price}/1k out"
@@ -197,6 +202,10 @@ class CostGovernorManager:
 
     def get_governor(self) -> Any:
         """Get or create the CostGovernor instance"""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "CostGovernorManager.get_governor")
+
         if self._instance is None:
             self._instance = CostGovernor()
         return self._instance

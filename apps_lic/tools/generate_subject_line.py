@@ -7,6 +7,7 @@ Generated: 2025-12-07T13:28:54.088686
 
 import logging
 import time
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -21,6 +22,10 @@ class GenerateSubjectLine:
 
     def execute(self, action: str, params: dict[str, object]) -> ExecutionResult:
         """Execute action."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "GenerateSubjectLine.execute")
+
         start: Any = time.time()
         try:
             output: Any = self._perform_action(action, params)

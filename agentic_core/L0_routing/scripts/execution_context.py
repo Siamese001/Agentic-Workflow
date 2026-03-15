@@ -17,6 +17,7 @@ from datetime import datetime
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, emit_replay_key, emit_determinism_digest
 
 
 def _get_subatomic_testing_mixin():
@@ -44,6 +45,12 @@ class ConfigSurface:
 
     def compute_hash(self) -> str:
         """Computes a deterministic hash of the entire configuration surface."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "ConfigSurface.compute_hash")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         from dataclasses import asdict
 
         canonical_string = json.dumps(asdict(self), sort_keys=True, separators=(",", ":")).encode("utf-8")
@@ -126,6 +133,12 @@ class BaseRefiner:
         Returns:
             Refined data with weights applied
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "BaseRefiner.refine")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         active_weights = weights or self.weights
         result = data.copy()
         for key, weight in active_weights.items():
@@ -164,6 +177,12 @@ class BaseTaskExecutor(SovereignBaseAgent, SubatomicTestingMixin):
         Returns:
             Execution result
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "BaseTaskExecutor.execute")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         result = {
             "task_id": task.get("id", "unknown"),
             "status": "pending",
@@ -218,6 +237,12 @@ class BaseDiagnoser:
         Returns:
             Diagnostic report
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "BaseDiagnoser.diagnose")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         report = {
             "target_type": type(target).__name__,
             "issues": [],
@@ -254,6 +279,12 @@ class PolicyResult:
 
     def final_verdict(self) -> str:
         """Return the final verdict string."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "PolicyResult.final_verdict")
+        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+
         if self.passed:
             return f"PASS: {self.policy_name}"
         return f"FAIL: {self.policy_name} - {self.verdict}"

@@ -20,6 +20,7 @@ from enum import Enum
 from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class InjectionType(str, Enum):
@@ -65,6 +66,10 @@ class InjectionPattern(BaseModel):
     @classmethod
     def validate_variables(cls, value: list[str]) -> list[str]:
         """[HARDENED] Ensure variables list has no empty entries."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "InjectionPattern.validate_variables")
+
         for variable in value:
             if not variable.strip():
                 raise ValueError("Injection variables cannot be empty")

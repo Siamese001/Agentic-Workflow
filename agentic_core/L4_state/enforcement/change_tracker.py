@@ -3,6 +3,7 @@ from __future__ import annotations
 "\nChange Tracker - Sovereign Healing Audit Trail\nCanon-compliant utility for tracking file modifications by healer/fixer agents.\n\nLocation: agentic_core/utils/general_helpers/change_tracker.py\nDepth: 3 (per SSOT semantic_l2_registry['utils']['general_helpers'])\nPurpose: Domain-agnostic core utility for miscellaneous tracking\n"
 from collections import defaultdict
 from pathlib import Path
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class ChangeRecord:
@@ -45,6 +46,10 @@ class ChangeTracker:
 
     def generate_markdown_report(self) -> str:
         """Generate a detailed Markdown report of all changes."""
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "ChangeTracker.generate_markdown_report")
+
         by_agent = self._group_by_agent()
         by_file = self._group_by_file()
         lines = ["## Sovereign Healing Change Report (Canon-Compliant)\n"]

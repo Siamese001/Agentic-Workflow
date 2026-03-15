@@ -14,6 +14,7 @@ import unicodedata
 from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Final
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 logger = logging.getLogger(__name__)
 DEFAULT_RATE_LIMIT_PER_MINUTE: Final[int] = 60
 
@@ -94,6 +95,10 @@ class InputGuardrail:
         Returns:
             GuardResult with action and details
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "InputGuardrail.scan")
+
         start_time = clock_provider.time()
         result = GuardResult(action=GuardAction.ALLOW, reason='Input appears safe', confidence=0.0, pii_detected=[], injection_patterns=[])
         try:

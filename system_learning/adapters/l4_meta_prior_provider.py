@@ -18,6 +18,7 @@ from system_learning.ports.meta_prior_provider import (
     _NEUTRAL_PRIOR,
     NeutralMetaPriorProvider,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -43,6 +44,10 @@ class L4MetaPriorProvider:
         - store is None (cold start)
         - store raises any exception
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "L4MetaPriorProvider.get_prior")
+
         if self._store is None:
             return _NEUTRAL_PRIOR
         try:

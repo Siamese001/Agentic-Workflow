@@ -35,6 +35,7 @@ from agentic_core.adg.schema import (
     PROVIDER_SDK_SYMBOLS,
     module_path_to_layer,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 # Rank map for upward-mutation detection: higher rank = higher in the stack.
 # An upward mutation writes FROM a lower-rank layer TO a higher-rank layer.
@@ -259,6 +260,10 @@ class GuardianPrioritizer:
             Optional list of guardian IDs to score. If None, all registered
             guardians in _GUARDIAN_ADG_SIGNALS are scored.
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "GuardianPrioritizer.prioritize")
+
         import hashlib
 
         self._build_signals()

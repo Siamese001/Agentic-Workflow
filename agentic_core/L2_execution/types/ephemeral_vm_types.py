@@ -17,6 +17,7 @@ try:
     from agentic_core.L2_execution.types.firecracker_manager_types import VMConfig
 except ImportError:
     VMConfig = None
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 LOGGER = logging.getLogger(__name__)
 Logger: Any = logging.getLogger(__name__)
 
@@ -120,6 +121,13 @@ class EphemeralVm:
         Returns:
             ExecutionResult
         """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "EphemeralVm.execute_code")
+        import hashlib as _hashlib  # noqa: PLC0415
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:EphemeralVm.execute_code".encode()).hexdigest()[:24]
+        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+
         timeout: Any = timeout_seconds or self.IsolationConfig.max_execution_time_seconds
         start_time: Any = get_clock().now_epoch()
         vm_id, VmConfig = self._create_vm_config(timeout)
