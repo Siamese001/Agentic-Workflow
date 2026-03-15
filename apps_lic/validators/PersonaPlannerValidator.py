@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass, field
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from typing import Any
 
 "Persona Planner - L1 planning for persona parameters and messaging approaches.\n\nIncorporated from L1 lic_persona_planner.py to provide deterministic persona\nplanning that maps Archetype and profile analysis to specific messaging parameters\nincluding tone style, detail level, risk tolerance, and drift thresholds.\n\nThis is a foundational L1 planning component that feeds into the hop-based\nK1-K7 execution pipeline for persona-driven message generation.\n"
@@ -123,6 +124,9 @@ class PersonaPlanner:
         Returns:
             Complete persona plan with messaging parameters
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "PersonaPlannerValidator.plan")
         outreach_context: Any = outreach_context or {}
         base_persona: Any = self._get_base_persona(Archetype)
         seniority_adjusted: Any = self._apply_seniority_adjustments(base_persona, recipient_profile)

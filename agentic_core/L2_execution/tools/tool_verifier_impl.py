@@ -6,6 +6,7 @@ import logging
 import re
 from dataclasses import dataclass
 from enum import Enum
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from typing import Any
 
 LOGGER = logging.getLogger(__name__)
@@ -132,6 +133,9 @@ class ToolVerifier:
         Returns:
             VerificationReport with results and issues
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "ToolVerifierImpl.verify_tool_call")
         _ectx = _make_execution_context(tool_name, "tool_verifier_impl.verify_tool_call")
         _invoke_authorize_and_execute(
             _ectx,
