@@ -2,8 +2,8 @@
 TestQualityDetector — catches low-quality test assertions that pass even when
 the underlying functionality is completely broken.
 
-Three sub-patterns detected
------------------------------
+Four sub-patterns detected
+----------------------------
 VACUOUS_ASSERT
     ``assert True`` or any always-true expression in a test function body.
     Unconditionally passes; provides zero signal about the system under test.
@@ -29,11 +29,20 @@ WRITE_WITHOUT_READ
     Not applied to ``*_adg.py`` importability stubs.
     Enforcement: WARNING — flags for review, does not block.
 
+SOLE_HASATTR_CHECK
+    A test function where *every* assertion is ``assert hasattr(x, 'attr')``.
+    More specific than SOLE_TYPE_CHECK — fires only when every assertion is
+    purely an attribute-existence probe with no isinstance or value checks.
+    These pass even when the attribute exists but holds a completely wrong value.
+    Not applied to ``*_adg.py`` importability stubs.
+    Enforcement: WARNING — flags for review, does not block.
+
 Scope
 -----
 Only scans test_*.py and *_test.py files.
-Only applies SOLE_TYPE_CHECK and WRITE_WITHOUT_READ to files that are NOT
-*_adg.py importability stubs (those legitimately only check importability).
+Only applies SOLE_TYPE_CHECK, SOLE_HASATTR_CHECK, and WRITE_WITHOUT_READ to
+files that are NOT *_adg.py importability stubs (those legitimately only check
+importability).
 """
 
 from __future__ import annotations
@@ -83,6 +92,21 @@ _WRITE_EXACT: frozenset[str] = frozenset(
         "commit",
         "flush",
         "dump",
+    }
+)
+
+_WRITE_EXCLUDED_STDLIB: frozenset[str] = frozenset(
+    {
+        # pathlib.Path primitives used to set up fixtures, not to test persistence
+        "write_text",
+        "write_bytes",
+        # os-level IO used for test scaffolding
+        "makedirs",
+        "mkdir",
+        "symlink",
+        "link",
+        "rename",
+        "replace",
     }
 )
 
@@ -202,11 +226,18 @@ def _call_name(node: ast.Call) -> str:
 
 
 def _has_write_call(fn: ast.FunctionDef | ast.AsyncFunctionDef) -> str | None:
-    """Return the first write-like call name found, or None."""
+    """Return the first write-like call name found, or None.
+
+    Stdlib / pathlib IO primitives in ``_WRITE_EXCLUDED_STDLIB`` are skipped
+    because they are typically used for fixture setup, not to exercise
+    application persistence under test.
+    """
     for node in ast.walk(fn):
         if not isinstance(node, ast.Call):
             continue
         name = _call_name(node)
+        if name in _WRITE_EXCLUDED_STDLIB:
+            continue
         if any(name.startswith(p) for p in _WRITE_PREFIXES):
             return name
         if name in _WRITE_EXACT:
@@ -313,6 +344,11 @@ class TestQualityDetector(AntiPatternDetector):
                 if v:
                     violations.append(v)
 
+                # SOLE_HASATTR_CHECK — skip ADG stubs
+                v = self._check_sole_hasattr(node, file_path, source_lines)
+                if v:
+                    violations.append(v)
+
         return violations
 
     # ------------------------------------------------------------------
@@ -359,6 +395,60 @@ class TestQualityDetector(AntiPatternDetector):
                 },
             )
         return None
+
+    # ------------------------------------------------------------------
+    # Sub-pattern: SOLE_HASATTR_CHECK
+    # ------------------------------------------------------------------
+
+    def _check_sole_hasattr(
+        self,
+        fn: ast.FunctionDef | ast.AsyncFunctionDef,
+        file_path: Path,
+        source_lines: list[str],
+    ) -> AntiPatternViolation | None:
+        """Detect test methods where every assertion is a bare hasattr() probe."""
+        asserts = [n for n in ast.walk(fn) if isinstance(n, ast.Assert)]
+        if not asserts:
+            return None
+
+        def _is_hasattr_only(a: ast.Assert) -> bool:
+            return (
+                isinstance(a.test, ast.Call)
+                and isinstance(a.test.func, ast.Name)
+                and a.test.func.id == "hasattr"
+            )
+
+        if not all(_is_hasattr_only(a) for a in asserts):
+            return None
+        if self._has_whitelist(source_lines, fn.lineno):
+            return None
+        examples = []
+        for a in asserts[:3]:
+            if a.lineno <= len(source_lines):
+                examples.append(source_lines[a.lineno - 1].strip())
+        evidence = "; ".join(examples)
+        return AntiPatternViolation(
+            file_path=file_path,
+            line_number=fn.lineno,
+            category=self.category,
+            message=(
+                f"`{fn.name}` has {len(asserts)} assertion(s) that are ALL "
+                f"bare `hasattr()` probes. These pass even when the attribute "
+                f"exists but holds a completely wrong value or type."
+            ),
+            evidence=evidence,
+            severity="warning",
+            suggested_fix=(
+                "Add at least one assertion that verifies the attribute's actual "
+                "value, type, or a specific behavior it enables — not just that "
+                "the attribute exists."
+            ),
+            metadata={
+                "sub_pattern": "SOLE_HASATTR_CHECK",
+                "test_function": fn.name,
+                "assertion_count": len(asserts),
+            },
+        )
 
     # ------------------------------------------------------------------
     # Sub-pattern: SOLE_TYPE_CHECK

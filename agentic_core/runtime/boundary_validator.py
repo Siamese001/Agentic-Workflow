@@ -12,6 +12,11 @@ from __future__ import annotations
 
 import sys
 
+from agentic_core.L0_routing.config.path_constants import (
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+)
 from agentic_core.runtime.sovereignty_exceptions import SovereigntyViolationError
 
 _FORBIDDEN_IN_AGENTIC_CORE = frozenset({APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR})

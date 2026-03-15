@@ -42,78 +42,116 @@ except ImportError as _exc:
 
 @pytest.mark.skipif(not _AVAILABLE, reason="healer_exceptions.py deps unavailable")
 class TestHealerErrorContract:
-    def test_is_class(self):
-        assert isinstance(HealerError, type)
+    def test_is_exception_subclass(self):
+        assert issubclass(HealerError, Exception)
 
-    def test_instantiable_or_abstract(self):
-        assert isinstance(HealerError, type)
+    def test_raises_and_catchable(self):
+        with pytest.raises(HealerError):
+            raise HealerError("healer failed")
+
+    def test_message_preserved(self):
+        exc = HealerError("healer failed")
+        assert str(exc) == "healer failed"
 
 @pytest.mark.skipif(not _AVAILABLE, reason="healer_exceptions.py deps unavailable")
 class TestCircularDependencyErrorContract:
-    def test_is_class(self):
-        assert isinstance(CircularDependencyError, type)
+    def test_is_exception_subclass(self):
+        assert issubclass(CircularDependencyError, Exception)
 
-    def test_instantiable_or_abstract(self):
-        assert isinstance(CircularDependencyError, type)
+    def test_raises_and_catchable(self):
+        with pytest.raises(CircularDependencyError):
+            raise CircularDependencyError("circular dep")
+
+    def test_message_preserved(self):
+        exc = CircularDependencyError("circular dep")
+        assert str(exc) == "circular dep"
 
 @pytest.mark.skipif(not _AVAILABLE, reason="healer_exceptions.py deps unavailable")
 class TestHealingBudgetExceededErrorContract:
-    def test_is_class(self):
-        assert isinstance(HealingBudgetExceededError, type)
+    def test_is_exception_subclass(self):
+        assert issubclass(HealingBudgetExceededError, Exception)
 
-    def test_instantiable_or_abstract(self):
-        assert isinstance(HealingBudgetExceededError, type)
+    def test_raises_and_catchable(self):
+        with pytest.raises(HealingBudgetExceededError):
+            raise HealingBudgetExceededError("budget exceeded")
+
+    def test_message_preserved(self):
+        exc = HealingBudgetExceededError("budget exceeded")
+        assert str(exc) == "budget exceeded"
 
 @pytest.mark.skipif(not _AVAILABLE, reason="healer_exceptions.py deps unavailable")
 class TestValidationRegistryErrorContract:
-    def test_is_class(self):
-        assert isinstance(ValidationRegistryError, type)
+    def test_is_exception_subclass(self):
+        assert issubclass(ValidationRegistryError, Exception)
 
-    def test_instantiable_or_abstract(self):
-        assert isinstance(ValidationRegistryError, type)
+    def test_raises_and_catchable(self):
+        with pytest.raises(ValidationRegistryError):
+            raise ValidationRegistryError("registry error")
+
+    def test_message_preserved(self):
+        exc = ValidationRegistryError("registry error")
+        assert str(exc) == "registry error"
 
 @pytest.mark.skipif(not _AVAILABLE, reason="healer_exceptions.py deps unavailable")
 class TestHealingTimeoutErrorContract:
-    def test_is_class(self):
-        assert isinstance(HealingTimeoutError, type)
+    def test_is_exception_subclass(self):
+        assert issubclass(HealingTimeoutError, Exception)
 
-    def test_instantiable_or_abstract(self):
-        assert isinstance(HealingTimeoutError, type)
+    def test_raises_and_catchable(self):
+        with pytest.raises(HealingTimeoutError):
+            raise HealingTimeoutError("timeout")
+
+    def test_message_preserved(self):
+        exc = HealingTimeoutError("timeout")
+        assert str(exc) == "timeout"
 
 @pytest.mark.skipif(not _AVAILABLE, reason="healer_exceptions.py deps unavailable")
 class TestSovereignErrorContract:
-    def test_is_class(self):
-        assert isinstance(SovereignError, type)
+    def test_is_exception_subclass(self):
+        assert issubclass(SovereignError, Exception)
 
-    def test_instantiable_or_abstract(self):
-        assert isinstance(SovereignError, type)
+    def test_raises_and_catchable(self):
+        with pytest.raises(SovereignError):
+            raise SovereignError("sovereign violation")
+
+    def test_message_preserved(self):
+        exc = SovereignError("sovereign violation")
+        assert str(exc) == "sovereign violation"
 
 @pytest.mark.skipif(not _AVAILABLE, reason="healer_exceptions.py deps unavailable")
 class TestMaxRetriesConstant:
-    def test_is_not_none(self):
-        assert MAX_RETRIES is not None
+    def test_is_positive_int(self):
+        assert isinstance(MAX_RETRIES, int)
+        assert MAX_RETRIES > 0
 
 @pytest.mark.skipif(not _AVAILABLE, reason="healer_exceptions.py deps unavailable")
 class TestDefaultSleepConstant:
-    def test_is_not_none(self):
-        assert DEFAULT_SLEEP is not None
+    def test_is_positive_number(self):
+        assert isinstance(DEFAULT_SLEEP, (int, float))
+        assert DEFAULT_SLEEP > 0
 
 @pytest.mark.skipif(not _AVAILABLE, reason="healer_exceptions.py deps unavailable")
 class TestThresholdConstant:
-    def test_is_not_none(self):
-        assert THRESHOLD is not None
+    def test_is_fraction(self):
+        assert isinstance(THRESHOLD, (int, float))
+        assert 0 < THRESHOLD <= 1.0
 
 @pytest.mark.skipif(not _AVAILABLE, reason="healer_exceptions.py deps unavailable")
 class TestBufferSizeConstant:
-    def test_is_not_none(self):
-        assert BUFFER_SIZE is not None
+    def test_is_positive_int(self):
+        assert isinstance(BUFFER_SIZE, int)
+        assert BUFFER_SIZE > 0
 
 @pytest.mark.skipif(not _AVAILABLE, reason="healer_exceptions.py deps unavailable")
 class TestBatchSizeConstant:
-    def test_is_not_none(self):
-        assert BATCH_SIZE is not None
+    def test_is_positive_int(self):
+        assert isinstance(BATCH_SIZE, int)
+        assert BATCH_SIZE > 0
 
 
 def test_module_importable():
     """Module healer_exceptions must be importable or skip gracefully."""
-    assert _AVAILABLE or not _AVAILABLE
+    if not _AVAILABLE:
+        pytest.skip("healer_exceptions.py deps unavailable — import failed")
+    assert issubclass(HealerError, Exception)
+    assert issubclass(CircularDependencyError, Exception)

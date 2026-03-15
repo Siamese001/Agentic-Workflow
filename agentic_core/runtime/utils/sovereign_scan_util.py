@@ -58,7 +58,7 @@ class SovereignScanner:
         Logger.info("Performing single-pass repository scan...")
         from agentic_core.utils.file_cache import FileCache
 
-        from agentic_core.L5_safety.config.structure_blueprint import SOVEREIGN_REGISTRY
+        from agentic_core.config.core.registry_config import SOVEREIGN_REGISTRY
 
         cache = FileCache.get_instance(self.project_root)
         self._all_files = list(cache.get_python_files())

@@ -42,78 +42,116 @@ except ImportError as _exc:
 
 @pytest.mark.skipif(not _AVAILABLE, reason="runtime_exceptions.py deps unavailable")
 class TestAgentRuntimeErrorContract:
-    def test_is_class(self):
-        assert isinstance(AgentRuntimeError, type)
+    def test_is_exception_subclass(self):
+        assert issubclass(AgentRuntimeError, Exception)
 
-    def test_instantiable_or_abstract(self):
-        assert isinstance(AgentRuntimeError, type)
+    def test_raises_and_catchable(self):
+        with pytest.raises(AgentRuntimeError):
+            raise AgentRuntimeError("agent runtime failure")
+
+    def test_message_preserved(self):
+        exc = AgentRuntimeError("agent runtime failure")
+        assert str(exc) == "agent runtime failure"
 
 @pytest.mark.skipif(not _AVAILABLE, reason="runtime_exceptions.py deps unavailable")
 class TestToolExecutionErrorContract:
-    def test_is_class(self):
-        assert isinstance(ToolExecutionError, type)
+    def test_is_exception_subclass(self):
+        assert issubclass(ToolExecutionError, Exception)
 
-    def test_instantiable_or_abstract(self):
-        assert isinstance(ToolExecutionError, type)
+    def test_raises_and_catchable(self):
+        with pytest.raises(ToolExecutionError):
+            raise ToolExecutionError("tool exec failed")
+
+    def test_message_preserved(self):
+        exc = ToolExecutionError("tool exec failed")
+        assert str(exc) == "tool exec failed"
 
 @pytest.mark.skipif(not _AVAILABLE, reason="runtime_exceptions.py deps unavailable")
 class TestToolNotFoundErrorContract:
-    def test_is_class(self):
-        assert isinstance(ToolNotFoundError, type)
+    def test_is_exception_subclass(self):
+        assert issubclass(ToolNotFoundError, Exception)
 
-    def test_instantiable_or_abstract(self):
-        assert isinstance(ToolNotFoundError, type)
+    def test_raises_and_catchable(self):
+        with pytest.raises(ToolNotFoundError):
+            raise ToolNotFoundError("tool not found")
+
+    def test_message_preserved(self):
+        exc = ToolNotFoundError("tool not found")
+        assert str(exc) == "tool not found"
 
 @pytest.mark.skipif(not _AVAILABLE, reason="runtime_exceptions.py deps unavailable")
 class TestHealExecutionErrorContract:
-    def test_is_class(self):
-        assert isinstance(HealExecutionError, type)
+    def test_is_exception_subclass(self):
+        assert issubclass(HealExecutionError, Exception)
 
-    def test_instantiable_or_abstract(self):
-        assert isinstance(HealExecutionError, type)
+    def test_raises_and_catchable(self):
+        with pytest.raises(HealExecutionError):
+            raise HealExecutionError("heal exec failed")
+
+    def test_message_preserved(self):
+        exc = HealExecutionError("heal exec failed")
+        assert str(exc) == "heal exec failed"
 
 @pytest.mark.skipif(not _AVAILABLE, reason="runtime_exceptions.py deps unavailable")
 class TestPatternExecutionErrorContract:
-    def test_is_class(self):
-        assert isinstance(PatternExecutionError, type)
+    def test_is_exception_subclass(self):
+        assert issubclass(PatternExecutionError, Exception)
 
-    def test_instantiable_or_abstract(self):
-        assert isinstance(PatternExecutionError, type)
+    def test_raises_and_catchable(self):
+        with pytest.raises(PatternExecutionError):
+            raise PatternExecutionError("pattern exec failed")
+
+    def test_message_preserved(self):
+        exc = PatternExecutionError("pattern exec failed")
+        assert str(exc) == "pattern exec failed"
 
 @pytest.mark.skipif(not _AVAILABLE, reason="runtime_exceptions.py deps unavailable")
 class TestMaxTurnsExceededErrorContract:
-    def test_is_class(self):
-        assert isinstance(MaxTurnsExceededError, type)
+    def test_is_exception_subclass(self):
+        assert issubclass(MaxTurnsExceededError, Exception)
 
-    def test_instantiable_or_abstract(self):
-        assert isinstance(MaxTurnsExceededError, type)
+    def test_raises_and_catchable(self):
+        with pytest.raises(MaxTurnsExceededError):
+            raise MaxTurnsExceededError("max turns exceeded")
+
+    def test_message_preserved(self):
+        exc = MaxTurnsExceededError("max turns exceeded")
+        assert str(exc) == "max turns exceeded"
 
 @pytest.mark.skipif(not _AVAILABLE, reason="runtime_exceptions.py deps unavailable")
 class TestMaxRetriesConstant:
-    def test_is_not_none(self):
-        assert MAX_RETRIES is not None
+    def test_is_positive_int(self):
+        assert isinstance(MAX_RETRIES, int)
+        assert MAX_RETRIES > 0
 
 @pytest.mark.skipif(not _AVAILABLE, reason="runtime_exceptions.py deps unavailable")
 class TestDefaultSleepConstant:
-    def test_is_not_none(self):
-        assert DEFAULT_SLEEP is not None
+    def test_is_positive_number(self):
+        assert isinstance(DEFAULT_SLEEP, (int, float))
+        assert DEFAULT_SLEEP > 0
 
 @pytest.mark.skipif(not _AVAILABLE, reason="runtime_exceptions.py deps unavailable")
 class TestThresholdConstant:
-    def test_is_not_none(self):
-        assert THRESHOLD is not None
+    def test_is_fraction(self):
+        assert isinstance(THRESHOLD, (int, float))
+        assert 0 < THRESHOLD <= 1.0
 
 @pytest.mark.skipif(not _AVAILABLE, reason="runtime_exceptions.py deps unavailable")
 class TestBufferSizeConstant:
-    def test_is_not_none(self):
-        assert BUFFER_SIZE is not None
+    def test_is_positive_int(self):
+        assert isinstance(BUFFER_SIZE, int)
+        assert BUFFER_SIZE > 0
 
 @pytest.mark.skipif(not _AVAILABLE, reason="runtime_exceptions.py deps unavailable")
 class TestBatchSizeConstant:
-    def test_is_not_none(self):
-        assert BATCH_SIZE is not None
+    def test_is_positive_int(self):
+        assert isinstance(BATCH_SIZE, int)
+        assert BATCH_SIZE > 0
 
 
 def test_module_importable():
     """Module runtime_exceptions must be importable or skip gracefully."""
-    assert _AVAILABLE or not _AVAILABLE
+    if not _AVAILABLE:
+        pytest.skip("runtime_exceptions.py deps unavailable — import failed")
+    assert issubclass(AgentRuntimeError, Exception)
+    assert issubclass(ToolExecutionError, Exception)
