@@ -18,6 +18,7 @@ from agentic_core.L0_routing.config.path_constants import (
     THRESHOLD,
 )
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger = logging.getLogger(__name__)
 
@@ -155,6 +156,9 @@ class SSOTFolderCleanupAgent(SovereignBaseAgent):
         Returns:
             True if path is in an approved location
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, f"SSOTFolderCleanupAgent.is_path_ssot_approved:{path.name}")
         try:
             rel_path = path.relative_to(self.project_root)
         except ValueError:

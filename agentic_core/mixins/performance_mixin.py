@@ -29,6 +29,8 @@ from collections.abc import Awaitable, Callable, Iterable
 from dataclasses import dataclass, field
 from typing import Any, TypeVar
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
 Logger = logging.getLogger(__name__)
 T = TypeVar("T")
 
@@ -176,6 +178,9 @@ class PerformanceMixin:
         Raises:
             ValueError: If any parameter is invalid
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "PerformanceMixin.configure_performance")
         if cache_max_size is not None and cache_max_size <= 0:
             raise ValueError("cache_max_size must be positive")
         if cache_default_ttl is not None and cache_default_ttl <= 0:

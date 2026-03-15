@@ -27,6 +27,7 @@ from agentic_core.runtime.trace_context import get_trace_context
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L3_orchestration.contracts.orchestration_handoff_contract import emit_agent_executes_agent
 from agentic_core.utils.timeout_decorator_util import timeout
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 _logger = logging.getLogger(__name__)
 
@@ -178,6 +179,9 @@ class DecompositionOrchestrator(SovereignBaseAgent):
         Returns:
             MissionPlan with DAG of atomic tasks
         """
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(_uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"DecompositionOrchestrator.decompose:{prompt[:40]}")
         mission_id = f"mission_{uuid.uuid4().hex[:8]}"
         plan = MissionPlan(mission_id=mission_id, created_at=datetime.utcnow().isoformat(), prompt=prompt)
         task_hints = self._extract_task_hints(prompt)

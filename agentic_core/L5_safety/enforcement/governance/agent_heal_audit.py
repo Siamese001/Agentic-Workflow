@@ -13,6 +13,7 @@ import ast
 import json
 from pathlib import Path, PurePosixPath
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
     APPS_LIC_DIR,
@@ -80,6 +81,9 @@ class AgentHealAuditScanner:
 
     def scan_agent_file(self, file_path: Path) -> list[dict[str, Any]]:
         """Scan a single Python file for Agent classes and their healing methods."""
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, f"AgentHealAudit.scan_agent_file:{file_path.name}")
         try:
             with open(file_path, encoding="utf-8") as f:
                 content = f.read()
