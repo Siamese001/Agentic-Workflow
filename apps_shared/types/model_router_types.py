@@ -15,6 +15,9 @@ try:
     from agentic_core.L3_orchestration.reasoning.mcp_manager import MCPConnectionManager as _MCPManager
 except ImportError:
     _MCPManager = None
+
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
 logger = logging.getLogger(__name__)
 
 
@@ -217,6 +220,9 @@ class ModelRouter:
         Returns:
             Model configuration dictionary
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"AdaptiveModelRouter.get_model_config:{task_type}")
         profile = self._task_profiles.get(task_type)
         # guardian: allow-config-with-logic
         if not profile:

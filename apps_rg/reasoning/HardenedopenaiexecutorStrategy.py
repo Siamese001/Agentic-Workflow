@@ -19,6 +19,7 @@ from agentic_core.interfaces.gateway import GenerationRequest
 from agentic_core.interfaces.observability import SystemTelemetry
 from agentic_core.L2_execution.providers import get_clock
 from agentic_core.mixins.hardening_mixin import HardeningMixin
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -158,6 +159,9 @@ class HardenedOpenAIExecutor(HardeningMixin):
         Returns:
             Generated text response
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "HardenedOpenAIExecutorStrategy.run_llm")
         if messages:
             openai_messages = self._build_messages(messages, system_prompt)
             combined_prompt = "\n".join(msg.content for msg in messages)
