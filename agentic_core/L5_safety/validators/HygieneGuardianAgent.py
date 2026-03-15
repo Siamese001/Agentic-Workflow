@@ -16,14 +16,16 @@ Territory: agentic_core/L5_safety/validators/
 
 import os
 import re
+import uuid
 from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L5_safety.core.archival_gatekeeper_config import ArchivalGatekeeper
 from agentic_core.L5_safety.validators.decorators import standard_heal
+
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 # --- SOVEREIGN GUARDRAILS ---
@@ -132,7 +134,6 @@ class HygieneGuardianAgent(SovereignBaseAgent):
         Returns:
             Dict with keys: status, details, artifacts, errors
         """
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "HygieneGuardianAgent.heal")
         try:

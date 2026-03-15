@@ -5,6 +5,7 @@ from agentic_core.L2_execution.tools import write_gateway as _wg
 "\nSovereign Healing Engine – Phase 17 (Dec 27, 2025)\nAutonomous self-correction using Filesystem and GitKraken MCPs.\n"
 import logging
 import re
+import uuid
 from pathlib import Path
 from typing import Any
 
@@ -57,7 +58,6 @@ class SovereignHealingEngine:
         Returns:
             Healing cycle results
         """
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "SovereignHealingEngine.execute_autonomous_cycle")
         if not config.AUTONOMOUS_HEALING_ENABLED:

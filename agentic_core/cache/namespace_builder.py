@@ -23,6 +23,7 @@ Key examples::
 from __future__ import annotations
 
 import re
+
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 _LAYER_NAMES = frozenset(

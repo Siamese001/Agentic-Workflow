@@ -56,10 +56,10 @@ import hashlib
 import logging
 from typing import Sequence
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from system_learning.enforcement.determinism import deterministic_json
 from system_learning.types.prompt_artifact_types import PromptOutcomeRecord
 from system_learning.types.trace_feature_types import TraceFeatureRecord
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 

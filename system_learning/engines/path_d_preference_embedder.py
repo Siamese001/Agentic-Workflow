@@ -24,13 +24,13 @@ import threading
 from dataclasses import dataclass
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from system_learning.config.semantic_memory_config import DEFAULT_EMBEDDER_BUFFER_SIZE
 from system_learning.engines.embedding_corpus_extraction import (
     CorpusRecord,
     compute_content_hash,
 )
 from system_learning.types.semantic_memory_types import PathDPreferencePair
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 

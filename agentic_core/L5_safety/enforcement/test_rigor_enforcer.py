@@ -24,10 +24,16 @@ Usage:
 from __future__ import annotations
 
 import subprocess
+import uuid
 from dataclasses import dataclass, field
 from pathlib import Path
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+)
 
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
@@ -100,6 +106,7 @@ class TestRigorEnforcer:
         Returns:
             ValidationResult with compliant=True if requirements declared, False otherwise
         """
+        _emit_applies_guardrail(str(uuid.uuid4()), "TestRigorEnforcer.validate_pre_code_generation", "L5_POLICY")
         violations = []
 
         if not self.requirements:

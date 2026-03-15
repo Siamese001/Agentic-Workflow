@@ -17,8 +17,8 @@ except ImportError:
 
 
 from agentic_core.L5_safety.config.structure_blueprint import TESTS_DIR
-from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.utils.decorators_compat_util import standard_heal
 
 
 @dataclass

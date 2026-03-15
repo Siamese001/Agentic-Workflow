@@ -12,8 +12,9 @@ import json
 from dataclasses import dataclass
 from typing import Any
 
-from agentic_core.L0_routing.engines.assembly_stage import GovernedPayload
 from agentic_core.L0_routing.providers.clock_provider import ClockProvider as clock_provider
+
+from agentic_core.L0_routing.engines.assembly_stage import GovernedPayload
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 

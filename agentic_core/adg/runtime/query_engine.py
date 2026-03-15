@@ -19,6 +19,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from agentic_core.adg.extraction.static_scanner import ScanResult
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
 logger = logging.getLogger(__name__)
 _SINGLETON: ADGRuntimeQueryEngine | None = None
 

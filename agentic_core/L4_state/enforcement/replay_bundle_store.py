@@ -8,10 +8,15 @@ ReplayVerifier checks integrity (hash recomputation) and prior-only constraints.
 from __future__ import annotations
 
 import hashlib
+import uuid
 from dataclasses import dataclass, field
 
 from agentic_core.L4_state.types.replay_bundle_types import ReplayBundle
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_snapshots_state,
+)
 
 
 def _sha256(data: bytes) -> str:
@@ -34,6 +39,7 @@ class ReplayBundleStore:
         Persist a ReplayBundle. Returns replay_hash.
         Idempotent: storing the same bundle twice is a no-op.
         """
+        _emit_snapshots_state(str(uuid.uuid4()), "ReplayBundleStore.store_replay_bundle", "L4_STATE")
         import uuid as _uuid  # noqa: PLC0415
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "ReplayBundleStore.store_replay_bundle")

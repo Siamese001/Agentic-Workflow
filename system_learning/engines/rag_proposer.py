@@ -13,6 +13,7 @@ import json
 import logging
 from dataclasses import dataclass
 from typing import Any
+
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)

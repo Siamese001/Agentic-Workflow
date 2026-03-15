@@ -8,7 +8,6 @@ namespaces (apps_*, agentic_core.L*).  Uses AST parsing — no regex.
 """
 import ast
 from pathlib import Path
-from typing import List
 
 from system_learning.config.import_policy import (
     ALLOWED_AGENTIC_CORE_PREFIXES,
@@ -21,7 +20,7 @@ _SL_ROOT = Path(__file__).parent.parent
 
 class _BoundaryVisitor(ast.NodeVisitor):
     def __init__(self) -> None:
-        self.violations: List[str] = []
+        self.violations: list[str] = []
 
     def _check_module(self, module: str, lineno: int) -> None:
         if not module:
@@ -52,7 +51,7 @@ class _BoundaryVisitor(ast.NodeVisitor):
         self.generic_visit(node)
 
 
-def check_file_isolation(file_path: Path) -> List[str]:
+def check_file_isolation(file_path: Path) -> list[str]:
     """Return list of violation strings for a single file (empty = clean)."""
     try:
         tree = ast.parse(file_path.read_text(encoding="utf-8"))
@@ -68,7 +67,7 @@ def check_system_learning_isolation() -> bool:
 
     Prints violations and returns False if any found, True if clean.
     """
-    all_violations: List[str] = []
+    all_violations: list[str] = []
     for py_file in _SL_ROOT.rglob("*.py"):
         file_violations = check_file_isolation(py_file)
         if file_violations:

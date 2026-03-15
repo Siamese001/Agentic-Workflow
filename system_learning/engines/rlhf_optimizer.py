@@ -8,8 +8,8 @@ from __future__ import annotations
 import json
 from typing import Protocol
 
-from system_learning.engines.change_package_impl import ChangePackage
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from system_learning.engines.change_package_impl import ChangePackage
 
 
 class RLHFOptimizer(Protocol):

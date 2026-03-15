@@ -1,8 +1,14 @@
 from __future__ import annotations
 
 "\nConsensus & Deliberation Schemas\n===============================\nDefines the structures for multi-model consensus and individual\nmodel opinions. Used to ensure plan safety and agreement across\nthe agentic collective.\n"
+
 from pydantic import BaseModel, ConfigDict, Field, field_validator
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+)
 
 
 class ConsensusVerdict(BaseModel):

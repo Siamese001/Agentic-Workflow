@@ -20,6 +20,7 @@ from __future__ import annotations
 import asyncio
 import logging
 import time
+import uuid
 from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum
@@ -189,7 +190,6 @@ class ToolReliabilityMixin:
         Raises:
             ValueError: If any parameter is invalid
         """
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"ToolReliabilityMixin.configure_tool_retry:{tool_name}")
         # [HARDENING] Validate inputs

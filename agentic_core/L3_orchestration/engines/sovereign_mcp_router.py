@@ -5,12 +5,13 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 "L3 Orchestration: Sovereign MCP router — Eternal Integration\nHardened routing of canon violations to MCP tools across all layers and apps.\nL5 safety shielded + auto-immune on breach.\n"
 import json
 import logging
+import uuid
 from pathlib import Path
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from typing import Any
 
 from agentic_core.cache.redis_cache_client import get_hot_cache
 from agentic_core.L3_orchestration.reasoning.mcp_manager import MCPConnectionManager, load_mcp_config
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.seams.contracts.authority import get_mcp_authority
 
 Logger: Any = logging.getLogger(__name__)
@@ -28,7 +29,6 @@ class SovereignMcpRouter(SovereignBaseAgent):
     # guardian: allow-type-erasure
     async def initialize(self) -> Any:
         """Async initialization with L5 shielding and immediate fail-fast"""
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "SovereignMCPRouter.initialize")
         try:

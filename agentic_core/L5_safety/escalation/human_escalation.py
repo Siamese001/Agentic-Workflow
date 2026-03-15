@@ -12,11 +12,12 @@ from __future__ import annotations
 import hashlib
 import logging
 import threading
+import uuid
 from dataclasses import dataclass, field
 from enum import Enum
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 from agentic_core.L2_execution.providers import get_clock
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 _ESCALATION_LOG = logging.getLogger("adg.human_escalation_emitted")
@@ -205,7 +206,6 @@ class HumanEscalationRegistry:
 
     def persist_record(self, record: HumanEscalationRecord) -> None:
         """Persist a human escalation record."""
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "HumanEscalationStore.persist_record")
         with self._lock:

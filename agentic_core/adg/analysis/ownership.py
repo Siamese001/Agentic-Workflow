@@ -15,6 +15,7 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass
 from typing import Literal
+
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Owner = Literal["platform", "apps_rg", "apps_lic", "apps_shared", "safety", "observability", "unknown"]

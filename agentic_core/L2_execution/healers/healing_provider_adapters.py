@@ -12,8 +12,10 @@ from __future__ import annotations
 
 import hashlib
 import logging
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+import uuid
 from typing import Any
+
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 try:
     from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
@@ -97,7 +99,6 @@ class QwenInvokerAdapter:
         Returns:
             InvocationRecord with replay-deterministic fields
         """
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "HealingProviderAdapter.invoke_qwen_vllm")
         model_id = config.model_qwen_vllm_id

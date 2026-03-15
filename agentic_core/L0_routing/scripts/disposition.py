@@ -8,18 +8,23 @@ on agentic_core/base_agents/ to eliminate entropy and establish the Final Sovere
 
 import ast
 import json
+import uuid
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
 
 import networkx as nx
 
-from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.L0_routing.config import (
     APPS_LIC_DIR,
     APPS_RG_DIR,
     APPS_SHARED_DIR,
+)
+from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_verifies_policy,
 )
 
 
@@ -57,7 +62,6 @@ class CoreSynthesisAnalyzer:
 
     def analyze_file(self, file_path: Path) -> CoreAnalysisResult:
         """Perform comprehensive analysis of a single file."""
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"CoreDispositionAnalyzer.analyze_file:{file_path.name}")
         try:
@@ -179,6 +183,7 @@ class CoreSynthesisAnalyzer:
     def _verify_contract_compliance(self, tree: ast.AST) -> bool:
         """Verify CanonBaseAgentInterface contract compliance."""
         # Check for required methods and attributes
+        _emit_verifies_policy(str(uuid.uuid4()), "CoreSynthesisAnalyzer._verify_contract_compliance", "L0_ROUTING")
         required_methods = ["smart_fix"]
         required_attrs = ["ctx", "name", "python_files"]
 

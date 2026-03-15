@@ -7,6 +7,7 @@ import logging
 import re
 from html.parser import HTMLParser
 from pathlib import Path
+
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 log = logging.getLogger(__name__)

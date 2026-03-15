@@ -1,9 +1,9 @@
 """Healing Outcome Intake Adapter - persist-only adapter for meta-learning intake."""
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
 from system_learning.ports.healing_outcome_intake_store import HealingOutcomeIntakeStore
 from system_learning.types.healing_outcome_intake_types import HealingOutcomeIntakeRecord
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class HealingOutcomeIntakeAdapter:

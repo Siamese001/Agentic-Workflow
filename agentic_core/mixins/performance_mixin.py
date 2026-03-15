@@ -24,6 +24,7 @@ import functools
 import logging
 import threading
 import time
+import uuid
 from collections import OrderedDict
 from collections.abc import Awaitable, Callable, Iterable
 from dataclasses import dataclass, field
@@ -178,7 +179,6 @@ class PerformanceMixin:
         Raises:
             ValueError: If any parameter is invalid
         """
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "PerformanceMixin.configure_performance")
         if cache_max_size is not None and cache_max_size <= 0:

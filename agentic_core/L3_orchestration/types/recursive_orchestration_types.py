@@ -15,6 +15,7 @@ Phase: 1 - Core Infrastructure
 from __future__ import annotations
 
 import logging
+import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any
@@ -23,9 +24,9 @@ from agentic_core.L3_orchestration.types import (
     AgentResult,
     ExecutionContext,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger = logging.getLogger(__name__)
 
@@ -122,7 +123,6 @@ class RecursiveOrchestrator:
         Returns:
             AgentResult from successor execution
         """
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"RecursiveOrchestrator.spawn_successor:{successor_spec.agent_name}")
         self._metrics.total_spawns += 1

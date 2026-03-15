@@ -11,11 +11,12 @@ from __future__ import annotations
 
 import logging
 import threading
+import uuid
 from dataclasses import dataclass, field
 from enum import Enum
 
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.L2_execution.providers import get_clock
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 _LIFECYCLE_LOG = logging.getLogger("adg.state_lifecycle_emitted")
@@ -143,7 +144,6 @@ class StateLifecycleRecord:
 
     def is_stale_growth(self) -> bool:
         """Check if stale state growth is occurring (Gate D)."""
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "StateLifecycle.is_stale_growth")
         current_time = get_clock().now_epoch()

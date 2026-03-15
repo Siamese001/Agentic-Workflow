@@ -23,8 +23,14 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import uuid
 from typing import Any
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_snapshots_state,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -137,6 +143,7 @@ class SystemLearningMemoryBridge:
         Returns:
             True if persisted, False if MCP unavailable.
         """
+        _emit_snapshots_state(str(uuid.uuid4()), "SystemLearningMemoryBridge.persist_healing_success_rate", "L4_STATE")
         if not self._bridge:
             return False
         sig_hash = _content_hash(error_signature)

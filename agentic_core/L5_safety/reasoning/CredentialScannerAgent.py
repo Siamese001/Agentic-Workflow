@@ -5,6 +5,7 @@ from agentic_core.L2_execution.tools import write_gateway as _wg
 "\nCredentialScannerAgent - Detects hardcoded credentials in source code\n\nRisk 4: Hardcoded Credential Detection\nScans the codebase for potential security leaks including:\n- API Keys\n- Secret Tokens\n- Private Keys\n- Hardcoded Passwords\n- AWS/Azure/GCP credentials\n\nUses FileCache for efficient scanning (Opportunity #3 integration).\n"
 import logging
 import re
+import uuid
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -12,8 +13,12 @@ from typing import Any
 from agentic_core.utils.file_cache import FileCache
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_validated_by_safety_plane,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -160,7 +165,7 @@ class CredentialScannerAgent(SovereignBaseAgent):
         Returns:
             Dict with keys: status, details, artifacts, errors
         """
-        import uuid  # noqa: PLC0415
+        _emit_validated_by_safety_plane(str(uuid.uuid4()), "CredentialScannerAgent.heal", "L5_POLICY")
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "CredentialScannerAgent.heal")
         try:

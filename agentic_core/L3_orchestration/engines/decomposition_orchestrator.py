@@ -26,8 +26,8 @@ from agentic_core.runtime.trace_context import get_trace_context
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L3_orchestration.contracts.orchestration_handoff_contract import emit_agent_executes_agent
-from agentic_core.utils.timeout_decorator_util import timeout
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.utils.timeout_decorator_util import timeout
 
 _logger = logging.getLogger(__name__)
 
@@ -278,6 +278,7 @@ class DecompositionOrchestrator(SovereignBaseAgent):
         Returns:
             Execution results dictionary
         """
+        _emit_agent_executes_agent(str(uuid.uuid4()), "DecompositionOrchestrator", "DecompositionOrchestrator.execute")
         with get_trace_context().run_frame(
             layer="L3",
             module="decomposition_orchestrator",
@@ -581,3 +582,4 @@ if __name__ == "__main__":
         prompt = "Validate all L5 agents for proper inheritance and fix naming violations"
     plan = orchestrator.decompose(prompt)
     results = orchestrator.execute(plan, dry_run=True)
+from agentic_core.runtime.lifecycle_trace_contract import _emit_agent_executes_agent

@@ -22,8 +22,8 @@ import hashlib
 from dataclasses import dataclass, field
 from typing import Literal
 
-from system_learning.enforcement.determinism import deterministic_json
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from system_learning.enforcement.determinism import deterministic_json
 
 # ---------------------------------------------------------------------------
 # Outcome class literals

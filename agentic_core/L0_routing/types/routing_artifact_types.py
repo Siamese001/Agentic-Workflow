@@ -20,7 +20,12 @@ from agentic_core.L0_routing.seams.layer_emission_seam import (
     assert_layer_may_emit,
 )
 from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, emit_replay_key, emit_determinism_digest
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    emit_determinism_digest,
+    emit_replay_key,
+)
 
 # =============================================================================
 # §3.1 — RouteDecision Typed Artifact

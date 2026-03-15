@@ -10,13 +10,21 @@ Phase 2: L5 Guardian Certification Enforcement
 
 from __future__ import annotations
 
+import uuid
+
 from agentic_core.L2_execution.enforcement.key_source import get_current_secret
 from agentic_core.L2_execution.types.instruction_packet_types import (
     InstructionPacket,
     SignatureVerificationError,
 )
 from agentic_core.L2_execution.types.sandbox_envelope_types import SandboxEnvelope
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_verifies_boundary,
+)
 
 
 class L2BoundaryVerifier:
@@ -44,6 +52,8 @@ class L2BoundaryVerifier:
 
     def verify_instruction_packet(self, packet: InstructionPacket) -> None:
         """Verify InstructionPacket signature.  Raises SignatureVerificationError on failure."""
+        _emit_verifies_boundary(str(uuid.uuid4()), "L2BoundaryVerifier.verify_instruction_packet", "L2_EXECUTION")
+        _emit_applies_guardrail(str(uuid.uuid4()), "L2BoundaryVerifier.verify_instruction_packet", "L2_EXECUTION")
         import uuid as _uuid  # noqa: PLC0415
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "L2BoundaryVerifier.verify_instruction_packet")

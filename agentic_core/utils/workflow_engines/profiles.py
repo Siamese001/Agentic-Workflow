@@ -12,6 +12,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
 from .fusion import ReciprocalRankFusion
 from .interfaces import (
     Document,
@@ -21,7 +23,6 @@ from .interfaces import (
     IRetrieverVector,
 )
 from .reranker import HeuristicReranker
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 PROFILE_VECTOR_ONLY = "vector_only"
 PROFILE_HYBRID = "hybrid"

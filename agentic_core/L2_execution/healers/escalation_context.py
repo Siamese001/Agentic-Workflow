@@ -13,7 +13,12 @@ Phase 3.2: Mathematically-Sealed Sovereignty Hardening
 from __future__ import annotations
 
 from dataclasses import dataclass
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+)
 
 
 class MonotonicityViolation(RuntimeError):

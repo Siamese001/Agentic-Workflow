@@ -11,12 +11,17 @@ from __future__ import annotations
 
 import logging
 import threading
+import uuid
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
 from agentic_core.L2_execution.providers import get_clock
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_snapshots_state,
+)
 
 logger = logging.getLogger(__name__)
 _DASHBOARD_LOG = logging.getLogger("adg.dashboard_aggregated")
@@ -198,6 +203,7 @@ class DashboardAggregateRegistry:
 
     def persist_snapshot(self, snapshot: DashboardSnapshot) -> None:
         """Persist a dashboard snapshot."""
+        _emit_snapshots_state(str(uuid.uuid4()), "DashboardAggregateRegistry.persist_snapshot", "L6_OBSERVABILITY")
         with self._lock:
             self._snapshots[snapshot.dashboard_snapshot_id] = snapshot
 

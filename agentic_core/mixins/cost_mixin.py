@@ -21,9 +21,11 @@ from __future__ import annotations
 import logging
 import threading
 import time
+import uuid
 from dataclasses import dataclass, field
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from typing import Any
+
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger = logging.getLogger(__name__)
 
@@ -149,7 +151,6 @@ class CostGuardrailMixin:
         Raises:
             ValueError: If any parameter is invalid (negative or out of range)
         """
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "CostMixin.configure_budget")
         if max_tokens_per_request is not None and max_tokens_per_request <= 0:

@@ -685,7 +685,7 @@ VECTOR_STORE_SYMBOLS: frozenset[str] = frozenset(
     }
 )
 CONFIDENCE_SCORING_CLASSES: frozenset[str] = frozenset(
-    {"HealingConfidenceScorer", "ConfidenceScorer", "ConfidenceEngine"}
+    {"HealingConfidenceScorer", "ConfidenceScorer", "ConfidenceEngine", "_emit_gated_by_confidence"}
 )
 HITL_ESCALATION_METHODS: frozenset[str] = frozenset(
     {
@@ -717,7 +717,7 @@ GUARDRAIL_CLASS_NAMES: frozenset[str] = frozenset(
     }
 )
 POLICY_HASH_METHODS: frozenset[str] = frozenset(
-    {"verify_policy_hash", "validate_policy_hash", "check_policy_hash", "enforce_policy", "verify_hash"}
+    {"verify_policy_hash", "validate_policy_hash", "check_policy_hash", "enforce_policy", "verify_hash", "_emit_verifies_policy"}
 )
 SANDBOX_ENVELOPE_CLASSES: frozenset[str] = frozenset(
     {"SandboxEnvelope", "WorkContract", "SandboxAirlock", "L5SandboxStamper", "SandboxSession"}
@@ -766,6 +766,7 @@ BOUNDARY_VERIFIER_CLASSES: frozenset[str] = frozenset(
         "ExecutionBoundaryCheck",
         "PacketValidator",
         "EnvelopeVerifier",
+        "_emit_verifies_boundary",
     }
 )
 CAPABILITY_CHOKEPOINT_CLASSES: frozenset[str] = frozenset(
@@ -1018,6 +1019,8 @@ POLICY_STATE_READ_METHODS: frozenset[str] = frozenset(
         "probe_health",
         "read_governance_state",
         "observe_runtime_state",
+        "_emit_snapshots_state",
+        "_emit_observes_runtime_state",
     }
 )
 ANTIPATTERN_REGISTRY_CLASSES: frozenset[str] = frozenset(
@@ -1337,6 +1340,7 @@ WRITE_SIDE_EFFECT_SYMBOLS: frozenset[str] = frozenset(
         "subprocess.call",
         "subprocess.check_call",
         "subprocess.check_output",
+        "_emit_writes_through",
     }
 )
 NETWORK_SYMBOLS: frozenset[str] = frozenset(

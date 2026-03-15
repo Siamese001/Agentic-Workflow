@@ -8,6 +8,7 @@ import asyncio
 import json
 import logging
 import time
+import uuid
 from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any, Optional
@@ -193,7 +194,6 @@ class ReflectionEngine:
         Returns:
             CritiqueResult with evaluation details
         """
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "SelfCritiqueEvaluator.evaluate")
         start_time = time.time()

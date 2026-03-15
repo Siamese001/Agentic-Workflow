@@ -22,16 +22,21 @@ from __future__ import annotations
 
 import logging
 import threading
+import uuid
 from dataclasses import dataclass
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_verifies_policy,
+)
 from system_learning.config.semantic_memory_config import DEFAULT_EMBEDDER_BUFFER_SIZE
 from system_learning.engines.embedding_corpus_extraction import (
     CorpusRecord,
     compute_content_hash,
 )
 from system_learning.types.semantic_memory_types import PolicyGuardrailCase
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -80,6 +85,7 @@ class PolicyGuardrailEmbedder:
         Returns:
             The generated CorpusRecord.
         """
+        _emit_verifies_policy(str(uuid.uuid4()), "PolicyGuardrailEmbedder.ingest", "L4_STATE")
         import uuid as _uuid  # noqa: PLC0415
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PolicyGuardrailEmbedder.ingest")

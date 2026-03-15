@@ -31,6 +31,7 @@ from agentic_core.L4_state.versioning.state_transition_registry import (
     StateVersionRegistry,
     get_state_version_registry,
 )
+from agentic_core.runtime.lifecycle_trace_contract import _emit_snapshots_state
 
 logger = logging.getLogger(__name__)
 _TRANSITION_LOG = logging.getLogger("adg.state_transition_committed")
@@ -138,6 +139,8 @@ def commit_versioned_state_transition(
         StateVersionMissingError: If previous version required but missing (step 2)
         StateConflictError: If concurrent write conflict detected (step 4)
     """
+    import uuid  # noqa: PLC0415
+    _emit_snapshots_state(str(uuid.uuid4()), "Module.commit_versioned_state_transition", "L4_STATE")
     _registry = registry or get_state_version_registry()
 
     # --- Step 1: validate namespace ---

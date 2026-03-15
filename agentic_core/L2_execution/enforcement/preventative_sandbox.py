@@ -20,10 +20,17 @@ from __future__ import annotations
 import builtins
 import contextlib
 import logging
+import uuid
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import Any
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+)
 
 Logger = logging.getLogger(__name__)
 
@@ -103,6 +110,7 @@ class PreventativeSandbox:
 
     def _make_guard(self, target: _PatchTarget) -> Callable[..., Any]:
         """Create a guard function that raises on call."""
+        _emit_applies_guardrail(str(uuid.uuid4()), "PreventativeSandbox._make_guard", "L2_EXECUTION")
         fqn = f"{target.module_path}.{target.attr_name}"
 
         def _guard(*args: Any, **kwargs: Any) -> Any:

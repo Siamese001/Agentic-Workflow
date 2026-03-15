@@ -11,7 +11,11 @@ import ast
 from pathlib import Path
 
 from agentic_core.L0_routing.config.path_constants import TOOLS_DIR
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+)
 
 
 class PowerShellBanVisitor(ast.NodeVisitor):

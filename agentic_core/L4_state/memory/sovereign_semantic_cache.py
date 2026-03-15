@@ -22,8 +22,8 @@ def get_redis_client():
     return _get_hot_cache()
 
 
-from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.utils.decorators_compat_util import standard_heal
 
 Logger: Any = logging.getLogger(__name__)
 redis_cache_ttl: Any = 60 * 60 * 24 * 7

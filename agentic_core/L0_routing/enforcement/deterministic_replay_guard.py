@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import hashlib
 import logging
+import uuid
 from dataclasses import dataclass
 
 from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import (
@@ -24,7 +25,13 @@ from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import (
     RoutingArtifact,
     get_routing_gateway,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, emit_replay_key, emit_determinism_digest
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    emit_determinism_digest,
+    emit_replay_key,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -132,6 +139,7 @@ _global_replay_guard: DeterministicReplayGuard | None = None
 
 def get_replay_guard(replay_mode: bool = False) -> DeterministicReplayGuard:
     """Return the process-level deterministic replay guard."""
+    _emit_applies_guardrail(str(uuid.uuid4()), "Module.get_replay_guard", "L0_ROUTING")
     global _global_replay_guard
     if _global_replay_guard is None:
         _global_replay_guard = DeterministicReplayGuard(replay_mode=replay_mode)

@@ -13,10 +13,10 @@ from agentic_core.L0_routing.config.path_constants import (
     TESTS_DIR,
 )
 from agentic_core.L2_execution.tools import write_gateway as _wg
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 """
 HierarchyAgent - Unified Hierarchy Management
@@ -35,6 +35,7 @@ LOCATION: agentic_core/L5_safety/enforcement/ (LCD+ SSOT-compliant)
 import logging
 import os
 import time
+import uuid
 from pathlib import Path
 from typing import Any
 
@@ -135,7 +136,6 @@ class HierarchyHealerAgent(SovereignBaseAgent):
         Returns:
             Dict with keys: status, details, artifacts, errors
         """
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "HierarchyAgent.heal")
         try:

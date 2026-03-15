@@ -2,12 +2,18 @@ from __future__ import annotations
 
 '\nHealingStrategy - Tiered Healing Execution Strategy\n\nThis strategy encapsulates the healing logic currently in SSOTOrchestratorAgent,\nimplementing the 5-tier execution flow for repository healing.\n\nTIERS:\n    Tier 0: Pre-Flight - Syntax validation (must pass before anything else)\n    Tier 1: Structural - Identity collisions, hygiene, naming, location\n    Tier 2: Architectural - Gravity enforcement, deep deduplication\n    Tier 3: Dynamic - Code SSOT enforcement, runtime checks\n    Tier 4: Final Gate - Safety validation, final checks\n\nUSAGE:\n    from agentic_core.L3_orchestration.unified_orchestrator import Orchestrator\n\n    strategy = HealingStrategy(project_root=Path.cwd())\n    orchestrator = Orchestrator(strategy=strategy)\n    result = orchestrator.run_mission({"dry_run": True})\n'
 import logging
+import uuid
 from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.config.core.hygiene_registry_config import CORE_HYGIENE_AGENTS
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_agent_executes_agent,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+)
 
 Logger = logging.getLogger(__name__)
 
@@ -55,6 +61,7 @@ class HealingStrategy:
         Returns:
             Dictionary mapping tier names to lists of agent names.
         """
+        _emit_applies_guardrail(str(uuid.uuid4()), "HealingStrategy.get_tiers", "L5_POLICY")
         return {k: v for k, v in self._tiers.items() if v}
 
     def should_run_tier(self, tier_name: str) -> bool:
@@ -67,7 +74,7 @@ class HealingStrategy:
         Returns:
             True if the tier should run, False to skip
         """
-        import uuid  # noqa: PLC0415
+        _emit_agent_executes_agent(str(uuid.uuid4()), "HealingStrategy", "HealingStrategy.should_run_tier")
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, f"HealingStrategy.should_run_tier:{tier_name}")
         if self.target_tier is None:

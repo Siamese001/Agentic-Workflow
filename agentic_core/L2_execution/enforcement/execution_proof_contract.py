@@ -30,7 +30,13 @@ import logging
 import time
 import uuid
 from typing import Any, Callable
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_verifies_boundary,
+)
 
 logger = logging.getLogger(__name__)
 _PROOF_LOG = logging.getLogger("adg.emits_replay_key")
@@ -217,6 +223,7 @@ class ExecutionProofRecord:
         Raises:
             DeterminismViolation: if replay key or digest do not match.
         """
+        _emit_verifies_boundary(str(uuid.uuid4()), "ExecutionProofRecord.validate_replay", "L2_EXECUTION")
         import uuid as _uuid  # noqa: PLC0415
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "ExecutionProofRecord.validate_replay")

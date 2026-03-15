@@ -8,6 +8,7 @@ import logging
 import os
 import sys
 import time
+import uuid
 from pathlib import Path
 
 from agentic_core.utils.security_util import safe_git_execute
@@ -68,6 +69,7 @@ try:
 except ImportError:
     GITPYTHON_AVAILABLE = False
     Repo = None
+from agentic_core.runtime.lifecycle_trace_contract import _emit_agent_executes_agent
 
 
 def _get_imports():
@@ -174,6 +176,7 @@ def run_daemon_mode():
     Watches the repository for file modifications and automatically triggers
     surgical validation missions using blast radius analysis.
     """
+    _emit_agent_executes_agent(str(uuid.uuid4()), "Module", "Module.run_daemon_mode")
     manifest = _v15_build_mission_manifest("run_daemon_mode", target_layer="L5")
     if manifest is not None:
         _v15_gateway_audit(manifest, trace_id=manifest.correlation_id)

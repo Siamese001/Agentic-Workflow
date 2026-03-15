@@ -26,13 +26,13 @@ import threading
 from dataclasses import dataclass
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from system_learning.config.semantic_memory_config import DEFAULT_EMBEDDER_BUFFER_SIZE
 from system_learning.engines.embedding_corpus_extraction import (
     CorpusRecord,
     compute_content_hash,
 )
 from system_learning.types.semantic_memory_types import PromptOutcomeEmbeddingRecord
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -211,7 +211,7 @@ class PromptOutcomeEmbedder:
         Returns:
             Dict mapping safety_outcome -> count; all 5 keys always present.
         """
-        stats: dict[str, int] = {v: 0 for v in sorted(_VALID_SAFETY_OUTCOMES)}
+        stats: dict[str, int] = dict.fromkeys(sorted(_VALID_SAFETY_OUTCOMES), 0)
         with self._lock:
             for meta in self._meta.values():
                 outcome = meta.get("safety_outcome", "")

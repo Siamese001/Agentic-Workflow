@@ -9,6 +9,7 @@ This is the CST Pivot implementation to prevent data loss.
 
 from __future__ import annotations
 
+import uuid
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
@@ -17,15 +18,6 @@ import libcst as cst
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 if TYPE_CHECKING:
-    from agentic_core.L5_safety.types.cst_transformers_types import (
-        create_bare_except_fixer,
-        create_blank_line_normalizer,
-        create_docstring_inserter,
-        create_future_import_inserter,
-        create_import_remover,
-        create_trailing_whitespace_fixer,
-        create_type_hint_inserter,
-    )
     from agentic_core.L5_safety.types.surgical_context_types import (
         ASTCoordinate,
         SurgicalContext,
@@ -222,7 +214,6 @@ class SurgicalCSTHealerMixin:
         Returns:
             Dict with healing results
         """
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "CSTHealerMixin.heal_surgical_cst")
         try:

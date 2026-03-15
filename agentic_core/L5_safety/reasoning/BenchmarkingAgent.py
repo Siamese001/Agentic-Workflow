@@ -8,12 +8,14 @@ import json
 import logging
 import statistics
 import time
+import uuid
 from collections.abc import Callable
 from datetime import datetime
 from functools import wraps
 from pathlib import Path
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from typing import Any
+
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger = logging.getLogger(__name__)
 benchmark_history_size = 1000
@@ -70,7 +72,6 @@ class BenchmarkSuite:
     # guardian: allow-type-erasure
     def add_result(self, result: BenchmarkResult) -> Any:
         """Add a benchmark result."""
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "BenchmarkSuite.add_result")
         self.results.append(result)

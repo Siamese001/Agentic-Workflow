@@ -18,6 +18,7 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import uuid
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -29,7 +30,6 @@ from agentic_core.adg.identity.normalizer import (
     IdentityKind,
     IdentityNormalizer,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.adg.schema import (
     GATEWAY_ALLOWLIST,
     PROVIDER_SDK_SYMBOLS,
@@ -37,6 +37,7 @@ from agentic_core.adg.schema import (
     canonical_name,
     module_path_to_layer,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -194,7 +195,6 @@ class ADGArtifact:
         commit_sha is excluded so the same graph content always produces the
         same digest regardless of which commit triggered the scan.
         """
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "ADGBuilder.compute_digest")
         payload = {

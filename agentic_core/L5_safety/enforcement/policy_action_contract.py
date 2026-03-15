@@ -44,8 +44,10 @@ from agentic_core.L5_safety.escalation.escalation_orchestrator import (
 from agentic_core.runtime.execution_trace import get_active_execution_trace
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,
     _emit_records_execution_trace,
     _emit_signs_execution_trace,
+    _emit_verifies_policy,
     emit_determinism_digest,
     emit_replay_key,
 )
@@ -258,6 +260,7 @@ def _apply_guardrail_check(
     trace_id: str,
 ) -> PolicyOutcome:
     """Apply guardrail check — emits applies_guardrail ADG edge via GuardrailGate."""
+    _emit_applies_guardrail(str(uuid.uuid4()), "Module._apply_guardrail_check", "L5_POLICY")
     _GUARDRAIL_LOG.debug(
         "GuardrailGate action=%s class=%s actor=%s policy_hash=%s trace=%s",
         action_name,
@@ -374,6 +377,7 @@ def enforce_policy_before_action(
     Returns PolicyDecisionArtifact with decision_outcome=ALLOW when action may proceed.
     Raises PolicyEnforcementError otherwise.
     """
+    _emit_verifies_policy(str(uuid.uuid4()), "Module.enforce_policy_before_action", "L5_POLICY")
     meta = metadata or {}
     trace_id = _get_trace_id()
     _emit_records_execution_trace(trace_id or run_id, LayerSegment.L5_POLICY, f"enforce_policy:{action_name}")

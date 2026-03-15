@@ -20,6 +20,7 @@ Design constraints:
 from __future__ import annotations
 
 import logging
+import uuid
 from typing import TYPE_CHECKING, Any
 
 from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBridge
@@ -72,7 +73,6 @@ class ADGMemoryAdapter:
             ts: ISO timestamp string (e.g. "20260311T193725Z")
             diff_edges: Net edge delta vs previous snapshot (for observations)
         """
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"MemoryMCPAdapter.ingest_snapshot:{ts}")
         snapshot_name = f"ADGSnapshot_{ts}"

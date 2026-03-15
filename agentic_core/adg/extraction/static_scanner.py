@@ -3927,6 +3927,7 @@ def run_scanner_self_test() -> bool:
 import os
 from pathlib import Path
 from some.external.sdk import SomeProvider
+import uuid
 
 class BaseClass:
     pass

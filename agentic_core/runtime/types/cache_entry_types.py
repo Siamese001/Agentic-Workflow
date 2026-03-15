@@ -25,7 +25,6 @@ except ImportError:
         return [0.0] * 1536
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
-
 Logger: Any = logging.getLogger(__name__)
 SIMILARITY_THRESHOLD = 0.92
 EMBEDDING_MODEL = "text-embedding-3-small"

@@ -4,11 +4,17 @@ Provides injectable, testable key source with no ambient secrets.
 """
 
 import os
+import uuid
 from abc import ABC, abstractmethod
 from typing import Final
 
 from agentic_core.L2_execution.providers import get_clock
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+)
 
 
 class KeySource(ABC):
@@ -123,6 +129,7 @@ def inject_key_source(source: KeySource) -> None:
 
 def get_key_source() -> KeySource:
     """Get the injected key source - fails if not injected."""
+    _emit_applies_guardrail(str(uuid.uuid4()), "Module.get_key_source", "L2_EXECUTION")
     global _injected_key_source
     if _injected_key_source is None:
         raise RuntimeError("KeySource not injected - call inject_key_source() first")

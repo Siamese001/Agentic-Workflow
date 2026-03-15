@@ -36,6 +36,7 @@ import logging
 import threading
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from system_learning.config.semantic_memory_config import (
     DEFAULT_EMBEDDER_BUFFER_SIZE,
     GRAPH_NEIGHBORHOOD_BUFFER_SIZE,
@@ -47,7 +48,6 @@ from system_learning.engines.incident_bundle_embedder import IncidentBundleEmbed
 from system_learning.engines.mutation_diff_embedder import MutationDiffEmbedder
 from system_learning.engines.path_d_preference_embedder import PathDPreferenceEmbedder
 from system_learning.engines.policy_guardrail_embedder import PolicyGuardrailEmbedder
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 

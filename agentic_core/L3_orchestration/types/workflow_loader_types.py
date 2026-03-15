@@ -7,11 +7,12 @@ from dataclasses import dataclass
 "\nWorkflow Loader - Dynamic loading and parsing of workflow configurations.\n\nLoads the active_workflow.json and provides typed accessors for workflow sections,\nK-node configurations, prompts, and validation rules.\n"
 import json
 import logging
+import uuid
 from pathlib import Path
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from typing import Any
 
 from agentic_core.L0_routing.config import TESTS_DIR
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 LOGGER = logging.getLogger(__name__)
 Logger: Any = logging.getLogger(__name__)
@@ -190,7 +191,6 @@ class WorkflowLoader:
 
     def get_metadata(self) -> dict[str, Any]:
         """Get the metadata section."""
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "WorkflowLoader.get_metadata")
         if self._cached_metadata is None:

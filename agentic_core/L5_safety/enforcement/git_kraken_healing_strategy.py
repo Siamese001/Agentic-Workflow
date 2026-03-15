@@ -5,7 +5,11 @@ import logging
 from typing import Any
 
 from agentic_core.config.core.sovereign_config import get_sovereign_config
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+)
 
 config = get_sovereign_config()
 Logger: Any = logging.getLogger(__name__)

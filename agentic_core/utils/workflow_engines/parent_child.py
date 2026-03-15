@@ -14,6 +14,7 @@ from typing import Any
 
 from agentic_core.evaluation.retrieval.completeness import GroundedDocument, IParentChildExpander
 from agentic_core.evaluation.retrieval.interfaces import Document
+
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 

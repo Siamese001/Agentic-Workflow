@@ -7,8 +7,8 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.L2_execution.providers import get_clock
-from agentic_core.seams.contracts.safety_agents import SafetyAgentFactory
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.seams.contracts.safety_agents import SafetyAgentFactory
 
 Logger = logging.getLogger(__name__)
 

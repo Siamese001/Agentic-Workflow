@@ -18,18 +18,24 @@ from __future__ import annotations
 import ast
 import logging
 import threading
+import uuid
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.L0_routing.config.path_constants import TESTS_DIR
 from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
     ValidationResult,
     ValidatorStrategy,
 )
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_validated_by_safety_plane,
+)
 from agentic_core.utils.decorators_compat_util import standard_heal
-from agentic_core.L0_routing.config.path_constants import TESTS_DIR
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 Logger = logging.getLogger(__name__)
 
@@ -51,6 +57,7 @@ class ComplexityAnalyzerStrategy(ValidatorStrategy):
 
     async def execute(self, agent: Any, **kwargs: Any) -> ValidationResult:
         """Execute complexity analysis via unified strategy."""
+        _emit_validated_by_safety_plane(str(uuid.uuid4()), "ComplexityAnalyzerStrategy.execute", "L5_POLICY")
         import uuid as _uuid  # noqa: PLC0415
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "ComplexityAnalyzerStrategy.execute")

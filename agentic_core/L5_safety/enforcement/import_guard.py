@@ -16,9 +16,17 @@ Usage:
 from __future__ import annotations
 
 import logging
+import uuid
 from datetime import datetime, timezone
 from typing import Any
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_verifies_policy,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -87,6 +95,7 @@ class ImportGuard:
         Raises:
             DynamicImportDeniedError: If import is denied in enforce mode
         """
+        _emit_verifies_policy(str(uuid.uuid4()), "ImportGuard.check", "L5_POLICY")
         import uuid as _uuid  # noqa: PLC0415
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "ImportGuard.check")
@@ -161,5 +170,6 @@ def get_import_guard() -> ImportGuard:
 
 def set_import_guard_mode(mode: str) -> None:
     """Set global ImportGuard mode ("warn" or "enforce")."""
+    _emit_applies_guardrail(str(uuid.uuid4()), "Module.set_import_guard_mode", "L5_POLICY")
     global _global_guard
     _global_guard = ImportGuard(mode=mode)

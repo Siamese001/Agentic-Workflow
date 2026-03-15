@@ -15,6 +15,7 @@ Boot Phases:
 
 import logging
 import sys
+import uuid
 from pathlib import Path
 from typing import Any
 
@@ -23,7 +24,14 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 from agentic_core.discovery import AgentRegistry
 from agentic_core.L0_routing.enforcement.manifest_guardian_util import ManifestGuardian
 from agentic_core.L0_routing.scripts.compliance_gate_validator import check_compliance
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, emit_replay_key, emit_determinism_digest
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    emit_determinism_digest,
+    emit_replay_key,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -110,6 +118,7 @@ class BootSequence:
 
 def main():
     """Entry point for the boot sequence."""
+    _emit_applies_guardrail(str(uuid.uuid4()), "Module.main", "L0_ROUTING")
     logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
     boot = BootSequence(strict_mode=True)
     result = boot.execute_boot()

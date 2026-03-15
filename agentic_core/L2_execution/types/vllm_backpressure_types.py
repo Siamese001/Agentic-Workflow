@@ -16,7 +16,11 @@ from agentic_core.L2_execution.types.vllm_token_budget_types import (
     GEMINI_25_PRO_MODEL_ID,
     VLLMFailureType,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+)
 
 # ---------------------------------------------------------------------------
 # WAVE 3.1 — Queue policy constants (deterministic, not env-derived)

@@ -5,11 +5,16 @@ import logging
 "Brief description of functionality and purpose."
 "Brief description of functionality and purpose."
 import time
+import uuid
 from typing import Any
 
 from agentic_core.L2_execution.determinism.execution_proof_emitter import ExecutionProofEmitter
 from agentic_core.L2_execution.enforcement.write_governor_mixin import WriteGovernorMixin
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_writes_through,
+)
 
 _proof_emitter = ExecutionProofEmitter("L4.GenealogyRegistry")
 
@@ -26,6 +31,7 @@ class GenealogyRegistry(WriteGovernorMixin):
 
     def register_attempt(self, trace_id: str, Task: str, context_hash: str) -> Any:
         """Records a mission attempt in the sovereign ledger."""
+        _emit_writes_through(str(uuid.uuid4()), "GenealogyRegistry.register_attempt", "L4_STATE")
         import uuid as _uuid  # noqa: PLC0415
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "GenealogyRegistry.register_attempt")

@@ -7,8 +7,8 @@ No wall-clock reads; all timestamps are explicit.
 from __future__ import annotations
 
 from collections import defaultdict, deque
-from typing import Dict, Tuple
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from system_learning.types.healing_outcome_learning_types import (
     HealingOutcomeAggregate,
     HealingOutcomeAggregateKey,
@@ -19,7 +19,6 @@ from system_learning.types.healing_outcome_types import (
     HealingOutcomeProposal,
     HealingOutcomeStats,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class HealingOutcomeAggregator:
@@ -43,7 +42,7 @@ class HealingOutcomeAggregator:
         self._window_size = window_size
         self._buffer: deque[HealingOutcomeEvent] = deque(maxlen=window_size)
         # Internal state for new aggregation methods
-        self._aggregates: Dict[HealingOutcomeAggregateKey, Tuple[int, int]] = defaultdict(lambda: (0, 0))
+        self._aggregates: dict[HealingOutcomeAggregateKey, tuple[int, int]] = defaultdict(lambda: (0, 0))
 
     # -----------------------------------------------------------------
     # Ingest

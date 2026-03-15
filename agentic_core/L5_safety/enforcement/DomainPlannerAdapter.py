@@ -21,8 +21,13 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.L5_safety.enforcement.circuit_breaker_gate import get_breaker
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_verifies_boundary,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -83,6 +88,8 @@ class DomainPlannerAdapter:
         Returns:
             True if input is valid, False to reject
         """
+        _emit_verifies_boundary(str(uuid.uuid4()), "DomainPlannerAdapter._validate_input", "L5_POLICY")
+        _emit_applies_guardrail(str(uuid.uuid4()), "DomainPlannerAdapter._validate_input", "L5_POLICY")
         plan = kwargs.get("plan") or (args[0] if len(args) > 0 else None)
         job_context = kwargs.get("job_context") or (args[1] if len(args) > 1 else None)
         workflow_id = kwargs.get("workflow_id") or (args[2] if len(args) > 2 else None)

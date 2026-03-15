@@ -10,9 +10,10 @@ from __future__ import annotations
 
 from typing import Any, Callable
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
 from .base import GenerationMetric
 from .groundedness import _token_f1, _tokenize
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class AnswerCorrectness(GenerationMetric):

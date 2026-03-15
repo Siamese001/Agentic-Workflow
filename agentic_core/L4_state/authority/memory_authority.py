@@ -36,10 +36,14 @@ from enum import Enum
 from typing import Any
 
 from agentic_core.L2_execution.providers import get_clock
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.L4_state.authority.run_state_authority import (
     RunStateAuthority,
     get_run_state_authority,
+)
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_snapshots_state,
 )
 
 logger = logging.getLogger(__name__)
@@ -428,6 +432,7 @@ class MemoryAuthority:
 
         ADG edge: snapshots_state.
         """
+        _emit_snapshots_state(str(uuid.uuid4()), "MemoryAuthority.snapshot", "L4_STATE")
         effective_run_id = run_id or self.run_id
         snap = self._rsa.snapshot(label, run_id=effective_run_id)
         _SNAPSHOT_LOG.debug(

@@ -28,6 +28,10 @@ from agentic_core.L0_routing.types.guardian_contract_types import (
     is_v15_enforced,
     is_v15_hard_fail,
 )
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,
+    _emit_hard_fails_untranscripted,
+)
 
 Logger = logging.getLogger(__name__)
 
@@ -39,6 +43,7 @@ _guard_context = threading.local()
 
 def _get_active_guards() -> set[str]:
     """Return the set of currently active guard entry point IDs."""
+    _emit_applies_guardrail(str(uuid.uuid4()), "Module._get_active_guards", "L0_ROUTING")
     if not hasattr(_guard_context, "active"):
         _guard_context.active = set()
     return _guard_context.active
@@ -64,6 +69,7 @@ def runtime_guard(entry_point_id: str) -> Callable[[F], F]:
         - Pass-through with zero overhead
     """
 
+    _emit_hard_fails_untranscripted(str(uuid.uuid4()), "Module.runtime_guard")
     def decorator(fn: F) -> F:
         @functools.wraps(fn)
         def sync_wrapper(*args: Any, **kwargs: Any) -> Any:

@@ -5,8 +5,14 @@ import os
 
 "Brief description of functionality and purpose."
 "Brief description of functionality and purpose."
+import uuid
 from typing import Any
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_gated_by_confidence,
+    _emit_records_execution_trace,
+)
 
 Logger: Any = logging.getLogger("ConsensusEngine")
 if not logging.root.handlers:
@@ -150,6 +156,7 @@ class ConsensusEngine:
             A dictionary containing the overall status ("PASS" or "FAIL"),
             the consensus score, and a list of individual juror votes.
         """
+        _emit_gated_by_confidence(str(uuid.uuid4()), "ConsensusEngine.judge_artifact", "0.5")
         import uuid as _uuid  # noqa: PLC0415
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L1_REASONING, "ConsensusEngine.judge_artifact")

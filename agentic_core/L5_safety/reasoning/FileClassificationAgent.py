@@ -108,6 +108,7 @@ except ImportError:
 # Safety Gates (WAVE 1.1–3.2): collision prevention, blast radius, mass action, wave execution
 # Logger for healing operations
 import logging
+import uuid
 
 from agentic_core.L5_safety.utils.fca_safety_gates_util import (
     NestedLCDPolicy,
@@ -118,7 +119,12 @@ from agentic_core.L5_safety.utils.fca_safety_gates_util import (
     detect_agent_lineage,
     run_all_safety_gates,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_validated_by_safety_plane,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -332,6 +338,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
         Returns:
             New target path if file should be moved, None if file is correctly placed.
         """
+        _emit_validated_by_safety_plane(str(uuid.uuid4()), "FileClassificationHealerAgent.enforce_kernel_structure", "L5_POLICY")
         import uuid as _uuid  # noqa: PLC0415
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "FileClassificationHealerAgent.enforce_kernel_structure")

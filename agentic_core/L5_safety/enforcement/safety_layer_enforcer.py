@@ -10,7 +10,12 @@ if TYPE_CHECKING:
     from agentic_core.governor import create_cost_governor
     from agentic_core.overseer import create_overseer
     from agentic_core.PiiVault import create_pii_vault
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+)
+
 LOGGER = logging.getLogger(__name__)
 Logger: Any = logging.getLogger(__name__)
 

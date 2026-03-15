@@ -4,11 +4,17 @@ from __future__ import annotations
 import ast
 import logging
 import re
+import uuid
 from datetime import datetime
 from typing import Any
 
 from agentic_core.L0_routing.P1_core.filesystem_mcp_client_1 import get_filesystem_client
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_agent_executes_agent,
+    _emit_records_execution_trace,
+)
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -292,4 +298,5 @@ async def create_kg_healing_strategy() -> KnowledgeGraphHealingStrategy:
     Returns:
         Initialized KnowledgeGraphHealingStrategy instance
     """
+    _emit_agent_executes_agent(str(uuid.uuid4()), "Module", "Module.create_kg_healing_strategy")
     return KnowledgeGraphHealingStrategy()

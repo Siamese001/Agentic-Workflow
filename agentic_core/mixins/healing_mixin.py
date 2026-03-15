@@ -1,4 +1,5 @@
 """
+import uuid
 HealingStrategyMixin - Unified Healing Access for Agents
 
 [PHASE 5 MIGRATION] Provides single interface to healing operations.

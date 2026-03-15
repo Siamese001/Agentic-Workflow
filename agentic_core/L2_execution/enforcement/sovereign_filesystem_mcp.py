@@ -3,13 +3,20 @@ from __future__ import annotations
 "L4 State: Sovereign Filesystem MCP Client — Atomic Eternal Operations\nUltra-hardened integration of Filesystem MCP with Roots, L5 shielding, and Redis cache.\nZero tolerance for path escape or unrecorded writes.\n[SSOT] Root prefixes derived from SOVEREIGN_REGISTRY in structure_blueprint.py\n"
 import json
 import logging
+import uuid
 from datetime import datetime
 
 from agentic_core.cache.redis_cache_client import get_hot_cache
 from agentic_core.L0_routing.config.path_constants import PROJECT_ROOT_WHITELIST
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_writes_through,
+)
 from agentic_core.seams.contracts.authority import get_mcp_authority
 from agentic_core.seams.contracts.mcp import MCPConnectionManager
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 
 def _invoke_authorize_and_execute(execution_context, target_callable, capability_token, payload, **kw):
@@ -51,6 +58,7 @@ class SovereignFilesystemMcp:
 
     def _validate_path(self, path: str) -> str:
         """L5 path sovereignty check. Blocks traversals and absolute escapes."""
+        _emit_applies_guardrail(str(uuid.uuid4()), "SovereignFilesystemMcp._validate_path", "L2_EXECUTION")
         path_str = str(path).replace("\\", "/")
         if any(p in path_str for p in forbidden_path_patterns):
             raise PermissionError(f"Sovereignty Breach: Forbidden path pattern in '{path}'")
@@ -96,6 +104,7 @@ class SovereignFilesystemMcp:
 
     async def atomic_fission_write(self, files: dict[str, str], monolith_path: str) -> dict:
         """Executes a physical fission event via the MCP server."""
+        _emit_writes_through(str(uuid.uuid4()), "SovereignFilesystemMcp.atomic_fission_write", "L2_EXECUTION")
         for p in files:
             self._validate_path(p)
         self._validate_path(monolith_path)

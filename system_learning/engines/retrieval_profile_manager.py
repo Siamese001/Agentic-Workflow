@@ -6,9 +6,9 @@ Provides deterministic loading and activation.
 
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from system_learning.engines.l4_state_writer import L4StateWriter
 from system_learning.engines.retrieval_profile import RetrievalProfile
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class RetrievalProfileManager:

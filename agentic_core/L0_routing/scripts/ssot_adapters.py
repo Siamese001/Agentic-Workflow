@@ -20,7 +20,12 @@ from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from agentic_core.L2_execution.protocol import SubphaseResult
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, emit_replay_key, emit_determinism_digest
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    emit_determinism_digest,
+    emit_replay_key,
+)
 
 
 def _to_result(raw: Any, *, fixed: list[dict] | None = None) -> SubphaseResult:

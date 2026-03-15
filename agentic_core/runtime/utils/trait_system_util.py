@@ -25,6 +25,7 @@ import logging
 from abc import ABC, abstractmethod
 from collections.abc import Callable
 from typing import Any, TypeVar
+
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger = logging.getLogger(__name__)

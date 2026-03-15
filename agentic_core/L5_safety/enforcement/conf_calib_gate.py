@@ -7,7 +7,12 @@ No ML, no wall-clock usage, pure deterministic rules.
 
 from dataclasses import dataclass
 from enum import Enum
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+)
 
 
 class RiskLevel(Enum):

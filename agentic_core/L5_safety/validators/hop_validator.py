@@ -18,9 +18,16 @@ from __future__ import annotations
 
 import json
 import re
+import uuid
 from dataclasses import dataclass
 from typing import Any
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_validated_by_safety_plane,
+)
 
 
 @dataclass
@@ -53,6 +60,7 @@ class HOP1ProfileDeterministic:
 
         Moved to Deterministic: Pure rule-based classification
         """
+        _emit_validated_by_safety_plane(str(uuid.uuid4()), "HOP1ProfileDeterministic.classify_profile_heuristic", "L5_POLICY")
         import uuid as _uuid  # noqa: PLC0415
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "HOP1ProfileDeterministic.classify_profile_heuristic")

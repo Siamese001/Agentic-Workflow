@@ -32,7 +32,11 @@ from agentic_core.L5_safety.types.surgical_context_types import (
     SurgicalContext,
     ViolationConstraint,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+)
 
 Logger = logging.getLogger(__name__)
 

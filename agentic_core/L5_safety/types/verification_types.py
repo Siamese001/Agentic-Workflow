@@ -9,7 +9,12 @@ circular dependencies.
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from typing import Any
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+)
 
 
 @dataclass

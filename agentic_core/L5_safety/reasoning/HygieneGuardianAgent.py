@@ -3,6 +3,7 @@ from __future__ import annotations
 "\nHygieneGuardianAgent - Repository Hygiene Enforcement\n\nConsolidates hygiene checks:\n- Empty file detection and cleanup\n- Orphaned __init__.py files\n- Stale backup files (.bak, .orig, .backup)\n- Temporary files cleanup (.tmp, .temp, ~)\n- Debug print statement detection\n- Commented-out code detection\n\nTerritory: agentic_core/L5_safety/validators/\n"
 import os
 import re
+import uuid
 from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
@@ -15,7 +16,11 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
 from agentic_core.L5_safety.enforcement.archival_gatekeeper_gate import ArchivalGatekeeper
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+)
 from agentic_core.utils.decorators_compat_util import standard_heal
 
 MAX_FILENAME_WORDS = 5
@@ -104,7 +109,6 @@ class HygieneGuardianAgent(SovereignBaseAgent):
         Returns:
             Dict with keys: status, details, artifacts, errors
         """
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "HygieneGuardianAgent.heal")
         try:
@@ -431,6 +435,7 @@ class HygieneGuardianAgent(SovereignBaseAgent):
         Enhanced with CamelCase splitting and mixed delimiter handling.
         Example Violation: logic_synthesis_pick_best_refinement_refine_scripts_ranking.py
         """
+        _emit_applies_guardrail(str(uuid.uuid4()), "HygieneGuardianAgent._check_filename_length", "L5_POLICY")
         base_name = path.stem
         ext = path.suffix
         clean_name = base_name.replace("-", "_")

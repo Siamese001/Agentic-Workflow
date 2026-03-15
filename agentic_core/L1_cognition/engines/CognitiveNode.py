@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 "\nCognitive Node - Central L1 Cognition Pipeline\n\nIntegrates all L1 components:\n- Perception → Reasoning → Planning → Action\n- Semantic memory for pattern recall\n- Meta-learning for adaptive strategy selection\n- Governance for policy enforcement\n"
+import uuid
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -22,7 +23,6 @@ def _invoke_reason_and_record(ctx, prompt, retrieved, fn, **kw):
 
 
 def _make_reasoning_context(run_id: str, policy_hash: str, prompt: str, model_id: str, clock_tick: float):
-    import uuid  # noqa: PLC0415
 
     from agentic_core.L1_cognition.context.reasoning_context_builder import (
         build_reasoning_context,  # noqa: PLC0415

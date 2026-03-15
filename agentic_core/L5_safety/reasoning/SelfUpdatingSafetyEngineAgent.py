@@ -8,6 +8,7 @@ from agentic_core.L2_execution.tools import write_gateway as _wg
 import json
 import logging
 import os
+import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
@@ -15,8 +16,8 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.mixins.safety_mixin import SafetyAnalysisMixin
-from agentic_core.utils.timeout_decorator_util import timeout
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.utils.timeout_decorator_util import timeout
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -252,7 +253,6 @@ class SelfUpdatingSafetyEngineAgent(SovereignBaseAgent):
         Returns:
             Threat detection result
         """
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "SelfUpdatingSafetyEngineAgent.detect_threats")
         matched_rules: Any = []

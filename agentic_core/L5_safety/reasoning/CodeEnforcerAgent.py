@@ -8,6 +8,7 @@ import ast
 import logging
 import re
 import threading
+import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
@@ -137,7 +138,6 @@ class CodeEnforcerAgent(SovereignBaseAgent):
 
     def validate_file(self, file_path: Path) -> list[CodeViolation]:
         """Validate a file for all enforcement types."""
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, f"CodeEnforcerAgent.validate_file:{file_path.name}")
         violations = []

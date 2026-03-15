@@ -16,9 +16,15 @@ from __future__ import annotations
 
 import logging
 import time
+import uuid
 from dataclasses import dataclass, field
 from enum import Enum
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_snapshots_state,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -83,6 +89,7 @@ class StateLifecyclePolicy:
 
         Emits ``enforce_lifecycle`` ADG edge. Raises on invalid transitions.
         """
+        _emit_snapshots_state(str(uuid.uuid4()), "StateLifecyclePolicy.transition", "L4_STATE")
         import uuid as _uuid  # noqa: PLC0415
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "StateLifecyclePolicy.transition")

@@ -48,6 +48,7 @@ from agentic_core.L0_routing.optimization.optimization_orchestrator import (
     optimize_simple_routing,
 )
 from agentic_core.L2_execution.providers import get_clock
+from agentic_core.runtime.lifecycle_trace_contract import _emit_verifies_policy
 
 _LOG = logging.getLogger(__name__)
 
@@ -108,6 +109,7 @@ class RoutingContext:
 
     def validate(self) -> None:
         """Raise RoutingContractValidationError on missing required fields."""
+        _emit_verifies_policy(str(uuid.uuid4()), "RoutingContext.validate", "L0_ROUTING")
         missing = []
         if not self.run_id:
             missing.append("run_id")

@@ -2,8 +2,15 @@ from __future__ import annotations
 
 "\nPerception Node - Sub-atomic Input Processing\n\nHandles input parsing, context preparation, intent classification,\nand memory retrieval. Isolated from reasoning and action logic.\n"
 import asyncio
+import uuid
 from typing import Any
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_gated_by_confidence,
+    _emit_records_execution_trace,
+    _emit_transcripts_response,
+)
 
 
 class PerceptionNode:
@@ -33,6 +40,7 @@ class PerceptionNode:
         Returns:
             Perceived state with query, intent, memory
         """
+        _emit_transcripts_response(str(uuid.uuid4()), "PerceptionNode.process", "model")
         import uuid as _uuid  # noqa: PLC0415
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L1_REASONING, "PerceptionNode.process")
@@ -135,6 +143,7 @@ class PerceptionNode:
         Returns:
             Confidence score (0.0-1.0)
         """
+        _emit_gated_by_confidence(str(uuid.uuid4()), "PerceptionNode._estimate_confidence", "0.5")
         confidence = 0.5
         confidence += min(0.3, len(query) / 100.0)
         if intent in ["reasoning", "action", "memory"]:

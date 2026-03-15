@@ -8,6 +8,7 @@ import ast
 import json
 import logging
 import subprocess
+import uuid
 from datetime import date
 from pathlib import Path
 from typing import Any
@@ -28,8 +29,8 @@ from agentic_core.L5_safety.config.structure_blueprint import (
     AGENTIC_CORE_DIR,
     TESTS_DIR,
 )
-from agentic_core.utils.timeout_decorator_util import timeout
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.utils.timeout_decorator_util import timeout
 
 log = logging.getLogger(__name__)
 
@@ -80,7 +81,6 @@ class AutonomyGuardianAgent(SovereignBaseAgent):
         Returns:
             Dict with keys: status, details, artifacts, errors
         """
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "AutonomyGuardianAgent.heal")
         try:

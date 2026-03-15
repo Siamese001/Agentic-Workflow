@@ -4,15 +4,16 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 '\n⚛️ Predictive Cost Auditor - The Efficiency Guard\n\nMonitors Atomic Blackboard to track Economic ROI of healing efforts.\nIdentifies "Healing Sinks" where token spending exceeds value threshold.\n\nMission: Provide Go/No-Go signals for pipeline deployment\nStrategy: Thermal mapping of repository to identify technical debt hotspots\n\nTracks: Token usage per file, healing attempts, success rates\nFlags: Files consuming excessive tokens without reaching PASS state\nSuggests: Where manual Atomic Fission would be more cost-effective\n'
 import logging
+import uuid
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any
 
 from agentic_core.L2_execution.reasoning.base import SubAtomicAgent
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -102,7 +103,6 @@ class PredictiveCostAuditorAgent(SovereignBaseAgent, SubAtomicAgent):
 
         Analyzes healing history and generates cost report.
         """
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "PredictiveCostAuditorAgent.execute")
         Logger.info("💰 Predictive Cost Auditor: Analyzing healing economics...")

@@ -3,8 +3,8 @@
 import json
 from dataclasses import dataclass
 
-from system_learning.types.healing_outcome_types import HealingOutcomeProposal, HealingOutcomeStats
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from system_learning.types.healing_outcome_types import HealingOutcomeProposal, HealingOutcomeStats
 
 
 @dataclass(frozen=True, slots=True)

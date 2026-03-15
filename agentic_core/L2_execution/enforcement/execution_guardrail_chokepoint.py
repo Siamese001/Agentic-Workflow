@@ -78,6 +78,7 @@ from agentic_core.L5_safety.audit.safety_audit_emitter import (
 )
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_verifies_policy,
     emit_determinism_digest,
 )
 from agentic_core.runtime.lifecycle_trace_contract import (
@@ -135,6 +136,7 @@ def _emit_applies_guardrail(ctx: ExecutionContext, outcome: str) -> None:
 
 def _emit_validated_by_safety_plane(ctx: ExecutionContext) -> None:
     """ADG edge: validated_by_safety_plane"""
+    _emit_verifies_policy(str(uuid.uuid4()), "Module._emit_validated_by_safety_plane", "L2_EXECUTION")
     logger.debug(
         "EXEC validated_by_safety_plane req=%s policy=%s",
         ctx.execution_request_id,

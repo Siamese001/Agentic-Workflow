@@ -11,6 +11,7 @@ except ImportError as _err:
         "chromadb is required for this module. Install with: pip install -e '.[infra]'"
     ) from _err
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
 Logger: Any = logging.getLogger(__name__)
 
 

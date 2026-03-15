@@ -14,6 +14,7 @@ import hashlib
 import json
 import logging
 import time
+import uuid
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
@@ -161,7 +162,6 @@ class CheckpointManager(SovereignBaseAgent):
         Returns:
             Checkpoint ID
         """
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"CheckpointManager.create_checkpoint:{label}")
         checkpoint_id = self._generate_checkpoint_id(label)

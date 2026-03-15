@@ -1,10 +1,17 @@
 from __future__ import annotations
 
 "\nTool Arguments schema\n====================\nDefines the Pydantic models for all tool-calling arguments within the\nSovereign system. These models enforce strict path validation and\nexecution guardrails.\n"
+import uuid
 from pathlib import Path
 
 from pydantic import BaseModel, Field, validator
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_validated_by_safety_plane,
+)
 
 
 class ReadFileArgs(BaseModel):
@@ -14,6 +21,7 @@ class ReadFileArgs(BaseModel):
 
     @validator("path")
     def validate_path(cls, v):
+        _emit_validated_by_safety_plane(str(uuid.uuid4()), "ReadFileArgs.validate_path", "L5_POLICY")
         import uuid as _uuid  # noqa: PLC0415
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "ReadFileArgs.validate_path")

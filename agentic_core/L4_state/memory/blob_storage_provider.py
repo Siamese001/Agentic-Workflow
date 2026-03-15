@@ -11,11 +11,12 @@ def _get_write_gateway():
 "\nStorage adapters for different backend types.\n\nProvides atomic storage operations with hot-swappable backends.\nSupports local disk (for development) and S3 (for production).\n"
 import json
 import logging
+import uuid
 from pathlib import Path
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from typing import Any, Protocol
 
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -89,6 +90,7 @@ class LocalDiskAdapter:
         Returns:
             MD5 checksum of the data
         """
+        _emit_writes_through(str(uuid.uuid4()), "LocalDiskAdapter.write_blob", "L4_STATE")
         target_path: Any = self._get_path(key)
         temp_path: Any = target_path.with_suffix(".tmp")
         _get_write_gateway().ensure_dir(target_path.parent)
@@ -166,7 +168,6 @@ class LocalDiskAdapter:
         Returns:
             List of blob keys
         """
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"FilesystemBlobProvider.list_blobs:{prefix}")
         blobs: Any = []
@@ -315,6 +316,7 @@ def create_storage_adapter(adapter_type: str = "local", **kwargs) -> IBlobStorag
 
 
 from agentic_core.L0_routing.config import TESTS_DIR
+from agentic_core.runtime.lifecycle_trace_contract import _emit_writes_through
 
 
 class _TombstonedRedisDistributedLock:

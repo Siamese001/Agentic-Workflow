@@ -10,6 +10,7 @@ import logging
 import time
 from dataclasses import asdict, dataclass
 from pathlib import Path
+
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger = logging.getLogger(__name__)

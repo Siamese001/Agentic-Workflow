@@ -45,6 +45,15 @@ _REPLAY_LOG = logging.getLogger("adg.emits_replay_key")
 _DIGEST_LOG = logging.getLogger("adg.emits_determinism_digest")
 _TRANSCRIPT_LOG = logging.getLogger("adg.transcripts_response")
 _HARDFAIL_LOG = logging.getLogger("adg.hard_fails_untranscripted")
+_GUARDRAIL_LOG = logging.getLogger("adg.applies_guardrail")
+_SAFETY_PLANE_LOG = logging.getLogger("adg.validated_by_safety_plane")
+_BOUNDARY_LOG = logging.getLogger("adg.verifies_boundary")
+_AGENT_DISPATCH_LOG = logging.getLogger("adg.agent_executes_agent")
+_WRITES_THROUGH_LOG = logging.getLogger("adg.writes_through")
+_SNAPSHOT_LOG = logging.getLogger("adg.snapshots_state")
+_OBSERVES_RT_LOG = logging.getLogger("adg.observes_runtime_state")
+_VERIFIES_POLICY_LOG = logging.getLogger("adg.verifies_policy")
+_CONFIDENCE_LOG = logging.getLogger("adg.gated_by_confidence")
 
 
 # ── §3 — Per-layer trace segment types ───────────────────────────────────────
@@ -200,7 +209,9 @@ def _emit_records_execution_trace(root_trace_id: str, layer: str, operation: str
     if not os.environ.get("ADG_SCAN_ACTIVE"):
         try:
             # Aggregate dashboard metrics for current telemetry window
-            from agentic_core.L6_observability.dashboard.dashboard_orchestrator import aggregate_simple_dashboard  # noqa: PLC0415
+            from agentic_core.L6_observability.dashboard.dashboard_orchestrator import (
+                aggregate_simple_dashboard,  # noqa: PLC0415
+            )
             snapshot = aggregate_simple_dashboard(window_duration_seconds=300)  # 5-minute window
             _LOG.debug(
                 "DASHBOARD_AGGREGATION_TRIGGERED root_trace_id=%s layer=%s snapshot_id=%s",
@@ -260,6 +271,96 @@ def _emit_hard_fails_untranscripted(root_trace_id: str, reason: str) -> None:
         "hard_fails_untranscripted root_trace_id=%s reason=%s",
         root_trace_id,
         reason,
+    )
+
+
+def _emit_applies_guardrail(root_trace_id: str, guardrail_name: str, layer: str) -> None:
+    """Emit applies_guardrail ADG edge."""
+    _GUARDRAIL_LOG.debug(
+        "applies_guardrail root_trace_id=%s guardrail=%s layer=%s",
+        root_trace_id,
+        guardrail_name,
+        layer,
+    )
+
+
+def _emit_validated_by_safety_plane(root_trace_id: str, validator: str, layer: str) -> None:
+    """Emit validated_by_safety_plane ADG edge."""
+    _SAFETY_PLANE_LOG.debug(
+        "validated_by_safety_plane root_trace_id=%s validator=%s layer=%s",
+        root_trace_id,
+        validator,
+        layer,
+    )
+
+
+def _emit_verifies_boundary(root_trace_id: str, boundary: str, layer: str) -> None:
+    """Emit verifies_boundary ADG edge."""
+    _BOUNDARY_LOG.debug(
+        "verifies_boundary root_trace_id=%s boundary=%s layer=%s",
+        root_trace_id,
+        boundary,
+        layer,
+    )
+
+
+def _emit_agent_executes_agent(root_trace_id: str, caller: str, callee: str) -> None:
+    """Emit agent_executes_agent ADG edge."""
+    _AGENT_DISPATCH_LOG.debug(
+        "agent_executes_agent root_trace_id=%s caller=%s callee=%s",
+        root_trace_id,
+        caller,
+        callee,
+    )
+
+
+def _emit_writes_through(root_trace_id: str, target: str, governor: str) -> None:
+    """Emit writes_through ADG edge (governed write)."""
+    _WRITES_THROUGH_LOG.debug(
+        "writes_through root_trace_id=%s target=%s governor=%s",
+        root_trace_id,
+        target,
+        governor,
+    )
+
+
+def _emit_snapshots_state(root_trace_id: str, state_key: str, layer: str) -> None:
+    """Emit snapshots_state ADG edge."""
+    _SNAPSHOT_LOG.debug(
+        "snapshots_state root_trace_id=%s state_key=%s layer=%s",
+        root_trace_id,
+        state_key,
+        layer,
+    )
+
+
+def _emit_observes_runtime_state(root_trace_id: str, state_key: str, layer: str) -> None:
+    """Emit observes_runtime_state ADG edge."""
+    _OBSERVES_RT_LOG.debug(
+        "observes_runtime_state root_trace_id=%s state_key=%s layer=%s",
+        root_trace_id,
+        state_key,
+        layer,
+    )
+
+
+def _emit_verifies_policy(root_trace_id: str, policy: str, layer: str) -> None:
+    """Emit verifies_policy ADG edge."""
+    _VERIFIES_POLICY_LOG.debug(
+        "verifies_policy root_trace_id=%s policy=%s layer=%s",
+        root_trace_id,
+        policy,
+        layer,
+    )
+
+
+def _emit_gated_by_confidence(root_trace_id: str, scorer: str, threshold: str) -> None:
+    """Emit gated_by_confidence ADG edge."""
+    _CONFIDENCE_LOG.debug(
+        "gated_by_confidence root_trace_id=%s scorer=%s threshold=%s",
+        root_trace_id,
+        scorer,
+        threshold,
     )
 
 

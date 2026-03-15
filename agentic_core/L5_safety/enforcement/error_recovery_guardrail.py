@@ -11,12 +11,20 @@ DEFAULT_ERROR_LOG_LIMIT = 100
 MILLISECONDS_MULTIPLIER = 1000
 
 '\nError Recovery Guardrail - Consolidated Error Handling & Self-Healing\n\nMerges:\n- SecureErrorHandler\n- TerritoryHealer\n- SelfUpdatingSafetyEngine\n\nComposable Rules:\n- error_classification: Categorize error types\n- recovery_strategy: Select appropriate recovery\n- self_healing: Auto-recovery mechanisms\n'
-import time
 import traceback
+import uuid
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_hard_fails_untranscripted,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_verifies_boundary,
+)
+
 
 class ErrorCategory(Enum):
     """Error categories for classification."""
@@ -94,6 +102,8 @@ class ErrorRecoveryGuardrail:
         Returns:
             RecoveryResult with outcome
         """
+        _emit_hard_fails_untranscripted(str(uuid.uuid4()), "ErrorRecoveryGuardrail.handle_error")
+        _emit_verifies_boundary(str(uuid.uuid4()), "ErrorRecoveryGuardrail.handle_error", "L5_POLICY")
         import uuid as _uuid  # noqa: PLC0415
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "ErrorRecoveryGuardrail.handle_error")
@@ -120,7 +130,7 @@ class ErrorRecoveryGuardrail:
         error_type = type(error).__name__
         category = ErrorCategory.UNKNOWN
         for cat, patterns in self.error_patterns.items():
-            if any((p in error_str for p in patterns)):
+            if any(p in error_str for p in patterns):
                 category = cat
                 break
         if category in (ErrorCategory.PERMISSION, ErrorCategory.LOGIC):

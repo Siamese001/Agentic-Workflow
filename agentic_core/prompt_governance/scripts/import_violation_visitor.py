@@ -8,6 +8,7 @@ to prevent circular dependencies and architectural violations.
 import ast
 import sys
 from pathlib import Path
+
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 FORBIDDEN_IMPORTS = {

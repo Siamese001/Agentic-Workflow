@@ -11,11 +11,16 @@ from typing import Any
 from agentic_core.utils.dependency_resolver import DynamicLoader
 from agentic_core.utils.feature_flags import FeatureFlagManager
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    emit_determinism_digest,
+    emit_replay_key,
+)
 from agentic_core.utils.detection_protocol_util import DetectionSignalProtocol
 from agentic_core.utils.meta_learning_types_util import MetaLearningProtocol
 from agentic_core.utils.review_protocol_util import HumanReviewProtocol
 from agentic_core.utils.verification_types_util import VerificationGateProtocol
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, emit_replay_key, emit_determinism_digest
 
 logger = logging.getLogger(__name__)
 

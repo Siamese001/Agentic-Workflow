@@ -19,12 +19,20 @@ import contextlib
 import functools
 import hashlib
 import logging
+import uuid
 from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Callable
 
 from agentic_core.runtime.execution_trace import get_active_execution_trace
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_hard_fails_untranscripted,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_verifies_policy,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -262,6 +270,9 @@ _global_pep: PolicyEnforcementPoint | None = None
 
 def get_policy_enforcement_point(policy_hash: str = "") -> PolicyEnforcementPoint:
     """Return the process-level PolicyEnforcementPoint."""
+    _emit_hard_fails_untranscripted(str(uuid.uuid4()), "Module.get_policy_enforcement_point")
+    _emit_verifies_policy(str(uuid.uuid4()), "Module.get_policy_enforcement_point", "L5_POLICY")
+    _emit_applies_guardrail(str(uuid.uuid4()), "Module.get_policy_enforcement_point", "L5_POLICY")
     global _global_pep
     if _global_pep is None:
         _global_pep = PolicyEnforcementPoint(policy_hash=policy_hash)

@@ -8,8 +8,14 @@ from __future__ import annotations
 
 import json
 import logging
+import uuid
 from pathlib import Path
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_writes_through,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -38,6 +44,7 @@ class FileBackedTelemetryStore:
         tuple[tuple[int, str, bytes], ...]
             Tuple of ``(timestamp_utc, event_type, payload_bytes)`` triples.
         """
+        _emit_writes_through(str(uuid.uuid4()), "FileBackedTelemetryStore.read_events", "L4_STATE")
         import uuid as _uuid  # noqa: PLC0415
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "FileBackedTelemetryStore.read_events")

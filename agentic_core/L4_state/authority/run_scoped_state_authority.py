@@ -18,6 +18,7 @@ import hashlib
 import logging
 import threading
 import time
+import uuid
 from dataclasses import dataclass
 from typing import Any
 
@@ -32,6 +33,7 @@ from agentic_core.L4_state.versioning.commit_versioned_state_transition import (
     commit_versioned_state_transition,
 )
 from agentic_core.runtime.execution_trace import get_active_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import _emit_snapshots_state, _emit_writes_through
 
 logger = logging.getLogger(__name__)
 _WRITES_THROUGH_LOG = logging.getLogger("adg.writes_through")
@@ -177,6 +179,7 @@ class RunScopedStateAuthority:
         Raises :class:`FrozenStateError` if the authority is currently frozen.
         Emits writes_through and state_transition_committed ADG edges.
         """
+        _emit_writes_through(str(uuid.uuid4()), "RunScopedStateAuthority.write", "L4_STATE")
         with self._lock:
             if self._frozen:
                 raise FrozenStateError(
@@ -305,6 +308,7 @@ class RunScopedStateAuthority:
 
         Emits ``snapshots_state`` ADG edge.
         """
+        _emit_snapshots_state(str(uuid.uuid4()), "RunScopedStateAuthority.snapshot", "L4_STATE")
         with self._lock:
             snap = StateSnapshot.capture(
                 self._run_id,

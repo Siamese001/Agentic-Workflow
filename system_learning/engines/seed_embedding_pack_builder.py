@@ -13,11 +13,11 @@ import tempfile
 from pathlib import Path
 from typing import Any, Protocol
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from system_learning.types.seed_embedding_pack_types import (
     SeedEmbeddingPackConfig,
     SeedEmbeddingPackManifest,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class Embedder(Protocol):

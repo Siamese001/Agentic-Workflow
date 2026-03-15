@@ -88,7 +88,12 @@ def assert_l1_tool_allowed(capability: ToolCapability, tool_name: str = "") -> N
 
 from contextlib import contextmanager
 from typing import Generator
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+)
 
 
 @contextmanager

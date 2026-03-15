@@ -2,12 +2,14 @@ from __future__ import annotations
 
 "\nHARDENED Recovery Coordinator - Fallback for failed workflows\n\nRestored: 2026-01-13 | Version: 2.0.0\nOriginal: archives/unmapped_drift/20260107/agentic_core/L3_orchestration/coordinators/recovery_coordinator.py\n\nProvides graceful degradation and error recovery.\n"
 import logging
+import uuid
 from typing import Any
 
 from agentic_core.runtime.trace_context import get_trace_context
 
 from agentic_core.L3_orchestration.contracts.orchestration_handoff_contract import emit_agent_executes_agent
 from agentic_core.L3_orchestration.engines.coordinator_capability_orchestrator import WorkflowCoordinator
+from agentic_core.runtime.lifecycle_trace_contract import _emit_agent_executes_agent
 
 log = logging.getLogger(__name__)
 
@@ -24,6 +26,7 @@ class RecoveryCoordinatorOrchestrator(WorkflowCoordinator):
 
     async def coordinate(self, task: dict[str, Any]) -> dict[str, Any]:
         """Execute recovery workflow."""
+        _emit_agent_executes_agent(str(uuid.uuid4()), "RecoveryCoordinatorOrchestrator", "RecoveryCoordinatorOrchestrator.coordinate")
         with get_trace_context().run_frame(
             layer="L3",
             module="recovery_coordinator_orchestrator",

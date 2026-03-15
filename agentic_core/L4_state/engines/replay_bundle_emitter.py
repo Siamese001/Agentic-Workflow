@@ -9,8 +9,11 @@ Non-mutating to knowledge index (no upsert/setex calls).
 
 from __future__ import annotations
 
+import uuid
+
 from agentic_core.L4_state.enforcement.replay_bundle_store import ReplayBundleStore
 from agentic_core.L4_state.types.replay_bundle_types import ReplayBundle, build_replay_bundle
+from agentic_core.runtime.lifecycle_trace_contract import _emit_snapshots_state
 
 
 def emit_replay_bundle(
@@ -34,6 +37,7 @@ def emit_replay_bundle(
     Returns the persisted ReplayBundle (with stable replay_hash).
     Non-mutating to knowledge index.
     """
+    _emit_snapshots_state(str(uuid.uuid4()), "Module.emit_replay_bundle", "L4_STATE")
     bundle = build_replay_bundle(
         mission_id=mission_id,
         execution_start_tick=execution_start_tick,

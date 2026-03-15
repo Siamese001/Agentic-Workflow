@@ -16,8 +16,12 @@ import uuid
 from dataclasses import dataclass, field
 from enum import Enum
 
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.L2_execution.providers import get_clock
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_snapshots_state,
+)
 
 logger = logging.getLogger(__name__)
 _CAPACITY_LOG = logging.getLogger("adg.capacity_snapshot_emitted")
@@ -295,6 +299,7 @@ class CapacityRegistry:
 
     def persist_snapshot(self, snapshot: CapacitySnapshot) -> None:
         """Persist a capacity snapshot."""
+        _emit_snapshots_state(str(uuid.uuid4()), "CapacityRegistry.persist_snapshot", "L0_ROUTING")
         with self._lock:
             self._snapshots[snapshot.capacity_snapshot_id] = snapshot
 

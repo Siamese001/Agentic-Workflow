@@ -7,6 +7,7 @@ L6 has ZERO authority: no decisions, no direct L4 mutation, no L2/L5 coupling.
 
 from dataclasses import dataclass
 from typing import Callable
+
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 

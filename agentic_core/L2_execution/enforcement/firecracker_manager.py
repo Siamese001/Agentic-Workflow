@@ -3,6 +3,7 @@ from __future__ import annotations
 "Implementation for FirecrackerManager."
 import logging
 import subprocess
+import uuid
 from typing import Any
 
 from agentic_core.L2_execution.providers import get_clock
@@ -21,8 +22,13 @@ except ImportError:
     VMStatus = None
 from agentic_core.utils.security_util import safe_execute
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+)
 from agentic_core.utils.decorators_compat_util import standard_heal
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -290,4 +296,5 @@ def create_firecracker_manager(Provider: VMProvider = VMProvider.FIRECRACKER) ->
     Returns:
         FirecrackerManager instance
     """
+    _emit_applies_guardrail(str(uuid.uuid4()), "Module.create_firecracker_manager", "L2_EXECUTION")
     return FirecrackerManager(Provider=Provider)

@@ -18,12 +18,17 @@ import functools
 import hashlib
 import logging
 import time
+import uuid
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Callable
 
 if TYPE_CHECKING:
     from agentic_core.runtime.execution_trace import ExecutionTrace
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -180,7 +185,6 @@ class ExecutionProofEmitter:
         _seg_hash = _hashlib.sha256(f"{_trace_id}:ExecutionProofEmitter.emit".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
-        import uuid  # noqa: PLC0415
 
         trace_id = self._trace_id()
         _run_id = run_id or trace_id

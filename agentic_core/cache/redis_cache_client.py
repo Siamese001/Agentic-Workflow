@@ -28,6 +28,7 @@ import json
 import logging
 import os
 import urllib.parse
+import uuid
 from collections import OrderedDict
 from dataclasses import dataclass
 from enum import IntEnum
@@ -364,7 +365,6 @@ class DeterministicRedisCache:
         ValueError
             If holder_id, nonce are empty, semantic_clock_tick < 0, or TTL invalid.
         """
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"RedisCacheClient.acquire_lease:{key}")
         self._validate_key(key)

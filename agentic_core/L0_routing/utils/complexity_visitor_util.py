@@ -26,6 +26,7 @@ import logging
 import os
 import platform
 import sys
+import uuid
 from collections import defaultdict
 from pathlib import Path
 from typing import Any
@@ -318,7 +319,6 @@ def get_previous_agent_count() -> int | None:
 def generate_manifest(agents: list[dict], scan_duration: float, parse_errors: list[str]) -> dict:
     """Generate manifest with metadata for staleness detection and validation."""
     import hashlib  # noqa: PLC0415
-    import uuid  # noqa: PLC0415
     from datetime import datetime  # noqa: PLC0415
 
     _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"generate_manifest:agents={len(agents)}")

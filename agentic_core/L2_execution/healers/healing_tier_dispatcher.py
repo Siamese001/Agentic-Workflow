@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import hashlib
 import logging
+import uuid
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Protocol
 
@@ -179,7 +180,6 @@ class DefaultHealingProviderInvoker:
         *,
         agent_name: str = "",
     ) -> InvocationRecord:
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"LocalHealingTierDispatcher.invoke_local:{agent_name}")
         return InvocationRecord(

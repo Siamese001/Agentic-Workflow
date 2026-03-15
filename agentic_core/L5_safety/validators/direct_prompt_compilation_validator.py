@@ -20,13 +20,18 @@ from __future__ import annotations
 import ast
 from pathlib import Path
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+)
+
 from .base_detector_validator import (
     AntiPatternCategory,
     AntiPatternDetector,
     AntiPatternViolation,
     EnforcementLevel,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 _PROMPT_SLOT_PREFIXES = ("s0_", "i0_", "d0_", "c0_", "u0_")
 _ASSEMBLY_MODULE_STEMS = {"assembly_stage", "airlock_assembler"}

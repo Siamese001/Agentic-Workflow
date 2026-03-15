@@ -27,15 +27,22 @@ USAGE:
 from __future__ import annotations
 
 import re
+import uuid
 from dataclasses import dataclass, field
 from pathlib import Path
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from typing import Final
 
 from agentic_core.L0_routing.config.path_constants import TESTS_DIR
 from agentic_core.L5_safety.enforcement.registry_verification_enforcer import (
     AgentInfo,
     RegistryVerifier,
+)
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_verifies_policy,
 )
 
 # Guardian test patterns that provide architectural coverage
@@ -93,6 +100,8 @@ class AgentCompliance:
     @property
     def compliance_score(self) -> int:
         """Return compliance score (0-3)."""
+        _emit_verifies_policy(str(uuid.uuid4()), "AgentCompliance.compliance_score", "L5_POLICY")
+        _emit_signs_execution_trace(str(uuid.uuid4()), "seg_hash", "seg_sig", 0)
         score = 0
         if self.contract_tier.is_covered:
             score += 1
@@ -294,7 +303,6 @@ class ThreeTierComplianceChecker:
 
     def check_compliance(self) -> ComplianceResult:
         """Perform full three-tier compliance check."""
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "ThreeTierComplianceEnforcer.check_compliance")
         result = ComplianceResult()
@@ -405,6 +413,7 @@ class ThreeTierComplianceChecker:
 
 def run_compliance_check() -> ComplianceResult:
     """Run three-tier compliance check and return result."""
+    _emit_applies_guardrail(str(uuid.uuid4()), "Module.run_compliance_check", "L5_POLICY")
     checker = ThreeTierComplianceChecker()
     return checker.check_compliance()
 

@@ -2,9 +2,16 @@ from __future__ import annotations
 
 "\nCore Executor - Atomic Module\nExtracted from ActionNode.py via Atomic Fission Protocol\nHandles plan execution and step orchestration\n"
 import logging
+import uuid
 from pathlib import Path
 from typing import Any
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_transcripts_response,
+)
 
 Logger: Any = logging.getLogger("ActionNode.CoreExecutor")
 
@@ -49,6 +56,7 @@ class ActionNodeCore:
             Dict[str, Any]: A dictionary containing the overall status and results
                             of each executed step.
         """
+        _emit_transcripts_response(str(uuid.uuid4()), "ActionNodeCore.execute_plan", "model")
         import uuid as _uuid  # noqa: PLC0415
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "ActionNodeCore.execute_plan")

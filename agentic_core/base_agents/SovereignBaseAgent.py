@@ -26,6 +26,7 @@ MRO HARDENING:
 """
 
 import logging
+import uuid
 from pathlib import Path
 from typing import Any
 
@@ -202,7 +203,6 @@ class SovereignBaseAgent(
         Get comprehensive list of sovereign capabilities.
         HARDENED: Returns capability map with security metadata.
         """
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "SovereignBaseAgent.get_sovereign_capabilities")
         if not self._initialized:
@@ -476,7 +476,6 @@ class SovereignBaseAgent(
         Returns:
             Dict containing healing result with canonical HealResult schema.
         """
-        import os
         import time
 
         # Cycle detection: if this agent class is already in the call path, skip

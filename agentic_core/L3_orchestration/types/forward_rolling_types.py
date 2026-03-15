@@ -16,12 +16,14 @@ from __future__ import annotations
 
 import hashlib
 import logging
+import uuid
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from typing import Any
+
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger = logging.getLogger(__name__)
 
@@ -141,7 +143,6 @@ class ForwardRollingConfig:
         Returns:
             ExecutionMode to use for this request
         """
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"ForwardRollingManager.get_execution_mode:{agent_id}")
         cache_key = f"{agent_id}:{mission_id}" if mission_id else agent_id

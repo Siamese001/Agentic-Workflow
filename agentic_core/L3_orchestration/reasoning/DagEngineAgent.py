@@ -7,6 +7,7 @@ from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_re
 
 "DAG Engine for Task Dependencies and Workflow Management.\n\nPhase 2 - Pillar 4: Workflow (DAGs)\nLightweight workflow engine for modeling Task dependencies and conditional branching.\n"
 import logging
+import uuid
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
 from enum import Enum
@@ -245,7 +246,6 @@ class DagEngineAgent(SovereignBaseAgent):
         Returns:
             DAGExecutionResult with execution summary
         """
-        import uuid  # noqa: PLC0415
 
         _trace_id = str(uuid.uuid4())
         _gw = get_routing_gateway(_trace_id)

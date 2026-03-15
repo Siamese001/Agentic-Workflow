@@ -29,6 +29,7 @@ from agentic_core.L0_routing.types.governance_types import (
     ProposedPolicyChange,
     RouteDecisionRef,
 )
+from agentic_core.runtime.lifecycle_trace_contract import _emit_verifies_policy
 
 _log = logging.getLogger(__name__)
 
@@ -77,6 +78,8 @@ def build_evidence_pack(
 
 def validate_evidence_pack(pack: Any) -> EvidencePack:
     """§3.4 — Validate that an object is a well-formed EvidencePack."""
+    import uuid  # noqa: PLC0415
+    _emit_verifies_policy(str(uuid.uuid4()), "Module.validate_evidence_pack", "L0_ROUTING")
     if not isinstance(pack, EvidencePack):
         raise EvidencePackError(
             f"FAIL (P3): Expected EvidencePack, got {type(pack).__name__}",

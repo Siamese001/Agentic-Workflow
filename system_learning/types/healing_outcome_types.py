@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import decimal
 from dataclasses import dataclass, field
+
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 _ROUND_CTX = decimal.Context(rounding=decimal.ROUND_HALF_UP)

@@ -7,6 +7,7 @@ This engine provides the 'Skeptical' verification logic for L3 Orchestration.
 
 import hashlib
 from pathlib import Path
+
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 

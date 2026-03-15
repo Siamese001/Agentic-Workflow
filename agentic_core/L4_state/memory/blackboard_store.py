@@ -6,9 +6,15 @@ Provides atomic KV operations, lease semantics, and tick monotonicity.
 
 from __future__ import annotations
 
+import uuid
 from dataclasses import dataclass
 from typing import Any, Literal
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_snapshots_state,
+)
 
 
 @dataclass(frozen=True)
@@ -69,6 +75,7 @@ class BlackboardStore:
             agent_id: Agent performing the write
             commit_tick: Current commit tick (monotonic)
         """
+        _emit_snapshots_state(str(uuid.uuid4()), "BlackboardStore.set", "L4_STATE")
         _store[key] = value
 
     def lease(self, key: str, agent_id: str, ttl_ticks: int, commit_tick: int) -> LeaseResult:

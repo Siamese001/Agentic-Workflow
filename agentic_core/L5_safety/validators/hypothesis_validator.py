@@ -1,8 +1,14 @@
 from __future__ import annotations
 
 "\nMetacognition & Self-Analysis Schemas\n====================================\nDefines schemas for agentic self-reflection, hypothesis tracking,\nand uncertainty quantification.\n"
+
 from pydantic import BaseModel, ConfigDict, Field, field_validator
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+)
 
 
 class Hypothesis(BaseModel):

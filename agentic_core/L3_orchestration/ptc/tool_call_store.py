@@ -11,6 +11,8 @@ import json
 from pathlib import Path
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
 from .tool_contract import (
     ToolCall,
     ToolCallResult,
@@ -19,7 +21,6 @@ from .tool_contract import (
     tool_call_to_json,
     tool_spec_to_json,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class ToolCallStore:

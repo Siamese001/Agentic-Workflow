@@ -4,13 +4,19 @@ NamingAgent - Agent for handling naming conventions and validation.
 Re-exported from L5_safety for backwards compatibility.
 """
 
+import uuid
 from fnmatch import fnmatch
 from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L5_safety.config.structure_blueprint import PROJECT_ROOT_METADATA
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_validated_by_safety_plane,
+)
 
 TREE_SITTER_AVAILABLE = False
 
@@ -92,6 +98,7 @@ class NamingAgent(SovereignBaseAgent):
         Validate a name against naming conventions.
         [SSOT] Checks PROJECT_ROOT_METADATA for whitelist exemptions.
         """
+        _emit_validated_by_safety_plane(str(uuid.uuid4()), "NamingAgent.validate_name", "L5_POLICY")
         for meta in PROJECT_ROOT_METADATA.values():
             for pattern in meta.get("file_patterns", []):
                 if fnmatch(name, pattern):

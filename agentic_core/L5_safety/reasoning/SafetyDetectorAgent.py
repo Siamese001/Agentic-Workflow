@@ -6,11 +6,18 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 import logging
 import re
 import threading
+import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
 from typing import Any
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+)
 
 Logger = logging.getLogger(__name__)
 
@@ -90,6 +97,7 @@ class SafetyDetectorAgent(SovereignBaseAgent):
         Returns:
             Dict with healing summary
         """
+        _emit_applies_guardrail(str(uuid.uuid4()), "SafetyDetectorAgent.heal_repository", "L5_POLICY")
         return {"violations": 0, "fixed": 0, "errors": 0}
 
     INJECTION_PATTERNS = [

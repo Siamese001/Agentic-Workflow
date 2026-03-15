@@ -18,9 +18,14 @@ from datetime import datetime, timedelta, timezone
 from typing import Any
 
 from agentic_core.L0_routing.providers.clock_provider import ClockProvider as clock_provider
-from agentic_core.L2_execution.enforcement.key_source import get_current_secret
 from agentic_core.L5_safety.enforcement.credential_guard import get_credential_guard as credential_guard
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+
+from agentic_core.L2_execution.enforcement.key_source import get_current_secret
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+)
 
 
 def _canonical_bytes(data: dict[str, Any]) -> bytes:

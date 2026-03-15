@@ -7,13 +7,14 @@ FIX: Implements Functional Naming for imports.
 from __future__ import annotations
 
 import logging
+import uuid
 from collections.abc import Awaitable, Callable
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L0_routing.config.path_constants import THRESHOLD
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.L2_execution.providers import get_clock
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 try:
     import agentic_core.L3_orchestration.reasoning.agent_gym_types as OrchestrationTypes
@@ -102,7 +103,6 @@ class AgentGym(SovereignBaseAgent):
         Returns:
             BenchmarkResult
         """
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"AgentGymEngine.run_benchmark:{scenario_id}")
         self._scenarios.get(scenario_id)

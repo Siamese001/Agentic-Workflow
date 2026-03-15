@@ -29,6 +29,7 @@ import os
 import re
 import tempfile
 import threading
+import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
@@ -36,6 +37,9 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.L0_routing.config import (
+    ARCHIVES_DIR,
+)
 from agentic_core.L2_execution.tools import write_gateway as _wg
 from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
     HealingResult,
@@ -51,9 +55,6 @@ from agentic_core.L5_safety.types.surgical_context_types import (
 from agentic_core.mixins.circuit_breaker_mixin import CircuitBreakerMixin
 from agentic_core.mixins.cst_healer_mixin import SurgicalCSTHealerMixin
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
-from agentic_core.L0_routing.config import (
-    ARCHIVES_DIR,
-)
 
 Logger = logging.getLogger(__name__)
 
@@ -75,7 +76,6 @@ class CodeHealingStrategy(HealingStrategy):
 
     async def execute(self, agent: UnifiedAgent, **kwargs: Any) -> HealingResult:
         """Execute code healing logic via unified strategy."""
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "CodeHealingStrategy.execute")
         agent.log_info("Executing code healing...")

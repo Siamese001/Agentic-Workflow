@@ -5,9 +5,15 @@ from agentic_core.utils.timeout_decorator_util import timeout
 
 "Constitutional Reviewer Agent - Performs final constitutional review of the output."
 import json
+import uuid
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+)
 from agentic_core.utils.decorators_compat_util import standard_heal
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 
 class ConstitutionalReviewResult:
@@ -22,6 +28,7 @@ class ConstitutionalReviewResult:
 def track_metrics(name):
     """Stub decorator for track_metrics - TODO: Replace with sovereign equivalent"""
 
+    _emit_applies_guardrail(str(uuid.uuid4()), "Module.track_metrics", "L5_POLICY")
     def decorator(func):
         return func
 

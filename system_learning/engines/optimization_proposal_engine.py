@@ -24,10 +24,10 @@ import logging
 from dataclasses import dataclass
 from typing import Sequence
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from system_learning.enforcement.determinism import deterministic_json
 from system_learning.types.optimization_types import OptimizationProposal
 from system_learning.types.trace_feature_types import RCACluster
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 

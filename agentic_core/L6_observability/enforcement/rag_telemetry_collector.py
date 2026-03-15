@@ -3,6 +3,7 @@ from __future__ import annotations
 "\nRAG Telemetry Collector - L6 observability\nTracks RAG performance metrics for dashboard visualization\n"
 from collections import defaultdict
 from dataclasses import dataclass, field
+
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 

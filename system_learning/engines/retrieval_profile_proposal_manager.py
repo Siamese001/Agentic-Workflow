@@ -1,17 +1,18 @@
 """
+import uuid
 W4-E Retrieval Profile Proposal Manager
 
 Manages deterministic proposal creation and approval tracking.
 """
 
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from system_learning.engines.policy_recommendation_engine import PolicyRecommendation
 from system_learning.engines.retrieval_profile import RetrievalProfile
 from system_learning.engines.retrieval_profile_proposal import (
     RetrievalProfileProposal,
     create_proposal_digest,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class RetrievalProfileProposalManager:

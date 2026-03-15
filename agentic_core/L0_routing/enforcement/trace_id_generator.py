@@ -7,9 +7,16 @@ from __future__ import annotations
 
 import hashlib
 import re
+import uuid
 
 from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, emit_replay_key, emit_determinism_digest
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    emit_determinism_digest,
+    emit_replay_key,
+)
 
 
 class TraceIdGenerator:
@@ -125,4 +132,5 @@ def validate_trace_id(trace_id: str) -> bool:
     Returns:
         True if valid, False otherwise
     """
+    _emit_applies_guardrail(str(uuid.uuid4()), "Module.validate_trace_id", "L0_ROUTING")
     return _default_generator.validate_trace_id(trace_id)

@@ -21,6 +21,7 @@ if TYPE_CHECKING:
     from agentic_core.L2_execution.healers.healing_tier_dispatcher import InvocationRecord
     from agentic_core.L2_execution.healers.healing_tier_types import HealingDecision, HealingInput
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
 logger = logging.getLogger(__name__)
 
 

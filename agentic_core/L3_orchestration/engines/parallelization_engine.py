@@ -22,6 +22,7 @@ import logging
 from collections.abc import Awaitable, Callable
 from enum import Enum
 from typing import Any
+
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger = logging.getLogger(__name__)

@@ -12,7 +12,11 @@ from agentic_core.L0_routing.config.path_constants import (
     APPS_SHARED_DIR,
     TESTS_DIR,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+)
 
 Logger: Any = logging.getLogger(__name__)
 _GUARDRAIL_LOG = logging.getLogger("adg.applies_guardrail")

@@ -4,6 +4,7 @@ from __future__ import annotations
 import json
 import logging
 import re
+import uuid
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -49,7 +50,6 @@ class StrategicRecommendationAgent(SovereignBaseAgent):
         Returns:
             Structured prompt for LLM to generate recommendations
         """
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "StrategicRecommendationAgent.plan")
 

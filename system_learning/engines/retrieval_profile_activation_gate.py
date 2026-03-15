@@ -9,11 +9,11 @@ import json
 from dataclasses import dataclass
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from system_learning.engines.deterministic_replay_engine import DeterministicReplayEngine
 from system_learning.engines.l4_state_writer import L4StateWriter
 from system_learning.engines.retrieval_profile import RetrievalProfile
 from system_learning.engines.retrieval_profile_invariant_checker import RetrievalProfileInvariantChecker
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass(frozen=True, slots=True)

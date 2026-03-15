@@ -9,6 +9,7 @@ def _get_unified_cst_healer():
 
 "\nASTValidatorAgent - Consolidated AST validator replacing 5 micro-agents.\n\nConsolidates:\n- BareExceptValidatorAgent (Key 5)\n- EmptyExceptValidatorAgent (Key 4)\n- EvalExecValidatorAgent (Key 6)\n- DangerousBuiltinsValidatorAgent (Key 42)\n- DebuggerValidatorAgent (Key 3)\n\nThis consolidation eliminates ~200 lines of duplicated boilerplate while\nmaintaining 100% validation rigor and identical violation detection.\n\nTerritory: agentic_core/L1_cognition/thought_engine/\n"
 import ast
+import uuid
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -28,7 +29,6 @@ class ASTValidatorBase(ast.NodeVisitor):
 
     def report(self, message: str, node: ast.AST) -> None:
         """Report a violation found during AST traversal."""
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, f"ASTValidatorBase.report:{self._current_file}")
         self.violations.append(

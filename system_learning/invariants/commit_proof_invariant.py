@@ -17,6 +17,7 @@ from __future__ import annotations
 import hashlib
 import re
 from dataclasses import dataclass
+
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 _HEX_RE = re.compile("^[0-9a-f]+$")

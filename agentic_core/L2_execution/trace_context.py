@@ -48,7 +48,12 @@ import time
 from contextlib import contextmanager
 from dataclasses import dataclass, field
 from typing import Any, Generator
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+)
 
 logger = logging.getLogger(__name__)
 _TRACE_LOGGER = logging.getLogger("adg.records_execution_trace")

@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import hashlib
 import logging
+import uuid
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -31,7 +32,13 @@ from agentic_core.L0_routing.enforcement.routing_contract import (
     create_and_commit_routing_contract,
 )
 from agentic_core.L2_execution.providers import get_clock
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, emit_replay_key, emit_determinism_digest
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_verifies_policy,
+    emit_determinism_digest,
+    emit_replay_key,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -88,6 +95,7 @@ class RoutePolicyGovernor:
 
         Emits ``verifies_boundary`` ADG edge.
         """
+        _emit_verifies_policy(str(uuid.uuid4()), "RoutePolicyGovernor._verify_boundary", "L0_ROUTING")
         allowed = {
             "standard_validation",
             "low_risk_bypass",

@@ -12,7 +12,11 @@ from typing import Any, Optional
 
 from agentic_core.L0_routing.config import GLOBAL_EXCLUDED_DIRS
 from agentic_core.L0_routing.utils.path_util import is_path_allowed
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+)
 
 Logger = logging.getLogger(__name__)
 

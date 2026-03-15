@@ -12,7 +12,12 @@ import hashlib
 import json
 from dataclasses import dataclass
 from typing import Any, Callable
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+)
 
 
 class DeterminismProofFailure(RuntimeError):

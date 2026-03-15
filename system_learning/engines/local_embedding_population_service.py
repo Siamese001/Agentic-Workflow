@@ -12,9 +12,9 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Protocol
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from system_learning.engines.local_faiss_store import LocalFAISSStore
 from system_learning.types.index_build_metadata_types import IndexBuildMetadata
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class EmbeddingProvider(Protocol):

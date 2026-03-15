@@ -16,8 +16,8 @@ from agentic_core.L1_cognition.identity.spiffe_manager_types import (
 )
 
 from agentic_core.L2_execution.providers import get_clock
-from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.utils.decorators_compat_util import standard_heal
 
 LOGGER = logging.getLogger(__name__)
 Logger: Any = logging.getLogger(__name__)

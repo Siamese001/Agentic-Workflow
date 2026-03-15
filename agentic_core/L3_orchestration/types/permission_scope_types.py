@@ -11,6 +11,7 @@ try:
 except ImportError:
     AgentIdentity = type("AgentIdentity", (), {})
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
 Logger: Any = logging.getLogger(__name__)
 
 

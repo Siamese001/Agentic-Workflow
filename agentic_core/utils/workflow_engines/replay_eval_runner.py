@@ -13,13 +13,14 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
 from ..schemas.evaluation_dataset_schema import EvaluationDataset
 from ..schemas.evaluation_result_schema import (
     DeltaReport,
     EvaluationReport,
 )
 from .offline_eval_runner import GenerationFn, OfflineEvaluationRunner, RetrievalFn
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class SystemConfig:

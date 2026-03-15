@@ -20,10 +20,17 @@ from __future__ import annotations
 
 import importlib
 import logging
+import uuid
 from types import ModuleType
 from typing import Any
-from agentic_core.L2_execution.enforcement.guardrail_gate import get_guardrail_gate, Callable
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+
+from agentic_core.L2_execution.enforcement.guardrail_gate import Callable, get_guardrail_gate
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+)
 
 Logger = logging.getLogger(__name__)
 
@@ -153,6 +160,7 @@ _GUARDIAN_REGISTRY: StaticDispatchRegistry | None = None
 
 def get_guardian_registry() -> StaticDispatchRegistry:
     """Return the singleton guardian registry, creating and pre-populating it on first call."""
+    _emit_applies_guardrail(str(uuid.uuid4()), "Module.get_guardian_registry", "L2_EXECUTION")
     global _GUARDIAN_REGISTRY
     if _GUARDIAN_REGISTRY is None:
         _GUARDIAN_REGISTRY = StaticDispatchRegistry()

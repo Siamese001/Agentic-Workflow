@@ -8,6 +8,7 @@ and trend tracking across autonomous healing cycles.
 import json
 from datetime import datetime
 from typing import Any
+
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 

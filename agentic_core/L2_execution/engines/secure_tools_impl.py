@@ -3,11 +3,17 @@ from __future__ import annotations
 "\nSecure Tools - Atomic Module\nExtracted from ActionNode.py via Atomic Fission Protocol\nImplements sandboxed file operations and command execution\n"
 import logging
 import subprocess
+import uuid
 from pathlib import Path
 from typing import Any
 
 from agentic_core.L0_routing.config.path_constants import DEFAULT_TIMEOUT
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_verifies_boundary,
+)
 
 
 def _invoke_authorize_and_execute(execution_context, target_callable, capability_token, payload, **kw):
@@ -86,6 +92,7 @@ class SecureToolsImpl:
         Returns:
             str: A success message.
         """
+        _emit_verifies_boundary(str(uuid.uuid4()), "SecureToolsImpl.tool_write_file", "L2_EXECUTION")
         import uuid as _uuid  # noqa: PLC0415
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "SecureToolsImpl.tool_write_file")

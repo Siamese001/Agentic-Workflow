@@ -23,6 +23,7 @@ SemanticClock surface, closing the synchronization proof gap.
 from __future__ import annotations
 
 import logging
+import uuid
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -31,7 +32,11 @@ from agentic_core.L0_routing.types.determinism_types import (
     SemanticClockSnapshot,
     validate_semantic_clock,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_snapshots_state,
+)
 
 Logger = logging.getLogger(__name__)
 
@@ -68,6 +73,7 @@ def assert_clock_synchronized(
     Raises:
         ClockSyncViolation: if ``abs(a.tick - b.tick) > tolerance``.
     """
+    _emit_snapshots_state(str(uuid.uuid4()), "Module.assert_clock_synchronized", "L4_STATE")
     validate_semantic_clock(snapshot_a, context=f"{context}.a")
     validate_semantic_clock(snapshot_b, context=f"{context}.b")
     drift = abs(snapshot_a.tick - snapshot_b.tick)

@@ -31,16 +31,16 @@ Phase 3 Enhancement (Jan 31, 2026):
 from __future__ import annotations
 
 import logging
+import uuid
 from enum import Enum
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import get_routing_gateway
-from agentic_core.L0_routing.enforcement.runtime_guard import runtime_guard
 from agentic_core.runtime.trace_context import get_trace_context
 from agentic_core.utils.ssot_discovery_validator import get_agent_paths
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import get_routing_gateway
 from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
     APPS_LIC_DIR,
@@ -49,6 +49,7 @@ from agentic_core.L0_routing.config import (
     get_validated_project_root,
 )
 from agentic_core.L0_routing.config.path_constants import DEFAULT_TIMEOUT
+from agentic_core.L0_routing.enforcement.runtime_guard import runtime_guard
 from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
 from agentic_core.L2_execution.determinism.execution_proof_emitter import ExecutionProofEmitter
 from agentic_core.L3_orchestration.contracts.orchestration_handoff_contract import emit_agent_executes_agent
@@ -66,7 +67,11 @@ from agentic_core.L5_safety.enforcement.policy_action_contract import (
     PolicyEnforcementError,
     enforce_policy_before_action,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_agent_executes_agent,
+    _emit_records_execution_trace,
+)
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
 
@@ -95,7 +100,7 @@ class L3OrchestrationStrategy(OrchestrationStrategy):
     @runtime_guard("A.execute.orchestrator_engine")
     async def execute(self, agent: UnifiedAgent, **kwargs: Any) -> OrchestrationResult:
         """Execute orchestration logic via unified strategy."""
-        import uuid  # noqa: PLC0415
+        _emit_agent_executes_agent(str(uuid.uuid4()), "L3OrchestrationStrategy", "L3OrchestrationStrategy.execute")
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"orchestrator_engine.execute:{self.mode}")
         with get_trace_context().run_frame(

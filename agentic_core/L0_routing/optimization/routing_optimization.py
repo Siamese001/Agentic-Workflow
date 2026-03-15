@@ -12,7 +12,13 @@ from __future__ import annotations
 import logging
 import threading
 from dataclasses import dataclass
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, emit_replay_key, emit_determinism_digest
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    emit_determinism_digest,
+    emit_replay_key,
+)
 
 logger = logging.getLogger(__name__)
 _OPTIMIZATION_LOG = logging.getLogger("adg.routing_optimization_persisted")

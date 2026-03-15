@@ -16,6 +16,7 @@ from __future__ import annotations
 import json
 import logging
 import re
+import uuid
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from enum import Enum
@@ -697,7 +698,6 @@ class UnifiedAgent(SovereignBaseAgent):
 
     def _get_trace_id(self) -> str:
         """Return the active trace_id or generate a fresh UUID."""
-        import uuid  # noqa: PLC0415
 
         from agentic_core.runtime.execution_trace import get_active_execution_trace  # noqa: PLC0415
 

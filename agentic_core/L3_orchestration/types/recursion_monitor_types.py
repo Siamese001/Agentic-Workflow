@@ -15,6 +15,7 @@ Phase: 3 - Production Readiness
 from __future__ import annotations
 
 import logging
+import uuid
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
@@ -145,7 +146,6 @@ class RecursionMonitor:
             memory_bytes: Memory used by spawn
             cache_hit: Whether validation cache was hit
         """
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "RecursionMonitor.record_spawn")
         self._response_times.append(duration_ms)

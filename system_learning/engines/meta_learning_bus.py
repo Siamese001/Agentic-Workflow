@@ -42,6 +42,7 @@ DEFAULT_COMMIT_REWARD_THRESHOLD = 0.60
 
 import hashlib
 import logging
+import uuid
 from dataclasses import dataclass
 from typing import Any, Sequence
 
@@ -305,7 +306,6 @@ class MetaLearningBus:
         -------
         BusPipelineResult
         """
-        import uuid  # noqa: PLC0415
 
         _trace_id = str(uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "MetaLearningBus.process_traces")

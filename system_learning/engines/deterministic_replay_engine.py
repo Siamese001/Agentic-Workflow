@@ -11,8 +11,8 @@ from dataclasses import dataclass
 
 import numpy as np
 
-from system_learning.engines.retrieval_profile import RetrievalProfile
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from system_learning.engines.retrieval_profile import RetrievalProfile
 
 
 @dataclass(frozen=True, slots=True)

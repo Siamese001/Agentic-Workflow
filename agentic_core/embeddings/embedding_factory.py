@@ -15,8 +15,9 @@ import logging
 import os
 from typing import Any, Literal, Protocol, runtime_checkable
 
-from agentic_core.embeddings.embedding_input_guard import GuardedText
 from agentic_core.replay.replay_envelope import create_deterministic_cache_key
+
+from agentic_core.embeddings.embedding_input_guard import GuardedText
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)

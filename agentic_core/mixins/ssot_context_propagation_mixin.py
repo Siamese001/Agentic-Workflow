@@ -16,6 +16,7 @@ import contextvars
 import logging
 from contextlib import contextmanager
 from typing import Any, Generator
+
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 _logger = logging.getLogger("SSOTContextPropagation")

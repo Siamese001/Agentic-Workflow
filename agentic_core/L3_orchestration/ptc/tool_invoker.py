@@ -10,13 +10,14 @@ from __future__ import annotations
 import subprocess
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
 from .tool_contract import (
     ToolCall,
     ToolCallResult,
     canonical_json,
     hash_result_data,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class ToolInvoker:

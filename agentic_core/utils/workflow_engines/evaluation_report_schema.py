@@ -10,8 +10,9 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-from .evaluation_result_schema import DeltaReport, EvaluationReport
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
+from .evaluation_result_schema import DeltaReport, EvaluationReport
 
 
 @dataclass(frozen=True)

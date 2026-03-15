@@ -7,13 +7,17 @@ from agentic_core.runtime.trace_context import get_trace_context
 
 from agentic_core.L2_execution.determinism.execution_proof_emitter import ExecutionProofEmitter
 from agentic_core.L3_orchestration.contracts.orchestration_handoff_contract import emit_agent_executes_agent
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.L3_orchestration.engines.coordinator_capability_orchestrator import (
     CoordinatorCapability,
     WorkflowContext,
     WorkflowResult,
 )
 from agentic_core.L5_safety.enforcement.circuit_breaker_gate import get_breaker
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_observes_runtime_state,
+    _emit_records_execution_trace,
+)
 
 _proof_emitter = ExecutionProofEmitter("L3.rl_coordinator_orchestrator")
 _coord_breaker = get_breaker("rl_coordinator")
@@ -274,6 +278,8 @@ class MissionCoordinator(WorkflowCoordinator):
 
     async def _get_status(self, mission_id: str) -> dict:
         """Get mission status."""
+        import uuid  # noqa: PLC0415
+        _emit_observes_runtime_state(str(uuid.uuid4()), "MissionCoordinator._get_status", "L3_ORCHESTRATION")
         mission = self.active_missions.get(mission_id, {})
         return {"mission_id": mission_id, "status": mission.get("status", "unknown")}
 

@@ -6,8 +6,12 @@ from dataclasses import dataclass
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 "\nTypeHintFixerAgent - Extracted for one-class-per-file pattern.\n\nOriginally from: TypeHintEnforcementAgent.py\nExtracted: 2026-01-06 (Surgical Extraction)\n"
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+)
 from agentic_core.utils.decorators_compat_util import standard_heal
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 
 @dataclass

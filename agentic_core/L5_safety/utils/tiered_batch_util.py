@@ -2,12 +2,6 @@ from __future__ import annotations
 
 from agentic_core.L2_execution.healers.healing_tier_config import (
     HEALING_CONFIDENCE_X as _HEALING_CONFIDENCE_X,
-    MAX_RETRIES,
-    DEFAULT_SLEEP,
-    THRESHOLD,
-    BUFFER_SIZE,
-    BATCH_SIZE,
-    MAX_DEPTH,
 )
 from agentic_core.L2_execution.tools import write_gateway as _wg
 
@@ -17,7 +11,12 @@ import logging
 import time
 from pathlib import Path
 from typing import Any
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+)
 
 Logger = logging.getLogger(__name__)
 

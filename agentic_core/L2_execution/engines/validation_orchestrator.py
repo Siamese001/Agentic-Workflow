@@ -12,15 +12,16 @@ import asyncio
 import hashlib
 import logging
 import os
+import uuid
 from pathlib import Path
 from typing import Any
-from agentic_core.L2_execution.enforcement.guardrail_gate import get_guardrail_gate
 
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.L1_cognition.types.validation_types import IValidationProtocol
+from agentic_core.L2_execution.enforcement.guardrail_gate import get_guardrail_gate
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO").upper())
 Logger = logging.getLogger(__name__)
@@ -302,7 +303,6 @@ class ValidationOrchestrator(SovereignBaseAgent):
         """
         Execute validation checks.
         """
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "ValidationOrchestrator.execute")
         # Wave 3: Guardrail pre-check

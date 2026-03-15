@@ -16,12 +16,12 @@ from __future__ import annotations
 import logging
 from typing import Any, NotRequired, TypedDict
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from system_learning.ports.healing_pattern_advisor import (
     _MAX_PATTERN_BOOST,
     NullHealingPatternAdvisor,
     PatternAdvice,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 # MetaLearningClient import removed until implemented
 # Optional: from system_learning.ports.meta_learning_client import MetaLearningClient

@@ -13,8 +13,8 @@ Usage:
 
 import os
 from typing import Any
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0

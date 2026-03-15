@@ -24,7 +24,11 @@ from agentic_core.L5_safety.hitl.decision_logger import (
     get_decision_logger,
 )
 from agentic_core.runtime.execution_trace import get_active_execution_trace
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+)
 
 logger = logging.getLogger(__name__)
 

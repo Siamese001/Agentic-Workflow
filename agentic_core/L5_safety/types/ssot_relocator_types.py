@@ -4,14 +4,15 @@ from agentic_core.L2_execution.tools import write_gateway as _wg
 
 "\nSSOT Relocator - Automated Violation Remediation\n\nReplaces 4 manual relocation scripts with a single, reusable library:\n- phase2_gravity_relocation.py\n- phase4_final_gravity_relocation.py\n- phase4_final_observability_relocation.py\n- phase4_perfection_absolute.py\n\nProvides automated remediation for:\n1. Drift violations (orphaned folders → archives)\n2. Hierarchy violations (excessive depth → flattening)\n3. Gravity violations (wrong layer → correct layer)\n"
 import logging
+import uuid
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from typing import Any
 
 from agentic_core.L5_safety.config.structure_blueprint import AGENTIC_CORE_DIR, ARCHIVES_DIR
 from agentic_core.L5_safety.enforcement.archival_gatekeeper_gate import ArchivalGatekeeper
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -100,7 +101,6 @@ class SSOTRelocator:
         Returns:
             EnforcementReport with operation results
         """
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, f"OrphanRelocator.relocate_orphans:{len(drift_violations)}")
         report = EnforcementReport()

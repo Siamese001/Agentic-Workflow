@@ -14,10 +14,16 @@ def _get_write_gateway():
 "\nMissionHistorian - L4 State Framework Agent\nTracks mission execution history and audit trails.\n"
 import csv
 import logging
+import uuid
 from datetime import datetime
 from pathlib import Path
 from typing import Any
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_snapshots_state,
+)
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -52,6 +58,7 @@ class MissionHistorian:
             destination: Destination location
             reason: Reason for the action
         """
+        _emit_snapshots_state(str(uuid.uuid4()), "MissionHistorian.record", "L4_STATE")
         try:
             with _proof_emitter.proof_op(f"record:{action}:{file_name}"):
                 pass

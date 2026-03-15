@@ -10,8 +10,9 @@ from __future__ import annotations
 import builtins
 from typing import Callable
 
-from .tool_contract import ToolSpec
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
+from .tool_contract import ToolSpec
 
 
 class ToolRegistry:

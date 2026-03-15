@@ -10,8 +10,14 @@ Provides:
 from __future__ import annotations
 
 import hashlib
+import uuid
 from dataclasses import dataclass
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_snapshots_state,
+)
 
 
 class ParentVersionNotFound(Exception):
@@ -73,6 +79,7 @@ class L4VersionStore:
         ParentVersionNotFound
             If ``parent_version_id`` is not ``None`` and not in the store.
         """
+        _emit_snapshots_state(str(uuid.uuid4()), "L4VersionStore.commit_change_package", "L4_STATE")
         import uuid as _uuid  # noqa: PLC0415
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "L4VersionStore.commit_change_package")

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 "\nLocationValidatorAgent: Pure validation agent for territorial compliance\n\nResponsibility: Validate file locations against sovereign structure rules\n- NO healing or file operations\n- NO side effects\n- Pure validation logic only\n\nExtracted from LocationAgent.py as part of SRP fission.\n"
 import ast
+import uuid
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -16,8 +17,8 @@ from agentic_core.L0_routing.config.path_constants import (
     OPS_SCRIPTS_DIR,
 )
 from agentic_core.L5_safety.config.structure_blueprint import DEPTH_RULES, LAYER_PREFIX_EXEMPT_TERRITORIES
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.L5_safety.config.structure_blueprint.ssot import ALLOW_ROOT_PY_TERRITORIES
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass
@@ -62,7 +63,6 @@ class LocationValidatorAgent(SovereignBaseAgent):
         Returns:
             Dict with keys: status, details, artifacts, errors
         """
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "LocationValidatorAgent.heal")
         return {

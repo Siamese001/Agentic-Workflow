@@ -43,7 +43,12 @@ from enum import Enum
 from typing import Any, Callable
 
 from agentic_core.L2_execution.providers import get_clock
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_verifies_policy,
+)
 
 logger = logging.getLogger(__name__)
 _GUARDRAIL_LOG = logging.getLogger("adg.applies_guardrail")
@@ -282,6 +287,7 @@ def invoke_tool_safely(
         ToolPolicyError:          policy enforcement failed.
         ToolGuardrailDeniedError: guardrail check denied execution.
     """
+    _emit_verifies_policy(str(uuid.uuid4()), "Module.invoke_tool_safely", "L5_POLICY")
     import uuid as _uuid  # noqa: PLC0415
 
     _emit_records_execution_trace(
@@ -437,6 +443,7 @@ def _run_guardrail(
     policy_hash: str,
 ) -> bool:
     """Run guardrail decision. Returns True (ALLOW) or False (DENY)."""
+    _emit_applies_guardrail(str(uuid.uuid4()), "Module._run_guardrail", "L5_POLICY")
     try:
         from agentic_core.L2_execution.enforcement.guardrail_gate import get_guardrail_gate  # noqa: PLC0415
 

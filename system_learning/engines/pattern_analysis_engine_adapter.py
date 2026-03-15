@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import math
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from system_learning.engines.pattern_analysis_engine import PatternAnalysisEngine as BaseEngine
 from system_learning.types.healing_outcome_learning_types import (
     HealingOutcomeAggregateSnapshot,
@@ -15,7 +16,6 @@ from system_learning.types.pattern_analysis_types import (
     PatternFindingReport,
     PatternSourceIds,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class PatternAnalysisEngine(BaseEngine):

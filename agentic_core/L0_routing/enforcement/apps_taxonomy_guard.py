@@ -6,8 +6,16 @@ in prohibited directions, enforced via deterministic import-graph checks.
 """
 
 import ast
+import uuid
 from pathlib import Path
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, emit_replay_key, emit_determinism_digest
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    emit_determinism_digest,
+    emit_replay_key,
+)
 
 
 class AppsTaxonomyGuard:
@@ -70,6 +78,7 @@ class AppsTaxonomyGuard:
 
     def _check_import_node(self, node: ast.Import, file_path: Path, repo_root: Path) -> list[str]:
         """Check import node for prohibited agentic_core imports."""
+        _emit_applies_guardrail(str(uuid.uuid4()), "AppsTaxonomyGuard._check_import_node", "L0_ROUTING")
         violations = []
         for alias in node.names:
             if alias.name.startswith("agentic_core"):

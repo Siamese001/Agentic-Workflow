@@ -1,4 +1,5 @@
 """
+import uuid
 ConfigMixin - Unified configuration Access for Agents
 
 [PHASE 6 MIGRATION] Provides access to SovereignConfigManager.

@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import hashlib
 import logging
+import uuid
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -58,7 +59,6 @@ class LawSlotHandler:
 
     def register_twin(self, tool_name: str, read_only_twin: Any) -> None:
         """Register a read-only twin for a tool. Live instances are rejected."""
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"LawSlotHandler.register_twin:{tool_name}")
         if self._frozen:

@@ -18,15 +18,13 @@ References:
 """
 
 import logging
+import uuid
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from typing import Any, Optional, Protocol
 
-from agentic_core.L0_routing.types.routing_artifact_types import RoutePath
-from agentic_core.L5_safety.enforcement.circuit_breaker_gate import get_breaker
 from agentic_core.L5_safety.enforcement.context_session import (
     ContextSession,
     ContextSessionManager,
@@ -34,6 +32,10 @@ from agentic_core.L5_safety.enforcement.context_session import (
     classify_risk,
     get_session_manager,
 )
+
+from agentic_core.L0_routing.types.routing_artifact_types import RoutePath
+from agentic_core.L5_safety.enforcement.circuit_breaker_gate import get_breaker
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -148,7 +150,6 @@ class GuardianSignalBus:
         min_severity: str = "warning",
     ) -> list[dict[str, Any]]:
         """Get active signals, optionally filtered."""
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "GuardianSignalBus.get_active_signals")
         severity_order = {"info": 0, "warning": 1, "error": 2, "critical": 3}

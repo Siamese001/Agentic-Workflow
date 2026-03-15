@@ -7,8 +7,14 @@ W2: Embedding-augmented scoring (C0-only, informational). Final closeout.
 
 from __future__ import annotations
 
+import uuid
 from dataclasses import dataclass, field
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_gated_by_confidence,
+    _emit_records_execution_trace,
+)
 from system_learning.types.healing_outcome_learning_types import (
     HealingOutcomeAggregate,
     HealingOutcomeAggregateKey,
@@ -17,7 +23,6 @@ from system_learning.types.healing_outcome_learning_types import (
 from system_learning.types.pattern_analysis_types import (
     PatternFindingReport,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class HealingConfigOptimizer:
@@ -124,6 +129,7 @@ class HealingConfigOptimizer:
         Returns:
             Proposal with threshold adjustments (proposal-only).
         """
+        _emit_gated_by_confidence(str(uuid.uuid4()), "HealingConfigOptimizer.propose_threshold_adjustments", "0.5")
         adjustments = []
 
         for key, aggregate in snapshot.aggregates:

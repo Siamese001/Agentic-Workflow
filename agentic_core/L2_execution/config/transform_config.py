@@ -24,6 +24,7 @@ PRIORITY: Critical (★★★★★)
 
 import ast
 import logging
+import uuid
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
@@ -119,7 +120,6 @@ class SymbolRenamer(ast.NodeTransformer):
 
     def visit_FunctionDef(self, node: ast.FunctionDef) -> ast.FunctionDef:
         """Handle function definitions with scope tracking."""
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"SymbolRenamer.visit_FunctionDef:{node.name}")
         if node.name == self.old_name:

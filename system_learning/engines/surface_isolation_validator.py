@@ -7,6 +7,7 @@ to prevent cross-surface contamination and maintain isolation guarantees.
 from __future__ import annotations
 
 import time
+
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 

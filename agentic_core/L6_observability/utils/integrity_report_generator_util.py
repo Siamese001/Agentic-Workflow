@@ -19,14 +19,14 @@ USAGE:
 
 from __future__ import annotations
 
+import uuid
 from dataclasses import dataclass, field
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
-from typing import Any
 from datetime import datetime
 from pathlib import Path
 
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.L5_safety.config.structure_blueprint_config import REPORTS_DIR
 from agentic_core.L5_safety.enforcement.registry_verification_enforcer import (
     RegistryVerifier,
     VerificationResult,
@@ -39,7 +39,7 @@ from agentic_core.L5_safety.enforcement.three_tier_compliance_enforcer import (
     ComplianceResult,
     ThreeTierComplianceChecker,
 )
-from agentic_core.L5_safety.config.structure_blueprint_config import REPORTS_DIR
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass
@@ -195,7 +195,6 @@ class AgentIntegrityReporter:
 
     def validate_registry_coverage(self, registry_result: VerificationResult) -> tuple[bool, str]:
         """Validate 100% registry coverage."""
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "IntegrityReportGenerator.validate_registry_coverage")
         if registry_result.total_filesystem_agents == 0:

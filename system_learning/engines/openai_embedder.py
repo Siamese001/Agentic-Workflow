@@ -16,6 +16,7 @@ except ImportError:
     openai = None
     OpenAI = None
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
 _MODEL_DIMENSIONS = {
     "text-embedding-3-large": 1536,
     "text-embedding-3-small": 1536,

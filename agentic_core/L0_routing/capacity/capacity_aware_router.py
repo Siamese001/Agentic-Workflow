@@ -28,6 +28,7 @@ from agentic_core.L0_routing.capacity.capacity_snapshot import (
     RoutingCapacityError,
     get_capacity_registry,
 )
+from agentic_core.runtime.lifecycle_trace_contract import _emit_snapshots_state
 
 logger = logging.getLogger(__name__)
 _CAPACITY_LOG = logging.getLogger("adg.capacity_aware_routing")
@@ -56,6 +57,8 @@ def capacity_snapshot_emitted(
     snapshot_id: str, run_id: str, trace_id: str, router_id: str, candidates: int, chosen: str
 ) -> None:
     """ADG edge emitter for capacity_snapshot_emitted."""
+    import uuid  # noqa: PLC0415
+    _emit_snapshots_state(str(uuid.uuid4()), "Module.capacity_snapshot_emitted", "L0_ROUTING")
     pass
 
 

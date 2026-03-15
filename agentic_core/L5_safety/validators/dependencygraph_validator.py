@@ -7,6 +7,7 @@ import asyncio
 import functools
 import json
 import os
+import uuid
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -248,7 +249,6 @@ class ValidationContext:
     ) -> str:
         if not self.intelligence_enabled or not self.budget.check_budget():
             return code
-        import uuid  # noqa: PLC0415
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, f"resilient_mutation:{agent_name}")
         try:
             prompt = f"Agent: {agent_name}\nTask: {Task}\nContext:\n{code[:4000]}"

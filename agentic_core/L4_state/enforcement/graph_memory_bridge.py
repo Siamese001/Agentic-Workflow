@@ -4,10 +4,12 @@ from __future__ import annotations
 import hashlib
 import logging
 import threading
+import uuid
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from typing import Any
+
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 try:
     from agentic_core.adg.client.mcp_client import ADGMCPClient as _MCPFallbackClient
@@ -23,6 +25,8 @@ try:
 except ImportError:
     _SqliteMemoryStore = None  # type: ignore[assignment,misc]
     _SQLITE_STORE_AVAILABLE = False
+from agentic_core.runtime.lifecycle_trace_contract import _emit_writes_through
+
 Logger = logging.getLogger(__name__)
 
 
@@ -74,6 +78,7 @@ class GraphMemoryBridge:
     @classmethod
     def get_instance(cls) -> GraphMemoryBridge:
         """Get the singleton instance of GraphMemoryBridge."""
+        _emit_writes_through(str(uuid.uuid4()), "GraphMemoryBridge.get_instance", "L4_STATE")
         with cls._instance_lock:
             if cls._instance is None:
                 cls._instance = cls()

@@ -6,15 +6,21 @@ from agentic_core.L2_execution.tools import write_gateway as _wg
 import json
 import logging
 import os
+import uuid
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+)
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 Logger: logging.Logger = logging.getLogger(__name__)
 
@@ -315,6 +321,7 @@ def get_red_sentinel() -> RedSentinelAgent:
     Returns:
         Global RedSentinelAgent singleton instance.
     """
+    _emit_applies_guardrail(str(uuid.uuid4()), "Module.get_red_sentinel", "L5_POLICY")
     global _red_sentinel
     if _red_sentinel is None:
         _red_sentinel = RedSentinelAgent()

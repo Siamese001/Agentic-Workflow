@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import logging
 import subprocess
+import uuid
 from pathlib import Path
 
 from agentic_core.L5_safety.config.detection_signal_config import (
@@ -302,6 +303,7 @@ def check_git_health(repo_root: Path | str | None = None) -> DetectionSignal:
     Returns:
         DetectionSignal with health status.
     """
+    _emit_observes_runtime_state(str(uuid.uuid4()), "Module.check_git_health", "L5_POLICY")
     sensor = GitHealthSensor(repo_root)
     return sensor.check_repository_health()
 
@@ -312,4 +314,9 @@ if __name__ == "__main__":
 
     signal = check_git_health()
     print(json.dumps(signal.to_dict(), indent=2, default=str))
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_observes_runtime_state,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+)

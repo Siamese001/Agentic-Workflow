@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import logging
 import re
+import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
@@ -30,7 +31,12 @@ from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR
 from agentic_core.L5_safety.config.structure_blueprint import (
     get_validated_project_root,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_validated_by_safety_plane,
+)
 
 Logger = logging.getLogger(__name__)
 
@@ -329,6 +335,7 @@ def validate_report_location(file_path: Path, project_root: Path | None = None) 
     Returns:
         True if the file is in an approved location.
     """
+    _emit_validated_by_safety_plane(str(uuid.uuid4()), "Module.validate_report_location", "L5_POLICY")
     validator = ReportLocationValidator(project_root)
     result = validator.validate_file(file_path)
     return result.is_compliant

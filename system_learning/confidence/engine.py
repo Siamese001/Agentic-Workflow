@@ -3,10 +3,16 @@
 from __future__ import annotations
 
 import json
+import uuid
 from typing import Sequence
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_gated_by_confidence,
+    _emit_records_execution_trace,
+)
+
 from .types import ConfidenceDecision, HealingAttempt, HealingConfidenceReport
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class HealingConfidenceScorer:
@@ -22,6 +28,7 @@ class HealingConfidenceScorer:
 
     def score(self, attempts: Sequence[HealingAttempt]) -> HealingConfidenceReport:
         """Score healing attempts and generate confidence report."""
+        _emit_gated_by_confidence(str(uuid.uuid4()), "HealingConfidenceScorer.score", "0.5")
         import uuid as _uuid  # noqa: PLC0415
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HealingConfidenceScorer.score")

@@ -10,6 +10,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import uuid
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
@@ -35,7 +36,11 @@ from agentic_core.L5_safety.enforcement.policy_action_contract import (
     PolicyEnforcementError,
     enforce_policy_before_action,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_agent_executes_agent,
+    _emit_records_execution_trace,
+)
 from agentic_core.seams.orchestration_protocols import OrchestrationResult
 
 
@@ -64,6 +69,7 @@ def canonical_json(data: dict[str, Any]) -> str:
 
     Alphabetical key sort, UTF-8, no whitespace variance.
     """
+    _emit_agent_executes_agent(str(uuid.uuid4()), "Module", "Module.canonical_json")
     return json.dumps(data, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
 
 
@@ -165,7 +171,6 @@ class DeterministicOrchestrator:
         Returns:
             OrchestrationResult with deterministic outcome
         """
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"DeterministicOrchestrator.orchestrate:{route_mode}")
         with get_trace_context().run_frame(

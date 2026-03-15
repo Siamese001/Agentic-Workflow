@@ -11,7 +11,11 @@ from typing import Any
 
 from agentic_core.L0_routing.config.path_constants import APPS_SHARED_DIR
 from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+)
 
 exclude_dirs: Any = SOVEREIGN_EXCLUDED_FOLDERS
 exclude_files: Any = {"SovereignImportSurgeon.py"}

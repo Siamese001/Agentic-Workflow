@@ -16,12 +16,17 @@ from __future__ import annotations
 
 import hashlib
 import logging
+import uuid
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
 from agentic_core.L2_execution.providers import get_clock
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_agent_executes_agent,
+    _emit_records_execution_trace,
+)
 
 logger = logging.getLogger(__name__)
 _ADG_LOGGER = logging.getLogger("adg.agent_executes_agent")
@@ -181,6 +186,7 @@ def emit_agent_executes_agent(
     ADG scanner (_AgentDispatchVisitor) detects calls to this function
     by name and emits agent_executes_agent edges.
     """
+    _emit_agent_executes_agent(str(uuid.uuid4()), "Module", "Module.emit_agent_executes_agent")
     return OrchestrationHandoffContract.create(
         parent_agent_id=parent_agent_id,
         child_agent_id=child_agent_id,

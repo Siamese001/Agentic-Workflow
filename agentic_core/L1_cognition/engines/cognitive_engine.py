@@ -3,6 +3,7 @@ from __future__ import annotations
 "\nRefactored Cognitive Node - Coordinator Pattern\n\nOrchestrates PerceptionNode, ReasoningNode, and ActionNode with:\n- Parallel/async execution\n- Lazy evaluation for simple intents\n- Output caching\n- Per-node performance monitoring\n"
 import asyncio
 import hashlib
+import uuid
 from typing import Any
 
 from agentic_core.L0_routing.config.path_constants import DEFAULT_SLEEP
@@ -13,6 +14,7 @@ _proof_emitter = ExecutionProofEmitter("L1.cognitive_engine")
 
 
 def _get_reason_and_record():
+    _emit_transcripts_response(str(uuid.uuid4()), "Module._get_reason_and_record", "model")
     from agentic_core.L1_cognition.enforcement.reasoning_chokepoint import reason_and_record  # noqa: PLC0415
 
     return reason_and_record
@@ -25,7 +27,6 @@ def _invoke_reason_and_record(ctx, prompt, context, fn, **kw):
 
 
 def _make_reasoning_context(run_id: str, policy_hash: str, prompt: str, model_id: str, clock_tick: float):
-    import uuid  # noqa: PLC0415
 
     from agentic_core.L1_cognition.context.reasoning_context_builder import (
         build_reasoning_context,  # noqa: PLC0415
@@ -55,7 +56,12 @@ try:
     from .ReasoningNode import ReasoningNode
 except ImportError:
     ReasoningNode = None
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_gated_by_confidence,
+    _emit_records_execution_trace,
+    _emit_transcripts_response,
+)
 
 
 class CognitiveNodeRefactored:
@@ -99,6 +105,7 @@ class CognitiveNodeRefactored:
         Returns:
             Final output
         """
+        _emit_gated_by_confidence(str(uuid.uuid4()), "CognitiveNodeRefactored.process", "0.5")
         import uuid as _uuid  # noqa: PLC0415
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L1_REASONING, "CognitiveNodeRefactored.process")

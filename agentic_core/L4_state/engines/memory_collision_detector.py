@@ -4,6 +4,7 @@ import threading
 import time
 from dataclasses import dataclass
 from typing import NamedTuple, Sequence
+
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 

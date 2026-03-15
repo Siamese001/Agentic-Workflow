@@ -48,6 +48,7 @@ def _make_execution_context(payload, target: str):
     )
 
 
+
 from agentic_core.config.core.sovereign_config import get_sovereign_config
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
@@ -68,8 +69,11 @@ except ImportError:
 
         def cache_set(self, key, value, ttl=None):
             pass
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
-
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+)
 
 EmbeddingProvider = Literal["gemini", "openai", "bge-m3"]
 

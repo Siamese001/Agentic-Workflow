@@ -8,6 +8,7 @@ Remains deterministic, side-effect minimal, uses injected seams only.
 
 import hashlib
 import logging
+import uuid
 from typing import Any
 
 from agentic_core.L0_routing.enforcement.routing_contract import (
@@ -15,7 +16,13 @@ from agentic_core.L0_routing.enforcement.routing_contract import (
     RoutingContext,
     create_and_commit_routing_contract,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, emit_replay_key, emit_determinism_digest
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    emit_determinism_digest,
+    emit_replay_key,
+)
 
 Logger = logging.getLogger(__name__)
 
@@ -142,6 +149,7 @@ class ExecutionOrchestrator:
         Returns:
             Structured result dict with path, risk, cycle, and state
         """
+        _emit_signs_execution_trace(str(uuid.uuid4()), "seg_hash", "seg_sig", 0)
         import uuid as _uuid  # noqa: PLC0415
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "ExecutionOrchestrator.execute")

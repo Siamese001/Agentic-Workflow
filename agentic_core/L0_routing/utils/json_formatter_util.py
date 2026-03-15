@@ -4,7 +4,13 @@ import sys
 from datetime import datetime, timezone
 
 from agentic_core.config.settings_config import get_settings
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, emit_replay_key, emit_determinism_digest
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    emit_determinism_digest,
+    emit_replay_key,
+)
 
 
 class JSONFormatter(logging.Formatter):

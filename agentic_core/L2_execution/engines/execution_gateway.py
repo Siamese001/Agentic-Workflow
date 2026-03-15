@@ -7,6 +7,7 @@ and immutable audit trails.
 from __future__ import annotations
 
 import hashlib
+import uuid
 from typing import Any
 
 from agentic_core.L2_execution.determinism.execution_proof_emitter import ExecutionProofEmitter
@@ -17,7 +18,12 @@ from agentic_core.L2_execution.providers import get_clock
 from agentic_core.L2_execution.types.execution_trace_types import ExecutionTrace, ExecutionTraceBuilder
 from agentic_core.L2_execution.types.ptc_tool_contracts_types import ToolContractViolation, ToolResult
 from agentic_core.L2_execution.types.sandbox_envelope_types import SandboxEnvelope, SignatureVerificationError
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_verifies_boundary,
+)
 
 _guardrail = get_guardrail_gate()
 _proof_emitter = ExecutionProofEmitter("L2.execution_gateway")
@@ -75,6 +81,7 @@ class ExecutionGateway:
             BudgetExceeded: if any budget cap is breached
             SignatureBoundaryError: if envelope signature verification fails (fail-closed)
         """
+        _emit_verifies_boundary(str(uuid.uuid4()), "ExecutionGateway.execute_with_trace", "L2_EXECUTION")
         import uuid as _uuid  # noqa: PLC0415
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "ExecutionGateway.execute_with_trace")

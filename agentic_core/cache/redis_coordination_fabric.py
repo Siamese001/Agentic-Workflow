@@ -34,13 +34,13 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.cache.redis_cache_client import (
     CacheDB,
     DeterministicRedisCache,
     canonical_json_bytes,
     content_hash,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -186,7 +186,6 @@ class RedisCoordinationFabric:
         bool
             True on success (Redis or fallback).
         """
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"RedisCoordinationFabric.set_trace_working_set:{trace_id_hash}")
         if ttl_seconds > _TTL_TRACE_WS:
@@ -345,6 +344,7 @@ class RedisCoordinationFabric:
 
         When ``replay_mode=True``, always returns None so the caller re-derives
         from L4 and appends to the deterministic transcript.
+import uuid
         """
         return self._cache.get_json(_replay_frag_key(replay_key_hash), replay_mode=replay_mode)
 

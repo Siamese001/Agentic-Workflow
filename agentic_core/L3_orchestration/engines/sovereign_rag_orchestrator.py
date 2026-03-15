@@ -9,6 +9,7 @@ from agentic_core.L2_execution.tools import write_gateway as _wg
 import asyncio
 import json
 import logging
+import uuid
 from pathlib import Path
 from typing import Any
 
@@ -35,9 +36,9 @@ def _get_retrieval_anchor_types():
     return (AnchoredResult, RetrievalAnchor)
 
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 def get_sovereign_rag_orchestrator() -> SovereignRagOrchestrator:
@@ -152,7 +153,6 @@ class SovereignRagOrchestrator(SovereignBaseAgent, IRagProvider):
         Returns:
             Dictionary with faithfulness score and improvement suggestions
         """
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "SovereignRAGOrchestrator.red_team_critique")
         response: Any = await self.engine.resilient_mutation(critique_prompt, temperature=0.3)

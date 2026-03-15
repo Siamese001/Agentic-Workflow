@@ -13,6 +13,7 @@ import difflib
 "Brief description of functionality and purpose."
 import hashlib
 import textwrap
+import uuid
 import warnings
 from collections import defaultdict
 from typing import Any
@@ -114,7 +115,6 @@ class CodeDeduplicationAgent(SovereignBaseAgent):
         Returns:
             Dict with keys: status, details, artifacts, errors
         """
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "CodeDeduplicationAgent.heal")
         try:

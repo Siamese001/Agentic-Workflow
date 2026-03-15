@@ -7,16 +7,19 @@ HITL capabilities.
 """
 
 import logging
+import uuid
 from collections.abc import Callable
 from typing import Any, TypeVar
 
 from agentic_core.utils.dependency_resolver import DynamicLoader
+from agentic_core.utils.feature_flags import FeatureFlagManager
+
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.utils.detection_protocol_util import (
     DetectionResult,
     DetectionSignalProtocol,
     Severity,
 )
-from agentic_core.utils.feature_flags import FeatureFlagManager
 from agentic_core.utils.meta_learning_types_util import (
     LearningContext,
     LearningResult,
@@ -28,7 +31,6 @@ from agentic_core.utils.review_protocol_util import (
     ReviewResult,
     ReviewStatus,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.utils.verification_types_util import (
     VerificationGateProtocol,
     VerificationRequest,
@@ -151,7 +153,6 @@ class FeatureFlaggedAgentMixin:
         Returns:
             VerificationResult indicating success/failure
         """
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, f"FeatureFlaggedAgentMixin.verify_action:{action_type}")
         if not self._is_flag_enabled("ENABLE_VERIFICATION_GATE"):
@@ -303,7 +304,6 @@ class FeatureFlaggedAgentMixin:
                 reason="queue_unavailable",
             )
 
-        import uuid
 
         request = ReviewRequest(
             request_id=str(uuid.uuid4()),

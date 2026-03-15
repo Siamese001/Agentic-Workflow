@@ -3,6 +3,7 @@ from __future__ import annotations
 "\nAdaptiveExecutionMixin – Sovereign Agent Role Mixin (Phase 29 – Dec 30, 2025)\n\nPurpose:\n  Enable agents to dynamically select execution mode based on real-time context:\n    - standard: normal operation\n    - conservative: high failure rate → safer, more verification\n    - aggressive: urgent → faster, riskier\n    - minimal: high system load → skip non-essential work\n\nConstitutional Alignment:\n  - Prevents resource exhaustion\n  - Adapts to sovereignty health\n  - Enables self-preservation under stress\n"
 import logging
 from typing import Any
+
 from agentic_core.L3_orchestration.registry.agent_dispatch_registry import get_agent_dispatch_registry
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 

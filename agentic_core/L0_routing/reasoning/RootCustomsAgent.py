@@ -55,7 +55,6 @@ class ASTAnalyzer:
 
     def analyze_file(self, file_path: Path) -> dict[str, Any]:
         """Analyze Python file for AST signals."""
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"RootCustomsAgent.analyze_file:{file_path.name}")
         if not file_path.suffix == ".py":

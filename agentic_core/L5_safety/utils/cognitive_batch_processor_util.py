@@ -6,9 +6,16 @@ from agentic_core.L2_execution.tools import write_gateway as _wg
 import json
 import logging
 import time
+import uuid
 from pathlib import Path
 from typing import Any
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 Logger = logging.getLogger(__name__)
 
@@ -65,6 +72,7 @@ class CognitiveBatchProcessor:
         Returns:
             Dictionary of file_path -> disposition results
         """
+        _emit_snapshots_state(str(uuid.uuid4()), "CognitiveBatchProcessor._load_checkpoint", "L5_POLICY")
         if self.checkpoint_file.exists():
             try:
                 data = json.loads(self.checkpoint_file.read_text(encoding="utf-8"))

@@ -14,7 +14,12 @@ def _get_convergence_engine():
 
 
 from agentic_core.L0_routing.config import L0_MAINTENANCE_DIR
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, emit_replay_key, emit_determinism_digest
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    emit_determinism_digest,
+    emit_replay_key,
+)
 
 # guardian: allow-global-mutation
 sys.path.insert(0, str(Path(__file__).parent.parent))

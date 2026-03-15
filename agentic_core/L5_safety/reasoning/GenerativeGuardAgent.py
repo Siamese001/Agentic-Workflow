@@ -15,6 +15,7 @@ import logging
 import os
 import re
 import sys
+import uuid
 from pathlib import Path
 from typing import Any
 
@@ -68,8 +69,12 @@ except ImportError:
 
     def get_validated_project_root() -> Path:
         return _root
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
-
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+)
 
 EXCLUDED_DIRS = list(GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS)
 
@@ -124,6 +129,7 @@ class GenerativeGuardAgent(SovereignBaseAgent, HealerMixin, CanonBaseAgentInterf
     # guardian: allow-type-erasure
     async def _execute_guard(self) -> Any:
         """Scan for and optionally purge runaway generated files."""
+        _emit_applies_guardrail(str(uuid.uuid4()), "GenerativeGuardAgent._execute_guard", "L5_POLICY")
         print(f"\n[>>>] {self.name} ACTIVATED: Checking Generative Policy...")
         violations = []
         project_root = getattr(self.ctx, "project_root", ".")

@@ -11,9 +11,15 @@ Phase 3.1: Mathematically-Sealed Sovereignty Hardening
 from __future__ import annotations
 
 import threading
+import uuid
 
 from agentic_core.L2_execution.enforcement.key_derivation import get_key_version
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_verifies_boundary,
+)
 
 
 class TokenRevocationError(RuntimeError):
@@ -45,6 +51,7 @@ class CapabilityRevoker:
 
     def invalidate_version(self, version: str) -> None:
         """Invalidate all tokens carrying a specific authority_secret_version."""
+        _emit_verifies_boundary(str(uuid.uuid4()), "CapabilityRevoker.invalidate_version", "L2_EXECUTION")
         with self._lock:
             self._invalid_versions.add(version)
 

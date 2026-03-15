@@ -7,12 +7,19 @@ Implements fixed scoring rules with deterministic selection.
 
 from __future__ import annotations
 
+import uuid
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_agent_executes_agent,
+    _emit_records_execution_trace,
+)
+
 from .arbitration_contract import (
     AdvisorProposal,
     ArbitrationDecision,
     ArbitrationInput,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class Arbitrator:
@@ -37,6 +44,7 @@ class Arbitrator:
         Returns:
             Calculated score
         """
+        _emit_agent_executes_agent(str(uuid.uuid4()), "Arbitrator", "Arbitrator.calculate_score")
         import uuid as _uuid  # noqa: PLC0415
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "Arbitrator.calculate_score")

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 "\nUnified SSOT Validator - Consolidates All Validation Logic\n\nReplaces 5 separate validation tools with a single, comprehensive validator:\n1. audit_ssot.py → Gravity violations (files in wrong layers)\n2. audit_architectural_violations.py → Import violations (upward dependencies)\n3. HierarchyAgent → Depth compliance (max depth per layer)\n4. LocationAgent → Territory compliance (unauthorized folders)\n5. FilesystemSSOTReconcilerAgent → Drift detection (filesystem vs blueprint)\n\nPerformance: <5 seconds for complete validation (vs 60+ seconds running 5 tools)\n"
 import ast
+import uuid
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -12,8 +13,12 @@ from agentic_core.L5_safety.config.structure_blueprint import (
     PROJECT_ROOT_WHITELIST,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.L5_safety.enforcement.ssot_scanner_enforcer import SSOTScanner
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_validated_by_safety_plane,
+)
 
 
 @dataclass
@@ -103,7 +108,6 @@ class SovereignHealthReport:
 
     def to_markdown(self) -> str:
         """Generate Markdown report optimized for LLM/Human consumption."""
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "GravityValidator.to_markdown")
         lines = []
@@ -226,6 +230,7 @@ class UnifiedSSOTValidator:
         Returns:
             SovereignHealthReport with all violations and statistics
         """
+        _emit_validated_by_safety_plane(str(uuid.uuid4()), "UnifiedSSOTValidator.validate_all", "L5_POLICY")
         import time
 
         start_time = time.time()

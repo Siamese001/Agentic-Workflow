@@ -10,8 +10,8 @@ import hashlib
 import json
 from dataclasses import asdict, dataclass, field
 
-from system_learning.types.healing_outcome_intake_types import HealingOutcomeIntakeRecord
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from system_learning.types.healing_outcome_intake_types import HealingOutcomeIntakeRecord
 
 
 def _validate_weight(value: float, name: str) -> None:

@@ -6,6 +6,7 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 "Brief description of functionality and purpose."
 "Brief description of functionality and purpose."
+import uuid
 from pathlib import Path
 from typing import Any
 
@@ -14,9 +15,14 @@ from agentic_core.prompt_governance.rendering.sovereign_prompt_renderer_validato
 )
 from agentic_core.prompt_governance.version_registry.prompt_registry_config import registers_prompt
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+)
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 TEMPLATE_ROOT = Path(__file__).parents[3] / "templates"
 red_team_gov_path = TEMPLATE_ROOT / "red_team_governance.jinja"
@@ -64,6 +70,7 @@ class RedTeamAgent(SovereignBaseAgent):
         """
         Phase 2 batch entry point — controlled red-team sweep.
         """
+        _emit_applies_guardrail(str(uuid.uuid4()), "RedTeamAgent.execute", "L5_POLICY")
         import uuid as _uuid  # noqa: PLC0415
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "RedTeamAgent.execute")

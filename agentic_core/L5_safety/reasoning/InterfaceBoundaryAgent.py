@@ -4,14 +4,20 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 "\nINTERFACE BOUNDARY AGENT\n------------------------\nL2 Execution Agent designed to enforce the boundary between L0 Infrastructure\nand higher-level Orchestration.\n\nMechanism:\n1. Analyzes L0 maintenance scripts for complexity (Methods > 15 or LOC > 200).\n2. Identifies 'Heavy' dependencies being imported by L3/L4 agents.\n3. Automatically generates abstract Interface files in agentic_core/utils/core_extensions/.\n4. Proposes refactoring steps to decouple concrete implementations.\n"
 import ast
+import uuid
 from pathlib import Path
 from typing import Any
 
 from agentic_core.utils.ssot_discovery_validator import get_python_files
 
 from agentic_core.L5_safety.config.structure_blueprint import AGENTIC_CORE_DIR
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_validated_by_safety_plane,
+)
 from agentic_core.utils.decorators_compat_util import standard_heal
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 
 @dataclass
@@ -34,6 +40,7 @@ class InterfaceBoundaryAgent(SovereignBaseAgent):
         Returns:
             Dict with healing summary
         """
+        _emit_validated_by_safety_plane(str(uuid.uuid4()), "InterfaceBoundaryAgent.heal_repository", "L5_POLICY")
         import uuid as _uuid  # noqa: PLC0415
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "InterfaceBoundaryAgent.heal_repository")

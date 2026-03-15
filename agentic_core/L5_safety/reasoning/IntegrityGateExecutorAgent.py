@@ -7,11 +7,12 @@ from agentic_core.L2_execution.tools import write_gateway as _wg
 
 "Brief description of functionality and purpose."
 import re
+import uuid
 from enum import Enum
 from typing import Any
 
-from agentic_core.utils.timeout_decorator_util import timeout
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.utils.timeout_decorator_util import timeout
 
 
 class ValidationRejectionReason(Enum):
@@ -80,7 +81,6 @@ class IntegrityGateResult:
             reason: Reason for the validation failure
             message: Detailed violation message
         """
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, f"IntegrityGateResult.add_violation:{reason}")
         self.passed = False
@@ -274,6 +274,7 @@ class DeepResearchOutput:
         self.CitationMap = CitationMap
 
 
+from agentic_core.runtime.lifecycle_trace_contract import _emit_applies_guardrail
 from agentic_core.utils.decorators_compat_util import standard_heal
 
 
@@ -625,6 +626,7 @@ def validate_research_output(
     research_output: DeepResearchOutput, min_depth_score: float = 0.7
 ) -> IntegrityGateResult:
     """TODO: Add docstring."""
+    _emit_applies_guardrail(str(uuid.uuid4()), "Module.validate_research_output", "L5_POLICY")
     super().heal_repository()
     EXECUTOR = IntegrityGateExecutorAgent(min_depth_score=min_depth_score)
     return EXECUTOR.execute(research_output)

@@ -19,7 +19,12 @@ from agentic_core.L2_execution.types.tool_enforcement_types import (
     LawSlotOutcome,
     ToolEnforcementArtifact,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+)
 
 _log = logging.getLogger(__name__)
 
@@ -147,6 +152,7 @@ _TOOL_POLICY_ENFORCER: ToolPolicyEnforcer | None = None
 
 def get_tool_policy_enforcer() -> ToolPolicyEnforcer:
     """Get or create the global ToolPolicyEnforcer instance."""
+    _emit_applies_guardrail(str(uuid.uuid4()), "Module.get_tool_policy_enforcer", "L2_EXECUTION")
     global _TOOL_POLICY_ENFORCER
     if _TOOL_POLICY_ENFORCER is None:
         _TOOL_POLICY_ENFORCER = ToolPolicyEnforcer()

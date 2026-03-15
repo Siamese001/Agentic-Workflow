@@ -68,6 +68,7 @@ from agentic_core.L4_state.versioning.commit_versioned_state_transition import (
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_signs_execution_trace,
+    _emit_snapshots_state,
 )
 
 _proof_emitter = ExecutionProofEmitter("L4.RunStateAuthority")
@@ -325,6 +326,7 @@ class RunStateAuthority(WriteGovernorMixin):
         run_id: str = "",
     ) -> StateSnapshot:
         """Capture a snapshot (alias for snapshot())."""
+        _emit_snapshots_state(str(uuid.uuid4()), "RunStateAuthority.snapshot_runtime", "L4_STATE")
         return self.snapshot(label, run_id=run_id)
 
     def snapshot_state(

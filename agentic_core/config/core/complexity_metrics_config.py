@@ -21,6 +21,7 @@ Success Metrics: 41% line reduction, 50% nesting reduction, 103% preservation
 """
 import ast
 from dataclasses import dataclass
+
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 

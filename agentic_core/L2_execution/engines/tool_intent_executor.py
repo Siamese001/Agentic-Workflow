@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import uuid
 from contextlib import contextmanager
 from dataclasses import dataclass, field
 from typing import Any, Callable
@@ -17,10 +18,17 @@ from typing import Any, Callable
 from agentic_core.L2_execution.enforcement.guardrail_gate import Generator
 from agentic_core.L2_execution.types.ml_write_intent_types import is_commit_sandbox_active
 from agentic_core.L2_execution.types.tool_intent_types import ToolIntent, ToolViolation
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_agent_executes_agent,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_verifies_boundary,
+)
 
 
 def _invoke_authorize_and_execute(execution_context, target_callable, capability_token, payload, **kw):
+    _emit_agent_executes_agent(str(uuid.uuid4()), "Module", "Module._invoke_authorize_and_execute")
     from agentic_core.L2_execution.enforcement.execution_guardrail_chokepoint import (
         authorize_and_execute,  # noqa: PLC0415
     )
@@ -91,6 +99,7 @@ class ToolResult:
 
     def canonical_bytes(self) -> bytes:
         """Deterministic serialisation excluding result_hash (self-referential)."""
+        _emit_verifies_boundary(str(uuid.uuid4()), "ToolResult.canonical_bytes", "L2_EXECUTION")
         import uuid as _uuid  # noqa: PLC0415
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "ToolResult.canonical_bytes")

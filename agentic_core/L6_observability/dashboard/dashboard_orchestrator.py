@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import logging
 import time
+import uuid
 from dataclasses import dataclass
 from typing import Any
 
@@ -25,6 +26,8 @@ from agentic_core.L6_observability.dashboard.dashboard_aggregate import (
     HealthFlag,
     get_dashboard_registry,
 )
+from agentic_core.runtime.lifecycle_trace_contract import _emit_observes_runtime_state, _emit_snapshots_state
+
 logger = logging.getLogger(__name__)
 _DASHBOARD_LOG = logging.getLogger("adg.health_computed")
 
@@ -157,8 +160,10 @@ def aggregate_runtime_observability(
     Raises:
         DashboardAggregateError: If aggregation fails (Gate E)
     """
-    import uuid  # noqa: PLC0415
-    from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace  # noqa: PLC0415
+    from agentic_core.runtime.lifecycle_trace_contract import (  # noqa: PLC0415
+        LayerSegment,
+        _emit_records_execution_trace,
+    )
 
     _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L6_OBSERVABILITY, "aggregate_runtime_observability")
     _registry = registry or get_dashboard_registry()
@@ -311,6 +316,7 @@ def _compute_health_flags(
     aggregate_metrics: dict[str, Any], dashboard_policy: DashboardPolicy
 ) -> dict[str, HealthFlag]:
     """Compute health flags from aggregate metrics."""
+    _emit_observes_runtime_state(str(uuid.uuid4()), "Module._compute_health_flags", "L6_OBSERVABILITY")
     health_flags = {}
 
     # Compute health for each component
@@ -359,6 +365,7 @@ def _persist_dashboard_snapshot(
     registry,
 ) -> DashboardSnapshot:
     """Persist dashboard snapshot to registry."""
+    _emit_snapshots_state(str(uuid.uuid4()), "Module._persist_dashboard_snapshot", "L6_OBSERVABILITY")
     snapshot_id = str(uuid.uuid4())
 
     snapshot = DashboardSnapshot.create(

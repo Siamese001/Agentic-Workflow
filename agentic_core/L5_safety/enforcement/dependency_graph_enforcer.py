@@ -2,7 +2,12 @@ from __future__ import annotations
 
 "\nDependency Graph - Code structure analysis and impact tracking.\nExtracted from BudgetManagerAgent.py for single responsibility.\n"
 import ast
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+)
 
 
 class DependencyGraph:

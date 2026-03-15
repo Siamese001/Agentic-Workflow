@@ -15,6 +15,7 @@ are exercised in a real execution path.
 from __future__ import annotations
 
 import logging
+import uuid
 from dataclasses import dataclass, field
 from typing import Any, Callable
 
@@ -29,12 +30,14 @@ def _get_manifest_hash_validator():
 
 
 def _get_guardian_decision():
+    _emit_applies_guardrail(str(uuid.uuid4()), "Module._get_guardian_decision", "L0_ROUTING")
     from agentic_core.L5_safety.reasoning.guardian_decision import GuardianViolationError, L5Guardian
 
     return (GuardianViolationError, L5Guardian)
 
 
 from agentic_core.agents.agent_registry import get_profile, registry_digest
+from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import get_routing_gateway
 from agentic_core.L0_routing.types.crypto_trust_types import HashMismatchTracker
 from agentic_core.L0_routing.types.determinism_contracts_types import (
     create_boundary_snapshot,
@@ -62,9 +65,13 @@ from agentic_core.L0_routing.types.routing_contracts_types import (
     PolicyConfigGuard,
     PolicyMutationIncident,
 )
-from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import get_routing_gateway
 from agentic_core.L2_execution.providers import get_clock
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_agent_executes_agent,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+)
 
 Logger = logging.getLogger(__name__)
 
@@ -145,6 +152,7 @@ class V15ExecutionGateway:
         Returns:
             GatewayResult with full audit trail.
         """
+        _emit_agent_executes_agent(str(uuid.uuid4()), "V15ExecutionGateway", "V15ExecutionGateway.execute")
         _emit_records_execution_trace(trace_id, LayerSegment.L0_ROUTING, f"execution_gateway.execute:{agent_id}")
         _gw = get_routing_gateway(trace_id)
         self._pipe_violations = []

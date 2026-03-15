@@ -11,8 +11,11 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import uuid
 from pathlib import Path
 from typing import Any
+
+from agentic_core.runtime.lifecycle_trace_contract import _emit_snapshots_state
 
 logger = logging.getLogger(__name__)
 _GENESIS_HASH = "0" * 64
@@ -31,6 +34,7 @@ def validate_ledger_chain(entries: list[dict[str, Any]]) -> None:
     Each entry must have a ``_hash`` field computed from the previous hash
     and the entry data (excluding the ``_hash`` field itself).
     """
+    _emit_snapshots_state(str(uuid.uuid4()), "Module.validate_ledger_chain", "L4_STATE")
     prev_hash = _GENESIS_HASH
     for idx, entry in enumerate(entries):
         stored_hash = entry.get("_hash")

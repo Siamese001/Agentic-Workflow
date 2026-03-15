@@ -13,13 +13,14 @@ import inspect
 import json
 import logging
 import os
-from agentic_core.L3_orchestration.registry.agent_dispatch_registry import get_agent_dispatch_registry
+import uuid
 from pathlib import Path
 from typing import Any
 
 from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR
-from agentic_core.utils.decorators_compat_util import standard_heal
+from agentic_core.L3_orchestration.registry.agent_dispatch_registry import get_agent_dispatch_registry
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.utils.decorators_compat_util import standard_heal
 
 
 def _get_RedisSovereignAgent():
@@ -322,7 +323,6 @@ class SubAtomicRegistryAgent(SovereignBaseAgent):
 
     def extract_methods(self) -> list[dict]:
         """Deep crawl of all .py files to find callables"""
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "SubAtomicRegistryAgent.extract_methods")
         methods = []

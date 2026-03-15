@@ -19,9 +19,19 @@ from __future__ import annotations
 import hashlib
 import hmac
 import logging
+import uuid
 from dataclasses import dataclass
 from typing import Any
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, emit_replay_key, emit_determinism_digest
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_verifies_policy,
+    emit_determinism_digest,
+    emit_replay_key,
+)
 
 _log = logging.getLogger(__name__)
 
@@ -52,6 +62,7 @@ class PolicyHashValidationResult:
     policy_id: str = _POLICY_ID
 
     def format(self) -> str:
+        _emit_signs_execution_trace(str(uuid.uuid4()), "seg_hash", "seg_sig", 0)
         import uuid as _uuid  # noqa: PLC0415
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "PolicyHashValidationResult.format")
@@ -135,6 +146,8 @@ class PolicyHashEnforcer:
             When the packet's policy_hash is missing or does not match the
             active Merkle root, AND mode is ``"HARD_FAIL"``.
         """
+        _emit_verifies_policy(str(uuid.uuid4()), "PolicyHashEnforcer.enforce", "L0_ROUTING")
+        _emit_applies_guardrail(str(uuid.uuid4()), "PolicyHashEnforcer.enforce", "L0_ROUTING")
         import uuid as _uuid  # noqa: PLC0415
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "PolicyHashEnforcer.enforce")

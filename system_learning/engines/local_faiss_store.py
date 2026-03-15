@@ -16,8 +16,8 @@ import struct
 from pathlib import Path
 from typing import Any, Callable
 
-from system_learning.types.index_build_metadata_types import IndexBuildMetadata
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from system_learning.types.index_build_metadata_types import IndexBuildMetadata
 
 
 def _faiss_available() -> bool:

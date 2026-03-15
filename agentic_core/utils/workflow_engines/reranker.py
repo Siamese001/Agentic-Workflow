@@ -10,8 +10,9 @@ from __future__ import annotations
 import re
 from typing import Callable
 
-from .interfaces import Document, IReranker
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
+from .interfaces import Document, IReranker
 
 
 def _query_term_overlap(query: str, content: str) -> float:

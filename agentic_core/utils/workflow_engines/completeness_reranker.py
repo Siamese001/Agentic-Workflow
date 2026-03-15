@@ -19,6 +19,7 @@ from agentic_core.evaluation.retrieval.completeness import (
     IContextCompletenessScorer,
 )
 from agentic_core.evaluation.retrieval.interfaces import Document, IReranker
+
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 

@@ -8,14 +8,15 @@ from agentic_core.L2_execution.tools import write_gateway as _wg
 import asyncio
 import json
 import logging
+import uuid
 from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from typing import Any
 
 from agentic_core.L0_routing.config.path_constants import DEFAULT_SLEEP
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -42,7 +43,6 @@ class HealingPattern:
 
     def update_confidence(self) -> Any:
         """Update confidence score based on success rate and usage."""
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "HealingPattern.update_confidence")
         base_confidence: Any = self.success_rate

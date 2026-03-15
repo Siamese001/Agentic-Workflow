@@ -5,10 +5,11 @@ from datetime import datetime
 from typing import Any
 
 "\nDAGManager - Extracted for one-class-per-file pattern.\n\nOriginally from: DAGMutatorAgent.py\nExtracted: 2026-01-06 (Surgical Extraction)\nRenamed: 2026-01-22 (Utility Renaming - Not an Agent)\n"
+
 import networkx as nx
 
-from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.utils.decorators_compat_util import standard_heal
 
 
 class DAGManager(

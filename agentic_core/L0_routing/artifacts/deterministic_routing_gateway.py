@@ -21,7 +21,12 @@ from agentic_core.L0_routing.types.routing_artifact_types import (
     RoutingRationale,
 )
 from agentic_core.L2_execution.providers import get_clock
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, emit_replay_key, emit_determinism_digest
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    emit_determinism_digest,
+    emit_replay_key,
+)
 
 logger = logging.getLogger(__name__)
 _REPLAY_KEY_LOGGER = logging.getLogger("adg.emits_replay_key")

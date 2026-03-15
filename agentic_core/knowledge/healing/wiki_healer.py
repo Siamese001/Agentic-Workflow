@@ -161,8 +161,8 @@ class DeepWikiHealingStrategy:
             True if update succeeded, False otherwise
         """
         try:
-            import builtins
             import asyncio
+            import builtins
             repo = getattr(config, "DEEPWIKI_DEFAULT_REPO", "Siamese001/Agentic-Workflow")
             ask_fn = getattr(builtins, "mcp3_ask_question", None)
             if ask_fn is None:

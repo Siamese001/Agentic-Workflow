@@ -8,6 +8,7 @@ All upward imports (→ L5) are deferred inside the factory function.
 from __future__ import annotations
 
 from typing import Any, Protocol, runtime_checkable
+
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 

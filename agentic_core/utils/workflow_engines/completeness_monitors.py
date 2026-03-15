@@ -20,14 +20,16 @@ RULES:
 
 from __future__ import annotations
 
+import uuid
 from dataclasses import dataclass
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from typing import Any
 
 from agentic_core.evaluation.retrieval.completeness import (
     ContextCompletenessScore,
     SupportedAnswerCheck,
 )
+
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 # ---------------------------------------------------------------------------
 # Snapshot Types
@@ -185,7 +187,6 @@ class RetrievalCompletenessMonitor:
 
     def snapshot(self, snapshot_id: str, system_version: str) -> RetrievalCompletenessSnapshot:
         """Emit a deterministic snapshot of accumulated observations."""
-        import uuid  # noqa: PLC0415
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"CompletenessMonitor.snapshot:{snapshot_id}")
         n = len(self._records)
         if n == 0:

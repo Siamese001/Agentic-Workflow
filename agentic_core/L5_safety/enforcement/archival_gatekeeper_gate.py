@@ -7,6 +7,7 @@ import json
 import logging
 import os
 import threading
+import uuid
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -15,11 +16,11 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.L5_safety.config.structure_blueprint import ARCHIVES_DIR
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     GLOBAL_EXCLUDED_DIRS,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logging.basicConfig(level=logging.INFO)
 Logger = logging.getLogger(__name__)
@@ -432,7 +433,6 @@ class ArchivalGatekeeper:
         Returns:
             ArchivalResult with operation details
         """
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, f"ArchivalGatekeeper.safe_archive:{Path(source).name}")
         source = Path(source).resolve()

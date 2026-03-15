@@ -17,7 +17,12 @@ import importlib.machinery
 import importlib.util
 import sys
 from pathlib import Path
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+)
 
 _TRACKED_ROOTS: frozenset = frozenset(
     {APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR, AGENTIC_CORE_DIR, SYSTEM_LEARNING_DIR}

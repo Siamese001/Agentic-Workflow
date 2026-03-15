@@ -3,8 +3,8 @@ from __future__ import annotations
 "L3 Orchestration: Sovereign MCP Marketplace Integration\nSafe discovery and registration of marketplace MCPs with L5 sovereignty enforcement.\nGEMINI-ONLY policy — forbidden providers auto-blocked.\n"
 import logging
 
-from agentic_core.seams.contracts.authority import get_mcp_authority
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.seams.contracts.authority import get_mcp_authority
 
 Logger = logging.getLogger(__name__)
 sovereign_safe_mcps = {

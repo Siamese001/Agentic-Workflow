@@ -1,8 +1,14 @@
 from __future__ import annotations
 
+import uuid
+
 "Nervous System module."
 from agentic_core.L3_orchestration.engines.reflex_layer_pattern import ReflexLayer
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_agent_executes_agent,
+    _emit_records_execution_trace,
+)
 
 
 class NervousSystem:
@@ -14,6 +20,7 @@ class NervousSystem:
         self.missions = []
 
     def register_reflex(self, trigger: str, action: callable):
+        _emit_agent_executes_agent(str(uuid.uuid4()), "NervousSystem", "NervousSystem.register_reflex")
         import uuid as _uuid  # noqa: PLC0415
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "NervousSystem.register_reflex")

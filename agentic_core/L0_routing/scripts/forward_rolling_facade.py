@@ -15,6 +15,7 @@ Phase: 5 - Optimization & Enhancement
 from __future__ import annotations
 
 import logging
+import uuid
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -159,7 +160,6 @@ class ForwardRollingFacade:
         Returns:
             ForwardRollingResult with execution details
         """
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"ForwardRollingFacade.execute:{agent_name}")
         start_time = get_clock().now_epoch()

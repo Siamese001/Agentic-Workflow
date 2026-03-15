@@ -36,7 +36,11 @@ from agentic_core.cache.redis_cache_client import (
     DeterministicRedisCache,
     get_coordination_cache,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+)
 
 logger = logging.getLogger(__name__)
 

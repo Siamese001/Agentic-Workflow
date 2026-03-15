@@ -5,12 +5,19 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 "\nSafetyExecutorAgent - Safety Execution Interface\n\nPhase 4 Hard Migration: Consolidates:\n- IntegrityGateExecutorAgent (integrity gate execution)\n- L5IntegrityGateExecutorAgent (L5 integrity gates)\n- SafetyExecutorAgent (safety execution)\n\nFeatures:\n- Pre-execution safety checks\n- Integrity gate enforcement\n- Execution blocking on violations\n- Safety score thresholds\n- Audit logging\n"
 import logging
 import threading
+import uuid
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
 from typing import Any, TypeVar
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+)
 
 Logger = logging.getLogger(__name__)
 T = TypeVar("T")
@@ -115,6 +122,7 @@ class SafetyExecutorAgent(SovereignBaseAgent):
 
     def _init_default_gates(self) -> None:
         """Initialize default safety gates."""
+        _emit_applies_guardrail(str(uuid.uuid4()), "SafetyExecutorAgent._init_default_gates", "L5_POLICY")
         self._gates.append(
             SafetyGate(
                 name="context_integrity", check_fn=lambda ctx: ctx is not None, severity="HIGH", blocking=True

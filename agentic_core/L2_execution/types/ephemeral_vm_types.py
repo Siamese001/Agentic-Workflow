@@ -17,7 +17,12 @@ try:
     from agentic_core.L2_execution.types.firecracker_manager_types import VMConfig
 except ImportError:
     VMConfig = None
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+)
+
 LOGGER = logging.getLogger(__name__)
 Logger: Any = logging.getLogger(__name__)
 

@@ -4,6 +4,7 @@ from __future__ import annotations
 import inspect
 import json
 import logging
+import uuid
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import Any
@@ -113,7 +114,6 @@ class tool_registry:
             tags: Optional tags for categorization
             category: Tool category
         """
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"ToolRegistry.register:{name}")
         _ectx = _make_execution_context(name, "tool_registry.register")

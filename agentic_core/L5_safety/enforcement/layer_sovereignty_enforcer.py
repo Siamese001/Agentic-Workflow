@@ -13,14 +13,22 @@ from __future__ import annotations
 
 import ast
 import sys
+import uuid
 from dataclasses import dataclass, field
 from pathlib import Path
+
 from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
-    SYSTEM_LEARNING_DIR,
     APPS_SHARED_DIR,
+    SYSTEM_LEARNING_DIR,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_verifies_policy,
+)
 
 # ---------------------------------------------------------------------------
 # Layer hierarchy: higher number = higher authority.
@@ -269,6 +277,7 @@ class LayerSovereigntyEnforcer:
 
         A violation occurs when ``imported_layer > importer_layer``.
         """
+        _emit_applies_guardrail(str(uuid.uuid4()), "LayerSovereigntyEnforcer.check_upward_mutation", "L5_POLICY")
         return imported_layer > importer_layer
 
     def analyze_file_imports(self, file_path: Path) -> list[SovereigntyViolation]:
@@ -347,6 +356,7 @@ class LayerSovereigntyEnforcer:
 
 
 def main() -> int:
+    _emit_verifies_policy(str(uuid.uuid4()), "Module.main", "L5_POLICY")
     repo_root = Path(__file__).resolve().parents[4]
     enforcer = LayerSovereigntyEnforcer(repo_root)
     report = enforcer.run()

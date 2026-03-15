@@ -21,8 +21,14 @@ import hashlib
 import json
 import logging
 import os
+import uuid
 from typing import Any
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_snapshots_state,
+)
 
 logger = logging.getLogger(__name__)
 _NEUTRAL_PRIOR: float = 0.5
@@ -95,6 +101,7 @@ class HealingSuccessRateStore:
         Only fires when we have statistically meaningful data (count >= _MIN_SAMPLE_SIZE)
         to avoid polluting MCP with warm-up noise.
         """
+        _emit_snapshots_state(str(uuid.uuid4()), "HealingSuccessRateStore._maybe_persist_to_mcp", "L4_STATE")
         if count < _MIN_SAMPLE_SIZE:
             return
         try:

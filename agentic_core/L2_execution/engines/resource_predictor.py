@@ -12,7 +12,11 @@ from agentic_core.L2_execution.types.resource_prediction_types import (
     ResourceEnvelope,
     ResourcePrediction,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+)
 
 
 class ResourcePredictor(Protocol):

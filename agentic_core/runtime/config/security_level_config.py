@@ -50,6 +50,7 @@ class SecurityLevel(Enum):
 
     Defines the intensity and thoroughness of security checks,
     from basic validation to paranoid-level scrutiny.
+import uuid
     """
 
     BASIC = "basic"
@@ -204,7 +205,6 @@ class SecurityHardener:
         Returns:
             List of security issues found
         """
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, f"SecurityScanner.scan_content:{file_path}")
         issues = []

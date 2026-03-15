@@ -51,6 +51,7 @@ from __future__ import annotations
 
 import logging
 import sqlite3
+import uuid
 from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
@@ -275,7 +276,6 @@ class ADGBehavioralIndex:
             Always returns a valid object; falls back to neutral profile
             (score=0.5, no signals) when ADG is unavailable.
         """
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"BehavioralIndex.profile_for:{resolved_path}")
         # Normalize: forward slashes, no leading slash

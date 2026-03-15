@@ -5,8 +5,9 @@ from __future__ import annotations
 import re
 from typing import Any
 
-from .types import FailureEvent, FailureFingerprint
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
+from .types import FailureEvent, FailureFingerprint
 
 
 class FailureFingerprinter:

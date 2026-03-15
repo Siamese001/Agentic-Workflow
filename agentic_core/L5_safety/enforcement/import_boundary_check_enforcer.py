@@ -76,4 +76,8 @@ if __name__ == "__main__":
     import sys
 
     sys.exit(0 if check_agentic_core_boundaries() else 1)
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+)

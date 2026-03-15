@@ -6,6 +6,7 @@ from agentic_core.L2_execution.tools import write_gateway as _wg
 import logging
 import os
 import tempfile
+import uuid
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -14,7 +15,11 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L0_routing.config import ARCHIVES_DIR, OPS_SCRIPTS_DIR
 from agentic_core.L4_state.utils.layer_gravity_util import LAYER_ORDER
 from agentic_core.L5_safety.validators.context_validator import get_context_manager
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_validated_by_safety_plane,
+)
 
 Logger = logging.getLogger(__name__)
 
@@ -85,7 +90,6 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
         Returns:
             GravityFix with recommended solution
         """
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, f"GravityLeakRepairAgent.analyze_violation:{file_layer}->{import_layer}")
         violation = {
@@ -206,6 +210,7 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
 
     def _check_prohibition_circuit_breaker(self, file_path: Path, op: str) -> None:
         """Increment hit counter; raise GravityRepairProhibitedError on second hit."""
+        _emit_validated_by_safety_plane(str(uuid.uuid4()), "GravityLeakRepairAgent._check_prohibition_circuit_breaker", "L5_POLICY")
         key = (str(file_path), op)
         self._prohibition_hits[key] = self._prohibition_hits.get(key, 0) + 1
         if self._prohibition_hits[key] >= 2:

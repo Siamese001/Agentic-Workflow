@@ -6,6 +6,7 @@ Scans for SSOT, DRY, and Layered Sovereignty violations with high precision.
 import ast
 import sys
 from pathlib import Path
+
 from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
     APPS_LIC_DIR,
@@ -13,7 +14,12 @@ from agentic_core.L0_routing.config import (
     APPS_SHARED_DIR,
     ARCHIVES_DIR,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, emit_replay_key, emit_determinism_digest
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    emit_determinism_digest,
+    emit_replay_key,
+)
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 # guardian: allow-global-mutation

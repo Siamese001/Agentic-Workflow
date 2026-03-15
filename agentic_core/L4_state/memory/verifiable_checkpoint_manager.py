@@ -4,11 +4,17 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import uuid
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from agentic_core.storage import IBlobStorageProviderProtocol
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_snapshots_state,
+)
+
 Logger: Any = logging.getLogger(__name__)
 
 
@@ -209,6 +215,7 @@ def create_checkpoint_manager(storage_type: str = "local", **storage_kwargs) -> 
     Returns:
         VerifiableCheckpointManager instance
     """
+    _emit_snapshots_state(str(uuid.uuid4()), "Module.create_checkpoint_manager", "L4_STATE")
     from agentic_core.storage import create_storage_adapter
 
     create_storage_adapter(storage_type, **storage_kwargs)

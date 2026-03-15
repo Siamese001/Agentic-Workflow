@@ -13,6 +13,7 @@ import re
 import stat
 import tempfile
 import traceback
+import uuid
 from concurrent.futures import ThreadPoolExecutor
 from concurrent.futures import TimeoutError as FuturesTimeoutError
 from datetime import datetime
@@ -146,7 +147,6 @@ class RuntimeStateManager:
         self._persistence_disabled: bool = False
 
     def start_mission(self, mission_type: str, agents_order: list[str]):
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"RuntimeStateManager.start_mission:{mission_type}")
         self.state["status"] = "running"

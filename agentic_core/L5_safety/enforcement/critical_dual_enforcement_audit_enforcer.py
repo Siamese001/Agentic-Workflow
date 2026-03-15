@@ -10,12 +10,18 @@ and fail if audit conditions unmet.
 from __future__ import annotations
 
 import logging
+import uuid
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal
 
 from agentic_core.L5_safety.config.structure_blueprint.ssot import REPORTS_DIR
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+)
 
 Logger = logging.getLogger(__name__)
 EnforcementLayer = Literal["AST", "Runtime", "CI", "Schema", "Signature", "Replay"]
@@ -253,6 +259,7 @@ def run_dual_enforcement_audit() -> int:
     Returns:
         Exit code (0 for success, 1 for violations)
     """
+    _emit_applies_guardrail(str(uuid.uuid4()), "Module.run_dual_enforcement_audit", "L5_POLICY")
     auditor = CriticalDualEnforcementAuditor()
     return auditor.run_ci_audit()
 

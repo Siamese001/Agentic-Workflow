@@ -26,6 +26,7 @@ from agentic_core.L3_orchestration.visualization.workflow_visualization import (
     WorkflowVisualizationRecord,
     get_workflow_visualization_registry,
 )
+from agentic_core.runtime.lifecycle_trace_contract import _emit_observes_runtime_state
 
 logger = logging.getLogger(__name__)
 _VISUALIZATION_LOG = logging.getLogger("adg.visualization_updater")
@@ -173,6 +174,8 @@ def update_workflow_visualization(
     Raises:
         WorkflowVisualizationError: If visualization update is required but fails (Gate A)
     """
+    import uuid  # noqa: PLC0415
+    _emit_observes_runtime_state(str(uuid.uuid4()), "Module.update_workflow_visualization", "L3_ORCHESTRATION")
     _registry = registry or get_workflow_visualization_registry()
 
     # --- Step 1: record current stage ---

@@ -29,6 +29,7 @@ import hashlib
 from dataclasses import dataclass
 from typing import Callable
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from system_learning.enforcement.determinism import deterministic_json
 from system_learning.types.prompt_adg_relations import (
     BUDGET_EXCEEDED,
@@ -48,7 +49,6 @@ from system_learning.types.prompt_artifact_types import (
     CompiledPromptArtifact,
     PromptSlotManifest,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 # ---------------------------------------------------------------------------
 # Budget class thresholds (token counts)

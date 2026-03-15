@@ -5,8 +5,9 @@ from __future__ import annotations
 import json
 from typing import Sequence
 
-from .types import CorrelatedRiskReport, CorrelatedRow, DriftEvent
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
+from .types import CorrelatedRiskReport, CorrelatedRow, DriftEvent
 
 
 class RiskCorrelator:

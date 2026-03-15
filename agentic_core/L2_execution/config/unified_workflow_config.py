@@ -23,18 +23,20 @@ Implements single entrypoint with specialized coordinators for different mission
 # This boosts alignment detection — review and integrate appropriately
 
 
+import uuid
 from abc import ABC, abstractmethod
 from enum import Enum
 from typing import Any
-from agentic_core.L2_execution.enforcement.guardrail_gate import get_guardrail_gate
+
 from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
 from agentic_core.L2_execution.enforcement.capability_chokepoint import (
     authorize_and_execute,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.L2_execution.enforcement.guardrail_gate import get_guardrail_gate
 from agentic_core.L2_execution.types.capability_token_types import (
     CapabilityTokenArtifact,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 def _get_assert_activation_allowed():
@@ -86,7 +88,6 @@ class Coordinator(ABC):
 
     def record_execution(self, success: bool):
         """Record mission execution."""
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "WorkflowMetrics.record_execution")
         self.missions_executed += 1

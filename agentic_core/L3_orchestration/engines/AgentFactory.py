@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 "\nAgent Factory – L3 Orchestration Layer (Phase 9A & 11 – Dec 26, 2025)\nWires L1 Cognition agents with L2 Execution implementations via DIP.\n\nDDD Compliance:\n- L3 orchestrates the wiring between L1 and L2\n- L1 never directly imports L2\n- All dependencies injected at runtime\n\nPhase 11: Configurable Implementation Factory\n- Supports multiple implementation modes: real, mock, aggressive\n- Enables zero-cost unit testing with mock implementations\n- Allows runtime switching of agent behavior\n"
+import uuid
 from typing import Any
 
 try:
@@ -24,6 +25,8 @@ try:
     from agentic_core.L1_cognition.reasoning.canon_agents_syntax import CodeJanitor as CodeJanitor
 except ImportError:
     CodeJanitor = None
+from agentic_core.runtime.lifecycle_trace_contract import _emit_agent_executes_agent
+
 DependencySentinelAgent = None
 try:
     SafetyInspectorAgent = None
@@ -197,6 +200,7 @@ def create_all_agents(ctx: Any | None = None) -> dict:
 
 def _run_self_tests(self) -> dict:
     """Run internal self-tests."""
+    _emit_agent_executes_agent(str(uuid.uuid4()), "Module", "Module._run_self_tests")
     results = {"passed": 0, "failed": 0, "tests": []}
     try:
         assert self is not None

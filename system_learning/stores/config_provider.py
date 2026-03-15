@@ -8,9 +8,15 @@ from __future__ import annotations
 
 import json
 import logging
+import uuid
 from pathlib import Path
 from typing import Any
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_snapshots_state,
+)
 
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
@@ -58,6 +64,7 @@ class FileBackedConfigProvider:
         Reads from the config directory (if available) or falls back to
         extracting config sections from runtime_state.json.
         """
+        _emit_snapshots_state(str(uuid.uuid4()), "FileBackedConfigProvider.get_current_configs", "L4_STATE")
         import uuid as _uuid  # noqa: PLC0415
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "FileBackedConfigProvider.get_current_configs")

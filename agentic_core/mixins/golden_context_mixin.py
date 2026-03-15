@@ -12,6 +12,7 @@ COGNITIVE HARDENING (Feb 2026):
 
 import logging
 from typing import Any, Final
+
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)

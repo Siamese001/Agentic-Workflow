@@ -9,6 +9,7 @@ import logging
 import os
 import sys
 import tempfile
+import uuid
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
@@ -98,7 +99,6 @@ class ReconciliationViolation:
         _call_path: set | None = None,
     ) -> dict[str, int]:
         """L0 maintenance agent - operational only."""
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "FilesystemSSOTReconciler.heal_repository")
         super().heal_repository()

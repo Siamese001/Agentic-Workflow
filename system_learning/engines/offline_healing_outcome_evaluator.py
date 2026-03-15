@@ -6,6 +6,7 @@ No IO except optional store; no config/routing/L4 writes.
 
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from system_learning.types.healing_outcome_intake_types import HealingOutcomeIntakeRecord
 from system_learning.types.healing_outcome_scoring_types import (
     ScoredRecommendation,
@@ -14,7 +15,6 @@ from system_learning.types.healing_outcome_scoring_types import (
     _stable_round,
 )
 from system_learning.types.healing_outcome_types import HealingOutcomeProposal
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class OfflineHealingOutcomeEvaluator:

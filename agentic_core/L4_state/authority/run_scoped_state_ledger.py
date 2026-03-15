@@ -28,11 +28,17 @@ import hashlib
 import json
 import logging
 import threading
+import uuid
 from dataclasses import dataclass
 from typing import Any
 
 from agentic_core.L2_execution.providers import get_clock
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_snapshots_state,
+    _emit_writes_through,
+)
 
 _log = logging.getLogger(__name__)
 _OBSERVE_LOG = logging.getLogger("adg.observes_runtime_state")
@@ -232,6 +238,7 @@ class RunScopedStateLedger:
         final_state_version: int = 0,
     ) -> SnapshotEntry:
         """Record a state snapshot and emit snapshots_state."""
+        _emit_snapshots_state(str(uuid.uuid4()), "RunScopedStateLedger.record_snapshot", "L4_STATE")
         if state is None:
             state = {}
         if mutation_count is None:
@@ -342,6 +349,7 @@ _registry_lock = threading.Lock()
 
 def get_state_ledger(run_id: str, trace_id: str = "") -> RunScopedStateLedger:
     """Get or create a RunScopedStateLedger for ``run_id``."""
+    _emit_writes_through(str(uuid.uuid4()), "Module.get_state_ledger", "L4_STATE")
     with _registry_lock:
         if run_id not in _registry:
             _registry[run_id] = RunScopedStateLedger(run_id=run_id, trace_id=trace_id)

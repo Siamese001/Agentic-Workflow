@@ -15,10 +15,14 @@ import enum
 import hashlib
 from dataclasses import dataclass
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+)
 from agentic_core.utils.canonical_serializer_util import (
     canonical_bytes,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 
 class ReplayMode(enum.Enum):

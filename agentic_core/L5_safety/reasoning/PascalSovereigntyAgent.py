@@ -18,6 +18,7 @@ import platform
 import re
 import sys
 import time
+import uuid
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Literal
@@ -38,6 +39,7 @@ except ImportError:
     def standard_heal(func):
         """Fallback decorator when full infrastructure unavailable."""
         return func
+from agentic_core.runtime.lifecycle_trace_contract import _emit_validated_by_safety_plane
 
 
 # SSOT Integration with fast-fail pruning
@@ -197,6 +199,7 @@ class PascalSovereigntyAgent(SovereignBaseAgent):
         8. CLASS    - Any other class
         9. UTILITY  - No class definitions
         """
+        _emit_validated_by_safety_plane(str(uuid.uuid4()), "PascalSovereigntyAgent.classify_file", "L5_POLICY")
         if path.name == "conftest.py" or path.name == "__init__.py":
             return "IGNORE"
 
@@ -530,7 +533,6 @@ class PascalSovereigntyAgent(SovereignBaseAgent):
     # guardian: allow-type-erasure
     def heal(self, violation: dict) -> dict:
         """Heal Pascal naming violations."""
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "PascalSovereigntyAgent.heal")
         from agentic_core.base_agents.decorators import standard_heal

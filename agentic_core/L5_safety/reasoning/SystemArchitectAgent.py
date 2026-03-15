@@ -8,12 +8,17 @@ from agentic_core.L2_execution.tools import write_gateway as _wg
 "\nSystem Architect Agent - Core Architecture Validation\nCANONICAL: True - Consolidated 2026-01-06 (removed system_architect.py duplicate)\n\nResponsible for:\n- Core architecture integrity\n- Import dependencies, module structure\n- Architectural patterns and design\n"
 import logging
 import os
+import uuid
 from pathlib import Path
 from typing import Any
 
 from agentic_core.L0_routing.config.path_constants import TESTS_DIR
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_validated_by_safety_plane,
+)
 from agentic_core.utils.timeout_decorator_util import timeout
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger = logging.getLogger(__name__)
 
@@ -60,7 +65,6 @@ class SystemArchitectAgent(SovereignBaseAgent):
         [L5 HARDENING] Sovereign Architectural Execution.
         Enforces Hierarchy, Nesting, and Header Sovereignty.
         """
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "SystemArchitectAgent.execute")
         print()
@@ -93,6 +97,7 @@ class SystemArchitectAgent(SovereignBaseAgent):
         Documentation Sovereignty Pass.
         Checks for high-signal headers and specialized Test Protocols.
         """
+        _emit_validated_by_safety_plane(str(uuid.uuid4()), "SystemArchitectAgent._check_file_headers", "L5_POLICY")
         violations = []
         for file_path in self.ctx.python_files:
             try:

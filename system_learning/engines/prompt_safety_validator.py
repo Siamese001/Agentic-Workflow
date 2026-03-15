@@ -30,8 +30,8 @@ from __future__ import annotations
 import hashlib
 import logging
 from dataclasses import dataclass
-from typing import FrozenSet
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from system_learning.enforcement.determinism import deterministic_json
 from system_learning.types.prompt_adg_relations import (
     SAFETY_ALLOWED,
@@ -44,7 +44,6 @@ from system_learning.types.prompt_artifact_types import (
     CompiledPromptArtifact,
     PromptSafetyDecision,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -83,8 +82,8 @@ class SafetyValidatorConfig:
     """
 
     active_policy_hash: str | None = None
-    blocked_guardrails: FrozenSet[str] = frozenset()
-    active_guardrails: FrozenSet[str] = frozenset()
+    blocked_guardrails: frozenset[str] = frozenset()
+    active_guardrails: frozenset[str] = frozenset()
     block_on_extended: bool = False
     block_on_policy_mismatch: bool = True
 

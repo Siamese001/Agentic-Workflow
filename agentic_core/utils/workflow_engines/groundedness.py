@@ -12,8 +12,9 @@ from __future__ import annotations
 import re
 from typing import Callable
 
-from .base import GenerationMetric
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
+from .base import GenerationMetric
 
 
 def _tokenize(text: str) -> list[str]:

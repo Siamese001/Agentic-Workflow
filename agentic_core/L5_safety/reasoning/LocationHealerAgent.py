@@ -24,6 +24,7 @@ import logging
 import re
 import sys
 import time
+import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
 from fnmatch import fnmatch
@@ -56,11 +57,16 @@ from agentic_core.L5_safety.utils.location_constants_util import (
 from agentic_core.L5_safety.utils.location_utils_util import (
     compute_module_path,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_validated_by_safety_plane,
+)
 from agentic_core.utils.timeout_decorator_util import timeout
 
 
 def _get_write_gateway():
+    _emit_validated_by_safety_plane(str(uuid.uuid4()), "Module._get_write_gateway", "L5_POLICY")
     from agentic_core.L2_execution.tools import write_gateway
 
     return write_gateway
@@ -216,7 +222,6 @@ class LocationHealerAgent(SovereignBaseAgent):
         Returns:
             HealResult with violations_found, violations_fixed, status, errors, metadata.
         """
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "LocationHealerAgent.heal")
         start_time = time.time()

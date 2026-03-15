@@ -8,6 +8,7 @@ Uses AST analysis to detect template rendering calls and validate context variab
 import ast
 import sys
 from pathlib import Path
+
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 

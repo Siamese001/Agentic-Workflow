@@ -17,8 +17,9 @@ from typing import Any
 
 import yaml
 
-from .injection_layer_config import InjectionLayer, InstructionalPattern
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
+from .injection_layer_config import InjectionLayer, InstructionalPattern
 
 logger = logging.getLogger(__name__)
 

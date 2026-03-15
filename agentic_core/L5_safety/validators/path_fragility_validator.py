@@ -13,13 +13,18 @@ Pattern Detection:
 import ast
 from pathlib import Path
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+)
+
 from .base_detector_validator import (
     AntiPatternCategory,
     AntiPatternDetector,
     AntiPatternViolation,
     EnforcementLevel,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
 
 
 class PathFragilityDetector(AntiPatternDetector):
@@ -225,6 +230,7 @@ class PathFragilityDetector(AntiPatternDetector):
 
         return """Use pathlib.Path for all path operations:
     from pathlib import Path
+import uuid
 
     # Path construction
     path = Path(base) / "subdir" / "file.txt"

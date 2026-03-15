@@ -2,8 +2,15 @@ from __future__ import annotations
 
 "\nGit Tools - Atomic Module\nExtracted from action_registry.py via Atomic Fission Protocol\nTool ID Prefix: ACT-010\n"
 import logging
+import uuid
 from typing import Any
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_writes_through,
+)
 
 _LOGGER_NAME = "ActionRegistry.GitTools"
 _DEFAULT_LOG_ENTRIES = 10
@@ -31,6 +38,7 @@ class GitTools:
         Returns:
             str: A success message or an error message.
         """
+        _emit_writes_through(str(uuid.uuid4()), "GitTools.commit", "L2_EXECUTION")
         import uuid as _uuid  # noqa: PLC0415
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "GitTools.commit")

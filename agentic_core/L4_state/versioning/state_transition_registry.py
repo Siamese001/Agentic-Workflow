@@ -54,7 +54,11 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_snapshots_state,
+)
 
 logger = logging.getLogger(__name__)
 _TRANSITION_LOG = logging.getLogger("adg.state_transition_committed")
@@ -396,6 +400,7 @@ class StateVersionRegistry:
 
     def persist_transition(self, transition: StateTransitionRecord) -> None:
         """Persist a state transition (Gate A step 5)."""
+        _emit_snapshots_state(str(uuid.uuid4()), "StateVersionRegistry.persist_transition", "L4_STATE")
         with self._lock:
             self._transitions.append(transition)
 

@@ -21,14 +21,15 @@ into the SovereignBaseAgent hierarchy, enabling all agents to:
 from __future__ import annotations
 
 import logging
+import uuid
 from typing import Any
 
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     APPS_LIC_DIR,
     APPS_RG_DIR,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 def _get_ml_write_intent_types():
@@ -173,7 +174,6 @@ class MetaLearningClientMixin:
         Returns:
             Healing pattern if found above similarity threshold, None otherwise
         """
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "MetaLearningClientMixin.ml_recall_healing_pattern")
         self._ensure_ml_client()

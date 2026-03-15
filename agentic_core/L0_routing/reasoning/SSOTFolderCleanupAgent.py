@@ -7,6 +7,7 @@ import ast
 import logging
 import os
 import re
+import uuid
 from pathlib import Path
 from typing import Any
 
@@ -156,7 +157,6 @@ class SSOTFolderCleanupAgent(SovereignBaseAgent):
         Returns:
             True if path is in an approved location
         """
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, f"SSOTFolderCleanupAgent.is_path_ssot_approved:{path.name}")
         try:

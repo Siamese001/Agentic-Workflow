@@ -1,8 +1,15 @@
 from __future__ import annotations
 
+import uuid
 from collections import defaultdict
 from dataclasses import dataclass
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+)
 
 
 class ToolBudgetExceededError(Exception):
@@ -52,6 +59,7 @@ class DeterministicLoopDetector:
         Raises:
             ToolBudgetExceededError: If the counter exceeds the tool's max_steps.
         """
+        _emit_applies_guardrail(str(uuid.uuid4()), "DeterministicLoopDetector.increment_and_check", "L2_EXECUTION")
         import uuid as _uuid  # noqa: PLC0415
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "DeterministicLoopDetector.increment_and_check")

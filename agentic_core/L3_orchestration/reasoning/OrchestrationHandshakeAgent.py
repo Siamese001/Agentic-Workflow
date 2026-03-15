@@ -22,8 +22,8 @@ from agentic_core.L0_routing.types.routing_artifact_types import (
 from agentic_core.L0_routing.types.routing_contracts_types import TelemetryEmitter
 from agentic_core.L3_orchestration.types.route_decision_artifact_types import build_l3_route_decision_artifact
 from agentic_core.runtime.config.contextual_router_config import RoutingRequest, get_router
-from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.utils.decorators_compat_util import standard_heal
 
 
 class OrchestrationHandshakeAgent(SovereignBaseAgent, CoreOrchestrationAgent):

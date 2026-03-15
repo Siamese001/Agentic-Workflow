@@ -14,11 +14,11 @@ from __future__ import annotations
 
 import logging
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from system_learning.ports.meta_prior_provider import (
     _NEUTRAL_PRIOR,
     NeutralMetaPriorProvider,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 

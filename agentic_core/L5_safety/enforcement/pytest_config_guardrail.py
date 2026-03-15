@@ -4,8 +4,15 @@ from agentic_core.L2_execution.tools import write_gateway as _wg
 "\nPytest Configuration Enforcement Guard\n====================================\n\nValidates pytest configuration against hardening rules learned from RCA.\nEnsures conftest hooks are transparent and marker behavior is documented.\n"
 import ast
 import sys
+import uuid
 from pathlib import Path
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+)
 
 
 class PytestEnforcementGuard:
@@ -18,6 +25,7 @@ class PytestEnforcementGuard:
 
     def validate_pytest_configuration(self) -> tuple[list[str], list[str]]:
         """Validate entire pytest configuration setup."""
+        _emit_applies_guardrail(str(uuid.uuid4()), "PytestEnforcementGuard.validate_pytest_configuration", "L5_POLICY")
         import uuid as _uuid  # noqa: PLC0415
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "PytestEnforcementGuard.validate_pytest_configuration")

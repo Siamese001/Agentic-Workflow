@@ -367,7 +367,6 @@ class SovereignLLMGateway:
 
     async def route_generation(self, request: GenerationRequest, **kwargs) -> GenerationResponse:
         """Main entry point for all LLM generation, enforcing 2x2 agent policy."""
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L2_EXECUTION, f"SovereignLLMGateway.route_generation:{request.agent_id}")
         _gw = get_routing_gateway()

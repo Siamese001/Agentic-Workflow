@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 "Specificity Prose Engine Agent - Cover Letter Generator (K.10)\n\n\n# NAMING FIXED: LOGGER → Logger\nLogger = logging.getLogger(__name__)\nThis agent generates high-signal cover letters with company-specific details.\nEnforces 3 paragraphs @ 85-100 words each with ≥4 company-specific details.\n\nLayer: L2_execution\nResponsibilities:\n- Generate cover letter with 3 paragraphs\n- Enforce 85-100 words per paragraph\n- Include ≥4 company-specific details\n- Pass find-replace test for specificity\n\nNon-responsibilities:\n- Resume generation\n- Bullet synthesis\n- Headline composition\n"
+import uuid
 from dataclasses import dataclass
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from typing import Any
 
 from pydantic import ValidationError as ValidationResult
+
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass
@@ -87,7 +89,6 @@ class SpecificityProseEngine:
         Returns:
             SpecificityProseResult with cover letter and validation details
         """
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "SpecificityProseGenerator.generate_cover_letter")
         self.recovery_loop.reset(self.config.temperature)

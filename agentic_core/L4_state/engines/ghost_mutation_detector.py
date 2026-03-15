@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+import uuid
 from typing import Any, NamedTuple
+
+from agentic_core.runtime.lifecycle_trace_contract import _emit_writes_through
 
 ExecutionTranscript = list[dict[str, Any]]
 
@@ -57,6 +60,7 @@ def detect_ghost_mutations(
     Returns:
         A ReconciliationResult indicating if the state is consistent.
     """
+    _emit_writes_through(str(uuid.uuid4()), "Module.detect_ghost_mutations", "L4_STATE")
     expected_state_after = state_before.copy()
     for mutation in transcript:
         if mutation.get("operation") == "set_value":

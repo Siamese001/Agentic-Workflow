@@ -19,6 +19,7 @@ import hashlib
 import json
 import os
 import re
+import uuid
 from dataclasses import asdict, dataclass, field
 from enum import Enum
 from pathlib import Path, PurePosixPath
@@ -28,8 +29,8 @@ from agentic_core.L0_routing.config.path_constants import (
     GLOBAL_EXCLUDED_DIRS,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 # ---------------------------------------------------------------------------
 # V15 Enforcement Infrastructure
@@ -758,7 +759,6 @@ class GuardianResult:
         evidence: dict[str, Any] | None = None,
     ) -> None:
         """Add a check entry and update top-level status."""
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"GuardianContractResult.add_check:{check_id}")
         status_val = status.value if isinstance(status, CheckStatus) else status

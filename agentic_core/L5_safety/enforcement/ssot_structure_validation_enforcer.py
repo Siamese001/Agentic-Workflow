@@ -20,6 +20,7 @@ USAGE:
 
 from __future__ import annotations
 
+import uuid
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Final
@@ -30,10 +31,15 @@ from agentic_core.L5_safety.config.structure_blueprint import (
     L4_APPROVED_FOLDERS,
     VARIABLE_DEPTH_SUBFOLDERS,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.L5_safety.enforcement.registry_verification_enforcer import (
     AgentInfo,
     RegistryVerifier,
+)
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_verifies_policy,
 )
 
 # Base agent location requirement
@@ -156,6 +162,8 @@ class SSOTStructureValidator:
 
     def _validate_base_agent_location(self, agent: AgentInfo) -> StructureViolation | None:
         """Validate that base agents are in the correct location."""
+        _emit_verifies_policy(str(uuid.uuid4()), "SSOTStructureValidator._validate_base_agent_location", "L5_POLICY")
+        _emit_applies_guardrail(str(uuid.uuid4()), "SSOTStructureValidator._validate_base_agent_location", "L5_POLICY")
         if not self._is_base_agent(agent.class_name):
             return None
 
@@ -291,7 +299,6 @@ class SSOTStructureValidator:
 
     def validate_agent(self, agent: AgentInfo) -> list[StructureViolation]:
         """Validate a single agent against all SSOT rules."""
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, f"SSOTStructureValidationEnforcer.validate_agent:{agent.name}")
         violations = []

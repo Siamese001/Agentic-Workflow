@@ -5,6 +5,7 @@ import ast
 import logging
 import re
 import threading
+import uuid
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
@@ -18,7 +19,12 @@ from agentic_core.L4_state.utils.layer_gravity_util import (
     extract_layer_from_module,
     extract_layer_from_path,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+)
 
 Logger = logging.getLogger(__name__)
 
@@ -101,6 +107,7 @@ class StructuralValidatorAgent(SovereignBaseAgent):
         Public entry point for ArchitectureGovernorAgent.
         Returns an object with a 'violations' attribute.
         """
+        _emit_applies_guardrail(str(uuid.uuid4()), "StructuralValidatorAgent.validate_structure", "L5_POLICY")
         import uuid as _uuid  # noqa: PLC0415
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "StructuralValidatorAgent.validate_structure")

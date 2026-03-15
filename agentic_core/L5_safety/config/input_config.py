@@ -12,7 +12,12 @@ Provides input validation utilities for safety checks.
 import logging
 import re
 from typing import Any
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+)
 
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0

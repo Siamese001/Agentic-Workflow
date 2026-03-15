@@ -10,6 +10,7 @@ Contract version: 1.0.0
 from __future__ import annotations
 
 import hashlib
+import uuid
 
 from agentic_core.L0_routing.types.crypto_trust_types import (
     HashMismatchTracker,
@@ -21,7 +22,15 @@ from agentic_core.L0_routing.types.crypto_trust_types import (
     SigningAlgorithm,
     TrustRoot,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, emit_replay_key, emit_determinism_digest
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_verifies_boundary,
+    emit_determinism_digest,
+    emit_replay_key,
+)
 
 # =============================================================================
 # Canonical Hashing
@@ -50,6 +59,7 @@ def sign_artifact(
     semantic_clock_tick: int,
 ) -> SignatureEnvelope:
     """§7.4 / §7.4.1 — Sign artifact bytes via the enclave. Fail-closed."""
+    _emit_signs_execution_trace(str(uuid.uuid4()), "seg_hash", "seg_sig", 0)
     artifact_hash = hash_artifact_canonical(artifact_bytes)
     try:
         signature = enclave.sign(artifact_bytes, key_id)
@@ -98,6 +108,8 @@ def verify_signature(
     3. Signature is valid per enclave.verify()
     """
     # Check artifact hash
+    _emit_verifies_boundary(str(uuid.uuid4()), "Module.verify_signature", "L0_ROUTING")
+    _emit_applies_guardrail(str(uuid.uuid4()), "Module.verify_signature", "L0_ROUTING")
     actual_hash = hash_artifact_canonical(artifact_bytes)
     if actual_hash != envelope.artifact_hash:
         raise VerificationError(

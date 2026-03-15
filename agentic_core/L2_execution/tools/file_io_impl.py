@@ -3,6 +3,7 @@ from __future__ import annotations
 "\nFile I/O Tools - Atomic Module\nExtracted from action_registry.py via Atomic Fission Protocol\nTool ID Prefix: ACT-002\n"
 import logging
 import os
+import uuid
 from pathlib import Path
 from typing import Any
 
@@ -10,7 +11,13 @@ try:
     import PyPDF2
 except ImportError:
     PyPDF2: Any = None
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_writes_through,
+)
+
 Logger: Any = logging.getLogger("ActionRegistry.FileIO")
 
 
@@ -147,6 +154,7 @@ class FileIo:
         Returns:
             str: A success message or an error message.
         """
+        _emit_writes_through(str(uuid.uuid4()), "FileIo.save_file", "L2_EXECUTION")
         Logger.info(f"[SAVE] Saving file: '{file_path}' (content length: {len(content)})")
         _ectx = _make_execution_context(file_path, "file_io_impl.save_file")
         _invoke_authorize_and_execute(

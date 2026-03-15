@@ -24,6 +24,7 @@ from __future__ import annotations
 import hashlib
 import logging
 import time
+import uuid
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Callable
@@ -47,7 +48,11 @@ from agentic_core.L3_orchestration.visualization.visualization_updater import (
     record_workflow_completion,
 )
 from agentic_core.runtime.execution_trace import get_active_execution_trace
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_agent_executes_agent,
+    _emit_records_execution_trace,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -340,6 +345,7 @@ _global_dispatcher: HandoffDispatcher | None = None
 
 def get_handoff_dispatcher() -> HandoffDispatcher:
     """Return the process-level handoff dispatcher."""
+    _emit_agent_executes_agent(str(uuid.uuid4()), "Module", "Module.get_handoff_dispatcher")
     global _global_dispatcher
     if _global_dispatcher is None:
         _global_dispatcher = HandoffDispatcher()

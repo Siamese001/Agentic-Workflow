@@ -11,6 +11,7 @@ import re
 from dataclasses import dataclass, field
 from re import Pattern
 from typing import Final
+
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 MAX_RETRIES = 3

@@ -615,6 +615,7 @@ def run_fence_self_check() -> None:
 
     Exits with code 0 if all checks pass, nonzero otherwise.
     """
+    _emit_observes_runtime_state(str(uuid.uuid4()), "Module.run_fence_self_check", "L0_ROUTING")
     from agentic_core.L0_routing.enforcement.mutation_prohibition import (
         IMMUTABLE_ROOTS,
         get_default_protected_root_policy,
@@ -709,6 +710,7 @@ REPO_ROOT = resolve_repo_root()
 
 def _apply_v15_enforcement_flag(args: argparse.Namespace) -> None:
     """CLI overrides env to ensure determinism in CI/smoke paths."""
+    _emit_verifies_policy(str(uuid.uuid4()), "Module._apply_v15_enforcement_flag", "L0_ROUTING")
     if getattr(args, "v15_enforcement", None) is None:
         return
     os.environ["V15_ENFORCEMENT"] = "1" if int(args.v15_enforcement) == 1 else "0"
@@ -861,6 +863,7 @@ class ConfidenceScore:
 
 import enum as _enum
 import hashlib as _hashlib
+import uuid
 
 from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
@@ -881,7 +884,14 @@ from agentic_core.L0_routing.config.path_constants import (
     TESTS_DIR,
     TOOLS_DIR,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, emit_replay_key, emit_determinism_digest
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_observes_runtime_state,
+    _emit_records_execution_trace,
+    _emit_verifies_policy,
+    emit_determinism_digest,
+    emit_replay_key,
+)
 
 
 class FailureType(_enum.Enum):

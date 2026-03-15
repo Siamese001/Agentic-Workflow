@@ -2,12 +2,13 @@ from __future__ import annotations
 
 "MCP Tool Server Integration.\n\nProvides MCP (Model Context Protocol) tool server integration\nfor external tool access and context providers.\n\nPhase 1C - SDK Integration Layer\n"
 import logging
+import uuid
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from typing import Any
 
 from agentic_core.L0_routing.enforcement.runtime_guard import runtime_guard
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger = logging.getLogger(__name__)
 
@@ -85,7 +86,6 @@ class MCPToolServer:
         Raises:
             ValueError: If legacy capability enforcer is disabled (default).
         """
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "MCPServerConfig.set_capability_enforcer")
         if not self._allow_legacy_capability_enforcer:

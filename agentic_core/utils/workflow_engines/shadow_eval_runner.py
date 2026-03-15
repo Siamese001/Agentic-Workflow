@@ -11,13 +11,14 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
 from ..runners.offline_eval_runner import OfflineEvaluationRunner
 from ..runners.replay_eval_runner import ReplayEvaluationRunner, SystemConfig
 from ..schemas.evaluation_dataset_schema import EvaluationDataset
 from ..schemas.evaluation_result_schema import DeltaReport, EvaluationReport
 from .drift_monitor import AnswerQualityMonitor, RetrievalDriftMonitor
 from .snapshots import RetrievalDriftSnapshot
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class ShadowEvaluationRunner:

@@ -13,6 +13,7 @@ from __future__ import annotations
 import hashlib
 from dataclasses import dataclass
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from system_learning.constraints.delta_enforcer import validate_surface_change
 from system_learning.validators.dampening import (
     CooldownPolicy,
@@ -20,7 +21,6 @@ from system_learning.validators.dampening import (
     assert_cooldown_ok,
     assert_min_sample_size,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 # =============================================================================
 # ChangePackage (Minimal Implementation for Phase 3)

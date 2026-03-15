@@ -20,9 +20,11 @@ from __future__ import annotations
 
 import ast
 import re
+import uuid
 from pathlib import Path
 
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
 from .base_detector_validator import (
     AntiPatternCategory,
     AntiPatternDetector,
@@ -72,7 +74,7 @@ _SKIP_SUBSTRINGS: tuple[str, ...] = (
 )
 
 # Return values that count as "empty / null" (availability guard patterns)
-_NULL_CONSTANTS: frozenset[object] = frozenset({None, "", 0, False})
+_NULL_CONSTANTS: frozenset[object] = frozenset({None, "", 0})
 
 
 # ---------------------------------------------------------------------------
@@ -186,7 +188,6 @@ class SilentDegradationDetector(AntiPatternDetector):
 
     def detect(self, file_path: Path, tree: ast.Module) -> list[AntiPatternViolation]:
         """Scan *tree* for all silent degradation sub-patterns."""
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, f"SilentDegradationDetector.detect:{file_path.name}")
         violations: list[AntiPatternViolation] = []

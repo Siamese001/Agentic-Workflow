@@ -10,8 +10,14 @@ Failure of either → abort commit, emit MutationCommitFailure.
 from __future__ import annotations
 
 import logging
+import uuid
 from typing import Any, Callable
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_snapshots_state,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -39,6 +45,7 @@ class TwoPhaseCoordinator:
         Returns (resource_result, ledger_result) on success.
         Raises MutationCommitFailure if either ACK fails.
         """
+        _emit_snapshots_state(str(uuid.uuid4()), "TwoPhaseCoordinator.execute_commit", "L4_STATE")
         import uuid as _uuid  # noqa: PLC0415
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "TwoPhaseCoordinator.execute_commit")

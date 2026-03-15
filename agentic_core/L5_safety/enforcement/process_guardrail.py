@@ -21,7 +21,12 @@ import signal
 import threading
 from pathlib import Path
 from typing import Final
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+)
 
 logger = logging.getLogger(__name__)
 BLOCKED_COMMANDS: Final[frozenset[str]] = frozenset(

@@ -3,7 +3,12 @@ from __future__ import annotations
 "\nL5 Safety: SafetyGuardrail\nEnforces Zero-Loss principles during code mutation.\n"
 import ast
 from typing import Any
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+)
 
 
 class SafetyGuardrail:

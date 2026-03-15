@@ -7,8 +7,9 @@ retrieval results into a single ranked candidate list.
 
 from __future__ import annotations
 
-from .interfaces import Document, ICandidateFusion
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
+from .interfaces import Document, ICandidateFusion
 
 
 class ReciprocalRankFusion(ICandidateFusion):

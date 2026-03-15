@@ -13,7 +13,12 @@ from typing import Any
 from agentic_core.L0_routing.engines.shadow_router_classifier import ShadowRouterClassifier
 from agentic_core.L0_routing.types.routing_artifact_types import RouteDecisionArtifact
 from agentic_core.L0_routing.types.shadow_routing_types import ShadowRoutingTelemetry
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, emit_replay_key, emit_determinism_digest
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    emit_determinism_digest,
+    emit_replay_key,
+)
 
 logger = logging.getLogger(__name__)
 

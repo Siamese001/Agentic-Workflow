@@ -6,8 +6,14 @@ try:
 except ImportError:
     GraphDatabase = None
 import os
+import uuid
 from typing import Any
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_writes_through,
+)
 
 
 class Neo4jGraphStore:
@@ -38,6 +44,7 @@ class Neo4jGraphStore:
         """
         MERGE an Entity node with basic fields + arbitrary metadata.
         """
+        _emit_writes_through(str(uuid.uuid4()), "Neo4jGraphStore.upsert_entity", "L4_STATE")
         import uuid as _uuid  # noqa: PLC0415
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "Neo4jGraphStore.upsert_entity")

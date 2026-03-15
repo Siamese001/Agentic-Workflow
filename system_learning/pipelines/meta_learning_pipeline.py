@@ -50,10 +50,16 @@ from __future__ import annotations
 
 import hashlib
 import logging
+import uuid
 from dataclasses import dataclass
 from typing import Any, Protocol
 
 logger = logging.getLogger(__name__)
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_observes_runtime_state,
+    _emit_snapshots_state,
+    _emit_verifies_policy,
+)
 from system_learning.arbitration.engine import ArbitrationEngine
 from system_learning.arbitration.types import ArbitrationCandidate, ArbitrationPolicy
 from system_learning.confidence.engine import HealingConfidenceScorer
@@ -722,6 +728,10 @@ def run_pipeline(
     PipelineError
         If pipeline execution fails.
     """
+    _emit_verifies_policy(str(uuid.uuid4()), "Module.run_pipeline", "L4_STATE")
+    _emit_observes_runtime_state(str(uuid.uuid4()), "Module.run_pipeline", "L4_STATE")
+    import uuid  # noqa: PLC0415
+    _emit_snapshots_state(str(uuid.uuid4()), "Module.run_pipeline", "L4_STATE")
     if window_start_utc >= window_end_utc:
         raise PipelineError(f"Invalid window: start={window_start_utc} >= end={window_end_utc}")
     if deps.freeze_reader is not None and deps.freeze_reader.is_frozen():

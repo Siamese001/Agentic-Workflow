@@ -12,9 +12,9 @@ from agentic_core.L1_cognition.types.react_trace_types import (
     assert_c0_informational,
 )
 from agentic_core.patterns.base import BaseReasoningPattern
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.runtime.state import AgentState
 from agentic_core.runtime.tools import ToolRegistry
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger = logging.getLogger(__name__)
 

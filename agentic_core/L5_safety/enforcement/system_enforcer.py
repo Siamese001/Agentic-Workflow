@@ -9,7 +9,11 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from agentic_core.L5_safety.config.structure_blueprint import AGENT_DISCOVERY_JSON
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+)
 
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 Logger = logging.getLogger(__name__)

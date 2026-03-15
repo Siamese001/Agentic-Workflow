@@ -19,9 +19,14 @@ from agentic_core.L0_routing.telemetry.routing_telemetry import (
     RoutingTelemetryContext,
     record_routing_telemetry,
 )
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    emit_determinism_digest,
+    emit_replay_key,
+)
 
 from ..engines.assembly_stage import GovernedPayload
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, emit_replay_key, emit_determinism_digest
 
 _log = logging.getLogger(__name__)
 

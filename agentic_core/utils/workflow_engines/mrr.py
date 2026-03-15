@@ -8,8 +8,9 @@ from __future__ import annotations
 
 from typing import Any
 
-from .base import RetrievalMetric
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
+from .base import RetrievalMetric
 
 
 class MeanReciprocalRank(RetrievalMetric):

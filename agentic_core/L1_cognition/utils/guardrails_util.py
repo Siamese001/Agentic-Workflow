@@ -18,11 +18,12 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
-import time
+import uuid
 from dataclasses import dataclass, field
 from typing import Any
 
 from agentic_core.L0_routing.providers.clock_provider import ClockProvider as clock_provider
+
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger = logging.getLogger(__name__)
@@ -72,7 +73,6 @@ class MetaLearningGuardrails:
         Returns:
             True if key is safe, False otherwise
         """
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"GuardrailsUtil.validate_cache_key:{key[:32]}")
         if not key or not isinstance(key, str):

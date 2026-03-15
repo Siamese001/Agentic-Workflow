@@ -5,6 +5,7 @@ import hashlib
 import json
 import logging
 import re
+import uuid
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 from pathlib import Path
@@ -22,12 +23,12 @@ from agentic_core.prompt_governance.contracts.slot_contracts import (
     SlotU0,
     validate_slot_order,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.prompt_governance.security.validators.output_schema_validator import (
     validate_against_schema,
     validate_context_contract,
     validate_healer_reentry,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 __all__ = [
     "AssembledPrompt",
@@ -224,7 +225,6 @@ class PromptAssembler:
             SecurityIntegrityError: If security validation fails
             PromptAssemblyError: If XML structure is malformed
         """
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"PromptAssembler.assemble:{role}")
         if template_name and template_name in self.templates:

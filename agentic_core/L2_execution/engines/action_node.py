@@ -7,10 +7,16 @@ Handles tool selection, execution, and output formatting.
 Isolated from perception and reasoning logic.
 """
 import asyncio
+import uuid
 from typing import Any
 
 from agentic_core.L2_execution.providers import get_clock
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_transcripts_response,
+)
 
 
 def _invoke_authorize_and_execute(execution_context, target_callable, capability_token, payload, **kw):
@@ -66,6 +72,7 @@ class ActionNode:
         Returns:
             Action result with output and metadata
         """
+        _emit_transcripts_response(str(uuid.uuid4()), "ActionNode.act", "model")
         import uuid as _uuid  # noqa: PLC0415
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "ActionNode.act")

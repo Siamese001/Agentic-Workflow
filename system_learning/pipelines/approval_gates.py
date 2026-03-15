@@ -12,6 +12,7 @@ from __future__ import annotations
 
 from enum import Enum
 from typing import Any, Protocol
+
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 

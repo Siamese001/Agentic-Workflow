@@ -37,6 +37,7 @@ from agentic_core.L0_routing.types.guardian_registry_types import (
     get_guardian_specs,
 )
 from agentic_core.L0_routing.utils.project_root_util import get_validated_project_root
+from agentic_core.runtime.lifecycle_trace_contract import _emit_observes_runtime_state
 
 
 def _run_single_guardian(
@@ -80,6 +81,8 @@ def run_all_guardians(
     - Combined metrics
     - Artifact references
     """
+    import uuid  # noqa: PLC0415
+    _emit_observes_runtime_state(str(uuid.uuid4()), "Module.run_all_guardians", "L0_ROUTING")
     if repo_root is None:
         repo_root = get_validated_project_root()
 

@@ -17,10 +17,17 @@ from __future__ import annotations
 import hashlib
 import logging
 import time
+import uuid
 from dataclasses import dataclass
 from enum import Enum
 from typing import Any
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_verifies_policy,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -58,6 +65,7 @@ class PolicyAdaptationProposal:
     applied: bool = False
 
     def to_dict(self) -> dict[str, Any]:
+        _emit_verifies_policy(str(uuid.uuid4()), "PolicyAdaptationProposal.to_dict", "L5_POLICY")
         return {
             "policy_hash": self.policy_hash[:12],
             "new_policy_hash": self.new_policy_hash[:12],

@@ -16,6 +16,7 @@ import logging
 from datetime import datetime
 from pathlib import Path
 from typing import Protocol
+
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 LOGGER = logging.getLogger(__name__)

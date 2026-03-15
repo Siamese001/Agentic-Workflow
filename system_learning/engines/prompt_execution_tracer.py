@@ -21,8 +21,14 @@ from __future__ import annotations
 
 import hashlib
 import logging
+import uuid
 from dataclasses import dataclass
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_transcripts_response,
+)
 from system_learning.enforcement.determinism import deterministic_json
 from system_learning.types.prompt_adg_relations import (
     EXECUTION_EXECUTED_BY_MODEL,
@@ -44,7 +50,6 @@ from system_learning.types.prompt_artifact_types import (
     PromptExecutionRecord,
     PromptOutcomeRecord,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -403,6 +408,7 @@ def trace_execution(
     timestamp_utc: int,
 ) -> ExecutionTraceResult:
     """Module-level convenience wrapper."""
+    _emit_transcripts_response(str(uuid.uuid4()), "Module.trace_execution", "model")
     return PromptExecutionTracer().trace(prompt_hash, trace_id, signal, timestamp_utc)
 
 

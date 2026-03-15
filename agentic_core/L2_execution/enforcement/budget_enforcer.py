@@ -13,8 +13,10 @@ from __future__ import annotations
 import io
 import signal
 import threading
+import uuid
 from contextlib import contextmanager
 from typing import Any, Callable
+
 from agentic_core.L2_execution.enforcement.guardrail_gate import get_guardrail_gate
 
 try:
@@ -26,7 +28,13 @@ except ImportError:
     _HAS_RESOURCE = False
 _HAS_SIGALRM = hasattr(signal, "SIGALRM")
 from agentic_core.L2_execution.types.sandbox_envelope_types import SandboxEnvelope
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_hard_fails_untranscripted,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+)
 
 
 class BudgetExceeded(RuntimeError):
@@ -88,6 +96,8 @@ class BudgetEnforcer:
 
         Returns (exit_code, stdout_bytes) per PTC ToolResult contract [3].
         """
+        _emit_hard_fails_untranscripted(str(uuid.uuid4()), "BudgetEnforcer.run")
+        _emit_applies_guardrail(str(uuid.uuid4()), "BudgetEnforcer.run", "L2_EXECUTION")
         import uuid as _uuid  # noqa: PLC0415
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "BudgetEnforcer.run")

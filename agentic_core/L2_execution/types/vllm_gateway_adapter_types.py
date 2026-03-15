@@ -19,7 +19,12 @@ Seam contract:
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+)
 
 _DEFAULT_QUEUE: VLLMQueueController | None = None
 _DEFAULT_REGISTRY: VLLMCircuitBreakerRegistry | None = None

@@ -34,6 +34,7 @@ def _get_embedding_sovereign_agent():
 import hashlib
 import json
 import logging
+import uuid
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -169,7 +170,6 @@ class MetaLearningClient:
         Returns:
             Cached value or None if not found/expired
         """
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"MetaClient.cache_get:{domain}:{key}")
         cache_key = self._get_cache_key(key, domain)

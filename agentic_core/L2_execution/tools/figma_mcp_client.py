@@ -3,7 +3,12 @@ from __future__ import annotations
 "\nMCP Tool Stubs - Planned Feature Integration\n\nPURPOSE:\n    Stub implementations for MCP-powered tool integrations.\n    Provides Figma, Pinecone, and Memory MCP tool stubs for testing.\n\nSTATUS: Stub - Planned for Phase 2 MCP Integration\nPLANNED FEATURES:\n    - FigmaTools: Design token extraction, screenshots, design context\n    - PineconeTools: Vector search and RAG operations\n    - MemoryTools: Knowledge graph entity and node operations\n\nEXTRACTED: From action_registry.py via Atomic Fission Protocol\nTOOL ID PREFIX: ACT-012+\n"
 import logging
 from typing import Any
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+)
 
 Logger: Any = logging.getLogger("ActionRegistry.MCPStubs")
 

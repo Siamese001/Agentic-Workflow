@@ -7,11 +7,16 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L2_execution.tools import write_gateway as _wg
 
 "\nRegressionOracleAgent - Extracted for one-class-per-file pattern.\n\nOriginally from: MethodChangeDetectorAgent.py\nExtracted: 2026-01-06 (Surgical Extraction)\n"
+import uuid
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_validated_by_safety_plane,
+)
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass
@@ -74,7 +79,6 @@ class RegressionOracleAgent(SovereignBaseAgent):
 
         Listens for FILE_MODIFIED signals and generates tests.
         """
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "RegressionOracleAgent.execute")
         Logger.info("🔮 Regression Oracle: Monitoring for FILE_MODIFIED signals...")
@@ -105,6 +109,7 @@ class RegressionOracleAgent(SovereignBaseAgent):
 
         Returns a list of violation descriptions (empty = safe).
         """
+        _emit_validated_by_safety_plane(str(uuid.uuid4()), "RegressionOracleAgent._ast_safety_check", "L5_POLICY")
         import ast as _ast
 
         DANGEROUS_CALLS = {"os.system", "subprocess", "exec", "eval", "__import__", "compile"}

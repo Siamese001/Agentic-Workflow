@@ -11,9 +11,13 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.shared.architecture_constants import ALLOWED_ROOT_FILES
-
 from agentic_core.utils.security_util import safe_execute
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+)
 
 LOGGER = logging.getLogger(__name__)
 Logger: Any = logging.getLogger(__name__)

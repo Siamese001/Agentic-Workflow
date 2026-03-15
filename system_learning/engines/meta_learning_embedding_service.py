@@ -12,10 +12,10 @@ import struct
 from pathlib import Path
 from typing import Any, Protocol
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from system_learning.engines.embedding_service_factory import EmbeddingServiceFactory
 from system_learning.engines.retrieval_profile import RetrievalProfile
 from system_learning.types.embedding_artifact import EmbeddingArtifact
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class Embedder(Protocol):

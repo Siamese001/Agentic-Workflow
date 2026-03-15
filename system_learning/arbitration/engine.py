@@ -7,8 +7,9 @@ import json
 import math
 from typing import Sequence
 
-from .types import ArbitrationCandidate, ArbitrationDecision, ArbitrationPolicy
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
+from .types import ArbitrationCandidate, ArbitrationDecision, ArbitrationPolicy
 
 
 class ArbitrationEngine:

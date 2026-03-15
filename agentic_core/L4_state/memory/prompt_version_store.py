@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import hashlib
 from typing import Literal
+
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 _versions: dict[str, str] = {}

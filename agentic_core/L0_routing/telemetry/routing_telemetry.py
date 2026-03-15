@@ -43,6 +43,7 @@ from enum import Enum
 from typing import Any
 
 from agentic_core.L2_execution.providers import get_clock
+from agentic_core.runtime.lifecycle_trace_contract import _emit_observes_runtime_state
 
 logger = logging.getLogger(__name__)
 _TRACE_LOG = logging.getLogger("adg.records_execution_trace")
@@ -221,6 +222,7 @@ def record_routing_telemetry(
     Returns:
         RoutingTelemetry (immutable, 15 fields), persisted to the store.
     """
+    _emit_observes_runtime_state(str(uuid.uuid4()), "Module.record_routing_telemetry", "L0_ROUTING")
     clk = get_clock()
     now = clk.now_epoch()
 

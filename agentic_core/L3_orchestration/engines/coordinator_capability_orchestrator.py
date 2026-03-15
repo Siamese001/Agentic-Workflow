@@ -1,14 +1,19 @@
 from __future__ import annotations
 
 "\nBase Coordinator Class\n\nProvides the base interface and common functionality for all specialized coordinators.\nEach coordinator owns a specific orchestration domain with clear responsibilities.\n"
+import uuid
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Any
 
 from agentic_core.L2_execution.providers import get_clock
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_agent_executes_agent,
+    _emit_records_execution_trace,
+)
 
 from .execution import ExecutionStatus, WorkflowContext, WorkflowResult
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass
@@ -52,6 +57,7 @@ class WorkflowCoordinator(ABC):
         Returns:
             Workflow result
         """
+        _emit_agent_executes_agent(str(uuid.uuid4()), "WorkflowCoordinator", "WorkflowCoordinator.coordinate")
         pass
 
     @abstractmethod

@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import hashlib
 import logging
+import uuid
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -125,7 +126,6 @@ class UniversalWriteGateway:
 
     def check_write_permission(self, path: str, operation: str = "write") -> bool:
         """Check if write operation is permitted."""
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"UniversalWriteGateway.check_write_permission:{operation}")
         if self.replay_mode:

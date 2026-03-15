@@ -16,10 +16,18 @@ from __future__ import annotations
 import contextlib
 import functools
 import logging
+import uuid
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Callable
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_hard_fails_untranscripted,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -194,6 +202,8 @@ _global_guardrail_gate: GuardrailGate | None = None
 
 def get_guardrail_gate(policy_hash: str = "") -> GuardrailGate:
     """Return the process-level guardrail gate."""
+    _emit_hard_fails_untranscripted(str(uuid.uuid4()), "Module.get_guardrail_gate")
+    _emit_applies_guardrail(str(uuid.uuid4()), "Module.get_guardrail_gate", "L2_EXECUTION")
     global _global_guardrail_gate
     if _global_guardrail_gate is None:
         _global_guardrail_gate = GuardrailGate(policy_hash=policy_hash)

@@ -13,6 +13,7 @@ from __future__ import annotations
 import asyncio
 import logging
 from typing import Any, Protocol
+
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger = logging.getLogger(__name__)

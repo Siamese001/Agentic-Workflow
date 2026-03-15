@@ -46,7 +46,6 @@ if TYPE_CHECKING:
     from agentic_core.adg.artifact.builder import ADGArtifact
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
-
 # ---------------------------------------------------------------------------
 # Snapshot (Tier 1)
 # ---------------------------------------------------------------------------

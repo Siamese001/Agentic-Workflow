@@ -20,6 +20,7 @@ import hashlib
 import logging
 import os
 import re
+import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
@@ -147,7 +148,6 @@ class SignalAssessment:
         Returns:
             True if acceptable
         """
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "SignalQualityResult.is_acceptable")
         quality_hierarchy = {

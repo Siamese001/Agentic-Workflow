@@ -2,12 +2,13 @@ from __future__ import annotations
 
 "\nToolsmithAgent - L2 Tool Creation Agent\n\n"
 import logging
+import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
 
 from agentic_core.L2_execution.tools.write_gateway import write_json, write_text
-from agentic_core.utils.timeout_decorator_util import timeout
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.utils.timeout_decorator_util import timeout
 
 Logger = logging.getLogger(__name__)
 
@@ -140,7 +141,6 @@ class ToolsmithAgent(SovereignBaseAgent):
         Returns:
             Generated tool
         """
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"ToolsmithAgent.create_tool_from_spec:{spec.name}")
         # guardian: allow-config-with-logic

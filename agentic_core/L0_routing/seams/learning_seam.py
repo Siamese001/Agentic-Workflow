@@ -17,10 +17,15 @@ import hashlib
 from dataclasses import dataclass
 from typing import Protocol
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    emit_determinism_digest,
+    emit_replay_key,
+)
 from agentic_core.utils.canonical_serializer_util import (
     canonical_bytes,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, emit_replay_key, emit_determinism_digest
 
 
 def _intent_canonical_bytes(

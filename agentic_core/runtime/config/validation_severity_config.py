@@ -15,6 +15,7 @@ import logging
 from enum import Enum
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
+
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 _logger = logging.getLogger(__name__)

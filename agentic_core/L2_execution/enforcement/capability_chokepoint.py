@@ -9,6 +9,7 @@ No alternate execution path may bypass this module.
 from __future__ import annotations
 
 import logging
+import uuid
 from typing import Any, Callable, TypeVar
 
 from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
@@ -18,7 +19,13 @@ from agentic_core.L2_execution.types.capability_token_types import (
     CapabilityTokenArtifact,
     build_capability_decision,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_hard_fails_untranscripted,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -200,6 +207,8 @@ def authorize_and_execute(
 
     This is the ONLY function external callers should use for L2 execution.
     """
+    _emit_hard_fails_untranscripted(str(uuid.uuid4()), "Module.authorize_and_execute")
+    _emit_applies_guardrail(str(uuid.uuid4()), "Module.authorize_and_execute", "L2_EXECUTION")
     return _chokepoint.authorize_and_execute(
         token=token,
         fn=fn,

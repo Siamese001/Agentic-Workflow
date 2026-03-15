@@ -13,7 +13,12 @@ from __future__ import annotations
 import asyncio
 import logging
 from typing import Any, Protocol
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+)
 
 Logger = logging.getLogger(__name__)
 
@@ -59,10 +64,10 @@ class ChaosResilienceStrategy:
             return
 
         try:
+            from agentic_core.L4_state.validation_context import ValidationContext
             from agentic_core.L5_safety.red_teaming.chaos_engineering_agent_validator import (
                 ChaosEngineeringAgent,
             )
-            from agentic_core.L4_state.validation_context import ValidationContext
 
             ctx = ValidationContext()
             self._agent = ChaosEngineeringAgent(ctx=ctx)

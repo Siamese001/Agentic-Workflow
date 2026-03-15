@@ -24,6 +24,7 @@ Features:
 import ast
 import logging
 import re
+import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
@@ -139,7 +140,6 @@ class CodeValidatorAgent(SovereignBaseAgent):
 
     def validate_syntax(self, file_path: Path) -> list[Violation]:
         """Validate Python syntax for a file."""
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, f"CodeValidatorAgent.validate_syntax:{file_path.name}")
         violations = []

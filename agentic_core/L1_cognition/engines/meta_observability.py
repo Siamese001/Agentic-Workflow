@@ -14,6 +14,7 @@ Provides:
 from __future__ import annotations
 
 import logging
+import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any
@@ -23,7 +24,11 @@ from agentic_core.L1_cognition.types.observability_types import (
     MetricPoint,
 )
 from agentic_core.L2_execution.providers import get_clock
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_observes_runtime_state,
+    _emit_records_execution_trace,
+)
 
 Logger = logging.getLogger(__name__)
 
@@ -79,6 +84,7 @@ class MetaLearningObservability:
 
     def _initialize_health_checks(self) -> None:
         """Initialize health check entries for all components."""
+        _emit_observes_runtime_state(str(uuid.uuid4()), "MetaLearningObservability._initialize_health_checks", "L1_REASONING")
         components = [
             "MetaLearningClient",
             "HealingMemoryEmbedder",

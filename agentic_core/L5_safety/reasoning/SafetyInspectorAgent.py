@@ -5,14 +5,19 @@ from agentic_core.L2_execution.tools import write_gateway as _wg
 'Constitutional Overseer for validating ActionRequests.\n\nThis module provides safety validation for action requests, including:\n- ConstitutionalOverseer: Validates actions against forbidden commands\n- SafetyInspectorAgent: Scans files for security violations with Socratic Judge\n\nTypical usage:\n    overseer = create_overseer()\n    result = await overseer.validate_action(request)\n\n    inspector = create_safety_inspector()\n    violations = await inspector.scan_file("path/to/file.py")\n'
 import logging
 import re
+import uuid
 from dataclasses import dataclass
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L0_routing.config import AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR
 from agentic_core.L0_routing.config.path_constants import DEFAULT_TIMEOUT
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.L1_cognition.types.action_request_types import ActionRequest
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+)
 
 Logger: logging.Logger = logging.getLogger(__name__)
 
@@ -63,7 +68,7 @@ class ConstitutionalOverseer:
         Returns:
             ViolationCheck with validation result
         """
-        import uuid  # noqa: PLC0415
+        _emit_applies_guardrail(str(uuid.uuid4()), "ConstitutionalOverseer.validate_action", "L5_POLICY")
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, f"SafetyInspectorAgent.validate_action:{request.action_type}")
         if request.action_type == "tool_execution":

@@ -9,6 +9,7 @@ import hashlib as _hashlib
 import logging
 import os
 import re
+import uuid
 from typing import Any
 
 from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, DEFAULT_TIMEOUT
@@ -468,7 +469,6 @@ class SovereignDecisionEngine:
         Uses GPU-accelerated BAAI/bge-m3 cosine similarity for pattern matching
         when agent_name is in BMG_EMBEDDING_AGENT_KEYS.
         """
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"SovereignDecisionEngine.calculate_healing_confidence:{territory}")
         if violations_count == 0:

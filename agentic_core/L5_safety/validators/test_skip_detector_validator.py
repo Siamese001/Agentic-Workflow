@@ -37,7 +37,11 @@ from agentic_core.L5_safety.validators.base_detector_validator import (
     DetectionResult,
     EnforcementLevel,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+)
 
 # ---------------------------------------------------------------------------
 # Constants

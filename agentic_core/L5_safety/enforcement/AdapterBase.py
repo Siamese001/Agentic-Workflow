@@ -17,6 +17,7 @@ References:
 """
 
 import logging
+import uuid
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -24,7 +25,13 @@ from pathlib import Path
 from typing import Any, Generic, TypeVar
 
 from agentic_core.L5_safety.enforcement.circuit_breaker_gate import CircuitBreaker, get_breaker
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_verifies_boundary,
+)
 
 logger = logging.getLogger(__name__)
 T = TypeVar("T")
@@ -120,6 +127,7 @@ class AdapterBase(ABC, Generic[T]):
 
     def _get_verification_gate(self):
         """Lazy-load verification gate to avoid circular imports."""
+        _emit_applies_guardrail(str(uuid.uuid4()), "AdapterBase._get_verification_gate", "L5_POLICY")
         if self._verification_gate is None:
             try:
                 from agentic_core.L5_safety.enforcement.verification_gate import VerificationGate
@@ -161,6 +169,7 @@ class AdapterBase(ABC, Generic[T]):
         Returns:
             True if input is valid, False to reject
         """
+        _emit_verifies_boundary(str(uuid.uuid4()), "AdapterBase._validate_input", "L5_POLICY")
         return True
 
     def _validate_output(self, result: Any, context: AdapterContext) -> bool:

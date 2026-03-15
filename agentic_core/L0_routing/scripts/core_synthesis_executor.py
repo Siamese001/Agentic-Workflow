@@ -8,18 +8,18 @@ to eliminate entropy and establish the Final Sovereign Engine.
 
 import json
 import shutil
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
-from typing import AnyPath
+import uuid
 
-from agentic_core.L0_routing.enforcement.mutation_prohibition import (
-    assert_no_persistent_write,
-    safe_shutil_move,
-)
 from agentic_core.L0_routing.config import (
     APPS_LIC_DIR,
     APPS_RG_DIR,
     APPS_SHARED_DIR,
 )
+from agentic_core.L0_routing.enforcement.mutation_prohibition import (
+    assert_no_persistent_write,
+    safe_shutil_move,
+)
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class CoreSynthesisExecutor:
@@ -49,7 +49,6 @@ class CoreSynthesisExecutor:
 
     def execute_synthesis(self) -> bool:
         """Execute the complete synthesis and restructure plan."""
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "CoreSynthesisExecutor.execute_synthesis")
         print("🔬 PHASE 20: ZERO-LOSS SYNTHESIS & RESTRUCTURE")

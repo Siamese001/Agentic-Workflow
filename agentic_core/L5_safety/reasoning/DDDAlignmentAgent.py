@@ -3,14 +3,15 @@ from __future__ import annotations
 "\nDDDAlignmentAgent - Domain-Driven Design Bounded Context Enforcement\n\nPURPOSE: Enforces DDD bounded context boundaries to prevent cross-context\ncoupling that undermines the L0-L6 sovereign layer architecture.\n\nKEYS: Architectural integrity, bounded contexts, aggregate roots\nTIER: 2 (Architectural) - runs after structural validation\n\nLOCATION: agentic_core/L5_safety/validators/ (SSOT-compliant)\n"
 import ast
 import logging
+import uuid
 from dataclasses import dataclass
 from pathlib import Path
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR, TESTS_DIR
 from agentic_core.mixins.subatomic_testing_mixin import subatomic_testing_mixin
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.utils.timeout_decorator_util import timeout
 
 try:
@@ -231,7 +232,6 @@ class DDDAlignmentAgent(SovereignBaseAgent):
         Returns:
             Dict with keys: status, details, artifacts, errors
         """
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "DDDAlignmentAgent.heal")
         try:
@@ -440,6 +440,7 @@ def validate_ddd_alignment(target_dir: str) -> tuple[float, list[str]]:
     Returns:
         Tuple of (alignment_score, list of violation messages)
     """
+    _emit_validated_by_safety_plane(str(uuid.uuid4()), "Module.validate_ddd_alignment", "L5_POLICY")
     agent = DDDAlignmentAgent(project_root=Path(target_dir))
     violations = agent.run()
     messages = [str(v) for v in violations]
@@ -454,3 +455,4 @@ if __name__ == "__main__":
     result = agent.heal_repository(dry_run=True)
     print(f"\nAlignment Score: {result['alignment_score']:.1f}%")
     print(f"Violations: {result['violations_found']}")
+from agentic_core.runtime.lifecycle_trace_contract import _emit_validated_by_safety_plane

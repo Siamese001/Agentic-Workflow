@@ -8,13 +8,18 @@ import ast
 import logging
 import re
 import threading
+import uuid
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.L0_routing.config import ARCHIVES_DIR
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+)
 
 Logger = logging.getLogger(__name__)
 
@@ -126,7 +131,6 @@ class StructureEnforcerAgent(SovereignBaseAgent):
 
     def validate_file(self, file_path: Path) -> list[StructureViolation]:
         """Validate a file for all structure rules."""
-        import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, f"StructureEnforcerAgent.validate_file:{file_path.name}")
         violations = []
@@ -418,6 +422,7 @@ class StructureEnforcerAgent(SovereignBaseAgent):
 
 def create_legacy_gravity_enforcer() -> StructureEnforcerAgent:
     """Create enforcer for gravity rules."""
+    _emit_applies_guardrail(str(uuid.uuid4()), "Module.create_legacy_gravity_enforcer", "L5_POLICY")
     config = StructureConfig(
         enable_gravity=True,
         enable_hierarchy=False,

@@ -16,8 +16,13 @@ import hashlib
 import json
 from dataclasses import dataclass, field
 from typing import Any, Literal
+
 from agentic_core.L2_execution.enforcement.guardrail_gate import get_guardrail_gate
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+)
 
 
 class MLWriteEnvelopeViolation(Exception):

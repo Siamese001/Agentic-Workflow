@@ -14,6 +14,7 @@ Usage:
 """
 
 import logging
+import uuid
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -54,7 +55,12 @@ from agentic_core.L5_safety.validators.silent_swallower_validator import (
 from agentic_core.L5_safety.validators.type_erasure_validator import (
     TypeErasureDetector,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_validated_by_safety_plane,
+)
 
 Logger = logging.getLogger(__name__)
 
@@ -336,6 +342,7 @@ class AntiPatternScanner:
         Returns:
             Action to take: "pass", "warn", "soft_block", "hard_block"
         """
+        _emit_validated_by_safety_plane(str(uuid.uuid4()), "AntiPatternScanner.get_enforcement_action", "L5_POLICY")
         if report.passed:
             return "pass"
 

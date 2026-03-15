@@ -6,12 +6,17 @@ from agentic_core.L2_execution.tools import write_gateway as _wg
 import asyncio
 import json
 import logging
+import uuid
 from datetime import datetime
 from pathlib import Path
 from typing import Any
 
 from agentic_core.L0_routing.config.path_constants import DEFAULT_SLEEP
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_agent_executes_agent,
+    _emit_records_execution_trace,
+)
 
 Logger = logging.getLogger(__name__)
 
@@ -106,6 +111,7 @@ class autonomous_execution_engine:
         - RAG orchestrator
         - Systematic territory audits
         """
+        _emit_agent_executes_agent(str(uuid.uuid4()), "autonomous_execution_engine", "autonomous_execution_engine.execute_validation_mission")
         try:
             status = self.resource_manager.get_resource_status()
             if status["global_budget_remaining"] < 10:

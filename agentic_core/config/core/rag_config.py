@@ -16,6 +16,7 @@ Replaces fragmented configs across L1, L3, apps_shared
 """
 import os
 from dataclasses import dataclass, field
+
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 

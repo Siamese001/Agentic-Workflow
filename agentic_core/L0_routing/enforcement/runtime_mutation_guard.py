@@ -17,8 +17,17 @@ import builtins
 import importlib
 import logging
 import types
+import uuid
 from typing import Any
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, emit_replay_key, emit_determinism_digest
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_hard_fails_untranscripted,
+    _emit_records_execution_trace,
+    emit_determinism_digest,
+    emit_replay_key,
+)
 
 Logger = logging.getLogger(__name__)
 _original_setattr = setattr
@@ -69,6 +78,7 @@ def is_protected_module(module_name: str | None) -> bool:
     Returns:
         True if module is protected, False otherwise
     """
+    _emit_hard_fails_untranscripted(str(uuid.uuid4()), "Module.is_protected_module")
     if not module_name:
         return False
     return any(layer in module_name for layer in PROTECTED_LAYERS)
@@ -109,6 +119,7 @@ def guard_setattr(obj: Any, name: str, value: Any) -> None:
     Raises:
         RuntimeMutationViolation: If attempting to modify protected object
     """
+    _emit_applies_guardrail(str(uuid.uuid4()), "Module.guard_setattr", "L0_ROUTING")
     if _guard_disabled:
         _original_setattr(obj, name, value)
         return
