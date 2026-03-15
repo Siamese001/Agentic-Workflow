@@ -13,6 +13,7 @@ from enum import Enum
 from pathlib import Path
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.mixins.safety_mixin import SafetyAnalysisMixin
 
 Logger = logging.getLogger(__name__)
@@ -75,6 +76,9 @@ class SafetyRule:
 
     def matches(self, text: str) -> bool:
         """Check if text matches this rule."""
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "SafetyRule.matches")
         _CANON_MATCHES = SafetyAnalysisMixin.matches
         if not self.enabled:
             return False

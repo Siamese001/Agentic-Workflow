@@ -35,6 +35,7 @@ class JanitorViolation:
 
 
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
 
@@ -58,6 +59,9 @@ class CodeJanitorAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMixin):
     # guardian: allow-type-erasure
     async def execute(self) -> Any:
         """Execute Code Janitor validation checks."""
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "CodeJanitorAgent.execute")
         print(
             f"\nfrom agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[>>>] {self.name} ACTIVATED: Checking Syntax and Style..."
         )

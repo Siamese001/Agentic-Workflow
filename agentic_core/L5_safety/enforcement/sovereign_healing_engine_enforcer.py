@@ -8,6 +8,8 @@ import re
 from pathlib import Path
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
 
 def get_filesystem_client():
     raise NotImplementedError("P1_core.filesystem_mcp_client_1 was removed; see RCA_P1_core_dead_imports.md")
@@ -55,6 +57,9 @@ class SovereignHealingEngine:
         Returns:
             Healing cycle results
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "SovereignHealingEngine.execute_autonomous_cycle")
         if not config.AUTONOMOUS_HEALING_ENABLED:
             Logger.info("[L0 HEALING] Autonomous mode disabled in config.")
             return {

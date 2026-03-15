@@ -12,6 +12,7 @@ from agentic_core.L5_safety.config.structure_blueprint import (
     PROJECT_ROOT_WHITELIST,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.L5_safety.enforcement.ssot_scanner_enforcer import SSOTScanner
 
 
@@ -102,6 +103,9 @@ class SovereignHealthReport:
 
     def to_markdown(self) -> str:
         """Generate Markdown report optimized for LLM/Human consumption."""
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "GravityValidator.to_markdown")
         lines = []
         lines.append("# SSOT Sovereign Health Report")
         lines.append("")
