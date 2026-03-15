@@ -12,6 +12,7 @@ from typing import Any
 from pydantic import BaseModel, Field
 
 from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class sovereign_severity(str, Enum):
@@ -579,6 +580,9 @@ class hard_state:
 
     def add_trace(self, event: str, data: dict[str, Any]) -> "HardState":
         """Add an event to the execution trace (returns new instance)."""
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"HardState.add_trace:{event}")
         new_trace = self.execution_trace + [
             {"event": event, "timestamp": datetime.utcnow().isoformat(), "data": data}
         ]

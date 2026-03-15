@@ -33,6 +33,7 @@ from typing import Any
 from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR, TESTS_DIR
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 from agentic_core.L2_execution.providers import get_clock
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 try:
     from agentic_core.utils.ssot_discovery_validator import get_python_files
@@ -316,9 +317,11 @@ def get_previous_agent_count() -> int | None:
 
 def generate_manifest(agents: list[dict], scan_duration: float, parse_errors: list[str]) -> dict:
     """Generate manifest with metadata for staleness detection and validation."""
-    import hashlib
-    from datetime import datetime
+    import hashlib  # noqa: PLC0415
+    import uuid  # noqa: PLC0415
+    from datetime import datetime  # noqa: PLC0415
 
+    _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"generate_manifest:agents={len(agents)}")
     content_str = json.dumps(agents, sort_keys=True)
     content_hash = hashlib.sha256(content_str.encode()).hexdigest()
     layer_counts = defaultdict(int)
