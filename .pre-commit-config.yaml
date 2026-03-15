@@ -332,6 +332,32 @@ repos:
         types: [python]
         require_serial: true
 
+      # -- T3i: ADG Mypy-Ban Gate (Accelerator enforcement) ---------------------
+      # Hard-fail if staged Python files invoke mypy directly via subprocess.
+      # Only adg_type_check.py (via sys.executable) is allowed to call mypy.
+      # Exempt a specific line with: # guardian: allow-mypy -- <justification>
+      # Exempt an entire file with: # adg-mypy-ban: skip-file (first 5 lines)
+      - id: adg-mypy-ban-gate
+        name: "T3i: ADG Mypy-Ban Gate — no broad mypy; use adg_type_check.py"
+        entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/adg_mypy_ban_gate.py --staged"
+        language: system
+        pass_filenames: false
+        always_run: false
+        types: [python]
+        require_serial: true
+
+      # -- T3j: Skip-File Ratchet -----------------------------------------------
+      # Hard-fail if new # adg-grep-ban: skip-file directives were added without
+      # updating the baseline in ops_scripts/hooks/skip_file_budget.json.
+      # To legitimately add: run python ops_scripts/ci/adg_skip_file_ratchet.py --update
+      - id: adg-skip-file-ratchet
+        name: "T3j: ADG Skip-File Ratchet — enforce skip-file directive count ceiling"
+        entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/adg_skip_file_ratchet.py"
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+
       # -- T5: Pycache purge (FINAL CLEANUP - runs last) ------------------------
       # Scope: rglob("__pycache__") from repo root, skips .venv/env/.git.
       # CRITICAL: Must run AFTER all Python hooks to prevent __pycache__ litter.

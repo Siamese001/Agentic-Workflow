@@ -1,0 +1,22 @@
+{
+  "_comment": "ADG-aware Redis MCP server. Marketplace @modelcontextprotocol/server-redis is DISABLED (STRING-only, cannot access HASH/SET ADG keys). Use custom adg_redis server for all ADG cache queries.",
+  "mcpServers": {
+    "adg_redis": {
+      "command": "python",
+      "args": ["tools/adg/adg_mcp_server.py"],
+      "disabled": false,
+      "env": {
+        "ADG_REDIS_URL": "redis://localhost:6379/0",
+        "ADG_DIR": "C:\\Git\\Agentic-Workflow\\artifacts\\adg",
+        "ADG_MCP_PAGE_SIZE": "500",
+        "ADG_MCP_CACHE_META_TTL": "5"
+      }
+    },
+    "redis": {
+      "_comment": "Marketplace Redis MCP — DISABLED. STRING-only, cannot read HASH/SET ADG cache keys. Use adg_redis instead.",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-redis", "redis://localhost:6379"],
+      "disabled": true
+    }
+  }
+}

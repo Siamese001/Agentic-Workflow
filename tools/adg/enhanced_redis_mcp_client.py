@@ -1,4 +1,10 @@
 """
+DEPRECATED — do not use in new code.
+
+Use ADGRedisClient from tools/adg/adg_redis_query.py instead.
+That client is the canonical, fail-closed ADG Redis interface and is
+integrated with ADGQuerySession for freshness enforcement.
+
 Enhanced Redis MCP Client with HASH and SET support for ADG queries.
 
 This client extends the basic Redis MCP functionality to support:

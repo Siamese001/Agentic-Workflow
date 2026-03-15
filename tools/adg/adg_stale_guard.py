@@ -208,15 +208,29 @@ def _cli() -> None:
         action="store_true",
         help="List Python files changed since last ADG ingest",
     )
+    parser.add_argument(
+        "--fail-if-stale",
+        action="store_true",
+        dest="fail_if_stale",
+        help=(
+            "CI-safe strict mode: exit 1 if Redis is UP and graph is STALE, "
+            "exit 0 if Redis is DOWN (CI has no Redis). "
+            "Stronger than --warn (which never blocks), weaker than strict (which "
+            "blocks on Redis-unavailable too)."
+        ),
+    )
     args = parser.parse_args()
 
     import redis as _redis
+
+    # --fail-if-stale treats Redis-unavailable the same as --warn (exit 0)
+    _redis_down_is_ok = args.warn or args.fail_if_stale
 
     try:
         adg = ADGRedisClient()
         adg.ping()
     except _redis.ConnectionError as exc:
-        if args.warn:
+        if _redis_down_is_ok:
             print(
                 f"[adg-stale-guard] WARNING: Redis unavailable — cannot check ADG staleness: {exc}",
                 file=sys.stderr,
@@ -225,7 +239,7 @@ def _cli() -> None:
         print(f"ERROR: Redis unavailable: {exc}", file=sys.stderr)
         sys.exit(1)
     except RuntimeError as exc:
-        if args.warn:
+        if _redis_down_is_ok:
             print(f"[adg-stale-guard] WARNING: {exc}", file=sys.stderr)
             sys.exit(0)
         print(f"ERROR: {exc}", file=sys.stderr)
@@ -235,7 +249,7 @@ def _cli() -> None:
     try:
         result = checker.check()
     except RuntimeError as exc:
-        if args.warn:
+        if _redis_down_is_ok:
             print(f"[adg-stale-guard] WARNING: {exc}", file=sys.stderr)
             sys.exit(0)
         print(f"ERROR: {exc}", file=sys.stderr)
@@ -264,6 +278,7 @@ def _cli() -> None:
             for f in result.changed_files:
                 print(f"  {f}")
         print("\nRun: python tools/adg/adg_redis_ingest.py --force")
+        # --warn: never block; --fail-if-stale: block on stale (Redis is up)
         sys.exit(0 if args.warn else 1)
     else:
         print(f"FRESH: {result.message}")

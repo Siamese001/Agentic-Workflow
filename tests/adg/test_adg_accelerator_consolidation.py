@@ -551,7 +551,14 @@ class TestProductionSkipFileProtection:
         )
 
     def test_skip_file_must_not_appear_in_ops_scripts_ci_gates(self) -> None:
-        """CI gate files must NOT use skip-file — they're enforcement code, not test fixtures."""
+        """CI gate files must NOT use the actual skip-file directive (requires # prefix).
+
+        Docstrings that MENTION '# adg-grep-ban: skip-file' as documentation are
+        permitted; only lines that ARE the directive (start with #, match _FILE_SKIP_RE)
+        are forbidden.
+        """
+        from ops_scripts.ci.adg_grep_ban_gate import _FILE_SKIP_RE
+
         offenders = []
         ci_dir = ROOT / "ops_scripts" / "ci"
         for py_file in sorted(ci_dir.glob("*.py")):
@@ -560,13 +567,14 @@ class TestProductionSkipFileProtection:
             try:
                 lines = py_file.read_text(encoding="utf-8", errors="replace").splitlines()
                 for line in lines[:5]:
-                    if "adg-grep-ban" in line.lower() and "skip-file" in line.lower():
+                    # Must be an actual directive line (# prefix), not a docstring mention
+                    if line.lstrip().startswith("#") and _FILE_SKIP_RE.search(line):
                         offenders.append(py_file)
                         break
             except OSError:
                 pass
         assert not offenders, (
-            f"CI gate files in ops_scripts/ci/ must NOT have skip-file:\n"
+            f"CI gate files in ops_scripts/ci/ must NOT have the skip-file directive:\n"
             + "\n".join(f"  {p}" for p in offenders)
         )
 

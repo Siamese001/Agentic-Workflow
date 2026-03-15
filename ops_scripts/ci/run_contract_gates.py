@@ -116,6 +116,14 @@ def main():
             [sys.executable, "ops_scripts/ci/guardian_exemption_gate.py"],
             "Guardian Exemption Ratchet — exemption quality + count gate (§2.6)",
         ),
+        (
+            [sys.executable, "ops_scripts/ci/adg_mypy_ban_gate.py", "--all-python"],
+            "ADG Mypy-Ban Gate — no broad mypy; use adg_type_check.py (§2.6)",
+        ),
+        (
+            [sys.executable, "ops_scripts/ci/adg_skip_file_ratchet.py"],
+            "ADG Skip-File Ratchet — skip-file directive count ceiling (§2.6)",
+        ),
     ]
 
     print("Running contract gates in deterministic order...\n")
