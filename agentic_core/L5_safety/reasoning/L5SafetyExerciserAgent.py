@@ -16,6 +16,7 @@ def _get_layer_entry():
 
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.L5_safety.config.structure_blueprint import (
     get_validated_project_root,
     has_forbidden_layer_prefix,
@@ -115,6 +116,9 @@ class L5SafetyExerciserAgent(SovereignBaseAgent):
     @layer_entry("L5_safety", subterritory="guardrails")
     def act(self) -> str:
         """Primary entrypoint — called by orchestrator on synthetic task."""
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "L5SafetyExerciserAgent.act")
         report: list[str] = [f"{self.name}: Starting safety exercise cycle"]
         for strategy_name, strategy_func in self.exercise_strategies.items():
             try:

@@ -21,6 +21,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.L5_safety.enforcement.circuit_breaker_gate import get_breaker
 
 logger = logging.getLogger(__name__)
@@ -197,6 +198,9 @@ class DomainPlannerAdapter:
         Returns:
             AdapterResult with PlannerAssessment data
         """
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(_uuid.uuid4()), LayerSegment.L5_POLICY, f"DomainPlannerAdapter.plan:{workflow_id}")
         return self.execute(context=context, plan=plan, job_context=job_context, workflow_id=workflow_id)
 
     def execute(self, context: AdapterContext | None = None, *args: Any, **kwargs: Any) -> AdapterResult:

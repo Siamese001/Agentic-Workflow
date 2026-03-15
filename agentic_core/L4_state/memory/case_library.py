@@ -36,6 +36,7 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING, Any
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBridge
 
 if TYPE_CHECKING:
@@ -147,6 +148,9 @@ class CaseLibrary:
 
         Returns True if the entity was written (or already existed), False on error.
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "CaseLibrary.store")
         artifact_type = getattr(bundle, "artifact_type", None)
         if artifact_type not in BUNDLE_ARTIFACT_TYPES:
             logger.warning("[CaseLibrary] Unknown artifact_type: %s", artifact_type)

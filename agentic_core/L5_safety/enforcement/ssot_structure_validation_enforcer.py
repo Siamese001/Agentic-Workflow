@@ -30,6 +30,7 @@ from agentic_core.L5_safety.config.structure_blueprint import (
     L4_APPROVED_FOLDERS,
     VARIABLE_DEPTH_SUBFOLDERS,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.L5_safety.enforcement.registry_verification_enforcer import (
     AgentInfo,
     RegistryVerifier,
@@ -290,6 +291,9 @@ class SSOTStructureValidator:
 
     def validate_agent(self, agent: AgentInfo) -> list[StructureViolation]:
         """Validate a single agent against all SSOT rules."""
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, f"SSOTStructureValidationEnforcer.validate_agent:{agent.name}")
         violations = []
 
         # Run all validations
