@@ -29,6 +29,11 @@ from agentic_core.L2_execution.enforcement.guardrail_gate import get_guardrail_g
 from agentic_core.L2_execution.providers import get_clock
 from agentic_core.L2_execution.types.gateway_types import GenerationRequest, GenerationResponse
 from agentic_core.L2_execution.types.replay_envelope_types import ReplayEnvelope
+from agentic_core.L5_safety.enforcement.policy_action_contract import (
+    ActionClass,
+    PolicyEnforcementError,
+    enforce_policy_before_action,
+)
 from agentic_core.L5_safety.enforcement.policy_enforcement_point import get_policy_enforcement_point
 from data.sdks_mcps.client_wrappers import (
     create_anthropic_client,
@@ -362,6 +367,15 @@ class SovereignLLMGateway:
     async def route_generation(self, request: GenerationRequest, **kwargs) -> GenerationResponse:
         """Main entry point for all LLM generation, enforcing 2x2 agent policy."""
         _gw = get_routing_gateway()
+        try:
+            enforce_policy_before_action(
+                action_name="route_generation",
+                action_class=ActionClass.NETWORK_EGRESS,
+                actor_id=request.agent_id or "SovereignLLMGateway",
+                run_id="",
+            )
+        except PolicyEnforcementError:
+            raise
         if not request.agent_id:
             raise SovereigntyViolation("agent_id is required.")
 

@@ -28,6 +28,11 @@ from agentic_core.L2_execution.adaptation.execution_adaptation import (
     ExecutionAdaptationRecord,
     get_execution_adaptation_registry,
 )
+from agentic_core.L5_safety.enforcement.policy_action_contract import (
+    ActionClass,
+    PolicyEnforcementError,
+    enforce_policy_before_action,
+)
 
 logger = logging.getLogger(__name__)
 _STRATEGY_LOG = logging.getLogger("adg.execution_strategy_chosen")
@@ -181,6 +186,15 @@ def choose_execution_strategy(
     """
     _registry = registry or get_execution_adaptation_registry()
     _gw = get_routing_gateway(execution_context.trace_id if hasattr(execution_context, 'trace_id') else "")
+    try:
+        enforce_policy_before_action(
+            action_name="choose_execution_strategy",
+            action_class=ActionClass.TOOL_EXECUTION,
+            actor_id="adaptation_orchestrator",
+            run_id=execution_context.run_id if hasattr(execution_context, 'run_id') else "",
+        )
+    except PolicyEnforcementError:
+        raise
 
     # --- Step 1: analyze candidate strategies ---
     analyzed_strategies = _analyze_candidate_strategies(candidate_strategies, execution_context)

@@ -27,6 +27,11 @@ from agentic_core.L1_cognition.knowledge.reasoning_knowledge import (
     ReasoningKnowledgeRecord,
     get_reasoning_knowledge_registry,
 )
+from agentic_core.L5_safety.enforcement.policy_action_contract import (
+    ActionClass,
+    PolicyEnforcementError,
+    enforce_policy_before_action,
+)
 
 logger = logging.getLogger(__name__)
 _KNOWLEDGE_LOG = logging.getLogger("adg.pattern_stored")
@@ -164,6 +169,15 @@ def capture_reasoning_pattern(
     """
     _registry = registry or get_reasoning_knowledge_registry()
     _gw = get_routing_gateway(reasoning_context.run_id if hasattr(reasoning_context, 'run_id') else "")
+    try:
+        enforce_policy_before_action(
+            action_name="capture_reasoning_pattern",
+            action_class=ActionClass.TOOL_EXECUTION,
+            actor_id="knowledge_orchestrator",
+            run_id=reasoning_context.run_id if hasattr(reasoning_context, 'run_id') else "",
+        )
+    except PolicyEnforcementError:
+        raise
 
     # --- Step 1: identify reusable reasoning patterns ---
     pattern_analysis = _identify_reusable_reasoning_patterns(reasoning_trace, reasoning_context)
