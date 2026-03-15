@@ -35,7 +35,8 @@ from enum import Enum
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L2_execution.enforcement.runtime_guard import runtime_guard
+from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import get_routing_gateway
+from agentic_core.L0_routing.enforcement.runtime_guard import runtime_guard
 from agentic_core.runtime.trace_context import get_trace_context
 from agentic_core.utils.ssot_discovery_validator import get_agent_paths
 
@@ -333,6 +334,7 @@ class Orchestrator(SovereignBaseAgent):
         [PHASE 3: FORWARD-ROLLING RECURSION]
         Enforces linear depth limits and parameter merging for recursive healing.
         """
+        _gw = get_routing_gateway(agent_name)
         with _proof_emitter.proof_op(f"run_agent:{agent_name}"):
             pass
         emit_agent_executes_agent(

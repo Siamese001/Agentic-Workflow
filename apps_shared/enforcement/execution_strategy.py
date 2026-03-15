@@ -14,6 +14,8 @@ from datetime import datetime
 from enum import Enum
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
 logger = logging.getLogger(__name__)
 
 
@@ -128,6 +130,9 @@ class ObservabilityExecutionEngine:
         Returns:
             ExecutionResult: Execution result
         """
+        _emit_records_execution_trace(
+            request.request_id, LayerSegment.L3_ORCHESTRATION, f"ExecutionStrategy.execute:{request.operation_type}"
+        )
         self.logger.info(f"Executing operation: {request.operation_type}")
         start_time = time.time()
         try:

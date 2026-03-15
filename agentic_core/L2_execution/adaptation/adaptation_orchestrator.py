@@ -22,6 +22,7 @@ import time
 from dataclasses import dataclass
 from typing import Any
 
+from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import get_routing_gateway
 from agentic_core.L2_execution.adaptation.execution_adaptation import (
     ExecutionAdaptationError,
     ExecutionAdaptationRecord,
@@ -179,6 +180,7 @@ def choose_execution_strategy(
         ExecutionAdaptationError: If strategy selection fails (Gate A/D)
     """
     _registry = registry or get_execution_adaptation_registry()
+    _gw = get_routing_gateway(execution_context.trace_id if hasattr(execution_context, 'trace_id') else "")
 
     # --- Step 1: analyze candidate strategies ---
     analyzed_strategies = _analyze_candidate_strategies(candidate_strategies, execution_context)

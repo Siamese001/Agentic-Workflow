@@ -22,6 +22,7 @@ from dataclasses import dataclass
 from typing import Any, Literal
 
 from agentic_core.config.core.sovereign_config import get_sovereign_config
+from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import get_routing_gateway
 from agentic_core.L0_routing.config.path_constants import TOOLS_DIR
 from agentic_core.L2_execution.audit.hash_chain_audit_log import HashChainAuditLog
 from agentic_core.L2_execution.enforcement.guardrail_gate import get_guardrail_gate
@@ -360,6 +361,7 @@ class SovereignLLMGateway:
 
     async def route_generation(self, request: GenerationRequest, **kwargs) -> GenerationResponse:
         """Main entry point for all LLM generation, enforcing 2x2 agent policy."""
+        _gw = get_routing_gateway()
         if not request.agent_id:
             raise SovereigntyViolation("agent_id is required.")
 

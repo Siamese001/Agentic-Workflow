@@ -22,8 +22,11 @@ Design constraints:
 from __future__ import annotations
 
 import logging
+import uuid
 from dataclasses import dataclass
 from typing import Any
+
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 from system_learning.config.semantic_memory_config import (
     DEFAULT_EMBEDDER_BUFFER_SIZE,
@@ -194,6 +197,7 @@ class SemanticIndexRegistry:
     # -----------------------------------------------------------------------
 
     def ingest_incident(self, bundle: IncidentBundle) -> MultiIndexIngestResult:
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L4_STATE, "SemanticIndexRegistry.ingest_incident")
         r = self.incident.ingest(bundle)
         return MultiIndexIngestResult(INDEX_INCIDENT, r.content_hash, r.trace_id)
 

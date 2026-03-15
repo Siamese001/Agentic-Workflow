@@ -11,6 +11,8 @@ Model-driven:  none — this is a pure evaluation harness.
 
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
 # Common exception types for scenario error handling
 _SCENARIO_EXCEPTIONS = (ValueError, TypeError, AttributeError, RuntimeError, OSError)
 
@@ -574,6 +576,9 @@ class ScenarioRunner:
         Returns:
             SuiteResult with all scenario results.
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"ScenarioRunner.run_suite:{suite_id}")
         results: list[ScenarioResult] = []
 
         for scenario_id in scenario_ids:

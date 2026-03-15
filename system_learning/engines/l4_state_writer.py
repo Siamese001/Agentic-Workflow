@@ -16,9 +16,12 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import uuid
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Protocol
+
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -79,6 +82,7 @@ class InMemoryL4StateWriter:
     _latest: dict[str, bytes] = field(default_factory=dict)
 
     def _write(self, bucket: str, *, payload_bytes: bytes, component_name: str, created_utc: int) -> str:
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L4_STATE, f"L4StateWriter._write:{bucket}:{component_name}")
         content_key = _content_hash(payload_bytes)
         version_id = f"{bucket}_{component_name}_{content_key[:16]}_{created_utc}"
         if version_id not in self._store:
@@ -164,6 +168,7 @@ class FileBackedL4StateWriter:
         (self._base_dir / "_latest").mkdir(exist_ok=True)
 
     def _write(self, bucket: str, *, payload_bytes: bytes, component_name: str, created_utc: int) -> str:
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L4_STATE, f"FileBackedL4StateWriter._write:{bucket}:{component_name}")
         content_key = _content_hash(payload_bytes)
         version_id = f"{bucket}_{component_name}_{content_key[:16]}_{created_utc}"
         bucket_dir = self._base_dir / bucket

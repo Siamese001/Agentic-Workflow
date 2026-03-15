@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import get_routing_gateway
 from agentic_core.L0_routing.enforcement.runtime_guard import runtime_guard
 from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
 from agentic_core.utils.timeout_decorator_util import timeout
@@ -279,6 +280,7 @@ class NervousSystemAgent(SovereignBaseAgent):
         Returns:
             ExecutionResult with mission status and report
         """
+        _gw = get_routing_gateway()
         manifest = self._v15_build_operation_manifest("run_mission")
         if manifest is not None:
             gateway = getattr(self, "_v15_gateway", None)

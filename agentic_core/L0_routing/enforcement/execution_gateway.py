@@ -62,6 +62,7 @@ from agentic_core.L0_routing.types.routing_contracts_types import (
     PolicyConfigGuard,
     PolicyMutationIncident,
 )
+from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import get_routing_gateway
 from agentic_core.L2_execution.providers import get_clock
 
 Logger = logging.getLogger(__name__)
@@ -143,6 +144,7 @@ class V15ExecutionGateway:
         Returns:
             GatewayResult with full audit trail.
         """
+        _gw = get_routing_gateway(trace_id)
         self._pipe_violations = []
         self._policy_violations = []
         self._enforce_agent_registered(agent_id)

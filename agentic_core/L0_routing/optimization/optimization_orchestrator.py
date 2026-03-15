@@ -22,6 +22,7 @@ import time
 from dataclasses import dataclass
 from typing import Any
 
+from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import get_routing_gateway
 from agentic_core.L0_routing.optimization.routing_optimization import (
     RoutingOptimizationRecord,
     get_routing_optimization_registry,
@@ -157,6 +158,7 @@ def optimize_routing_policy(
         RoutingOptimizationError: If optimization fails (Gate A/E)
     """
     _registry = registry or get_routing_optimization_registry()
+    _gw = get_routing_gateway(policy_context.policy_hash if hasattr(policy_context, 'policy_hash') else "")
 
     # --- Step 1: analyze historical routing outcomes ---
     historical_analysis = _analyze_historical_routing_outcomes(routing_history, optimization_window)

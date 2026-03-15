@@ -22,6 +22,7 @@ import uuid
 from dataclasses import dataclass
 from typing import Any
 
+from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import get_routing_gateway
 from agentic_core.L1_cognition.knowledge.reasoning_knowledge import (
     ReasoningKnowledgeRecord,
     get_reasoning_knowledge_registry,
@@ -162,6 +163,7 @@ def capture_reasoning_pattern(
         ReasoningKnowledgeError: If pattern capture fails (Gate A/E)
     """
     _registry = registry or get_reasoning_knowledge_registry()
+    _gw = get_routing_gateway(reasoning_context.run_id if hasattr(reasoning_context, 'run_id') else "")
 
     # --- Step 1: identify reusable reasoning patterns ---
     pattern_analysis = _identify_reusable_reasoning_patterns(reasoning_trace, reasoning_context)
