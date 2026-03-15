@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import hashlib
 import logging
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from typing import Any
 
 try:
@@ -96,6 +97,9 @@ class QwenInvokerAdapter:
         Returns:
             InvocationRecord with replay-deterministic fields
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "HealingProviderAdapter.invoke_qwen_vllm")
         model_id = config.model_qwen_vllm_id
         prompt = self._build_prompt(healing_input, decision, agent_name)
         try:

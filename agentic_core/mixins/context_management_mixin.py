@@ -24,6 +24,7 @@ import threading
 import time
 from dataclasses import dataclass, field
 from enum import Enum
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from typing import Any
 
 Logger = logging.getLogger(__name__)
@@ -139,6 +140,9 @@ class ContextManagementMixin:
             min_context_tokens: Minimum context to maintain
             summary_target_tokens: Target size for summaries
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "ContextManagementMixin.configure_context")
         with self._context_lock:
             if max_context_tokens is not None:
                 self._context_config.max_context_tokens = max_context_tokens
