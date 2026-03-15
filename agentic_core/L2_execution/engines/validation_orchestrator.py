@@ -19,6 +19,7 @@ from agentic_core.L2_execution.enforcement.guardrail_gate import get_guardrail_g
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.L1_cognition.types.validation_types import IValidationProtocol
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO").upper())
@@ -301,6 +302,9 @@ class ValidationOrchestrator(SovereignBaseAgent):
         """
         Execute validation checks.
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "ValidationOrchestrator.execute")
         # Wave 3: Guardrail pre-check
         guardrail = get_guardrail_gate()
         guardrail.check(operation="execute_validation", target="validation_orchestrator")

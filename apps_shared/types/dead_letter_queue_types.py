@@ -15,6 +15,8 @@ from enum import Enum
 from pathlib import Path
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
 import aiofiles
 
 from .core.envelope import SignalEnvelope
@@ -228,6 +230,9 @@ class FileDeadLetterStorage(DeadLetterStorage):
         Returns:
             True if added successfully
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"DeadLetterQueue.add:{item.envelope.trace_id}")
         try:
             path = self._get_item_path(item)
             data = item.to_dict()

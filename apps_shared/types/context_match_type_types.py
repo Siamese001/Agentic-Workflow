@@ -11,6 +11,8 @@ from datetime import datetime
 from enum import Enum
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
 logger = logging.getLogger(__name__)
 
 
@@ -100,6 +102,9 @@ class SchemaContextMatcher:
         Returns:
             SchemaContextMatchResult: Ranked matches with scores
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "ContextSchemaMatchEngine.match_context")
         self.logger.info(f"Matching context for {len(request.candidate_schemas)} candidates")
         try:
             matches = []
