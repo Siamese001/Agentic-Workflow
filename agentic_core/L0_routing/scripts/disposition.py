@@ -15,6 +15,7 @@ from pathlib import Path
 import networkx as nx
 
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.L0_routing.config import (
     APPS_LIC_DIR,
     APPS_RG_DIR,
@@ -56,6 +57,9 @@ class CoreSynthesisAnalyzer:
 
     def analyze_file(self, file_path: Path) -> CoreAnalysisResult:
         """Perform comprehensive analysis of a single file."""
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"CoreDispositionAnalyzer.analyze_file:{file_path.name}")
         try:
             content = file_path.read_text(encoding="utf-8", errors="ignore")
             tree = ast.parse(content)

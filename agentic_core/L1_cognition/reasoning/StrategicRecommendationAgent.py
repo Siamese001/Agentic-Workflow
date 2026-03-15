@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.utils.decorators_compat_util import standard_heal
 
 log = logging.getLogger(__name__)
@@ -48,6 +49,9 @@ class StrategicRecommendationAgent(SovereignBaseAgent):
         Returns:
             Structured prompt for LLM to generate recommendations
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "StrategicRecommendationAgent.plan")
 
         def safe_get(row: dict, key: str, default: float = 0) -> float:
             val = row.get(key, default)
