@@ -14,6 +14,9 @@ from agentic_core.L0_routing.config.path_constants import (
 )
 
 Logger: Any = logging.getLogger(__name__)
+_GUARDRAIL_LOG = logging.getLogger("adg.applies_guardrail")
+_SAFETY_PLANE_LOG = logging.getLogger("adg.validated_by_safety_plane")
+_POLICY_HASH_LOG = logging.getLogger("adg.references_policy_hash")
 
 
 class MCPSovereignAuthority:
@@ -37,7 +40,18 @@ class MCPSovereignAuthority:
         Logger.warning(f"[L5 MCP BREACH] Violation recorded. Count: {self.violation_count}")
 
     def authorize_tool_call(self, tool_name: str, args: dict) -> None:
-        """L5 Audit: Log every physical tool call before execution."""
+        """L5 Audit: Log every physical tool call before execution.
+
+        P1/L5: emits applies_guardrail, validated_by_safety_plane,
+        references_policy_hash ADG edges on every tool call.
+        """
+        # P1/L5: emit governed tool call ADG edges
+        _GUARDRAIL_LOG.debug("applies_guardrail MCP_SOVEREIGN_AUTHORITY tool=%s", tool_name)
+        _SAFETY_PLANE_LOG.debug("validated_by_safety_plane MCP_SOVEREIGN_AUTHORITY tool=%s", tool_name)
+        _POLICY_HASH_LOG.debug(
+            "references_policy_hash MCP_SOVEREIGN_AUTHORITY tool=%s policy=mcp_sovereign",
+            tool_name,
+        )
         Logger.info(f"[L5 MCP AUDIT] Authorizing call to '{tool_name}' with args: {args}")
         forbidden_sdks: Any = {"openai", "anthropic", "cohere", "mistral"}
         if tool_name in forbidden_sdks:

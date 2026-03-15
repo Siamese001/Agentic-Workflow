@@ -127,7 +127,10 @@ class IntentEmbeddingClassifier:
                 result = embedder.embed(text)
                 if result is None:
                     continue
-                vec = list(result.vector) if hasattr(result, "vector") else list(result)
+                try:
+                    vec = list(result.vector)
+                except AttributeError:
+                    vec = list(result)
                 results.append(vec)
             return results if results else None
         except Exception as exc:  # guardian: allow-silent-swallow

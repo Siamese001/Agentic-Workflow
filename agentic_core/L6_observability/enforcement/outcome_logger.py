@@ -10,6 +10,14 @@ import hashlib
 import json
 from dataclasses import dataclass
 
+from agentic_core.L2_execution.determinism.execution_proof_emitter import ExecutionProofEmitter
+from agentic_core.L6_observability.evaluation.evaluation_record import (
+    EvaluationStage,
+    evaluate_and_attach,
+)
+
+_proof_emitter = ExecutionProofEmitter("L6.OutcomeLogger")
+
 
 @dataclass(frozen=True)
 class OutcomeRecord:
@@ -67,8 +75,22 @@ class OutcomeLogger:
         Returns:
             Created OutcomeRecord (immutable)
         """
+        with _proof_emitter.proof_op(f"outcome_log:{trace_id[:8]}"):
+            pass
         record = OutcomeRecord.create(trace_id, cid, status, manifest_hash)
         self._records.append(record)
+        # P1/L6: bind outcome record to trace lineage via evaluate_and_attach
+        try:
+            evaluate_and_attach(
+                evaluated_artifact={"cid": cid, "status": status, "manifest_hash": manifest_hash},
+                rubric={"type": "outcome_record"},
+                evaluator_id="OutcomeLogger",
+                score_payload={"status": status, "record_hash": record.record_hash},
+                evaluated_stage=EvaluationStage.FINAL_OUTCOME_TRACE,
+                trace_id=trace_id,
+            )
+        except Exception:
+            pass
         return record
 
     def records(self) -> tuple[OutcomeRecord, ...]:

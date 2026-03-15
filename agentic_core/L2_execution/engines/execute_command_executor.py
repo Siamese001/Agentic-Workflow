@@ -6,8 +6,33 @@ import sys
 from pathlib import Path
 from typing import Any, TypedDict
 
-from agentic_core.L0_routing.config.path_constants import DEFAULT_TIMEOUT
 from agentic_core.utils.security_util import safe_execute
+
+from agentic_core.L0_routing.config.path_constants import DEFAULT_TIMEOUT
+
+
+def _invoke_authorize_and_execute(execution_context, target_callable, capability_token, payload, **kw):
+    from agentic_core.L2_execution.enforcement.execution_guardrail_chokepoint import (
+        authorize_and_execute,  # noqa: PLC0415
+    )
+
+    return authorize_and_execute(execution_context, target_callable, capability_token, payload, **kw)
+
+
+def _make_execution_context(payload, target: str):
+    from agentic_core.L2_execution.context.execution_context import (  # noqa: PLC0415
+        ActionClass,
+        ExecutionContext,
+    )
+
+    return ExecutionContext.create(
+        run_id="execute_command_executor",
+        capability_token="default",
+        policy_hash="default",
+        execution_input=str(payload),
+        execution_target=target,
+        action_class=ActionClass.PRIVILEGED_LOCAL,
+    )
 
 
 class ExecuteCommandArgs(TypedDict):
@@ -152,6 +177,14 @@ def execute_with_timeout(
         raise ValueError("Command cannot be empty")
     if not is_command_allowed(command[0]):
         raise ExecutionError(f"Command not allowed: {command[0]}")
+    _ectx = _make_execution_context(" ".join(command), "execute_command_executor.execute_with_timeout")
+    _invoke_authorize_and_execute(
+        _ectx,
+        lambda p: p,
+        "default",
+        " ".join(command),
+        target_name="execute_command_executor.execute_with_timeout",
+    )
     project_root: Any = get_project_root()
     work_dir: Any = project_root
     if cwd:

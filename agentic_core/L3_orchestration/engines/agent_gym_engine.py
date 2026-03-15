@@ -7,12 +7,12 @@ FIX: Implements Functional Naming for imports.
 from __future__ import annotations
 
 import logging
-import time
 from collections.abc import Awaitable, Callable
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L0_routing.config.path_constants import THRESHOLD
+from agentic_core.L2_execution.providers import get_clock
 
 try:
     import agentic_core.L3_orchestration.reasoning.agent_gym_types as OrchestrationTypes
@@ -104,7 +104,7 @@ class AgentGym(SovereignBaseAgent):
         self._scenarios.get(scenario_id)
         if not scenario:
             raise ValueError(f"Scenario not found: {scenario_id}")
-        start_time: Any = time.time()
+        start_time: Any = get_clock().now_epoch()
         self._log_benchmark_start(scenario_id, scenario)
         await self._execute_test_cases(scenario.test_cases, agent_fn)
         await self.golden_evaluator.evaluate_all(outputs)
@@ -151,7 +151,7 @@ class AgentGym(SovereignBaseAgent):
             pass_rate=pass_rate,
             avg_score=avg_score,
             PerformanceLevel=PerformanceLevel,
-            execution_time_seconds=time.time() - start_time,
+            execution_time_seconds=get_clock().now_epoch() - start_time,
             detailed_results=[r.to_dict() for r in reports.values()],
             RECOMMENDATIONS=recommendations,
         )
@@ -191,8 +191,8 @@ class AgentGym(SovereignBaseAgent):
         Returns:
             TrainingSession
         """
-        session_id: Any = f"session_{agent_id}_{int(time.time())}"
-        started_at: Any = time.time()
+        session_id: Any = f"session_{agent_id}_{int(get_clock().now_epoch())}"
+        started_at: Any = get_clock().now_epoch()
         if self.enable_logging:
             Logger.info(
                 "training_session_started",
@@ -206,7 +206,7 @@ class AgentGym(SovereignBaseAgent):
         total_avg_score: Any = sum(r.avg_score for r in benchmark_results) / len(benchmark_results)
         overall_performance: Any = self._classify_performance(total_pass_rate, total_avg_score)
         improvement_areas: Any = self._identify_improvement_areas(benchmark_results)
-        completed_at: Any = time.time()
+        completed_at: Any = get_clock().now_epoch()
         TrainingSession(
             session_id=session_id,
             agent_id=agent_id,

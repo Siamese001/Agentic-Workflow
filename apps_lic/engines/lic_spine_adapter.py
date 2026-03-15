@@ -25,6 +25,7 @@ from agentic_core.interfaces.spine import (
     ReEntryLoop,
 )
 from agentic_core.L0_routing.meta_control.meta_learning_bus import MetaLearningBus
+from agentic_core.L2_execution.providers import get_clock
 from apps_shared.spine.base_spine_adapter import BaseSpineAdapter
 from apps_shared.spine.d0_engine_adapter import D0EngineAdapter
 from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
@@ -90,9 +91,13 @@ class LicSpineAdapter(BaseSpineAdapter):
             max_attempts=max_reentry_attempts,
             cid_registry=cid_registry,
         )
+        _path_router = PathRouter()
+        _clk = get_clock()
+        _clk.emit_replay_key(context=f"lic:{self._PREFIX}:init")
+        _clk.emit_determinism_digest(inputs={"app": "lic", "prefix": self._PREFIX})
         orchestrator = ExecutionOrchestrator(
             assembler=_LicAssemblerAdapter(),
-            path_router=PathRouter(),
+            path_router=_path_router,
             d0_engine=D0EngineAdapter(),
             risk_gate=RiskGateAdapter(),
             cid_registry=cid_registry,

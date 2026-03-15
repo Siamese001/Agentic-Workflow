@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 "\nUnified Workflow Engine\n\nSingle entry point for all workflow orchestration, replacing 8 core engines:\n- NervousSystemAgent\n- MissionControllerEngine\n- SubatomicOrchestratorImpl\n- DAGManagerAgent\n- DagEngineAgent\n- SelfRecoveringOrchestratorAgent\n- WorkflowFissionManagerAgent\n- L3OrchestrationBase\n"
-import time
 import uuid
 from dataclasses import dataclass
 from typing import Any
+
+from agentic_core.L2_execution.providers import get_clock
 
 from .base_coordinator import WorkflowCoordinator, coordinator_registry
 from .execution import (
@@ -126,7 +127,7 @@ class UnifiedWorkflowEngine:
             Workflow result
         """
         workflow_id = str(uuid.uuid4())
-        start_time = time.time()
+        start_time = get_clock().now_epoch()
         self.metrics.total_workflows += 1
         context = WorkflowContext(
             workflow_id=workflow_id,
@@ -153,7 +154,7 @@ class UnifiedWorkflowEngine:
                 self.metrics.completed_workflows += 1
             else:
                 self.metrics.failed_workflows += 1
-            elapsed = time.time() - start_time
+            elapsed = get_clock().now_epoch() - start_time
             self.metrics.total_time += elapsed
             self.metrics.avg_latency = self.metrics.total_time / self.metrics.total_workflows
             result.metrics["execution_time"] = elapsed

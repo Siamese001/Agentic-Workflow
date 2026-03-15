@@ -2,10 +2,11 @@ from __future__ import annotations
 
 "Types and models for FirecrackerManager."
 import logging
-import time
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
+
+from agentic_core.L2_execution.providers import get_clock
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -87,7 +88,7 @@ class VmInstance:
         Returns:
             True if expired
         """
-        current_time: Any = current_time or time.time()
+        current_time: Any = current_time or get_clock().now_epoch()
         elapsed: Any = current_time - self.created_at
         return elapsed > self.config.timeout_seconds
 

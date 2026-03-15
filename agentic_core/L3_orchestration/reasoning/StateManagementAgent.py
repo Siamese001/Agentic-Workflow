@@ -17,9 +17,21 @@ from typing import Any
 from agentic_core.utils.ssot_discovery_validator import get_data_files
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.L2_execution.determinism.execution_proof_emitter import ExecutionProofEmitter
+from agentic_core.L2_execution.enforcement.write_governor_mixin import WriteGovernorMixin
+from agentic_core.L4_persistence.lifecycle.lifecycle_policy_applier import (
+    apply_simple_lifecycle_policy,
+)
+from agentic_core.L4_state.authority.run_state_authority import get_run_state_authority
+from agentic_core.L5_safety.enforcement.policy_action_contract import (
+    ActionClass,
+    PolicyEnforcementError,
+    enforce_policy_before_action,
+)
 from agentic_core.utils.decorators_compat_util import standard_heal
 
 Logger = logging.getLogger(__name__)
+_proof_emitter = ExecutionProofEmitter("L3.StateManagementAgent")
 
 
 @dataclass
@@ -78,7 +90,7 @@ class IntegrityReport:
 
 
 @dataclass
-class StateManagementAgent(SovereignBaseAgent):
+class StateManagementAgent(WriteGovernorMixin, SovereignBaseAgent):
     """
     Unified L4 State Controller.
 
@@ -224,6 +236,19 @@ class StateManagementAgent(SovereignBaseAgent):
         Returns:
             File path where data was stored
         """
+        with _proof_emitter.proof_op(f"set_state:{key}"):
+            pass
+        try:
+            enforce_policy_before_action(
+                action_name=f"set_state:{key}",
+                action_class=ActionClass.PERSISTENT_MUTATION,
+                actor_id="StateManagementAgent",
+            )
+        except PolicyEnforcementError as _pee:
+            Logger.error("Policy blocked set_state %s: %s", key, _pee)
+            return ""
+        _rsa = get_run_state_authority()
+        _rsa.commit(key, data, actor_id="StateManagementAgent", reason_code="set_state")
         with self._lock:
             file_path = self.memory_root / "state" / f"{key}.json"
             data_json = json.dumps(data, sort_keys=True, default=str)
@@ -249,6 +274,23 @@ class StateManagementAgent(SovereignBaseAgent):
             self._save_manifest()
             self._notify_registry_update(key, "set")
             self._mcp8_mirror_set(key, data)
+
+            # P3/L4: Apply state lifecycle governance for write operations
+            try:
+                state_namespace = f"state_memory.{key}"
+                apply_simple_lifecycle_policy(
+                    state_namespace=state_namespace,
+                    access_type="write",
+                    actor_id="StateManagementAgent",
+                )
+                Logger.debug(
+                    "STATE_LIFECYCLE_GOVERNED namespace=%s operation=set_state",
+                    state_namespace,
+                )
+            except Exception as _lifecycle_exc:
+                Logger.error("STATE_LIFECYCLE_ERROR: %s", _lifecycle_exc)
+                # Continue - lifecycle failure should not block state operations
+
             Logger.debug(f"State set: {key}")
             return str(file_path)
 
@@ -296,6 +338,22 @@ class StateManagementAgent(SovereignBaseAgent):
         Returns:
             Deserialized data or None if not found
         """
+        get_run_state_authority().observe_runtime_state(
+            "get_state", stage=key, actor_id="StateManagementAgent"
+        )
+
+        # P3/L4: Apply state lifecycle governance for read operations
+        try:
+            state_namespace = f"state_memory.{key}"
+            apply_simple_lifecycle_policy(
+                state_namespace=state_namespace,
+                access_type="read",
+                actor_id="StateManagementAgent",
+            )
+        except Exception as _lifecycle_exc:
+            Logger.error("STATE_LIFECYCLE_ERROR: %s", _lifecycle_exc)
+            # Continue - lifecycle failure should not block state operations
+
         with self._lock:
             if key not in self._manifest:
                 return None

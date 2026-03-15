@@ -12,6 +12,7 @@ from dataclasses import dataclass, field
 from typing import Any, Final
 
 from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
+from agentic_core.L2_execution.providers import get_clock
 
 DEFAULT_SIMILARITY_THRESHOLD: Final[float] = 0.85
 DEFAULT_TTL_SECONDS: Final[int] = 3600
@@ -95,4 +96,4 @@ class CacheEntry:
 
     def is_expired(self) -> bool:
         """Check if cache entry has expired."""
-        return time.time() - self.created_at > self.ttl
+        return get_clock().now_epoch() - self.created_at > self.ttl

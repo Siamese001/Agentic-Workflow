@@ -9,7 +9,6 @@ import hashlib as _hashlib
 import logging
 import os
 import re
-import time
 from typing import Any
 
 from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, DEFAULT_TIMEOUT
@@ -37,6 +36,7 @@ from agentic_core.L0_routing.scripts._ssot_types import (
     RoutingInputs,
     RoutingTier,
 )
+from agentic_core.L2_execution.providers import get_clock
 
 logger = logging.getLogger(__name__)
 
@@ -737,7 +737,7 @@ class SovereignDecisionEngine:
             return False
         self._operation_stack.append(op_signature)
         self._atomic_lock = True
-        self._sovereignty_token = f"SOV_{int(time.time())}_{agent_name}"
+        self._sovereignty_token = f"SOV_{int(get_clock().now_epoch())}_{agent_name}"
         return True
 
     def release_sovereignty_token(self, agent_name: str, success: bool = True) -> None:

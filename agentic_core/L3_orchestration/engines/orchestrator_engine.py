@@ -35,6 +35,8 @@ from enum import Enum
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L2_execution.enforcement.runtime_guard import runtime_guard
+from agentic_core.runtime.trace_context import get_trace_context
 from agentic_core.utils.ssot_discovery_validator import get_agent_paths
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
@@ -46,20 +48,29 @@ from agentic_core.L0_routing.config import (
     get_validated_project_root,
 )
 from agentic_core.L0_routing.config.path_constants import DEFAULT_TIMEOUT
-from agentic_core.L2_execution.enforcement.runtime_guard import runtime_guard
-from agentic_core.runtime.trace_context import get_trace_context
-from agentic_core.L3_orchestration.registry.agent_dispatch_registry import get_agent_dispatch_registry
 from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
+from agentic_core.L2_execution.determinism.execution_proof_emitter import ExecutionProofEmitter
+from agentic_core.L3_orchestration.contracts.orchestration_handoff_contract import emit_agent_executes_agent
 from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
     OrchestrationResult,
     OrchestrationStrategy,
     UnifiedAgent,
 )
+from agentic_core.L3_orchestration.registry.agent_dispatch_registry import get_agent_dispatch_registry
 from agentic_core.L3_orchestration.types import AgentResult, ExecutionContext, ExecutionPhase, MissionResult
+from agentic_core.L4_state.authority.run_state_authority import get_run_state_authority
+from agentic_core.L5_safety.enforcement.circuit_breaker_gate import get_breaker
+from agentic_core.L5_safety.enforcement.policy_action_contract import (
+    ActionClass,
+    PolicyEnforcementError,
+    enforce_policy_before_action,
+)
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
 
 Logger = logging.getLogger(__name__)
+_proof_emitter = ExecutionProofEmitter("L3.orchestrator_engine")
+_exec_breaker = get_breaker("orchestrator_engine")
 ALLOWED_MODULE_PREFIXES = (AGENTIC_CORE_DIR, APPS_SHARED_DIR, APPS_LIC_DIR, APPS_RG_DIR)
 
 
@@ -229,7 +240,7 @@ class Orchestrator(SovereignBaseAgent):
                 target_class=strategy.__class__.__name__,
                 method=action,
                 target_instance=strategy,
-                args=(payload,)
+                args=(payload,),
             )
             self.logger.info(f"Dispatched {domain}.{action} successfully.")
             return {"status": "success", "data": result}
@@ -260,6 +271,9 @@ class Orchestrator(SovereignBaseAgent):
         Returns:
             MissionResult with aggregated outcomes
         """
+        with _proof_emitter.proof_op("run_mission"):
+            pass
+        _exec_breaker.call(lambda: None)
         if context is None:
             context = ExecutionContext(dry_run=dry_run, execute=execute)
         self.logger.info(f"[MISSION] Starting mission with {len(agents)} agents (mode={self.mode.value})")
@@ -319,6 +333,32 @@ class Orchestrator(SovereignBaseAgent):
         [PHASE 3: FORWARD-ROLLING RECURSION]
         Enforces linear depth limits and parameter merging for recursive healing.
         """
+        with _proof_emitter.proof_op(f"run_agent:{agent_name}"):
+            pass
+        emit_agent_executes_agent(
+            parent_agent_id="orchestrator_engine",
+            child_agent_id=agent_name,
+            stage="run_agent",
+        )
+        get_run_state_authority().observe_runtime_state(
+            "run_agent_dispatch", stage=agent_name, actor_id="orchestrator_engine"
+        )
+        try:
+            enforce_policy_before_action(
+                action_name=agent_name,
+                action_class=ActionClass.TOOL_EXECUTION,
+                actor_id="orchestrator_engine",
+                run_id=getattr(context, "run_id", "") or "",
+            )
+        except PolicyEnforcementError as _pee:
+            self.logger.error("Policy blocked run_agent %s: %s", agent_name, _pee)
+            return AgentResult(
+                agent_name=agent_name,
+                success=False,
+                errors=1,
+                status="POLICY_BLOCKED",
+                message=str(_pee),
+            )
         current_depth = context.metadata.get("depth", 0) if context else 0
         if current_depth > 50:
             self.logger.critical(f"[CIRCUIT_BREAKER] Max depth (50) reached for {agent_name}.")

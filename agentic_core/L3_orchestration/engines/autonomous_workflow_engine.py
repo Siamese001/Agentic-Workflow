@@ -20,6 +20,8 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Protocol, runtime_checkable
 
+from agentic_core.L3_orchestration.contracts.orchestration_handoff_contract import emit_agent_executes_agent
+
 Logger = logging.getLogger(__name__)
 
 _DEFAULT_MAX_ITERATIONS = 20
@@ -131,6 +133,11 @@ class AutonomousWorkflowEngine:
         Logger.info("autonomous_workflow_start", extra={"goal": goal[:80], "max_iter": self.max_iterations})
 
         for iteration in range(1, self.max_iterations + 1):
+            emit_agent_executes_agent(
+                parent_agent_id="autonomous_workflow_engine",
+                child_agent_id="policy_fn",
+                stage=f"iteration_{iteration}",
+            )
             try:
                 action, params = await self.policy_fn(goal, result.steps, last_obs)
             except Exception as exc:  # guardian: allow-silent-swallower

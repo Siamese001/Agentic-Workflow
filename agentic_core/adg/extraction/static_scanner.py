@@ -936,6 +936,8 @@ _GOVERNANCE_WRITE_SYMBOLS: frozenset[str] = frozenset(
         "submit_instruction",
         "commit_write",
         "uwg",
+        "WriteGovernorMixin",
+        "uwg_write",
     }
 )
 
@@ -1067,6 +1069,26 @@ class _GovernancePlaneVisitor(ast.NodeVisitor):
         self.module_adg_name = module_adg_name
         self.source_file = source_file
         self.edges: list[Edge] = []
+
+    def visit_ClassDef(self, node: ast.ClassDef) -> None:
+        for base in node.bases:
+            sym = self._extract_symbol(base)
+            if sym:
+                tail = sym.split(".")[-1]
+                base_name = sym.split(".")[0]
+                if base_name in _GOVERNANCE_WRITE_SYMBOLS or tail in _GOVERNANCE_WRITE_SYMBOLS:
+                    self.edges.append(
+                        Edge(
+                            from_name=self.module_adg_name,
+                            relation_type="writes_through",
+                            to_name=canonical_name("Symbol", sym),
+                            edge_kind="write",
+                            source_file=self.source_file,
+                            line_no=node.lineno,
+                            symbol=sym,
+                        )
+                    )
+        self.generic_visit(node)
 
     def visit_Call(self, node: ast.Call) -> None:
         sym = self._extract_symbol(node.func)
@@ -2505,7 +2527,7 @@ class _DeterminismControlVisitor(ast.NodeVisitor):
                 )
             )
         elif tail in DETERMINISM_PATCH_METHODS:
-            if "digest" in tail:
+            if "digest" in tail or tail in ("stamp_decision", "emit_routing_digest"):
                 relation, edge_kind = "emits_determinism_digest", "determinism_digest_emit"
             elif "seed" in tail or "rng" in tail or "random" in tail or "uuid" in tail:
                 relation, edge_kind = "seeds_rng", "determinism_seed"
@@ -2664,6 +2686,14 @@ class _ExecutionProofVisitor(ast.NodeVisitor):
             if "compare" in tail:
                 relation, ek = "compares_proof", "proof_comparison"
             elif "replay" in tail and "key" in tail or "replay_key" in tail:
+                relation, ek = "emits_replay_key", "replay_key_emit"
+            elif tail in (
+                "stamp_decision",
+                "guards_replay",
+                "verify_routing_replay",
+                "emit_determinism_digest",
+                "emit_routing_digest",
+            ):
                 relation, ek = "emits_replay_key", "replay_key_emit"
             else:
                 relation, ek = "records_execution_trace", "execution_trace_record"
@@ -3184,6 +3214,21 @@ class _L5ValidationProofVisitor(ast.NodeVisitor):
         self.module_adg_name = module_adg_name
         self.source_file = source_file
         self.edges: list[Edge] = []
+
+    def visit_ClassDef(self, node: ast.ClassDef) -> None:
+        for base_node in node.bases:
+            sym = _sym_of(base_node)
+            if sym:
+                tail = sym.split(".")[-1]
+                base = sym.split(".")[0]
+                name = tail or base
+                if name in UWG_TERMINATION_SYMBOLS or base in UWG_TERMINATION_SYMBOLS:
+                    self._emit("execution_terminates_at_uwg", "uwg_termination", sym or name, node.lineno)
+                if name in SAFETY_PLANE_CLASSES or base in SAFETY_PLANE_CLASSES:
+                    self._emit(
+                        "validated_by_safety_plane", "safety_plane_validation", sym or name, node.lineno
+                    )
+        self.generic_visit(node)
 
     def visit_Call(self, node: ast.Call) -> None:
         sym = _sym_of(node.func)

@@ -11,6 +11,8 @@ import logging
 from dataclasses import dataclass, field
 from typing import Any
 
+from agentic_core.L2_execution.providers import get_clock
+
 logger = logging.getLogger(__name__)
 
 
@@ -31,6 +33,9 @@ class HardenedGeminiExecutor:
             from agentic_core.interfaces.gateway import SovereignLLMGateway
 
             self._gateway = SovereignLLMGateway()
+            _clk = get_clock()
+            _clk.emit_replay_key(context=f"rg:gemini:{self.agent_id}")
+            _clk.emit_determinism_digest(inputs={"executor": self.agent_id, "provider": "google"})
         except ImportError:
             logger.warning("HardenedGeminiExecutor: SovereignLLMGateway not available")
             self._gateway = None

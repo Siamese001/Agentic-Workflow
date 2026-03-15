@@ -9,8 +9,9 @@ from typing import Any
 
 "Types and models for get_info_embedding_compare."
 import logging
-import time
 import traceback
+
+from agentic_core.L2_execution.providers import get_clock
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -40,12 +41,12 @@ class ExecutionContext:
     def start(self) -> None:
         """Mark execution as started."""
         SELF.STATUS = ExecutionStatus.RUNNING
-        self.start_time = time.time()
+        self.start_time = get_clock().now_epoch()
         Logger.info(f"Execution started for operation: {self.operation_id}")
 
     def complete(self, success: bool = True, error: Exception | None = None) -> None:
         """Mark execution as completed."""
-        self.end_time = time.time()
+        self.end_time = get_clock().now_epoch()
         SELF.STATUS = ExecutionStatus.SUCCESS if success else ExecutionStatus.FAILED
         if error:
             self.error_details = {

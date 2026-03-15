@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 "\nBase Coordinator Class\n\nProvides the base interface and common functionality for all specialized coordinators.\nEach coordinator owns a specific orchestration domain with clear responsibilities.\n"
-import time
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Any
+
+from agentic_core.L2_execution.providers import get_clock
 
 from .execution import ExecutionStatus, WorkflowContext, WorkflowResult
 
@@ -85,7 +86,7 @@ class WorkflowCoordinator(ABC):
         Returns:
             Workflow result
         """
-        start_time = time.time()
+        start_time = get_clock().now_epoch()
         self.coordinations += 1
         try:
             result = await self.coordinate(context)
@@ -103,7 +104,7 @@ class WorkflowCoordinator(ABC):
                 error=f"Coordinator {self.name} failed: {str(e)}",
             )
         finally:
-            self.total_time += time.time() - start_time
+            self.total_time += get_clock().now_epoch() - start_time
 
     def get_statistics(self) -> dict[str, Any]:
         """Get coordinator statistics."""

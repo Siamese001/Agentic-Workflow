@@ -18,6 +18,8 @@ from dataclasses import dataclass
 from typing import Any, Protocol, runtime_checkable
 
 logger = logging.getLogger(__name__)
+_WRITES_THROUGH_LOG = logging.getLogger("adg.writes_through")
+_READS_LOG = logging.getLogger("adg.reads_runtime_state")
 
 
 @runtime_checkable
@@ -153,6 +155,7 @@ class UnifiedMemoryFacade:
         """Write a value to a named backend.
 
         All L4 writes must route through this method.
+        Emits writes_through ADG edge (P1/L4 write-through discipline).
         """
         self._stats.writes += 1
         backend = self._backends.get(backend_name)
@@ -160,6 +163,12 @@ class UnifiedMemoryFacade:
             logger.warning("MEMORY_FACADE store unknown backend=%s key=%s", backend_name, key)
             return
         backend.write(key, value)
+        # P1/L4: emit writes_through ADG edge on every governed store
+        _WRITES_THROUGH_LOG.debug(
+            "writes_through UNIFIED_MEMORY_FACADE backend=%s key=%s",
+            backend_name,
+            key,
+        )
         logger.debug("MEMORY_FACADE store backend=%s key=%s", backend_name, key)
 
     def delete(self, backend_name: str, key: str) -> None:
@@ -200,11 +209,20 @@ class UnifiedMemoryFacade:
         return None
 
     def write(self, key: str, value: Any) -> None:
-        """MemoryBackend protocol compliance — writes to the first registered backend."""
+        """MemoryBackend protocol compliance — writes to the first registered backend.
+
+        Emits writes_through ADG edge (P1/L4 write-through discipline).
+        """
         if self._backends:
-            first = next(iter(self._backends.values()))
+            first_name = next(iter(self._backends))
+            first = self._backends[first_name]
             first.write(key, value)
             self._stats.writes += 1
+            _WRITES_THROUGH_LOG.debug(
+                "writes_through UNIFIED_MEMORY_FACADE protocol_write backend=%s key=%s",
+                first_name,
+                key,
+            )
 
     def delete(self, key: str) -> None:  # type: ignore[override]
         """MemoryBackend protocol compliance — delete from all backends."""

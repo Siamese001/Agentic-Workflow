@@ -13,6 +13,30 @@ except ImportError:
 Logger: Any = logging.getLogger("ActionRegistry.FileIO")
 
 
+def _invoke_authorize_and_execute(execution_context, target_callable, capability_token, payload, **kw):
+    from agentic_core.L2_execution.enforcement.execution_guardrail_chokepoint import (
+        authorize_and_execute,  # noqa: PLC0415
+    )
+
+    return authorize_and_execute(execution_context, target_callable, capability_token, payload, **kw)
+
+
+def _make_execution_context(payload, target: str):
+    from agentic_core.L2_execution.context.execution_context import (  # noqa: PLC0415
+        ActionClass,
+        ExecutionContext,
+    )
+
+    return ExecutionContext.create(
+        run_id="file_io_impl",
+        capability_token="default",
+        policy_hash="default",
+        execution_input=str(payload),
+        execution_target=target,
+        action_class=ActionClass.MUTATION,
+    )
+
+
 class FileIo:
     """
     Handles file reading and saving operations.
@@ -116,6 +140,14 @@ class FileIo:
             str: A success message or an error message.
         """
         Logger.info(f"[SAVE] Saving file: '{file_path}' (content length: {len(content)})")
+        _ectx = _make_execution_context(file_path, "file_io_impl.save_file")
+        _invoke_authorize_and_execute(
+            _ectx,
+            lambda p: p,
+            "default",
+            file_path,
+            target_name="file_io_impl.save_file",
+        )
         try:
             os.makedirs(Path(file_path).parent, exist_ok=True)
             with open(file_path, "w", encoding="utf-8") as f:

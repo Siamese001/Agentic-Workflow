@@ -17,6 +17,7 @@ from apps_rg.utils.agent_executor import AgentMessage, AgentResponse
 
 from agentic_core.interfaces.gateway import GenerationRequest
 from agentic_core.interfaces.observability import SystemTelemetry
+from agentic_core.L2_execution.providers import get_clock
 from agentic_core.mixins.hardening_mixin import HardeningMixin
 
 logger = logging.getLogger(__name__)
@@ -98,6 +99,9 @@ class HardenedOpenAIExecutor(HardeningMixin):
         from agentic_core.interfaces.gateway import SovereignLLMGateway
 
         self._gateway = SovereignLLMGateway()
+        _clk = get_clock()
+        _clk.emit_replay_key(context=f"rg:openai:{self.__class__.__name__}")
+        _clk.emit_determinism_digest(inputs={"strategy": self.__class__.__name__, "provider": "openai"})
 
     def _validate_token_budget(self, prompt: str) -> None:
         """Validate token budget before API call.

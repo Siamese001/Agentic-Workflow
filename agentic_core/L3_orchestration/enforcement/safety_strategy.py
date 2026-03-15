@@ -6,6 +6,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L2_execution.providers import get_clock
 from agentic_core.seams.contracts.safety_agents import SafetyAgentFactory
 
 Logger = logging.getLogger(__name__)
@@ -109,13 +110,11 @@ class SafetyStrategy:
         Returns:
             Dictionary with execution results
         """
-        import time
-
-        start_time = time.time()
+        start_time = get_clock().now_epoch()
         try:
             if hasattr(agent, "heal_repository"):
                 result = agent.heal_repository(dry_run=dry_run, execute=execute)
-                execution_time_ms = (time.time() - start_time) * 1000
+                execution_time_ms = (get_clock().now_epoch() - start_time) * 1000
                 return {
                     "status": "PASS" if result.get("errors", 0) == 0 else "FAIL",
                     "violations_found": result.get("violations", 0),
@@ -132,7 +131,7 @@ class SafetyStrategy:
                     "error_message": f"{agent_name} has no heal_repository method",
                 }
         except Exception as e:
-            execution_time_ms = (time.time() - start_time) * 1000
+            execution_time_ms = (get_clock().now_epoch() - start_time) * 1000
             return {
                 "status": "ERROR",
                 "violations_found": 0,

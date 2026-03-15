@@ -8,6 +8,32 @@ operations that could bypass the mutation fence and write to protected roots.
 import ast
 from dataclasses import dataclass
 from pathlib import Path
+
+
+def _invoke_authorize_and_execute(execution_context, target_callable, capability_token, payload, **kw):
+    from agentic_core.L2_execution.enforcement.execution_guardrail_chokepoint import (
+        authorize_and_execute,  # noqa: PLC0415
+    )
+
+    return authorize_and_execute(execution_context, target_callable, capability_token, payload, **kw)
+
+
+def _make_execution_context(payload, target: str):
+    from agentic_core.L2_execution.context.execution_context import (  # noqa: PLC0415
+        ActionClass,
+        ExecutionContext,
+    )
+
+    return ExecutionContext.create(
+        run_id="unsafe_io_detector",
+        capability_token="default",
+        policy_hash="default",
+        execution_input=str(payload),
+        execution_target=target,
+        action_class=ActionClass.PRIVILEGED_LOCAL,
+    )
+
+
 from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
     APPS_LIC_DIR,
@@ -126,6 +152,14 @@ def scan_for_unsafe_patterns(code: str, file_path: str) -> list[UnsafePattern]:
     Returns:
         List of unsafe patterns found
     """
+    _ectx = _make_execution_context(file_path, "unsafe_io_detector.scan_for_unsafe_patterns")
+    _invoke_authorize_and_execute(
+        _ectx,
+        lambda p: p,
+        "default",
+        file_path,
+        target_name="unsafe_io_detector.scan_for_unsafe_patterns",
+    )
     try:
         tree = ast.parse(code)
         visitor = UnsafePatternVisitor(file_path)

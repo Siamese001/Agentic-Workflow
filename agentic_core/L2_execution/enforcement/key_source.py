@@ -4,9 +4,10 @@ Provides injectable, testable key source with no ambient secrets.
 """
 
 import os
-import time
 from abc import ABC, abstractmethod
 from typing import Final
+
+from agentic_core.L2_execution.providers import get_clock
 
 
 class KeySource(ABC):
@@ -49,7 +50,7 @@ class TestKeySource(KeySource):
 
     def reject_expired_key(self) -> None:
         """Reject if the key has expired."""
-        if self._expiry_time and time.time() > self._expiry_time:
+        if self._expiry_time and get_clock().now_epoch() > self._expiry_time:
             raise ValueError("Key has expired")
 
     def set_key_scope(self, artifact_type: str, allowed: bool):
@@ -69,7 +70,7 @@ class EnvKeySource(KeySource):
         if env_var not in os.environ:
             raise ValueError(f"Environment variable {env_var} not set")
         self._key_scopes: dict[str, bool] = {"signature": True, "hmac": True, "audit": True, "trace": True}
-        self._creation_time = time.time()
+        self._creation_time = get_clock().now_epoch()
         self._ttl = 24 * 60 * 60
 
     def get_secret(self) -> bytes:
@@ -84,7 +85,7 @@ class EnvKeySource(KeySource):
 
     def reject_expired_key(self) -> None:
         """Reject if the key has expired."""
-        if time.time() > self._creation_time + self._ttl:
+        if get_clock().now_epoch() > self._creation_time + self._ttl:
             raise ValueError("Production key has expired")
 
     def set_key_scope(self, artifact_type: str, allowed: bool):

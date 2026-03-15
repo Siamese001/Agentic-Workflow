@@ -14,13 +14,40 @@ from __future__ import annotations
 import hashlib
 import logging
 import os
-import time
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, Literal
+
+from agentic_core.L2_execution.providers import get_clock
 
 if TYPE_CHECKING:
     pass
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+
+
+def _invoke_authorize_and_execute(execution_context, target_callable, capability_token, payload, **kw):
+    from agentic_core.L2_execution.enforcement.execution_guardrail_chokepoint import (
+        authorize_and_execute,  # noqa: PLC0415
+    )
+
+    return authorize_and_execute(execution_context, target_callable, capability_token, payload, **kw)
+
+
+def _make_execution_context(payload, target: str):
+    from agentic_core.L2_execution.context.execution_context import (  # noqa: PLC0415
+        ActionClass,
+        ExecutionContext,
+    )
+
+    return ExecutionContext.create(
+        run_id="EmbeddingSovereignAgent",
+        capability_token="default",
+        policy_hash="default",
+        execution_input=str(payload),
+        execution_target=target,
+        action_class=ActionClass.PRIVILEGED_LOCAL,
+    )
+
+
 from agentic_core.config.core.sovereign_config import get_sovereign_config
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
@@ -120,7 +147,7 @@ class EmbeddingSovereignAgent(RedisCacheMixin, SovereignBaseAgent):
                 "success": success,
                 "cached": cached,
                 "latency_ms": latency_ms,
-                "ts": time.time(),
+                "ts": get_clock().now_epoch(),
             }
         )
         self.operation_stats["total"] += 1
@@ -143,13 +170,21 @@ class EmbeddingSovereignAgent(RedisCacheMixin, SovereignBaseAgent):
 
         [PHASE 4] Unified interface for all embedding providers.
         """
-        start = time.time()
+        _ectx = _make_execution_context(content, "EmbeddingSovereignAgent.get_embedding")
+        _invoke_authorize_and_execute(
+            _ectx,
+            lambda p: p,
+            "default",
+            content,
+            target_name="EmbeddingSovereignAgent.get_embedding",
+        )
+        start = get_clock().now_epoch()
         cache_key = f"{self._cache_prefix}:{provider}:{self._content_hash(content)}"
         if use_cache:
             try:
                 cached = await self.cache_get(cache_key)
                 if cached:
-                    latency = (time.time() - start) * 1000
+                    latency = (get_clock().now_epoch() - start) * 1000
                     self._audit(provider, True, True, latency)
                     return cached
             except (ConnectionError, TimeoutError, RuntimeError, OSError) as e:
@@ -171,11 +206,11 @@ class EmbeddingSovereignAgent(RedisCacheMixin, SovereignBaseAgent):
                     await self.cache_set(cache_key, embedding, ttl=self._default_ttl)
                 except (ConnectionError, TimeoutError, RuntimeError, OSError) as e:
                     Logger.warning(f"Redis cache set failed: {e}")
-            latency = (time.time() - start) * 1000
+            latency = (get_clock().now_epoch() - start) * 1000
             self._audit(provider, True, False, latency)
             return embedding
         except Exception as e:
-            latency = (time.time() - start) * 1000
+            latency = (get_clock().now_epoch() - start) * 1000
             self._audit(provider, False, False, latency)
             Logger.error(f"Embedding failed: {e}")
             raise

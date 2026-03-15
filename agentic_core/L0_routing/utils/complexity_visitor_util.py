@@ -32,6 +32,7 @@ from typing import Any
 
 from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR, TESTS_DIR
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
+from agentic_core.L2_execution.providers import get_clock
 
 try:
     from agentic_core.utils.ssot_discovery_validator import get_python_files
@@ -916,7 +917,6 @@ def get_docstring(class_node: ast.ClassDef) -> str:
 
 def main():
     import sys
-    import time
 
     parser = argparse.ArgumentParser(description="Canonical Agent Discovery (SSOT)")
     parser.add_argument("--force", action="store_true", help="Force full scan ignoring validation")
@@ -997,7 +997,7 @@ def main():
             log.info("[FULL SCAN] Incremental mode disabled - performing complete repository scan")
     if previous_count:
         log.info(f"[BASELINE] Previous agent count: {previous_count}")
-    start_time = time.time()
+    start_time = get_clock().now_epoch()
     if not incremental_mode:
         for stale_path in {CANONICAL_JSON, LEGACY_JSON, MISTAKE_JSON, MISTAKE_JSON_2}:
             try:
@@ -1251,7 +1251,7 @@ def main():
             log.error(err.strip())
         log.error("Run with --force to override")
         sys.exit(1)
-    scan_duration = time.time() - start_time
+    scan_duration = get_clock().now_epoch() - start_time
     log.info(f"[MANIFEST] Computing hashes for {len(all_py_files)} scanned files...")
     file_hashes: dict[str, str] = {}
     hash_errors = 0

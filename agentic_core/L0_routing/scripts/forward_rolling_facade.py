@@ -15,10 +15,10 @@ Phase: 5 - Optimization & Enhancement
 from __future__ import annotations
 
 import logging
-import time
 from dataclasses import dataclass, field
 from typing import Any
 
+from agentic_core.L2_execution.providers import get_clock
 from agentic_core.seams.contracts.forward_rolling import (
     AdaptiveDepthManager,
     ContextPruningStrategy,
@@ -158,7 +158,7 @@ class ForwardRollingFacade:
         Returns:
             ForwardRollingResult with execution details
         """
-        start_time = time.time()
+        start_time = get_clock().now_epoch()
         self._metrics.total_executions += 1
 
         # Check cache
@@ -202,7 +202,7 @@ class ForwardRollingFacade:
                 raise
 
         # Calculate execution time
-        duration_ms = (time.time() - start_time) * 1000
+        duration_ms = (get_clock().now_epoch() - start_time) * 1000
         self._execution_times.append(duration_ms)
 
         # Update metrics

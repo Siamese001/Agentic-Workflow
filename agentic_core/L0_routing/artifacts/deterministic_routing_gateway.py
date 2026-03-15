@@ -12,7 +12,6 @@ from __future__ import annotations
 
 import hashlib
 import logging
-import time
 from dataclasses import dataclass
 from typing import Any
 
@@ -21,8 +20,11 @@ from agentic_core.L0_routing.types.routing_artifact_types import (
     RoutePath,
     RoutingRationale,
 )
+from agentic_core.L2_execution.providers import get_clock
 
 logger = logging.getLogger(__name__)
+_REPLAY_KEY_LOGGER = logging.getLogger("adg.emits_replay_key")
+_DETERMINISM_LOGGER = logging.getLogger("adg.emits_determinism_digest")
 
 
 @dataclass(frozen=True)
@@ -104,9 +106,12 @@ class DeterministicRoutingGateway:
 
         active = get_active_execution_trace()
         trace_id = active.trace_id if active else "no-active-trace"
-        ts = time.monotonic()
-        replay_key = _compute_replay_key(route_path, self._policy_hash, trace_id)
-        digest = _compute_determinism_digest(replay_key, ts)
+        clk = get_clock()
+        replay_key = clk.emit_replay_key(context=f"{route_path}:{self._policy_hash}:{trace_id}")
+        digest = clk.emit_determinism_digest(
+            inputs={"route": route_path, "policy": self._policy_hash, "trace": trace_id}
+        )
+        ts = clk.now_epoch()
         artifact = RoutingArtifact(
             trace_id=trace_id,
             replay_key=replay_key,

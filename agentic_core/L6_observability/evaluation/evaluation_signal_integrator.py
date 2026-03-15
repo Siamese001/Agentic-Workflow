@@ -19,6 +19,10 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Callable
 
+from agentic_core.L6_observability.evaluation.evaluation_record import (
+    EvaluationStage,
+    evaluate_and_attach,
+)
 from agentic_core.runtime.execution_trace import get_active_execution_trace
 
 logger = logging.getLogger(__name__)
@@ -102,14 +106,19 @@ class EvaluationSignalIntegrator:
         score: float,
         label: str = "",
         metadata: dict[str, Any] | None = None,
+        run_id: str = "",
+        policy_hash: str = "",
     ) -> EvalSignal:
         """Emit an evaluation signal and route it to subscribers.
 
         Emits ``evaluates_output`` + ``feeds_back_signal`` + ``invokes_eval``
         ADG edges.
+
+        P1/L6: calls evaluate_and_attach() to bind evaluation to trace lineage.
         """
+        trace_id = self._trace_id()
         signal = EvalSignal(
-            trace_id=self._trace_id(),
+            trace_id=trace_id,
             source_module=source_module,
             target_layer=target_layer,
             kind=kind,
@@ -118,6 +127,32 @@ class EvaluationSignalIntegrator:
             metadata=metadata or {},
         )
         self._ledger.append(signal)
+        # P1/L6: bind to trace lineage via evaluate_and_attach
+        _stage = (
+            EvaluationStage.REASONING_TRACE
+            if target_layer in ("L1", "L0")
+            else EvaluationStage.EXECUTION_TRACE
+            if target_layer == "L2"
+            else EvaluationStage.FINAL_OUTCOME_TRACE
+        )
+        try:
+            evaluate_and_attach(
+                evaluated_artifact={
+                    "source_module": source_module,
+                    "target_layer": target_layer,
+                    "label": label,
+                },
+                rubric={"kind": kind.value},
+                evaluator_id=source_module,
+                score_payload={"score": score, "label": label},
+                evaluated_stage=_stage,
+                run_id=run_id,
+                trace_id=trace_id if trace_id != "no-active-trace" else "",
+                policy_hash=policy_hash,
+                policy_sensitive=bool(policy_hash),
+            )
+        except Exception as _exc:
+            logger.debug("EVAL_INTEGRATOR evaluate_and_attach skipped: %s", _exc)
         logger.info(
             "EVAL_INTEGRATOR evaluates_output invokes_eval src=%s layer=%s kind=%s score=%.3f label=%s",
             source_module,

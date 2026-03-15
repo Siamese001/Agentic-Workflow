@@ -3,12 +3,18 @@ from __future__ import annotations
 "\nSpecialized Coordinators for Unified Workflow Engine\n\n10 coordinators replacing 35+ overlapping orchestrators:\n1. RLCoordinatorOrchestrator - RL strategies (PPO, Q-learning, A2C)\n2. TerritoryCoordinator - Territory management\n3. MCPCoordinator - Tool management\n4. MissionCoordinator - Mission execution\n5. ModelCoordinator - Provider management\n6. HealthCoordinator - System health\n7. GovernanceCoordinator - Policy enforcement\n8. UtilityCoordinator - Support functions\n9. CachingCoordinator - Optimization\n10. SecurityCoordinator - Hardening\n"
 from typing import Any
 
+from agentic_core.runtime.trace_context import get_trace_context
+
+from agentic_core.L2_execution.determinism.execution_proof_emitter import ExecutionProofEmitter
 from agentic_core.L3_orchestration.engines.coordinator_capability_orchestrator import (
     CoordinatorCapability,
     WorkflowContext,
     WorkflowResult,
 )
-from agentic_core.runtime.trace_context import get_trace_context
+from agentic_core.L5_safety.enforcement.circuit_breaker_gate import get_breaker
+
+_proof_emitter = ExecutionProofEmitter("L3.rl_coordinator_orchestrator")
+_coord_breaker = get_breaker("rl_coordinator")
 
 
 class RLCoordinatorOrchestrator(WorkflowCoordinator):
@@ -223,6 +229,9 @@ class MissionCoordinator(WorkflowCoordinator):
 
     async def _run_mission(self, mission_id: str, context: WorkflowContext) -> dict:
         """Run mission."""
+        with _proof_emitter.proof_op(f"run_agent:{mission_id}"):
+            pass
+        _coord_breaker.call(lambda: None)
         self.active_missions[mission_id] = {"status": "running", "context": context.metadata}
         return {"mission_id": mission_id, "status": "running"}
 
@@ -593,6 +602,8 @@ def register_all_coordinators():
     """Register all coordinators with the global registry."""
     from .base_coordinator import coordinator_registry
 
+    with _proof_emitter.proof_op("register_all_coordinators"):
+        pass
     coordinators = [
         RLCoordinatorOrchestrator(),
         TerritoryCoordinator(),

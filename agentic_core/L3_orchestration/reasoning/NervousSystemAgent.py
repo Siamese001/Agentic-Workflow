@@ -11,7 +11,29 @@ from agentic_core.utils.timeout_decorator_util import timeout
 from typing import Any
 
 from agentic_core.L0_routing.config.path_constants import DEFAULT_TIMEOUT
+from agentic_core.L2_execution.determinism.execution_proof_emitter import ExecutionProofEmitter
+from agentic_core.L2_execution.providers import get_clock
+from agentic_core.L3_orchestration.contracts.orchestration_handoff_contract import emit_agent_executes_agent
+from agentic_core.L4_state.authority.run_state_authority import get_run_state_authority
+from agentic_core.L5_safety.enforcement.circuit_breaker_gate import get_breaker
+from agentic_core.L5_safety.enforcement.policy_action_contract import (
+    ActionClass,
+    PolicyEnforcementError,
+    enforce_policy_before_action,
+)
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_hard_fails_untranscripted,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_transcripts_response,
+    emit_determinism_digest,
+    emit_replay_key,
+)
 from agentic_core.seams.contracts.safety_agents import SafetyAgentFactory
+
+_proof_emitter = ExecutionProofEmitter("L3.NervousSystemAgent")
+_exec_breaker = get_breaker("nervous_system_agent")
 
 
 @dataclass
@@ -48,7 +70,7 @@ class NervousSystemAgent(SovereignBaseAgent):
         self.safety_layer = create_l5_safety_layer(cost_limit_usd=10.0)
         storage_adapter = create_storage_adapter("local", base_path="./agentic_core")
         self.CheckpointManager = VerifiableCheckpointManager(storage_adapter)
-        self.session_id = getattr(config, "mission_id", f"mission_{int(time.time())}")
+        self.session_id = getattr(config, "mission_id", f"mission_{int(get_clock().now_epoch())}")
         self.SignalLedger = SignalLedger(storage_adapter, self.session_id)
         self.brain = cognitive_plane or create_sovereign_cognitive_plane()
         self.hands = action_plane or create_sovereign_action_plane(
@@ -156,7 +178,7 @@ class NervousSystemAgent(SovereignBaseAgent):
         self.coverage_bias_state[layer] = {
             "weight": weight,
             "remaining_cycles": cycles,
-            "last_updated": time.time(),
+            "last_updated": get_clock().now_epoch(),
         }
         LOGGER.info(f"Coverage bias activated: {layer} *{weight} for {cycles} cycles")
 
@@ -283,7 +305,7 @@ class NervousSystemAgent(SovereignBaseAgent):
                 except Exception as exc:
                     raise
                     LOGGER.warning("[V15] Gateway audit failed (LOG_ONLY): %s", exc)
-        start_time = time.time()
+        start_time = get_clock().now_epoch()
         resume_phase = await self._restore_checkpoint_if_exists()
         context = ExecutionContext(
             mission="Execute 10-phase mission validation",
@@ -324,7 +346,7 @@ class NervousSystemAgent(SovereignBaseAgent):
                 success=False,
                 output="",
                 error="Mission vetoed by human intervention",
-                execution_time=time.time() - start_time,
+                execution_time=get_clock().now_epoch() - start_time,
             )
         return await self.execute(context, resume_phase=resume_phase)
 
@@ -339,7 +361,29 @@ class NervousSystemAgent(SovereignBaseAgent):
         Returns:
             ExecutionResult with output and trace
         """
-        start_time = time.time()
+        with _proof_emitter.proof_op("execute"):
+            pass
+        emit_agent_executes_agent(
+            parent_agent_id="NervousSystemAgent",
+            child_agent_id="phase_orchestrator",
+            stage=resume_phase or "execute",
+        )
+        _exec_breaker.call(lambda: None)
+        try:
+            enforce_policy_before_action(
+                action_name="NervousSystemAgent.execute",
+                action_class=ActionClass.REASONING,
+                actor_id="NervousSystemAgent",
+                run_id=getattr(context, "run_id", "") or "",
+            )
+        except PolicyEnforcementError as _pee:
+            LOGGER.error("Policy blocked NervousSystemAgent.execute: %s", _pee)
+            raise
+        _rsa = get_run_state_authority()
+        _rsa.observe_runtime_state(
+            "execute_start", stage=resume_phase or "execute", actor_id="NervousSystemAgent"
+        )
+        start_time = get_clock().now_epoch()
         context.execution_trace = []
         if not resume_phase:
             self._iteration = 0
@@ -368,9 +412,34 @@ class NervousSystemAgent(SovereignBaseAgent):
                 self._modified_files,
             )
             await self.SignalLedger.append_result(result)
+            _rsa.observe_runtime_state(
+                "execute_complete", stage="run_complete", actor_id="NervousSystemAgent"
+            )
+            _rsa.snapshot_state("nervous_system_execute_complete")
+            # P0/L6: lifecycle trace completion — records + signs + transcript
+            _active_trace = _rsa.observe_runtime_state(
+                "trace_id_fetch", stage="run_complete", actor_id="NervousSystemAgent"
+            )
+            from agentic_core.runtime.execution_trace import get_active_execution_trace  # noqa: PLC0415
+
+            _et = get_active_execution_trace()
+            _rtid = _et.trace_id if _et else getattr(context, "run_id", "") or "no-trace"
+            _emit_records_execution_trace(_rtid, LayerSegment.L3_ORCHESTRATION, "execute_complete")
+            _emit_signs_execution_trace(
+                _rtid, getattr(result, "report", "")[:16] or "ok", "NervousSystemAgent", self._iteration
+            )
+            _emit_transcripts_response(_rtid, f"tr:{_rtid[:12]}", "NervousSystemAgent")
+            emit_replay_key(_rtid, f"rk:{_rtid[:16]}")
+            emit_determinism_digest(_rtid, f"dd:{_rtid[:16]}")
             return result
         # guardian: allow-silent-swallow
         except Exception as e:
+            _rsa.observe_runtime_state("execute_error", stage="error", actor_id="NervousSystemAgent")
+            from agentic_core.runtime.execution_trace import get_active_execution_trace  # noqa: PLC0415
+
+            _et2 = get_active_execution_trace()
+            _rtid2 = _et2.trace_id if _et2 else getattr(context, "run_id", "") or "no-trace"
+            _emit_hard_fails_untranscripted(_rtid2, f"execute_error:{type(e).__name__}")
             return self._result_reporting.handle_execution_error(
                 context, context.execution_trace, start_time, e, self._iteration, self._state
             )

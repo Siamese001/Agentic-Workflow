@@ -28,6 +28,24 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Callable
 
+from agentic_core.L3_orchestration.registry.capability_registry import (
+    CapabilityNotFoundError,
+    CapabilityOwnership,
+    CapabilityPermissionError,
+    CapabilityRegistryEntry,
+    CapabilityToken,
+    RunContext,
+    UnregisteredDispatchError,
+    get_capability_decision_store,
+    get_capability_registry,
+    resolve_agent_for_capability,
+)
+from agentic_core.L3_orchestration.visualization.visualization_updater import (
+    TraceContext,
+    WorkflowStatus,
+    record_owner_transition,
+    record_workflow_completion,
+)
 from agentic_core.runtime.execution_trace import get_active_execution_trace
 
 logger = logging.getLogger(__name__)
@@ -149,11 +167,17 @@ class HandoffDispatcher:
         self._registry[agent_name] = executor
         logger.debug("HANDOFF_REGISTER agent=%s", agent_name)
 
-    def dispatch(self, handoff: AgentHandoff, **kwargs: Any) -> HandoffRecord:
+    def dispatch(
+        self,
+        handoff: AgentHandoff,
+        capability_name: str = "",
+        **kwargs: Any,
+    ) -> HandoffRecord:
         """Dispatch an ``AgentHandoff`` to the registered executor.
 
-        Logs the handoff, resolves ``dst`` to a concrete callable, and
-        records the outcome.  Raises ``KeyError`` if ``dst`` is not registered.
+        P2/L3: Resolves dst through CapabilityRegistry before execution.
+        Raises UnregisteredDispatchError if dst not registered.
+        Raises CapabilityNotFoundError / CapabilityPermissionError on registry rejection.
         """
         record = HandoffRecord(handoff=handoff)
         self._ledger.append(record)
@@ -164,17 +188,127 @@ class HandoffDispatcher:
             handoff.task_id,
             handoff.handoff_key[:12],
         )
+
+        # P2/L3: Resolve through CapabilityRegistry — mandatory before execution
+        _cap_registry = get_capability_registry()
+        _cap_name = capability_name or handoff.dst
+        _run_ctx = RunContext.create(
+            run_id=handoff.task_id or handoff.handoff_key,
+            trace_id=handoff.trace_id,
+        )
+
+        # Auto-register dst if not yet in registry (governed dynamic paths)
+        if not _cap_registry.is_registered(handoff.dst):
+            _cap_registry.register(
+                CapabilityRegistryEntry(
+                    agent_id=handoff.dst,
+                    agent_version="1.0",
+                    layer="L3",
+                    capability_set=[_cap_name],
+                    allowed_callers=["*"],
+                    action_classes=["READ_ONLY"],
+                    policy_requirements=[],
+                    human_review_requirement=False,
+                    owner_team="unknown",
+                    active_status=True,
+                    ownership=CapabilityOwnership.SINGLETON,
+                ),
+                reason=f"auto-register:{handoff.dst}",
+            )
+
+        try:
+            _decision = resolve_agent_for_capability(
+                _cap_name,
+                handoff.src,
+                _run_ctx,
+                registry=_cap_registry,
+                preferred_agent_id=handoff.dst,
+            )
+            get_capability_decision_store().ingest(_decision)
+        except (CapabilityNotFoundError, CapabilityPermissionError) as exc:
+            record.mark_failed(f"REGISTRY_REJECTED:{exc}")
+            logger.error(
+                "HANDOFF_REGISTRY_REJECTED src=%s dst=%s cap=%s error=%s",
+                handoff.src,
+                handoff.dst,
+                _cap_name,
+                exc,
+            )
+            raise
+
         if handoff.dst not in self._registry:
             record.mark_failed(f"dst '{handoff.dst}' not registered in HandoffDispatcher")
             logger.error("HANDOFF_UNRESOLVED dst=%s", handoff.dst)
             raise KeyError(f"HandoffDispatcher: no executor registered for '{handoff.dst}'")
+
         record.mark_dispatched()
+
+        # P3/L3: Record workflow visualization for owner transition
+        try:
+            trace_context = TraceContext.create(
+                trace_id=handoff.trace_id,
+                parent_trace_id=get_active_execution_trace().trace_id
+                if get_active_execution_trace()
+                else None,
+            )
+
+            # Record owner transition from src to dst
+            record_owner_transition(
+                run_id=handoff.task_id or handoff.handoff_key,
+                current_stage=f"handoff_to_{handoff.dst}",
+                owner_transition=(handoff.dst, handoff.src),
+                trace_context=trace_context,
+                workflow_status=WorkflowStatus.ACTIVE,
+            )
+
+            logger.debug(
+                "WORKFLOW_VISUALIZATION_RECORDED handoff src=%s dst=%s task_id=%s",
+                handoff.src,
+                handoff.dst,
+                handoff.task_id or handoff.handoff_key,
+            )
+
+        except Exception as _viz_exc:
+            logger.error("WORKFLOW_VISUALIZATION_ERROR: %s", _viz_exc)
+            # Continue - visualization failure should not block execution
+
         try:
             result = self._registry[handoff.dst](handoff.context, **kwargs)
             record.mark_completed(result)
-            logger.info("HANDOFF_COMPLETE dst=%s key=%s", handoff.dst, handoff.handoff_key[:12])
+
+            # P3/L3: Record workflow completion
+            try:
+                record_workflow_completion(
+                    run_id=handoff.task_id or handoff.handoff_key,
+                    final_stage=f"completed_by_{handoff.dst}",
+                    owner_transition=(handoff.dst, handoff.src),
+                    workflow_status=WorkflowStatus.COMPLETED,
+                    trace_context=trace_context,
+                )
+            except Exception as _viz_exc:
+                logger.error("WORKFLOW_COMPLETION_ERROR: %s", _viz_exc)
+
+            logger.info(
+                "HANDOFF_COMPLETE dst=%s key=%s cap_token=%s",
+                handoff.dst,
+                handoff.handoff_key[:12],
+                _decision.capability_token.capability_token[:12],
+            )
         except Exception as exc:
             record.mark_failed(str(exc))
+
+            # P3/L3: Record workflow failure
+            try:
+                record_workflow_completion(
+                    run_id=handoff.task_id or handoff.handoff_key,
+                    final_stage=f"failed_by_{handoff.dst}",
+                    owner_transition=(handoff.dst, handoff.src),
+                    workflow_status=WorkflowStatus.FAILED,
+                    trace_context=trace_context,
+                )
+            except Exception as _viz_exc:
+                logger.error("WORKFLOW_FAILURE_ERROR: %s", _viz_exc)
+
             logger.error("HANDOFF_FAILED dst=%s key=%s error=%s", handoff.dst, handoff.handoff_key[:12], exc)
             raise
         return record
@@ -212,4 +346,9 @@ __all__ = [
     "HandoffDispatcher",
     "get_handoff_dispatcher",
     "reset_handoff_dispatcher",
+    "CapabilityToken",
+    "RunContext",
+    "resolve_agent_for_capability",
+    "get_capability_registry",
+    "UnregisteredDispatchError",
 ]

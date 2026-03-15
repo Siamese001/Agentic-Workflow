@@ -3,8 +3,33 @@ from __future__ import annotations
 "Implementation for ToolsUseATool."
 import logging
 import sys
-import time
 from typing import Any
+
+from agentic_core.L2_execution.providers import get_clock
+
+
+def _invoke_authorize_and_execute(execution_context, target_callable, capability_token, payload, **kw):
+    from agentic_core.L2_execution.enforcement.execution_guardrail_chokepoint import (
+        authorize_and_execute,  # noqa: PLC0415
+    )
+
+    return authorize_and_execute(execution_context, target_callable, capability_token, payload, **kw)
+
+
+def _make_execution_context(payload, target: str):
+    from agentic_core.L2_execution.context.execution_context import (  # noqa: PLC0415
+        ActionClass,
+        ExecutionContext,
+    )
+
+    return ExecutionContext.create(
+        run_id="tool_chain_executor",
+        capability_token="default",
+        policy_hash="default",
+        execution_input=str(payload),
+        execution_target=target,
+        action_class=ActionClass.MUTATION,
+    )
 
 
 class ToolsUseATool:
@@ -55,6 +80,14 @@ class ToolsUseATool:
         exec_ctx: Any = ExecutionContext(
             operation_id=self.config.get("operation_id", "default"), METADATA=context or {}
         )
+        _ectx = _make_execution_context(str(payload), "tool_chain_executor.process")
+        _invoke_authorize_and_execute(
+            _ectx,
+            lambda p: p,
+            "default",
+            str(payload),
+            target_name="tool_chain_executor.process",
+        )
         try:
             exec_ctx.start()
             if payload is None:
@@ -65,7 +98,10 @@ class ToolsUseATool:
                 success=True,
                 DATA=result,
                 ExecutionContext=exec_ctx,
-                additional_info={"processed_at": time.time(), "executor": self.__class__.__name__},
+                additional_info={
+                    "processed_at": get_clock().now_epoch(),
+                    "executor": self.__class__.__name__,
+                },
             )
         except Exception as e:
             exec_ctx.complete(success=False, error=e)

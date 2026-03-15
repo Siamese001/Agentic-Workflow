@@ -34,6 +34,31 @@ from typing import Any
 
 logger = logging.getLogger(__name__)
 
+
+def _invoke_authorize_and_execute(execution_context, target_callable, capability_token, payload, **kw):
+    from agentic_core.L2_execution.enforcement.execution_guardrail_chokepoint import (
+        authorize_and_execute,  # noqa: PLC0415
+    )
+
+    return authorize_and_execute(execution_context, target_callable, capability_token, payload, **kw)
+
+
+def _make_execution_context(payload, target: str):
+    from agentic_core.L2_execution.context.execution_context import (  # noqa: PLC0415
+        ActionClass,
+        ExecutionContext,
+    )
+
+    return ExecutionContext.create(
+        run_id="remediation_dispatcher",
+        capability_token="default",
+        policy_hash="default",
+        execution_input=str(payload),
+        execution_target=target,
+        action_class=ActionClass.MUTATION,
+    )
+
+
 from agentic_core.L2_execution.healers.healing_tier_config import (
     load_default_healing_tier_config,
 )
@@ -705,6 +730,14 @@ def run_dispatcher(
     Raises ApprovalGatingError if a phase requires approval and none is provided.
     Raises MutationGuardError if apply without sandbox or override.
     """
+    _ectx = _make_execution_context(str(guardian_result_path), "remediation_dispatcher.run_dispatcher")
+    _invoke_authorize_and_execute(
+        _ectx,
+        lambda p: p,
+        "default",
+        str(guardian_result_path),
+        target_name="remediation_dispatcher.run_dispatcher",
+    )
     # 1. Validate PhaseSpec integrity
     validate_phase_names(LEGACY_MIRROR_PLAN)
 

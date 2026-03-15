@@ -42,6 +42,7 @@ from types import FrameType
 from typing import Any, Optional
 
 from agentic_core.L0_routing.config.path_constants import DEFAULT_TIMEOUT, MAX_RETRIES
+from agentic_core.L2_execution.providers import get_clock
 
 try:
     from tqdm import tqdm
@@ -2113,7 +2114,7 @@ class SovereignDecisionEngine:
             return False
         self._operation_stack.append(op_signature)
         self._atomic_lock = True
-        self._sovereignty_token = f"SOV_{int(time.time())}_{agent_name}"
+        self._sovereignty_token = f"SOV_{int(get_clock().now_epoch())}_{agent_name}"
         return True
 
     def release_sovereignty_token(self, agent_name: str, success: bool = True) -> None:
@@ -3841,7 +3842,6 @@ def save_aggregate_report(targets: list[str], project_root: Path) -> Path | None
 
     Returns the Path to the written file, or None on failure.
     """
-    import datetime
 
     try:
         reports_dir = project_root / "logs" / "compliance_reports"
@@ -3922,7 +3922,7 @@ def save_aggregate_report(targets: list[str], project_root: Path) -> Path | None
         aggregate = {
             "meta": {
                 "report_type": "AGGREGATE",
-                "timestamp": datetime.datetime.now().isoformat(),
+                "timestamp": get_clock().now_iso(),
                 "territories_scanned": len(territory_summaries),
                 "territories_compliant": compliant,
                 "territories_non_compliant": non_compliant,
@@ -4786,7 +4786,6 @@ def _write_mandatory_json_output(
     machine-readable record of what the run did, what the meta-learning system learned,
     and what the routing engine decided. No querying required after the run.
     """
-    import datetime
     from collections import Counter
 
     healing_actions = state_mgr.state.get("healing_actions", [])
@@ -4847,7 +4846,7 @@ def _write_mandatory_json_output(
     output = {
         "meta": {
             "report_type": "HEAL_RUN_OUTPUT",
-            "timestamp": datetime.datetime.now().isoformat(),
+            "timestamp": get_clock().now_iso(),
             "mandatory": True,
         },
         "semantic_cache": {
@@ -5011,7 +5010,6 @@ def _write_heal_run_complete(
       healing_actions, blockers, executive_summary gate criteria.
     Always written; exceptions are logged and swallowed (fail-safe).
     """
-    import datetime
     from collections import Counter
 
     healing_actions = state_mgr.state.get("healing_actions", [])
@@ -5065,7 +5063,7 @@ def _write_heal_run_complete(
         git_commit = _r.stdout.strip()
     except (subprocess.CalledProcessError, OSError, subprocess.TimeoutExpired):
         pass
-    run_ts = datetime.datetime.now().isoformat()
+    run_ts = get_clock().now_iso()
     run_id = "run_" + run_ts.replace(":", "").replace("-", "").replace("T", "_")[:19]
     import re as _re
 
@@ -5565,7 +5563,6 @@ def _write_failure_forensics(
     Only written when there are failures, blockers, or misrouted agents.
     If all agents succeed and nothing is blocked, the file is not written.
     """
-    import datetime
     import hashlib
 
     TIER_ALIASES = {
@@ -5656,7 +5653,7 @@ def _write_failure_forensics(
                     "remediation": "Lower DETERMINISTIC threshold or add agent-specific calibration",
                 }
             )
-    run_ts = datetime.datetime.now().isoformat()
+    run_ts = get_clock().now_iso()
     output = {
         "meta": {"report_type": "FAILURE_FORENSICS", "timestamp": run_ts},
         "summary": {
@@ -6686,7 +6683,7 @@ def _legacy_main(
                 state_mgr.state["current_territory"] = territory
                 state_mgr.save()
                 state_mgr.add_event("domain_start", f"Entering Domain: {territory}")
-                _territory_start_ms = time.monotonic() * 1000.0
+                _territory_start_ms = get_clock().now_epoch() * 1000.0
                 from dataclasses import replace as _dc_replace
 
                 effective_ctx = ctx
@@ -6968,7 +6965,7 @@ def _legacy_main(
                             )
                         cert = execute_phase7_final(agents, territory, state_mgr, decision_engine)
                         results.append(cert)
-                        _territory_elapsed_ms = time.monotonic() * 1000.0 - _territory_start_ms
+                        _territory_elapsed_ms = get_clock().now_epoch() * 1000.0 - _territory_start_ms
                         state_mgr.state["agent_execution_log"].append(
                             {
                                 "territory": territory,
@@ -6991,10 +6988,10 @@ def _legacy_main(
                     if is_autonomous:
                         continue
                     else:
-                        _fire_meta_learning_intake(state_mgr, now_utc=int(time.time()))
+                        _fire_meta_learning_intake(state_mgr, now_utc=int(get_clock().now_epoch()))
                         state_mgr.finish_mission(status="error")
                         sys.exit(1)
-            _fire_meta_learning_intake(state_mgr, now_utc=int(time.time()))
+            _fire_meta_learning_intake(state_mgr, now_utc=int(get_clock().now_epoch()))
             save_aggregate_report(targets, REPO_ROOT)
             state_mgr.finish_mission(status="completed")
             try:
@@ -7046,7 +7043,7 @@ def _legacy_main(
     except (ImportError, AttributeError, TypeError, ValueError, OSError) as fatal_e:
         logger.critical(f"🔥 FATAL PROTOCOL ERROR: {fatal_e}")
         traceback.print_exc()
-        _fire_meta_learning_intake(state_mgr, now_utc=int(time.time()))
+        _fire_meta_learning_intake(state_mgr, now_utc=int(get_clock().now_epoch()))
         state_mgr.finish_mission(status="fatal_error")
         try:
             print("\n" + "=" * 80)

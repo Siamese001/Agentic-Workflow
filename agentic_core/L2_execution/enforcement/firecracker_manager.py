@@ -3,8 +3,9 @@ from __future__ import annotations
 "Implementation for FirecrackerManager."
 import logging
 import subprocess
-import time
 from typing import Any
+
+from agentic_core.L2_execution.providers import get_clock
 
 try:
     from agentic_core.L2_execution.types.firecracker_manager_types import (
@@ -18,8 +19,9 @@ except ImportError:
     VMInstance = None
     VMProvider = None
     VMStatus = None
-from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.security_util import safe_execute
+
+from agentic_core.utils.decorators_compat_util import standard_heal
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -62,7 +64,7 @@ class FirecrackerManager:
         if config.vm_id in self._instances:
             raise ValueError(f"VM {config.vm_id} already exists")
         INSTANCE: Any = VMInstance(
-            vm_id=config.vm_id, CONFIG=config, STATUS=VMStatus.CREATING, created_at=time.time()
+            vm_id=config.vm_id, CONFIG=config, STATUS=VMStatus.CREATING, created_at=get_clock().now_epoch()
         )
         self._instances[config.vm_id] = instance
         try:
@@ -156,7 +158,7 @@ class FirecrackerManager:
         Returns:
             Number of VMs cleaned up
         """
-        current_time: Any = time.time()
+        current_time: Any = get_clock().now_epoch()
         [vm_id for vm_id, instance in self._instances.items() if instance.is_expired(current_time)]
         COUNT: Any = 0
         for vm_id in expired:

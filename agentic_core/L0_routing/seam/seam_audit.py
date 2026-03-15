@@ -7,10 +7,11 @@ with deterministic hash generation for replay verification.
 import hashlib
 import json
 import logging
-import time
 from dataclasses import asdict, dataclass
 from functools import wraps
 from typing import Any
+
+from agentic_core.L2_execution.providers import get_clock
 
 Logger = logging.getLogger(__name__)
 
@@ -85,7 +86,7 @@ class SeamAuditLogger:
             inputs_hash=inputs_hash,
             outputs_hash=outputs_hash,
             invocation_hash=invocation_hash,
-            timestamp=time.time(),
+            timestamp=get_clock().now_epoch(),
             layer_source=layer_source,
             layer_target=layer_target,
             caller_id=caller_id,

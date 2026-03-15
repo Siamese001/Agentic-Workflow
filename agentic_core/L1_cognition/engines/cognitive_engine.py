@@ -3,10 +3,41 @@ from __future__ import annotations
 "\nRefactored Cognitive Node - Coordinator Pattern\n\nOrchestrates PerceptionNode, ReasoningNode, and ActionNode with:\n- Parallel/async execution\n- Lazy evaluation for simple intents\n- Output caching\n- Per-node performance monitoring\n"
 import asyncio
 import hashlib
-import time
 from typing import Any
 
 from agentic_core.L0_routing.config.path_constants import DEFAULT_SLEEP
+from agentic_core.L2_execution.determinism.execution_proof_emitter import ExecutionProofEmitter
+from agentic_core.L2_execution.providers import get_clock
+
+_proof_emitter = ExecutionProofEmitter("L1.cognitive_engine")
+
+
+def _get_reason_and_record():
+    from agentic_core.L1_cognition.enforcement.reasoning_chokepoint import reason_and_record  # noqa: PLC0415
+
+    return reason_and_record
+
+
+def _invoke_reason_and_record(ctx, prompt, context, fn, **kw):
+    from agentic_core.L1_cognition.enforcement.reasoning_chokepoint import reason_and_record  # noqa: PLC0415
+
+    return reason_and_record(ctx, prompt, context, fn, **kw)
+
+
+def _make_reasoning_context(run_id: str, policy_hash: str, prompt: str, model_id: str, clock_tick: float):
+    import uuid  # noqa: PLC0415
+
+    from agentic_core.L1_cognition.context.reasoning_context_builder import (
+        build_reasoning_context,  # noqa: PLC0415
+    )
+
+    return build_reasoning_context(
+        run_id=run_id,
+        trace_id=str(uuid.uuid4()),
+        policy_context=policy_hash or "default",
+        prompt=prompt,
+        model_id=model_id or "cognitive_engine",
+    )
 
 
 def _get_ActionNode():
@@ -71,21 +102,37 @@ class CognitiveNodeRefactored:
         cache_key = self._make_cache_key(raw_input, context)
         if cache_key in self.cache:
             return self.cache[cache_key].copy()
-        start = time.time()
+        _clk = get_clock().now_epoch()
+        _rctx = _make_reasoning_context(
+            run_id=cache_key[:16],
+            policy_hash=context.get("policy_hash", "default"),
+            prompt=raw_input.get("user_query", str(raw_input)[:128]),
+            model_id=context.get("model_id", "cognitive_engine"),
+            clock_tick=_clk,
+        )
+        with _proof_emitter.proof_op("process"):
+            pass
+        _, _trace = _invoke_reason_and_record(
+            _rctx,
+            raw_input,
+            context,
+            lambda p, c: p,
+        )
+        start = get_clock().now_epoch()
         perceived = self.perception.process(raw_input, context)
-        self._record_metric("perception", time.time() - start)
+        self._record_metric("perception", get_clock().now_epoch() - start)
         if self._is_simple_intent(perceived):
             self.lazy_evaluations += 1
-            start = time.time()
+            start = get_clock().now_epoch()
             output = self.action.act_simple(perceived)
-            self._record_metric("action", time.time() - start)
+            self._record_metric("action", get_clock().now_epoch() - start)
         else:
-            start = time.time()
+            start = get_clock().now_epoch()
             reasoned = self.reasoning.reason(perceived)
-            self._record_metric("reasoning", time.time() - start)
-            start = time.time()
+            self._record_metric("reasoning", get_clock().now_epoch() - start)
+            start = get_clock().now_epoch()
             output = self.action.act(reasoned)
-            self._record_metric("action", time.time() - start)
+            self._record_metric("action", get_clock().now_epoch() - start)
         self.cache[cache_key] = output.copy()
         return output
 
@@ -109,25 +156,41 @@ class CognitiveNodeRefactored:
         cache_key = self._make_cache_key(raw_input, context)
         if cache_key in self.cache:
             return self.cache[cache_key].copy()
-        start = time.time()
+        _clk = get_clock().now_epoch()
+        _rctx = _make_reasoning_context(
+            run_id=cache_key[:16],
+            policy_hash=context.get("policy_hash", "default"),
+            prompt=raw_input.get("user_query", str(raw_input)[:128]),
+            model_id=context.get("model_id", "cognitive_engine"),
+            clock_tick=_clk,
+        )
+        with _proof_emitter.proof_op("process_async"):
+            pass
+        _, _trace_async = _invoke_reason_and_record(
+            _rctx,
+            raw_input,
+            context,
+            lambda p, c: p,
+        )
+        start = get_clock().now_epoch()
         perception_task = asyncio.create_task(self.perception.process_async(raw_input, context))
         memory_task = asyncio.create_task(self._lazy_memory_prefetch(context))
         perceived = await perception_task
         memory = await memory_task
         perceived["memory"] = memory
-        self._record_metric("perception", time.time() - start)
+        self._record_metric("perception", get_clock().now_epoch() - start)
         if self._is_simple_intent(perceived):
             self.lazy_evaluations += 1
-            start = time.time()
+            start = get_clock().now_epoch()
             output = await asyncio.to_thread(self.action.act_simple, perceived)
-            self._record_metric("action", time.time() - start)
+            self._record_metric("action", get_clock().now_epoch() - start)
         else:
-            start = time.time()
+            start = get_clock().now_epoch()
             reasoned = await self.reasoning.reason_async(perceived)
-            self._record_metric("reasoning", time.time() - start)
-            start = time.time()
+            self._record_metric("reasoning", get_clock().now_epoch() - start)
+            start = get_clock().now_epoch()
             output = await self.action.act_async(reasoned)
-            self._record_metric("action", time.time() - start)
+            self._record_metric("action", get_clock().now_epoch() - start)
         self.cache[cache_key] = output.copy()
         return output
 

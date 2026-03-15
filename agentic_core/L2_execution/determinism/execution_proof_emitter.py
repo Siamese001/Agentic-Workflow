@@ -29,36 +29,93 @@ logger = logging.getLogger(__name__)
 
 @dataclass(frozen=True)
 class ExecutionProof:
-    """Signed, reproducible proof of a single L2 execution event."""
+    """Signed, reproducible proof of a single L2 execution event.
 
+    Required fields (P1/L2 spec):
+        execution_proof_id    — unique per proof
+        run_id                — run that produced this execution
+        trace_id              — execution trace linkage
+        execution_input_hash  — hash of inputs passed to execution
+        execution_output_hash — hash of outputs produced
+        replay_key            — deterministic replay anchor
+        determinism_digest    — digest over replay_key + elapsed
+        policy_hash           — active policy hash at execution time
+        execution_target_hash — hash of the execution target (fn/tool/op)
+        execution_signature   — signed proof binding all fields
+        created_at_tick       — clock epoch at proof creation
+    """
+
+    execution_proof_id: str
+    run_id: str
     trace_id: str
-    module: str
-    operation: str
+    execution_input_hash: str
+    execution_output_hash: str
     replay_key: str
     determinism_digest: str
-    signature: str
-    elapsed_ms: float
-    success: bool
+    policy_hash: str
+    execution_target_hash: str
+    execution_signature: str
+    created_at_tick: float
+    module: str = ""
+    operation: str = ""
+    elapsed_ms: float = 0.0
+    success: bool = True
 
     def verify_replay(self) -> bool:
         """Verify the replay key can be reconstructed from the proof fields.
 
         Emits ``guards_replay`` ADG edge.
         """
-        expected = hashlib.sha256(f"{self.trace_id}:{self.module}:{self.operation}".encode()).hexdigest()[:32]
+        expected = _compute_replay_key(
+            self.trace_id, self.run_id, self.module, self.operation, self.execution_input_hash
+        )
         return expected == self.replay_key
 
+    def is_signed(self) -> bool:
+        """True if execution_signature is populated."""
+        return bool(self.execution_signature)
 
-def _compute_replay_key(trace_id: str, module: str, operation: str) -> str:
-    return hashlib.sha256(f"{trace_id}:{module}:{operation}".encode()).hexdigest()[:32]
+
+def _compute_replay_key(
+    trace_id: str,
+    run_id: str,
+    module: str,
+    operation: str,
+    input_hash: str = "",
+) -> str:
+    return hashlib.sha256(f"{trace_id}:{run_id}:{module}:{operation}:{input_hash}".encode()).hexdigest()[:32]
 
 
 def _compute_digest(replay_key: str, elapsed_ms: float) -> str:
     return hashlib.sha256(f"{replay_key}:{elapsed_ms:.3f}".encode()).hexdigest()[:32]
 
 
+def _sign_proof(
+    execution_proof_id: str,
+    replay_key: str,
+    digest: str,
+    policy_hash: str,
+    output_hash: str,
+) -> str:
+    payload = f"{execution_proof_id}:{replay_key}:{digest}:{policy_hash}:{output_hash}"
+    return hashlib.sha256(payload.encode()).hexdigest()[:32]
+
+
 def _sign(replay_key: str, digest: str) -> str:
     return hashlib.sha256(f"{replay_key}:{digest}".encode()).hexdigest()[:24]
+
+
+def _hash_input(payload: object) -> str:
+    return hashlib.sha256(repr(payload).encode()).hexdigest()[:32]
+
+
+def _hash_output(output: object) -> str:
+    return hashlib.sha256(repr(output).encode()).hexdigest()[:32]
+
+
+def _hash_target(target_callable: object) -> str:
+    name = getattr(target_callable, "__qualname__", None) or repr(target_callable)
+    return hashlib.sha256(name.encode()).hexdigest()[:32]
 
 
 class ExecutionProofEmitter:
@@ -95,30 +152,50 @@ class ExecutionProofEmitter:
         operation: str,
         elapsed_ms: float,
         success: bool = True,
+        *,
+        run_id: str = "",
+        input_hash: str = "",
+        output_hash: str = "",
+        policy_hash: str = "",
+        target_hash: str = "",
+        created_at_tick: float = 0.0,
     ) -> ExecutionProof:
         """Emit a signed execution proof for ``operation``.
 
         Emits ``emits_replay_key`` + ``emits_determinism_digest``
         + ``signs_execution_trace`` ADG edges.
         """
+        import uuid  # noqa: PLC0415
+
         trace_id = self._trace_id()
-        replay_key = _compute_replay_key(trace_id, self._module, operation)
+        _run_id = run_id or trace_id
+        proof_id = str(uuid.uuid4())
+        replay_key = _compute_replay_key(trace_id, _run_id, self._module, operation, input_hash)
         digest = _compute_digest(replay_key, elapsed_ms)
-        signature = _sign(replay_key, digest)
+        signature = _sign_proof(proof_id, replay_key, digest, policy_hash, output_hash)
+        _tick = created_at_tick or time.time()
         proof = ExecutionProof(
+            execution_proof_id=proof_id,
+            run_id=_run_id,
             trace_id=trace_id,
-            module=self._module,
-            operation=operation,
+            execution_input_hash=input_hash,
+            execution_output_hash=output_hash,
             replay_key=replay_key,
             determinism_digest=digest,
-            signature=signature,
+            policy_hash=policy_hash,
+            execution_target_hash=target_hash,
+            execution_signature=signature,
+            created_at_tick=_tick,
+            module=self._module,
+            operation=operation,
             elapsed_ms=elapsed_ms,
             success=success,
         )
         self._ledger.append(proof)
         logger.debug(
             "EXEC_PROOF emits_replay_key emits_determinism_digest signs_execution_trace "
-            "module=%s op=%s replay=%s digest=%s ok=%s",
+            "proof_id=%s module=%s op=%s replay=%s digest=%s ok=%s",
+            proof_id[:8],
             self._module,
             operation,
             replay_key[:12],

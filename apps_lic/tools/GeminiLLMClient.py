@@ -2,6 +2,7 @@ __version__ = "13.0"
 import asyncio
 
 from agentic_core.interfaces.gateway import GenerationRequest, SovereignLLMGateway
+from agentic_core.L2_execution.providers import get_clock
 
 
 class GeminiLLMClient:
@@ -23,5 +24,8 @@ class GeminiLLMClient:
         request = GenerationRequest(
             agent_id=self._AGENT_ID, provider="google", model=self._MODEL, prompt=prompt
         )
+        _clk = get_clock()
+        _clk.emit_replay_key(context=f"lic:gemini:{self._AGENT_ID}:{self._MODEL}")
+        _clk.emit_determinism_digest(inputs={"agent": self._AGENT_ID, "model": self._MODEL})
         response = asyncio.get_event_loop().run_until_complete(self._gateway.route_generation(request))
         return response.content

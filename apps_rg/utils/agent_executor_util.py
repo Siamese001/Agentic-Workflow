@@ -13,6 +13,8 @@ from typing import Any
 from apps_shared.utils.observability_clients import create_span, record_exception, set_span_attribute
 from apps_shared.utils.Provider import Provider, get_client, get_instructor_client, get_litellm_completion
 
+from agentic_core.L2_execution.providers import get_clock
+
 logger = logging.getLogger(__name__)
 
 
@@ -174,6 +176,9 @@ class AgentExecutor:
                 temperature=self.config.temperature,
                 max_tokens=self.config.max_tokens,
             )
+            _clk = get_clock()
+            _clk.emit_replay_key(context=f"rg:agent:{request.agent_id}:{request.provider}")
+            _clk.emit_determinism_digest(inputs={"agent": request.agent_id, "provider": request.provider})
             response = gateway.generate(request)
             text = response.text if hasattr(response, "text") else str(response)
             return AgentResponse(content=text, finish_reason="stop", raw_response=response)

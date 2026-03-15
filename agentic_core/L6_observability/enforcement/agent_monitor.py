@@ -12,10 +12,13 @@ import time
 from datetime import datetime
 from typing import Any
 
+from agentic_core.L2_execution.determinism.execution_proof_emitter import ExecutionProofEmitter
 from agentic_core.L6_observability.types.monitor_types import (
     AggregatedMetrics,
     ExecutionMetrics,
 )
+
+_proof_emitter = ExecutionProofEmitter("L6.UnifiedAgentMonitor")
 
 Logger = logging.getLogger(__name__)
 

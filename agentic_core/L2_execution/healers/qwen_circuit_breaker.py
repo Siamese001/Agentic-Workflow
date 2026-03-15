@@ -8,7 +8,8 @@ behavior during replay mode.
 from __future__ import annotations
 
 import logging
-import time
+
+from agentic_core.L2_execution.providers import get_clock
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +29,7 @@ class QwenCircuitBreaker:
         """Record failure with deterministic replay behavior."""
         if self.replay_mode:
             return False
-        now = timestamp or int(time.time())
+        now = timestamp or int(get_clock().now_epoch())
         self.last_failure_timestamp = now
         self.failure_timestamps = [t for t in self.failure_timestamps if now - t <= 60]
         self.failure_timestamps.append(now)
@@ -46,7 +47,7 @@ class QwenCircuitBreaker:
             return False
         if not self.circuit_open:
             return False
-        now = timestamp or int(time.time())
+        now = timestamp or int(get_clock().now_epoch())
         if now - self.circuit_open_timestamp > 300:
             self.circuit_open = False
             self.failure_count = 0

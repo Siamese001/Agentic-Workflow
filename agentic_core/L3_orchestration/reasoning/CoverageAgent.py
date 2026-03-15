@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import time
 import uuid
 from dataclasses import dataclass
 from typing import Any
@@ -12,6 +11,7 @@ from agentic_core.L0_routing.config.path_constants import (
     DEFAULT_TIMEOUT,
     LAYER_ROOTS,
 )
+from agentic_core.L2_execution.providers import get_clock
 
 try:
     import numpy as np
@@ -184,7 +184,7 @@ class CoverageAgent(SovereignBaseAgent):
                 "underrepresented_layer": layer,
                 "selection_weight_multiplier": effective_weight,
                 "remaining_orchestration_cycles": self.bias_duration_cycles,
-                "trigger_timestamp": time.time(),
+                "trigger_timestamp": get_clock().now_epoch(),
             },
         )
 

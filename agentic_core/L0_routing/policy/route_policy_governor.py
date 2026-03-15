@@ -24,6 +24,13 @@ from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import (
     RoutingArtifact,
     get_routing_gateway,
 )
+from agentic_core.L0_routing.enforcement.routing_contract import (
+    RoutingContext as ContractRoutingContext,
+)
+from agentic_core.L0_routing.enforcement.routing_contract import (
+    create_and_commit_routing_contract,
+)
+from agentic_core.L2_execution.providers import get_clock
 
 logger = logging.getLogger(__name__)
 
@@ -120,6 +127,30 @@ class RoutePolicyGovernor:
             metadata=metadata or {},
         )
         self._ledger.append(proposal)
+        _clock = get_clock()
+        _clock.emit_replay_key(context=f"{route_path}:{trace_id}")
+        # P1/L0: commit full RoutingContract for this governance decision
+        _contract_ctx = ContractRoutingContext(
+            run_id=trace_id,
+            router_id="RoutePolicyGovernor",
+            request_hash=proposal_hash,
+            candidate_routes=list(
+                {
+                    "standard_validation",
+                    "low_risk_bypass",
+                    "human_escalation",
+                    "policy_challenge_loop",
+                    "route_recovery_budget_overflow",
+                }
+            ),
+            chosen_route=route_path,
+            policy_hash=self._policy_hash or "no-policy",
+            policy_version="1.0",
+        )
+        try:
+            create_and_commit_routing_contract(_contract_ctx)
+        except Exception as _rce:  # guardian: allow-silent-swallow
+            logger.warning("GOVERNOR routing contract failed: %s", _rce)
         logger.info(
             "GOVERNOR proposal_commits_routing references_policy_hash "
             "route=%s policy=%s proposal=%s boundary=%s",

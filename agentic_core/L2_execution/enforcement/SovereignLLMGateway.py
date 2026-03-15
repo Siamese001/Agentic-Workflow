@@ -18,15 +18,17 @@ from __future__ import annotations
 import hashlib
 import logging
 import os
-import time
 from dataclasses import dataclass
 from typing import Any, Literal
 
 from agentic_core.config.core.sovereign_config import get_sovereign_config
 from agentic_core.L0_routing.config.path_constants import TOOLS_DIR
 from agentic_core.L2_execution.audit.hash_chain_audit_log import HashChainAuditLog
+from agentic_core.L2_execution.enforcement.guardrail_gate import get_guardrail_gate
+from agentic_core.L2_execution.providers import get_clock
 from agentic_core.L2_execution.types.gateway_types import GenerationRequest, GenerationResponse
 from agentic_core.L2_execution.types.replay_envelope_types import ReplayEnvelope
+from agentic_core.L5_safety.enforcement.policy_enforcement_point import get_policy_enforcement_point
 from data.sdks_mcps.client_wrappers import (
     create_anthropic_client,
     create_openai_client,
@@ -198,7 +200,7 @@ class SovereignLLMGateway:
                 "success": success,
                 "latency_ms": latency_ms,
                 "tokens": tokens,
-                "ts": time.time(),
+                "ts": get_clock().now_epoch(),
             },
         )
 
@@ -245,7 +247,7 @@ class SovereignLLMGateway:
             provider: The provider that was used.
             success: Whether the operation was successful.
         """
-        current_time = int(time.time())
+        current_time = int(get_clock().now_epoch())
         health = self._provider_health[provider]
 
         # Create new health state with updated values
@@ -298,7 +300,7 @@ class SovereignLLMGateway:
         Returns:
             True if provider is available.
         """
-        current_time = int(time.time())
+        current_time = int(get_clock().now_epoch())
         health = self._provider_health[provider]
 
         # If provider is in degraded mode, check if the window has expired
@@ -413,6 +415,13 @@ class SovereignLLMGateway:
 
         # W11: Build ReplayEnvelope before provider call
         replay_envelope = self._build_replay_envelope(request, model, temperature)
+        _clk = get_clock()
+        _clk.emit_replay_key(context=f"{request.agent_id}:{request.provider}:{model}")
+        _clk.emit_determinism_digest(
+            inputs={"agent": request.agent_id, "provider": request.provider, "model": model}
+        )
+        get_guardrail_gate().check("route_generation", f"{request.provider}:{model}")
+        get_policy_enforcement_point().check("llm_route", target=request.provider)
 
         fallback_providers = request.fallback_providers or ["anthropic", "google"]
         providers_to_try = [request.provider] + [p for p in fallback_providers if p != request.provider]
@@ -424,7 +433,7 @@ class SovereignLLMGateway:
                 Logger.warning(f"[LLM Gateway] Provider {current_provider} is in degraded mode, skipping")
                 continue
 
-            start = time.time()
+            start = get_clock().now_epoch()
             try:
                 current_model = model
                 if current_provider != request.provider:
@@ -439,7 +448,7 @@ class SovereignLLMGateway:
                     **kwargs,
                 )
 
-                latency = (time.time() - start) * 1000
+                latency = (get_clock().now_epoch() - start) * 1000
                 self._audit(current_provider, str(current_model), True, latency, result.get("tokens", 0))
 
                 # Update provider health on success
@@ -461,7 +470,7 @@ class SovereignLLMGateway:
             except Exception as e:
                 # TODO: Handle specific exception properly
                 raise  # Re-raise after logging/handling
-                latency = (time.time() - start) * 1000
+                latency = (get_clock().now_epoch() - start) * 1000
                 self._audit(current_provider, str(model), False, latency)
                 last_error = e
 

@@ -13,6 +13,7 @@ import time
 
 from agentic_core.L0_routing.config.path_constants import DEFAULT_SLEEP, DEFAULT_TIMEOUT
 from agentic_core.L2_execution.healers.healing_tier_config import QWEN_GPU_MEM_UTIL
+from agentic_core.L2_execution.providers import get_clock
 
 logger = logging.getLogger(__name__)
 
@@ -49,7 +50,7 @@ class VLLMProcessManager:
         logger.info(f"Starting vLLM server with command: {' '.join(cmd)}")
         try:
             self.process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-            self.start_time = time.time()
+            self.start_time = get_clock().now_epoch()
             time.sleep(DEFAULT_SLEEP)
             if self.process.poll() is not None:
                 stdout, stderr = self.process.communicate()
@@ -129,7 +130,7 @@ class VLLMProcessManager:
         """Get server uptime in seconds."""
         if not self.start_time:
             return 0.0
-        return time.time() - self.start_time
+        return get_clock().now_epoch() - self.start_time
 
 
 vllm_process_manager = VLLMProcessManager()

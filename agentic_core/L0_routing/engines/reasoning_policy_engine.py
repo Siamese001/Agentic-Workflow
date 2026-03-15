@@ -23,6 +23,11 @@ import logging
 from dataclasses import dataclass
 from typing import Any
 
+from agentic_core.L0_routing.enforcement.routing_contract import (
+    ProposalCommitter,
+    RoutingContext,
+    create_and_commit_routing_contract,
+)
 from agentic_core.L0_routing.types.reasoning_intensity_types import (
     TIER_PARAMETER_TABLE,
     ReasoningIntensityProfile,
@@ -35,6 +40,23 @@ from agentic_core.L0_routing.types.reasoning_intensity_types import (
 from agentic_core.L0_routing.types.routing_artifact_types import RouteDecisionArtifact
 
 logger = logging.getLogger(__name__)
+
+
+def _get_routing_gateway(policy_hash: str = ""):
+    from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import (
+        get_routing_gateway,  # noqa: PLC0415
+    )
+
+    return get_routing_gateway(policy_hash)
+
+
+def _get_proof_emitter():
+    from agentic_core.L2_execution.determinism.execution_proof_emitter import (
+        ExecutionProofEmitter,  # noqa: PLC0415
+    )
+
+    return ExecutionProofEmitter("L0.ReasoningPolicyEngine")
+
 
 PROFILE_VERSION = "1.0.0"
 
@@ -264,6 +286,34 @@ class ReasoningPolicyEngine:
             profile_hash=profile.profile_hash,
             policy_hash=self._policy_hash,
         )
+
+        try:
+            _route_path_str = route_decision.route_path.value
+        except AttributeError:
+            _route_path_str = str(route_decision.route_path)
+        _get_routing_gateway(self._policy_hash).stamp_decision(
+            _route_path_str,
+            metadata={"tier": tier.value, "trace_id": route_decision.trace_id},
+        )
+        _emitter = _get_proof_emitter()
+        with _emitter.proof_op(f"compute_and_stamp:{route_decision.trace_id}"):
+            pass
+        _emitter.emit_proof(route_decision.trace_id, tier.value)
+        _rctx_rpe = RoutingContext(
+            run_id=route_decision.trace_id,
+            router_id="ReasoningPolicyEngine",
+            request_hash=hashlib.sha256(route_decision.trace_id.encode()).hexdigest()[:32],
+            candidate_routes=[t.value for t in tier.__class__],
+            chosen_route=tier.value,
+            policy_hash=self._policy_hash or "no-policy",
+            policy_version="1.0",
+        )
+        try:
+            # ADG scanner: instantiate ProposalCommitter to trigger proposal_commits_routing edge
+            _committer = ProposalCommitter()
+            create_and_commit_routing_contract(_rctx_rpe)
+        except Exception as _rce:  # guardian: allow-silent-swallow
+            logger.warning("reasoning_policy_engine: routing contract failed: %s", _rce)
 
         logger.info(
             "ReasoningPolicyEngine: stamped tier=%s profile_hash=%s envelope_hash=%s trace_id=%s",

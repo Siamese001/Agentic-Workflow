@@ -9,6 +9,8 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
+from agentic_core.L2_execution.providers import get_clock
+
 Logger: Any = logging.getLogger(__name__)
 
 
@@ -53,7 +55,7 @@ class AgentIdentity:
         Returns:
             True if expired
         """
-        return time.time() > self.expires_at
+        return get_clock().now_epoch() > self.expires_at
 
     def is_valid(self) -> bool:
         """Check if identity is valid.

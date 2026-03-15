@@ -12,6 +12,8 @@ import logging
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L2_execution.providers import get_clock
+
 logger = logging.getLogger(__name__)
 from agentic_core.L3_orchestration.types.rag_provider_types import (
     IRagProvider,
@@ -174,9 +176,7 @@ class SovereignRagOrchestrator(SovereignBaseAgent, IRagProvider):
         Unified retrieve method implementing IRagProvider interface.
         Routes to Titanium Pipeline if available, else falls back to legacy.
         """
-        import time
-
-        start_time = time.time()
+        start_time = get_clock().now_epoch()
         if self.titanium_pipeline:
 
             async def retrieval_func(q: str, max_docs: int, **kwargs):
@@ -200,7 +200,7 @@ class SovereignRagOrchestrator(SovereignBaseAgent, IRagProvider):
             return RagResult(
                 query=query.query,
                 documents=documents,
-                latency_ms=(time.time() - start_time) * 1000,
+                latency_ms=(get_clock().now_epoch() - start_time) * 1000,
                 cached=result["metadata"].get("cached", False),
                 reranked=result["metadata"].get("reranked", False),
                 metadata=result["metadata"],
@@ -222,7 +222,7 @@ class SovereignRagOrchestrator(SovereignBaseAgent, IRagProvider):
             return RagResult(
                 query=query.query,
                 documents=documents,
-                latency_ms=(time.time() - start_time) * 1000,
+                latency_ms=(get_clock().now_epoch() - start_time) * 1000,
                 faithfulness_score=legacy_result.get("faithfulness", 0.0),
                 metadata=legacy_result,
             )

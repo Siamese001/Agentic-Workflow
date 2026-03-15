@@ -15,6 +15,30 @@ except ImportError as _err:
 Logger: Any = logging.getLogger(__name__)
 
 
+def _invoke_authorize_and_execute(execution_context, target_callable, capability_token, payload, **kw):
+    from agentic_core.L2_execution.enforcement.execution_guardrail_chokepoint import (
+        authorize_and_execute,  # noqa: PLC0415
+    )
+
+    return authorize_and_execute(execution_context, target_callable, capability_token, payload, **kw)
+
+
+def _make_execution_context(payload, target: str):
+    from agentic_core.L2_execution.context.execution_context import (  # noqa: PLC0415
+        ActionClass,
+        ExecutionContext,
+    )
+
+    return ExecutionContext.create(
+        run_id="tool_registry",
+        capability_token="default",
+        policy_hash="default",
+        execution_input=str(payload),
+        execution_target=target,
+        action_class=ActionClass.MUTATION,
+    )
+
+
 @dataclass
 class ToolDefinition:
     """Definition of a tool in the registry."""
@@ -87,6 +111,14 @@ class tool_registry:
             tags: Optional tags for categorization
             category: Tool category
         """
+        _ectx = _make_execution_context(name, "tool_registry.register")
+        _invoke_authorize_and_execute(
+            _ectx,
+            lambda p: p,
+            "default",
+            name,
+            target_name="tool_registry.register",
+        )
         if name in self.tools:
             LOGGER.warning(f"Tool {name} already registered, overwriting")
         if not description:

@@ -54,9 +54,18 @@ from agentic_core.L2_execution.enforcement.guardrail_gate import (
     get_guardrail_gate,
 )
 from agentic_core.L2_execution.trace_context import get_trace_context
+from agentic_core.L3_orchestration.contracts.coordination_ledger import (
+    MissingCoordinationLedger,
+    get_coordination_ledger,
+    update_coordination_ledger,
+)
 from agentic_core.L3_orchestration.registry.agent_capability_registry import (
     AgentCapabilityRegistry,
     get_agent_capability_registry,
+)
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
 )
 
 logger = logging.getLogger(__name__)
@@ -228,9 +237,10 @@ class AgentDispatchRegistry:
                     f"caller={caller} target={target_class}.{method}"
                 ) from gve
             logger.warning(
-                "DISPATCH_REGISTRY guardrail_blocked (warn mode: continuing) "
-                "caller=%s target=%s method=%s",
-                caller, target_class, method,
+                "DISPATCH_REGISTRY guardrail_blocked (warn mode: continuing) caller=%s target=%s method=%s",
+                caller,
+                target_class,
+                method,
             )
 
         # --- Capability check ---
@@ -270,8 +280,7 @@ class AgentDispatchRegistry:
 
         if not hasattr(target_instance, method):
             raise AttributeError(
-                f"AgentDispatchRegistry: {target_class!r} has no method {method!r}. "
-                f"caller={caller}"
+                f"AgentDispatchRegistry: {target_class!r} has no method {method!r}. caller={caller}"
             )
 
         result = getattr(target_instance, method)(*args, **kwargs)
@@ -299,7 +308,29 @@ class AgentDispatchRegistry:
             guardrail_verdict,
         )
 
-        # Wave 5: emit records_execution_trace into active TraceContext
+        # P1/L3: update CoordinationLedger on every agent dispatch if run is tracked
+        _run_id = getattr(capability_token, "run_id", "") if capability_token else ""
+        if _run_id and get_coordination_ledger(_run_id) is not None:
+            try:
+                update_coordination_ledger(
+                    run_id=_run_id,
+                    owner_agent_id=caller,
+                    stage_transition={
+                        "new_stage": f"dispatch:{method}",
+                        "new_owner": target_class,
+                        "handoff_reason": f"{caller}->{target_class}.{method}",
+                    },
+                )
+            except (MissingCoordinationLedger, Exception) as _cl_exc:
+                logger.debug("DISPATCH_REGISTRY coordination_ledger update skipped: %s", _cl_exc)
+
+        # P0/L6: emit records_execution_trace + signs_execution_trace lifecycle edges
+        from agentic_core.runtime.execution_trace import get_active_execution_trace  # noqa: PLC0415
+
+        _active = get_active_execution_trace()
+        _rtid = _active.trace_id if _active else f"no-trace:{caller}->{target_class}"
+        _emit_records_execution_trace(_rtid, "L3", f"dispatch:{caller}->{target_class}.{method}")
+        _emit_signs_execution_trace(_rtid, f"{caller}:{target_class}:{method}", result_type, 0)
         get_trace_context().record(
             layer="L3",
             module="AgentDispatchRegistry",

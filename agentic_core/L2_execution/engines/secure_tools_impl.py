@@ -8,6 +8,32 @@ from typing import Any
 
 from agentic_core.L0_routing.config.path_constants import DEFAULT_TIMEOUT
 
+
+def _invoke_authorize_and_execute(execution_context, target_callable, capability_token, payload, **kw):
+    from agentic_core.L2_execution.enforcement.execution_guardrail_chokepoint import (
+        authorize_and_execute,  # noqa: PLC0415
+    )
+
+    return authorize_and_execute(execution_context, target_callable, capability_token, payload, **kw)
+
+
+def _make_execution_context(payload, target: str, action_class_name: str = "MUTATION"):
+    from agentic_core.L2_execution.context.execution_context import (  # noqa: PLC0415
+        ActionClass,
+        ExecutionContext,
+    )
+
+    ac = ActionClass(action_class_name)
+    return ExecutionContext.create(
+        run_id="secure_tools",
+        capability_token="default",
+        policy_hash="default",
+        execution_input=payload,
+        execution_target=target,
+        action_class=ac,
+    )
+
+
 Logger: Any = logging.getLogger("ActionNode.SecureTools")
 
 
@@ -59,6 +85,14 @@ class SecureToolsImpl:
         Returns:
             str: A success message.
         """
+        _ectx = _make_execution_context(filename, "secure_tools.tool_write_file")
+        _invoke_authorize_and_execute(
+            _ectx,
+            lambda p: p,
+            "default",
+            filename,
+            target_name="secure_tools.tool_write_file",
+        )
         target: Path = self._safe_path(filename)
         target.parent.mkdir(parents=True, exist_ok=True)
         with open(target, "w", encoding="utf-8") as f:
@@ -126,6 +160,14 @@ class SecureToolsImpl:
         Raises:
             ValueError: If the command contains blacklisted patterns.
         """
+        _ectx = _make_execution_context(command, "secure_tools.tool_run_command", "PRIVILEGED_LOCAL")
+        _invoke_authorize_and_execute(
+            _ectx,
+            lambda p: p,
+            "default",
+            command,
+            target_name="secure_tools.tool_run_command",
+        )
         if any(b in command for b in self.BLACKLIST_COMMANDS):
             Logger.error(f"SECURITY VIOLATION: Command '{command}' contains blacklisted patterns.")
             raise ValueError(

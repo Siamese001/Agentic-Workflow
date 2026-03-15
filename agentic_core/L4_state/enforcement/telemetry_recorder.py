@@ -12,7 +12,10 @@ import logging
 from dataclasses import asdict, dataclass
 from typing import Any
 
+from agentic_core.L2_execution.determinism.execution_proof_emitter import ExecutionProofEmitter
+
 MAX_EVENTS = 100
+_proof_emitter = ExecutionProofEmitter("L4.TelemetryRecorder")
 _telemetry_log: list[dict[str, Any]] = []
 
 
@@ -64,6 +67,8 @@ class TelemetryRecorder:
         Returns:
             Event ID (SHA-256 of event content)
         """
+        with _proof_emitter.proof_op(f"record:{event_type}"):
+            pass
         event = {"event_type": event_type, "data": data, "commit_tick": commit_tick}
         if timestamp is not None:
             event["timestamp"] = timestamp

@@ -9,6 +9,31 @@ from agentic_core.cache.redis_cache_client import get_hot_cache
 from agentic_core.L0_routing.config.path_constants import PROJECT_ROOT_WHITELIST
 from agentic_core.seams.contracts.mcp import MCPConnectionManager
 
+
+def _invoke_authorize_and_execute(execution_context, target_callable, capability_token, payload, **kw):
+    from agentic_core.L2_execution.enforcement.execution_guardrail_chokepoint import (
+        authorize_and_execute,  # noqa: PLC0415
+    )
+
+    return authorize_and_execute(execution_context, target_callable, capability_token, payload, **kw)
+
+
+def _make_execution_context(payload, target: str):
+    from agentic_core.L2_execution.context.execution_context import (  # noqa: PLC0415
+        ActionClass,
+        ExecutionContext,
+    )
+
+    return ExecutionContext.create(
+        run_id="sovereign_filesystem_mcp",
+        capability_token="default",
+        policy_hash="default",
+        execution_input=str(payload),
+        execution_target=target,
+        action_class=ActionClass.MUTATION,
+    )
+
+
 Logger = logging.getLogger(__name__)
 allowed_root_prefixes = set(PROJECT_ROOT_WHITELIST) | {"config"}
 forbidden_path_patterns = {"..", "/etc", "/root", "~", ".ssh", ".env"}
@@ -65,6 +90,14 @@ class SovereignFilesystemMcp:
         for p in files:
             self._validate_path(p)
         self._validate_path(monolith_path)
+        _ectx = _make_execution_context(list(files.keys()), "sovereign_filesystem_mcp.atomic_fission_write")
+        _invoke_authorize_and_execute(
+            _ectx,
+            lambda p: p,
+            "default",
+            monolith_path,
+            target_name="sovereign_filesystem_mcp.atomic_fission_write",
+        )
         try:
             results = []
             for path, content in files.items():

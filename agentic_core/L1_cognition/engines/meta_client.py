@@ -34,7 +34,6 @@ def _get_embedding_sovereign_agent():
 import hashlib
 import json
 import logging
-import time
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -46,6 +45,7 @@ from agentic_core.L1_cognition.types.client_types import (
     CacheEntry,
     HealingPattern,
 )
+from agentic_core.L2_execution.providers import get_clock
 
 Logger = logging.getLogger(__name__)
 _singleton_instance: Any = None
@@ -242,14 +242,14 @@ class MetaLearningClient:
         if healing_result.get("status") != "fixed":
             return None
         error_signature = self._generate_error_signature(violation)
-        pattern_id = f"{domain}:{error_signature}:{int(time.time())}"
+        pattern_id = f"{domain}:{error_signature}:{int(get_clock().now_epoch())}"
         pattern = HealingPattern(
             pattern_id=pattern_id,
             violation_type=violation.get("type", "unknown"),
             error_signature=error_signature,
             healing_strategy=healing_result,
             domain=domain,
-            metadata={"violation_path": violation.get("path", ""), "timestamp": time.time()},
+            metadata={"violation_path": violation.get("path", ""), "timestamp": get_clock().now_epoch()},
         )
         embedding = self._generate_embedding(violation)
         if embedding:

@@ -16,7 +16,19 @@ from typing import Any
 
 from agentic_core.L4_state.utils.complexity_analyzer import calculate_mccabe_complexity
 
+from agentic_core.L2_execution.determinism.execution_proof_emitter import ExecutionProofEmitter
+from agentic_core.L2_execution.enforcement.guardrail_gate import get_guardrail_gate
 from agentic_core.L5_safety.enforcement.archival_gatekeeper_gate import ArchivalGatekeeper
+from agentic_core.L5_safety.enforcement.policy_action_contract import (
+    ActionClass,
+    PolicyEnforcementError,
+    enforce_policy_before_action,
+)
+from agentic_core.L5_safety.enforcement.policy_enforcement_point import get_policy_enforcement_point
+
+_guardrail = get_guardrail_gate()
+_pep = get_policy_enforcement_point()
+_proof_emitter = ExecutionProofEmitter("L5.GovernanceAgent")
 
 try:
     from agentic_core.mixins.mcp_hardened_mixin import mcp_hardened_mixin  # noqa: F401
@@ -896,6 +908,15 @@ class GovernanceAgent(SovereignBaseAgent):
         """
         GOLD STANDARD WORKFLOW — Full governance compliance with autonomous cleanup.
         """
+        try:
+            enforce_policy_before_action(
+                action_name="governance_run_with_cleanup",
+                action_class=ActionClass.PRIVILEGED_LOCAL,
+                actor_id="GovernanceAgent",
+            )
+        except PolicyEnforcementError as _pee:
+            LOGGER.error("Policy blocked governance cleanup: %s", _pee)
+            return {"status": "POLICY_BLOCKED", "error": str(_pee)}
         if file_paths is None:
             file_paths = [str(p) for p in get_python_files(self.root_dir)]
         cleanup_results = self.cleanup_violations(file_paths, dry_run=dry_run)

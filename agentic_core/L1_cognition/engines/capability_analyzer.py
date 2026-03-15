@@ -1,10 +1,6 @@
 from __future__ import annotations
 
 import logging
-
-"Brief description of functionality and purpose."
-"Brief description of functionality and purpose."
-import time
 from typing import Any
 
 from agentic_core.L1_cognition.planning.capability_analyzer_types import (
@@ -15,8 +11,38 @@ from agentic_core.L1_cognition.planning.capability_analyzer_types import (
     RecommendationType,
 )
 
+from agentic_core.L2_execution.providers import get_clock
+
 LOGGER = logging.getLogger(__name__)
 Logger: Any = logging.getLogger(__name__)
+
+
+def _get_reason_and_record():
+    from agentic_core.L1_cognition.enforcement.reasoning_chokepoint import reason_and_record  # noqa: PLC0415
+
+    return reason_and_record
+
+
+def _invoke_reason_and_record(ctx, prompt, retrieved, fn, **kw):
+    from agentic_core.L1_cognition.enforcement.reasoning_chokepoint import reason_and_record  # noqa: PLC0415
+
+    return reason_and_record(ctx, prompt, retrieved, fn, **kw)
+
+
+def _make_reasoning_context(run_id: str, policy_hash: str, prompt: str, model_id: str, clock_tick: float):
+    import uuid  # noqa: PLC0415
+
+    from agentic_core.L1_cognition.context.reasoning_context_builder import (
+        build_reasoning_context,  # noqa: PLC0415
+    )
+
+    return build_reasoning_context(
+        run_id=run_id,
+        trace_id=str(uuid.uuid4()),
+        policy_context=policy_hash or "default",
+        prompt=prompt,
+        model_id=model_id or "capability_analyzer",
+    )
 
 
 class CapabilityAnalyzer:
@@ -102,16 +128,30 @@ class CapabilityAnalyzer:
         Returns:
             AnalysisReport
         """
+        _clk = get_clock().now_epoch()
+        _rctx = _make_reasoning_context(
+            run_id=f"{agent_id}:{int(_clk)}",
+            policy_hash="default",
+            prompt=str(failure_reports)[:256],
+            model_id="capability_analyzer",
+            clock_tick=_clk,
+        )
+        _, _trace = _invoke_reason_and_record(
+            _rctx,
+            failure_reports,
+            {},
+            lambda p, c: p,
+        )
         gaps: Any = self.analyze_failures(agent_id, failure_reports)
         recommendations: Any = self.generate_recommendations(agent_id, gaps)
         health_score: Any = self._calculate_health_score(gaps)
         report: Any = AnalysisReport(
-            report_id=f"analysis_{agent_id}_{int(time.time())}",
+            report_id=f"analysis_{agent_id}_{int(get_clock().now_epoch())}",
             agent_id=agent_id,
             gaps_identified=gaps,
             recommendations=recommendations,
             overall_health_score=health_score,
-            analysis_timestamp=time.time(),
+            analysis_timestamp=get_clock().now_epoch(),
         )
         return report
 
@@ -171,7 +211,7 @@ class CapabilityAnalyzer:
         Severity = min(len(failures) / 10.0, 1.0)
         evidence = [f.get("error_message", "") for f in failures[:5]]
         gap = CapabilityGap(
-            gap_id=f"gap_{agent_id}_{pattern_type}_{int(time.time())}",
+            gap_id=f"gap_{agent_id}_{pattern_type}_{int(get_clock().now_epoch())}",
             GapType=GapType,
             description=f"{pattern_type.replace('_', ' ').title()} detected in {len(failures)} cases",
             affected_scenarios=scenarios,

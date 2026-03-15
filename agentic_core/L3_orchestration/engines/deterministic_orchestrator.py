@@ -15,9 +15,10 @@ from enum import Enum
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L0_routing.types.governance_types import GovernedPayload
 from agentic_core.runtime.trace_context import get_trace_context
-from agentic_core.L4_state.authority.run_state_authority import get_run_state_authority
+
+from agentic_core.L0_routing.types.governance_types import GovernedPayload
+from agentic_core.L3_orchestration.contracts.orchestration_handoff_contract import emit_agent_executes_agent
 from agentic_core.L3_orchestration.engines.handshake_state_machine import (
     HandshakeState,
     HandshakeStateMachine,
@@ -27,6 +28,12 @@ from agentic_core.L3_orchestration.types.execution_trace_types import (
 )
 from agentic_core.L3_orchestration.types.human_decision_artifact_types import (
     create_human_review_draft,
+)
+from agentic_core.L4_state.authority.run_state_authority import get_run_state_authority
+from agentic_core.L5_safety.enforcement.policy_action_contract import (
+    ActionClass,
+    PolicyEnforcementError,
+    enforce_policy_before_action,
 )
 from agentic_core.seams.orchestration_protocols import OrchestrationResult
 
@@ -171,14 +178,44 @@ class DeterministicOrchestrator:
             )
 
             # Route-specific orchestration
+            emit_agent_executes_agent(
+                parent_agent_id="deterministic_orchestrator",
+                child_agent_id=f"path_{route_mode.lower()}_handler",
+                run_id=self.run_id,
+                stage=f"orchestrate_path_{route_mode}",
+                policy_hash=policy_hash,
+            )
+            _rsa = get_run_state_authority()
+            try:
+                enforce_policy_before_action(
+                    action_name=f"orchestrate_path_{route_mode}",
+                    action_class=ActionClass.ROUTING,
+                    actor_id="deterministic_orchestrator",
+                    run_id=self.run_id or "",
+                    policy_hash=policy_hash or "",
+                )
+            except PolicyEnforcementError as _pee:
+                raise ValueError(f"Policy blocked orchestration path {route_mode}: {_pee}") from _pee
+            _rsa.observe_runtime_state(
+                "orchestrate_route_dispatch",
+                stage=f"path_{route_mode}",
+                actor_id="deterministic_orchestrator",
+            )
             if config.route_mode == RouteMode.B:
-                return self._orchestrate_path_b(config)
+                result = self._orchestrate_path_b(config)
             elif config.route_mode == RouteMode.C:
-                return self._orchestrate_path_c(config)
+                result = self._orchestrate_path_c(config)
             elif config.route_mode == RouteMode.D:
-                return self._orchestrate_path_d(config)
+                result = self._orchestrate_path_d(config)
             else:
                 raise ValueError(f"Unsupported route_mode '{route_mode}'. Must be B, C, or D.")
+            _rsa.observe_runtime_state(
+                "orchestrate_route_complete",
+                stage=f"path_{route_mode}_done",
+                actor_id="deterministic_orchestrator",
+            )
+            _rsa.snapshot_state(f"deterministic_orchestrate_{route_mode}_complete")
+            return result
 
     def _orchestrate_path_b(self, config: OrchestrationConfig) -> OrchestrationResult:
         """

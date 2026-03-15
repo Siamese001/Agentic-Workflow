@@ -9,6 +9,8 @@ from typing import Any
 
 from runtime.shared.multi_provider_clients import Provider, get_client
 
+from agentic_core.L2_execution.providers import get_clock
+
 Logger = logging.getLogger(__name__)
 
 
@@ -186,6 +188,9 @@ class ResumeGenerator:
                 prompt=prompt,
                 temperature=temperature,
             )
+            _clk = get_clock()
+            _clk.emit_replay_key(context=f"rg:resume:{request.agent_id}:{request.provider}")
+            _clk.emit_determinism_digest(inputs={"agent": request.agent_id, "provider": request.provider})
             response = gateway.generate(request)
             return response.text if hasattr(response, "text") else str(response)
         # guardian: allow-silent-swallow

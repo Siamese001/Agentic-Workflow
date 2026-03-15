@@ -3,10 +3,11 @@ from __future__ import annotations
 "Ephemeral VM with Isolation and Auto-Teardown.\n\nPhase 3 - Pillar 14: Execution Sandbox (Hardened Ephemeral)\nEnforces strict network/resource isolation and automatic teardown.\n"
 import asyncio
 import logging
-import time
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
+
+from agentic_core.L2_execution.providers import get_clock
 
 try:
     from agentic_core.L2_execution.enforcement.vm.firecracker_manager import FirecrackerManager
@@ -120,7 +121,7 @@ class EphemeralVm:
             ExecutionResult
         """
         timeout: Any = timeout_seconds or self.IsolationConfig.max_execution_time_seconds
-        start_time: Any = time.time()
+        start_time: Any = get_clock().now_epoch()
         vm_id, VmConfig = self._create_vm_config(timeout)
         VmInstance: Any = None
         try:
@@ -139,7 +140,7 @@ class EphemeralVm:
     def _create_vm_config(self, timeout: int) -> tuple:
         """Create VM configuration."""
         self._vm_counter += 1
-        vm_id = f"ephemeral_vm_{self._vm_counter}_{int(time.time())}"
+        vm_id = f"ephemeral_vm_{self._vm_counter}_{int(get_clock().now_epoch())}"
         VmConfig = VMConfig(
             vm_id=vm_id,
             Provider=self.vm_manager.Provider,
@@ -161,7 +162,7 @@ class EphemeralVm:
         result = await self._execute_in_vm(
             VmInstance=VmInstance, code=code, language=language, timeout=timeout
         )
-        result.execution_time_seconds = time.time() - start_time
+        result.execution_time_seconds = get_clock().now_epoch() - start_time
         if self.enable_logging:
             LOGGER.info(
                 "code_executed",
@@ -181,7 +182,7 @@ class EphemeralVm:
             success=False,
             output="",
             error=f"Execution timeout after {timeout} seconds",
-            execution_time_seconds=time.time() - start_time,
+            execution_time_seconds=get_clock().now_epoch() - start_time,
             exit_code=124,
         )
 
@@ -193,7 +194,7 @@ class EphemeralVm:
             success=False,
             output="",
             error=str(error),
-            execution_time_seconds=time.time() - start_time,
+            execution_time_seconds=get_clock().now_epoch() - start_time,
             exit_code=1,
         )
 

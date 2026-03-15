@@ -9,9 +9,13 @@ from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforce
 
 "Brief description of functionality and purpose."
 "Brief description of functionality and purpose."
-import time
 import uuid
 from typing import Any
+
+from agentic_core.L2_execution.determinism.execution_proof_emitter import ExecutionProofEmitter
+from agentic_core.L2_execution.providers import get_clock
+
+_proof_emitter = ExecutionProofEmitter("L3.SubatomicHopAgent")
 
 from agentic_core.runtime.core.telemetry import TraceEvent
 from agentic_core.runtime.types.core_contracts_types import AgentPlan
@@ -152,6 +156,8 @@ class SubatomicHopAgent(SovereignBaseAgent):
     # guardian: allow-type-erasure
     async def run(self, context: dict) -> Any:
         """Execute the hop with zero-trust protections."""
+        with _proof_emitter.proof_op("run"):
+            pass
         manifest = self._v15_build_operation_manifest("run")
         if manifest is not None:
             import hashlib as _hl
@@ -197,7 +203,7 @@ class SubatomicHopAgent(SovereignBaseAgent):
                     ROLE=self.role,
                     event_type="SUCCESS",
                     PAYLOAD={"total_cost": think_cost + act_cost, "zero_trust": True},
-                    TIMESTAMP=time.time(),
+                    TIMESTAMP=get_clock().now_epoch(),
                 )
             )
             return final_output
@@ -221,7 +227,7 @@ class SubatomicHopAgent(SovereignBaseAgent):
                 ROLE=self.role,
                 event_type="PREFLIGHT_COMPLETE",
                 PAYLOAD={"checks": ["genealogy", "mcp", "membrane"]},
-                TIMESTAMP=time.time(),
+                TIMESTAMP=get_clock().now_epoch(),
             )
         )
 
@@ -241,7 +247,7 @@ class SubatomicHopAgent(SovereignBaseAgent):
                             ROLE=self.role,
                             event_type="CONTENT_SANITIZED",
                             PAYLOAD={"original_length": len(value), "sanitized_length": len(sanitized_value)},
-                            TIMESTAMP=time.time(),
+                            TIMESTAMP=get_clock().now_epoch(),
                         )
                     )
             else:
@@ -272,7 +278,7 @@ class SubatomicHopAgent(SovereignBaseAgent):
                         "safe_to_proceed": Verdict.safe_to_proceed,
                         "cost": think_cost,
                     },
-                    TIMESTAMP=time.time(),
+                    TIMESTAMP=get_clock().now_epoch(),
                 )
             )
             return (plan, think_cost)
@@ -284,7 +290,7 @@ class SubatomicHopAgent(SovereignBaseAgent):
                     ROLE=self.role,
                     event_type="CONSENSUS_FAILED",
                     PAYLOAD={"error": str(e)},
-                    TIMESTAMP=time.time(),
+                    TIMESTAMP=get_clock().now_epoch(),
                 )
             )
             raise
@@ -339,7 +345,7 @@ class SubatomicHopAgent(SovereignBaseAgent):
                         ROLE=self.role,
                         event_type="AIRLOCK_BLOCKED",
                         PAYLOAD={"tool": tool_name, "error": str(e)},
-                        TIMESTAMP=time.time(),
+                        TIMESTAMP=get_clock().now_epoch(),
                     )
                 )
                 raise
@@ -354,7 +360,7 @@ class SubatomicHopAgent(SovereignBaseAgent):
                     "total_cost": total_cost,
                     "airlock_checks": len(plan.tool_calls),
                 },
-                TIMESTAMP=time.time(),
+                TIMESTAMP=get_clock().now_epoch(),
             )
         )
         return (results, total_cost)
@@ -375,7 +381,7 @@ class SubatomicHopAgent(SovereignBaseAgent):
                 ROLE=self.role,
                 event_type="CRITIQUE_COMPLETE",
                 PAYLOAD={"budget_used": self.governor.spend, "sanitized": True},
-                TIMESTAMP=time.time(),
+                TIMESTAMP=get_clock().now_epoch(),
             )
         )
         return sanitized_output
@@ -386,7 +392,12 @@ class SubatomicHopAgent(SovereignBaseAgent):
         await self.storage.write_blob(
             f"hops/{self.id}.txt",
             final_output.encode(),
-            METADATA={"trace_id": trace_id, "role": self.role, "timestamp": time.time(), "zero_trust": True},
+            METADATA={
+                "trace_id": trace_id,
+                "role": self.role,
+                "timestamp": get_clock().now_epoch(),
+                "zero_trust": True,
+            },
         )
         self.telemetry.record(
             TraceEvent(
@@ -395,7 +406,7 @@ class SubatomicHopAgent(SovereignBaseAgent):
                 ROLE=self.role,
                 event_type="COMMIT_COMPLETE",
                 PAYLOAD={"storage_key": f"hops/{self.id}.txt"},
-                TIMESTAMP=time.time(),
+                TIMESTAMP=get_clock().now_epoch(),
             )
         )
         return final_output
@@ -410,7 +421,7 @@ class SubatomicHopAgent(SovereignBaseAgent):
                 ROLE=self.role,
                 event_type="BUDGET_EXCEEDED" if error_type == "BudgetExceededError" else "EXECUTION_ERROR",
                 PAYLOAD={"error": str(error), "type": error_type},
-                TIMESTAMP=time.time(),
+                TIMESTAMP=get_clock().now_epoch(),
             )
         )
 
@@ -424,7 +435,7 @@ class SubatomicHopAgent(SovereignBaseAgent):
                 ROLE=self.role,
                 event_type="CLEANUP_COMPLETE",
                 PAYLOAD={"zero_trust": True},
-                TIMESTAMP=time.time(),
+                TIMESTAMP=get_clock().now_epoch(),
             )
         )
 

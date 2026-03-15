@@ -4,8 +4,10 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from agentic_core.L3_orchestration.engines.coordinator_capability_orchestrator import WorkflowCoordinator
 from agentic_core.runtime.trace_context import get_trace_context
+
+from agentic_core.L3_orchestration.contracts.orchestration_handoff_contract import emit_agent_executes_agent
+from agentic_core.L3_orchestration.engines.coordinator_capability_orchestrator import WorkflowCoordinator
 
 log = logging.getLogger(__name__)
 
@@ -29,6 +31,11 @@ class RecoveryCoordinatorOrchestrator(WorkflowCoordinator):
         ):
             self._lazy_init()
             original_task = task.get("original_task", {})
+            emit_agent_executes_agent(
+                parent_agent_id="recovery_coordinator_orchestrator",
+                child_agent_id=original_task.get("type", "unknown_recovery_target"),
+                stage="recovery_coordinate",
+            )
             error = task.get("error", "Unknown error")
             log.error(f"Recovery triggered for task type: {original_task.get('type', 'unknown')}")
             log.error(f"Error: {error}")

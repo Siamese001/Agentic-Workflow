@@ -9,6 +9,30 @@ from typing import Any
 from agentic_core.L0_routing.enforcement.mutation_prohibition import enforce_protected_root
 
 
+def _invoke_authorize_and_execute(execution_context, target_callable, capability_token, payload, **kw):
+    from agentic_core.L2_execution.enforcement.execution_guardrail_chokepoint import (
+        authorize_and_execute,  # noqa: PLC0415
+    )
+
+    return authorize_and_execute(execution_context, target_callable, capability_token, payload, **kw)
+
+
+def _make_execution_context(payload, target: str):
+    from agentic_core.L2_execution.context.execution_context import (  # noqa: PLC0415
+        ActionClass,
+        ExecutionContext,
+    )
+
+    return ExecutionContext.create(
+        run_id="safe_subprocess",
+        capability_token="default",
+        policy_hash="default",
+        execution_input=str(payload),
+        execution_target=target,
+        action_class=ActionClass.PRIVILEGED_LOCAL,
+    )
+
+
 def safe_subprocess_run(
     argv: list[str],
     *,
@@ -66,6 +90,14 @@ def safe_subprocess_run(
                     )
     if not isinstance(argv, list):
         raise TypeError("argv must be a list of strings")
+    _ectx = _make_execution_context(" ".join(str(a) for a in argv), "safe_subprocess.safe_subprocess_run")
+    _invoke_authorize_and_execute(
+        _ectx,
+        lambda p: p,
+        "default",
+        " ".join(str(a) for a in argv),
+        target_name="safe_subprocess.safe_subprocess_run",
+    )
     return subprocess.run(argv, cwd=cwd, capture_output=capture_output, text=text, check=check, **kwargs)
 
 

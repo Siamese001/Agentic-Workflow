@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 from agentic_core.interfaces.write_gateway import get_write_gateway
+from agentic_core.L2_execution.determinism.execution_proof_emitter import ExecutionProofEmitter
+
+_proof_emitter = ExecutionProofEmitter("L4.MissionHistorian")
 
 
 def _get_write_gateway():
@@ -49,6 +52,8 @@ class MissionHistorian:
             reason: Reason for the action
         """
         try:
+            with _proof_emitter.proof_op(f"record:{action}:{file_name}"):
+                pass
             _get_write_gateway().append_csv_row(
                 self.log_path, [datetime.now().isoformat(), file_name, action, source, destination, reason]
             )

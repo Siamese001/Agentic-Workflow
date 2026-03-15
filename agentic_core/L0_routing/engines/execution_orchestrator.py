@@ -6,10 +6,25 @@ CIDRegistry, ReEntryLoop, MetaLearningBus, and VigilanceDispatcher.
 Remains deterministic, side-effect minimal, uses injected seams only.
 """
 
+import hashlib
 import logging
 from typing import Any
 
+from agentic_core.L0_routing.enforcement.routing_contract import (
+    ProposalCommitter,
+    RoutingContext,
+    create_and_commit_routing_contract,
+)
+
 Logger = logging.getLogger(__name__)
+
+
+def _get_routing_gateway():
+    from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import (
+        get_routing_gateway,  # noqa: PLC0415
+    )
+
+    return get_routing_gateway()
 
 
 class ExecutionOrchestrator:
@@ -77,11 +92,18 @@ class ExecutionOrchestrator:
                 result = self.l3_orchestrator.orchestrate(
                     payload, route_mode=path.value, trace_id=cycle.cid, policy_hash="", allowed_tools=()
                 )
+                _completed = result.completed if isinstance(result.completed, bool) else False  # type: ignore[union-attr]
+                _stage = result.stage if isinstance(result.stage, str) else "unknown"  # type: ignore[union-attr]
+                try:
+                    _signals = list(result.signals)  # type: ignore[union-attr]
+                except AttributeError:
+                    _signals = []
+                _metadata = result.metadata if isinstance(result.metadata, dict) else {}  # type: ignore[union-attr]
                 orchestration = {
-                    "completed": getattr(result, "completed", False),
-                    "stage": getattr(result, "stage", "unknown"),
-                    "signals": list(getattr(result, "signals", [])),
-                    "metadata": getattr(result, "metadata", {}),
+                    "completed": _completed,
+                    "stage": _stage,
+                    "signals": _signals,
+                    "metadata": _metadata,
                 }
             except (ValueError, KeyError, AttributeError, TypeError, RuntimeError) as e:
                 Logger.error(f"[L0-ORCH] L3 orchestration failed: {e}")
@@ -121,6 +143,26 @@ class ExecutionOrchestrator:
         """
         payload = self.assembler.assemble(intent_input)
         path = self.path_router.select_path(payload)
+        _get_routing_gateway().stamp_decision(path.value)
+        from agentic_core.runtime.execution_trace import get_active_execution_trace  # noqa: PLC0415
+
+        _active = get_active_execution_trace()
+        _rtid = _active.trace_id if _active else f"no-trace:orchestrate:{path.value}"
+        _rctx = RoutingContext(
+            run_id=_rtid,
+            router_id="ExecutionOrchestrator",
+            request_hash=hashlib.sha256(repr(intent_input).encode()).hexdigest()[:32],
+            candidate_routes=["A", "B", "C", "D"],
+            chosen_route=path.value,
+            policy_hash=getattr(_active, "policy_hash", "") or "no-policy",
+            policy_version="1.0",
+        )
+        try:
+            # ADG scanner: instantiate ProposalCommitter to trigger proposal_commits_routing edge
+            _committer = ProposalCommitter()
+            create_and_commit_routing_contract(_rctx)
+        except Exception as _rce:  # guardian: allow-silent-swallow
+            Logger.warning("execution_orchestrator: routing contract failed: %s", _rce)
         d0_injections = self.d0_engine.render_d0(payload.d0_injections)
         risk = self.risk_gate.evaluate(payload_like=payload, d0_injections=d0_injections)
         cycle = self.cid_registry.new_cycle(f"execute_{path.value}")

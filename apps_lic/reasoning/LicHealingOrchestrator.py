@@ -17,6 +17,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L2_execution.providers import get_clock
 from apps_shared.reasoning.BaseHealingOrchestrator import BaseHealingOrchestrator
 
 Logger = logging.getLogger(__name__)
@@ -190,6 +191,9 @@ class LicHealingOrchestrator(BaseHealingOrchestrator):
             request = GenerationRequest(
                 agent_id="LicHealingOrchestrator", provider="google", model="gemini-2.5-pro", prompt=prompt
             )
+            _clk = get_clock()
+            _clk.emit_replay_key(context=f"lic:heal:{request.agent_id}:{request.provider}")
+            _clk.emit_determinism_digest(inputs={"agent": request.agent_id, "provider": request.provider})
             loop = asyncio.new_event_loop()
             try:
                 response = loop.run_until_complete(gateway.route_generation(request))

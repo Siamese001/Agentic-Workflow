@@ -7,14 +7,43 @@ and immutable audit trails.
 from __future__ import annotations
 
 import hashlib
-import time
 from typing import Any
 
+from agentic_core.L2_execution.determinism.execution_proof_emitter import ExecutionProofEmitter
 from agentic_core.L2_execution.enforcement.budget_enforcer import BudgetEnforcer, BudgetExceeded
+from agentic_core.L2_execution.enforcement.guardrail_gate import get_guardrail_gate
 from agentic_core.L2_execution.enforcement.key_source import get_current_secret
+from agentic_core.L2_execution.providers import get_clock
 from agentic_core.L2_execution.types.execution_trace_types import ExecutionTrace, ExecutionTraceBuilder
 from agentic_core.L2_execution.types.ptc_tool_contracts_types import ToolContractViolation, ToolResult
 from agentic_core.L2_execution.types.sandbox_envelope_types import SandboxEnvelope, SignatureVerificationError
+
+_guardrail = get_guardrail_gate()
+_proof_emitter = ExecutionProofEmitter("L2.execution_gateway")
+
+
+def _invoke_authorize_and_execute(execution_context, target_callable, capability_token, payload, **kw):
+    from agentic_core.L2_execution.enforcement.execution_guardrail_chokepoint import (
+        authorize_and_execute,  # noqa: PLC0415
+    )
+
+    return authorize_and_execute(execution_context, target_callable, capability_token, payload, **kw)
+
+
+def _make_execution_context(run_id: str, capability_token: str, policy_hash: str, payload: Any, target: str):
+    from agentic_core.L2_execution.context.execution_context import (  # noqa: PLC0415
+        ActionClass,
+        ExecutionContext,
+    )
+
+    return ExecutionContext.create(
+        run_id=run_id,
+        capability_token=capability_token,
+        policy_hash=policy_hash or "default",
+        execution_input=payload,
+        execution_target=target,
+        action_class=ActionClass.MUTATION,
+    )
 
 
 class SignatureBoundaryError(RuntimeError):
@@ -45,6 +74,25 @@ class ExecutionGateway:
             BudgetExceeded: if any budget cap is breached
             SignatureBoundaryError: if envelope signature verification fails (fail-closed)
         """
+        with _proof_emitter.proof_op(f"execute_with_trace:{envelope.tool_name}"):
+            pass
+        with _guardrail.applies_guardrail("execute", envelope.tool_name):
+            pass
+        _capability_token = envelope.invocation_metadata.get("capability_token", "default")
+        _ectx = _make_execution_context(
+            run_id=envelope.invocation_metadata.get("run_id", envelope.envelope_id),
+            capability_token=_capability_token,
+            policy_hash=policy_hash,
+            payload=envelope.tool_args,
+            target=envelope.tool_name,
+        )
+        _invoke_authorize_and_execute(
+            _ectx,
+            lambda p: p,
+            _capability_token,
+            envelope.tool_args,
+            target_name=envelope.tool_name,
+        )
         try:
             envelope.verify(get_current_secret())
         except SignatureVerificationError:
@@ -57,7 +105,7 @@ class ExecutionGateway:
         builder.transcript_hash = transcript_hash
         builder.sandbox_envelope_ids = [envelope.envelope_id]
         builder.agent_id = envelope.invocation_metadata.get("agent_id", "unknown")
-        start_ms = int(time.time() * 1000)
+        start_ms = int(get_clock().now_epoch() * 1000)
         stdout_bytes: bytes = b""
         exit_code: int = -1
         try:
@@ -78,7 +126,7 @@ class ExecutionGateway:
             builder.error = f"ToolContract violation: {e}"
             raise
         finally:
-            builder.timing_ms = int(time.time() * 1000) - start_ms
+            builder.timing_ms = int(get_clock().now_epoch() * 1000) - start_ms
             builder.extra = {
                 "stdout_bytes": len(stdout_bytes),
                 "stdout_hash": hashlib.sha256(stdout_bytes).hexdigest(),

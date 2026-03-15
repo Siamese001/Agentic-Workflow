@@ -15,12 +15,13 @@ Phase: 3 - Production Readiness
 from __future__ import annotations
 
 import logging
-import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
 from typing import Any
+
+from agentic_core.L2_execution.providers import get_clock
 
 Logger = logging.getLogger(__name__)
 
@@ -243,19 +244,19 @@ class RecursionMonitor:
             List of HealthCheck results
         """
         checks = []
-        start = time.time()
+        start = get_clock().now_epoch()
         circuit_status = HealthStatus.CRITICAL if self._circuit_open else HealthStatus.HEALTHY
         checks.append(
             HealthCheck(
                 name="circuit_breaker",
                 status=circuit_status,
                 message="Circuit is open" if self._circuit_open else "Circuit is closed",
-                duration_ms=(time.time() - start) * 1000,
+                duration_ms=(get_clock().now_epoch() - start) * 1000,
                 timestamp=datetime.now().isoformat(),
                 metadata={"consecutive_failures": self._consecutive_failures},
             )
         )
-        start = time.time()
+        start = get_clock().now_epoch()
         if self._metrics_history:
             latest = self._metrics_history[-1]
             mem_mb = latest.memory_usage_bytes / (1024 * 1024)
@@ -267,12 +268,12 @@ class RecursionMonitor:
                     name="memory_usage",
                     status=mem_status,
                     message=f"Memory usage: {mem_mb:.1f}MB",
-                    duration_ms=(time.time() - start) * 1000,
+                    duration_ms=(get_clock().now_epoch() - start) * 1000,
                     timestamp=datetime.now().isoformat(),
                     metadata={"memory_mb": mem_mb},
                 )
             )
-        start = time.time()
+        start = get_clock().now_epoch()
         if self._metrics_history:
             latest = self._metrics_history[-1]
             success_status = (
@@ -285,12 +286,12 @@ class RecursionMonitor:
                     name="success_rate",
                     status=success_status,
                     message=f"Success rate: {latest.success_rate:.1%}",
-                    duration_ms=(time.time() - start) * 1000,
+                    duration_ms=(get_clock().now_epoch() - start) * 1000,
                     timestamp=datetime.now().isoformat(),
                     metadata={"success_rate": latest.success_rate},
                 )
             )
-        start = time.time()
+        start = get_clock().now_epoch()
         if self._response_times:
             avg_response = sum(self._response_times) / len(self._response_times)
             response_status = HealthStatus.HEALTHY if avg_response < 1000 else HealthStatus.DEGRADED
@@ -299,7 +300,7 @@ class RecursionMonitor:
                     name="response_time",
                     status=response_status,
                     message=f"Avg response time: {avg_response:.1f}ms",
-                    duration_ms=(time.time() - start) * 1000,
+                    duration_ms=(get_clock().now_epoch() - start) * 1000,
                     timestamp=datetime.now().isoformat(),
                     metadata={"avg_response_ms": avg_response},
                 )

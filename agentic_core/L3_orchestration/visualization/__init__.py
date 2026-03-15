@@ -1,0 +1,85 @@
+"""L3 Orchestration Visualization module.
+
+Provides operational visibility for runtime workflow progress as a
+queryable, stage-aware orchestration graph.
+"""
+
+# P3/L3 Workflow Visualization exports
+from agentic_core.L3_orchestration.visualization.visualization_updater import (
+    WorkflowVisualizationContext,
+    owner_transition_recorded,
+    query_workflow_visualization,
+    record_owner_transition,
+    record_stage_transition,
+    record_workflow_completion,
+    stage_transition_recorded,
+    update_workflow_visualization,
+    workflow_completed_recorded,
+    workflow_visualization_emitted,
+)
+from agentic_core.L3_orchestration.visualization.visualization_updater import (
+    get_workflow_visualization_registry as get_updater_registry,
+)
+from agentic_core.L3_orchestration.visualization.visualization_updater import (
+    reset_workflow_visualization_registry as reset_updater_registry,
+)
+from agentic_core.L3_orchestration.visualization.workflow_visualization import (
+    # Enum values for ADG scanner detection
+    ACTIVE,
+    BLOCK_DETECTED,
+    BLOCKED,
+    COMPLETED,
+    ESCALATED,
+    ESCALATION_TRIGGERED,
+    FAILED,
+    NORMAL_TRANSITION,
+    RETRY_TRIGGERED,
+    RETRYING,
+    WORKFLOW_ERROR,
+    StageTransitionReason,
+    WorkflowStageModel,
+    WorkflowStatus,
+    WorkflowVisualizationError,
+    WorkflowVisualizationRecord,
+    get_workflow_visualization_registry,
+    reset_workflow_visualization_registry,
+)
+
+__all__ = [
+    # Visualization Records
+    "WorkflowVisualizationRecord",
+    "WorkflowStageModel",
+    # Enums
+    "WorkflowStatus",
+    "StageTransitionReason",
+    # Exception Classes
+    "WorkflowVisualizationError",
+    # Context Classes
+    "WorkflowVisualizationContext",
+    # Emission Functions
+    "update_workflow_visualization",
+    "record_stage_transition",
+    "record_owner_transition",
+    "record_workflow_completion",
+    "query_workflow_visualization",
+    # Registry Access
+    "get_workflow_visualization_registry",
+    "reset_workflow_visualization_registry",
+    # ADG Edge Emitters
+    "workflow_visualization_emitted",
+    "stage_transition_recorded",
+    "owner_transition_recorded",
+    "workflow_completed_recorded",
+    # Enum values for ADG scanner detection
+    "ACTIVE",
+    "BLOCKED",
+    "RETRYING",
+    "ESCALATED",
+    "COMPLETED",
+    "FAILED",
+    "NORMAL_TRANSITION",
+    "RETRY_TRIGGERED",
+    "ESCALATION_TRIGGERED",
+    "BLOCK_DETECTED",
+    "WORKFLOW_ERROR",
+]

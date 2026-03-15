@@ -62,6 +62,7 @@ from agentic_core.L0_routing.types.routing_contracts_types import (
     PolicyConfigGuard,
     PolicyMutationIncident,
 )
+from agentic_core.L2_execution.providers import get_clock
 
 Logger = logging.getLogger(__name__)
 
@@ -189,6 +190,11 @@ class V15ExecutionGateway:
         """Execute with explicit L2 envelope separation."""
         manifest = self._validate_manifest(execution_input, trace_id)
         self._guardian_validate(manifest, trace_id, **kwargs)
+        _clk = get_clock()
+        _clk.emit_replay_key(context=f"{trace_id}:{manifest.node_id}")
+        _clk.emit_determinism_digest(
+            inputs={"trace": trace_id, "node": manifest.node_id, "registry": self._registry_digest}
+        )
         result = self._commit_mutation(manifest, heal_fn, state_hash_fn, trace_id, **kwargs)
         if not result.success and result.error:
             return self._heal_and_retry(manifest, heal_fn, state_hash_fn, trace_id, **kwargs)

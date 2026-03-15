@@ -21,9 +21,21 @@ import time
 from dataclasses import dataclass
 from typing import Any
 
+from agentic_core.L4_state.versioning.commit_versioned_state_transition import (
+    ActorContext,
+    MutationPayload,
+    SnapshotPolicy,
+    StateConflictError,
+    StateContext,
+    StateNamespaceError,
+    StateVersionMissingError,
+    commit_versioned_state_transition,
+)
 from agentic_core.runtime.execution_trace import get_active_execution_trace
 
 logger = logging.getLogger(__name__)
+_WRITES_THROUGH_LOG = logging.getLogger("adg.writes_through")
+_READS_LOG = logging.getLogger("adg.reads_runtime_state")
 
 
 @dataclass(frozen=True)
@@ -149,21 +161,129 @@ class RunScopedStateAuthority:
             )
             return contract
 
-    def write(self, key: str, value: Any) -> None:
+    def write(
+        self,
+        key: str,
+        value: Any,
+        *,
+        actor_id: str = "",
+        state_namespace: str = "",
+        expected_previous_version: int = -1,
+    ) -> None:
         """Write a value under ``key``.
 
+        P2/L4: Routes through commit_versioned_state_transition() for mandatory
+        versioning, conflict detection, and snapshot policy.
         Raises :class:`FrozenStateError` if the authority is currently frozen.
+        Emits writes_through and state_transition_committed ADG edges.
         """
         with self._lock:
             if self._frozen:
                 raise FrozenStateError(
                     f"RunScopedStateAuthority.write blocked: state is frozen (run={self._run_id}, key={key})"
                 )
-            self._state[key] = value
-            logger.debug("AUTHORITY write run=%s key=%s", self._run_id, key)
+            old_value = self._state.get(key)
 
-    def read(self, key: str, default: Any = None) -> Any:
-        """Read a value by ``key`` (returns ``default`` if absent)."""
+        # P2/L4: Mandatory versioned transition through commit_versioned_state_transition()
+        namespace = state_namespace or f"run_scoped.{self._run_id}"
+        try:
+            state_ctx = StateContext.create(
+                state_namespace=namespace,
+                key=key,
+                run_id=self._run_id,
+                trace_id=self._trace_id(),
+            )
+            mutation = MutationPayload.create(
+                key=key,
+                old_value=old_value,
+                new_value=value,
+            )
+            actor_ctx = ActorContext.create(
+                actor_id=actor_id or "run_scoped_state_authority",
+            )
+
+            transition = commit_versioned_state_transition(
+                state_context=state_ctx,
+                mutation_payload=mutation,
+                actor_context=actor_ctx,
+                snapshot_policy=SnapshotPolicy.ON_STAGE_COMPLETION,
+                stage_completion=True,  # Every write in scoped authority is a stage boundary
+                expected_previous_version=expected_previous_version,
+            )
+        except (StateNamespaceError, StateVersionMissingError, StateConflictError) as exc:
+            logger.error(
+                "RUN_SCOPED_STATE_AUTHORITY commit_versioned_state_transition failed: %s (namespace=%s key=%s)",
+                exc,
+                namespace,
+                key,
+            )
+            raise
+
+        # Update internal state after successful transition
+        with self._lock:
+            self._state[key] = value
+            logger.debug(
+                "AUTHORITY write run=%s key=%s version=%d transition_id=%s",
+                self._run_id,
+                key,
+                transition.new_version,
+                transition.state_transition_id,
+            )
+
+        # P1/L4: emit writes_through ADG edge on every governed state write
+        _WRITES_THROUGH_LOG.debug(
+            "writes_through RUN_SCOPED_STATE_AUTHORITY key=%s run_id=%s version=%d transition_id=%s",
+            key,
+            self._run_id,
+            transition.new_version,
+            transition.state_transition_id,
+        )
+
+    def read(
+        self,
+        key: str,
+        default: Any = None,
+        *,
+        state_namespace: str = "",
+    ) -> Any:
+        """Read a value by ``key`` (returns ``default`` if absent).
+
+        P2/L4: Returns versioned state when state_namespace is provided.
+        """
+        if state_namespace:
+            from agentic_core.L4_state.versioning.commit_versioned_state_transition import (
+                StateVersionMissingError,
+                UnversionedStateError,
+                read_versioned_state,
+            )
+
+            try:
+                versioned = read_versioned_state(
+                    state_namespace=state_namespace,
+                    key=key,
+                    run_id=self._run_id,
+                    trace_id=self._trace_id(),
+                    default=default,
+                )
+                _READS_LOG.debug(
+                    "reads_runtime_state namespace=%s key=%s version=%d run_id=%s source_hash=%s",
+                    state_namespace,
+                    key,
+                    versioned.state_version,
+                    self._run_id,
+                    versioned.source_hash,
+                )
+                return versioned.value
+            except (StateVersionMissingError, UnversionedStateError) as exc:
+                logger.warning(
+                    "RUN_SCOPED_STATE_AUTHORITY versioned_read failed, falling back: %s (namespace=%s key=%s)",
+                    exc,
+                    state_namespace,
+                    key,
+                )
+                # Fall through to legacy read
+
+        # Legacy read path
         with self._lock:
             return self._state.get(key, default)
 

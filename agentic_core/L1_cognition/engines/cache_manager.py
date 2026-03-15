@@ -14,7 +14,6 @@ Provides:
 from __future__ import annotations
 
 import logging
-import time
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -31,6 +30,7 @@ from agentic_core.L1_cognition.types.cache_types import (
     DomainConfig,
     EvictionPolicy,
 )
+from agentic_core.L2_execution.providers import get_clock
 
 Logger = logging.getLogger(__name__)
 
@@ -149,7 +149,7 @@ class CacheStrategyManager:
     def is_expired(self, created_at: float, domain: str) -> bool:
         """Check if an entry has expired based on domain TTL."""
         ttl = self.get_ttl(domain)
-        return time.time() - created_at > ttl
+        return get_clock().now_epoch() - created_at > ttl
 
     # ==================== SIMILARITY THRESHOLD ====================
 
@@ -182,7 +182,7 @@ class CacheStrategyManager:
 
     def record_access(self, key: str) -> None:
         """Record cache access for eviction tracking."""
-        self._access_times[key] = time.time()
+        self._access_times[key] = get_clock().now_epoch()
         self._access_counts[key] = self._access_counts.get(key, 0) + 1
 
     def get_eviction_candidates(

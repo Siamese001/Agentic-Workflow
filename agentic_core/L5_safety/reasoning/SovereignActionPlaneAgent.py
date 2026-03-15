@@ -20,8 +20,15 @@ from typing import Any
 from agentic_core.shared.interfaces import ActionRequest, ActionResult, IActionPlane
 
 from agentic_core.L0_routing.config.path_constants import DEFAULT_TIMEOUT
+from agentic_core.L2_execution.determinism.execution_proof_emitter import ExecutionProofEmitter
+from agentic_core.L2_execution.enforcement.guardrail_gate import get_guardrail_gate
 from agentic_core.L5_safety.config.structure_blueprint import SCRIPTS_DIR
+from agentic_core.L5_safety.gates.tool_safety_gate import ToolSafetyGate
 from agentic_core.utils.decorators_compat_util import standard_heal
+
+_guardrail = get_guardrail_gate()
+_tool_gate = ToolSafetyGate()
+_proof_emitter = ExecutionProofEmitter("L5.SovereignActionPlaneAgent")
 
 LOGGER = logging.getLogger(__name__)
 Logger: Any = logging.getLogger(__name__)
@@ -102,6 +109,11 @@ class SovereignSandbox:
         Returns:
             Dictionary with execution results
         """
+        with _proof_emitter.proof_op("execute_tool"):
+            pass
+        with _guardrail.applies_guardrail("execute_tool", str(tool_path)):
+            pass
+        _tool_gate.check_tool("tool_execution", sandboxed=True)
         if not self._is_running:
             await self.start()
         process: Any = None
@@ -223,6 +235,13 @@ class SovereignActionPlaneAgent(SovereignBaseAgent, IActionPlane):
 
     async def execute(self, request: ActionRequest) -> ActionResult:
         """Execute an action request with L5 safety validation."""
+        with _proof_emitter.proof_op("execute"):
+            pass
+        with _guardrail.applies_guardrail(
+            "execute", request.action if hasattr(request, "action") else str(request)
+        ):
+            pass
+        _tool_gate.check_tool("action_execute", sandboxed=False)
         manifest = self._v15_build_operation_manifest("execute")
         if manifest is not None:
             import hashlib as _hl

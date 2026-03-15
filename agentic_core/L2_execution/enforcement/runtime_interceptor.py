@@ -15,6 +15,30 @@ T = TypeVar("T")
 _mutable_ref_violations = []
 
 
+def _invoke_authorize_and_execute(execution_context, target_callable, capability_token, payload, **kw):
+    from agentic_core.L2_execution.enforcement.execution_guardrail_chokepoint import (
+        authorize_and_execute,  # noqa: PLC0415
+    )
+
+    return authorize_and_execute(execution_context, target_callable, capability_token, payload, **kw)
+
+
+def _make_execution_context(payload, target: str):
+    from agentic_core.L2_execution.context.execution_context import (  # noqa: PLC0415
+        ActionClass,
+        ExecutionContext,
+    )
+
+    return ExecutionContext.create(
+        run_id="runtime_interceptor",
+        capability_token="default",
+        policy_hash="default",
+        execution_input=str(payload),
+        execution_target=target,
+        action_class=ActionClass.PRIVILEGED_LOCAL,
+    )
+
+
 class MutableReferenceError(RuntimeError):
     """Raised when a mutable reference is detected outside allowed seams."""
 
@@ -106,6 +130,14 @@ def immutable_references(func: Callable[..., T]) -> Callable[..., T]:
     """
 
     def wrapper(*args, **kwargs) -> T:
+        _ectx = _make_execution_context(func.__name__, "runtime_interceptor.immutable_references")
+        _invoke_authorize_and_execute(
+            _ectx,
+            lambda p: p,
+            "default",
+            func.__name__,
+            target_name="runtime_interceptor.immutable_references",
+        )
         for i, arg in enumerate(args):
             assert_immutable_reference(arg, f"{func.__name__} arg {i}")
         for key, value in kwargs.items():

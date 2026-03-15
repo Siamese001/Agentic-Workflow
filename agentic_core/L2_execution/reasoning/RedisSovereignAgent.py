@@ -13,8 +13,33 @@ import redis
 from redis.connection import ConnectionPool
 
 from agentic_core.config.core.env_loader import get_env
+from agentic_core.L2_execution.providers import get_clock
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
+
+
+def _invoke_authorize_and_execute(execution_context, target_callable, capability_token, payload, **kw):
+    from agentic_core.L2_execution.enforcement.execution_guardrail_chokepoint import (
+        authorize_and_execute,  # noqa: PLC0415
+    )
+
+    return authorize_and_execute(execution_context, target_callable, capability_token, payload, **kw)
+
+
+def _make_execution_context(payload, target: str):
+    from agentic_core.L2_execution.context.execution_context import (  # noqa: PLC0415
+        ActionClass,
+        ExecutionContext,
+    )
+
+    return ExecutionContext.create(
+        run_id="RedisSovereignAgent",
+        capability_token="default",
+        policy_hash="default",
+        execution_input=str(payload),
+        execution_target=target,
+        action_class=ActionClass.PRIVILEGED_LOCAL,
+    )
 
 
 @dataclass
@@ -88,11 +113,11 @@ class RedisSovereignAgent(SovereignBaseAgent):
 
     def _audit(self, operation: str, key: str, success: bool) -> None:
         """[PHASE 2] Record operation to internal audit plane."""
-        import time
-
         if not hasattr(self, "audit_log"):
             self.audit_log = []
-        self.audit_log.append({"op": operation, "key": key[:32], "success": success, "ts": time.time()})
+        self.audit_log.append(
+            {"op": operation, "key": key[:32], "success": success, "ts": get_clock().now_epoch()}
+        )
         self.operation_stats["total"] += 1
         self.operation_stats[operation] = self.operation_stats.get(operation, 0) + 1
 
@@ -136,6 +161,14 @@ class RedisSovereignAgent(SovereignBaseAgent):
     # guardian: allow-type-erasure
     async def execute(self, ctx=None) -> Any:
         """Execute execute operation."""
+        _ectx = _make_execution_context("redis_execute", "RedisSovereignAgent.execute")
+        _invoke_authorize_and_execute(
+            _ectx,
+            lambda p: p,
+            "default",
+            "redis_execute",
+            target_name="RedisSovereignAgent.execute",
+        )
         info = self.client.info()
         mem = info.get("used_memory_human", "0B")
         print(f"   [OK] RedisSovereignAgent: Healthy. Memory: {mem}")

@@ -1,11 +1,39 @@
 from __future__ import annotations
 
 "\nCognitive Node - Central L1 Cognition Pipeline\n\nIntegrates all L1 components:\n- Perception → Reasoning → Planning → Action\n- Semantic memory for pattern recall\n- Meta-learning for adaptive strategy selection\n- Governance for policy enforcement\n"
-import time
 from dataclasses import dataclass, field
 from typing import Any
 
 from agentic_core.L0_routing.config.path_constants import BATCH_SIZE
+from agentic_core.L2_execution.providers import get_clock
+
+
+def _get_reason_and_record():
+    from agentic_core.L1_cognition.enforcement.reasoning_chokepoint import reason_and_record  # noqa: PLC0415
+
+    return reason_and_record
+
+
+def _invoke_reason_and_record(ctx, prompt, retrieved, fn, **kw):
+    from agentic_core.L1_cognition.enforcement.reasoning_chokepoint import reason_and_record  # noqa: PLC0415
+
+    return reason_and_record(ctx, prompt, retrieved, fn, **kw)
+
+
+def _make_reasoning_context(run_id: str, policy_hash: str, prompt: str, model_id: str, clock_tick: float):
+    import uuid  # noqa: PLC0415
+
+    from agentic_core.L1_cognition.context.reasoning_context_builder import (
+        build_reasoning_context,  # noqa: PLC0415
+    )
+
+    return build_reasoning_context(
+        run_id=run_id,
+        trace_id=str(uuid.uuid4()),
+        policy_context=policy_hash or "default",
+        prompt=prompt,
+        model_id=model_id or "CognitiveNode",
+    )
 
 
 @dataclass
@@ -29,7 +57,7 @@ class PerceptionNode:
         return {
             "query": raw_input.get("user_query", ""),
             "context": context,
-            "timestamp": time.time(),
+            "timestamp": get_clock().now_epoch(),
             "input_type": self._classify_input(raw_input),
         }
 
@@ -202,8 +230,15 @@ class CognitiveNode:
         Returns:
             CognitiveResult with output and metadata
         """
-        start_time = time.time()
+        start_time = get_clock().now_epoch()
         self.missions_processed += 1
+        _rctx = _make_reasoning_context(
+            run_id=str(self.missions_processed),
+            policy_hash=context.get("policy_hash", "default"),
+            prompt=raw_input.get("user_query", ""),
+            model_id=context.get("model_id", "CognitiveNode"),
+            clock_tick=start_time,
+        )
         try:
             perceived = await self.perception.process_async(raw_input, context)
             memory_used = []
@@ -215,6 +250,14 @@ class CognitiveNode:
             if self.meta_learner:
                 strategy_bias = self.meta_learner.get_strategy_bias()
             perceived["strategy_bias"] = strategy_bias
+            output_raw, _trace = _invoke_reason_and_record(
+                _rctx,
+                perceived,
+                perceived.get("memory", []),
+                lambda p, r: self.reasoning._generate_reasoning(
+                    p.get("query", ""), self.reasoning._biased_select(p.get("strategy_bias", {})), r
+                ),
+            )
             reasoned = await self.reasoning.reason_async(perceived)
             plan = self.planning.plan(reasoned["goal"], reasoned["domain"], perceived)
             reasoned["plan"] = plan
@@ -229,7 +272,7 @@ class CognitiveNode:
                 )
                 if self.missions_processed % 10 == 0:
                     await self._async_replay_and_learn()
-            latency_ms = (time.time() - start_time) * 1000
+            latency_ms = (get_clock().now_epoch() - start_time) * 1000
             self.total_latency_ms += latency_ms
             return CognitiveResult(
                 output=output,
@@ -242,7 +285,7 @@ class CognitiveNode:
             )
         # guardian: allow-silent-swallow
         except Exception as e:
-            latency_ms = (time.time() - start_time) * 1000
+            latency_ms = (get_clock().now_epoch() - start_time) * 1000
             return CognitiveResult(
                 output=f"Error: {str(e)}", thought_type="error", latency_ms=latency_ms, success=False
             )

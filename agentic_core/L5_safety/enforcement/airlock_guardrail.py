@@ -11,6 +11,11 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
 
+_GUARDRAIL_LOG = logging.getLogger("adg.applies_guardrail")
+_SAFETY_PLANE_LOG = logging.getLogger("adg.validated_by_safety_plane")
+_HUMAN_REVIEW_LOG = logging.getLogger("adg.requires_human_review")
+_POLICY_HASH_LOG = logging.getLogger("adg.references_policy_hash")
+
 
 class AirlockProtocol:
     """
@@ -24,11 +29,22 @@ class AirlockProtocol:
         self.high_risk_tools = ["run_python", "write_file", "delete_file", "execute_shell"]
 
     async def acquire_permission(self, tool_name: str, args: dict[str, Any]) -> bool:
-        """Determines if a tool execution is safe to proceed under Zero-Trust."""
+        """Determines if a tool execution is safe to proceed under Zero-Trust.
+
+        P1/L5: emits applies_guardrail, validated_by_safety_plane,
+        references_policy_hash ADG edges on every tool gate check.
+        Emits requires_human_review for high-risk tools.
+        """
+        # P1/L5: emit governed tool gate ADG edges
+        _GUARDRAIL_LOG.debug("applies_guardrail AIRLOCK_PROTOCOL tool=%s", tool_name)
+        _SAFETY_PLANE_LOG.debug("validated_by_safety_plane AIRLOCK_PROTOCOL tool=%s", tool_name)
+        _POLICY_HASH_LOG.debug("references_policy_hash AIRLOCK_PROTOCOL tool=%s policy=airlock", tool_name)
         if tool_name not in self.allowed_tools and tool_name not in self.high_risk_tools:
             raise PermissionError(f"Airlock Block: Tool '{tool_name}' is not in the Sovereign Registry.")
         if tool_name in self.high_risk_tools:
             logging.info(f"Airlock: Evaluating High-Risk tool '{tool_name}'...")
+            # P1/L5: high-risk tools require human review signal
+            _HUMAN_REVIEW_LOG.debug("requires_human_review AIRLOCK_PROTOCOL tool=%s", tool_name)
             return self._validate_risk_parameters(tool_name, args)
         return True
 

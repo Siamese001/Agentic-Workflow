@@ -6,7 +6,6 @@ import hashlib
 "Brief description of functionality and purpose."
 import logging
 import secrets
-import time
 from typing import Any
 
 from agentic_core.L1_cognition.identity.spiffe_manager_types import (
@@ -16,6 +15,7 @@ from agentic_core.L1_cognition.identity.spiffe_manager_types import (
     TrustDomain,
 )
 
+from agentic_core.L2_execution.providers import get_clock
 from agentic_core.utils.decorators_compat_util import standard_heal
 
 LOGGER = logging.getLogger(__name__)
@@ -82,7 +82,7 @@ class SpiffeManager:
             AgentIdentity with cryptographic credentials
         """
         ttl: Any = ttl_seconds or self.default_ttl_seconds
-        now: Any = time.time()
+        now: Any = get_clock().now_epoch()
         spiffe_id: Any = self._generate_spiffe_id(
             TrustDomain=self.TrustDomain, namespace=namespace, agent_name=agent_name
         )
@@ -150,7 +150,7 @@ class SpiffeManager:
         if not identity:
             return None
         ttl: Any = ttl_seconds or self.default_ttl_seconds
-        now: Any = time.time()
+        now: Any = get_clock().now_epoch()
         public_key, private_key = self._generate_key_pair()
         identity.public_key = public_key
         identity.private_key = private_key

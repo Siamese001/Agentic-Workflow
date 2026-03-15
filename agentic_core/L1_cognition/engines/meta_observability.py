@@ -14,7 +14,6 @@ Provides:
 from __future__ import annotations
 
 import logging
-import time
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any
@@ -23,6 +22,7 @@ from agentic_core.L1_cognition.types.observability_types import (
     HealthStatus,
     MetricPoint,
 )
+from agentic_core.L2_execution.providers import get_clock
 
 Logger = logging.getLogger(__name__)
 
@@ -392,11 +392,11 @@ class OperationTimer:
         self.start_time: float = 0
 
     def __enter__(self):
-        self.start_time = time.time()
+        self.start_time = get_clock().now_epoch()
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        duration_ms = (time.time() - self.start_time) * 1000
+        duration_ms = (get_clock().now_epoch() - self.start_time) * 1000
         observability = get_meta_learning_observability()
         observability.record_operation_time(self.operation, duration_ms)
         return False

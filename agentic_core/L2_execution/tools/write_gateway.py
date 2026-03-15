@@ -33,6 +33,31 @@ from agentic_core.L0_routing.config.path_constants import (
 )
 from agentic_core.L0_routing.enforcement.mutation_prohibition import enforce_protected_root
 
+
+def _invoke_authorize_and_execute(execution_context, target_callable, capability_token, payload, **kw):
+    from agentic_core.L2_execution.enforcement.execution_guardrail_chokepoint import (
+        authorize_and_execute,  # noqa: PLC0415
+    )
+
+    return authorize_and_execute(execution_context, target_callable, capability_token, payload, **kw)
+
+
+def _make_execution_context(payload, target: str):
+    from agentic_core.L2_execution.context.execution_context import (  # noqa: PLC0415
+        ActionClass,
+        ExecutionContext,
+    )
+
+    return ExecutionContext.create(
+        run_id="write_gateway",
+        capability_token="default",
+        policy_hash="default",
+        execution_input=payload,
+        execution_target=target,
+        action_class=ActionClass.MUTATION,
+    )
+
+
 MAX_WRITE_BYTES = 10 * 1024 * 1024
 MAX_GROWTH_RATIO = 2.0
 
@@ -239,6 +264,14 @@ def write_text(
         WriteAmplificationError: If growth ratio exceeds MAX_GROWTH_RATIO
         MutationEntropyError: If substitution_count > expected_max_substitutions
     """
+    _ectx = _make_execution_context(str(path), "write_gateway.write_text")
+    _invoke_authorize_and_execute(
+        _ectx,
+        lambda p: p,
+        "default",
+        str(path),
+        target_name="write_gateway.write_text",
+    )
     p = Path(path)
     before_hash: str | None = None
     if p.exists():

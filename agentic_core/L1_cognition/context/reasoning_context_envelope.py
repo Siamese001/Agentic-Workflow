@@ -19,10 +19,10 @@ from __future__ import annotations
 import hashlib
 import logging
 import threading
-import time
 from dataclasses import dataclass
 from typing import Any
 
+from agentic_core.L2_execution.providers import get_clock
 from agentic_core.runtime.execution_trace import get_active_execution_trace
 
 logger = logging.getLogger(__name__)
@@ -166,7 +166,7 @@ class ReasoningContextEnvelopeBuilder:
                 raise RuntimeError("ReasoningContextEnvelopeBuilder: already sealed")
             active = get_active_execution_trace()
             trace_id = active.trace_id if active else "no-active-trace"
-            ts = time.monotonic()
+            ts = get_clock().now_epoch()
             payload = f"{self._run_id}:{trace_id}:{self._task}:{len(self._retrievals)}:{ts:.6f}"
             contract_hash = hashlib.sha256(payload.encode()).hexdigest()[:24]
             envelope = ReasoningContextEnvelope(

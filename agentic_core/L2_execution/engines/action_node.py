@@ -1,9 +1,41 @@
 from __future__ import annotations
 
-"\nAction Node - Sub-atomic Execution & Output Generation\n\nHandles tool selection, execution, and output formatting.\nIsolated from perception and reasoning logic.\n"
+"""
+Action Node - Sub-atomic Execution & Output Generation
+
+Handles tool selection, execution, and output formatting.
+Isolated from perception and reasoning logic.
+"""
 import asyncio
-import time
 from typing import Any
+
+from agentic_core.L2_execution.providers import get_clock
+
+
+def _invoke_authorize_and_execute(execution_context, target_callable, capability_token, payload, **kw):
+    from agentic_core.L2_execution.enforcement.execution_guardrail_chokepoint import (
+        authorize_and_execute,  # noqa: PLC0415
+    )
+
+    return authorize_and_execute(execution_context, target_callable, capability_token, payload, **kw)
+
+
+def _make_execution_context(
+    run_id: str, capability_token: str, policy_hash: str, payload: Any, target: str, action_class=None
+):
+    from agentic_core.L2_execution.context.execution_context import (  # noqa: PLC0415
+        ActionClass,
+        ExecutionContext,
+    )
+
+    return ExecutionContext.create(
+        run_id=run_id,
+        capability_token=capability_token,
+        policy_hash=policy_hash,
+        execution_input=payload,
+        execution_target=target,
+        action_class=action_class or ActionClass.READ_ONLY,
+    )
 
 
 class ActionNode:
@@ -33,12 +65,29 @@ class ActionNode:
         Returns:
             Action result with output and metadata
         """
-        start_time = time.time()
+        start_time = get_clock().now_epoch()
         self.actions_executed += 1
+        run_id = reasoning.get("run_id", "action_node")
+        policy_hash = reasoning.get("policy_hash", "default")
+        capability_token = reasoning.get("capability_token", "default")
+        _ectx = _make_execution_context(
+            run_id=run_id,
+            capability_token=capability_token,
+            policy_hash=policy_hash,
+            payload=reasoning,
+            target="action_node.act",
+        )
         tools = self._select_tools(reasoning["plan"])
+        _invoke_authorize_and_execute(
+            _ectx,
+            lambda p: self._execute_tools(tools, p),
+            capability_token,
+            reasoning,
+            target_name="action_node.act",
+        )
         results = self._execute_tools(tools, reasoning)
         output = self._format_output(results, reasoning)
-        execution_time = time.time() - start_time
+        execution_time = get_clock().now_epoch() - start_time
         self.total_execution_time += execution_time
         action_result = {
             "output": output,
@@ -59,12 +108,29 @@ class ActionNode:
         Returns:
             Action result
         """
-        start_time = time.time()
+        start_time = get_clock().now_epoch()
         self.actions_executed += 1
+        run_id = reasoning.get("run_id", "action_node")
+        policy_hash = reasoning.get("policy_hash", "default")
+        capability_token = reasoning.get("capability_token", "default")
+        _ectx = _make_execution_context(
+            run_id=run_id,
+            capability_token=capability_token,
+            policy_hash=policy_hash,
+            payload=reasoning,
+            target="action_node.act_async",
+        )
         tools = self._select_tools(reasoning["plan"])
+        _invoke_authorize_and_execute(
+            _ectx,
+            lambda p: p,
+            capability_token,
+            reasoning,
+            target_name="action_node.act_async",
+        )
         results = await asyncio.to_thread(self._execute_tools, tools, reasoning)
         output = await asyncio.to_thread(self._format_output, results, reasoning)
-        execution_time = time.time() - start_time
+        execution_time = get_clock().now_epoch() - start_time
         self.total_execution_time += execution_time
         action_result = {
             "output": output,
@@ -85,10 +151,27 @@ class ActionNode:
         Returns:
             Simple action result
         """
-        start_time = time.time()
+        start_time = get_clock().now_epoch()
         self.actions_executed += 1
+        run_id = perceived.get("run_id", "action_node")
+        policy_hash = perceived.get("policy_hash", "default")
+        capability_token = perceived.get("capability_token", "default")
+        _ectx = _make_execution_context(
+            run_id=run_id,
+            capability_token=capability_token,
+            policy_hash=policy_hash,
+            payload=perceived,
+            target="action_node.act_simple",
+        )
+        _invoke_authorize_and_execute(
+            _ectx,
+            lambda p: p,
+            capability_token,
+            perceived,
+            target_name="action_node.act_simple",
+        )
         output = f"Responding to: {perceived['query'][:50]}..."
-        execution_time = time.time() - start_time
+        execution_time = get_clock().now_epoch() - start_time
         self.total_execution_time += execution_time
         return {
             "output": output,

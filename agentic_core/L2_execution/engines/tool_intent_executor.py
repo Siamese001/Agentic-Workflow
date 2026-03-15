@@ -13,10 +13,35 @@ import json
 from contextlib import contextmanager
 from dataclasses import dataclass, field
 from typing import Any, Callable
-from agentic_core.L2_execution.enforcement.guardrail_gate import get_guardrail_gate, Generator
 
+from agentic_core.L2_execution.enforcement.guardrail_gate import Generator
 from agentic_core.L2_execution.types.ml_write_intent_types import is_commit_sandbox_active
 from agentic_core.L2_execution.types.tool_intent_types import ToolIntent, ToolViolation
+
+
+def _invoke_authorize_and_execute(execution_context, target_callable, capability_token, payload, **kw):
+    from agentic_core.L2_execution.enforcement.execution_guardrail_chokepoint import (
+        authorize_and_execute,  # noqa: PLC0415
+    )
+
+    return authorize_and_execute(execution_context, target_callable, capability_token, payload, **kw)
+
+
+def _make_execution_context(payload, target: str):
+    from agentic_core.L2_execution.context.execution_context import (  # noqa: PLC0415
+        ActionClass,
+        ExecutionContext,
+    )
+
+    return ExecutionContext.create(
+        run_id="tool_intent_executor",
+        capability_token="default",
+        policy_hash="default",
+        execution_input=str(payload),
+        execution_target=target,
+        action_class=ActionClass.MUTATION,
+    )
+
 
 _SCHEMA_VERSION: int = 1
 
@@ -131,6 +156,14 @@ class ToolIntentExecutor:
                 code="TOOL_WRITE_OUTSIDE_SANDBOX",
                 detail=f"tool '{intent.tool_name}' requires commit sandbox (capability={intent.capability.value})",
             )
+        _ectx = _make_execution_context(intent.args_hash, intent.tool_name)
+        _invoke_authorize_and_execute(
+            _ectx,
+            lambda p: p,
+            "default",
+            intent.args_hash,
+            target_name=intent.tool_name,
+        )
         raw = fn(intent.args)
         output_summary = str(raw.get("output_summary", ""))
         anchor_ids: list[str] = list(raw.get("anchor_ids", []))

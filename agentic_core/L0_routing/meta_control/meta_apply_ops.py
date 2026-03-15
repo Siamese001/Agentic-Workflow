@@ -9,7 +9,6 @@ NO automatic/background application.  All functions are explicit invoke only.
 from __future__ import annotations
 
 import json
-import time
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any
@@ -23,6 +22,7 @@ from agentic_core.L0_routing.types.determinism_types import (
     SemanticClockSnapshot,
     validate_semantic_clock,
 )
+from agentic_core.L2_execution.providers import get_clock
 
 
 def _get_apply_attempt_types():
@@ -299,7 +299,7 @@ def check_rate_limit(
     Only 1 APPLY per (app_id, target_component) per hour.
     """
     rl_file = _rate_limit_path(base_dir, target_component)
-    now = now_epoch_s if now_epoch_s is not None else int(time.time())
+    now = now_epoch_s if now_epoch_s is not None else int(get_clock().now_epoch())
 
     if rl_file.exists():
         state = json.loads(rl_file.read_text(encoding="utf-8"))
@@ -317,7 +317,7 @@ def record_apply_timestamp(
 ) -> None:
     """Record an apply timestamp for rate limiting."""
     rl_file = _rate_limit_path(base_dir, target_component)
-    now = now_epoch_s if now_epoch_s is not None else int(time.time())
+    now = now_epoch_s if now_epoch_s is not None else int(get_clock().now_epoch())
 
     state: dict[str, int] = {}
     if rl_file.exists():

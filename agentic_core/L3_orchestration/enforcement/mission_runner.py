@@ -12,6 +12,35 @@ from pathlib import Path
 
 from agentic_core.utils.security_util import safe_git_execute
 
+from agentic_core.L2_execution.determinism.execution_proof_emitter import ExecutionProofEmitter
+from agentic_core.L2_execution.providers import get_clock
+from agentic_core.L3_orchestration.contracts.coordination_ledger import (
+    MissingCoordinationLedger,
+    WorkflowStatus,
+    complete_coordination_ledger,
+    get_coordination_ledger,
+    initialise_coordination_ledger,
+    update_coordination_ledger,
+)
+from agentic_core.L3_orchestration.contracts.orchestration_handoff_contract import emit_agent_executes_agent
+from agentic_core.L4_state.authority.run_state_authority import get_run_state_authority
+from agentic_core.L5_safety.enforcement.circuit_breaker_gate import get_breaker
+from agentic_core.L5_safety.enforcement.policy_action_contract import (
+    ActionClass,
+    PolicyEnforcementError,
+    enforce_policy_before_action,
+)
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_transcripts_response,
+    emit_determinism_digest,
+    emit_replay_key,
+)
+
+_proof_emitter = ExecutionProofEmitter("L3.mission_runner")
+_mission_breaker = get_breaker("mission_runner")
+
 from agentic_core.L0_routing.config.path_constants import DEFAULT_SLEEP, DEFAULT_TIMEOUT
 from agentic_core.L0_routing.enforcement.runtime_guard import runtime_guard
 from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
@@ -270,7 +299,10 @@ def run_standard_mode():
     async def run_mission():
         MAX_CYCLES = 5
         cycle = 0
-        branch_name = f"healing/auto_{int(time.time())}"
+        with _proof_emitter.proof_op("run_mission"):
+            pass
+        _mission_breaker.call(lambda: None)
+        branch_name = f"healing/auto_{int(get_clock().now_epoch())}"
         try:
             safe_git_execute(
                 ["checkout", "-b", branch_name], repo_root=Path.cwd(), timeout=DEFAULT_TIMEOUT, check=False
@@ -279,9 +311,30 @@ def run_standard_mode():
         # guardian: allow-silent-swallow
         except Exception:
             print("   [!] GitOps: Could not create branch (may not be in git repo)")
+        _rsa = get_run_state_authority()
+        try:
+            enforce_policy_before_action(
+                action_name="run_mission",
+                action_class=ActionClass.REASONING,
+                actor_id="mission_runner",
+                run_id=str(id(ctx)),
+            )
+        except PolicyEnforcementError as _pee:
+            Logger.error("Policy blocked mission start: %s", _pee)
+            return
+        _rsa.observe_runtime_state("mission_start", stage="pre_cycle", actor_id="mission_runner")
+        from agentic_core.runtime.execution_trace import get_active_execution_trace  # noqa: PLC0415
+
+        _et_start = get_active_execution_trace()
+        _rtid_mission = _et_start.trace_id if _et_start else str(id(ctx))
+        _emit_records_execution_trace(_rtid_mission, LayerSegment.L3_ORCHESTRATION, "mission_start")
+        _emit_transcripts_response(_rtid_mission, f"tr:{_rtid_mission[:12]}", "mission_runner")
+        emit_replay_key(_rtid_mission, f"rk:mission:{_rtid_mission[:16]}")
+        emit_determinism_digest(_rtid_mission, f"dd:mission:{_rtid_mission[:16]}")
         while cycle < MAX_CYCLES:
             cycle += 1
             ctx.signal_healing_cycle(cycle)
+            _rsa.observe_runtime_state("healing_cycle", stage=f"cycle_{cycle}", actor_id="mission_runner")
             print(f"\n=== [CYCLE] SELF-HEALING CYCLE {cycle}/{MAX_CYCLES} ===")
             ctx.modified_files.clear()
             agenda = _build_agenda(cycle, ctx, agents, GitAgent, StrategicPlannerAgent, ReflectionAgent)
@@ -292,6 +345,50 @@ def run_standard_mode():
                 break
             for agent in final_agenda:
                 if agent.can_run():
+                    try:
+                        enforce_policy_before_action(
+                            action_name=getattr(agent, "name", type(agent).__name__),
+                            action_class=ActionClass.TOOL_EXECUTION,
+                            actor_id="mission_runner",
+                            run_id=str(id(ctx)),
+                        )
+                    except PolicyEnforcementError as _pee:
+                        Logger.error("Policy blocked agent execution: %s", _pee)
+                        continue
+                    emit_agent_executes_agent(
+                        parent_agent_id="mission_runner",
+                        child_agent_id=getattr(agent, "name", type(agent).__name__),
+                        stage=f"cycle_{cycle}",
+                    )
+                    # P1/L3: update CoordinationLedger on agent dispatch
+                    _mission_run_id = str(id(ctx))
+                    if get_coordination_ledger(_mission_run_id) is None:
+                        try:
+                            from agentic_core.runtime.execution_trace import (
+                                get_active_execution_trace,  # noqa: PLC0415
+                            )
+
+                            _at = get_active_execution_trace()
+                            initialise_coordination_ledger(
+                                run_id=_mission_run_id,
+                                root_trace_id=_at.trace_id if _at else "no-trace",
+                                owner_agent_id="mission_runner",
+                                initial_stage=f"cycle_{cycle}",
+                            )
+                        except Exception:
+                            pass
+                    try:
+                        update_coordination_ledger(
+                            run_id=_mission_run_id,
+                            owner_agent_id="mission_runner",
+                            stage_transition={
+                                "new_stage": f"cycle_{cycle}",
+                                "new_owner": getattr(agent, "name", type(agent).__name__),
+                                "handoff_reason": f"mission_runner->agent cycle_{cycle}",
+                            },
+                        )
+                    except (MissingCoordinationLedger, Exception):
+                        pass
                     await agent.execute()
             if "TEST_FAILURE" in ctx.signals and cycle > 1 and ctx.file_backups:
                 print("   [ALERT] Critical Regression Detected. Initiating Rollback Protocol.")
@@ -308,6 +405,13 @@ def run_standard_mode():
         _remote_sync(ctx, branch_name)
         print("\n[SAVE] SAVING BLACKBOARD STATE...")
         ctx._save_memory()
+        _rsa.observe_runtime_state("mission_complete", stage="run_complete", actor_id="mission_runner")
+        _rsa.snapshot_state("mission_complete")
+        # P1/L3: mark CoordinationLedger complete on mission finish
+        try:
+            complete_coordination_ledger(str(id(ctx)), WorkflowStatus.COMPLETED)
+        except (MissingCoordinationLedger, Exception):
+            pass
         print("\nMISSION COMPLETE")
 
     return run_mission
@@ -424,7 +528,7 @@ def _handle_max_cycles_reached(ctx):
         esc_dir = Path("observability/human_review")
         _wg.ensure_dir(esc_dir)
         report = f"# ESCALATION REPORT\nTimestamp: {time.ctime()}\nSignals: {ctx.signals}\nPending Files: {ctx.modified_files}"
-        _wg.write_text(esc_dir / f"escalation_{int(time.time())}.md", report)
+        _wg.write_text(esc_dir / f"escalation_{int(get_clock().now_epoch())}.md", report)
         print(f"   [ALERT] Manual Review Required. Report saved to: {esc_dir}")
 
 

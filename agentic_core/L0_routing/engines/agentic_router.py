@@ -13,10 +13,53 @@ from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any
 
+from agentic_core.L0_routing.capacity.capacity_aware_router import (
+    RoutingCapacityContext,
+    RoutingCapacityError,
+    RoutingPolicyContext,
+    choose_route_with_capacity,
+)
+from agentic_core.L0_routing.enforcement.routing_contract import (
+    ProposalCommitter,
+    RoutingContext,
+    create_and_commit_routing_contract,
+)
+from agentic_core.L0_routing.telemetry.routing_telemetry import (
+    RoutingOutcomeStatus,
+    RoutingTelemetryContext,
+    record_routing_telemetry,
+)
+from agentic_core.L6_observability.performance.performance_emitter import (
+    StageStatus,
+    record_routing_performance,
+)
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    emit_replay_key,
+)
+
 if TYPE_CHECKING:
     from agentic_core.L0_routing.engines.intent_embedding_classifier import IntentEmbeddingClassifier
 
 Logger = logging.getLogger(__name__)
+
+
+def _get_routing_gateway():
+    from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import (
+        get_routing_gateway,  # noqa: PLC0415
+    )
+
+    return get_routing_gateway()
+
+
+def _get_proof_emitter():
+    from agentic_core.L2_execution.determinism.execution_proof_emitter import (
+        ExecutionProofEmitter,  # noqa: PLC0415
+    )
+
+    return ExecutionProofEmitter("L0.AgenticRouter")
 
 
 @dataclass
@@ -133,12 +176,94 @@ class AgenticRouter:
             RoutingDecision with chosen target, confidence, and handler result.
         """
         context = context or {}
+        from agentic_core.L2_execution.providers import get_clock as _get_clock  # noqa: PLC0415
+
+        _route_start_tick = _get_clock().now_epoch()
         intent, target_name, confidence = self._classify(user_input)
 
         Logger.info(
             "agentic_router_dispatch",
             extra={"intent": intent, "target": target_name, "confidence": confidence},
         )
+
+        _get_routing_gateway().stamp_decision(target_name or "unknown", metadata={"intent": intent})
+        _emitter = _get_proof_emitter()
+        with _emitter.proof_op(f"route:{intent}:{target_name}"):
+            pass
+        _emitter.emit_proof(intent, target_name)
+        from agentic_core.runtime.execution_trace import get_active_execution_trace  # noqa: PLC0415
+
+        _active = get_active_execution_trace()
+        _rtid = _active.trace_id if _active else f"no-trace:route:{intent}"
+        _emit_records_execution_trace(_rtid, LayerSegment.L0_ROUTING, f"route:{intent}:{target_name}")
+        _emit_signs_execution_trace(_rtid, target_name or "unknown", intent or "unknown", 0)
+        emit_replay_key(_rtid, f"rk:route:{target_name or 'unknown'}:{intent or 'unknown'}")
+        import hashlib as _hl  # noqa: PLC0415
+
+        _candidate_routes = list(self._targets.keys()) or [target_name or "unknown"]
+        _request_hash = _hl.sha256(user_input.encode()).hexdigest()[:32]
+        _rctx = RoutingContext(
+            run_id=_rtid,
+            router_id="AgenticRouter",
+            request_hash=_request_hash,
+            candidate_routes=_candidate_routes,
+            chosen_route=target_name or "unknown",
+            policy_hash=getattr(_active, "policy_hash", "") or "no-policy",
+            policy_version="1.0",
+        )
+        _routing_contract_id = "no-contract"
+        try:
+            # ADG scanner: instantiate ProposalCommitter to trigger proposal_commits_routing edge
+            _committer = ProposalCommitter()
+            _contract = create_and_commit_routing_contract(_rctx)
+            _routing_contract_id = _contract.routing_contract_id
+        except Exception as _rce:  # guardian: allow-silent-swallow
+            Logger.warning("agentic_router: routing contract creation failed: %s", _rce)
+
+        # P3/L0: Apply capacity-aware routing if multiple candidates exist
+        _capacity_chosen_route = target_name
+        if len(_candidate_routes) > 1:
+            try:
+                capacity_ctx = RoutingCapacityContext.create(
+                    run_id=_rtid,
+                    trace_id=_rtid,
+                    routing_contract_id=_routing_contract_id,
+                    router_id="AgenticRouter",
+                )
+                policy_ctx = RoutingPolicyContext.create(
+                    allow_degraded=True,
+                    allow_saturated=False,
+                    require_capacity_aware=True,
+                )
+
+                _capacity_chosen_route, _capacity_snapshot = choose_route_with_capacity(
+                    routing_context=capacity_ctx,
+                    candidate_routes=_candidate_routes,
+                    policy_context=policy_ctx,
+                )
+
+                Logger.debug(
+                    "CAPACITY_AWARE_ROUTING_APPLIED original=%s capacity_chosen=%s candidates=%d",
+                    target_name,
+                    _capacity_chosen_route,
+                    len(_candidate_routes),
+                )
+
+                # Update target_name to capacity-chosen route
+                target_name = _capacity_chosen_route
+
+            except RoutingCapacityError as _rce:
+                Logger.warning(
+                    "CAPACITY_ROUTING_FAILED: %s, falling back to original routing",
+                    _rce,
+                )
+                # Continue with original routing - capacity failure should not block routing
+            except Exception as _cap_exc:
+                Logger.error(
+                    "CAPACITY_ROUTING_ERROR: %s, falling back to original routing",
+                    _cap_exc,
+                )
+                # Continue with original routing - capacity failure should not block routing
 
         decision = RoutingDecision(
             intent=intent,
@@ -157,6 +282,29 @@ class AgenticRouter:
                     Logger.error("agentic_router_fallback_error", extra={"error": str(exc)})
             else:
                 decision.error = f"No target for intent '{intent}' (confidence={confidence:.2f})"
+            # P2/L0: emit telemetry — route abandoned (no target matched)
+            _route_end_tick = _get_clock().now_epoch()
+            _outcome = (
+                RoutingOutcomeStatus.ROUTE_FAILED if decision.error else RoutingOutcomeStatus.ROUTE_ABANDONED
+            )
+            try:
+                record_routing_telemetry(
+                    RoutingTelemetryContext(
+                        router_id="AgenticRouter",
+                        routing_contract_id=_routing_contract_id,
+                        request_hash=_request_hash,
+                        candidate_routes=_candidate_routes,
+                        chosen_route=target_name or "unknown",
+                        outcome=_outcome,
+                        run_id=_rtid,
+                        trace_id=_rtid,
+                        routing_start_tick=_route_start_tick,
+                        routing_end_tick=_route_end_tick,
+                        failure_reason=decision.error or "",
+                    )
+                )
+            except Exception as _te:  # guardian: allow-silent-swallow
+                Logger.debug("agentic_router: telemetry emission failed: %s", _te)
             return decision
 
         try:
@@ -164,6 +312,55 @@ class AgenticRouter:
         except Exception as exc:  # guardian: allow-silent-swallower
             decision.error = str(exc)
             Logger.error("agentic_router_handler_error", extra={"target": target_name, "error": str(exc)})
+
+        # P2/L0: emit telemetry — success or failure
+        _route_end_tick = _get_clock().now_epoch()
+        _outcome = (
+            RoutingOutcomeStatus.ROUTE_FAILED if decision.error else RoutingOutcomeStatus.ROUTE_SUCCEEDED
+        )
+        try:
+            record_routing_telemetry(
+                RoutingTelemetryContext(
+                    router_id="AgenticRouter",
+                    routing_contract_id=_routing_contract_id,
+                    request_hash=_request_hash,
+                    candidate_routes=_candidate_routes,
+                    chosen_route=target_name or "unknown",
+                    outcome=_outcome,
+                    run_id=_rtid,
+                    trace_id=_rtid,
+                    routing_start_tick=_route_start_tick,
+                    routing_end_tick=_route_end_tick,
+                    failure_reason=decision.error or "",
+                )
+            )
+        except Exception as _te:  # guardian: allow-silent-swallow
+            Logger.debug("agentic_router: telemetry emission failed: %s", _te)
+
+        # P2/L6: Emit performance record for routing stage
+        try:
+            perf_status = StageStatus.ERROR if decision.error else StageStatus.SUCCESS
+            routing_perf = record_routing_performance(
+                run_id=_rtid,
+                trace_id=_rtid,
+                start_tick=_route_start_tick,
+                end_tick=_route_end_tick,
+                status=perf_status,
+                queue_depth=len(self._targets),  # Number of routing options
+            )
+            Logger.debug(
+                "ROUTING_PERFORMANCE_RECORD record_id=%s target=%s duration_ms=%.2f",
+                routing_perf.performance_record_id,
+                target_name,
+                routing_perf.duration_ms,
+            )
+        except Exception as _perf_exc:
+            Logger.error(
+                "ROUTING_PERFORMANCE_ERROR: %s (target=%s)",
+                _perf_exc,
+                target_name,
+            )
+            # Continue - performance failure should not block routing
 
         return decision
 

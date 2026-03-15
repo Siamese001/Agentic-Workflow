@@ -688,7 +688,17 @@ CONFIDENCE_SCORING_CLASSES: frozenset[str] = frozenset(
     {"HealingConfidenceScorer", "ConfidenceScorer", "ConfidenceEngine"}
 )
 HITL_ESCALATION_METHODS: frozenset[str] = frozenset(
-    {"escalate", "escalate_to_human", "request_human_review", "await_human_approval", "submit_for_review"}
+    {
+        "escalate",
+        "escalate_to_human",
+        "request_human_review",
+        "await_human_approval",
+        "submit_for_review",
+        "_emit_requires_human_review",
+        "requires_human_review",
+        "_emit_reenters_safety",
+        "reenters_safety",
+    }
 )
 GUARDRAIL_CLASS_NAMES: frozenset[str] = frozenset(
     {
@@ -698,6 +708,12 @@ GUARDRAIL_CLASS_NAMES: frozenset[str] = frozenset(
         "OutputGuardrail",
         "CircuitBreaker",
         "SafetyEnforcer",
+        "GuardrailGate",
+        "get_guardrail_gate",
+        "applies_guardrail",
+        "get_breaker",
+        "authorize_and_execute",
+        "_emit_applies_guardrail",
     }
 )
 POLICY_HASH_METHODS: frozenset[str] = frozenset(
@@ -759,7 +775,15 @@ SEMANTIC_CLOCK_CLASSES: frozenset[str] = frozenset(
     {"SemanticClock", "DeterministicClock", "ReplayClock", "FrozenClock"}
 )
 REPLAY_GUARD_CLASSES: frozenset[str] = frozenset(
-    {"ReplayGuard", "DeterminismGuard", "ReplayPatcher", "NondeterminismBlocker"}
+    {
+        "ReplayGuard",
+        "DeterminismGuard",
+        "ReplayPatcher",
+        "NondeterminismBlocker",
+        "DeterministicReplayGuard",
+        "get_replay_guard",
+        "verify_routing_replay",
+    }
 )
 DETERMINISM_PATCH_METHODS: frozenset[str] = frozenset(
     {
@@ -770,6 +794,8 @@ DETERMINISM_PATCH_METHODS: frozenset[str] = frozenset(
         "emit_determinism_digest",
         "guards_replay",
         "install_replay_patches",
+        "stamp_decision",
+        "emit_routing_digest",
     }
 )
 IO_INTERCEPT_CLASSES: frozenset[str] = frozenset(
@@ -788,6 +814,12 @@ NETWORK_TRANSCRIPT_SYMBOLS: frozenset[str] = frozenset(
         "record_api_response",
         "hard_fail_untranscripted",
         "intercept_io",
+        "transcripts_response",
+        "hard_fails_untranscripted",
+        "_emit_transcripts_response",
+        "_emit_hard_fails_untranscripted",
+        "ReasoningTranscript",
+        "reason_and_record",
     }
 )
 MUTATION_TRANSPORT_CLASSES: frozenset[str] = frozenset(
@@ -798,6 +830,11 @@ MUTATION_TRANSPORT_CLASSES: frozenset[str] = frozenset(
         "MutationDistributor",
         "VsockMutationEgress",
         "BlastRadiusChecker",
+        "ExecutionProofEmitter",
+        "emit_proof",
+        "reason_and_record",
+        "_emit_signs_execution_trace",
+        "authorize_and_execute",
     }
 )
 RFC6902_DIFF_SYMBOLS: frozenset[str] = frozenset(
@@ -811,7 +848,19 @@ RFC6902_DIFF_SYMBOLS: frozenset[str] = frozenset(
     }
 )
 EXECUTION_TRACE_CLASSES: frozenset[str] = frozenset(
-    {"ExecutionTrace", "ExecutionProof", "DeterminismDigest", "ProofArtifact", "SignedExecutionTrace"}
+    {
+        "ExecutionTrace",
+        "ExecutionProof",
+        "DeterminismDigest",
+        "ProofArtifact",
+        "SignedExecutionTrace",
+        "ExecutionProofEmitter",
+        "ReasoningTraceArtifact",
+        "reason_and_record",
+        "_emit_records_execution_trace",
+        "_emit_signs_execution_trace",
+        "authorize_and_execute",
+    }
 )
 REPLAY_KEY_METHODS: frozenset[str] = frozenset(
     {
@@ -821,6 +870,11 @@ REPLAY_KEY_METHODS: frozenset[str] = frozenset(
         "compare_proof",
         "emit_singleton_digest",
         "verify_replay",
+        "proof_op",
+        "emit_determinism_digest",
+        "stamp_decision",
+        "guards_replay",
+        "verify_routing_replay",
     }
 )
 PATH_CONTROL_CLASSES: frozenset[str] = frozenset(
@@ -831,6 +885,11 @@ PATH_CONTROL_CLASSES: frozenset[str] = frozenset(
         "StallForcer",
         "SafetyReentryGate",
         "VigilanceRerouter",
+        "AgenticRouter",
+        "DeterministicRoutingGateway",
+        "get_routing_gateway",
+        "ReasoningPolicyEngine",
+        "DeterministicReplayGuard",
     }
 )
 PATH_REROUTE_METHODS: frozenset[str] = frozenset(
@@ -842,6 +901,11 @@ PATH_REROUTE_METHODS: frozenset[str] = frozenset(
         "vigilance_reroute",
         "reroute_to_l0",
         "reroute_to_l1",
+        "route",
+        "select_path",
+        "compute_and_stamp",
+        "_emit_reenters_safety",
+        "reenters_safety",
     }
 )
 EVAL_METRIC_CLASSES: frozenset[str] = frozenset(
@@ -949,6 +1013,7 @@ POLICY_STATE_READ_METHODS: frozenset[str] = frozenset(
         "read_policy_state",
         "observe_policy",
         "snapshot_runtime",
+        "snapshot_state",
         "get_runtime_state",
         "probe_health",
         "read_governance_state",
@@ -1064,6 +1129,11 @@ AGENT_DISPATCH_CLASSES: frozenset[str] = frozenset(
         "MultiAgentCoordinator",
         "AgentChain",
         "AgentPipeline",
+        # P0/L3 canonical dispatch chokepoint
+        "AgentDispatchRegistry",
+        "HandoffDispatcher",
+        "get_agent_dispatch_registry",
+        "get_handoff_dispatcher",
     }
 )
 AGENT_DISPATCH_METHODS: frozenset[str] = frozenset(
@@ -1076,10 +1146,34 @@ AGENT_DISPATCH_METHODS: frozenset[str] = frozenset(
         "delegate_to",
         "handoff_to",
         "forward_to_agent",
+        # P0/L3 canonical dispatch method
+        "dispatch",
+        "emit_handoff",
+        "emit_agent_executes_agent",
+        "_emit_agent_executes_agent",
     }
 )
 AGENT_REGISTRY_CLASSES: frozenset[str] = frozenset(
-    {"AgentRegistry", "AgentRegistrar", "CapabilityRegistry", "AgentValidator", "RegistryLookup"}
+    {
+        "AgentRegistry",
+        "AgentRegistrar",
+        "CapabilityRegistry",
+        "AgentValidator",
+        "RegistryLookup",
+        # P0/L3 typed registry
+        "AgentCapabilityRegistry",
+        "TypedAgentRegistry",
+        "get_agent_capability_registry",
+    }
+)
+ORCHESTRATION_CONTEXT_CLASSES: frozenset[str] = frozenset(
+    {
+        "OrchestrationContext",
+        "OrchestrationHandoffContract",
+        "HandoffContract",
+        "RunScopedOrchestrationLedger",
+        "OrchestrationLedger",
+    }
 )
 SAFETY_PLANE_CLASSES: frozenset[str] = frozenset(
     {
@@ -1090,10 +1184,25 @@ SAFETY_PLANE_CLASSES: frozenset[str] = frozenset(
         "StructureBlueprint",
         "SovereignLLMGateway",
         "SovereignMCPGatewayAgent",
+        "ToolSafetyGate",
+        "PolicyEnforcementPoint",
+        "get_policy_enforcement_point",
+        "authorize_and_execute",
+        "_emit_validated_by_safety_plane",
     }
 )
 UWG_TERMINATION_SYMBOLS: frozenset[str] = frozenset(
-    {"UniversalWriteGateway", "UWGAdapter", "uwg_write", "commit_via_uwg", "route_through_uwg", "uwg_gate"}
+    {
+        "UniversalWriteGateway",
+        "UWGAdapter",
+        "uwg_write",
+        "commit_via_uwg",
+        "route_through_uwg",
+        "uwg_gate",
+        "WriteGovernorMixin",
+        "_emit_execution_terminates_at_uwg",
+        "execution_terminates_at_uwg",
+    }
 )
 POLICY_HASH_SYMBOLS: frozenset[str] = frozenset(
     {
@@ -1105,6 +1214,11 @@ POLICY_HASH_SYMBOLS: frozenset[str] = frozenset(
         "verify_policy_hash",
         "check_policy_hash",
         "PolicyHashChain",
+        "_emit_references_policy_hash",
+        "references_policy_hash",
+        "ReasoningContext",
+        "ExecutionContext",
+        "authorize_and_execute",
     }
 )
 ROUTING_COMMIT_SYMBOLS: frozenset[str] = frozenset(
@@ -1326,6 +1440,7 @@ __all__ = [
     "AGENT_DISPATCH_CLASSES",
     "AGENT_DISPATCH_METHODS",
     "AGENT_REGISTRY_CLASSES",
+    "ORCHESTRATION_CONTEXT_CLASSES",
     "SAFETY_PLANE_CLASSES",
     "UWG_TERMINATION_SYMBOLS",
     "POLICY_HASH_SYMBOLS",

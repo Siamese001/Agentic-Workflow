@@ -2,8 +2,9 @@ from __future__ import annotations
 
 "\nReasoning Node - Sub-atomic Thought Generation\n\nHandles reasoning strategy selection, thought generation, and planning.\nIntegrates Phase 1-3 optimizations (caching, pruning, adaptive planning).\n"
 import asyncio
-import time
 from typing import Any
+
+from agentic_core.L2_execution.providers import get_clock
 
 
 class ReasoningNode:
@@ -33,11 +34,11 @@ class ReasoningNode:
         Returns:
             Reasoning result with thoughts and plan
         """
-        start_time = time.time()
+        start_time = get_clock().now_epoch()
         strategy = self._select_strategy(perceived["intent"])
         thoughts = self._generate_thoughts(perceived["query"], strategy, perceived)
         plan = self._generate_plan(thoughts, perceived)
-        reasoning_time = time.time() - start_time
+        reasoning_time = get_clock().now_epoch() - start_time
         self.total_reasoning_time += reasoning_time
         reasoning = {
             "thoughts": thoughts,
@@ -58,11 +59,11 @@ class ReasoningNode:
         Returns:
             Reasoning result
         """
-        start_time = time.time()
+        start_time = get_clock().now_epoch()
         strategy = self._select_strategy(perceived["intent"])
         thoughts = await asyncio.to_thread(self._generate_thoughts, perceived["query"], strategy, perceived)
         plan = await asyncio.to_thread(self._generate_plan, thoughts, perceived)
-        reasoning_time = time.time() - start_time
+        reasoning_time = get_clock().now_epoch() - start_time
         self.total_reasoning_time += reasoning_time
         reasoning = {
             "thoughts": thoughts,

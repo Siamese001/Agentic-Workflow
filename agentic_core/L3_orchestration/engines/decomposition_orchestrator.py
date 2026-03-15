@@ -17,14 +17,15 @@ import json
 import logging
 import uuid
 from collections.abc import Awaitable, Callable
-from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L2_execution.enforcement.runtime_guard import runtime_guard
 from agentic_core.runtime.trace_context import get_trace_context
+
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.L3_orchestration.contracts.orchestration_handoff_contract import emit_agent_executes_agent
 from agentic_core.utils.timeout_decorator_util import timeout
 
 _logger = logging.getLogger(__name__)
@@ -439,6 +440,11 @@ class WorkerPool:
         """Dispatch all tasks in a MissionPlan sequentially (respects order)."""
         results: list[WorkerResult] = []
         for task in plan.tasks:
+            emit_agent_executes_agent(
+                parent_agent_id="decomposition_orchestrator",
+                child_agent_id=task.target_agent,
+                stage=task.task_id,
+            )
             result = await self.dispatch(task)
             results.append(result)
         return results

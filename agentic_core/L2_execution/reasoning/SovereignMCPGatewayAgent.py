@@ -13,10 +13,10 @@ SovereignMCPGateway - Unified MCP Operations Gateway
 from __future__ import annotations
 
 import logging
-import time
 from dataclasses import dataclass
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.L2_execution.providers import get_clock
 
 Logger = logging.getLogger(__name__)
 
@@ -47,7 +47,7 @@ class SovereignMCPGateway(SovereignBaseAgent):
         if not hasattr(self, "audit_log"):
             self.audit_log = []
         self.audit_log.append(
-            {"op": operation, "success": success, "latency_ms": latency_ms, "ts": time.time()}
+            {"op": operation, "success": success, "latency_ms": latency_ms, "ts": get_clock().now_epoch()}
         )
         self.operation_stats["total"] += 1
         if not success:
@@ -61,7 +61,7 @@ class SovereignMCPGateway(SovereignBaseAgent):
         Route LLM request with fallback and retry.
         [PHASE 3] Absorbed from llm_router_mcp_client.py
         """
-        start = time.time()
+        start = get_clock().now_epoch()
         try:
             result = await self._hardened_call(
                 "llm_route",
@@ -69,11 +69,11 @@ class SovereignMCPGateway(SovereignBaseAgent):
                 tool_name="llm_route",
                 args={"prompt": prompt, "model": model, **kwargs},
             )
-            latency = (time.time() - start) * 1000
+            latency = (get_clock().now_epoch() - start) * 1000
             self._audit("llm_route", True, latency)
             return result
         except Exception as e:
-            latency = (time.time() - start) * 1000
+            latency = (get_clock().now_epoch() - start) * 1000
             self._audit("llm_route", False, latency)
             Logger.error(f"[MCP Gateway] LLM Route failed: {e}")
             raise
@@ -84,7 +84,7 @@ class SovereignMCPGateway(SovereignBaseAgent):
         Query knowledge graph with caching.
         [PHASE 3] Absorbed from knowledge_graph_sovereign_graph_client.py
         """
-        start = time.time()
+        start = get_clock().now_epoch()
         try:
             result = await self._hardened_call(
                 "kg_query",
@@ -92,11 +92,11 @@ class SovereignMCPGateway(SovereignBaseAgent):
                 tool_name="kg_query",
                 args={"query": query, **kwargs},
             )
-            latency = (time.time() - start) * 1000
+            latency = (get_clock().now_epoch() - start) * 1000
             self._audit("kg_query", True, latency)
             return result
         except Exception as e:
-            latency = (time.time() - start) * 1000
+            latency = (get_clock().now_epoch() - start) * 1000
             self._audit("kg_query", False, latency)
             Logger.error(f"[MCP Gateway] KG Query failed: {e}")
             raise
@@ -107,7 +107,7 @@ class SovereignMCPGateway(SovereignBaseAgent):
         Execute archive operation.
         [PHASE 3] Absorbed from archive_client.py
         """
-        start = time.time()
+        start = get_clock().now_epoch()
         try:
             result = await self._hardened_call(
                 "archive_op",
@@ -115,11 +115,11 @@ class SovereignMCPGateway(SovereignBaseAgent):
                 tool_name="archive_op",
                 args={"operation": operation, **kwargs},
             )
-            latency = (time.time() - start) * 1000
+            latency = (get_clock().now_epoch() - start) * 1000
             self._audit("archive_op", True, latency)
             return result
         except Exception as e:
-            latency = (time.time() - start) * 1000
+            latency = (get_clock().now_epoch() - start) * 1000
             self._audit("archive_op", False, latency)
             Logger.error(f"[MCP Gateway] Archive Op failed: {e}")
             raise
