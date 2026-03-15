@@ -56,6 +56,7 @@ from agentic_core.L5_safety.utils.location_constants_util import (
 from agentic_core.L5_safety.utils.location_utils_util import (
     compute_module_path,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.utils.timeout_decorator_util import timeout
 
 
@@ -215,6 +216,9 @@ class LocationHealerAgent(SovereignBaseAgent):
         Returns:
             HealResult with violations_found, violations_fixed, status, errors, metadata.
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "LocationHealerAgent.heal")
         start_time = time.time()
 
         file_path = violation.get("file")

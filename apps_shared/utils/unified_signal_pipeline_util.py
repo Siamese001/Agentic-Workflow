@@ -24,6 +24,7 @@ from .hyde_processor import HyDEProcessor
 from .prompt_optimizer import PromptOptimizer, optimize_prompt
 from .rag_components import KnowledgeGraphInjector, SelfRAGProcessor, semantic_cache
 from .signal_infrastructure import DomainConfig, EngineType, get_shared_infrastructure
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from .signal_quality_pipeline import SignalQualityPipeline
 from .tone_model import ToneModel, adapt_tone
 
@@ -61,6 +62,9 @@ class PipelineContext:
         Returns:
             cache key
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"PipelineContext.get_cache_key:{component}")
         content = json.dumps(data, sort_keys=True, default=str)
         hash_key = hashlib.sha256(f"{component}:{content}".encode()).hexdigest()[:16]
         self.cache_keys.add(hash_key)
