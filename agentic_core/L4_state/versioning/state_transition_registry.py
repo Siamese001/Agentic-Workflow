@@ -54,6 +54,8 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
 logger = logging.getLogger(__name__)
 _TRANSITION_LOG = logging.getLogger("adg.state_transition_committed")
 _SNAPSHOT_LOG = logging.getLogger("adg.snapshots_state")
@@ -339,6 +341,9 @@ class StateVersionRegistry:
         new_version: int,
     ) -> None:
         """Write value with assigned version (internal use)."""
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"VersionedStateRegistry.write_versioned:{state_namespace}/{key}")
         with self._lock:
             if state_namespace not in self._state:
                 self._state[state_namespace] = {}

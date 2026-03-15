@@ -41,6 +41,8 @@ import uuid
 from dataclasses import dataclass, field
 from typing import Any, Callable
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
 logger = logging.getLogger(__name__)
 _TRACE_LOG = logging.getLogger("adg.records_execution_trace")
 _GUARDRAIL_LOG = logging.getLogger("adg.applies_guardrail")
@@ -266,11 +268,14 @@ class TypedToolRegistry:
 
     def register(self, entry: ToolRegistryEntry) -> None:
         """Register a tool entry. Re-registration of same name+version overwrites."""
+        import uuid  # noqa: PLC0415
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"TypedToolRegistry.register:{entry.tool_name}")
         with self._lock:
             self._entries[(entry.tool_name, entry.tool_version)] = entry
 
     def get(self, tool_name: str, tool_version: str = "latest") -> ToolRegistryEntry | None:
         """Lookup by (name, version). 'latest' returns highest lexicographic version."""
+        # ... (rest of the code remains the same)
         with self._lock:
             if tool_version == "latest":
                 candidates = [e for (n, v), e in self._entries.items() if n == tool_name]

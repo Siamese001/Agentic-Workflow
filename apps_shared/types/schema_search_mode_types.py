@@ -8,6 +8,8 @@ Follows the functional component pattern with proper logging.
 import logging
 from datetime import datetime
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
 logger = logging.getLogger(__name__)
 
 
@@ -101,6 +103,9 @@ class SchemaVectorSearcher:
         Returns:
             SchemaSearchResult: Search results with similarity scores
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"SchemaVectorSearchEngine.search_schema_vectors:{query.search_mode}")
         self.logger.info(f"Searching schema vectors with mode: {query.search_mode.value}")
         start_time = datetime.utcnow()
         try:
