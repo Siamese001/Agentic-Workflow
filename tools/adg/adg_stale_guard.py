@@ -190,10 +190,24 @@ def _cli() -> None:
     )
     args = parser.parse_args()
 
+    import redis as _redis
+
     try:
         adg = ADGRedisClient()
         adg.ping()
+    except _redis.ConnectionError as exc:
+        if args.warn:
+            print(
+                f"[adg-stale-guard] WARNING: Redis unavailable — cannot check ADG staleness: {exc}",
+                file=sys.stderr,
+            )
+            sys.exit(0)
+        print(f"ERROR: Redis unavailable: {exc}", file=sys.stderr)
+        sys.exit(1)
     except RuntimeError as exc:
+        if args.warn:
+            print(f"[adg-stale-guard] WARNING: {exc}", file=sys.stderr)
+            sys.exit(0)
         print(f"ERROR: {exc}", file=sys.stderr)
         sys.exit(1)
 
@@ -201,6 +215,9 @@ def _cli() -> None:
     try:
         result = checker.check()
     except RuntimeError as exc:
+        if args.warn:
+            print(f"[adg-stale-guard] WARNING: {exc}", file=sys.stderr)
+            sys.exit(0)
         print(f"ERROR: {exc}", file=sys.stderr)
         sys.exit(1)
 

@@ -30,14 +30,22 @@ If exit code 2, Redis could not be started automatically. Manual intervention re
 
 ## STEP 1: Check Redis cache staleness
 
+**Use the canonical staleness guard (Accelerator #2) — never inline Redis queries:**
+
 // turbo
 ```
-python -c "import redis, os; r = redis.Redis(host='localhost', port=6379, db=0, decode_responses=True); meta = r.hgetall('adg:meta'); print('Cache timestamp:', meta.get('timestamp','MISSING')); print('Node count:', meta.get('node_count','MISSING')); print('Edge count:', meta.get('edge_count','MISSING')); print('Digest:', meta.get('digest','MISSING')[:16] if meta.get('digest') else 'MISSING')"
+python tools/adg/adg_stale_guard.py --json
 ```
 
-If `MISSING` → cache is cold, proceed directly to STEP 3.
-If timestamp is stale vs. recent code changes → proceed to STEP 2.
-If timestamp matches current ADG artifacts → **STOP**, cache is hot.
+Interpret output:
+- `"is_stale": false` → cache is FRESH → **SKIP to STEP 5**
+- `"is_stale": true` → cache is STALE → continue to STEP 2; `changed_files` lists what changed
+- Exit 1 (Redis unavailable) → start Redis first, then retry
+
+To list exactly which files changed since last ingest:
+```
+python tools/adg/adg_stale_guard.py --files
+```
 
 ---
 
@@ -90,8 +98,31 @@ python -c "import redis, json; r = redis.Redis(host='localhost', port=6379, db=0
 
 ## STEP 5: Confirm ADG is driving queries
 
-From this point all analysis queries use Redis Tier-1 lookups via `tools/adg/adg_redis_query.py`:
+From this point all analysis queries use Redis Tier-1 lookups via `tools/adg/adg_redis_query.py`.
 
+**Accelerator #3 — Use `search-nodes` with layer and entity_type filters (never raw Redis inline):**
+```
+# Find all agents in L3:
+python tools/adg/adg_redis_query.py search-nodes --query Agent --layer L3
+
+# Find class nodes only:
+python tools/adg/adg_redis_query.py search-nodes --query Orchestrator --entity-type class
+
+# Combined filter:
+python tools/adg/adg_redis_query.py search-nodes --query Checker --layer L5 --entity-type class
+```
+
+**Accelerator #5 — Use `adg_test_selector.py` to select tests for changed files:**
+```
+python tools/adg/adg_test_selector.py --from-diff
+```
+
+**Accelerator #4 — Use `adg_type_check.py` for incremental type checking:**
+```
+python tools/adg/adg_type_check.py --from-diff
+```
+
+Raw Redis key reference:
 - `adg:node:<id>` — node details by integer ID
 - `adg:nodes:by_layer:<layer>` — all node IDs in a layer (L0–L_UNKNOWN)
 - `adg:nodes:by_file:<resolved_path>` — all node IDs for a file
@@ -123,7 +154,11 @@ The ingest script (`tools/adg/adg_redis_ingest.py`) auto-detects staleness by co
 ## References
 
 - Ingest script: `tools/adg/adg_redis_ingest.py`
-- Query helper: `tools/adg/adg_redis_query.py`
+- Query helper: `tools/adg/adg_redis_query.py` (Accelerator #3: `search-nodes --layer --entity-type`)
+- Staleness guard: `tools/adg/adg_stale_guard.py` (Accelerator #2)
+- Test selector: `tools/adg/adg_test_selector.py` (Accelerator #5)
+- Type checker: `tools/adg/adg_type_check.py` (Accelerator #4)
+- Anti-pattern fixer: `tools/adg/adg_antipattern_fixer.py` (Accelerator #1)
 - ADG artifacts: `artifacts/adg/`
 - ADG regeneration: `tools/generate_full_adg.py`
 - Memory: ADG Pre-Ingest Rule (MEMORY[1c4e46e0])

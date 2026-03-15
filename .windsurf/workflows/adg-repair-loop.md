@@ -6,13 +6,15 @@ description: ADG-controlled repair loop - strictly graph-first, no full-suite ru
 
 This workflow enforces §ADG-1. Invoke with `/adg-repair-loop`.
 
-### STEP 0: Verify ADG Redis cache is hot
+### STEP 0: Verify ADG Redis cache is hot and fresh
 // turbo
 ```
-python -c "import redis; r = redis.Redis(host='localhost', port=6379, db=0, decode_responses=True); meta = r.hgetall('adg:meta'); print('ADG cache timestamp:', meta.get('timestamp','MISSING')); print('Nodes:', meta.get('node_count','MISSING')); print('Keys total:', r.dbsize())"
+python tools/adg/adg_stale_guard.py --json
 ```
 
-If `MISSING` or `node_count` < 8000 → run `/adg-redis-refresh` before continuing.
+- `"is_stale": false` + ingest_time present → cache is HOT and FRESH → continue
+- `"is_stale": true` → run `/adg-redis-refresh` (STEP 2+3) before continuing
+- Exit 1 (Redis unavailable) → start Redis: `redis-server` then run `/adg-redis-refresh`
 
 ### STEP 1: Load current cluster state
 // turbo
@@ -20,12 +22,24 @@ If `MISSING` or `node_count` < 8000 → run `/adg-redis-refresh` before continui
 python -c "import json; from pathlib import Path; f = Path('artifacts/adg_failure_clusters.json'); data = json.loads(f.read_text(encoding='utf-8')); clusters = data.get('top_clusters', []); print(f'Total clusters: {len(clusters)}'); [print(f\"  [{i}] {c.get('root_module','?')} tests={len(c.get('covering_tests',[]))} risk={c.get('risk_score',0)}\") for i, c in enumerate(clusters[:10])]"
 ```
 
-### STEP 2: Run scoped tests for top cluster (identify actual failures)
+### STEP 2: Select scoped tests via ADG (Accelerator #5) and run them
+
+**Always use `adg_test_selector.py` — never manually expand test paths:**
 // turbo
 ```
-python -m pytest <CLUSTER_TEST_FILES> --tb=short -q --no-header
+python tools/adg/adg_test_selector.py --from-diff
 ```
-Replace `<CLUSTER_TEST_FILES>` with the covering_tests from cluster[0].
+
+This emits exact `pytest` nodeids derived from ADG `covers` edges for all files changed since HEAD. Copy the emitted command and run it:
+// turbo
+```
+python -m pytest <EMITTED_NODEIDS> --tb=short -q --no-header
+```
+
+If the cluster root module is known (from STEP 1), target it directly:
+```
+python tools/adg/adg_test_selector.py <root_module_file>
+```
 
 **STOP HERE** — Read actual failure messages before editing anything.
 
@@ -46,13 +60,20 @@ If any answer is missing → rebuild ADG: `python tools/adg_semantic_builder.py 
 - Fix the definition, not the call sites
 - No changes to test files unless the test itself has a missing import that is the root cause
 
-### STEP 5: Refresh ADG Redis after fix
+### STEP 5: Refresh ADG Redis after fix, then verify staleness and type-check blast radius
 // turbo
 ```
 python tools/adg/adg_redis_ingest.py
 ```
 
 Staleness guard auto-skips if sqlite is unchanged. If `generate_full_adg.py` was run as part of the fix, use `--force` instead.
+
+**After ingest — run incremental type check over the blast radius (Accelerator #4):**
+```
+python tools/adg/adg_type_check.py --from-diff
+```
+
+Fix any type errors before moving to STEP 6.
 
 ### STEP 6: Verify with scoped rerun
 // turbo

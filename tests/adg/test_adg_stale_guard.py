@@ -250,3 +250,97 @@ class TestAssertFresh:
         ):
             with pytest.raises(RuntimeError, match="adg_redis_ingest"):
                 checker.assert_fresh()
+
+
+# ===========================================================================
+# CLI — Redis unavailability in --warn mode (regression gate for pre-commit)
+# ===========================================================================
+
+
+class TestCLIRedisUnavailable:
+    """Gate: pre-commit T3g hook must exit 0 when Redis is down (warn mode).
+
+    Tests run _cli() in-process with patched sys.argv to verify exact exit
+    codes via SystemExit, so mocks apply correctly to the same process.
+    """
+
+    def _call_cli(self, args: list[str]) -> tuple[int, str]:
+        """Invoke _cli() in-process with patched argv. Returns (exit_code, stderr)."""
+        import io
+
+        from tools.adg.adg_stale_guard import _cli
+
+        captured_err = io.StringIO()
+        with (
+            patch("sys.argv", ["adg_stale_guard"] + args),
+            patch("sys.stderr", captured_err),
+        ):
+            try:
+                _cli()
+                return 0, captured_err.getvalue()
+            except SystemExit as exc:
+                code = exc.code if isinstance(exc.code, int) else int(exc.code or 0)
+                return code, captured_err.getvalue()
+
+    def test_warn_mode_exits_0_on_redis_connection_error(self):
+        """--warn exits 0 even when redis raises ConnectionError."""
+        import redis
+
+        with patch("tools.adg.adg_stale_guard.ADGRedisClient") as mock_cls:
+            mock_instance = MagicMock()
+            mock_instance.ping.side_effect = redis.ConnectionError("Connection refused")
+            mock_cls.return_value = mock_instance
+            code, _ = self._call_cli(["--warn"])
+        assert code == 0, f"--warn must exit 0 when Redis is down; got {code}"
+
+    def test_warn_mode_exits_0_on_runtime_error(self):
+        """--warn exits 0 when ADG cache is not loaded (RuntimeError from ping)."""
+        with patch("tools.adg.adg_stale_guard.ADGRedisClient") as mock_cls:
+            mock_instance = MagicMock()
+            mock_instance.ping.side_effect = RuntimeError("ADG Redis cache is not loaded")
+            mock_cls.return_value = mock_instance
+            code, _ = self._call_cli(["--warn"])
+        assert code == 0, f"--warn must exit 0 on RuntimeError; got {code}"
+
+    def test_strict_mode_exits_1_on_redis_connection_error(self):
+        """Without --warn, redis.ConnectionError must exit 1 (fail-closed)."""
+        import redis
+
+        with patch("tools.adg.adg_stale_guard.ADGRedisClient") as mock_cls:
+            mock_instance = MagicMock()
+            mock_instance.ping.side_effect = redis.ConnectionError("Connection refused")
+            mock_cls.return_value = mock_instance
+            code, _ = self._call_cli([])
+        assert code == 1, f"Strict mode must exit 1 when Redis is down; got {code}"
+
+    def test_warn_mode_prints_warning_to_stderr(self):
+        """--warn prints a human-readable WARNING message when Redis is unavailable."""
+        import redis
+
+        with patch("tools.adg.adg_stale_guard.ADGRedisClient") as mock_cls:
+            mock_instance = MagicMock()
+            mock_instance.ping.side_effect = redis.ConnectionError("Connection refused")
+            mock_cls.return_value = mock_instance
+            _, stderr = self._call_cli(["--warn"])
+        assert "WARNING" in stderr, f"--warn must emit a WARNING message to stderr; got {stderr!r}"
+
+    def test_warn_mode_exits_0_when_stale(self):
+        """--warn exits 0 even when ADG is genuinely stale (non-blocking)."""
+        from tools.adg.adg_stale_guard import ADGStalenessChecker, StalenessResult
+
+        stale_result = StalenessResult(
+            is_stale=True,
+            ingest_time=1000000000.0,
+            last_commit_time=1000100000.0,
+            changed_files=["foo.py"],
+            message="ADG is STALE",
+        )
+        with (
+            patch("tools.adg.adg_stale_guard.ADGRedisClient") as mock_cls,
+            patch.object(ADGStalenessChecker, "check", return_value=stale_result),
+        ):
+            mock_instance = MagicMock()
+            mock_instance.ping.return_value = True
+            mock_cls.return_value = mock_instance
+            code, _ = self._call_cli(["--warn"])
+        assert code == 0, f"--warn must exit 0 even when stale; got {code}"

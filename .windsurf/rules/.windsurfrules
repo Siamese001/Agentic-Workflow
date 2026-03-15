@@ -75,7 +75,18 @@ For ANY code investigation, analysis, or modification task, Windsurf MUST:
 
 ### 1.3 Test Selection & Execution
 
-**Graph-backed test selection:** Test selection MUST be dependency-graph-backed. For every changed production file, identify tests via: direct test imports, fixture dependency edges, integration entrypoint coverage, registry/factory reachability, CLI-to-function reachability. Filename similarity is not sufficient. No test edge found = coverage gap to fix, not proof no tests are needed.
+**Graph-backed test selection:** Test selection MUST be dependency-graph-backed via **`tools/adg/adg_test_selector.py`** (Accelerator #5). For every changed production file, identify tests via: direct test imports, fixture dependency edges, integration entrypoint coverage, registry/factory reachability, CLI-to-function reachability. Filename similarity is not sufficient. No test edge found = coverage gap to fix, not proof no tests are needed.
+
+**Canonical test selection command:**
+```
+# For git diff (changed files since HEAD):
+python tools/adg/adg_test_selector.py --from-diff
+
+# For specific files:
+python tools/adg/adg_test_selector.py <file> [<file> ...]
+
+# Output: exact pytest nodeids ready to run
+```
 
 **NodeID-first testing discipline:** When ADG provides exact test nodeids → run those nodeids first. File-level fallback ONLY when nodeid extraction fails. Directory-level ONLY in final full-suite run. Any fallback MUST be recorded as `## SCOPE_LOSSINESS` in evidence.
 
@@ -225,7 +236,9 @@ Every meaningful code change MUST include `## DEPENDENCY_GRAPH` section with: gr
 
 **Four proofs required before every repair edit:** scope, cause, proof surface, dependency justification.
 
-**ADG artifact freshness gate:** Repair BLOCKED if `adg_failure_clusters.json`, `adg_semantic_graph.json`, or `adg_test_surface_map.json` are missing or older than the current failure run. Rebuild before proceeding.
+**ADG artifact freshness gate:** Repair BLOCKED if `adg_failure_clusters.json`, `adg_semantic_graph.json`, or `adg_test_surface_map.json` are missing or older than the current failure run. Rebuild before proceeding. Check freshness with **`python tools/adg/adg_stale_guard.py`** (Accelerator #2) before any repair session.
+
+**Incremental type checking:** Before and after every repair, run **`python tools/adg/adg_type_check.py --from-diff`** (Accelerator #4) to catch type regressions in the blast radius without running full mypy.
 
 **Failure capture (required before any edit — Gate G1):** For every failing test, capture before any code edit:
 - `nodeid`, `exception_type`, `exception_message` (first 200 chars)
@@ -252,6 +265,32 @@ Every meaningful code change MUST include `## DEPENDENCY_GRAPH` section with: gr
 Class unclear → STOP. Emit as UNRESOLVED. Do not proceed.
 
 Commit message footer MUST include: `repair_class: <class>`
+
+### 2.6 ADG Accelerator Tools — Primary Defaults
+
+These five tools MUST be used as the primary default for their respective tasks. Bypassing them in favour of raw Redis commands, grep, full-suite mypy, or manual test selection is a §2.3 violation.
+
+| # | Tool | Primary task | CLI |
+|---|------|-------------|-----|
+| 1 | `tools/adg/adg_antipattern_fixer.py` | Fix non-canonical `# guardian:` comments | `--staged` / `--from-diff` / `<files>` |
+| 2 | `tools/adg/adg_stale_guard.py` | Assert ADG freshness before any query session | `--json` / `--warn` / `--files` |
+| 3 | `tools/adg/adg_redis_query.py` | Search ADG nodes with layer & entity_type filters | `search-nodes --query <q> [--layer L3] [--entity-type class]` |
+| 4 | `tools/adg/adg_type_check.py` | Incremental type checking scoped to blast radius | `--from-diff` / `<files>` |
+| 5 | `tools/adg/adg_test_selector.py` | Select exact pytest nodeids via ADG `covers` edges | `--from-diff` / `<files>` |
+
+**Integration points (automatically enforced):**
+- Pre-commit T2c: `adg_antipattern_fixer.py --staged` runs on every commit (no Redis needed)
+- Pre-commit T3g: `adg_stale_guard.py --warn` runs on every commit (non-blocking; warns when stale)
+- CI workflow `adg-antipattern-ci.yml`: `adg_antipattern_fixer.py --check-only` blocks PRs with violations
+- Workflow `/adg-redis-refresh` STEP 1: uses `adg_stale_guard.py --json`
+- Workflow `/adg-repair-loop` STEP 0: uses `adg_stale_guard.py`; STEP 2: uses `adg_test_selector.py --from-diff`
+
+**Forbidden substitutions:**
+- ❌ `python -c "import redis; r = redis.Redis(...); r.hgetall('adg:meta')"` → use `adg_stale_guard.py`
+- ❌ `grep -r ClassName .` → use `adg_redis_query.py search-nodes`
+- ❌ `python -m mypy <entire_package>` → use `adg_type_check.py --from-diff`
+- ❌ `pytest tests/` (broad) before convergence → use `adg_test_selector.py --from-diff`
+- ❌ Manually editing guardian comments → let pre-commit T2c fix them automatically
 
 ---
 

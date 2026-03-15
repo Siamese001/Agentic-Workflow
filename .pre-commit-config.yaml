@@ -155,6 +155,24 @@ repos:
         exclude: ops_scripts/ci/check_anti_patterns\.py
 
   # ============================================================================
+  # TIER 2 (continued): ADG Accelerator Auto-Fixers
+  # Runs after ruff-format so formatting is canonical before guardian fixes.
+  # ============================================================================
+  - repo: local
+    hooks:
+      # -- T2c: Guardian Comment Auto-Fix (Accelerator #1) ----------------------
+      # Fixes non-canonical guardian comment format in staged files.
+      # Canonical form: # guardian: allow-<type> -- <justification>
+      # No Redis dependency — runs on raw source. Always exit 0 (auto-fixer).
+      - id: guardian-comment-fixer
+        name: "T2c: Guardian Comment Auto-Fix (Accelerator #1)"
+        entry: python tools/adg/adg_antipattern_fixer.py --staged
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+
+  # ============================================================================
   # TIER 3: Logic Analysis, Structural Checks, Guard & Cleanup (local hooks)
   # All hooks below share this single `repo: local` block.
   # ============================================================================
@@ -238,6 +256,18 @@ repos:
         always_run: true
         require_serial: true
         stages: [manual]
+
+      # -- T3g: ADG Staleness Guard (Accelerator #2) ----------------------------
+      # Warns when ADG Redis cache is stale vs. latest Python commits.
+      # --warn mode: always exits 0 (non-blocking); works without Redis in CI.
+      # Developers: run without --warn to get exit-1 enforcement locally.
+      - id: adg-stale-guard
+        name: "T3g: ADG Staleness Guard (Accelerator #2)"
+        entry: python tools/adg/adg_stale_guard.py --warn
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
 
       # -- T3b: Report location SSOT (staged-only, structural) ------------------
       - id: check-report-location
