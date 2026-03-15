@@ -8,6 +8,7 @@ metrics (Revenue, OpEx, Retention).
 import logging
 import re
 from enum import Enum
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from typing import Any
 
 from pydantic import BaseModel, Field, validator
@@ -130,6 +131,9 @@ class MetricAugmenter:
         Returns:
             AugmentedBullet with business impact
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "MetricAugmenter.augment_bullet")
         try:
             technical_metrics = self._detect_metrics(bullet_text)
             if not technical_metrics:

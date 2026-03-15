@@ -8,6 +8,7 @@ the Resume Engine cites the most current and verified truth.
 import logging
 import re
 from datetime import datetime
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from typing import Any
 
 from pydantic import BaseModel, Field, confloat, validator
@@ -106,6 +107,9 @@ class EvidenceRanker:
         Returns:
             List of RankedEvidence sorted by final_score descending
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "EvidenceRanker.rank_evidence")
         try:
             if current_year:
                 self.current_year = current_year
