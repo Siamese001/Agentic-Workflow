@@ -16,9 +16,14 @@ from typing import Any, Protocol
 
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
     _emit_records_execution_trace,
     _emit_signs_execution_trace,
+    _emit_snapshots_state,  # noqa: E402
 )
+
+_emit_applies_guardrail("p0", "chaos_healing_integration_types", "p0_governance")
+_emit_snapshots_state("p0", "chaos_healing_integration_types", "state_snapshot")
 
 Logger = logging.getLogger(__name__)
 
@@ -87,9 +92,11 @@ class ChaosResilienceStrategy:
             True if this strategy can handle the violation type
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "ChaosResilienceStrategy.can_heal")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:ChaosResilienceStrategy.can_heal".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 

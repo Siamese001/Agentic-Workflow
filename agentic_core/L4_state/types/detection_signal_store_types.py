@@ -12,10 +12,27 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 
 def _get_detection_signal_class():
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "_get_detection_signal_class", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "_get_detection_signal_class", "p0_governance")
     from agentic_core.L6_observability.types.detection_signal_types import DetectionSignal
 
     return DetectionSignal
@@ -54,6 +71,7 @@ class DetectionSignalStore:
         last stored tick (monotonicity enforcement).
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "DetectionSignalStore.store")
 

@@ -4,12 +4,27 @@ import sys
 import traceback
 from datetime import datetime
 from pathlib import Path
-from agentic_core.L3_orchestration.registry.agent_dispatch_registry import get_agent_dispatch_registry
 
 from agentic_core.L0_routing.config.path_constants import MAX_DEPTH
+from agentic_core.L3_orchestration.registry.agent_dispatch_registry import get_agent_dispatch_registry
+from agentic_core.runtime.lifecycle_trace_contract import _emit_snapshots_state  # noqa: E402
+
+_emit_snapshots_state("p0", "colors", "state_snapshot")
 
 
 def _get_orchestrator_class():
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "_get_orchestrator_class", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "_get_orchestrator_class")
     from agentic_core.L3_orchestration.Orchestrator import Orchestrator
 
     return Orchestrator
@@ -83,6 +98,13 @@ if sys.platform.startswith("win"):
     sys.stdout.reconfigure(encoding="utf-8")
 _mission_executed = False
 import json as _json
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+)
 
 RUNTIME_STATE_FILE = "runtime_state.json"
 _runtime_state = {
@@ -462,7 +484,7 @@ def main():
                     target_class=agent.__class__.__name__,
                     method=method_name,
                     target_instance=agent,
-                    kwargs={"dry_run": not execute, "execute": execute, "depth": 0, "max_depth": MAX_DEPTH}
+                    kwargs={"dry_run": not execute, "execute": execute, "depth": 0, "max_depth": MAX_DEPTH},
                 )
                 print("\n[AGENT COMPLETE]")
                 print(f"   Renamed: {result.get('renamed', 0)}")

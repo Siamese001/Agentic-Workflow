@@ -17,6 +17,10 @@ ADG edges produced:
 Usage
 -----
     from agentic_core.L2_execution.providers import get_clock, get_random
+from agentic_core.runtime.lifecycle_trace_contract import _emit_snapshots_state  # noqa: E402
+from agentic_core.runtime.lifecycle_trace_contract import _emit_applies_guardrail  # noqa: E402
+_emit_applies_guardrail("p0", "providers", "p0_governance")
+_emit_snapshots_state("p0", "providers", "state_snapshot")
 
     ts = get_clock().now_iso()          # replaces datetime.now().isoformat()
     n  = get_random().randint(0, 100)   # replaces random.randint(0, 100)
@@ -83,9 +87,7 @@ class ClockProvider(ABC):
         ts = self.now_iso()
         raw = f"{context}:{ts}"
         key = hashlib.sha256(raw.encode("utf-8")).hexdigest()
-        _REPLAY_KEY_LOGGER.debug(
-            "emits_replay_key context=%s ts=%s key=%s", context, ts, key[:16]
-        )
+        _REPLAY_KEY_LOGGER.debug("emits_replay_key context=%s ts=%s key=%s", context, ts, key[:16])
         return key
 
     def emit_determinism_digest(self, inputs: dict[str, Any]) -> str:
@@ -97,12 +99,8 @@ class ClockProvider(ABC):
 
         ts = self.now_iso()
         payload = {"clock": ts, "inputs": inputs}
-        digest = hashlib.sha256(
-            _json.dumps(payload, sort_keys=True, default=str).encode("utf-8")
-        ).hexdigest()
-        _DETERMINISM_LOGGER.debug(
-            "emits_determinism_digest ts=%s digest=%s", ts, digest[:16]
-        )
+        digest = hashlib.sha256(_json.dumps(payload, sort_keys=True, default=str).encode("utf-8")).hexdigest()
+        _DETERMINISM_LOGGER.debug("emits_determinism_digest ts=%s digest=%s", ts, digest[:16])
         return digest
 
 
@@ -130,9 +128,7 @@ class RandomProvider(ABC):
 
         ADG edge: ``seeds_rng``.
         """
-        _SEEDS_RNG_LOGGER.debug(
-            "seeds_rng context=%s seed=%s", context, self.seed_value()
-        )
+        _SEEDS_RNG_LOGGER.debug("seeds_rng context=%s seed=%s", context, self.seed_value())
 
 
 # ---------------------------------------------------------------------------
@@ -152,9 +148,11 @@ class WallClock(ClockProvider):
 
     def now(self) -> datetime:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "WallClock.now")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:WallClock.now".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
@@ -215,9 +213,7 @@ class FrozenClock(ClockProvider):
             self._frozen = frozen_time
             if self._frozen.tzinfo is None:
                 self._frozen = self._frozen.replace(tzinfo=timezone.utc)
-        _PATCHES_TIME_LOGGER.debug(
-            "patches_time frozen_clock ts=%s", self._frozen.isoformat()
-        )
+        _PATCHES_TIME_LOGGER.debug("patches_time frozen_clock ts=%s", self._frozen.isoformat())
 
     def now(self) -> datetime:
         return self._frozen
@@ -277,9 +273,11 @@ class MonotonicSequenceClock(ClockProvider):
 
     def now(self) -> datetime:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "MonotonicSequenceClock.now")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:MonotonicSequenceClock.now".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 

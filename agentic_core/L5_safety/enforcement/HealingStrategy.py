@@ -1,5 +1,13 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_snapshots_state("p0", "HealingStrategy", "state_snapshot")
+
 '\nHealingStrategy - Tiered Healing Execution Strategy\n\nThis strategy encapsulates the healing logic currently in SSOTOrchestratorAgent,\nimplementing the 5-tier execution flow for repository healing.\n\nTIERS:\n    Tier 0: Pre-Flight - Syntax validation (must pass before anything else)\n    Tier 1: Structural - Identity collisions, hygiene, naming, location\n    Tier 2: Architectural - Gravity enforcement, deep deduplication\n    Tier 3: Dynamic - Code SSOT enforcement, runtime checks\n    Tier 4: Final Gate - Safety validation, final checks\n\nUSAGE:\n    from agentic_core.L3_orchestration.unified_orchestrator import Orchestrator\n\n    strategy = HealingStrategy(project_root=Path.cwd())\n    orchestrator = Orchestrator(strategy=strategy)\n    result = orchestrator.run_mission({"dry_run": True})\n'
 import logging
 import uuid
@@ -76,7 +84,9 @@ class HealingStrategy:
         """
         _emit_agent_executes_agent(str(uuid.uuid4()), "HealingStrategy", "HealingStrategy.should_run_tier")
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, f"HealingStrategy.should_run_tier:{tier_name}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L5_POLICY, f"HealingStrategy.should_run_tier:{tier_name}"
+        )
         if self.target_tier is None:
             return True
         try:

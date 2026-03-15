@@ -2,6 +2,18 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_snapshots_state("p0", "result_types", "state_snapshot")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "result_types", "p0_governance")
+_emit_records_execution_trace("p0", "evidence", "result_types")
+
 "Brief description of functionality and purpose."
 "Brief description of functionality and purpose."
 "L1 Result Parser - Pure result parsing logic only."

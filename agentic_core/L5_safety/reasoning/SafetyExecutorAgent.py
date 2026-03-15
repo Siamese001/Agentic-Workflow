@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.runtime.lifecycle_trace_contract import _emit_snapshots_state  # noqa: E402
+
+_emit_snapshots_state("p0", "SafetyExecutorAgent", "state_snapshot")
 
 "\nSafetyExecutorAgent - Safety Execution Interface\n\nPhase 4 Hard Migration: Consolidates:\n- IntegrityGateExecutorAgent (integrity gate execution)\n- L5IntegrityGateExecutorAgent (L5 integrity gates)\n- SafetyExecutorAgent (safety execution)\n\nFeatures:\n- Pre-execution safety checks\n- Integrity gate enforcement\n- Execution blocking on violations\n- Safety score thresholds\n- Audit logging\n"
 import logging
@@ -134,9 +137,11 @@ class SafetyExecutorAgent(SovereignBaseAgent):
     ) -> None:
         """Add a custom safety gate."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "SafetyExecutorAgent.add_gate")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:SafetyExecutorAgent.add_gate".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 

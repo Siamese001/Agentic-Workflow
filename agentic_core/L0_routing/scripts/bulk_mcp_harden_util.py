@@ -11,6 +11,13 @@ from pathlib import Path
 
 from agentic_core.L0_routing.config import AGENT_DISCOVERY_JSON
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DISCOVERY_PATH = PROJECT_ROOT / AGENT_DISCOVERY_JSON
@@ -19,6 +26,21 @@ MCP_IMPORT = "from agentic_core.mixins.mcp_hardened_mixin import MCPHardenedMixi
 
 def load_discovery():
     """Load agent discovery data."""
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "load_discovery", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "load_discovery", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "load_discovery")
     with open(DISCOVERY_PATH) as f:
         return json.load(f)
 

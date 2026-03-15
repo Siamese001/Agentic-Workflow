@@ -1,5 +1,15 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_snapshots_state("p0", "perception_engine", "state_snapshot")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "perception_engine", "p0_governance")
+
 "\nPerception Node - Sub-atomic Input Processing\n\nHandles input parsing, context preparation, intent classification,\nand memory retrieval. Isolated from reasoning and action logic.\n"
 import asyncio
 import uuid
@@ -42,6 +52,7 @@ class PerceptionNode:
         """
         _emit_transcripts_response(str(uuid.uuid4()), "PerceptionNode.process", "model")
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L1_REASONING, "PerceptionNode.process")
 

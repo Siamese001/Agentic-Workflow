@@ -3,6 +3,14 @@ from __future__ import annotations
 import hashlib
 from typing import Any, NamedTuple
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
+
 HealedPlan = dict[str, Any]
 
 
@@ -35,6 +43,21 @@ def invalidate_signature_and_rehash(plan: HealedPlan) -> InvalidationResult:
         An InvalidationResult containing the plan with its signature stripped
         and a new policy hash for re-validation.
     """
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "invalidate_signature_and_rehash", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "invalidate_signature_and_rehash", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "invalidate_signature_and_rehash")
     invalidated_plan = plan.copy()
     invalidated_plan.pop("l5_signature", None)
     invalidated_plan.pop("l5_approval_timestamp", None)

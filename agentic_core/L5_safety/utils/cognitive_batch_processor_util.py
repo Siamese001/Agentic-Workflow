@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.runtime.lifecycle_trace_contract import _emit_applies_guardrail  # noqa: E402
+
+_emit_applies_guardrail("p0", "cognitive_batch_processor_util", "p0_governance")
 
 "\n[PHASE 13] Cognitive Batch Processor - High-Volume AI Audit Management.\n\nManages API rate limits, checkpointing, and batch execution for large-scale\narchitectural audits using Gemini LLM.\n\nFeatures:\n- Rate limiting with configurable delays\n- Progress checkpointing for resumable execution\n- Exponential backoff for API errors\n- Batch processing with periodic saves\n\nResponsibilities:\n- Process large batches of violations (2,160+)\n- Save progress every N items to prevent data loss\n- Skip already-processed items on resume\n- Handle API rate limits and errors gracefully\n\n[SSOT] Integrates with CognitiveDispositionAgent for AI-powered triage.\n"
 import json
@@ -107,10 +110,16 @@ class CognitiveBatchProcessor:
             Statistics dictionary with counts
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "CognitiveBatchProcessor.process_batch")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L5_POLICY, "CognitiveBatchProcessor.process_batch"
+        )
         import hashlib as _hashlib  # noqa: PLC0415
-        _seg_hash = _hashlib.sha256(f"{_trace_id}:CognitiveBatchProcessor.process_batch".encode()).hexdigest()[:24]
+
+        _seg_hash = _hashlib.sha256(
+            f"{_trace_id}:CognitiveBatchProcessor.process_batch".encode()
+        ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
         stats = {"PROCESSED": 0, "SKIPPED": 0, "ERRORS": 0, "TOTAL": len(violations)}

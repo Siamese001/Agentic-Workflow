@@ -19,10 +19,17 @@ from typing import Any
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
     _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
     emit_determinism_digest,
     emit_replay_key,
 )
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "execution_context", "p0_governance")
+_emit_snapshots_state("p0", "execution_context", "state_snapshot")
 
 
 def _get_subatomic_testing_mixin():
@@ -51,6 +58,7 @@ class ConfigSurface:
     def compute_hash(self) -> str:
         """Computes a deterministic hash of the entire configuration surface."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "ConfigSurface.compute_hash")
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
@@ -139,6 +147,7 @@ class BaseRefiner:
             Refined data with weights applied
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "BaseRefiner.refine")
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
@@ -183,6 +192,7 @@ class BaseTaskExecutor(SovereignBaseAgent, SubatomicTestingMixin):
             Execution result
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "BaseTaskExecutor.execute")
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
@@ -243,6 +253,7 @@ class BaseDiagnoser:
             Diagnostic report
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "BaseDiagnoser.diagnose")
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
@@ -285,6 +296,7 @@ class PolicyResult:
     def final_verdict(self) -> str:
         """Return the final verdict string."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "PolicyResult.final_verdict")
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")

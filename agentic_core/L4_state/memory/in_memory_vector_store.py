@@ -5,7 +5,13 @@ import math
 
 from agentic_core.L4_state.types.memory_item_types import MemoryItem, MemoryQuery
 from agentic_core.L4_state.types.vector_store_types import BaseVectorStore
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 
 def _faiss_available() -> bool:
@@ -14,6 +20,17 @@ def _faiss_available() -> bool:
 
 class InMemoryVectorStore(BaseVectorStore):
     def __init__(self):
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "InMemoryVectorStore.__init__", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "InMemoryVectorStore.__init__", "p0_governance")
         self._storage: dict[str, MemoryItem] = {}
         self._ordered_ids: list[str] = []
         self._faiss_index = None
@@ -44,6 +61,7 @@ class InMemoryVectorStore(BaseVectorStore):
 
     async def initialize(self) -> None:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "InMemoryVectorStore.initialize")
 

@@ -2,6 +2,14 @@ from __future__ import annotations
 
 import logging
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "canary_token_defense_strategy", "p0_governance")
+_emit_snapshots_state("p0", "canary_token_defense_strategy", "state_snapshot")
+
 "Brief description of functionality and purpose."
 "Brief description of functionality and purpose."
 import re
@@ -56,9 +64,11 @@ class CanaryDefense:
             CanaryToken instance
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "CanaryDefense.generate_canary")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:CanaryDefense.generate_canary".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 

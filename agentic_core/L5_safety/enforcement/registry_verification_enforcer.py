@@ -38,7 +38,13 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     GLOBAL_EXCLUDED_DIRS,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 EXCLUDED_DIRS: Final[frozenset[str]] = (
     GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
@@ -78,6 +84,17 @@ class RegistryVerifier:
 
     def __init__(self, project_root: Path | None = None):
         """Initialize verifier with project root."""
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "RegistryVerifier.__init__", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "RegistryVerifier.__init__", "p0_governance")
         self.project_root = project_root or self._find_project_root()
         self.discovery_path = self._find_discovery_json()
 
@@ -163,7 +180,9 @@ class RegistryVerifier:
     def scan_filesystem(self) -> list[AgentInfo]:
         """Scan filesystem for all agent files."""
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "RegistryVerifier.scan_filesystem")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L5_POLICY, "RegistryVerifier.scan_filesystem"
+        )
         agents: list[AgentInfo] = []
         for agent_file in self.project_root.rglob("*Agent.py"):
             if self._is_excluded(agent_file):

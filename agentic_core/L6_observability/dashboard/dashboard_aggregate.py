@@ -19,9 +19,14 @@ from typing import Any
 from agentic_core.L2_execution.providers import get_clock
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
     _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
     _emit_snapshots_state,
 )
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "dashboard_aggregate", "p0_governance")
 
 logger = logging.getLogger(__name__)
 _DASHBOARD_LOG = logging.getLogger("adg.dashboard_aggregated")
@@ -192,8 +197,11 @@ class DashboardAggregateRegistry:
     def get_instance(cls) -> DashboardAggregateRegistry:
         """Singleton accessor."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L6_OBSERVABILITY, "DashboardAggregateRegistry.get_instance")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L6_OBSERVABILITY, "DashboardAggregateRegistry.get_instance"
+        )
 
         if cls._instance is None:
             with cls._lock:
@@ -203,7 +211,9 @@ class DashboardAggregateRegistry:
 
     def persist_snapshot(self, snapshot: DashboardSnapshot) -> None:
         """Persist a dashboard snapshot."""
-        _emit_snapshots_state(str(uuid.uuid4()), "DashboardAggregateRegistry.persist_snapshot", "L6_OBSERVABILITY")
+        _emit_snapshots_state(
+            str(uuid.uuid4()), "DashboardAggregateRegistry.persist_snapshot", "L6_OBSERVABILITY"
+        )
         with self._lock:
             self._snapshots[snapshot.dashboard_snapshot_id] = snapshot
 

@@ -31,7 +31,15 @@ from agentic_core.L2_execution.healers.healing_tier_types import (
     HealingTier,
 )
 from agentic_core.L3_orchestration.registry.agent_dispatch_registry import get_agent_dispatch_registry
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_snapshots_state("p0", "healing_tier_dispatcher", "state_snapshot")
 
 if TYPE_CHECKING:
     from agentic_core.L2_execution.engines.resource_predictor import ResourcePredictor
@@ -56,6 +64,14 @@ def _get_l4_prior_provider() -> Any:
 
     Falls back to NeutralMetaPriorProvider if the adapter is unavailable (cold start).
     """
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "_get_l4_prior_provider", "p0_governance")
     global _l4_prior_provider
     if _l4_prior_provider is None:
         try:
@@ -180,8 +196,11 @@ class DefaultHealingProviderInvoker:
         *,
         agent_name: str = "",
     ) -> InvocationRecord:
-
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"LocalHealingTierDispatcher.invoke_local:{agent_name}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            f"LocalHealingTierDispatcher.invoke_local:{agent_name}",
+        )
         return InvocationRecord(
             tier=HealingTier.LOCAL_AGENT,
             model_id="local",
@@ -303,7 +322,7 @@ def dispatch_healing(
             method=method_name,
             target_instance=invoker,
             args=(healing_input, decision, config),
-            kwargs={"agent_name": agent_name}
+            kwargs={"agent_name": agent_name},
         )
         success = True
     # guardian: allow-silent-swallow
@@ -534,7 +553,7 @@ def invoke_qwen_with_oom_protection(
                 method=method_name,
                 target_instance=invoker,
                 args=(healing_input, escalated_decision, config),
-                kwargs={"agent_name": agent_name}
+                kwargs={"agent_name": agent_name},
             )
         raise
 

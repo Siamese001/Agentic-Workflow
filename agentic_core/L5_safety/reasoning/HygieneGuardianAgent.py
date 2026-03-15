@@ -20,6 +20,8 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_applies_guardrail,
     _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
 )
 from agentic_core.utils.decorators_compat_util import standard_heal
 
@@ -84,6 +86,14 @@ class HygieneGuardianAgent(SovereignBaseAgent):
             ctx: Execution context (optional)
             dry_run: If True, only report violations without fixing
         """
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "HygieneGuardianAgent.__init__", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
         self.project_root = Path(project_root).resolve()
         self.ctx = ctx
         self.dry_run = dry_run

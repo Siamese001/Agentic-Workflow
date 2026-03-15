@@ -1,5 +1,17 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_snapshots_state("p0", "execution_phase_signal_types", "state_snapshot")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "execution_phase_signal_types", "p0_governance")
+_emit_records_execution_trace("p0", "evidence", "execution_phase_signal_types")
+
 "\nOrchestration Types for agentic_core\n\nCore types used across orchestration components to avoid circular dependencies.\n"
 from collections.abc import Callable
 from dataclasses import dataclass, field

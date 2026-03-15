@@ -1,6 +1,13 @@
 from __future__ import annotations
 
 from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_snapshots_state("p0", "StateManagementAgent", "state_snapshot")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 "\nStateManagementAgent - Consolidated L4 State Controller (Phase 5)\n\nConsolidates:\n- ManifestManagerAgent (manifest inventory and serialization)\n- MemoryManagerAgent (physical memory cleanup and persistence)\n- AutonomousStateGuardianAgent (drift detection and integrity monitoring)\n\nKey Features:\n- Unified state controller coordinating manifest and physical storage\n- Atomic state transactions preventing race conditions\n- Autonomous heartbeat for continuous integrity checks\n- Ghost state detection (files without manifest entries)\n- Orphan entry detection (manifest entries without files)\n- Resource synchronization with registry agents\n\nTerritory: agentic_core/L4_state/memory/\nCanon Alignment: L4 state persistence, integrity, and recovery\n"
 import asyncio
@@ -28,8 +35,12 @@ from agentic_core.L5_safety.enforcement.policy_action_contract import (
     PolicyEnforcementError,
     enforce_policy_before_action,
 )
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+)
 from agentic_core.utils.decorators_compat_util import standard_heal
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger = logging.getLogger(__name__)
 _proof_emitter = ExecutionProofEmitter("L3.StateManagementAgent")
@@ -48,6 +59,9 @@ class StateEntry:
 
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization."""
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "StateEntry.to_dict", "p0_governance")
         return {
             "key": self.key,
             "file_path": self.file_path,
@@ -237,7 +251,9 @@ class StateManagementAgent(WriteGovernorMixin, SovereignBaseAgent):
         Returns:
             File path where data was stored
         """
-        _emit_records_execution_trace(key, LayerSegment.L3_ORCHESTRATION, f"StateManagementAgent.set_state:{key}")
+        _emit_records_execution_trace(
+            key, LayerSegment.L3_ORCHESTRATION, f"StateManagementAgent.set_state:{key}"
+        )
         with _proof_emitter.proof_op(f"set_state:{key}"):
             pass
         try:

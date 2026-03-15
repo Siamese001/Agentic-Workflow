@@ -24,9 +24,14 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import (
 )
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
     _emit_records_execution_trace,
     _emit_signs_execution_trace,
+    _emit_snapshots_state,  # noqa: E402
 )
+
+_emit_applies_guardrail("p0", "heal_llm_seam_types", "p0_governance")
+_emit_snapshots_state("p0", "heal_llm_seam_types", "state_snapshot")
 
 # Capability token: only standard_heal may set this to True
 _HEAL_SEAM_CAPABILITY: contextvars.ContextVar[bool] = contextvars.ContextVar(
@@ -134,9 +139,11 @@ class PolicyDecisionRecord:
     def input_hash(self) -> str:
         """Compute deterministic hash of inputs for stable filenames."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "PolicyDecisionRecord.input_hash")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:PolicyDecisionRecord.input_hash".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
@@ -166,9 +173,11 @@ class HealBudgetCaps:
     def from_env(cls, enable_llm: bool = False) -> HealBudgetCaps:
         """Load budget caps from environment variables with sensible defaults."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "HealBudgetCaps.from_env")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:HealBudgetCaps.from_env".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
@@ -274,10 +283,14 @@ class HealTelemetryRecord:
     def telemetry_hash(self) -> str:
         """Compute deterministic hash of telemetry record for filenames."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "HealTelemetryRecord.telemetry_hash")
         import hashlib as _hashlib  # noqa: PLC0415
-        _seg_hash = _hashlib.sha256(f"{_trace_id}:HealTelemetryRecord.telemetry_hash".encode()).hexdigest()[:24]
+
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:HealTelemetryRecord.telemetry_hash".encode()).hexdigest()[
+            :24
+        ]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
         record_str = json.dumps(self.to_dict(), sort_keys=True)
@@ -388,9 +401,11 @@ class RepoHealPlan:
     def plan_hash(self) -> str:
         """Compute deterministic hash of the plan for stable comparison."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "RepoHealPlan.plan_hash")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:RepoHealPlan.plan_hash".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 

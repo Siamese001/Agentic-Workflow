@@ -38,7 +38,15 @@ except ImportError:
 
         def set(self, key: str, value) -> None:
             self._cache[key] = value
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 
 class query_planner:
@@ -47,6 +55,17 @@ class query_planner:
     """
 
     def __init__(self, engine: SubAtomicEngine | None = None, cache: semantic_cache | None = None):
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "query_planner.__init__", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "query_planner.__init__", "p0_governance")
         self.engine = engine or SubAtomicEngine()
         self.cache = cache or semantic_cache()
         self.expansion_temperature = 0.7
@@ -65,8 +84,11 @@ class query_planner:
         L1: Generate diverse query variants to maximize vector recall.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L1_REASONING, "query_planner.multi_query_generation")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L1_REASONING, "query_planner.multi_query_generation"
+        )
 
         cache_key: Any = f"mq_expand:{hash(original_query)}"
         cached: Any = self.cache.get(cache_key)

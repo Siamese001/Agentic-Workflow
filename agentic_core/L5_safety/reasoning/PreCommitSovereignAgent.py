@@ -1,6 +1,13 @@
 from __future__ import annotations
 
 from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_snapshots_state("p0", "PreCommitSovereignAgent", "state_snapshot")
 
 "\nPRE-COMMIT SOVEREIGN AGENT\n--------------------------\nL0 Infrastructure Agent designed to intercept git commits and enforce\nSovereign SSOT Gravity Laws. It ensures no new 'Upward Leaks' are\nintroduced into the codebase.\n\nDomain: Infrastructure & Enforcement\nLayer: L0 Maintenance\nPurpose: Git pre-commit hook for architectural compliance\n\nLogic:\n1. Identifies staged files in the git index.\n2. Scans files for top-level static imports.\n3. Validates import direction against Layered Gravity (L5 -> L0).\n4. Aborts commit (exit 1) if a violation is found.\n"
 import subprocess
@@ -81,7 +88,9 @@ class PreCommitSovereignAgent(SovereignBaseAgent, L0RoutingBase):
             Dict with healing summary
         """
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "PreCommitSovereignAgent.heal_repository")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L5_POLICY, "PreCommitSovereignAgent.heal_repository"
+        )
         super().heal_repository(**kwargs)
         if hasattr(self, "validate_staged_files"):
             try:
@@ -184,7 +193,9 @@ class PreCommitSovereignAgent(SovereignBaseAgent, L0RoutingBase):
         Returns:
             Dictionary with validation results.
         """
-        _emit_applies_guardrail(str(uuid.uuid4()), "PreCommitSovereignAgent.validate_staged_files", "L5_POLICY")
+        _emit_applies_guardrail(
+            str(uuid.uuid4()), "PreCommitSovereignAgent.validate_staged_files", "L5_POLICY"
+        )
         print("SOVEREIGN PRE-FLIGHT: Purging temporary artifacts...")
         purge_repository_cache(target_path=self.root)
         staged_files = self.get_staged_files()

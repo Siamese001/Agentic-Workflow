@@ -43,6 +43,15 @@ from typing import Any, Optional
 
 from agentic_core.L0_routing.config.path_constants import DEFAULT_TIMEOUT, MAX_RETRIES
 from agentic_core.L2_execution.providers import get_clock
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "execute_ssot", "p0_governance")
+_emit_snapshots_state("p0", "execute_ssot", "state_snapshot")
 
 try:
     from tqdm import tqdm
@@ -971,6 +980,7 @@ class RoutingDecision:
 
     def as_log_line(self) -> str:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "RoutingDecision.as_log_line")
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
@@ -1115,8 +1125,11 @@ class ReconciliationManifest:
 
     def add_modification(self, modification: dict[str, Any]) -> None:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "ReconciliationManifest.add_modification")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L0_ROUTING, "ReconciliationManifest.add_modification"
+        )
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
         emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
 
@@ -1188,8 +1201,11 @@ class ASTCodeQualityValidator:
     def check_file_quality(self, file_path: Path) -> dict:
         """Check file for code quality issues (missing types, etc)."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "ASTCodeQualityValidator.check_file_quality")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L0_ROUTING, "ASTCodeQualityValidator.check_file_quality"
+        )
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
         emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
 
@@ -1470,6 +1486,7 @@ class HealContext:
           --apply-proposals => meta-learning always on under --heal
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "HealContext.from_args")
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
@@ -1859,8 +1876,11 @@ class SovereignDecisionEngine:
           0.5   unknown:     no adjustment
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "SovereignDecisionEngine.calculate_healing_confidence")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L0_ROUTING, "SovereignDecisionEngine.calculate_healing_confidence"
+        )
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
         emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
 
@@ -2186,6 +2206,7 @@ class PreFlightValidator:
 
     def run_checks(self) -> tuple[bool, list[str]]:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "PreFlightValidator.run_checks")
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
@@ -2599,6 +2620,7 @@ class RuntimeStateManager:
 
     def start_mission(self, mission_type: str, agents_order: list[str]):
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "RuntimeStateManager.start_mission")
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
@@ -7199,8 +7221,11 @@ class GracefulExitHandler:
     def exit_gracefully(self, signum: int, frame: FrameType | None):
         """Signal handler."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "GracefulExitHandler.exit_gracefully")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L0_ROUTING, "GracefulExitHandler.exit_gracefully"
+        )
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
         emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
 

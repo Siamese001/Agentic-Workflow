@@ -8,9 +8,17 @@ from agentic_core.base_agents.L3OrchestrationBase import L3OrchestrationBase
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import get_routing_gateway
 from agentic_core.L3_orchestration.contracts.orchestration_handoff_contract import emit_agent_executes_agent
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,  # noqa: E402
+)
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
+
+_emit_snapshots_state("p0", "DomainPlannerAgent", "state_snapshot")
 
 Logger = logging.getLogger(__name__)
 if TYPE_CHECKING:
@@ -59,6 +67,14 @@ class StrategyPlan:
             setattr(self, k, v)
 
     def model_copy(self, deep=True):
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "StrategyPlan.model_copy", "p0_governance")
         import copy
 
         return copy.deepcopy(self) if deep else copy.copy(self)
@@ -88,7 +104,9 @@ class DomainPlannerAgent(L3OrchestrationBase):
         self, plan: StrategyPlan, job_context: dict[str, Any], workflow_id: str
     ) -> PlannerAssessment:
         _gw = get_routing_gateway(workflow_id)
-        _emit_records_execution_trace(workflow_id, LayerSegment.L3_ORCHESTRATION, "DomainPlannerAgent.run_async")
+        _emit_records_execution_trace(
+            workflow_id, LayerSegment.L3_ORCHESTRATION, "DomainPlannerAgent.run_async"
+        )
         emit_agent_executes_agent(
             parent_agent_id="DomainPlannerAgent",
             child_agent_id="domain_planner_strategy",

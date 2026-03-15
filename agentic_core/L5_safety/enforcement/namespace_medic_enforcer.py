@@ -9,6 +9,13 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.L5_safety.config.structure_blueprint import AGENTIC_CORE_DIR
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 import_patterns: Any = [
     ("logging.", "import logging", "simple"),
@@ -34,6 +41,21 @@ import_patterns: Any = [
 
 def find_missing_imports(content: str) -> list[str]:
     """Detect which standard library imports are Missing from the file."""
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "find_missing_imports", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "find_missing_imports", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "find_missing_imports")
     Missing: Any = []
     seen_import_types: Any = set()
     for usage_pattern, import_stmt, import_type in IMPORT_PATTERNS:

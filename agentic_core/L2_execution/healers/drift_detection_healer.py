@@ -20,6 +20,13 @@ from agentic_core.L2_execution.types.heal_contract_types import (
     HealCheckResult,
     HealStatus,
 )
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 from agentic_core.utils.ast_fuzzy_util import parse_evidence as _parse_evidence
 
 
@@ -46,6 +53,21 @@ def heal_guardian_drift_detection(
         - Duplicate folders: NEVER touched (PARTIAL if present).
         Returns HEALED if all items resolved, PARTIAL if any remain.
     """
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "heal_guardian_drift_detection", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "heal_guardian_drift_detection", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "heal_guardian_drift_detection")
     evidence = _parse_evidence(check)
     check_id: str = check["check_id"]
 

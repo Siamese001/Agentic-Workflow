@@ -13,9 +13,14 @@ import libcst as cst
 
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
     _emit_records_execution_trace,
     _emit_signs_execution_trace,
+    _emit_snapshots_state,  # noqa: E402
 )
+
+_emit_applies_guardrail("p0", "cst_transformers_types", "p0_governance")
+_emit_snapshots_state("p0", "cst_transformers_types", "state_snapshot")
 
 
 @dataclass
@@ -69,9 +74,11 @@ class SurgicalImportRemover(cst.CSTTransformer):
     def on_visit(self, node: cst.CSTNode) -> bool:
         """Initialize line tracking."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "SurgicalImportRemover.on_visit")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:SurgicalImportRemover.on_visit".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
@@ -185,10 +192,16 @@ class SurgicalDocstringInserter(cst.CSTTransformer):
     def leave_ClassDef(self, original_node: cst.ClassDef, updated_node: cst.ClassDef) -> cst.ClassDef:
         """Insert docstring into class if targeted by name."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "SurgicalDocstringInserter.leave_ClassDef")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L5_POLICY, "SurgicalDocstringInserter.leave_ClassDef"
+        )
         import hashlib as _hashlib  # noqa: PLC0415
-        _seg_hash = _hashlib.sha256(f"{_trace_id}:SurgicalDocstringInserter.leave_ClassDef".encode()).hexdigest()[:24]
+
+        _seg_hash = _hashlib.sha256(
+            f"{_trace_id}:SurgicalDocstringInserter.leave_ClassDef".encode()
+        ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
         class_name = updated_node.name.value
@@ -248,10 +261,16 @@ class SurgicalBareExceptFixer(cst.CSTTransformer):
     ) -> cst.ExceptHandler:
         """Fix bare except clauses."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "SurgicalBareExceptFixer.leave_ExceptHandler")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L5_POLICY, "SurgicalBareExceptFixer.leave_ExceptHandler"
+        )
         import hashlib as _hashlib  # noqa: PLC0415
-        _seg_hash = _hashlib.sha256(f"{_trace_id}:SurgicalBareExceptFixer.leave_ExceptHandler".encode()).hexdigest()[:24]
+
+        _seg_hash = _hashlib.sha256(
+            f"{_trace_id}:SurgicalBareExceptFixer.leave_ExceptHandler".encode()
+        ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
         if updated_node.type is not None:
@@ -293,10 +312,16 @@ class SurgicalFutureImportInserter(cst.CSTTransformer):
     def visit_ImportFrom(self, node: cst.ImportFrom) -> bool:
         """Check if __future__ import already exists."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "SurgicalFutureImportInserter.visit_ImportFrom")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L5_POLICY, "SurgicalFutureImportInserter.visit_ImportFrom"
+        )
         import hashlib as _hashlib  # noqa: PLC0415
-        _seg_hash = _hashlib.sha256(f"{_trace_id}:SurgicalFutureImportInserter.visit_ImportFrom".encode()).hexdigest()[:24]
+
+        _seg_hash = _hashlib.sha256(
+            f"{_trace_id}:SurgicalFutureImportInserter.visit_ImportFrom".encode()
+        ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
         if node.module and isinstance(node.module, cst.Attribute):
@@ -348,10 +373,16 @@ class SurgicalTrailingWhitespaceFixer(cst.CSTTransformer):
     ) -> cst.TrailingWhitespace:
         """Remove trailing whitespace before newlines."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "SurgicalTrailingWhitespaceFixer.leave_TrailingWhitespace")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L5_POLICY, "SurgicalTrailingWhitespaceFixer.leave_TrailingWhitespace"
+        )
         import hashlib as _hashlib  # noqa: PLC0415
-        _seg_hash = _hashlib.sha256(f"{_trace_id}:SurgicalTrailingWhitespaceFixer.leave_TrailingWhitespace".encode()).hexdigest()[:24]
+
+        _seg_hash = _hashlib.sha256(
+            f"{_trace_id}:SurgicalTrailingWhitespaceFixer.leave_TrailingWhitespace".encode()
+        ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
         if updated_node.whitespace.value.strip() == "" and updated_node.whitespace.value:
@@ -390,10 +421,16 @@ class SurgicalBlankLineNormalizer(cst.CSTTransformer):
     def leave_Module(self, original_node: cst.Module, updated_node: cst.Module) -> cst.Module:
         """Normalize blank lines in the module body."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "SurgicalBlankLineNormalizer.leave_Module")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L5_POLICY, "SurgicalBlankLineNormalizer.leave_Module"
+        )
         import hashlib as _hashlib  # noqa: PLC0415
-        _seg_hash = _hashlib.sha256(f"{_trace_id}:SurgicalBlankLineNormalizer.leave_Module".encode()).hexdigest()[:24]
+
+        _seg_hash = _hashlib.sha256(
+            f"{_trace_id}:SurgicalBlankLineNormalizer.leave_Module".encode()
+        ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
         new_body = []
@@ -462,10 +499,16 @@ class SurgicalTypeHintInserter(cst.CSTTransformer):
     ) -> cst.FunctionDef:
         """Add type hints to function if targeted."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "SurgicalTypeHintInserter.leave_FunctionDef")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L5_POLICY, "SurgicalTypeHintInserter.leave_FunctionDef"
+        )
         import hashlib as _hashlib  # noqa: PLC0415
-        _seg_hash = _hashlib.sha256(f"{_trace_id}:SurgicalTypeHintInserter.leave_FunctionDef".encode()).hexdigest()[:24]
+
+        _seg_hash = _hashlib.sha256(
+            f"{_trace_id}:SurgicalTypeHintInserter.leave_FunctionDef".encode()
+        ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
         func_name = updated_node.name.value

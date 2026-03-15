@@ -1,5 +1,13 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "web_search_client", "p0_governance")
+_emit_snapshots_state("p0", "web_search_client", "state_snapshot")
+
 "\nSovereign Brave Search MCP Client — L2 Execution Layer\nPhase 13F: Full MCP integration via L3 router with unified output formatting\nTool ID Prefix: ACT-001\n"
 import json
 import logging
@@ -38,9 +46,11 @@ class WebSearchTools:
             str: A formatted string of search results or an error message.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "WebSearchTools.search_web")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:WebSearchTools.search_web".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 

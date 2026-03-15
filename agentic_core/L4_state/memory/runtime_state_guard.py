@@ -6,7 +6,13 @@ from typing import Any
 from agentic_core.interfaces.write_gateway import get_write_gateway
 from agentic_core.L0_routing.config import RUNTIME_STATE_JSON
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 
 def _get_write_gateway():
@@ -21,6 +27,17 @@ class RuntimeStateGuard:
     """
 
     def __init__(self, project_root: Path):
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "RuntimeStateGuard.__init__", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "RuntimeStateGuard.__init__", "p0_governance")
         self.state_path = project_root / RUNTIME_STATE_JSON
         self.backup_path = project_root / f"{RUNTIME_STATE_JSON}.bak"
         self._state_cache: dict[str, Any] = {}
@@ -67,6 +84,7 @@ class RuntimeStateGuard:
         Persists immediately UNLESS inside a batch context.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "RuntimeStateGuard.increment_metric")
 

@@ -3,6 +3,16 @@ from __future__ import annotations
 import logging
 import os
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_snapshots_state("p0", "consensus_validator", "state_snapshot")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "consensus_validator", "p0_governance")
+
 "Brief description of functionality and purpose."
 "Brief description of functionality and purpose."
 import uuid
@@ -158,6 +168,7 @@ class ConsensusEngine:
         """
         _emit_gated_by_confidence(str(uuid.uuid4()), "ConsensusEngine.judge_artifact", "0.5")
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L1_REASONING, "ConsensusEngine.judge_artifact")
 

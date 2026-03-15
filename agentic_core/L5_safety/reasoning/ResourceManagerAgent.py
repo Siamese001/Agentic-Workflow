@@ -1,6 +1,13 @@
 from __future__ import annotations
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "ResourceManagerAgent", "p0_governance")
+_emit_snapshots_state("p0", "ResourceManagerAgent", "state_snapshot")
 
 "\nResourceManagerAgent - Thread-Safe Resource Management\n\nPhase 3 Hard Migration: Consolidates:\n- BudgetManagerAgent (budget tracking and enforcement)\n- ProactiveResourceManagerAgent (proactive resource allocation)\n- FallbackManagerAgent (fallback and recovery logic)\n\nFeatures:\n- Thread-safe budget management with locks\n- Hard cap enforcement (100% exhaustion halts execution)\n- Proactive resource allocation\n- Fallback strategies for resource exhaustion\n- Concurrent agent support (10+ simultaneous requests)\n"
 import logging
@@ -67,9 +74,11 @@ class ResourceBudget:
     @property
     def utilization(self) -> float:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "ResourceBudget.utilization")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:ResourceBudget.utilization".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
@@ -297,9 +306,11 @@ class ResourceManagerAgent(SovereignBaseAgent):
             Dictionary with healing results following standard_heal format.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "ResourceManagerAgent.heal")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:ResourceManagerAgent.heal".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 

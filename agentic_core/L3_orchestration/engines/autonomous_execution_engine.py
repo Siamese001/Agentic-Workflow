@@ -1,6 +1,15 @@
 from __future__ import annotations
 
 from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_snapshots_state("p0", "autonomous_execution_engine", "state_snapshot")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "autonomous_execution_engine", "p0_governance")
 
 "\nL3 Orchestration: Autonomous Execution Engine\nThe eternal heart that continuously validates and heals the Canon territory.\n"
 import asyncio
@@ -111,7 +120,11 @@ class autonomous_execution_engine:
         - RAG orchestrator
         - Systematic territory audits
         """
-        _emit_agent_executes_agent(str(uuid.uuid4()), "autonomous_execution_engine", "autonomous_execution_engine.execute_validation_mission")
+        _emit_agent_executes_agent(
+            str(uuid.uuid4()),
+            "autonomous_execution_engine",
+            "autonomous_execution_engine.execute_validation_mission",
+        )
         try:
             status = self.resource_manager.get_resource_status()
             if status["global_budget_remaining"] < 10:
@@ -148,8 +161,11 @@ class autonomous_execution_engine:
     async def eternal_execution_cycle(self):
         """L3: Continuous validation and healing cycle"""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "autonomous_execution_engine.eternal_execution_cycle")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "autonomous_execution_engine.eternal_execution_cycle"
+        )
 
         Logger.info("L3: Eternal execution cycle active")
         while self.running:

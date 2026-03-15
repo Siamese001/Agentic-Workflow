@@ -12,7 +12,13 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     GLOBAL_EXCLUDED_DIRS,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 LOGGER = logging.getLogger(__name__)
 Logger: Any = logging.getLogger(__name__)
@@ -36,6 +42,17 @@ class TheCartographer:
         Args:
             llm_client: LLM client for generating summaries
         """
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "TheCartographer.__init__", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "TheCartographer.__init__", "p0_governance")
         self.llm_client = llm_client
         self.api_key = os.getenv("GOOGLE_API_KEY")
         self.primary_root = Path.cwd()
@@ -70,8 +87,11 @@ class TheCartographer:
             Dictionary with mapping results
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L1_REASONING, "TheCartographer.map_all_repositories")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L1_REASONING, "TheCartographer.map_all_repositories"
+        )
 
         LOGGER.info("🗺️  TheCartographer: Beginning semantic mapping")
         results: dict[str, Any] = {

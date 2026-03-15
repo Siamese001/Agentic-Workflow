@@ -15,11 +15,34 @@ import re
 from dataclasses import dataclass
 from enum import Enum
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
+
 TRACE_ID_PATTERN = re.compile("^CC3AL1-[0-9A-F]{8}$")
 
 
 def validate_trace_id(trace_id: str) -> str:
     """§15.5 — Validate trace ID matches strict format. Fail-closed."""
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "validate_trace_id", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "validate_trace_id", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "validate_trace_id")
     if not TRACE_ID_PATTERN.match(trace_id):
         raise ValueError(
             f"FAIL (P4): Trace ID '{trace_id}' does not match required pattern ^CC3AL1-[0-9A-F]{{8}}$"

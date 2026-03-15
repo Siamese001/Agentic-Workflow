@@ -26,7 +26,15 @@ from agentic_core.L6_observability.dashboard.dashboard_aggregate import (
     HealthFlag,
     get_dashboard_registry,
 )
-from agentic_core.runtime.lifecycle_trace_contract import _emit_observes_runtime_state, _emit_snapshots_state
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_observes_runtime_state,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,
+)
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "dashboard_orchestrator", "p0_governance")
 
 logger = logging.getLogger(__name__)
 _DASHBOARD_LOG = logging.getLogger("adg.health_computed")
@@ -165,7 +173,9 @@ def aggregate_runtime_observability(
         _emit_records_execution_trace,
     )
 
-    _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L6_OBSERVABILITY, "aggregate_runtime_observability")
+    _emit_records_execution_trace(
+        str(uuid.uuid4()), LayerSegment.L6_OBSERVABILITY, "aggregate_runtime_observability"
+    )
     _registry = registry or get_dashboard_registry()
 
     # --- Step 1: gather lifecycle telemetry ---

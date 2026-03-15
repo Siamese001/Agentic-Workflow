@@ -13,10 +13,21 @@ import json
 import sys
 from pathlib import Path
 
-from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
 )
+from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "add_dataclass_to_agents_util")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "add_dataclass_to_agents_util", "p0_governance")
+_emit_snapshots_state("p0", "add_dataclass_to_agents_util", "state_snapshot")
 
 PROJECT_ROOT = Path(__file__).parent.parent
 

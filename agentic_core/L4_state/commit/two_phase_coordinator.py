@@ -15,9 +15,14 @@ from typing import Any, Callable
 
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
     _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
     _emit_snapshots_state,
 )
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "two_phase_coordinator", "p0_governance")
 
 logger = logging.getLogger(__name__)
 
@@ -47,6 +52,7 @@ class TwoPhaseCoordinator:
         """
         _emit_snapshots_state(str(uuid.uuid4()), "TwoPhaseCoordinator.execute_commit", "L4_STATE")
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "TwoPhaseCoordinator.execute_commit")
 

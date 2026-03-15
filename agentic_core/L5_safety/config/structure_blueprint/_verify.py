@@ -25,6 +25,13 @@ from types import MappingProxyType
 from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
 from agentic_core.L2_execution.tools import write_gateway as _wg
 from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 ALLOWED_MODULES: frozenset[str] = frozenset(
     {"__future__", "typing", "types", "collections", "functools", "itertools", "dataclasses"}
@@ -53,6 +60,21 @@ def _assert_frozen(obj: object, path: str = "root") -> str | None:
     Returns None if fully frozen, or a string describing the first
     mutable structure found (with its path).
     """
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "_assert_frozen", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "_assert_frozen", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "_assert_frozen")
     if isinstance(obj, dict):
         return f"{path}: dict (mutable)"
     if isinstance(obj, list):

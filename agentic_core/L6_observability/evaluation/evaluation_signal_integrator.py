@@ -24,7 +24,13 @@ from agentic_core.L6_observability.evaluation.evaluation_record import (
     evaluate_and_attach,
 )
 from agentic_core.runtime.execution_trace import get_active_execution_trace
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -57,6 +63,17 @@ class EvalSignal:
         return self.score >= 0.7
 
     def to_dict(self) -> dict[str, Any]:
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "EvalSignal.to_dict", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "EvalSignal.to_dict", "p0_governance")
         return {
             "trace_id": self.trace_id,
             "source_module": self.source_module,
@@ -93,8 +110,11 @@ class EvaluationSignalIntegrator:
     def subscribe(self, layer: str, callback: Callable[[EvalSignal], None]) -> None:
         """Register a callback to receive signals destined for ``layer``."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L6_OBSERVABILITY, "EvaluationSignalIntegrator.subscribe")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L6_OBSERVABILITY, "EvaluationSignalIntegrator.subscribe"
+        )
 
         self._subscribers.setdefault(layer, []).append(callback)
         logger.debug("EVAL_INTEGRATOR subscribe layer=%s", layer)

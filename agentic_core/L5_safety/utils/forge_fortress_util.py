@@ -15,6 +15,13 @@ from typing import Any
 
 from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR
 from agentic_core.L5_safety.config.structure_blueprint import CORE_SUBFOLDER_MAP
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 core_map: Any = CORE_SUBFOLDER_MAP
 external_map: Any = {
@@ -37,6 +44,21 @@ annexation_plan: Any = {
 
 def forge_fortress() -> Any:
     """Brief description of functionality and purpose."""
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "forge_fortress", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "forge_fortress", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "forge_fortress")
     logging.info("FORTRESS FORGE: Initializing System Reconstruction...")
     for layer, stages in CORE_MAP.items():
         layer_path: Any = CORE / layer

@@ -1,5 +1,13 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "rag_validation_result_types", "p0_governance")
+_emit_snapshots_state("p0", "rag_validation_result_types", "state_snapshot")
+
 "Dataclass models for models."
 import datetime
 import logging
@@ -34,10 +42,14 @@ class ValidationResult(BaseModel):
     def validate_severity(cls, v: str) -> str:
         """[HARDENED] Ensure severity is valid."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "ValidationResult.validate_severity")
         import hashlib as _hashlib  # noqa: PLC0415
-        _seg_hash = _hashlib.sha256(f"{_trace_id}:ValidationResult.validate_severity".encode()).hexdigest()[:24]
+
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:ValidationResult.validate_severity".encode()).hexdigest()[
+            :24
+        ]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
         valid_severities = {"low", "medium", "high", "critical"}
@@ -62,10 +74,16 @@ class ThematicAnalysis(BaseModel):
     def validate_confidence_scores(cls, v: list[float]) -> list[float]:
         """[HARDENED] Ensure all confidence scores are between 0 and 1."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "ThematicAnalysis.validate_confidence_scores")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L5_POLICY, "ThematicAnalysis.validate_confidence_scores"
+        )
         import hashlib as _hashlib  # noqa: PLC0415
-        _seg_hash = _hashlib.sha256(f"{_trace_id}:ThematicAnalysis.validate_confidence_scores".encode()).hexdigest()[:24]
+
+        _seg_hash = _hashlib.sha256(
+            f"{_trace_id}:ThematicAnalysis.validate_confidence_scores".encode()
+        ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
         for score in v:

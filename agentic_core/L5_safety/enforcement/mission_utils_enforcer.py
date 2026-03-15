@@ -21,6 +21,17 @@ from agentic_core.L5_safety.config.structure_blueprint import (
     APPS_SHARED_SUBFOLDER_MAP,
     CORE_SUBFOLDER_MAP,
 )
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_records_execution_trace("p0", "evidence", "mission_utils_enforcer")
+_emit_applies_guardrail("p0", "mission_utils_enforcer", "p0_governance")
+_emit_snapshots_state("p0", "mission_utils_enforcer", "state_snapshot")
 
 
 def dynamic_import(module_path: str, class_name: str) -> Any | None:

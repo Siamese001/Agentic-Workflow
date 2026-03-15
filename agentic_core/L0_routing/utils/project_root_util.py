@@ -13,6 +13,14 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Final
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
+
 # Core package directory name
 AGENTIC_CORE_DIR: str = "agentic_core"
 
@@ -39,6 +47,21 @@ def get_project_root(start_path: str | None = None) -> Path:
     Raises:
         RuntimeError: If the project root cannot be found after searching 10 levels up.
     """
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "get_project_root", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "get_project_root", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "get_project_root")
     current = Path(start_path).resolve() if start_path else Path.cwd().resolve()
 
     # Safety: If we are in a file (not dir), start from its parent

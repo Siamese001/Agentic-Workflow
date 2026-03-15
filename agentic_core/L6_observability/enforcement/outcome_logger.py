@@ -15,7 +15,15 @@ from agentic_core.L6_observability.evaluation.evaluation_record import (
     EvaluationStage,
     evaluate_and_attach,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,
+)
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 _proof_emitter = ExecutionProofEmitter("L6.OutcomeLogger")
 
@@ -45,6 +53,13 @@ class OutcomeRecord:
             New OutcomeRecord with computed record_hash
         """
         import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "OutcomeRecord.create", "state_snapshot")
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "OutcomeRecord.create", "p0_governance")
+        import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L6_OBSERVABILITY, "OutcomeRecord.create")
 
@@ -81,6 +96,7 @@ class OutcomeLogger:
             Created OutcomeRecord (immutable)
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L6_OBSERVABILITY, "OutcomeLogger.append")
 
@@ -142,6 +158,7 @@ class OutcomeReconciler:
             ReconcileResult with missing/extra hashes and ok status
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L6_OBSERVABILITY, "OutcomeReconciler.reconcile")
 

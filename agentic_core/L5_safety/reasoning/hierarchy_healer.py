@@ -59,6 +59,11 @@ from agentic_core.L5_safety.enforcement.mission_utils_enforcer import (
     get_best_target_l1,
     get_best_target_l2,
 )
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
 
@@ -106,6 +111,17 @@ class HierarchyHealerAgent(SovereignBaseAgent):
             ctx: Optional context for reporting
             auto_approve: If True, bypasses interactive user confirmation for moves
         """
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "HierarchyHealerAgent.__init__", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "HierarchyHealerAgent.__init__", "p0_governance")
         self.project_root = project_root.resolve()
         self.healing_enabled = healing_enabled
         self.ctx = ctx

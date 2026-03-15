@@ -1,5 +1,13 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "core_contracts_types", "p0_governance")
+_emit_snapshots_state("p0", "core_contracts_types", "state_snapshot")
+
 "\nCore Contracts - Pydantic models for sovereign system contracts.\nSSOT for retry policies, hop specifications, and registry.\n"
 from typing import Any
 
@@ -30,9 +38,11 @@ class RetryPolicy(BaseModel):
     def validate_retry_on(cls, v: list[str]) -> list[str]:
         """[HARDENED] Ensure retry_on list is not empty."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "RetryPolicy.validate_retry_on")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:RetryPolicy.validate_retry_on".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 

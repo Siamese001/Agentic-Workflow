@@ -1,5 +1,13 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "time_utils_impl", "p0_governance")
+_emit_snapshots_state("p0", "time_utils_impl", "state_snapshot")
+
 "\nTime Tools - Atomic Module\nExtracted from action_registry.py via Atomic Fission Protocol\nTool ID Prefix: ACT-008\n"
 import logging
 from typing import Any
@@ -64,9 +72,11 @@ class TimeTools:
             str: The current time in ISO 8601 format or an error message.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "TimeTools.get_current_time")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:TimeTools.get_current_time".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 

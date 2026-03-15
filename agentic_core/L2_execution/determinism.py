@@ -16,13 +16,24 @@ import os
 from pathlib import Path
 
 from agentic_core.agents.agent_registry import AGENT_REGISTRY, registry_digest
-from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
-from agentic_core.L2_execution.enforcement.provider_binding_determinism import compute_provider_binding_digest
 from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
     APPS_LIC_DIR,
     APPS_RG_DIR,
 )
+from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
+from agentic_core.L2_execution.enforcement.provider_binding_determinism import compute_provider_binding_digest
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_records_execution_trace("p0", "evidence", "determinism")
+_emit_applies_guardrail("p0", "determinism", "p0_governance")
+_emit_snapshots_state("p0", "determinism", "state_snapshot")
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 GATEWAY_PATH = REPO_ROOT / AGENTIC_CORE_DIR / "L2_execution" / "enforcement" / "SovereignLLMGateway.py"
@@ -173,7 +184,9 @@ def compute_lockdown_determinism_digest() -> str:
     tool_inventory_hash = _sha256_bytes(_canonical_json(tool_inventory_map).encode("utf-8"))
 
     # Healer registry hash
-    healer_registry_path = REPO_ROOT / AGENTIC_CORE_DIR / "L2_execution" / "healers" / "healing_tier_router.py"
+    healer_registry_path = (
+        REPO_ROOT / AGENTIC_CORE_DIR / "L2_execution" / "healers" / "healing_tier_router.py"
+    )
     healer_registry_hash = _file_hash(healer_registry_path) if healer_registry_path.exists() else ""
 
     # Allowlists hash

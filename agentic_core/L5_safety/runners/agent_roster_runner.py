@@ -15,6 +15,14 @@ import json
 import sys
 from pathlib import Path
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
+
 
 def get_project_root() -> Path:
     """Get project root from this file's location."""
@@ -23,6 +31,21 @@ def get_project_root() -> Path:
 
 def _get_ObservabilityProbeExecutorAgent():
     """Lazy loader for ObservabilityProbeExecutorAgent (upward L5->L6 seam)."""
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "_get_ObservabilityProbeExecutorAgent", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "_get_ObservabilityProbeExecutorAgent", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "_get_ObservabilityProbeExecutorAgent")
     from agentic_core.L6_observability.reasoning.observability_probe_executor import (
         ObservabilityProbeExecutorAgent,
     )

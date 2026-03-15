@@ -16,7 +16,13 @@ except ImportError as _err:
         "rank-bm25 is required for this module. Install with: pip install -e '.[infra]'"
     ) from _err
 from agentic_core.L2_execution.config.hybrid_retriever_config import ASTAwareTokenizer
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 _tokenizer = ASTAwareTokenizer()
 
@@ -25,6 +31,17 @@ class Bm25Store:
     """In-memory BM25 index for fast keyword retrieval."""
 
     def __init__(self):
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "Bm25Store.__init__", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "Bm25Store.__init__", "p0_governance")
         self.documents: list[dict] = []
         self.bm25: BM25Okapi | None = None
         self._build_index()
@@ -32,6 +49,7 @@ class Bm25Store:
     def add_documents(self, docs: list[dict]) -> None:
         """Add or update documents."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "Bm25Store.add_documents")
 

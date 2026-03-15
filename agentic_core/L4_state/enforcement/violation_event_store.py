@@ -19,9 +19,14 @@ import uuid
 from agentic_core.L4_state.types.violation_event_types import ViolationEvent
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
     _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
     _emit_snapshots_state,
 )
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "violation_event_store", "p0_governance")
 
 
 class ViolationEventStore:
@@ -42,8 +47,11 @@ class ViolationEventStore:
         """
         _emit_snapshots_state(str(uuid.uuid4()), "ViolationEventStore.store_violation_event", "L4_STATE")
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "ViolationEventStore.store_violation_event")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L4_STATE, "ViolationEventStore.store_violation_event"
+        )
 
         if not isinstance(event, ViolationEvent):
             raise TypeError(

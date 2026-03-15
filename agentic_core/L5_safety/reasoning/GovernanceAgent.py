@@ -5,6 +5,9 @@ import importlib
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L0_routing.utils.ssot_discovery_util import get_python_files
 from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.runtime.lifecycle_trace_contract import _emit_signs_execution_trace  # noqa: E402
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 "\nL6 Sovereign Code Graph & Governance Infrastructure\n\nImplements the DependencyGraph class and impact radius analysis\nfor calculating blast radius of file modifications.\n\nFeatures:\n- AST-based dependency extraction\n- Impact radius calculation\n- Architecture governance laws enforcement (DECISION-ONLY as of P4 consolidation)\n- Blast radius visualization\n\n[P4 CONSOLIDATION] 2025-12-31:\nFile move operations have been centralized into StructuralHealerAgent.\nGovernanceAgent now provides DECISION-ONLY functions:\n- check_depth_law() -> Returns Violation info, does NOT move files\n- check_atomicity_law() -> Returns Violation info, does NOT split files\n\nFor file operations, use:\n    from agentic_core.L5_safety.enforcement.StructuralHealerAgent import StructuralHealerAgent\n    healer = StructuralHealerAgent(project_root)\n    healer.heal_file_moves(violations)  # For depth violations\n    healer.heal_fission(large_files)    # For atomicity violations\n\nGOLD STANDARD UPGRADE (2026-01-02):\n- Structured Violation dataclass with severity levels\n- HierarchyAgent integration for structure validation\n- ImportAgent integration for gravity compliance\n- Post-heal validation with blast radius analysis\n- Batch post-heal reporting with FULL_SUCCESS/PARTIAL/NEEDS_REVIEW\n- cleanup_violations with multi-stage healing coordination\n- run_with_cleanup returning comprehensive summaries\n\nDOMAIN-SPECIFIC INTEGRATIONS:\n- HierarchyAgent: Validate structure after governance fixes\n- ImportAgent: Check gravity compliance after moves\n- DependencyGraph: Calculate blast radius for all changes\n"
 import ast
@@ -42,7 +45,7 @@ except ImportError:
 
 from agentic_core.L0_routing.config import AGENTIC_CORE_DIR
 from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, TESTS_DIR
-from agentic_core.runtime.lifecycle_trace_contract import _emit_applies_guardrail
+from agentic_core.runtime.lifecycle_trace_contract import _emit_applies_guardrail, _emit_snapshots_state
 from agentic_core.utils.timeout_decorator_util import timeout
 
 Logger: Any = logging.getLogger(__name__)
@@ -60,6 +63,9 @@ def heal(violation: dict[str, Any]) -> dict[str, Any]:
     Returns:
         Dict with keys: status, details, artifacts, errors
     """
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "heal", "state_snapshot")
     try:
         violation_type = violation.get("type", "")
         file_path = violation.get("file")

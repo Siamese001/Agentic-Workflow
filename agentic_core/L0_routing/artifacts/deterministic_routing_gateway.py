@@ -23,10 +23,17 @@ from agentic_core.L0_routing.types.routing_artifact_types import (
 from agentic_core.L2_execution.providers import get_clock
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
     _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
     emit_determinism_digest,
     emit_replay_key,
 )
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "deterministic_routing_gateway", "p0_governance")
+_emit_snapshots_state("p0", "deterministic_routing_gateway", "state_snapshot")
 
 logger = logging.getLogger(__name__)
 _REPLAY_KEY_LOGGER = logging.getLogger("adg.emits_replay_key")
@@ -52,6 +59,7 @@ class RoutingArtifact:
     def as_route_decision(self, risk_score: float = 0.0, budget_est: float = 0.0) -> RouteDecisionArtifact:
         """Convert to the canonical RouteDecisionArtifact for downstream consumers."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "RoutingArtifact.as_route_decision")
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
@@ -115,8 +123,11 @@ class DeterministicRoutingGateway:
         request so downstream layers can verify routing provenance.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "DeterministicRoutingGateway.stamp_decision")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L0_ROUTING, "DeterministicRoutingGateway.stamp_decision"
+        )
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
         emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
 

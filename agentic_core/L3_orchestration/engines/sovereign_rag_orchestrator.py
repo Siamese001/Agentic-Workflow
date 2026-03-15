@@ -25,6 +25,17 @@ from agentic_core.L3_orchestration.types.rag_provider_types import (
 
 
 def _get_active_configs():
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "_get_active_configs", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "_get_active_configs", "p0_governance")
     from agentic_core.L4_state.config.versioned_configs import get_active_configs
 
     return get_active_configs
@@ -36,7 +47,13 @@ def _get_retrieval_anchor_types():
     return (AnchoredResult, RetrievalAnchor)
 
 
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
 
@@ -154,7 +171,9 @@ class SovereignRagOrchestrator(SovereignBaseAgent, IRagProvider):
             Dictionary with faithfulness score and improvement suggestions
         """
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "SovereignRAGOrchestrator.red_team_critique")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "SovereignRAGOrchestrator.red_team_critique"
+        )
         response: Any = await self.engine.resilient_mutation(critique_prompt, temperature=0.3)
 
         # guardian: allow-type-erasure

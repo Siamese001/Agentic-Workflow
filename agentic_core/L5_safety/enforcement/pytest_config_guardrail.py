@@ -1,5 +1,8 @@
 from agentic_core.L0_routing.config.path_constants import TESTS_DIR
 from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.runtime.lifecycle_trace_contract import _emit_snapshots_state  # noqa: E402
+
+_emit_snapshots_state("p0", "pytest_config_guardrail", "state_snapshot")
 
 "\nPytest Configuration Enforcement Guard\n====================================\n\nValidates pytest configuration against hardening rules learned from RCA.\nEnsures conftest hooks are transparent and marker behavior is documented.\n"
 import ast
@@ -25,12 +28,20 @@ class PytestEnforcementGuard:
 
     def validate_pytest_configuration(self) -> tuple[list[str], list[str]]:
         """Validate entire pytest configuration setup."""
-        _emit_applies_guardrail(str(uuid.uuid4()), "PytestEnforcementGuard.validate_pytest_configuration", "L5_POLICY")
+        _emit_applies_guardrail(
+            str(uuid.uuid4()), "PytestEnforcementGuard.validate_pytest_configuration", "L5_POLICY"
+        )
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "PytestEnforcementGuard.validate_pytest_configuration")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L5_POLICY, "PytestEnforcementGuard.validate_pytest_configuration"
+        )
         import hashlib as _hashlib  # noqa: PLC0415
-        _seg_hash = _hashlib.sha256(f"{_trace_id}:PytestEnforcementGuard.validate_pytest_configuration".encode()).hexdigest()[:24]
+
+        _seg_hash = _hashlib.sha256(
+            f"{_trace_id}:PytestEnforcementGuard.validate_pytest_configuration".encode()
+        ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
         self.errors.clear()
@@ -212,10 +223,18 @@ class TestPytestConfigGuardBrittleMarkerDetection:
     def test_detects_brittle_getoption_m(self):
         """Test that getoption("-m") is flagged as brittle."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "TestPytestConfigGuardBrittleMarkerDetection.test_detects_brittle_getoption_m")
+        _emit_records_execution_trace(
+            _trace_id,
+            LayerSegment.L5_POLICY,
+            "TestPytestConfigGuardBrittleMarkerDetection.test_detects_brittle_getoption_m",
+        )
         import hashlib as _hashlib  # noqa: PLC0415
-        _seg_hash = _hashlib.sha256(f"{_trace_id}:TestPytestConfigGuardBrittleMarkerDetection.test_detects_brittle_getoption_m".encode()).hexdigest()[:24]
+
+        _seg_hash = _hashlib.sha256(
+            f"{_trace_id}:TestPytestConfigGuardBrittleMarkerDetection.test_detects_brittle_getoption_m".encode()
+        ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
         import tempfile

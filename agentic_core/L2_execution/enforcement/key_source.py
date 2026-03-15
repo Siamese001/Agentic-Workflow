@@ -14,7 +14,10 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_applies_guardrail,
     _emit_records_execution_trace,
     _emit_signs_execution_trace,
+    _emit_snapshots_state,  # noqa: E402
 )
+
+_emit_snapshots_state("p0", "key_source", "state_snapshot")
 
 
 class KeySource(ABC):
@@ -51,9 +54,11 @@ class TestKeySource(KeySource):
     def assert_key_scope(self, artifact_type: str) -> None:
         """Assert that the key is scoped for the given artifact type."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "TestKeySource.assert_key_scope")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:TestKeySource.assert_key_scope".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
@@ -93,9 +98,11 @@ class EnvKeySource(KeySource):
     def assert_key_scope(self, artifact_type: str) -> None:
         """Assert that the key is scoped for the given artifact type."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "EnvKeySource.assert_key_scope")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:EnvKeySource.assert_key_scope".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 

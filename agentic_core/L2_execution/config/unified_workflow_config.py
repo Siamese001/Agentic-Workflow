@@ -1,5 +1,13 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+)
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "unified_workflow_config", "p0_governance")
+
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
 THRESHOLD = 0.95
@@ -36,11 +44,18 @@ from agentic_core.L2_execution.enforcement.guardrail_gate import get_guardrail_g
 from agentic_core.L2_execution.types.capability_token_types import (
     CapabilityTokenArtifact,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_snapshots_state,
+)
 
 
 def _get_assert_activation_allowed():
     """Lazy load assert_activation_allowed to avoid upward import."""
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "_get_assert_activation_allowed", "state_snapshot")
     from agentic_core.L5_safety.enforcement.activation_gate import (
         assert_activation_allowed,
     )
@@ -89,7 +104,9 @@ class Coordinator(ABC):
     def record_execution(self, success: bool):
         """Record mission execution."""
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "WorkflowMetrics.record_execution")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "WorkflowMetrics.record_execution"
+        )
         self.missions_executed += 1
         if success:
             self.missions_succeeded += 1

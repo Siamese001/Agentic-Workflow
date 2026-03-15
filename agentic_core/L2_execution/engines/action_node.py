@@ -1,5 +1,13 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "action_node", "p0_governance")
+_emit_snapshots_state("p0", "action_node", "state_snapshot")
+
 """
 Action Node - Sub-atomic Execution & Output Generation
 
@@ -74,9 +82,11 @@ class ActionNode:
         """
         _emit_transcripts_response(str(uuid.uuid4()), "ActionNode.act", "model")
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "ActionNode.act")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:ActionNode.act".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 

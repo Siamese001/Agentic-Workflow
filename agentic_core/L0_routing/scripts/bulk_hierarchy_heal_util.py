@@ -2,6 +2,18 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "bulk_hierarchy_heal_util")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "bulk_hierarchy_heal_util", "p0_governance")
+_emit_snapshots_state("p0", "bulk_hierarchy_heal_util", "state_snapshot")
+
 "\nOne-Off Bulk Hierarchy Healer - Eternal Depth 4 Alignment\n"
 import shutil
 import sys

@@ -19,6 +19,17 @@ from agentic_core.L2_execution.types.heal_contract_types import (
     HealCheckResult,
     HealStatus,
 )
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_records_execution_trace("p0", "evidence", "heal_result_adapter")
+_emit_applies_guardrail("p0", "heal_result_adapter", "p0_governance")
+_emit_snapshots_state("p0", "heal_result_adapter", "state_snapshot")
 
 # Mirror the pattern used by HealCheckResult.__post_init__ to detect absolute paths.
 # Must be kept in sync with heal_contract_types._ABS_PATH_RE.
@@ -182,9 +193,7 @@ def _extract_changes_made(d: dict[str, Any], agent_name: str, root: Path) -> lis
     return changes
 
 
-def _determine_llm_escalation(
-    d: dict[str, Any], status: HealStatus, changes_made: list[str]
-) -> bool:
+def _determine_llm_escalation(d: dict[str, Any], status: HealStatus, changes_made: list[str]) -> bool:
     """Return True iff LLM escalation is required."""
     # Agent explicitly set the flag
     if "needs_llm_escalation" in d:

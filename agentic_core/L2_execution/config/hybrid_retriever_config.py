@@ -25,7 +25,13 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 try:
     from rank_bm25 import BM25Okapi
@@ -95,6 +101,17 @@ class ASTAwareTokenizer:
     @staticmethod
     def split_identifier(name: str) -> list[str]:
         """Split CamelCase and snake_case identifiers into sub-tokens."""
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "ASTAwareTokenizer.split_identifier", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "ASTAwareTokenizer.split_identifier", "p0_governance")
         # First split on underscores
         parts = name.split("_")
         result = []
@@ -209,7 +226,9 @@ class HybridRetriever:
     async def rebuild_from_ingestion(self) -> Any:
         """Rebuild local index from latest ingestion artifacts"""
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "HybridRetrieverConfig.rebuild_from_ingestion")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "HybridRetrieverConfig.rebuild_from_ingestion"
+        )
         try:
             from agentic_core.L0_routing.scripts.sovereign_ingestion_mission import (
                 load_latest_ingested_chunks,

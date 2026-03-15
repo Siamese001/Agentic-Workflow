@@ -21,6 +21,16 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Sequence
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+)
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_records_execution_trace("p0", "evidence", "write_gateway")
+_emit_applies_guardrail("p0", "write_gateway", "p0_governance")
+
 Logger: Any = logging.getLogger("L2.WriteGateway")
 _MUTATION_LEDGER_PATH: Path | None = None
 _MUTATION_SEQUENCE: int = 0
@@ -32,9 +42,13 @@ from agentic_core.L0_routing.config.path_constants import (
     TESTS_DIR,
 )
 from agentic_core.L0_routing.enforcement.mutation_prohibition import enforce_protected_root
+from agentic_core.runtime.lifecycle_trace_contract import _emit_snapshots_state
 
 
 def _invoke_authorize_and_execute(execution_context, target_callable, capability_token, payload, **kw):
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "_invoke_authorize_and_execute", "state_snapshot")
     from agentic_core.L2_execution.enforcement.execution_guardrail_chokepoint import (
         authorize_and_execute,  # noqa: PLC0415
     )

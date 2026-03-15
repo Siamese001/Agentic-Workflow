@@ -42,6 +42,17 @@ from enum import Enum
 from typing import Any
 
 from agentic_core.L2_execution.providers import get_clock
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_snapshots_state("p0", "evaluation_record", "state_snapshot")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "evaluation_record", "p0_governance")
+_emit_records_execution_trace("p0", "evidence", "evaluation_record")
 
 logger = logging.getLogger(__name__)
 _INVOKES_EVAL_LOG = logging.getLogger("adg.invokes_eval")

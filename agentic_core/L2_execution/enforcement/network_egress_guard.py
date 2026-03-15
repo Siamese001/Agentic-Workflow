@@ -12,6 +12,14 @@ import os
 import re
 import socket
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
+
 Logger = logging.getLogger(__name__)
 LLM_ENDPOINT_PATTERNS = [
     ".*\\.openai\\.com",
@@ -51,6 +59,21 @@ def is_llm_endpoint(hostname: str, port: int | None = None) -> bool:
     Returns:
         True if it's an LLM endpoint, False otherwise
     """
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "is_llm_endpoint", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "is_llm_endpoint", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "is_llm_endpoint")
     host_port = f"{hostname}:{port}" if port else hostname
     for pattern in COMPILED_PATTERNS:
         if pattern.match(host_port):

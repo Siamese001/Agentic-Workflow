@@ -12,7 +12,10 @@ from typing import Any
 
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,
     _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
     _emit_validated_by_safety_plane,
 )
 from agentic_core.utils.decorators_compat_util import standard_heal
@@ -45,6 +48,17 @@ class RegressionOracleAgent(SovereignBaseAgent):
         Args:
             ctx: ValidationContext
         """
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "RegressionOracleAgent.__init__", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "RegressionOracleAgent.__init__", "p0_governance")
         super().__init__(ctx)
         self.test_dir = Path("tests/autogen")
         _wg.ensure_dir(self.test_dir)
@@ -80,7 +94,9 @@ class RegressionOracleAgent(SovereignBaseAgent):
         Listens for FILE_MODIFIED signals and generates tests.
         """
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "RegressionOracleAgent.execute")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L5_POLICY, "RegressionOracleAgent.execute"
+        )
         Logger.info("🔮 Regression Oracle: Monitoring for FILE_MODIFIED signals...")
         modified_files_to_process: Any = []
         if hasattr(self.ctx, "signals"):
@@ -109,7 +125,9 @@ class RegressionOracleAgent(SovereignBaseAgent):
 
         Returns a list of violation descriptions (empty = safe).
         """
-        _emit_validated_by_safety_plane(str(uuid.uuid4()), "RegressionOracleAgent._ast_safety_check", "L5_POLICY")
+        _emit_validated_by_safety_plane(
+            str(uuid.uuid4()), "RegressionOracleAgent._ast_safety_check", "L5_POLICY"
+        )
         import ast as _ast
 
         DANGEROUS_CALLS = {"os.system", "subprocess", "exec", "eval", "__import__", "compile"}

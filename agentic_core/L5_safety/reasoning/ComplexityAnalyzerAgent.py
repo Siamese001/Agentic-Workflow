@@ -31,11 +31,15 @@ from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
 )
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
     _emit_records_execution_trace,
     _emit_signs_execution_trace,
+    _emit_snapshots_state,
     _emit_validated_by_safety_plane,
 )
 from agentic_core.utils.decorators_compat_util import standard_heal
+
+_emit_applies_guardrail("p0", "ComplexityAnalyzerAgent", "p0_governance")
 
 Logger = logging.getLogger(__name__)
 
@@ -50,6 +54,9 @@ class ComplexityAnalyzerStrategy(ValidatorStrategy):
 
     def __init__(self, config: dict[str, Any]) -> None:
         """Initialize with complexity analysis configuration."""
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "ComplexityAnalyzerStrategy.__init__", "state_snapshot")
         super().__init__(config)
         self.max_cyclomatic_complexity = config.get("max_cyclomatic_complexity", 10)
         self.max_function_length = config.get("max_function_length", 50)
@@ -59,10 +66,14 @@ class ComplexityAnalyzerStrategy(ValidatorStrategy):
         """Execute complexity analysis via unified strategy."""
         _emit_validated_by_safety_plane(str(uuid.uuid4()), "ComplexityAnalyzerStrategy.execute", "L5_POLICY")
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "ComplexityAnalyzerStrategy.execute")
         import hashlib as _hashlib  # noqa: PLC0415
-        _seg_hash = _hashlib.sha256(f"{_trace_id}:ComplexityAnalyzerStrategy.execute".encode()).hexdigest()[:24]
+
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:ComplexityAnalyzerStrategy.execute".encode()).hexdigest()[
+            :24
+        ]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
         agent.log_info("Executing complexity analysis...")
@@ -135,10 +146,16 @@ class ComplexityAnalyzerAgent(SovereignBaseAgent):
     def analyze_repository(self, target_path: Path = None) -> dict[str, Any]:
         """Entry point for full scan."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "ComplexityAnalyzerAgent.analyze_repository")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L5_POLICY, "ComplexityAnalyzerAgent.analyze_repository"
+        )
         import hashlib as _hashlib  # noqa: PLC0415
-        _seg_hash = _hashlib.sha256(f"{_trace_id}:ComplexityAnalyzerAgent.analyze_repository".encode()).hexdigest()[:24]
+
+        _seg_hash = _hashlib.sha256(
+            f"{_trace_id}:ComplexityAnalyzerAgent.analyze_repository".encode()
+        ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
         target = target_path or self.project_root

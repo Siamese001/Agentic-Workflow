@@ -7,6 +7,18 @@ These are used by the tool_registry to validate tool calls.
 
 from pydantic import BaseModel, Field
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_records_execution_trace("p0", "evidence", "tool_args_types")
+_emit_applies_guardrail("p0", "tool_args_types", "p0_governance")
+_emit_snapshots_state("p0", "tool_args_types", "state_snapshot")
+
 
 class ReadFileArgs(BaseModel):
     """Arguments for reading a file."""

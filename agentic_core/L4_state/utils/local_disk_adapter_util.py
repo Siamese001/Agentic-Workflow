@@ -15,7 +15,13 @@ def _get_write_gateway():
 from pathlib import Path
 from typing import Any
 
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 
 class LocalDiskAdapter:
@@ -28,6 +34,17 @@ class LocalDiskAdapter:
     """
 
     def __init__(self, config: dict[str, Any]):
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "LocalDiskAdapter.__init__", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "LocalDiskAdapter.__init__", "p0_governance")
         self.config = config
         self.root = Path(config.get("storage_path", "./data/storage"))
         _get_write_gateway().ensure_dir(self.root)
@@ -35,6 +52,7 @@ class LocalDiskAdapter:
     async def write_blob(self, key: str, data: bytes, METADATA: dict = None) -> Any:
         """Writes data to the sovereign storage area."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "LocalDiskAdapter.write_blob")
 

@@ -38,7 +38,13 @@ from agentic_core.L0_routing.scripts._ssot_types import (
     HealContext,
 )
 from agentic_core.L0_routing.scripts._ssot_validation_artifacts import _record_healing_action
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 logger = logging.getLogger("UnifiedSovereign")
 
@@ -49,6 +55,17 @@ ALLOWED_MODULE_PREFIXES = (AGENTIC_CORE_DIR, APPS_SHARED_DIR, APPS_LIC_DIR, APPS
 
 
 def _get_uwg():
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "_get_uwg", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "_get_uwg", "p0_governance")
     from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
 
     return UniversalWriteGateway.get_instance()
@@ -147,8 +164,11 @@ class RuntimeStateManager:
         self._persistence_disabled: bool = False
 
     def start_mission(self, mission_type: str, agents_order: list[str]):
-
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"RuntimeStateManager.start_mission:{mission_type}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            f"RuntimeStateManager.start_mission:{mission_type}",
+        )
         self.state["status"] = "running"
         self.state["start_time"] = datetime.now().isoformat()
         self.state["agents_order"] = agents_order

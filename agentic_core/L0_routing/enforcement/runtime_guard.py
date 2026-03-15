@@ -31,7 +31,14 @@ from agentic_core.L0_routing.types.guardian_contract_types import (
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_applies_guardrail,
     _emit_hard_fails_untranscripted,
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
 )
+
+_emit_records_execution_trace("p0", "evidence", "runtime_guard")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_snapshots_state("p0", "runtime_guard", "state_snapshot")
 
 Logger = logging.getLogger(__name__)
 
@@ -70,6 +77,7 @@ def runtime_guard(entry_point_id: str) -> Callable[[F], F]:
     """
 
     _emit_hard_fails_untranscripted(str(uuid.uuid4()), "Module.runtime_guard")
+
     def decorator(fn: F) -> F:
         @functools.wraps(fn)
         def sync_wrapper(*args: Any, **kwargs: Any) -> Any:

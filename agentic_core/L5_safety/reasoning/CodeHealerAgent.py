@@ -54,7 +54,13 @@ from agentic_core.L5_safety.types.surgical_context_types import (
 )
 from agentic_core.mixins.circuit_breaker_mixin import CircuitBreakerMixin
 from agentic_core.mixins.cst_healer_mixin import SurgicalCSTHealerMixin
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 Logger = logging.getLogger(__name__)
 
@@ -69,6 +75,17 @@ class CodeHealingStrategy(HealingStrategy):
 
     def __init__(self, config: dict[str, Any]) -> None:
         """Initialize with code healing configuration."""
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "CodeHealingStrategy.__init__", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "CodeHealingStrategy.__init__", "p0_governance")
         super().__init__(config)
         self.enable_canon = config.get("enable_canon", True)
         self.enable_import = config.get("enable_import", True)
@@ -77,7 +94,9 @@ class CodeHealingStrategy(HealingStrategy):
     async def execute(self, agent: UnifiedAgent, **kwargs: Any) -> HealingResult:
         """Execute code healing logic via unified strategy."""
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "CodeHealingStrategy.execute")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L5_POLICY, "CodeHealingStrategy.execute"
+        )
         agent.log_info("Executing code healing...")
 
         kwargs.get("dry_run", True)  # Reserved for future use

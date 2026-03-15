@@ -17,9 +17,14 @@ from typing import Any
 
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
     _emit_records_execution_trace,
     _emit_signs_execution_trace,
+    _emit_snapshots_state,  # noqa: E402
 )
+
+_emit_applies_guardrail("p0", "vllm_gateway_integration_types", "p0_governance")
+_emit_snapshots_state("p0", "vllm_gateway_integration_types", "state_snapshot")
 
 
 def select_serving_profile(severity: str) -> VLLMServingProfile:
@@ -119,9 +124,11 @@ class VLLMQueueController:
     def snapshot(self, oldest_wait_seconds: float = 0.0) -> VLLMQueueState:
         """Return an immutable snapshot of current queue state."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "VLLMQueueController.snapshot")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:VLLMQueueController.snapshot".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
@@ -167,9 +174,11 @@ class VLLMCircuitBreakerRegistry:
 
     def get(self, tier: str) -> VLLMCircuitBreaker:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "VLLMCircuitBreakerRegistry.get")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:VLLMCircuitBreakerRegistry.get".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 

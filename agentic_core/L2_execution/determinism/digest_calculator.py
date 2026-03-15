@@ -28,8 +28,10 @@ import hashlib
 
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,
     _emit_records_execution_trace,
     _emit_signs_execution_trace,
+    _emit_snapshots_state,
 )
 from agentic_core.utils.canonical_json_util import CanonicalJSON
 
@@ -60,9 +62,17 @@ class DigestCalculator:
         All five arguments must be 64-character lowercase hex strings (SHA-256).
         """
         import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "DigestCalculator.compute", "state_snapshot")
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "DigestCalculator.compute", "p0_governance")
+        import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "DigestCalculator.compute")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:DigestCalculator.compute".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 

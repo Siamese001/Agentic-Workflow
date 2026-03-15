@@ -18,7 +18,14 @@ import random as _random_module
 import time as _time_module
 import uuid as _uuid_module
 from typing import Any
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 _ACTIVE_TRACE_ID: str | None = None
 _PATCHED: bool = False
@@ -42,6 +49,12 @@ class FixedTimeProvider:
     """
 
     def __init__(self, trace_id: str) -> None:
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "FixedTimeProvider.__init__", "state_snapshot")
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "FixedTimeProvider.__init__", "p0_governance")
         seed_bytes = hashlib.sha256(trace_id.encode("utf-8")).digest()
         self._base_time: float = float(int.from_bytes(seed_bytes[:8], byteorder="big") % 1000000000)
         self._offset: float = 0.0
@@ -53,9 +66,11 @@ class FixedTimeProvider:
     def sleep(self, seconds: float) -> None:
         """Advance virtual clock instead of blocking."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "FixedTimeProvider.sleep")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:FixedTimeProvider.sleep".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
@@ -102,10 +117,16 @@ class DeterministicRandomSource:
     def shuffle(self, seq: list) -> list:
         """Shuffle sequence deterministically in-place and return it."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "DeterministicRandomSource.shuffle")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L2_EXECUTION, "DeterministicRandomSource.shuffle"
+        )
         import hashlib as _hashlib  # noqa: PLC0415
-        _seg_hash = _hashlib.sha256(f"{_trace_id}:DeterministicRandomSource.shuffle".encode()).hexdigest()[:24]
+
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:DeterministicRandomSource.shuffle".encode()).hexdigest()[
+            :24
+        ]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
         self._rng.shuffle(seq)
@@ -127,9 +148,11 @@ class DeterministicUUIDProvider:
     def uuid4(self) -> _uuid_module.UUID:
         """Return deterministic UUID."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "DeterministicUUIDProvider.uuid4")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:DeterministicUUIDProvider.uuid4".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 

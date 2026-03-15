@@ -17,9 +17,16 @@ from typing import Any
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
     _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
     _emit_transcripts_response,
 )
+
+_emit_snapshots_state("p0", "MetaLearningAgent", "state_snapshot")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "MetaLearningAgent", "p0_governance")
 
 TelemetryCallback = Callable[[str, dict[str, Any]], None]
 _STRICT_WEIGHTS_ENV = "META_LEARNING_STRICT_WEIGHTS"
@@ -82,8 +89,11 @@ class MetaLearningAgent(SovereignBaseAgent):
         """Stores a new experience in the replay buffer with reward signal."""
         _emit_transcripts_response(str(uuid.uuid4()), "MetaLearningAgent.store_experience", "model")
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L1_REASONING, "MetaLearningAgent.store_experience")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L1_REASONING, "MetaLearningAgent.store_experience"
+        )
 
         exp = ExperienceRecord(state=state, thought_type=thought_type, outcome=outcome, reward=reward)
         if len(self.replay_buffer) >= self.replay_capacity:

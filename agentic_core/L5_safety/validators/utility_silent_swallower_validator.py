@@ -25,10 +25,15 @@ from agentic_core.L5_safety.validators.base_detector_validator import (
 )
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
     _emit_records_execution_trace,
     _emit_signs_execution_trace,
+    _emit_snapshots_state,  # noqa: E402
     _emit_validated_by_safety_plane,
 )
+
+_emit_applies_guardrail("p0", "utility_silent_swallower_validator", "p0_governance")
+_emit_snapshots_state("p0", "utility_silent_swallower_validator", "state_snapshot")
 
 logger = logging.getLogger(__name__)
 
@@ -69,12 +74,20 @@ class UtilityScriptClassifier:
     @classmethod
     def classify_script(cls, file_path: Path) -> str:
         """Classify a script by its operational category."""
-        _emit_validated_by_safety_plane(str(uuid.uuid4()), "UtilityScriptClassifier.classify_script", "L5_POLICY")
+        _emit_validated_by_safety_plane(
+            str(uuid.uuid4()), "UtilityScriptClassifier.classify_script", "L5_POLICY"
+        )
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "UtilityScriptClassifier.classify_script")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L5_POLICY, "UtilityScriptClassifier.classify_script"
+        )
         import hashlib as _hashlib  # noqa: PLC0415
-        _seg_hash = _hashlib.sha256(f"{_trace_id}:UtilityScriptClassifier.classify_script".encode()).hexdigest()[:24]
+
+        _seg_hash = _hashlib.sha256(
+            f"{_trace_id}:UtilityScriptClassifier.classify_script".encode()
+        ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
         # Normalize to forward slashes for cross-platform comparison
@@ -146,10 +159,16 @@ class UtilitySilentSwallowerDetector(AntiPatternDetector):
     def detect(self, file_path: Path, tree: ast.Module) -> list[AntiPatternViolation]:
         """Detect utility silent swallower violations in the given AST."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "UtilitySilentSwallowerDetector.detect")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L5_POLICY, "UtilitySilentSwallowerDetector.detect"
+        )
         import hashlib as _hashlib  # noqa: PLC0415
-        _seg_hash = _hashlib.sha256(f"{_trace_id}:UtilitySilentSwallowerDetector.detect".encode()).hexdigest()[:24]
+
+        _seg_hash = _hashlib.sha256(
+            f"{_trace_id}:UtilitySilentSwallowerDetector.detect".encode()
+        ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
         violations = []

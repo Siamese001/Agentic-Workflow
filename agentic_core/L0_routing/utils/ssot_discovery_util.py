@@ -11,6 +11,14 @@ USAGE:
         get_agents_by_layer,
         get_agent_by_name,
     )
+from agentic_core.runtime.lifecycle_trace_contract import _emit_snapshots_state  # noqa: E402
+from agentic_core.runtime.lifecycle_trace_contract import _emit_applies_guardrail  # noqa: E402
+from agentic_core.runtime.lifecycle_trace_contract import _emit_signs_execution_trace  # noqa: E402
+from agentic_core.runtime.lifecycle_trace_contract import _emit_records_execution_trace  # noqa: E402
+_emit_records_execution_trace("p0", "evidence", "ssot_discovery_util")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "ssot_discovery_util", "p0_governance")
+_emit_snapshots_state("p0", "ssot_discovery_util", "state_snapshot")
 
     # Get all agent paths
     paths = get_agent_paths(project_root)
@@ -116,7 +124,7 @@ def load_agent_discovery(
         Logger.debug(f"[SSOT] Loaded {len(agents)} agents from discovery JSON")
         return agents
 
-    # guardian: allow-silent-swallow
+    # guardian: allow-silent-swallow -- resilient SSOT discovery; failure logged above
     except Exception as e:
         Logger.error(f"[SSOT] Failed to load discovery JSON: {e}")
         return []

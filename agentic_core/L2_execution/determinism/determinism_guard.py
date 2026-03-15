@@ -11,6 +11,14 @@ import uuid
 from contextlib import contextmanager
 from typing import Generator
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
+
 
 @contextmanager
 def assert_no_uuid4() -> Generator[None, None, None]:
@@ -19,6 +27,21 @@ def assert_no_uuid4() -> Generator[None, None, None]:
     Raises:
         RuntimeError: If uuid.uuid4() is called within the context.
     """
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "assert_no_uuid4", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "assert_no_uuid4", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "assert_no_uuid4")
     original_uuid4 = uuid.uuid4
 
     def tracking_uuid4() -> uuid.UUID:

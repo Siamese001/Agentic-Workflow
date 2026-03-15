@@ -7,6 +7,14 @@ import importlib
 import logging
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
+
 from .client import MCPClientRegistry, MCPClientSpec, MCPClientStub
 from .exceptions_util import MCPClientInitializationError
 
@@ -25,6 +33,21 @@ def parse_mcp_client_specs(raw_specs: list[dict[str, Any]]) -> list[MCPClientSpe
     Raises:
         ValueError: If specs are invalid
     """
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "parse_mcp_client_specs", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "parse_mcp_client_specs", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "parse_mcp_client_specs")
     specs: list[MCPClientSpec] = []
     for raw in raw_specs:
         if not isinstance(raw, dict):

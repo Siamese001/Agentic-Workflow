@@ -70,7 +70,10 @@ from agentic_core.L5_safety.enforcement.policy_action_contract import (
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
+    _emit_applies_guardrail,
     _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
 )
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
@@ -91,6 +94,17 @@ class L3OrchestrationStrategy(OrchestrationStrategy):
 
     def __init__(self, config: dict[str, Any], mode: str = "unified") -> None:
         """Initialize with orchestration configuration."""
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "L3OrchestrationStrategy.__init__", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "L3OrchestrationStrategy.__init__", "p0_governance")
         super().__init__(config)
         self.mode = mode
         self.project_root = Path.cwd().resolve()
@@ -100,9 +114,13 @@ class L3OrchestrationStrategy(OrchestrationStrategy):
     @runtime_guard("A.execute.orchestrator_engine")
     async def execute(self, agent: UnifiedAgent, **kwargs: Any) -> OrchestrationResult:
         """Execute orchestration logic via unified strategy."""
-        _emit_agent_executes_agent(str(uuid.uuid4()), "L3OrchestrationStrategy", "L3OrchestrationStrategy.execute")
+        _emit_agent_executes_agent(
+            str(uuid.uuid4()), "L3OrchestrationStrategy", "L3OrchestrationStrategy.execute"
+        )
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"orchestrator_engine.execute:{self.mode}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"orchestrator_engine.execute:{self.mode}"
+        )
         with get_trace_context().run_frame(
             layer="L3",
             module="orchestrator_engine",

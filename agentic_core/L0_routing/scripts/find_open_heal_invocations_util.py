@@ -6,6 +6,18 @@ This is a data integrity issue that needs to be fixed.
 
 import json
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "find_open_heal_invocations_util")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "find_open_heal_invocations_util", "p0_governance")
+_emit_snapshots_state("p0", "find_open_heal_invocations_util", "state_snapshot")
+
 with open("agent_discovery_full.json") as f:
     agents = json.load(f)
 print(f"Total agents: {len(agents)}")

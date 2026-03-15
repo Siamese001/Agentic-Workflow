@@ -13,7 +13,13 @@ from enum import Enum
 from typing import Any, Literal
 
 from agentic_core.L0_routing.engines.assembly_stage import GovernedPayload
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 
 class HumanAction(Enum):
@@ -35,6 +41,17 @@ class StructuredPatchSchema:
 
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization."""
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "StructuredPatchSchema.to_dict", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "StructuredPatchSchema.to_dict", "p0_governance")
         return {
             "allowed_tools": list(self.allowed_tools),
             "patch_format": self.patch_format,
@@ -85,8 +102,11 @@ class HumanDecisionArtifact:
             rationale: Rationale for the modifications
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HumanDecisionArtifact.apply_modify_diff")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "HumanDecisionArtifact.apply_modify_diff"
+        )
 
         import hashlib
         from datetime import datetime

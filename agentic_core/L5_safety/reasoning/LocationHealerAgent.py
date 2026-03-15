@@ -59,13 +59,27 @@ from agentic_core.L5_safety.utils.location_utils_util import (
 )
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,
     _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
     _emit_validated_by_safety_plane,
 )
 from agentic_core.utils.timeout_decorator_util import timeout
 
 
 def _get_write_gateway():
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "_get_write_gateway", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "_get_write_gateway", "p0_governance")
     _emit_validated_by_safety_plane(str(uuid.uuid4()), "Module._get_write_gateway", "L5_POLICY")
     from agentic_core.L2_execution.tools import write_gateway
 
@@ -947,14 +961,14 @@ class LocationHealerAgent(SovereignBaseAgent):
                         target_class=self.__class__.__name__,
                         method=method_name,
                         target_instance=self,
-                        args=(file_path, dry_run, affected_paths)
+                        args=(file_path, dry_run, affected_paths),
                     )
                 return registry.dispatch(
                     caller="LocationHealerAgent",
                     target_class=self.__class__.__name__,
                     method=method_name,
                     target_instance=self,
-                    args=(file_path, msg, dry_run, affected_paths, import_touched_paths)
+                    args=(file_path, msg, dry_run, affected_paths, import_touched_paths),
                 )
 
         # Block archiving for depth violations — these must never fall through to archive

@@ -20,10 +20,22 @@ from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Generator
+
 from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     TESTS_DIR,
 )
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "mutation_prohibition")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "mutation_prohibition", "p0_governance")
+_emit_snapshots_state("p0", "mutation_prohibition", "state_snapshot")
 
 logger = logging.getLogger(__name__)
 

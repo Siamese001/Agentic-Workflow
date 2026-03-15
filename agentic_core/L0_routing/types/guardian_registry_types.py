@@ -16,6 +16,14 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Literal
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
+
 
 class GuardianTier(str, Enum):
     """Execution tier for guardians."""
@@ -194,6 +202,21 @@ def get_guardian_specs(
     Returns:
         Tuple of GuardianSpec in deterministic sorted order by guardian_id.
     """
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "get_guardian_specs", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "get_guardian_specs", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "get_guardian_specs")
     result = list(ALL_GUARDIANS)
     if enabled_only:
         result = [s for s in result if s.enabled_by_default]

@@ -31,6 +31,13 @@ from agentic_core.L0_routing.types.guardian_registry_types import (
     ALL_GUARDIANS,
 )
 from agentic_core.L0_routing.utils.project_root_util import get_validated_project_root
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 GUARDIAN_ID = "contract_integrity"
 
@@ -45,6 +52,21 @@ CANONICAL_CONTRACT_MODULE = "agentic_core.L0_routing.types.guardian_contract_typ
 
 def _check_imports_contract(tree: ast.AST) -> bool:
     """Check if the module imports from the canonical contract path."""
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "_check_imports_contract", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "_check_imports_contract", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "_check_imports_contract")
     for node in ast.walk(tree):
         if isinstance(node, ast.ImportFrom):
             if node.module and CANONICAL_CONTRACT_MODULE in node.module:

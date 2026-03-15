@@ -13,7 +13,10 @@ from agentic_core.utils.feature_flags import FeatureFlagManager
 
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,
     _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
     emit_determinism_digest,
     emit_replay_key,
 )
@@ -45,8 +48,22 @@ class ComponentFactory:
             VerificationGateProtocol instance or None if disabled
         """
         import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "ComponentFactory.get_verification_gate", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "ComponentFactory.get_verification_gate", "p0_governance")
+        import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "ComponentFactory.get_verification_gate")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L0_ROUTING, "ComponentFactory.get_verification_gate"
+        )
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
         emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
 

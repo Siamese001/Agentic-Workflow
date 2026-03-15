@@ -39,6 +39,14 @@ import warnings
 from collections.abc import Iterator
 from pathlib import Path
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
+
 Logger = logging.getLogger(__name__)
 
 
@@ -65,6 +73,21 @@ def guarded_rglob(path: Path, pattern: str, caller: str | None = None) -> Iterat
         # Instead of: path.rglob("*.py")
         files = list(guarded_rglob(path, "*.py"))
     """
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "guarded_rglob", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "guarded_rglob", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "guarded_rglob")
     caller_info = f" (caller: {caller})" if caller else ""
     path_str = str(path)
 

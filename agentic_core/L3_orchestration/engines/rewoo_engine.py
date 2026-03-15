@@ -24,7 +24,17 @@ from agentic_core.L3_orchestration.types.rewoo_types import (
     RewooTaskList,
     RewooTaskStatus,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_snapshots_state("p0", "rewoo_engine", "state_snapshot")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "rewoo_engine", "p0_governance")
 
 Logger = logging.getLogger(__name__)
 
@@ -50,6 +60,7 @@ class RewooPlanner:
     async def plan(self, goal: str, context: dict[str, Any] | None = None) -> RewooTaskList:
         """Generate ordered task list for the goal."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RewooPlanner.plan")
 
@@ -85,6 +96,7 @@ class RewooSolver:
     async def execute_task(self, task: RewooTask, context: RewooContext) -> Any:
         """Execute a single task, substituting #task_id references in tool_input."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RewooSolver.execute_task")
 
@@ -126,6 +138,7 @@ class RewooWorker:
     def update(self, context: RewooContext, task: RewooTask) -> None:
         """Persist task result into context for downstream tasks."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RewooWorker.update")
 
@@ -176,6 +189,7 @@ class RewooEngine:
             RewooContext with all task results and optional final_answer.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RewooEngine.run")
 

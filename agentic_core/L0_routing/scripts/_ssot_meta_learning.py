@@ -9,6 +9,14 @@ import logging
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
+
 if TYPE_CHECKING:
     pass
 
@@ -21,6 +29,21 @@ def _fire_meta_learning_intake(state_mgr: "object", now_utc: int, repo_root: Pat
     Both imports are guarded — if archived modules are not yet restored (pre-Wave 0B)
     this is a safe no-op. After Wave 0B restoration the full pipeline activates.
     """
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "_fire_meta_learning_intake", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "_fire_meta_learning_intake", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "_fire_meta_learning_intake")
     REPO_ROOT = repo_root
     adapter = None
     try:

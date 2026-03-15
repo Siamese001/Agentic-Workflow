@@ -17,9 +17,14 @@ from typing import Any
 
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
     _emit_records_execution_trace,
     _emit_signs_execution_trace,
+    _emit_snapshots_state,  # noqa: E402
 )
+
+_emit_applies_guardrail("p0", "vllm_invariant_contract_types", "p0_governance")
+_emit_snapshots_state("p0", "vllm_invariant_contract_types", "state_snapshot")
 
 
 class InvariantId(str, Enum):
@@ -58,10 +63,16 @@ class InvariantViolation:
     def canonical_json(self) -> str:
         """Returns canonical JSON representation with sorted keys."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "InvariantViolation.canonical_json")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L2_EXECUTION, "InvariantViolation.canonical_json"
+        )
         import hashlib as _hashlib  # noqa: PLC0415
-        _seg_hash = _hashlib.sha256(f"{_trace_id}:InvariantViolation.canonical_json".encode()).hexdigest()[:24]
+
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:InvariantViolation.canonical_json".encode()).hexdigest()[
+            :24
+        ]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
         data = {

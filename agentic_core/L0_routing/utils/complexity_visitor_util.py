@@ -105,6 +105,11 @@ from agentic_core.L0_routing.config import (
 )
 from agentic_core.L0_routing.config.path_constants import REPORTS_DIR
 from agentic_core.L0_routing.seams.canonical_truth_seam import categorize_agent, get_canonical_layer
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 if platform.system() == "Windows":
     try:
@@ -210,6 +215,17 @@ def should_exclude_path(path: Path) -> bool:
     2. Filename matches EXCLUDED_FILENAME_PATTERNS
     3. Path contains EXCLUDED_PATH_PATTERNS
     """
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "should_exclude_path", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "should_exclude_path", "p0_governance")
     path_str = str(path).replace("\\", "/").lower()
     if any(excluded.lower() in path.parts for excluded in EXCLUDED_DIRS):
         return True
@@ -321,7 +337,9 @@ def generate_manifest(agents: list[dict], scan_duration: float, parse_errors: li
     import hashlib  # noqa: PLC0415
     from datetime import datetime  # noqa: PLC0415
 
-    _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"generate_manifest:agents={len(agents)}")
+    _emit_records_execution_trace(
+        str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"generate_manifest:agents={len(agents)}"
+    )
     content_str = json.dumps(agents, sort_keys=True)
     content_hash = hashlib.sha256(content_str.encode()).hexdigest()
     layer_counts = defaultdict(int)

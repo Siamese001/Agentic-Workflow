@@ -17,6 +17,14 @@ from pathlib import Path
 from re import Pattern
 from typing import Final
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
+
 APP_SPECIFIC_PREFIXES: Final[Mapping[str, str]] = {
     "rg_": "apps_rg",
     "lic_": "apps_lic",
@@ -95,6 +103,21 @@ EPHEMERAL_PATTERN_EXEMPTIONS: Final[Sequence[str]] = [
 
 def get_correct_app_folder(filename: str) -> str | None:
     """Return the correct root app folder for a file based on prefix."""
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "get_correct_app_folder", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "get_correct_app_folder", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "get_correct_app_folder")
     for prefix, folder in APP_SPECIFIC_PREFIXES.items():
         if filename.startswith(prefix):
             return folder

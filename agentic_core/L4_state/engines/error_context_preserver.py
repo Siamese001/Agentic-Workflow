@@ -5,7 +5,13 @@ import json
 from dataclasses import dataclass, field
 from typing import Any, NamedTuple
 
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 ExecutionTrace = Any
 AgentState = Any
@@ -36,6 +42,17 @@ class ErrorContext:
 
     def _canonical_bytes(self) -> bytes:
         """Computes the canonical byte representation of the context for hashing."""
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "ErrorContext._canonical_bytes", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "ErrorContext._canonical_bytes", "p0_governance")
         data = {
             "error_type": self.error_type,
             "error_message": self.error_message,
@@ -47,6 +64,7 @@ class ErrorContext:
     def with_chain(self, prev_hash: str) -> ErrorContext:
         """Attaches the previous hash to form a chain, returning a new instance."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "ErrorContext.with_chain")
 

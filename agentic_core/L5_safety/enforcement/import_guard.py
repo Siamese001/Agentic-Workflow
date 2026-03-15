@@ -7,6 +7,8 @@ Emits applies_guardrail ADG edges for tracking and compliance.
 
 Usage:
     from agentic_core.L5_safety.enforcement.import_guard import get_import_guard
+from agentic_core.runtime.lifecycle_trace_contract import _emit_snapshots_state  # noqa: E402
+_emit_snapshots_state("p0", "import_guard", "state_snapshot")
 
     guard = get_import_guard()
     guard.check(operation="import_module", module_name="some.module")
@@ -97,9 +99,11 @@ class ImportGuard:
         """
         _emit_verifies_policy(str(uuid.uuid4()), "ImportGuard.check", "L5_POLICY")
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "ImportGuard.check")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:ImportGuard.check".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 

@@ -11,9 +11,15 @@ import networkx as nx
 from pydantic import BaseModel, Field, validator
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 if TYPE_CHECKING:
     pass
@@ -33,6 +39,17 @@ class GraphTransaction:
         Args:
             manager: The DynamicDAGManager instance
         """
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "GraphTransaction.__init__", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "GraphTransaction.__init__", "p0_governance")
         self.manager = manager
         self.original_graph = None
         self.transaction_graph = None
@@ -192,7 +209,11 @@ class DAGMutatorAgent(SovereignBaseAgent):
         """
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"DAGMutatorAgent.apply_mutation:{mutation.mutation_type}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            f"DAGMutatorAgent.apply_mutation:{mutation.mutation_type}",
+        )
         try:
             with GraphTransaction(self) as tx_graph:
                 self._validate_mutation(tx_graph, mutation)

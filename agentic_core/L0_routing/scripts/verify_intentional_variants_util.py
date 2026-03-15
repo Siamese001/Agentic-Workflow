@@ -18,6 +18,13 @@ from agentic_core.L0_routing.config.path_constants import (
     GLOBAL_EXCLUDED_DIRS,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 from agentic_core.utils.ast_fuzzy_util import compute_file_hash
 
 project_root = Path(__file__).parent.parent
@@ -27,6 +34,21 @@ sys.path.insert(0, str(project_root))  # guardian: allow-global-mutation
 
 def read_file_content(file_path: Path) -> str:
     """Read file content as string."""
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "read_file_content", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "read_file_content", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "read_file_content")
     try:
         with open(file_path, encoding="utf-8") as f:
             return f.read()

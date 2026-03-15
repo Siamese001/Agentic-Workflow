@@ -16,6 +16,14 @@ from __future__ import annotations
 import ast
 from typing import TYPE_CHECKING
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
+
 if TYPE_CHECKING:
     pass
 
@@ -39,6 +47,21 @@ def calculate_mccabe_complexity(node: ast.AST) -> int:
         >>> calculate_mccabe_complexity(tree.body[0])
         2
     """
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "calculate_mccabe_complexity", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "calculate_mccabe_complexity", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "calculate_mccabe_complexity")
     complexity = 1
     for child in ast.walk(node):
         if isinstance(child, ast.If | ast.For | ast.While | ast.ExceptHandler):

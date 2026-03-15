@@ -16,6 +16,14 @@ from __future__ import annotations
 from dataclasses import dataclass
 from enum import Enum
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
+
 
 class HealingTier(str, Enum):
     """Healing model tier selected by the centralized router."""
@@ -155,6 +163,21 @@ class FailureSignal:
         self, required_tools: tuple[str, ...] = (), violation_metadata_refs: tuple[str, ...] = ()
     ) -> HealingInput:
         """Convert FailureSignal to HealingInput for L2.3 router consumption."""
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "FailureSignal.to_healing_input", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "FailureSignal.to_healing_input", "p0_governance")
+        import uuid as _uuid  # noqa: PLC0415
+
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "FailureSignal.to_healing_input")
         return HealingInput(
             agent_id=self.source_agent,
             failure_type=self.failure_type,

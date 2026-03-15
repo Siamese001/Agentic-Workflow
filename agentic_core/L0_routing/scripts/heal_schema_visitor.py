@@ -30,10 +30,17 @@ from pathlib import Path
 from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
     _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
     emit_determinism_digest,
     emit_replay_key,
 )
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "heal_schema_visitor", "p0_governance")
+_emit_snapshots_state("p0", "heal_schema_visitor", "state_snapshot")
 
 CANONICAL_KEYS = {"violations_found", "violations_fixed", "errors", "skipped", "status", "error_message"}
 NON_CANONICAL_MAPPINGS = {
@@ -72,8 +79,11 @@ class HealSchemaVisitor(ast.NodeVisitor):
     def visit_FunctionDef(self, node: ast.FunctionDef):
         """TODO: Add documentation for visit_FunctionDef."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "HealSchemaVisitor.visit_FunctionDef")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L0_ROUTING, "HealSchemaVisitor.visit_FunctionDef"
+        )
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
         emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
 

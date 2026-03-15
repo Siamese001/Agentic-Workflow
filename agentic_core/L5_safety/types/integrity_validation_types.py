@@ -1,5 +1,13 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "integrity_validation_types", "p0_governance")
+_emit_snapshots_state("p0", "integrity_validation_types", "state_snapshot")
+
 "\nIntegrity Validation Guardrail - Consolidated Integrity Checks\n\nMerges:\n- L5IntegrityGateExecutor\n- GravityEnforcer\n\nComposable Rules:\n- integrity_checks: Data integrity validation\n- gravity_compliance: Gravity enforcement\n"
 import hashlib
 import time
@@ -76,10 +84,16 @@ class IntegrityValidationGuardrail:
             IntegrityResult
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "IntegrityValidationGuardrail.validate_integrity")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L5_POLICY, "IntegrityValidationGuardrail.validate_integrity"
+        )
         import hashlib as _hashlib  # noqa: PLC0415
-        _seg_hash = _hashlib.sha256(f"{_trace_id}:IntegrityValidationGuardrail.validate_integrity".encode()).hexdigest()[:24]
+
+        _seg_hash = _hashlib.sha256(
+            f"{_trace_id}:IntegrityValidationGuardrail.validate_integrity".encode()
+        ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
         start_time = time.time()

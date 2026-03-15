@@ -21,6 +21,17 @@ from agentic_core.L2_execution.types.vllm_token_budget_types import (
     estimate_tokens_qwen,
     run_preflight_budget_check,
 )
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_records_execution_trace("p0", "evidence", "vllm_concurrency_types")
+_emit_applies_guardrail("p0", "vllm_concurrency_types", "p0_governance")
+_emit_snapshots_state("p0", "vllm_concurrency_types", "state_snapshot")
 
 # ---------------------------------------------------------------------------
 # WAVE 2.1 — Stress request dataclass

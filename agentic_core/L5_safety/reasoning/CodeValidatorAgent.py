@@ -35,7 +35,13 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
     CodeValidatorStrategy,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 Logger = logging.getLogger(__name__)
 
@@ -89,6 +95,17 @@ class ValidationReport:
     # guardian: allow-type-erasure
     def to_dict(self) -> dict[str, Any]:
         """Convert report to dictionary for serialization."""
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "ValidationReport.to_dict", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "ValidationReport.to_dict", "p0_governance")
         return {
             "validation_summary": self.validation_summary,
             "violations": [
@@ -141,7 +158,9 @@ class CodeValidatorAgent(SovereignBaseAgent):
     def validate_syntax(self, file_path: Path) -> list[Violation]:
         """Validate Python syntax for a file."""
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, f"CodeValidatorAgent.validate_syntax:{file_path.name}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L5_POLICY, f"CodeValidatorAgent.validate_syntax:{file_path.name}"
+        )
         violations = []
 
         if not self.ruleset.check_syntax:

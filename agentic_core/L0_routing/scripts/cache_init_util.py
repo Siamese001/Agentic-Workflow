@@ -3,6 +3,18 @@ from __future__ import annotations
 import logging
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "cache_init_util")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "cache_init_util", "p0_governance")
+_emit_snapshots_state("p0", "cache_init_util", "state_snapshot")
+
 "Brief description of functionality and purpose."
 "Brief description of functionality and purpose."
 Logger: Any = logging.getLogger(__name__)

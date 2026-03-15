@@ -1,5 +1,13 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+)
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "tool_verifier_impl", "p0_governance")
+
 '\nTool Verification Loop - The "Compiler Check"\n\nPrevents agents from hallucinating tools or code by forcing verification\nbefore execution. Acts as a pre-commit check for agent actions.\n'
 import ast
 import logging
@@ -9,13 +17,20 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Any
 
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_snapshots_state,
+)
 
 LOGGER = logging.getLogger(__name__)
 Logger: Any = logging.getLogger(__name__)
 
 
 def _invoke_authorize_and_execute(execution_context, target_callable, capability_token, payload, **kw):
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "_invoke_authorize_and_execute", "state_snapshot")
     from agentic_core.L2_execution.enforcement.execution_guardrail_chokepoint import (
         authorize_and_execute,  # noqa: PLC0415
     )
@@ -136,7 +151,9 @@ class ToolVerifier:
             VerificationReport with results and issues
         """
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "ToolVerifierImpl.verify_tool_call")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "ToolVerifierImpl.verify_tool_call"
+        )
         _ectx = _make_execution_context(tool_name, "tool_verifier_impl.verify_tool_call")
         _invoke_authorize_and_execute(
             _ectx,

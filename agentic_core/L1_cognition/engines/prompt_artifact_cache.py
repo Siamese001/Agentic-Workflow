@@ -33,7 +33,17 @@ from agentic_core.cache.cache_key_builders import (
     build_compiled_prompt_key,
     build_template_render_key,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_snapshots_state("p0", "prompt_artifact_cache", "state_snapshot")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "prompt_artifact_cache", "p0_governance")
 
 
 def _get_hot_cache() -> Any:
@@ -97,6 +107,7 @@ class CompiledPromptCache:
     ) -> dict[str, Any] | None:
         """Return the cached artifact dict or ``None`` on miss/bypass."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L1_REASONING, "CompiledPromptCache.get")
 
@@ -201,6 +212,7 @@ class TemplateRenderCache:
     ) -> str | None:
         """Return the cached rendered string or ``None`` on miss/bypass."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L1_REASONING, "TemplateRenderCache.get")
 

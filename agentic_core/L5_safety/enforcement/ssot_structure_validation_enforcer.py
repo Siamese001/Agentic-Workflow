@@ -14,6 +14,10 @@ USAGE:
     from agentic_core.L5_safety.enforcement.ssot_structure_validation_enforcer import (
         SSOTStructureValidator
     )
+from agentic_core.runtime.lifecycle_trace_contract import _emit_snapshots_state  # noqa: E402
+from agentic_core.runtime.lifecycle_trace_contract import _emit_signs_execution_trace  # noqa: E402
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_snapshots_state("p0", "ssot_structure_validation_enforcer", "state_snapshot")
     validator = SSOTStructureValidator()
     result = validator.validate_structure()
 """
@@ -162,8 +166,12 @@ class SSOTStructureValidator:
 
     def _validate_base_agent_location(self, agent: AgentInfo) -> StructureViolation | None:
         """Validate that base agents are in the correct location."""
-        _emit_verifies_policy(str(uuid.uuid4()), "SSOTStructureValidator._validate_base_agent_location", "L5_POLICY")
-        _emit_applies_guardrail(str(uuid.uuid4()), "SSOTStructureValidator._validate_base_agent_location", "L5_POLICY")
+        _emit_verifies_policy(
+            str(uuid.uuid4()), "SSOTStructureValidator._validate_base_agent_location", "L5_POLICY"
+        )
+        _emit_applies_guardrail(
+            str(uuid.uuid4()), "SSOTStructureValidator._validate_base_agent_location", "L5_POLICY"
+        )
         if not self._is_base_agent(agent.class_name):
             return None
 
@@ -300,7 +308,11 @@ class SSOTStructureValidator:
     def validate_agent(self, agent: AgentInfo) -> list[StructureViolation]:
         """Validate a single agent against all SSOT rules."""
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, f"SSOTStructureValidationEnforcer.validate_agent:{agent.name}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()),
+            LayerSegment.L5_POLICY,
+            f"SSOTStructureValidationEnforcer.validate_agent:{agent.name}",
+        )
         violations = []
 
         # Run all validations

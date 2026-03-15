@@ -6,6 +6,13 @@ import json
 from pathlib import Path
 
 from agentic_core.L5_safety.config.structure_blueprint import AGENT_DISCOVERY_JSON
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DISCOVERY_JSON = PROJECT_ROOT / AGENT_DISCOVERY_JSON
@@ -14,6 +21,21 @@ HEAL_METHOD_TEMPLATE = '\n    def heal_repository(self, **kwargs) -> dict:\n    
 
 def load_inherited_agents() -> list[dict]:
     """Load agents with invocation='Inherited' status."""
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "load_inherited_agents", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "load_inherited_agents", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "load_inherited_agents")
     with open(DISCOVERY_JSON, encoding="utf-8") as f:
         agents = json.load(f)
     return [a for a in agents if a.get("invocation") == "Inherited"]

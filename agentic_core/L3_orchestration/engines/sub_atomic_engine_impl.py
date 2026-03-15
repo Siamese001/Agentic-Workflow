@@ -6,10 +6,27 @@ import os
 
 from agentic_core.L2_execution.enforcement.SovereignLLMGateway import get_llm_gateway
 from agentic_core.mixins.instructional_injection_mixin import get_instructional_injection_mixin
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 
 def _get_prompt_assembler():
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "_get_prompt_assembler", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "_get_prompt_assembler", "p0_governance")
     from agentic_core.prompt_governance.core.prompt_assembler import assemble_prompt
 
     return assemble_prompt
@@ -46,8 +63,11 @@ class SubAtomicEngineImpl:
     async def resilient_mutation(self, *args, **kwargs) -> str:
         """Gateway-backed mutation."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SubAtomicEngineImpl.resilient_mutation")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "SubAtomicEngineImpl.resilient_mutation"
+        )
 
         prompt = kwargs.get("prompt", "") or (args[0] if args else "")
         system_prompt = kwargs.get("system_prompt", None)

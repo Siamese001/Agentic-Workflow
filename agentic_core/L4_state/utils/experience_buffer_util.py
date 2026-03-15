@@ -17,7 +17,13 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 
 class ExperienceBuffer:
@@ -36,6 +42,17 @@ class ExperienceBuffer:
             max_entries: Maximum historical entries to retain
             similarity_keys: Keys used for similarity matching (default: all keys)
         """
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "ExperienceBuffer.__init__", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "ExperienceBuffer.__init__", "p0_governance")
         self.path = Path(path)
         self.max_entries = max_entries
         self.similarity_keys = similarity_keys or []
@@ -52,6 +69,7 @@ class ExperienceBuffer:
         Appends to file and enforces size limit.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "ExperienceBuffer.record")
 

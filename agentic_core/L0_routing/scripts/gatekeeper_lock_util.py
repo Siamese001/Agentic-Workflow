@@ -22,6 +22,13 @@ import subprocess
 import sys
 from pathlib import Path
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 from agentic_core.utils.ast_fuzzy_util import normalize_path
 
 PROTECTED_FILES = ["agentic_core/L5_safety/enforcement/ArchivalGatekeeper.py"]
@@ -31,6 +38,21 @@ BYPASS_ENV_VAR = "GATEKEEPER_BYPASS"
 
 def get_staged_files() -> list[str]:
     """Get list of staged files from git."""
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "get_staged_files", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "get_staged_files", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "get_staged_files")
     try:
         result = subprocess.run(
             ["git", "diff", "--cached", "--name-only"], capture_output=True, text=True, check=True

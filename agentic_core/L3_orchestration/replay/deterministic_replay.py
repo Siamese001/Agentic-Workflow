@@ -18,6 +18,14 @@ import subprocess
 from dataclasses import dataclass, field
 from datetime import datetime
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
+
 
 @dataclass(frozen=True)
 class ReplayMetrics:
@@ -76,6 +84,21 @@ _ENV_ALLOWLIST = {"AGENTIC_BYPASS_LONGPATHS_CHECK", "PYTHONUTF8", "PYTHONPATH", 
 
 def _hash_command_result(command: ReplayCommand, result: ReplayResult) -> str:
     """Compute SHA256 hash of command and result for integrity verification."""
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "_hash_command_result", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "_hash_command_result", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "_hash_command_result")
     data = {
         "argv": command.argv,
         "cwd": command.cwd,

@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.runtime.lifecycle_trace_contract import _emit_snapshots_state  # noqa: E402
+
+_emit_snapshots_state("p0", "SafetyDetectorAgent", "state_snapshot")
 
 "\nSafetyDetectorAgent - Safety & Security Detection\n\nPhase 4 Hard Migration: Consolidates:\n- BiasDetectorAgent (bias detection in outputs)\n- HallucinationDetectorAgent (hallucination detection)\n- PromptInjectionDetectorAgent (injection attack detection)\n\nFeatures:\n- Bias pattern detection in model outputs\n- Hallucination detection via fact-checking\n- Prompt injection attack detection\n- Configurable detection thresholds\n- Real-time safety scoring\n"
 import logging
@@ -143,9 +146,11 @@ class SafetyDetectorAgent(SovereignBaseAgent):
     def detect_all(self, text: str, source: str = "unknown") -> list[SafetyThreat]:
         """Run all enabled detections on text."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "SafetyDetectorAgent.detect_all")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:SafetyDetectorAgent.detect_all".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 

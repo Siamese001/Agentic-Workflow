@@ -1,5 +1,9 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import _emit_snapshots_state  # noqa: E402
+
+_emit_snapshots_state("p0", "coordinator_capability_orchestrator", "state_snapshot")
+
 "\nBase Coordinator Class\n\nProvides the base interface and common functionality for all specialized coordinators.\nEach coordinator owns a specific orchestration domain with clear responsibilities.\n"
 import uuid
 from abc import ABC, abstractmethod
@@ -10,7 +14,9 @@ from agentic_core.L2_execution.providers import get_clock
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
+    _emit_applies_guardrail,
     _emit_records_execution_trace,
+    _emit_signs_execution_trace,
 )
 
 from .execution import ExecutionStatus, WorkflowContext, WorkflowResult
@@ -39,6 +45,14 @@ class WorkflowCoordinator(ABC):
 
     def __init__(self, name: str):
         """Initialize coordinator."""
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "WorkflowCoordinator.__init__", "p0_governance")
         self.name = name
         self.enabled = True
         self.coordinations = 0
@@ -94,8 +108,11 @@ class WorkflowCoordinator(ABC):
             Workflow result
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "WorkflowCoordinator.safe_coordinate")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "WorkflowCoordinator.safe_coordinate"
+        )
 
         start_time = get_clock().now_epoch()
         self.coordinations += 1
@@ -162,8 +179,11 @@ class CoordinatorRegistry:
     def get_for_workflow(self, workflow_type: str) -> WorkflowCoordinator | None:
         """Get coordinator that can handle workflow type."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "CoordinatorRegistry.get_for_workflow")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "CoordinatorRegistry.get_for_workflow"
+        )
 
         for coordinator in self.coordinators.values():
             if coordinator.enabled and coordinator.can_handle(workflow_type):

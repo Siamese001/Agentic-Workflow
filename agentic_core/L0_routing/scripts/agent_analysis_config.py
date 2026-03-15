@@ -1,6 +1,16 @@
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "agent_analysis_config", "p0_governance")
+_emit_snapshots_state("p0", "agent_analysis_config", "state_snapshot")
+
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
 THRESHOLD = 0.95
@@ -60,6 +70,7 @@ class AgentAnalysis:
     def needs_hardening(self) -> bool:
         """Check if this agent needs cache-first hardening."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "AgentAnalysis.needs_hardening")
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")

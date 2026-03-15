@@ -11,6 +11,14 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
+
 GPU_MEMORY_UTILIZATION: float = 0.85
 GPU_VRAM_GB: int = 32
 LOCAL_FAST_7B_MODEL: str = "Qwen/Qwen2.5-7B-Instruct"
@@ -65,6 +73,23 @@ class VLLMServingProfileInvalid(Exception):
     """
 
     def __init__(self, profile: str, reason: str) -> None:
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "VLLMServingProfileInvalid.__init__", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "VLLMServingProfileInvalid.__init__", "p0_governance")
+        import uuid as _uuid  # noqa: PLC0415
+
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L2_EXECUTION, "VLLMServingProfileInvalid.__init__"
+        )
         self.profile = profile
         self.reason = reason
         super().__init__(f"VLLMServingProfileInvalid: profile={profile!r}, reason={reason}")

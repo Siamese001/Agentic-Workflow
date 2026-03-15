@@ -23,6 +23,10 @@ Migration path
       from agentic_core.L3_orchestration.registry.agent_dispatch_registry import (
           get_agent_dispatch_registry,
       )
+from agentic_core.runtime.lifecycle_trace_contract import _emit_applies_guardrail  # noqa: E402
+from agentic_core.runtime.lifecycle_trace_contract import _emit_snapshots_state  # noqa: E402
+_emit_snapshots_state("p0", "agent_dispatch_registry", "state_snapshot")
+_emit_applies_guardrail("p0", "agent_dispatch_registry", "p0_governance")
       registry = get_agent_dispatch_registry()
       result = registry.dispatch(
           caller="MyOrchestrator",

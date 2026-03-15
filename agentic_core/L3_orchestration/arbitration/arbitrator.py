@@ -12,7 +12,10 @@ import uuid
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
+    _emit_applies_guardrail,  # noqa: E402
     _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
 )
 
 from .arbitration_contract import (
@@ -20,6 +23,10 @@ from .arbitration_contract import (
     ArbitrationDecision,
     ArbitrationInput,
 )
+
+_emit_snapshots_state("p0", "arbitrator", "state_snapshot")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "arbitrator", "p0_governance")
 
 
 class Arbitrator:
@@ -46,6 +53,7 @@ class Arbitrator:
         """
         _emit_agent_executes_agent(str(uuid.uuid4()), "Arbitrator", "Arbitrator.calculate_score")
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "Arbitrator.calculate_score")
 

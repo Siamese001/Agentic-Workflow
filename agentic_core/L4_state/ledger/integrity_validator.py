@@ -15,7 +15,13 @@ import uuid
 from pathlib import Path
 from typing import Any
 
-from agentic_core.runtime.lifecycle_trace_contract import _emit_snapshots_state
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 logger = logging.getLogger(__name__)
 _GENESIS_HASH = "0" * 64
@@ -23,6 +29,18 @@ _GENESIS_HASH = "0" * 64
 
 def compute_entry_hash(prev_hash: str, entry: dict[str, Any]) -> str:
     """Compute chained SHA256: hash(prev_hash || entry_bytes)."""
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "compute_entry_hash", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "compute_entry_hash")
     entry_bytes = json.dumps(entry, sort_keys=True, ensure_ascii=True, default=str).encode()
     payload = (prev_hash + entry_bytes.decode()).encode()
     return hashlib.sha256(payload).hexdigest()

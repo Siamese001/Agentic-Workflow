@@ -1,4 +1,12 @@
 """
+from agentic_core.runtime.lifecycle_trace_contract import _emit_snapshots_state  # noqa: E402
+from agentic_core.runtime.lifecycle_trace_contract import _emit_applies_guardrail  # noqa: E402
+from agentic_core.runtime.lifecycle_trace_contract import _emit_signs_execution_trace  # noqa: E402
+from agentic_core.runtime.lifecycle_trace_contract import _emit_records_execution_trace  # noqa: E402
+_emit_records_execution_trace("p0", "evidence", "legacy_agent_name_allowlist")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "legacy_agent_name_allowlist", "p0_governance")
+_emit_snapshots_state("p0", "legacy_agent_name_allowlist", "state_snapshot")
 Canonical allowlist for legacy L5 safety agent names.
 
 These agents have been deleted or retired but their names may still appear

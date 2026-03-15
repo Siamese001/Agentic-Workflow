@@ -11,6 +11,14 @@ Uses AST parsing — no regex.
 import ast
 from pathlib import Path
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "import_boundary_check_enforcer", "p0_governance")
+_emit_snapshots_state("p0", "import_boundary_check_enforcer", "state_snapshot")
+
 _AGENTIC_CORE_ROOT = Path(__file__).parent.parent
 FORBIDDEN_IMPORT_PREFIXES = frozenset({APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR})
 
@@ -25,10 +33,16 @@ class _ImportBoundaryVisitor(ast.NodeVisitor):
 
     def visit_Import(self, node: ast.Import) -> None:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "_ImportBoundaryVisitor.visit_Import")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L5_POLICY, "_ImportBoundaryVisitor.visit_Import"
+        )
         import hashlib as _hashlib  # noqa: PLC0415
-        _seg_hash = _hashlib.sha256(f"{_trace_id}:_ImportBoundaryVisitor.visit_Import".encode()).hexdigest()[:24]
+
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:_ImportBoundaryVisitor.visit_Import".encode()).hexdigest()[
+            :24
+        ]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
         for alias in node.names:

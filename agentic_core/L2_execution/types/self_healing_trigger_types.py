@@ -25,6 +25,17 @@ from agentic_core.L0_routing.types.determinism_types import (
     SemanticClockSnapshot,
     validate_semantic_clock,
 )
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_records_execution_trace("p0", "evidence", "self_healing_trigger_types")
+_emit_applies_guardrail("p0", "self_healing_trigger_types", "p0_governance")
+_emit_snapshots_state("p0", "self_healing_trigger_types", "state_snapshot")
 
 # =============================================================================
 # §Wave4.3 — Authorization decision enum (string, not Enum object)

@@ -1,5 +1,13 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "safety_layer_enforcer", "p0_governance")
+_emit_snapshots_state("p0", "safety_layer_enforcer", "state_snapshot")
+
 "L5 Safety Layer Integration.\n\nCoordinates PII Vault, Constitutional Overseer, and Cost Governor.\n"
 import logging
 from typing import TYPE_CHECKING, Any
@@ -48,9 +56,11 @@ class L5SafetyLayer:
             True if action is safe and approved, False otherwise
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "L5SafetyLayer.validate_action")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:L5SafetyLayer.validate_action".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 

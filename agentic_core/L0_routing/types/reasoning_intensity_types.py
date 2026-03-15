@@ -22,6 +22,13 @@ from enum import Enum
 from typing import Any
 
 from agentic_core.L0_routing.types.routing_artifact_types import RouteDecisionArtifact
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 
 class ReasoningTier(str, Enum):
@@ -185,6 +192,21 @@ def _compute_profile_hash(
     allowed_modes: list[str],
 ) -> str:
     """Compute SHA256 over deterministic canonical serialization of profile parameters."""
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "_compute_profile_hash", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "_compute_profile_hash", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "_compute_profile_hash")
     canonical = json.dumps(
         {
             "version": version,

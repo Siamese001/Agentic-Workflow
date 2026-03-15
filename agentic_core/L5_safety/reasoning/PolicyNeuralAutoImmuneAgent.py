@@ -13,8 +13,10 @@ from agentic_core.L4_state.reasoning.RedisSovereignAgent import RedisSovereignAg
 from agentic_core.L5_safety.reasoning.NeuralAutoImmuneAgent import NeuralAutoImmuneAgent
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,
     _emit_records_execution_trace,
     _emit_signs_execution_trace,
+    _emit_snapshots_state,
 )
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
@@ -26,6 +28,12 @@ class PolicyNeuralAutoImmuneAgent(NeuralAutoImmuneAgent, SovereignBaseAgent):
 
     def __init__(self, project_root: Path) -> None:
         """Initialize the instance."""
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "PolicyNeuralAutoImmuneAgent.__init__", "state_snapshot")
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "PolicyNeuralAutoImmuneAgent.__init__", "p0_governance")
         self.redis = RedisSovereignAgent(project_root).get_client()
         # guardian: allow-magic-config
         self.threshold = 5
@@ -48,10 +56,16 @@ class PolicyNeuralAutoImmuneAgent(NeuralAutoImmuneAgent, SovereignBaseAgent):
     ) -> dict[str, int]:
         """L5 safety agent - operational only."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "PolicyNeuralAutoImmuneAgent.heal_repository")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L5_POLICY, "PolicyNeuralAutoImmuneAgent.heal_repository"
+        )
         import hashlib as _hashlib  # noqa: PLC0415
-        _seg_hash = _hashlib.sha256(f"{_trace_id}:PolicyNeuralAutoImmuneAgent.heal_repository".encode()).hexdigest()[:24]
+
+        _seg_hash = _hashlib.sha256(
+            f"{_trace_id}:PolicyNeuralAutoImmuneAgent.heal_repository".encode()
+        ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
         super().heal_repository()

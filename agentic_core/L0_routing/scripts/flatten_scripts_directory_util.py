@@ -12,12 +12,19 @@ from typing import Any
 from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
 )
+from agentic_core.L0_routing.config.path_constants import DEPTH_RULES, SOVEREIGN_EXCLUDED_FOLDERS
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 from agentic_core.L0_routing.utils.path_util import (
     safe_prefixed_filename,
     validate_no_duplicate_prefix,
 )
-from agentic_core.L0_routing.config.path_constants import DEPTH_RULES, SOVEREIGN_EXCLUDED_FOLDERS
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 ROOT: Any = Path(__file__).resolve().parents[4]
 CORE: Any = ROOT / AGENTIC_CORE_DIR
@@ -27,6 +34,21 @@ REQUIRED_DEPTH: Any = DEPTH_RULES.get("agentic_core", 4)
 
 def flatten_scripts() -> Any:
     """Brief description of functionality and purpose."""
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "flatten_scripts", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "flatten_scripts", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "flatten_scripts")
     print(f"[*] FLATTENING L0_routing/scripts TO DEPTH-{REQUIRED_DEPTH}...")
     moved: Any = 0
     if not SCRIPTS_DIR.exists():

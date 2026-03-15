@@ -5,10 +5,17 @@ from pathlib import Path
 
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
     _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
     emit_determinism_digest,
     emit_replay_key,
 )
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "manifest_guardian_util", "p0_governance")
+_emit_snapshots_state("p0", "manifest_guardian_util", "state_snapshot")
 
 logger = logging.getLogger(__name__)
 
@@ -30,8 +37,11 @@ class ManifestGuardian:
     def calculate_checksum(file_path: Path = MANIFEST_PATH) -> str:
         """Calculates the SHA-256 checksum of the manifest file."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "ManifestGuardian.calculate_checksum")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L0_ROUTING, "ManifestGuardian.calculate_checksum"
+        )
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
         emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
 

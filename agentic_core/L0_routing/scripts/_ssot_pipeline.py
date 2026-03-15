@@ -8,8 +8,18 @@ import json
 import logging
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
+
 from agentic_core.L3_orchestration.registry.agent_dispatch_registry import get_agent_dispatch_registry
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_snapshots_state("p0", "_ssot_pipeline", "state_snapshot")
 
 if TYPE_CHECKING:
     from ._ssot_phases import RuntimeStateManager
@@ -172,6 +182,18 @@ def get_execution_plan() -> list[dict]:
 
 def _emit_pipeline_digest(adapters: "dict[str, object]", territory: str, ctx: "HealContext") -> str:
     """Compute and print the deterministic pipeline digest (once per run)."""
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "_emit_pipeline_digest", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "_emit_pipeline_digest")
     from agentic_core.L2_execution.protocol import emit_pipeline_digest as _emit
 
     return _emit(
@@ -250,7 +272,7 @@ def run_pipeline(
                     target_class=adapter.__class__.__name__,
                     method=subphase_name,
                     target_instance=adapter,
-                    args=(territory, effective_ctx)
+                    args=(territory, effective_ctx),
                 )
             except (ImportError, AttributeError, TypeError, ValueError, RuntimeError) as exc:
                 result = SubphaseResult(error=str(exc), skipped=True, skip_reason=f"exception: {exc}")

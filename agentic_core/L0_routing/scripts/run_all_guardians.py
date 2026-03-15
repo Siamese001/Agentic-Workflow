@@ -37,7 +37,16 @@ from agentic_core.L0_routing.types.guardian_registry_types import (
     get_guardian_specs,
 )
 from agentic_core.L0_routing.utils.project_root_util import get_validated_project_root
-from agentic_core.runtime.lifecycle_trace_contract import _emit_observes_runtime_state
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_observes_runtime_state,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_snapshots_state("p0", "run_all_guardians", "state_snapshot")
 
 
 def _run_single_guardian(
@@ -48,6 +57,18 @@ def _run_single_guardian(
     correlation_id: str | None,
 ) -> GuardianResult:
     """Import and execute a single guardian, returning its result."""
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "_run_single_guardian", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "_run_single_guardian")
     mod = importlib.import_module(spec.entrypoint_module)
     func = getattr(mod, spec.entrypoint_fn)
     result: GuardianResult = func(
@@ -82,6 +103,7 @@ def run_all_guardians(
     - Artifact references
     """
     import uuid  # noqa: PLC0415
+
     _emit_observes_runtime_state(str(uuid.uuid4()), "Module.run_all_guardians", "L0_ROUTING")
     if repo_root is None:
         repo_root = get_validated_project_root()

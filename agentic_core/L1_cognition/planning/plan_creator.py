@@ -30,7 +30,16 @@ from agentic_core.L1_cognition.planning.reasoning_plan import (
     StepStatus,
     get_plan_registry,
 )
-from agentic_core.runtime.lifecycle_trace_contract import _emit_snapshots_state
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,
+)
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "plan_creator", "p0_governance")
+_emit_records_execution_trace("p0", "evidence", "plan_creator")
 
 logger = logging.getLogger(__name__)
 _PLAN_LOG = logging.getLogger("adg.plan_creator")
@@ -256,6 +265,7 @@ def _decompose_goal_into_steps(goal: str, policy: PlanningPolicy) -> list[str]:
 def _create_checkpoint_policy(policy: PlanningPolicy) -> str:
     """Create checkpoint policy string."""
     import uuid  # noqa: PLC0415
+
     _emit_snapshots_state(str(uuid.uuid4()), "Module._create_checkpoint_policy", "L1_REASONING")
     checkpoints = []
     if policy.checkpoint_after_evidence:

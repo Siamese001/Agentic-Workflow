@@ -33,9 +33,16 @@ from typing import Any
 from agentic_core.L2_execution.providers import get_clock
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
     _emit_observes_runtime_state,
     _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
 )
+
+_emit_snapshots_state("p0", "coordination_ledger", "state_snapshot")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "coordination_ledger", "p0_governance")
 
 logger = logging.getLogger(__name__)
 _COORD_LOG = logging.getLogger("adg.agent_executes_agent")
@@ -90,6 +97,7 @@ class TaskRecord:
 
     def transition(self, new_status: TaskStatus) -> None:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "TaskRecord.transition")
 
@@ -217,7 +225,9 @@ def initialise_coordination_ledger(
 
     Emits ``observes_runtime_state`` ADG edge.
     """
-    _emit_observes_runtime_state(str(uuid.uuid4()), "Module.initialise_coordination_ledger", "L3_ORCHESTRATION")
+    _emit_observes_runtime_state(
+        str(uuid.uuid4()), "Module.initialise_coordination_ledger", "L3_ORCHESTRATION"
+    )
     ledger = CoordinationLedger(
         run_id=run_id,
         root_trace_id=root_trace_id,

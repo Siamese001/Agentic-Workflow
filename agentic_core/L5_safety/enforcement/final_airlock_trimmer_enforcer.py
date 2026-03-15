@@ -8,6 +8,13 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.L0_routing.config import AGENTIC_CORE_DIR
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 ROOT: Any = Path("C:/Git/Agentic-Workflow")
 CORE: Any = ROOT / AGENTIC_CORE_DIR
@@ -23,6 +30,21 @@ HEAVY_AIRLOCKS: Any = [
 
 def trim_airlock(file_path: Any) -> Any:
     """Aggressively trim __init__.py to exactly 50 lines."""
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "trim_airlock", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "trim_airlock", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "trim_airlock")
     lines: Any = file_path.read_text(encoding="utf-8").splitlines()
     cleaned: Any = [line for line in lines if line.strip() and (not line.strip().startswith("#"))]
     if len(cleaned) > 50:

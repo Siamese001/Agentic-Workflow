@@ -11,6 +11,14 @@ Detects violations of Domain-Driven Design tactical patterns:
 import ast
 from pathlib import Path
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
+
 try:
     from agentic_core.L0_routing.scripts.full_agent_discovery import SCRIPTS_DIR, TESTS_DIR
 except ImportError:
@@ -25,6 +33,21 @@ def get_ddd_violations_detailed(root_path: str) -> list[dict]:
     Returns:
         List of dicts with keys: file, line, type, description, Severity
     """
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "get_ddd_violations_detailed", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "get_ddd_violations_detailed", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "get_ddd_violations_detailed")
     violations: list[dict] = []
     root = Path(root_path)
     if not root.exists():

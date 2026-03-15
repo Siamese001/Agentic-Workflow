@@ -11,7 +11,13 @@ from __future__ import annotations
 import hashlib
 import logging
 
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -25,6 +31,17 @@ class DriftDetector:
 
     def __init__(self) -> None:
         """Initialize the drift detector."""
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "DriftDetector.__init__", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "DriftDetector.__init__", "p0_governance")
         self._context_registry: dict[str, str] = {}
         self._drift_alerts: dict[str, tuple[str, str]] = {}
 
@@ -39,8 +56,11 @@ class DriftDetector:
             True if drift was detected, False otherwise.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L6_OBSERVABILITY, "DriftDetector.register_context_hash")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L6_OBSERVABILITY, "DriftDetector.register_context_hash"
+        )
 
         if replay_key in self._context_registry:
             old_hash = self._context_registry[replay_key]

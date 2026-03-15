@@ -7,7 +7,13 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.L2_execution.providers import get_clock
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 from agentic_core.seams.contracts.safety_agents import SafetyAgentFactory
 
 Logger = logging.getLogger(__name__)
@@ -48,6 +54,17 @@ class SafetyStrategy:
         Returns:
             Dictionary mapping tier names to lists of agent names.
         """
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "SafetyStrategy.get_tiers", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "SafetyStrategy.get_tiers", "p0_governance")
         return {
             "Tier 0: Pre-Flight": ["CodeValidatorAgent"],
             "Tier 1: Compliance": ["HygieneGuardianAgent", "NamingAgent"],
@@ -79,8 +96,13 @@ class SafetyStrategy:
 
                     def heal_repository(self, directory=None, **kwargs):
                         import uuid as _uuid  # noqa: PLC0415
+
                         _trace_id = str(_uuid.uuid4())
-                        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "CodeValidatorAgentProxy.heal_repository")
+                        _emit_records_execution_trace(
+                            _trace_id,
+                            LayerSegment.L3_ORCHESTRATION,
+                            "CodeValidatorAgentProxy.heal_repository",
+                        )
 
                         if directory:
                             return self._invoke(
@@ -116,8 +138,11 @@ class SafetyStrategy:
             Dictionary with execution results
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SafetyStrategy.execute_agent")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "SafetyStrategy.execute_agent"
+        )
 
         start_time = get_clock().now_epoch()
         try:

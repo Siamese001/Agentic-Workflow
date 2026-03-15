@@ -9,6 +9,14 @@ Invariant: Failure of any extension must not affect kernel operation.
 
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
+
 SOVEREIGN_KERNEL_COMPONENTS: frozenset[str] = frozenset(
     {
         "agentic_core.L0_routing",
@@ -62,6 +70,21 @@ MODULAR_EXTENSIONS: frozenset[str] = frozenset(
 
 def is_kernel_component(module_path: str) -> bool:
     """Check if a given module path is part of the sovereign kernel."""
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "is_kernel_component", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "is_kernel_component", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "is_kernel_component")
     normalized = module_path.replace("/", ".").replace("\\", ".")
     for kernel_path in SOVEREIGN_KERNEL_COMPONENTS:
         if normalized == kernel_path or normalized.startswith(kernel_path + "."):

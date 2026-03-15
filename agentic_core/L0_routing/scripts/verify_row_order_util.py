@@ -2,6 +2,18 @@
 
 import json
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "verify_row_order_util")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "verify_row_order_util", "p0_governance")
+_emit_snapshots_state("p0", "verify_row_order_util", "state_snapshot")
+
 with open("agentic_core/L6_observability/dashboards/data/dashboard_data.js", encoding="utf-8") as f:
     content = f.read()
     start = content.find("[")

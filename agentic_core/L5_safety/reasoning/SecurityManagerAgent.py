@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.runtime.lifecycle_trace_contract import _emit_snapshots_state  # noqa: E402
+
+_emit_snapshots_state("p0", "SecurityManagerAgent", "state_snapshot")
 
 "\nSecurityManagerAgent - Vaulted Security Management\n\nPhase 3 Hard Migration: Consolidates:\n- AgentPermissionManagerAgent (permission management)\n- SecureCheckpointManagerAgent (secure checkpoint operations)\n- SecureConfigManagerAgent (secure configuration access)\n\nFeatures:\n- Permission-based access control\n- Vaulted configuration storage\n- Secure checkpoint operations\n- Role-based access (SECURE_READER, SECURE_WRITER, ADMIN)\n- Audit logging for all security operations\n"
 import hashlib
@@ -329,9 +332,11 @@ class SecurityManagerAgent(SovereignBaseAgent):
             Dictionary with healing results following standard_heal format.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "SecurityManagerAgent.heal")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:SecurityManagerAgent.heal".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 

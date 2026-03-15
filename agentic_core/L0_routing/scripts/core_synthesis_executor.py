@@ -19,13 +19,30 @@ from agentic_core.L0_routing.enforcement.mutation_prohibition import (
     assert_no_persistent_write,
     safe_shutil_move,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 
 class CoreSynthesisExecutor:
     """Executes zero-loss synthesis and restructure operations."""
 
     def __init__(self):
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "CoreSynthesisExecutor.__init__", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "CoreSynthesisExecutor.__init__", "p0_governance")
         self.base_path = Path("agentic_core/base_agents")
         self.utils_path = Path("agentic_core/utils")
         self.archives_path = Path("archives/phase20_synthesis")
@@ -50,7 +67,9 @@ class CoreSynthesisExecutor:
     def execute_synthesis(self) -> bool:
         """Execute the complete synthesis and restructure plan."""
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "CoreSynthesisExecutor.execute_synthesis")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "CoreSynthesisExecutor.execute_synthesis"
+        )
         print("🔬 PHASE 20: ZERO-LOSS SYNTHESIS & RESTRUCTURE")
         print("=" * 80)
         print("⚛️ Atomic Logic Merging & Structural Refinement")

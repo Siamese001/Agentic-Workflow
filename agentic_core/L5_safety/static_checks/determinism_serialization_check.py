@@ -12,9 +12,14 @@ from pathlib import Path
 
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
     _emit_records_execution_trace,
     _emit_signs_execution_trace,
+    _emit_snapshots_state,  # noqa: E402
 )
+
+_emit_applies_guardrail("p0", "determinism_serialization_check", "p0_governance")
+_emit_snapshots_state("p0", "determinism_serialization_check", "state_snapshot")
 
 
 class DeterminismVisitor(ast.NodeVisitor):
@@ -29,10 +34,16 @@ class DeterminismVisitor(ast.NodeVisitor):
     def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
         """Track function context."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "DeterminismVisitor.visit_FunctionDef")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L5_POLICY, "DeterminismVisitor.visit_FunctionDef"
+        )
         import hashlib as _hashlib  # noqa: PLC0415
-        _seg_hash = _hashlib.sha256(f"{_trace_id}:DeterminismVisitor.visit_FunctionDef".encode()).hexdigest()[:24]
+
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:DeterminismVisitor.visit_FunctionDef".encode()).hexdigest()[
+            :24
+        ]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
         old_function = self.current_function
@@ -203,10 +214,16 @@ class ExecutionScopeNondeterminismVisitor(ast.NodeVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:  # noqa: N802
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "ExecutionScopeNondeterminismVisitor.visit_Call")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L5_POLICY, "ExecutionScopeNondeterminismVisitor.visit_Call"
+        )
         import hashlib as _hashlib  # noqa: PLC0415
-        _seg_hash = _hashlib.sha256(f"{_trace_id}:ExecutionScopeNondeterminismVisitor.visit_Call".encode()).hexdigest()[:24]
+
+        _seg_hash = _hashlib.sha256(
+            f"{_trace_id}:ExecutionScopeNondeterminismVisitor.visit_Call".encode()
+        ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
         if not self._is_allowed(node.lineno):

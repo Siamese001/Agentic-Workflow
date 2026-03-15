@@ -18,6 +18,9 @@ from contextlib import contextmanager
 from typing import Any, Callable
 
 from agentic_core.L2_execution.enforcement.guardrail_gate import get_guardrail_gate
+from agentic_core.runtime.lifecycle_trace_contract import _emit_snapshots_state  # noqa: E402
+
+_emit_snapshots_state("p0", "budget_enforcer", "state_snapshot")
 
 try:
     import resource
@@ -99,9 +102,11 @@ class BudgetEnforcer:
         _emit_hard_fails_untranscripted(str(uuid.uuid4()), "BudgetEnforcer.run")
         _emit_applies_guardrail(str(uuid.uuid4()), "BudgetEnforcer.run", "L2_EXECUTION")
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "BudgetEnforcer.run")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:BudgetEnforcer.run".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 

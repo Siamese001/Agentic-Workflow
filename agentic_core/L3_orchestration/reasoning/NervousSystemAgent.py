@@ -6,7 +6,14 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import get_routing_gateway
 from agentic_core.L0_routing.enforcement.runtime_guard import runtime_guard
 from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
 from agentic_core.utils.timeout_decorator_util import timeout
+
+_emit_snapshots_state("p0", "NervousSystemAgent", "state_snapshot")
+_emit_applies_guardrail("p0", "NervousSystemAgent", "p0_governance")
 
 "\nNervousSystemAgent - Extracted for one-class-per-file pattern.\n\nOriginally from: NervousSystemPhaseOrchestratorAgent.py\nExtracted: 2026-01-06 (Surgical Extraction)\n"
 from typing import Any

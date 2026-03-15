@@ -21,7 +21,13 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any
 
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 Logger = logging.getLogger(__name__)
 CRITICAL_DNA_KEYS: frozenset[str] = frozenset(
@@ -87,6 +93,17 @@ class ContextPruningStrategy:
             critical_keys: Set of keys that must never be pruned
             strategy: Pruning strategy ('lru', 'priority', 'size', 'hybrid')
         """
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "ContextPruningStrategy.__init__", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "ContextPruningStrategy.__init__", "p0_governance")
         self.max_context_size = max_context_size
         self.prune_ratio = min(max(prune_ratio, 0.1), 0.9)
         self.min_entries_to_keep = min_entries_to_keep
@@ -110,7 +127,9 @@ class ContextPruningStrategy:
             True if pruning should be triggered
         """
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "ContextPruner.should_prune")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "ContextPruner.should_prune"
+        )
         current_size = self._estimate_context_size(context)
         return current_size > self.max_context_size
 

@@ -42,9 +42,14 @@ from agentic_core.L4_state.authority.run_state_authority import (
 )
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
     _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
     _emit_snapshots_state,
 )
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "memory_authority", "p0_governance")
 
 logger = logging.getLogger(__name__)
 _WRITES_THROUGH_LOG = logging.getLogger("adg.writes_through")
@@ -273,7 +278,9 @@ class MemoryAuthority:
         """
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"MemoryAuthority.read:{namespace.value}:{key}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"MemoryAuthority.read:{namespace.value}:{key}"
+        )
         value, version = self._rsa.read(key, default)
         source_hash = hashlib.sha256(repr(value).encode()).hexdigest()[:16]
         _READS_LOG.debug(

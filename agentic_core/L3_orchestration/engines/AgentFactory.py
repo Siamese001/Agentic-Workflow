@@ -25,7 +25,14 @@ try:
     from agentic_core.L1_cognition.reasoning.canon_agents_syntax import CodeJanitor as CodeJanitor
 except ImportError:
     CodeJanitor = None
-from agentic_core.runtime.lifecycle_trace_contract import _emit_agent_executes_agent
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_agent_executes_agent,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 DependencySentinelAgent = None
 try:
@@ -36,6 +43,21 @@ except ImportError:
 
 def _get_CodeEnforcerAgent():
     """Lazy loader for CodeEnforcerAgent (upward L3->L5 seam)."""
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "_get_CodeEnforcerAgent", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "_get_CodeEnforcerAgent", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "_get_CodeEnforcerAgent")
     try:
         from agentic_core.L5_safety.reasoning.CodeEnforcerAgent import CodeEnforcerAgent
 

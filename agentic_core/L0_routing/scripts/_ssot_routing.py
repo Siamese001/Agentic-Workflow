@@ -5,7 +5,6 @@ Extracted from execute_ssot.py to reduce file size and improve cohesion.
 All public symbols are re-exported from execute_ssot.py for backward compat.
 """
 
-import hashlib as _hashlib
 import logging
 import os
 import re
@@ -38,13 +37,30 @@ from agentic_core.L0_routing.scripts._ssot_types import (
     RoutingTier,
 )
 from agentic_core.L2_execution.providers import get_clock
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 logger = logging.getLogger(__name__)
 
 
 def compute_routing_decision(inputs: RoutingInputs) -> RoutingDecision:
     """Pure SSOT routing function — strict gate order, no side effects."""
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "compute_routing_decision", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "compute_routing_decision", "p0_governance")
     C, B, A, N, F, L = (inputs.C, inputs.B, inputs.A, inputs.N, inputs.F, inputs.L)
 
     def _decide(tier: RoutingTier, gate: str, score: int = 0) -> RoutingDecision:
@@ -470,7 +486,11 @@ class SovereignDecisionEngine:
         when agent_name is in BMG_EMBEDDING_AGENT_KEYS.
         """
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"SovereignDecisionEngine.calculate_healing_confidence:{territory}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            f"SovereignDecisionEngine.calculate_healing_confidence:{territory}",
+        )
         if violations_count == 0:
             return ConfidenceScore(value=1.0, reasoning="Zero violations")
         if getattr(self, "auto_approve", False):

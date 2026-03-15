@@ -30,7 +30,13 @@ from agentic_core.L0_routing.enforcement.governance_contracts import (
 )
 from agentic_core.L0_routing.types.governance_types import HILOutcome
 from agentic_core.L5_safety.types.human_decision_artifact_types import HumanDecisionArtifact
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 Logger = logging.getLogger(__name__)
 
@@ -60,6 +66,17 @@ class ProposedDiff:
 
     def to_unified_diff(self) -> str:
         """Generate unified diff format."""
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "ProposedDiff.to_unified_diff", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "ProposedDiff.to_unified_diff", "p0_governance")
         original_lines = self.original_content.splitlines(keepends=True)
         proposed_lines = self.proposed_content.splitlines(keepends=True)
         diff = difflib.unified_diff(
@@ -200,9 +217,7 @@ class HumanReviewQueue:
         Returns:
             ReviewRequest tracking the submission
         """
-        _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L5_POLICY, "submit_for_review"
-        )
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "submit_for_review")
         request = ReviewRequest(
             context_bundle=context_bundle,
             timeout_seconds=timeout_seconds if timeout_seconds is not None else self.default_timeout,
@@ -415,7 +430,7 @@ class HumanReviewQueue:
         if callback:
             try:
                 callback(request_id, action)
-            # guardian: allow-silent-swallow
+            # guardian: allow-silent-swallow -- review queue persistence is best-effort; logged
             except Exception as e:
                 # TODO: Handle specific exception properly
                 raise  # Re-raise after logging/handling
@@ -453,7 +468,7 @@ class HumanReviewQueue:
             emitter.emit_typed_artifact("POLICY_UPDATE_PROPOSAL", proposal)
             _log_dir = Path(__file__).resolve().parents[2] / "L0_routing" / "logs"
             emitter.flush_to_artifacts_dir(_log_dir)
-        # guardian: allow-silent-swallow
+        # guardian: allow-silent-swallow -- review queue persistence is best-effort; logged
         except Exception as exc:
             # TODO: Handle specific exception properly
             raise  # Re-raise after logging/handling

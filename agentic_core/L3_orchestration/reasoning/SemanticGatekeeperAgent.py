@@ -14,7 +14,13 @@ from typing import Any
 from agentic_core.utils.timeout_decorator_util import timeout
 
 Logger: Any = logging.getLogger(__name__)
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 from agentic_core.utils.decorators_compat_util import standard_heal
 
 
@@ -33,6 +39,17 @@ class SemanticGatekeeperAgent(SovereignBaseAgent):
             max_concurrent: Maximum number of concurrent executions
             timeout_seconds: Default timeout for operations
         """
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "SemanticGatekeeperAgent.__init__", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "SemanticGatekeeperAgent.__init__", "p0_governance")
         self.semaphore = asyncio.Semaphore(max_concurrent)
         self.timeout_seconds = timeout_seconds
         self.dead_letter_queue = []
@@ -57,8 +74,11 @@ class SemanticGatekeeperAgent(SovereignBaseAgent):
     ) -> dict[str, int]:
         """L3 orchestration agent - operational only."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SemanticGatekeeperAgent.heal_repository")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "SemanticGatekeeperAgent.heal_repository"
+        )
 
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)
         if _call_path is None:

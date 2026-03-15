@@ -7,7 +7,13 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -34,6 +40,17 @@ class ProactiveFissionScanner:
             McpRouterAgent: MCPRouter instance for MCP calls
             line_threshold: Line count threshold for bloat detection
         """
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "ProactiveFissionScanner.__init__", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "ProactiveFissionScanner.__init__", "p0_governance")
         self.router = McpRouterAgent
         self.threshold = line_threshold
         Logger.info(f"[OK] Proactive Scanner initialized (threshold: {line_threshold} lines)")
@@ -66,8 +83,11 @@ class ProactiveFissionScanner:
             List of candidate files with metadata
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ProactiveFissionScanner.scan_repository")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ProactiveFissionScanner.scan_repository"
+        )
 
         Logger.info(f"[SCAN] Scanning repository: {target_dir}")
         candidates: Any = []

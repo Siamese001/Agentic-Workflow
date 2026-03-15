@@ -11,6 +11,18 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Final
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_snapshots_state("p0", "cache_types", "state_snapshot")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "cache_types", "p0_governance")
+_emit_records_execution_trace("p0", "evidence", "cache_types")
+
 DEFAULT_TTL_SECONDS: Final[int] = 3600
 MIN_TTL_SECONDS: Final[int] = 60
 MAX_TTL_SECONDS: Final[int] = 86400

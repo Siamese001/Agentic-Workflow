@@ -12,7 +12,13 @@ import json
 from dataclasses import dataclass
 from typing import Any
 
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 
 def compute_event_hash(stage: str, kind: str, commit_tick: int, details: dict[str, Any]) -> str:
@@ -28,6 +34,17 @@ def compute_event_hash(stage: str, kind: str, commit_tick: int, details: dict[st
     Returns:
         SHA-256 hash of canonical JSON representation
     """
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "compute_event_hash", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "compute_event_hash", "p0_governance")
     canonical_data = {"stage": stage, "kind": kind, "commit_tick": commit_tick, "details": details}
     canonical_json = json.dumps(canonical_data, sort_keys=True, separators=(",", ":"))
     return hashlib.sha256(canonical_json.encode("utf-8")).hexdigest()
@@ -62,6 +79,7 @@ class TelemetryEvent:
             New TelemetryEvent with computed event_hash
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L1_REASONING, "TelemetryEvent.create")
 

@@ -10,6 +10,13 @@ from agentic_core.L0_routing.config import AGENTIC_CORE_DIR
 from agentic_core.L0_routing.config.path_constants import DEPTH_RULES, SOVEREIGN_EXCLUDED_FOLDERS
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 from agentic_core.L0_routing.utils.ssot_discovery_util import get_python_files
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 ROOT: Any = Path(__file__).parent.parent.parent.parent
 CORE: Any = ROOT / AGENTIC_CORE_DIR
@@ -18,6 +25,21 @@ REQUIRED_DEPTH: Any = DEPTH_RULES.get("agentic_core", 4)
 
 def fix_tunnel_violations() -> Any:
     """Moves files from deep tunnels up to proper SSOT-compliant depth structure."""
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "fix_tunnel_violations", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "fix_tunnel_violations", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "fix_tunnel_violations")
     print(f"[*] FIXING ALL TUNNEL VIOLATIONS (target depth: {REQUIRED_DEPTH})...")
     fixed: Any = 0
     all_py = get_python_files(ROOT)

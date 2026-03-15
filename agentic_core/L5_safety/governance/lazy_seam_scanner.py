@@ -1,4 +1,11 @@
 from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "lazy_seam_scanner", "p0_governance")
+_emit_snapshots_state("p0", "lazy_seam_scanner", "state_snapshot")
 
 "\nLazy Seam Scanner - Phase 4 Option A: Thin wrapper over Phase 3B metric.\n\nThis scanner uses the exact Phase 3B lazy upward import metric to ensure\nthe same seam universe (44 seams) and scan scope.\n"
 import ast
@@ -190,9 +197,11 @@ class LazySeamScanner:
     def scan_codebase(self) -> list[dict[str, Any]]:
         """Scan codebase using Phase 3B lazy upward import metric."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "LazySeamScanner.scan_codebase")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:LazySeamScanner.scan_codebase".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 

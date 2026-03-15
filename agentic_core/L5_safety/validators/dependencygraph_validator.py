@@ -13,7 +13,13 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 try:
     from google import genai
@@ -27,6 +33,17 @@ def _get_python_files(base_path: str = ".") -> list[str]:
     """
     Recursively finds all Python files in the given base path.
     """
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "_get_python_files", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "_get_python_files", "p0_governance")
     python_files = []
     for root, dirs, files in os.walk(base_path):
         dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
@@ -249,7 +266,9 @@ class ValidationContext:
     ) -> str:
         if not self.intelligence_enabled or not self.budget.check_budget():
             return code
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, f"resilient_mutation:{agent_name}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L5_POLICY, f"resilient_mutation:{agent_name}"
+        )
         try:
             prompt = f"Agent: {agent_name}\nTask: {Task}\nContext:\n{code[:4000]}"
             response = await asyncio.to_thread(

@@ -26,9 +26,16 @@ from agentic_core.L1_cognition.types.observability_types import (
 from agentic_core.L2_execution.providers import get_clock
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
     _emit_observes_runtime_state,
     _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
 )
+
+_emit_snapshots_state("p0", "meta_observability", "state_snapshot")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "meta_observability", "p0_governance")
 
 Logger = logging.getLogger(__name__)
 
@@ -84,7 +91,9 @@ class MetaLearningObservability:
 
     def _initialize_health_checks(self) -> None:
         """Initialize health check entries for all components."""
-        _emit_observes_runtime_state(str(uuid.uuid4()), "MetaLearningObservability._initialize_health_checks", "L1_REASONING")
+        _emit_observes_runtime_state(
+            str(uuid.uuid4()), "MetaLearningObservability._initialize_health_checks", "L1_REASONING"
+        )
         components = [
             "MetaLearningClient",
             "HealingMemoryEmbedder",
@@ -117,8 +126,11 @@ class MetaLearningObservability:
             tags: Optional tags for filtering
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L1_REASONING, "MetaLearningObservability.record_metric")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L1_REASONING, "MetaLearningObservability.record_metric"
+        )
 
         metric = MetricPoint(name=name, value=value, tags=tags or {})
         self._metrics.append(metric)

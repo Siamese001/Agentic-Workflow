@@ -22,6 +22,13 @@ import logging
 from pathlib import Path
 
 from agentic_core.L2_execution.types.heal_contract_types import HealCheckResult, HealStatus
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 CHECK_ID = "architecture_governance"
 
@@ -44,6 +51,21 @@ def heal_architecture_governance(
     Returns:
         HealCheckResult with status HEALED / PARTIAL / SKIPPED / FAILED.
     """
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "heal_architecture_governance", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "heal_architecture_governance", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "heal_architecture_governance")
     violations_count = check.get("violations_count", 0)
     territory = check.get("territory")
 
@@ -85,7 +107,7 @@ def heal_architecture_governance(
             auto_approve=True,
             target_territory=territory,
         )
-    # guardian: allow-silent-swallow
+    # guardian: allow-silent-swallow -- healer best-effort recovery; failure logged above
     except Exception as exc:  # guardian: allow-silent-swallower
         logger.error("[architecture_governor_healer] heal failed: %s", exc)
         return HealCheckResult(

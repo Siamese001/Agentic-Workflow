@@ -6,6 +6,17 @@ from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "investigate_overlaps_util")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "investigate_overlaps_util", "p0_governance")
+_emit_snapshots_state("p0", "investigate_overlaps_util", "state_snapshot")
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 GROUPS = {

@@ -17,10 +17,17 @@ from enum import Enum
 
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
     _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
     emit_determinism_digest,
     emit_replay_key,
 )
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "crypto_trust_types", "p0_governance")
+_emit_snapshots_state("p0", "crypto_trust_types", "state_snapshot")
 
 
 class KeyStatus(Enum):
@@ -83,6 +90,7 @@ class TrustRoot:
     def get_key(self, key_id: str) -> KeyRecord | None:
         """Look up a key by ID. Returns None if not found."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "TrustRoot.get_key")
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
@@ -232,8 +240,11 @@ class HashMismatchTracker:
     def record_mismatch(self) -> bool:
         """Record a mismatch. Returns True if escalation is now required."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "HashMismatchTracker.record_mismatch")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L0_ROUTING, "HashMismatchTracker.record_mismatch"
+        )
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
         emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
 
@@ -275,6 +286,7 @@ class DeterministicTestEnclave(SignatureEnclave):
     def sign(self, artifact_bytes: bytes, key_id: str) -> str:
         """HMAC-SHA256 sign using the key's public_key as the HMAC secret."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "DeterministicTestEnclave.sign")
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")

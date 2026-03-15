@@ -32,7 +32,17 @@ from agentic_core.L5_safety.enforcement.policy_action_contract import (
     PolicyEnforcementError,
     enforce_policy_before_action,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_snapshots_state("p0", "knowledge_orchestrator", "state_snapshot")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "knowledge_orchestrator", "p0_governance")
 
 logger = logging.getLogger(__name__)
 _KNOWLEDGE_LOG = logging.getLogger("adg.pattern_stored")
@@ -172,13 +182,13 @@ def capture_reasoning_pattern(
         reasoning_trace.trace_id, LayerSegment.L1_COGNITION, "capture_reasoning_pattern"
     )
     _registry = registry or get_reasoning_knowledge_registry()
-    _gw = get_routing_gateway(reasoning_context.run_id if hasattr(reasoning_context, 'run_id') else "")
+    _gw = get_routing_gateway(reasoning_context.run_id if hasattr(reasoning_context, "run_id") else "")
     try:
         enforce_policy_before_action(
             action_name="capture_reasoning_pattern",
             action_class=ActionClass.TOOL_EXECUTION,
             actor_id="knowledge_orchestrator",
-            run_id=reasoning_context.run_id if hasattr(reasoning_context, 'run_id') else "",
+            run_id=reasoning_context.run_id if hasattr(reasoning_context, "run_id") else "",
         )
     except PolicyEnforcementError:
         raise

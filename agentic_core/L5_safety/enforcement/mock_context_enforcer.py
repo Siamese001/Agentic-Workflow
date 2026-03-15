@@ -13,7 +13,13 @@ sys.path.insert(0, str(project_root))
 from agentic_core.L0_routing.config import AGENTIC_CORE_DIR
 from agentic_core.L0_routing.config.path_constants import TESTS_DIR
 from agentic_core.L5_safety.config.structure_blueprint import CORE_SUBFOLDER_MAP, DEPTH_RULES
-from agentic_core.runtime.lifecycle_trace_contract import _emit_applies_guardrail
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 
 class MockContext:
@@ -25,6 +31,18 @@ class MockContext:
 
 def validate_l2_l3_structure(project_root: Path) -> dict:
     """Validate L2/L3 structure (CORE_SUBFOLDER_MAP) without making changes."""
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "validate_l2_l3_structure", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "validate_l2_l3_structure")
     _emit_applies_guardrail(str(uuid.uuid4()), "Module.validate_l2_l3_structure", "L5_POLICY")
     violations = []
     missing_dirs = []

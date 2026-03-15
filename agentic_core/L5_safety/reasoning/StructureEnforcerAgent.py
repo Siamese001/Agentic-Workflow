@@ -2,6 +2,13 @@ from __future__ import annotations
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_snapshots_state("p0", "StructureEnforcerAgent", "state_snapshot")
 
 "\nStructureEnforcerAgent - Structural Enforcement\n\nPhase 3 Hard Migration: Consolidates:\n- GravityEnforcerAgent (layer gravity enforcement)\n- HierarchyEnforcerAgent (hierarchy enforcement)\n- NamingEnforcerAgent (naming conventions)\n- DocEnforcerAgent (documentation enforcement)\n- ASCIIEnforcerAgent (ASCII compliance)\n- StrictDocEnforcerAgent (strict documentation)\n\nFeatures:\n- Gravity/layer import enforcement\n- Hierarchy validation\n- Naming convention enforcement ([Name]Agent suffix)\n- Documentation completeness checks\n- ASCII compliance validation\n- Auto-rename for non-compliant classes\n"
 import ast
@@ -132,7 +139,11 @@ class StructureEnforcerAgent(SovereignBaseAgent):
     def validate_file(self, file_path: Path) -> list[StructureViolation]:
         """Validate a file for all structure rules."""
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, f"StructureEnforcerAgent.validate_file:{file_path.name}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()),
+            LayerSegment.L5_POLICY,
+            f"StructureEnforcerAgent.validate_file:{file_path.name}",
+        )
         violations = []
         if not file_path.exists():
             return violations

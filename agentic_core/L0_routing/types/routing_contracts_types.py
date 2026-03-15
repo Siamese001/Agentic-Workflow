@@ -30,7 +30,13 @@ from agentic_core.L0_routing.types.routing_artifact_types import (
     TokenGateResult,
     VigilanceTier,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -49,6 +55,17 @@ class LawSlotHandler:
     """
 
     def __init__(self, trace_id: str, total_slots: int) -> None:
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "LawSlotHandler.__init__", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "LawSlotHandler.__init__", "p0_governance")
         self._trace_id = trace_id
         self._twins: dict[str, Any] = {}
         self._depletion = CapabilityDepletionTracker(
@@ -60,7 +77,9 @@ class LawSlotHandler:
     def register_twin(self, tool_name: str, read_only_twin: Any) -> None:
         """Register a read-only twin for a tool. Live instances are rejected."""
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"LawSlotHandler.register_twin:{tool_name}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"LawSlotHandler.register_twin:{tool_name}"
+        )
         if self._frozen:
             raise RuntimeError("LawSlotHandler: Cannot register after freeze")
         self._twins[tool_name] = read_only_twin

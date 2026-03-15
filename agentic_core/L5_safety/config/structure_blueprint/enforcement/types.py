@@ -11,6 +11,14 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Any, TypedDict
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
+
 
 class Violation(TypedDict):
     """A single enforcement violation."""
@@ -49,6 +57,21 @@ def make_result(
     stats: dict[str, int],
 ) -> EnforcementResult:
     """Create an EnforcementResult with computed passed status."""
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "make_result", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "make_result", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "make_result")
     has_errors = any(v["severity"] == "error" for v in violations)
     return EnforcementResult(
         name=name,

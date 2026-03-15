@@ -22,9 +22,14 @@ from enum import Enum
 
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
     _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
     _emit_snapshots_state,
 )
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "state_lifecycle_policy", "p0_governance")
 
 logger = logging.getLogger(__name__)
 
@@ -91,6 +96,7 @@ class StateLifecyclePolicy:
         """
         _emit_snapshots_state(str(uuid.uuid4()), "StateLifecyclePolicy.transition", "L4_STATE")
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "StateLifecyclePolicy.transition")
 

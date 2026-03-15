@@ -38,6 +38,21 @@ def _capture_start_of_run_state(
     This is called once per component per run to establish what L0 should read
     during this run, regardless of any writes that happen during the run.
     """
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "_capture_start_of_run_state", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "_capture_start_of_run_state", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "_capture_start_of_run_state")
     global _IN_WRITE_CONTEXT
     cache_key = (str(store_root), app_id, component)
 
@@ -83,6 +98,13 @@ from agentic_core.L0_routing.meta_control.config_store_types import (
     validate_component_allowed,
 )
 from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 
 def _get_MetaLearningChangePackageArtifact():

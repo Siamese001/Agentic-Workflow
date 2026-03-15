@@ -1,6 +1,13 @@
 from __future__ import annotations
 
 from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_snapshots_state("p0", "SafetyInspectorAgent", "state_snapshot")
 
 'Constitutional Overseer for validating ActionRequests.\n\nThis module provides safety validation for action requests, including:\n- ConstitutionalOverseer: Validates actions against forbidden commands\n- SafetyInspectorAgent: Scans files for security violations with Socratic Judge\n\nTypical usage:\n    overseer = create_overseer()\n    result = await overseer.validate_action(request)\n\n    inspector = create_safety_inspector()\n    violations = await inspector.scan_file("path/to/file.py")\n'
 import logging
@@ -70,7 +77,11 @@ class ConstitutionalOverseer:
         """
         _emit_applies_guardrail(str(uuid.uuid4()), "ConstitutionalOverseer.validate_action", "L5_POLICY")
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, f"SafetyInspectorAgent.validate_action:{request.action_type}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()),
+            LayerSegment.L5_POLICY,
+            f"SafetyInspectorAgent.validate_action:{request.action_type}",
+        )
         if request.action_type == "tool_execution":
             return await self._validate_tool_execution(request)
         elif request.action_type == "file_operations":

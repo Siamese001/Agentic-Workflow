@@ -1,6 +1,13 @@
 from __future__ import annotations
 
 from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "DynamicSealAgent", "p0_governance")
+_emit_snapshots_state("p0", "DynamicSealAgent", "state_snapshot")
 
 "\nDYNAMIC SEAL AGENT\n------------------\nL2 Execution Tool designed to surgically eliminate upward architectural leaks.\nReplaces static imports with dynamic lazy-loading helpers to satisfy SSOT Gravity.\n\nDomain: Architectural Enforcement\nLayer: L2 Execution\nPurpose: Automated remediation of import violations using Dynamic Seal pattern\n"
 from dataclasses import dataclass
@@ -55,9 +62,11 @@ class DynamicSealAgent(SovereignBaseAgent):
             Dict with healing summary
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "DynamicSealAgent.heal_repository")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:DynamicSealAgent.heal_repository".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 

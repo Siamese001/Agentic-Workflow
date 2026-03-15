@@ -1,5 +1,13 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "constitutional_governance_types", "p0_governance")
+_emit_snapshots_state("p0", "constitutional_governance_types", "state_snapshot")
+
 "\nConstitutional Governance Guardrail - Consolidated Constitutional AI\n\nMerges:\n- ConstitutionalReviewer\n- constitutional_ai\n- constitutional_overseer\n\nComposable Rules:\n- constitutional_review: Constitutional principle checks\n- governance: Governance rule enforcement\n- oversight: Oversight and audit trails\n"
 import time
 from dataclasses import dataclass, field
@@ -103,10 +111,16 @@ class ConstitutionalGovernanceGuardrail:
             GovernanceResult
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "ConstitutionalGovernanceGuardrail.review")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L5_POLICY, "ConstitutionalGovernanceGuardrail.review"
+        )
         import hashlib as _hashlib  # noqa: PLC0415
-        _seg_hash = _hashlib.sha256(f"{_trace_id}:ConstitutionalGovernanceGuardrail.review".encode()).hexdigest()[:24]
+
+        _seg_hash = _hashlib.sha256(
+            f"{_trace_id}:ConstitutionalGovernanceGuardrail.review".encode()
+        ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
         self.reviews_performed += 1

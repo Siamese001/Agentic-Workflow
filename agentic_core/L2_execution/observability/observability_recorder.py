@@ -27,6 +27,17 @@ from agentic_core.L2_execution.observability.execution_observability import (
     FailureClassification,
     get_observability_registry,
 )
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_records_execution_trace("p0", "evidence", "observability_recorder")
+_emit_applies_guardrail("p0", "observability_recorder", "p0_governance")
+_emit_snapshots_state("p0", "observability_recorder", "state_snapshot")
 
 logger = logging.getLogger(__name__)
 _OBSERVABILITY_LOG = logging.getLogger("adg.observability_recorder")

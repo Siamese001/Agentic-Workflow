@@ -1,5 +1,13 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "deterministic_cleaner_util", "p0_governance")
+_emit_snapshots_state("p0", "deterministic_cleaner_util", "state_snapshot")
+
 "\nL6 Deterministic Pre-Flight Sanitation\n\nImplements deterministic cleaners that run before LLM processing\nto maintain baseline code quality and save tokens.\n"
 import ast
 import logging
@@ -68,10 +76,16 @@ class DeterministicCleaner:
             Tuple of (cleaned_code, was_modified)
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "DeterministicCleaner.deterministic_clean")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L2_EXECUTION, "DeterministicCleaner.deterministic_clean"
+        )
         import hashlib as _hashlib  # noqa: PLC0415
-        _seg_hash = _hashlib.sha256(f"{_trace_id}:DeterministicCleaner.deterministic_clean".encode()).hexdigest()[:24]
+
+        _seg_hash = _hashlib.sha256(
+            f"{_trace_id}:DeterministicCleaner.deterministic_clean".encode()
+        ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
         original_code: Any = code

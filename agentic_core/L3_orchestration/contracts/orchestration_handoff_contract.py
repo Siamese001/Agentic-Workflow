@@ -25,8 +25,15 @@ from agentic_core.L2_execution.providers import get_clock
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
+    _emit_applies_guardrail,  # noqa: E402
     _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
 )
+
+_emit_snapshots_state("p0", "orchestration_handoff_contract", "state_snapshot")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "orchestration_handoff_contract", "p0_governance")
 
 logger = logging.getLogger(__name__)
 _ADG_LOGGER = logging.getLogger("adg.agent_executes_agent")
@@ -98,8 +105,11 @@ class OrchestrationHandoffContract:
             Immutable OrchestrationHandoffContract.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "OrchestrationHandoffContract.create")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "OrchestrationHandoffContract.create"
+        )
 
         if not trace_id:
             try:

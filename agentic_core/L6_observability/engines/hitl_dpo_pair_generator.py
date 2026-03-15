@@ -9,7 +9,13 @@ import hashlib
 from typing import Protocol
 
 from agentic_core.L6_observability.types.dpo_types import DPOExampleId, DPOPair
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 
 class DPOPairGenerator(Protocol):
@@ -34,6 +40,17 @@ class DPOPairGenerator(Protocol):
         Returns:
             DPOPair with deterministic hashing.
         """
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "DPOPairGenerator.generate", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "DPOPairGenerator.generate", "p0_governance")
         ...
 
 
@@ -66,8 +83,11 @@ class DefaultDeterministicDPOPairGenerator:
             ValueError: If human_decision is not "APPROVE" or "REJECT".
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L6_OBSERVABILITY, "DefaultDeterministicDPOPairGenerator.generate")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L6_OBSERVABILITY, "DefaultDeterministicDPOPairGenerator.generate"
+        )
 
         if human_decision not in {"APPROVE", "REJECT"}:
             raise ValueError(f"human_decision must be 'APPROVE' or 'REJECT', got: {human_decision}")

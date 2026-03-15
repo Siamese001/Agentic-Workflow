@@ -1,5 +1,13 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "secure_tools_impl", "p0_governance")
+_emit_snapshots_state("p0", "secure_tools_impl", "state_snapshot")
+
 "\nSecure Tools - Atomic Module\nExtracted from ActionNode.py via Atomic Fission Protocol\nImplements sandboxed file operations and command execution\n"
 import logging
 import subprocess
@@ -94,9 +102,11 @@ class SecureToolsImpl:
         """
         _emit_verifies_boundary(str(uuid.uuid4()), "SecureToolsImpl.tool_write_file", "L2_EXECUTION")
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "SecureToolsImpl.tool_write_file")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:SecureToolsImpl.tool_write_file".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 

@@ -17,10 +17,17 @@ from typing import Any
 
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
     _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
     emit_determinism_digest,
     emit_replay_key,
 )
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "determinism_types", "p0_governance")
+_emit_snapshots_state("p0", "determinism_types", "state_snapshot")
 
 
 class FixConstraint(str, Enum):
@@ -60,6 +67,7 @@ class SurgicalManifest:
     def verify_hash(self) -> bool:
         """§1.6 — manifest_hash must match SHA-256 of ast_snippet bytes."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "SurgicalManifest.verify_hash")
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
@@ -94,6 +102,7 @@ class CanonicalASTResult:
     def verify(self) -> bool:
         """Hash must match canonical_form bytes."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "CanonicalASTResult.verify")
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
@@ -117,6 +126,7 @@ class SemanticClock:
     def prepare_commit(self, layer: str) -> None:
         """Prepare a state commit for a layer. Does NOT advance clock."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "SemanticClock.prepare_commit")
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
@@ -297,6 +307,7 @@ class ForensicTraceBuffer:
     def flush(self) -> list[dict[str, Any]]:
         """Flush buffer contents for persistence. Returns copy and clears."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "ForensicTraceBuffer.flush")
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")

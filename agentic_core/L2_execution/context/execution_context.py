@@ -23,7 +23,14 @@ import uuid
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_signs_execution_trace
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 
 class ActionClass(str, Enum):
@@ -42,6 +49,12 @@ class ActionClass(str, Enum):
 
     @property
     def is_irreversible(self) -> bool:
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "ActionClass.is_irreversible", "state_snapshot")
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "ActionClass.is_irreversible", "p0_governance")
         return self in (
             ActionClass.MUTATION,
             ActionClass.PRIVILEGED_LOCAL,
@@ -147,9 +160,11 @@ class ExecutionContext:
     ) -> ExecutionContext:
         """Factory with deterministic hashing."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "ExecutionContext.create")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:ExecutionContext.create".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 

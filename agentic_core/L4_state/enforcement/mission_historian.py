@@ -2,6 +2,13 @@ from __future__ import annotations
 
 from agentic_core.interfaces.write_gateway import get_write_gateway
 from agentic_core.L2_execution.determinism.execution_proof_emitter import ExecutionProofEmitter
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+)
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "mission_historian", "p0_governance")
 
 _proof_emitter = ExecutionProofEmitter("L4.MissionHistorian")
 
@@ -82,6 +89,7 @@ class MissionHistorian:
             List of history records
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "MissionHistorian.get_history")
 

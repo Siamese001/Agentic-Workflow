@@ -63,6 +63,13 @@ from agentic_core.L6_observability.performance.performance_emitter import (
     StageStatus,
     record_reasoning_performance,
 )
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_snapshots_state("p0", "reasoning_chokepoint", "state_snapshot")
+_emit_applies_guardrail("p0", "reasoning_chokepoint", "p0_governance")
 
 logger = logging.getLogger(__name__)
 

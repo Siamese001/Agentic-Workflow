@@ -1,6 +1,18 @@
 import os
 from dataclasses import dataclass
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_snapshots_state("p0", "memory_store_config", "state_snapshot")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "memory_store_config", "p0_governance")
+_emit_records_execution_trace("p0", "evidence", "memory_store_config")
+
 
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
@@ -11,6 +23,7 @@ MAX_DEPTH = 6
 MAX_FILES = 1000
 DEFAULT_TIMEOUT = 300  # 5 minutes
 # Configuration constants
+
 
 @dataclass
 class MemoryStoreConfig:

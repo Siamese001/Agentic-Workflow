@@ -23,7 +23,13 @@ import re
 import uuid
 from pathlib import Path
 
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
 
 from .base_detector_validator import (
     AntiPatternCategory,
@@ -31,6 +37,10 @@ from .base_detector_validator import (
     AntiPatternViolation,
     EnforcementLevel,
 )
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "silent_degradation_validator", "p0_governance")
+_emit_snapshots_state("p0", "silent_degradation_validator", "state_snapshot")
 
 # Attribute name suffixes that signal an "availability" flag
 _AVAIL_SUFFIXES: tuple[str, ...] = (
@@ -44,9 +54,7 @@ _AVAIL_SUFFIXES: tuple[str, ...] = (
 )
 
 # Logger method names that can precede a mock return
-_LOG_METHODS: frozenset[str] = frozenset(
-    {"warning", "warn", "info", "debug", "error", "critical"}
-)
+_LOG_METHODS: frozenset[str] = frozenset({"warning", "warn", "info", "debug", "error", "critical"})
 
 # Keywords in logger message strings that betray silent fallback behaviour
 _MOCK_KEYWORDS: tuple[str, ...] = (
@@ -189,7 +197,9 @@ class SilentDegradationDetector(AntiPatternDetector):
     def detect(self, file_path: Path, tree: ast.Module) -> list[AntiPatternViolation]:
         """Scan *tree* for all silent degradation sub-patterns."""
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, f"SilentDegradationDetector.detect:{file_path.name}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L5_POLICY, f"SilentDegradationDetector.detect:{file_path.name}"
+        )
         violations: list[AntiPatternViolation] = []
         try:
             source_lines = file_path.read_text(encoding="utf-8").splitlines()
@@ -258,7 +268,7 @@ class SilentDegradationDetector(AntiPatternDetector):
             suggested_fix=(
                 f"Replace `if not {attr_name}: return None` with:\n"
                 f"    if not {attr_name}:\n"
-                f"        raise RuntimeError(\"{attr_name} is unavailable — cannot proceed\")"
+                f'        raise RuntimeError("{attr_name} is unavailable — cannot proceed")'
             ),
             metadata={"sub_pattern": "AVAILABILITY_GUARD_SKIP", "attr": attr_name},
         )
@@ -279,19 +289,13 @@ class SilentDegradationDetector(AntiPatternDetector):
         if not isinstance(node.test, ast.BoolOp) or not isinstance(node.test.op, ast.Or):
             return None
 
-        has_is_not_none = any(
-            self._is_is_not_none_compare(v) for v in node.test.values
-        )
-        has_null_noop_guard = any(
-            self._is_null_and_guard(v) for v in node.test.values
-        )
+        has_is_not_none = any(self._is_is_not_none_compare(v) for v in node.test.values)
+        has_null_noop_guard = any(self._is_null_and_guard(v) for v in node.test.values)
         if not (has_is_not_none and has_null_noop_guard):
             return None
 
         has_success_return = any(
-            isinstance(s, ast.Return)
-            and isinstance(s.value, ast.Constant)
-            and s.value.value in (True, 1)
+            isinstance(s, ast.Return) and isinstance(s.value, ast.Constant) and s.value.value in (True, 1)
             for s in node.body
         )
         if not has_success_return:
@@ -322,23 +326,18 @@ class SilentDegradationDetector(AntiPatternDetector):
         return (
             isinstance(node, ast.Compare)
             and any(isinstance(op, ast.IsNot) for op in node.ops)
-            and any(
-                isinstance(c, ast.Constant) and c.value is None
-                for c in node.comparators
-            )
+            and any(isinstance(c, ast.Constant) and c.value is None for c in node.comparators)
         )
 
     @staticmethod
     def _is_null_and_guard(node: ast.expr) -> bool:
         """True when node is `A is None` or `A is None and B is None ...`."""
+
         def _is_is_none(n: ast.expr) -> bool:
             return (
                 isinstance(n, ast.Compare)
                 and any(isinstance(op, ast.Is) for op in n.ops)
-                and any(
-                    isinstance(c, ast.Constant) and c.value is None
-                    for c in n.comparators
-                )
+                and any(isinstance(c, ast.Constant) and c.value is None for c in n.comparators)
             )
 
         if _is_is_none(node):
@@ -367,9 +366,7 @@ class SilentDegradationDetector(AntiPatternDetector):
         if phantom_name is None:
             return None
 
-        catches_import_error = any(
-            self._handler_catches_import_error(h) for h in node.handlers
-        )
+        catches_import_error = any(self._handler_catches_import_error(h) for h in node.handlers)
         if not catches_import_error:
             return None
         if self._has_whitelist(source_lines, node.lineno):
@@ -388,7 +385,7 @@ class SilentDegradationDetector(AntiPatternDetector):
             evidence=self._get_source_line(file_path, node.lineno),
             severity="error",
             suggested_fix=(
-                f"Remove `importlib.import_module(\"{phantom_name}\")`. "
+                f'Remove `importlib.import_module("{phantom_name}")`. '
                 "Inject MCP callables via a `set_mcp_functions()` method, or raise at "
                 "construction time when the required dependency is absent."
             ),
@@ -411,11 +408,7 @@ class SilentDegradationDetector(AntiPatternDetector):
             ):
                 return node.args[0].value
             # from mcp11 import something
-            if (
-                isinstance(node, ast.ImportFrom)
-                and node.module
-                and _MCP_PHANTOM_RE.match(node.module)
-            ):
+            if isinstance(node, ast.ImportFrom) and node.module and _MCP_PHANTOM_RE.match(node.module):
                 return node.module
         return None
 
@@ -432,8 +425,7 @@ class SilentDegradationDetector(AntiPatternDetector):
             )
         if isinstance(handler.type, ast.Tuple):
             return any(
-                isinstance(e, ast.Name)
-                and e.id in ("ImportError", "ModuleNotFoundError")
+                isinstance(e, ast.Name) and e.id in ("ImportError", "ModuleNotFoundError")
                 for e in handler.type.elts
             )
         return False
@@ -474,7 +466,7 @@ class SilentDegradationDetector(AntiPatternDetector):
             suggested_fix=(
                 "Replace with:\n"
                 "    except ImportError as exc:\n"
-                "        raise ImportError(\"Required module not available\") from exc\n"
+                '        raise ImportError("Required module not available") from exc\n'
                 "Or set a flag AND ensure every consumer of that flag raises on use."
             ),
             metadata={"sub_pattern": "EXCEPT_IMPORT_PASS"},
@@ -488,8 +480,7 @@ class SilentDegradationDetector(AntiPatternDetector):
             return node.type.id in ("ImportError", "ModuleNotFoundError")
         if isinstance(node.type, ast.Tuple):
             return any(
-                isinstance(e, ast.Name)
-                and e.id in ("ImportError", "ModuleNotFoundError")
+                isinstance(e, ast.Name) and e.id in ("ImportError", "ModuleNotFoundError")
                 for e in node.type.elts
             )
         return False
@@ -526,8 +517,7 @@ class SilentDegradationDetector(AntiPatternDetector):
         if not self._has_mock_log_call(node.body):
             return None
         has_dict_return = any(
-            isinstance(s, ast.Return) and isinstance(s.value, (ast.Dict, ast.Call))
-            for s in node.body
+            isinstance(s, ast.Return) and isinstance(s.value, (ast.Dict, ast.Call)) for s in node.body
         )
         if not has_dict_return:
             return None
@@ -547,7 +537,7 @@ class SilentDegradationDetector(AntiPatternDetector):
             suggested_fix=(
                 "Raise an exception instead of returning mock data:\n"
                 "    except ImportError as exc:\n"
-                "        raise RuntimeError(\"Dependency unavailable\") from exc"
+                '        raise RuntimeError("Dependency unavailable") from exc'
             ),
             metadata={"sub_pattern": "LOG_AND_RETURN_MOCK"},
         )
@@ -591,21 +581,14 @@ class SilentDegradationDetector(AntiPatternDetector):
         file_path: Path,
         source_lines: list[str],
     ) -> AntiPatternViolation | None:
-        if not isinstance(node.value, ast.Constant) or not isinstance(
-            node.value.value, str
-        ):
+        if not isinstance(node.value, ast.Constant) or not isinstance(node.value.value, str):
             return None
         val: str = node.value.value
         if not any(sub in val for sub in _SKIP_SUBSTRINGS):
             return None
         # Require at least one additional contextual signal to avoid false positives
         lower = val.lower()
-        if not (
-            "available" in lower
-            or "agent" in lower
-            or "skip" in lower
-            or "probe" in lower
-        ):
+        if not ("available" in lower or "agent" in lower or "skip" in lower or "probe" in lower):
             return None
         if self._has_whitelist(source_lines, node.lineno):
             return None
@@ -616,14 +599,14 @@ class SilentDegradationDetector(AntiPatternDetector):
             line_number=node.lineno,
             category=self.category,
             message=(
-                f"Skip string return: `return \"{preview}\"` — callers cannot "
+                f'Skip string return: `return "{preview}"` — callers cannot '
                 "distinguish a genuine result from a silent skip."
             ),
             evidence=self._get_source_line(file_path, node.lineno),
             severity="warning",
             suggested_fix=(
                 "Raise a domain-specific exception instead of returning a skip string:\n"
-                "    raise RuntimeError(\"<dependency> not available\")"
+                '    raise RuntimeError("<dependency> not available")'
             ),
             metadata={"sub_pattern": "SKIP_STRING_RETURN", "value": val[:80]},
         )

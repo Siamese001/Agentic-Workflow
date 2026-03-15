@@ -11,7 +11,13 @@ from typing import Any
 
 from agentic_core.cache.redis_cache_client import get_hot_cache
 from agentic_core.L3_orchestration.reasoning.mcp_manager import MCPConnectionManager, load_mcp_config
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 from agentic_core.seams.contracts.authority import get_mcp_authority
 
 Logger: Any = logging.getLogger(__name__)
@@ -21,6 +27,17 @@ class SovereignMcpRouter(SovereignBaseAgent):
     """Ultra-hardened L3 MCP switchboard — zero tolerance for failure"""
 
     def __init__(self, role: str = "validator", config_path: str = "config/mcp_mappings.yaml"):
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "SovereignMcpRouter.__init__", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "SovereignMcpRouter.__init__", "p0_governance")
         self.role = role
         self.config_path = Path(config_path)
         self.manager: MCPConnectionManager | None = None
@@ -30,7 +47,9 @@ class SovereignMcpRouter(SovereignBaseAgent):
     async def initialize(self) -> Any:
         """Async initialization with L5 shielding and immediate fail-fast"""
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "SovereignMCPRouter.initialize")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "SovereignMCPRouter.initialize"
+        )
         try:
             if not self.config_path.exists():
                 raise FileNotFoundError(f"MCP config Missing: {self.config_path}")
@@ -156,10 +175,14 @@ class SovereignMcpRouter(SovereignBaseAgent):
                     except (json.JSONDecodeError, AttributeError) as e:
                         Logger.debug(f"Cache retrieval failed: {e}")
                     max_thoughts = min(len(cached_template) if cached_template else 8, 15)
-                    thoughts: list[str] = cached_template if cached_template else [
-                        f"Step {i+1}: {'Analyze' if i == 0 else 'Synthesize' if i == max_thoughts - 1 else 'Continue'} resolving Canon Key {key_id}: {violation_desc[:120]}"
-                        for i in range(max_thoughts)
-                    ]
+                    thoughts: list[str] = (
+                        cached_template
+                        if cached_template
+                        else [
+                            f"Step {i + 1}: {'Analyze' if i == 0 else 'Synthesize' if i == max_thoughts - 1 else 'Continue'} resolving Canon Key {key_id}: {violation_desc[:120]}"
+                            for i in range(max_thoughts)
+                        ]
+                    )
                     steps_out: list[str] = []
                     for idx, thought_text in enumerate(thoughts):
                         is_last = idx == len(thoughts) - 1
@@ -173,7 +196,9 @@ class SovereignMcpRouter(SovereignBaseAgent):
                             },
                         )
                         steps_out.append(thought_text)
-                        if isinstance(step_result, dict) and not step_result.get("nextThoughtNeeded", not is_last):
+                        if isinstance(step_result, dict) and not step_result.get(
+                            "nextThoughtNeeded", not is_last
+                        ):
                             break
                     solution = steps_out[-1] if steps_out else violation_desc
                     reasoning_result: Any = {"steps": steps_out, "solution": solution}

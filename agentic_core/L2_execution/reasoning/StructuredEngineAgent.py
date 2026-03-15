@@ -1,5 +1,13 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "StructuredEngineAgent", "p0_governance")
+_emit_snapshots_state("p0", "StructuredEngineAgent", "state_snapshot")
+
 "\nStructuredEngineAgent - Intent to Plan Converter\n\n[PHASE 8 REFACTOR] Uses SovereignLLMGateway.\n"
 import logging
 import os
@@ -33,10 +41,16 @@ class StructuredEngineAgent(SovereignBaseAgent):
 
     async def generate_plan(self, task: str, context: str) -> AgentPlan:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "StructuredEngineAgent.generate_plan")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L2_EXECUTION, "StructuredEngineAgent.generate_plan"
+        )
         import hashlib as _hashlib  # noqa: PLC0415
-        _seg_hash = _hashlib.sha256(f"{_trace_id}:StructuredEngineAgent.generate_plan".encode()).hexdigest()[:24]
+
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:StructuredEngineAgent.generate_plan".encode()).hexdigest()[
+            :24
+        ]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
         self.log_info(f"Planning Task via Gateway: {task[:50]}")

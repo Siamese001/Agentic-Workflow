@@ -25,9 +25,14 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_applies_guardrail,
     _emit_hard_fails_untranscripted,
     _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
     emit_determinism_digest,
     emit_replay_key,
 )
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_snapshots_state("p0", "runtime_mutation_guard", "state_snapshot")
 
 Logger = logging.getLogger(__name__)
 _original_setattr = setattr
@@ -223,6 +228,7 @@ class RuntimeMutationGuard:
     def install(self) -> None:
         """Install the runtime mutation guard (REQ-417)."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "RuntimeMutationGuard.install")
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")

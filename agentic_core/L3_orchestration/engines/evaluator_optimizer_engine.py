@@ -20,7 +20,17 @@ import logging
 from collections.abc import Awaitable, Callable
 from typing import Any
 
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_snapshots_state("p0", "evaluator_optimizer_engine", "state_snapshot")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "evaluator_optimizer_engine", "p0_governance")
 
 Logger = logging.getLogger(__name__)
 
@@ -66,8 +76,11 @@ class EvaluatorOptimizerEngine:
                 ``history``    — list of (score, issues) per iteration
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "EvaluatorOptimizerEngine.run")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "EvaluatorOptimizerEngine.run"
+        )
 
         content = await self.generator_fn(task, context)
         history: list[dict[str, Any]] = []

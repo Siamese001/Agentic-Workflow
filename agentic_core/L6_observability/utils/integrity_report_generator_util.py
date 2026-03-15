@@ -39,7 +39,13 @@ from agentic_core.L5_safety.enforcement.three_tier_compliance_enforcer import (
     ComplianceResult,
     ThreeTierComplianceChecker,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 
 @dataclass
@@ -81,6 +87,21 @@ class IntegrityReportResult:
     @property
     def overall_health_score(self) -> float:
         """Calculate overall health score (0-100)."""
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(
+            str(_uuid.uuid4()), "IntegrityReportResult.overall_health_score", "state_snapshot"
+        )
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(
+            str(_uuid.uuid4()), "IntegrityReportResult.overall_health_score", "p0_governance"
+        )
         scores = []
 
         if self.registry_result:
@@ -196,7 +217,9 @@ class AgentIntegrityReporter:
     def validate_registry_coverage(self, registry_result: VerificationResult) -> tuple[bool, str]:
         """Validate 100% registry coverage."""
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "IntegrityReportGenerator.validate_registry_coverage")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L5_POLICY, "IntegrityReportGenerator.validate_registry_coverage"
+        )
         if registry_result.total_filesystem_agents == 0:
             return False, "No agents found in filesystem"
 

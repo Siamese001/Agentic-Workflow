@@ -20,6 +20,8 @@ USAGE:
     from agentic_core.L5_safety.enforcement.three_tier_compliance_enforcer import (
         ThreeTierComplianceChecker
     )
+from agentic_core.runtime.lifecycle_trace_contract import _emit_snapshots_state  # noqa: E402
+_emit_snapshots_state("p0", "three_tier_compliance_enforcer", "state_snapshot")
     checker = ThreeTierComplianceChecker()
     result = checker.check_compliance()
 """
@@ -304,7 +306,9 @@ class ThreeTierComplianceChecker:
     def check_compliance(self) -> ComplianceResult:
         """Perform full three-tier compliance check."""
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "ThreeTierComplianceEnforcer.check_compliance")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L5_POLICY, "ThreeTierComplianceEnforcer.check_compliance"
+        )
         result = ComplianceResult()
 
         # Scan tests

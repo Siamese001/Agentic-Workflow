@@ -7,10 +7,27 @@ from typing import Any
 
 from agentic_core.L0_routing.config.path_constants import BATCH_SIZE
 from agentic_core.L2_execution.providers import get_clock
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 
 def _get_reason_and_record():
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "_get_reason_and_record", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "_get_reason_and_record", "p0_governance")
     from agentic_core.L1_cognition.enforcement.reasoning_chokepoint import reason_and_record  # noqa: PLC0415
 
     return reason_and_record
@@ -23,7 +40,6 @@ def _invoke_reason_and_record(ctx, prompt, retrieved, fn, **kw):
 
 
 def _make_reasoning_context(run_id: str, policy_hash: str, prompt: str, model_id: str, clock_tick: float):
-
     from agentic_core.L1_cognition.context.reasoning_context_builder import (
         build_reasoning_context,  # noqa: PLC0415
     )
@@ -81,6 +97,7 @@ class ReasoningNode:
     async def reason_async(self, perceived: dict) -> dict:
         """Generate reasoning with adaptive strategy selection."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L1_REASONING, "ReasoningNode.reason_async")
 
@@ -144,6 +161,7 @@ class PlanningCoordinator:
     def plan(self, goal: str, domain: str, context: dict) -> dict[str, Any]:
         """Create plan from reasoning."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L1_REASONING, "PlanningCoordinator.plan")
 
@@ -183,6 +201,7 @@ class ActionNode:
     def act(self, reasoned: dict) -> str:
         """Execute action based on reasoning."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L1_REASONING, "ActionNode.act")
 
@@ -244,6 +263,7 @@ class CognitiveNode:
             CognitiveResult with output and metadata
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L1_REASONING, "CognitiveNode.process_async")
 

@@ -11,6 +11,10 @@ USAGE:
         get_misplaced_reports,
         generate_report_inventory,
     )
+from agentic_core.runtime.lifecycle_trace_contract import _emit_snapshots_state  # noqa: E402
+from agentic_core.runtime.lifecycle_trace_contract import _emit_applies_guardrail  # noqa: E402
+_emit_applies_guardrail("p0", "report_location_validator", "p0_governance")
+_emit_snapshots_state("p0", "report_location_validator", "state_snapshot")
 
 SSOT PRINCIPLE:
     All reports must reside in docs/reports/ or approved subdirectories.
@@ -142,10 +146,16 @@ class ReportLocationValidator:
             True if the file matches a report pattern.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "ReportLocationValidator.is_report_file")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L5_POLICY, "ReportLocationValidator.is_report_file"
+        )
         import hashlib as _hashlib  # noqa: PLC0415
-        _seg_hash = _hashlib.sha256(f"{_trace_id}:ReportLocationValidator.is_report_file".encode()).hexdigest()[:24]
+
+        _seg_hash = _hashlib.sha256(
+            f"{_trace_id}:ReportLocationValidator.is_report_file".encode()
+        ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
         filename = file_path.name

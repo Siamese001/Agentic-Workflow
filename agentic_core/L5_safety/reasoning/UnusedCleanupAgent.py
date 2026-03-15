@@ -1,5 +1,13 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "UnusedCleanupAgent", "p0_governance")
+_emit_snapshots_state("p0", "UnusedCleanupAgent", "state_snapshot")
+
 'Unused Cleanup Agent - Removes unused imports and variables using autoflake.\n\nThis module provides an atomic agent that removes unused imports and variables\nfrom Python files using the autoflake tool.\n\nTypical usage:\n    agent = UnusedCleanupAgent(project_root="/path/to/project", ctx=context)\n    result = await agent.execute(file_path="src/module.py")\n'
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -43,9 +51,11 @@ class UnusedCleanupAgent(CodeToolRunnerCapability, SovereignBaseAgent):
             Dict with healed status and action taken
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "UnusedCleanupAgent.execute")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:UnusedCleanupAgent.execute".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 

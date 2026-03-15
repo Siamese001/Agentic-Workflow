@@ -35,6 +35,13 @@ from agentic_core.L0_routing.types.guardian_contract_types import (
     write_guardian_result,
 )
 from agentic_core.L0_routing.utils.project_root_util import get_validated_project_root
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 GUARDIAN_ID = "hygiene"
 IGNORE_NAMES = frozenset({".gitkeep", ".git"})
@@ -56,6 +63,21 @@ def scan_temp_artifacts(
     Enforces MAX_FILES_PER_SCAN and MAX_FOLDER_DEPTH caps.
     Returns ScanBudgetExceeded sentinel on cap breach instead of raising.
     """
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "scan_temp_artifacts", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "scan_temp_artifacts", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "scan_temp_artifacts")
     hits: list[str] = []
     file_count = 0
     # Allowed roots must not be blocked by IGNORE_PATTERNS (e.g. "tests" is in

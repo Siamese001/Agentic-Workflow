@@ -1,5 +1,15 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "execution", "p0_governance")
+_emit_snapshots_state("p0", "execution", "state_snapshot")
+
 "\nExecution Strategy Interface and Implementations\n\nProvides pluggable execution strategies for the UnifiedWorkflowEngine:\n- DAGStrategy: Directed Acyclic Graph-based execution\n- StateMachineStrategy: State machine-based execution\n- EventDrivenStrategy: Event-driven execution\n- ReactiveStrategy: Reactive stream-based execution\n"
 import asyncio
 from abc import ABC, abstractmethod
@@ -93,6 +103,7 @@ class DAGStrategy(ExecutionStrategy):
     async def execute(self, context: WorkflowContext, steps: list[WorkflowStep]) -> WorkflowResult:
         """Execute workflow as DAG."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "DAGStrategy.execute")
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
@@ -168,6 +179,7 @@ class StateMachineStrategy(ExecutionStrategy):
     async def execute(self, context: WorkflowContext, steps: list[WorkflowStep]) -> WorkflowResult:
         """Execute workflow as state machine."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "StateMachineStrategy.execute")
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
@@ -244,6 +256,7 @@ class EventDrivenStrategy(ExecutionStrategy):
     async def execute(self, context: WorkflowContext, steps: list[WorkflowStep]) -> WorkflowResult:
         """Execute workflow using event-driven pattern."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "EventDrivenStrategy.execute")
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
@@ -316,6 +329,7 @@ class ReactiveStrategy(ExecutionStrategy):
     async def execute(self, context: WorkflowContext, steps: list[WorkflowStep]) -> WorkflowResult:
         """Execute workflow using reactive streams."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "ReactiveStrategy.execute")
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")

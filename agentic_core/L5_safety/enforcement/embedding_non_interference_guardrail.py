@@ -23,6 +23,14 @@ from __future__ import annotations
 import ast as _ast
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
+
 
 class C0InterferenceViolation(RuntimeError):
     """Raised when C0 RAG context is found to influence routing inputs."""
@@ -70,6 +78,21 @@ def assert_c0_context_clean(c0_context: dict[str, Any]) -> None:
     Raises:
         C0InterferenceViolation: if any forbidden field is present.
     """
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "assert_c0_context_clean", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "assert_c0_context_clean", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "assert_c0_context_clean")
     violations = [
         f"forbidden field {field!r} present in c0_context"
         for field in _C0_FORBIDDEN_FIELDS

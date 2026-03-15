@@ -24,9 +24,17 @@ from agentic_core.L3_orchestration.types import (
     AgentResult,
     ExecutionContext,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,  # noqa: E402
+)
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
+
+_emit_snapshots_state("p0", "recursive_orchestration_types", "state_snapshot")
 
 Logger = logging.getLogger(__name__)
 
@@ -90,6 +98,14 @@ class RecursiveOrchestrator:
             enable_validation_cache: Enable acyclicity validation caching
             cache_size: Maximum cache entries for validation results
         """
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "RecursiveOrchestrator.__init__", "p0_governance")
         self.max_depth = max_depth
         self.enable_validation_cache = enable_validation_cache
         self.cache_size = cache_size
@@ -124,7 +140,11 @@ class RecursiveOrchestrator:
             AgentResult from successor execution
         """
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"RecursiveOrchestrator.spawn_successor:{successor_spec.agent_name}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            f"RecursiveOrchestrator.spawn_successor:{successor_spec.agent_name}",
+        )
         self._metrics.total_spawns += 1
 
         # Extract current depth from context

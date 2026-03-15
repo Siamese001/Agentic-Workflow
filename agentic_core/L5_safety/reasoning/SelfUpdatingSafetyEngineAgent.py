@@ -56,6 +56,17 @@ class ThreatPattern:
     @property
     def confidence_score(self) -> float:
         """Calculate confidence score for this pattern."""
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "ThreatPattern.confidence_score", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "ThreatPattern.confidence_score", "p0_governance")
         total: Any = self.detection_count + self.false_positive_count
         if total == 0:
             return 0.5
@@ -131,6 +142,11 @@ class ThreatDetection:
     recommendations: list[str]
 
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 from agentic_core.utils.decorators_compat_util import standard_heal
 
 
@@ -254,7 +270,9 @@ class SelfUpdatingSafetyEngineAgent(SovereignBaseAgent):
             Threat detection result
         """
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "SelfUpdatingSafetyEngineAgent.detect_threats")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L5_POLICY, "SelfUpdatingSafetyEngineAgent.detect_threats"
+        )
         matched_rules: Any = []
         max_threat_level: Any = ThreatLevel.LOW
         for rule in self.rules.values():

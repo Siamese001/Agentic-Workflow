@@ -3,7 +3,14 @@ from __future__ import annotations
 import uuid
 from typing import Any, NamedTuple
 
-from agentic_core.runtime.lifecycle_trace_contract import _emit_writes_through
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+    _emit_writes_through,
+)
 
 ExecutionTranscript = list[dict[str, Any]]
 
@@ -12,6 +19,21 @@ class GhostMutationViolation(Exception):
     """Raised when a state mutation is detected that was not recorded in the transcript."""
 
     def __init__(self, message: str, diff: list[str]):
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "GhostMutationViolation.__init__", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "GhostMutationViolation.__init__", "p0_governance")
+        import uuid as _uuid  # noqa: PLC0415
+
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "GhostMutationViolation.__init__")
         self.message = message
         self.diff = diff
         super().__init__(f"{message} Diff: {diff}")

@@ -20,7 +20,13 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from agentic_core.L2_execution.providers import get_clock
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
 from agentic_core.seams.contracts.forward_rolling import (
     AdaptiveDepthManager,
     ContextPruningStrategy,
@@ -30,6 +36,10 @@ from agentic_core.seams.contracts.forward_rolling import (
     RecursionMonitor,
     RolloutStage,
 )
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "forward_rolling_facade", "p0_governance")
+_emit_snapshots_state("p0", "forward_rolling_facade", "state_snapshot")
 
 Logger = logging.getLogger(__name__)
 
@@ -161,7 +171,9 @@ class ForwardRollingFacade:
             ForwardRollingResult with execution details
         """
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"ForwardRollingFacade.execute:{agent_name}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"ForwardRollingFacade.execute:{agent_name}"
+        )
         start_time = get_clock().now_epoch()
         self._metrics.total_executions += 1
 

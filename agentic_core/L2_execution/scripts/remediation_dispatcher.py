@@ -32,6 +32,14 @@ from enum import Enum
 from pathlib import Path
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "remediation_dispatcher", "p0_governance")
+_emit_snapshots_state("p0", "remediation_dispatcher", "state_snapshot")
+
 logger = logging.getLogger(__name__)
 
 
@@ -166,10 +174,16 @@ class CanonicalEscalationPayload:
     def to_canonical_string(self) -> str:
         """Return deterministic string representation for comparison."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "CanonicalEscalationPayload.to_canonical_string")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L2_EXECUTION, "CanonicalEscalationPayload.to_canonical_string"
+        )
         import hashlib as _hashlib  # noqa: PLC0415
-        _seg_hash = _hashlib.sha256(f"{_trace_id}:CanonicalEscalationPayload.to_canonical_string".encode()).hexdigest()[:24]
+
+        _seg_hash = _hashlib.sha256(
+            f"{_trace_id}:CanonicalEscalationPayload.to_canonical_string".encode()
+        ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
         payload_dict = self.to_dict()
@@ -206,9 +220,11 @@ class EscalationContext:
     def from_result(cls, check_id: str, result: HealCheckResult, retry_count: int) -> EscalationContext:
         """Build deterministically from a HealCheckResult with strict parsing."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "EscalationContext.from_result")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:EscalationContext.from_result".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 

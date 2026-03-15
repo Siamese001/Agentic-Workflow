@@ -4,6 +4,13 @@ from agentic_core.L2_execution.healers.healing_tier_config import (
     HEALING_CONFIDENCE_X as _HEALING_CONFIDENCE_X,
 )
 from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "tiered_batch_util", "p0_governance")
+_emit_snapshots_state("p0", "tiered_batch_util", "state_snapshot")
 
 "\n[PHASE 15/17] Tiered Batch Processor - Smart Hybrid Disposition.\n\nImplements a tiered approach to violation processing:\n- Tier 1: High-confidence heuristics (>=0.75) - auto-execute immediately\n- Tier 2: Low-confidence files (<0.75) - route to LLM Gemini\n- Phase 17: Semantic Meta-Learning with Redis/Pinecone caching\n\nThis dramatically reduces LLM API calls while maintaining intelligent triage.\n\n[SSOT] Integrates with CognitiveDispositionAgent and SemanticCacheManager.\n"
 import json
@@ -165,10 +172,14 @@ class TieredBatchProcessor:
             Processing statistics
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "TieredBatchProcessor.process_batch")
         import hashlib as _hashlib  # noqa: PLC0415
-        _seg_hash = _hashlib.sha256(f"{_trace_id}:TieredBatchProcessor.process_batch".encode()).hexdigest()[:24]
+
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:TieredBatchProcessor.process_batch".encode()).hexdigest()[
+            :24
+        ]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
         total = len(violations)

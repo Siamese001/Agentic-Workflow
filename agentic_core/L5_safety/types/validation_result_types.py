@@ -1,5 +1,13 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "validation_result_types", "p0_governance")
+_emit_snapshots_state("p0", "validation_result_types", "state_snapshot")
+
 "Executive Title Composer Agent - Headline Generator (K.4)\n\n\n# NAMING FIXED: LOGGER → Logger\nLogger = logging.getLogger(__name__)\nThis agent generates resume headlines with industry-first validation.\nEnforces GICS sector precedence and strict character limits.\n\nLayer: L2_execution\nResponsibilities:\n- Generate professional headline with industry-first segment\n- Enforce 8-13 word limit and ≤90 character limit\n- Validate first segment is GICS sector (not technology)\n- Block technology-first headlines\n\nNon-responsibilities:\n- Executive summary generation\n- Bullet synthesis\n- Content grounding\n"
 from dataclasses import dataclass
 from typing import Any
@@ -183,10 +191,16 @@ class executive_title_composer:
             TitleComposerResult with headline and validation details
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "executive_title_composer.generate_headline")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L5_POLICY, "executive_title_composer.generate_headline"
+        )
         import hashlib as _hashlib  # noqa: PLC0415
-        _seg_hash = _hashlib.sha256(f"{_trace_id}:executive_title_composer.generate_headline".encode()).hexdigest()[:24]
+
+        _seg_hash = _hashlib.sha256(
+            f"{_trace_id}:executive_title_composer.generate_headline".encode()
+        ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
         self.recovery_loop.reset(self.CONFIG.TEMPERATURE)

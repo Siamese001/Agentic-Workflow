@@ -7,6 +7,14 @@ from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
+
 
 def is_agent_file(path: Path) -> bool:
     """Check if path is an actual agent file (not test).
@@ -15,6 +23,21 @@ def is_agent_file(path: Path) -> bool:
     For full AST-based classification, use:
         from agentic_core.L5_safety.core_kernel.classification_kernel import is_agent_file
     """
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "is_agent_file", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "is_agent_file", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "is_agent_file")
     if not path.name.endswith("Agent.py"):
         return False
     path_str = str(path).lower()

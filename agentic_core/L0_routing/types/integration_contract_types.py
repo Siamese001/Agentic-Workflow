@@ -16,10 +16,17 @@ from pathlib import Path
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
     _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
     emit_determinism_digest,
     emit_replay_key,
 )
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "integration_contract_types", "p0_governance")
+_emit_snapshots_state("p0", "integration_contract_types", "state_snapshot")
 
 SCHEMA_VERSION = "1.0.0"
 
@@ -35,6 +42,7 @@ class Finding:
 
     def to_ordered_dict(self) -> dict:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "Finding.to_ordered_dict")
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
@@ -63,6 +71,7 @@ class ResultEnvelope:
     def status(self) -> str:
         """Derive status from exit_code and findings."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "ResultEnvelope.status")
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")

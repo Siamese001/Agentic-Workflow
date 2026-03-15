@@ -1,5 +1,13 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "egress_util", "p0_governance")
+_emit_snapshots_state("p0", "egress_util", "state_snapshot")
+
 "\nNetworking Utilities for Agentic Workflow\nProvides P8 Egress Filter for strict domain whitelisting\n\nZero-Ambiguity Standard: Renamed from EgressResult.py to egress_util.py\n"
 import logging
 from dataclasses import dataclass
@@ -87,9 +95,11 @@ class NetworkingUtility:
             Send result with status
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "NetworkingUtility.send_email")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:NetworkingUtility.send_email".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 

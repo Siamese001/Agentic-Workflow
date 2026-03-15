@@ -14,6 +14,14 @@ import json
 import logging
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
+
 logger = logging.getLogger(__name__)
 
 
@@ -28,6 +36,21 @@ def compute_boundary_diff(snapshot_pre: dict[str, Any], snapshot_post: dict[str,
     Returns a dict mapping changed keys to (pre_value, post_value) tuples.
     Only top-level key changes are tracked for simplicity.
     """
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "compute_boundary_diff", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "compute_boundary_diff", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "compute_boundary_diff")
     all_keys = set(snapshot_pre) | set(snapshot_post)
     diff: dict[str, Any] = {}
     for key in sorted(all_keys):

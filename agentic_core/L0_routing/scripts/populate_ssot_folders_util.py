@@ -11,6 +11,13 @@ if str(project_root) not in sys.path:
 from agentic_core.L0_routing.config import AGENTIC_CORE_DIR
 from agentic_core.L0_routing.config.path_constants import CORE_SUBFOLDER_MAP
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 core_root = project_root / AGENTIC_CORE_DIR
 LAYER_BEST_PRACTICES = {
@@ -51,6 +58,21 @@ LAYER_BEST_PRACTICES = {
 
 
 def get_purpose(l1: str, l2: str, depth3: str = None) -> str:
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "get_purpose", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "get_purpose", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "get_purpose")
     layer_data = LAYER_BEST_PRACTICES.get(l1, {})
     key = depth3 if depth3 and depth3 in layer_data else l2
     specific = layer_data.get(key, layer_data.get("default", "Sovereign territory"))

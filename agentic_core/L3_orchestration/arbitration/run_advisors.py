@@ -7,6 +7,14 @@ Ensures deterministic outputs and contract compliance.
 
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
+
 from .advisors import get_available_advisors, run_advisor
 from .arbitration_contract import AdvisorProposal
 
@@ -24,6 +32,21 @@ def run_advisors(task_dict: dict[str, str], advisor_ids: list[str]) -> list[Advi
     Raises:
         ValueError: If any advisor_id is invalid
     """
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "run_advisors", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "run_advisors", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "run_advisors")
     proposals = []
     for advisor_id in advisor_ids:
         available = get_available_advisors()

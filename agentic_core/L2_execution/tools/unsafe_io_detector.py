@@ -9,6 +9,14 @@ import ast
 from dataclasses import dataclass
 from pathlib import Path
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "unsafe_io_detector", "p0_governance")
+_emit_snapshots_state("p0", "unsafe_io_detector", "state_snapshot")
+
 
 def _invoke_authorize_and_execute(execution_context, target_callable, capability_token, payload, **kw):
     from agentic_core.L2_execution.enforcement.execution_guardrail_chokepoint import (
@@ -93,9 +101,11 @@ class UnsafePatternVisitor(ast.NodeVisitor):
     def visit_Call(self, node: ast.Call):
         """Visit function calls to detect unsafe patterns."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "UnsafePatternVisitor.visit_Call")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:UnsafePatternVisitor.visit_Call".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 

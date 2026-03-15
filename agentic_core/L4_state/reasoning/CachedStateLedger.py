@@ -10,7 +10,13 @@ from pathlib import Path
 
 from agentic_core.runtime.types.anomaly_report import AnomalyReport
 
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 
 class CachedStateLedger(SovereignBaseAgent):
@@ -20,6 +26,17 @@ class CachedStateLedger(SovereignBaseAgent):
     """
 
     def __init__(self, project_root: Path, session_id: str):
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "CachedStateLedger.__init__", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "CachedStateLedger.__init__", "p0_governance")
         super().__init__()
         self.root = project_root
         self.session_id = session_id
@@ -61,8 +78,11 @@ class CachedStateLedger(SovereignBaseAgent):
     def cache_validation_context(self, key: str, context: dict):
         """cache validation context for instant access"""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "CachedStateLedger.cache_validation_context")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L4_STATE, "CachedStateLedger.cache_validation_context"
+        )
 
         full_key = f"{self.prefix_context}:{key}"
         try:

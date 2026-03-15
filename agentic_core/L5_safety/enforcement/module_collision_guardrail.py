@@ -17,6 +17,18 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_records_execution_trace("p0", "evidence", "module_collision_guardrail")
+_emit_applies_guardrail("p0", "module_collision_guardrail", "p0_governance")
+_emit_snapshots_state("p0", "module_collision_guardrail", "state_snapshot")
+
 _ROOT = Path(__file__).resolve().parents[3]
 # guardian: allow-global-mutation
 if str(_ROOT) not in sys.path:
@@ -192,7 +204,7 @@ def save_baseline(collisions: dict[str, list[tuple[str, list[Path]]]]) -> None:
     baseline_path = Path("artifacts/architecture/module_collision_baseline.json")
     baseline_path.parent.mkdir(parents=True, exist_ok=True)
     content = json.dumps(baseline, indent=2, sort_keys=True) + "\n"
-    baseline_path.write_text(content, encoding="utf-8")
+    baseline_path.write_bytes(content.encode("utf-8"))
 
 
 def check_against_baseline(collisions: dict[str, list[tuple[str, list[Path]]]], baseline: dict) -> list[str]:

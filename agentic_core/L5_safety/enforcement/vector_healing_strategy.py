@@ -1,5 +1,13 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "vector_healing_strategy", "p0_governance")
+_emit_snapshots_state("p0", "vector_healing_strategy", "state_snapshot")
+
 "\nSovereign Vector Healing Strategy – Phase 17B (Dec 27, 2025)\nDetects and autonomously corrects Pinecone vector state drift.\nL4 state self-healing using official Pinecone MCP.\n"
 import hashlib
 import logging
@@ -50,9 +58,11 @@ class VectorHealingStrategy:
             List of fix dictionaries with action details
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "VectorHealingStrategy.diagnose")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:VectorHealingStrategy.diagnose".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 

@@ -19,12 +19,29 @@ from typing import Any
 
 from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR
 from agentic_core.L3_orchestration.registry.agent_dispatch_registry import get_agent_dispatch_registry
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 from agentic_core.utils.decorators_compat_util import standard_heal
 
 
 def _get_RedisSovereignAgent():
     """Lazy load RedisSovereignAgent to avoid upward import."""
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "_get_RedisSovereignAgent", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "_get_RedisSovereignAgent", "p0_governance")
     from agentic_core.L4_state.reasoning.RedisSovereignAgent import RedisSovereignAgent
 
     return RedisSovereignAgent
@@ -324,7 +341,9 @@ class SubAtomicRegistryAgent(SovereignBaseAgent):
     def extract_methods(self) -> list[dict]:
         """Deep crawl of all .py files to find callables"""
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "SubAtomicRegistryAgent.extract_methods")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "SubAtomicRegistryAgent.extract_methods"
+        )
         methods = []
         from agentic_core.utils.ssot_discovery_validator import get_python_files
 

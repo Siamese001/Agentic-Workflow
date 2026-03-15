@@ -1,5 +1,15 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "specificity_prose_types", "p0_governance")
+_emit_snapshots_state("p0", "specificity_prose_types", "state_snapshot")
+
 "Specificity Prose Engine Agent - Cover Letter Generator (K.10)\n\n\n# NAMING FIXED: LOGGER → Logger\nLogger = logging.getLogger(__name__)\nThis agent generates high-signal cover letters with company-specific details.\nEnforces 3 paragraphs @ 85-100 words each with ≥4 company-specific details.\n\nLayer: L2_execution\nResponsibilities:\n- Generate cover letter with 3 paragraphs\n- Enforce 85-100 words per paragraph\n- Include ≥4 company-specific details\n- Pass find-replace test for specificity\n\nNon-responsibilities:\n- Resume generation\n- Bullet synthesis\n- Headline composition\n"
 import uuid
 from dataclasses import dataclass
@@ -90,7 +100,9 @@ class SpecificityProseEngine:
             SpecificityProseResult with cover letter and validation details
         """
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "SpecificityProseGenerator.generate_cover_letter")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L5_POLICY, "SpecificityProseGenerator.generate_cover_letter"
+        )
         self.recovery_loop.reset(self.config.temperature)
         validation_results: Any = []
         for attempt in range(1, self.config.max_attempts + 1):

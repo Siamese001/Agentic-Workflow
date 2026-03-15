@@ -18,7 +18,13 @@ from agentic_core.L0_routing.config.path_constants import (
 )
 from agentic_core.L5_safety.config.structure_blueprint import DEPTH_RULES, LAYER_PREFIX_EXEMPT_TERRITORIES
 from agentic_core.L5_safety.config.structure_blueprint.ssot import ALLOW_ROOT_PY_TERRITORIES
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 
 @dataclass
@@ -63,8 +69,21 @@ class LocationValidatorAgent(SovereignBaseAgent):
         Returns:
             Dict with keys: status, details, artifacts, errors
         """
+        import uuid as _uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "LocationValidatorAgent.heal")
+        _emit_snapshots_state(str(_uuid.uuid4()), "LocationValidatorAgent.heal", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "LocationValidatorAgent.heal", "p0_governance")
+
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L5_POLICY, "LocationValidatorAgent.heal"
+        )
         return {
             "status": "skipped",
             "details": "LocationValidatorAgent is validation-only. Use LocationHealerAgent for healing.",

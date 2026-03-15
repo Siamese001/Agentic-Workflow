@@ -12,6 +12,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_applies_guardrail,
     _emit_records_execution_trace,
     _emit_signs_execution_trace,
+    _emit_snapshots_state,
 )
 from agentic_core.utils.decorators_compat_util import standard_heal
 
@@ -20,6 +21,9 @@ class ConstitutionalReviewResult:
     """Stub for ConstitutionalReviewResult - TODO: Replace with sovereign equivalent"""
 
     def __init__(self, review_passed=True, violations_found=None, feedback="") -> None:
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "ConstitutionalReviewResult.__init__", "state_snapshot")
         self.review_passed = review_passed
         self.violations_found = violations_found or []
         self.feedback = feedback
@@ -29,6 +33,7 @@ def track_metrics(name):
     """Stub decorator for track_metrics - TODO: Replace with sovereign equivalent"""
 
     _emit_applies_guardrail(str(uuid.uuid4()), "Module.track_metrics", "L5_POLICY")
+
     def decorator(func):
         return func
 
@@ -47,10 +52,16 @@ class ConstitutionalReviewerAgent(SovereignBaseAgent, L5SafetyBase):
     async def run_async(self, final_draft: str, workflow_id: str) -> ConstitutionalReviewResult:
         """Run async constitutional review of the final draft."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "ConstitutionalReviewerAgent.run_async")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L5_POLICY, "ConstitutionalReviewerAgent.run_async"
+        )
         import hashlib as _hashlib  # noqa: PLC0415
-        _seg_hash = _hashlib.sha256(f"{_trace_id}:ConstitutionalReviewerAgent.run_async".encode()).hexdigest()[:24]
+
+        _seg_hash = _hashlib.sha256(
+            f"{_trace_id}:ConstitutionalReviewerAgent.run_async".encode()
+        ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
         self.log_info("Running final constitutional review...")

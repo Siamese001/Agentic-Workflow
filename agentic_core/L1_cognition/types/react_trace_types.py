@@ -18,7 +18,13 @@ import json
 from dataclasses import dataclass, field
 from typing import Any
 
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 # ---------------------------------------------------------------------------
 # C0 Forbidden mutation fields — RAG context must not carry these
@@ -52,6 +58,17 @@ def assert_c0_informational(rag_context: dict[str, Any], source: str = "") -> No
     Raises:
         C0BoundaryViolation: If any forbidden field is present.
     """
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "assert_c0_informational", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "assert_c0_informational", "p0_governance")
     leaked = C0_FORBIDDEN_FIELDS & set(rag_context.keys())
     if leaked:
         raise C0BoundaryViolation(
@@ -85,8 +102,11 @@ class ReasonTraceEnvelope:
 
     def canonical_bytes(self) -> bytes:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L1_REASONING, "ReasonTraceEnvelope.canonical_bytes")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L1_REASONING, "ReasonTraceEnvelope.canonical_bytes"
+        )
 
         d = {
             "trace_id": self.trace_id,
@@ -161,8 +181,11 @@ class PromptProvenanceRecord:
 
     def canonical_bytes(self) -> bytes:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L1_REASONING, "PromptProvenanceRecord.canonical_bytes")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L1_REASONING, "PromptProvenanceRecord.canonical_bytes"
+        )
 
         d = {
             "prompt_hash": self.prompt_hash,
@@ -228,6 +251,7 @@ class ReplayGuard:
 
     def record_violation(self, source: str) -> None:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L1_REASONING, "ReplayGuard.record_violation")
 

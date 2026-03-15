@@ -13,6 +13,14 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "TerritoryChangeHandlerAgent", "p0_governance")
+_emit_snapshots_state("p0", "TerritoryChangeHandlerAgent", "state_snapshot")
+
 try:
     from watchdog.events import FileSystemEventHandler  # noqa: F401
     from watchdog.observers import Observer  # noqa: F401
@@ -56,10 +64,16 @@ class TerritoryChangeHandlerAgent(SovereignBaseAgent, FileSystemEventHandler):
     def on_modified(self, event: Any) -> None:
         """Execute on_modified operation when files change."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "TerritoryChangeHandlerAgent.on_modified")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L5_POLICY, "TerritoryChangeHandlerAgent.on_modified"
+        )
         import hashlib as _hashlib  # noqa: PLC0415
-        _seg_hash = _hashlib.sha256(f"{_trace_id}:TerritoryChangeHandlerAgent.on_modified".encode()).hexdigest()[:24]
+
+        _seg_hash = _hashlib.sha256(
+            f"{_trace_id}:TerritoryChangeHandlerAgent.on_modified".encode()
+        ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
         if event.is_directory:
@@ -106,9 +120,11 @@ class AutonomousRagDaemon:
     async def start(self) -> None:
         """Start the autonomous monitoring and reindexing cycle."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "AutonomousRagDaemon.start")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:AutonomousRagDaemon.start".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 

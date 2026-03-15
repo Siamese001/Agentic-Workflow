@@ -17,6 +17,14 @@ import hashlib
 import math
 import struct
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
+
 _FALLBACK_DIMS = 16
 _FALLBACK_TRUNC = 200
 
@@ -54,6 +62,21 @@ def normalize_failure_signal(action: dict) -> str:
         A normalized ASCII text string for embedding, e.g.:
         "IMPORT_BOUNDARY_VIOLATION gate:import_boundary_check DependencyRepairAgent yaml config loader"
     """
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "normalize_failure_signal", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "normalize_failure_signal", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "normalize_failure_signal")
     failure_type: str = action.get("type") or action.get("routing_tier") or "UNKNOWN"
     routing_gate: str = action.get("routing_gate") or ""
     agent: str = action.get("agent") or "unknown_agent"

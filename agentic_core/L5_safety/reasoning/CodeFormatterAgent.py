@@ -1,5 +1,13 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "CodeFormatterAgent", "p0_governance")
+_emit_snapshots_state("p0", "CodeFormatterAgent", "state_snapshot")
+
 'Code Formatter Agent - Enforces consistent formatting using Black + Ruff.\n\nThis module provides an atomic agent that enforces consistent code formatting\nacross Python files using Black for formatting and Ruff for linting auto-fixes.\n\nTypical usage:\n    agent = CodeFormatterAgent(project_root="/path/to/project", ctx=context)\n    result = await agent.execute(file_path="src/module.py")\n'
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -47,9 +55,11 @@ class CodeFormatterAgent(CodeToolRunnerCapability, SovereignBaseAgent):
                 - action: Description of action taken (if healed)
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "CodeFormatterAgent.execute")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:CodeFormatterAgent.execute".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 

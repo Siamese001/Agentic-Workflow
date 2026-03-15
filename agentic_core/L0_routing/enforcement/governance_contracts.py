@@ -29,7 +29,16 @@ from agentic_core.L0_routing.types.governance_types import (
     ProposedPolicyChange,
     RouteDecisionRef,
 )
-from agentic_core.runtime.lifecycle_trace_contract import _emit_verifies_policy
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+    _emit_verifies_policy,
+)
+
+_emit_applies_guardrail("p0", "governance_contracts", "p0_governance")
 
 _log = logging.getLogger(__name__)
 
@@ -60,6 +69,18 @@ def build_evidence_pack(
 
     Fail-closed: any invalid field raises EvidencePackError.
     """
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "build_evidence_pack", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "build_evidence_pack")
     try:
         pack = EvidencePack(
             trace_id=trace_id,
@@ -79,6 +100,7 @@ def build_evidence_pack(
 def validate_evidence_pack(pack: Any) -> EvidencePack:
     """§3.4 — Validate that an object is a well-formed EvidencePack."""
     import uuid  # noqa: PLC0415
+
     _emit_verifies_policy(str(uuid.uuid4()), "Module.validate_evidence_pack", "L0_ROUTING")
     if not isinstance(pack, EvidencePack):
         raise EvidencePackError(

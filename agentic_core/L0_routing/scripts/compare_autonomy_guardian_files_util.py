@@ -3,6 +3,18 @@
 import difflib
 from pathlib import Path
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "compare_autonomy_guardian_files_util")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "compare_autonomy_guardian_files_util", "p0_governance")
+_emit_snapshots_state("p0", "compare_autonomy_guardian_files_util", "state_snapshot")
+
 file1 = Path("agentic_core/L5_safety/validators/AutonomyGuardianAgent.py")
 file2 = Path("agentic_core/config/blueprint_sovereign/AutonomyGuardianAgent.py")
 content1 = file1.read_text(encoding="utf-8").splitlines()

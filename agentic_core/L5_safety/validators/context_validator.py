@@ -13,6 +13,10 @@ Replaces:
 
 Usage:
     from agentic_core.L4_state.utils.context_manager import get_context_manager
+from agentic_core.runtime.lifecycle_trace_contract import _emit_snapshots_state  # noqa: E402
+from agentic_core.runtime.lifecycle_trace_contract import _emit_applies_guardrail  # noqa: E402
+_emit_applies_guardrail("p0", "context_validator", "p0_governance")
+_emit_snapshots_state("p0", "context_validator", "state_snapshot")
 
     ctx = get_context_manager(project_root)
 
@@ -93,9 +97,11 @@ class L4ContextManager:
     def get_instance(cls, project_root: Path) -> L4ContextManager:
         """Get or create singleton instance."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "L4ContextManager.get_instance")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:L4ContextManager.get_instance".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 

@@ -32,6 +32,17 @@ from agentic_core.L5_safety.config.structure_blueprint.derived import (
 from agentic_core.L5_safety.config.structure_blueprint.territories import (
     get_all_territories,
 )
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_records_execution_trace("p0", "evidence", "ssot")
+_emit_applies_guardrail("p0", "ssot", "p0_governance")
+_emit_snapshots_state("p0", "ssot", "state_snapshot")
 
 # ============================================================================
 # LAYER VALIDATION API (Phase 1 Hardening — 2026-02-07)

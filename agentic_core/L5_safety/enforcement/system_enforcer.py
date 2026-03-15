@@ -1,4 +1,11 @@
 from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "system_enforcer", "p0_governance")
+_emit_snapshots_state("p0", "system_enforcer", "state_snapshot")
 
 "\nPhase 5: System Validation Suite — Ultra Zero-Loss Verification\n\nFull end-to-end sovereignty verification:\n1. Run all core agents self-tests in sandbox\n2. Verify testing coverage (Phase 1-2)\n3. Simulate violations → confirm healing (Phase 3)\n4. Verify MCP hardening on external agents (Phase 4)\n5. Detect regressions (syntax errors, unhardened external)\n6. Generate validation report\n\nTarget: PASS on all checks (0 violations, healing success, MCP audit clean)\n"
 import ast
@@ -47,9 +54,11 @@ class ValidationReport:
 
     def add_result(self, result: ValidationResult):
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "ValidationReport.add_result")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:ValidationReport.add_result".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
@@ -77,9 +86,11 @@ class SystemValidator:
     def load_discovery(self) -> list[dict]:
         """Load agent discovery JSON."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "SystemValidator.load_discovery")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:SystemValidator.load_discovery".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 

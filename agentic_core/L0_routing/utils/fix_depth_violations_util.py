@@ -10,6 +10,13 @@ from agentic_core.L0_routing.config import get_validated_project_root
 from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 from agentic_core.L0_routing.utils.path_util import safe_path_join
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 PROJECT_ROOT = get_validated_project_root()
 CORE = safe_path_join(PROJECT_ROOT, AGENTIC_CORE_DIR)
@@ -28,6 +35,21 @@ STAGE_MAPPINGS: Any = {
 
 def fix_depth_violations() -> Any:
     """Move shallow files into proper stage subdirectories."""
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "fix_depth_violations", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "fix_depth_violations", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "fix_depth_violations")
     print("[*] FIXING DEPTH VIOLATIONS...")
     moved: Any = 0
     for layer_name, default_stage in STAGE_MAPPINGS.items():

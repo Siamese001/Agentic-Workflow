@@ -5,6 +5,14 @@ import json
 from dataclasses import dataclass
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
+
 
 @dataclass(frozen=True)
 class ReplayKeyComponents:
@@ -40,6 +48,21 @@ def compute_replay_key(components: ReplayKeyComponents) -> str:
     Returns:
         A SHA-256 hex digest representing the deterministic replay key.
     """
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "compute_replay_key", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "compute_replay_key", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L6_OBSERVABILITY, "compute_replay_key")
 
     def _canonical_json(data: Any) -> str:
         """Computes canonical JSON: sorted keys, UTF-8, no whitespace."""

@@ -11,6 +11,14 @@ import hashlib
 import json
 import unicodedata
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
+
 
 def compute_qwen_determinism_digest(
     model_id: str,
@@ -22,6 +30,21 @@ def compute_qwen_determinism_digest(
     torch_version: str,
 ) -> str:
     """Compute W-QWEN-DETERMINISM-DIGEST with full SHA-256."""
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "compute_qwen_determinism_digest", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "compute_qwen_determinism_digest", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "compute_qwen_determinism_digest")
     payload = {
         "model_id": model_id,
         "model_revision": model_revision,

@@ -19,9 +19,14 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import (
 )
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
     _emit_records_execution_trace,
     _emit_signs_execution_trace,
+    _emit_snapshots_state,  # noqa: E402
 )
+
+_emit_applies_guardrail("p0", "ssot_scanner_enforcer", "p0_governance")
+_emit_snapshots_state("p0", "ssot_scanner_enforcer", "state_snapshot")
 
 
 @dataclass
@@ -44,10 +49,16 @@ class AgentMetadata:
         Only L0-L5 layers can have violations. APP and UNKNOWN are not violations.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "AgentMetadata.has_gravity_violation")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L5_POLICY, "AgentMetadata.has_gravity_violation"
+        )
         import hashlib as _hashlib  # noqa: PLC0415
-        _seg_hash = _hashlib.sha256(f"{_trace_id}:AgentMetadata.has_gravity_violation".encode()).hexdigest()[:24]
+
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:AgentMetadata.has_gravity_violation".encode()).hexdigest()[
+            :24
+        ]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
         # Skip if either layer is APP or UNKNOWN (not subject to gravity rules)
@@ -125,9 +136,11 @@ class SSOTScanner:
             List of agent metadata
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "SSOTScanner.scan_agents")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:SSOTScanner.scan_agents".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 

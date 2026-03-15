@@ -13,6 +13,14 @@ Bulk refactor hardcoded paths to use SSOT constants from structure_blueprint.py
 import re
 from pathlib import Path
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
+
 PROJECT_ROOT = Path(__file__).parent.parent
 
 # Files to exclude
@@ -96,6 +104,21 @@ SSOT_IMPORT = """from agentic_core.L5_safety.config.structure_blueprint_config i
 
 def should_exclude_path(path: Path) -> bool:
     """Check if path should be excluded."""
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "should_exclude_path", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "should_exclude_path", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "should_exclude_path")
     parts_lower = {p.lower() for p in path.parts}
     if parts_lower & {d.lower() for d in EXCLUDED_DIRS}:
         return True
@@ -189,7 +212,7 @@ def refactor_file(file_path: Path, dry_run: bool = False) -> tuple[bool, int]:
 
         return False, 0
 
-    # guardian: allow-silent-swallow
+    # guardian: allow-silent-swallow -- enforcer resilience; refactor failure non-fatal
     except Exception as e:
         print(f"❌ Error processing {file_path}: {e}")
         return False, 0

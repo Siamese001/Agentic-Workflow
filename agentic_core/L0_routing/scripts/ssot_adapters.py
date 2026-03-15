@@ -18,6 +18,16 @@ from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "ssot_adapters", "p0_governance")
+_emit_snapshots_state("p0", "ssot_adapters", "state_snapshot")
+
 if TYPE_CHECKING:
     from agentic_core.L2_execution.protocol import SubphaseResult
 from agentic_core.runtime.lifecycle_trace_contract import (
@@ -71,6 +81,7 @@ class ReconcilerAdapter:
 
     def pre_commit(self, territory: str, ctx: Any) -> SubphaseResult:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "ReconcilerAdapter.pre_commit")
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
@@ -105,6 +116,7 @@ class LocationAdapter:
 
     def pre_commit(self, territory: str, ctx: Any) -> SubphaseResult:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "LocationAdapter.pre_commit")
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
@@ -139,6 +151,7 @@ class FileClassAdapter:
 
     def pre_commit(self, territory: str, ctx: Any) -> SubphaseResult:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "FileClassAdapter.pre_commit")
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
@@ -169,6 +182,7 @@ class HierarchyAdapter:
 
     def pre_commit(self, territory: str, ctx: Any) -> SubphaseResult:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "HierarchyAdapter.pre_commit")
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
@@ -206,6 +220,7 @@ class ArchGovAdapter:
 
     def pre_commit(self, territory: str, ctx: Any) -> SubphaseResult:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "ArchGovAdapter.pre_commit")
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
@@ -243,6 +258,7 @@ class GravityAdapter:
 
     def pre_commit(self, territory: str, ctx: Any) -> SubphaseResult:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "GravityAdapter.pre_commit")
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
@@ -277,6 +293,7 @@ class SysArchAdapter:
 
     def pre_commit(self, territory: str, ctx: Any) -> SubphaseResult:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "SysArchAdapter.pre_commit")
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
@@ -307,6 +324,7 @@ class ObsProbeAdapter:
 
     def pre_commit(self, territory: str, ctx: Any) -> SubphaseResult:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "ObsProbeAdapter.pre_commit")
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
@@ -338,6 +356,7 @@ class RootHygieneAdapter:
 
     def pre_commit(self, territory: str, ctx: Any) -> SubphaseResult:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "RootHygieneAdapter.pre_commit")
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")

@@ -25,7 +25,13 @@ from agentic_core.L1_cognition.types.domain_types import (
     DomainContext,
     SharingPolicy,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 Logger = logging.getLogger(__name__)
 
@@ -68,6 +74,21 @@ class DomainContextManager:
 
     def _initialize_default_contexts(self) -> None:
         """Initialize default domain contexts."""
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(
+            str(_uuid.uuid4()), "DomainContextManager._initialize_default_contexts", "state_snapshot"
+        )
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(
+            str(_uuid.uuid4()), "DomainContextManager._initialize_default_contexts", "p0_governance"
+        )
         # agentic_core is the root domain
         self._contexts[AGENTIC_CORE_DIR] = DomainContext(
             domain=AGENTIC_CORE_DIR,
@@ -107,8 +128,11 @@ class DomainContextManager:
             DomainContext or None if not found
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L1_REASONING, "DomainContextManager.get_context")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L1_REASONING, "DomainContextManager.get_context"
+        )
 
         self.stats["context_lookups"] += 1
         return self._contexts.get(domain)

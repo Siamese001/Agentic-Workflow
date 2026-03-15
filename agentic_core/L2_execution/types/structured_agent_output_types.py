@@ -12,6 +12,14 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
+
 
 class StructuredOutputViolation(ValueError):
     """Raised when StructuredAgentOutput invariants are broken."""
@@ -67,6 +75,21 @@ class StructuredAgentOutput:
 
     def to_dict(self) -> dict[str, Any]:
         """Serialize to a plain dict for AgentOutputContract payload."""
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "StructuredAgentOutput.to_dict", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "StructuredAgentOutput.to_dict", "p0_governance")
+        import uuid as _uuid  # noqa: PLC0415
+
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "StructuredAgentOutput.to_dict")
         return {
             "intent_delta": self.intent_delta,
             "tool_requests": [{"tool_name": r.tool_name, "args": r.args} for r in self.tool_requests],

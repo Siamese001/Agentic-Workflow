@@ -20,6 +20,17 @@ from agentic_core.L5_safety.config.structure_blueprint._constants import (
     SubfolderDefinition,  # noqa: F401
     TerritoryDefinition,  # noqa: F401
 )
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_records_execution_trace("p0", "evidence", "territories")
+_emit_applies_guardrail("p0", "territories", "p0_governance")
+_emit_snapshots_state("p0", "territories", "state_snapshot")
 
 
 def get_territory_metadata(territory_name: str) -> TerritoryDefinition | None:

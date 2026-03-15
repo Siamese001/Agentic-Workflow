@@ -15,6 +15,14 @@ from __future__ import annotations
 import logging
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
+
 logger = logging.getLogger(__name__)
 ACTIVATION_GATE_VERSION = "v5.4-P0"
 _REQUIRED_COMPONENTS: list[tuple[str, str, str]] = [
@@ -49,6 +57,21 @@ def assert_activation_allowed(trace_id: str | None = None) -> None:
     Raises:
         PermissionError: If any required enforcement component is missing.
     """
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "assert_activation_allowed", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "assert_activation_allowed", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "assert_activation_allowed")
     missing: list[str] = []
     for module_path, symbol_name, short_key in _REQUIRED_COMPONENTS:
         try:

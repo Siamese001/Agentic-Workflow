@@ -35,12 +35,22 @@ from agentic_core.L5_safety.enforcement.policy_action_contract import (
     enforce_policy_before_action,
 )
 from agentic_core.L5_safety.enforcement.policy_enforcement_point import get_policy_enforcement_point
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
 from data.sdks_mcps.client_wrappers import (
     create_anthropic_client,
     create_openai_client,
     create_vertex_client,
 )
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "SovereignLLMGateway", "p0_governance")
+_emit_snapshots_state("p0", "SovereignLLMGateway", "state_snapshot")
 
 
 def _get_injection_detector_class():
@@ -368,7 +378,11 @@ class SovereignLLMGateway:
     async def route_generation(self, request: GenerationRequest, **kwargs) -> GenerationResponse:
         """Main entry point for all LLM generation, enforcing 2x2 agent policy."""
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L2_EXECUTION, f"SovereignLLMGateway.route_generation:{request.agent_id}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()),
+            LayerSegment.L2_EXECUTION,
+            f"SovereignLLMGateway.route_generation:{request.agent_id}",
+        )
         _gw = get_routing_gateway()
         try:
             enforce_policy_before_action(

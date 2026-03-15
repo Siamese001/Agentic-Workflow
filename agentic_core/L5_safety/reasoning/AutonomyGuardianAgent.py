@@ -16,6 +16,17 @@ from typing import Any
 
 def _get_DashboardDataGenerator():
     """Lazy load DashboardDataGenerator to avoid upward import."""
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "_get_DashboardDataGenerator", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "_get_DashboardDataGenerator", "p0_governance")
     from agentic_core.L6_observability.dashboards.data_generator import DashboardDataGenerator
 
     return DashboardDataGenerator
@@ -29,7 +40,13 @@ from agentic_core.L5_safety.config.structure_blueprint import (
     AGENTIC_CORE_DIR,
     TESTS_DIR,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 from agentic_core.utils.timeout_decorator_util import timeout
 
 log = logging.getLogger(__name__)

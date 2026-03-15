@@ -5,7 +5,13 @@ import logging
 from dataclasses import dataclass, field
 from typing import Any
 
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -25,6 +31,17 @@ class semantic_cache:
 
     def __init__(self):
         """Initialize semantic cache."""
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "semantic_cache.__init__", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "semantic_cache.__init__", "p0_governance")
         self._cache: dict[str, Any] = {}
         Logger.debug("semantic_cache initialized")
 
@@ -39,6 +56,7 @@ class semantic_cache:
     def check_sufficiency(self, query: str) -> CacheSufficiencyResult:
         """Check if cached response is sufficient for query."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "semantic_cache.check_sufficiency")
 
@@ -77,6 +95,7 @@ class SelfRagProcessor:
     def identify_gaps(self, query: str, context: str) -> list[KnowledgeGap]:
         """Identify knowledge gaps in the context."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "SelfRagProcessor.identify_gaps")
 
@@ -144,8 +163,11 @@ class KnowledgeGraphInjector:
     def inject_context(self, query: str, context: KGContext) -> str:
         """Inject KG context into query."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "KnowledgeGraphInjector.inject_context")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L4_STATE, "KnowledgeGraphInjector.inject_context"
+        )
 
         if not context.entities:
             return query
@@ -181,6 +203,7 @@ class FewShotInjector:
     def inject_examples(self, prompt: str, examples: list[FewShotExample]) -> str:
         """Inject examples into prompt."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "FewShotInjector.inject_examples")
 

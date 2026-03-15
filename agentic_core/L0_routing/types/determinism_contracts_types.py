@@ -23,6 +23,17 @@ from agentic_core.L0_routing.types.determinism_types import (
     SemanticClock,
     SurgicalManifest,
 )
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "determinism_contracts_types")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "determinism_contracts_types", "p0_governance")
+_emit_snapshots_state("p0", "determinism_contracts_types", "state_snapshot")
 
 # =============================================================================
 # §1.1 — SurgicalManifest as exclusive execution input

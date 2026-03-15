@@ -9,7 +9,13 @@ import hashlib
 import json
 from dataclasses import dataclass
 
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -30,6 +36,17 @@ class DPOExampleId:
         Returns:
             Bytes with deterministic ordering and formatting.
         """
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "DPOExampleId.canonical_bytes", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "DPOExampleId.canonical_bytes", "p0_governance")
         return json.dumps(
             {"control_hash": self.control_hash, "candidate_hash": self.candidate_hash},
             separators=(",", ":"),
@@ -110,6 +127,7 @@ class DPOBatch:
             Bytes with deterministic ordering and formatting.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L6_OBSERVABILITY, "DPOBatch.canonical_bytes")
 

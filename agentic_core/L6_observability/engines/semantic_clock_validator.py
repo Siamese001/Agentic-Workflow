@@ -18,6 +18,14 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
+
 
 class SemanticClockHashMismatch(ValueError):
     """Raised when a SemanticClockAdvancementArtifact hash fails validation."""
@@ -56,6 +64,21 @@ def validate_artifact(artifact: Any) -> SemanticClockValidationResult:
     Raises:
         SemanticClockHashMismatch: if stored != computed hash.
     """
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "validate_artifact", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "validate_artifact", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L6_OBSERVABILITY, "validate_artifact")
     material = {
         "advancement_id": str(artifact.advancement_id),
         "advancement_reason": str(artifact.advancement_reason),

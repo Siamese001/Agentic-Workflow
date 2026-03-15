@@ -11,6 +11,13 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from agentic_core.L6_observability.types.detection_signal_types import DetectionSignal
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 if TYPE_CHECKING:
     from system_learning.engines.l4_state_writer import L4StateWriter
@@ -32,6 +39,21 @@ def emit_detection_signal(
     alter the GatewayResult or any in-flight execution decision.
     The signal is for persistence + N+1 routing influence only.
     """
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "emit_detection_signal", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "emit_detection_signal", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L6_OBSERVABILITY, "emit_detection_signal")
     signal = DetectionSignal.build(
         mission_id=mission_id,
         created_at_utc=created_at_utc,

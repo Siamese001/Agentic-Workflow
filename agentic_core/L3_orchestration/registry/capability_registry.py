@@ -43,7 +43,17 @@ from dataclasses import dataclass, field
 from enum import Enum
 
 from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import get_routing_gateway
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_snapshots_state("p0", "capability_registry", "state_snapshot")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "capability_registry", "p0_governance")
 
 logger = logging.getLogger(__name__)
 _CAPABILITY_LOG = logging.getLogger("adg.issues_capability_token")
@@ -427,7 +437,7 @@ def resolve_agent_for_capability(
         UnregisteredAgentError:      preferred_agent_id not in registry.
     """
     _registry = registry or get_capability_registry()
-    _gw = get_routing_gateway(run_context.trace_id if hasattr(run_context, 'trace_id') else "")
+    _gw = get_routing_gateway(run_context.trace_id if hasattr(run_context, "trace_id") else "")
 
     _emit_records_execution_trace(
         run_context.trace_id,

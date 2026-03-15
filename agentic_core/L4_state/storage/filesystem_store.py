@@ -13,6 +13,13 @@ import uuid
 from pathlib import Path
 
 from agentic_core.interfaces.write_gateway import InstructionPacket, get_write_gateway
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 from .persistent_store import (
     StoredArtifact,
@@ -20,7 +27,6 @@ from .persistent_store import (
     _canonicalize_payload,
     _sanitize_id,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class FileSystemStore:
@@ -33,6 +39,17 @@ class FileSystemStore:
             root_dir: Root directory for storage
             max_artifact_size: Maximum artifact size in bytes (default: 5MB)
         """
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "FileSystemStore.__init__", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "FileSystemStore.__init__", "p0_governance")
         self.root_dir = Path(root_dir)
         self.max_artifact_size = max_artifact_size
         self.root_dir.mkdir(parents=True, exist_ok=True)
@@ -96,6 +113,7 @@ class FileSystemStore:
             OSError: If filesystem operation fails
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "FileSystemStore.put")
 

@@ -5,7 +5,13 @@ import time
 from dataclasses import dataclass
 from typing import NamedTuple, Sequence
 
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 
 class MemoryDeadlockViolation(Exception):
@@ -38,6 +44,17 @@ class MemoryCollisionDetector:
     """
 
     def __init__(self, policy: LockPolicy):
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "MemoryCollisionDetector.__init__", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "MemoryCollisionDetector.__init__", "p0_governance")
         self.policy = policy
         self._locks: dict[str, threading.Lock] = {name: threading.Lock() for name in policy.lock_hierarchy}
         self._lock_order: dict[str, int] = {name: i for i, name in enumerate(policy.lock_hierarchy)}
@@ -54,8 +71,11 @@ class MemoryCollisionDetector:
             A LockAcquisitionResult indicating the outcome.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "MemoryCollisionDetector.acquire_locks")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L4_STATE, "MemoryCollisionDetector.acquire_locks"
+        )
 
         try:
             sorted_locks = sorted(required_locks, key=lambda name: self._lock_order[name])

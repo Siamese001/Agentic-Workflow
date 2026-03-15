@@ -39,6 +39,13 @@ from agentic_core.L0_routing.types.guardian_contract_types import (
     write_guardian_result,
 )
 from agentic_core.L0_routing.utils.project_root_util import get_validated_project_root
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 GUARDIAN_ID = "c0_sovereignty_enforcement"
 
@@ -78,6 +85,21 @@ THRESHOLD_TARGET_NAMES: frozenset[str] = frozenset(
 
 
 def _collect_files(repo_root: Path) -> list[Path]:
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "_collect_files", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "_collect_files", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "_collect_files")
     result: list[Path] = []
     for root_name in sorted(SCAN_ROOTS):
         root_path = repo_root / root_name

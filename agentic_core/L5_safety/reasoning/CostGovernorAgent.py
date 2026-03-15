@@ -8,8 +8,10 @@ from typing import Any
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,
     _emit_records_execution_trace,
     _emit_signs_execution_trace,
+    _emit_snapshots_state,
 )
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
@@ -46,6 +48,12 @@ class CostGovernorAgent(SovereignBaseAgent):
             config: configuration dictionary containing:
                 - budget_limit: Maximum allowed spend in dollars (default: 10.0)
         """
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "CostGovernorAgent.__init__", "state_snapshot")
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "CostGovernorAgent.__init__", "p0_governance")
         self.config: dict[str, Any] = config
         self.limit: float = config.get("budget_limit", 10.0)
         self.spend: float = 0.0
@@ -65,9 +73,11 @@ class CostGovernorAgent(SovereignBaseAgent):
             BudgetExceededError: If total spend exceeds the configured limit.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "CostGovernorAgent.track")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:CostGovernorAgent.track".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 

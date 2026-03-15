@@ -9,7 +9,13 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import Any
 
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 try:
     import numpy as np
@@ -19,6 +25,17 @@ Logger: Any = logging.getLogger(__name__)
 
 
 def _invoke_authorize_and_execute(execution_context, target_callable, capability_token, payload, **kw):
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "_invoke_authorize_and_execute", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "_invoke_authorize_and_execute", "p0_governance")
     from agentic_core.L2_execution.enforcement.execution_guardrail_chokepoint import (
         authorize_and_execute,  # noqa: PLC0415
     )
@@ -115,7 +132,9 @@ class tool_registry:
             category: Tool category
         """
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"ToolRegistry.register:{name}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"ToolRegistry.register:{name}"
+        )
         _ectx = _make_execution_context(name, "tool_registry.register")
         _invoke_authorize_and_execute(
             _ectx,

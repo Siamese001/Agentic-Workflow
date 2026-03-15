@@ -19,6 +19,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_applies_guardrail,
     _emit_records_execution_trace,
     _emit_signs_execution_trace,
+    _emit_snapshots_state,
 )
 from agentic_core.utils.decorators_compat_util import standard_heal
 
@@ -39,6 +40,9 @@ class SprawlInspectorAgent(SovereignBaseAgent):
         Args:
             target_path: Root directory to inspect for sprawl violations
         """
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "SprawlInspectorAgent.__init__", "state_snapshot")
         self.root: Path = Path(target_path)
         self.MAX_BREADTH: int = 7
         self.MIN_FILES: int = 3
@@ -62,9 +66,11 @@ class SprawlInspectorAgent(SovereignBaseAgent):
         """
         _emit_applies_guardrail(str(uuid.uuid4()), "SprawlInspectorAgent.inspect", "L5_POLICY")
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "SprawlInspectorAgent.inspect")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:SprawlInspectorAgent.inspect".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 

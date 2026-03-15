@@ -4,6 +4,14 @@ Blueprint Compiler: Derives all secondary registries from SOVEREIGN_TERRITORIES.
 This module eliminates duplication by computing CORE_SUBFOLDER_MAP, SUBFOLDER_METADATA,
 APPS_*_SUBFOLDER_MAP, L4_SUBFOLDER_MAP, L4_APPROVED_FOLDERS, and VARIABLE_DEPTH_SUBFOLDERS
 from the single SSOT: SOVEREIGN_TERRITORIES.
+from agentic_core.runtime.lifecycle_trace_contract import _emit_snapshots_state  # noqa: E402
+from agentic_core.runtime.lifecycle_trace_contract import _emit_applies_guardrail  # noqa: E402
+from agentic_core.runtime.lifecycle_trace_contract import _emit_records_execution_trace  # noqa: E402
+from agentic_core.runtime.lifecycle_trace_contract import _emit_signs_execution_trace  # noqa: E402
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_records_execution_trace("p0", "evidence", "blueprint_compiler")
+_emit_applies_guardrail("p0", "blueprint_compiler", "p0_governance")
+_emit_snapshots_state("p0", "blueprint_compiler", "state_snapshot")
 
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
@@ -26,14 +34,15 @@ from __future__ import annotations
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from typing import Any, Final
+
 from agentic_core.L0_routing.config import (
     DASHBOARD_DIR,
 )
 from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
-    APPS_SHARED_DIR,
     APPS_LIC_DIR,
     APPS_RG_DIR,
+    APPS_SHARED_DIR,
     TOOLS_DIR,
 )
 

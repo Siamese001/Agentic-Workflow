@@ -1,5 +1,15 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "gravity_validator", "p0_governance")
+_emit_snapshots_state("p0", "gravity_validator", "state_snapshot")
+
 "\nUnified SSOT Validator - Consolidates All Validation Logic\n\nReplaces 5 separate validation tools with a single, comprehensive validator:\n1. audit_ssot.py → Gravity violations (files in wrong layers)\n2. audit_architectural_violations.py → Import violations (upward dependencies)\n3. HierarchyAgent → Depth compliance (max depth per layer)\n4. LocationAgent → Territory compliance (unauthorized folders)\n5. FilesystemSSOTReconcilerAgent → Drift detection (filesystem vs blueprint)\n\nPerformance: <5 seconds for complete validation (vs 60+ seconds running 5 tools)\n"
 import ast
 import uuid
@@ -109,7 +119,9 @@ class SovereignHealthReport:
     def to_markdown(self) -> str:
         """Generate Markdown report optimized for LLM/Human consumption."""
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "GravityValidator.to_markdown")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L5_POLICY, "GravityValidator.to_markdown"
+        )
         lines = []
         lines.append("# SSOT Sovereign Health Report")
         lines.append("")

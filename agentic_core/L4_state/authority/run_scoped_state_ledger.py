@@ -35,10 +35,15 @@ from typing import Any
 from agentic_core.L2_execution.providers import get_clock
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
     _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
     _emit_snapshots_state,
     _emit_writes_through,
 )
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "run_scoped_state_ledger", "p0_governance")
 
 _log = logging.getLogger(__name__)
 _OBSERVE_LOG = logging.getLogger("adg.observes_runtime_state")
@@ -157,6 +162,7 @@ class RunScopedStateLedger:
     def record_read(self, key: str, state_version: int) -> ReadEntry:
         """Record a state read and emit reads_runtime_state."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "RunScopedStateLedger.record_read")
 

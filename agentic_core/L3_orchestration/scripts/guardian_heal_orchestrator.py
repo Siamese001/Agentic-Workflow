@@ -31,6 +31,13 @@ from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_p
 from agentic_core.L0_routing.utils.project_root_util import get_validated_project_root
 from agentic_core.L2_execution.tools import write_gateway as _wg
 from agentic_core.L5_safety.config.structure_blueprint_config import REPORTS_DIR
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 TOOL_ID = "guardian_heal_orchestrator"
 
@@ -39,6 +46,21 @@ def _run_guardians(
     repo_root: Path, timestamp: str, correlation_id: str | None = None, write_artifacts_dir: str | None = None
 ) -> dict:
     """Run all enabled guardians and return aggregate result as dict."""
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "_run_guardians", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "_run_guardians", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "_run_guardians")
     from agentic_core.L0_routing.scripts.run_all_guardians import run_all_guardians
 
     result = run_all_guardians(

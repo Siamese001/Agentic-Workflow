@@ -19,6 +19,14 @@ import uuid
 from pathlib import Path
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_snapshots_state("p0", "boot_sequence", "state_snapshot")
+
 # guardian: allow-global-mutation
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 from agentic_core.discovery import AgentRegistry
@@ -55,6 +63,7 @@ class BootSequence:
             Dict containing boot status, metrics, and any violations
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "BootSequence.execute_boot")
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")

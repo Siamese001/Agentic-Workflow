@@ -39,9 +39,14 @@ from agentic_core.L5_safety.enforcement.policy_action_contract import (
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
+    _emit_applies_guardrail,
     _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,  # noqa: E402
 )
 from agentic_core.seams.orchestration_protocols import OrchestrationResult
+
+_emit_snapshots_state("p0", "deterministic_orchestrator", "state_snapshot")
 
 
 class RouteMode(Enum):
@@ -69,6 +74,14 @@ def canonical_json(data: dict[str, Any]) -> str:
 
     Alphabetical key sort, UTF-8, no whitespace variance.
     """
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "canonical_json", "p0_governance")
     _emit_agent_executes_agent(str(uuid.uuid4()), "Module", "Module.canonical_json")
     return json.dumps(data, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
 
@@ -172,7 +185,11 @@ class DeterministicOrchestrator:
             OrchestrationResult with deterministic outcome
         """
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"DeterministicOrchestrator.orchestrate:{route_mode}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            f"DeterministicOrchestrator.orchestrate:{route_mode}",
+        )
         with get_trace_context().run_frame(
             layer="L3",
             module="deterministic_orchestrator",

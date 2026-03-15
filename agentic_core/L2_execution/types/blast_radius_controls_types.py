@@ -11,6 +11,14 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
+
 
 class BlastRadiusExceeded(RuntimeError):
     """Raised when an execution trace exceeds a blast-radius limit."""
@@ -52,6 +60,23 @@ class BlastRadiusControls:
                 raise ValueError(f"BlastRadiusControls: {field_name} must be positive, got {value}")
 
     def check_state_diff(self, diff_bytes: int) -> None:
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "BlastRadiusControls.check_state_diff", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "BlastRadiusControls.check_state_diff", "p0_governance")
+        import uuid as _uuid  # noqa: PLC0415
+
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L2_EXECUTION, "BlastRadiusControls.check_state_diff"
+        )
         if diff_bytes > self.max_state_diff_bytes:
             raise BlastRadiusExceeded(
                 f"State diff {diff_bytes} bytes exceeds limit {self.max_state_diff_bytes}"

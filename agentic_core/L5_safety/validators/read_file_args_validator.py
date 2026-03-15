@@ -1,5 +1,13 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "read_file_args_validator", "p0_governance")
+_emit_snapshots_state("p0", "read_file_args_validator", "state_snapshot")
+
 "\nTool Arguments schema\n====================\nDefines the Pydantic models for all tool-calling arguments within the\nSovereign system. These models enforce strict path validation and\nexecution guardrails.\n"
 import uuid
 from pathlib import Path
@@ -23,9 +31,11 @@ class ReadFileArgs(BaseModel):
     def validate_path(cls, v):
         _emit_validated_by_safety_plane(str(uuid.uuid4()), "ReadFileArgs.validate_path", "L5_POLICY")
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "ReadFileArgs.validate_path")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:ReadFileArgs.validate_path".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
@@ -44,9 +54,11 @@ class WriteFileArgs(BaseModel):
     @validator("path")
     def validate_path(cls, v):
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "WriteFileArgs.validate_path")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:WriteFileArgs.validate_path".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
@@ -65,9 +77,11 @@ class MoveFileArgs(BaseModel):
     @validator("source", "destination")
     def validate_paths(cls, v):
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "MoveFileArgs.validate_paths")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:MoveFileArgs.validate_paths".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
@@ -86,9 +100,11 @@ class ListFilesArgs(BaseModel):
     @validator("path")
     def validate_path(cls, v):
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "ListFilesArgs.validate_path")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:ListFilesArgs.validate_path".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
@@ -105,9 +121,11 @@ class DeleteFileArgs(BaseModel):
     @validator("path")
     def validate_path(cls, v):
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "DeleteFileArgs.validate_path")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:DeleteFileArgs.validate_path".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
@@ -125,10 +143,14 @@ class CreateDirectoryArgs(BaseModel):
     @validator("path")
     def validate_path(cls, v):
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "CreateDirectoryArgs.validate_path")
         import hashlib as _hashlib  # noqa: PLC0415
-        _seg_hash = _hashlib.sha256(f"{_trace_id}:CreateDirectoryArgs.validate_path".encode()).hexdigest()[:24]
+
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:CreateDirectoryArgs.validate_path".encode()).hexdigest()[
+            :24
+        ]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
         if Path(v).is_absolute():
@@ -148,10 +170,16 @@ class ExecuteCommandArgs(BaseModel):
     @validator("timeout")
     def validate_timeout(cls, v):
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "ExecuteCommandArgs.validate_timeout")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L5_POLICY, "ExecuteCommandArgs.validate_timeout"
+        )
         import hashlib as _hashlib  # noqa: PLC0415
-        _seg_hash = _hashlib.sha256(f"{_trace_id}:ExecuteCommandArgs.validate_timeout".encode()).hexdigest()[:24]
+
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:ExecuteCommandArgs.validate_timeout".encode()).hexdigest()[
+            :24
+        ]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
         if v > 300:

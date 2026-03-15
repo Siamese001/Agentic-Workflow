@@ -26,8 +26,14 @@ from agentic_core.runtime.trace_context import get_trace_context
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L3_orchestration.contracts.orchestration_handoff_contract import emit_agent_executes_agent
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_snapshots_state,  # noqa: E402
+)
 from agentic_core.utils.timeout_decorator_util import timeout
+
+_emit_snapshots_state("p0", "decomposition_orchestrator", "state_snapshot")
 
 _logger = logging.getLogger(__name__)
 
@@ -91,6 +97,16 @@ class DecompositionOrchestrator(SovereignBaseAgent):
 
     def _load_agent_registry(self) -> None:
         """Load agent capabilities from SSOT discovery JSON."""
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(
+            str(_uuid.uuid4()), "DecompositionOrchestrator._load_agent_registry", "p0_governance"
+        )
         discovery_path = Path(__file__).resolve().parents[3] / "agent_discovery_full.json"
         if discovery_path.exists():
             try:
@@ -181,7 +197,11 @@ class DecompositionOrchestrator(SovereignBaseAgent):
         """
         import uuid as _uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(_uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"DecompositionOrchestrator.decompose:{prompt[:40]}")
+        _emit_records_execution_trace(
+            str(_uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            f"DecompositionOrchestrator.decompose:{prompt[:40]}",
+        )
         mission_id = f"mission_{uuid.uuid4().hex[:8]}"
         plan = MissionPlan(mission_id=mission_id, created_at=datetime.utcnow().isoformat(), prompt=prompt)
         task_hints = self._extract_task_hints(prompt)
@@ -278,7 +298,9 @@ class DecompositionOrchestrator(SovereignBaseAgent):
         Returns:
             Execution results dictionary
         """
-        _emit_agent_executes_agent(str(uuid.uuid4()), "DecompositionOrchestrator", "DecompositionOrchestrator.execute")
+        _emit_agent_executes_agent(
+            str(uuid.uuid4()), "DecompositionOrchestrator", "DecompositionOrchestrator.execute"
+        )
         with get_trace_context().run_frame(
             layer="L3",
             module="decomposition_orchestrator",
@@ -582,4 +604,8 @@ if __name__ == "__main__":
         prompt = "Validate all L5 agents for proper inheritance and fix naming violations"
     plan = orchestrator.decompose(prompt)
     results = orchestrator.execute(plan, dry_run=True)
-from agentic_core.runtime.lifecycle_trace_contract import _emit_agent_executes_agent
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_agent_executes_agent,
+    _emit_applies_guardrail,
+    _emit_signs_execution_trace,
+)

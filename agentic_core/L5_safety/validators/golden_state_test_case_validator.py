@@ -1,5 +1,13 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "golden_state_test_case_validator", "p0_governance")
+_emit_snapshots_state("p0", "golden_state_test_case_validator", "state_snapshot")
+
 "\nGolden State & Evaluation Schemas\n================================\nDefines models for Ground Truth benchmarking and LM-as-a-Judge\nevaluation workflows.\n"
 from typing import Any, Literal
 
@@ -26,10 +34,16 @@ class GoldenStateTestCase(BaseModel):
     def validate_required_text(cls, value: str) -> str:
         """[HARDENED] Ensure required text fields are not empty."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "GoldenStateTestCase.validate_required_text")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L5_POLICY, "GoldenStateTestCase.validate_required_text"
+        )
         import hashlib as _hashlib  # noqa: PLC0415
-        _seg_hash = _hashlib.sha256(f"{_trace_id}:GoldenStateTestCase.validate_required_text".encode()).hexdigest()[:24]
+
+        _seg_hash = _hashlib.sha256(
+            f"{_trace_id}:GoldenStateTestCase.validate_required_text".encode()
+        ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
         if not value.strip():
@@ -50,9 +64,11 @@ class JudgeVerdict(BaseModel):
     def validate_non_empty(cls, value: str) -> str:
         """[HARDENED] Ensure rating and explanation are not empty."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "JudgeVerdict.validate_non_empty")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:JudgeVerdict.validate_non_empty".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 

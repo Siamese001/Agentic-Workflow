@@ -6,6 +6,9 @@ from dataclasses import dataclass
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L0_routing.enforcement.runtime_guard import runtime_guard
 from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
+from agentic_core.runtime.lifecycle_trace_contract import _emit_signs_execution_trace  # noqa: E402
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 "Brief description of functionality and purpose."
 "Brief description of functionality and purpose."
@@ -29,9 +32,14 @@ class SovereignDependencyError(Exception):
     pass
 
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_snapshots_state,
+)
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass
@@ -83,6 +91,12 @@ class SubatomicHopAgent(SovereignBaseAgent):
         Raises:
             SovereignDependencyError: If required dependencies are Missing
         """
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "SubatomicHopAgent.__init__", "state_snapshot")
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "SubatomicHopAgent.__init__", "p0_governance")
         self.role = role
         self.id = str(uuid.uuid4())
         self.config = config
@@ -454,7 +468,9 @@ class SubatomicHopAgent(SovereignBaseAgent):
         """L3 orchestration agent - operational only."""
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "SubatomicHopAgent.heal_repository")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "SubatomicHopAgent.heal_repository"
+        )
         if _call_path is None:
             super().heal_repository()
         agent_name = self.__class__.__name__

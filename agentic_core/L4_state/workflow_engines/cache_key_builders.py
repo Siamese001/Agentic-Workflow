@@ -10,6 +10,14 @@ enforce the non-authoritative cache contract:
 
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
+
 
 def _require_safe_segment(name: str, value: str) -> None:
     """Raise ``ValueError`` if *value* contains characters illegal in a key segment.
@@ -23,6 +31,21 @@ def _require_safe_segment(name: str, value: str) -> None:
     Hash-typed segments (64-hex strings) are never affected — SHA-256
     hexdigests contain only ``[0-9a-f]``.
     """
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "_require_safe_segment", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "_require_safe_segment", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "_require_safe_segment")
     if ":" in value:
         raise ValueError(
             f"Key segment {name!r} contains illegal ':' character: {value!r}. Use a slug, version tag, or hex digest instead."

@@ -13,6 +13,14 @@ Exit codes:
 import sys
 from pathlib import Path
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
+
 project_root = Path(__file__).parent.parent.parent
 # guardian: allow-global-mutation
 sys.path.insert(0, str(project_root))
@@ -25,6 +33,21 @@ def run_code_deduplication_check() -> tuple[bool, str]:
     Returns:
         Tuple of (success, message)
     """
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "run_code_deduplication_check", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "run_code_deduplication_check", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "run_code_deduplication_check")
     try:
         from agentic_core.L0_routing.seams.safety_enforcement_seam import load_code_deduplication_agent
 

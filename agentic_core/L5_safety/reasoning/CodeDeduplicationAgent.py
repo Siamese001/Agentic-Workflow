@@ -48,6 +48,11 @@ except ImportError:
 from agentic_core.L0_routing.config import AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR
 from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR
 from agentic_core.L5_safety.config.structure_blueprint import AGENTIC_CORE_DIR
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 from agentic_core.utils.timeout_decorator_util import timeout
 
 
@@ -87,6 +92,17 @@ class CodeDeduplicationAgent(SovereignBaseAgent):
             similarity_threshold: Default 1.0 (100% identity required)
             min_lines: Minimum lines for duplicate detection
         """
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "CodeDeduplicationAgent.__init__", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "CodeDeduplicationAgent.__init__", "p0_governance")
         self.threshold = 1.0
         self.min_lines = min_lines
         self.duplicate_groups: dict[str, list[tuple[Path, str, int, str]]] = defaultdict(list)
@@ -116,7 +132,9 @@ class CodeDeduplicationAgent(SovereignBaseAgent):
             Dict with keys: status, details, artifacts, errors
         """
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "CodeDeduplicationAgent.heal")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L5_POLICY, "CodeDeduplicationAgent.heal"
+        )
         try:
             violation_type = violation.get("type", "")
             file_path = violation.get("file")

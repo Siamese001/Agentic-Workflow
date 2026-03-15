@@ -1,4 +1,7 @@
 from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.runtime.lifecycle_trace_contract import _emit_snapshots_state  # noqa: E402
+
+_emit_snapshots_state("p0", "StructuralValidatorAgent", "state_snapshot")
 
 "\nStructuralValidatorAgent - Facade Shell for Zero-Loss Consolidation.\n\nL5 Sovereign Guardian for Structural Enforcement.\nConverted to Facade: 2026-01-31 (Phase 2 Deprecation Implementation)\n\nFACADE PATTERN: Delegates to UnifiedAgent while preserving 100% legacy compatibility.\nAll original imports and signatures work without modification.\n\nRationale:\n    - Canonizes the legacy 'StructureEnforcerAgent' into 'StructuralValidatorAgent'.\n    - Implements Atomic Writes for safe refactoring.\n    - Enforces Layer Gravity (L0-L6) and Naming Laws.\n    - Integrates with ArchitectureGovernorAgent.\n"
 import ast
@@ -109,10 +112,16 @@ class StructuralValidatorAgent(SovereignBaseAgent):
         """
         _emit_applies_guardrail(str(uuid.uuid4()), "StructuralValidatorAgent.validate_structure", "L5_POLICY")
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "StructuralValidatorAgent.validate_structure")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L5_POLICY, "StructuralValidatorAgent.validate_structure"
+        )
         import hashlib as _hashlib  # noqa: PLC0415
-        _seg_hash = _hashlib.sha256(f"{_trace_id}:StructuralValidatorAgent.validate_structure".encode()).hexdigest()[:24]
+
+        _seg_hash = _hashlib.sha256(
+            f"{_trace_id}:StructuralValidatorAgent.validate_structure".encode()
+        ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
         self._violations = []

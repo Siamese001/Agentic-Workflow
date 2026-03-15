@@ -31,7 +31,13 @@ from typing import Any
 
 from pydantic import BaseModel, Field
 
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 Logger = logging.getLogger(__name__)
 
@@ -76,6 +82,17 @@ class TransformResult:
 
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "TransformResult.to_dict", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "TransformResult.to_dict", "p0_governance")
         return {
             "success": self.success,
             "transformed_code": self.transformed_code,
@@ -121,7 +138,9 @@ class SymbolRenamer(ast.NodeTransformer):
     def visit_FunctionDef(self, node: ast.FunctionDef) -> ast.FunctionDef:
         """Handle function definitions with scope tracking."""
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"SymbolRenamer.visit_FunctionDef:{node.name}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"SymbolRenamer.visit_FunctionDef:{node.name}"
+        )
         if node.name == self.old_name:
             self.changes.append(
                 f"Renamed function '{self.old_name}' to '{self.new_name}' at line {node.lineno}",

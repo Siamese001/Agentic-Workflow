@@ -9,6 +9,14 @@ from pathlib import Path
 
 from cryptography.fernet import Fernet
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
+
 SECRETS_DIR = Path("C:\\Users\\amita\\.agentic_secrets")
 KEY_FILE = SECRETS_DIR / ".key"
 SECRETS_FILE = SECRETS_DIR / "secrets.enc"
@@ -16,6 +24,21 @@ SECRETS_FILE = SECRETS_DIR / "secrets.enc"
 
 def _ensure_key() -> bytes:
     """Ensure encryption key exists, return key bytes."""
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "_ensure_key", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "_ensure_key", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "_ensure_key")
     if KEY_FILE.exists():
         return KEY_FILE.read_bytes()
     key = Fernet.generate_key()

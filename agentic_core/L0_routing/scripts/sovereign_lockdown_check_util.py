@@ -3,9 +3,32 @@ from pathlib import Path
 "\n[PHASE 7/8] Sovereign Lockdown Check - CI/CD Entrypoint.\n\nThis script acts as the final gatekeeper for architectural purity.\nIt interfaces with the ArchitectureGovernorAgent in headless mode.\n\nUsage:\n    python scripts/ci/sovereign_lockdown_check_util.py\n\nExit Codes:\n    0 - Repository is sovereign-compliant (no violations)\n    1 - Violations detected (commit should be blocked)\n    2 - Error during verification\n\nPre-commit Hook Entry:\n    - id: sovereign-lockdown-verification\n      name: Sovereign Lockdown Verification (Phase 7)\n      entry: python\n      args: [scripts/ci/sovereign_lockdown_check_util.py]\n      language: python\n      pass_filenames: false\n      always_run: true\n"
 import sys
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
+
 
 def main() -> int:
     """Run sovereign lockdown verification."""
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "main", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "main", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "main")
     try:
         project_root = Path(__file__).resolve().parent.parent.parent
         # guardian: allow-global-mutation

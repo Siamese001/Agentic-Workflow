@@ -5,6 +5,18 @@ Run NamingAgent to scan for duplicate filenames and class names.
 import sys
 from pathlib import Path
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "run_naming_scan_util")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "run_naming_scan_util", "p0_governance")
+_emit_snapshots_state("p0", "run_naming_scan_util", "state_snapshot")
+
 project_root = Path(__file__).resolve().parents[1]
 # guardian: allow-global-mutation
 sys.path.insert(0, str(project_root))

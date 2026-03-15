@@ -3,8 +3,10 @@ from typing import Any
 
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,
     _emit_records_execution_trace,
     _emit_signs_execution_trace,
+    _emit_snapshots_state,
 )
 
 from .sovereign_policy_registry import PolicySeverity, SovereignPolicyRegistry
@@ -28,10 +30,20 @@ class ComplianceAuditManager:
         Returns False if action should be blocked.
         """
         import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "ComplianceAuditManager.audit_event", "state_snapshot")
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "ComplianceAuditManager.audit_event", "p0_governance")
+        import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "ComplianceAuditManager.audit_event")
         import hashlib as _hashlib  # noqa: PLC0415
-        _seg_hash = _hashlib.sha256(f"{_trace_id}:ComplianceAuditManager.audit_event".encode()).hexdigest()[:24]
+
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:ComplianceAuditManager.audit_event".encode()).hexdigest()[
+            :24
+        ]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
         policy = next((p for p in self.registry.get_all() if p.id == policy_id), None)

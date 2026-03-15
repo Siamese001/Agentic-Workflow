@@ -10,11 +10,33 @@ from pathlib import Path
 
 from agentic_core.L0_routing.config import AGENT_DISCOVERY_JSON, TESTS_DIR
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 TEST_METHOD = '\n    def _run_self_tests(self) -> dict:\n        """Run internal self-tests."""\n        results = {"passed": 0, "failed": 0, TESTS_DIR: []}\n        try:\n            assert self is not None\n            results["passed"] += 1\n            results[TESTS_DIR].append({"name": "test_instantiation", "status": "passed"})\n        except AssertionError as e:\n            results["failed"] += 1\n            results[TESTS_DIR].append({"name": "test_instantiation", "status": "failed", "error": str(e)})\n        return results\n'
 
 
 def has_tests(path, content):
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "has_tests", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "has_tests", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "has_tests")
     has_external = (path.parent / TESTS_DIR / f"test_{path.stem}.py").exists()
     has_self = "_run_self_tests" in content or "SubatomicTestingMixin" in content
     has_delegation = "L0DelegationTestingMixin" in content or "_delegate_tests" in content

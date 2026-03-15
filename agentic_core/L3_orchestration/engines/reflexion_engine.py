@@ -20,7 +20,17 @@ from collections.abc import Awaitable, Callable
 from typing import Any
 
 from agentic_core.L3_orchestration.types.reflexion_types import ReflexionCritique, ReflexionMemory
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_snapshots_state("p0", "reflexion_engine", "state_snapshot")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "reflexion_engine", "p0_governance")
 
 Logger = logging.getLogger(__name__)
 
@@ -67,6 +77,7 @@ class ReflexionEngine:
                 ``memory``     — ReflexionMemory instance with full critique history
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ReflexionEngine.run")
 

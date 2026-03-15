@@ -21,7 +21,17 @@ from enum import Enum
 from typing import Any, Protocol, runtime_checkable
 
 from agentic_core.L3_orchestration.contracts.orchestration_handoff_contract import emit_agent_executes_agent
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_snapshots_state("p0", "autonomous_workflow_engine", "state_snapshot")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "autonomous_workflow_engine", "p0_governance")
 
 Logger = logging.getLogger(__name__)
 
@@ -128,8 +138,11 @@ class AutonomousWorkflowEngine:
             WorkflowResult with the full step trace and stop signal.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "AutonomousWorkflowEngine.run")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "AutonomousWorkflowEngine.run"
+        )
 
         result = WorkflowResult(goal=goal)
         last_obs: dict[str, Any] = initial_context or {}

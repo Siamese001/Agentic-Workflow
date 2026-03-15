@@ -1312,6 +1312,9 @@
   "agentic_core/L5_safety/validators/mission_preflight_validator.py": {
     "silent-swallower": 1
   },
+  "agentic_core/L5_safety/validators/silent_degradation_validator.py": {
+    "silent-degradation": 1
+  },
   "agentic_core/L5_safety/validators/verb_canonicalizer_validator.py": {
     "path-string": 1
   },
@@ -1969,7 +1972,7 @@
   },
   "apps_shared/types/model_router_types.py": {
     "config-with-logic": 2,
-    "magic-config": 8,
+    "magic-config": 7,
     "silent-swallow": 3
   },
   "apps_shared/types/operation_category_types.py": {

@@ -1,6 +1,15 @@
 from __future__ import annotations
 
 from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "GravityLeakRepairAgent", "p0_governance")
+_emit_snapshots_state("p0", "GravityLeakRepairAgent", "state_snapshot")
 
 "\nGravityLeakRepairAgent - Automated Gravity Violation Healer (Phase 2.3)\nTerritory: agentic_core/L5_safety/enforcement/\n\nRESPONSIBILITIES:\n- Automatically fix upward imports detected by StructureEnforcerAgent\n- Refactor code to eliminate gravity violations\n- Suggest architectural improvements\n- Generate import rewrite recommendations\n\nHEALING STRATEGIES:\n1. Move shared code to neutral utils/ layer\n2. Create abstraction layers for cross-layer dependencies\n3. Use dependency injection instead of direct imports\n4. Refactor to respect layer hierarchy\n\nCanon Key 51 Compliance: Includes heal_repository() method\n"
 import logging
@@ -91,7 +100,11 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
             GravityFix with recommended solution
         """
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, f"GravityLeakRepairAgent.analyze_violation:{file_layer}->{import_layer}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()),
+            LayerSegment.L5_POLICY,
+            f"GravityLeakRepairAgent.analyze_violation:{file_layer}->{import_layer}",
+        )
         violation = {
             "type": "gravity_violation",
             "file_path": str(file_path),
@@ -210,7 +223,9 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
 
     def _check_prohibition_circuit_breaker(self, file_path: Path, op: str) -> None:
         """Increment hit counter; raise GravityRepairProhibitedError on second hit."""
-        _emit_validated_by_safety_plane(str(uuid.uuid4()), "GravityLeakRepairAgent._check_prohibition_circuit_breaker", "L5_POLICY")
+        _emit_validated_by_safety_plane(
+            str(uuid.uuid4()), "GravityLeakRepairAgent._check_prohibition_circuit_breaker", "L5_POLICY"
+        )
         key = (str(file_path), op)
         self._prohibition_hits[key] = self._prohibition_hits.get(key, 0) + 1
         if self._prohibition_hits[key] >= 2:

@@ -16,9 +16,16 @@ from typing import Any, Optional
 
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
     _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
     _emit_writes_through,
 )
+
+_emit_snapshots_state("p0", "metrics_emission", "state_snapshot")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "metrics_emission", "p0_governance")
 
 Logger = logging.getLogger(__name__)
 
@@ -82,8 +89,11 @@ class MetricsEmissionEnforcer:
             ValueError: If blast radius exceeded
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "MetricsEmissionEnforcer.single_authoritative_emission")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L4_STATE, "MetricsEmissionEnforcer.single_authoritative_emission"
+        )
 
         emission_key = f"{trace_id}:{artifact_type}"
         if emission_key in self._emissions:
@@ -170,8 +180,11 @@ class BlastRadiusEnforcer:
             ValueError: If blast radius exceeds limits
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "BlastRadiusEnforcer.validate_blast_radius")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L4_STATE, "BlastRadiusEnforcer.validate_blast_radius"
+        )
 
         if state_surface_bytes > self.config.max_state_surface_bytes:
             raise ValueError(
@@ -213,6 +226,7 @@ class PhaseLockStore:
         """
         _emit_writes_through(str(uuid.uuid4()), "PhaseLockStore.persist", "L4_STATE")
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "PhaseLockStore.persist")
 
@@ -271,6 +285,7 @@ class ActivationFlagsStore:
             flags: Activation flags to persist
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "ActivationFlagsStore.persist_flags")
 

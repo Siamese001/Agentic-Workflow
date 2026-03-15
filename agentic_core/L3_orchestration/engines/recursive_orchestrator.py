@@ -31,10 +31,15 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
+    _emit_applies_guardrail,
     _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,  # noqa: E402
 )
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
+
+_emit_snapshots_state("p0", "recursive_orchestrator", "state_snapshot")
 
 logger = logging.getLogger(__name__)
 
@@ -62,8 +67,17 @@ class RetryContext:
 
     def add_failure(self, reason: str, context: dict[str, Any] | None = None) -> None:
         """Record a failure attempt."""
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "RetryContext.add_failure", "p0_governance")
         _emit_agent_executes_agent(str(uuid.uuid4()), "RetryContext", "RetryContext.add_failure")
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RetryContext.add_failure")
 
@@ -143,8 +157,11 @@ class RecursiveOrchestrator(SovereignBaseAgent):
             Dict with action taken and result
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RecursiveOrchestrator.handle_task_status")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "RecursiveOrchestrator.handle_task_status"
+        )
 
         if status == TaskStatus.SUCCESS:
             self._cleanup_retry_context(node_id)

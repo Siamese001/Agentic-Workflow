@@ -21,6 +21,17 @@ except ImportError as _err:
 
 def _get_layer_entry():
     """Lazy load layer_entry to avoid upward import."""
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "_get_layer_entry", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "_get_layer_entry", "p0_governance")
     from agentic_core.L6_observability.reasoning.layer_decorator import layer_entry
 
     return layer_entry
@@ -50,7 +61,15 @@ except ImportError:
     def enqueue(task_payload: dict) -> Any:
         """Execute enqueue operation."""
         print(f"[CoverageAgent] Task enqueued (stub): {task_payload['task_id']}")
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 
 @dataclass
@@ -148,6 +167,7 @@ class CoverageAgent(SovereignBaseAgent):
     def act(self) -> str:
         """Primary actuation method — call periodically from orchestrator/metrics coordinator."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "CoverageAgent.act")
 

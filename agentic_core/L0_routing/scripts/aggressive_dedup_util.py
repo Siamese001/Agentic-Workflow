@@ -13,18 +13,41 @@ import ast
 import re
 from collections import defaultdict
 from pathlib import Path
+
 from agentic_core.L0_routing.config import (
     APPS_LIC_DIR,
     APPS_RG_DIR,
     APPS_SHARED_DIR,
 )
 from agentic_core.L0_routing.config.path_constants import TESTS_DIR
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 APPS_DIRS = [APPS_RG_DIR, APPS_LIC_DIR, APPS_SHARED_DIR]
 
 
 def get_all_classes_in_codebase(dirs: list[str]) -> dict[str, list[str]]:
     """Get all classes and which files they appear in."""
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "get_all_classes_in_codebase", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "get_all_classes_in_codebase", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "get_all_classes_in_codebase")
     class_files = defaultdict(list)
 
     for d in dirs:

@@ -5,7 +5,13 @@ import logging
 from typing import Any
 
 from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBridge
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 Logger: Any = logging.getLogger(__name__)
 max_observation_length: Any = 2000
@@ -16,6 +22,17 @@ class SovereignMemoryMcp:
     """Ultra-hardened knowledge graph MCP — delegates to GraphMemoryBridge."""
 
     def __init__(self, mission_id: str, engine=None):
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "SovereignMemoryMcp.__init__", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "SovereignMemoryMcp.__init__", "p0_governance")
         self.mission_id = mission_id
         self.engine = engine
         self._bridge = GraphMemoryBridge.get_instance()
@@ -23,6 +40,7 @@ class SovereignMemoryMcp:
     async def create_entities(self, entities: list[dict]) -> dict:
         """Create sovereign entities — delegated to GraphMemoryBridge → mcp11."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "SovereignMemoryMcp.create_entities")
 

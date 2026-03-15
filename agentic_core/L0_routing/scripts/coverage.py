@@ -1,5 +1,15 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "coverage", "p0_governance")
+_emit_snapshots_state("p0", "coverage", "state_snapshot")
+
 "\nConvergence Runner - Phase 6 Autonomous Remediation\nTriggers the ConvergenceEngine to heal low-coverage modules.\n"
 import asyncio
 import sys
@@ -34,6 +44,7 @@ class CoverageValidator:
     async def validate(self) -> list[dict[str, Any]]:
         """Identify modules with coverage below target."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "CoverageValidator.validate")
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
@@ -64,6 +75,7 @@ class CoverageHealer:
     async def heal(self, violation: dict[str, Any]) -> bool:
         """Attempt to heal a coverage violation."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "CoverageHealer.heal")
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")

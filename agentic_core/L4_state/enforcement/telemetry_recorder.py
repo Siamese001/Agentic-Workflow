@@ -16,9 +16,16 @@ from typing import Any
 from agentic_core.L2_execution.determinism.execution_proof_emitter import ExecutionProofEmitter
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
     _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
     _emit_writes_through,
 )
+
+_emit_snapshots_state("p0", "telemetry_recorder", "state_snapshot")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "telemetry_recorder", "p0_governance")
 
 MAX_EVENTS = 100
 _proof_emitter = ExecutionProofEmitter("L4.TelemetryRecorder")
@@ -75,6 +82,7 @@ class TelemetryRecorder:
         """
         _emit_writes_through(str(uuid.uuid4()), "TelemetryRecorder.record", "L4_STATE")
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "TelemetryRecorder.record")
 

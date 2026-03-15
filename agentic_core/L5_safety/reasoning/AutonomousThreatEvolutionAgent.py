@@ -13,8 +13,10 @@ from typing import Any
 
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,
     _emit_records_execution_trace,
     _emit_signs_execution_trace,
+    _emit_snapshots_state,
 )
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
@@ -31,6 +33,14 @@ class AutonomousThreatEvolutionAgent(SovereignBaseAgent):
         Args:
             SafetyEngine: Optional safety engine instance
         """
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "AutonomousThreatEvolutionAgent.__init__", "state_snapshot")
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(
+            str(_uuid.uuid4()), "AutonomousThreatEvolutionAgent.__init__", "p0_governance"
+        )
         self.safety: Any | None = SafetyEngine
         self.log_path: Path = Path("agentic_core/L6_observability/reasoning/threat_detections.json")
         self.evolution_interval: int = 3600
@@ -41,10 +51,14 @@ class AutonomousThreatEvolutionAgent(SovereignBaseAgent):
     async def run(self) -> dict[str, Any]:
         """Standardized entry point for L6 Coordinator"""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "AutonomousThreatEvolutionAgent.run")
         import hashlib as _hashlib  # noqa: PLC0415
-        _seg_hash = _hashlib.sha256(f"{_trace_id}:AutonomousThreatEvolutionAgent.run".encode()).hexdigest()[:24]
+
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:AutonomousThreatEvolutionAgent.run".encode()).hexdigest()[
+            :24
+        ]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
         print("   [L5] Threat Evolution Agent: Online")

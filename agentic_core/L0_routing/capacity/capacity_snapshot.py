@@ -19,9 +19,14 @@ from enum import Enum
 from agentic_core.L2_execution.providers import get_clock
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
     _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
     _emit_snapshots_state,
 )
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "capacity_snapshot", "p0_governance")
 
 logger = logging.getLogger(__name__)
 _CAPACITY_LOG = logging.getLogger("adg.capacity_snapshot_emitted")
@@ -235,7 +240,11 @@ class CapacitySnapshot:
         """Get capacity metrics for the chosen route."""
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"CapacitySnapshot.get_chosen_route_metrics:{self.chosen_route_hash[:8]}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            f"CapacitySnapshot.get_chosen_route_metrics:{self.chosen_route_hash[:8]}",
+        )
         # Find the route with matching hash (simplified - in practice would store route name)
         for route_name in self.queue_depth_by_candidate.keys():
             route_hash = hashlib.sha256(route_name.encode()).hexdigest()[:16]

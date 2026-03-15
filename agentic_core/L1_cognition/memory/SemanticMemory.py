@@ -7,7 +7,13 @@ Provides semantic memory capabilities with embedding-based retrieval.
 import logging
 from typing import Any
 
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -40,6 +46,17 @@ class SemanticEntry:
     """Entry in semantic memory."""
 
     def __init__(self, key: str, value: Any, embedding: list[float] | None = None):
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "SemanticEntry.__init__", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "SemanticEntry.__init__", "p0_governance")
         self.key = key
         self.value = value
         self.embedding = embedding
@@ -56,6 +73,7 @@ class SemanticMemory:
     def store(self, key: str, value: Any, embedding: list[float] | None = None) -> None:
         """Store a memory with optional embedding."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L1_REASONING, "SemanticMemory.store")
 
@@ -76,9 +94,7 @@ class SemanticMemory:
             if key in self._memories:
                 # Simple dot product as similarity (not normalized)
                 similarity = sum(a * b for a, b in zip(query_embedding, embedding, strict=False))
-                results.append(
-                    {"key": key, "value": self._memories[key]["value"], "similarity": similarity}
-                )
+                results.append({"key": key, "value": self._memories[key]["value"], "similarity": similarity})
         results.sort(key=lambda x: x["similarity"], reverse=True)
         return results[:top_k]
 

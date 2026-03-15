@@ -10,7 +10,13 @@ from dataclasses import dataclass
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 Logger = logging.getLogger(__name__)
 
@@ -33,6 +39,17 @@ class FissionManagerAgent(SovereignBaseAgent):
 
     # guardian: allow-magic-config
     def __init__(self, line_limit: int = 800, deletion_guardrail: int = 110, max_rounds: int = 3) -> None:
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "FissionManagerAgent.__init__", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "FissionManagerAgent.__init__", "p0_governance")
         super().__init__()
         self.line_limit = line_limit
         self.deletion_guardrail = deletion_guardrail
@@ -40,8 +57,11 @@ class FissionManagerAgent(SovereignBaseAgent):
 
     async def execute_fission(self, file_path: str, content: str, reason: str) -> FissionResult:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "FissionManagerAgent.execute_fission")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "FissionManagerAgent.execute_fission"
+        )
 
         Logger.info(f"FISSION TRIGGERED: {file_path} ({reason})")
         prompt = self._get_fission_prompt(file_path, content)

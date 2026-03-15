@@ -11,6 +11,14 @@ from __future__ import annotations
 
 import logging
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
+
 logger = logging.getLogger(__name__)
 TIERING_ALLOWLIST: frozenset[tuple[str, str]] = frozenset(
     {
@@ -33,6 +41,21 @@ TIERING_ALLOWLIST_FILE_PATHS: frozenset[str] = frozenset((path for _, path in TI
 
 def _validate_allowlist_sovereignty() -> None:
     """Validate allowlist invariants at module import time."""
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "_validate_allowlist_sovereignty", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "_validate_allowlist_sovereignty", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "_validate_allowlist_sovereignty")
     logger.info("Validating compile-time frozen TIERING_ALLOWLIST...")
     if not isinstance(TIERING_ALLOWLIST, frozenset):
         raise RuntimeError("TIERING_ALLOWLIST must be frozenset for compile-time freezing")

@@ -20,7 +20,13 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     GLOBAL_EXCLUDED_DIRS,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 logging.basicConfig(level=logging.INFO)
 Logger = logging.getLogger(__name__)
@@ -51,6 +57,17 @@ class ArchivalResult:
 
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for logging/serialization."""
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "ArchivalResult.to_dict", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "ArchivalResult.to_dict", "p0_governance")
         return {
             "success": self.success,
             "operation": self.operation.value,
@@ -434,7 +451,9 @@ class ArchivalGatekeeper:
             ArchivalResult with operation details
         """
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, f"ArchivalGatekeeper.safe_archive:{Path(source).name}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L5_POLICY, f"ArchivalGatekeeper.safe_archive:{Path(source).name}"
+        )
         source = Path(source).resolve()
         error = self._validate_path(source, "archive")
         if error:

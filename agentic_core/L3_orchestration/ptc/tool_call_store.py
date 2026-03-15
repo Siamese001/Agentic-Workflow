@@ -11,7 +11,13 @@ import json
 from pathlib import Path
 from typing import Any
 
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
 
 from .tool_contract import (
     ToolCall,
@@ -21,6 +27,10 @@ from .tool_contract import (
     tool_call_to_json,
     tool_spec_to_json,
 )
+
+_emit_snapshots_state("p0", "tool_call_store", "state_snapshot")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "tool_call_store", "p0_governance")
 
 
 class ToolCallStore:
@@ -58,6 +68,7 @@ class ToolCallStore:
             Reference to stored artifact
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ToolCallStore.record_call")
 

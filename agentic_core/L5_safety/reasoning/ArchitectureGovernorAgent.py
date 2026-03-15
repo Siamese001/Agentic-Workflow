@@ -21,7 +21,13 @@ from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
     FileClassificationAgent,
     get_python_files_fast,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
 
@@ -88,6 +94,21 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
 
     def _get_structure_validator(self):
         """Lazy-load StructuralValidatorAgent to avoid circular imports."""
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(
+            str(_uuid.uuid4()), "ArchitectureGovernorAgent._get_structure_validator", "state_snapshot"
+        )
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(
+            str(_uuid.uuid4()), "ArchitectureGovernorAgent._get_structure_validator", "p0_governance"
+        )
         if self._structure_validator is None:
             from agentic_core.L5_safety.reasoning.StructuralValidatorAgent import (
                 StructuralValidatorAgent,
@@ -142,7 +163,9 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
         Returns:
             Dict with keys: status, details, artifacts, errors
         """
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "ArchitectureGovernorAgent.heal")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L5_POLICY, "ArchitectureGovernorAgent.heal"
+        )
         if hasattr(self, "ml_enhanced_heal") and hasattr(self, "_do_heal"):
             return self.ml_enhanced_heal(violation, self._do_heal)
         return self._do_heal(violation)

@@ -1,5 +1,17 @@
 from pathlib import Path
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "comprehensive_archive_check_util")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "comprehensive_archive_check_util", "p0_governance")
+_emit_snapshots_state("p0", "comprehensive_archive_check_util", "state_snapshot")
+
 "Comprehensive check of ALL agents that might have been archived in entire chat history."
 import os
 

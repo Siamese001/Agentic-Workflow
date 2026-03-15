@@ -2,9 +2,6 @@
   "_tmp_current_state.py": {
     "path_fragility": 1
   },
-  "_tmp_gap_analysis.py": {
-    "path_fragility": 1
-  },
   "_tmp_l0_after.py": {
     "path_fragility": 1
   },
@@ -39,6 +36,9 @@
   "agentic_core/L0_routing/capacity/capacity_aware_router.py": {
     "magic_configuration": 2
   },
+  "agentic_core/L0_routing/enforcement/mutation_prohibition.py": {
+    "silent_degradation": 1
+  },
   "agentic_core/L0_routing/enforcement/routing_contract.py": {
     "silent_swallower": 1
   },
@@ -46,6 +46,7 @@
     "silent_swallower": 7
   },
   "agentic_core/L0_routing/engines/execution_orchestrator.py": {
+    "silent_degradation": 1,
     "silent_swallower": 1
   },
   "agentic_core/L0_routing/engines/path_router.py": {
@@ -60,8 +61,71 @@
   "agentic_core/L0_routing/policy/route_policy_governor.py": {
     "silent_swallower": 1
   },
+  "agentic_core/L0_routing/scripts/_ssot_meta_learning.py": {
+    "silent_degradation": 9
+  },
+  "agentic_core/L0_routing/scripts/_ssot_phases.py": {
+    "silent_degradation": 7
+  },
+  "agentic_core/L0_routing/scripts/_ssot_pipeline.py": {
+    "silent_degradation": 7
+  },
+  "agentic_core/L0_routing/scripts/_ssot_reporting.py": {
+    "silent_degradation": 2
+  },
+  "agentic_core/L0_routing/scripts/_ssot_routing.py": {
+    "silent_degradation": 6
+  },
+  "agentic_core/L0_routing/scripts/_ssot_validation_artifacts.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/L0_routing/scripts/collision_resolver.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/L0_routing/scripts/colors.py": {
+    "silent_degradation": 2
+  },
+  "agentic_core/L0_routing/scripts/emoji_fixer.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/L0_routing/scripts/execute_ssot.py": {
+    "silent_degradation": 60
+  },
+  "agentic_core/L0_routing/scripts/execution_context.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/L0_routing/scripts/forensic_discovery_prep.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/L0_routing/scripts/run_guardian_architecture_governance.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/L0_routing/scripts/sovereign_lockdown_check_util.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/L0_routing/scripts/verify_mro_util.py": {
+    "silent_degradation": 3
+  },
+  "agentic_core/L0_routing/seam/seam_audit.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/L0_routing/seams/observability_seam.py": {
+    "silent_degradation": 1
+  },
   "agentic_core/L0_routing/telemetry/routing_telemetry.py": {
     "silent_swallower": 2
+  },
+  "agentic_core/L0_routing/utils/complexity_visitor_util.py": {
+    "silent_degradation": 4
+  },
+  "agentic_core/L0_routing/utils/component_util.py": {
+    "silent_degradation": 2
+  },
+  "agentic_core/L0_routing/utils/find_misnamed_agents_util.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/L1_cognition/config/react_config.py": {
+    "silent_degradation": 1
   },
   "agentic_core/L1_cognition/enforcement/react_strategy.py": {
     "silent_swallower": 1
@@ -69,8 +133,29 @@
   "agentic_core/L1_cognition/enforcement/reasoning_chokepoint.py": {
     "silent_swallower": 5
   },
+  "agentic_core/L1_cognition/engines/CognitiveNode.py": {
+    "silent_degradation": 2
+  },
+  "agentic_core/L1_cognition/engines/cognitive_engine.py": {
+    "silent_degradation": 2
+  },
+  "agentic_core/L1_cognition/engines/episodic_manager.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/L1_cognition/engines/meta_client.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/L1_cognition/engines/query_planner.py": {
+    "silent_degradation": 2
+  },
+  "agentic_core/L1_cognition/engines/semantic_manager.py": {
+    "silent_degradation": 3
+  },
   "agentic_core/L1_cognition/knowledge/reasoning_knowledge.py": {
     "magic_configuration": 1
+  },
+  "agentic_core/L1_cognition/memory/healing_memory_retriever.py": {
+    "silent_degradation": 1
   },
   "agentic_core/L1_cognition/planning/plan_creator.py": {
     "config_with_logic": 4,
@@ -85,8 +170,62 @@
   "agentic_core/L2_execution/adaptation/execution_adaptation.py": {
     "magic_configuration": 1
   },
+  "agentic_core/L2_execution/enforcement/SovereignLLMGateway.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/L2_execution/enforcement/budget_enforcer.py": {
+    "silent_degradation": 1
+  },
   "agentic_core/L2_execution/enforcement/execution_guardrail_chokepoint.py": {
     "silent_swallower": 8
+  },
+  "agentic_core/L2_execution/enforcement/filesystem_mcp.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/L2_execution/enforcement/firecracker_manager.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/L2_execution/enforcement/preventative_sandbox.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/L2_execution/engines/tool_registry.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/L2_execution/engines/validation_orchestrator.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/L2_execution/healers/healing_provider_adapters.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/L2_execution/healers/healing_tier_dispatcher.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/L2_execution/reasoning/EmbeddingSovereignAgent.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py": {
+    "silent_degradation": 6
+  },
+  "agentic_core/L2_execution/tools/file_io_impl.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/L2_execution/tools/git_ops_impl.py": {
+    "silent_degradation": 12
+  },
+  "agentic_core/L2_execution/tools/read_gateway.py": {
+    "silent_degradation": 4
+  },
+  "agentic_core/L2_execution/tools/time_utils_impl.py": {
+    "silent_degradation": 4
+  },
+  "agentic_core/L2_execution/types/ephemeral_vm_types.py": {
+    "silent_degradation": 2
+  },
+  "agentic_core/L2_execution/utils/egress_util.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/L2_execution/utils/text_similarity_util.py": {
+    "silent_degradation": 1
   },
   "agentic_core/L3_orchestration/contracts/agent_handoff.py": {
     "silent_swallower": 3
@@ -98,7 +237,20 @@
     "silent_swallower": 1
   },
   "agentic_core/L3_orchestration/enforcement/mission_runner.py": {
+    "silent_degradation": 3,
     "silent_swallower": 3
+  },
+  "agentic_core/L3_orchestration/enforcement/safety_strategy.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/L3_orchestration/engines/AgentFactory.py": {
+    "silent_degradation": 6
+  },
+  "agentic_core/L3_orchestration/engines/agent_gym_engine.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/L3_orchestration/engines/autonomous_execution_engine.py": {
+    "silent_degradation": 1
   },
   "agentic_core/L3_orchestration/engines/autonomous_workflow_engine.py": {
     "magic_configuration": 1,
@@ -108,17 +260,48 @@
     "magic_configuration": 1,
     "silent_swallower": 1
   },
+  "agentic_core/L3_orchestration/engines/orchestrator_engine.py": {
+    "silent_degradation": 3
+  },
   "agentic_core/L3_orchestration/engines/prompt_chain_engine.py": {
     "silent_swallower": 1
   },
   "agentic_core/L3_orchestration/engines/rewoo_engine.py": {
     "magic_configuration": 1
   },
+  "agentic_core/L3_orchestration/engines/sovereign_mcp_router.py": {
+    "silent_degradation": 2
+  },
+  "agentic_core/L3_orchestration/engines/sovereign_rag_orchestrator.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/L3_orchestration/engines/sovereign_redis_orchestrator.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/L3_orchestration/reasoning/CoverageAgent.py": {
+    "silent_degradation": 2
+  },
+  "agentic_core/L3_orchestration/reasoning/DagEngineAgent.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/L3_orchestration/reasoning/DomainPlannerAgent.py": {
+    "silent_degradation": 1
+  },
   "agentic_core/L3_orchestration/reasoning/StateManagementAgent.py": {
+    "silent_degradation": 1,
     "silent_swallower": 2
+  },
+  "agentic_core/L3_orchestration/reasoning/UnifiedAgent.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/L3_orchestration/reasoning/mcp_manager.py": {
+    "silent_degradation": 1
   },
   "agentic_core/L3_orchestration/registry/agent_dispatch_registry.py": {
     "silent_swallower": 1
+  },
+  "agentic_core/L3_orchestration/types/permission_scope_types.py": {
+    "silent_degradation": 1
   },
   "agentic_core/L4_persistence/lifecycle/lifecycle_policy_applier.py": {
     "config_with_logic": 11
@@ -126,8 +309,33 @@
   "agentic_core/L4_state/authority/memory_authority.py": {
     "silent_swallower": 1
   },
+  "agentic_core/L4_state/enforcement/graph_memory_bridge.py": {
+    "silent_degradation": 9,
+    "silent_swallower": 1
+  },
+  "agentic_core/L4_state/enforcement/neo4j_store.py": {
+    "silent_degradation": 1
+  },
   "agentic_core/L4_state/memory/cache_admission_gate.py": {
     "silent_swallower": 1
+  },
+  "agentic_core/L4_state/memory/reasoning_memory.py": {
+    "silent_degradation": 3
+  },
+  "agentic_core/L4_state/memory/semantic_cache_manager.py": {
+    "silent_degradation": 3
+  },
+  "agentic_core/L4_state/utils/__init__.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/L5_safety/enforcement/AdapterBase.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/L5_safety/enforcement/HealingStrategy.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/L5_safety/enforcement/activation_gate.py": {
+    "silent_degradation": 1
   },
   "agentic_core/L5_safety/enforcement/embedding_non_interference_guardrail.py": {
     "direct_prompt_compilation": 1
@@ -135,14 +343,45 @@
   "agentic_core/L5_safety/enforcement/error_recovery_guardrail.py": {
     "magic_configuration": 1
   },
+  "agentic_core/L5_safety/enforcement/mission_utils_enforcer.py": {
+    "silent_degradation": 1
+  },
   "agentic_core/L5_safety/enforcement/policy_action_contract.py": {
     "silent_swallower": 3
   },
   "agentic_core/L5_safety/enforcement/tool_safety_contract.py": {
     "silent_swallower": 2
   },
+  "agentic_core/L5_safety/reasoning/CodeDeduplicationAgent.py": {
+    "silent_degradation": 7
+  },
+  "agentic_core/L5_safety/reasoning/DDDAlignmentAgent.py": {
+    "silent_degradation": 4
+  },
+  "agentic_core/L5_safety/reasoning/DuplicateCodeDetectorAgent.py": {
+    "silent_degradation": 1
+  },
   "agentic_core/L5_safety/reasoning/FileClassificationAgent.py": {
+    "silent_degradation": 2,
     "silent_swallower": 1
+  },
+  "agentic_core/L5_safety/reasoning/GenerativeGuardAgent.py": {
+    "silent_degradation": 2
+  },
+  "agentic_core/L5_safety/reasoning/GovernanceAgent.py": {
+    "silent_degradation": 5
+  },
+  "agentic_core/L5_safety/reasoning/GravityLeakRepairAgent.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/L5_safety/reasoning/L5SafetyExerciserAgent.py": {
+    "silent_degradation": 10
+  },
+  "agentic_core/L5_safety/reasoning/LocationHealerAgent.py": {
+    "silent_degradation": 25
+  },
+  "agentic_core/L5_safety/reasoning/PascalSovereigntyAgent.py": {
+    "silent_degradation": 1
   },
   "agentic_core/L5_safety/reasoning/SelfUpdatingSafetyEngineAgent.py": {
     "path_fragility": 1
@@ -150,11 +389,68 @@
   "agentic_core/L5_safety/reasoning/SovereignActionPlaneAgent.py": {
     "path_fragility": 1
   },
+  "agentic_core/L5_safety/reasoning/TerritoryChangeHandlerAgent.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/L5_safety/reasoning/filesystem_ssot_reconciler.py": {
+    "silent_degradation": 2
+  },
+  "agentic_core/L5_safety/reasoning/gravity_validator.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/L5_safety/reasoning/hierarchy_healer.py": {
+    "silent_degradation": 6
+  },
+  "agentic_core/L5_safety/reasoning/location_validator.py": {
+    "silent_degradation": 2
+  },
+  "agentic_core/L5_safety/reasoning/root_hygiene_healer.py": {
+    "silent_degradation": 2
+  },
+  "agentic_core/L5_safety/types/healing_orchestration_types.py": {
+    "silent_degradation": 2
+  },
   "agentic_core/L5_safety/types/safety_types.py": {
     "path_fragility": 1
   },
+  "agentic_core/L5_safety/types/security_validation_types.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/L5_safety/utils/guard_ddd_alignment_util.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/L5_safety/utils/register_all_validators_util.py": {
+    "silent_degradation": 11
+  },
+  "agentic_core/L5_safety/utils/verify_no_mock_data_util.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/L5_safety/utils/verify_semantic_meta_learning_util.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/L5_safety/validators/chaos_healing_integration_types.py": {
+    "silent_degradation": 2
+  },
+  "agentic_core/L5_safety/validators/dependency_healing_integration_types.py": {
+    "silent_degradation": 2
+  },
+  "agentic_core/L5_safety/validators/dependencygraph_validator.py": {
+    "silent_degradation": 3
+  },
+  "agentic_core/L5_safety/validators/intervention_server_validator.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/L5_safety/validators/mission_preflight_validator.py": {
+    "silent_degradation": 3
+  },
+  "agentic_core/L5_safety/validators/silent_degradation_validator.py": {
+    "silent_swallower": 1
+  },
   "agentic_core/L6_observability/enforcement/outcome_logger.py": {
     "silent_swallower": 1
+  },
+  "agentic_core/L6_observability/enforcement/reasoning_streamer.py": {
+    "silent_degradation": 2
   },
   "agentic_core/L6_observability/evaluation/evaluation_record.py": {
     "silent_swallower": 3
@@ -165,26 +461,227 @@
   "agentic_core/L6_observability/performance/performance_emitter.py": {
     "silent_swallower": 1
   },
+  "agentic_core/L6_observability/utils/fix_testing_observability_util.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/adg/applications/execute_ssot_integration.py": {
+    "silent_degradation": 2
+  },
   "agentic_core/adg/runtime/behavioral_index.py": {
     "silent_swallower": 3
+  },
+  "agentic_core/agents/adg_backed_registry.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/base_agents/L0RoutingBase.py": {
+    "silent_degradation": 1
   },
   "agentic_core/cache/cache_key_builders.py": {
     "direct_prompt_compilation": 1
   },
+  "agentic_core/cache/redis_cache_client.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/config/core/gateway_config.py": {
+    "silent_degradation": 4
+  },
+  "agentic_core/config/core/non_conforming_agent_finder_config.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/config/core/reflection_config.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/evaluation/__init__.py": {
+    "silent_degradation": 3
+  },
+  "agentic_core/evaluation/metrics/__init__.py": {
+    "silent_degradation": 9
+  },
+  "agentic_core/interfaces/IHealingStrategyProtocol.py": {
+    "silent_degradation": 2
+  },
+  "agentic_core/interfaces/IValidatorProtocol.py": {
+    "silent_degradation": 3
+  },
+  "agentic_core/interfaces/execution_contracts.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/interfaces/meta_learning.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/interfaces/mixins.py": {
+    "silent_degradation": 2
+  },
+  "agentic_core/interfaces/orchestration.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/interfaces/routing_types.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/interfaces/safety.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/interfaces/validators.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/knowledge/document_loaders/csv_document_loader_config.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/knowledge/document_loaders/html_loader.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/knowledge/engine/rag_orchestrator.py": {
+    "silent_degradation": 3
+  },
+  "agentic_core/mixins/audit_trail_mixin.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/mixins/autonomy_mixin.py": {
+    "silent_degradation": 2
+  },
+  "agentic_core/mixins/hardening_mixin.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/mixins/healing_mixin.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/mixins/performance_mixin.py": {
+    "silent_degradation": 4
+  },
+  "agentic_core/mixins/redis_cache_mixin.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/mixins/replay_guard_mixin.py": {
+    "silent_degradation": 2
+  },
+  "agentic_core/mixins/runtime_safety_mixin.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/mixins/ssot_feature_flag_mixin.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/mixins/subatomic_testing_mixin.py": {
+    "silent_degradation": 2
+  },
+  "agentic_core/mixins/tracing_mixin.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/mixins/validator_mixin.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/prompt_governance/scripts/dry_run_compiler.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/runtime/config/prompt_injection_loader_config.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/runtime/config/security_level_config.py": {
+    "silent_degradation": 1
+  },
   "agentic_core/runtime/lifecycle_trace_contract.py": {
     "silent_swallower": 1
+  },
+  "agentic_core/runtime/types/cache_entry_types.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/runtime/utils/__init__.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/runtime/utils/dynamic_loader_util.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/runtime/utils/main_util.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/runtime/utils/sovereign_index_util.py": {
+    "silent_degradation": 2
+  },
+  "agentic_core/seams/contracts/authority.py": {
+    "silent_degradation": 1
+  },
+  "agentic_core/seams/contracts/safety_agents.py": {
+    "silent_degradation": 2
+  },
+  "apps_eval/engines/base_eval_engine.py": {
+    "silent_degradation": 4
+  },
+  "apps_eval/engines/scenario_runner.py": {
+    "silent_degradation": 18
+  },
+  "apps_eval/reasoning/EvalOrchestrator.py": {
+    "silent_degradation": 2
   },
   "apps_eval/tools/eval_dry_run_tool.py": {
     "silent_swallower": 1
   },
+  "apps_exec/engines/base_exec_engine.py": {
+    "silent_degradation": 5
+  },
+  "apps_exec/reasoning/ExecOrchestrator.py": {
+    "silent_degradation": 1
+  },
   "apps_exec/tools/exec_dry_run_tool.py": {
     "silent_swallower": 1
+  },
+  "apps_lic/engines/__init__.py": {
+    "silent_degradation": 4
+  },
+  "apps_lic/reasoning/LicHealingOrchestrator.py": {
+    "silent_degradation": 1
+  },
+  "apps_lic/reasoning/OutreachSignalRouterAgent.py": {
+    "silent_degradation": 3
+  },
+  "apps_lic/tools/GeminiLLMClient.py": {
+    "silent_degradation": 1
+  },
+  "apps_lic/tools/run_workflow_lic.py": {
+    "silent_degradation": 1
+  },
+  "apps_lic/types/ImmutableStagingBuffer.py": {
+    "silent_degradation": 2
+  },
+  "apps_lic/types/TraceRegistry.py": {
+    "silent_degradation": 1
+  },
+  "apps_lic/utils/lic_agent_base_util.py": {
+    "silent_degradation": 4
+  },
+  "apps_lic/utils/manifest_manager_util.py": {
+    "silent_degradation": 2
+  },
+  "apps_research/engines/base_research_engine.py": {
+    "silent_degradation": 4
+  },
+  "apps_research/reasoning/ResearchOrchestrator.py": {
+    "silent_degradation": 2
   },
   "apps_research/tools/research_dry_run_tool.py": {
     "silent_swallower": 1
   },
+  "apps_rfp/engines/base_rfp_engine.py": {
+    "silent_degradation": 4
+  },
+  "apps_rfp/reasoning/RfpOrchestrator.py": {
+    "silent_degradation": 1
+  },
   "apps_rfp/tools/rfp_dry_run_tool.py": {
     "silent_swallower": 1
+  },
+  "apps_rg/engines/base_rg_engine.py": {
+    "silent_degradation": 6
+  },
+  "apps_rg/engines/hardened_gemini_executor.py": {
+    "silent_degradation": 1
+  },
+  "apps_rg/reasoning/ContentQualityAgent.py": {
+    "silent_degradation": 1
+  },
+  "apps_rg/reasoning/DispatchResumeToolsAgent.py": {
+    "silent_degradation": 1
+  },
+  "apps_rg/reasoning/RgHealingOrchestrator.py": {
+    "silent_degradation": 1
   },
   "apps_rg/types/PromptTemplate.py": {
     "magic_configuration": 12
@@ -192,8 +689,60 @@
   "apps_rg/types/routing_tier_types.py": {
     "magic_configuration": 3
   },
+  "apps_rg/utils/agent_executor_util.py": {
+    "silent_degradation": 1
+  },
+  "apps_rg/utils/rg_agent_base_util.py": {
+    "silent_degradation": 2
+  },
+  "apps_shared/enforcement/DecomposedqueryagentStrategy.py": {
+    "silent_degradation": 1
+  },
+  "apps_shared/enforcement/GlobalcacheStrategy.py": {
+    "silent_degradation": 1
+  },
+  "apps_shared/reasoning/BaseDispatchAgent.py": {
+    "silent_degradation": 1
+  },
+  "apps_shared/reasoning/BaseHealingOrchestrator.py": {
+    "silent_degradation": 1
+  },
+  "apps_shared/scripts/benchmark_consolidation_performance.py": {
+    "silent_degradation": 1
+  },
+  "apps_shared/scripts/fix_structural_debt.py": {
+    "silent_degradation": 1
+  },
+  "apps_shared/scripts/run_hardened_job.py": {
+    "silent_degradation": 2
+  },
+  "apps_shared/spine/d0_engine_adapter.py": {
+    "silent_degradation": 1
+  },
+  "apps_shared/spine/risk_gate_adapter.py": {
+    "silent_degradation": 1
+  },
+  "apps_shared/spine/vigilance_dispatcher_adapter.py": {
+    "silent_degradation": 1
+  },
+  "apps_shared/types/app_config_types.py": {
+    "silent_degradation": 1
+  },
+  "apps_shared/types/golden_state_evaluator_types.py": {
+    "silent_degradation": 1
+  },
+  "apps_shared/types/hardened_gemini_executor_types.py": {
+    "silent_degradation": 4
+  },
+  "apps_shared/types/integration_layer_types.py": {
+    "silent_degradation": 1
+  },
   "apps_shared/types/k_node_type_types.py": {
     "magic_configuration": 33
+  },
+  "apps_shared/types/model_router_types.py": {
+    "magic_configuration": 1,
+    "silent_degradation": 1
   },
   "apps_shared/types/standard_type_types.py": {
     "magic_configuration": 8
@@ -201,17 +750,47 @@
   "apps_shared/types/tone_model_types.py": {
     "magic_configuration": 5
   },
+  "apps_shared/utils/app_base_util.py": {
+    "silent_degradation": 2
+  },
+  "apps_shared/utils/autonomous_sovereign_core_util.py": {
+    "silent_degradation": 7
+  },
   "apps_shared/utils/bulkhead_manager_util.py": {
     "magic_configuration": 5
+  },
+  "apps_shared/utils/config_loader_util.py": {
+    "silent_degradation": 1
+  },
+  "apps_shared/utils/health_check_types_util.py": {
+    "silent_degradation": 2
+  },
+  "apps_shared/utils/open_telemetry_tracing_adapter_util.py": {
+    "silent_degradation": 1
+  },
+  "apps_shared/utils/providers_google_genai_client_util.py": {
+    "silent_degradation": 1
+  },
+  "apps_shared/utils/rank_observability_components_util.py": {
+    "silent_degradation": 1
+  },
+  "apps_shared/utils/resource_manager_types_util.py": {
+    "silent_degradation": 1
+  },
+  "apps_shared/utils/subatomic_hop_util.py": {
+    "silent_degradation": 2
   },
   "apps_shared/utils/tone_voice_util.py": {
     "magic_configuration": 10
   },
+  "artifacts/dedup/run_dedup_analysis.py": {
+    "silent_degradation": 1
+  },
+  "artifacts/windsurf/phase3/_run_import_check_phase3.py": {
+    "silent_degradation": 4
+  },
   "ops_scripts/ci/_adg_ci_gates.py": {
     "global_mutation": 1
-  },
-  "ops_scripts/ci/adg_grep_ban_gate.py": {
-    "magic_configuration": 2
   },
   "ops_scripts/ci/_capability_registry_gate.py": {
     "silent_swallower": 1
@@ -258,15 +837,101 @@
   "ops_scripts/ci/_typed_tool_gate.py": {
     "silent_swallower": 1
   },
+  "ops_scripts/ci/adg_grep_ban_gate.py": {
+    "magic_configuration": 2
+  },
+  "ops_scripts/ci/adg_mypy_ban_gate.py": {
+    "magic_configuration": 2
+  },
+  "ops_scripts/ci/adg_pytest_ban_gate.py": {
+    "magic_configuration": 2
+  },
+  "ops_scripts/ci/adg_skip_file_ratchet.py": {
+    "magic_configuration": 1
+  },
+  "ops_scripts/ci/adg_yaml_grep_ban_gate.py": {
+    "magic_configuration": 2
+  },
+  "ops_scripts/ci/audit_agent_registry_enforcement.py": {
+    "silent_degradation": 1
+  },
+  "ops_scripts/ci/audit_qwen_sovereignty.py": {
+    "silent_degradation": 1
+  },
+  "ops_scripts/ci/check_agent_registry_completeness.py": {
+    "silent_degradation": 1
+  },
+  "ops_scripts/ci/check_test_quality.py": {
+    "global_mutation": 1
+  },
+  "ops_scripts/ci/check_test_silent_skips.py": {
+    "global_mutation": 1
+  },
+  "ops_scripts/ci/guard_guardian_hitl.py": {
+    "silent_swallower": 1
+  },
   "ops_scripts/ci/guardian_exemption_gate.py": {
     "global_mutation": 1,
-    "silent_swallower": 1
+    "silent_swallower": 2
   },
   "ops_scripts/ci/run_all_guardrails.py": {
     "global_mutation": 1
   },
+  "ops_scripts/ci/sovereign_lockdown_check.py": {
+    "silent_degradation": 1
+  },
+  "ops_scripts/dev_tools/l0_scripts/playwright_verify_total_row_util.py": {
+    "silent_degradation": 1
+  },
+  "ops_scripts/dev_tools/l0_scripts/silo_mover.py": {
+    "silent_degradation": 1
+  },
+  "ops_scripts/dev_tools/l0_scripts/sovereign_pdf_parser.py": {
+    "silent_degradation": 2
+  },
+  "ops_scripts/dev_tools/l0_scripts/sovereignty_auditor.py": {
+    "silent_degradation": 1
+  },
+  "ops_scripts/dev_tools/l0_scripts/start_runtime_api_util.py": {
+    "silent_degradation": 1
+  },
+  "ops_scripts/dev_tools/l0_scripts/sync_mcp_util.py": {
+    "silent_degradation": 1
+  },
+  "ops_scripts/general/find_hangs.py": {
+    "silent_degradation": 1
+  },
+  "ops_scripts/general/fix_test_quality_vacuous.py": {
+    "global_mutation": 1,
+    "silent_swallower": 2
+  },
+  "ops_scripts/general/fix_test_silent_skips.py": {
+    "global_mutation": 1,
+    "silent_swallower": 2
+  },
+  "ops_scripts/general/quick_hang_finder.py": {
+    "silent_degradation": 1
+  },
+  "ops_scripts/maintenance/analyze_deleted_tests.py": {
+    "silent_degradation": 1
+  },
+  "ops_scripts/maintenance/execute_cognitive_purge.py": {
+    "silent_degradation": 2
+  },
+  "ops_scripts/maintenance/execute_convergence.py": {
+    "silent_degradation": 1
+  },
+  "ops_scripts/maintenance/execute_tiered_purge.py": {
+    "silent_degradation": 1
+  },
+  "ops_scripts/maintenance/migrate_reports_to_ssot.py": {
+    "silent_degradation": 1
+  },
   "system_learning/engines/meta_learning_bus.py": {
     "silent_swallower": 6
+  },
+  "system_learning/engines/openai_embedder.py": {
+    "silent_degradation": 1
   },
   "system_learning/engines/optimization_proposal_engine.py": {
     "config_with_logic": 1
@@ -288,8 +953,20 @@
     "config_with_logic": 4,
     "silent_swallower": 2
   },
+  "system_learning/engines/seed_pack_build_cli.py": {
+    "silent_degradation": 1
+  },
   "system_learning/engines/trace_feature_extractor.py": {
     "silent_swallower": 1
+  },
+  "system_learning/pipelines/meta_learning_pipeline.py": {
+    "silent_degradation": 4
+  },
+  "system_learning/pipelines/pipeline_factory.py": {
+    "silent_degradation": 8
+  },
+  "tools/_probe_stub_modules.py": {
+    "silent_degradation": 1
   },
   "tools/adg/adg_antipattern_fixer.py": {
     "global_mutation": 1,
@@ -318,7 +995,65 @@
   "tools/adg/bulk_uwg_migrator.py": {
     "global_mutation": 1
   },
+  "tools/adg/drift_lifecycle.py": {
+    "silent_degradation": 2
+  },
   "tools/adg/react_chunking_graph_audit.py": {
     "global_mutation": 1
+  },
+  "tools/adg/redis_health_check.py": {
+    "silent_degradation": 1
+  },
+  "tools/check_schema.py": {
+    "path_fragility": 4
+  },
+  "tools/commit_helper.py": {
+    "path_fragility": 4
+  },
+  "tools/evidence/_pg_verify.py": {
+    "silent_degradation": 1
+  },
+  "tools/evidence/qwen_migration_phase7_replay_tamper_roundtrip_runner.py": {
+    "silent_degradation": 1
+  },
+  "tools/evidence/qwen_migration_phase8_canonical_payload_lock_runner.py": {
+    "silent_degradation": 1
+  },
+  "tools/evidence/qwen_migration_phase9_shadow_router_runner.py": {
+    "silent_degradation": 1
+  },
+  "tools/fix_uuid_imports.py": {
+    "path_fragility": 2
+  },
+  "tools/fix_uuid_syntax.py": {
+    "path_fragility": 1
+  },
+  "tools/generate_full_adg.py": {
+    "silent_degradation": 1
+  },
+  "tools/guardian/scripts/rename_low_signal_tests.py": {
+    "global_mutation": 1,
+    "path_fragility": 1
+  },
+  "tools/measure_p0.py": {
+    "path_fragility": 4
+  },
+  "tools/measure_p0_detailed.py": {
+    "path_fragility": 4
+  },
+  "tools/mega_wire_adg.py": {
+    "path_fragility": 1
+  },
+  "tools/p0_batch_wirer.py": {
+    "path_fragility": 1
+  },
+  "tools/p0_fallback_wirer.py": {
+    "path_fragility": 7
+  },
+  "tools/p0_gap_analyzer.py": {
+    "path_fragility": 14
+  },
+  "tools/prove_meta_learning_bus.py": {
+    "silent_degradation": 4
   }
 }

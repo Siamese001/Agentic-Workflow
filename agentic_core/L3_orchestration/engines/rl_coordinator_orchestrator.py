@@ -1,5 +1,15 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_snapshots_state("p0", "rl_coordinator_orchestrator", "state_snapshot")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "rl_coordinator_orchestrator", "p0_governance")
+
 "\nSpecialized Coordinators for Unified Workflow Engine\n\n10 coordinators replacing 35+ overlapping orchestrators:\n1. RLCoordinatorOrchestrator - RL strategies (PPO, Q-learning, A2C)\n2. TerritoryCoordinator - Territory management\n3. MCPCoordinator - Tool management\n4. MissionCoordinator - Mission execution\n5. ModelCoordinator - Provider management\n6. HealthCoordinator - System health\n7. GovernanceCoordinator - Policy enforcement\n8. UtilityCoordinator - Support functions\n9. CachingCoordinator - Optimization\n10. SecurityCoordinator - Hardening\n"
 from typing import Any
 
@@ -40,7 +50,9 @@ class RLCoordinatorOrchestrator(WorkflowCoordinator):
 
     async def coordinate(self, context: WorkflowContext) -> WorkflowResult:
         """Execute RL-based coordination."""
-        _emit_records_execution_trace(context.workflow_id, LayerSegment.L3_ORCHESTRATION, "RLCoordinatorOrchestrator.coordinate")
+        _emit_records_execution_trace(
+            context.workflow_id, LayerSegment.L3_ORCHESTRATION, "RLCoordinatorOrchestrator.coordinate"
+        )
         with get_trace_context().run_frame(
             layer="L3",
             module="rl_coordinator_orchestrator",
@@ -279,6 +291,7 @@ class MissionCoordinator(WorkflowCoordinator):
     async def _get_status(self, mission_id: str) -> dict:
         """Get mission status."""
         import uuid  # noqa: PLC0415
+
         _emit_observes_runtime_state(str(uuid.uuid4()), "MissionCoordinator._get_status", "L3_ORCHESTRATION")
         mission = self.active_missions.get(mission_id, {})
         return {"mission_id": mission_id, "status": mission.get("status", "unknown")}

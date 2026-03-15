@@ -3,10 +3,22 @@ Prevents Windows encoding issues.
 """
 
 from pathlib import Path
+
 from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
     APPS_SHARED_DIR,
 )
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "emoji_fixer")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "emoji_fixer", "p0_governance")
+_emit_snapshots_state("p0", "emoji_fixer", "state_snapshot")
 
 try:
     from agentic_core.L0_routing.scripts.full_agent_discovery import (

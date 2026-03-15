@@ -1,5 +1,13 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "batch_embedding_service", "p0_governance")
+_emit_snapshots_state("p0", "batch_embedding_service", "state_snapshot")
+
 "Batch Embedding Service - Parallel embedding generation for 5-10x speedup.\n\nOptimized for i7-10750H (6 cores/12 threads) with 32GB RAM allocation.\nUses ThreadPoolExecutor to process embeddings in parallel batches.\n"
 import asyncio
 import logging
@@ -55,10 +63,16 @@ class BatchEmbeddingService:
             ... )
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "BatchEmbeddingService.embed_batch")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L2_EXECUTION, "BatchEmbeddingService.embed_batch"
+        )
         import hashlib as _hashlib  # noqa: PLC0415
-        _seg_hash = _hashlib.sha256(f"{_trace_id}:BatchEmbeddingService.embed_batch".encode()).hexdigest()[:24]
+
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:BatchEmbeddingService.embed_batch".encode()).hexdigest()[
+            :24
+        ]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
         if not texts:

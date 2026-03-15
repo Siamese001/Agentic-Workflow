@@ -12,7 +12,13 @@ from typing import Any
 
 from agentic_core.L2_execution.reasoning.base import SubAtomicAgent
 
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
 
@@ -65,6 +71,17 @@ class AdversarialRedTeamerAgent(SovereignBaseAgent, SubAtomicAgent):
         Args:
             ctx: The context object for the agent. (e.g., AgentContext)
         """
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "AdversarialRedTeamerAgent.__init__", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "AdversarialRedTeamerAgent.__init__", "p0_governance")
         super().__init__(ctx)
         self.test_suite = self._build_test_suite()
         self.results: list[RedTeamResult] = []
@@ -77,7 +94,9 @@ class AdversarialRedTeamerAgent(SovereignBaseAgent, SubAtomicAgent):
         Runs in pre-deployment phase to find vulnerabilities before production.
         """
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "AdversarialRedTeamerAgent.execute")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L5_POLICY, "AdversarialRedTeamerAgent.execute"
+        )
         Logger.info("🔴 Adversarial Red-Teamer: Initiating vulnerability scan...")
         await self._test_preservation_boundaries()
         await self._test_sandbox_escapes()

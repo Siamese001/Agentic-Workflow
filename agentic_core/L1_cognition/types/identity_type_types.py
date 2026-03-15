@@ -10,7 +10,13 @@ from enum import Enum
 from typing import Any
 
 from agentic_core.L2_execution.providers import get_clock
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -56,6 +62,17 @@ class AgentIdentity:
         Returns:
             True if expired
         """
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "AgentIdentity.is_expired", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "AgentIdentity.is_expired", "p0_governance")
         return get_clock().now_epoch() > self.expires_at
 
     def is_valid(self) -> bool:
@@ -90,6 +107,7 @@ class AgentIdentity:
             Namespace portion of SPIFFE ID
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L1_REASONING, "AgentIdentity.get_namespace")
 

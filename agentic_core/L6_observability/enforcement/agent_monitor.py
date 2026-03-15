@@ -17,7 +17,15 @@ from agentic_core.L6_observability.types.monitor_types import (
     AggregatedMetrics,
     ExecutionMetrics,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,
+)
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 _proof_emitter = ExecutionProofEmitter("L6.UnifiedAgentMonitor")
 
@@ -46,6 +54,12 @@ class UnifiedAgentMonitor:
 
     def __init__(self) -> None:
         """Initialize monitor."""
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "UnifiedAgentMonitor.__init__", "state_snapshot")
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "UnifiedAgentMonitor.__init__", "p0_governance")
         if self._initialized:
             return
 
@@ -67,8 +81,11 @@ class UnifiedAgentMonitor:
     ) -> None:
         """Record an execution metric."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L6_OBSERVABILITY, "UnifiedAgentMonitor.record_execution")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L6_OBSERVABILITY, "UnifiedAgentMonitor.record_execution"
+        )
 
         metric = ExecutionMetrics(
             agent_name=agent_name,

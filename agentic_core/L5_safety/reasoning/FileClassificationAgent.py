@@ -4,6 +4,13 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     GLOBAL_EXCLUDED_DIRS,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "FileClassificationAgent", "p0_governance")
+_emit_snapshots_state("p0", "FileClassificationAgent", "state_snapshot")
 
 """
 File: agentic_core/L5_safety/reasoning/FileClassificationAgent.py
@@ -338,12 +345,20 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
         Returns:
             New target path if file should be moved, None if file is correctly placed.
         """
-        _emit_validated_by_safety_plane(str(uuid.uuid4()), "FileClassificationHealerAgent.enforce_kernel_structure", "L5_POLICY")
+        _emit_validated_by_safety_plane(
+            str(uuid.uuid4()), "FileClassificationHealerAgent.enforce_kernel_structure", "L5_POLICY"
+        )
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "FileClassificationHealerAgent.enforce_kernel_structure")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L5_POLICY, "FileClassificationHealerAgent.enforce_kernel_structure"
+        )
         import hashlib as _hashlib  # noqa: PLC0415
-        _seg_hash = _hashlib.sha256(f"{_trace_id}:FileClassificationHealerAgent.enforce_kernel_structure".encode()).hexdigest()[:24]
+
+        _seg_hash = _hashlib.sha256(
+            f"{_trace_id}:FileClassificationHealerAgent.enforce_kernel_structure".encode()
+        ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
         parts = file_path.parts

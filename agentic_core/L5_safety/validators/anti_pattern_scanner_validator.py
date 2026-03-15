@@ -7,6 +7,10 @@ code quality enforcement.
 
 Usage:
     from agentic_core.L5_safety.validators.anti_pattern_scanner_validator import AntiPatternScanner
+from agentic_core.runtime.lifecycle_trace_contract import _emit_snapshots_state  # noqa: E402
+from agentic_core.runtime.lifecycle_trace_contract import _emit_applies_guardrail  # noqa: E402
+_emit_applies_guardrail("p0", "anti_pattern_scanner_validator", "p0_governance")
+_emit_snapshots_state("p0", "anti_pattern_scanner_validator", "state_snapshot")
 
     scanner = AntiPatternScanner(project_root)
     report = scanner.scan_repository()
@@ -81,9 +85,11 @@ class ScanReport:
     def summary(self) -> str:
         """Generate human-readable summary."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "ScanReport.summary")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:ScanReport.summary".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
@@ -203,10 +209,14 @@ class AntiPatternScanner:
             ScanReport with all findings
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "AntiPatternScanner.scan_repository")
         import hashlib as _hashlib  # noqa: PLC0415
-        _seg_hash = _hashlib.sha256(f"{_trace_id}:AntiPatternScanner.scan_repository".encode()).hexdigest()[:24]
+
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:AntiPatternScanner.scan_repository".encode()).hexdigest()[
+            :24
+        ]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
         import time
@@ -342,7 +352,9 @@ class AntiPatternScanner:
         Returns:
             Action to take: "pass", "warn", "soft_block", "hard_block"
         """
-        _emit_validated_by_safety_plane(str(uuid.uuid4()), "AntiPatternScanner.get_enforcement_action", "L5_POLICY")
+        _emit_validated_by_safety_plane(
+            str(uuid.uuid4()), "AntiPatternScanner.get_enforcement_action", "L5_POLICY"
+        )
         if report.passed:
             return "pass"
 

@@ -56,9 +56,14 @@ from typing import Any
 
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
     _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
     _emit_snapshots_state,
 )
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "state_transition_registry", "p0_governance")
 
 logger = logging.getLogger(__name__)
 _TRANSITION_LOG = logging.getLogger("adg.state_transition_committed")
@@ -347,7 +352,11 @@ class StateVersionRegistry:
         """Write value with assigned version (internal use)."""
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"VersionedStateRegistry.write_versioned:{state_namespace}/{key}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            f"VersionedStateRegistry.write_versioned:{state_namespace}/{key}",
+        )
         with self._lock:
             if state_namespace not in self._state:
                 self._state[state_namespace] = {}

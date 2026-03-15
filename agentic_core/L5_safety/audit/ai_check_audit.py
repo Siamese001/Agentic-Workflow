@@ -20,9 +20,14 @@ from typing import Any
 
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
     _emit_records_execution_trace,
     _emit_signs_execution_trace,
+    _emit_snapshots_state,  # noqa: E402
 )
+
+_emit_applies_guardrail("p0", "ai_check_audit", "p0_governance")
+_emit_snapshots_state("p0", "ai_check_audit", "state_snapshot")
 
 logger = logging.getLogger(__name__)
 _DEFAULT_AUDIT_PATH = Path("artifacts/audit/ai_check_audit.jsonl")
@@ -88,9 +93,11 @@ class AICheckAuditEmitter:
         Automatically sets human_enqueued=True when confidence < 0.7 (C5 rule).
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "AICheckAuditEmitter.emit")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:AICheckAuditEmitter.emit".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 

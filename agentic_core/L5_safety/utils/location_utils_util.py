@@ -6,6 +6,13 @@ from pathlib import Path
 
 from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
 from agentic_core.L5_safety.config.structure_blueprint import DEPTH_RULES, SOVEREIGN_EXCLUDED_FOLDERS
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 
 def normalize_location_path(path: str) -> str:
@@ -18,6 +25,21 @@ def normalize_location_path(path: str) -> str:
     Returns:
         Normalized path with forward slashes
     """
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "normalize_location_path", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "normalize_location_path", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "normalize_location_path")
     # guardian: allow-path-string
     return os.path.normpath(path).replace("\\", "/")
 

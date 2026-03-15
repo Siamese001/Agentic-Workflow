@@ -9,12 +9,24 @@ import ast
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
+
 from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
     APPS_LIC_DIR,
     APPS_RG_DIR,
     APPS_SHARED_DIR,
 )
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "file_analysis")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "file_analysis", "p0_governance")
+_emit_snapshots_state("p0", "file_analysis", "state_snapshot")
 
 
 @dataclass

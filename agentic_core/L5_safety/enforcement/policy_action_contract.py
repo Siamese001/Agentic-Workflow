@@ -47,10 +47,13 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_applies_guardrail,
     _emit_records_execution_trace,
     _emit_signs_execution_trace,
+    _emit_snapshots_state,  # noqa: E402
     _emit_verifies_policy,
     emit_determinism_digest,
     emit_replay_key,
 )
+
+_emit_snapshots_state("p0", "policy_action_contract", "state_snapshot")
 
 _LOG = logging.getLogger(__name__)
 

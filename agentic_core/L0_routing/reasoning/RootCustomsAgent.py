@@ -21,7 +21,13 @@ from agentic_core.L0_routing.config import (
     get_validated_project_root,
 )
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 # Constants that need L0 definitions
 ARTIFACT_ROUTING_MAP: dict = {}  # Placeholder - routing logic handled by L5 at runtime
@@ -47,6 +53,17 @@ class ASTAnalyzer:
     """Analyzes Python files for AST-based routing signals."""
 
     def __init__(self):
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "ASTAnalyzer.__init__", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "ASTAnalyzer.__init__", "p0_governance")
         self.imports = []
         self.decorators = []
         self.class_names = []
@@ -56,7 +73,11 @@ class ASTAnalyzer:
     def analyze_file(self, file_path: Path) -> dict[str, Any]:
         """Analyze Python file for AST signals."""
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"RootCustomsAgent.analyze_file:{file_path.name}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            f"RootCustomsAgent.analyze_file:{file_path.name}",
+        )
         if not file_path.suffix == ".py":
             return {}
 

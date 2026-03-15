@@ -20,9 +20,14 @@ from typing import Any
 
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
     _emit_records_execution_trace,
     _emit_signs_execution_trace,
+    _emit_snapshots_state,  # noqa: E402
 )
+
+_emit_applies_guardrail("p0", "vllm_replay_validator_types", "p0_governance")
+_emit_snapshots_state("p0", "vllm_replay_validator_types", "state_snapshot")
 
 
 def canonical_prompt_hash(prompt: str) -> str:
@@ -175,10 +180,16 @@ class VLLMReplayArtifact:
             64-character lowercase hex SHA256 digest of the canonical payload.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "VLLMReplayArtifact.canonical_payload_hash")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L2_EXECUTION, "VLLMReplayArtifact.canonical_payload_hash"
+        )
         import hashlib as _hashlib  # noqa: PLC0415
-        _seg_hash = _hashlib.sha256(f"{_trace_id}:VLLMReplayArtifact.canonical_payload_hash".encode()).hexdigest()[:24]
+
+        _seg_hash = _hashlib.sha256(
+            f"{_trace_id}:VLLMReplayArtifact.canonical_payload_hash".encode()
+        ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
         from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint_types import sha256_hex
@@ -226,10 +237,16 @@ class VLLMReplayValidator:
             Dict with validation result and hash details.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "VLLMReplayValidator.validate_and_report")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L2_EXECUTION, "VLLMReplayValidator.validate_and_report"
+        )
         import hashlib as _hashlib  # noqa: PLC0415
-        _seg_hash = _hashlib.sha256(f"{_trace_id}:VLLMReplayValidator.validate_and_report".encode()).hexdigest()[:24]
+
+        _seg_hash = _hashlib.sha256(
+            f"{_trace_id}:VLLMReplayValidator.validate_and_report".encode()
+        ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
         is_valid = self.validate(artifact)

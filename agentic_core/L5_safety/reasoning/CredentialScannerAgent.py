@@ -1,6 +1,15 @@
 from __future__ import annotations
 
 from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "CredentialScannerAgent", "p0_governance")
+_emit_snapshots_state("p0", "CredentialScannerAgent", "state_snapshot")
 
 "\nCredentialScannerAgent - Detects hardcoded credentials in source code\n\nRisk 4: Hardcoded Credential Detection\nScans the codebase for potential security leaks including:\n- API Keys\n- Secret Tokens\n- Private Keys\n- Hardcoded Passwords\n- AWS/Azure/GCP credentials\n\nUses FileCache for efficient scanning (Opportunity #3 integration).\n"
 import logging
@@ -167,7 +176,9 @@ class CredentialScannerAgent(SovereignBaseAgent):
         """
         _emit_validated_by_safety_plane(str(uuid.uuid4()), "CredentialScannerAgent.heal", "L5_POLICY")
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "CredentialScannerAgent.heal")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L5_POLICY, "CredentialScannerAgent.heal"
+        )
         try:
             violation.get("type", "")
             file_path = violation.get("file")

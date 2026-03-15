@@ -17,8 +17,11 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_applies_guardrail,
     _emit_records_execution_trace,
     _emit_signs_execution_trace,
+    _emit_snapshots_state,  # noqa: E402
     _emit_writes_through,
 )
+
+_emit_snapshots_state("p0", "write_set_enforcer", "state_snapshot")
 
 
 class WriteSetViolation(RuntimeError):
@@ -50,9 +53,11 @@ class WriteSetEnforcer:
         """
         _emit_writes_through(str(uuid.uuid4()), "WriteSetEnforcer.record_write", "L2_EXECUTION")
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "WriteSetEnforcer.record_write")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:WriteSetEnforcer.record_write".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 

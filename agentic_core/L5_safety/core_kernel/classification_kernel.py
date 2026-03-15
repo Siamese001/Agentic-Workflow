@@ -82,6 +82,21 @@ def get_classification_conflicts() -> list[dict]:
 
 def clear_classification_conflicts() -> None:
     """Clear the conflict tracking list."""
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "clear_classification_conflicts", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "clear_classification_conflicts", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "clear_classification_conflicts")
     global _classification_conflicts
     _classification_conflicts = []
 
@@ -594,20 +609,24 @@ def classification_cache_info():
 def classification_cache_context():
     """Context manager that clears the cache on entry and exit.
 
-    Useful for batch operations (Discovery, CI scans) where files won't
-    change mid-operation, ensuring no stale state carries into the next
-    operation.
+        Useful for batch operations (Discovery, CI scans) where files won't
+        change mid-operation, ensuring no stale state carries into the next
+        operation.
 
-    Usage::
+        Usage::
 
-        from agentic_core.L5_safety.core_kernel.classification_kernel import classification_cache_context
-from agentic_core.L0_routing.config.path_constants import (
-    OPS_SCRIPTS_DIR,
-)
+            from agentic_core.L5_safety.core_kernel.classification_kernel import classification_cache_context
+    from agentic_core.L0_routing.config.path_constants import (
+    from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+    from agentic_core.runtime.lifecycle_trace_contract import _emit_applies_guardrail
+    from agentic_core.runtime.lifecycle_trace_contract import _emit_signs_execution_trace
+    from agentic_core.runtime.lifecycle_trace_contract import _emit_snapshots_state
+        OPS_SCRIPTS_DIR,
+    )
 
-        with classification_cache_context():
-            # Run heavy discovery / scan here
-            ...
+            with classification_cache_context():
+                # Run heavy discovery / scan here
+                ...
     """
     clear_classification_cache()
     try:

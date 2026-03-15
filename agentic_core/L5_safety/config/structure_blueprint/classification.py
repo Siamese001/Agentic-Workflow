@@ -16,6 +16,13 @@ from pathlib import Path
 from typing import Final
 
 from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 CLASSIFICATION_SUFFIX_PATTERNS: Final[Mapping[str, str]] = {
     "_agent\\.py$": "AGENT",
@@ -355,6 +362,21 @@ def get_classification_suffix_patterns_compiled() -> dict[Pattern, str]:
 @lru_cache(maxsize=1)
 def get_compound_suffix_patterns_compiled() -> list[tuple[Pattern, str, str, str]]:
     """Compile and cache compound suffix conflict patterns."""
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "get_compound_suffix_patterns_compiled", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "get_compound_suffix_patterns_compiled", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "get_compound_suffix_patterns_compiled")
     return [
         (re.compile(pattern), tag_a, tag_b, example)
         for pattern, tag_a, tag_b, example in COMPOUND_SUFFIX_CONFLICTS

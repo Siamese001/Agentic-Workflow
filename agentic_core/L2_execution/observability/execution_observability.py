@@ -19,10 +19,15 @@ from enum import Enum
 from agentic_core.L2_execution.providers import get_clock
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
     _emit_observes_runtime_state,
     _emit_records_execution_trace,
     _emit_signs_execution_trace,
+    _emit_snapshots_state,  # noqa: E402
 )
+
+_emit_applies_guardrail("p0", "execution_observability", "p0_governance")
+_emit_snapshots_state("p0", "execution_observability", "state_snapshot")
 
 logger = logging.getLogger(__name__)
 _OBSERVABILITY_LOG = logging.getLogger("adg.execution_observability_emitted")
@@ -127,10 +132,16 @@ class ExecutionObservabilityRecord:
     ) -> ExecutionObservabilityRecord:
         """Factory to create ExecutionObservabilityRecord with computed fields."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "ExecutionObservabilityRecord.create")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L2_EXECUTION, "ExecutionObservabilityRecord.create"
+        )
         import hashlib as _hashlib  # noqa: PLC0415
-        _seg_hash = _hashlib.sha256(f"{_trace_id}:ExecutionObservabilityRecord.create".encode()).hexdigest()[:24]
+
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:ExecutionObservabilityRecord.create".encode()).hexdigest()[
+            :24
+        ]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
         execution_observability_id = str(uuid.uuid4())
@@ -207,10 +218,16 @@ class ObservabilityRegistry:
     def get_instance(cls) -> ObservabilityRegistry:
         """Singleton accessor."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "ObservabilityRegistry.get_instance")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L2_EXECUTION, "ObservabilityRegistry.get_instance"
+        )
         import hashlib as _hashlib  # noqa: PLC0415
-        _seg_hash = _hashlib.sha256(f"{_trace_id}:ObservabilityRegistry.get_instance".encode()).hexdigest()[:24]
+
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:ObservabilityRegistry.get_instance".encode()).hexdigest()[
+            :24
+        ]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
         if cls._instance is None:
@@ -302,7 +319,9 @@ class ObservabilityRegistry:
 
     def query_by_status(self, status: ExecutionStatus) -> list[ExecutionObservabilityRecord]:
         """Query execution observability records by status."""
-        _emit_observes_runtime_state(str(uuid.uuid4()), "ObservabilityRegistry.query_by_status", "L2_EXECUTION")
+        _emit_observes_runtime_state(
+            str(uuid.uuid4()), "ObservabilityRegistry.query_by_status", "L2_EXECUTION"
+        )
         with self._lock:
             record_ids = self._status_index.get(status.value, [])
             return [self._records[record_id] for record_id in record_ids if record_id in self._records]

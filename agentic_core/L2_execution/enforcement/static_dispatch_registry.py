@@ -30,7 +30,10 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_applies_guardrail,
     _emit_records_execution_trace,
     _emit_signs_execution_trace,
+    _emit_snapshots_state,  # noqa: E402
 )
+
+_emit_snapshots_state("p0", "static_dispatch_registry", "state_snapshot")
 
 Logger = logging.getLogger(__name__)
 
@@ -69,9 +72,11 @@ class StaticDispatchRegistry:
                 ``"agentic_core.L0_routing.scripts.run_guardian_hygiene"``).
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "StaticDispatchRegistry.register")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:StaticDispatchRegistry.register".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 

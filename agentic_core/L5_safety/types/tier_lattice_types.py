@@ -24,9 +24,14 @@ from dataclasses import dataclass
 
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
     _emit_records_execution_trace,
     _emit_signs_execution_trace,
+    _emit_snapshots_state,  # noqa: E402
 )
+
+_emit_applies_guardrail("p0", "tier_lattice_types", "p0_governance")
+_emit_snapshots_state("p0", "tier_lattice_types", "state_snapshot")
 
 
 class LearningTier(enum.IntEnum):
@@ -83,9 +88,11 @@ class TierLattice:
     def can_drop(self, tier: LearningTier, under_pressure: bool = False) -> bool:
         """Whether a signal at this tier may be dropped."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "TierLattice.can_drop")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:TierLattice.can_drop".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 

@@ -38,7 +38,13 @@ import uuid
 from typing import TYPE_CHECKING, Any
 
 from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBridge
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 if TYPE_CHECKING:
     from system_learning.types.case_memory_types import (
@@ -53,6 +59,17 @@ if TYPE_CHECKING:
 
 
 def _get_case_memory_types():
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "_get_case_memory_types", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "_get_case_memory_types", "p0_governance")
     from system_learning.types.case_memory_types import (
         BUNDLE_ARTIFACT_TYPES,
         CaseBundle,

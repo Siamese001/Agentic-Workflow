@@ -30,9 +30,32 @@ except ImportError:
     print("[WARNING] python-dotenv not installed - environment variables must be set manually")
 from agentic_core.L5_safety.validators.AutonomyGuardianAgent import get_autonomy_guardian
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
+
 
 def check_gemini_embedder(guardian):
     """Verify Gemini embedder is initialized."""
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "check_gemini_embedder", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "check_gemini_embedder", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "check_gemini_embedder")
     print("\n" + "=" * 80)
     print("1. GEMINI EMBEDDER VERIFICATION")
     print("=" * 80)

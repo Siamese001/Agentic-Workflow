@@ -51,8 +51,15 @@ from agentic_core.runtime.execution_trace import get_active_execution_trace
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
+    _emit_applies_guardrail,  # noqa: E402
     _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
 )
+
+_emit_snapshots_state("p0", "agent_handoff", "state_snapshot")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "agent_handoff", "p0_governance")
 
 logger = logging.getLogger(__name__)
 
@@ -100,6 +107,7 @@ class AgentHandoff:
     ) -> AgentHandoff:
         """Factory: create a new handoff with computed trace linkage."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "AgentHandoff.create")
 
@@ -147,8 +155,11 @@ class HandoffRecord:
 
     def mark_completed(self, result: Any = None) -> None:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HandoffRecord.mark_completed")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "HandoffRecord.mark_completed"
+        )
 
         self.status = HandoffStatus.COMPLETED
         self.result = result
@@ -179,6 +190,7 @@ class HandoffDispatcher:
     def register(self, agent_name: str, executor: Callable) -> None:
         """Register a named agent executor."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HandoffDispatcher.register")
 

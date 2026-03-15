@@ -19,6 +19,14 @@ import uuid
 from dataclasses import dataclass, field
 from typing import Any, Callable
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_snapshots_state("p0", "execution_gateway", "state_snapshot")
+
 MUTATION_COUNTER = 0
 CURRENT_PHASE = "UNKNOWN"
 
@@ -153,7 +161,9 @@ class V15ExecutionGateway:
             GatewayResult with full audit trail.
         """
         _emit_agent_executes_agent(str(uuid.uuid4()), "V15ExecutionGateway", "V15ExecutionGateway.execute")
-        _emit_records_execution_trace(trace_id, LayerSegment.L0_ROUTING, f"execution_gateway.execute:{agent_id}")
+        _emit_records_execution_trace(
+            trace_id, LayerSegment.L0_ROUTING, f"execution_gateway.execute:{agent_id}"
+        )
         _gw = get_routing_gateway(trace_id)
         self._pipe_violations = []
         self._policy_violations = []

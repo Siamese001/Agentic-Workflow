@@ -11,10 +11,17 @@ from dataclasses import dataclass
 
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
     _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
     emit_determinism_digest,
     emit_replay_key,
 )
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "c0_context_retriever", "p0_governance")
+_emit_snapshots_state("p0", "c0_context_retriever", "state_snapshot")
 
 
 @dataclass
@@ -44,6 +51,7 @@ class C0ContextRetriever:
     async def retrieve(self, u0_user_prompt: str) -> str:
         """Return a deterministic, bounded context string."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "C0ContextRetriever.retrieve")
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")

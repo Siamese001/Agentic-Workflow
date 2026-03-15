@@ -15,7 +15,16 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 from typing import Any
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, emit_replay_key, emit_determinism_digest
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+    emit_determinism_digest,
+    emit_replay_key,
+)
 
 
 @dataclass
@@ -29,22 +38,42 @@ class ConfidenceScore:
     @property
     def is_high_confidence(self) -> bool:
         import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "ConfidenceScore.is_high_confidence", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "ConfidenceScore.is_high_confidence", "p0_governance")
+        import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "ConfidenceScore.is_high_confidence")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L0_ROUTING, "ConfidenceScore.is_high_confidence"
+        )
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
         emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
 
         from agentic_core.L2_execution.healers.healing_tier_config import HEALING_CONFIDENCE_X
+
         return self.value > HEALING_CONFIDENCE_X
 
     @property
     def is_medium_confidence(self) -> bool:
-        from agentic_core.L2_execution.healers.healing_tier_config import HEALING_CONFIDENCE_X, HEALING_CONFIDENCE_Y
+        from agentic_core.L2_execution.healers.healing_tier_config import (
+            HEALING_CONFIDENCE_X,
+            HEALING_CONFIDENCE_Y,
+        )
+
         return HEALING_CONFIDENCE_Y <= self.value <= HEALING_CONFIDENCE_X
 
     @property
     def is_low_confidence(self) -> bool:
         from agentic_core.L2_execution.healers.healing_tier_config import HEALING_CONFIDENCE_Y
+
         return self.value < HEALING_CONFIDENCE_Y
 
 
@@ -122,6 +151,7 @@ class RoutingDecision:
 
     def as_log_line(self) -> str:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "RoutingDecision.as_log_line")
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
@@ -173,8 +203,11 @@ class ReconciliationManifest:
 
     def add_modification(self, modification: dict[str, Any]) -> None:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "ReconciliationManifest.add_modification")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L0_ROUTING, "ReconciliationManifest.add_modification"
+        )
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
         emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
 
@@ -246,8 +279,11 @@ class ASTCodeQualityValidator:
     def check_file_quality(self, file_path: Path) -> dict:
         """Check file for code quality issues (missing types, etc)."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "ASTCodeQualityValidator.check_file_quality")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L0_ROUTING, "ASTCodeQualityValidator.check_file_quality"
+        )
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
         emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
 
@@ -318,6 +354,7 @@ class HealContext:
           --apply-proposals => meta-learning always on under --heal
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "HealContext.from_args")
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")

@@ -350,6 +350,44 @@ def _get_staged_production_files() -> set[str]:
         return set()
 
 
+def _get_added_lines_per_file() -> dict[str, set[int]]:
+    """
+    Parse ``git diff --cached -U0`` to get the set of *added* line numbers
+    per file.  Only lines starting with ``+`` (excluding the ``+++`` header)
+    are considered added.  Returns {posix_rel_path: {line_numbers}}.
+    """
+    try:
+        result = subprocess.run(
+            ["git", "diff", "--cached", "-U0", "--no-color"],
+            capture_output=True,
+            cwd=str(PROJECT_ROOT),
+        )
+        if result.returncode != 0:
+            return {}
+    except Exception:  # noqa: BLE001
+        return {}
+
+    added: dict[str, set[int]] = defaultdict(set)
+    current_file: str | None = None
+    stdout_text = result.stdout.decode("utf-8", errors="replace")
+    for raw_line in stdout_text.splitlines():
+        if raw_line.startswith("+++ b/"):
+            current_file = raw_line[6:]
+            continue
+        if raw_line.startswith("@@ ") and current_file:
+            # Parse hunk header: @@ -old,count +new,count @@
+            hunk = raw_line.split("@@")[1].strip()
+            plus_part = hunk.split("+")[1].split()[0]
+            if "," in plus_part:
+                start, count = plus_part.split(",")
+                start, count = int(start), int(count)
+            else:
+                start, count = int(plus_part), 1
+            for ln in range(start, start + count):
+                added[current_file].add(ln)
+    return dict(added)
+
+
 # ---------------------------------------------------------------------------
 # Main gate logic
 # ---------------------------------------------------------------------------
@@ -397,12 +435,21 @@ def main() -> int:  # noqa: C901
     # unjustified exemptions from being added without blocking legacy ones.
     # ---------------------------------------------------------------------------
     staged_files = _get_staged_production_files()
+    added_lines = _get_added_lines_per_file()
     rule1_failures: list[tuple[str, int, str, str]] = []
 
     for rel_path, hits in scan_results.items():
         if rel_path not in staged_files:
             continue  # Only check files being committed right now.
+        # Convert POSIX rel_path to match git diff output (already POSIX).
+        file_added = added_lines.get(rel_path, set())
+        # Also try backslash variant for Windows compatibility.
+        if not file_added:
+            file_added = added_lines.get(rel_path.replace("/", "\\"), set())
         for lineno, raw_line, etype, justification in hits:
+            # Rule 1 only applies to ADDED lines — skip pre-existing exemptions.
+            if lineno not in file_added:
+                continue
             if justification is None:
                 rule1_failures.append((rel_path, lineno, raw_line.strip(), "missing -- <justification>"))
             elif _is_generic_justification(justification):
@@ -437,7 +484,7 @@ def main() -> int:  # noqa: C901
         for rel_path, lineno, raw, reason in rule1_failures:
             print(f"  {rel_path}:{lineno}")
             print(f"    {raw}")
-            print(f"    ⚠  {reason}")
+            print(f"    >>  {reason}")
             print()
         print("Fix: add a real justification, e.g.:")
         print(

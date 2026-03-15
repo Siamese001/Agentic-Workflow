@@ -9,7 +9,13 @@ import json
 from datetime import datetime
 from typing import Any
 
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 
 class SovereignHealthMonitor:
@@ -29,6 +35,17 @@ class SovereignHealthMonitor:
         Args:
             redis_client: Redis client instance for L4 State persistence
         """
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "SovereignHealthMonitor.__init__", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "SovereignHealthMonitor.__init__", "p0_governance")
         self.redis = redis_client
 
     def log_snapshot(self, domain: str, score: int, fixes: int) -> None:
@@ -46,8 +63,11 @@ class SovereignHealthMonitor:
             fixes: Number of fixes applied in this healing cycle
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L6_OBSERVABILITY, "SovereignHealthMonitor.log_snapshot")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L6_OBSERVABILITY, "SovereignHealthMonitor.log_snapshot"
+        )
 
         timestamp = datetime.now().isoformat()
         _adg_trust_score: float = 1.0

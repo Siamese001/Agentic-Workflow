@@ -48,7 +48,13 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 logger = logging.getLogger(__name__)
 _EVAL_LOG = logging.getLogger("adg.invokes_eval")
@@ -127,6 +133,17 @@ class ReasoningEvaluationRecord:
         evaluation_outcome_status: ReasoningEvaluationOutcome,
     ) -> ReasoningEvaluationRecord:
         """Factory — computes all hash fields deterministically."""
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "ReasoningEvaluationRecord.create", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "ReasoningEvaluationRecord.create", "p0_governance")
         evaluation_id = f"re-{uuid.uuid4().hex[:12]}"
         rubric_hash = _sha256(repr(sorted(rubric.items())))
         score_hash = _sha256(repr(sorted(score_payload.items())))
@@ -476,7 +493,11 @@ class ReasoningEvaluationStore:
     def ingest(self, record: ReasoningEvaluationRecord) -> None:
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"ReasoningEvaluationStore.ingest:{record.run_id}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            f"ReasoningEvaluationStore.ingest:{record.run_id}",
+        )
         with self._lock:
             self._records.append(record)
 

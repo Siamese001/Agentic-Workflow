@@ -10,12 +10,26 @@ import logging
 from collections.abc import Hashable
 from typing import Any, Callable, TypeVar
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,
+)
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_records_execution_trace("p0", "evidence", "runtime_interceptor")
+_emit_applies_guardrail("p0", "runtime_interceptor", "p0_governance")
+
 logger = logging.getLogger(__name__)
 T = TypeVar("T")
 _mutable_ref_violations = []
 
 
 def _invoke_authorize_and_execute(execution_context, target_callable, capability_token, payload, **kw):
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "_invoke_authorize_and_execute", "state_snapshot")
     from agentic_core.L2_execution.enforcement.execution_guardrail_chokepoint import (
         authorize_and_execute,  # noqa: PLC0415
     )

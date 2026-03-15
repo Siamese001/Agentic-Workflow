@@ -26,8 +26,13 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_applies_guardrail,
     _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
     _emit_verifies_boundary,
 )
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_snapshots_state("p0", "DomainPlannerAdapter", "state_snapshot")
 
 logger = logging.getLogger(__name__)
 
@@ -207,7 +212,9 @@ class DomainPlannerAdapter:
         """
         import uuid as _uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(_uuid.uuid4()), LayerSegment.L5_POLICY, f"DomainPlannerAdapter.plan:{workflow_id}")
+        _emit_records_execution_trace(
+            str(_uuid.uuid4()), LayerSegment.L5_POLICY, f"DomainPlannerAdapter.plan:{workflow_id}"
+        )
         return self.execute(context=context, plan=plan, job_context=job_context, workflow_id=workflow_id)
 
     def execute(self, context: AdapterContext | None = None, *args: Any, **kwargs: Any) -> AdapterResult:

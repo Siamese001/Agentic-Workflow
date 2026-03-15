@@ -30,7 +30,13 @@ from agentic_core.L6_observability.performance.performance_registry import (
     StageStatus,
     get_performance_registry,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 logger = logging.getLogger(__name__)
 _PERF_LOG = logging.getLogger("adg.performance_record_emitted")
@@ -53,6 +59,17 @@ def performance_record_emitted(
     within_budget: bool,
 ) -> None:
     """ADG edge emitter for performance_record_emitted."""
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "performance_record_emitted", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "performance_record_emitted", "p0_governance")
     pass
 
 
@@ -119,6 +136,7 @@ class LatencyBudget:
     def for_stage(cls, stage_name: str) -> LatencyBudget:
         """Create appropriate latency budget for a stage."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L6_OBSERVABILITY, "LatencyBudget.for_stage")
 

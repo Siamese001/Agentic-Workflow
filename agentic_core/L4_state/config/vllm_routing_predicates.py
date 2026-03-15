@@ -14,6 +14,13 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Callable, Mapping, NamedTuple
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 from tools.canonical_hash import canonical_hash
 
 
@@ -77,6 +84,21 @@ def evaluate(context: Mapping[str, Any]) -> RoutingDecision:
     First-match-wins. Context is not mutated.
     Deterministic: key-order independent, hash-stable.
     """
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "evaluate", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "evaluate", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "evaluate")
     snapshot = copy.deepcopy(context)
     hash_before = canonical_hash(dict(context))
     predicate_hash = canonical_hash(dict(context))

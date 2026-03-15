@@ -12,7 +12,13 @@ import logging
 from pathlib import Path
 from typing import Any
 
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -63,6 +69,17 @@ _TOOL_DISPATCH: dict[str, str] = {
 
 def _resolve_tool(tool_name: str) -> Any:
     """Resolve a logical tool name to a callable, or None if unavailable."""
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "_resolve_tool", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "_resolve_tool", "p0_governance")
     mapped = _TOOL_DISPATCH.get(tool_name)
     if mapped is None:
         Logger.debug(f"[MCPManager] No dispatch mapping for tool '{tool_name}'")
@@ -104,8 +121,11 @@ class MCPConnectionManager:
     async def connect(self, role: str) -> None:
         """Mark connection active for the given role."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "MCPConnectionManager.connect")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "MCPConnectionManager.connect"
+        )
 
         self._role = role
         self._connected = True

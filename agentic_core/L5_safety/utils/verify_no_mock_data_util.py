@@ -12,6 +12,14 @@ Comprehensive verification that all mock data has been eliminated:
 import re
 from pathlib import Path
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
+
 try:
     from agentic_core.L0_routing.scripts.full_agent_discovery import DASHBOARD_DIR, get_validated_project_root
 except ImportError:
@@ -23,6 +31,21 @@ except ImportError:
 
 def verify_no_mock_data():
     """Verify all mock data has been eliminated from dashboard."""
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "verify_no_mock_data", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "verify_no_mock_data", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "verify_no_mock_data")
     print("=" * 70)
     print("MOCK DATA ELIMINATION VERIFICATION")
     print("=" * 70)

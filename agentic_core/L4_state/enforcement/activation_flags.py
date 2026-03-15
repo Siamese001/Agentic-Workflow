@@ -11,7 +11,13 @@ import time
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 Logger = logging.getLogger(__name__)
 
@@ -48,6 +54,17 @@ class ActivationFlagsStore:
     """Manages L4-persisted activation flags with cryptographic binding."""
 
     def __init__(self, storage_path: Path | None = None):
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "ActivationFlagsStore.__init__", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "ActivationFlagsStore.__init__", "p0_governance")
         self.storage_path = storage_path or Path("agentic_core/L4_state/.activation")
         self.flags_file = self.storage_path / "activation_flags.json"
         self.proof_file = self.storage_path / "activation_proof.json"
@@ -118,6 +135,7 @@ class ActivationFlagsStore:
             RuntimeError: If signature verification fails
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "ActivationFlagsStore.update_flags")
 
@@ -220,6 +238,7 @@ class ActivationGate:
             True if P0 requirements are met
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "ActivationGate.check_p0_ready")
 

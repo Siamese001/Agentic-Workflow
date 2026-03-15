@@ -19,6 +19,10 @@ ADG edges emitted (structured log records):
 Usage — chokepoint injection::
 
     from agentic_core.L2_execution.trace_context import get_trace_context
+from agentic_core.runtime.lifecycle_trace_contract import _emit_snapshots_state  # noqa: E402
+from agentic_core.runtime.lifecycle_trace_contract import _emit_applies_guardrail  # noqa: E402
+_emit_applies_guardrail("p0", "trace_context", "p0_governance")
+_emit_snapshots_state("p0", "trace_context", "state_snapshot")
 
     ctx = get_trace_context()
     ctx.record(
@@ -119,9 +123,11 @@ class TraceContext:
     ) -> TraceEntry:
         """Append a trace entry.  ADG edge: ``records_execution_trace``."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "TraceContext.record")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:TraceContext.record".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
@@ -174,9 +180,7 @@ class TraceContext:
         """
         with self._lock:
             payload = [e.to_dict() for e in self._entries]
-        digest = hashlib.sha256(
-            json.dumps(payload, sort_keys=True, default=str).encode("utf-8")
-        ).hexdigest()
+        digest = hashlib.sha256(json.dumps(payload, sort_keys=True, default=str).encode("utf-8")).hexdigest()
         self._signed_digest = digest
         _SIGN_LOGGER.debug(
             "signs_execution_trace run=%s entries=%d digest=%s",
@@ -199,8 +203,7 @@ class TraceContext:
         """
         with self._lock:
             found = any(
-                e.operation == operation and (not module or e.module == module)
-                for e in self._entries
+                e.operation == operation and (not module or e.module == module) for e in self._entries
             )
         if not found:
             _UNTRANSCRIPTED_LOGGER.warning(

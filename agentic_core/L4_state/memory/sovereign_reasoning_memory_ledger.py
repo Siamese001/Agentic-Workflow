@@ -8,7 +8,13 @@ from datetime import datetime
 from pathlib import Path
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 Logger = logging.getLogger(__name__)
 
@@ -23,6 +29,17 @@ class SovereignReasoningMemory(SovereignBaseAgent):
     _lock = threading.Lock()
 
     def __init__(self):
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "SovereignReasoningMemory.__init__", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "SovereignReasoningMemory.__init__", "p0_governance")
         super().__init__()
         # guardian: allow-magic-config
         self.max_thought_length = 4000
@@ -43,8 +60,11 @@ class SovereignReasoningMemory(SovereignBaseAgent):
 
     def add_thought(self, file_path: str, thought: str, key_id: str = None) -> None:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "SovereignReasoningMemory.add_thought")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L4_STATE, "SovereignReasoningMemory.add_thought"
+        )
 
         if len(thought) > self.max_thought_length:
             thought = thought[: self.max_thought_length] + "...[TRUNCATED]"

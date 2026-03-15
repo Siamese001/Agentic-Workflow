@@ -41,7 +41,13 @@ import uuid
 from dataclasses import dataclass, field
 from typing import Any, Callable
 
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 logger = logging.getLogger(__name__)
 _TRACE_LOG = logging.getLogger("adg.records_execution_trace")
@@ -110,6 +116,17 @@ class ToolSchema:
     schema_id: str = field(default_factory=lambda: f"schema-{uuid.uuid4().hex[:8]}")
 
     def to_dict(self) -> dict[str, Any]:
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "ToolSchema.to_dict", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "ToolSchema.to_dict", "p0_governance")
         return {
             "schema_id": self.schema_id,
             "schema_version": self.schema_version,
@@ -269,7 +286,10 @@ class TypedToolRegistry:
     def register(self, entry: ToolRegistryEntry) -> None:
         """Register a tool entry. Re-registration of same name+version overwrites."""
         import uuid  # noqa: PLC0415
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"TypedToolRegistry.register:{entry.tool_name}")
+
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"TypedToolRegistry.register:{entry.tool_name}"
+        )
         with self._lock:
             self._entries[(entry.tool_name, entry.tool_version)] = entry
 

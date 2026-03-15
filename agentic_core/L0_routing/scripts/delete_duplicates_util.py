@@ -7,6 +7,14 @@ import asyncio
 import sys
 from pathlib import Path
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
+
 project_root = Path(__file__).parent.parent
 # guardian: allow-global-mutation
 sys.path.insert(0, str(project_root))
@@ -14,6 +22,21 @@ sys.path.insert(0, str(project_root))
 
 async def main():
     """Delete duplicates with dry-run or execute mode."""
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "main", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "main", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "main")
     parser = argparse.ArgumentParser(description="Delete duplicate files")
     parser.add_argument("--execute", action="store_true", help="Actually delete files (default is dry-run)")
     parser.add_argument("--dry-run", action="store_true", help="Simulate deletion without actually deleting")

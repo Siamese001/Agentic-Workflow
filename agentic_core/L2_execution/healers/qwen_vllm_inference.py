@@ -17,9 +17,31 @@ import argparse
 import json
 
 from agentic_core.L2_execution.healers.healing_tier_config import QWEN_GPU_MEM_UTIL
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 
 def _build_prompt(agent_name: str, violation_types: list[str], territory: str, score: int, gate: str) -> str:
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "_build_prompt", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "_build_prompt", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "_build_prompt")
     violations_str = ", ".join(violation_types) if violation_types else "UNKNOWN"
     band = (
         "low (agent-native)" if score <= 13 else "medium (Qwen-advised)" if score <= 26 else "high (Gemini)"

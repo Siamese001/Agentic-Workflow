@@ -11,8 +11,10 @@ from agentic_core.utils.security_util import safe_git_execute
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,
     _emit_records_execution_trace,
     _emit_signs_execution_trace,
+    _emit_snapshots_state,
 )
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
@@ -44,6 +46,12 @@ class GitHygieneAgent(SovereignBaseAgent):
             project_root: Root directory of the Git repository.
             ctx: Execution context with optional report() method.
         """
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "GitHygieneAgent.__init__", "state_snapshot")
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "GitHygieneAgent.__init__", "p0_governance")
         self.project_root: Path = Path(project_root)
         self.ctx: Any = ctx
         self.dry_run: bool = True
@@ -115,9 +123,11 @@ class GitHygieneAgent(SovereignBaseAgent):
     async def execute(self) -> dict:
         """Audit repository health and optionally clean up."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "GitHygieneAgent.execute")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:GitHygieneAgent.execute".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 

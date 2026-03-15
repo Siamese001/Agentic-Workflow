@@ -8,7 +8,13 @@ L6 has ZERO authority: no decisions, no direct L4 mutation, no L2/L5 coupling.
 from dataclasses import dataclass
 from typing import Callable
 
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 
 @dataclass(frozen=True)
@@ -33,8 +39,22 @@ class VigilanceEventArtifact:
             New VigilanceEventArtifact with sorted unique signals
         """
         import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "VigilanceEventArtifact.create", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "VigilanceEventArtifact.create", "p0_governance")
+        import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L6_OBSERVABILITY, "VigilanceEventArtifact.create")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L6_OBSERVABILITY, "VigilanceEventArtifact.create"
+        )
 
         unique_signals = tuple(sorted(set(signals)))
         return cls(trace_id=trace_id, signals=unique_signals, summary=summary)

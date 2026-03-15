@@ -14,9 +14,14 @@ from dataclasses import dataclass, field
 from agentic_core.L4_state.types.replay_bundle_types import ReplayBundle
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
     _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
     _emit_snapshots_state,
 )
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "replay_bundle_store", "p0_governance")
 
 
 def _sha256(data: bytes) -> str:
@@ -41,8 +46,11 @@ class ReplayBundleStore:
         """
         _emit_snapshots_state(str(uuid.uuid4()), "ReplayBundleStore.store_replay_bundle", "L4_STATE")
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "ReplayBundleStore.store_replay_bundle")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L4_STATE, "ReplayBundleStore.store_replay_bundle"
+        )
 
         self._store[bundle.replay_hash] = bundle
         return bundle.replay_hash
@@ -150,6 +158,7 @@ class ReplayVerifier:
         ReplayVerificationError on any failure.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "ReplayVerifier.verify")
 

@@ -11,6 +11,13 @@ from typing import Any, Callable
 
 Logger = logging.getLogger(__name__)
 from agentic_core.L0_routing.enforcement.execution_gateway import CURRENT_PHASE, MUTATION_COUNTER
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 
 def durable_write(operation: Callable[..., Any], *args: Any, **kwargs: Any) -> Any:
@@ -28,6 +35,21 @@ def durable_write(operation: Callable[..., Any], *args: Any, **kwargs: Any) -> A
     Raises:
         AssertionError: If not in L2.2 phase
     """
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "durable_write", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "durable_write", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "durable_write")
     global CURRENT_PHASE, MUTATION_COUNTER
     if CURRENT_PHASE != "L2.2":
         raise AssertionError(f"Durable write attempted in phase {CURRENT_PHASE}, only L2.2 allowed")

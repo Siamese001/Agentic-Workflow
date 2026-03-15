@@ -1,5 +1,17 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_snapshots_state("p0", "agentic_constants_util", "state_snapshot")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "agentic_constants_util", "p0_governance")
+_emit_records_execution_trace("p0", "evidence", "agentic_constants_util")
+
 "\nConstants for the Agentic Core system.\n[SSOT] Structural constants derived from structure_blueprint.py\n\nContains all shared constants used across the agentic framework.\n"
 from typing import Any
 

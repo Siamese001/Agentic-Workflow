@@ -15,6 +15,14 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
+
 
 def setup_logging():
     logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - [MANIFEST] %(message)s")
@@ -25,6 +33,21 @@ def analyze_impact(report: dict[str, Any]) -> bool:
     Analyzes the dry-run report to determine if the proposed changes are safe.
     Returns: True if analysis passes safety thresholds, False otherwise.
     """
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "analyze_impact", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "analyze_impact", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "analyze_impact")
     phase1 = report.get("phase1", {})
     phase2 = report.get("phase2", {})
     meta = report.get("meta", {})

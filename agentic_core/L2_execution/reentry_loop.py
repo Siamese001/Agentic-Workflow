@@ -6,6 +6,13 @@ No infinite loops, no sleep/time usage, pure deterministic behavior.
 """
 
 from agentic_core.L2_execution.cid_registry import CIDRegistry, ExecutionCycle
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 
 class ReEntryLoop:
@@ -24,6 +31,21 @@ class ReEntryLoop:
             max_attempts: Maximum number of attempts allowed
             cid_registry: Optional CIDRegistry instance
         """
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "ReEntryLoop.__init__", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "ReEntryLoop.__init__", "p0_governance")
+        import uuid as _uuid  # noqa: PLC0415
+
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "ReEntryLoop.__init__")
         if max_attempts < 1:
             raise ValueError("max_attempts must be at least 1")
         self.max_attempts = max_attempts

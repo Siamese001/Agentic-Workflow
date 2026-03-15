@@ -58,7 +58,13 @@ from agentic_core.L5_safety.validators.base_detector_validator import (
     DetectionResult,
     EnforcementLevel,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -150,6 +156,17 @@ def _is_weak_assert(node: ast.Assert) -> bool:
     - ``assert hasattr(x, 'attr')`` — only checks attribute existence
     - Combinations of the above via ``and``
     """
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "_is_weak_assert", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "_is_weak_assert", "p0_governance")
     return _is_weak_expr(node.test)
 
 
@@ -159,19 +176,11 @@ def _is_weak_expr(expr: ast.expr) -> bool:
         return True
 
     # assert isinstance(x, T)
-    if (
-        isinstance(expr, ast.Call)
-        and isinstance(expr.func, ast.Name)
-        and expr.func.id == "isinstance"
-    ):
+    if isinstance(expr, ast.Call) and isinstance(expr.func, ast.Name) and expr.func.id == "isinstance":
         return True
 
     # assert hasattr(x, 'attr')
-    if (
-        isinstance(expr, ast.Call)
-        and isinstance(expr.func, ast.Name)
-        and expr.func.id == "hasattr"
-    ):
+    if isinstance(expr, ast.Call) and isinstance(expr.func, ast.Name) and expr.func.id == "hasattr":
         return True
 
     # assert x is not None
@@ -315,8 +324,9 @@ class TestQualityDetector(AntiPatternDetector):
     # ------------------------------------------------------------------
 
     def detect(self, file_path: Path, tree: ast.Module) -> list[AntiPatternViolation]:
-
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, f"TestQualityDetector.detect:{file_path.name}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L5_POLICY, f"TestQualityDetector.detect:{file_path.name}"
+        )
         violations: list[AntiPatternViolation] = []
 
         try:
@@ -374,9 +384,7 @@ class TestQualityDetector(AntiPatternDetector):
             if self._has_whitelist(source_lines, node.lineno):
                 continue
             evidence = (
-                source_lines[node.lineno - 1].strip()
-                if node.lineno <= len(source_lines)
-                else "assert True"
+                source_lines[node.lineno - 1].strip() if node.lineno <= len(source_lines) else "assert True"
             )
             return AntiPatternViolation(
                 file_path=file_path,

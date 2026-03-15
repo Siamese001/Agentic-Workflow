@@ -39,7 +39,14 @@ except ImportError:
     def standard_heal(func):
         """Fallback decorator when full infrastructure unavailable."""
         return func
-from agentic_core.runtime.lifecycle_trace_contract import _emit_validated_by_safety_plane
+
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+    _emit_validated_by_safety_plane,
+)
 
 
 # SSOT Integration with fast-fail pruning
@@ -48,6 +55,17 @@ def get_python_files_fast(root: Path) -> list[Path]:
     Optimized repository scanner that prunes heavy/irrelevant directories
     before they enter the pipeline.
     """
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "get_python_files_fast", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "get_python_files_fast", "p0_governance")
     python_files = []
     exclude_dirs = {".git", "archives", "__pycache__", "node_modules", "venv", ".env"}
 
@@ -199,7 +217,9 @@ class PascalSovereigntyAgent(SovereignBaseAgent):
         8. CLASS    - Any other class
         9. UTILITY  - No class definitions
         """
-        _emit_validated_by_safety_plane(str(uuid.uuid4()), "PascalSovereigntyAgent.classify_file", "L5_POLICY")
+        _emit_validated_by_safety_plane(
+            str(uuid.uuid4()), "PascalSovereigntyAgent.classify_file", "L5_POLICY"
+        )
         if path.name == "conftest.py" or path.name == "__init__.py":
             return "IGNORE"
 
@@ -534,7 +554,9 @@ class PascalSovereigntyAgent(SovereignBaseAgent):
     def heal(self, violation: dict) -> dict:
         """Heal Pascal naming violations."""
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "PascalSovereigntyAgent.heal")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L5_POLICY, "PascalSovereigntyAgent.heal"
+        )
         from agentic_core.base_agents.decorators import standard_heal
 
         @standard_heal

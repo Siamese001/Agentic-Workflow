@@ -25,7 +25,12 @@ try:
 except ImportError:
     _SqliteMemoryStore = None  # type: ignore[assignment,misc]
     _SQLITE_STORE_AVAILABLE = False
-from agentic_core.runtime.lifecycle_trace_contract import _emit_writes_through
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+    _emit_writes_through,
+)
 
 Logger = logging.getLogger(__name__)
 
@@ -78,6 +83,17 @@ class GraphMemoryBridge:
     @classmethod
     def get_instance(cls) -> GraphMemoryBridge:
         """Get the singleton instance of GraphMemoryBridge."""
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "GraphMemoryBridge.get_instance", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "GraphMemoryBridge.get_instance", "p0_governance")
         _emit_writes_through(str(uuid.uuid4()), "GraphMemoryBridge.get_instance", "L4_STATE")
         with cls._instance_lock:
             if cls._instance is None:
@@ -132,21 +148,15 @@ class GraphMemoryBridge:
                 import os
                 from pathlib import Path as _Path
 
-                _db_path = _Path(
-                    os.environ.get("MEMORY_DB", "artifacts/memory/knowledge_graph.sqlite")
-                )
+                _db_path = _Path(os.environ.get("MEMORY_DB", "artifacts/memory/knowledge_graph.sqlite"))
                 try:
                     self._sqlite_store = _SqliteMemoryStore(_db_path)
                     self._mcp_available = True
-                    Logger.info(
-                        "[GraphMemoryBridge] Initialized (SQLite fallback mode) db=%s", _db_path
-                    )
+                    Logger.info("[GraphMemoryBridge] Initialized (SQLite fallback mode) db=%s", _db_path)
                 except Exception as _e:
                     self._sqlite_store = None
                     self._mcp_available = False
-                    Logger.warning(
-                        "[GraphMemoryBridge] SQLite store init failed: %s — no-op mode", _e
-                    )
+                    Logger.warning("[GraphMemoryBridge] SQLite store init failed: %s — no-op mode", _e)
             else:
                 self._sqlite_store = None
                 self._mcp_available = False
@@ -215,7 +225,9 @@ class GraphMemoryBridge:
         """
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "GraphMemoryBridge.set_mcp_functions")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "GraphMemoryBridge.set_mcp_functions"
+        )
         self._create_entities_fn = create_entities
         self._create_relations_fn = create_relations
         self._add_observations_fn = add_observations

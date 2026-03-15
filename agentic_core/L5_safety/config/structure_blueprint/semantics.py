@@ -12,6 +12,18 @@ from __future__ import annotations
 from collections.abc import Mapping, Sequence
 from typing import Any, Final
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_records_execution_trace("p0", "evidence", "semantics")
+_emit_applies_guardrail("p0", "semantics", "p0_governance")
+_emit_snapshots_state("p0", "semantics", "state_snapshot")
+
 NAMING_CONVENTIONS: Final[Mapping[str, Mapping[str, Any]]] = {
     "agent": {
         "pattern": "^[A-Z][a-zA-Z0-9]*Agent\\.py$",

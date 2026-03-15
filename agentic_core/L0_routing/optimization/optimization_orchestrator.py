@@ -30,9 +30,16 @@ from agentic_core.L0_routing.optimization.routing_optimization import (
 )
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
     _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
     _emit_verifies_policy,
 )
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "optimization_orchestrator", "p0_governance")
+_emit_snapshots_state("p0", "optimization_orchestrator", "state_snapshot")
 
 logger = logging.getLogger(__name__)
 _OPTIMIZATION_LOG = logging.getLogger("adg.optimizes_routing")
@@ -167,7 +174,7 @@ def optimize_routing_policy(
     _emit_verifies_policy(str(uuid.uuid4()), "Module.optimize_routing_policy", "L0_ROUTING")
     _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L0_ROUTING, "optimize_routing_policy")
     _registry = registry or get_routing_optimization_registry()
-    _gw = get_routing_gateway(policy_context.policy_hash if hasattr(policy_context, 'policy_hash') else "")
+    _gw = get_routing_gateway(policy_context.policy_hash if hasattr(policy_context, "policy_hash") else "")
 
     # --- Step 1: analyze historical routing outcomes ---
     historical_analysis = _analyze_historical_routing_outcomes(routing_history, optimization_window)

@@ -22,7 +22,6 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
     APPS_LIC_DIR,
@@ -30,6 +29,18 @@ from agentic_core.L0_routing.config import (
     APPS_SHARED_DIR,
     ARCHIVES_DIR,
 )
+from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "code_entity")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "code_entity", "p0_governance")
+_emit_snapshots_state("p0", "code_entity", "state_snapshot")
 
 # ============================================================================
 # DATA STRUCTURES

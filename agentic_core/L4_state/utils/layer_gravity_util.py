@@ -16,6 +16,14 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
+
 LAYER_ORDER: dict[str, int] = {"L0": 0, "L1": 1, "L2": 2, "L3": 3, "L4": 4, "L5": 5, "L6": 6}
 GRAVITY_RULES: dict[str, set[str]] = {
     "L0": {"L0"},
@@ -44,6 +52,21 @@ def extract_layer_from_path(path: Path | str) -> str | None:
         >>> extract_layer_from_path("apps_rg/engines/tool.py")
         None
     """
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "extract_layer_from_path", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "extract_layer_from_path", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "extract_layer_from_path")
     path_str = str(path)
     for layer in LAYER_ORDER.keys():
         if f"/{layer}_" in path_str or f"\\{layer}_" in path_str:

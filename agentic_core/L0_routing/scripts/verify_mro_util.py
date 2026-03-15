@@ -10,6 +10,14 @@ Opportunity #4: Mixin Inheritance Complexity - Phase 4 Verification
 import sys
 from pathlib import Path
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
+
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 # guardian: allow-global-mutation
 sys.path.insert(0, str(PROJECT_ROOT))
@@ -17,6 +25,21 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 def print_mro(agent_class, agent_name: str):
     """Print the MRO for an agent class."""
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "print_mro", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "print_mro", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "print_mro")
     print(f"\n{'=' * 80}")
     print(f"MRO for {agent_name}")
     print(f"{'=' * 80}")

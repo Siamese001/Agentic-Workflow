@@ -23,7 +23,13 @@ from datetime import datetime
 from enum import Enum
 from typing import Any
 
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 Logger = logging.getLogger(__name__)
 
@@ -110,6 +116,17 @@ class ForwardRollingConfig:
             initial_stage: Initial rollout stage
             config_update_callback: Callback when config changes
         """
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "ForwardRollingConfig.__init__", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "ForwardRollingConfig.__init__", "p0_governance")
         self._config = RolloutConfig(stage=initial_stage)
         self._feature_flags: dict[str, FeatureFlag] = {}
         self._routing_cache: dict[str, ExecutionMode] = {}
@@ -144,7 +161,11 @@ class ForwardRollingConfig:
             ExecutionMode to use for this request
         """
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"ForwardRollingManager.get_execution_mode:{agent_id}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            f"ForwardRollingManager.get_execution_mode:{agent_id}",
+        )
         cache_key = f"{agent_id}:{mission_id}" if mission_id else agent_id
         if self._config.sticky_routing and cache_key in self._routing_cache:
             return self._routing_cache[cache_key]

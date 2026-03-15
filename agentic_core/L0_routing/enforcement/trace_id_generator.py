@@ -14,9 +14,14 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_applies_guardrail,
     _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
     emit_determinism_digest,
     emit_replay_key,
 )
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_snapshots_state("p0", "trace_id_generator", "state_snapshot")
 
 
 class TraceIdGenerator:
@@ -47,8 +52,11 @@ class TraceIdGenerator:
             TraceID matching pattern ^CC3AL1-[0-9A-F]{8}$
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "TraceIdGenerator.generate_trace_id")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L0_ROUTING, "TraceIdGenerator.generate_trace_id"
+        )
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
         emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
 

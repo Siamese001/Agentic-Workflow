@@ -45,6 +45,17 @@ class BenchmarkResultActual:
     """Result of a single benchmark measurement."""
 
     def __init__(self, name: str, duration_ms: float, metadata: dict = None):
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "BenchmarkResultActual.__init__", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "BenchmarkResultActual.__init__", "p0_governance")
         self.name = name
         self.duration_ms = duration_ms
         self.metadata = metadata or {}
@@ -116,6 +127,11 @@ class BenchmarkSuite:
         }
 
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 from agentic_core.utils.decorators_compat_util import standard_heal
 
 

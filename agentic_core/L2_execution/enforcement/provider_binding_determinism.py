@@ -13,6 +13,13 @@ from dataclasses import dataclass
 from typing import Any
 
 from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 
 @dataclass(frozen=True)
@@ -44,6 +51,21 @@ def compute_provider_binding_digest(
     Returns:
         SHA-256 hex digest of provider binding information
     """
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "compute_provider_binding_digest", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "compute_provider_binding_digest", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "compute_provider_binding_digest")
     vector_dict = dict(semantic_clock.vector_clock)
     binding_data = {
         "provider_id": provider_id,

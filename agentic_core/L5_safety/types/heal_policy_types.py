@@ -36,14 +36,21 @@ from enum import Enum
 
 from agentic_core.L2_execution.healers.healing_tier_config import (
     SSOT_SCORE_THRESHOLD_DET as SCORE_THRESHOLD_DET,
-    SSOT_SCORE_THRESHOLD_QWEN as SCORE_THRESHOLD_QWEN,
-    MAX_RETRIES,
-    DEFAULT_SLEEP,
-    THRESHOLD,
-    BUFFER_SIZE,
-    BATCH_SIZE,
-    MAX_DEPTH,
 )
+from agentic_core.L2_execution.healers.healing_tier_config import (
+    SSOT_SCORE_THRESHOLD_QWEN as SCORE_THRESHOLD_QWEN,
+)
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_records_execution_trace("p0", "evidence", "heal_policy_types")
+_emit_applies_guardrail("p0", "heal_policy_types", "p0_governance")
+_emit_snapshots_state("p0", "heal_policy_types", "state_snapshot")
 
 
 class ReasoningTier(Enum):

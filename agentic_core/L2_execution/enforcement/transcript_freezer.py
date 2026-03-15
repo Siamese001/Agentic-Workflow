@@ -2,6 +2,14 @@ from __future__ import annotations
 
 from typing import Any, MutableSequence
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
+
 
 class TranscriptMutationViolation(Exception):
     """Raised when an attempt is made to mutate a frozen execution transcript."""
@@ -20,6 +28,23 @@ class FrozenTranscript(MutableSequence[Any]):
         return len(self._data)
 
     def _raise_violation(self, *args: Any, **kwargs: Any) -> None:
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "FrozenTranscript._raise_violation", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "FrozenTranscript._raise_violation", "p0_governance")
+        import uuid as _uuid  # noqa: PLC0415
+
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L2_EXECUTION, "FrozenTranscript._raise_violation"
+        )
         raise TranscriptMutationViolation(
             "Cannot mutate a frozen transcript. It has been sealed for digest computation."
         )

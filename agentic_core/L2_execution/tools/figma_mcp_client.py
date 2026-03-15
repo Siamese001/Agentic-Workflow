@@ -1,5 +1,13 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "figma_mcp_client", "p0_governance")
+_emit_snapshots_state("p0", "figma_mcp_client", "state_snapshot")
+
 "\nMCP Tool Stubs - Planned Feature Integration\n\nPURPOSE:\n    Stub implementations for MCP-powered tool integrations.\n    Provides Figma, Pinecone, and Memory MCP tool stubs for testing.\n\nSTATUS: Stub - Planned for Phase 2 MCP Integration\nPLANNED FEATURES:\n    - FigmaTools: Design token extraction, screenshots, design context\n    - PineconeTools: Vector search and RAG operations\n    - MemoryTools: Knowledge graph entity and node operations\n\nEXTRACTED: From action_registry.py via Atomic Fission Protocol\nTOOL ID PREFIX: ACT-012+\n"
 import logging
 from typing import Any
@@ -35,9 +43,11 @@ class FigmaTools:
             str: A message indicating the tool is not implemented.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "FigmaTools.get_variable_defs")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:FigmaTools.get_variable_defs".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
@@ -97,9 +107,11 @@ class PineconeTools:
             str: A message indicating the tool is not implemented.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "PineconeTools.search_records")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:PineconeTools.search_records".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
@@ -128,9 +140,11 @@ class MemoryTools:
             str: A message indicating the tool is not implemented.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "MemoryTools.create_entities")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:MemoryTools.create_entities".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 

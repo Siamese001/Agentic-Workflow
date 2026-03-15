@@ -16,7 +16,13 @@ import hashlib
 import threading
 from typing import Any
 
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 
 class DuplicateEmissionError(RuntimeError):
@@ -66,8 +72,22 @@ class DeterminismDigestEmitter:
             ValueError: if any component is not a 64-char hex string.
         """
         import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "DeterminismDigestEmitter.compute", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "DeterminismDigestEmitter.compute", "p0_governance")
+        import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L6_OBSERVABILITY, "DeterminismDigestEmitter.compute")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L6_OBSERVABILITY, "DeterminismDigestEmitter.compute"
+        )
 
         components = {
             "config_surface_hash": config_surface_hash,
@@ -156,6 +176,7 @@ def _canonical_json_bytes(data: Any) -> bytes:
     class _Encoder(json.JSONEncoder):
         def default(self, o: Any) -> Any:
             import uuid as _uuid  # noqa: PLC0415
+
             _trace_id = str(_uuid.uuid4())
             _emit_records_execution_trace(_trace_id, LayerSegment.L6_OBSERVABILITY, "_Encoder.default")
 

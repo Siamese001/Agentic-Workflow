@@ -15,9 +15,14 @@ from agentic_core.L0_routing.config import (
 )
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
     _emit_records_execution_trace,
     _emit_signs_execution_trace,
+    _emit_snapshots_state,  # noqa: E402
 )
+
+_emit_applies_guardrail("p0", "ptc_invariants", "p0_governance")
+_emit_snapshots_state("p0", "ptc_invariants", "state_snapshot")
 
 
 class PTCInvariantVisitor(ast.NodeVisitor):
@@ -32,9 +37,11 @@ class PTCInvariantVisitor(ast.NodeVisitor):
     def visit(self, node: ast.AST) -> None:
         """Override to track line content."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "PTCInvariantVisitor.visit")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:PTCInvariantVisitor.visit".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 

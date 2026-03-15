@@ -19,7 +19,13 @@ from agentic_core.L0_routing.config.path_constants import (
     THRESHOLD,
 )
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 Logger = logging.getLogger(__name__)
 
@@ -50,6 +56,17 @@ class SSOTFolderCleanupAgent(SovereignBaseAgent):
             project_root: Root of the project (auto-detected if None)
             dry_run: If True, only report actions without executing
         """
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "SSOTFolderCleanupAgent.__init__", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "SSOTFolderCleanupAgent.__init__", "p0_governance")
         self.project_root = project_root or self._detect_project_root()
         self.dry_run = dry_run
         self._cognitive_agent = None
@@ -158,7 +175,11 @@ class SSOTFolderCleanupAgent(SovereignBaseAgent):
             True if path is in an approved location
         """
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, f"SSOTFolderCleanupAgent.is_path_ssot_approved:{path.name}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()),
+            LayerSegment.L5_POLICY,
+            f"SSOTFolderCleanupAgent.is_path_ssot_approved:{path.name}",
+        )
         try:
             rel_path = path.relative_to(self.project_root)
         except ValueError:

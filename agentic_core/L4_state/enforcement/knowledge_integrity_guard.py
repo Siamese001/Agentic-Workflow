@@ -5,7 +5,13 @@ import json
 from dataclasses import dataclass, field
 from typing import Any
 
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 
 class KnowledgeIntegrityViolation(Exception):
@@ -28,6 +34,17 @@ class KnowledgeNode:
 
     def _canonical_bytes(self) -> bytes:
         """Computes the canonical byte representation for signing."""
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "KnowledgeNode._canonical_bytes", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "KnowledgeNode._canonical_bytes", "p0_governance")
         data = {"content_hash": self.content_hash, "prev_hash": self.prev_hash, "node_id": self.node_id}
         return json.dumps(data, sort_keys=True, separators=(",", ":")).encode("utf-8")
 
@@ -58,6 +75,7 @@ class KnowledgeIntegrityGuard:
             The newly created, signed KnowledgeNode.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "KnowledgeIntegrityGuard.mutate")
 

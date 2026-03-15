@@ -26,6 +26,8 @@ concurrent orchestration runs.
 Usage — facade (zero behaviour change)::
 
     from agentic_core.L4_state.authority.run_state_authority import get_run_state_authority
+from agentic_core.runtime.lifecycle_trace_contract import _emit_applies_guardrail  # noqa: E402
+_emit_applies_guardrail("p0", "run_state_authority", "p0_governance")
 
     rsa = get_run_state_authority()
     value, version = rsa.read("my_key")

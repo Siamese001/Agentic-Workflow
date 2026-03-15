@@ -27,8 +27,11 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_applies_guardrail,
     _emit_records_execution_trace,
     _emit_signs_execution_trace,
+    _emit_snapshots_state,  # noqa: E402
     _emit_verifies_policy,
 )
+
+_emit_snapshots_state("p0", "layer_sovereignty_enforcer", "state_snapshot")
 
 # ---------------------------------------------------------------------------
 # Layer hierarchy: higher number = higher authority.
@@ -105,9 +108,11 @@ class EnforcementReport:
 
     def summary(self) -> str:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "EnforcementReport.summary")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:EnforcementReport.summary".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
@@ -147,9 +152,7 @@ class LayerSovereigntyEnforcer:
         self.repo_root = repo_root
         self.scan_roots = scan_roots or SCAN_ROOTS_DEFAULT
         self.allowed_exceptions = (
-            allowed_exceptions
-            if allowed_exceptions is not None
-            else ALLOWED_UPWARD_EXCEPTIONS
+            allowed_exceptions if allowed_exceptions is not None else ALLOWED_UPWARD_EXCEPTIONS
         )
 
     # ------------------------------------------------------------------
@@ -159,9 +162,11 @@ class LayerSovereigntyEnforcer:
     def run(self) -> EnforcementReport:
         """Run the full sovereignty scan and return an EnforcementReport."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "LayerSovereigntyEnforcer.run")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:LayerSovereigntyEnforcer.run".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
@@ -277,7 +282,9 @@ class LayerSovereigntyEnforcer:
 
         A violation occurs when ``imported_layer > importer_layer``.
         """
-        _emit_applies_guardrail(str(uuid.uuid4()), "LayerSovereigntyEnforcer.check_upward_mutation", "L5_POLICY")
+        _emit_applies_guardrail(
+            str(uuid.uuid4()), "LayerSovereigntyEnforcer.check_upward_mutation", "L5_POLICY"
+        )
         return imported_layer > importer_layer
 
     def analyze_file_imports(self, file_path: Path) -> list[SovereigntyViolation]:

@@ -18,6 +18,14 @@ from __future__ import annotations
 
 import logging
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
+
 logger = logging.getLogger(__name__)
 _MODEL_CACHE: object | None = None
 _MODEL_ID = "BAAI/bge-m3"
@@ -25,6 +33,21 @@ _MODEL_ID = "BAAI/bge-m3"
 
 def _get_model() -> object:
     """Load and cache the BGE-M3 model.  Raises ImportError if unavailable."""
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "_get_model", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "_get_model", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "_get_model")
     global _MODEL_CACHE
     if _MODEL_CACHE is not None:
         return _MODEL_CACHE

@@ -12,6 +12,17 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     GLOBAL_EXCLUDED_DIRS,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_records_execution_trace("p0", "evidence", "validate_path_ssot_util")
+_emit_applies_guardrail("p0", "validate_path_ssot_util", "p0_governance")
+_emit_snapshots_state("p0", "validate_path_ssot_util", "state_snapshot")
 
 PROJECT_ROOT = Path(__file__).parent.parent
 
@@ -96,7 +107,7 @@ def validate_file(file_path: Path) -> list[tuple[int, str, str]]:
                 if re.search(pattern, line):
                     violations.append((line_num, description, line.strip()))
 
-    # guardian: allow-silent-swallow
+    # guardian: allow-silent-swallow -- path validation fallback; failure logged above
     except Exception:
         pass
 

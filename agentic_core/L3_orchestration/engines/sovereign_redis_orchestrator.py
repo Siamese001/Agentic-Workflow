@@ -21,7 +21,13 @@ try:
     from agentic_core.L3_orchestration.reasoning.mcp_manager import MCPConnectionManager as _MCPManager
 except ImportError:
     _MCPManager = None
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 
 @dataclass
@@ -30,6 +36,17 @@ class SovereignRedisOrchestrator(SovereignBaseAgent):
 
     def __init__(self) -> None:
         """Initialize the instance."""
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "SovereignRedisOrchestrator.__init__", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "SovereignRedisOrchestrator.__init__", "p0_governance")
         self.redis_url = os.getenv("REDIS_URL", "redis://localhost:6379")
         self.connection: redis.Redis | None = None
         self._mcp: Any = None
@@ -84,8 +101,11 @@ class SovereignRedisOrchestrator(SovereignBaseAgent):
     def get(self, key: str) -> Any:
         """Execute get operation (MCP-routed when REDIS_MCP_ENABLED)."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SovereignRedisOrchestrator.get")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "SovereignRedisOrchestrator.get"
+        )
 
         if self._use_mcp:
             result = self._mcp_call("redis_get", {"key": key})

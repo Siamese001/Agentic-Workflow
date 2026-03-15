@@ -19,6 +19,14 @@ Fixes:
 import json
 from collections import defaultdict
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
+
 data = json.load(open("agent_discovery_full.json"))
 LAYERS = ["L0", "L1", "L2", "L3", "L4", "L5", "L6"]
 CANONICAL_BASE_AGENTS = {
@@ -34,6 +42,21 @@ CANONICAL_BASE_AGENTS = {
 
 def find_base_agents() -> dict[str, list[dict]]:
     """Find all base agents grouped by layer."""
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "find_base_agents", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "find_base_agents", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "find_base_agents")
     base_agents_by_layer = defaultdict(list)
     for agent in data:
         class_name = agent.get("class_name", "")

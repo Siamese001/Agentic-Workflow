@@ -24,7 +24,13 @@ from typing import Any
 
 from agentic_core.L2_execution.providers import get_clock
 from agentic_core.runtime.execution_trace import get_active_execution_trace
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -41,6 +47,18 @@ class RetrievalResult:
     @classmethod
     def from_raw(cls, source: str, content: Any, confidence: float = 1.0) -> RetrievalResult:
         import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "RetrievalResult.from_raw", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "RetrievalResult.from_raw", "p0_governance")
+        import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L1_REASONING, "RetrievalResult.from_raw")
 
@@ -81,8 +99,11 @@ class ReasoningContextEnvelope:
     def is_high_confidence(self) -> bool:
         """True if all retrievals meet the minimum confidence threshold."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L1_REASONING, "ReasoningContextEnvelope.is_high_confidence")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L1_REASONING, "ReasoningContextEnvelope.is_high_confidence"
+        )
 
         if not self.retrieval_results:
             return True
@@ -153,8 +174,11 @@ class ReasoningContextEnvelopeBuilder:
         Emits the ``pulls_context`` ADG edge.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L1_REASONING, "ReasoningContextEnvelopeBuilder.pull_context")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L1_REASONING, "ReasoningContextEnvelopeBuilder.pull_context"
+        )
 
         with self._lock:
             if self._sealed:

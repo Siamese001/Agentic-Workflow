@@ -22,10 +22,17 @@ from agentic_core.L0_routing.config.path_constants import SOVEREIGN_EXCLUDED_FOL
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
     _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
     emit_determinism_digest,
     emit_replay_key,
 )
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "debris_hunter", "p0_governance")
+_emit_snapshots_state("p0", "debris_hunter", "state_snapshot")
 
 
 class DebrisHunter:
@@ -40,6 +47,7 @@ class DebrisHunter:
         where one is likely the ancestor of the other.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "DebrisHunter.scan_for_collisions")
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")

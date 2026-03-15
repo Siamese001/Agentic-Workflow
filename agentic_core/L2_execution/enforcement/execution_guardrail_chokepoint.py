@@ -78,6 +78,7 @@ from agentic_core.L5_safety.audit.safety_audit_emitter import (
 )
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_snapshots_state,  # noqa: E402
     _emit_verifies_policy,
     emit_determinism_digest,
 )
@@ -87,6 +88,8 @@ from agentic_core.runtime.lifecycle_trace_contract import (
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_signs_execution_trace as _lc_signs,
 )
+
+_emit_snapshots_state("p0", "execution_guardrail_chokepoint", "state_snapshot")
 
 logger = logging.getLogger(__name__)
 

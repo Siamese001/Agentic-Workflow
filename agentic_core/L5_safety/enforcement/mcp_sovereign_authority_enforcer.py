@@ -1,5 +1,13 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "mcp_sovereign_authority_enforcer", "p0_governance")
+_emit_snapshots_state("p0", "mcp_sovereign_authority_enforcer", "state_snapshot")
+
 "L5 Safety: MCP Sovereign Shield\nEnforces zero-trust auditing and auto-immune responses for all MCP tool calls.\n"
 import logging
 from datetime import datetime
@@ -35,10 +43,16 @@ class MCPSovereignAuthority:
     def is_authorized(self) -> bool:
         """Sovereignty check: Kill connections if breaches exceed threshold."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "MCPSovereignAuthority.is_authorized")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L5_POLICY, "MCPSovereignAuthority.is_authorized"
+        )
         import hashlib as _hashlib  # noqa: PLC0415
-        _seg_hash = _hashlib.sha256(f"{_trace_id}:MCPSovereignAuthority.is_authorized".encode()).hexdigest()[:24]
+
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:MCPSovereignAuthority.is_authorized".encode()).hexdigest()[
+            :24
+        ]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
         if self.violation_count > 5:

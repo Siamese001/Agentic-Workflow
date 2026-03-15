@@ -1,9 +1,20 @@
 #!/usr/bin/env python3
 from agentic_core.L0_routing.config.path_constants import (
     APPS_LIC_DIR,
-    APPS_SHARED_DIR,
     APPS_RG_DIR,
+    APPS_SHARED_DIR,
 )
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "territory_ssot_definitions_util")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "territory_ssot_definitions_util", "p0_governance")
+_emit_snapshots_state("p0", "territory_ssot_definitions_util", "state_snapshot")
 """
 SSOT: Territory Name Definitions
 =================================

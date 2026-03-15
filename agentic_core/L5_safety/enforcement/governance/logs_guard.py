@@ -1,4 +1,15 @@
 from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_records_execution_trace("p0", "evidence", "logs_guard")
+_emit_applies_guardrail("p0", "logs_guard", "p0_governance")
+_emit_snapshots_state("p0", "logs_guard", "state_snapshot")
 
 "\nLogs & Outputs Governance Guard\n\nDeterministic read-only scanner for log/output file governance.\nEnforces location constraints, sensitive content detection, and inventory tracking.\n"
 import re

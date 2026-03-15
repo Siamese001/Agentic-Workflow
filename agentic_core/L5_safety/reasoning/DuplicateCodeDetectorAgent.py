@@ -20,7 +20,13 @@ from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
 Logger: logging.Logger = logging.getLogger(__name__)
 UTILS_DIR = "agentic_core/utils"
 from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 try:
     TREE_SITTER_AVAILABLE = True
@@ -105,6 +111,17 @@ class DuplicateCodeDetectorAgent(AtomicExecutionMixin, SubatomicTestingMixin, He
             project_root: Optional project root directory
             ctx: Optional validation context
         """
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "DuplicateCodeDetectorAgent.__init__", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "DuplicateCodeDetectorAgent.__init__", "p0_governance")
         super().__init__()
         self.project_root: Path = Path(project_root) if project_root else Path.cwd()
         self.ctx: Any | None = ctx
@@ -132,7 +149,9 @@ class DuplicateCodeDetectorAgent(AtomicExecutionMixin, SubatomicTestingMixin, He
             Dict with duplicate findings and deletion recommendations
         """
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "DuplicateCodeDetectorAgent.execute")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L5_POLICY, "DuplicateCodeDetectorAgent.execute"
+        )
         file_types = file_types or self.SUPPORTED_EXTENSIONS
         Logger.info(f"[DUPE SCAN] Scanning for duplicates in {len(file_types)} file types...")
         _adg_antipatterns: list = []

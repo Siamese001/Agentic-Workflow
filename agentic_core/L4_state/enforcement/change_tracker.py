@@ -1,5 +1,13 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+)
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "change_tracker", "p0_governance")
+
 "\nChange Tracker - Sovereign Healing Audit Trail\nCanon-compliant utility for tracking file modifications by healer/fixer agents.\n\nLocation: agentic_core/utils/general_helpers/change_tracker.py\nDepth: 3 (per SSOT semantic_l2_registry['utils']['general_helpers'])\nPurpose: Domain-agnostic core utility for miscellaneous tracking\n"
 import uuid
 from collections import defaultdict
@@ -54,8 +62,11 @@ class ChangeTracker:
         """Generate a detailed Markdown report of all changes."""
         _emit_snapshots_state(str(uuid.uuid4()), "ChangeTracker.generate_markdown_report", "L4_STATE")
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "ChangeTracker.generate_markdown_report")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L4_STATE, "ChangeTracker.generate_markdown_report"
+        )
 
         by_agent = self._group_by_agent()
         by_file = self._group_by_file()

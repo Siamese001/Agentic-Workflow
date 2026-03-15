@@ -17,11 +17,23 @@ from __future__ import annotations
 import ast
 import sys
 from pathlib import Path
+
 from agentic_core.L0_routing.config import (
     APPS_LIC_DIR,
     APPS_RG_DIR,
     APPS_SHARED_DIR,
 )
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_records_execution_trace("p0", "evidence", "sealed_interface_check_enforcer")
+_emit_applies_guardrail("p0", "sealed_interface_check_enforcer", "p0_governance")
+_emit_snapshots_state("p0", "sealed_interface_check_enforcer", "state_snapshot")
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 APPS_ROOTS = [

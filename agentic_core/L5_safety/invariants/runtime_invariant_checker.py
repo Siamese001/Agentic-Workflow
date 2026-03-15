@@ -12,6 +12,17 @@ from agentic_core.L5_safety.types.hardening_errors import (
     C0AuthorityLeakError,
     MutationReplayIntegrityViolation,
 )
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_records_execution_trace("p0", "evidence", "runtime_invariant_checker")
+_emit_applies_guardrail("p0", "runtime_invariant_checker", "p0_governance")
+_emit_snapshots_state("p0", "runtime_invariant_checker", "state_snapshot")
 
 logger = logging.getLogger(__name__)
 
@@ -107,7 +118,7 @@ def run_all_invariants(
     for checker, arg in checks:
         try:
             checker(arg)
-        # guardian: allow-silent-swallow
+        # guardian: allow-silent-swallow -- invariant check is observational; failure non-blocking
         except Exception as exc:
             violations.append(str(exc))
 

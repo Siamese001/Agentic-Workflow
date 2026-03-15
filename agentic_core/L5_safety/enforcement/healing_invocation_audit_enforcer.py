@@ -1,4 +1,11 @@
 from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "healing_invocation_audit_enforcer", "p0_governance")
+_emit_snapshots_state("p0", "healing_invocation_audit_enforcer", "state_snapshot")
 
 "\nHealing Invocation Audit Script\n\nComprehensive audit of all heal_repository() methods to verify super() presence\nand chain completeness across the entire codebase.\n"
 import re
@@ -39,10 +46,16 @@ class HealingInvocationAudit:
             Audit results dictionary
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "HealingInvocationAudit.audit_all_methods")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L5_POLICY, "HealingInvocationAudit.audit_all_methods"
+        )
         import hashlib as _hashlib  # noqa: PLC0415
-        _seg_hash = _hashlib.sha256(f"{_trace_id}:HealingInvocationAudit.audit_all_methods".encode()).hexdigest()[:24]
+
+        _seg_hash = _hashlib.sha256(
+            f"{_trace_id}:HealingInvocationAudit.audit_all_methods".encode()
+        ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
         grep_cmd = ["grep", "-r", "def heal_repository(", str(self.agentic_core), "--include=*.py"]

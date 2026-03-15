@@ -17,9 +17,14 @@ from typing import Any, Protocol
 
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
     _emit_records_execution_trace,
     _emit_signs_execution_trace,
+    _emit_snapshots_state,  # noqa: E402
 )
+
+_emit_applies_guardrail("p0", "dependency_healing_integration_types", "p0_governance")
+_emit_snapshots_state("p0", "dependency_healing_integration_types", "state_snapshot")
 
 Logger = logging.getLogger(__name__)
 
@@ -97,10 +102,14 @@ class DependencyPruningStrategy:
             True if this strategy can handle the violation type
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "DependencyPruningStrategy.can_heal")
         import hashlib as _hashlib  # noqa: PLC0415
-        _seg_hash = _hashlib.sha256(f"{_trace_id}:DependencyPruningStrategy.can_heal".encode()).hexdigest()[:24]
+
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:DependencyPruningStrategy.can_heal".encode()).hexdigest()[
+            :24
+        ]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
         violation_type = violation.get("type", "")
@@ -191,9 +200,7 @@ def register_dependency_healing(project_root: Path | None = None) -> dict[str, A
         orchestrator = get_healing_orchestrator()
 
         try:
-            orchestrator.register_strategy(
-                "dependency_pruning", get_dependency_strategy(project_root)
-            )
+            orchestrator.register_strategy("dependency_pruning", get_dependency_strategy(project_root))
             registered.append("dependency_pruning")
         # guardian: allow-silent-swallower
         except Exception as e:

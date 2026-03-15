@@ -69,7 +69,12 @@ try:
 except ImportError:
     GITPYTHON_AVAILABLE = False
     Repo = None
-from agentic_core.runtime.lifecycle_trace_contract import _emit_agent_executes_agent
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_agent_executes_agent,
+    _emit_applies_guardrail,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 
 def _get_imports():
@@ -79,6 +84,17 @@ def _get_imports():
     self-healing agents with mutation logic. The agentic_core/agents/ versions
     are detection-only stubs without healing capabilities.
     """
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "_get_imports", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "_get_imports", "p0_governance")
     from agentic_core.InterventionServer import FASTAPI_AVAILABLE, approval_event, start_intervention_server
 
     from agentic_core.L5_safety.reasoning.GovernanceAgent import GovernanceAgent as ArchitectureGovernor

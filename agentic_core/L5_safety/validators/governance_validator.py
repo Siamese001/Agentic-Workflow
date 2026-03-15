@@ -21,9 +21,14 @@ from typing import Any
 
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
     _emit_records_execution_trace,
     _emit_signs_execution_trace,
+    _emit_snapshots_state,  # noqa: E402
 )
+
+_emit_applies_guardrail("p0", "governance_validator", "p0_governance")
+_emit_snapshots_state("p0", "governance_validator", "state_snapshot")
 
 
 @dataclass
@@ -98,10 +103,16 @@ class GovernanceShieldValidator:
         Moved to Deterministic: Pure keyword-based risk classification
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "GovernanceShieldValidator.scan_risk_level")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L5_POLICY, "GovernanceShieldValidator.scan_risk_level"
+        )
         import hashlib as _hashlib  # noqa: PLC0415
-        _seg_hash = _hashlib.sha256(f"{_trace_id}:GovernanceShieldValidator.scan_risk_level".encode()).hexdigest()[:24]
+
+        _seg_hash = _hashlib.sha256(
+            f"{_trace_id}:GovernanceShieldValidator.scan_risk_level".encode()
+        ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
         issues: list[str] = []

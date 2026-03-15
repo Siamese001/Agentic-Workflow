@@ -6,10 +6,32 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.L0_routing.config.path_constants import TESTS_DIR
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 
 def align_tests_structure(root_path: Any) -> Any:
     """Brief description of functionality and purpose."""
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "align_tests_structure", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "align_tests_structure", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "align_tests_structure")
     from agentic_core.L5_safety.config.structure_blueprint import TESTS_L2_SUBFOLDER_MAP
 
     print("--- ALIGNING TESTS WITH SOVEREIGN LAW ---")

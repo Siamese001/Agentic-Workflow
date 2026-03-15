@@ -9,6 +9,9 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     GLOBAL_EXCLUDED_DIRS,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
+from agentic_core.runtime.lifecycle_trace_contract import _emit_snapshots_state  # noqa: E402
+
+_emit_snapshots_state("p0", "GenerativeGuardAgent", "state_snapshot")
 
 "\nGenerativeGuardAgent - Detects and removes runaway generated files.\n\nKEYS: 45 (Dead Code/Runaway Generation)\nROLE: The Watchdog. Identifies and deletes recursively-generated files.\nExtracted from CanonHealerAgent.py for one-file-per-agent pattern.\n"
 import logging
@@ -69,6 +72,8 @@ except ImportError:
 
     def get_validated_project_root() -> Path:
         return _root
+
+
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_applies_guardrail,
@@ -109,9 +114,11 @@ class GenerativeGuardAgent(SovereignBaseAgent, HealerMixin, CanonBaseAgentInterf
     async def execute(self, goal: str = None, context: dict[str, Any] = None) -> dict[str, Any]:
         """Execute guard checks - maintains backward compatibility."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "GenerativeGuardAgent.execute")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:GenerativeGuardAgent.execute".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 

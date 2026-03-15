@@ -14,6 +14,14 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any, Protocol
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
+
 
 @dataclass(frozen=True)
 class StoredArtifact:
@@ -70,6 +78,21 @@ def _sanitize_id(identifier: str) -> str:
 
     Only allows alphanumeric, hyphen, underscore, and dot characters.
     """
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "_sanitize_id", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "_sanitize_id", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "_sanitize_id")
     sanitized = re.sub("[^a-zA-Z0-9._-]", "_", identifier)
     if sanitized.startswith("-") or (sanitized.startswith(".") and (not sanitized.startswith(".."))):
         sanitized = "id_" + sanitized

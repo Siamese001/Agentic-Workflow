@@ -21,7 +21,13 @@ from agentic_core.L0_routing.config import (
     APPS_RG_DIR,
     APPS_SHARED_DIR,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 
 class AgentHealAuditScanner:
@@ -58,6 +64,19 @@ class AgentHealAuditScanner:
         Returns:
             (is_runtime, reason)
         """
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "AgentHealAuditScanner._is_runtime_agent", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(
+            str(_uuid.uuid4()), "AgentHealAuditScanner._is_runtime_agent", "p0_governance"
+        )
         # Rule 1: Inherits from known agent base
         for base_name in base_names:
             if base_name in self.KNOWN_AGENT_BASES:
@@ -84,7 +103,9 @@ class AgentHealAuditScanner:
     def scan_agent_file(self, file_path: Path) -> list[dict[str, Any]]:
         """Scan a single Python file for Agent classes and their healing methods."""
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, f"AgentHealAudit.scan_agent_file:{file_path.name}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L5_POLICY, f"AgentHealAudit.scan_agent_file:{file_path.name}"
+        )
         try:
             with open(file_path, encoding="utf-8") as f:
                 content = f.read()

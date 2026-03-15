@@ -1,5 +1,15 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+)
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_records_execution_trace("p0", "evidence", "execute_command_executor")
+_emit_applies_guardrail("p0", "execute_command_executor", "p0_governance")
+
 "\nSecure Subprocess Execution - Timeout-Protected Command Execution\nPrevents livelocks and provides safe subprocess management.\n"
 import subprocess
 import sys
@@ -9,9 +19,13 @@ from typing import Any, TypedDict
 from agentic_core.utils.security_util import safe_execute
 
 from agentic_core.L0_routing.config.path_constants import DEFAULT_TIMEOUT
+from agentic_core.runtime.lifecycle_trace_contract import _emit_snapshots_state
 
 
 def _invoke_authorize_and_execute(execution_context, target_callable, capability_token, payload, **kw):
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "_invoke_authorize_and_execute", "state_snapshot")
     from agentic_core.L2_execution.enforcement.execution_guardrail_chokepoint import (
         authorize_and_execute,  # noqa: PLC0415
     )

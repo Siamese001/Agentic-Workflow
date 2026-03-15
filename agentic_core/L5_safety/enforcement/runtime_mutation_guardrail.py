@@ -12,6 +12,14 @@ from __future__ import annotations
 import importlib
 from types import ModuleType
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
+
 _CORE_PREFIXES = ("agentic_core.", "apps_lic.", "apps_rg.", "apps_shared.", "system_learning.")
 _ORIGINAL_RELOAD: object = importlib.reload
 _GUARDS_INSTALLED: bool = False
@@ -19,6 +27,21 @@ _GUARDS_INSTALLED: bool = False
 
 def _guarded_reload(module: ModuleType) -> ModuleType:
     """REQ-417: block importlib.reload for core-layer modules."""
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "_guarded_reload", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "_guarded_reload", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "_guarded_reload")
     name = getattr(module, "__name__", "") or ""
     if any(name.startswith(p) for p in _CORE_PREFIXES):
         raise ImportError(f"REQ-417: importlib.reload of core module forbidden: {name}")

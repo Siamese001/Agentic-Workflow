@@ -1,5 +1,15 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "reasoning", "p0_governance")
+_emit_snapshots_state("p0", "reasoning", "state_snapshot")
+
 "\nReasoning Strategy Pattern - Polymorphic Thought Execution\n\nReplaces if/elif branching with strategy classes for different reasoning modes.\nEach strategy encapsulates a distinct reasoning approach (CoT, ToT, ReAct, etc.).\n"
 import logging
 from abc import ABC, abstractmethod
@@ -55,6 +65,7 @@ class ChainOfThoughtStrategy(ReasoningStrategy):
     def execute(self, problem: str, context: dict[str, Any]) -> list[str]:
         """Execute CoT reasoning."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "ChainOfThoughtStrategy.execute")
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
@@ -77,6 +88,7 @@ class TreeOfThoughtsStrategy(ReasoningStrategy):
     def execute(self, problem: str, context: dict[str, Any]) -> list[str]:
         """Execute ToT reasoning with branching."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "TreeOfThoughtsStrategy.execute")
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
@@ -101,6 +113,7 @@ class ReActStrategy(ReasoningStrategy):
     def execute(self, problem: str, context: dict[str, Any]) -> list[str]:
         """Execute ReAct reasoning with actions."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "ReActStrategy.execute")
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
@@ -124,6 +137,7 @@ class ReflectionStrategy(ReasoningStrategy):
     def execute(self, problem: str, context: dict[str, Any]) -> list[str]:
         """Execute reflection reasoning."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "ReflectionStrategy.execute")
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
@@ -146,6 +160,7 @@ class CritiqueStrategy(ReasoningStrategy):
     def execute(self, problem: str, context: dict[str, Any]) -> list[str]:
         """Execute critique reasoning."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "CritiqueStrategy.execute")
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
@@ -169,6 +184,7 @@ class MultiPathStrategy(ReasoningStrategy):
     def execute(self, problem: str, context: dict[str, Any]) -> list[str]:
         """Execute multi-path reasoning."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "MultiPathStrategy.execute")
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
@@ -221,6 +237,7 @@ class ReasoningStrategyFactory:
             ValueError: If strategy type unknown
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "ReasoningStrategyFactory.create")
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")

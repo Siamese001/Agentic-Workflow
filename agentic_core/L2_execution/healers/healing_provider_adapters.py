@@ -15,7 +15,17 @@ import logging
 import uuid
 from typing import Any
 
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "healing_provider_adapters", "p0_governance")
+_emit_snapshots_state("p0", "healing_provider_adapters", "state_snapshot")
 
 try:
     from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
@@ -100,7 +110,9 @@ class QwenInvokerAdapter:
             InvocationRecord with replay-deterministic fields
         """
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "HealingProviderAdapter.invoke_qwen_vllm")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "HealingProviderAdapter.invoke_qwen_vllm"
+        )
         model_id = config.model_qwen_vllm_id
         prompt = self._build_prompt(healing_input, decision, agent_name)
         try:

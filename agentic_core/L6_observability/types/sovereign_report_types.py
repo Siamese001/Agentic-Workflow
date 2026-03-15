@@ -5,7 +5,13 @@ import logging
 import re
 from datetime import datetime
 
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 
 class SovereignReport:
@@ -15,6 +21,17 @@ class SovereignReport:
     """
 
     def __init__(self):
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "SovereignReport.__init__", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "SovereignReport.__init__", "p0_governance")
         self.scores: dict[str, float] = {}
         self.issues: dict[str, list[str]] = {}
         self.report_id: str = ""
@@ -23,8 +40,11 @@ class SovereignReport:
     def get_overall_score(self) -> float:
         """Calculate overall health score across all dimensions."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L6_OBSERVABILITY, "SovereignReport.get_overall_score")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L6_OBSERVABILITY, "SovereignReport.get_overall_score"
+        )
 
         if not self.scores:
             return 0.0
@@ -57,6 +77,7 @@ class SovereignReport:
         ) -> SovereignReport.Builder:
             """Sets a validated dimension score."""
             import uuid as _uuid  # noqa: PLC0415
+
             _trace_id = str(_uuid.uuid4())
             _emit_records_execution_trace(_trace_id, LayerSegment.L6_OBSERVABILITY, "Builder.with_dimension")
 

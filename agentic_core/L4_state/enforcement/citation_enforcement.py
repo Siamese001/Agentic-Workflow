@@ -15,6 +15,13 @@ from typing import Any
 
 from agentic_core.L4_state.types.citation_bundle_types import build_citation_bundle
 from agentic_core.L4_state.types.retrieval_anchor_types import AnchoredResult, RetrievalAnchor
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 
 def _sha256(data: bytes) -> str:
@@ -34,6 +41,23 @@ class CitationEnforcementViolation(Exception):
     code: str = "MISSING_CITATIONS"
 
     def __init__(self, detail: str = "") -> None:
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "CitationEnforcementViolation.__init__", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "CitationEnforcementViolation.__init__", "p0_governance")
+        import uuid as _uuid  # noqa: PLC0415
+
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L4_STATE, "CitationEnforcementViolation.__init__"
+        )
         self.detail = detail
         super().__init__(
             f"[{self.code}] Retrieval used but citations missing" + (f": {detail}" if detail else "")

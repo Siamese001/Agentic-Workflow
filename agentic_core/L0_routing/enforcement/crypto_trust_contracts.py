@@ -27,10 +27,13 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_applies_guardrail,
     _emit_records_execution_trace,
     _emit_signs_execution_trace,
+    _emit_snapshots_state,  # noqa: E402
     _emit_verifies_boundary,
     emit_determinism_digest,
     emit_replay_key,
 )
+
+_emit_snapshots_state("p0", "crypto_trust_contracts", "state_snapshot")
 
 # =============================================================================
 # Canonical Hashing
@@ -163,6 +166,7 @@ class ReplayGuardStore:
     ) -> ReplayGuardRecord:
         """Record an artifact hash. Raises on replay (second sighting)."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "ReplayGuardStore.check_and_record")
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")

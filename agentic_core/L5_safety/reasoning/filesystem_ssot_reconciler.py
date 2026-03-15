@@ -41,6 +41,11 @@ except ImportError:
 
 from agentic_core.L0_routing.config import AGENTIC_CORE_DIR
 from agentic_core.L5_safety.enforcement.archival_gatekeeper_gate import ArchivalGatekeeper
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 Logger = logging.getLogger(__name__)
 _BLUEPRINT_MODULE_PREFIXES = (
@@ -61,6 +66,17 @@ def _evict_blueprint_modules() -> None:
     importlib.invalidate_caches() then tells the import machinery to rescan
     the filesystem for new/changed .py files.
     """
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "_evict_blueprint_modules", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "_evict_blueprint_modules", "p0_governance")
     evicted = [
         k
         for k in list(sys.modules)
@@ -100,7 +116,9 @@ class ReconciliationViolation:
     ) -> dict[str, int]:
         """L0 maintenance agent - operational only."""
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "FilesystemSSOTReconciler.heal_repository")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L5_POLICY, "FilesystemSSOTReconciler.heal_repository"
+        )
         super().heal_repository()
         if _call_path is None:
             _call_path = set()

@@ -34,7 +34,17 @@ from agentic_core.L5_safety.enforcement.policy_action_contract import (
     PolicyEnforcementError,
     enforce_policy_before_action,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "adaptation_orchestrator", "p0_governance")
+_emit_snapshots_state("p0", "adaptation_orchestrator", "state_snapshot")
 
 logger = logging.getLogger(__name__)
 _STRATEGY_LOG = logging.getLogger("adg.execution_strategy_chosen")
@@ -190,13 +200,13 @@ def choose_execution_strategy(
         execution_context.trace_id, LayerSegment.L2_EXECUTION, "choose_execution_strategy"
     )
     _registry = registry or get_execution_adaptation_registry()
-    _gw = get_routing_gateway(execution_context.trace_id if hasattr(execution_context, 'trace_id') else "")
+    _gw = get_routing_gateway(execution_context.trace_id if hasattr(execution_context, "trace_id") else "")
     try:
         enforce_policy_before_action(
             action_name="choose_execution_strategy",
             action_class=ActionClass.TOOL_EXECUTION,
             actor_id="adaptation_orchestrator",
-            run_id=execution_context.run_id if hasattr(execution_context, 'run_id') else "",
+            run_id=execution_context.run_id if hasattr(execution_context, "run_id") else "",
         )
     except PolicyEnforcementError:
         raise

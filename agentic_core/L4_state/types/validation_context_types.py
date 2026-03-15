@@ -17,7 +17,13 @@ from datetime import datetime
 from pathlib import Path
 from typing import Protocol
 
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -77,6 +83,17 @@ class Historian:
             context_manager: An instance conforming to IValidationContextManager protocol.
             memory_dir: Directory to store historical data
         """
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "Historian.__init__", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "Historian.__init__", "p0_governance")
         self.memory_dir = memory_dir or Path("observability/memory")
         _get_write_gateway().ensure_dir(self.memory_dir)
         self.context_manager = context_manager
@@ -140,6 +157,7 @@ class Historian:
             True if file should be skipped (unchanged)
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "Historian.should_skip_file")
 

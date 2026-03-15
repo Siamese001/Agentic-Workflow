@@ -1,6 +1,13 @@
 from __future__ import annotations
 
 from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "CognitiveDispositionAgent", "p0_governance")
+_emit_snapshots_state("p0", "CognitiveDispositionAgent", "state_snapshot")
 
 "\n[PHASE 15 REFACTOR] Cognitive Disposition Agent.\nSTRICT COMPLIANCE: Native Sovereign Capabilities.\n\nPURPOSE:\n- AI-powered architectural triage via Sovereign Gateway\n- Enhanced decision making for SSOT execution\n- Cognitive analysis of structural violations\n- Intelligent file disposition recommendations\n\nINTEGRATION:\n- Used by execute_ssot.py with --enable-cda flag\n- Enhances AutonomousDecisionEngine with cognitive insights\n- Provides 15% cognitive factor in confidence calculations\n\nSTATUS: PRODUCTION READY - Keep and enhance\n"
 import json
@@ -64,10 +71,16 @@ class CognitiveDispositionAgent(SovereignBaseAgent):
     ) -> DispositionDecision:
         """Analyze violation using Native LLM Gateway."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "CognitiveDispositionAgent.analyze_violation_async")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L5_POLICY, "CognitiveDispositionAgent.analyze_violation_async"
+        )
         import hashlib as _hashlib  # noqa: PLC0415
-        _seg_hash = _hashlib.sha256(f"{_trace_id}:CognitiveDispositionAgent.analyze_violation_async".encode()).hexdigest()[:24]
+
+        _seg_hash = _hashlib.sha256(
+            f"{_trace_id}:CognitiveDispositionAgent.analyze_violation_async".encode()
+        ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
         context = context or {}

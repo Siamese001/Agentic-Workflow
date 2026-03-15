@@ -20,9 +20,14 @@ from pathlib import Path
 
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
     _emit_records_execution_trace,
     _emit_signs_execution_trace,
+    _emit_snapshots_state,  # noqa: E402
 )
+
+_emit_applies_guardrail("p0", "structural_namespace_fence_enforcer", "p0_governance")
+_emit_snapshots_state("p0", "structural_namespace_fence_enforcer", "state_snapshot")
 
 _TRACKED_ROOTS: frozenset = frozenset(
     {APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR, AGENTIC_CORE_DIR, SYSTEM_LEARNING_DIR}
@@ -51,9 +56,11 @@ class ProvenanceTracker:
     def register(self, module_name: str, origin: str | None) -> None:
         """Register module provenance from its file path origin."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "ProvenanceTracker.register")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:ProvenanceTracker.register".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
@@ -128,9 +135,11 @@ class ProvenanceLoader(importlib.abc.Loader):
 
     def create_module(self, spec):
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "ProvenanceLoader.create_module")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:ProvenanceLoader.create_module".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
@@ -157,10 +166,16 @@ class StructuralNamespaceFinder(importlib.abc.MetaPathFinder):
 
     def find_spec(self, fullname: str, path, target=None):
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "StructuralNamespaceFinder.find_spec")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L5_POLICY, "StructuralNamespaceFinder.find_spec"
+        )
         import hashlib as _hashlib  # noqa: PLC0415
-        _seg_hash = _hashlib.sha256(f"{_trace_id}:StructuralNamespaceFinder.find_spec".encode()).hexdigest()[:24]
+
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:StructuralNamespaceFinder.find_spec".encode()).hexdigest()[
+            :24
+        ]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
         caller_module = self._get_caller_from_loaded_modules()

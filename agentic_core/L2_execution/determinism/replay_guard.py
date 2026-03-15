@@ -26,6 +26,14 @@ import threading
 from types import TracebackType
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
+
 
 class ReplayViolation(RuntimeError):
     """Raised when a nondeterministic call is attempted during replay."""
@@ -71,6 +79,22 @@ class ReplayGuard:
             setattr(obj, attr, self._saved.pop(key))
 
     def _patch_socket(self) -> None:
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "ReplayGuard._patch_socket", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "ReplayGuard._patch_socket", "p0_governance")
+        import uuid as _uuid  # noqa: PLC0415
+
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "ReplayGuard._patch_socket")
+
         def _blocked_init(self_inner: Any, *args: Any, **kwargs: Any) -> None:
             raise ReplayViolation("Network socket creation prohibited during replay")
 

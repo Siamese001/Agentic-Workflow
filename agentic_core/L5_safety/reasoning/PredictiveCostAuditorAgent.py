@@ -11,7 +11,13 @@ from typing import Any
 
 from agentic_core.L2_execution.reasoning.base import SubAtomicAgent
 
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
 
@@ -88,6 +94,17 @@ class PredictiveCostAuditorAgent(SovereignBaseAgent, SubAtomicAgent):
         Args:
             ctx: ValidationContext
         """
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "PredictiveCostAuditorAgent.__init__", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "PredictiveCostAuditorAgent.__init__", "p0_governance")
         super().__init__(ctx)
         self.HEALING_SINK_ATTEMPTS = 3
         self.CRITICAL_SINK_COST = 5.0
@@ -104,7 +121,9 @@ class PredictiveCostAuditorAgent(SovereignBaseAgent, SubAtomicAgent):
         Analyzes healing history and generates cost report.
         """
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "PredictiveCostAuditorAgent.execute")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L5_POLICY, "PredictiveCostAuditorAgent.execute"
+        )
         Logger.info("💰 Predictive Cost Auditor: Analyzing healing economics...")
         self._load_healing_history()
         self._audit_files()

@@ -26,7 +26,13 @@ try:
 except ImportError:
     WEBSOCKETS_AVAILABLE: Any = False
     LOGGER.warning("websockets not available - live browser updates disabled")
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 
 class L5Streamer:
@@ -44,6 +50,17 @@ class L5Streamer:
         Args:
             stream_dir: Directory for live_stream.jsonl output
         """
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "L5Streamer.__init__", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "L5Streamer.__init__", "p0_governance")
         self.stream_dir = Path(stream_dir)
         self.log_path = self.stream_dir / "live_stream.jsonl"
         self.stream_queue: asyncio.Queue = asyncio.Queue()
@@ -59,6 +76,7 @@ class L5Streamer:
     async def start_streamer(self) -> Any:
         """Initialize the non-blocking stream worker and WebSocket server."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L6_OBSERVABILITY, "L5Streamer.start_streamer")
 

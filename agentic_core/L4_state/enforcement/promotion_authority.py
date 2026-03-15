@@ -9,7 +9,13 @@ import logging
 import time
 from dataclasses import dataclass
 
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 Logger = logging.getLogger(__name__)
 
@@ -40,8 +46,26 @@ class PromotionAuthority:
     def update_pointer_via_gateway(self, new_pointer: str, capability_token) -> PromotionPointerUpdate:
         """Update pointer via gateway with capability token validation."""
         import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(
+            str(_uuid.uuid4()), "PromotionAuthority.update_pointer_via_gateway", "state_snapshot"
+        )
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(
+            str(_uuid.uuid4()), "PromotionAuthority.update_pointer_via_gateway", "p0_governance"
+        )
+        import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "PromotionAuthority.update_pointer_via_gateway")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L4_STATE, "PromotionAuthority.update_pointer_via_gateway"
+        )
 
         if not self._write_gateway:
             raise RuntimeError("Write gateway not configured")

@@ -26,7 +26,16 @@ from agentic_core.L3_orchestration.visualization.workflow_visualization import (
     WorkflowVisualizationRecord,
     get_workflow_visualization_registry,
 )
-from agentic_core.runtime.lifecycle_trace_contract import _emit_observes_runtime_state
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_observes_runtime_state,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_snapshots_state("p0", "visualization_updater", "state_snapshot")
 
 logger = logging.getLogger(__name__)
 _VISUALIZATION_LOG = logging.getLogger("adg.visualization_updater")
@@ -41,6 +50,18 @@ def workflow_visualization_emitted(
     record_id: str, run_id: str, workflow_id: str, stage: str, status: str
 ) -> None:
     """ADG edge emitter for workflow_visualization_emitted."""
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "workflow_visualization_emitted", "p0_governance")
+    import uuid as _uuid  # noqa: PLC0415
+
+    _trace_id = str(_uuid.uuid4())
+    _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "workflow_visualization_emitted")
     pass
 
 
@@ -175,7 +196,10 @@ def update_workflow_visualization(
         WorkflowVisualizationError: If visualization update is required but fails (Gate A)
     """
     import uuid  # noqa: PLC0415
-    _emit_observes_runtime_state(str(uuid.uuid4()), "Module.update_workflow_visualization", "L3_ORCHESTRATION")
+
+    _emit_observes_runtime_state(
+        str(uuid.uuid4()), "Module.update_workflow_visualization", "L3_ORCHESTRATION"
+    )
     _registry = registry or get_workflow_visualization_registry()
 
     # --- Step 1: record current stage ---

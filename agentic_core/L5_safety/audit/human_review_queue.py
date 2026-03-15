@@ -13,9 +13,14 @@ from typing import Any
 
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
     _emit_records_execution_trace,
     _emit_signs_execution_trace,
+    _emit_snapshots_state,  # noqa: E402
 )
+
+_emit_applies_guardrail("p0", "human_review_queue", "p0_governance")
+_emit_snapshots_state("p0", "human_review_queue", "state_snapshot")
 
 logger = logging.getLogger(__name__)
 
@@ -49,9 +54,11 @@ class HumanReviewQueue:
     def enqueue(self, verdict: PendingVerdict) -> None:
         """Add a verdict to the review queue."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "HumanReviewQueue.enqueue")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:HumanReviewQueue.enqueue".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 

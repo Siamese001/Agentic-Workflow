@@ -9,6 +9,18 @@ from __future__ import annotations
 
 from typing import Final, Mapping, Sequence
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "structure_blueprint_data")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "structure_blueprint_data", "p0_governance")
+_emit_snapshots_state("p0", "structure_blueprint_data", "state_snapshot")
+
 SCRIPTS_FORBIDDEN_PATTERNS: Final[Sequence[str]] = ["^[A-Z]", "^test_"]
 L5_SUBPROCESS_ALLOWLIST: Final[Sequence[str]] = [
     "agentic_core/L5_safety/enforcement/safe_subprocess_handler_enforcer.py",

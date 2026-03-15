@@ -15,9 +15,14 @@ from agentic_core.L0_routing.config.path_constants import TESTS_DIR
 from agentic_core.L5_safety.config.structure_blueprint.ssot import REPORTS_DIR
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
     _emit_records_execution_trace,
     _emit_signs_execution_trace,
+    _emit_snapshots_state,  # noqa: E402
 )
+
+_emit_applies_guardrail("p0", "phase_acceptance_guardrail", "p0_governance")
+_emit_snapshots_state("p0", "phase_acceptance_guardrail", "state_snapshot")
 
 
 class PhaseAcceptanceGuard:
@@ -31,10 +36,16 @@ class PhaseAcceptanceGuard:
     def check_testpaths_contract_sync(self) -> None:
         """Rule 46: Testpaths contract must be synchronized with pytest.ini."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "PhaseAcceptanceGuard.check_testpaths_contract_sync")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L5_POLICY, "PhaseAcceptanceGuard.check_testpaths_contract_sync"
+        )
         import hashlib as _hashlib  # noqa: PLC0415
-        _seg_hash = _hashlib.sha256(f"{_trace_id}:PhaseAcceptanceGuard.check_testpaths_contract_sync".encode()).hexdigest()[:24]
+
+        _seg_hash = _hashlib.sha256(
+            f"{_trace_id}:PhaseAcceptanceGuard.check_testpaths_contract_sync".encode()
+        ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
         pytest_ini = self.repo_root / "pytest.ini"

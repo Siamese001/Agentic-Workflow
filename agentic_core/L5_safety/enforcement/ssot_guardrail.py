@@ -42,6 +42,17 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     GLOBAL_EXCLUDED_DIRS,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_records_execution_trace("p0", "evidence", "ssot_guardrail")
+_emit_applies_guardrail("p0", "ssot_guardrail", "p0_governance")
+_emit_snapshots_state("p0", "ssot_guardrail", "state_snapshot")
 
 # ============================================================================
 # CONFIGURATION

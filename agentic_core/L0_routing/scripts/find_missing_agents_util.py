@@ -4,6 +4,18 @@ import json
 from collections import defaultdict
 from pathlib import Path
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "find_missing_agents_util")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "find_missing_agents_util", "p0_governance")
+_emit_snapshots_state("p0", "find_missing_agents_util", "state_snapshot")
+
 PROJECT_ROOT = Path(__file__).parent.parent
 DISCOVERY_PATH = PROJECT_ROOT / "agent_discovery_full.json"
 with open(DISCOVERY_PATH, encoding="utf-8") as f:

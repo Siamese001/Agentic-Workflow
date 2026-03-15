@@ -18,6 +18,17 @@ from typing import Any
 
 
 def _get_embedding_sovereign_agent():
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "_get_embedding_sovereign_agent", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "_get_embedding_sovereign_agent", "p0_governance")
     from agentic_core.interfaces.execution_agents import EmbeddingSovereignAgent
 
     return EmbeddingSovereignAgent
@@ -28,7 +39,13 @@ from agentic_core.L1_cognition.types.memory_types import (
     MAX_TEXT_LENGTH,
     ViolationSignature,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 Logger = logging.getLogger(__name__)
 _embedder_singleton: Any = None
@@ -78,8 +95,11 @@ class HealingMemoryEmbedder:
     def reset_instance(cls) -> None:
         """[TESTING ONLY] Reset singleton state."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L1_REASONING, "HealingMemoryEmbedder.reset_instance")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L1_REASONING, "HealingMemoryEmbedder.reset_instance"
+        )
 
         global _embedder_singleton
         _embedder_singleton = None

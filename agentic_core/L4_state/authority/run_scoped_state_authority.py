@@ -33,7 +33,17 @@ from agentic_core.L4_state.versioning.commit_versioned_state_transition import (
     commit_versioned_state_transition,
 )
 from agentic_core.runtime.execution_trace import get_active_execution_trace
-from agentic_core.runtime.lifecycle_trace_contract import _emit_snapshots_state, _emit_writes_through
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,
+    _emit_writes_through,
+)
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "run_scoped_state_authority", "p0_governance")
+_emit_records_execution_trace("p0", "evidence", "run_scoped_state_authority")
 
 logger = logging.getLogger(__name__)
 _WRITES_THROUGH_LOG = logging.getLogger("adg.writes_through")

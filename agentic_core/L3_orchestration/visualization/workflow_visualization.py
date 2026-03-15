@@ -19,9 +19,16 @@ from enum import Enum
 from agentic_core.L2_execution.providers import get_clock
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
     _emit_observes_runtime_state,
     _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
 )
+
+_emit_snapshots_state("p0", "workflow_visualization", "state_snapshot")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "workflow_visualization", "p0_governance")
 
 logger = logging.getLogger(__name__)
 _VISUALIZATION_LOG = logging.getLogger("adg.workflow_visualization_emitted")
@@ -253,7 +260,9 @@ class WorkflowVisualizationRegistry:
 
     def persist_record(self, record: WorkflowVisualizationRecord) -> None:
         """Persist a workflow visualization record."""
-        _emit_records_execution_trace(record.run_id, LayerSegment.L3_ORCHESTRATION, f"workflow_viz:{record.workflow_id}")
+        _emit_records_execution_trace(
+            record.run_id, LayerSegment.L3_ORCHESTRATION, f"workflow_viz:{record.workflow_id}"
+        )
         with self._lock:
             self._records[record.workflow_visualization_id] = record
 
@@ -335,7 +344,9 @@ class WorkflowVisualizationRegistry:
 
     def query_by_status(self, status: WorkflowStatus) -> list[WorkflowVisualizationRecord]:
         """Query workflow visualization records by status."""
-        _emit_observes_runtime_state(str(uuid.uuid4()), "WorkflowVisualizationRegistry.query_by_status", "L3_ORCHESTRATION")
+        _emit_observes_runtime_state(
+            str(uuid.uuid4()), "WorkflowVisualizationRegistry.query_by_status", "L3_ORCHESTRATION"
+        )
         with self._lock:
             record_ids = self._status_index.get(status.value, [])
             return [self._records[record_id] for record_id in record_ids if record_id in self._records]

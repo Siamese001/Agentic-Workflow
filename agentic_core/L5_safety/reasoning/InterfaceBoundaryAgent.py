@@ -1,6 +1,9 @@
 from dataclasses import dataclass
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.runtime.lifecycle_trace_contract import _emit_applies_guardrail  # noqa: E402
+
+_emit_applies_guardrail("p0", "InterfaceBoundaryAgent", "p0_governance")
 
 "\nINTERFACE BOUNDARY AGENT\n------------------------\nL2 Execution Agent designed to enforce the boundary between L0 Infrastructure\nand higher-level Orchestration.\n\nMechanism:\n1. Analyzes L0 maintenance scripts for complexity (Methods > 15 or LOC > 200).\n2. Identifies 'Heavy' dependencies being imported by L3/L4 agents.\n3. Automatically generates abstract Interface files in agentic_core/utils/core_extensions/.\n4. Proposes refactoring steps to decouple concrete implementations.\n"
 import ast
@@ -15,6 +18,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_records_execution_trace,
     _emit_signs_execution_trace,
+    _emit_snapshots_state,
     _emit_validated_by_safety_plane,
 )
 from agentic_core.utils.decorators_compat_util import standard_heal
@@ -40,12 +44,23 @@ class InterfaceBoundaryAgent(SovereignBaseAgent):
         Returns:
             Dict with healing summary
         """
-        _emit_validated_by_safety_plane(str(uuid.uuid4()), "InterfaceBoundaryAgent.heal_repository", "L5_POLICY")
         import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "InterfaceBoundaryAgent.heal_repository", "state_snapshot")
+        _emit_validated_by_safety_plane(
+            str(uuid.uuid4()), "InterfaceBoundaryAgent.heal_repository", "L5_POLICY"
+        )
+        import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "InterfaceBoundaryAgent.heal_repository")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L5_POLICY, "InterfaceBoundaryAgent.heal_repository"
+        )
         import hashlib as _hashlib  # noqa: PLC0415
-        _seg_hash = _hashlib.sha256(f"{_trace_id}:InterfaceBoundaryAgent.heal_repository".encode()).hexdigest()[:24]
+
+        _seg_hash = _hashlib.sha256(
+            f"{_trace_id}:InterfaceBoundaryAgent.heal_repository".encode()
+        ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
         super().heal_repository(**kwargs)

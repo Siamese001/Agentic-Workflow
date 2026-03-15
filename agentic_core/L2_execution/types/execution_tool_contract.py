@@ -20,6 +20,18 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_records_execution_trace("p0", "evidence", "execution_tool_contract")
+_emit_applies_guardrail("p0", "execution_tool_contract", "p0_governance")
+_emit_snapshots_state("p0", "execution_tool_contract", "state_snapshot")
+
 
 class ToolCategory(str, Enum):
     """High-level category of a tool."""

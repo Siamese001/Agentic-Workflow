@@ -13,9 +13,14 @@ from pathlib import Path
 from agentic_core.L0_routing.config.path_constants import TOOLS_DIR
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
     _emit_records_execution_trace,
     _emit_signs_execution_trace,
+    _emit_snapshots_state,  # noqa: E402
 )
+
+_emit_applies_guardrail("p0", "powershell_ban", "p0_governance")
+_emit_snapshots_state("p0", "powershell_ban", "state_snapshot")
 
 
 class PowerShellBanVisitor(ast.NodeVisitor):
@@ -34,10 +39,16 @@ class PowerShellBanVisitor(ast.NodeVisitor):
         are NOT flagged because they lack a following argument.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "PowerShellBanVisitor.visit_Constant")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L5_POLICY, "PowerShellBanVisitor.visit_Constant"
+        )
         import hashlib as _hashlib  # noqa: PLC0415
-        _seg_hash = _hashlib.sha256(f"{_trace_id}:PowerShellBanVisitor.visit_Constant".encode()).hexdigest()[:24]
+
+        _seg_hash = _hashlib.sha256(f"{_trace_id}:PowerShellBanVisitor.visit_Constant".encode()).hexdigest()[
+            :24
+        ]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
         if isinstance(node.value, str):

@@ -232,6 +232,17 @@ class DDDAlignmentAgent(SovereignBaseAgent):
         Returns:
             Dict with keys: status, details, artifacts, errors
         """
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "DDDAlignmentAgent.heal", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(str(_uuid.uuid4()), "DDDAlignmentAgent.heal", "p0_governance")
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "DDDAlignmentAgent.heal")
         try:
@@ -455,4 +466,9 @@ if __name__ == "__main__":
     result = agent.heal_repository(dry_run=True)
     print(f"\nAlignment Score: {result['alignment_score']:.1f}%")
     print(f"Violations: {result['violations_found']}")
-from agentic_core.runtime.lifecycle_trace_contract import _emit_validated_by_safety_plane
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+    _emit_validated_by_safety_plane,
+)

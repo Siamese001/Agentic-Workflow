@@ -47,6 +47,14 @@ class Violation:
             reason: Reason for the validation failure
             message: Detailed violation message
         """
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "Violation.__init__", "state_snapshot")
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
         self.reason: ValidationRejectionReason = reason
         self.message: str = message
 
@@ -82,7 +90,9 @@ class IntegrityGateResult:
             message: Detailed violation message
         """
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, f"IntegrityGateResult.add_violation:{reason}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L5_POLICY, f"IntegrityGateResult.add_violation:{reason}"
+        )
         self.passed = False
         self.violations.append(Violation(reason, message))
 
@@ -274,7 +284,11 @@ class DeepResearchOutput:
         self.CitationMap = CitationMap
 
 
-from agentic_core.runtime.lifecycle_trace_contract import _emit_applies_guardrail
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 from agentic_core.utils.decorators_compat_util import standard_heal
 
 

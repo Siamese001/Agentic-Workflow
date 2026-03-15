@@ -23,9 +23,16 @@ from agentic_core.L0_routing.config import (
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
     _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
     _emit_verifies_policy,
 )
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "disposition", "p0_governance")
+_emit_snapshots_state("p0", "disposition", "state_snapshot")
 
 
 class Disposition(Enum):
@@ -63,7 +70,11 @@ class CoreSynthesisAnalyzer:
     def analyze_file(self, file_path: Path) -> CoreAnalysisResult:
         """Perform comprehensive analysis of a single file."""
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"CoreDispositionAnalyzer.analyze_file:{file_path.name}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            f"CoreDispositionAnalyzer.analyze_file:{file_path.name}",
+        )
         try:
             content = file_path.read_text(encoding="utf-8", errors="ignore")
             tree = ast.parse(content)
@@ -183,7 +194,9 @@ class CoreSynthesisAnalyzer:
     def _verify_contract_compliance(self, tree: ast.AST) -> bool:
         """Verify CanonBaseAgentInterface contract compliance."""
         # Check for required methods and attributes
-        _emit_verifies_policy(str(uuid.uuid4()), "CoreSynthesisAnalyzer._verify_contract_compliance", "L0_ROUTING")
+        _emit_verifies_policy(
+            str(uuid.uuid4()), "CoreSynthesisAnalyzer._verify_contract_compliance", "L0_ROUTING"
+        )
         required_methods = ["smart_fix"]
         required_attrs = ["ctx", "name", "python_files"]
 

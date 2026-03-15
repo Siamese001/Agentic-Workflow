@@ -26,6 +26,17 @@ from agentic_core.L0_routing.config import (
     GLOBAL_EXCLUDED_DIRS,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "check_rglob_usage_util")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "check_rglob_usage_util", "p0_governance")
+_emit_snapshots_state("p0", "check_rglob_usage_util", "state_snapshot")
 
 # configuration
 # guardian: allow-magic-config

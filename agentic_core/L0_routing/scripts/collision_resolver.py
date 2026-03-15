@@ -18,6 +18,15 @@ from agentic_core.L0_routing.config.path_constants import (
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
 from agentic_core.L0_routing.enforcement.mutation_prohibition import safe_os_remove
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "collision_resolver", "p0_governance")
+_emit_snapshots_state("p0", "collision_resolver", "state_snapshot")
 
 try:
     from agentic_core.utils.ssot_discovery_validator import get_python_files
@@ -25,6 +34,8 @@ except ImportError:
 
     def get_python_files(root: Path):
         return list(root.rglob("*.py"))
+
+
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_records_execution_trace,
@@ -74,6 +85,7 @@ class CollisionResolver:
     def find_collisions(self):
         """Find files that want the same target name within the same directory."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "CollisionResolver.find_collisions")
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")

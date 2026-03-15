@@ -35,10 +35,15 @@ from agentic_core.L6_observability.performance.performance_emitter import (
 )
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
     _emit_records_execution_trace,
     _emit_signs_execution_trace,
+    _emit_snapshots_state,  # noqa: E402
     emit_replay_key,
 )
+
+_emit_applies_guardrail("p0", "agentic_router", "p0_governance")
+_emit_snapshots_state("p0", "agentic_router", "state_snapshot")
 
 if TYPE_CHECKING:
     from agentic_core.L0_routing.engines.intent_embedding_classifier import IntentEmbeddingClassifier

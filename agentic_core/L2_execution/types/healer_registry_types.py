@@ -41,6 +41,17 @@ from agentic_core.L2_execution.healers.hierarchy_compliance_healer import (
     heal_subfolder_compliance,
 )
 from agentic_core.L2_execution.types.heal_contract_types import HealCheckResult
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_records_execution_trace("p0", "evidence", "healer_registry_types")
+_emit_applies_guardrail("p0", "healer_registry_types", "p0_governance")
+_emit_snapshots_state("p0", "healer_registry_types", "state_snapshot")
 
 HealerFn = Callable[..., HealCheckResult]
 

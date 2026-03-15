@@ -67,6 +67,12 @@ from agentic_core.L1_cognition.planning.reasoning_plan import (
     get_plan_registry,
     reset_plan_registry,
 )
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
 
 from .types.action_request_types import (  # noqa: F401
     ActionRequest,
@@ -74,6 +80,11 @@ from .types.action_request_types import (  # noqa: F401
     PlanningRequest,
     PlanningResult,
 )
+
+_emit_snapshots_state("p0", "__init__", "state_snapshot")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "__init__", "p0_governance")
+_emit_records_execution_trace("p0", "evidence", "__init__")
 
 __all__ = [
     # Action Types

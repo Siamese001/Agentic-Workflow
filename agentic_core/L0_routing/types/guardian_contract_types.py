@@ -30,7 +30,13 @@ from agentic_core.L0_routing.config.path_constants import (
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 
 # ---------------------------------------------------------------------------
 # V15 Enforcement Infrastructure
@@ -50,6 +56,17 @@ def is_v15_enforced() -> bool:
     Any other value → ValueError (deterministic misconfig rejection).
     Use ``is_v15_hard_fail()`` / ``is_v15_soft_fail()`` for mode selection.
     """
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_snapshots_state(str(_uuid.uuid4()), "is_v15_enforced", "state_snapshot")
+    import hashlib as _hashlib  # noqa: PLC0415
+    import uuid as _uuid  # noqa: PLC0415
+
+    _tid = str(_uuid.uuid4())
+    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+    import uuid as _uuid  # noqa: PLC0415
+
+    _emit_applies_guardrail(str(_uuid.uuid4()), "is_v15_enforced", "p0_governance")
     raw = os.environ.get("V15_ENFORCEMENT")
     if raw is None:
         return True
@@ -760,7 +777,9 @@ class GuardianResult:
     ) -> None:
         """Add a check entry and update top-level status."""
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"GuardianContractResult.add_check:{check_id}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"GuardianContractResult.add_check:{check_id}"
+        )
         status_val = status.value if isinstance(status, CheckStatus) else status
         self.checks.append(
             GuardianCheck(

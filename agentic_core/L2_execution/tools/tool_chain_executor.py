@@ -1,5 +1,13 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "tool_chain_executor", "p0_governance")
+_emit_snapshots_state("p0", "tool_chain_executor", "state_snapshot")
+
 "Implementation for ToolsUseATool."
 import logging
 import sys
@@ -83,9 +91,11 @@ class ToolsUseATool:
             ProcessingResult with outcome and metadata
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "ToolsUseATool.process")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:ToolsUseATool.process".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 

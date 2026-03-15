@@ -18,6 +18,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_applies_guardrail,
     _emit_records_execution_trace,
     _emit_signs_execution_trace,
+    _emit_snapshots_state,
 )
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
@@ -49,6 +50,9 @@ class RedSentinelAgent(SovereignBaseAgent):
         Args:
             llm_client: LLM client for generating hostile inputs (deprecated, uses MCP).
         """
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(str(_uuid.uuid4()), "RedSentinelAgent.__init__", "state_snapshot")
         self.llm_client: Any | None = llm_client
         self.enabled: bool = os.getenv("ENABLE_FUZZ", "false").lower() == "true"
         self.audit_path: Path = Path("observability/audit/fuzz_results.json")
@@ -68,9 +72,11 @@ class RedSentinelAgent(SovereignBaseAgent):
             Dictionary with fuzz results and vulnerabilities
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "RedSentinelAgent.fuzz_function")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:RedSentinelAgent.fuzz_function".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 

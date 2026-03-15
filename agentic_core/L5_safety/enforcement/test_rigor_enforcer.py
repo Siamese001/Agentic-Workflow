@@ -13,6 +13,8 @@ Constitutional Requirements:
 
 Usage:
     from agentic_core.L5_safety.enforcement.test_rigor_enforcer import TestRigorEnforcer
+from agentic_core.runtime.lifecycle_trace_contract import _emit_snapshots_state  # noqa: E402
+_emit_snapshots_state("p0", "test_rigor_enforcer", "state_snapshot")
 
     enforcer = TestRigorEnforcer(project_root=Path.cwd())
     result = enforcer.validate_code_changes()
@@ -44,6 +46,7 @@ MAX_DEPTH = 6
 MAX_FILES = 1000
 DEFAULT_TIMEOUT = 300  # 5 minutes
 # Configuration constants
+
 
 @dataclass
 class TestCoverageRequirement:
@@ -80,9 +83,11 @@ class TestRigorEnforcer:
     def declare_scope(self, changed_files: list[str]) -> None:
         """Declare scope of code changes (Step 1 of pre-code-generation gate)."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "TestRigorEnforcer.declare_scope")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:TestRigorEnforcer.declare_scope".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
@@ -106,7 +111,9 @@ class TestRigorEnforcer:
         Returns:
             ValidationResult with compliant=True if requirements declared, False otherwise
         """
-        _emit_applies_guardrail(str(uuid.uuid4()), "TestRigorEnforcer.validate_pre_code_generation", "L5_POLICY")
+        _emit_applies_guardrail(
+            str(uuid.uuid4()), "TestRigorEnforcer.validate_pre_code_generation", "L5_POLICY"
+        )
         violations = []
 
         if not self.requirements:

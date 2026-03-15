@@ -22,7 +22,13 @@ from agentic_core.L0_routing.types.routing_artifact_types import (
 from agentic_core.L0_routing.types.routing_contracts_types import TelemetryEmitter
 from agentic_core.L3_orchestration.types.route_decision_artifact_types import build_l3_route_decision_artifact
 from agentic_core.runtime.config.contextual_router_config import RoutingRequest, get_router
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+)
 from agentic_core.utils.decorators_compat_util import standard_heal
 
 
@@ -43,8 +49,26 @@ class OrchestrationHandshakeAgent(SovereignBaseAgent, CoreOrchestrationAgent):
         cache-first — Redis hit -> instant discovery.
         """
         import uuid as _uuid  # noqa: PLC0415
+
+        _emit_snapshots_state(
+            str(_uuid.uuid4()), "OrchestrationHandshakeAgent.discover_capable_agents", "state_snapshot"
+        )
+        import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+
+        _tid = str(_uuid.uuid4())
+        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_applies_guardrail(
+            str(_uuid.uuid4()), "OrchestrationHandshakeAgent.discover_capable_agents", "p0_governance"
+        )
+        import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "OrchestrationHandshakeAgent.discover_capable_agents")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "OrchestrationHandshakeAgent.discover_capable_agents"
+        )
 
         cache_key: Any = (
             f"handshake_discover:{hashlib.sha256((Task + str(min_confidence)).encode()).hexdigest()}"

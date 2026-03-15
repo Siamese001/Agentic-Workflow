@@ -4,6 +4,10 @@ TestSilentSkipDetector — catches over-broad import guards in test files.
 Root cause of the silent-test-skip epidemic (1 569 affected files):
     try:
         from some.module import Foo, CONSTANT_THAT_DOESNT_EXIST
+from agentic_core.runtime.lifecycle_trace_contract import _emit_snapshots_state  # noqa: E402
+from agentic_core.runtime.lifecycle_trace_contract import _emit_applies_guardrail  # noqa: E402
+_emit_applies_guardrail("p0", "test_skip_detector_validator", "p0_governance")
+_emit_snapshots_state("p0", "test_skip_detector_validator", "state_snapshot")
         _AVAILABLE = True
     except Exception:          # ← TOO BROAD
         _AVAILABLE = False     # ← every test in this file permanently skipped
@@ -47,9 +51,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
 # Constants
 # ---------------------------------------------------------------------------
 
-_SAFE_IMPORT_EXCEPTIONS: frozenset[str] = frozenset(
-    {"ImportError", "ModuleNotFoundError"}
-)
+_SAFE_IMPORT_EXCEPTIONS: frozenset[str] = frozenset({"ImportError", "ModuleNotFoundError"})
 
 _AVAILABILITY_SUFFIXES: tuple[str, ...] = (
     "_AVAILABLE",
@@ -106,9 +108,11 @@ class TestSilentSkipDetector(AntiPatternDetector):
     def scan_file(self, file_path: Path) -> DetectionResult:
         """Return empty result for non-test files; delegate to base for test files."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "TestSilentSkipDetector.scan_file")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:TestSilentSkipDetector.scan_file".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
@@ -170,9 +174,7 @@ class TestSilentSkipDetector(AntiPatternDetector):
 
         caught_label = "bare except" if handler_type_name is None else f"except {handler_type_name}"
         evidence = (
-            source_lines[handler.lineno - 1].strip()
-            if handler.lineno <= len(source_lines)
-            else caught_label
+            source_lines[handler.lineno - 1].strip() if handler.lineno <= len(source_lines) else caught_label
         )
 
         return AntiPatternViolation(

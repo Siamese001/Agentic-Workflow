@@ -1,4 +1,11 @@
 from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "agent_info_enforcer", "p0_governance")
+_emit_snapshots_state("p0", "agent_info_enforcer", "state_snapshot")
 
 "\nAST REDUNDANCY ANALYZER - Sovereign Structural Deduplication\nDecember 30, 2025\n\nPerforms comprehensive AST-based fingerprinting to detect:\n1. Exact structural duplicates (identical normalized AST)\n2. Near-duplicates (>90% structural similarity)\n"
 import ast
@@ -50,9 +57,11 @@ class ASTNormalizer(ast.NodeTransformer):
 
     def reset(self):
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "ASTNormalizer.reset")
         import hashlib as _hashlib  # noqa: PLC0415
+
         _seg_hash = _hashlib.sha256(f"{_trace_id}:ASTNormalizer.reset".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
