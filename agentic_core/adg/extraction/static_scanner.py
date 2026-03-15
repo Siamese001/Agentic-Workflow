@@ -278,8 +278,11 @@ class ScanResult:
     def canonical_edge_text(self) -> str:
         """S7: Stable, sorted serialization of edges for digest computation."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ScanResult.canonical_edge_text")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ScanResult.canonical_edge_text"
+        )
 
         lines = []
         for e in sorted(self.edges):  # S7: sort before digest
@@ -373,8 +376,11 @@ class _InheritanceVisitor(ast.NodeVisitor):
 
     def visit_ClassDef(self, node: ast.ClassDef) -> None:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "_InheritanceVisitor.visit_ClassDef")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "_InheritanceVisitor.visit_ClassDef"
+        )
 
         class_adg = canonical_name("Module", f"{self.source_file}::{node.name}")
         for base in node.bases:
@@ -428,8 +434,11 @@ class _AttributeVisitor(ast.NodeVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "_AttributeVisitor.visit_Call")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "_AttributeVisitor.visit_Call"
+        )
 
         sym = self._extract_call_sym(node.func)
         sub_type = self._classify_config_read(sym)
@@ -549,8 +558,11 @@ class _CompositionVisitor(ast.NodeVisitor):
 
     def visit_ClassDef(self, node: ast.ClassDef) -> None:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "_CompositionVisitor.visit_ClassDef")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "_CompositionVisitor.visit_ClassDef"
+        )
 
         old_class = self._current_class
         self._current_class = node.name
@@ -622,8 +634,11 @@ class _DynamicExecutionVisitor(ast.NodeVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "_DynamicExecutionVisitor.visit_Call")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "_DynamicExecutionVisitor.visit_Call"
+        )
 
         sym = self._extract_sym(node.func)
         if sym and (sym in _DYNAMIC_EXEC_SYMBOLS or any(sym.startswith(d) for d in _DYNAMIC_EXEC_SYMBOLS)):
@@ -692,8 +707,11 @@ class _ImportVisitor(ast.NodeVisitor):
 
     def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "_ImportVisitor.visit_FunctionDef")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "_ImportVisitor.visit_FunctionDef"
+        )
 
         self._function_depth += 1
         self.generic_visit(node)
@@ -890,6 +908,7 @@ class _CallVisitor(ast.NodeVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "_CallVisitor.visit_Call")
 
@@ -979,6 +998,7 @@ _GOVERNANCE_ROUTE_SYMBOLS: frozenset[str] = frozenset(
         "replay_run",
         "route_instruction",
         "healing_orchestrator",
+        "_emit_routes_through",
     }
 )
 
@@ -994,8 +1014,11 @@ class _InternalCallGraphVisitor(ast.NodeVisitor):
 
     def visit_Import(self, node: ast.Import) -> None:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "_InternalCallGraphVisitor.visit_Import")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "_InternalCallGraphVisitor.visit_Import"
+        )
 
         for alias in node.names:
             if any(alias.name.startswith(p) for p in _INTERNAL_MODULE_PREFIXES):
@@ -1058,8 +1081,11 @@ class _TestTraceabilityVisitor(ast.NodeVisitor):
 
     def visit_Import(self, node: ast.Import) -> None:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "_TestTraceabilityVisitor.visit_Import")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "_TestTraceabilityVisitor.visit_Import"
+        )
 
         if not self._is_test:
             return
@@ -1109,8 +1135,11 @@ class _GovernancePlaneVisitor(ast.NodeVisitor):
 
     def visit_ClassDef(self, node: ast.ClassDef) -> None:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "_GovernancePlaneVisitor.visit_ClassDef")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "_GovernancePlaneVisitor.visit_ClassDef"
+        )
 
         for base in node.bases:
             sym = self._extract_symbol(base)
@@ -1201,8 +1230,11 @@ class _TypeAnnotationVisitor(ast.NodeVisitor):
 
     def _emit(self, sym: str, line_no: int) -> None:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "_TypeAnnotationVisitor._emit")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "_TypeAnnotationVisitor._emit"
+        )
 
         key = (sym, line_no)
         if key in self._seen:
@@ -1321,8 +1353,11 @@ class _AntipatternVisitor(ast.NodeVisitor):
 
     def visit_Module(self, node: ast.Module) -> None:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "_AntipatternVisitor.visit_Module")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "_AntipatternVisitor.visit_Module"
+        )
 
         # Collect module-level UPPER_CASE names (potential global constants)
         for stmt in node.body:
@@ -1528,8 +1563,11 @@ class _PromptSlotVisitor(ast.NodeVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "_PromptSlotVisitor.visit_Call")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "_PromptSlotVisitor.visit_Call"
+        )
 
         func_sym = self._sym(node.func)
         func_tail = func_sym.split(".")[-1] if func_sym else ""
@@ -1627,8 +1665,11 @@ class _ExecutionTraceVisitor(ast.NodeVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "_ExecutionTraceVisitor.visit_Call")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "_ExecutionTraceVisitor.visit_Call"
+        )
 
         func_sym = self._sym(node.func)
         func_tail = func_sym.split(".")[-1] if func_sym else ""
@@ -1717,8 +1758,11 @@ class _DecoratorVisitor(ast.NodeVisitor):
 
     def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "_DecoratorVisitor.visit_FunctionDef")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "_DecoratorVisitor.visit_FunctionDef"
+        )
 
         self._process_decorators(node.decorator_list, node.lineno)
         self.generic_visit(node)
@@ -1769,8 +1813,11 @@ class _SymbolInventoryVisitor(ast.NodeVisitor):
 
     def visit_Module(self, node: ast.Module) -> None:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "_SymbolInventoryVisitor.visit_Module")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "_SymbolInventoryVisitor.visit_Module"
+        )
 
         self._all_names = self._extract_all(node)
         self.generic_visit(node)
@@ -1864,8 +1911,11 @@ class _UnusedImportVisitor(ast.NodeVisitor):
 
     def visit_ImportFrom(self, node: ast.ImportFrom) -> None:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "_UnusedImportVisitor.visit_ImportFrom")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "_UnusedImportVisitor.visit_ImportFrom"
+        )
 
         # G4: exclude __future__ imports from dead-import tracking
         if (node.module or "") == "__future__":
@@ -2107,8 +2157,11 @@ class _HealerValidatorVisitor(ast.NodeVisitor):
 
     def visit_ClassDef(self, node: ast.ClassDef) -> None:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "_HealerValidatorVisitor.visit_ClassDef")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "_HealerValidatorVisitor.visit_ClassDef"
+        )
 
         for base in node.bases:
             base_name = self._sym(base)
@@ -2196,8 +2249,11 @@ class _EmbeddingPipelineVisitor(ast.NodeVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "_EmbeddingPipelineVisitor.visit_Call")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "_EmbeddingPipelineVisitor.visit_Call"
+        )
 
         sym = self._sym(node.func)
         tail = sym.split(".")[-1] if sym else ""
@@ -2261,6 +2317,7 @@ class _HITLVisitor(ast.NodeVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "_HITLVisitor.visit_Call")
 
@@ -2330,8 +2387,11 @@ class _SafetyEnforcementVisitor(ast.NodeVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "_SafetyEnforcementVisitor.visit_Call")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "_SafetyEnforcementVisitor.visit_Call"
+        )
 
         sym = self._sym(node.func)
         tail = sym.split(".")[-1] if sym else ""
@@ -2398,8 +2458,11 @@ class _SandboxAirlockVisitor(ast.NodeVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "_SandboxAirlockVisitor.visit_Call")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "_SandboxAirlockVisitor.visit_Call"
+        )
 
         sym = _sym_of(node.func)
         tail = sym.split(".")[-1] if sym else ""
@@ -2441,8 +2504,11 @@ class _CapabilityBudgetVisitor(ast.NodeVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "_CapabilityBudgetVisitor.visit_Call")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "_CapabilityBudgetVisitor.visit_Call"
+        )
 
         sym = _sym_of(node.func)
         tail = sym.split(".")[-1] if sym else ""
@@ -2497,8 +2563,11 @@ class _JITContextVisitor(ast.NodeVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "_JITContextVisitor.visit_Call")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "_JITContextVisitor.visit_Call"
+        )
 
         sym = _sym_of(node.func)
         tail = sym.split(".")[-1] if sym else ""
@@ -2551,8 +2620,11 @@ class _BoundaryVerifierVisitor(ast.NodeVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "_BoundaryVerifierVisitor.visit_Call")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "_BoundaryVerifierVisitor.visit_Call"
+        )
 
         sym = _sym_of(node.func)
         tail = sym.split(".")[-1] if sym else ""
@@ -2601,8 +2673,11 @@ class _DeterminismControlVisitor(ast.NodeVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "_DeterminismControlVisitor.visit_Call")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "_DeterminismControlVisitor.visit_Call"
+        )
 
         sym = _sym_of(node.func)
         tail = sym.split(".")[-1] if sym else ""
@@ -2668,8 +2743,11 @@ class _IOInterceptionVisitor(ast.NodeVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "_IOInterceptionVisitor.visit_Call")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "_IOInterceptionVisitor.visit_Call"
+        )
 
         sym = _sym_of(node.func)
         tail = sym.split(".")[-1] if sym else ""
@@ -2722,8 +2800,11 @@ class _MutationTransportVisitor(ast.NodeVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "_MutationTransportVisitor.visit_Call")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "_MutationTransportVisitor.visit_Call"
+        )
 
         sym = _sym_of(node.func)
         tail = sym.split(".")[-1] if sym else ""
@@ -2781,8 +2862,11 @@ class _ExecutionProofVisitor(ast.NodeVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "_ExecutionProofVisitor.visit_Call")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "_ExecutionProofVisitor.visit_Call"
+        )
 
         sym = _sym_of(node.func)
         tail = sym.split(".")[-1] if sym else ""
@@ -2845,8 +2929,11 @@ class _PathControlVisitor(ast.NodeVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "_PathControlVisitor.visit_Call")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "_PathControlVisitor.visit_Call"
+        )
 
         sym = _sym_of(node.func)
         tail = sym.split(".")[-1] if sym else ""
@@ -2903,8 +2990,11 @@ class _EvalSpineVisitor(ast.NodeVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "_EvalSpineVisitor.visit_Call")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "_EvalSpineVisitor.visit_Call"
+        )
 
         sym = _sym_of(node.func)
         tail = sym.split(".")[-1] if sym else ""
@@ -2972,8 +3062,11 @@ class _SecretAccessVisitor(ast.NodeVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "_SecretAccessVisitor.visit_Call")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "_SecretAccessVisitor.visit_Call"
+        )
 
         sym = _sym_of(node.func)
         tail = sym.split(".")[-1] if sym else ""
@@ -3019,8 +3112,11 @@ class _ConfigGovernanceVisitor(ast.NodeVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "_ConfigGovernanceVisitor.visit_Call")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "_ConfigGovernanceVisitor.visit_Call"
+        )
 
         sym = _sym_of(node.func)
         tail = sym.split(".")[-1] if sym else ""
@@ -3067,8 +3163,11 @@ class _DynamicInvocationVisitor(ast.NodeVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "_DynamicInvocationVisitor.visit_Call")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "_DynamicInvocationVisitor.visit_Call"
+        )
 
         sym = _sym_of(node.func)
         tail = sym.split(".")[-1] if sym else ""
@@ -3117,8 +3216,11 @@ class _PolicyStateObserverVisitor(ast.NodeVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "_PolicyStateObserverVisitor.visit_Call")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "_PolicyStateObserverVisitor.visit_Call"
+        )
 
         sym = _sym_of(node.func)
         tail = sym.split(".")[-1] if sym else ""
@@ -3168,8 +3270,11 @@ class _AntipatternRegistryVisitor(ast.NodeVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "_AntipatternRegistryVisitor.visit_Call")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "_AntipatternRegistryVisitor.visit_Call"
+        )
 
         sym = _sym_of(node.func)
         tail = sym.split(".")[-1] if sym else ""
@@ -3213,8 +3318,11 @@ class _HealingOrchestratorVisitor(ast.NodeVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "_HealingOrchestratorVisitor.visit_Call")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "_HealingOrchestratorVisitor.visit_Call"
+        )
 
         sym = _sym_of(node.func)
         tail = sym.split(".")[-1] if sym else ""
@@ -3260,8 +3368,11 @@ class _NondeterminismVisitor(ast.NodeVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "_NondeterminismVisitor.visit_Call")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "_NondeterminismVisitor.visit_Call"
+        )
 
         sym = _sym_of(node.func)
         if sym in NONDETERMINISM_WALL_CLOCK_SYMBOLS:
@@ -3300,8 +3411,11 @@ class _ExternalHttpVisitor(ast.NodeVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "_ExternalHttpVisitor.visit_Call")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "_ExternalHttpVisitor.visit_Call"
+        )
 
         sym = _sym_of(node.func)
         if sym in EXTERNAL_HTTP_SYMBOLS:
@@ -3336,8 +3450,11 @@ class _AgentDispatchVisitor(ast.NodeVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "_AgentDispatchVisitor.visit_Call")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "_AgentDispatchVisitor.visit_Call"
+        )
 
         sym = _sym_of(node.func)
         tail = sym.split(".")[-1] if sym else ""
@@ -3378,8 +3495,11 @@ class _L5ValidationProofVisitor(ast.NodeVisitor):
 
     def visit_ClassDef(self, node: ast.ClassDef) -> None:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "_L5ValidationProofVisitor.visit_ClassDef")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "_L5ValidationProofVisitor.visit_ClassDef"
+        )
 
         for base_node in node.bases:
             sym = _sym_of(base_node)
@@ -3450,8 +3570,11 @@ class _LearningProvenanceVisitor(ast.NodeVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "_LearningProvenanceVisitor.visit_Call")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "_LearningProvenanceVisitor.visit_Call"
+        )
 
         sym = _sym_of(node.func)
         tail = sym.split(".")[-1] if sym else ""
@@ -3534,8 +3657,11 @@ class _DuplicateMethodVisitor(ast.NodeVisitor):
 
     def visit_ClassDef(self, node: ast.ClassDef) -> None:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "_DuplicateMethodVisitor.visit_ClassDef")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "_DuplicateMethodVisitor.visit_ClassDef"
+        )
 
         seen: dict[str, int] = {}
         for stmt in node.body:
@@ -3596,8 +3722,11 @@ class _UnreachableCodeAfterRaiseVisitor(ast.NodeVisitor):
 
     def visit_ExceptHandler(self, node: ast.ExceptHandler) -> None:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "_UnreachableCodeAfterRaiseVisitor.visit_ExceptHandler")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "_UnreachableCodeAfterRaiseVisitor.visit_ExceptHandler"
+        )
 
         self._check_body(node.body)
         self.generic_visit(node)
@@ -4006,6 +4135,7 @@ class ADGStaticScanner:
     def scan(self, commit_sha: str = "") -> ScanResult:
         """Run full static scan. Returns ScanResult with digest computed."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ADGStaticScanner.scan")
 

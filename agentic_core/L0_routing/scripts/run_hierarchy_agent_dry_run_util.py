@@ -8,6 +8,18 @@ Location: Uses the NEW unified agent at agentic_core/L5_safety/enforcement/Hiera
 import sys
 from pathlib import Path
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "run_hierarchy_agent_dry_run_util", "L0")
+_emit_routes_through("p1", "run_hierarchy_agent_dry_run_util", "L0")
+_emit_escalates_to_human("p1", "run_hierarchy_agent_dry_run_util", "L0")
+_emit_reads_policy_state("p1", "run_hierarchy_agent_dry_run_util", "L0")
+
 project_root = Path(__file__).resolve().parents[1]
 # guardian: allow-global-mutation
 sys.path.insert(0, str(project_root))

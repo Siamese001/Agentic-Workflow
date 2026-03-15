@@ -1,5 +1,17 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "BoundaryTestingAgent", "L5")
+_emit_routes_through("p1", "BoundaryTestingAgent", "L5")
+_emit_escalates_to_human("p1", "BoundaryTestingAgent", "L5")
+_emit_reads_policy_state("p1", "BoundaryTestingAgent", "L5")
+
 "\nBoundaryTestingAgent: Tests system behavior at edge cases and boundaries.\nProbes limits of input validation, output constraints, and system boundaries\nto identify where the system breaks or behaves unexpectedly.\n"
 import logging
 from dataclasses import dataclass

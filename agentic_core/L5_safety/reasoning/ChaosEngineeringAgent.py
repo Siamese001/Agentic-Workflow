@@ -1,5 +1,17 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "ChaosEngineeringAgent", "L5")
+_emit_routes_through("p1", "ChaosEngineeringAgent", "L5")
+_emit_escalates_to_human("p1", "ChaosEngineeringAgent", "L5")
+_emit_reads_policy_state("p1", "ChaosEngineeringAgent", "L5")
+
 "\nChaosEngineeringAgent: Injects faults and chaos to test system resilience.\nSimulates failures, latency, resource exhaustion, and cascading failures\nto ensure the AI system degrades gracefully under adverse conditions.\n"
 import logging
 import random

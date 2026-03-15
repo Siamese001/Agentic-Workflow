@@ -4,6 +4,17 @@ from dataclasses import dataclass, field
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "SystemArchitectAgent", "L5")
+_emit_routes_through("p1", "SystemArchitectAgent", "L5")
+_emit_escalates_to_human("p1", "SystemArchitectAgent", "L5")
+_emit_reads_policy_state("p1", "SystemArchitectAgent", "L5")
 
 "\nSystem Architect Agent - Core Architecture Validation\nCANONICAL: True - Consolidated 2026-01-06 (removed system_architect.py duplicate)\n\nResponsible for:\n- Core architecture integrity\n- Import dependencies, module structure\n- Architectural patterns and design\n"
 import logging

@@ -5,6 +5,17 @@ from dataclasses import dataclass
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L2_execution.tools import write_gateway as _wg
 from agentic_core.L5_safety.config.structure_blueprint import TESTS_AUTOGEN_DIR
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "TestGeneratorAgent", "L5")
+_emit_routes_through("p1", "TestGeneratorAgent", "L5")
+_emit_escalates_to_human("p1", "TestGeneratorAgent", "L5")
+_emit_reads_policy_state("p1", "TestGeneratorAgent", "L5")
 
 "\nTestGeneratorAgent: Automatically creates subatomic tests for agents.\nCreated: 2026-01-13 | Version: 2.0.0\n\nThis agent parses agent source files via AST and generates corresponding\ntest cases for methods, ensuring L0 maintenance health.\n"
 import ast

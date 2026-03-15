@@ -1,4 +1,15 @@
 from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "fix_inherited_invocation_util", "L5")
+_emit_routes_through("p1", "fix_inherited_invocation_util", "L5")
+_emit_escalates_to_human("p1", "fix_inherited_invocation_util", "L5")
+_emit_reads_policy_state("p1", "fix_inherited_invocation_util", "L5")
 
 '\nFix Inherited Invocation - Add heal_repository() methods to agents missing explicit invocation.\n\nThis script:\n1. Loads agents with invocation=\'Inherited\' from agent_discovery_full.json\n2. For each agent class, adds a heal_repository(, **kwargs) method that calls super(, **kwargs).heal_repository(, **kwargs)\n3. This converts "Inherited" → "Yes" status, maximizing invocation %\n'
 import ast

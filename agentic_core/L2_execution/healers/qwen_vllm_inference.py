@@ -20,10 +20,19 @@ from agentic_core.L2_execution.healers.healing_tier_config import QWEN_GPU_MEM_U
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_applies_guardrail,
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
     _emit_records_execution_trace,
+    _emit_routes_through,  # noqa: E402
     _emit_signs_execution_trace,
     _emit_snapshots_state,
 )
+
+_emit_dispatches_healing_run("p1", "qwen_vllm_inference", "L2")
+_emit_routes_through("p1", "qwen_vllm_inference", "L2")
+_emit_escalates_to_human("p1", "qwen_vllm_inference", "L2")
+_emit_reads_policy_state("p1", "qwen_vllm_inference", "L2")
 
 
 def _build_prompt(agent_name: str, violation_types: list[str], territory: str, score: int, gate: str) -> str:

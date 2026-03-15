@@ -1,5 +1,17 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "mcp_registry", "L2")
+_emit_routes_through("p1", "mcp_registry", "L2")
+_emit_escalates_to_human("p1", "mcp_registry", "L2")
+_emit_reads_policy_state("p1", "mcp_registry", "L2")
+
 "\nSovereign MCP Registry – Phase 13 (Dec 26, 2025)\nCanonical SSOT for all MCP server configurations across L0-L6.\n\nThis registry enforces:\n- Layer-specific MCP assignments (L0-L6)\n- Mode validation (local, remote, mocked)\n- Capability tracking for sovereignty alignment\n- Constitutional compliance for all integrations\n"
 from enum import Enum
 from typing import Any

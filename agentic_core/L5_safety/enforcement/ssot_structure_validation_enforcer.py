@@ -14,10 +14,6 @@ USAGE:
     from agentic_core.L5_safety.enforcement.ssot_structure_validation_enforcer import (
         SSOTStructureValidator
     )
-from agentic_core.runtime.lifecycle_trace_contract import _emit_snapshots_state  # noqa: E402
-from agentic_core.runtime.lifecycle_trace_contract import _emit_signs_execution_trace  # noqa: E402
-_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
-_emit_snapshots_state("p0", "ssot_structure_validation_enforcer", "state_snapshot")
     validator = SSOTStructureValidator()
     result = validator.validate_structure()
 """
@@ -42,9 +38,22 @@ from agentic_core.L5_safety.enforcement.registry_verification_enforcer import (
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_applies_guardrail,
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
     _emit_records_execution_trace,
+    _emit_routes_through,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
     _emit_verifies_policy,
 )
+
+_emit_dispatches_healing_run("p1", "ssot_structure_validation_enforcer", "L5")
+_emit_routes_through("p1", "ssot_structure_validation_enforcer", "L5")
+_emit_escalates_to_human("p1", "ssot_structure_validation_enforcer", "L5")
+_emit_reads_policy_state("p1", "ssot_structure_validation_enforcer", "L5")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_snapshots_state("p0", "ssot_structure_validation_enforcer", "state_snapshot")
 
 # Base agent location requirement
 BASE_AGENT_REQUIRED_PATH: Final[str] = "agentic_core/base_agents"

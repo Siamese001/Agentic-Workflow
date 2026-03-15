@@ -1,6 +1,17 @@
 from __future__ import annotations
 
 from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "airlock_trimmer_enforcer", "L5")
+_emit_routes_through("p1", "airlock_trimmer_enforcer", "L5")
+_emit_escalates_to_human("p1", "airlock_trimmer_enforcer", "L5")
+_emit_reads_policy_state("p1", "airlock_trimmer_enforcer", "L5")
 
 "\nTrim heavy airlock __init__.py files to meet 50-line limit.\nCondenses verbose __all__ lists and removes blank lines.\n"
 from pathlib import Path

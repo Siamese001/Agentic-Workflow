@@ -34,7 +34,19 @@ from typing import Any
 from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR, TESTS_DIR
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 from agentic_core.L2_execution.providers import get_clock
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "complexity_visitor_util", "L0")
+_emit_routes_through("p1", "complexity_visitor_util", "L0")
+_emit_escalates_to_human("p1", "complexity_visitor_util", "L0")
+_emit_reads_policy_state("p1", "complexity_visitor_util", "L0")
 
 try:
     from agentic_core.utils.ssot_discovery_validator import get_python_files

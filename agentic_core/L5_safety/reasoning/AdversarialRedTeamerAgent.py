@@ -1,6 +1,17 @@
 from __future__ import annotations
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "AdversarialRedTeamerAgent", "L5")
+_emit_routes_through("p1", "AdversarialRedTeamerAgent", "L5")
+_emit_escalates_to_human("p1", "AdversarialRedTeamerAgent", "L5")
+_emit_reads_policy_state("p1", "AdversarialRedTeamerAgent", "L5")
 
 "\n⚛️ Adversarial Red-Teamer - The Skeptic\n\nProactive vulnerability testing agent that finds edge cases and attempts to break\nsandbox rules before code reaches production.\n\nMission: Reduce manual QA by 70% via proactive stress tests\nStrategy: Conflict-first approach to ensure resilience\n\nIntegration: Runs in pre-deployment phase to probe boundaries of:\n- 90% Preservation Rule\n- Sandbox Security\n- Stage connectivity in HOP pipeline\n"
 import ast

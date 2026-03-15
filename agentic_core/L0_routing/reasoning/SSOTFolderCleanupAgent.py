@@ -1,6 +1,17 @@
 from __future__ import annotations
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "SSOTFolderCleanupAgent", "L0")
+_emit_routes_through("p1", "SSOTFolderCleanupAgent", "L0")
+_emit_escalates_to_human("p1", "SSOTFolderCleanupAgent", "L0")
+_emit_reads_policy_state("p1", "SSOTFolderCleanupAgent", "L0")
 
 "\n[PHASE 24] SSOT Folder Cleanup Agent - Automated SSOT Compliance Enforcement.\n\nProvides automated cleanup of non-SSOT-approved folders:\n1. Identifies files in non-approved folders\n2. Uses CognitiveDispositionAgent to determine target SSOT folder\n3. Moves files via ArchivalGatekeeper (audited, safe)\n4. Updates imports across the codebase\n5. Deletes empty non-approved folders\n\nThis agent enforces the SSOT protocol by ensuring all files are in approved locations.\n\n[SSOT] This is the canonical agent for SSOT folder cleanup operations.\n"
 import ast

@@ -17,10 +17,19 @@ from typing import Literal
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_applies_guardrail,
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
     _emit_records_execution_trace,
+    _emit_routes_through,  # noqa: E402
     _emit_signs_execution_trace,
     _emit_snapshots_state,
 )
+
+_emit_dispatches_healing_run("p1", "vllm_token_budget_types", "L2")
+_emit_routes_through("p1", "vllm_token_budget_types", "L2")
+_emit_escalates_to_human("p1", "vllm_token_budget_types", "L2")
+_emit_reads_policy_state("p1", "vllm_token_budget_types", "L2")
 
 VLLM_MAX_TOKENS_DEFAULT: int = 600
 VLLM_MAX_TOKENS_EXTENDED: int = 1200

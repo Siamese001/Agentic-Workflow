@@ -17,11 +17,20 @@ from typing import Any, Callable, Mapping, NamedTuple
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_applies_guardrail,
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
     _emit_records_execution_trace,
+    _emit_routes_through,  # noqa: E402
     _emit_signs_execution_trace,
     _emit_snapshots_state,
 )
 from tools.canonical_hash import canonical_hash
+
+_emit_dispatches_healing_run("p1", "vllm_routing_predicates", "L4")
+_emit_routes_through("p1", "vllm_routing_predicates", "L4")
+_emit_escalates_to_human("p1", "vllm_routing_predicates", "L4")
+_emit_reads_policy_state("p1", "vllm_routing_predicates", "L4")
 
 
 class Provider(Enum):

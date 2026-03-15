@@ -2,6 +2,17 @@ from __future__ import annotations
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "CodeEnforcerAgent", "L5")
+_emit_routes_through("p1", "CodeEnforcerAgent", "L5")
+_emit_escalates_to_human("p1", "CodeEnforcerAgent", "L5")
+_emit_reads_policy_state("p1", "CodeEnforcerAgent", "L5")
 
 "\nCodeEnforcerAgent - Code Sovereignty Enforcement\n\nPhase 3 Hard Migration: Consolidates:\n- CodeSSOTEnforcerAgent (SSOT registry sync)\n- CodeStandardsEnforcerAgent (code standards)\n- PatternEnforcerAgent (pattern enforcement)\n- TypeEnforcerAgent (type hint enforcement)\n- PythonFileSovereigntyEnforcerAgent (file sovereignty)\n\nFeatures:\n- SSOT registry synchronization\n- Code standards enforcement\n- Pattern detection and enforcement\n- Type hint validation\n- Layer sovereignty protection (L5 files protected from L3/L4 modification)\n- Signed exception support for cross-layer access\n"
 import ast

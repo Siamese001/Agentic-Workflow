@@ -3,6 +3,17 @@ from __future__ import annotations
 import os
 
 from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "learning_types", "L5")
+_emit_routes_through("p1", "learning_types", "L5")
+_emit_escalates_to_human("p1", "learning_types", "L5")
+_emit_reads_policy_state("p1", "learning_types", "L5")
 
 "\nAdaptive Learning Engine - L1 Cognition Enhancement\n\nLearns from healing patterns to predict and prevent violations before they occur.\nUses pattern recognition and predictive analytics to make agents more autonomous.\n"
 import asyncio

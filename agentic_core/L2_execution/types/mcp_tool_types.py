@@ -1,5 +1,17 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "mcp_tool_types", "L2")
+_emit_routes_through("p1", "mcp_tool_types", "L2")
+_emit_escalates_to_human("p1", "mcp_tool_types", "L2")
+_emit_reads_policy_state("p1", "mcp_tool_types", "L2")
+
 "MCP Tool Server Integration.\n\nProvides MCP (Model Context Protocol) tool server integration\nfor external tool access and context providers.\n\nPhase 1C - SDK Integration Layer\n"
 import logging
 import uuid

@@ -24,8 +24,17 @@ from agentic_core.L5_safety.config.detection_signal_config import (
 )
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_applies_guardrail,  # noqa: E402
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
     _emit_snapshots_state,  # noqa: E402
 )
+
+_emit_dispatches_healing_run("p1", "git_health_sensor_enforcer", "L5")
+_emit_routes_through("p1", "git_health_sensor_enforcer", "L5")
+_emit_escalates_to_human("p1", "git_health_sensor_enforcer", "L5")
+_emit_reads_policy_state("p1", "git_health_sensor_enforcer", "L5")
 
 _emit_applies_guardrail("p0", "git_health_sensor_enforcer", "p0_governance")
 _emit_snapshots_state("p0", "git_health_sensor_enforcer", "state_snapshot")

@@ -1,5 +1,17 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "secure_error_handler_enforcer", "L5")
+_emit_routes_through("p1", "secure_error_handler_enforcer", "L5")
+_emit_escalates_to_human("p1", "secure_error_handler_enforcer", "L5")
+_emit_reads_policy_state("p1", "secure_error_handler_enforcer", "L5")
+
 "Secure Error Handling - Prevents sensitive data leakage in exceptions.\n\nThis module provides secure exception handling that sanitizes error messages,\nremoves sensitive information from stack traces, and provides safe error\nreporting mechanisms.\n"
 import inspect
 import logging

@@ -1,6 +1,17 @@
 from __future__ import annotations
 
 from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "ssot_relocator_types", "L5")
+_emit_routes_through("p1", "ssot_relocator_types", "L5")
+_emit_escalates_to_human("p1", "ssot_relocator_types", "L5")
+_emit_reads_policy_state("p1", "ssot_relocator_types", "L5")
 
 "\nSSOT Relocator - Automated Violation Remediation\n\nReplaces 4 manual relocation scripts with a single, reusable library:\n- phase2_gravity_relocation.py\n- phase4_final_gravity_relocation.py\n- phase4_final_observability_relocation.py\n- phase4_perfection_absolute.py\n\nProvides automated remediation for:\n1. Drift violations (orphaned folders → archives)\n2. Hierarchy violations (excessive depth → flattening)\n3. Gravity violations (wrong layer → correct layer)\n"
 import logging

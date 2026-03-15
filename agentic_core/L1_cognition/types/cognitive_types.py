@@ -1,5 +1,17 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "cognitive_types", "L1")
+_emit_routes_through("p1", "cognitive_types", "L1")
+_emit_escalates_to_human("p1", "cognitive_types", "L1")
+_emit_reads_policy_state("p1", "cognitive_types", "L1")
+
 "Cognitive Plane Interface - The Brain.\n\nPhase 2 - Pillar 1: Layering Model\nDefines the contract for all planning, reasoning, and decision-making.\nL1 Cognition: Pure thought, no side effects.\n"
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field

@@ -20,8 +20,6 @@ USAGE:
     from agentic_core.L5_safety.enforcement.three_tier_compliance_enforcer import (
         ThreeTierComplianceChecker
     )
-from agentic_core.runtime.lifecycle_trace_contract import _emit_snapshots_state  # noqa: E402
-_emit_snapshots_state("p0", "three_tier_compliance_enforcer", "state_snapshot")
     checker = ThreeTierComplianceChecker()
     result = checker.check_compliance()
 """
@@ -42,10 +40,21 @@ from agentic_core.L5_safety.enforcement.registry_verification_enforcer import (
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_applies_guardrail,
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
     _emit_records_execution_trace,
+    _emit_routes_through,  # noqa: E402
     _emit_signs_execution_trace,
+    _emit_snapshots_state,  # noqa: E402
     _emit_verifies_policy,
 )
+
+_emit_dispatches_healing_run("p1", "three_tier_compliance_enforcer", "L5")
+_emit_routes_through("p1", "three_tier_compliance_enforcer", "L5")
+_emit_escalates_to_human("p1", "three_tier_compliance_enforcer", "L5")
+_emit_reads_policy_state("p1", "three_tier_compliance_enforcer", "L5")
+_emit_snapshots_state("p0", "three_tier_compliance_enforcer", "state_snapshot")
 
 # Guardian test patterns that provide architectural coverage
 GUARDIAN_TEST_PATTERNS: Final[list[str]] = [

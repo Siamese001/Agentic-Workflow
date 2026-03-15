@@ -1,5 +1,17 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "align_tests_structure_util", "L0")
+_emit_routes_through("p1", "align_tests_structure_util", "L0")
+_emit_escalates_to_human("p1", "align_tests_structure_util", "L0")
+_emit_reads_policy_state("p1", "align_tests_structure_util", "L0")
+
 "\nTEST STRUCTURE ALIGNMENT\nEnsures all test directories have __init__.py for Python package recognition.\n"
 import os
 from pathlib import Path

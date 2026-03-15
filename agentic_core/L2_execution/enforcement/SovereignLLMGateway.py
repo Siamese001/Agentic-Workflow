@@ -38,7 +38,11 @@ from agentic_core.L5_safety.enforcement.policy_enforcement_point import get_poli
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_applies_guardrail,  # noqa: E402
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
     _emit_records_execution_trace,
+    _emit_routes_through,  # noqa: E402
     _emit_signs_execution_trace,  # noqa: E402
     _emit_snapshots_state,  # noqa: E402
 )
@@ -47,6 +51,11 @@ from data.sdks_mcps.client_wrappers import (
     create_openai_client,
     create_vertex_client,
 )
+
+_emit_dispatches_healing_run("p1", "SovereignLLMGateway", "L2")
+_emit_routes_through("p1", "SovereignLLMGateway", "L2")
+_emit_escalates_to_human("p1", "SovereignLLMGateway", "L2")
+_emit_reads_policy_state("p1", "SovereignLLMGateway", "L2")
 
 _emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 _emit_applies_guardrail("p0", "SovereignLLMGateway", "p0_governance")

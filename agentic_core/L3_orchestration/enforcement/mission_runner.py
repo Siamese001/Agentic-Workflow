@@ -1,6 +1,17 @@
 from __future__ import annotations
 
 from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "mission_runner", "L3")
+_emit_routes_through("p1", "mission_runner", "L3")
+_emit_escalates_to_human("p1", "mission_runner", "L3")
+_emit_reads_policy_state("p1", "mission_runner", "L3")
 
 "\nCanon Validator Mission Runner\n\nContains all mission execution modes:\n- Standard Mode (L4): Full validation mission with self-healing cycles\n- Daemon Mode (L5): The Watchman - file system monitoring\n- Surgical Mode: Target specific files for validation\n\nThis module consolidates all mission execution logic from the canon validator.\n"
 import asyncio

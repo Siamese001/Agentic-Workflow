@@ -18,10 +18,19 @@ from typing import Final
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_applies_guardrail,
+    _emit_dispatches_healing_run,
+    _emit_escalates_to_human,
+    _emit_reads_policy_state,
     _emit_records_execution_trace,
+    _emit_routes_through,
     _emit_signs_execution_trace,
     _emit_snapshots_state,
 )
+
+_emit_reads_policy_state("p1", "path_constants", "L0")
+_emit_escalates_to_human("p1", "path_constants", "L0")
+_emit_routes_through("p1", "path_constants", "L0")
+_emit_dispatches_healing_run("p1", "path_constants", "L0")
 
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0

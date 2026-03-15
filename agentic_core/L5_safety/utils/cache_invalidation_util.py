@@ -1,5 +1,17 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "cache_invalidation_util", "L5")
+_emit_routes_through("p1", "cache_invalidation_util", "L5")
+_emit_escalates_to_human("p1", "cache_invalidation_util", "L5")
+_emit_reads_policy_state("p1", "cache_invalidation_util", "L5")
+
 '\ncache Invalidation Utilities for Healing Workflows\n\nProvides decorators and helpers to invalidate cache after successful healing operations.\nThis ensures stale cached data (like AST results, compliance checks) is purged\nwhen the underlying code changes.\n\nUsage:\n\n    class HealerAgent(SovereignBaseAgent):\n        @heal_invalidate_cache("canon:*")  # Invalidate AST caches after heal\n        async def heal_repository(self) -> dict:\n            # Healing logic...\n            return {"success": True}\n'
 import functools
 import logging

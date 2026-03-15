@@ -1,5 +1,17 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "sovereign_precommit_no_hardcoded_util", "L0")
+_emit_routes_through("p1", "sovereign_precommit_no_hardcoded_util", "L0")
+_emit_escalates_to_human("p1", "sovereign_precommit_no_hardcoded_util", "L0")
+_emit_reads_policy_state("p1", "sovereign_precommit_no_hardcoded_util", "L0")
+
 "\nSovereign Guard: Block Hardcoded configuration Constants\nEnforces that all operational constants must be centralized in sovereign_config.py\n\nUsage: Called automatically by pre-commit hook\n"
 import re
 import sys

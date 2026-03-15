@@ -1,5 +1,17 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "GitHygieneAgent", "L5")
+_emit_routes_through("p1", "GitHygieneAgent", "L5")
+_emit_escalates_to_human("p1", "GitHygieneAgent", "L5")
+_emit_reads_policy_state("p1", "GitHygieneAgent", "L5")
+
 'Git Hygiene Agent - Enforces Git repository hygiene.\n\nThis module provides a batch agent that enforces Git repository hygiene by:\n- Detecting stale branches (no commits in >90 days)\n- Identifying large files in history (>10MB)\n- Checking for uncommitted/unpushed changes\n\nTypical usage:\n    agent = GitHygieneAgent(project_root=Path("/path/to/repo"), ctx=context)\n    result = await agent.execute()\n'
 from dataclasses import dataclass
 from datetime import datetime, timedelta

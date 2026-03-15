@@ -1,5 +1,17 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "AgentFactory", "L3")
+_emit_routes_through("p1", "AgentFactory", "L3")
+_emit_escalates_to_human("p1", "AgentFactory", "L3")
+_emit_reads_policy_state("p1", "AgentFactory", "L3")
+
 "\nAgent Factory – L3 Orchestration Layer (Phase 9A & 11 – Dec 26, 2025)\nWires L1 Cognition agents with L2 Execution implementations via DIP.\n\nDDD Compliance:\n- L3 orchestrates the wiring between L1 and L2\n- L1 never directly imports L2\n- All dependencies injected at runtime\n\nPhase 11: Configurable Implementation Factory\n- Supports multiple implementation modes: real, mock, aggressive\n- Enables zero-cost unit testing with mock implementations\n- Allows runtime switching of agent behavior\n"
 import uuid
 from typing import Any

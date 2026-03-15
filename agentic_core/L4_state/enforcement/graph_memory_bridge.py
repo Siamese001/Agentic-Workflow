@@ -1,5 +1,17 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "graph_memory_bridge", "L4")
+_emit_routes_through("p1", "graph_memory_bridge", "L4")
+_emit_escalates_to_human("p1", "graph_memory_bridge", "L4")
+_emit_reads_policy_state("p1", "graph_memory_bridge", "L4")
+
 "\n[PHASE 21] Graph Memory Bridge - Interface to Memory MCP Knowledge Graph.\n\nProvides a programmatic interface to the Memory MCP server for:\n- Entity creation (agents, tasks, protocols)\n- Relation creation (MASTERED_TASK, INTERACTS_WITH, etc.)\n- Observation storage\n- Graph queries\n\nThis bridge uses the live Windsurf Memory MCP tools:\n- mcp11_create_entities: Create entities in the knowledge graph\n- mcp11_create_relations: Create relations between entities\n- mcp11_add_observations: Add observations to entities\n- mcp11_search_nodes: Search for nodes in the graph\n- mcp11_open_nodes: Open specific nodes by name\n- mcp11_read_graph: Read the full graph\n\nResilient Mode: If MCP is unavailable, operations are logged but don't crash.\n\n[SSOT] This is the canonical interface for Memory MCP operations.\n"
 import hashlib
 import logging

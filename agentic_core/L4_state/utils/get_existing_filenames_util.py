@@ -2,6 +2,18 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "get_existing_filenames_util", "L4")
+_emit_routes_through("p1", "get_existing_filenames_util", "L4")
+_emit_escalates_to_human("p1", "get_existing_filenames_util", "L4")
+_emit_reads_policy_state("p1", "get_existing_filenames_util", "L4")
+
 "Brief description of functionality and purpose."
 "Brief description of functionality and purpose."
 from typing import Any

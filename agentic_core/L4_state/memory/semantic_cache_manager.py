@@ -1,5 +1,17 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "semantic_cache_manager", "L4")
+_emit_routes_through("p1", "semantic_cache_manager", "L4")
+_emit_escalates_to_human("p1", "semantic_cache_manager", "L4")
+_emit_reads_policy_state("p1", "semantic_cache_manager", "L4")
+
 '\n[PHASE 17/20] Semantic cache Manager - The Collective Hive Mind.\n\n[PHASE 3 MIGRATION] Canonical Implementation:\n- This is the ONLY SemanticCacheManager in the codebase.\n- All other copies (L5/guardrails, L5/cognition) have been deprecated.\n- Use semantic_cache_mixin.py for agent-level access.\n\nLocated in L4_state as it manages the persistence and state of agentic memory.\nProvides O(1) exact recall (Redis) and semantic similarity recall (InMemoryVectorStore).\n\nPhase 17: Initial implementation with Redis + InMemoryVectorStore\nPhase 20: Hardened singleton pattern, thread safety, and connection retries.\nPhase 20+: Configurable compliance, PII sanitization, trace sampling, memory lifecycle.\n\nconfiguration (Environment Variables):\n- HIVE_MIND_STRICT_MODE: "true" (default) raises on infrastructure failure, "false" degrades gracefully\n- HIVE_MIND_TRACE_SAMPLING_RATE: 0.0 to 1.0 (default 1.0) - controls trace capture rate\n- HIVE_MIND_PROMOTION_THRESHOLD: 0.0 to 1.0 (default 0.8) - minimum feedback score for promotion\n\n[SSOT] This is the canonical location for the Hive Mind infrastructure.\n'
 import hashlib
 import json

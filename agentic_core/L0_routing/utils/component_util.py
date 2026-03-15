@@ -14,7 +14,11 @@ from agentic_core.utils.feature_flags import FeatureFlagManager
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_applies_guardrail,
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
     _emit_records_execution_trace,
+    _emit_routes_through,  # noqa: E402
     _emit_signs_execution_trace,
     _emit_snapshots_state,
     emit_determinism_digest,
@@ -24,6 +28,11 @@ from agentic_core.utils.detection_protocol_util import DetectionSignalProtocol
 from agentic_core.utils.meta_learning_types_util import MetaLearningProtocol
 from agentic_core.utils.review_protocol_util import HumanReviewProtocol
 from agentic_core.utils.verification_types_util import VerificationGateProtocol
+
+_emit_dispatches_healing_run("p1", "component_util", "L0")
+_emit_routes_through("p1", "component_util", "L0")
+_emit_escalates_to_human("p1", "component_util", "L0")
+_emit_reads_policy_state("p1", "component_util", "L0")
 
 logger = logging.getLogger(__name__)
 

@@ -1,5 +1,17 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "rl_strategy", "L3")
+_emit_routes_through("p1", "rl_strategy", "L3")
+_emit_escalates_to_human("p1", "rl_strategy", "L3")
+_emit_reads_policy_state("p1", "rl_strategy", "L3")
+
 "\nRLStrategy - Consolidated Reinforcement Learning Orchestration Strategy\n\nThis module consolidates logic from:\n- ActorCriticOrchestratorAgent\n- PPOOrchestratorAgent\n- QLearningOrchestratorAgent\n- RLOrchestratorAgent\n- ReinforceCriticOrchestratorAgent\n\nSSOT PRINCIPLE:\n    All RL-related orchestration flows through this strategy,\n    which is injected into Orchestrator.\n"
 import logging
 from dataclasses import dataclass, field

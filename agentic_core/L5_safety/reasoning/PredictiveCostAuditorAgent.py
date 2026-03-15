@@ -1,6 +1,17 @@
 from __future__ import annotations
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "PredictiveCostAuditorAgent", "L5")
+_emit_routes_through("p1", "PredictiveCostAuditorAgent", "L5")
+_emit_escalates_to_human("p1", "PredictiveCostAuditorAgent", "L5")
+_emit_reads_policy_state("p1", "PredictiveCostAuditorAgent", "L5")
 
 '\n⚛️ Predictive Cost Auditor - The Efficiency Guard\n\nMonitors Atomic Blackboard to track Economic ROI of healing efforts.\nIdentifies "Healing Sinks" where token spending exceeds value threshold.\n\nMission: Provide Go/No-Go signals for pipeline deployment\nStrategy: Thermal mapping of repository to identify technical debt hotspots\n\nTracks: Token usage per file, healing attempts, success rates\nFlags: Files consuming excessive tokens without reaching PASS state\nSuggests: Where manual Atomic Fission would be more cost-effective\n'
 import logging

@@ -1,5 +1,17 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "subprocess_security_util", "L5")
+_emit_routes_through("p1", "subprocess_security_util", "L5")
+_emit_escalates_to_human("p1", "subprocess_security_util", "L5")
+_emit_reads_policy_state("p1", "subprocess_security_util", "L5")
+
 "\nSecurity Utilities for Agentic Workflow\n\nZero-Trust subprocess execution wrapper with comprehensive input validation,\ninjection prevention, and observability integration.\n\nZero-Ambiguity Standard: Renamed from SecurityViolationError.py to subprocess_security_util.py\nCategory: UTILITY (Security utilities, not just an Error class)\n\nCreated: 2026-01-20\nPurpose: Harden all subprocess calls against shell injection attacks\n"
 import logging
 import re

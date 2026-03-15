@@ -1,4 +1,15 @@
 from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "DuplicateCodeDetectorAgent", "L5")
+_emit_routes_through("p1", "DuplicateCodeDetectorAgent", "L5")
+_emit_escalates_to_human("p1", "DuplicateCodeDetectorAgent", "L5")
+_emit_reads_policy_state("p1", "DuplicateCodeDetectorAgent", "L5")
 
 "Duplicate Code Detector Agent - Detects duplicate files and code blocks.\n\nThis module provides a batch agent that detects exact duplicate files and\ncode blocks across the entire territory using content hashing and AST\nfingerprinting for structural comparison.\n\nTypical usage:\n    agent = DuplicateCodeDetectorAgent(project_root=Path(\"/path/to/project\"))\n    result = await agent.execute(file_types={'.py', '.js'})\n"
 import ast

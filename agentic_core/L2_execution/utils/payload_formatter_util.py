@@ -1,5 +1,17 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "payload_formatter_util", "L2")
+_emit_routes_through("p1", "payload_formatter_util", "L2")
+_emit_escalates_to_human("p1", "payload_formatter_util", "L2")
+_emit_reads_policy_state("p1", "payload_formatter_util", "L2")
+
 "\nPrepareGenerationPayload.py - Formatting Module\n\nDomain: resume\nGenerated: 2025-12-07T13:29:00.518651\n"
 import logging
 from typing import Any

@@ -1,6 +1,17 @@
 from __future__ import annotations
 
 from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "DependencyPruningAgent", "L5")
+_emit_routes_through("p1", "DependencyPruningAgent", "L5")
+_emit_escalates_to_human("p1", "DependencyPruningAgent", "L5")
+_emit_reads_policy_state("p1", "DependencyPruningAgent", "L5")
 
 "Dependency Pruning Agent - Detects and removes unused Python dependencies.\n\nThis module provides a batch agent that detects and removes unused Python\ndependencies from requirements.txt using 'deptry' for accurate AST-based\nunused detection.\n\nTypical usage:\n    agent = DependencyPruningAgent(project_root=Path(\"/path/to/project\"), ctx=context)\n    result = await agent.execute()\n"
 import json

@@ -4,10 +4,6 @@ TestSilentSkipDetector — catches over-broad import guards in test files.
 Root cause of the silent-test-skip epidemic (1 569 affected files):
     try:
         from some.module import Foo, CONSTANT_THAT_DOESNT_EXIST
-from agentic_core.runtime.lifecycle_trace_contract import _emit_snapshots_state  # noqa: E402
-from agentic_core.runtime.lifecycle_trace_contract import _emit_applies_guardrail  # noqa: E402
-_emit_applies_guardrail("p0", "test_skip_detector_validator", "p0_governance")
-_emit_snapshots_state("p0", "test_skip_detector_validator", "state_snapshot")
         _AVAILABLE = True
     except Exception:          # ← TOO BROAD
         _AVAILABLE = False     # ← every test in this file permanently skipped
@@ -43,9 +39,22 @@ from agentic_core.L5_safety.validators.base_detector_validator import (
 )
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
     _emit_records_execution_trace,
+    _emit_routes_through,  # noqa: E402
     _emit_signs_execution_trace,
+    _emit_snapshots_state,  # noqa: E402
 )
+
+_emit_dispatches_healing_run("p1", "test_skip_detector_validator", "L5")
+_emit_routes_through("p1", "test_skip_detector_validator", "L5")
+_emit_escalates_to_human("p1", "test_skip_detector_validator", "L5")
+_emit_reads_policy_state("p1", "test_skip_detector_validator", "L5")
+_emit_applies_guardrail("p0", "test_skip_detector_validator", "p0_governance")
+_emit_snapshots_state("p0", "test_skip_detector_validator", "state_snapshot")
 
 # ---------------------------------------------------------------------------
 # Constants

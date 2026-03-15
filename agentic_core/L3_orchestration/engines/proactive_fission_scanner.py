@@ -1,5 +1,17 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "proactive_fission_scanner", "L3")
+_emit_routes_through("p1", "proactive_fission_scanner", "L3")
+_emit_escalates_to_human("p1", "proactive_fission_scanner", "L3")
+_emit_reads_policy_state("p1", "proactive_fission_scanner", "L3")
+
 "\nProactive Fission Scanner - L3 Orchestration\n\nScans L4 State for structural patterns matching known 'Critical Bloat' profiles.\nIdentifies files likely to cause Key 41/42 violations before they fail.\n\nStrategy:\n- Scan repository for high-gravity files (>600 lines)\n- Use Brave Search for modular design patterns\n- Use Pinecone to find structural twins\n- Create pre-emptive refactor proposals\n- Enable proactive architectural governance\n"
 import logging
 import os

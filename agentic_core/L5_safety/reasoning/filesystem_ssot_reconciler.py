@@ -1,6 +1,17 @@
 from __future__ import annotations
 
 from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "filesystem_ssot_reconciler", "L5")
+_emit_routes_through("p1", "filesystem_ssot_reconciler", "L5")
+_emit_escalates_to_human("p1", "filesystem_ssot_reconciler", "L5")
+_emit_reads_policy_state("p1", "filesystem_ssot_reconciler", "L5")
 
 "\nFilesystemSSOTReconcilerAgent - FILESYSTEM-LEVEL SSOT RECONCILER\nTerritory: agentic_core/L0_routing/scripts/\n\nVERSION 2.0 — 2025-12-31\nEnforces SSOT blueprint by aligning filesystem structure.\n\nDirection: Blueprint → Filesystem (Enforcement)\nScans: Actual folder structure on disk (L1/L2 depth)\nDetects: Unauthorized folders (Heresy) or missing required folders.\nAction: Creates missing folders and archives unauthorized ones.\n\nResponsibilities:\n- Scan filesystem for actual folder structure (L1/L2 depth)\n- Scan agents for canonical signals usage\n- Detect drift between structure_blueprint.py and reality\n- Generate filesystem proposals\n- Auto-align filesystem with safety checks (opt-in)\n\nMirrors the successful PromptRegistry.py pattern:\n- Deduplication-safe updates\n- Atomic writes with tempfile + rename\n- Backup before modifications\n- Syntax validation after changes\n\nInvoked by:\n- MissionController (post-mission hook, env: RECONCILE_BLUEPRINT)\n- SovereignAuditor (on sovereignty degradation)\n- Manual CLI trigger\n\nPhase 1: Read-only drift detection (auto_apply=False by default)\nPhase 2: Manual approval workflow\nPhase 3: Autonomous updates (auto_apply=True with safety checks)\n\nComplementary to CodeSSOTEnforcerAgent which validates that code uses\nSSOT imports instead of hard-coded paths.\n\nGOLD STANDARD UPGRADE (2026-01-02):\n- Structured Violation dataclass with severity levels\n- LocationAgent integration for territory validation after reconciliation\n- HierarchyAgent integration for structure validation after reconciliation\n- NamingAgent integration for naming compliance checks\n- Post-heal validation confirming blueprint sync\n- Batch post-heal reporting with FULL_SUCCESS/PARTIAL/NEEDS_REVIEW\n- cleanup_violations with multi-stage reconciliation healing\n- run_with_cleanup returning comprehensive summaries\n\nDOMAIN-SPECIFIC INTEGRATIONS (SSOT Coordination):\n- LocationAgent: Validate file territories match blueprint\n- HierarchyAgent: Validate depth compliance after reconciliation\n- NamingAgent: Validate naming conventions in reconciled structure\n"
 import ast

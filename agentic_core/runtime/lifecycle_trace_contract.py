@@ -55,6 +55,12 @@ _OBSERVES_RT_LOG = logging.getLogger("adg.observes_runtime_state")
 _VERIFIES_POLICY_LOG = logging.getLogger("adg.verifies_policy")
 _CONFIDENCE_LOG = logging.getLogger("adg.gated_by_confidence")
 
+# ── P1 Structural Integrity loggers ──────────────────────────────────────────
+_POLICY_STATE_LOG = logging.getLogger("adg.reads_policy_state")
+_ESCALATION_LOG = logging.getLogger("adg.escalates_to_human")
+_ROUTES_THROUGH_LOG = logging.getLogger("adg.routes_through")
+_HEALING_DISPATCH_LOG = logging.getLogger("adg.dispatches_healing_run")
+
 
 # ── §3 — Per-layer trace segment types ───────────────────────────────────────
 
@@ -212,6 +218,7 @@ def _emit_records_execution_trace(root_trace_id: str, layer: str, operation: str
             from agentic_core.L6_observability.dashboard.dashboard_orchestrator import (
                 aggregate_simple_dashboard,  # noqa: PLC0415
             )
+
             snapshot = aggregate_simple_dashboard(window_duration_seconds=300)  # 5-minute window
             _LOG.debug(
                 "DASHBOARD_AGGREGATION_TRIGGERED root_trace_id=%s layer=%s snapshot_id=%s",
@@ -361,6 +368,49 @@ def _emit_gated_by_confidence(root_trace_id: str, scorer: str, threshold: str) -
         root_trace_id,
         scorer,
         threshold,
+    )
+
+
+# ── P1 Structural Integrity emitter functions ────────────────────────────────
+
+
+def _emit_reads_policy_state(root_trace_id: str, policy_key: str, layer: str) -> None:
+    """Emit reads_policy_state ADG edge (P1 Evidence)."""
+    _POLICY_STATE_LOG.debug(
+        "reads_policy_state root_trace_id=%s policy_key=%s layer=%s",
+        root_trace_id,
+        policy_key,
+        layer,
+    )
+
+
+def _emit_escalates_to_human(root_trace_id: str, reason: str, layer: str) -> None:
+    """Emit escalates_to_human ADG edge (P1 Governance)."""
+    _ESCALATION_LOG.debug(
+        "escalates_to_human root_trace_id=%s reason=%s layer=%s",
+        root_trace_id,
+        reason,
+        layer,
+    )
+
+
+def _emit_routes_through(root_trace_id: str, route_key: str, layer: str) -> None:
+    """Emit routes_through ADG edge (P1 Trace)."""
+    _ROUTES_THROUGH_LOG.debug(
+        "routes_through root_trace_id=%s route_key=%s layer=%s",
+        root_trace_id,
+        route_key,
+        layer,
+    )
+
+
+def _emit_dispatches_healing_run(root_trace_id: str, healer_key: str, layer: str) -> None:
+    """Emit dispatches_healing_run ADG edge (P1 Runtime)."""
+    _HEALING_DISPATCH_LOG.debug(
+        "dispatches_healing_run root_trace_id=%s healer_key=%s layer=%s",
+        root_trace_id,
+        healer_key,
+        layer,
     )
 
 
@@ -547,4 +597,8 @@ __all__ = [
     "_emit_signs_execution_trace",
     "_emit_transcripts_response",
     "_emit_hard_fails_untranscripted",
+    "_emit_reads_policy_state",
+    "_emit_escalates_to_human",
+    "_emit_routes_through",
+    "_emit_dispatches_healing_run",
 ]

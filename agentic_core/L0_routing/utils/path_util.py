@@ -10,6 +10,18 @@ from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "path_util", "L0")
+_emit_routes_through("p1", "path_util", "L0")
+_emit_escalates_to_human("p1", "path_util", "L0")
+_emit_reads_policy_state("p1", "path_util", "L0")
+
 if TYPE_CHECKING:
     from collections.abc import Iterator
 from agentic_core.L0_routing.config.path_constants import GLOBAL_EXCLUDED_DIRS, PROJECT_ROOT_MARKERS

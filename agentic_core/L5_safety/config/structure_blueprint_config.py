@@ -99,6 +99,17 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import (  # noqa: F4
     get_sovereign_territories,
     get_subfolder_metadata,
 )
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_reads_policy_state("p1", "structure_blueprint_config", "L5")
+_emit_escalates_to_human("p1", "structure_blueprint_config", "L5")
+_emit_routes_through("p1", "structure_blueprint_config", "L5")
+_emit_dispatches_healing_run("p1", "structure_blueprint_config", "L5")
 
 # __all__ mirrors the package's __all__ exactly (163 names).
 # The 18 backward-compat re-exports above are importable by explicit import

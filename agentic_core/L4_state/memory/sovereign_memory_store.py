@@ -1,5 +1,17 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "sovereign_memory_store", "L4")
+_emit_routes_through("p1", "sovereign_memory_store", "L4")
+_emit_escalates_to_human("p1", "sovereign_memory_store", "L4")
+_emit_reads_policy_state("p1", "sovereign_memory_store", "L4")
+
 "L4 State: Sovereign MCP Memory — Eternal Knowledge Graph\n\nUltra-hardened persistent memory with entities, relations, observations.\n\nDelegates all operations through GraphMemoryBridge which routes to the\nlive mcp11_* Memory MCP tools (or falls back gracefully in CI).\n\n"
 import logging
 from typing import Any

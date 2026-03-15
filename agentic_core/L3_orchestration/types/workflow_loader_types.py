@@ -2,6 +2,18 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "workflow_loader_types", "L3")
+_emit_routes_through("p1", "workflow_loader_types", "L3")
+_emit_escalates_to_human("p1", "workflow_loader_types", "L3")
+_emit_reads_policy_state("p1", "workflow_loader_types", "L3")
+
 "Brief description of functionality and purpose."
 "Brief description of functionality and purpose."
 "\nWorkflow Loader - Dynamic loading and parsing of workflow configurations.\n\nLoads the active_workflow.json and provides typed accessors for workflow sections,\nK-node configurations, prompts, and validation rules.\n"

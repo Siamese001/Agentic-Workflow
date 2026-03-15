@@ -11,14 +11,6 @@ USAGE:
         get_agents_by_layer,
         get_agent_by_name,
     )
-from agentic_core.runtime.lifecycle_trace_contract import _emit_snapshots_state  # noqa: E402
-from agentic_core.runtime.lifecycle_trace_contract import _emit_applies_guardrail  # noqa: E402
-from agentic_core.runtime.lifecycle_trace_contract import _emit_signs_execution_trace  # noqa: E402
-from agentic_core.runtime.lifecycle_trace_contract import _emit_records_execution_trace  # noqa: E402
-_emit_records_execution_trace("p0", "evidence", "ssot_discovery_util")
-_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
-_emit_applies_guardrail("p0", "ssot_discovery_util", "p0_governance")
-_emit_snapshots_state("p0", "ssot_discovery_util", "state_snapshot")
 
     # Get all agent paths
     paths = get_agent_paths(project_root)
@@ -42,6 +34,25 @@ from agentic_core.L0_routing.config import (
     AGENT_DISCOVERY_JSON,
     get_validated_project_root,
 )
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "ssot_discovery_util", "L0")
+_emit_routes_through("p1", "ssot_discovery_util", "L0")
+_emit_escalates_to_human("p1", "ssot_discovery_util", "L0")
+_emit_reads_policy_state("p1", "ssot_discovery_util", "L0")
+_emit_records_execution_trace("p0", "evidence", "ssot_discovery_util")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_applies_guardrail("p0", "ssot_discovery_util", "p0_governance")
+_emit_snapshots_state("p0", "ssot_discovery_util", "state_snapshot")
 
 Logger = logging.getLogger(__name__)
 

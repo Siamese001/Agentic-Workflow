@@ -13,10 +13,6 @@ Replaces:
 
 Usage:
     from agentic_core.L4_state.utils.context_manager import get_context_manager
-from agentic_core.runtime.lifecycle_trace_contract import _emit_snapshots_state  # noqa: E402
-from agentic_core.runtime.lifecycle_trace_contract import _emit_applies_guardrail  # noqa: E402
-_emit_applies_guardrail("p0", "context_validator", "p0_governance")
-_emit_snapshots_state("p0", "context_validator", "state_snapshot")
 
     ctx = get_context_manager(project_root)
 
@@ -40,9 +36,22 @@ from typing import Any
 
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
     _emit_records_execution_trace,
+    _emit_routes_through,  # noqa: E402
     _emit_signs_execution_trace,
+    _emit_snapshots_state,  # noqa: E402
 )
+
+_emit_dispatches_healing_run("p1", "context_validator", "L5")
+_emit_routes_through("p1", "context_validator", "L5")
+_emit_escalates_to_human("p1", "context_validator", "L5")
+_emit_reads_policy_state("p1", "context_validator", "L5")
+_emit_applies_guardrail("p0", "context_validator", "p0_governance")
+_emit_snapshots_state("p0", "context_validator", "state_snapshot")
 
 
 @dataclass

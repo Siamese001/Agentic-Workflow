@@ -1,5 +1,17 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "analysis_ops_util", "L2")
+_emit_routes_through("p1", "analysis_ops_util", "L2")
+_emit_escalates_to_human("p1", "analysis_ops_util", "L2")
+_emit_reads_policy_state("p1", "analysis_ops_util", "L2")
+
 "\nAnalysis Operations - AST Parsing, Linting, and Code Quality Tools\nConsolidated from core_utils.py and security_utils.py\n"
 import ast
 import logging

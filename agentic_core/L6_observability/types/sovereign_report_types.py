@@ -1,5 +1,17 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "sovereign_report_types", "L6")
+_emit_routes_through("p1", "sovereign_report_types", "L6")
+_emit_escalates_to_human("p1", "sovereign_report_types", "L6")
+_emit_reads_policy_state("p1", "sovereign_report_types", "L6")
+
 "\nSovereign Report Agent – Phase 13+ (Dec 30, 2025)\nPure canonical audit report structure and builder.\nZero side effects. Import-safe for L6 consumption and all orchestration agents.\n"
 import logging
 import re

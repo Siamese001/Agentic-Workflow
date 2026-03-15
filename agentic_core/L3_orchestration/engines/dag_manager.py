@@ -4,6 +4,18 @@ from collections.abc import Callable
 from datetime import datetime
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "dag_manager", "L3")
+_emit_routes_through("p1", "dag_manager", "L3")
+_emit_escalates_to_human("p1", "dag_manager", "L3")
+_emit_reads_policy_state("p1", "dag_manager", "L3")
+
 "\nDAGManager - Extracted for one-class-per-file pattern.\n\nOriginally from: DAGMutatorAgent.py\nExtracted: 2026-01-06 (Surgical Extraction)\nRenamed: 2026-01-22 (Utility Renaming - Not an Agent)\n"
 
 import networkx as nx

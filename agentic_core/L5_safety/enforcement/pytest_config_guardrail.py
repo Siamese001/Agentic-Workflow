@@ -1,6 +1,17 @@
 from agentic_core.L0_routing.config.path_constants import TESTS_DIR
 from agentic_core.L2_execution.tools import write_gateway as _wg
-from agentic_core.runtime.lifecycle_trace_contract import _emit_snapshots_state  # noqa: E402
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "pytest_config_guardrail", "L5")
+_emit_routes_through("p1", "pytest_config_guardrail", "L5")
+_emit_escalates_to_human("p1", "pytest_config_guardrail", "L5")
+_emit_reads_policy_state("p1", "pytest_config_guardrail", "L5")
 
 _emit_snapshots_state("p0", "pytest_config_guardrail", "state_snapshot")
 

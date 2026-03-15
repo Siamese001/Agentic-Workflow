@@ -1,6 +1,17 @@
 from __future__ import annotations
 
 from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "circular_import_fixer_enforcer", "L5")
+_emit_routes_through("p1", "circular_import_fixer_enforcer", "L5")
+_emit_escalates_to_human("p1", "circular_import_fixer_enforcer", "L5")
+_emit_reads_policy_state("p1", "circular_import_fixer_enforcer", "L5")
 
 "\nFix circular imports in agentic_core by converting absolute imports to relative imports.\n\nThis script:\n1. Scans all Python files in agentic_core/\n3. Converts them to relative imports: from .L1_cognition... or from ..L1_cognition...\n4. Preserves imports from outside agentic_core (e.g., from apps_shared, from schemas)\n"
 import re

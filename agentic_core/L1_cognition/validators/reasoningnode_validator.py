@@ -1,5 +1,17 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "reasoningnode_validator", "L1")
+_emit_routes_through("p1", "reasoningnode_validator", "L1")
+_emit_escalates_to_human("p1", "reasoningnode_validator", "L1")
+_emit_reads_policy_state("p1", "reasoningnode_validator", "L1")
+
 "\nReasoning Node - Sub-atomic Thought Generation\n\nHandles reasoning strategy selection, thought generation, and planning.\nIntegrates Phase 1-3 optimizations (caching, pruning, adaptive planning).\n"
 import asyncio
 from typing import Any

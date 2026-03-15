@@ -1,5 +1,17 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "action_capability", "L0")
+_emit_routes_through("p1", "action_capability", "L0")
+_emit_escalates_to_human("p1", "action_capability", "L0")
+_emit_reads_policy_state("p1", "action_capability", "L0")
+
 "Action Plane Interface - The Hands.\n\nPhase 2 - Pillar 1: Layering Model\nDefines the contract for all tool execution and external interactions.\nL2 Execution: Side effects allowed, but controlled and observable.\n"
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field

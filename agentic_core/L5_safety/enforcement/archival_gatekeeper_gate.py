@@ -1,6 +1,17 @@
 from __future__ import annotations
 
 from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "archival_gatekeeper_gate", "L5")
+_emit_routes_through("p1", "archival_gatekeeper_gate", "L5")
+_emit_escalates_to_human("p1", "archival_gatekeeper_gate", "L5")
+_emit_reads_policy_state("p1", "archival_gatekeeper_gate", "L5")
 
 '\nArchivalGatekeeper - Centralized Service for Destructive File Operations\n\nThis module provides a singleton service that handles ALL destructive file operations\n(move, delete, archive) across the entire codebase. This prevents "God Object" creation\nby centralizing file operation logic while keeping agents focused on their domain.\n\nDESIGN PRINCIPLES:\n1. Singleton/Static Service - Single point of control for all file operations\n2. Safe Deletion - \'delete\' actually moves to timestamped archive (soft delete)\n3. Audit Logging - Every operation is logged with full context\n4. No Hard Deletes - Hard delete is banned; all removals go to archive\n\nUSAGE:\n\n    gatekeeper = ArchivalGatekeeper.get_instance(project_root)\n    result = gatekeeper.safe_move(src, dst, "MyAgent", "Relocating to correct territory")\n    result = gatekeeper.safe_archive(src, "MyAgent", "File violates depth rules")\n    result = gatekeeper.safe_delete(src, "MyAgent", "Duplicate file removal")\n\nTerritory: agentic_core/L5_safety/enforcement/\n'
 import json

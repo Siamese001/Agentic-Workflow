@@ -12,10 +12,19 @@ from enum import Enum
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_applies_guardrail,  # noqa: E402
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
     _emit_records_execution_trace,
+    _emit_routes_through,  # noqa: E402
     _emit_signs_execution_trace,
     _emit_snapshots_state,  # noqa: E402
 )
+
+_emit_dispatches_healing_run("p1", "priority_violation_guard", "L5")
+_emit_routes_through("p1", "priority_violation_guard", "L5")
+_emit_escalates_to_human("p1", "priority_violation_guard", "L5")
+_emit_reads_policy_state("p1", "priority_violation_guard", "L5")
 
 _emit_applies_guardrail("p0", "priority_violation_guard", "p0_governance")
 _emit_snapshots_state("p0", "priority_violation_guard", "state_snapshot")

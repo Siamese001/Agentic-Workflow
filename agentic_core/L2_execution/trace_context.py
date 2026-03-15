@@ -19,10 +19,6 @@ ADG edges emitted (structured log records):
 Usage — chokepoint injection::
 
     from agentic_core.L2_execution.trace_context import get_trace_context
-from agentic_core.runtime.lifecycle_trace_contract import _emit_snapshots_state  # noqa: E402
-from agentic_core.runtime.lifecycle_trace_contract import _emit_applies_guardrail  # noqa: E402
-_emit_applies_guardrail("p0", "trace_context", "p0_governance")
-_emit_snapshots_state("p0", "trace_context", "state_snapshot")
 
     ctx = get_trace_context()
     ctx.record(
@@ -55,9 +51,22 @@ from typing import Any, Generator
 
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
     _emit_records_execution_trace,
+    _emit_routes_through,  # noqa: E402
     _emit_signs_execution_trace,
+    _emit_snapshots_state,  # noqa: E402
 )
+
+_emit_dispatches_healing_run("p1", "trace_context", "L2")
+_emit_routes_through("p1", "trace_context", "L2")
+_emit_escalates_to_human("p1", "trace_context", "L2")
+_emit_reads_policy_state("p1", "trace_context", "L2")
+_emit_applies_guardrail("p0", "trace_context", "p0_governance")
+_emit_snapshots_state("p0", "trace_context", "state_snapshot")
 
 logger = logging.getLogger(__name__)
 _TRACE_LOGGER = logging.getLogger("adg.records_execution_trace")

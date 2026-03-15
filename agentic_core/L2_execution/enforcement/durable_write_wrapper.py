@@ -9,6 +9,18 @@ from __future__ import annotations
 import logging
 from typing import Any, Callable
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "durable_write_wrapper", "L2")
+_emit_routes_through("p1", "durable_write_wrapper", "L2")
+_emit_escalates_to_human("p1", "durable_write_wrapper", "L2")
+_emit_reads_policy_state("p1", "durable_write_wrapper", "L2")
+
 Logger = logging.getLogger(__name__)
 from agentic_core.L0_routing.enforcement.execution_gateway import CURRENT_PHASE, MUTATION_COUNTER
 from agentic_core.runtime.lifecycle_trace_contract import (

@@ -1,7 +1,18 @@
 from __future__ import annotations
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
 from agentic_core.utils.timeout_decorator_util import timeout
+
+_emit_dispatches_healing_run("p1", "ConstitutionalReviewerAgent", "L5")
+_emit_routes_through("p1", "ConstitutionalReviewerAgent", "L5")
+_emit_escalates_to_human("p1", "ConstitutionalReviewerAgent", "L5")
+_emit_reads_policy_state("p1", "ConstitutionalReviewerAgent", "L5")
 
 "Constitutional Reviewer Agent - Performs final constitutional review of the output."
 import json

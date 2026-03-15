@@ -1,6 +1,17 @@
 from __future__ import annotations
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "sovereign_mcp_router", "L3")
+_emit_routes_through("p1", "sovereign_mcp_router", "L3")
+_emit_escalates_to_human("p1", "sovereign_mcp_router", "L3")
+_emit_reads_policy_state("p1", "sovereign_mcp_router", "L3")
 
 "L3 Orchestration: Sovereign MCP router — Eternal Integration\nHardened routing of canon violations to MCP tools across all layers and apps.\nL5 safety shielded + auto-immune on breach.\n"
 import json

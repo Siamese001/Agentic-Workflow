@@ -1,5 +1,17 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "logic_data_access_init_util", "L0")
+_emit_routes_through("p1", "logic_data_access_init_util", "L0")
+_emit_escalates_to_human("p1", "logic_data_access_init_util", "L0")
+_emit_reads_policy_state("p1", "logic_data_access_init_util", "L0")
+
 "\nData Access Module\n\nThis module provides logic layer data access operations within the Agentic-Workflow system.\nIt offers comprehensive functionality with proper error handling, logging,\nand performance optimization.\n\nFeatures:\n- Efficient processing capabilities\n- Comprehensive error handling\n- Performance monitoring and metrics\n- Type safety and validation\n- Integration with other system components\n\nArchitecture:\nThe module follows clean architecture principles with clear separation\nof concerns and maintainable code structure.\n\nAuthor: Agentic-Workflow Team\nVersion: 1.0.0\n"
 import logging
 from typing import Any

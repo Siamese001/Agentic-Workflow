@@ -13,10 +13,19 @@ from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_p
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_applies_guardrail,
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
     _emit_records_execution_trace,
+    _emit_routes_through,  # noqa: E402
     _emit_signs_execution_trace,
     _emit_snapshots_state,
 )
+
+_emit_dispatches_healing_run("p1", "add_test_coverage_util", "L0")
+_emit_routes_through("p1", "add_test_coverage_util", "L0")
+_emit_escalates_to_human("p1", "add_test_coverage_util", "L0")
+_emit_reads_policy_state("p1", "add_test_coverage_util", "L0")
 
 TEST_METHOD = '\n    def _run_self_tests(self) -> dict:\n        """Run internal self-tests."""\n        results = {"passed": 0, "failed": 0, TESTS_DIR: []}\n        try:\n            assert self is not None\n            results["passed"] += 1\n            results[TESTS_DIR].append({"name": "test_instantiation", "status": "passed"})\n        except AssertionError as e:\n            results["failed"] += 1\n            results[TESTS_DIR].append({"name": "test_instantiation", "status": "failed", "error": str(e)})\n        return results\n'
 

@@ -1,5 +1,17 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "episodic_manager", "L1")
+_emit_routes_through("p1", "episodic_manager", "L1")
+_emit_escalates_to_human("p1", "episodic_manager", "L1")
+_emit_reads_policy_state("p1", "episodic_manager", "L1")
+
 "\nEpisodic Memory - Expanded Mission/Episode Storage\n\nProvides expanded capacity for mission episodes with semantic index\nintegration for long-term pattern access.\n\nFeatures:\n- Expanded capacity (20 → 200 episodes)\n- Semantic index integration for similarity retrieval\n- Automatic offload of old episodes to semantic memory\n- Mission history retention across sessions\n"
 import hashlib
 import time

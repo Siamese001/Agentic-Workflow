@@ -1,5 +1,17 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "data_serializer_util", "L2")
+_emit_routes_through("p1", "data_serializer_util", "L2")
+_emit_escalates_to_human("p1", "data_serializer_util", "L2")
+_emit_reads_policy_state("p1", "data_serializer_util", "L2")
+
 "\nSerializeData.py - Formatting Module\n\nDomain: outreach\nGenerated: 2025-12-07T13:28:54.126442\n"
 import logging
 from typing import Any

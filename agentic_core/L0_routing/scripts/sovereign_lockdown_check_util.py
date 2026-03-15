@@ -1,5 +1,17 @@
 from pathlib import Path
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "sovereign_lockdown_check_util", "L0")
+_emit_routes_through("p1", "sovereign_lockdown_check_util", "L0")
+_emit_escalates_to_human("p1", "sovereign_lockdown_check_util", "L0")
+_emit_reads_policy_state("p1", "sovereign_lockdown_check_util", "L0")
+
 "\n[PHASE 7/8] Sovereign Lockdown Check - CI/CD Entrypoint.\n\nThis script acts as the final gatekeeper for architectural purity.\nIt interfaces with the ArchitectureGovernorAgent in headless mode.\n\nUsage:\n    python scripts/ci/sovereign_lockdown_check_util.py\n\nExit Codes:\n    0 - Repository is sovereign-compliant (no violations)\n    1 - Violations detected (commit should be blocked)\n    2 - Error during verification\n\nPre-commit Hook Entry:\n    - id: sovereign-lockdown-verification\n      name: Sovereign Lockdown Verification (Phase 7)\n      entry: python\n      args: [scripts/ci/sovereign_lockdown_check_util.py]\n      language: python\n      pass_filenames: false\n      always_run: true\n"
 import sys
 

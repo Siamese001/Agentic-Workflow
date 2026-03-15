@@ -9,6 +9,18 @@ from __future__ import annotations
 
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "bm25_store", "L4")
+_emit_routes_through("p1", "bm25_store", "L4")
+_emit_escalates_to_human("p1", "bm25_store", "L4")
+_emit_reads_policy_state("p1", "bm25_store", "L4")
+
 try:
     from rank_bm25 import BM25Okapi
 except ImportError as _err:

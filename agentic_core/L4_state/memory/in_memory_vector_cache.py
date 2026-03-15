@@ -1,5 +1,17 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "in_memory_vector_cache", "L4")
+_emit_routes_through("p1", "in_memory_vector_cache", "L4")
+_emit_escalates_to_human("p1", "in_memory_vector_cache", "L4")
+_emit_reads_policy_state("p1", "in_memory_vector_cache", "L4")
+
 "In-Memory Vector cache - Ultra-fast ChromaDB hot cache for 10-50x speedup.\n\nProvides ephemeral in-memory vector storage for frequently accessed collections.\nOptimized for 8GB hot cache allocation within 32GB WSL2 environment.\n"
 import logging
 from typing import Any

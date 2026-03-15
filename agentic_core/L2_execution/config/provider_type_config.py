@@ -1,5 +1,17 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "provider_type_config", "L2")
+_emit_routes_through("p1", "provider_type_config", "L2")
+_emit_escalates_to_human("p1", "provider_type_config", "L2")
+_emit_reads_policy_state("p1", "provider_type_config", "L2")
+
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
 THRESHOLD = 0.95

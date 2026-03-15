@@ -3,6 +3,17 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "SubAtomicRegistryAgent", "L2")
+_emit_routes_through("p1", "SubAtomicRegistryAgent", "L2")
+_emit_escalates_to_human("p1", "SubAtomicRegistryAgent", "L2")
+_emit_reads_policy_state("p1", "SubAtomicRegistryAgent", "L2")
 
 "\n\nSubAtomicRegistry - Live Semantic Index of Every Method\n\n\n\nUpdated 2026-01-19: Added UNIFIED_AGENT_MAPPING for consolidated agent architecture.\n\nMaps legacy micro-agent keys to unified handlers for backward compatibility.\n\n"
 import ast

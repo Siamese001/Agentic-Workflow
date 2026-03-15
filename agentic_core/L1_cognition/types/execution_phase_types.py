@@ -1,5 +1,17 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "execution_phase_types", "L1")
+_emit_routes_through("p1", "execution_phase_types", "L1")
+_emit_escalates_to_human("p1", "execution_phase_types", "L1")
+_emit_reads_policy_state("p1", "execution_phase_types", "L1")
+
 "Execution-related types and interfaces.\n\nDefines ExecutionContext, ExecutionResult, and ExecutionPhase for\norchestrating agent execution cycles.\n"
 from dataclasses import dataclass, field
 from enum import Enum

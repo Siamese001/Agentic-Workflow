@@ -18,7 +18,18 @@ from contextlib import contextmanager
 from typing import Any, Callable
 
 from agentic_core.L2_execution.enforcement.guardrail_gate import get_guardrail_gate
-from agentic_core.runtime.lifecycle_trace_contract import _emit_snapshots_state  # noqa: E402
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "budget_enforcer", "L2")
+_emit_routes_through("p1", "budget_enforcer", "L2")
+_emit_escalates_to_human("p1", "budget_enforcer", "L2")
+_emit_reads_policy_state("p1", "budget_enforcer", "L2")
 
 _emit_snapshots_state("p0", "budget_enforcer", "state_snapshot")
 

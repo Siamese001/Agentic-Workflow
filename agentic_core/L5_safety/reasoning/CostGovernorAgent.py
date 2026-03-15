@@ -1,5 +1,17 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "CostGovernorAgent", "L5")
+_emit_routes_through("p1", "CostGovernorAgent", "L5")
+_emit_escalates_to_human("p1", "CostGovernorAgent", "L5")
+_emit_reads_policy_state("p1", "CostGovernorAgent", "L5")
+
 'Cost Governor Agent - L5 Safety financial guardrail for LLM spend tracking.\n\nThis module provides a financial guardrail agent that tracks and limits\nspending across LLM models and tools. It enforces budget constraints\nand raises exceptions when limits are exceeded.\n\nTypical usage:\n    agent = CostGovernorAgent(config={"budget_limit": 10.0})\n    cost = agent.track(model="gpt-4", input_tokens=100, output_tokens=50)\n'
 import logging
 from dataclasses import dataclass

@@ -1559,6 +1559,18 @@ ROOT_WHITELIST: Final[frozenset[str]] = frozenset(SOVEREIGN_TERRITORIES.keys())
 
 import os as _os
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_reads_policy_state("p1", "_constants", "L5")
+_emit_escalates_to_human("p1", "_constants", "L5")
+_emit_routes_through("p1", "_constants", "L5")
+_emit_dispatches_healing_run("p1", "_constants", "L5")
+
 HEALING_CONFIG: Final[Mapping[str, int]] = {
     "max_rounds": int(_os.getenv("MAX_HEALING_ROUNDS", "10")),
     "max_per_file": int(_os.getenv("MAX_HEALING_PER_FILE", "8")),

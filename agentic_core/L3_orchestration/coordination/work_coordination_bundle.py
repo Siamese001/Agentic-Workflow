@@ -29,10 +29,19 @@ from agentic_core.runtime.execution_trace import get_active_execution_trace
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_applies_guardrail,
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
     _emit_records_execution_trace,
+    _emit_routes_through,  # noqa: E402
     _emit_signs_execution_trace,
     _emit_snapshots_state,
 )
+
+_emit_dispatches_healing_run("p1", "work_coordination_bundle", "L3")
+_emit_routes_through("p1", "work_coordination_bundle", "L3")
+_emit_escalates_to_human("p1", "work_coordination_bundle", "L3")
+_emit_reads_policy_state("p1", "work_coordination_bundle", "L3")
 
 logger = logging.getLogger(__name__)
 

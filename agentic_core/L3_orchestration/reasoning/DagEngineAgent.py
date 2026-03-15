@@ -5,9 +5,18 @@ from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import get_
 from agentic_core.L3_orchestration.contracts.orchestration_handoff_contract import emit_agent_executes_agent
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
     _emit_records_execution_trace,
+    _emit_routes_through,  # noqa: E402
     _emit_snapshots_state,  # noqa: E402
 )
+
+_emit_dispatches_healing_run("p1", "DagEngineAgent", "L3")
+_emit_routes_through("p1", "DagEngineAgent", "L3")
+_emit_escalates_to_human("p1", "DagEngineAgent", "L3")
+_emit_reads_policy_state("p1", "DagEngineAgent", "L3")
 
 _emit_snapshots_state("p0", "DagEngineAgent", "state_snapshot")
 

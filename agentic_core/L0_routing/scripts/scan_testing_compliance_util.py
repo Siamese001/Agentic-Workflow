@@ -28,6 +28,17 @@ from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_p
 from agentic_core.L0_routing.seams.safety_validators_seam import (
     load_canonical_truth_validator,
 )
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "scan_testing_compliance_util", "L0")
+_emit_routes_through("p1", "scan_testing_compliance_util", "L0")
+_emit_escalates_to_human("p1", "scan_testing_compliance_util", "L0")
+_emit_reads_policy_state("p1", "scan_testing_compliance_util", "L0")
 
 _ctv = load_canonical_truth_validator()
 get_canonical_layer = _ctv.get_canonical_layer

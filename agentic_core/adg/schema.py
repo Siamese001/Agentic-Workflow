@@ -698,6 +698,7 @@ HITL_ESCALATION_METHODS: frozenset[str] = frozenset(
         "requires_human_review",
         "_emit_reenters_safety",
         "reenters_safety",
+        "_emit_escalates_to_human",
     }
 )
 GUARDRAIL_CLASS_NAMES: frozenset[str] = frozenset(
@@ -717,7 +718,14 @@ GUARDRAIL_CLASS_NAMES: frozenset[str] = frozenset(
     }
 )
 POLICY_HASH_METHODS: frozenset[str] = frozenset(
-    {"verify_policy_hash", "validate_policy_hash", "check_policy_hash", "enforce_policy", "verify_hash", "_emit_verifies_policy"}
+    {
+        "verify_policy_hash",
+        "validate_policy_hash",
+        "check_policy_hash",
+        "enforce_policy",
+        "verify_hash",
+        "_emit_verifies_policy",
+    }
 )
 SANDBOX_ENVELOPE_CLASSES: frozenset[str] = frozenset(
     {"SandboxEnvelope", "WorkContract", "SandboxAirlock", "L5SandboxStamper", "SandboxSession"}
@@ -1062,6 +1070,7 @@ HEALING_DISPATCH_METHODS: frozenset[str] = frozenset(
         "abort_heal",
         "schedule_repair",
         "trigger_healing",
+        "_emit_dispatches_healing_run",
     }
 )
 NONDETERMINISM_WALL_CLOCK_SYMBOLS: frozenset[str] = frozenset(

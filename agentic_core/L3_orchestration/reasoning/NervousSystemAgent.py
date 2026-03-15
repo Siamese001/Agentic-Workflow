@@ -8,9 +8,18 @@ from agentic_core.L0_routing.enforcement.runtime_guard import runtime_guard
 from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_applies_guardrail,  # noqa: E402
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
     _emit_snapshots_state,  # noqa: E402
 )
 from agentic_core.utils.timeout_decorator_util import timeout
+
+_emit_dispatches_healing_run("p1", "NervousSystemAgent", "L3")
+_emit_routes_through("p1", "NervousSystemAgent", "L3")
+_emit_escalates_to_human("p1", "NervousSystemAgent", "L3")
+_emit_reads_policy_state("p1", "NervousSystemAgent", "L3")
 
 _emit_snapshots_state("p0", "NervousSystemAgent", "state_snapshot")
 _emit_applies_guardrail("p0", "NervousSystemAgent", "p0_governance")

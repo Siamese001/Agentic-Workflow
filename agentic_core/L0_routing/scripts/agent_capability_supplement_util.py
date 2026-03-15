@@ -1,5 +1,17 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "agent_capability_supplement_util", "L0")
+_emit_routes_through("p1", "agent_capability_supplement_util", "L0")
+_emit_escalates_to_human("p1", "agent_capability_supplement_util", "L0")
+_emit_reads_policy_state("p1", "agent_capability_supplement_util", "L0")
+
 '\nULTRA-HARDENED AST-DRIVEN CAPABILITY SUPPLEMENTATION ANALYSIS\n\nGoal:\n  Mine the 35 "DEAD" agents for unique, valuable logic that can supplement the 19 LIVE agents.\n  Instead of deletion, achieve evolutionary enhancement → denser, more capable live core.\n\nTechnical Approach:\n  • Reuse the sovereign ASTNormalizer from agent_discovery_audit.py\n  • Extract semantic capabilities via method names + body pattern analysis\n  • Identify unique/underrepresented capabilities in DEAD agents\n  • Generate precise supplementation recommendations with file paths and method targets\n'
 import ast
 import json

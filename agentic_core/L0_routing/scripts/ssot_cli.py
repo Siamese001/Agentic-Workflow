@@ -1,5 +1,17 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "ssot_cli", "L0")
+_emit_routes_through("p1", "ssot_cli", "L0")
+_emit_escalates_to_human("p1", "ssot_cli", "L0")
+_emit_reads_policy_state("p1", "ssot_cli", "L0")
+
 "\nSSOT - Sovereign Single Source of Truth CLI\n\nProfessional-grade command-line tool for SSOT architectural governance.\nProvides a unified interface for scanning, validation, and enforcement.\n\nUsage:\n    python scripts/ssot_util.py scan              # Scan and list all agents\n    python scripts/ssot_util.py validate          # Run comprehensive validation\n    python scripts/ssot_util.py enforce           # Apply automated remediation\n    python scripts/ssot_util.py status            # Show compliance dashboard\n\nSimilar to git/npm, this tool provides a discoverable interface for\narchitectural governance as a first-class citizen of your workflow.\n"
 import argparse
 import json

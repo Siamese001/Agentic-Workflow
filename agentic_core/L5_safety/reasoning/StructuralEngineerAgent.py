@@ -4,6 +4,17 @@ from dataclasses import dataclass
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "StructuralEngineerAgent", "L5")
+_emit_routes_through("p1", "StructuralEngineerAgent", "L5")
+_emit_escalates_to_human("p1", "StructuralEngineerAgent", "L5")
+_emit_reads_policy_state("p1", "StructuralEngineerAgent", "L5")
 
 "\nStructural Engineer Agent - Code Structure Validation\nCANONICAL: True - Consolidated 2026-01-06 (merged from engineering.py)\n\nResponsible for:\n- Large functions\n- Many parameters\n- No large classes (>20 methods or >500 lines)\n- Complexity metrics, cyclomatic complexity\n- Code organization, modularity, cohesion\n- Large files\n- Class density\n- Duplicate code\n"
 import ast

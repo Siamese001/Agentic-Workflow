@@ -1,5 +1,17 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "StrategicRecommendationAgent", "L1")
+_emit_routes_through("p1", "StrategicRecommendationAgent", "L1")
+_emit_escalates_to_human("p1", "StrategicRecommendationAgent", "L1")
+_emit_reads_policy_state("p1", "StrategicRecommendationAgent", "L1")
+
 "\nStrategic Recommendation Agent\nL3 Orchestration agent: Reviews full autonomy report data and generates high-signal strategic recommendations.\n\nRestored: 2026-01-13 | Version: 3.0.0\nRefactored: 2026-01-14 | Improved macro + metrics observations\n\nPurpose:\n- Analyzes dashboardData (territories, metrics, gaps) for cross-layer patterns.\n- Generates TWO types of observations:\n  1. MACRO OBSERVATIONS: Architectural insights (consolidation, layer health, structural patterns)\n  2. METRICS OBSERVATIONS: Specific metric-focused recommendations (invocation, coverage, complexity)\n- Outputs structured JSON with strategic review and prioritized recommendations.\n- Integrated into report generator → injects into autonomy_dashboard.html\n"
 import json
 import logging

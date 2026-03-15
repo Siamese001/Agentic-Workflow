@@ -46,11 +46,20 @@ from agentic_core.L2_execution.providers import get_clock
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_applies_guardrail,
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
     _emit_records_execution_trace,
+    _emit_routes_through,  # noqa: E402
     _emit_signs_execution_trace,  # noqa: E402
     _emit_snapshots_state,  # noqa: E402
     _emit_verifies_policy,
 )
+
+_emit_dispatches_healing_run("p1", "tool_safety_contract", "L5")
+_emit_routes_through("p1", "tool_safety_contract", "L5")
+_emit_escalates_to_human("p1", "tool_safety_contract", "L5")
+_emit_reads_policy_state("p1", "tool_safety_contract", "L5")
 
 _emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 _emit_snapshots_state("p0", "tool_safety_contract", "state_snapshot")

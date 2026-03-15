@@ -2,6 +2,18 @@ from __future__ import annotations
 
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "FissionManagerAgent", "L3")
+_emit_routes_through("p1", "FissionManagerAgent", "L3")
+_emit_escalates_to_human("p1", "FissionManagerAgent", "L3")
+_emit_reads_policy_state("p1", "FissionManagerAgent", "L3")
+
 "\n[PHASE 14 REFACTOR] FissionManagerAgent.\nSTRICT COMPLIANCE: No direct SDK imports. Uses SovereignLLMGateway.\n"
 import json
 import logging

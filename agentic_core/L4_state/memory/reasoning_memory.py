@@ -1,5 +1,17 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "reasoning_memory", "L4")
+_emit_routes_through("p1", "reasoning_memory", "L4")
+_emit_escalates_to_human("p1", "reasoning_memory", "L4")
+_emit_reads_policy_state("p1", "reasoning_memory", "L4")
+
 "\nReasoning Memory - Expanded Short-Term Thought Storage\n\nProvides expanded capacity for reasoning thoughts with persistence\nand semantic memory integration for long-term retention.\n\nFeatures:\n- Expanded capacity (50 → 500 thoughts)\n- Persistent storage to ledger/Redis\n- Semantic memory offload for LRU evictions\n- Relevance-based retrieval\n"
 import hashlib
 import time

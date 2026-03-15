@@ -1,5 +1,17 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "security_controls_util", "L5")
+_emit_routes_through("p1", "security_controls_util", "L5")
+_emit_escalates_to_human("p1", "security_controls_util", "L5")
+_emit_reads_policy_state("p1", "security_controls_util", "L5")
+
 "\nSecurity Controls Utility\n\nZero-Ambiguity Standard: Renamed from security_controls_validator_util.py to security_controls_util.py\nCategory: UTILITY (Security helper functions)\n\nProvides core functionality and exports for the Security Controls module.\n"
 import logging
 from typing import Any

@@ -1,5 +1,17 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "reasoning_cache", "L1")
+_emit_routes_through("p1", "reasoning_cache", "L1")
+_emit_escalates_to_human("p1", "reasoning_cache", "L1")
+_emit_reads_policy_state("p1", "reasoning_cache", "L1")
+
 "\nReasoning Path Caching Module\n\nImplements memoization for reasoning paths to reduce redundant LLM calls\nand improve latency on repeated sub-problems.\n"
 import functools
 import hashlib

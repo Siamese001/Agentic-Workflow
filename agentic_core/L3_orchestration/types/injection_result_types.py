@@ -1,5 +1,17 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "injection_result_types", "L3")
+_emit_routes_through("p1", "injection_result_types", "L3")
+_emit_escalates_to_human("p1", "injection_result_types", "L3")
+_emit_reads_policy_state("p1", "injection_result_types", "L3")
+
 "Prompt Injection Detection Module - Safety Guardrail\n\nDetects and blocks prompt injection attempts in user inputs.\nPart of the safety guardrail system for agentic workflows.\n"
 import logging
 from dataclasses import dataclass, field

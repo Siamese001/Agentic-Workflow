@@ -34,10 +34,19 @@ from agentic_core.L3_orchestration.registry.agent_dispatch_registry import get_a
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_applies_guardrail,
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
     _emit_records_execution_trace,
+    _emit_routes_through,  # noqa: E402
     _emit_signs_execution_trace,
     _emit_snapshots_state,  # noqa: E402
 )
+
+_emit_dispatches_healing_run("p1", "healing_tier_dispatcher", "L2")
+_emit_routes_through("p1", "healing_tier_dispatcher", "L2")
+_emit_escalates_to_human("p1", "healing_tier_dispatcher", "L2")
+_emit_reads_policy_state("p1", "healing_tier_dispatcher", "L2")
 
 _emit_snapshots_state("p0", "healing_tier_dispatcher", "state_snapshot")
 

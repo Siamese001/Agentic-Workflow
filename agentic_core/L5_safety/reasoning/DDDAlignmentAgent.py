@@ -1,5 +1,17 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_routes_through,  # noqa: E402
+)
+
+_emit_dispatches_healing_run("p1", "DDDAlignmentAgent", "L5")
+_emit_routes_through("p1", "DDDAlignmentAgent", "L5")
+_emit_escalates_to_human("p1", "DDDAlignmentAgent", "L5")
+_emit_reads_policy_state("p1", "DDDAlignmentAgent", "L5")
+
 "\nDDDAlignmentAgent - Domain-Driven Design Bounded Context Enforcement\n\nPURPOSE: Enforces DDD bounded context boundaries to prevent cross-context\ncoupling that undermines the L0-L6 sovereign layer architecture.\n\nKEYS: Architectural integrity, bounded contexts, aggregate roots\nTIER: 2 (Architectural) - runs after structural validation\n\nLOCATION: agentic_core/L5_safety/validators/ (SSOT-compliant)\n"
 import ast
 import logging
