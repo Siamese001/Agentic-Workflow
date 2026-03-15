@@ -22,6 +22,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Literal
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
 # Optional: Import SovereignBaseAgent if available for full integration
 try:
     from agentic_core.L5_safety.validators.decorators import standard_heal
@@ -528,6 +530,9 @@ class PascalSovereigntyAgent(SovereignBaseAgent):
     # guardian: allow-type-erasure
     def heal(self, violation: dict) -> dict:
         """Heal Pascal naming violations."""
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "PascalSovereigntyAgent.heal")
         from agentic_core.base_agents.decorators import standard_heal
 
         @standard_heal

@@ -32,6 +32,8 @@ from datetime import datetime
 from enum import Enum
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
 try:
     from agentic_core.L3_orchestration.reasoning.subatomic_testing_mixin import (
         L3SubatomicTestingMixin,
@@ -202,6 +204,9 @@ class SecurityHardener:
         Returns:
             List of security issues found
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, f"SecurityScanner.scan_content:{file_path}")
         issues = []
         self._scans_performed += 1
 

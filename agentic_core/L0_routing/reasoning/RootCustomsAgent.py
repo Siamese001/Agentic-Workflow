@@ -21,6 +21,7 @@ from agentic_core.L0_routing.config import (
     get_validated_project_root,
 )
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 # Constants that need L0 definitions
 ARTIFACT_ROUTING_MAP: dict = {}  # Placeholder - routing logic handled by L5 at runtime
@@ -54,6 +55,9 @@ class ASTAnalyzer:
 
     def analyze_file(self, file_path: Path) -> dict[str, Any]:
         """Analyze Python file for AST signals."""
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"RootCustomsAgent.analyze_file:{file_path.name}")
         if not file_path.suffix == ".py":
             return {}
 
