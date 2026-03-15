@@ -7,6 +7,7 @@ from agentic_core.runtime.trace_context import get_trace_context
 
 from agentic_core.L2_execution.determinism.execution_proof_emitter import ExecutionProofEmitter
 from agentic_core.L3_orchestration.contracts.orchestration_handoff_contract import emit_agent_executes_agent
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.L3_orchestration.engines.coordinator_capability_orchestrator import (
     CoordinatorCapability,
     WorkflowContext,
@@ -35,6 +36,7 @@ class RLCoordinatorOrchestrator(WorkflowCoordinator):
 
     async def coordinate(self, context: WorkflowContext) -> WorkflowResult:
         """Execute RL-based coordination."""
+        _emit_records_execution_trace(context.workflow_id, LayerSegment.L3_ORCHESTRATION, "RLCoordinatorOrchestrator.coordinate")
         with get_trace_context().run_frame(
             layer="L3",
             module="rl_coordinator_orchestrator",

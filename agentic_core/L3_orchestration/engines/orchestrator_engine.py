@@ -66,6 +66,7 @@ from agentic_core.L5_safety.enforcement.policy_action_contract import (
     PolicyEnforcementError,
     enforce_policy_before_action,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
 
@@ -94,6 +95,9 @@ class L3OrchestrationStrategy(OrchestrationStrategy):
     @runtime_guard("A.execute.orchestrator_engine")
     async def execute(self, agent: UnifiedAgent, **kwargs: Any) -> OrchestrationResult:
         """Execute orchestration logic via unified strategy."""
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"orchestrator_engine.execute:{self.mode}")
         with get_trace_context().run_frame(
             layer="L3",
             module="orchestrator_engine",

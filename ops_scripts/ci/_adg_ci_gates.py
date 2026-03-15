@@ -64,8 +64,8 @@ TRACE_COVERAGE_THRESHOLD = 0.05
 ROUTES_PATH_MIN_EDGES = 180
 # applies_guardrail: 154 edges (proxy for enforce_policy_before_action coverage); threshold 130
 POLICY_GUARDRAIL_MIN_EDGES = 130
-# records_execution_trace: 182 edges currently; threshold ratcheted 179→181
-TRACE_MIN_EDGES = 181
+# records_execution_trace: 184 edges currently; threshold ratcheted 181→183
+TRACE_MIN_EDGES = 183
 
 # ---------------------------------------------------------------------------
 # Gate definitions
