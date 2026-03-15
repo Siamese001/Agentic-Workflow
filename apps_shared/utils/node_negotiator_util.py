@@ -12,6 +12,7 @@ import time
 import uuid
 from collections.abc import Callable
 from datetime import datetime
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from typing import Any
 
 from pydantic import BaseModel, Field, validator
@@ -175,6 +176,9 @@ class NodeNegotiator:
         Returns:
             NegotiationResult with outcome
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "NodeNegotiator.request_change")
         self.stats["total_negotiations"] += 1
         round_id = self._get_or_create_round(downstream_hop.config.hop_id, upstream_hop_id)
         negotiation = self.active_negotiations[round_id]

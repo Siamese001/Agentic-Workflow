@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from typing import Any
 
 from .ThematicAnalysisNode import ThematicAnalysisNode, ThematicAnalysisOutput
@@ -106,6 +107,9 @@ class RGFlowRouter:
         Returns:
             str: Next hop identifier
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "RgFlowRouter.determine_next_hop")
         if not state:
             raise ValueError("Routing state cannot be empty")
         result = self.execute_routing(state)
