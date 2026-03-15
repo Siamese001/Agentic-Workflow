@@ -1,5 +1,8 @@
+import uuid
 from dataclasses import dataclass
 from typing import Any
+
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 "\nLIC Code Interpreter Tool - Fast loop for deterministic evaluation.\n\nPorted from: archives/legacy_lic/Agentic LIC/tools_LIC.py\n"
 
@@ -161,6 +164,7 @@ class LICCodeInterpreter:
         Raises:
             ValueError: If function not registered
         """
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"LicCodeInterpreter.execute:{function_name}")
         if function_name not in self.functions:
             raise ValueError(
                 f"Function '{function_name}' not registered. Available: {list(self.functions.keys())}"

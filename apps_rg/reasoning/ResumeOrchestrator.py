@@ -1,6 +1,10 @@
 # Ownership: apps_rg / L3_orchestration
 """Pure orchestration of resume generation using shared atoms."""
 
+import uuid
+
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
 
 class ResumeOrchestrator:
     """Orchestrate the multi-hop resume generation workflow."""
@@ -15,6 +19,7 @@ class ResumeOrchestrator:
 
     def run(self, JobDescription: str) -> dict[str, object]:
         """Execute the full resume generation workflow."""
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "ResumeOrchestrator.run")
         # HOP-0: JD Analysis
         self.jd_enforcer.validate_jd_input(JobDescription, "HOP-0")
         if self.jd_enforcer.has_failures():

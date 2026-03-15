@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from apps_rg.utils.RGAgentBase import RGAgentBase
 
 
@@ -23,6 +24,9 @@ class RGStrategyExecutor(RGAgentBase):
 
     def execute(self, data: dict | None = None, **kwargs) -> dict:
         """Dispatch to strategy-specific execution."""
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"RGStrategyExecutor.execute:{self.strategy_type}")
         ctx = data or {}
         handler = {
             "content": self._strategy_content,

@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.prompt_governance import PromptLoader
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class ExecutiveStrategyAgent:
@@ -72,6 +73,9 @@ class ExecutiveStrategyAgent:
             PromptLoadError: If prompt file cannot be loaded
             PromptSchemaError: If template formatting fails
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "ExecutiveStrategyAgent.conduct_shadow_audit")
         return self._render("executive", "k11_shadow_audit", payload)
 
     def generate_strategy_roadmap(self, payload: dict[str, Any]) -> str:

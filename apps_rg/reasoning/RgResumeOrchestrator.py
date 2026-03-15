@@ -11,6 +11,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from agentic_core.base_agents.timeout_decorator import timeout
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from apps_rg.utils.RGAgentBase import RGAgentBase
 
 _logger = logging.getLogger(__name__)
@@ -33,6 +34,9 @@ class RgResumeOrchestrator(RGAgentBase):
 
     def run(self, JobDescription: str) -> dict[str, object]:
         """Execute the full resume generation workflow."""
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "RgResumeOrchestrator.run")
         if self.jd_enforcer:
             self.jd_enforcer.validate_jd_input(JobDescription, "HOP-0")
             if self.jd_enforcer.has_failures():

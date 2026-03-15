@@ -19,6 +19,7 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.prompt_governance import PromptLoader
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class ResumeTemplateError(Exception):
@@ -62,6 +63,9 @@ class ResumeAssemblyAgent:
         Raises:
             PromptLoadError: If prompt file cannot be loaded or rendered
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "ResumeAssemblyAgent.assemble_resume")
         return self._prompt_loader.get_template("resume", "k7_assembly_agent", **payload)
 
     def generate_skills_section(self, payload: dict[str, Any]) -> str:
