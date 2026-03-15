@@ -21,6 +21,7 @@ from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
     FileClassificationAgent,
     get_python_files_fast,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
 
@@ -141,6 +142,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
         Returns:
             Dict with keys: status, details, artifacts, errors
         """
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "ArchitectureGovernorAgent.heal")
         if hasattr(self, "ml_enhanced_heal") and hasattr(self, "_do_heal"):
             return self.ml_enhanced_heal(violation, self._do_heal)
         return self._do_heal(violation)
