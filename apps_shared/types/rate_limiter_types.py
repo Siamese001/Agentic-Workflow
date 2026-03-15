@@ -22,6 +22,7 @@ from abc import ABC, abstractmethod
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from typing import Any
 
 logger = logging.getLogger(__name__)
@@ -270,6 +271,9 @@ class TokenBucketRateLimiter(RateLimiter):
 
     async def stop(self) -> None:
         """Stop the rate limiter."""
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "SlidingWindowRateLimiter.stop")
         if self._cleanup_task:
             self._cleanup_task.cancel()
             try:

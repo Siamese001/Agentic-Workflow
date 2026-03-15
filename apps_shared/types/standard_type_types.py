@@ -8,6 +8,7 @@ while allowing for domain-specific customizations.
 
 from dataclasses import dataclass, field
 from enum import Enum
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from typing import Any
 
 
@@ -353,6 +354,9 @@ class CrossEngineQualityStandards:
         Returns:
             Domain configuration
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"StandardsManager.create_domain_config:{engine_type}")
         profile = self.get_engine_profile(engine_type)
         if not profile:
             raise ValueError(f"No profile found for engine {engine_type}")

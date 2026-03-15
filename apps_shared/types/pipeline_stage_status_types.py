@@ -10,6 +10,7 @@ import logging
 import uuid
 from datetime import datetime
 from enum import Enum
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from typing import Any, Generic, TypeVar
 
 from pydantic import BaseModel, Field, validator
@@ -232,6 +233,9 @@ class SignalEnvelope(GenericModel, Generic[T]):
             duration_ms: Execution duration before failure
             retry_count: Number of retries attempted
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"PipelineExecution.mark_stage_failed:{stage_name}")
         for i, result in enumerate(self.history):
             if result.stage_name == stage_name:
                 self.history[i] = StageResult(

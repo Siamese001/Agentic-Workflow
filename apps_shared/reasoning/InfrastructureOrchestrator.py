@@ -7,6 +7,7 @@ infrastructure, ensuring all components work together seamlessly.
 
 import asyncio
 import logging
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from typing import Any
 
 from .bulkhead_manager import BulkheadManager, TaskPriority, get_bulkhead_manager
@@ -37,6 +38,9 @@ class InfrastructureOrchestrator:
 
     async def initialize(self) -> None:
         """Initialize all infrastructure components."""
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "InfrastructureOrchestrator.initialize")
         if self._initialized:
             return
         logger.info("Initializing infrastructure components...")
