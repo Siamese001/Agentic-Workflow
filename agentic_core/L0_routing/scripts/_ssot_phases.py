@@ -37,6 +37,7 @@ from agentic_core.L0_routing.scripts._ssot_types import (
     HealContext,
 )
 from agentic_core.L0_routing.scripts._ssot_validation_artifacts import _record_healing_action
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger("UnifiedSovereign")
 
@@ -145,6 +146,9 @@ class RuntimeStateManager:
         self._persistence_disabled: bool = False
 
     def start_mission(self, mission_type: str, agents_order: list[str]):
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"RuntimeStateManager.start_mission:{mission_type}")
         self.state["status"] = "running"
         self.state["start_time"] = datetime.now().isoformat()
         self.state["agents_order"] = agents_order

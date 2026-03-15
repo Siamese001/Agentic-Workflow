@@ -17,6 +17,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from .quality.signal_enhancer import QualityThresholds, SignalQuality, get_signal_enhancer
 from .reflection_engine import (
     STANDARD_CRITERIA,
@@ -175,6 +176,7 @@ class SubatomicHop:
         Returns:
             Final result from the COMMIT stage
         """
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "SubatomicHop.run")
         self.start_time = time.time()
         self.state = HopState.RUNNING
 

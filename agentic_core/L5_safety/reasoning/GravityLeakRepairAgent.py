@@ -14,6 +14,7 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L0_routing.config import ARCHIVES_DIR, OPS_SCRIPTS_DIR
 from agentic_core.L4_state.utils.layer_gravity_util import LAYER_ORDER
 from agentic_core.L5_safety.validators.context_validator import get_context_manager
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger = logging.getLogger(__name__)
 
@@ -84,6 +85,9 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
         Returns:
             GravityFix with recommended solution
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, f"GravityLeakRepairAgent.analyze_violation:{file_layer}->{import_layer}")
         violation = {
             "type": "gravity_violation",
             "file_path": str(file_path),
