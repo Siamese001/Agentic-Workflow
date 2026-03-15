@@ -168,6 +168,9 @@ class HITLMixin:
         Raises:
             ValueError: If any parameter is invalid
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "HITLMixin.configure_hitl")
         if default_timeout_seconds is not None and default_timeout_seconds <= 0:
             raise ValueError('default_timeout_seconds must be positive')
         if escalation_timeout_seconds is not None and escalation_timeout_seconds <= 0:

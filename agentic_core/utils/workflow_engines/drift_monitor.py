@@ -16,8 +16,10 @@ from collections.abc import Callable
 from datetime import datetime
 from typing import Any
 
-_logger = logging.getLogger(__name__)
 from .snapshots import AnswerQualitySnapshot, DriftAlert, EmbeddingHealthSnapshot, RetrievalDriftSnapshot
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
+_logger = logging.getLogger(__name__)
 
 
 def _utcnow() -> str:
@@ -84,6 +86,9 @@ class RetrievalDriftMonitor:
         Returns:
             RetrievalDriftSnapshot
         """
+        import uuid as _uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(_uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "RetrievalDriftMonitor.measure")
         n = len(queries)
         if n == 0:
             raise ValueError("queries must be non-empty")
