@@ -15,6 +15,7 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
 from agentic_core.L5_safety.enforcement.archival_gatekeeper_gate import ArchivalGatekeeper
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.utils.decorators_compat_util import standard_heal
 
 MAX_FILENAME_WORDS = 5
@@ -103,6 +104,9 @@ class HygieneGuardianAgent(SovereignBaseAgent):
         Returns:
             Dict with keys: status, details, artifacts, errors
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "HygieneGuardianAgent.heal")
         try:
             violation.get("type", "")
             file_path = violation.get("file")

@@ -13,6 +13,7 @@ from typing import Any
 
 from agentic_core.L0_routing.config.path_constants import TESTS_DIR
 from agentic_core.utils.timeout_decorator_util import timeout
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger = logging.getLogger(__name__)
 
@@ -59,6 +60,9 @@ class SystemArchitectAgent(SovereignBaseAgent):
         [L5 HARDENING] Sovereign Architectural Execution.
         Enforces Hierarchy, Nesting, and Header Sovereignty.
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "SystemArchitectAgent.execute")
         print()
         print(f"   [{self.name}] 🔍 Checking Architecture: Hierarchy & Headers...")
         passed_arch, arch_viols = self.check_core_architecture()

@@ -13,6 +13,7 @@ from datetime import datetime
 from enum import Enum
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.L0_routing.config.path_constants import DEFAULT_SLEEP
 
 logger = logging.getLogger(__name__)
@@ -114,6 +115,9 @@ class ObservabilityToolInvoker:
             tool_spec: Tool specification
             client: Optional client instance
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"ObservabilityToolRegistry.register_tool:{tool_spec.tool_id}")
         self._registered_tools[tool_spec.tool_id] = tool_spec
         if client:
             self._tool_clients[tool_spec.tool_id] = client
