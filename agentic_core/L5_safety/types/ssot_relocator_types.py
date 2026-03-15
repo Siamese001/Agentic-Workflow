@@ -7,6 +7,7 @@ import logging
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from typing import Any
 
 from agentic_core.L5_safety.config.structure_blueprint import AGENTIC_CORE_DIR, ARCHIVES_DIR
@@ -99,6 +100,9 @@ class SSOTRelocator:
         Returns:
             EnforcementReport with operation results
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, f"OrphanRelocator.relocate_orphans:{len(drift_violations)}")
         report = EnforcementReport()
         logger.info(f"{('[DRY-RUN] ' if self.dry_run else '')}Starting orphan relocation")
         logger.info(f"Target violations: {len(drift_violations)}")

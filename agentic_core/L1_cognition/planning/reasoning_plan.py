@@ -17,6 +17,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.L2_execution.providers import get_clock
 
 logger = logging.getLogger(__name__)
@@ -355,6 +356,9 @@ class PlanRegistry:
 
     def persist_plan(self, plan: ReasoningPlan) -> None:
         """Persist a reasoning plan."""
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"PlanRegistry.persist_plan:{plan.reasoning_plan_id}")
         with self._lock:
             self._plans[plan.reasoning_plan_id] = plan
 

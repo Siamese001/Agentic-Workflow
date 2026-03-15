@@ -29,6 +29,7 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from typing import Final
 
 from agentic_core.L0_routing.config.path_constants import TESTS_DIR
@@ -293,6 +294,9 @@ class ThreeTierComplianceChecker:
 
     def check_compliance(self) -> ComplianceResult:
         """Perform full three-tier compliance check."""
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "ThreeTierComplianceEnforcer.check_compliance")
         result = ComplianceResult()
 
         # Scan tests

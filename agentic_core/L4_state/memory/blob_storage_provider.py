@@ -12,6 +12,7 @@ def _get_write_gateway():
 import json
 import logging
 from pathlib import Path
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from typing import Any, Protocol
 
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
@@ -165,6 +166,9 @@ class LocalDiskAdapter:
         Returns:
             List of blob keys
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"FilesystemBlobProvider.list_blobs:{prefix}")
         blobs: Any = []
         from agentic_core.utils.ssot_discovery_validator import get_data_files, get_python_files
 
