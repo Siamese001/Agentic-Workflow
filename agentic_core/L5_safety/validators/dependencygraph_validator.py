@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 try:
     from google import genai
@@ -247,6 +248,8 @@ class ValidationContext:
     ) -> str:
         if not self.intelligence_enabled or not self.budget.check_budget():
             return code
+        import uuid  # noqa: PLC0415
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, f"resilient_mutation:{agent_name}")
         try:
             prompt = f"Agent: {agent_name}\nTask: {Task}\nContext:\n{code[:4000]}"
             response = await asyncio.to_thread(
