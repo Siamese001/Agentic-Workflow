@@ -6,6 +6,7 @@ from collections.abc import Mapping
 from dataclasses import dataclass, field
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from apps_lic.utils.LICAgentBase import LICAgentBase
 
 from apps_lic.tools.validation_tools import ValidationResult, validate_schema_policy
@@ -33,6 +34,9 @@ class ValidatorAgent(LICAgentBase):
         artifacts: Mapping[str, str] | None = None,
     ) -> ValidationResult:
         """Sovereign validation check with retry logic."""
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "ValidatorAgent.check")
         artifacts = artifacts or {}
         current_draft = draft
         attempts = 1

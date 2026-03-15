@@ -2,6 +2,7 @@ from dataclasses import dataclass
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 "\nRgTemplateOptimizerAgent - Extracted for one-class-per-file pattern.\n\nOriginally from: LeadQualityAgent.py\nExtracted: 2026-01-06 (Surgical Extraction)\n"
 
@@ -11,6 +12,9 @@ class LicTemplateOptimizerAgent(SubatomicTestingMixin, SovereignBaseAgent):
     """Optimizes message templates for engagement."""
 
     async def execute(self) -> None:
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "LicTemplateOptimizerAgent.execute")
         print(f"   [{self.name}] Optimizing templates...")
         messages = self.ctx.messages
         if not messages:

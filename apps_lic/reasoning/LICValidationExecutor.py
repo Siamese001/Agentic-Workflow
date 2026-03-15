@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from apps_lic.utils.lic_engine_validation_capability_util import LICEngineValidationCapability
 from apps_shared.reasoning.ParameterizedValidator import ParameterizedValidator
 
@@ -29,6 +30,9 @@ class LICValidationExecutor(LICEngineValidationCapability, ParameterizedValidato
 
     def collect_issues(self, data: dict, **kwargs) -> list[dict]:
         """Dispatch to rule-specific validation (LIC-local registry)."""
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"LICValidationExecutor.collect_issues:{self.rule_set}")
         if self.rule_set == "campaign_balance":
             return self._validate_campaign_balance(data)
         elif self.rule_set == "deliverability":

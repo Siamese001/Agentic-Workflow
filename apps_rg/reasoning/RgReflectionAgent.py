@@ -17,6 +17,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBridge
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from apps_shared.reasoning.BaseReflectionAgent import BaseReflectionAgent
 
 Logger = logging.getLogger(__name__)
@@ -161,6 +162,9 @@ class RgReflectionAgent(BaseReflectionAgent):
         Returns:
             True if cached successfully
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"RgReflectionAgent.ml_cache_execution_insight:{insight_id}")
         cache_key = f"execution_insight:{insight_id}"
         return self.ml_cache_set(cache_key, insight_data)
 
