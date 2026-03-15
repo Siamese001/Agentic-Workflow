@@ -14,6 +14,7 @@ from collections import OrderedDict
 from contextlib import contextmanager
 from dataclasses import dataclass
 from enum import Enum
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from typing import Any
 
 import psutil
@@ -103,6 +104,9 @@ class MemoryManager:
 
     def stop_monitoring(self) -> None:
         """Stop memory monitoring."""
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "MemoryManager.stop_monitoring")
         self._monitoring = False
         if self._monitor_thread:
             self._monitor_thread.join(timeout=DEFAULT_TIMEOUT)

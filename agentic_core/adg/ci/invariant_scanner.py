@@ -20,7 +20,8 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from typing import TYPE_CHECKING, Any
 
 from agentic_core.adg.schema import (
     ALLOWED_LAYER_EDGES,
@@ -94,6 +95,9 @@ class ScanReport:
         return len(self.violations) == 0
 
     def print_summary(self) -> None:
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "InvariantScanResult.print_summary")
         if self.passed:
             print(f"ADG-INVARIANT-SCAN: PASSED (new_edges={self.new_edges_count}, digest={self.digest})")
         else:
