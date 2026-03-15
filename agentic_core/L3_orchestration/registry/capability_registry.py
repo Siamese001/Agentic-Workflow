@@ -43,6 +43,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 
 from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import get_routing_gateway
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 _CAPABILITY_LOG = logging.getLogger("adg.issues_capability_token")
@@ -428,6 +429,11 @@ def resolve_agent_for_capability(
     _registry = registry or get_capability_registry()
     _gw = get_routing_gateway(run_context.trace_id if hasattr(run_context, 'trace_id') else "")
 
+    _emit_records_execution_trace(
+        run_context.trace_id,
+        LayerSegment.L3_ORCHESTRATION,
+        f"resolve_agent_for_capability:{capability_name}",
+    )
     _TRACE_LOG.debug(
         "records_execution_trace CAPABILITY_RESOLVE cap=%s caller=%s run=%s trace=%s",
         capability_name,

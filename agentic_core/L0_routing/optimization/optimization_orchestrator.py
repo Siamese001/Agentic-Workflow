@@ -27,6 +27,7 @@ from agentic_core.L0_routing.optimization.routing_optimization import (
     RoutingOptimizationRecord,
     get_routing_optimization_registry,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 _OPTIMIZATION_LOG = logging.getLogger("adg.optimizes_routing")
@@ -157,6 +158,9 @@ def optimize_routing_policy(
     Raises:
         RoutingOptimizationError: If optimization fails (Gate A/E)
     """
+    import uuid  # noqa: PLC0415
+
+    _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L0_ROUTING, "optimize_routing_policy")
     _registry = registry or get_routing_optimization_registry()
     _gw = get_routing_gateway(policy_context.policy_hash if hasattr(policy_context, 'policy_hash') else "")
 

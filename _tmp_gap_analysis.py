@@ -78,8 +78,10 @@ for f in sorted(unlinked_orch)[:20]:
 
 # --- State authority bypass ---
 state_writers = sym_files("%RunStateAuthority%") | sym_files("%run_state_authority%")
-unsnapped = state_writers - snap_callers
-print(f"\nRunStateAuthority users:    {len(state_writers)}")
+# Exclude the defining file itself — it implements snapshot_state, not a consumer
+state_consumers = {f for f in state_writers if 'run_state_authority.py' not in f}
+unsnapped = state_consumers - snap_callers
+print(f"\nRunStateAuthority consumers: {len(state_consumers)} (excl. defining file)")
 print(f"  without snapshots_state:    {len(unsnapped)}")
 for f in sorted(unsnapped)[:15]:
     print(f"    NO-SNAP: {f}")

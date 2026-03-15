@@ -64,6 +64,7 @@ from agentic_core.L0_routing.types.routing_contracts_types import (
 )
 from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import get_routing_gateway
 from agentic_core.L2_execution.providers import get_clock
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger = logging.getLogger(__name__)
 
@@ -144,6 +145,7 @@ class V15ExecutionGateway:
         Returns:
             GatewayResult with full audit trail.
         """
+        _emit_records_execution_trace(trace_id, LayerSegment.L0_ROUTING, f"execution_gateway.execute:{agent_id}")
         _gw = get_routing_gateway(trace_id)
         self._pipe_violations = []
         self._policy_violations = []
