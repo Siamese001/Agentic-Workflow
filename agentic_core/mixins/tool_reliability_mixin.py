@@ -29,6 +29,7 @@ from agentic_core.L0_routing.enforcement.runtime_guard import (
     runtime_guard,
 )
 from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger = logging.getLogger(__name__)
 
@@ -188,6 +189,9 @@ class ToolReliabilityMixin:
         Raises:
             ValueError: If any parameter is invalid
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"ToolReliabilityMixin.configure_tool_retry:{tool_name}")
         # [HARDENING] Validate inputs
         if not tool_name or not tool_name.strip():
             raise ValueError("tool_name cannot be empty")

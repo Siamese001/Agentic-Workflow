@@ -11,6 +11,7 @@ from enum import Enum
 from typing import Any
 
 from agentic_core.utils.timeout_decorator_util import timeout
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class ValidationRejectionReason(Enum):
@@ -79,6 +80,9 @@ class IntegrityGateResult:
             reason: Reason for the validation failure
             message: Detailed violation message
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, f"IntegrityGateResult.add_violation:{reason}")
         self.passed = False
         self.violations.append(Violation(reason, message))
 

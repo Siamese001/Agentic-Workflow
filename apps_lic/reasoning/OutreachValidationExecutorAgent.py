@@ -12,6 +12,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 class ValidationGateExecutor:
@@ -422,6 +423,9 @@ class OutreachValidationExecutorAgent(SovereignBaseAgent):
     # guardian: allow-type-erasure
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """Heal violations detected by OutreachValidationExecutorAgent."""
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "OutreachValidationExecutorAgent.heal")
         violation_type = violation.get("type", "unknown")
         try:
             return {
