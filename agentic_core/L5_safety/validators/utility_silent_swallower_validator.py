@@ -237,7 +237,7 @@ class UtilitySilentSwallowerDetector(AntiPatternDetector):
                     or "guardian: allow_silent_swallower" in line
                 ):
                     return True
-            
+
             # Check the line before the except handler
             line_idx = handler.lineno - 2
             if 0 <= line_idx < len(source_lines):
