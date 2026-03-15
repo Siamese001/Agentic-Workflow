@@ -5,6 +5,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import ClassVar
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
 
 @dataclass
 class CompetitiveAnalysisConfig:
@@ -145,6 +147,9 @@ class PromptsConfig:
         Raises:
             KeyError: If prompt or section doesn't exist
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"PromptConfig.get_prompt:{prompt_name}")
         if prompt_name not in self.prompts:
             raise KeyError(f"Prompt '{prompt_name}' not found in prompts.json")
         prompt_data = self.prompts[prompt_name]

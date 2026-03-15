@@ -14,6 +14,8 @@ from enum import Enum, auto
 from pathlib import Path
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
 Logger = logging.getLogger(__name__)
 
 
@@ -135,6 +137,9 @@ class CodeEnforcerAgent(SovereignBaseAgent):
 
     def validate_file(self, file_path: Path) -> list[CodeViolation]:
         """Validate a file for all enforcement types."""
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, f"CodeEnforcerAgent.validate_file:{file_path.name}")
         violations = []
         if not file_path.exists():
             return violations

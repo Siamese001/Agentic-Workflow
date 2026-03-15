@@ -19,6 +19,8 @@ except ImportError as _err:
     raise ImportError("numpy is required for this module. Install with: pip install -e '.[infra]'") from _err
 from pydantic import BaseModel, Field
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
 logger = logging.getLogger(__name__)
 
 
@@ -176,6 +178,9 @@ class L2VectorStore:
         Returns:
             List of (entry, similarity) tuples
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "SemanticVectorStore.search")
         if self.embeddings.shape[0] == 0:
             self._misses += 1
             return []
