@@ -27,6 +27,8 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+import redis
+
 from tools.adg.adg_redis_query import ADGRedisClient
 
 
@@ -261,8 +263,8 @@ def _cli() -> None:
     try:
         adg = ADGRedisClient()
         adg.ping()
-    except RuntimeError as exc:
-        print(f"ERROR: {exc}", file=sys.stderr)
+    except (RuntimeError, redis.ConnectionError) as exc:
+        print(f"ERROR: ADG Redis unavailable — {exc}", file=sys.stderr)
         sys.exit(1)
 
     checker = ADGTypeChecker(client=adg)

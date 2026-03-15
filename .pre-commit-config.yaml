@@ -269,6 +269,18 @@ repos:
         always_run: true
         require_serial: true
 
+      # -- T3h: ADG Grep-Ban Gate (Accelerator enforcement) ---------------------
+      # Hard-fail if staged Python files use grep/rg/ripgrep as ADG substitutes.
+      # Exempt a specific line with: # guardian: allow-grep -- <justification>
+      - id: adg-grep-ban-gate
+        name: "T3h: ADG Grep-Ban Gate — no grep/rg as ADG fallback"
+        entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/adg_grep_ban_gate.py --staged"
+        language: system
+        pass_filenames: false
+        always_run: false
+        types: [python]
+        require_serial: true
+
       # -- T3b: Report location SSOT (staged-only, structural) ------------------
       - id: check-report-location
         name: "T3b: Report Location SSOT Check"

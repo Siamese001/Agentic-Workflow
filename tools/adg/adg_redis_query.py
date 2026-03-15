@@ -18,9 +18,15 @@ Usage:
 """
 
 import json
+import sys
+from pathlib import Path
 from typing import Any
 
 import redis
+
+_ROOT = Path(__file__).resolve().parents[2]
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))
 
 
 class ADGRedisClient:
@@ -150,9 +156,52 @@ class ADGRedisClient:
         return sorted(matches, key=lambda n: n.get("adg_name", ""))
 
 
+class ADGQuerySession:
+    """Context manager that asserts ADG freshness before any query operation.
+
+    Ensures the stale guard runs (Accelerator #2) before every ADG query session
+    so queries never run against a stale graph. Fail-closed by default.
+
+    Usage::
+
+        with ADGQuerySession() as adg:
+            nodes = adg.search_nodes("MyClass")
+
+        # Warn-only (non-blocking, for pre-commit / CI contexts without Redis):
+        with ADGQuerySession(warn_only=True) as adg:
+            nodes = adg.search_nodes("MyClass")
+
+    Raises:
+        RuntimeError: if ADG is stale or Redis cache is not loaded (fail-closed).
+        redis.ConnectionError: if Redis is not reachable (fail-closed).
+    """
+
+    def __init__(
+        self,
+        warn_only: bool = False,
+        client: ADGRedisClient | None = None,
+    ) -> None:
+        self._warn_only = warn_only
+        self._client = client or ADGRedisClient()
+
+    def __enter__(self) -> ADGRedisClient:
+        # Lazy import to avoid circular dependency:
+        # adg_stale_guard imports ADGRedisClient from this module.
+        from tools.adg.adg_stale_guard import ADGStalenessChecker
+
+        checker = ADGStalenessChecker(client=self._client)
+        if self._warn_only:
+            checker.warn_if_stale()
+        else:
+            checker.assert_fresh()
+        return self._client
+
+    def __exit__(self, *_: object) -> None:
+        pass
+
+
 def _cli() -> None:
-    import argparse
-    import sys
+    import argparse  # noqa: PLC0415
 
     parser = argparse.ArgumentParser(
         prog="adg_redis_query",
@@ -194,8 +243,8 @@ def _cli() -> None:
     adg = ADGRedisClient()
     try:
         adg.ping()
-    except RuntimeError as exc:
-        print(f"ERROR: {exc}", file=sys.stderr)
+    except (RuntimeError, redis.ConnectionError) as exc:
+        print(f"ERROR: ADG Redis unavailable — {exc}", file=sys.stderr)
         sys.exit(1)
 
     cmd = args.cmd.lstrip("-")

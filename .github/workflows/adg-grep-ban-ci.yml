@@ -1,0 +1,33 @@
+name: ADG Grep-Ban Gate
+
+on:
+  pull_request:
+    paths:
+      - "**.py"
+  push:
+    branches: [main, execute_ssot]
+    paths:
+      - "**.py"
+
+jobs:
+  grep-ban:
+    name: "Reject grep/rg as ADG query substitutes"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install redis
+
+      - name: Run ADG grep-ban gate (all Python files)
+        env:
+          PYTHONPATH: .
+          PYTHONIOENCODING: utf-8
+        run: |
+          python ops_scripts/ci/adg_grep_ban_gate.py --all-python

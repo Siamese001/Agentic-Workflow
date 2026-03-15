@@ -164,6 +164,26 @@ class ADGStalenessChecker:
         if result.is_stale:
             raise RuntimeError(result.message)
 
+    def warn_if_stale(self) -> None:
+        """Print a warning to stderr if ADG is stale; never raises.
+
+        Use in non-blocking contexts (e.g. pre-commit warn mode, ADGQuerySession
+        with warn_only=True). Redis/staleness errors are demoted to warnings.
+        """
+        try:
+            result = self.check()
+        except Exception as exc:
+            print(
+                f"[adg-stale-guard] WARNING: could not check staleness: {exc}",
+                file=sys.stderr,
+            )
+            return
+        if result.is_stale:
+            print(
+                f"[adg-stale-guard] WARNING: {result.message}",
+                file=sys.stderr,
+            )
+
 
 def _cli() -> None:
     import argparse
