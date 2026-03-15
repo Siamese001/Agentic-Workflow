@@ -16,6 +16,7 @@ from agentic_core.L2_execution.enforcement.guardrail_gate import (
     GuardrailGate,
 )
 from agentic_core.L2_execution.types.instruction_packet_types import InstructionPacket
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger = logging.getLogger(__name__)
 
@@ -124,6 +125,9 @@ class UniversalWriteGateway:
 
     def check_write_permission(self, path: str, operation: str = "write") -> bool:
         """Check if write operation is permitted."""
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"UniversalWriteGateway.check_write_permission:{operation}")
         if self.replay_mode:
             return True
         path_normalized = str(Path(path).as_posix())

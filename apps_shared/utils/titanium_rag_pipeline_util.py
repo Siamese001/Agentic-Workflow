@@ -35,6 +35,7 @@ from .retrieval_grader import (
     get_retrieval_grader,
     get_web_search_fallback,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from .sota_layer import (
     ContrastiveSemanticCache,
     LateInteractionReranker,
@@ -168,6 +169,9 @@ class TitaniumRAGPipeline:
         Returns:
             Dictionary with results and metadata
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "TitaniumRAGPipeline.query")
         start_time = time.time()
         self.stats["total_queries"] += 1
 
