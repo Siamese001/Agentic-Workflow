@@ -12,6 +12,7 @@ from agentic_core.L2_execution.reasoning.base import SubAtomicAgent
 
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -101,6 +102,9 @@ class PredictiveCostAuditorAgent(SovereignBaseAgent, SubAtomicAgent):
 
         Analyzes healing history and generates cost report.
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "PredictiveCostAuditorAgent.execute")
         Logger.info("💰 Predictive Cost Auditor: Analyzing healing economics...")
         self._load_healing_history()
         self._audit_files()
