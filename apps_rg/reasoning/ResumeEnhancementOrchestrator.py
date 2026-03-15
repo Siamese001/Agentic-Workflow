@@ -7,6 +7,8 @@ resume generation capabilities.
 
 import logging
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
 logger = logging.getLogger(__name__)
 
 
@@ -157,6 +159,7 @@ class ResumeEnhancementOrchestrator:
             import uuid
 
             trace_id = str(uuid.uuid4())
+        _emit_records_execution_trace(trace_id, LayerSegment.L3_ORCHESTRATION, "ResumeEnhancementOrchestrator.generate_enhanced_resume")
         await self.infrastructure.event_bus.publish(
             "events.resume_enhancement_started",
             SystemEvent(

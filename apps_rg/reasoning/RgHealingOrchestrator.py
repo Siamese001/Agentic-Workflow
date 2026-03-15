@@ -20,6 +20,7 @@ from typing import Any
 
 from apps_rg.reasoning.healing_cycle import HealingCycle
 from apps_shared.reasoning.BaseHealingOrchestrator import BaseHealingOrchestrator
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger = logging.getLogger(__name__)
 
@@ -73,6 +74,9 @@ class RgHealingOrchestrator(BaseHealingOrchestrator):
         Returns:
             HealingResult with complete execution details
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "RgHealingOrchestrator.run")
         start_time: float = time.time()
         print("\n" + "=" * 60)
         print("🧬 SELF-HEALING ORCHESTRATOR STARTED")

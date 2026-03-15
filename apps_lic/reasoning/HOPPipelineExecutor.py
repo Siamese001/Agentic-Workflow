@@ -16,6 +16,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from apps_lic.utils.hop_stage_capability import HOPStageCapability
 from apps_lic.utils.LICAgentBase import LICAgentBase
 
@@ -60,6 +61,9 @@ class HOPPipelineExecutor(HOPStageCapability, LICAgentBase):
         Domain logic for each stage is preserved via the stage registry.
         reasoning_profile (if present) is forwarded as a read-only constraint.
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"HOPPipelineExecutor._process:stage_{self.stage_id}")
         from apps_lic.engines import hop_stage_registry
 
         handler = hop_stage_registry.get_stage_handler(self.stage_id)

@@ -11,6 +11,7 @@ import logging
 import re
 from dataclasses import dataclass, field
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from apps_lic.utils.LICAgentBase import LICAgentBase
 
 logger = logging.getLogger(__name__)
@@ -119,6 +120,9 @@ class GovernanceShieldAgent(LICAgentBase):
         Returns:
             Comprehensive safety protocol
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "GovernanceShieldAgent.generate_safety_protocol")
         try:
             if risk_profile.is_high_risk:
                 return self._generate_high_risk_protocol(risk_profile)
