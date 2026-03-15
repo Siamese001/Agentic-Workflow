@@ -64,6 +64,7 @@ from agentic_core.mixins.llm_provider_mixin import LLMProviderMixin
 from agentic_core.mixins.meta_learning_client_mixin import MetaLearningClientMixin
 from agentic_core.mixins.runtime_safety_mixin import RuntimeSafetyMixin
 from agentic_core.mixins.validator_mixin import ValidatorMixin
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 def _get_configuration_error():
@@ -201,6 +202,9 @@ class SovereignBaseAgent(
         Get comprehensive list of sovereign capabilities.
         HARDENED: Returns capability map with security metadata.
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "SovereignBaseAgent.get_sovereign_capabilities")
         if not self._initialized:
             raise SovereignError("SovereignBaseAgent not properly initialized")
 
