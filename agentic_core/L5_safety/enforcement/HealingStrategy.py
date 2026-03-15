@@ -6,6 +6,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.config.core.hygiene_registry_config import CORE_HYGIENE_AGENTS
 
 Logger = logging.getLogger(__name__)
@@ -66,6 +67,9 @@ class HealingStrategy:
         Returns:
             True if the tier should run, False to skip
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, f"HealingStrategy.should_run_tier:{tier_name}")
         if self.target_tier is None:
             return True
         try:

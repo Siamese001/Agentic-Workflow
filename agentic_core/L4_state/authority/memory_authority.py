@@ -36,6 +36,7 @@ from enum import Enum
 from typing import Any
 
 from agentic_core.L2_execution.providers import get_clock
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.L4_state.authority.run_state_authority import (
     RunStateAuthority,
     get_run_state_authority,
@@ -266,6 +267,9 @@ class MemoryAuthority:
 
         ADG edge: reads_runtime_state, observes_runtime_state.
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"MemoryAuthority.read:{namespace.value}:{key}")
         value, version = self._rsa.read(key, default)
         source_hash = hashlib.sha256(repr(value).encode()).hexdigest()[:16]
         _READS_LOG.debug(

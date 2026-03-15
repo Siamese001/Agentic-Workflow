@@ -12,6 +12,7 @@ from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L0_routing.config.path_constants import THRESHOLD
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.L2_execution.providers import get_clock
 
 try:
@@ -101,6 +102,9 @@ class AgentGym(SovereignBaseAgent):
         Returns:
             BenchmarkResult
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"AgentGymEngine.run_benchmark:{scenario_id}")
         self._scenarios.get(scenario_id)
         if not scenario:
             raise ValueError(f"Scenario not found: {scenario_id}")
