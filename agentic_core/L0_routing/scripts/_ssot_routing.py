@@ -37,6 +37,7 @@ from agentic_core.L0_routing.scripts._ssot_types import (
     RoutingTier,
 )
 from agentic_core.L2_execution.providers import get_clock
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -467,6 +468,9 @@ class SovereignDecisionEngine:
         Uses GPU-accelerated BAAI/bge-m3 cosine similarity for pattern matching
         when agent_name is in BMG_EMBEDDING_AGENT_KEYS.
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"SovereignDecisionEngine.calculate_healing_confidence:{territory}")
         if violations_count == 0:
             return ConfidenceScore(value=1.0, reasoning="Zero violations")
         if getattr(self, "auto_approve", False):

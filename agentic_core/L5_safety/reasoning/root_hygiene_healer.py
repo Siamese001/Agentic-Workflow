@@ -30,6 +30,7 @@ from agentic_core.L0_routing.config import (
     OPS_SCRIPTS_DIR,
 )
 from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 # Optional: Import SovereignBaseAgent if available for full integration
 try:
@@ -91,6 +92,9 @@ class RootHygieneHealerAgent(SovereignBaseAgent):
 
     def run(self) -> dict[str, Any]:
         """Entry point for execute_ssot.py orchestration."""
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "RootHygieneHealer.run")
         print(f"[HYGIENE] Executing Root Hygiene Enforcement at {self.project_root}")
         success = self._enforce_root_hygiene()
         return {
