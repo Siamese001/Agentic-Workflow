@@ -1,0 +1,379 @@
+"""Tests for ADG anti-pattern fixer — Accelerator #1.
+
+Coverage matrix per §1.1:
+- _is_canonical: canonical lines pass, all non-canonical forms fail
+- _normalize_type: underscore→kebab, camelCase→kebab, with/without 'allow' prefix
+- scan_violations: empty file, no violations, mixed canonical+non-canonical
+- fix_source: each non-canonical form fixed correctly, canonical lines untouched,
+              empty justification skipped with warning, multi-violation file
+- fix_file: file modified on disk, check_only does not modify, OSError propagated
+- Determinism: same source → same output on repeated calls
+- Side-effects: fix_file writes exactly once when changes present
+"""
+
+from __future__ import annotations
+
+import sys
+from pathlib import Path
+
+import pytest
+
+ROOT = Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+
+# ===========================================================================
+# _is_canonical
+# ===========================================================================
+
+
+class TestIsCanonical:
+    def _check(self, line: str) -> bool:
+        from tools.adg.adg_antipattern_fixer import _is_canonical
+
+        return _is_canonical(line)
+
+    def test_canonical_magic_config_passes(self):
+        assert self._check("    # guardian: allow-magic-config -- used in legacy startup path") is True
+
+    def test_canonical_silent_swallower_passes(self):
+        assert self._check("# guardian: allow-silent-swallower -- intentional degraded path") is True
+
+    def test_canonical_global_mutation_passes(self):
+        assert self._check("# guardian: allow-global-mutation -- module-level singleton init") is True
+
+    def test_missing_colon_is_not_canonical(self):
+        assert self._check("# guardian allow-magic-config -- reason") is False
+
+    def test_wrong_separator_is_not_canonical(self):
+        assert self._check("# guardian: allow-magic-config: reason") is False
+
+    def test_wrong_case_is_not_canonical(self):
+        assert self._check("# Guardian: allow-magic-config -- reason") is False
+
+    def test_underscore_type_is_not_canonical(self):
+        assert self._check("# guardian: allow_magic_config -- reason") is False
+
+    def test_non_guardian_comment_is_not_canonical(self):
+        assert self._check("# This is just a regular comment") is False
+
+    def test_empty_string_is_not_canonical(self):
+        assert self._check("") is False
+
+    def test_empty_justification_is_not_canonical(self):
+        assert self._check("# guardian: allow-magic-config -- ") is False
+
+    def test_missing_space_after_double_dash_is_not_canonical(self):
+        assert self._check("# guardian: allow-magic-config --reason") is False
+
+
+# ===========================================================================
+# _normalize_type
+# ===========================================================================
+
+
+class TestNormalizeType:
+    def _norm(self, raw: str) -> str:
+        from tools.adg.adg_antipattern_fixer import _normalize_type
+
+        return _normalize_type(raw)
+
+    def test_already_canonical_magic_config(self):
+        assert self._norm("allow-magic-config") == "allow-magic-config"
+
+    def test_underscore_to_hyphen(self):
+        assert self._norm("allow_magic_config") == "allow-magic-config"
+
+    def test_camelcase_to_kebab(self):
+        assert self._norm("allowMagicConfig") == "allow-magic-config"
+
+    def test_silent_swallower_underscore(self):
+        assert self._norm("allow_silent_swallower") == "allow-silent-swallower"
+
+    def test_silent_swallower_camel(self):
+        assert self._norm("allowSilentSwallower") == "allow-silent-swallower"
+
+    def test_global_mutation_underscore(self):
+        assert self._norm("allow_global_mutation") == "allow-global-mutation"
+
+    def test_already_canonical_bare_except(self):
+        assert self._norm("allow-bare-except") == "allow-bare-except"
+
+    def test_bare_except_underscore(self):
+        assert self._norm("allow_bare_except") == "allow-bare-except"
+
+    def test_os_path_underscore(self):
+        assert self._norm("allow_os_path") == "allow-os-path"
+
+    def test_string_path_concat_underscore(self):
+        assert self._norm("allow_string_path_concat") == "allow-string-path-concat"
+
+    def test_unknown_type_gets_best_effort_kebab(self):
+        result = self._norm("allow-custom-type-xyz")
+        assert result.startswith("allow-")
+        assert "_" not in result
+
+    def test_normalize_is_deterministic(self):
+        from tools.adg.adg_antipattern_fixer import _normalize_type
+
+        assert _normalize_type("allow_magic_config") == _normalize_type("allow_magic_config")
+
+
+# ===========================================================================
+# scan_violations
+# ===========================================================================
+
+
+class TestScanViolations:
+    def _scan(self, source: str):
+        from tools.adg.adg_antipattern_fixer import GuardianCommentFixer
+
+        return GuardianCommentFixer().scan_violations(source)
+
+    def test_empty_source_returns_no_violations(self):
+        assert self._scan("") == []
+
+    def test_no_guardian_comments_returns_empty(self):
+        src = "x = 1\n# normal comment\ndef foo(): pass\n"
+        assert self._scan(src) == []
+
+    def test_canonical_comment_not_reported(self):
+        src = "# guardian: allow-magic-config -- used in legacy startup path\nx = 1\n"
+        violations = self._scan(src)
+        assert violations == []
+
+    def test_missing_colon_detected(self):
+        src = "# guardian allow-magic-config -- reason\n"
+        violations = self._scan(src)
+        assert len(violations) == 1
+        assert violations[0][0] == 1  # line 1
+
+    def test_wrong_separator_detected(self):
+        src = "# guardian: allow-magic-config: reason\n"
+        violations = self._scan(src)
+        assert len(violations) == 1
+
+    def test_wrong_case_detected(self):
+        src = "# Guardian: allow-magic-config -- reason\n"
+        violations = self._scan(src)
+        assert len(violations) == 1
+
+    def test_underscore_type_detected(self):
+        src = "# guardian: allow_magic_config -- reason\n"
+        violations = self._scan(src)
+        assert len(violations) == 1
+
+    def test_multiple_violations_all_detected(self):
+        src = "# guardian allow-magic-config -- r1\nx = 1\n# guardian: allow_silent_swallower -- r2\n"
+        violations = self._scan(src)
+        assert len(violations) == 2
+        assert violations[0][0] == 1
+        assert violations[1][0] == 3
+
+    def test_mixed_canonical_and_violation(self):
+        src = (
+            "# guardian: allow-magic-config -- canonical\n"
+            "# guardian allow-silent-swallower -- not canonical\n"
+        )
+        violations = self._scan(src)
+        assert len(violations) == 1
+        assert violations[0][0] == 2
+
+    def test_violation_line_numbers_are_1_indexed(self):
+        src = "x = 1\n# guardian allow-magic-config -- reason\n"
+        violations = self._scan(src)
+        assert violations[0][0] == 2
+
+
+# ===========================================================================
+# fix_source
+# ===========================================================================
+
+
+class TestFixSource:
+    def _fix(self, source: str):
+        from tools.adg.adg_antipattern_fixer import GuardianCommentFixer
+
+        return GuardianCommentFixer().fix_source(source)
+
+    def test_canonical_line_unchanged(self):
+        src = "# guardian: allow-magic-config -- used in legacy startup\n"
+        fixed, changes, warnings = self._fix(src)
+        assert changes == []
+        assert fixed == src
+
+    def test_missing_colon_fixed(self):
+        src = "# guardian allow-magic-config -- legacy startup path\n"
+        fixed, changes, _ = self._fix(src)
+        assert len(changes) == 1
+        assert "# guardian: allow-magic-config -- legacy startup path" in fixed
+
+    def test_wrong_separator_colon_fixed_to_double_dash(self):
+        src = "# guardian: allow-magic-config: legacy startup path\n"
+        fixed, changes, _ = self._fix(src)
+        assert len(changes) == 1
+        assert "-- legacy startup path" in fixed
+        assert ": legacy" not in fixed
+
+    def test_wrong_case_guardian_fixed(self):
+        src = "# Guardian: allow-magic-config -- legacy startup path\n"
+        fixed, changes, _ = self._fix(src)
+        assert len(changes) == 1
+        assert fixed.startswith("# guardian:")
+
+    def test_underscore_type_normalized_to_kebab(self):
+        src = "# guardian: allow_magic_config -- legacy startup path\n"
+        fixed, changes, _ = self._fix(src)
+        assert len(changes) == 1
+        assert "allow-magic-config" in fixed
+        assert "allow_magic_config" not in fixed
+
+    def test_camelcase_type_normalized(self):
+        src = "# guardian: allowMagicConfig -- legacy startup path\n"
+        fixed, changes, _ = self._fix(src)
+        assert len(changes) == 1
+        assert "allow-magic-config" in fixed
+
+    def test_empty_justification_skipped_with_warning(self):
+        src = "# guardian: allow-magic-config -- \n"
+        fixed, changes, warnings = self._fix(src)
+        assert changes == []  # not fixed
+        assert len(warnings) == 1
+        assert "empty justification" in warnings[0]
+
+    def test_indentation_preserved(self):
+        src = "    # guardian allow-magic-config -- reason\n"
+        fixed, changes, _ = self._fix(src)
+        assert len(changes) == 1
+        assert changes[0].new_line.startswith("    # guardian:")
+
+    def test_multiple_violations_all_fixed(self):
+        src = "# guardian allow-magic-config -- r1\nx = 1\n# guardian: allow_silent_swallower -- r2\n"
+        fixed, changes, _ = self._fix(src)
+        assert len(changes) == 2
+        assert "allow-magic-config" in fixed
+        assert "allow-silent-swallower" in fixed
+
+    def test_non_guardian_lines_untouched(self):
+        src = "x = 1\n# regular comment\ndef foo(): pass\n"
+        fixed, changes, _ = self._fix(src)
+        assert changes == []
+        assert fixed == src
+
+    def test_fix_is_deterministic(self):
+        src = "# guardian allow-magic-config -- reason\n"
+        from tools.adg.adg_antipattern_fixer import GuardianCommentFixer
+
+        fixer = GuardianCommentFixer()
+        r1 = fixer.fix_source(src)
+        r2 = fixer.fix_source(src)
+        assert r1[0] == r2[0]
+        assert len(r1[1]) == len(r2[1])
+
+    def test_change_records_old_and_new_line(self):
+        src = "# guardian allow-magic-config -- reason\n"
+        _, changes, _ = self._fix(src)
+        assert changes[0].old_line == "# guardian allow-magic-config -- reason"
+        assert changes[0].new_line == "# guardian: allow-magic-config -- reason"
+
+    def test_change_line_no_is_1_indexed(self):
+        src = "x = 1\n# guardian allow-magic-config -- reason\n"
+        _, changes, _ = self._fix(src)
+        assert changes[0].line_no == 2
+
+    def test_already_fixed_line_produces_no_change(self):
+        """If fix_source is called twice, second call produces zero changes."""
+        src = "# guardian allow-magic-config -- reason\n"
+        from tools.adg.adg_antipattern_fixer import GuardianCommentFixer
+
+        fixer = GuardianCommentFixer()
+        fixed_src, _, _ = fixer.fix_source(src)
+        _, changes2, _ = fixer.fix_source(fixed_src)
+        assert changes2 == [], "Idempotent: second call on already-fixed source yields no changes"
+
+
+# ===========================================================================
+# fix_file
+# ===========================================================================
+
+
+class TestFixFile:
+    def test_fix_file_writes_corrected_content(self, tmp_path):
+        from tools.adg.adg_antipattern_fixer import GuardianCommentFixer
+
+        f = tmp_path / "test_module.py"
+        f.write_text("# guardian allow-magic-config -- reason\n", encoding="utf-8")
+
+        fixer = GuardianCommentFixer()
+        result = fixer.fix_file(f)
+
+        assert result.fixed_count == 1
+        content = f.read_text(encoding="utf-8")
+        assert "# guardian: allow-magic-config -- reason" in content
+
+    def test_check_only_does_not_modify_file(self, tmp_path):
+        from tools.adg.adg_antipattern_fixer import GuardianCommentFixer
+
+        f = tmp_path / "test_module.py"
+        original = "# guardian allow-magic-config -- reason\n"
+        f.write_text(original, encoding="utf-8")
+
+        fixer = GuardianCommentFixer()
+        result = fixer.fix_file(f, check_only=True)
+
+        assert result.fixed_count == 1  # violation detected
+        assert f.read_text(encoding="utf-8") == original  # file unchanged
+
+    def test_no_violations_writes_nothing(self, tmp_path):
+        from tools.adg.adg_antipattern_fixer import GuardianCommentFixer
+
+        f = tmp_path / "clean.py"
+        original = "# guardian: allow-magic-config -- reason\nx = 1\n"
+        f.write_text(original, encoding="utf-8")
+
+        fixer = GuardianCommentFixer()
+        result = fixer.fix_file(f)
+
+        assert result.fixed_count == 0
+        assert f.read_text(encoding="utf-8") == original
+
+    def test_result_file_path_matches_input(self, tmp_path):
+        from tools.adg.adg_antipattern_fixer import GuardianCommentFixer
+
+        f = tmp_path / "module.py"
+        f.write_text("x = 1\n", encoding="utf-8")
+        result = GuardianCommentFixer().fix_file(f)
+        assert result.file_path == str(f)
+
+    def test_empty_justification_increments_skipped_counter(self, tmp_path):
+        from tools.adg.adg_antipattern_fixer import GuardianCommentFixer
+
+        f = tmp_path / "module.py"
+        f.write_text("# guardian: allow-magic-config -- \n", encoding="utf-8")
+        result = GuardianCommentFixer().fix_file(f)
+        assert result.skipped_empty_justification == 1
+        assert result.fixed_count == 0
+
+    def test_had_violations_true_when_fixes_made(self, tmp_path):
+        from tools.adg.adg_antipattern_fixer import GuardianCommentFixer
+
+        f = tmp_path / "module.py"
+        f.write_text("# guardian allow-magic-config -- reason\n", encoding="utf-8")
+        result = GuardianCommentFixer().fix_file(f)
+        assert result.had_violations is True
+
+    def test_had_violations_false_when_clean(self, tmp_path):
+        from tools.adg.adg_antipattern_fixer import GuardianCommentFixer
+
+        f = tmp_path / "clean.py"
+        f.write_text("# guardian: allow-magic-config -- reason\n", encoding="utf-8")
+        result = GuardianCommentFixer().fix_file(f)
+        assert result.had_violations is False
+
+    def test_missing_file_raises_os_error(self, tmp_path):
+        from tools.adg.adg_antipattern_fixer import GuardianCommentFixer
+
+        missing = tmp_path / "does_not_exist.py"
+        with pytest.raises(OSError):
+            GuardianCommentFixer().fix_file(missing)

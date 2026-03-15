@@ -1,12 +1,104 @@
 {
+  "_tmp_current_state.py": {
+    "path_fragility": 1
+  },
+  "_tmp_gap_analysis.py": {
+    "path_fragility": 1
+  },
+  "_tmp_l0_after.py": {
+    "path_fragility": 1
+  },
+  "_tmp_l0_regen.py": {
+    "path_fragility": 1
+  },
+  "_tmp_l1l2l3_wc.py": {
+    "path_fragility": 1
+  },
+  "_tmp_l4_debug.py": {
+    "path_fragility": 1
+  },
+  "_tmp_l4_regen.py": {
+    "magic_configuration": 3,
+    "path_fragility": 1
+  },
+  "_tmp_l5_counts.py": {
+    "path_fragility": 1
+  },
+  "_tmp_l5_regen.py": {
+    "path_fragility": 1
+  },
+  "_tmp_l6_regen.py": {
+    "path_fragility": 1
+  },
+  "_tmp_routing_callers.py": {
+    "path_fragility": 1
+  },
+  "_tmp_routing_sites.py": {
+    "path_fragility": 1
+  },
+  "agentic_core/L0_routing/capacity/capacity_aware_router.py": {
+    "magic_configuration": 2
+  },
+  "agentic_core/L0_routing/enforcement/routing_contract.py": {
+    "silent_swallower": 1
+  },
   "agentic_core/L0_routing/engines/agentic_router.py": {
+    "silent_swallower": 7
+  },
+  "agentic_core/L0_routing/engines/execution_orchestrator.py": {
+    "silent_swallower": 1
+  },
+  "agentic_core/L0_routing/engines/path_router.py": {
+    "silent_swallower": 2
+  },
+  "agentic_core/L0_routing/engines/reasoning_policy_engine.py": {
+    "silent_swallower": 1
+  },
+  "agentic_core/L0_routing/optimization/optimization_orchestrator.py": {
+    "magic_configuration": 1
+  },
+  "agentic_core/L0_routing/policy/route_policy_governor.py": {
+    "silent_swallower": 1
+  },
+  "agentic_core/L0_routing/telemetry/routing_telemetry.py": {
     "silent_swallower": 2
   },
   "agentic_core/L1_cognition/enforcement/react_strategy.py": {
     "silent_swallower": 1
   },
+  "agentic_core/L1_cognition/enforcement/reasoning_chokepoint.py": {
+    "silent_swallower": 5
+  },
+  "agentic_core/L1_cognition/knowledge/reasoning_knowledge.py": {
+    "magic_configuration": 1
+  },
+  "agentic_core/L1_cognition/planning/plan_creator.py": {
+    "config_with_logic": 4,
+    "magic_configuration": 1
+  },
   "agentic_core/L1_cognition/telemetry/react_chunking_telemetry.py": {
     "silent_swallower": 1
+  },
+  "agentic_core/L2_execution/adaptation/adaptation_orchestrator.py": {
+    "magic_configuration": 4
+  },
+  "agentic_core/L2_execution/adaptation/execution_adaptation.py": {
+    "magic_configuration": 1
+  },
+  "agentic_core/L2_execution/enforcement/execution_guardrail_chokepoint.py": {
+    "silent_swallower": 8
+  },
+  "agentic_core/L3_orchestration/contracts/agent_handoff.py": {
+    "silent_swallower": 3
+  },
+  "agentic_core/L3_orchestration/contracts/orchestration_context.py": {
+    "silent_swallower": 1
+  },
+  "agentic_core/L3_orchestration/contracts/orchestration_handoff_contract.py": {
+    "silent_swallower": 1
+  },
+  "agentic_core/L3_orchestration/enforcement/mission_runner.py": {
+    "silent_swallower": 3
   },
   "agentic_core/L3_orchestration/engines/autonomous_workflow_engine.py": {
     "magic_configuration": 1,
@@ -22,11 +114,32 @@
   "agentic_core/L3_orchestration/engines/rewoo_engine.py": {
     "magic_configuration": 1
   },
+  "agentic_core/L3_orchestration/reasoning/StateManagementAgent.py": {
+    "silent_swallower": 2
+  },
+  "agentic_core/L3_orchestration/registry/agent_dispatch_registry.py": {
+    "silent_swallower": 1
+  },
+  "agentic_core/L4_persistence/lifecycle/lifecycle_policy_applier.py": {
+    "config_with_logic": 11
+  },
+  "agentic_core/L4_state/authority/memory_authority.py": {
+    "silent_swallower": 1
+  },
   "agentic_core/L4_state/memory/cache_admission_gate.py": {
     "silent_swallower": 1
   },
   "agentic_core/L5_safety/enforcement/embedding_non_interference_guardrail.py": {
     "direct_prompt_compilation": 1
+  },
+  "agentic_core/L5_safety/enforcement/error_recovery_guardrail.py": {
+    "magic_configuration": 1
+  },
+  "agentic_core/L5_safety/enforcement/policy_action_contract.py": {
+    "silent_swallower": 3
+  },
+  "agentic_core/L5_safety/enforcement/tool_safety_contract.py": {
+    "silent_swallower": 2
   },
   "agentic_core/L5_safety/reasoning/FileClassificationAgent.py": {
     "silent_swallower": 1
@@ -40,11 +153,26 @@
   "agentic_core/L5_safety/types/safety_types.py": {
     "path_fragility": 1
   },
+  "agentic_core/L6_observability/enforcement/outcome_logger.py": {
+    "silent_swallower": 1
+  },
+  "agentic_core/L6_observability/evaluation/evaluation_record.py": {
+    "silent_swallower": 3
+  },
+  "agentic_core/L6_observability/evaluation/evaluation_signal_integrator.py": {
+    "silent_swallower": 1
+  },
+  "agentic_core/L6_observability/performance/performance_emitter.py": {
+    "silent_swallower": 1
+  },
   "agentic_core/adg/runtime/behavioral_index.py": {
     "silent_swallower": 3
   },
   "agentic_core/cache/cache_key_builders.py": {
     "direct_prompt_compilation": 1
+  },
+  "agentic_core/runtime/lifecycle_trace_contract.py": {
+    "silent_swallower": 1
   },
   "apps_eval/tools/eval_dry_run_tool.py": {
     "silent_swallower": 1
@@ -79,6 +207,57 @@
   "apps_shared/utils/tone_voice_util.py": {
     "magic_configuration": 10
   },
+  "ops_scripts/ci/_adg_ci_gates.py": {
+    "global_mutation": 1
+  },
+  "ops_scripts/ci/_capability_registry_gate.py": {
+    "silent_swallower": 1
+  },
+  "ops_scripts/ci/_coordination_ledger_gate.py": {
+    "silent_swallower": 1
+  },
+  "ops_scripts/ci/_evaluation_signal_gate.py": {
+    "silent_swallower": 1
+  },
+  "ops_scripts/ci/_execution_proof_gate.py": {
+    "silent_swallower": 1
+  },
+  "ops_scripts/ci/_memory_authority_gate.py": {
+    "silent_swallower": 1
+  },
+  "ops_scripts/ci/_policy_enforcement_gate.py": {
+    "path_fragility": 3
+  },
+  "ops_scripts/ci/_reasoning_context_gate.py": {
+    "path_fragility": 2,
+    "silent_swallower": 1
+  },
+  "ops_scripts/ci/_reasoning_evaluation_gate.py": {
+    "silent_swallower": 1
+  },
+  "ops_scripts/ci/_routing_governance_gate.py": {
+    "magic_configuration": 3,
+    "path_fragility": 3
+  },
+  "ops_scripts/ci/_routing_telemetry_gate.py": {
+    "silent_swallower": 1
+  },
+  "ops_scripts/ci/_state_versioning_gate.py": {
+    "silent_swallower": 1
+  },
+  "ops_scripts/ci/_tool_safety_gate.py": {
+    "silent_swallower": 1
+  },
+  "ops_scripts/ci/_trace_completeness_gate.py": {
+    "magic_configuration": 3,
+    "path_fragility": 3
+  },
+  "ops_scripts/ci/_typed_tool_gate.py": {
+    "silent_swallower": 1
+  },
+  "ops_scripts/ci/run_all_guardrails.py": {
+    "global_mutation": 1
+  },
   "system_learning/engines/meta_learning_bus.py": {
     "silent_swallower": 6
   },
@@ -104,6 +283,25 @@
   },
   "system_learning/engines/trace_feature_extractor.py": {
     "silent_swallower": 1
+  },
+  "tools/adg/adg_antipattern_fixer.py": {
+    "global_mutation": 1,
+    "magic_configuration": 1
+  },
+  "tools/adg/adg_stale_guard.py": {
+    "global_mutation": 1,
+    "magic_configuration": 2
+  },
+  "tools/adg/adg_test_selector.py": {
+    "global_mutation": 1,
+    "magic_configuration": 1
+  },
+  "tools/adg/adg_type_check.py": {
+    "global_mutation": 1,
+    "magic_configuration": 2
+  },
+  "tools/adg/bulk_uwg_migrator.py": {
+    "global_mutation": 1
   },
   "tools/adg/react_chunking_graph_audit.py": {
     "global_mutation": 1

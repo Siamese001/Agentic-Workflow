@@ -362,20 +362,17 @@ def _heal_uncovered_module(r: redis.Redis, path: str, dry_run: bool) -> tuple[He
     # Derive import path from file path
     import_path = path.replace("/", ".").replace("\\", ".").removesuffix(".py")
 
-    # Fetch exported symbols from ADG (best-effort)
+    # Fetch exported symbols from ADG
     symbols: list[str] = []
-    try:
-        node_ids = r.smembers(f"adg:nodes:by_file:{path}")
-        for nid in node_ids:
-            node = r.hgetall(f"adg:node:{nid}")
-            name = node.get("adg_name", "")
-            if "::Symbol::" in name and "::" not in name.rsplit("::", 1)[-1]:
-                sym = name.rsplit("::", 1)[-1]
-                if sym and not sym.startswith("_"):
-                    symbols.append(sym)
-        symbols = sorted(set(symbols))[:5]
-    except redis.RedisError:
-        pass
+    node_ids = r.smembers(f"adg:nodes:by_file:{path}")
+    for nid in node_ids:
+        node = r.hgetall(f"adg:node:{nid}")
+        name = node.get("adg_name", "")
+        if "::Symbol::" in name and "::" not in name.rsplit("::", 1)[-1]:
+            sym = name.rsplit("::", 1)[-1]
+            if sym and not sym.startswith("_"):
+                symbols.append(sym)
+    symbols = sorted(set(symbols))[:5]
 
     # Generate minimal stub
     stub_lines = [
@@ -443,20 +440,17 @@ def _resolve_test_paths(r: redis.Redis, prod_path: str) -> list[str]:
     Falls back to stub mirror path if no covers edges exist.
     """
     test_paths: list[str] = []
-    try:
-        node_ids = r.smembers(f"adg:nodes:by_file:{prod_path}")
-        for nid in node_ids:
-            node = r.hgetall(f"adg:node:{nid}")
-            if node.get("entity_type") != "module":
-                continue
-            cover_nids = r.smembers(f"adg:edge:in:{nid}:covers")
-            for tnid in cover_nids:
-                tnode = r.hgetall(f"adg:node:{tnid}")
-                rp = tnode.get("resolved_path", "")
-                if rp and rp.startswith("tests/"):
-                    test_paths.append(rp)
-    except redis.RedisError as exc:
-        logger.warning("[lifecycle] covers lookup failed for %s: %s", prod_path, exc)
+    node_ids = r.smembers(f"adg:nodes:by_file:{prod_path}")
+    for nid in node_ids:
+        node = r.hgetall(f"adg:node:{nid}")
+        if node.get("entity_type") != "module":
+            continue
+        cover_nids = r.smembers(f"adg:edge:in:{nid}:covers")
+        for tnid in cover_nids:
+            tnode = r.hgetall(f"adg:node:{tnid}")
+            rp = tnode.get("resolved_path", "")
+            if rp and rp.startswith("tests/"):
+                test_paths.append(rp)
 
     return sorted(set(test_paths))
 
@@ -617,9 +611,14 @@ def _rescore(dry_run: bool) -> float:
         r = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB, decode_responses=True)
         val = r.get("adg:drift:score")
         return float(val) if val else -1.0
-    except (subprocess.TimeoutExpired, OSError, redis.RedisError) as exc:
-        logger.warning("[lifecycle] rescore failed: %s", exc)
+    except (subprocess.TimeoutExpired, OSError) as exc:
+        logger.warning("[lifecycle] rescore subprocess failed: %s", exc)
         return -1.0
+    except redis.RedisError as exc:
+        raise RuntimeError(
+            f"[lifecycle] ADG Redis unavailable during rescore — "
+            f"run: python tools/adg/adg_redis_ingest.py --force. Error: {exc}"
+        ) from exc
 
 
 def _write_lifecycle_result(r: redis.Redis, result: LifecycleResult) -> None:
