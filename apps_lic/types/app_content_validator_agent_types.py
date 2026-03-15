@@ -19,6 +19,7 @@ import warnings
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from typing import Any
 
 from agentic_core.L0_routing.config.path_constants import THRESHOLD
@@ -160,6 +161,9 @@ class AppContentValidatorAgent(SubatomicTestingMixin):
 
     def validate_email(self, email: str) -> list[ContentViolation]:
         """Validate an email address."""
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "ContentValidator.validate_email")
         violations = []
         if not email:
             if self.config.require_contact:

@@ -8,7 +8,9 @@ unverifiable content is filtered out to ensure only high-signal content is used.
 import logging
 import re
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from pydantic import BaseModel, Field, confloat, validator
+from typing import Any
 
 from agentic_core.interfaces.path_constants import THRESHOLD
 
@@ -161,6 +163,9 @@ class SignalQualityPipeline:
         Returns:
             QualityAssessment with detailed evaluation results
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "SignalQualityPipeline.evaluate_signal")
         try:
             assessment = QualityAssessment(is_pass=True, doc_id=doc_id)
             if not content or not isinstance(content, str):

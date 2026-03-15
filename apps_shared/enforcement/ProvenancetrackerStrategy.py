@@ -12,6 +12,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from difflib import SequenceMatcher
 from pathlib import Path
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from typing import Any
 
 from pydantic import BaseModel, Field
@@ -281,6 +282,9 @@ class ProvenanceTracker:
         Returns:
             List of matching lineages
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "ProvenanceTracker.search_lineage")
         results = []
         try:
             lines = await asyncio.to_thread(self._read_lineage_file)
