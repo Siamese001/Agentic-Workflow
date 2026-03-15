@@ -25,8 +25,6 @@ from agentic_core.L6_observability.dashboard.dashboard_aggregate import (
     HealthFlag,
     get_dashboard_registry,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
-
 logger = logging.getLogger(__name__)
 _DASHBOARD_LOG = logging.getLogger("adg.health_computed")
 
@@ -160,6 +158,7 @@ def aggregate_runtime_observability(
         DashboardAggregateError: If aggregation fails (Gate E)
     """
     import uuid  # noqa: PLC0415
+    from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace  # noqa: PLC0415
 
     _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L6_OBSERVABILITY, "aggregate_runtime_observability")
     _registry = registry or get_dashboard_registry()

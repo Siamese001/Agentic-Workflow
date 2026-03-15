@@ -33,9 +33,6 @@ import uuid
 from dataclasses import dataclass, field
 from typing import Any
 
-from agentic_core.L6_observability.dashboard.dashboard_orchestrator import (
-    aggregate_simple_dashboard,
-)
 from agentic_core.runtime.execution_trace import get_active_execution_trace
 
 _LOG = logging.getLogger(__name__)
@@ -200,6 +197,7 @@ def _emit_records_execution_trace(root_trace_id: str, layer: str, operation: str
     # P3/L6: Trigger dashboard aggregation on execution trace emission
     try:
         # Aggregate dashboard metrics for current telemetry window
+        from agentic_core.L6_observability.dashboard.dashboard_orchestrator import aggregate_simple_dashboard  # noqa: PLC0415
         snapshot = aggregate_simple_dashboard(window_duration_seconds=300)  # 5-minute window
         _LOG.debug(
             "DASHBOARD_AGGREGATION_TRIGGERED root_trace_id=%s layer=%s snapshot_id=%s",
