@@ -20,6 +20,8 @@ USAGE:
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from typing import Any
 from datetime import datetime
 from pathlib import Path
 
@@ -193,6 +195,9 @@ class AgentIntegrityReporter:
 
     def validate_registry_coverage(self, registry_result: VerificationResult) -> tuple[bool, str]:
         """Validate 100% registry coverage."""
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "IntegrityReportGenerator.validate_registry_coverage")
         if registry_result.total_filesystem_agents == 0:
             return False, "No agents found in filesystem"
 

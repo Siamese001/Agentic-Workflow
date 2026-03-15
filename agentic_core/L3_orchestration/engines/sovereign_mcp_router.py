@@ -6,6 +6,7 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 import json
 import logging
 from pathlib import Path
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from typing import Any
 
 from agentic_core.cache.redis_cache_client import get_hot_cache
@@ -27,6 +28,9 @@ class SovereignMcpRouter(SovereignBaseAgent):
     # guardian: allow-type-erasure
     async def initialize(self) -> Any:
         """Async initialization with L5 shielding and immediate fail-fast"""
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "SovereignMCPRouter.initialize")
         try:
             if not self.config_path.exists():
                 raise FileNotFoundError(f"MCP config Missing: {self.config_path}")

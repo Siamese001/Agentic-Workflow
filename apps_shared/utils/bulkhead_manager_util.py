@@ -15,6 +15,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from typing import Any
 
 from agentic_core.L0_routing.config.path_constants import DEFAULT_TIMEOUT, THRESHOLD
@@ -349,6 +350,9 @@ class BulkheadManager:
         Raises:
             ResourceExhaustedError: If bulkhead not found or exhausted
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"BulkheadManager.execute:{bulkhead_name}")
         bulkhead = self.get_bulkhead(bulkhead_name)
         if not bulkhead:
             raise ResourceExhaustedError(bulkhead_name, "Bulkhead not found")
