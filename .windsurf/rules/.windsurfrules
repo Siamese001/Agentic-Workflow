@@ -334,6 +334,62 @@ It is the lowest-overhead freshness probe: `adg_status` reads it + validates aga
 
 ---
 
+### 2.7 Custom Memory MCP — `memory` (MANDATORY, replaces marketplace server)
+
+**Why the replacement:** `@modelcontextprotocol/server-memory` uses an in-memory Node.js store.
+The ENTIRE knowledge graph is wiped on every Windsurf restart — constitutional rules, ADG
+context, and session observations vanish. No cross-session knowledge accumulation is possible.
+
+`tools/memory/adg_memory_server.py` is wired as `"memory"` in `mcp_config.json`. It provides:
+- **SQLite-backed persistence** at `artifacts/memory/knowledge_graph.sqlite` — survives restarts
+- **Observation deduplication** — `add_observations` is idempotent; call as many times as needed
+- **Protected entity types** — `ArchitectureLayer`, `ProjectContext`, `ConstitutionalRule` entities
+  survive `mem_cleanup_stale` and represent the durable knowledge base
+
+**Tool reference (same core API as marketplace + enhanced tools):**
+
+| Tool | Action | Notes |
+|---|---|---|
+| `mem_recall_session_start` | Return ALL protected entities | **Call first at session start** |
+| `mem_import_adg_context` | Seed from ADG Redis hot cache | Creates Layer:L0–L6 + Project:ADG |
+| `create_entities` | Create new entities | Skips duplicates silently |
+| `add_observations` | Append observations to entity | Deduped — safe to call repeatedly |
+| `create_relations` | Add directed relation | Auto-creates missing entities |
+| `open_nodes` | Load entities by name | Returns observations + relations |
+| `search_nodes` | Full-text search | Matches name, type, observations |
+| `read_graph` | Dump entire graph | Avoid unless graph is small |
+| `delete_entities` | Delete + cascade | Cascades to observations + relations |
+| `delete_observations` | Remove specific observations | Fine-grained pruning |
+| `delete_relations` | Remove specific relations | |
+| `mem_get_stats` | Entity/obs/rel counts by type | Use for KB health check |
+| `mem_cleanup_stale` | Delete non-protected entities > N days | Default 30 days |
+
+**Entity type conventions:**
+
+| Type | Lifetime | Examples |
+|---|---|---|
+| `ArchitectureLayer` | Permanent (protected) | `Layer:L0` … `Layer:L6` |
+| `ProjectContext` | Permanent (protected) | `Project:ADG` |
+| `ConstitutionalRule` | Permanent (protected) | `ConstitutionalRule:ADG-freshness` |
+| `Agent` | Session → persistent | `Agent:L3-orchestration` |
+| `Violation` | Session | `Violation:path_fragility` |
+| `general` | Session | ad-hoc observations |
+
+**Session startup protocol (MANDATORY):**
+1. Call `mem_recall_session_start` → loads all durable project context in one call
+2. If empty (first run): call `mem_import_adg_context` to seed from ADG hot cache
+3. Add session-specific entities with type `general` or `Agent`/`Violation` as needed
+
+**Rules:**
+- ✅ Always call `mem_recall_session_start` at the start of every session
+- ✅ Use `ArchitectureLayer` / `ProjectContext` / `ConstitutionalRule` types for knowledge
+  that should outlive sessions — these are NEVER deleted by `mem_cleanup_stale`
+- ✅ The DB at `artifacts/memory/knowledge_graph.sqlite` is gitignored (local only)
+- ❌ NEVER rely on `@modelcontextprotocol/server-memory` — it is disabled
+- ❌ NEVER create duplicate entities — `add_observations` is idempotent; use it to extend
+
+---
+
 ## §3. EVIDENCE & DOCUMENTATION
 
 ### 3.1 Evidence Contract

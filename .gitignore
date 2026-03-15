@@ -22,6 +22,8 @@ artifacts/adg/adg_LATEST*.sqlite
 artifacts/adg/adg_LATEST*.json
 # ADG archive directory (compressed backups - local only)
 artifacts/adg/_archive/
+# Memory knowledge graph (SQLite DB — local only, rebuilt via mem_import_adg_context)
+artifacts/memory/
 # Generated one-off patch scripts
 tools/_patch_evidence.py
 .healing_backups/
