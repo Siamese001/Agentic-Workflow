@@ -31,6 +31,7 @@ class SovereignDependencyError(Exception):
 
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 @dataclass
@@ -451,6 +452,9 @@ class SubatomicHopAgent(SovereignBaseAgent):
         _call_path: set | None = None,
     ) -> dict[str, int]:
         """L3 orchestration agent - operational only."""
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "SubatomicHopAgent.heal_repository")
         if _call_path is None:
             super().heal_repository()
         agent_name = self.__class__.__name__

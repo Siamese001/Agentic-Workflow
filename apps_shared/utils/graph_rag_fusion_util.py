@@ -11,6 +11,8 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Final
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
 logger = logging.getLogger(__name__)
 DEFAULT_CONFIDENCE_THRESHOLD: Final[float] = 0.6
 DEFAULT_MAX_RESULTS: Final[int] = 5
@@ -88,6 +90,9 @@ class CypherQueryGenerator:
         Returns:
             Tuple of (cypher_query, parameters, query_type)
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "GraphRAGQueryGenerator.generate_query")
         natural_lower = natural_query.lower()
         for pattern_name, pattern in self.patterns.items():
             match = re.search(pattern, natural_lower)

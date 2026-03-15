@@ -12,6 +12,8 @@ from datetime import datetime
 from enum import Enum
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
 logger = logging.getLogger(__name__)
 
 
@@ -192,6 +194,9 @@ class InternalSchemaConverter:
         external_schema: dict[str, object] | None = None,
     ) -> ConversionResult:
         """Convert external data to internal schema format."""
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"SchemaConverter.convert_to_internal:{internal_schema.schema_id}")
         self.logger.info(f"Converting to internal schema: {internal_schema.name}")
         try:
             converted_data = {}

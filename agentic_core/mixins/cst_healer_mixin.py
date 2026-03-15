@@ -14,6 +14,8 @@ from typing import TYPE_CHECKING, Any
 
 import libcst as cst
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
 if TYPE_CHECKING:
     from agentic_core.L5_safety.types.cst_transformers_types import (
         create_bare_except_fixer,
@@ -220,6 +222,9 @@ class SurgicalCSTHealerMixin:
         Returns:
             Dict with healing results
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "CSTHealerMixin.heal_surgical_cst")
         try:
             # Verification Gate pre-check to prevent Epistemic Cascade
             if hasattr(self, "gate"):
