@@ -578,9 +578,6 @@
   "agentic_core/runtime/config/security_level_config.py": {
     "silent_degradation": 1
   },
-  "agentic_core/runtime/lifecycle_trace_contract.py": {
-    "silent_swallower": 1
-  },
   "agentic_core/runtime/types/cache_entry_types.py": {
     "silent_degradation": 1
   },

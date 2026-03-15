@@ -11,19 +11,17 @@ from __future__ import annotations
 
 import logging
 import threading
+import time
 import uuid
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
-from agentic_core.L2_execution.providers import get_clock
 from agentic_core.runtime.lifecycle_trace_contract import (
-    LayerSegment,
     _emit_applies_guardrail,  # noqa: E402
     _emit_dispatches_healing_run,  # noqa: E402
     _emit_escalates_to_human,  # noqa: E402
     _emit_reads_policy_state,  # noqa: E402
-    _emit_records_execution_trace,
     _emit_routes_through,  # noqa: E402
     _emit_signs_execution_trace,  # noqa: E402
     _emit_snapshots_state,
@@ -163,7 +161,7 @@ class DashboardAggregate:
     window_end_tick: float
     snapshots: list[DashboardSnapshot] = field(default_factory=list)
     health_transitions: list[dict[str, Any]] = field(default_factory=list)
-    computed_at_tick: float = field(default_factory=lambda: get_clock().now_epoch())
+    computed_at_tick: float = field(default_factory=time.time)
 
     @classmethod
     def create(
@@ -204,14 +202,12 @@ class DashboardAggregateRegistry:
 
     @classmethod
     def get_instance(cls) -> DashboardAggregateRegistry:
-        """Singleton accessor."""
-        import uuid as _uuid  # noqa: PLC0415
+        """Singleton accessor.
 
-        _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(
-            _trace_id, LayerSegment.L6_OBSERVABILITY, "DashboardAggregateRegistry.get_instance"
-        )
-
+        Does NOT emit execution traces — doing so causes infinite recursion via
+        get_instance → _emit_records_execution_trace → aggregate_simple_dashboard
+        → get_dashboard_registry → get_instance.
+        """
         if cls._instance is None:
             with cls._lock:
                 if cls._instance is None:

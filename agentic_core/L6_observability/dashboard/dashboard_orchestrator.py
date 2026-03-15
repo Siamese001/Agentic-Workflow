@@ -25,6 +25,7 @@ from agentic_core.L6_observability.dashboard.dashboard_aggregate import (
     DashboardSnapshot,
     HealthFlag,
     get_dashboard_registry,
+    reset_dashboard_registry,
 )
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_applies_guardrail,  # noqa: E402
