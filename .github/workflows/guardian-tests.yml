@@ -89,7 +89,7 @@ jobs:
             echo "::error::docs/reports/guardian_artifacts must not exist — guardian outputs belong under docs/reports/verification/guardian/"
             exit 1
           fi
-          if find docs/reports/verification/guardian -name '*.py' 2>/dev/null | grep -q .; then
+          if find docs/reports/verification/guardian -name '*.py' 2>/dev/null | grep -q .; then  # guardian: allow-grep-yaml -- POSIX pipe-has-content idiom; not an ADG query substitute
             echo "::error::docs/reports/verification/guardian/ must not contain .py files — output dir is for JSON artifacts only"
             exit 1
           fi

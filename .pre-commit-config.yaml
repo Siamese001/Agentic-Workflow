@@ -346,6 +346,32 @@ repos:
         types: [python]
         require_serial: true
 
+      # -- T3k: ADG Pytest-Ban Gate (Accelerator enforcement) -------------------
+      # Hard-fail if staged Python files invoke pytest broadly (directory/no files).
+      # Use adg_test_selector.py --from-diff --pytest-args to select via ADG.
+      # Exempt a specific line with: # guardian: allow-pytest -- <justification>
+      - id: adg-pytest-ban-gate
+        name: "T3k: ADG Pytest-Ban Gate — no broad pytest; use adg_test_selector.py"
+        entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/adg_pytest_ban_gate.py --staged"
+        language: system
+        pass_filenames: false
+        always_run: false
+        types: [python]
+        require_serial: true
+
+      # -- T3l: ADG YAML Grep-Ban Gate ------------------------------------------
+      # Hard-fail if staged YAML workflow files invoke grep/rg in run: steps.
+      # Use Python-based ADG accelerators or explicit Python scripts instead.
+      # Exempt a line with: # guardian: allow-grep-yaml -- <justification>
+      - id: adg-yaml-grep-ban-gate
+        name: "T3l: ADG YAML Grep-Ban Gate — no grep/rg in GitHub Actions run: steps"
+        entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/adg_yaml_grep_ban_gate.py --staged"
+        language: system
+        pass_filenames: false
+        always_run: false
+        types: [yaml]
+        require_serial: true
+
       # -- T3j: Skip-File Ratchet -----------------------------------------------
       # Hard-fail if new # adg-grep-ban: skip-file directives were added without
       # updating the baseline in ops_scripts/hooks/skip_file_budget.json.

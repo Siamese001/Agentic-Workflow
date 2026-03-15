@@ -47,10 +47,28 @@ _BANNED_SHELL_STR_RE = re.compile(
     r"\s*\(\s*['\"][^'\"]*\b(?:grep|rg|ripgrep)\b",
 )
 
+# os.system("grep ...") — shell invocation via os.system
+_BANNED_OS_SYSTEM_RE = re.compile(
+    r"\bos\s*\.\s*system\s*\(\s*['\"][^'\"]*\b(?:grep|rg|ripgrep|ag|ack|findstr)\b",
+)
+
+# subprocess.getoutput("grep ...") — convenience shell wrapper
+_BANNED_GETOUTPUT_RE = re.compile(
+    r"\bsubprocess\s*\.\s*getoutput\s*\(\s*['\"][^'\"]*\b(?:grep|rg|ripgrep|ag|ack|findstr)\b",
+)
+
+# subprocess.getstatusoutput("grep ...") — convenience shell wrapper
+_BANNED_GETSTATUSOUTPUT_RE = re.compile(
+    r"\bsubprocess\s*\.\s*getstatusoutput\s*\(\s*['\"][^'\"]*\b(?:grep|rg|ripgrep|ag|ack|findstr)\b",
+)
+
 _BANNED_PATTERNS: list[re.Pattern[str]] = [
     _BANNED_SUBPROCESS_RE,
     _BANNED_POPEN_RE,
     _BANNED_SHELL_STR_RE,
+    _BANNED_OS_SYSTEM_RE,
+    _BANNED_GETOUTPUT_RE,
+    _BANNED_GETSTATUSOUTPUT_RE,
 ]
 
 # Guardian exemption — if present on the same line the violation is waived

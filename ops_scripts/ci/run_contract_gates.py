@@ -124,6 +124,14 @@ def main():
             [sys.executable, "ops_scripts/ci/adg_skip_file_ratchet.py"],
             "ADG Skip-File Ratchet — skip-file directive count ceiling (§2.6)",
         ),
+        (
+            [sys.executable, "ops_scripts/ci/adg_pytest_ban_gate.py", "--all-python"],
+            "ADG Pytest-Ban Gate — no broad pytest; use adg_test_selector.py (§2.6)",
+        ),
+        (
+            [sys.executable, "ops_scripts/ci/adg_yaml_grep_ban_gate.py", "--all-yaml"],
+            "ADG YAML Grep-Ban Gate — no grep/rg in GitHub Actions run: steps (§2.6)",
+        ),
     ]
 
     print("Running contract gates in deterministic order...\n")

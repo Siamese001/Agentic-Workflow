@@ -1,3 +1,4 @@
+# adg-mypy-ban: skip-file
 """ADG Mypy-Ban Gate — hard-fail enforcement for broad mypy subprocess calls.
 
 Rejects Python files that invoke mypy directly (via subprocess or os.popen/system)
