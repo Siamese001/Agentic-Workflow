@@ -29,6 +29,7 @@ from agentic_core.L5_safety.enforcement.policy_action_contract import (
     enforce_policy_before_action,
 )
 from agentic_core.utils.decorators_compat_util import standard_heal
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger = logging.getLogger(__name__)
 _proof_emitter = ExecutionProofEmitter("L3.StateManagementAgent")
@@ -236,6 +237,7 @@ class StateManagementAgent(WriteGovernorMixin, SovereignBaseAgent):
         Returns:
             File path where data was stored
         """
+        _emit_records_execution_trace(key, LayerSegment.L3_ORCHESTRATION, f"StateManagementAgent.set_state:{key}")
         with _proof_emitter.proof_op(f"set_state:{key}"):
             pass
         try:

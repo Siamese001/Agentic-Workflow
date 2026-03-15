@@ -30,6 +30,7 @@ from agentic_core.L0_routing.enforcement.governance_contracts import (
 )
 from agentic_core.L0_routing.types.governance_types import HILOutcome
 from agentic_core.L5_safety.types.human_decision_artifact_types import HumanDecisionArtifact
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 Logger = logging.getLogger(__name__)
 
@@ -199,6 +200,9 @@ class HumanReviewQueue:
         Returns:
             ReviewRequest tracking the submission
         """
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L5_POLICY, "submit_for_review"
+        )
         request = ReviewRequest(
             context_bundle=context_bundle,
             timeout_seconds=timeout_seconds if timeout_seconds is not None else self.default_timeout,

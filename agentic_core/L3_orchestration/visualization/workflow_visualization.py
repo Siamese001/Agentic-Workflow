@@ -17,6 +17,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 
 from agentic_core.L2_execution.providers import get_clock
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 _VISUALIZATION_LOG = logging.getLogger("adg.workflow_visualization_emitted")
@@ -248,6 +249,7 @@ class WorkflowVisualizationRegistry:
 
     def persist_record(self, record: WorkflowVisualizationRecord) -> None:
         """Persist a workflow visualization record."""
+        _emit_records_execution_trace(record.run_id, LayerSegment.L3_ORCHESTRATION, f"workflow_viz:{record.workflow_id}")
         with self._lock:
             self._records[record.workflow_visualization_id] = record
 
