@@ -50,6 +50,7 @@ from __future__ import annotations
 import ast
 from pathlib import Path
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.L5_safety.validators.base_detector_validator import (
     AntiPatternCategory,
     AntiPatternDetector,
@@ -313,6 +314,9 @@ class TestQualityDetector(AntiPatternDetector):
     # ------------------------------------------------------------------
 
     def detect(self, file_path: Path, tree: ast.Module) -> list[AntiPatternViolation]:
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, f"TestQualityDetector.detect:{file_path.name}")
         violations: list[AntiPatternViolation] = []
 
         try:

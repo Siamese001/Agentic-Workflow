@@ -11,6 +11,8 @@ from datetime import datetime
 from enum import Enum
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
 logger = logging.getLogger(__name__)
 
 
@@ -108,6 +110,9 @@ class SchemaSimilarityRetriever:
         Returns:
             SchemaSimilarityResult: Detailed similarity analysis
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"SchemaSimilarityRetriever.retrieve_similarity:{request.similarity_method}")
         self.logger.info(f"Computing schema similarity using method: {request.method.value}")
         try:
             source_fields = self._extract_fields_with_types(request.source_schema)
