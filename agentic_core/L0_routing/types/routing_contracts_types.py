@@ -29,6 +29,7 @@ from agentic_core.L0_routing.types.routing_artifact_types import (
     TokenGateResult,
     VigilanceTier,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 
@@ -57,6 +58,9 @@ class LawSlotHandler:
 
     def register_twin(self, tool_name: str, read_only_twin: Any) -> None:
         """Register a read-only twin for a tool. Live instances are rejected."""
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"LawSlotHandler.register_twin:{tool_name}")
         if self._frozen:
             raise RuntimeError("LawSlotHandler: Cannot register after freeze")
         self._twins[tool_name] = read_only_twin
