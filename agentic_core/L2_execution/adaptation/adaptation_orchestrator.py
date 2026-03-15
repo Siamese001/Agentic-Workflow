@@ -33,6 +33,7 @@ from agentic_core.L5_safety.enforcement.policy_action_contract import (
     PolicyEnforcementError,
     enforce_policy_before_action,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)
 _STRATEGY_LOG = logging.getLogger("adg.execution_strategy_chosen")
@@ -184,6 +185,9 @@ def choose_execution_strategy(
     Raises:
         ExecutionAdaptationError: If strategy selection fails (Gate A/D)
     """
+    _emit_records_execution_trace(
+        execution_context.trace_id, LayerSegment.L2_EXECUTION, "choose_execution_strategy"
+    )
     _registry = registry or get_execution_adaptation_registry()
     _gw = get_routing_gateway(execution_context.trace_id if hasattr(execution_context, 'trace_id') else "")
     try:
