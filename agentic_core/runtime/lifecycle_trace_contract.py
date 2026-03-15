@@ -61,6 +61,7 @@ class LayerSegment(str):
     L3_ORCHESTRATION = "L3_ORCHESTRATION"
     L4_STATE = "L4_STATE"
     L5_POLICY = "L5_POLICY"
+    L6_OBSERVABILITY = "L6_OBSERVABILITY"
 
 
 @dataclass

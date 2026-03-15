@@ -350,6 +350,8 @@ class MemoryAuthority:
         with self._lock:
             self._write_records.append(write_record)
 
+        self._rsa.snapshot_state(f"memory_write:{namespace.value}:{key}", run_id=effective_run_id)
+
         # Write-through: delegate to RunStateAuthority (durable ledger)
         self._rsa.commit(
             key=f"{namespace.value}:{key}",
