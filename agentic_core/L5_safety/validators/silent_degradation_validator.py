@@ -22,6 +22,7 @@ import ast
 import re
 from pathlib import Path
 
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from .base_detector_validator import (
     AntiPatternCategory,
     AntiPatternDetector,
@@ -185,6 +186,9 @@ class SilentDegradationDetector(AntiPatternDetector):
 
     def detect(self, file_path: Path, tree: ast.Module) -> list[AntiPatternViolation]:
         """Scan *tree* for all silent degradation sub-patterns."""
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, f"SilentDegradationDetector.detect:{file_path.name}")
         violations: list[AntiPatternViolation] = []
         try:
             source_lines = file_path.read_text(encoding="utf-8").splitlines()

@@ -30,6 +30,7 @@ from agentic_core.L2_execution.healers.healing_tier_types import (
     HealingTier,
 )
 from agentic_core.L3_orchestration.registry.agent_dispatch_registry import get_agent_dispatch_registry
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 if TYPE_CHECKING:
     from agentic_core.L2_execution.engines.resource_predictor import ResourcePredictor
@@ -178,6 +179,9 @@ class DefaultHealingProviderInvoker:
         *,
         agent_name: str = "",
     ) -> InvocationRecord:
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"LocalHealingTierDispatcher.invoke_local:{agent_name}")
         return InvocationRecord(
             tier=HealingTier.LOCAL_AGENT,
             model_id="local",
@@ -289,7 +293,7 @@ def dispatch_healing(
     method_name = _TIER_TO_METHOD[decision.tier]
     # Wave 2: Use AgentDispatchRegistry instead of raw getattr
     registry = get_agent_dispatch_registry()
-    
+
     success = False
     record: InvocationRecord | None = None
     try:

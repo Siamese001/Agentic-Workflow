@@ -39,6 +39,7 @@ from agentic_core.L2_execution.tools import write_gateway as _wg
 from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
     StructureHealingStrategy,
 )
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.L0_routing.config import (
     ARCHIVES_DIR,
 )
@@ -142,6 +143,9 @@ class StructureHealerAgent(SovereignBaseAgent):
 
         Wraps heal_all to provide the standard Sovereign interface.
         """
+        import uuid  # noqa: PLC0415
+
+        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "StructureHealerAgent.heal_repository")
         # Update config based on args
         self._agent_config.dry_run = dry_run
 
