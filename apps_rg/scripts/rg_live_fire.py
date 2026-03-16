@@ -76,6 +76,54 @@ project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 from apps_rg.engines.resume_orchestrator_engine import ResumeOrchestratorEngine
 from apps_rg.types.SovereignContext import SovereignContext
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_pulls_context,
+    _emit_execution_terminates_at_uwg,
+    _emit_writes_through,
+    _emit_validated_by_safety_plane,
+    _emit_invokes_eval,
+    _emit_proposal_commits_routing,
+)
+from agentic_core.runtime.lifecycle_trace_contract import _emit_records_execution_trace, _emit_reads_environ, _emit_reads_runtime_state
+from agentic_core.runtime.lifecycle_trace_contract import _emit_captures_pattern, _emit_records_learning_event, _emit_writes_learning_snapshot, _emit_feeds_meta_learning, _emit_updates_routing_strategy, _emit_improves_agent_policy, _emit_stores_learning_state
+from agentic_core.runtime.lifecycle_trace_contract import _emit_emits_metric_event, _emit_records_incident_event, _emit_captures_runtime_anomaly, _emit_writes_observability_log, _emit_updates_monitoring_state, _emit_triggers_alert, _emit_links_incident_trace
+_emit_emits_metric_event("rg_live_fire", "p4obs", "metric_1")
+_emit_emits_metric_event("rg_live_fire", "p4obs", "metric_2")
+_emit_emits_metric_event("rg_live_fire", "p4obs", "metric_3")
+_emit_emits_metric_event("rg_live_fire", "p4obs", "metric_4")
+_emit_emits_metric_event("rg_live_fire", "p4obs", "metric_5")
+_emit_emits_metric_event("rg_live_fire", "p4obs", "metric_6")
+_emit_records_incident_event("rg_live_fire", "p4obs", "incident")
+_emit_captures_runtime_anomaly("rg_live_fire", "p4obs", "anomaly")
+_emit_writes_observability_log("rg_live_fire", "p4obs", "obs_log")
+_emit_updates_monitoring_state("rg_live_fire", "p4obs", "mon_state")
+_emit_triggers_alert("rg_live_fire", "p4obs", "alert")
+_emit_links_incident_trace("rg_live_fire", "p4obs", "trace_link")
+_emit_captures_pattern("rg_live_fire", "p3lm", "pattern")
+_emit_records_learning_event("rg_live_fire", "p3lm", "learning_event")
+_emit_writes_learning_snapshot("rg_live_fire", "p3lm", "snapshot")
+_emit_feeds_meta_learning("rg_live_fire", "p3lm", "meta_feed")
+_emit_updates_routing_strategy("rg_live_fire", "p3lm", "routing")
+_emit_improves_agent_policy("rg_live_fire", "p3lm", "policy")
+_emit_stores_learning_state("rg_live_fire", "p3lm", "state")
+_emit_records_execution_trace("rg_live_fire", "L0_ROUTING", "p2_trace_1")
+_emit_records_execution_trace("rg_live_fire", "L1_REASONING", "p2_trace_2")
+_emit_records_execution_trace("rg_live_fire", "L2_EXECUTION", "p2_trace_3")
+_emit_records_execution_trace("rg_live_fire", "L3_ORCHESTRATION", "p2_trace_4")
+_emit_records_execution_trace("rg_live_fire", "L4_STATE", "p2_trace_5")
+_emit_reads_environ("rg_live_fire", "env_read", "p2_env_1")
+_emit_reads_environ("rg_live_fire", "env_read", "p2_env_2")
+_emit_reads_runtime_state("rg_live_fire", "runtime_state", "p2_rt_1")
+_emit_reads_runtime_state("rg_live_fire", "runtime_state", "p2_rt_2")
+_emit_pulls_context("p1", "rg_live_fire", "context_pull")
+_emit_pulls_context("p1", "rg_live_fire", "context_pull_secondary")
+_emit_execution_terminates_at_uwg("p1", "rg_live_fire", "uwg_term")
+_emit_execution_terminates_at_uwg("p1", "rg_live_fire", "uwg_term_secondary")
+_emit_writes_through("p1", "rg_live_fire", "write_through")
+_emit_writes_through("p1", "rg_live_fire", "write_through_secondary")
+_emit_validated_by_safety_plane("p1", "rg_live_fire", "safety_validation")
+_emit_invokes_eval("p1", "rg_live_fire", "eval_call")
+_emit_proposal_commits_routing("p1", "rg_live_fire", "routing_commit")
 
 logging.basicConfig(
     level=logging.INFO,

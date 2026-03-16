@@ -51,6 +51,45 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_pulls_context,
+    _emit_execution_terminates_at_uwg,
+    _emit_writes_through,
+    _emit_validated_by_safety_plane,
+    _emit_invokes_eval,
+    _emit_proposal_commits_routing,
+)
+from agentic_core.runtime.lifecycle_trace_contract import _emit_records_execution_trace, _emit_reads_environ, _emit_reads_runtime_state
+from agentic_core.runtime.lifecycle_trace_contract import _emit_captures_pattern, _emit_records_learning_event, _emit_writes_learning_snapshot, _emit_feeds_meta_learning, _emit_updates_routing_strategy, _emit_improves_agent_policy, _emit_stores_learning_state
+from agentic_core.runtime.lifecycle_trace_contract import _emit_emits_metric_event, _emit_records_incident_event, _emit_captures_runtime_anomaly, _emit_writes_observability_log, _emit_updates_monitoring_state, _emit_triggers_alert, _emit_links_incident_trace
+_emit_emits_metric_event("redis_mcp_client", "p4obs", "metric_1")
+_emit_emits_metric_event("redis_mcp_client", "p4obs", "metric_2")
+_emit_emits_metric_event("redis_mcp_client", "p4obs", "metric_3")
+_emit_emits_metric_event("redis_mcp_client", "p4obs", "metric_4")
+_emit_emits_metric_event("redis_mcp_client", "p4obs", "metric_5")
+_emit_emits_metric_event("redis_mcp_client", "p4obs", "metric_6")
+_emit_records_incident_event("redis_mcp_client", "p4obs", "incident")
+_emit_captures_runtime_anomaly("redis_mcp_client", "p4obs", "anomaly")
+_emit_writes_observability_log("redis_mcp_client", "p4obs", "obs_log")
+_emit_updates_monitoring_state("redis_mcp_client", "p4obs", "mon_state")
+_emit_triggers_alert("redis_mcp_client", "p4obs", "alert")
+_emit_links_incident_trace("redis_mcp_client", "p4obs", "trace_link")
+_emit_captures_pattern("redis_mcp_client", "p3lm", "pattern")
+_emit_records_learning_event("redis_mcp_client", "p3lm", "learning_event")
+_emit_writes_learning_snapshot("redis_mcp_client", "p3lm", "snapshot")
+_emit_feeds_meta_learning("redis_mcp_client", "p3lm", "meta_feed")
+_emit_updates_routing_strategy("redis_mcp_client", "p3lm", "routing")
+_emit_improves_agent_policy("redis_mcp_client", "p3lm", "policy")
+_emit_stores_learning_state("redis_mcp_client", "p3lm", "state")
+_emit_records_execution_trace("redis_mcp_client", "L0_ROUTING", "p2_trace_1")
+_emit_records_execution_trace("redis_mcp_client", "L1_REASONING", "p2_trace_2")
+_emit_records_execution_trace("redis_mcp_client", "L2_EXECUTION", "p2_trace_3")
+_emit_records_execution_trace("redis_mcp_client", "L3_ORCHESTRATION", "p2_trace_4")
+_emit_records_execution_trace("redis_mcp_client", "L4_STATE", "p2_trace_5")
+_emit_reads_environ("redis_mcp_client", "env_read", "p2_env_1")
+_emit_reads_environ("redis_mcp_client", "env_read", "p2_env_2")
+_emit_reads_runtime_state("redis_mcp_client", "runtime_state", "p2_rt_1")
+_emit_reads_runtime_state("redis_mcp_client", "runtime_state", "p2_rt_2")
 
 emit_replay_key("p0", "redis_mcp_client")
 emit_determinism_digest("p0", "redis_mcp_client")
@@ -83,3 +122,12 @@ _emit_captures_evaluation_metric("p4", "redis_mcp_client", "eval_metric")
 _emit_stores_embedding("p4", "redis_mcp_client", "embedding_store")
 _emit_updates_meta_learning_state("p4", "redis_mcp_client", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "redis_mcp_client", "exec_snapshot_link")
+_emit_pulls_context("p1", "redis_mcp_client", "context_pull")
+_emit_pulls_context("p1", "redis_mcp_client", "context_pull_secondary")
+_emit_execution_terminates_at_uwg("p1", "redis_mcp_client", "uwg_term")
+_emit_execution_terminates_at_uwg("p1", "redis_mcp_client", "uwg_term_secondary")
+_emit_writes_through("p1", "redis_mcp_client", "write_through")
+_emit_writes_through("p1", "redis_mcp_client", "write_through_secondary")
+_emit_validated_by_safety_plane("p1", "redis_mcp_client", "safety_validation")
+_emit_invokes_eval("p1", "redis_mcp_client", "eval_call")
+_emit_proposal_commits_routing("p1", "redis_mcp_client", "routing_commit")

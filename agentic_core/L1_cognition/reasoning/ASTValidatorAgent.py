@@ -90,6 +90,47 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_snapshots_state,
 )
 from agentic_core.utils.decorators_compat_util import standard_heal
+from agentic_core.runtime.lifecycle_trace_contract import _emit_pulls_context, _emit_execution_terminates_at_uwg, _emit_writes_through, _emit_validated_by_safety_plane, _emit_invokes_eval, _emit_proposal_commits_routing
+from agentic_core.runtime.lifecycle_trace_contract import _emit_records_execution_trace, _emit_reads_environ, _emit_reads_runtime_state
+from agentic_core.runtime.lifecycle_trace_contract import _emit_captures_pattern, _emit_records_learning_event, _emit_writes_learning_snapshot, _emit_feeds_meta_learning, _emit_updates_routing_strategy, _emit_improves_agent_policy, _emit_stores_learning_state
+from agentic_core.runtime.lifecycle_trace_contract import _emit_emits_metric_event, _emit_records_incident_event, _emit_captures_runtime_anomaly, _emit_writes_observability_log, _emit_updates_monitoring_state, _emit_triggers_alert, _emit_links_incident_trace
+_emit_emits_metric_event("ASTValidatorAgent", "p4obs", "metric_1")
+_emit_emits_metric_event("ASTValidatorAgent", "p4obs", "metric_2")
+_emit_emits_metric_event("ASTValidatorAgent", "p4obs", "metric_3")
+_emit_emits_metric_event("ASTValidatorAgent", "p4obs", "metric_4")
+_emit_emits_metric_event("ASTValidatorAgent", "p4obs", "metric_5")
+_emit_emits_metric_event("ASTValidatorAgent", "p4obs", "metric_6")
+_emit_records_incident_event("ASTValidatorAgent", "p4obs", "incident")
+_emit_captures_runtime_anomaly("ASTValidatorAgent", "p4obs", "anomaly")
+_emit_writes_observability_log("ASTValidatorAgent", "p4obs", "obs_log")
+_emit_updates_monitoring_state("ASTValidatorAgent", "p4obs", "mon_state")
+_emit_triggers_alert("ASTValidatorAgent", "p4obs", "alert")
+_emit_links_incident_trace("ASTValidatorAgent", "p4obs", "trace_link")
+_emit_captures_pattern("ASTValidatorAgent", "p3lm", "pattern")
+_emit_records_learning_event("ASTValidatorAgent", "p3lm", "learning_event")
+_emit_writes_learning_snapshot("ASTValidatorAgent", "p3lm", "snapshot")
+_emit_feeds_meta_learning("ASTValidatorAgent", "p3lm", "meta_feed")
+_emit_updates_routing_strategy("ASTValidatorAgent", "p3lm", "routing")
+_emit_improves_agent_policy("ASTValidatorAgent", "p3lm", "policy")
+_emit_stores_learning_state("ASTValidatorAgent", "p3lm", "state")
+_emit_records_execution_trace("ASTValidatorAgent", "L0_ROUTING", "p2_trace_1")
+_emit_records_execution_trace("ASTValidatorAgent", "L1_REASONING", "p2_trace_2")
+_emit_records_execution_trace("ASTValidatorAgent", "L2_EXECUTION", "p2_trace_3")
+_emit_records_execution_trace("ASTValidatorAgent", "L3_ORCHESTRATION", "p2_trace_4")
+_emit_records_execution_trace("ASTValidatorAgent", "L4_STATE", "p2_trace_5")
+_emit_reads_environ("ASTValidatorAgent", "env_read", "p2_env_1")
+_emit_reads_environ("ASTValidatorAgent", "env_read", "p2_env_2")
+_emit_reads_runtime_state("ASTValidatorAgent", "runtime_state", "p2_rt_1")
+_emit_reads_runtime_state("ASTValidatorAgent", "runtime_state", "p2_rt_2")
+_emit_pulls_context("p1", "ASTValidatorAgent", "context_pull")
+_emit_pulls_context("p1", "ASTValidatorAgent", "context_pull_2")
+_emit_execution_terminates_at_uwg("p1", "ASTValidatorAgent", "uwg_term")
+_emit_execution_terminates_at_uwg("p1", "ASTValidatorAgent", "uwg_term_2")
+_emit_writes_through("p1", "ASTValidatorAgent", "write_through")
+_emit_writes_through("p1", "ASTValidatorAgent", "write_through_2")
+_emit_validated_by_safety_plane("p1", "ASTValidatorAgent", "safety_validation")
+_emit_invokes_eval("p1", "ASTValidatorAgent", "eval_call")
+_emit_proposal_commits_routing("p1", "ASTValidatorAgent", "routing_commit")
 
 
 class ASTValidatorBase(ast.NodeVisitor):

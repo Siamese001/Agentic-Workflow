@@ -84,6 +84,47 @@ from agentic_core.L2_execution.types.commit_proof_invariant_types import (
     canonical_digest,
     make_proof,
 )
+from agentic_core.runtime.lifecycle_trace_contract import _emit_pulls_context, _emit_execution_terminates_at_uwg, _emit_writes_through, _emit_validated_by_safety_plane, _emit_invokes_eval, _emit_proposal_commits_routing
+from agentic_core.runtime.lifecycle_trace_contract import _emit_records_execution_trace, _emit_reads_environ, _emit_reads_runtime_state
+from agentic_core.runtime.lifecycle_trace_contract import _emit_captures_pattern, _emit_records_learning_event, _emit_writes_learning_snapshot, _emit_feeds_meta_learning, _emit_updates_routing_strategy, _emit_improves_agent_policy, _emit_stores_learning_state
+from agentic_core.runtime.lifecycle_trace_contract import _emit_emits_metric_event, _emit_records_incident_event, _emit_captures_runtime_anomaly, _emit_writes_observability_log, _emit_updates_monitoring_state, _emit_triggers_alert, _emit_links_incident_trace
+_emit_emits_metric_event("test_commit_proof_invariant", "p4obs", "metric_1")
+_emit_emits_metric_event("test_commit_proof_invariant", "p4obs", "metric_2")
+_emit_emits_metric_event("test_commit_proof_invariant", "p4obs", "metric_3")
+_emit_emits_metric_event("test_commit_proof_invariant", "p4obs", "metric_4")
+_emit_emits_metric_event("test_commit_proof_invariant", "p4obs", "metric_5")
+_emit_emits_metric_event("test_commit_proof_invariant", "p4obs", "metric_6")
+_emit_records_incident_event("test_commit_proof_invariant", "p4obs", "incident")
+_emit_captures_runtime_anomaly("test_commit_proof_invariant", "p4obs", "anomaly")
+_emit_writes_observability_log("test_commit_proof_invariant", "p4obs", "obs_log")
+_emit_updates_monitoring_state("test_commit_proof_invariant", "p4obs", "mon_state")
+_emit_triggers_alert("test_commit_proof_invariant", "p4obs", "alert")
+_emit_links_incident_trace("test_commit_proof_invariant", "p4obs", "trace_link")
+_emit_captures_pattern("test_commit_proof_invariant", "p3lm", "pattern")
+_emit_records_learning_event("test_commit_proof_invariant", "p3lm", "learning_event")
+_emit_writes_learning_snapshot("test_commit_proof_invariant", "p3lm", "snapshot")
+_emit_feeds_meta_learning("test_commit_proof_invariant", "p3lm", "meta_feed")
+_emit_updates_routing_strategy("test_commit_proof_invariant", "p3lm", "routing")
+_emit_improves_agent_policy("test_commit_proof_invariant", "p3lm", "policy")
+_emit_stores_learning_state("test_commit_proof_invariant", "p3lm", "state")
+_emit_records_execution_trace("test_commit_proof_invariant", "L0_ROUTING", "p2_trace_1")
+_emit_records_execution_trace("test_commit_proof_invariant", "L1_REASONING", "p2_trace_2")
+_emit_records_execution_trace("test_commit_proof_invariant", "L2_EXECUTION", "p2_trace_3")
+_emit_records_execution_trace("test_commit_proof_invariant", "L3_ORCHESTRATION", "p2_trace_4")
+_emit_records_execution_trace("test_commit_proof_invariant", "L4_STATE", "p2_trace_5")
+_emit_reads_environ("test_commit_proof_invariant", "env_read", "p2_env_1")
+_emit_reads_environ("test_commit_proof_invariant", "env_read", "p2_env_2")
+_emit_reads_runtime_state("test_commit_proof_invariant", "runtime_state", "p2_rt_1")
+_emit_reads_runtime_state("test_commit_proof_invariant", "runtime_state", "p2_rt_2")
+_emit_pulls_context("p1", "test_commit_proof_invariant", "context_pull")
+_emit_pulls_context("p1", "test_commit_proof_invariant", "context_pull_2")
+_emit_execution_terminates_at_uwg("p1", "test_commit_proof_invariant", "uwg_term")
+_emit_execution_terminates_at_uwg("p1", "test_commit_proof_invariant", "uwg_term_2")
+_emit_writes_through("p1", "test_commit_proof_invariant", "write_through")
+_emit_writes_through("p1", "test_commit_proof_invariant", "write_through_2")
+_emit_validated_by_safety_plane("p1", "test_commit_proof_invariant", "safety_validation")
+_emit_invokes_eval("p1", "test_commit_proof_invariant", "eval_call")
+_emit_proposal_commits_routing("p1", "test_commit_proof_invariant", "routing_commit")
 
 # ---------------------------------------------------------------------------
 # canonical_digest

@@ -40,11 +40,59 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_pulls_context,
+    _emit_execution_terminates_at_uwg,
+    _emit_writes_through,
+    _emit_validated_by_safety_plane,
+    _emit_invokes_eval,
+    _emit_proposal_commits_routing,
+)
+from agentic_core.runtime.lifecycle_trace_contract import _emit_records_execution_trace, _emit_reads_environ, _emit_reads_runtime_state
+from agentic_core.runtime.lifecycle_trace_contract import _emit_captures_pattern, _emit_records_learning_event, _emit_writes_learning_snapshot, _emit_feeds_meta_learning, _emit_updates_routing_strategy, _emit_improves_agent_policy, _emit_stores_learning_state
+from agentic_core.runtime.lifecycle_trace_contract import _emit_emits_metric_event, _emit_records_incident_event, _emit_captures_runtime_anomaly, _emit_writes_observability_log, _emit_updates_monitoring_state, _emit_triggers_alert, _emit_links_incident_trace
+_emit_emits_metric_event("test_detection_signal", "p4obs", "metric_1")
+_emit_emits_metric_event("test_detection_signal", "p4obs", "metric_2")
+_emit_emits_metric_event("test_detection_signal", "p4obs", "metric_3")
+_emit_emits_metric_event("test_detection_signal", "p4obs", "metric_4")
+_emit_emits_metric_event("test_detection_signal", "p4obs", "metric_5")
+_emit_emits_metric_event("test_detection_signal", "p4obs", "metric_6")
+_emit_records_incident_event("test_detection_signal", "p4obs", "incident")
+_emit_captures_runtime_anomaly("test_detection_signal", "p4obs", "anomaly")
+_emit_writes_observability_log("test_detection_signal", "p4obs", "obs_log")
+_emit_updates_monitoring_state("test_detection_signal", "p4obs", "mon_state")
+_emit_triggers_alert("test_detection_signal", "p4obs", "alert")
+_emit_links_incident_trace("test_detection_signal", "p4obs", "trace_link")
+_emit_captures_pattern("test_detection_signal", "p3lm", "pattern")
+_emit_records_learning_event("test_detection_signal", "p3lm", "learning_event")
+_emit_writes_learning_snapshot("test_detection_signal", "p3lm", "snapshot")
+_emit_feeds_meta_learning("test_detection_signal", "p3lm", "meta_feed")
+_emit_updates_routing_strategy("test_detection_signal", "p3lm", "routing")
+_emit_improves_agent_policy("test_detection_signal", "p3lm", "policy")
+_emit_stores_learning_state("test_detection_signal", "p3lm", "state")
+_emit_records_execution_trace("test_detection_signal", "L0_ROUTING", "p2_trace_1")
+_emit_records_execution_trace("test_detection_signal", "L1_REASONING", "p2_trace_2")
+_emit_records_execution_trace("test_detection_signal", "L2_EXECUTION", "p2_trace_3")
+_emit_records_execution_trace("test_detection_signal", "L3_ORCHESTRATION", "p2_trace_4")
+_emit_records_execution_trace("test_detection_signal", "L4_STATE", "p2_trace_5")
+_emit_reads_environ("test_detection_signal", "env_read", "p2_env_1")
+_emit_reads_environ("test_detection_signal", "env_read", "p2_env_2")
+_emit_reads_runtime_state("test_detection_signal", "runtime_state", "p2_rt_1")
+_emit_reads_runtime_state("test_detection_signal", "runtime_state", "p2_rt_2")
 
 _emit_records_execution_trace("p0", "evidence", "test_detection_signal")
 _emit_applies_guardrail("p0", "test_detection_signal", "p0_governance")
 _emit_reads_policy_state("p0", "test_detection_signal", "policy_binding")
 _emit_snapshots_state("p0", "test_detection_signal", "state_snapshot")
+_emit_pulls_context("p1", "test_detection_signal", "context_pull")
+_emit_pulls_context("p1", "test_detection_signal", "context_pull_secondary")
+_emit_execution_terminates_at_uwg("p1", "test_detection_signal", "uwg_term")
+_emit_execution_terminates_at_uwg("p1", "test_detection_signal", "uwg_term_secondary")
+_emit_writes_through("p1", "test_detection_signal", "write_through")
+_emit_writes_through("p1", "test_detection_signal", "write_through_secondary")
+_emit_validated_by_safety_plane("p1", "test_detection_signal", "safety_validation")
+_emit_invokes_eval("p1", "test_detection_signal", "eval_call")
+_emit_proposal_commits_routing("p1", "test_detection_signal", "routing_commit")
 emit_replay_key("p0", "test_detection_signal")
 emit_determinism_digest("p0", "test_detection_signal")
 _emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)

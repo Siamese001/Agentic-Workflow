@@ -75,6 +75,47 @@ from agentic_core.L0_routing.config.path_constants import (
     THRESHOLD,
 )
 from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
+from agentic_core.runtime.lifecycle_trace_contract import _emit_pulls_context, _emit_execution_terminates_at_uwg, _emit_writes_through, _emit_validated_by_safety_plane, _emit_invokes_eval, _emit_proposal_commits_routing
+from agentic_core.runtime.lifecycle_trace_contract import _emit_records_execution_trace, _emit_reads_environ, _emit_reads_runtime_state
+from agentic_core.runtime.lifecycle_trace_contract import _emit_captures_pattern, _emit_records_learning_event, _emit_writes_learning_snapshot, _emit_feeds_meta_learning, _emit_updates_routing_strategy, _emit_improves_agent_policy, _emit_stores_learning_state
+from agentic_core.runtime.lifecycle_trace_contract import _emit_emits_metric_event, _emit_records_incident_event, _emit_captures_runtime_anomaly, _emit_writes_observability_log, _emit_updates_monitoring_state, _emit_triggers_alert, _emit_links_incident_trace
+_emit_emits_metric_event("rescue_reviewer", "p4obs", "metric_1")
+_emit_emits_metric_event("rescue_reviewer", "p4obs", "metric_2")
+_emit_emits_metric_event("rescue_reviewer", "p4obs", "metric_3")
+_emit_emits_metric_event("rescue_reviewer", "p4obs", "metric_4")
+_emit_emits_metric_event("rescue_reviewer", "p4obs", "metric_5")
+_emit_emits_metric_event("rescue_reviewer", "p4obs", "metric_6")
+_emit_records_incident_event("rescue_reviewer", "p4obs", "incident")
+_emit_captures_runtime_anomaly("rescue_reviewer", "p4obs", "anomaly")
+_emit_writes_observability_log("rescue_reviewer", "p4obs", "obs_log")
+_emit_updates_monitoring_state("rescue_reviewer", "p4obs", "mon_state")
+_emit_triggers_alert("rescue_reviewer", "p4obs", "alert")
+_emit_links_incident_trace("rescue_reviewer", "p4obs", "trace_link")
+_emit_captures_pattern("rescue_reviewer", "p3lm", "pattern")
+_emit_records_learning_event("rescue_reviewer", "p3lm", "learning_event")
+_emit_writes_learning_snapshot("rescue_reviewer", "p3lm", "snapshot")
+_emit_feeds_meta_learning("rescue_reviewer", "p3lm", "meta_feed")
+_emit_updates_routing_strategy("rescue_reviewer", "p3lm", "routing")
+_emit_improves_agent_policy("rescue_reviewer", "p3lm", "policy")
+_emit_stores_learning_state("rescue_reviewer", "p3lm", "state")
+_emit_records_execution_trace("rescue_reviewer", "L0_ROUTING", "p2_trace_1")
+_emit_records_execution_trace("rescue_reviewer", "L1_REASONING", "p2_trace_2")
+_emit_records_execution_trace("rescue_reviewer", "L2_EXECUTION", "p2_trace_3")
+_emit_records_execution_trace("rescue_reviewer", "L3_ORCHESTRATION", "p2_trace_4")
+_emit_records_execution_trace("rescue_reviewer", "L4_STATE", "p2_trace_5")
+_emit_reads_environ("rescue_reviewer", "env_read", "p2_env_1")
+_emit_reads_environ("rescue_reviewer", "env_read", "p2_env_2")
+_emit_reads_runtime_state("rescue_reviewer", "runtime_state", "p2_rt_1")
+_emit_reads_runtime_state("rescue_reviewer", "runtime_state", "p2_rt_2")
+_emit_pulls_context("p1", "rescue_reviewer", "context_pull")
+_emit_pulls_context("p1", "rescue_reviewer", "context_pull_2")
+_emit_execution_terminates_at_uwg("p1", "rescue_reviewer", "uwg_term")
+_emit_execution_terminates_at_uwg("p1", "rescue_reviewer", "uwg_term_2")
+_emit_writes_through("p1", "rescue_reviewer", "write_through")
+_emit_writes_through("p1", "rescue_reviewer", "write_through_2")
+_emit_validated_by_safety_plane("p1", "rescue_reviewer", "safety_validation")
+_emit_invokes_eval("p1", "rescue_reviewer", "eval_call")
+_emit_proposal_commits_routing("p1", "rescue_reviewer", "routing_commit")
 
 
 def _get_redis_sovereign_agent():

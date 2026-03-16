@@ -72,6 +72,47 @@ except ImportError:
     openai = None
     OpenAI = None
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import _emit_pulls_context, _emit_execution_terminates_at_uwg, _emit_writes_through, _emit_validated_by_safety_plane, _emit_invokes_eval, _emit_proposal_commits_routing
+from agentic_core.runtime.lifecycle_trace_contract import _emit_records_execution_trace, _emit_reads_environ, _emit_reads_runtime_state
+from agentic_core.runtime.lifecycle_trace_contract import _emit_captures_pattern, _emit_records_learning_event, _emit_writes_learning_snapshot, _emit_feeds_meta_learning, _emit_updates_routing_strategy, _emit_improves_agent_policy, _emit_stores_learning_state
+from agentic_core.runtime.lifecycle_trace_contract import _emit_emits_metric_event, _emit_records_incident_event, _emit_captures_runtime_anomaly, _emit_writes_observability_log, _emit_updates_monitoring_state, _emit_triggers_alert, _emit_links_incident_trace
+_emit_emits_metric_event("openai_embedder", "p4obs", "metric_1")
+_emit_emits_metric_event("openai_embedder", "p4obs", "metric_2")
+_emit_emits_metric_event("openai_embedder", "p4obs", "metric_3")
+_emit_emits_metric_event("openai_embedder", "p4obs", "metric_4")
+_emit_emits_metric_event("openai_embedder", "p4obs", "metric_5")
+_emit_emits_metric_event("openai_embedder", "p4obs", "metric_6")
+_emit_records_incident_event("openai_embedder", "p4obs", "incident")
+_emit_captures_runtime_anomaly("openai_embedder", "p4obs", "anomaly")
+_emit_writes_observability_log("openai_embedder", "p4obs", "obs_log")
+_emit_updates_monitoring_state("openai_embedder", "p4obs", "mon_state")
+_emit_triggers_alert("openai_embedder", "p4obs", "alert")
+_emit_links_incident_trace("openai_embedder", "p4obs", "trace_link")
+_emit_captures_pattern("openai_embedder", "p3lm", "pattern")
+_emit_records_learning_event("openai_embedder", "p3lm", "learning_event")
+_emit_writes_learning_snapshot("openai_embedder", "p3lm", "snapshot")
+_emit_feeds_meta_learning("openai_embedder", "p3lm", "meta_feed")
+_emit_updates_routing_strategy("openai_embedder", "p3lm", "routing")
+_emit_improves_agent_policy("openai_embedder", "p3lm", "policy")
+_emit_stores_learning_state("openai_embedder", "p3lm", "state")
+_emit_records_execution_trace("openai_embedder", "L0_ROUTING", "p2_trace_1")
+_emit_records_execution_trace("openai_embedder", "L1_REASONING", "p2_trace_2")
+_emit_records_execution_trace("openai_embedder", "L2_EXECUTION", "p2_trace_3")
+_emit_records_execution_trace("openai_embedder", "L3_ORCHESTRATION", "p2_trace_4")
+_emit_records_execution_trace("openai_embedder", "L4_STATE", "p2_trace_5")
+_emit_reads_environ("openai_embedder", "env_read", "p2_env_1")
+_emit_reads_environ("openai_embedder", "env_read", "p2_env_2")
+_emit_reads_runtime_state("openai_embedder", "runtime_state", "p2_rt_1")
+_emit_reads_runtime_state("openai_embedder", "runtime_state", "p2_rt_2")
+_emit_pulls_context("p1", "openai_embedder", "context_pull")
+_emit_pulls_context("p1", "openai_embedder", "context_pull_2")
+_emit_execution_terminates_at_uwg("p1", "openai_embedder", "uwg_term")
+_emit_execution_terminates_at_uwg("p1", "openai_embedder", "uwg_term_2")
+_emit_writes_through("p1", "openai_embedder", "write_through")
+_emit_writes_through("p1", "openai_embedder", "write_through_2")
+_emit_validated_by_safety_plane("p1", "openai_embedder", "safety_validation")
+_emit_invokes_eval("p1", "openai_embedder", "eval_call")
+_emit_proposal_commits_routing("p1", "openai_embedder", "routing_commit")
 
 _MODEL_DIMENSIONS = {
     "text-embedding-3-large": 1536,

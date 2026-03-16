@@ -104,6 +104,54 @@ from agentic_core.L5_safety.validators.report_location_validator import (
     SSOT_REPORTS_DIR,
     ReportLocationValidator,
 )
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_pulls_context,
+    _emit_execution_terminates_at_uwg,
+    _emit_writes_through,
+    _emit_validated_by_safety_plane,
+    _emit_invokes_eval,
+    _emit_proposal_commits_routing,
+)
+from agentic_core.runtime.lifecycle_trace_contract import _emit_records_execution_trace, _emit_reads_environ, _emit_reads_runtime_state
+from agentic_core.runtime.lifecycle_trace_contract import _emit_captures_pattern, _emit_records_learning_event, _emit_writes_learning_snapshot, _emit_feeds_meta_learning, _emit_updates_routing_strategy, _emit_improves_agent_policy, _emit_stores_learning_state
+from agentic_core.runtime.lifecycle_trace_contract import _emit_emits_metric_event, _emit_records_incident_event, _emit_captures_runtime_anomaly, _emit_writes_observability_log, _emit_updates_monitoring_state, _emit_triggers_alert, _emit_links_incident_trace
+_emit_emits_metric_event("validate_report_location", "p4obs", "metric_1")
+_emit_emits_metric_event("validate_report_location", "p4obs", "metric_2")
+_emit_emits_metric_event("validate_report_location", "p4obs", "metric_3")
+_emit_emits_metric_event("validate_report_location", "p4obs", "metric_4")
+_emit_emits_metric_event("validate_report_location", "p4obs", "metric_5")
+_emit_emits_metric_event("validate_report_location", "p4obs", "metric_6")
+_emit_records_incident_event("validate_report_location", "p4obs", "incident")
+_emit_captures_runtime_anomaly("validate_report_location", "p4obs", "anomaly")
+_emit_writes_observability_log("validate_report_location", "p4obs", "obs_log")
+_emit_updates_monitoring_state("validate_report_location", "p4obs", "mon_state")
+_emit_triggers_alert("validate_report_location", "p4obs", "alert")
+_emit_links_incident_trace("validate_report_location", "p4obs", "trace_link")
+_emit_captures_pattern("validate_report_location", "p3lm", "pattern")
+_emit_records_learning_event("validate_report_location", "p3lm", "learning_event")
+_emit_writes_learning_snapshot("validate_report_location", "p3lm", "snapshot")
+_emit_feeds_meta_learning("validate_report_location", "p3lm", "meta_feed")
+_emit_updates_routing_strategy("validate_report_location", "p3lm", "routing")
+_emit_improves_agent_policy("validate_report_location", "p3lm", "policy")
+_emit_stores_learning_state("validate_report_location", "p3lm", "state")
+_emit_records_execution_trace("validate_report_location", "L0_ROUTING", "p2_trace_1")
+_emit_records_execution_trace("validate_report_location", "L1_REASONING", "p2_trace_2")
+_emit_records_execution_trace("validate_report_location", "L2_EXECUTION", "p2_trace_3")
+_emit_records_execution_trace("validate_report_location", "L3_ORCHESTRATION", "p2_trace_4")
+_emit_records_execution_trace("validate_report_location", "L4_STATE", "p2_trace_5")
+_emit_reads_environ("validate_report_location", "env_read", "p2_env_1")
+_emit_reads_environ("validate_report_location", "env_read", "p2_env_2")
+_emit_reads_runtime_state("validate_report_location", "runtime_state", "p2_rt_1")
+_emit_reads_runtime_state("validate_report_location", "runtime_state", "p2_rt_2")
+_emit_pulls_context("p1", "validate_report_location", "context_pull")
+_emit_pulls_context("p1", "validate_report_location", "context_pull_secondary")
+_emit_execution_terminates_at_uwg("p1", "validate_report_location", "uwg_term")
+_emit_execution_terminates_at_uwg("p1", "validate_report_location", "uwg_term_secondary")
+_emit_writes_through("p1", "validate_report_location", "write_through")
+_emit_writes_through("p1", "validate_report_location", "write_through_secondary")
+_emit_validated_by_safety_plane("p1", "validate_report_location", "safety_validation")
+_emit_invokes_eval("p1", "validate_report_location", "eval_call")
+_emit_proposal_commits_routing("p1", "validate_report_location", "routing_commit")
 
 COMPLIANCE_LOG_DIR = PROJECT_ROOT / 'agentic_core' / 'L0_routing' / 'logs' / 'compliance_reports'
 

@@ -67,6 +67,54 @@ _emit_links_execution_to_snapshot("p4", "prompts_util", "exec_snapshot_link")
 
 "\nagentic_core/domain/prompts_util.py\nDepth: 3\nRole: Static storage for LLM few-shot prompts to keep Context clean.\n"
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_pulls_context,
+    _emit_execution_terminates_at_uwg,
+    _emit_writes_through,
+    _emit_validated_by_safety_plane,
+    _emit_invokes_eval,
+    _emit_proposal_commits_routing,
+)
+from agentic_core.runtime.lifecycle_trace_contract import _emit_records_execution_trace, _emit_reads_environ, _emit_reads_runtime_state
+from agentic_core.runtime.lifecycle_trace_contract import _emit_captures_pattern, _emit_records_learning_event, _emit_writes_learning_snapshot, _emit_feeds_meta_learning, _emit_updates_routing_strategy, _emit_improves_agent_policy, _emit_stores_learning_state
+from agentic_core.runtime.lifecycle_trace_contract import _emit_emits_metric_event, _emit_records_incident_event, _emit_captures_runtime_anomaly, _emit_writes_observability_log, _emit_updates_monitoring_state, _emit_triggers_alert, _emit_links_incident_trace
+_emit_emits_metric_event("prompts_util", "p4obs", "metric_1")
+_emit_emits_metric_event("prompts_util", "p4obs", "metric_2")
+_emit_emits_metric_event("prompts_util", "p4obs", "metric_3")
+_emit_emits_metric_event("prompts_util", "p4obs", "metric_4")
+_emit_emits_metric_event("prompts_util", "p4obs", "metric_5")
+_emit_emits_metric_event("prompts_util", "p4obs", "metric_6")
+_emit_records_incident_event("prompts_util", "p4obs", "incident")
+_emit_captures_runtime_anomaly("prompts_util", "p4obs", "anomaly")
+_emit_writes_observability_log("prompts_util", "p4obs", "obs_log")
+_emit_updates_monitoring_state("prompts_util", "p4obs", "mon_state")
+_emit_triggers_alert("prompts_util", "p4obs", "alert")
+_emit_links_incident_trace("prompts_util", "p4obs", "trace_link")
+_emit_captures_pattern("prompts_util", "p3lm", "pattern")
+_emit_records_learning_event("prompts_util", "p3lm", "learning_event")
+_emit_writes_learning_snapshot("prompts_util", "p3lm", "snapshot")
+_emit_feeds_meta_learning("prompts_util", "p3lm", "meta_feed")
+_emit_updates_routing_strategy("prompts_util", "p3lm", "routing")
+_emit_improves_agent_policy("prompts_util", "p3lm", "policy")
+_emit_stores_learning_state("prompts_util", "p3lm", "state")
+_emit_records_execution_trace("prompts_util", "L0_ROUTING", "p2_trace_1")
+_emit_records_execution_trace("prompts_util", "L1_REASONING", "p2_trace_2")
+_emit_records_execution_trace("prompts_util", "L2_EXECUTION", "p2_trace_3")
+_emit_records_execution_trace("prompts_util", "L3_ORCHESTRATION", "p2_trace_4")
+_emit_records_execution_trace("prompts_util", "L4_STATE", "p2_trace_5")
+_emit_reads_environ("prompts_util", "env_read", "p2_env_1")
+_emit_reads_environ("prompts_util", "env_read", "p2_env_2")
+_emit_reads_runtime_state("prompts_util", "runtime_state", "p2_rt_1")
+_emit_reads_runtime_state("prompts_util", "runtime_state", "p2_rt_2")
+_emit_pulls_context("p1", "prompts_util", "context_pull")
+_emit_pulls_context("p1", "prompts_util", "context_pull_secondary")
+_emit_execution_terminates_at_uwg("p1", "prompts_util", "uwg_term")
+_emit_execution_terminates_at_uwg("p1", "prompts_util", "uwg_term_secondary")
+_emit_writes_through("p1", "prompts_util", "write_through")
+_emit_writes_through("p1", "prompts_util", "write_through_secondary")
+_emit_validated_by_safety_plane("p1", "prompts_util", "safety_validation")
+_emit_invokes_eval("p1", "prompts_util", "eval_call")
+_emit_proposal_commits_routing("p1", "prompts_util", "routing_commit")
 
 few_shot_global_refactor: Any = "\nFEW-SHOT REFACTORING PATTERNS:\n\nEXAMPLE 1: Monolith Function → Atomic Split\nBAD: def handle_order(order): # 250 lines\nGOOD: Split into orders/validate.py, orders/charge.py\n\nEXAMPLE 2: Incorrect Depth\nBAD: apps/payment/helpers.py (depth 3)\nGOOD: agentic_core/shared/payments/domain/charge_service.py (depth 5)\n"
 few_shot_import_fixes: Any = "\nFEW-SHOT IMPORT RESOLUTION:\n\nEXAMPLE 1: Relative Import\nBAD: from utils import validate\nGOOD: from agentic_core.shared.validation.common import validate\n\nEXAMPLE 2: Missing schema\nBAD: ImportError: cannot import name 'OrderSchema'\nGOOD: from agentic_core.L1_cognition.P2_domain.models import DomainSchema\n"

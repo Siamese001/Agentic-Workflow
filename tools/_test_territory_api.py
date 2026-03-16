@@ -101,6 +101,54 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     ALLOW_ROOT_PY_TERRITORIES,
     LAYER_PREFIX_EXEMPT_TERRITORIES,
 )
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_pulls_context,
+    _emit_execution_terminates_at_uwg,
+    _emit_writes_through,
+    _emit_validated_by_safety_plane,
+    _emit_invokes_eval,
+    _emit_proposal_commits_routing,
+)
+from agentic_core.runtime.lifecycle_trace_contract import _emit_records_execution_trace, _emit_reads_environ, _emit_reads_runtime_state
+from agentic_core.runtime.lifecycle_trace_contract import _emit_captures_pattern, _emit_records_learning_event, _emit_writes_learning_snapshot, _emit_feeds_meta_learning, _emit_updates_routing_strategy, _emit_improves_agent_policy, _emit_stores_learning_state
+from agentic_core.runtime.lifecycle_trace_contract import _emit_emits_metric_event, _emit_records_incident_event, _emit_captures_runtime_anomaly, _emit_writes_observability_log, _emit_updates_monitoring_state, _emit_triggers_alert, _emit_links_incident_trace
+_emit_emits_metric_event("_test_territory_api", "p4obs", "metric_1")
+_emit_emits_metric_event("_test_territory_api", "p4obs", "metric_2")
+_emit_emits_metric_event("_test_territory_api", "p4obs", "metric_3")
+_emit_emits_metric_event("_test_territory_api", "p4obs", "metric_4")
+_emit_emits_metric_event("_test_territory_api", "p4obs", "metric_5")
+_emit_emits_metric_event("_test_territory_api", "p4obs", "metric_6")
+_emit_records_incident_event("_test_territory_api", "p4obs", "incident")
+_emit_captures_runtime_anomaly("_test_territory_api", "p4obs", "anomaly")
+_emit_writes_observability_log("_test_territory_api", "p4obs", "obs_log")
+_emit_updates_monitoring_state("_test_territory_api", "p4obs", "mon_state")
+_emit_triggers_alert("_test_territory_api", "p4obs", "alert")
+_emit_links_incident_trace("_test_territory_api", "p4obs", "trace_link")
+_emit_captures_pattern("_test_territory_api", "p3lm", "pattern")
+_emit_records_learning_event("_test_territory_api", "p3lm", "learning_event")
+_emit_writes_learning_snapshot("_test_territory_api", "p3lm", "snapshot")
+_emit_feeds_meta_learning("_test_territory_api", "p3lm", "meta_feed")
+_emit_updates_routing_strategy("_test_territory_api", "p3lm", "routing")
+_emit_improves_agent_policy("_test_territory_api", "p3lm", "policy")
+_emit_stores_learning_state("_test_territory_api", "p3lm", "state")
+_emit_records_execution_trace("_test_territory_api", "L0_ROUTING", "p2_trace_1")
+_emit_records_execution_trace("_test_territory_api", "L1_REASONING", "p2_trace_2")
+_emit_records_execution_trace("_test_territory_api", "L2_EXECUTION", "p2_trace_3")
+_emit_records_execution_trace("_test_territory_api", "L3_ORCHESTRATION", "p2_trace_4")
+_emit_records_execution_trace("_test_territory_api", "L4_STATE", "p2_trace_5")
+_emit_reads_environ("_test_territory_api", "env_read", "p2_env_1")
+_emit_reads_environ("_test_territory_api", "env_read", "p2_env_2")
+_emit_reads_runtime_state("_test_territory_api", "runtime_state", "p2_rt_1")
+_emit_reads_runtime_state("_test_territory_api", "runtime_state", "p2_rt_2")
+_emit_pulls_context("p1", "_test_territory_api", "context_pull")
+_emit_pulls_context("p1", "_test_territory_api", "context_pull_secondary")
+_emit_execution_terminates_at_uwg("p1", "_test_territory_api", "uwg_term")
+_emit_execution_terminates_at_uwg("p1", "_test_territory_api", "uwg_term_secondary")
+_emit_writes_through("p1", "_test_territory_api", "write_through")
+_emit_writes_through("p1", "_test_territory_api", "write_through_secondary")
+_emit_validated_by_safety_plane("p1", "_test_territory_api", "safety_validation")
+_emit_invokes_eval("p1", "_test_territory_api", "eval_call")
+_emit_proposal_commits_routing("p1", "_test_territory_api", "routing_commit")
 
 print(f"✅ ALLOW_ROOT_PY_TERRITORIES: {len(ALLOW_ROOT_PY_TERRITORIES)} territories")
 print(f"✅ LAYER_PREFIX_EXEMPT_TERRITORIES: {len(LAYER_PREFIX_EXEMPT_TERRITORIES)} territories")

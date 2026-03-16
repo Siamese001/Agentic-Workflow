@@ -82,6 +82,47 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 # Import the factory to patch it
 import system_learning.engines.embedding_service_factory as factory_module
 from system_learning.engines.embedding_service_factory import EmbeddingServiceFactory
+from agentic_core.runtime.lifecycle_trace_contract import _emit_pulls_context, _emit_execution_terminates_at_uwg, _emit_writes_through, _emit_validated_by_safety_plane, _emit_invokes_eval, _emit_proposal_commits_routing
+from agentic_core.runtime.lifecycle_trace_contract import _emit_records_execution_trace, _emit_reads_environ, _emit_reads_runtime_state
+from agentic_core.runtime.lifecycle_trace_contract import _emit_captures_pattern, _emit_records_learning_event, _emit_writes_learning_snapshot, _emit_feeds_meta_learning, _emit_updates_routing_strategy, _emit_improves_agent_policy, _emit_stores_learning_state
+from agentic_core.runtime.lifecycle_trace_contract import _emit_emits_metric_event, _emit_records_incident_event, _emit_captures_runtime_anomaly, _emit_writes_observability_log, _emit_updates_monitoring_state, _emit_triggers_alert, _emit_links_incident_trace
+_emit_emits_metric_event("w1_strong_negative_control", "p4obs", "metric_1")
+_emit_emits_metric_event("w1_strong_negative_control", "p4obs", "metric_2")
+_emit_emits_metric_event("w1_strong_negative_control", "p4obs", "metric_3")
+_emit_emits_metric_event("w1_strong_negative_control", "p4obs", "metric_4")
+_emit_emits_metric_event("w1_strong_negative_control", "p4obs", "metric_5")
+_emit_emits_metric_event("w1_strong_negative_control", "p4obs", "metric_6")
+_emit_records_incident_event("w1_strong_negative_control", "p4obs", "incident")
+_emit_captures_runtime_anomaly("w1_strong_negative_control", "p4obs", "anomaly")
+_emit_writes_observability_log("w1_strong_negative_control", "p4obs", "obs_log")
+_emit_updates_monitoring_state("w1_strong_negative_control", "p4obs", "mon_state")
+_emit_triggers_alert("w1_strong_negative_control", "p4obs", "alert")
+_emit_links_incident_trace("w1_strong_negative_control", "p4obs", "trace_link")
+_emit_captures_pattern("w1_strong_negative_control", "p3lm", "pattern")
+_emit_records_learning_event("w1_strong_negative_control", "p3lm", "learning_event")
+_emit_writes_learning_snapshot("w1_strong_negative_control", "p3lm", "snapshot")
+_emit_feeds_meta_learning("w1_strong_negative_control", "p3lm", "meta_feed")
+_emit_updates_routing_strategy("w1_strong_negative_control", "p3lm", "routing")
+_emit_improves_agent_policy("w1_strong_negative_control", "p3lm", "policy")
+_emit_stores_learning_state("w1_strong_negative_control", "p3lm", "state")
+_emit_records_execution_trace("w1_strong_negative_control", "L0_ROUTING", "p2_trace_1")
+_emit_records_execution_trace("w1_strong_negative_control", "L1_REASONING", "p2_trace_2")
+_emit_records_execution_trace("w1_strong_negative_control", "L2_EXECUTION", "p2_trace_3")
+_emit_records_execution_trace("w1_strong_negative_control", "L3_ORCHESTRATION", "p2_trace_4")
+_emit_records_execution_trace("w1_strong_negative_control", "L4_STATE", "p2_trace_5")
+_emit_reads_environ("w1_strong_negative_control", "env_read", "p2_env_1")
+_emit_reads_environ("w1_strong_negative_control", "env_read", "p2_env_2")
+_emit_reads_runtime_state("w1_strong_negative_control", "runtime_state", "p2_rt_1")
+_emit_reads_runtime_state("w1_strong_negative_control", "runtime_state", "p2_rt_2")
+_emit_pulls_context("p1", "w1_strong_negative_control", "context_pull")
+_emit_pulls_context("p1", "w1_strong_negative_control", "context_pull_2")
+_emit_execution_terminates_at_uwg("p1", "w1_strong_negative_control", "uwg_term")
+_emit_execution_terminates_at_uwg("p1", "w1_strong_negative_control", "uwg_term_2")
+_emit_writes_through("p1", "w1_strong_negative_control", "write_through")
+_emit_writes_through("p1", "w1_strong_negative_control", "write_through_2")
+_emit_validated_by_safety_plane("p1", "w1_strong_negative_control", "safety_validation")
+_emit_invokes_eval("p1", "w1_strong_negative_control", "eval_call")
+_emit_proposal_commits_routing("p1", "w1_strong_negative_control", "routing_commit")
 
 
 def create_test_pack():

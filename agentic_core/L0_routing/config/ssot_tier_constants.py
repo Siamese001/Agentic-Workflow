@@ -44,6 +44,45 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     emit_determinism_digest,
     emit_replay_key,
 )
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_pulls_context,
+    _emit_execution_terminates_at_uwg,
+    _emit_writes_through,
+    _emit_validated_by_safety_plane,
+    _emit_invokes_eval,
+    _emit_proposal_commits_routing,
+)
+from agentic_core.runtime.lifecycle_trace_contract import _emit_records_execution_trace, _emit_reads_environ, _emit_reads_runtime_state
+from agentic_core.runtime.lifecycle_trace_contract import _emit_captures_pattern, _emit_records_learning_event, _emit_writes_learning_snapshot, _emit_feeds_meta_learning, _emit_updates_routing_strategy, _emit_improves_agent_policy, _emit_stores_learning_state
+from agentic_core.runtime.lifecycle_trace_contract import _emit_emits_metric_event, _emit_records_incident_event, _emit_captures_runtime_anomaly, _emit_writes_observability_log, _emit_updates_monitoring_state, _emit_triggers_alert, _emit_links_incident_trace
+_emit_emits_metric_event("ssot_tier_constants", "p4obs", "metric_1")
+_emit_emits_metric_event("ssot_tier_constants", "p4obs", "metric_2")
+_emit_emits_metric_event("ssot_tier_constants", "p4obs", "metric_3")
+_emit_emits_metric_event("ssot_tier_constants", "p4obs", "metric_4")
+_emit_emits_metric_event("ssot_tier_constants", "p4obs", "metric_5")
+_emit_emits_metric_event("ssot_tier_constants", "p4obs", "metric_6")
+_emit_records_incident_event("ssot_tier_constants", "p4obs", "incident")
+_emit_captures_runtime_anomaly("ssot_tier_constants", "p4obs", "anomaly")
+_emit_writes_observability_log("ssot_tier_constants", "p4obs", "obs_log")
+_emit_updates_monitoring_state("ssot_tier_constants", "p4obs", "mon_state")
+_emit_triggers_alert("ssot_tier_constants", "p4obs", "alert")
+_emit_links_incident_trace("ssot_tier_constants", "p4obs", "trace_link")
+_emit_captures_pattern("ssot_tier_constants", "p3lm", "pattern")
+_emit_records_learning_event("ssot_tier_constants", "p3lm", "learning_event")
+_emit_writes_learning_snapshot("ssot_tier_constants", "p3lm", "snapshot")
+_emit_feeds_meta_learning("ssot_tier_constants", "p3lm", "meta_feed")
+_emit_updates_routing_strategy("ssot_tier_constants", "p3lm", "routing")
+_emit_improves_agent_policy("ssot_tier_constants", "p3lm", "policy")
+_emit_stores_learning_state("ssot_tier_constants", "p3lm", "state")
+_emit_records_execution_trace("ssot_tier_constants", "L0_ROUTING", "p2_trace_1")
+_emit_records_execution_trace("ssot_tier_constants", "L1_REASONING", "p2_trace_2")
+_emit_records_execution_trace("ssot_tier_constants", "L2_EXECUTION", "p2_trace_3")
+_emit_records_execution_trace("ssot_tier_constants", "L3_ORCHESTRATION", "p2_trace_4")
+_emit_records_execution_trace("ssot_tier_constants", "L4_STATE", "p2_trace_5")
+_emit_reads_environ("ssot_tier_constants", "env_read", "p2_env_1")
+_emit_reads_environ("ssot_tier_constants", "env_read", "p2_env_2")
+_emit_reads_runtime_state("ssot_tier_constants", "runtime_state", "p2_rt_1")
+_emit_reads_runtime_state("ssot_tier_constants", "runtime_state", "p2_rt_2")
 
 _emit_reads_policy_state("p1", "ssot_tier_constants", "L0")
 _emit_escalates_to_human("p1", "ssot_tier_constants", "L0")
@@ -52,6 +91,15 @@ _emit_dispatches_healing_run("p1", "ssot_tier_constants", "L0")
 _emit_records_execution_trace("p0", "evidence", "ssot_tier_constants")
 _emit_applies_guardrail("p0", "ssot_tier_constants", "p0_governance")
 _emit_snapshots_state("p0", "ssot_tier_constants", "state_snapshot")
+_emit_pulls_context("p1", "ssot_tier_constants", "context_pull")
+_emit_pulls_context("p1", "ssot_tier_constants", "context_pull_secondary")
+_emit_execution_terminates_at_uwg("p1", "ssot_tier_constants", "uwg_term")
+_emit_execution_terminates_at_uwg("p1", "ssot_tier_constants", "uwg_term_secondary")
+_emit_writes_through("p1", "ssot_tier_constants", "write_through")
+_emit_writes_through("p1", "ssot_tier_constants", "write_through_secondary")
+_emit_validated_by_safety_plane("p1", "ssot_tier_constants", "safety_validation")
+_emit_invokes_eval("p1", "ssot_tier_constants", "eval_call")
+_emit_proposal_commits_routing("p1", "ssot_tier_constants", "routing_commit")
 emit_replay_key("p0", "ssot_tier_constants")
 emit_determinism_digest("p0", "ssot_tier_constants")
 _emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)

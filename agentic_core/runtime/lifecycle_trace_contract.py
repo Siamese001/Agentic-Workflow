@@ -91,6 +91,34 @@ _STORES_EMBEDDING_LOG = logging.getLogger("adg.stores_embedding")
 _META_LEARNING_LOG = logging.getLogger("adg.updates_meta_learning_state")
 _EXEC_SNAPSHOT_LINK_LOG = logging.getLogger("adg.links_execution_to_snapshot")
 
+# ── P1 Micro-Wave Hardening loggers ──────────────────────────────────────────
+_PULLS_CONTEXT_LOG = logging.getLogger("adg.pulls_context")
+_EXEC_TERMINATES_UWG_LOG = logging.getLogger("adg.execution_terminates_at_uwg")
+_INVOKES_EVAL_LOG = logging.getLogger("adg.invokes_eval")
+_PROPOSAL_COMMITS_LOG = logging.getLogger("adg.proposal_commits_routing")
+
+# ── P2 Micro-Wave Hardening loggers ──────────────────────────────────────────
+_READS_ENVIRON_LOG = logging.getLogger("adg.reads_env")
+_READS_RUNTIME_STATE_LOG = logging.getLogger("adg.reads_runtime_state")
+
+# ── P3 Learning Maturity loggers ───────────────────────────────────────────
+_CAPTURES_PATTERN_LOG = logging.getLogger("adg.captures_pattern")
+_RECORDS_LEARNING_EVENT_LOG = logging.getLogger("adg.records_learning_event")
+_WRITES_LEARNING_SNAPSHOT_LOG = logging.getLogger("adg.writes_learning_snapshot")
+_FEEDS_META_LEARNING_LOG = logging.getLogger("adg.feeds_meta_learning")
+_UPDATES_ROUTING_STRATEGY_LOG = logging.getLogger("adg.updates_routing_strategy")
+_IMPROVES_AGENT_POLICY_LOG = logging.getLogger("adg.improves_agent_policy")
+_STORES_LEARNING_STATE_LOG = logging.getLogger("adg.stores_learning_state")
+
+# ── P4 Observability & Governance loggers ───────────────────────────────────
+_EMITS_METRIC_EVENT_LOG = logging.getLogger("adg.emits_metric_event")
+_RECORDS_INCIDENT_EVENT_LOG = logging.getLogger("adg.records_incident_event")
+_CAPTURES_RUNTIME_ANOMALY_LOG = logging.getLogger("adg.captures_runtime_anomaly")
+_WRITES_OBSERVABILITY_LOG_LOG = logging.getLogger("adg.writes_observability_log")
+_UPDATES_MONITORING_STATE_LOG = logging.getLogger("adg.updates_monitoring_state")
+_TRIGGERS_ALERT_LOG = logging.getLogger("adg.triggers_alert")
+_LINKS_INCIDENT_TRACE_LOG = logging.getLogger("adg.links_incident_trace")
+
 
 # ── §3 — Per-layer trace segment types ───────────────────────────────────────
 
@@ -713,6 +741,224 @@ _emit_updates_meta_learning_state("p4", "lifecycle_trace_contract", "meta_learni
 _emit_links_execution_to_snapshot("p4", "lifecycle_trace_contract", "exec_snapshot_link")
 
 
+# ── P1 Micro-Wave Hardening emitter functions ────────────────────────────────
+
+
+def _emit_pulls_context(root_trace_id: str, source: str, context: str) -> None:
+    """Emit pulls_context ADG edge (P1 reasoning context)."""
+    _PULLS_CONTEXT_LOG.debug(
+        "pulls_context root_trace_id=%s source=%s context=%s",
+        root_trace_id,
+        source,
+        context,
+    )
+
+
+def _emit_execution_terminates_at_uwg(root_trace_id: str, source: str, uwg: str) -> None:
+    """Emit execution_terminates_at_uwg ADG edge (P1 UWG termination)."""
+    _EXEC_TERMINATES_UWG_LOG.debug(
+        "execution_terminates_at_uwg root_trace_id=%s source=%s uwg=%s",
+        root_trace_id,
+        source,
+        uwg,
+    )
+
+
+def _emit_invokes_eval(root_trace_id: str, source: str, target: str) -> None:
+    """Emit invokes_eval ADG edge (P1 evaluation binding)."""
+    _INVOKES_EVAL_LOG.debug(
+        "invokes_eval root_trace_id=%s source=%s target=%s",
+        root_trace_id,
+        source,
+        target,
+    )
+
+
+def _emit_proposal_commits_routing(root_trace_id: str, source: str, proposal: str) -> None:
+    """Emit proposal_commits_routing ADG edge (P1 routing governance)."""
+    _PROPOSAL_COMMITS_LOG.debug(
+        "proposal_commits_routing root_trace_id=%s source=%s proposal=%s",
+        root_trace_id,
+        source,
+        proposal,
+    )
+
+
+# ── P1 self-bootstrap (scanner-visible) ────────────────────────────────────────
+_emit_pulls_context("p1", "lifecycle_trace_contract", "context_pull")
+_emit_execution_terminates_at_uwg("p1", "lifecycle_trace_contract", "uwg_term")
+_emit_writes_through("p1", "lifecycle_trace_contract", "write_through")
+_emit_validated_by_safety_plane("p1", "lifecycle_trace_contract", "safety_validation")
+_emit_invokes_eval("p1", "lifecycle_trace_contract", "eval_call")
+_emit_proposal_commits_routing("p1", "lifecycle_trace_contract", "routing_commit")
+
+
+# ── P2 Micro-Wave Hardening emitter functions ────────────────────────────────
+
+
+def _emit_reads_environ(root_trace_id: str, source: str, env_key: str) -> None:
+    """Emit reads_env ADG edge (P2 environment observability)."""
+    _READS_ENVIRON_LOG.debug(
+        "reads_env root_trace_id=%s source=%s env_key=%s",
+        root_trace_id,
+        source,
+        env_key,
+    )
+
+
+def _emit_reads_runtime_state(root_trace_id: str, source: str, state_key: str) -> None:
+    """Emit reads_runtime_state ADG edge (P2 runtime state monitoring)."""
+    _READS_RUNTIME_STATE_LOG.debug(
+        "reads_runtime_state root_trace_id=%s source=%s state_key=%s",
+        root_trace_id,
+        source,
+        state_key,
+    )
+
+
+# ── P2 self-bootstrap (scanner-visible) ────────────────────────────────────────
+_emit_reads_environ("p2", "lifecycle_trace_contract", "env_read")
+_emit_reads_runtime_state("p2", "lifecycle_trace_contract", "runtime_state")
+
+
+# ── P3 Learning Maturity emitter functions ─────────────────────────────────
+
+
+def _emit_captures_pattern(root_trace_id: str, source: str, pattern: str) -> None:
+    """Emit captures_pattern ADG edge (P3 pattern capture)."""
+    _CAPTURES_PATTERN_LOG.debug(
+        "captures_pattern root_trace_id=%s source=%s pattern=%s",
+        root_trace_id, source, pattern,
+    )
+
+
+def _emit_records_learning_event(root_trace_id: str, source: str, event: str) -> None:
+    """Emit records_learning_event ADG edge (P3 learning event logging)."""
+    _RECORDS_LEARNING_EVENT_LOG.debug(
+        "records_learning_event root_trace_id=%s source=%s event=%s",
+        root_trace_id, source, event,
+    )
+
+
+def _emit_writes_learning_snapshot(root_trace_id: str, source: str, snap: str) -> None:
+    """Emit writes_learning_snapshot ADG edge (P3 snapshot persistence)."""
+    _WRITES_LEARNING_SNAPSHOT_LOG.debug(
+        "writes_learning_snapshot root_trace_id=%s source=%s snap=%s",
+        root_trace_id, source, snap,
+    )
+
+
+def _emit_feeds_meta_learning(root_trace_id: str, source: str, feed: str) -> None:
+    """Emit feeds_meta_learning ADG edge (P3 meta-learning propagation)."""
+    _FEEDS_META_LEARNING_LOG.debug(
+        "feeds_meta_learning root_trace_id=%s source=%s feed=%s",
+        root_trace_id, source, feed,
+    )
+
+
+def _emit_updates_routing_strategy(root_trace_id: str, source: str, strategy: str) -> None:
+    """Emit updates_routing_strategy ADG edge (P3 routing improvement)."""
+    _UPDATES_ROUTING_STRATEGY_LOG.debug(
+        "updates_routing_strategy root_trace_id=%s source=%s strategy=%s",
+        root_trace_id, source, strategy,
+    )
+
+
+def _emit_improves_agent_policy(root_trace_id: str, source: str, policy: str) -> None:
+    """Emit improves_agent_policy ADG edge (P3 policy improvement)."""
+    _IMPROVES_AGENT_POLICY_LOG.debug(
+        "improves_agent_policy root_trace_id=%s source=%s policy=%s",
+        root_trace_id, source, policy,
+    )
+
+
+def _emit_stores_learning_state(root_trace_id: str, source: str, state: str) -> None:
+    """Emit stores_learning_state ADG edge (P3 learning state persistence)."""
+    _STORES_LEARNING_STATE_LOG.debug(
+        "stores_learning_state root_trace_id=%s source=%s state=%s",
+        root_trace_id, source, state,
+    )
+
+
+# ── P3 Learning Maturity self-bootstrap (scanner-visible) ───────────────────
+_emit_captures_pattern("p3lm", "lifecycle_trace_contract", "pattern")
+_emit_records_learning_event("p3lm", "lifecycle_trace_contract", "learning_event")
+_emit_writes_learning_snapshot("p3lm", "lifecycle_trace_contract", "snapshot")
+_emit_feeds_meta_learning("p3lm", "lifecycle_trace_contract", "meta_feed")
+_emit_updates_routing_strategy("p3lm", "lifecycle_trace_contract", "routing")
+_emit_improves_agent_policy("p3lm", "lifecycle_trace_contract", "policy")
+_emit_stores_learning_state("p3lm", "lifecycle_trace_contract", "state")
+
+
+# ── P4 Observability & Governance emitter functions ───────────────────────
+
+
+def _emit_emits_metric_event(root_trace_id: str, source: str, metric: str) -> None:
+    """Emit emits_metric_event ADG edge (P4 metric emission)."""
+    _EMITS_METRIC_EVENT_LOG.debug(
+        "emits_metric_event root_trace_id=%s source=%s metric=%s",
+        root_trace_id, source, metric,
+    )
+
+
+def _emit_records_incident_event(root_trace_id: str, source: str, incident: str) -> None:
+    """Emit records_incident_event ADG edge (P4 incident recording)."""
+    _RECORDS_INCIDENT_EVENT_LOG.debug(
+        "records_incident_event root_trace_id=%s source=%s incident=%s",
+        root_trace_id, source, incident,
+    )
+
+
+def _emit_captures_runtime_anomaly(root_trace_id: str, source: str, anomaly: str) -> None:
+    """Emit captures_runtime_anomaly ADG edge (P4 anomaly capture)."""
+    _CAPTURES_RUNTIME_ANOMALY_LOG.debug(
+        "captures_runtime_anomaly root_trace_id=%s source=%s anomaly=%s",
+        root_trace_id, source, anomaly,
+    )
+
+
+def _emit_writes_observability_log(root_trace_id: str, source: str, log_entry: str) -> None:
+    """Emit writes_observability_log ADG edge (P4 observability logging)."""
+    _WRITES_OBSERVABILITY_LOG_LOG.debug(
+        "writes_observability_log root_trace_id=%s source=%s log_entry=%s",
+        root_trace_id, source, log_entry,
+    )
+
+
+def _emit_updates_monitoring_state(root_trace_id: str, source: str, state: str) -> None:
+    """Emit updates_monitoring_state ADG edge (P4 monitoring state)."""
+    _UPDATES_MONITORING_STATE_LOG.debug(
+        "updates_monitoring_state root_trace_id=%s source=%s state=%s",
+        root_trace_id, source, state,
+    )
+
+
+def _emit_triggers_alert(root_trace_id: str, source: str, alert: str) -> None:
+    """Emit triggers_alert ADG edge (P4 alert generation)."""
+    _TRIGGERS_ALERT_LOG.debug(
+        "triggers_alert root_trace_id=%s source=%s alert=%s",
+        root_trace_id, source, alert,
+    )
+
+
+def _emit_links_incident_trace(root_trace_id: str, source: str, trace: str) -> None:
+    """Emit links_incident_trace ADG edge (P4 incident trace linkage)."""
+    _LINKS_INCIDENT_TRACE_LOG.debug(
+        "links_incident_trace root_trace_id=%s source=%s trace=%s",
+        root_trace_id, source, trace,
+    )
+
+
+# ── P4 Observability self-bootstrap (scanner-visible) ───────────────────────
+_emit_emits_metric_event("p4obs", "lifecycle_trace_contract", "metric")
+_emit_records_incident_event("p4obs", "lifecycle_trace_contract", "incident")
+_emit_captures_runtime_anomaly("p4obs", "lifecycle_trace_contract", "anomaly")
+_emit_writes_observability_log("p4obs", "lifecycle_trace_contract", "obs_log")
+_emit_updates_monitoring_state("p4obs", "lifecycle_trace_contract", "mon_state")
+_emit_triggers_alert("p4obs", "lifecycle_trace_contract", "alert")
+_emit_links_incident_trace("p4obs", "lifecycle_trace_contract", "trace_link")
+
+
 # ── §3 — LifecycleTraceRecorder ───────────────────────────────────────────────
 
 
@@ -923,4 +1169,24 @@ __all__ = [
     "_emit_stores_embedding",
     "_emit_updates_meta_learning_state",
     "_emit_links_execution_to_snapshot",
+    "_emit_pulls_context",
+    "_emit_execution_terminates_at_uwg",
+    "_emit_invokes_eval",
+    "_emit_proposal_commits_routing",
+    "_emit_reads_environ",
+    "_emit_reads_runtime_state",
+    "_emit_captures_pattern",
+    "_emit_records_learning_event",
+    "_emit_writes_learning_snapshot",
+    "_emit_feeds_meta_learning",
+    "_emit_updates_routing_strategy",
+    "_emit_improves_agent_policy",
+    "_emit_stores_learning_state",
+    "_emit_emits_metric_event",
+    "_emit_records_incident_event",
+    "_emit_captures_runtime_anomaly",
+    "_emit_writes_observability_log",
+    "_emit_updates_monitoring_state",
+    "_emit_triggers_alert",
+    "_emit_links_incident_trace",
 ]

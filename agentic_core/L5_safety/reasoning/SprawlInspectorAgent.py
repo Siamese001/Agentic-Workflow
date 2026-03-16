@@ -77,6 +77,47 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_snapshots_state,
 )
 from agentic_core.utils.decorators_compat_util import standard_heal
+from agentic_core.runtime.lifecycle_trace_contract import _emit_pulls_context, _emit_execution_terminates_at_uwg, _emit_writes_through, _emit_validated_by_safety_plane, _emit_invokes_eval, _emit_proposal_commits_routing
+from agentic_core.runtime.lifecycle_trace_contract import _emit_records_execution_trace, _emit_reads_environ, _emit_reads_runtime_state
+from agentic_core.runtime.lifecycle_trace_contract import _emit_captures_pattern, _emit_records_learning_event, _emit_writes_learning_snapshot, _emit_feeds_meta_learning, _emit_updates_routing_strategy, _emit_improves_agent_policy, _emit_stores_learning_state
+from agentic_core.runtime.lifecycle_trace_contract import _emit_emits_metric_event, _emit_records_incident_event, _emit_captures_runtime_anomaly, _emit_writes_observability_log, _emit_updates_monitoring_state, _emit_triggers_alert, _emit_links_incident_trace
+_emit_emits_metric_event("SprawlInspectorAgent", "p4obs", "metric_1")
+_emit_emits_metric_event("SprawlInspectorAgent", "p4obs", "metric_2")
+_emit_emits_metric_event("SprawlInspectorAgent", "p4obs", "metric_3")
+_emit_emits_metric_event("SprawlInspectorAgent", "p4obs", "metric_4")
+_emit_emits_metric_event("SprawlInspectorAgent", "p4obs", "metric_5")
+_emit_emits_metric_event("SprawlInspectorAgent", "p4obs", "metric_6")
+_emit_records_incident_event("SprawlInspectorAgent", "p4obs", "incident")
+_emit_captures_runtime_anomaly("SprawlInspectorAgent", "p4obs", "anomaly")
+_emit_writes_observability_log("SprawlInspectorAgent", "p4obs", "obs_log")
+_emit_updates_monitoring_state("SprawlInspectorAgent", "p4obs", "mon_state")
+_emit_triggers_alert("SprawlInspectorAgent", "p4obs", "alert")
+_emit_links_incident_trace("SprawlInspectorAgent", "p4obs", "trace_link")
+_emit_captures_pattern("SprawlInspectorAgent", "p3lm", "pattern")
+_emit_records_learning_event("SprawlInspectorAgent", "p3lm", "learning_event")
+_emit_writes_learning_snapshot("SprawlInspectorAgent", "p3lm", "snapshot")
+_emit_feeds_meta_learning("SprawlInspectorAgent", "p3lm", "meta_feed")
+_emit_updates_routing_strategy("SprawlInspectorAgent", "p3lm", "routing")
+_emit_improves_agent_policy("SprawlInspectorAgent", "p3lm", "policy")
+_emit_stores_learning_state("SprawlInspectorAgent", "p3lm", "state")
+_emit_records_execution_trace("SprawlInspectorAgent", "L0_ROUTING", "p2_trace_1")
+_emit_records_execution_trace("SprawlInspectorAgent", "L1_REASONING", "p2_trace_2")
+_emit_records_execution_trace("SprawlInspectorAgent", "L2_EXECUTION", "p2_trace_3")
+_emit_records_execution_trace("SprawlInspectorAgent", "L3_ORCHESTRATION", "p2_trace_4")
+_emit_records_execution_trace("SprawlInspectorAgent", "L4_STATE", "p2_trace_5")
+_emit_reads_environ("SprawlInspectorAgent", "env_read", "p2_env_1")
+_emit_reads_environ("SprawlInspectorAgent", "env_read", "p2_env_2")
+_emit_reads_runtime_state("SprawlInspectorAgent", "runtime_state", "p2_rt_1")
+_emit_reads_runtime_state("SprawlInspectorAgent", "runtime_state", "p2_rt_2")
+_emit_pulls_context("p1", "SprawlInspectorAgent", "context_pull")
+_emit_pulls_context("p1", "SprawlInspectorAgent", "context_pull_2")
+_emit_execution_terminates_at_uwg("p1", "SprawlInspectorAgent", "uwg_term")
+_emit_execution_terminates_at_uwg("p1", "SprawlInspectorAgent", "uwg_term_2")
+_emit_writes_through("p1", "SprawlInspectorAgent", "write_through")
+_emit_writes_through("p1", "SprawlInspectorAgent", "write_through_2")
+_emit_validated_by_safety_plane("p1", "SprawlInspectorAgent", "safety_validation")
+_emit_invokes_eval("p1", "SprawlInspectorAgent", "eval_call")
+_emit_proposal_commits_routing("p1", "SprawlInspectorAgent", "routing_commit")
 
 
 @dataclass

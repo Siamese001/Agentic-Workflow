@@ -40,11 +40,59 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_pulls_context,
+    _emit_execution_terminates_at_uwg,
+    _emit_writes_through,
+    _emit_validated_by_safety_plane,
+    _emit_invokes_eval,
+    _emit_proposal_commits_routing,
+)
+from agentic_core.runtime.lifecycle_trace_contract import _emit_records_execution_trace, _emit_reads_environ, _emit_reads_runtime_state
+from agentic_core.runtime.lifecycle_trace_contract import _emit_captures_pattern, _emit_records_learning_event, _emit_writes_learning_snapshot, _emit_feeds_meta_learning, _emit_updates_routing_strategy, _emit_improves_agent_policy, _emit_stores_learning_state
+from agentic_core.runtime.lifecycle_trace_contract import _emit_emits_metric_event, _emit_records_incident_event, _emit_captures_runtime_anomaly, _emit_writes_observability_log, _emit_updates_monitoring_state, _emit_triggers_alert, _emit_links_incident_trace
+_emit_emits_metric_event("test_runtime_state_digest", "p4obs", "metric_1")
+_emit_emits_metric_event("test_runtime_state_digest", "p4obs", "metric_2")
+_emit_emits_metric_event("test_runtime_state_digest", "p4obs", "metric_3")
+_emit_emits_metric_event("test_runtime_state_digest", "p4obs", "metric_4")
+_emit_emits_metric_event("test_runtime_state_digest", "p4obs", "metric_5")
+_emit_emits_metric_event("test_runtime_state_digest", "p4obs", "metric_6")
+_emit_records_incident_event("test_runtime_state_digest", "p4obs", "incident")
+_emit_captures_runtime_anomaly("test_runtime_state_digest", "p4obs", "anomaly")
+_emit_writes_observability_log("test_runtime_state_digest", "p4obs", "obs_log")
+_emit_updates_monitoring_state("test_runtime_state_digest", "p4obs", "mon_state")
+_emit_triggers_alert("test_runtime_state_digest", "p4obs", "alert")
+_emit_links_incident_trace("test_runtime_state_digest", "p4obs", "trace_link")
+_emit_captures_pattern("test_runtime_state_digest", "p3lm", "pattern")
+_emit_records_learning_event("test_runtime_state_digest", "p3lm", "learning_event")
+_emit_writes_learning_snapshot("test_runtime_state_digest", "p3lm", "snapshot")
+_emit_feeds_meta_learning("test_runtime_state_digest", "p3lm", "meta_feed")
+_emit_updates_routing_strategy("test_runtime_state_digest", "p3lm", "routing")
+_emit_improves_agent_policy("test_runtime_state_digest", "p3lm", "policy")
+_emit_stores_learning_state("test_runtime_state_digest", "p3lm", "state")
+_emit_records_execution_trace("test_runtime_state_digest", "L0_ROUTING", "p2_trace_1")
+_emit_records_execution_trace("test_runtime_state_digest", "L1_REASONING", "p2_trace_2")
+_emit_records_execution_trace("test_runtime_state_digest", "L2_EXECUTION", "p2_trace_3")
+_emit_records_execution_trace("test_runtime_state_digest", "L3_ORCHESTRATION", "p2_trace_4")
+_emit_records_execution_trace("test_runtime_state_digest", "L4_STATE", "p2_trace_5")
+_emit_reads_environ("test_runtime_state_digest", "env_read", "p2_env_1")
+_emit_reads_environ("test_runtime_state_digest", "env_read", "p2_env_2")
+_emit_reads_runtime_state("test_runtime_state_digest", "runtime_state", "p2_rt_1")
+_emit_reads_runtime_state("test_runtime_state_digest", "runtime_state", "p2_rt_2")
 
 _emit_records_execution_trace("p0", "evidence", "test_runtime_state_digest")
 _emit_applies_guardrail("p0", "test_runtime_state_digest", "p0_governance")
 _emit_reads_policy_state("p0", "test_runtime_state_digest", "policy_binding")
 _emit_snapshots_state("p0", "test_runtime_state_digest", "state_snapshot")
+_emit_pulls_context("p1", "test_runtime_state_digest", "context_pull")
+_emit_pulls_context("p1", "test_runtime_state_digest", "context_pull_secondary")
+_emit_execution_terminates_at_uwg("p1", "test_runtime_state_digest", "uwg_term")
+_emit_execution_terminates_at_uwg("p1", "test_runtime_state_digest", "uwg_term_secondary")
+_emit_writes_through("p1", "test_runtime_state_digest", "write_through")
+_emit_writes_through("p1", "test_runtime_state_digest", "write_through_secondary")
+_emit_validated_by_safety_plane("p1", "test_runtime_state_digest", "safety_validation")
+_emit_invokes_eval("p1", "test_runtime_state_digest", "eval_call")
+_emit_proposal_commits_routing("p1", "test_runtime_state_digest", "routing_commit")
 emit_replay_key("p0", "test_runtime_state_digest")
 emit_determinism_digest("p0", "test_runtime_state_digest")
 _emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)

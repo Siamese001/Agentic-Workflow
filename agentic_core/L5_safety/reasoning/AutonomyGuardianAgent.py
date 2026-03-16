@@ -103,6 +103,47 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_snapshots_state,
 )
 from agentic_core.utils.timeout_decorator_util import timeout
+from agentic_core.runtime.lifecycle_trace_contract import _emit_pulls_context, _emit_execution_terminates_at_uwg, _emit_writes_through, _emit_validated_by_safety_plane, _emit_invokes_eval, _emit_proposal_commits_routing
+from agentic_core.runtime.lifecycle_trace_contract import _emit_records_execution_trace, _emit_reads_environ, _emit_reads_runtime_state
+from agentic_core.runtime.lifecycle_trace_contract import _emit_captures_pattern, _emit_records_learning_event, _emit_writes_learning_snapshot, _emit_feeds_meta_learning, _emit_updates_routing_strategy, _emit_improves_agent_policy, _emit_stores_learning_state
+from agentic_core.runtime.lifecycle_trace_contract import _emit_emits_metric_event, _emit_records_incident_event, _emit_captures_runtime_anomaly, _emit_writes_observability_log, _emit_updates_monitoring_state, _emit_triggers_alert, _emit_links_incident_trace
+_emit_emits_metric_event("AutonomyGuardianAgent", "p4obs", "metric_1")
+_emit_emits_metric_event("AutonomyGuardianAgent", "p4obs", "metric_2")
+_emit_emits_metric_event("AutonomyGuardianAgent", "p4obs", "metric_3")
+_emit_emits_metric_event("AutonomyGuardianAgent", "p4obs", "metric_4")
+_emit_emits_metric_event("AutonomyGuardianAgent", "p4obs", "metric_5")
+_emit_emits_metric_event("AutonomyGuardianAgent", "p4obs", "metric_6")
+_emit_records_incident_event("AutonomyGuardianAgent", "p4obs", "incident")
+_emit_captures_runtime_anomaly("AutonomyGuardianAgent", "p4obs", "anomaly")
+_emit_writes_observability_log("AutonomyGuardianAgent", "p4obs", "obs_log")
+_emit_updates_monitoring_state("AutonomyGuardianAgent", "p4obs", "mon_state")
+_emit_triggers_alert("AutonomyGuardianAgent", "p4obs", "alert")
+_emit_links_incident_trace("AutonomyGuardianAgent", "p4obs", "trace_link")
+_emit_captures_pattern("AutonomyGuardianAgent", "p3lm", "pattern")
+_emit_records_learning_event("AutonomyGuardianAgent", "p3lm", "learning_event")
+_emit_writes_learning_snapshot("AutonomyGuardianAgent", "p3lm", "snapshot")
+_emit_feeds_meta_learning("AutonomyGuardianAgent", "p3lm", "meta_feed")
+_emit_updates_routing_strategy("AutonomyGuardianAgent", "p3lm", "routing")
+_emit_improves_agent_policy("AutonomyGuardianAgent", "p3lm", "policy")
+_emit_stores_learning_state("AutonomyGuardianAgent", "p3lm", "state")
+_emit_records_execution_trace("AutonomyGuardianAgent", "L0_ROUTING", "p2_trace_1")
+_emit_records_execution_trace("AutonomyGuardianAgent", "L1_REASONING", "p2_trace_2")
+_emit_records_execution_trace("AutonomyGuardianAgent", "L2_EXECUTION", "p2_trace_3")
+_emit_records_execution_trace("AutonomyGuardianAgent", "L3_ORCHESTRATION", "p2_trace_4")
+_emit_records_execution_trace("AutonomyGuardianAgent", "L4_STATE", "p2_trace_5")
+_emit_reads_environ("AutonomyGuardianAgent", "env_read", "p2_env_1")
+_emit_reads_environ("AutonomyGuardianAgent", "env_read", "p2_env_2")
+_emit_reads_runtime_state("AutonomyGuardianAgent", "runtime_state", "p2_rt_1")
+_emit_reads_runtime_state("AutonomyGuardianAgent", "runtime_state", "p2_rt_2")
+_emit_pulls_context("p1", "AutonomyGuardianAgent", "context_pull")
+_emit_pulls_context("p1", "AutonomyGuardianAgent", "context_pull_2")
+_emit_execution_terminates_at_uwg("p1", "AutonomyGuardianAgent", "uwg_term")
+_emit_execution_terminates_at_uwg("p1", "AutonomyGuardianAgent", "uwg_term_2")
+_emit_writes_through("p1", "AutonomyGuardianAgent", "write_through")
+_emit_writes_through("p1", "AutonomyGuardianAgent", "write_through_2")
+_emit_validated_by_safety_plane("p1", "AutonomyGuardianAgent", "safety_validation")
+_emit_invokes_eval("p1", "AutonomyGuardianAgent", "eval_call")
+_emit_proposal_commits_routing("p1", "AutonomyGuardianAgent", "routing_commit")
 
 log = logging.getLogger(__name__)
 

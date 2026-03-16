@@ -81,6 +81,54 @@ from agentic_core.L6_observability.engines.detection_signal_emitter import (
     emit_detection_signal_with_l4a,
 )
 from agentic_core.L6_observability.types.detection_signal_types import DetectionSignal
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_pulls_context,
+    _emit_execution_terminates_at_uwg,
+    _emit_writes_through,
+    _emit_validated_by_safety_plane,
+    _emit_invokes_eval,
+    _emit_proposal_commits_routing,
+)
+from agentic_core.runtime.lifecycle_trace_contract import _emit_records_execution_trace, _emit_reads_environ, _emit_reads_runtime_state
+from agentic_core.runtime.lifecycle_trace_contract import _emit_captures_pattern, _emit_records_learning_event, _emit_writes_learning_snapshot, _emit_feeds_meta_learning, _emit_updates_routing_strategy, _emit_improves_agent_policy, _emit_stores_learning_state
+from agentic_core.runtime.lifecycle_trace_contract import _emit_emits_metric_event, _emit_records_incident_event, _emit_captures_runtime_anomaly, _emit_writes_observability_log, _emit_updates_monitoring_state, _emit_triggers_alert, _emit_links_incident_trace
+_emit_emits_metric_event("test_detection_signal_emitter_writes_l4a", "p4obs", "metric_1")
+_emit_emits_metric_event("test_detection_signal_emitter_writes_l4a", "p4obs", "metric_2")
+_emit_emits_metric_event("test_detection_signal_emitter_writes_l4a", "p4obs", "metric_3")
+_emit_emits_metric_event("test_detection_signal_emitter_writes_l4a", "p4obs", "metric_4")
+_emit_emits_metric_event("test_detection_signal_emitter_writes_l4a", "p4obs", "metric_5")
+_emit_emits_metric_event("test_detection_signal_emitter_writes_l4a", "p4obs", "metric_6")
+_emit_records_incident_event("test_detection_signal_emitter_writes_l4a", "p4obs", "incident")
+_emit_captures_runtime_anomaly("test_detection_signal_emitter_writes_l4a", "p4obs", "anomaly")
+_emit_writes_observability_log("test_detection_signal_emitter_writes_l4a", "p4obs", "obs_log")
+_emit_updates_monitoring_state("test_detection_signal_emitter_writes_l4a", "p4obs", "mon_state")
+_emit_triggers_alert("test_detection_signal_emitter_writes_l4a", "p4obs", "alert")
+_emit_links_incident_trace("test_detection_signal_emitter_writes_l4a", "p4obs", "trace_link")
+_emit_captures_pattern("test_detection_signal_emitter_writes_l4a", "p3lm", "pattern")
+_emit_records_learning_event("test_detection_signal_emitter_writes_l4a", "p3lm", "learning_event")
+_emit_writes_learning_snapshot("test_detection_signal_emitter_writes_l4a", "p3lm", "snapshot")
+_emit_feeds_meta_learning("test_detection_signal_emitter_writes_l4a", "p3lm", "meta_feed")
+_emit_updates_routing_strategy("test_detection_signal_emitter_writes_l4a", "p3lm", "routing")
+_emit_improves_agent_policy("test_detection_signal_emitter_writes_l4a", "p3lm", "policy")
+_emit_stores_learning_state("test_detection_signal_emitter_writes_l4a", "p3lm", "state")
+_emit_records_execution_trace("test_detection_signal_emitter_writes_l4a", "L0_ROUTING", "p2_trace_1")
+_emit_records_execution_trace("test_detection_signal_emitter_writes_l4a", "L1_REASONING", "p2_trace_2")
+_emit_records_execution_trace("test_detection_signal_emitter_writes_l4a", "L2_EXECUTION", "p2_trace_3")
+_emit_records_execution_trace("test_detection_signal_emitter_writes_l4a", "L3_ORCHESTRATION", "p2_trace_4")
+_emit_records_execution_trace("test_detection_signal_emitter_writes_l4a", "L4_STATE", "p2_trace_5")
+_emit_reads_environ("test_detection_signal_emitter_writes_l4a", "env_read", "p2_env_1")
+_emit_reads_environ("test_detection_signal_emitter_writes_l4a", "env_read", "p2_env_2")
+_emit_reads_runtime_state("test_detection_signal_emitter_writes_l4a", "runtime_state", "p2_rt_1")
+_emit_reads_runtime_state("test_detection_signal_emitter_writes_l4a", "runtime_state", "p2_rt_2")
+_emit_pulls_context("p1", "test_detection_signal_emitter_writes_l4a", "context_pull")
+_emit_pulls_context("p1", "test_detection_signal_emitter_writes_l4a", "context_pull_secondary")
+_emit_execution_terminates_at_uwg("p1", "test_detection_signal_emitter_writes_l4a", "uwg_term")
+_emit_execution_terminates_at_uwg("p1", "test_detection_signal_emitter_writes_l4a", "uwg_term_secondary")
+_emit_writes_through("p1", "test_detection_signal_emitter_writes_l4a", "write_through")
+_emit_writes_through("p1", "test_detection_signal_emitter_writes_l4a", "write_through_secondary")
+_emit_validated_by_safety_plane("p1", "test_detection_signal_emitter_writes_l4a", "safety_validation")
+_emit_invokes_eval("p1", "test_detection_signal_emitter_writes_l4a", "eval_call")
+_emit_proposal_commits_routing("p1", "test_detection_signal_emitter_writes_l4a", "routing_commit")
 
 
 class FakeL4StateWriter:

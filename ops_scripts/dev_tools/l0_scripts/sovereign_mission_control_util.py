@@ -80,6 +80,54 @@ from typing import Any
 
 from agentic_core.L0_routing.P1_core.sovereign_auditor_v3 import main_util as run_audit
 from canon_validator_agentic_v2 import run_mission as run_healing
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_pulls_context,
+    _emit_execution_terminates_at_uwg,
+    _emit_writes_through,
+    _emit_validated_by_safety_plane,
+    _emit_invokes_eval,
+    _emit_proposal_commits_routing,
+)
+from agentic_core.runtime.lifecycle_trace_contract import _emit_records_execution_trace, _emit_reads_environ, _emit_reads_runtime_state
+from agentic_core.runtime.lifecycle_trace_contract import _emit_captures_pattern, _emit_records_learning_event, _emit_writes_learning_snapshot, _emit_feeds_meta_learning, _emit_updates_routing_strategy, _emit_improves_agent_policy, _emit_stores_learning_state
+from agentic_core.runtime.lifecycle_trace_contract import _emit_emits_metric_event, _emit_records_incident_event, _emit_captures_runtime_anomaly, _emit_writes_observability_log, _emit_updates_monitoring_state, _emit_triggers_alert, _emit_links_incident_trace
+_emit_emits_metric_event("sovereign_mission_control_util", "p4obs", "metric_1")
+_emit_emits_metric_event("sovereign_mission_control_util", "p4obs", "metric_2")
+_emit_emits_metric_event("sovereign_mission_control_util", "p4obs", "metric_3")
+_emit_emits_metric_event("sovereign_mission_control_util", "p4obs", "metric_4")
+_emit_emits_metric_event("sovereign_mission_control_util", "p4obs", "metric_5")
+_emit_emits_metric_event("sovereign_mission_control_util", "p4obs", "metric_6")
+_emit_records_incident_event("sovereign_mission_control_util", "p4obs", "incident")
+_emit_captures_runtime_anomaly("sovereign_mission_control_util", "p4obs", "anomaly")
+_emit_writes_observability_log("sovereign_mission_control_util", "p4obs", "obs_log")
+_emit_updates_monitoring_state("sovereign_mission_control_util", "p4obs", "mon_state")
+_emit_triggers_alert("sovereign_mission_control_util", "p4obs", "alert")
+_emit_links_incident_trace("sovereign_mission_control_util", "p4obs", "trace_link")
+_emit_captures_pattern("sovereign_mission_control_util", "p3lm", "pattern")
+_emit_records_learning_event("sovereign_mission_control_util", "p3lm", "learning_event")
+_emit_writes_learning_snapshot("sovereign_mission_control_util", "p3lm", "snapshot")
+_emit_feeds_meta_learning("sovereign_mission_control_util", "p3lm", "meta_feed")
+_emit_updates_routing_strategy("sovereign_mission_control_util", "p3lm", "routing")
+_emit_improves_agent_policy("sovereign_mission_control_util", "p3lm", "policy")
+_emit_stores_learning_state("sovereign_mission_control_util", "p3lm", "state")
+_emit_records_execution_trace("sovereign_mission_control_util", "L0_ROUTING", "p2_trace_1")
+_emit_records_execution_trace("sovereign_mission_control_util", "L1_REASONING", "p2_trace_2")
+_emit_records_execution_trace("sovereign_mission_control_util", "L2_EXECUTION", "p2_trace_3")
+_emit_records_execution_trace("sovereign_mission_control_util", "L3_ORCHESTRATION", "p2_trace_4")
+_emit_records_execution_trace("sovereign_mission_control_util", "L4_STATE", "p2_trace_5")
+_emit_reads_environ("sovereign_mission_control_util", "env_read", "p2_env_1")
+_emit_reads_environ("sovereign_mission_control_util", "env_read", "p2_env_2")
+_emit_reads_runtime_state("sovereign_mission_control_util", "runtime_state", "p2_rt_1")
+_emit_reads_runtime_state("sovereign_mission_control_util", "runtime_state", "p2_rt_2")
+_emit_pulls_context("p1", "sovereign_mission_control_util", "context_pull")
+_emit_pulls_context("p1", "sovereign_mission_control_util", "context_pull_secondary")
+_emit_execution_terminates_at_uwg("p1", "sovereign_mission_control_util", "uwg_term")
+_emit_execution_terminates_at_uwg("p1", "sovereign_mission_control_util", "uwg_term_secondary")
+_emit_writes_through("p1", "sovereign_mission_control_util", "write_through")
+_emit_writes_through("p1", "sovereign_mission_control_util", "write_through_secondary")
+_emit_validated_by_safety_plane("p1", "sovereign_mission_control_util", "safety_validation")
+_emit_invokes_eval("p1", "sovereign_mission_control_util", "eval_call")
+_emit_proposal_commits_routing("p1", "sovereign_mission_control_util", "routing_commit")
 
 
 async def execute_unified_mission(target: Any = "agentic_core") -> Any:

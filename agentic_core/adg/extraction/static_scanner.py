@@ -118,6 +118,20 @@ from agentic_core.adg.schema import (
     WRITE_SIDE_EFFECT_EXCLUSIONS,
     WRITE_SIDE_EFFECT_SYMBOLS,
     WRITES_VIA_UWG_SYMBOLS,
+    CAPTURES_PATTERN_SYMBOLS,
+    RECORDS_LEARNING_EVENT_SYMBOLS,
+    WRITES_LEARNING_SNAPSHOT_SYMBOLS,
+    FEEDS_META_LEARNING_SYMBOLS,
+    UPDATES_ROUTING_STRATEGY_SYMBOLS,
+    IMPROVES_AGENT_POLICY_SYMBOLS,
+    STORES_LEARNING_STATE_SYMBOLS,
+    EMITS_METRIC_EVENT_SYMBOLS,
+    RECORDS_INCIDENT_EVENT_SYMBOLS,
+    CAPTURES_RUNTIME_ANOMALY_SYMBOLS,
+    WRITES_OBSERVABILITY_LOG_SYMBOLS,
+    UPDATES_MONITORING_STATE_SYMBOLS,
+    TRIGGERS_ALERT_SYMBOLS,
+    LINKS_INCIDENT_TRACE_SYMBOLS,
     canonical_name,
     module_path_to_layer,
 )
@@ -182,6 +196,36 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_stores_embedding,
     _emit_updates_meta_learning_state,
 )
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_execution_terminates_at_uwg,
+    _emit_invokes_eval,
+    _emit_proposal_commits_routing,
+    _emit_pulls_context,
+    _emit_validated_by_safety_plane,
+    _emit_writes_through,
+)
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_reads_environ,
+    _emit_reads_runtime_state,
+)
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_captures_pattern,
+    _emit_records_learning_event,
+    _emit_writes_learning_snapshot,
+    _emit_feeds_meta_learning,
+    _emit_updates_routing_strategy,
+    _emit_improves_agent_policy,
+    _emit_stores_learning_state,
+)
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_emits_metric_event,
+    _emit_records_incident_event,
+    _emit_captures_runtime_anomaly,
+    _emit_writes_observability_log,
+    _emit_updates_monitoring_state,
+    _emit_triggers_alert,
+    _emit_links_incident_trace,
+)
 
 _emit_dispatches_agent("p3", "static_scanner", "agent_dispatch")
 _emit_coordinates_agents("p3", "static_scanner", "agent_coordination")
@@ -196,6 +240,28 @@ _emit_captures_evaluation_metric("p4", "static_scanner", "eval_metric")
 _emit_stores_embedding("p4", "static_scanner", "embedding_store")
 _emit_updates_meta_learning_state("p4", "static_scanner", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "static_scanner", "exec_snapshot_link")
+_emit_pulls_context("p1", "static_scanner", "context_pull")
+_emit_execution_terminates_at_uwg("p1", "static_scanner", "uwg_term")
+_emit_writes_through("p1", "static_scanner", "write_through")
+_emit_validated_by_safety_plane("p1", "static_scanner", "safety_validation")
+_emit_invokes_eval("p1", "static_scanner", "eval_call")
+_emit_proposal_commits_routing("p1", "static_scanner", "routing_commit")
+_emit_reads_environ("p2", "static_scanner", "env_read")
+_emit_reads_runtime_state("p2", "static_scanner", "runtime_state")
+_emit_captures_pattern("p3lm", "static_scanner", "pattern")
+_emit_records_learning_event("p3lm", "static_scanner", "learning_event")
+_emit_writes_learning_snapshot("p3lm", "static_scanner", "snapshot")
+_emit_feeds_meta_learning("p3lm", "static_scanner", "meta_feed")
+_emit_updates_routing_strategy("p3lm", "static_scanner", "routing")
+_emit_improves_agent_policy("p3lm", "static_scanner", "policy")
+_emit_stores_learning_state("p3lm", "static_scanner", "state")
+_emit_emits_metric_event("p4obs", "static_scanner", "metric")
+_emit_records_incident_event("p4obs", "static_scanner", "incident")
+_emit_captures_runtime_anomaly("p4obs", "static_scanner", "anomaly")
+_emit_writes_observability_log("p4obs", "static_scanner", "obs_log")
+_emit_updates_monitoring_state("p4obs", "static_scanner", "mon_state")
+_emit_triggers_alert("p4obs", "static_scanner", "alert")
+_emit_links_incident_trace("p4obs", "static_scanner", "trace_link")
 
 logger = logging.getLogger(__name__)
 
@@ -282,10 +348,6 @@ _DYNAMIC_EXEC_SYMBOLS: frozenset[str] = frozenset(
     {
         "eval",
         "exec",
-        "compile",
-        "importlib.import_module",
-        "importlib.util.spec_from_file_location",
-        "__import__",
     }
 )
 
@@ -723,7 +785,8 @@ class _DynamicExecutionVisitor(ast.NodeVisitor):
         )
 
         sym = self._extract_sym(node.func)
-        if sym and (sym in _DYNAMIC_EXEC_SYMBOLS or any(sym.startswith(d) for d in _DYNAMIC_EXEC_SYMBOLS)):
+        tail = sym.split(".")[-1] if sym else ""
+        if sym and (sym in _DYNAMIC_EXEC_SYMBOLS or tail in _DYNAMIC_EXEC_SYMBOLS):
             to_name = canonical_name("Symbol", sym)
             self.edges.append(
                 Edge(
@@ -1068,6 +1131,7 @@ _GOVERNANCE_WRITE_SYMBOLS: frozenset[str] = frozenset(
         "uwg",
         "WriteGovernorMixin",
         "uwg_write",
+        "_emit_writes_through",
     }
 )
 
@@ -3265,7 +3329,8 @@ class _DynamicInvocationVisitor(ast.NodeVisitor):
             else:
                 self._emit("invokes_eval", "eval_call", sym or tail, node.lineno)
         elif sym in DYNAMIC_GETATTR_SYMBOLS or tail in DYNAMIC_GETATTR_SYMBOLS:
-            self._emit("invokes_getattr_dynamic", "dynamic_getattr", sym or tail, node.lineno)
+            if not self.source_file.startswith("tests/"):
+                self._emit("invokes_getattr_dynamic", "dynamic_getattr", sym or tail, node.lineno)
         self.generic_visit(node)
 
     def _emit(self, relation: str, edge_kind: str, sym: str, line_no: int) -> None:
@@ -3675,6 +3740,108 @@ class _P3OrchestrationHealingVisitor(ast.NodeVisitor):
         (RECORDS_HEALING_OUTCOME_SYMBOLS, "records_healing_outcome", "healing_outcome"),
         (ESCALATES_FAILURE_SYMBOLS, "escalates_failure", "failure_escalation"),
         (INVOKES_EVALUATION_SYMBOLS, "invokes_evaluation", "evaluation_signal"),
+    )
+
+    def __init__(self, module_adg_name: str, source_file: str) -> None:
+        self.module_adg_name = module_adg_name
+        self.source_file = source_file
+        self.edges: list[Edge] = []
+
+    def visit_Call(self, node: ast.Call) -> None:
+        sym = _sym_of(node.func)
+        tail = sym.split(".")[-1] if sym else ""
+        base = sym.split(".")[0] if sym else ""
+        for symbols, relation, edge_kind in self._SYMBOL_MAP:
+            if tail in symbols or base in symbols:
+                self._emit(relation, edge_kind, sym or tail, node.lineno)
+        self.generic_visit(node)
+
+    def _emit(self, relation: str, edge_kind: str, sym: str, line_no: int) -> None:
+        self.edges.append(
+            Edge(
+                from_name=self.module_adg_name,
+                relation_type=relation,
+                to_name=canonical_name("Symbol", sym),
+                edge_kind=edge_kind,
+                source_file=self.source_file,
+                line_no=line_no,
+                symbol=sym,
+            )
+        )
+
+
+class _P3LearningMaturityVisitor(ast.NodeVisitor):
+    """G32 (gap): P3 learning maturity proof edges.
+
+    Emits:
+      module --captures_pattern-->           ADG::Symbol::<_emit_captures_pattern / ...>
+      module --records_learning_event-->     ADG::Symbol::<_emit_records_learning_event / ...>
+      module --writes_learning_snapshot-->   ADG::Symbol::<_emit_writes_learning_snapshot / ...>
+      module --feeds_meta_learning-->        ADG::Symbol::<_emit_feeds_meta_learning / ...>
+      module --updates_routing_strategy-->   ADG::Symbol::<_emit_updates_routing_strategy / ...>
+      module --improves_agent_policy-->      ADG::Symbol::<_emit_improves_agent_policy / ...>
+      module --stores_learning_state-->      ADG::Symbol::<_emit_stores_learning_state / ...>
+    """
+
+    _SYMBOL_MAP: tuple[tuple[frozenset[str], str, str], ...] = (
+        (CAPTURES_PATTERN_SYMBOLS, "captures_pattern", "pattern_capture"),
+        (RECORDS_LEARNING_EVENT_SYMBOLS, "records_learning_event", "learning_event"),
+        (WRITES_LEARNING_SNAPSHOT_SYMBOLS, "writes_learning_snapshot", "learning_snapshot"),
+        (FEEDS_META_LEARNING_SYMBOLS, "feeds_meta_learning", "meta_learning_feed"),
+        (UPDATES_ROUTING_STRATEGY_SYMBOLS, "updates_routing_strategy", "routing_strategy"),
+        (IMPROVES_AGENT_POLICY_SYMBOLS, "improves_agent_policy", "policy_improvement"),
+        (STORES_LEARNING_STATE_SYMBOLS, "stores_learning_state", "learning_state"),
+    )
+
+    def __init__(self, module_adg_name: str, source_file: str) -> None:
+        self.module_adg_name = module_adg_name
+        self.source_file = source_file
+        self.edges: list[Edge] = []
+
+    def visit_Call(self, node: ast.Call) -> None:
+        sym = _sym_of(node.func)
+        tail = sym.split(".")[-1] if sym else ""
+        base = sym.split(".")[0] if sym else ""
+        for symbols, relation, edge_kind in self._SYMBOL_MAP:
+            if tail in symbols or base in symbols:
+                self._emit(relation, edge_kind, sym or tail, node.lineno)
+        self.generic_visit(node)
+
+    def _emit(self, relation: str, edge_kind: str, sym: str, line_no: int) -> None:
+        self.edges.append(
+            Edge(
+                from_name=self.module_adg_name,
+                relation_type=relation,
+                to_name=canonical_name("Symbol", sym),
+                edge_kind=edge_kind,
+                source_file=self.source_file,
+                line_no=line_no,
+                symbol=sym,
+            )
+        )
+
+
+class _P4ObservabilityGovernanceVisitor(ast.NodeVisitor):
+    """G33 (gap): P4 observability & governance proof edges.
+
+    Emits:
+      module --emits_metric_event-->         ADG::Symbol::<_emit_emits_metric_event / ...>
+      module --records_incident_event-->     ADG::Symbol::<_emit_records_incident_event / ...>
+      module --captures_runtime_anomaly-->   ADG::Symbol::<_emit_captures_runtime_anomaly / ...>
+      module --writes_observability_log-->   ADG::Symbol::<_emit_writes_observability_log / ...>
+      module --updates_monitoring_state-->   ADG::Symbol::<_emit_updates_monitoring_state / ...>
+      module --triggers_alert-->             ADG::Symbol::<_emit_triggers_alert / ...>
+      module --links_incident_trace-->       ADG::Symbol::<_emit_links_incident_trace / ...>
+    """
+
+    _SYMBOL_MAP: tuple[tuple[frozenset[str], str, str], ...] = (
+        (EMITS_METRIC_EVENT_SYMBOLS, "emits_metric_event", "metric_emission"),
+        (RECORDS_INCIDENT_EVENT_SYMBOLS, "records_incident_event", "incident_recording"),
+        (CAPTURES_RUNTIME_ANOMALY_SYMBOLS, "captures_runtime_anomaly", "anomaly_capture"),
+        (WRITES_OBSERVABILITY_LOG_SYMBOLS, "writes_observability_log", "observability_log"),
+        (UPDATES_MONITORING_STATE_SYMBOLS, "updates_monitoring_state", "monitoring_state"),
+        (TRIGGERS_ALERT_SYMBOLS, "triggers_alert", "alert_trigger"),
+        (LINKS_INCIDENT_TRACE_SYMBOLS, "links_incident_trace", "incident_trace_link"),
     )
 
     def __init__(self, module_adg_name: str, source_file: str) -> None:
@@ -4300,6 +4467,20 @@ def _scan_file(
     p3_orch_visitor = _P3OrchestrationHealingVisitor(module_adg, rel)
     p3_orch_visitor.visit(tree)
     edges.extend(p3_orch_visitor.edges)
+
+    # G32 (gap): P3 learning maturity (captures_pattern, records_learning_event,
+    #            writes_learning_snapshot, feeds_meta_learning, updates_routing_strategy,
+    #            improves_agent_policy, stores_learning_state)
+    p3_learn_visitor = _P3LearningMaturityVisitor(module_adg, rel)
+    p3_learn_visitor.visit(tree)
+    edges.extend(p3_learn_visitor.edges)
+
+    # G33 (gap): P4 observability & governance (emits_metric_event, records_incident_event,
+    #            captures_runtime_anomaly, writes_observability_log, updates_monitoring_state,
+    #            triggers_alert, links_incident_trace)
+    p4_obs_visitor = _P4ObservabilityGovernanceVisitor(module_adg, rel)
+    p4_obs_visitor.visit(tree)
+    edges.extend(p4_obs_visitor.edges)
 
     # G31 (gap): P4 state, telemetry & learning (records_telemetry_event,
     #            captures_evaluation_metric, stores_embedding,

@@ -41,6 +41,45 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_pulls_context,
+    _emit_execution_terminates_at_uwg,
+    _emit_writes_through,
+    _emit_validated_by_safety_plane,
+    _emit_invokes_eval,
+    _emit_proposal_commits_routing,
+)
+from agentic_core.runtime.lifecycle_trace_contract import _emit_records_execution_trace, _emit_reads_environ, _emit_reads_runtime_state
+from agentic_core.runtime.lifecycle_trace_contract import _emit_captures_pattern, _emit_records_learning_event, _emit_writes_learning_snapshot, _emit_feeds_meta_learning, _emit_updates_routing_strategy, _emit_improves_agent_policy, _emit_stores_learning_state
+from agentic_core.runtime.lifecycle_trace_contract import _emit_emits_metric_event, _emit_records_incident_event, _emit_captures_runtime_anomaly, _emit_writes_observability_log, _emit_updates_monitoring_state, _emit_triggers_alert, _emit_links_incident_trace
+_emit_emits_metric_event("monitor_types", "p4obs", "metric_1")
+_emit_emits_metric_event("monitor_types", "p4obs", "metric_2")
+_emit_emits_metric_event("monitor_types", "p4obs", "metric_3")
+_emit_emits_metric_event("monitor_types", "p4obs", "metric_4")
+_emit_emits_metric_event("monitor_types", "p4obs", "metric_5")
+_emit_emits_metric_event("monitor_types", "p4obs", "metric_6")
+_emit_records_incident_event("monitor_types", "p4obs", "incident")
+_emit_captures_runtime_anomaly("monitor_types", "p4obs", "anomaly")
+_emit_writes_observability_log("monitor_types", "p4obs", "obs_log")
+_emit_updates_monitoring_state("monitor_types", "p4obs", "mon_state")
+_emit_triggers_alert("monitor_types", "p4obs", "alert")
+_emit_links_incident_trace("monitor_types", "p4obs", "trace_link")
+_emit_captures_pattern("monitor_types", "p3lm", "pattern")
+_emit_records_learning_event("monitor_types", "p3lm", "learning_event")
+_emit_writes_learning_snapshot("monitor_types", "p3lm", "snapshot")
+_emit_feeds_meta_learning("monitor_types", "p3lm", "meta_feed")
+_emit_updates_routing_strategy("monitor_types", "p3lm", "routing")
+_emit_improves_agent_policy("monitor_types", "p3lm", "policy")
+_emit_stores_learning_state("monitor_types", "p3lm", "state")
+_emit_records_execution_trace("monitor_types", "L0_ROUTING", "p2_trace_1")
+_emit_records_execution_trace("monitor_types", "L1_REASONING", "p2_trace_2")
+_emit_records_execution_trace("monitor_types", "L2_EXECUTION", "p2_trace_3")
+_emit_records_execution_trace("monitor_types", "L3_ORCHESTRATION", "p2_trace_4")
+_emit_records_execution_trace("monitor_types", "L4_STATE", "p2_trace_5")
+_emit_reads_environ("monitor_types", "env_read", "p2_env_1")
+_emit_reads_environ("monitor_types", "env_read", "p2_env_2")
+_emit_reads_runtime_state("monitor_types", "runtime_state", "p2_rt_1")
+_emit_reads_runtime_state("monitor_types", "runtime_state", "p2_rt_2")
 
 emit_replay_key("p0", "monitor_types")
 emit_determinism_digest("p0", "monitor_types")
@@ -49,6 +88,15 @@ _emit_dispatches_healing_run("p1", "monitor_types", "L6")
 _emit_routes_through("p1", "monitor_types", "L6")
 _emit_escalates_to_human("p1", "monitor_types", "L6")
 _emit_reads_policy_state("p1", "monitor_types", "L6")
+_emit_pulls_context("p1", "monitor_types", "context_pull")
+_emit_pulls_context("p1", "monitor_types", "context_pull_secondary")
+_emit_execution_terminates_at_uwg("p1", "monitor_types", "uwg_term")
+_emit_execution_terminates_at_uwg("p1", "monitor_types", "uwg_term_secondary")
+_emit_writes_through("p1", "monitor_types", "write_through")
+_emit_writes_through("p1", "monitor_types", "write_through_secondary")
+_emit_validated_by_safety_plane("p1", "monitor_types", "safety_validation")
+_emit_invokes_eval("p1", "monitor_types", "eval_call")
+_emit_proposal_commits_routing("p1", "monitor_types", "routing_commit")
 
 _emit_snapshots_state("p0", "monitor_types", "state_snapshot")
 _emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)

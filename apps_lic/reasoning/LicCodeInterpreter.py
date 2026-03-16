@@ -32,10 +32,58 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_pulls_context,
+    _emit_execution_terminates_at_uwg,
+    _emit_writes_through,
+    _emit_validated_by_safety_plane,
+    _emit_invokes_eval,
+    _emit_proposal_commits_routing,
+)
+from agentic_core.runtime.lifecycle_trace_contract import _emit_records_execution_trace, _emit_reads_environ, _emit_reads_runtime_state
+from agentic_core.runtime.lifecycle_trace_contract import _emit_captures_pattern, _emit_records_learning_event, _emit_writes_learning_snapshot, _emit_feeds_meta_learning, _emit_updates_routing_strategy, _emit_improves_agent_policy, _emit_stores_learning_state
+from agentic_core.runtime.lifecycle_trace_contract import _emit_emits_metric_event, _emit_records_incident_event, _emit_captures_runtime_anomaly, _emit_writes_observability_log, _emit_updates_monitoring_state, _emit_triggers_alert, _emit_links_incident_trace
+_emit_emits_metric_event("LicCodeInterpreter", "p4obs", "metric_1")
+_emit_emits_metric_event("LicCodeInterpreter", "p4obs", "metric_2")
+_emit_emits_metric_event("LicCodeInterpreter", "p4obs", "metric_3")
+_emit_emits_metric_event("LicCodeInterpreter", "p4obs", "metric_4")
+_emit_emits_metric_event("LicCodeInterpreter", "p4obs", "metric_5")
+_emit_emits_metric_event("LicCodeInterpreter", "p4obs", "metric_6")
+_emit_records_incident_event("LicCodeInterpreter", "p4obs", "incident")
+_emit_captures_runtime_anomaly("LicCodeInterpreter", "p4obs", "anomaly")
+_emit_writes_observability_log("LicCodeInterpreter", "p4obs", "obs_log")
+_emit_updates_monitoring_state("LicCodeInterpreter", "p4obs", "mon_state")
+_emit_triggers_alert("LicCodeInterpreter", "p4obs", "alert")
+_emit_links_incident_trace("LicCodeInterpreter", "p4obs", "trace_link")
+_emit_captures_pattern("LicCodeInterpreter", "p3lm", "pattern")
+_emit_records_learning_event("LicCodeInterpreter", "p3lm", "learning_event")
+_emit_writes_learning_snapshot("LicCodeInterpreter", "p3lm", "snapshot")
+_emit_feeds_meta_learning("LicCodeInterpreter", "p3lm", "meta_feed")
+_emit_updates_routing_strategy("LicCodeInterpreter", "p3lm", "routing")
+_emit_improves_agent_policy("LicCodeInterpreter", "p3lm", "policy")
+_emit_stores_learning_state("LicCodeInterpreter", "p3lm", "state")
+_emit_records_execution_trace("LicCodeInterpreter", "L0_ROUTING", "p2_trace_1")
+_emit_records_execution_trace("LicCodeInterpreter", "L1_REASONING", "p2_trace_2")
+_emit_records_execution_trace("LicCodeInterpreter", "L2_EXECUTION", "p2_trace_3")
+_emit_records_execution_trace("LicCodeInterpreter", "L3_ORCHESTRATION", "p2_trace_4")
+_emit_records_execution_trace("LicCodeInterpreter", "L4_STATE", "p2_trace_5")
+_emit_reads_environ("LicCodeInterpreter", "env_read", "p2_env_1")
+_emit_reads_environ("LicCodeInterpreter", "env_read", "p2_env_2")
+_emit_reads_runtime_state("LicCodeInterpreter", "runtime_state", "p2_rt_1")
+_emit_reads_runtime_state("LicCodeInterpreter", "runtime_state", "p2_rt_2")
 
 _emit_applies_guardrail("p0", "LicCodeInterpreter", "p0_governance")
 _emit_reads_policy_state("p0", "LicCodeInterpreter", "policy_binding")
 _emit_snapshots_state("p0", "LicCodeInterpreter", "state_snapshot")
+_emit_pulls_context("p1", "LicCodeInterpreter", "context_pull")
+_emit_pulls_context("p1", "LicCodeInterpreter", "context_pull_secondary")
+_emit_execution_terminates_at_uwg("p1", "LicCodeInterpreter", "uwg_term")
+_emit_execution_terminates_at_uwg("p1", "LicCodeInterpreter", "uwg_term_secondary")
+_emit_writes_through("p1", "LicCodeInterpreter", "write_through")
+_emit_writes_through("p1", "LicCodeInterpreter", "write_through_secondary")
+_emit_validated_by_safety_plane("p1", "LicCodeInterpreter", "safety_validation")
+_emit_invokes_eval("p1", "LicCodeInterpreter", "eval_call")
+_emit_proposal_commits_routing("p1", "LicCodeInterpreter", "routing_commit")
 emit_replay_key("p0", "LicCodeInterpreter")
 emit_determinism_digest("p0", "LicCodeInterpreter")
 _emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)

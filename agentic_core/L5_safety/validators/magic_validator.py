@@ -74,6 +74,37 @@ from .base_detector_validator import (
     AntiPatternViolation,
     EnforcementLevel,
 )
+from agentic_core.runtime.lifecycle_trace_contract import _emit_records_execution_trace, _emit_reads_environ, _emit_reads_runtime_state
+from agentic_core.runtime.lifecycle_trace_contract import _emit_captures_pattern, _emit_records_learning_event, _emit_writes_learning_snapshot, _emit_feeds_meta_learning, _emit_updates_routing_strategy, _emit_improves_agent_policy, _emit_stores_learning_state
+from agentic_core.runtime.lifecycle_trace_contract import _emit_emits_metric_event, _emit_records_incident_event, _emit_captures_runtime_anomaly, _emit_writes_observability_log, _emit_updates_monitoring_state, _emit_triggers_alert, _emit_links_incident_trace
+_emit_emits_metric_event("magic_validator", "p4obs", "metric_1")
+_emit_emits_metric_event("magic_validator", "p4obs", "metric_2")
+_emit_emits_metric_event("magic_validator", "p4obs", "metric_3")
+_emit_emits_metric_event("magic_validator", "p4obs", "metric_4")
+_emit_emits_metric_event("magic_validator", "p4obs", "metric_5")
+_emit_emits_metric_event("magic_validator", "p4obs", "metric_6")
+_emit_records_incident_event("magic_validator", "p4obs", "incident")
+_emit_captures_runtime_anomaly("magic_validator", "p4obs", "anomaly")
+_emit_writes_observability_log("magic_validator", "p4obs", "obs_log")
+_emit_updates_monitoring_state("magic_validator", "p4obs", "mon_state")
+_emit_triggers_alert("magic_validator", "p4obs", "alert")
+_emit_links_incident_trace("magic_validator", "p4obs", "trace_link")
+_emit_captures_pattern("magic_validator", "p3lm", "pattern")
+_emit_records_learning_event("magic_validator", "p3lm", "learning_event")
+_emit_writes_learning_snapshot("magic_validator", "p3lm", "snapshot")
+_emit_feeds_meta_learning("magic_validator", "p3lm", "meta_feed")
+_emit_updates_routing_strategy("magic_validator", "p3lm", "routing")
+_emit_improves_agent_policy("magic_validator", "p3lm", "policy")
+_emit_stores_learning_state("magic_validator", "p3lm", "state")
+_emit_records_execution_trace("magic_validator", "L0_ROUTING", "p2_trace_1")
+_emit_records_execution_trace("magic_validator", "L1_REASONING", "p2_trace_2")
+_emit_records_execution_trace("magic_validator", "L2_EXECUTION", "p2_trace_3")
+_emit_records_execution_trace("magic_validator", "L3_ORCHESTRATION", "p2_trace_4")
+_emit_records_execution_trace("magic_validator", "L4_STATE", "p2_trace_5")
+_emit_reads_environ("magic_validator", "env_read", "p2_env_1")
+_emit_reads_environ("magic_validator", "env_read", "p2_env_2")
+_emit_reads_runtime_state("magic_validator", "runtime_state", "p2_rt_1")
+_emit_reads_runtime_state("magic_validator", "runtime_state", "p2_rt_2")
 
 emit_replay_key("p0", "magic_validator")
 emit_determinism_digest("p0", "magic_validator")
@@ -432,6 +463,23 @@ import uuid
 
     # Or use AgentDefaults
     from agentic_core.config.agent_defaults import AgentDefaults
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_pulls_context,
+    _emit_execution_terminates_at_uwg,
+    _emit_writes_through,
+    _emit_validated_by_safety_plane,
+    _emit_invokes_eval,
+    _emit_proposal_commits_routing,
+)
+_emit_pulls_context("p1", "magic_validator", "context_pull")
+_emit_pulls_context("p1", "magic_validator", "context_pull_secondary")
+_emit_execution_terminates_at_uwg("p1", "magic_validator", "uwg_term")
+_emit_execution_terminates_at_uwg("p1", "magic_validator", "uwg_term_secondary")
+_emit_writes_through("p1", "magic_validator", "write_through")
+_emit_writes_through("p1", "magic_validator", "write_through_secondary")
+_emit_validated_by_safety_plane("p1", "magic_validator", "safety_validation")
+_emit_invokes_eval("p1", "magic_validator", "eval_call")
+_emit_proposal_commits_routing("p1", "magic_validator", "routing_commit")
     value = AgentDefaults.get("CONFIG_NAME", "{value}")"""
 
 

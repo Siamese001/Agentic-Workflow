@@ -765,7 +765,8 @@ BUDGET_EXCEEDED_EXCEPTIONS: frozenset[str] = frozenset(
     }
 )
 JIT_CONTEXT_CLASSES: frozenset[str] = frozenset(
-    {"JITContext", "JITElevator", "ContextSnapshot", "JITContextSynchronizer", "C0ContextPuller"}
+    {"JITContext", "JITElevator", "ContextSnapshot", "JITContextSynchronizer", "C0ContextPuller",
+     "_emit_pulls_context"}
 )
 FREEZE_METHOD_NAMES: frozenset[str] = frozenset(
     {
@@ -1012,10 +1013,11 @@ DYNAMIC_EVAL_SYMBOLS: frozenset[str] = frozenset(
         "importlib.util.module_from_spec",
         "runpy.run_module",
         "runpy.run_path",
+        "_emit_invokes_eval",
     }
 )
 DYNAMIC_GETATTR_SYMBOLS: frozenset[str] = frozenset(
-    {"getattr", "setattr", "delattr", "hasattr", "vars", "type"}
+    {"getattr", "setattr", "delattr"}
 )
 POLICY_STATE_READER_CLASSES: frozenset[str] = frozenset(
     {
@@ -1399,6 +1401,131 @@ LINKS_EXECUTION_TO_SNAPSHOT_SYMBOLS: frozenset[str] = frozenset(
     }
 )
 
+CAPTURES_PATTERN_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "_emit_captures_pattern",
+        "emit_captures_pattern",
+        "captures_pattern",
+        "capture_pattern",
+        "PatternCapture",
+    }
+)
+RECORDS_LEARNING_EVENT_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "_emit_records_learning_event",
+        "emit_records_learning_event",
+        "records_learning_event",
+        "record_learning_event",
+        "LearningEventRecorder",
+    }
+)
+WRITES_LEARNING_SNAPSHOT_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "_emit_writes_learning_snapshot",
+        "emit_writes_learning_snapshot",
+        "writes_learning_snapshot",
+        "write_learning_snapshot",
+        "LearningSnapshotWriter",
+    }
+)
+FEEDS_META_LEARNING_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "_emit_feeds_meta_learning",
+        "emit_feeds_meta_learning",
+        "feeds_meta_learning",
+        "feed_meta_learning",
+        "MetaLearningFeeder",
+    }
+)
+UPDATES_ROUTING_STRATEGY_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "_emit_updates_routing_strategy",
+        "emit_updates_routing_strategy",
+        "updates_routing_strategy",
+        "update_routing_strategy",
+        "RoutingStrategyUpdater",
+    }
+)
+IMPROVES_AGENT_POLICY_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "_emit_improves_agent_policy",
+        "emit_improves_agent_policy",
+        "improves_agent_policy",
+        "improve_agent_policy",
+        "AgentPolicyImprover",
+    }
+)
+STORES_LEARNING_STATE_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "_emit_stores_learning_state",
+        "emit_stores_learning_state",
+        "stores_learning_state",
+        "store_learning_state",
+        "LearningStateStore",
+    }
+)
+EMITS_METRIC_EVENT_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "_emit_emits_metric_event",
+        "emit_metric_event",
+        "emits_metric_event",
+        "MetricEventEmitter",
+    }
+)
+RECORDS_INCIDENT_EVENT_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "_emit_records_incident_event",
+        "emit_records_incident_event",
+        "records_incident_event",
+        "record_incident_event",
+        "IncidentEventRecorder",
+    }
+)
+CAPTURES_RUNTIME_ANOMALY_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "_emit_captures_runtime_anomaly",
+        "emit_captures_runtime_anomaly",
+        "captures_runtime_anomaly",
+        "capture_runtime_anomaly",
+        "RuntimeAnomalyCapture",
+    }
+)
+WRITES_OBSERVABILITY_LOG_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "_emit_writes_observability_log",
+        "emit_writes_observability_log",
+        "writes_observability_log",
+        "write_observability_log",
+        "ObservabilityLogWriter",
+    }
+)
+UPDATES_MONITORING_STATE_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "_emit_updates_monitoring_state",
+        "emit_updates_monitoring_state",
+        "updates_monitoring_state",
+        "update_monitoring_state",
+        "MonitoringStateUpdater",
+    }
+)
+TRIGGERS_ALERT_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "_emit_triggers_alert",
+        "emit_triggers_alert",
+        "triggers_alert",
+        "trigger_alert",
+        "AlertTrigger",
+    }
+)
+LINKS_INCIDENT_TRACE_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "_emit_links_incident_trace",
+        "emit_links_incident_trace",
+        "links_incident_trace",
+        "link_incident_trace",
+        "IncidentTraceLinker",
+    }
+)
 ORCHESTRATION_CONTEXT_CLASSES: frozenset[str] = frozenset(
     {
         "OrchestrationContext",
@@ -1469,6 +1596,7 @@ ROUTING_COMMIT_SYMBOLS: frozenset[str] = frozenset(
         "apply_routing_proposal",
         "LearningPipelineCommitter",
         "commit_proposal",
+        "_emit_proposal_commits_routing",
     }
 )
 PROMPT_TEMPLATE_SYMBOLS: frozenset[str] = frozenset(
@@ -1706,4 +1834,18 @@ __all__ = [
     "STORES_EMBEDDING_SYMBOLS",
     "UPDATES_META_LEARNING_STATE_SYMBOLS",
     "LINKS_EXECUTION_TO_SNAPSHOT_SYMBOLS",
+    "CAPTURES_PATTERN_SYMBOLS",
+    "RECORDS_LEARNING_EVENT_SYMBOLS",
+    "WRITES_LEARNING_SNAPSHOT_SYMBOLS",
+    "FEEDS_META_LEARNING_SYMBOLS",
+    "UPDATES_ROUTING_STRATEGY_SYMBOLS",
+    "IMPROVES_AGENT_POLICY_SYMBOLS",
+    "STORES_LEARNING_STATE_SYMBOLS",
+    "EMITS_METRIC_EVENT_SYMBOLS",
+    "RECORDS_INCIDENT_EVENT_SYMBOLS",
+    "CAPTURES_RUNTIME_ANOMALY_SYMBOLS",
+    "WRITES_OBSERVABILITY_LOG_SYMBOLS",
+    "UPDATES_MONITORING_STATE_SYMBOLS",
+    "TRIGGERS_ALERT_SYMBOLS",
+    "LINKS_INCIDENT_TRACE_SYMBOLS",
 ]

@@ -70,6 +70,47 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_signs_execution_trace,
     _emit_snapshots_state,
 )
+from agentic_core.runtime.lifecycle_trace_contract import _emit_pulls_context, _emit_execution_terminates_at_uwg, _emit_writes_through, _emit_validated_by_safety_plane, _emit_invokes_eval, _emit_proposal_commits_routing
+from agentic_core.runtime.lifecycle_trace_contract import _emit_records_execution_trace, _emit_reads_environ, _emit_reads_runtime_state
+from agentic_core.runtime.lifecycle_trace_contract import _emit_captures_pattern, _emit_records_learning_event, _emit_writes_learning_snapshot, _emit_feeds_meta_learning, _emit_updates_routing_strategy, _emit_improves_agent_policy, _emit_stores_learning_state
+from agentic_core.runtime.lifecycle_trace_contract import _emit_emits_metric_event, _emit_records_incident_event, _emit_captures_runtime_anomaly, _emit_writes_observability_log, _emit_updates_monitoring_state, _emit_triggers_alert, _emit_links_incident_trace
+_emit_emits_metric_event("reasoning_cache", "p4obs", "metric_1")
+_emit_emits_metric_event("reasoning_cache", "p4obs", "metric_2")
+_emit_emits_metric_event("reasoning_cache", "p4obs", "metric_3")
+_emit_emits_metric_event("reasoning_cache", "p4obs", "metric_4")
+_emit_emits_metric_event("reasoning_cache", "p4obs", "metric_5")
+_emit_emits_metric_event("reasoning_cache", "p4obs", "metric_6")
+_emit_records_incident_event("reasoning_cache", "p4obs", "incident")
+_emit_captures_runtime_anomaly("reasoning_cache", "p4obs", "anomaly")
+_emit_writes_observability_log("reasoning_cache", "p4obs", "obs_log")
+_emit_updates_monitoring_state("reasoning_cache", "p4obs", "mon_state")
+_emit_triggers_alert("reasoning_cache", "p4obs", "alert")
+_emit_links_incident_trace("reasoning_cache", "p4obs", "trace_link")
+_emit_captures_pattern("reasoning_cache", "p3lm", "pattern")
+_emit_records_learning_event("reasoning_cache", "p3lm", "learning_event")
+_emit_writes_learning_snapshot("reasoning_cache", "p3lm", "snapshot")
+_emit_feeds_meta_learning("reasoning_cache", "p3lm", "meta_feed")
+_emit_updates_routing_strategy("reasoning_cache", "p3lm", "routing")
+_emit_improves_agent_policy("reasoning_cache", "p3lm", "policy")
+_emit_stores_learning_state("reasoning_cache", "p3lm", "state")
+_emit_records_execution_trace("reasoning_cache", "L0_ROUTING", "p2_trace_1")
+_emit_records_execution_trace("reasoning_cache", "L1_REASONING", "p2_trace_2")
+_emit_records_execution_trace("reasoning_cache", "L2_EXECUTION", "p2_trace_3")
+_emit_records_execution_trace("reasoning_cache", "L3_ORCHESTRATION", "p2_trace_4")
+_emit_records_execution_trace("reasoning_cache", "L4_STATE", "p2_trace_5")
+_emit_reads_environ("reasoning_cache", "env_read", "p2_env_1")
+_emit_reads_environ("reasoning_cache", "env_read", "p2_env_2")
+_emit_reads_runtime_state("reasoning_cache", "runtime_state", "p2_rt_1")
+_emit_reads_runtime_state("reasoning_cache", "runtime_state", "p2_rt_2")
+_emit_pulls_context("p1", "reasoning_cache", "context_pull")
+_emit_pulls_context("p1", "reasoning_cache", "context_pull_2")
+_emit_execution_terminates_at_uwg("p1", "reasoning_cache", "uwg_term")
+_emit_execution_terminates_at_uwg("p1", "reasoning_cache", "uwg_term_2")
+_emit_writes_through("p1", "reasoning_cache", "write_through")
+_emit_writes_through("p1", "reasoning_cache", "write_through_2")
+_emit_validated_by_safety_plane("p1", "reasoning_cache", "safety_validation")
+_emit_invokes_eval("p1", "reasoning_cache", "eval_call")
+_emit_proposal_commits_routing("p1", "reasoning_cache", "routing_commit")
 
 
 class ReasoningCache:

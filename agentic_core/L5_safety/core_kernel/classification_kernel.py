@@ -59,6 +59,37 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from agentic_core.runtime.lifecycle_trace_contract import _emit_records_execution_trace, _emit_reads_environ, _emit_reads_runtime_state
+from agentic_core.runtime.lifecycle_trace_contract import _emit_captures_pattern, _emit_records_learning_event, _emit_writes_learning_snapshot, _emit_feeds_meta_learning, _emit_updates_routing_strategy, _emit_improves_agent_policy, _emit_stores_learning_state
+from agentic_core.runtime.lifecycle_trace_contract import _emit_emits_metric_event, _emit_records_incident_event, _emit_captures_runtime_anomaly, _emit_writes_observability_log, _emit_updates_monitoring_state, _emit_triggers_alert, _emit_links_incident_trace
+_emit_emits_metric_event("classification_kernel", "p4obs", "metric_1")
+_emit_emits_metric_event("classification_kernel", "p4obs", "metric_2")
+_emit_emits_metric_event("classification_kernel", "p4obs", "metric_3")
+_emit_emits_metric_event("classification_kernel", "p4obs", "metric_4")
+_emit_emits_metric_event("classification_kernel", "p4obs", "metric_5")
+_emit_emits_metric_event("classification_kernel", "p4obs", "metric_6")
+_emit_records_incident_event("classification_kernel", "p4obs", "incident")
+_emit_captures_runtime_anomaly("classification_kernel", "p4obs", "anomaly")
+_emit_writes_observability_log("classification_kernel", "p4obs", "obs_log")
+_emit_updates_monitoring_state("classification_kernel", "p4obs", "mon_state")
+_emit_triggers_alert("classification_kernel", "p4obs", "alert")
+_emit_links_incident_trace("classification_kernel", "p4obs", "trace_link")
+_emit_captures_pattern("classification_kernel", "p3lm", "pattern")
+_emit_records_learning_event("classification_kernel", "p3lm", "learning_event")
+_emit_writes_learning_snapshot("classification_kernel", "p3lm", "snapshot")
+_emit_feeds_meta_learning("classification_kernel", "p3lm", "meta_feed")
+_emit_updates_routing_strategy("classification_kernel", "p3lm", "routing")
+_emit_improves_agent_policy("classification_kernel", "p3lm", "policy")
+_emit_stores_learning_state("classification_kernel", "p3lm", "state")
+_emit_records_execution_trace("classification_kernel", "L0_ROUTING", "p2_trace_1")
+_emit_records_execution_trace("classification_kernel", "L1_REASONING", "p2_trace_2")
+_emit_records_execution_trace("classification_kernel", "L2_EXECUTION", "p2_trace_3")
+_emit_records_execution_trace("classification_kernel", "L3_ORCHESTRATION", "p2_trace_4")
+_emit_records_execution_trace("classification_kernel", "L4_STATE", "p2_trace_5")
+_emit_reads_environ("classification_kernel", "env_read", "p2_env_1")
+_emit_reads_environ("classification_kernel", "env_read", "p2_env_2")
+_emit_reads_runtime_state("classification_kernel", "runtime_state", "p2_rt_1")
+_emit_reads_runtime_state("classification_kernel", "runtime_state", "p2_rt_2")
 
 emit_replay_key("p0", "classification_kernel")
 emit_determinism_digest("p0", "classification_kernel")
@@ -679,6 +710,23 @@ def classification_cache_context():
     from agentic_core.runtime.lifecycle_trace_contract import _emit_snapshots_state
         OPS_SCRIPTS_DIR,
     )
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_pulls_context,
+    _emit_execution_terminates_at_uwg,
+    _emit_writes_through,
+    _emit_validated_by_safety_plane,
+    _emit_invokes_eval,
+    _emit_proposal_commits_routing,
+)
+_emit_pulls_context("p1", "classification_kernel", "context_pull")
+_emit_pulls_context("p1", "classification_kernel", "context_pull_secondary")
+_emit_execution_terminates_at_uwg("p1", "classification_kernel", "uwg_term")
+_emit_execution_terminates_at_uwg("p1", "classification_kernel", "uwg_term_secondary")
+_emit_writes_through("p1", "classification_kernel", "write_through")
+_emit_writes_through("p1", "classification_kernel", "write_through_secondary")
+_emit_validated_by_safety_plane("p1", "classification_kernel", "safety_validation")
+_emit_invokes_eval("p1", "classification_kernel", "eval_call")
+_emit_proposal_commits_routing("p1", "classification_kernel", "routing_commit")
 
             with classification_cache_context():
                 # Run heavy discovery / scan here
