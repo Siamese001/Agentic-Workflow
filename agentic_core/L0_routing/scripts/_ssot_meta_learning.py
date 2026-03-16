@@ -309,6 +309,23 @@ def _fire_meta_learning_intake(state_mgr: "object", now_utc: int, repo_root: Pat
             logging.debug("[MetaLearning] MetaLearningBus drain skipped (non-fatal): %s", _bus_err)
         store = InMemoryHealingOutcomeIntakeStore()
         adapter = HealingOutcomeIntakeAdapter(store=store)
+        # Wave 3: one-shot historical backfill from .healing_backups (sentinel-guarded)
+        try:
+            from system_learning.engines.historical_backfill_engine import run_backfill as _run_backfill
+
+            _bf_result = _run_backfill(REPO_ROOT)
+            if not _bf_result.get("skipped"):
+                logging.info(
+                    "[MetaLearning] Historical backfill: +%d corpus records, %d territories seeded",
+                    _bf_result.get("corpus_records_added", 0),
+                    len(_bf_result.get("territories_seeded", {})),
+                )
+        except (
+            ImportError,
+            AttributeError,
+            OSError,
+        ) as _bf_err:  # guardian: allow-silent-degradation — backfill is best-effort; missing .healing_backups dir is expected in CI
+            logging.debug("[MetaLearning] Historical backfill skipped (non-fatal): %s", _bf_err)
         if healing_actions:
             record = adapter.build_record(aggregator=aggregator, created_utc=now_utc, source="execute_ssot")
             adapter.persist_record(record)

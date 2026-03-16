@@ -62,7 +62,11 @@
     "silent_swallower": 1
   },
   "agentic_core/L0_routing/scripts/_ssot_meta_learning.py": {
-    "silent_degradation": 10
+    "silent_degradation": 11
+  },
+  "system_learning/engines/historical_backfill_engine.py": {
+    "silent_degradation": 1,
+    "silent_swallower": 1
   },
   "agentic_core/L0_routing/scripts/_ssot_phases.py": {
     "silent_degradation": 7
