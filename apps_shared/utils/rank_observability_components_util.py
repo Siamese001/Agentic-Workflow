@@ -5,12 +5,70 @@ Writes entities, relations, and events to Neo4jGraphStore
 to support resume timeline analysis and job alignment.
 """
 
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 from datetime import datetime
+from types import SimpleNamespace
+from typing import Any
+
+from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
+
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+
+emit_determinism_digest("p0", "rank_observability_components_util")
+
+
+@dataclass
+class TemporalEntity:
+    entity_id: str
+    entity_type: str = "entity"
+    canonical_id: str = ""
+    aliases: tuple[str, ...] = ()
+    confidence: float = 0.0
+    created_at: datetime = field(default_factory=datetime.utcnow)
+    metadata: dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class TemporalRange:
+    valid_at: datetime = field(default_factory=datetime.utcnow)
+    invalid_at: datetime | None = None
+
+
+@dataclass
+class TemporalTriplet:
+    triplet_id: str
+    subject: str = ""
+    predicate: str = "related_to"
+    object: str = ""
+    temporal_range: TemporalRange = field(default_factory=TemporalRange)
+    confidence: float = 0.0
+    source: str = "unknown"
+    status: Any = field(default_factory=lambda: SimpleNamespace(value="active"))
+    metadata: dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class TemporalEvent:
+    event_type: str = ""
+    triplet_id: str | None = None
+    metadata: dict[str, Any] = field(default_factory=dict)
+
 
 try:
-    _neo4j_graph: Neo4jGraphStore | None = Neo4jGraphStore()
+    from agentic_core.L4_state.enforcement.neo4j_store import Neo4jGraphStore
+except Exception:
+    Neo4jGraphStore = None  # type: ignore[assignment]
+
+try:
+    _neo4j_graph: Neo4jGraphStore | None = Neo4jGraphStore() if Neo4jGraphStore else None
     _NEO4J_AVAILABLE = True
-except ImportError:
+except Exception:
     _neo4j_graph = None
     _NEO4J_AVAILABLE = False
 
