@@ -27,7 +27,15 @@ from datetime import timezone
 from pathlib import Path
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_records_execution_trace,
+    emit_determinism_digest,
+)
+
 logger = logging.getLogger(__name__)
+
+emit_determinism_digest("p0", "historical_backfill_engine")
+_emit_records_execution_trace("p0", "evidence", "historical_backfill_engine")
 
 _CORPUS_PATH = Path("data/corpus/healing_contexts_corpus.jsonl")
 _SENTINEL_PATH = Path("data/corpus/.healing_backups_backfill_done")

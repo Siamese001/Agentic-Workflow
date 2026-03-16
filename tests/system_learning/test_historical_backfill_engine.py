@@ -15,6 +15,14 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_records_execution_trace,
+    emit_determinism_digest,
+)
+
+emit_determinism_digest("p0", "test_historical_backfill_engine")
+_emit_records_execution_trace("p0", "evidence", "test_historical_backfill_engine")
+
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
