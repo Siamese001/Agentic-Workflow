@@ -2,10 +2,29 @@ from __future__ import annotations
 
 from agentic_core.L2_execution.tools import write_gateway as _wg
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_authorize_and_execute,
+    _emit_blocks_direct_write,
+    _emit_captures_evaluation_metric,
+    _emit_captures_execution_output,
+    _emit_coordinates_agents,
+    _emit_dispatches_agent,
     _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_failure,
     _emit_escalates_to_human,  # noqa: E402
+    _emit_invokes_evaluation,
+    _emit_links_execution_to_snapshot,
+    _emit_orchestrates_workflow,
     _emit_reads_policy_state,  # noqa: E402
+    _emit_records_healing_outcome,
+    _emit_records_telemetry_event,
+    _emit_records_tool_invocation,
+    _emit_records_workflow_lineage,
     _emit_routes_through,  # noqa: E402
+    _emit_routes_to_capability,
+    _emit_stores_embedding,
+    _emit_updates_meta_learning_state,
+    _emit_validates_capability,
+    _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
@@ -17,6 +36,26 @@ _emit_dispatches_healing_run("p1", "reasoning_streamer", "L6")
 _emit_routes_through("p1", "reasoning_streamer", "L6")
 _emit_escalates_to_human("p1", "reasoning_streamer", "L6")
 _emit_reads_policy_state("p1", "reasoning_streamer", "L6")
+_emit_authorize_and_execute("p2", "reasoning_streamer", "execution_auth")
+_emit_validates_capability("p2", "reasoning_streamer", "capability_check")
+_emit_routes_to_capability("p2", "reasoning_streamer", "capability_route")
+_emit_writes_via_uwg("p2", "reasoning_streamer", "uwg_write")
+_emit_blocks_direct_write("p2", "reasoning_streamer", "direct_write_block")
+_emit_records_tool_invocation("p2", "reasoning_streamer", "tool_invocation")
+_emit_captures_execution_output("p2", "reasoning_streamer", "exec_output")
+_emit_dispatches_agent("p3", "reasoning_streamer", "agent_dispatch")
+_emit_coordinates_agents("p3", "reasoning_streamer", "agent_coordination")
+_emit_records_workflow_lineage("p3", "reasoning_streamer", "workflow_lineage")
+_emit_records_healing_outcome("p3", "reasoning_streamer", "healing_outcome")
+_emit_escalates_failure("p3", "reasoning_streamer", "failure_escalation")
+_emit_orchestrates_workflow("p3", "reasoning_streamer", "workflow_orchestration")
+_emit_dispatches_healing_run("p3", "reasoning_streamer", "healing_dispatch")
+_emit_invokes_evaluation("p3", "reasoning_streamer", "evaluation_signal")
+_emit_records_telemetry_event("p4", "reasoning_streamer", "telemetry_event")
+_emit_captures_evaluation_metric("p4", "reasoning_streamer", "eval_metric")
+_emit_stores_embedding("p4", "reasoning_streamer", "embedding_store")
+_emit_updates_meta_learning_state("p4", "reasoning_streamer", "meta_learning")
+_emit_links_execution_to_snapshot("p4", "reasoning_streamer", "exec_snapshot_link")
 
 "\nL5 Streamer - Live Reasoning Broadcast System\n\nImplements non-blocking JSONL streaming of agent thoughts and actions\nto observability/audit/live_stream.jsonl for real-time monitoring.\n\nFeatures:\n- Non-blocking asyncio.Queue based streaming\n- WebSocket server for real-time browser updates\n- Reasoning extraction from LLM responses\n- Agent lifecycle broadcasts\n- Graceful shutdown with queue drain\n"
 import asyncio

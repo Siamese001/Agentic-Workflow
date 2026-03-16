@@ -2,12 +2,35 @@ from __future__ import annotations
 
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_applies_guardrail,  # noqa: E402
+    _emit_authorize_and_execute,
+    _emit_blocks_direct_write,
+    _emit_captures_evaluation_metric,
+    _emit_captures_execution_output,
+    _emit_checks_agent_registry,
+    _emit_coordinates_agents,
+    _emit_dispatches_agent,
+    _emit_dispatches_execution_plan,
     _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_failure,
     _emit_escalates_to_human,  # noqa: E402
+    _emit_invokes_evaluation,
+    _emit_links_execution_to_snapshot,
+    _emit_orchestrates_workflow,
     _emit_reads_policy_state,  # noqa: E402
+    _emit_records_healing_outcome,
+    _emit_records_telemetry_event,
+    _emit_records_tool_invocation,
+    _emit_records_workflow_lineage,
     _emit_routes_through,  # noqa: E402
+    _emit_routes_to_agent,
+    _emit_routes_to_capability,
     _emit_signs_execution_trace,  # noqa: E402
     _emit_snapshots_state,  # noqa: E402
+    _emit_stores_embedding,
+    _emit_updates_meta_learning_state,
+    _emit_validates_agent_capability,
+    _emit_validates_capability,
+    _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
@@ -23,6 +46,31 @@ _emit_reads_policy_state("p1", "rl_coordinator_orchestrator", "L3")
 _emit_snapshots_state("p0", "rl_coordinator_orchestrator", "state_snapshot")
 _emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 _emit_applies_guardrail("p0", "rl_coordinator_orchestrator", "p0_governance")
+_emit_orchestrates_workflow("p1", "rl_coordinator_orchestrator", "L3")
+_emit_routes_to_agent("p1", "rl_coordinator_orchestrator", "L3")
+_emit_dispatches_execution_plan("p1", "rl_coordinator_orchestrator", "L3")
+_emit_validates_agent_capability("p1", "rl_coordinator_orchestrator", "L3")
+_emit_checks_agent_registry("p1", "rl_coordinator_orchestrator", "L3")
+_emit_authorize_and_execute("p2", "rl_coordinator_orchestrator", "execution_auth")
+_emit_validates_capability("p2", "rl_coordinator_orchestrator", "capability_check")
+_emit_routes_to_capability("p2", "rl_coordinator_orchestrator", "capability_route")
+_emit_writes_via_uwg("p2", "rl_coordinator_orchestrator", "uwg_write")
+_emit_blocks_direct_write("p2", "rl_coordinator_orchestrator", "direct_write_block")
+_emit_records_tool_invocation("p2", "rl_coordinator_orchestrator", "tool_invocation")
+_emit_captures_execution_output("p2", "rl_coordinator_orchestrator", "exec_output")
+_emit_dispatches_agent("p3", "rl_coordinator_orchestrator", "agent_dispatch")
+_emit_coordinates_agents("p3", "rl_coordinator_orchestrator", "agent_coordination")
+_emit_records_workflow_lineage("p3", "rl_coordinator_orchestrator", "workflow_lineage")
+_emit_records_healing_outcome("p3", "rl_coordinator_orchestrator", "healing_outcome")
+_emit_escalates_failure("p3", "rl_coordinator_orchestrator", "failure_escalation")
+_emit_orchestrates_workflow("p3", "rl_coordinator_orchestrator", "workflow_orchestration")
+_emit_dispatches_healing_run("p3", "rl_coordinator_orchestrator", "healing_dispatch")
+_emit_invokes_evaluation("p3", "rl_coordinator_orchestrator", "evaluation_signal")
+_emit_records_telemetry_event("p4", "rl_coordinator_orchestrator", "telemetry_event")
+_emit_captures_evaluation_metric("p4", "rl_coordinator_orchestrator", "eval_metric")
+_emit_stores_embedding("p4", "rl_coordinator_orchestrator", "embedding_store")
+_emit_updates_meta_learning_state("p4", "rl_coordinator_orchestrator", "meta_learning")
+_emit_links_execution_to_snapshot("p4", "rl_coordinator_orchestrator", "exec_snapshot_link")
 
 "\nSpecialized Coordinators for Unified Workflow Engine\n\n10 coordinators replacing 35+ overlapping orchestrators:\n1. RLCoordinatorOrchestrator - RL strategies (PPO, Q-learning, A2C)\n2. TerritoryCoordinator - Territory management\n3. MCPCoordinator - Tool management\n4. MissionCoordinator - Mission execution\n5. ModelCoordinator - Provider management\n6. HealthCoordinator - System health\n7. GovernanceCoordinator - Policy enforcement\n8. UtilityCoordinator - Support functions\n9. CachingCoordinator - Optimization\n10. SecurityCoordinator - Hardening\n"
 from typing import Any

@@ -6,11 +6,30 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L0_routing.utils.ssot_discovery_util import get_python_files
 from agentic_core.L2_execution.tools import write_gateway as _wg
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_authorize_and_execute,
+    _emit_blocks_direct_write,
+    _emit_captures_evaluation_metric,
+    _emit_captures_execution_output,
+    _emit_coordinates_agents,
+    _emit_dispatches_agent,
     _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_failure,
     _emit_escalates_to_human,  # noqa: E402
+    _emit_invokes_evaluation,
+    _emit_links_execution_to_snapshot,
+    _emit_orchestrates_workflow,
     _emit_reads_policy_state,  # noqa: E402
+    _emit_records_healing_outcome,
+    _emit_records_telemetry_event,
+    _emit_records_tool_invocation,
+    _emit_records_workflow_lineage,
     _emit_routes_through,  # noqa: E402
+    _emit_routes_to_capability,
     _emit_signs_execution_trace,  # noqa: E402
+    _emit_stores_embedding,
+    _emit_updates_meta_learning_state,
+    _emit_validates_capability,
+    _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
@@ -24,6 +43,26 @@ _emit_escalates_to_human("p1", "GovernanceAgent", "L5")
 _emit_reads_policy_state("p1", "GovernanceAgent", "L5")
 
 _emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_authorize_and_execute("p2", "GovernanceAgent", "execution_auth")
+_emit_validates_capability("p2", "GovernanceAgent", "capability_check")
+_emit_routes_to_capability("p2", "GovernanceAgent", "capability_route")
+_emit_writes_via_uwg("p2", "GovernanceAgent", "uwg_write")
+_emit_blocks_direct_write("p2", "GovernanceAgent", "direct_write_block")
+_emit_records_tool_invocation("p2", "GovernanceAgent", "tool_invocation")
+_emit_captures_execution_output("p2", "GovernanceAgent", "exec_output")
+_emit_dispatches_agent("p3", "GovernanceAgent", "agent_dispatch")
+_emit_coordinates_agents("p3", "GovernanceAgent", "agent_coordination")
+_emit_records_workflow_lineage("p3", "GovernanceAgent", "workflow_lineage")
+_emit_records_healing_outcome("p3", "GovernanceAgent", "healing_outcome")
+_emit_escalates_failure("p3", "GovernanceAgent", "failure_escalation")
+_emit_orchestrates_workflow("p3", "GovernanceAgent", "workflow_orchestration")
+_emit_dispatches_healing_run("p3", "GovernanceAgent", "healing_dispatch")
+_emit_invokes_evaluation("p3", "GovernanceAgent", "evaluation_signal")
+_emit_records_telemetry_event("p4", "GovernanceAgent", "telemetry_event")
+_emit_captures_evaluation_metric("p4", "GovernanceAgent", "eval_metric")
+_emit_stores_embedding("p4", "GovernanceAgent", "embedding_store")
+_emit_updates_meta_learning_state("p4", "GovernanceAgent", "meta_learning")
+_emit_links_execution_to_snapshot("p4", "GovernanceAgent", "exec_snapshot_link")
 
 "\nL6 Sovereign Code Graph & Governance Infrastructure\n\nImplements the DependencyGraph class and impact radius analysis\nfor calculating blast radius of file modifications.\n\nFeatures:\n- AST-based dependency extraction\n- Impact radius calculation\n- Architecture governance laws enforcement (DECISION-ONLY as of P4 consolidation)\n- Blast radius visualization\n\n[P4 CONSOLIDATION] 2025-12-31:\nFile move operations have been centralized into StructuralHealerAgent.\nGovernanceAgent now provides DECISION-ONLY functions:\n- check_depth_law() -> Returns Violation info, does NOT move files\n- check_atomicity_law() -> Returns Violation info, does NOT split files\n\nFor file operations, use:\n    from agentic_core.L5_safety.enforcement.StructuralHealerAgent import StructuralHealerAgent\n    healer = StructuralHealerAgent(project_root)\n    healer.heal_file_moves(violations)  # For depth violations\n    healer.heal_fission(large_files)    # For atomicity violations\n\nGOLD STANDARD UPGRADE (2026-01-02):\n- Structured Violation dataclass with severity levels\n- HierarchyAgent integration for structure validation\n- ImportAgent integration for gravity compliance\n- Post-heal validation with blast radius analysis\n- Batch post-heal reporting with FULL_SUCCESS/PARTIAL/NEEDS_REVIEW\n- cleanup_violations with multi-stage healing coordination\n- run_with_cleanup returning comprehensive summaries\n\nDOMAIN-SPECIFIC INTEGRATIONS:\n- HierarchyAgent: Validate structure after governance fixes\n- ImportAgent: Check gravity compliance after moves\n- DependencyGraph: Calculate blast radius for all changes\n"
 import ast

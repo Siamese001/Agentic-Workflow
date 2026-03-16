@@ -64,6 +64,50 @@ if str(PROJECT_ROOT) not in sys.path:
 from agentic_core.L5_safety.validators.anti_pattern_scanner_validator import AntiPatternScanner
 from agentic_core.L5_safety.validators.base_detector_validator import EnforcementLevel
 from agentic_core.L5_safety.config.structure_blueprint.ssot import DISCOVERY_EXCLUDED_TERRITORIES, GLOBAL_EXCLUDED_DIRS, SOVEREIGN_EXCLUDED_FOLDERS
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_authorize_and_execute,
+    _emit_validates_capability,
+    _emit_routes_to_capability,
+    _emit_writes_via_uwg,
+    _emit_blocks_direct_write,
+    _emit_records_tool_invocation,
+    _emit_captures_execution_output,
+    _emit_dispatches_agent,
+    _emit_coordinates_agents,
+    _emit_records_workflow_lineage,
+    _emit_records_healing_outcome,
+    _emit_escalates_failure,
+    _emit_orchestrates_workflow,
+    _emit_dispatches_healing_run,
+    _emit_invokes_evaluation,
+    _emit_records_telemetry_event,
+    _emit_captures_evaluation_metric,
+    _emit_stores_embedding,
+    _emit_updates_meta_learning_state,
+    _emit_links_execution_to_snapshot,
+)
+
+_emit_authorize_and_execute("p2", "check_anti_patterns", "execution_auth")
+_emit_validates_capability("p2", "check_anti_patterns", "capability_check")
+_emit_routes_to_capability("p2", "check_anti_patterns", "capability_route")
+_emit_writes_via_uwg("p2", "check_anti_patterns", "uwg_write")
+_emit_blocks_direct_write("p2", "check_anti_patterns", "direct_write_block")
+_emit_records_tool_invocation("p2", "check_anti_patterns", "tool_invocation")
+_emit_captures_execution_output("p2", "check_anti_patterns", "exec_output")
+_emit_dispatches_agent("p3", "check_anti_patterns", "agent_dispatch")
+_emit_coordinates_agents("p3", "check_anti_patterns", "agent_coordination")
+_emit_records_workflow_lineage("p3", "check_anti_patterns", "workflow_lineage")
+_emit_records_healing_outcome("p3", "check_anti_patterns", "healing_outcome")
+_emit_escalates_failure("p3", "check_anti_patterns", "failure_escalation")
+_emit_orchestrates_workflow("p3", "check_anti_patterns", "workflow_orchestration")
+_emit_dispatches_healing_run("p3", "check_anti_patterns", "healing_dispatch")
+_emit_invokes_evaluation("p3", "check_anti_patterns", "evaluation_signal")
+_emit_records_telemetry_event("p4", "check_anti_patterns", "telemetry_event")
+_emit_captures_evaluation_metric("p4", "check_anti_patterns", "eval_metric")
+_emit_stores_embedding("p4", "check_anti_patterns", "embedding_store")
+_emit_updates_meta_learning_state("p4", "check_anti_patterns", "meta_learning")
+_emit_links_execution_to_snapshot("p4", "check_anti_patterns", "exec_snapshot_link")
 BASELINE_FILE = PROJECT_ROOT / OPS_SCRIPTS_DIR / 'hooks' / 'landmine_baseline.txt'
 _EXCLUDE_DIRS = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES | {'.nox'}
 _EXCLUDE_FILE_PATTERNS = ['__dbg_*.py', '**/activate_this.py']

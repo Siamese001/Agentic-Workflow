@@ -2,12 +2,31 @@ from __future__ import annotations
 
 from agentic_core.L2_execution.tools import write_gateway as _wg
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_authorize_and_execute,
+    _emit_blocks_direct_write,
+    _emit_captures_evaluation_metric,
+    _emit_captures_execution_output,
+    _emit_coordinates_agents,
+    _emit_dispatches_agent,
     _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_failure,
     _emit_escalates_to_human,  # noqa: E402
+    _emit_invokes_evaluation,
+    _emit_links_execution_to_snapshot,
+    _emit_orchestrates_workflow,
     _emit_reads_policy_state,  # noqa: E402
+    _emit_records_healing_outcome,
+    _emit_records_telemetry_event,
+    _emit_records_tool_invocation,
+    _emit_records_workflow_lineage,
     _emit_routes_through,  # noqa: E402
+    _emit_routes_to_capability,
     _emit_signs_execution_trace,  # noqa: E402
     _emit_snapshots_state,  # noqa: E402
+    _emit_stores_embedding,
+    _emit_updates_meta_learning_state,
+    _emit_validates_capability,
+    _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
@@ -22,6 +41,26 @@ _emit_reads_policy_state("p1", "StateManagementAgent", "L3")
 
 _emit_snapshots_state("p0", "StateManagementAgent", "state_snapshot")
 _emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_authorize_and_execute("p2", "StateManagementAgent", "execution_auth")
+_emit_validates_capability("p2", "StateManagementAgent", "capability_check")
+_emit_routes_to_capability("p2", "StateManagementAgent", "capability_route")
+_emit_writes_via_uwg("p2", "StateManagementAgent", "uwg_write")
+_emit_blocks_direct_write("p2", "StateManagementAgent", "direct_write_block")
+_emit_records_tool_invocation("p2", "StateManagementAgent", "tool_invocation")
+_emit_captures_execution_output("p2", "StateManagementAgent", "exec_output")
+_emit_dispatches_agent("p3", "StateManagementAgent", "agent_dispatch")
+_emit_coordinates_agents("p3", "StateManagementAgent", "agent_coordination")
+_emit_records_workflow_lineage("p3", "StateManagementAgent", "workflow_lineage")
+_emit_records_healing_outcome("p3", "StateManagementAgent", "healing_outcome")
+_emit_escalates_failure("p3", "StateManagementAgent", "failure_escalation")
+_emit_orchestrates_workflow("p3", "StateManagementAgent", "workflow_orchestration")
+_emit_dispatches_healing_run("p3", "StateManagementAgent", "healing_dispatch")
+_emit_invokes_evaluation("p3", "StateManagementAgent", "evaluation_signal")
+_emit_records_telemetry_event("p4", "StateManagementAgent", "telemetry_event")
+_emit_captures_evaluation_metric("p4", "StateManagementAgent", "eval_metric")
+_emit_stores_embedding("p4", "StateManagementAgent", "embedding_store")
+_emit_updates_meta_learning_state("p4", "StateManagementAgent", "meta_learning")
+_emit_links_execution_to_snapshot("p4", "StateManagementAgent", "exec_snapshot_link")
 
 "\nStateManagementAgent - Consolidated L4 State Controller (Phase 5)\n\nConsolidates:\n- ManifestManagerAgent (manifest inventory and serialization)\n- MemoryManagerAgent (physical memory cleanup and persistence)\n- AutonomousStateGuardianAgent (drift detection and integrity monitoring)\n\nKey Features:\n- Unified state controller coordinating manifest and physical storage\n- Atomic state transactions preventing race conditions\n- Autonomous heartbeat for continuous integrity checks\n- Ghost state detection (files without manifest entries)\n- Orphan entry detection (manifest entries without files)\n- Resource synchronization with registry agents\n\nTerritory: agentic_core/L4_state/memory/\nCanon Alignment: L4 state persistence, integrity, and recovery\n"
 import asyncio

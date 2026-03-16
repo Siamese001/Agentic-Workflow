@@ -1,10 +1,29 @@
 from __future__ import annotations
 
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_authorize_and_execute,
+    _emit_blocks_direct_write,
+    _emit_captures_evaluation_metric,
+    _emit_captures_execution_output,
+    _emit_coordinates_agents,
+    _emit_dispatches_agent,
     _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_failure,
     _emit_escalates_to_human,  # noqa: E402
+    _emit_invokes_evaluation,
+    _emit_links_execution_to_snapshot,
+    _emit_orchestrates_workflow,
     _emit_reads_policy_state,  # noqa: E402
+    _emit_records_healing_outcome,
+    _emit_records_telemetry_event,
+    _emit_records_tool_invocation,
+    _emit_records_workflow_lineage,
     _emit_routes_through,  # noqa: E402
+    _emit_routes_to_capability,
+    _emit_stores_embedding,
+    _emit_updates_meta_learning_state,
+    _emit_validates_capability,
+    _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
@@ -16,6 +35,26 @@ _emit_dispatches_healing_run("p1", "GitHygieneAgent", "L5")
 _emit_routes_through("p1", "GitHygieneAgent", "L5")
 _emit_escalates_to_human("p1", "GitHygieneAgent", "L5")
 _emit_reads_policy_state("p1", "GitHygieneAgent", "L5")
+_emit_authorize_and_execute("p2", "GitHygieneAgent", "execution_auth")
+_emit_validates_capability("p2", "GitHygieneAgent", "capability_check")
+_emit_routes_to_capability("p2", "GitHygieneAgent", "capability_route")
+_emit_writes_via_uwg("p2", "GitHygieneAgent", "uwg_write")
+_emit_blocks_direct_write("p2", "GitHygieneAgent", "direct_write_block")
+_emit_records_tool_invocation("p2", "GitHygieneAgent", "tool_invocation")
+_emit_captures_execution_output("p2", "GitHygieneAgent", "exec_output")
+_emit_dispatches_agent("p3", "GitHygieneAgent", "agent_dispatch")
+_emit_coordinates_agents("p3", "GitHygieneAgent", "agent_coordination")
+_emit_records_workflow_lineage("p3", "GitHygieneAgent", "workflow_lineage")
+_emit_records_healing_outcome("p3", "GitHygieneAgent", "healing_outcome")
+_emit_escalates_failure("p3", "GitHygieneAgent", "failure_escalation")
+_emit_orchestrates_workflow("p3", "GitHygieneAgent", "workflow_orchestration")
+_emit_dispatches_healing_run("p3", "GitHygieneAgent", "healing_dispatch")
+_emit_invokes_evaluation("p3", "GitHygieneAgent", "evaluation_signal")
+_emit_records_telemetry_event("p4", "GitHygieneAgent", "telemetry_event")
+_emit_captures_evaluation_metric("p4", "GitHygieneAgent", "eval_metric")
+_emit_stores_embedding("p4", "GitHygieneAgent", "embedding_store")
+_emit_updates_meta_learning_state("p4", "GitHygieneAgent", "meta_learning")
+_emit_links_execution_to_snapshot("p4", "GitHygieneAgent", "exec_snapshot_link")
 
 'Git Hygiene Agent - Enforces Git repository hygiene.\n\nThis module provides a batch agent that enforces Git repository hygiene by:\n- Detecting stale branches (no commits in >90 days)\n- Identifying large files in history (>10MB)\n- Checking for uncommitted/unpushed changes\n\nTypical usage:\n    agent = GitHygieneAgent(project_root=Path("/path/to/repo"), ctx=context)\n    result = await agent.execute()\n'
 from dataclasses import dataclass

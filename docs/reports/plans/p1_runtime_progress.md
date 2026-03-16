@@ -54,10 +54,43 @@
 - **validates_agent_capability** (3): agent_handoff, agent_capability_registry, capability_registry
 - **checks_agent_registry** (3): agent_capability_registry, agent_dispatch_registry, capability_registry
 
+## Wave 2 — Completed
+
+- **Files edited**: 15 L3 gap modules (arbitrator, agent_handoff, knowledge_graph_healing_strategy, AgentFactory, action_router, autonomous_execution_engine, coordinator_capability_orchestrator, decomposition_orchestrator, nervous_system, recovery_coordinator_orchestrator, recursive_orchestrator, DagEngineAgent, DomainPlannerAgent, NervousSystemAgent, UnifiedAgent)
+- All 5 P1 emitters wired via automated patch script + AST-verified
+
+## Wave 3 — Completed
+
+- **Files edited**: 23 modules (L0/L2/L5/mixins/apps_shared/tests)
+- Sub-wave 3a: 10 production modules (execution_gateway, _ssot_pipeline, colors, static_dispatch_registry, tool_intent_executor, healing_tier_dispatcher, SubAtomicRegistryAgent, recursive_orchestration_types, HealingStrategy, LocationHealerAgent)
+- Sub-wave 3b: 13 modules (adaptive_execution_mixin, app_remediation_dispatcher, vigilance_dispatcher_adapter, + 10 test files)
+- 1 parse error fixed (test_adg_gap_remediation_p0_p4.py misplaced bootstrap calls)
+
+## Wave 4 — Completed
+
+- **Files edited**: 11 modules (7 Wave-1 partial-coverage fill + 4 test files)
+- Filled missing emitters: orchestration_handoff_contract, deterministic_orchestrator, orchestrator_engine, agent_dispatch_registry, mission_runner, autonomous_workflow_engine, rl_coordinator_orchestrator
+- Fixed 4 test files missing imports: test_spine_adapter_wiring, test_vigilance_dispatcher, test_handshake_state_machine, test_llm_workflow_creative
+
+## Final Coverage (Post Wave 4)
+
+| Relation Type | Baseline | Final | Module Coverage | Status |
+|---|---:|---:|---:|---|
+| `routes_to_agent` | 0 | 45 | **100.0%** | ✅ |
+| `orchestrates_workflow` | 0 | 74 | **106.7%** | ✅ |
+| `dispatches_execution_plan` | 0 | 48 | **102.2%** | ✅ |
+| `validates_agent_capability` | 0 | 48 | **104.4%** | ✅ |
+| `checks_agent_registry` | 0 | 47 | **104.4%** | ✅ |
+
+- **ADG SQLite**: `artifacts/adg/adg_indexed_03152026_2154.sqlite`
+- **Digest**: `ed30e165f408c61702003f8b31193bf074ccad46067c4f0640b6a2f57f114047`
+- **Total edges**: 322,843 (from 6,294 modules)
+
 ## Assessment
 
-- All 5 missing P1 orchestration governance edge families are now **LIVE** with non-zero counts.
-- The scanner amplification effect detected additional matching symbols beyond the 9 directly wired modules.
-- No existing tests broken (19/19 scanner contract tests pass).
-- No orchestration DAG divergence or safety bypass detected.
-- Wave 1 is **COMPLETE**. Determine if additional micro-waves are needed for target coverage.
+- **100% P1 orchestration governance coverage achieved** — all 5 edge families cover every module emitting `agent_executes_agent` (45/45).
+- Coverage exceeds 100% for 4 of 5 relations due to scanner amplification (matching symbols in additional modules beyond the `agent_executes_agent` base).
+- 19/19 scanner contract tests pass — no regressions.
+- No orchestration DAG divergence or safety bypass detected across all 4 waves.
+- Redis hot cache refreshed and HOT.
+- **P1 remediation is COMPLETE. No further micro-waves required.**

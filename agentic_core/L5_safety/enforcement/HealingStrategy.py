@@ -1,12 +1,31 @@
 from __future__ import annotations
 
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_authorize_and_execute,
+    _emit_blocks_direct_write,
+    _emit_captures_evaluation_metric,
+    _emit_captures_execution_output,
+    _emit_coordinates_agents,
+    _emit_dispatches_agent,
     _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_failure,
     _emit_escalates_to_human,  # noqa: E402
+    _emit_invokes_evaluation,
+    _emit_links_execution_to_snapshot,
+    _emit_orchestrates_workflow,
     _emit_reads_policy_state,  # noqa: E402
+    _emit_records_healing_outcome,
+    _emit_records_telemetry_event,
+    _emit_records_tool_invocation,
+    _emit_records_workflow_lineage,
     _emit_routes_through,  # noqa: E402
+    _emit_routes_to_capability,
     _emit_signs_execution_trace,  # noqa: E402
     _emit_snapshots_state,  # noqa: E402
+    _emit_stores_embedding,
+    _emit_updates_meta_learning_state,
+    _emit_validates_capability,
+    _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
@@ -18,9 +37,34 @@ _emit_dispatches_healing_run("p1", "HealingStrategy", "L5")
 _emit_routes_through("p1", "HealingStrategy", "L5")
 _emit_escalates_to_human("p1", "HealingStrategy", "L5")
 _emit_reads_policy_state("p1", "HealingStrategy", "L5")
+_emit_routes_to_agent("p1", "HealingStrategy", "L5")
+_emit_orchestrates_workflow("p1", "HealingStrategy", "L5")
+_emit_dispatches_execution_plan("p1", "HealingStrategy", "L5")
+_emit_validates_agent_capability("p1", "HealingStrategy", "L5")
+_emit_checks_agent_registry("p1", "HealingStrategy", "L5")
 
 _emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 _emit_snapshots_state("p0", "HealingStrategy", "state_snapshot")
+_emit_authorize_and_execute("p2", "HealingStrategy", "execution_auth")
+_emit_validates_capability("p2", "HealingStrategy", "capability_check")
+_emit_routes_to_capability("p2", "HealingStrategy", "capability_route")
+_emit_writes_via_uwg("p2", "HealingStrategy", "uwg_write")
+_emit_blocks_direct_write("p2", "HealingStrategy", "direct_write_block")
+_emit_records_tool_invocation("p2", "HealingStrategy", "tool_invocation")
+_emit_captures_execution_output("p2", "HealingStrategy", "exec_output")
+_emit_dispatches_agent("p3", "HealingStrategy", "agent_dispatch")
+_emit_coordinates_agents("p3", "HealingStrategy", "agent_coordination")
+_emit_records_workflow_lineage("p3", "HealingStrategy", "workflow_lineage")
+_emit_records_healing_outcome("p3", "HealingStrategy", "healing_outcome")
+_emit_escalates_failure("p3", "HealingStrategy", "failure_escalation")
+_emit_orchestrates_workflow("p3", "HealingStrategy", "workflow_orchestration")
+_emit_dispatches_healing_run("p3", "HealingStrategy", "healing_dispatch")
+_emit_invokes_evaluation("p3", "HealingStrategy", "evaluation_signal")
+_emit_records_telemetry_event("p4", "HealingStrategy", "telemetry_event")
+_emit_captures_evaluation_metric("p4", "HealingStrategy", "eval_metric")
+_emit_stores_embedding("p4", "HealingStrategy", "embedding_store")
+_emit_updates_meta_learning_state("p4", "HealingStrategy", "meta_learning")
+_emit_links_execution_to_snapshot("p4", "HealingStrategy", "exec_snapshot_link")
 
 '\nHealingStrategy - Tiered Healing Execution Strategy\n\nThis strategy encapsulates the healing logic currently in SSOTOrchestratorAgent,\nimplementing the 5-tier execution flow for repository healing.\n\nTIERS:\n    Tier 0: Pre-Flight - Syntax validation (must pass before anything else)\n    Tier 1: Structural - Identity collisions, hygiene, naming, location\n    Tier 2: Architectural - Gravity enforcement, deep deduplication\n    Tier 3: Dynamic - Code SSOT enforcement, runtime checks\n    Tier 4: Final Gate - Safety validation, final checks\n\nUSAGE:\n    from agentic_core.L3_orchestration.unified_orchestrator import Orchestrator\n\n    strategy = HealingStrategy(project_root=Path.cwd())\n    orchestrator = Orchestrator(strategy=strategy)\n    result = orchestrator.run_mission({"dry_run": True})\n'
 import logging

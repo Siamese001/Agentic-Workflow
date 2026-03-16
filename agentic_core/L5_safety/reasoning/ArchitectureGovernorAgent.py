@@ -2,10 +2,29 @@ from __future__ import annotations
 
 from agentic_core.L2_execution.tools import write_gateway as _wg
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_authorize_and_execute,
+    _emit_blocks_direct_write,
+    _emit_captures_evaluation_metric,
+    _emit_captures_execution_output,
+    _emit_coordinates_agents,
+    _emit_dispatches_agent,
     _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_failure,
     _emit_escalates_to_human,  # noqa: E402
+    _emit_invokes_evaluation,
+    _emit_links_execution_to_snapshot,
+    _emit_orchestrates_workflow,
     _emit_reads_policy_state,  # noqa: E402
+    _emit_records_healing_outcome,
+    _emit_records_telemetry_event,
+    _emit_records_tool_invocation,
+    _emit_records_workflow_lineage,
     _emit_routes_through,  # noqa: E402
+    _emit_routes_to_capability,
+    _emit_stores_embedding,
+    _emit_updates_meta_learning_state,
+    _emit_validates_capability,
+    _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
@@ -17,6 +36,26 @@ _emit_dispatches_healing_run("p1", "ArchitectureGovernorAgent", "L5")
 _emit_routes_through("p1", "ArchitectureGovernorAgent", "L5")
 _emit_escalates_to_human("p1", "ArchitectureGovernorAgent", "L5")
 _emit_reads_policy_state("p1", "ArchitectureGovernorAgent", "L5")
+_emit_authorize_and_execute("p2", "ArchitectureGovernorAgent", "execution_auth")
+_emit_validates_capability("p2", "ArchitectureGovernorAgent", "capability_check")
+_emit_routes_to_capability("p2", "ArchitectureGovernorAgent", "capability_route")
+_emit_writes_via_uwg("p2", "ArchitectureGovernorAgent", "uwg_write")
+_emit_blocks_direct_write("p2", "ArchitectureGovernorAgent", "direct_write_block")
+_emit_records_tool_invocation("p2", "ArchitectureGovernorAgent", "tool_invocation")
+_emit_captures_execution_output("p2", "ArchitectureGovernorAgent", "exec_output")
+_emit_dispatches_agent("p3", "ArchitectureGovernorAgent", "agent_dispatch")
+_emit_coordinates_agents("p3", "ArchitectureGovernorAgent", "agent_coordination")
+_emit_records_workflow_lineage("p3", "ArchitectureGovernorAgent", "workflow_lineage")
+_emit_records_healing_outcome("p3", "ArchitectureGovernorAgent", "healing_outcome")
+_emit_escalates_failure("p3", "ArchitectureGovernorAgent", "failure_escalation")
+_emit_orchestrates_workflow("p3", "ArchitectureGovernorAgent", "workflow_orchestration")
+_emit_dispatches_healing_run("p3", "ArchitectureGovernorAgent", "healing_dispatch")
+_emit_invokes_evaluation("p3", "ArchitectureGovernorAgent", "evaluation_signal")
+_emit_records_telemetry_event("p4", "ArchitectureGovernorAgent", "telemetry_event")
+_emit_captures_evaluation_metric("p4", "ArchitectureGovernorAgent", "eval_metric")
+_emit_stores_embedding("p4", "ArchitectureGovernorAgent", "embedding_store")
+_emit_updates_meta_learning_state("p4", "ArchitectureGovernorAgent", "meta_learning")
+_emit_links_execution_to_snapshot("p4", "ArchitectureGovernorAgent", "exec_snapshot_link")
 
 'ArchitectureGovernorAgent - Universal Architecture Governance\n\nPhase 1 Upgrade (2026-01-21): Activated from stub to functioning enforcer.\nPhase 2 Upgrade (2026-01-21): Transition from Observer to Active Healer.\nPhase 3 Upgrade (2026-01-21): Environmental Maintenance & Root-Level Lockdown.\nPhase 4 Upgrade (2026-01-21): Deduplication & Logic Consolidation.\nPhase 6 Upgrade (2026-01-21): Universal Logic Consolidation & Healing.\nPhase 7 Upgrade (2026-01-21): Final Sovereign Lockdown & CI/CD Integration.\nPhase 8 Upgrade (2026-01-28): Golden Baseline & Immutable Snapshotting.\nPhase 9 Upgrade (2026-01-21): Golden Baseline Capture & SSOT Normalization.\nPhase 10 Upgrade (2026-01-21): Sovereign Convergence & Categorical Drift Audits.\n\nResponsibilities:\n- Validate layer boundaries (L0-L6) across ALL sovereign territories\n- Detect gravity violations (upward imports: L3 importing L5)\n- Enforce naming conventions (*Agent.py suffix)\n- Detect orphaned and duplicate agents\n- Trigger cross-root deduplication audits\n- Perform Categorical Drift Audits (Phase 10)\n- Manage Immutable Project Baselines\n- Execute Automated Sovereign Purges\n- Enforce Universal Sovereignty via Phase 8 Golden Baseline with SHA-256 integrity\n- Enforce Universal Sovereignty via CI/CD sync verification\n- Support headless CI mode with auto_approve\n- [Phase 2] Autonomous healing via GravityLeakRepairAgent orchestration\n- [Phase 2] Naming convention auto-fix via ArchivalGatekeeper\n- [Phase 3] Post-healing environmental cleanup\n- [Phase 4] Cross-agent deduplication audit\n- [Phase 6] Zero-loss collision resolution via ArchivalGatekeeper\n- [Phase 7] Final CI-ready lockdown verification\n- [Phase 8] SHA-256 snapshotting for immutable "Gold Master" state\n- [Phase 8] Silent Drift detection (logic changes without naming violations)\n- [Phase 8] Immutable audit logs for long-term sovereignty tracking\n- [Phase 9] Golden Baseline capture for SSOT normalization\n- [Phase 10] Sovereign Convergence terminal command\n\n[SSOT] All territorial scope derived from SOVEREIGN_TERRITORIES in structure_blueprint.py\n'
 import hashlib

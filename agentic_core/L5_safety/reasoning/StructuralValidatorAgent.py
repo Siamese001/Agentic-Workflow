@@ -1,10 +1,29 @@
 from agentic_core.L2_execution.tools import write_gateway as _wg
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_authorize_and_execute,
+    _emit_blocks_direct_write,
+    _emit_captures_evaluation_metric,
+    _emit_captures_execution_output,
+    _emit_coordinates_agents,
+    _emit_dispatches_agent,
     _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_failure,
     _emit_escalates_to_human,  # noqa: E402
+    _emit_invokes_evaluation,
+    _emit_links_execution_to_snapshot,
+    _emit_orchestrates_workflow,
     _emit_reads_policy_state,  # noqa: E402
+    _emit_records_healing_outcome,
+    _emit_records_telemetry_event,
+    _emit_records_tool_invocation,
+    _emit_records_workflow_lineage,
     _emit_routes_through,  # noqa: E402
+    _emit_routes_to_capability,
     _emit_snapshots_state,  # noqa: E402
+    _emit_stores_embedding,
+    _emit_updates_meta_learning_state,
+    _emit_validates_capability,
+    _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
@@ -18,6 +37,26 @@ _emit_escalates_to_human("p1", "StructuralValidatorAgent", "L5")
 _emit_reads_policy_state("p1", "StructuralValidatorAgent", "L5")
 
 _emit_snapshots_state("p0", "StructuralValidatorAgent", "state_snapshot")
+_emit_authorize_and_execute("p2", "StructuralValidatorAgent", "execution_auth")
+_emit_validates_capability("p2", "StructuralValidatorAgent", "capability_check")
+_emit_routes_to_capability("p2", "StructuralValidatorAgent", "capability_route")
+_emit_writes_via_uwg("p2", "StructuralValidatorAgent", "uwg_write")
+_emit_blocks_direct_write("p2", "StructuralValidatorAgent", "direct_write_block")
+_emit_records_tool_invocation("p2", "StructuralValidatorAgent", "tool_invocation")
+_emit_captures_execution_output("p2", "StructuralValidatorAgent", "exec_output")
+_emit_dispatches_agent("p3", "StructuralValidatorAgent", "agent_dispatch")
+_emit_coordinates_agents("p3", "StructuralValidatorAgent", "agent_coordination")
+_emit_records_workflow_lineage("p3", "StructuralValidatorAgent", "workflow_lineage")
+_emit_records_healing_outcome("p3", "StructuralValidatorAgent", "healing_outcome")
+_emit_escalates_failure("p3", "StructuralValidatorAgent", "failure_escalation")
+_emit_orchestrates_workflow("p3", "StructuralValidatorAgent", "workflow_orchestration")
+_emit_dispatches_healing_run("p3", "StructuralValidatorAgent", "healing_dispatch")
+_emit_invokes_evaluation("p3", "StructuralValidatorAgent", "evaluation_signal")
+_emit_records_telemetry_event("p4", "StructuralValidatorAgent", "telemetry_event")
+_emit_captures_evaluation_metric("p4", "StructuralValidatorAgent", "eval_metric")
+_emit_stores_embedding("p4", "StructuralValidatorAgent", "embedding_store")
+_emit_updates_meta_learning_state("p4", "StructuralValidatorAgent", "meta_learning")
+_emit_links_execution_to_snapshot("p4", "StructuralValidatorAgent", "exec_snapshot_link")
 
 "\nStructuralValidatorAgent - Facade Shell for Zero-Loss Consolidation.\n\nL5 Sovereign Guardian for Structural Enforcement.\nConverted to Facade: 2026-01-31 (Phase 2 Deprecation Implementation)\n\nFACADE PATTERN: Delegates to UnifiedAgent while preserving 100% legacy compatibility.\nAll original imports and signatures work without modification.\n\nRationale:\n    - Canonizes the legacy 'StructureEnforcerAgent' into 'StructuralValidatorAgent'.\n    - Implements Atomic Writes for safe refactoring.\n    - Enforces Layer Gravity (L0-L6) and Naming Laws.\n    - Integrates with ArchitectureGovernorAgent.\n"
 import ast

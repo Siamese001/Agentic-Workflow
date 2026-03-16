@@ -2,10 +2,30 @@ from __future__ import annotations
 
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_applies_guardrail,  # noqa: E402
+    _emit_authorize_and_execute,
+    _emit_blocks_direct_write,
+    _emit_captures_evaluation_metric,
+    _emit_captures_execution_output,
+    _emit_coordinates_agents,
+    _emit_dispatches_agent,
+    _emit_dispatches_healing_run,
+    _emit_escalates_failure,
+    _emit_invokes_evaluation,
+    _emit_links_execution_to_snapshot,
+    _emit_orchestrates_workflow,
     _emit_reads_policy_state,  # noqa: E402
     _emit_records_execution_trace,  # noqa: E402
+    _emit_records_healing_outcome,
+    _emit_records_telemetry_event,
+    _emit_records_tool_invocation,
+    _emit_records_workflow_lineage,
+    _emit_routes_to_capability,
     _emit_signs_execution_trace,  # noqa: E402
     _emit_snapshots_state,  # noqa: E402
+    _emit_stores_embedding,
+    _emit_updates_meta_learning_state,
+    _emit_validates_capability,
+    _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
@@ -17,6 +37,26 @@ _emit_snapshots_state("p0", "cleanup_duplicates_util", "state_snapshot")
 emit_replay_key("p0", "cleanup_duplicates_util")
 emit_determinism_digest("p0", "cleanup_duplicates_util")
 _emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_authorize_and_execute("p2", "cleanup_duplicates_util", "execution_auth")
+_emit_validates_capability("p2", "cleanup_duplicates_util", "capability_check")
+_emit_routes_to_capability("p2", "cleanup_duplicates_util", "capability_route")
+_emit_writes_via_uwg("p2", "cleanup_duplicates_util", "uwg_write")
+_emit_blocks_direct_write("p2", "cleanup_duplicates_util", "direct_write_block")
+_emit_records_tool_invocation("p2", "cleanup_duplicates_util", "tool_invocation")
+_emit_captures_execution_output("p2", "cleanup_duplicates_util", "exec_output")
+_emit_dispatches_agent("p3", "cleanup_duplicates_util", "agent_dispatch")
+_emit_coordinates_agents("p3", "cleanup_duplicates_util", "agent_coordination")
+_emit_records_workflow_lineage("p3", "cleanup_duplicates_util", "workflow_lineage")
+_emit_records_healing_outcome("p3", "cleanup_duplicates_util", "healing_outcome")
+_emit_escalates_failure("p3", "cleanup_duplicates_util", "failure_escalation")
+_emit_orchestrates_workflow("p3", "cleanup_duplicates_util", "workflow_orchestration")
+_emit_dispatches_healing_run("p3", "cleanup_duplicates_util", "healing_dispatch")
+_emit_invokes_evaluation("p3", "cleanup_duplicates_util", "evaluation_signal")
+_emit_records_telemetry_event("p4", "cleanup_duplicates_util", "telemetry_event")
+_emit_captures_evaluation_metric("p4", "cleanup_duplicates_util", "eval_metric")
+_emit_stores_embedding("p4", "cleanup_duplicates_util", "embedding_store")
+_emit_updates_meta_learning_state("p4", "cleanup_duplicates_util", "meta_learning")
+_emit_links_execution_to_snapshot("p4", "cleanup_duplicates_util", "exec_snapshot_link")
 
 "\nOne-time cleanup utility to collapse duplicate entries in registry.json.\n\nUsage:\n    python -m agentic_core.prompt_governance.version_registry.cleanup_duplicates\n\nThis script:\n- Loads the current registry via get_prompt_registry() for consistency\n- Deduplicates entries based on key fields (version, purpose, author, content_hash, territory)\n- Keeps only the most recent entry for each unique combination\n- Ensures only one active version per template\n- Saves the cleaned registry atomically\n"
 import logging

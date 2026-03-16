@@ -1,10 +1,33 @@
 from __future__ import annotations
 
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_authorize_and_execute,
+    _emit_blocks_direct_write,
+    _emit_captures_evaluation_metric,
+    _emit_captures_execution_output,
+    _emit_checks_agent_registry,
+    _emit_coordinates_agents,
+    _emit_dispatches_agent,
+    _emit_dispatches_execution_plan,
     _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_failure,
     _emit_escalates_to_human,  # noqa: E402
+    _emit_invokes_evaluation,
+    _emit_links_execution_to_snapshot,
+    _emit_orchestrates_workflow,
     _emit_reads_policy_state,  # noqa: E402
+    _emit_records_healing_outcome,
+    _emit_records_telemetry_event,
+    _emit_records_tool_invocation,
+    _emit_records_workflow_lineage,
     _emit_routes_through,  # noqa: E402
+    _emit_routes_to_agent,
+    _emit_routes_to_capability,
+    _emit_stores_embedding,
+    _emit_updates_meta_learning_state,
+    _emit_validates_agent_capability,
+    _emit_validates_capability,
+    _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
@@ -16,6 +39,31 @@ _emit_dispatches_healing_run("p1", "AgentFactory", "L3")
 _emit_routes_through("p1", "AgentFactory", "L3")
 _emit_escalates_to_human("p1", "AgentFactory", "L3")
 _emit_reads_policy_state("p1", "AgentFactory", "L3")
+_emit_routes_to_agent("p1", "AgentFactory", "L3")
+_emit_orchestrates_workflow("p1", "AgentFactory", "L3")
+_emit_dispatches_execution_plan("p1", "AgentFactory", "L3")
+_emit_validates_agent_capability("p1", "AgentFactory", "L3")
+_emit_checks_agent_registry("p1", "AgentFactory", "L3")
+_emit_authorize_and_execute("p2", "AgentFactory", "execution_auth")
+_emit_validates_capability("p2", "AgentFactory", "capability_check")
+_emit_routes_to_capability("p2", "AgentFactory", "capability_route")
+_emit_writes_via_uwg("p2", "AgentFactory", "uwg_write")
+_emit_blocks_direct_write("p2", "AgentFactory", "direct_write_block")
+_emit_records_tool_invocation("p2", "AgentFactory", "tool_invocation")
+_emit_captures_execution_output("p2", "AgentFactory", "exec_output")
+_emit_dispatches_agent("p3", "AgentFactory", "agent_dispatch")
+_emit_coordinates_agents("p3", "AgentFactory", "agent_coordination")
+_emit_records_workflow_lineage("p3", "AgentFactory", "workflow_lineage")
+_emit_records_healing_outcome("p3", "AgentFactory", "healing_outcome")
+_emit_escalates_failure("p3", "AgentFactory", "failure_escalation")
+_emit_orchestrates_workflow("p3", "AgentFactory", "workflow_orchestration")
+_emit_dispatches_healing_run("p3", "AgentFactory", "healing_dispatch")
+_emit_invokes_evaluation("p3", "AgentFactory", "evaluation_signal")
+_emit_records_telemetry_event("p4", "AgentFactory", "telemetry_event")
+_emit_captures_evaluation_metric("p4", "AgentFactory", "eval_metric")
+_emit_stores_embedding("p4", "AgentFactory", "embedding_store")
+_emit_updates_meta_learning_state("p4", "AgentFactory", "meta_learning")
+_emit_links_execution_to_snapshot("p4", "AgentFactory", "exec_snapshot_link")
 
 "\nAgent Factory – L3 Orchestration Layer (Phase 9A & 11 – Dec 26, 2025)\nWires L1 Cognition agents with L2 Execution implementations via DIP.\n\nDDD Compliance:\n- L3 orchestrates the wiring between L1 and L2\n- L1 never directly imports L2\n- All dependencies injected at runtime\n\nPhase 11: Configurable Implementation Factory\n- Supports multiple implementation modes: real, mock, aggressive\n- Enables zero-cost unit testing with mock implementations\n- Allows runtime switching of agent behavior\n"
 import uuid

@@ -1,10 +1,29 @@
 from __future__ import annotations
 
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_authorize_and_execute,
+    _emit_blocks_direct_write,
+    _emit_captures_evaluation_metric,
+    _emit_captures_execution_output,
+    _emit_coordinates_agents,
+    _emit_dispatches_agent,
     _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_failure,
     _emit_escalates_to_human,  # noqa: E402
+    _emit_invokes_evaluation,
+    _emit_links_execution_to_snapshot,
+    _emit_orchestrates_workflow,
     _emit_reads_policy_state,  # noqa: E402
+    _emit_records_healing_outcome,
+    _emit_records_telemetry_event,
+    _emit_records_tool_invocation,
+    _emit_records_workflow_lineage,
     _emit_routes_through,  # noqa: E402
+    _emit_routes_to_capability,
+    _emit_stores_embedding,
+    _emit_updates_meta_learning_state,
+    _emit_validates_capability,
+    _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
@@ -16,6 +35,26 @@ _emit_dispatches_healing_run("p1", "proactive_fission_scanner", "L3")
 _emit_routes_through("p1", "proactive_fission_scanner", "L3")
 _emit_escalates_to_human("p1", "proactive_fission_scanner", "L3")
 _emit_reads_policy_state("p1", "proactive_fission_scanner", "L3")
+_emit_authorize_and_execute("p2", "proactive_fission_scanner", "execution_auth")
+_emit_validates_capability("p2", "proactive_fission_scanner", "capability_check")
+_emit_routes_to_capability("p2", "proactive_fission_scanner", "capability_route")
+_emit_writes_via_uwg("p2", "proactive_fission_scanner", "uwg_write")
+_emit_blocks_direct_write("p2", "proactive_fission_scanner", "direct_write_block")
+_emit_records_tool_invocation("p2", "proactive_fission_scanner", "tool_invocation")
+_emit_captures_execution_output("p2", "proactive_fission_scanner", "exec_output")
+_emit_dispatches_agent("p3", "proactive_fission_scanner", "agent_dispatch")
+_emit_coordinates_agents("p3", "proactive_fission_scanner", "agent_coordination")
+_emit_records_workflow_lineage("p3", "proactive_fission_scanner", "workflow_lineage")
+_emit_records_healing_outcome("p3", "proactive_fission_scanner", "healing_outcome")
+_emit_escalates_failure("p3", "proactive_fission_scanner", "failure_escalation")
+_emit_orchestrates_workflow("p3", "proactive_fission_scanner", "workflow_orchestration")
+_emit_dispatches_healing_run("p3", "proactive_fission_scanner", "healing_dispatch")
+_emit_invokes_evaluation("p3", "proactive_fission_scanner", "evaluation_signal")
+_emit_records_telemetry_event("p4", "proactive_fission_scanner", "telemetry_event")
+_emit_captures_evaluation_metric("p4", "proactive_fission_scanner", "eval_metric")
+_emit_stores_embedding("p4", "proactive_fission_scanner", "embedding_store")
+_emit_updates_meta_learning_state("p4", "proactive_fission_scanner", "meta_learning")
+_emit_links_execution_to_snapshot("p4", "proactive_fission_scanner", "exec_snapshot_link")
 
 "\nProactive Fission Scanner - L3 Orchestration\n\nScans L4 State for structural patterns matching known 'Critical Bloat' profiles.\nIdentifies files likely to cause Key 41/42 violations before they fail.\n\nStrategy:\n- Scan repository for high-gravity files (>600 lines)\n- Use Brave Search for modular design patterns\n- Use Pinecone to find structural twins\n- Create pre-emptive refactor proposals\n- Enable proactive architectural governance\n"
 import logging

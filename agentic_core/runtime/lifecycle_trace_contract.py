@@ -60,6 +60,37 @@ _ESCALATION_LOG = logging.getLogger("adg.escalates_to_human")
 _ROUTES_THROUGH_LOG = logging.getLogger("adg.routes_through")
 _HEALING_DISPATCH_LOG = logging.getLogger("adg.dispatches_healing_run")
 
+# ── P1 Orchestration Governance loggers ──────────────────────────────────────
+_ROUTES_TO_AGENT_LOG = logging.getLogger("adg.routes_to_agent")
+_ORCHESTRATES_WORKFLOW_LOG = logging.getLogger("adg.orchestrates_workflow")
+_DISPATCHES_PLAN_LOG = logging.getLogger("adg.dispatches_execution_plan")
+_VALIDATES_CAPABILITY_LOG = logging.getLogger("adg.validates_agent_capability")
+_CHECKS_REGISTRY_LOG = logging.getLogger("adg.checks_agent_registry")
+
+# ── P2 Execution Capability loggers ───────────────────────────────────────────
+_AUTHORIZE_EXECUTE_LOG = logging.getLogger("adg.authorize_and_execute")
+_VALIDATES_CAP_LOG = logging.getLogger("adg.validates_capability")
+_ROUTES_CAP_LOG = logging.getLogger("adg.routes_to_capability")
+_WRITES_UWG_LOG = logging.getLogger("adg.writes_via_uwg")
+_BLOCKS_WRITE_LOG = logging.getLogger("adg.blocks_direct_write")
+_TOOL_INVOCATION_LOG = logging.getLogger("adg.records_tool_invocation")
+_EXEC_OUTPUT_LOG = logging.getLogger("adg.captures_execution_output")
+
+# ── P3 Orchestration & Healing loggers ───────────────────────────────────────
+_DISPATCHES_AGENT_LOG = logging.getLogger("adg.dispatches_agent")
+_COORDINATES_AGENTS_LOG = logging.getLogger("adg.coordinates_agents")
+_WORKFLOW_LINEAGE_LOG = logging.getLogger("adg.records_workflow_lineage")
+_HEALING_OUTCOME_LOG = logging.getLogger("adg.records_healing_outcome")
+_ESCALATES_FAILURE_LOG = logging.getLogger("adg.escalates_failure")
+_INVOKES_EVALUATION_LOG = logging.getLogger("adg.invokes_evaluation")
+
+# ── P4 State, Telemetry & Learning loggers ──────────────────────────────────
+_TELEMETRY_EVENT_LOG = logging.getLogger("adg.records_telemetry_event")
+_EVALUATION_METRIC_LOG = logging.getLogger("adg.captures_evaluation_metric")
+_STORES_EMBEDDING_LOG = logging.getLogger("adg.stores_embedding")
+_META_LEARNING_LOG = logging.getLogger("adg.updates_meta_learning_state")
+_EXEC_SNAPSHOT_LINK_LOG = logging.getLogger("adg.links_execution_to_snapshot")
+
 
 # ── §3 — Per-layer trace segment types ───────────────────────────────────────
 
@@ -399,6 +430,289 @@ def _emit_dispatches_healing_run(root_trace_id: str, healer_key: str, layer: str
     )
 
 
+# ── P1 Orchestration Governance emitter functions ────────────────────────────
+
+
+def _emit_routes_to_agent(root_trace_id: str, caller: str, target_agent: str) -> None:
+    """Emit routes_to_agent ADG edge (P1 Orchestration Governance)."""
+    _ROUTES_TO_AGENT_LOG.debug(
+        "routes_to_agent root_trace_id=%s caller=%s target_agent=%s",
+        root_trace_id,
+        caller,
+        target_agent,
+    )
+
+
+def _emit_orchestrates_workflow(
+    root_trace_id: str, orchestrator: str, workflow_id: str
+) -> None:
+    """Emit orchestrates_workflow ADG edge (P1 Orchestration Governance)."""
+    _ORCHESTRATES_WORKFLOW_LOG.debug(
+        "orchestrates_workflow root_trace_id=%s orchestrator=%s workflow_id=%s",
+        root_trace_id,
+        orchestrator,
+        workflow_id,
+    )
+
+
+def _emit_dispatches_execution_plan(
+    root_trace_id: str, dispatcher: str, plan_id: str
+) -> None:
+    """Emit dispatches_execution_plan ADG edge (P1 Orchestration Governance)."""
+    _DISPATCHES_PLAN_LOG.debug(
+        "dispatches_execution_plan root_trace_id=%s dispatcher=%s plan_id=%s",
+        root_trace_id,
+        dispatcher,
+        plan_id,
+    )
+
+
+def _emit_validates_agent_capability(
+    root_trace_id: str, validator: str, capability: str
+) -> None:
+    """Emit validates_agent_capability ADG edge (P1 Orchestration Governance)."""
+    _VALIDATES_CAPABILITY_LOG.debug(
+        "validates_agent_capability root_trace_id=%s validator=%s capability=%s",
+        root_trace_id,
+        validator,
+        capability,
+    )
+
+
+def _emit_checks_agent_registry(
+    root_trace_id: str, checker: str, registry_key: str
+) -> None:
+    """Emit checks_agent_registry ADG edge (P1 Orchestration Governance)."""
+    _CHECKS_REGISTRY_LOG.debug(
+        "checks_agent_registry root_trace_id=%s checker=%s registry_key=%s",
+        root_trace_id,
+        checker,
+        registry_key,
+    )
+
+
+# ── P2 Execution Capability emitter functions ─────────────────────────────
+
+
+def _emit_authorize_and_execute(root_trace_id: str, authorizer: str, capability: str) -> None:
+    """Emit authorize_and_execute ADG edge (P2 Execution Capability)."""
+    _AUTHORIZE_EXECUTE_LOG.debug(
+        "authorize_and_execute root_trace_id=%s authorizer=%s capability=%s",
+        root_trace_id,
+        authorizer,
+        capability,
+    )
+
+
+def _emit_validates_capability(root_trace_id: str, validator: str, capability: str) -> None:
+    """Emit validates_capability ADG edge (P2 Execution Capability)."""
+    _VALIDATES_CAP_LOG.debug(
+        "validates_capability root_trace_id=%s validator=%s capability=%s",
+        root_trace_id,
+        validator,
+        capability,
+    )
+
+
+def _emit_routes_to_capability(root_trace_id: str, router: str, capability: str) -> None:
+    """Emit routes_to_capability ADG edge (P2 Execution Capability)."""
+    _ROUTES_CAP_LOG.debug(
+        "routes_to_capability root_trace_id=%s router=%s capability=%s",
+        root_trace_id,
+        router,
+        capability,
+    )
+
+
+def _emit_writes_via_uwg(root_trace_id: str, writer: str, target: str) -> None:
+    """Emit writes_via_uwg ADG edge (P2 Execution Capability)."""
+    _WRITES_UWG_LOG.debug(
+        "writes_via_uwg root_trace_id=%s writer=%s target=%s",
+        root_trace_id,
+        writer,
+        target,
+    )
+
+
+def _emit_blocks_direct_write(root_trace_id: str, blocker: str, target: str) -> None:
+    """Emit blocks_direct_write ADG edge (P2 Execution Capability)."""
+    _BLOCKS_WRITE_LOG.debug(
+        "blocks_direct_write root_trace_id=%s blocker=%s target=%s",
+        root_trace_id,
+        blocker,
+        target,
+    )
+
+
+def _emit_records_tool_invocation(root_trace_id: str, tool: str, caller: str) -> None:
+    """Emit records_tool_invocation ADG edge (P2 Execution Capability)."""
+    _TOOL_INVOCATION_LOG.debug(
+        "records_tool_invocation root_trace_id=%s tool=%s caller=%s",
+        root_trace_id,
+        tool,
+        caller,
+    )
+
+
+def _emit_captures_execution_output(root_trace_id: str, output_key: str, caller: str) -> None:
+    """Emit captures_execution_output ADG edge (P2 Execution Capability)."""
+    _EXEC_OUTPUT_LOG.debug(
+        "captures_execution_output root_trace_id=%s output_key=%s caller=%s",
+        root_trace_id,
+        output_key,
+        caller,
+    )
+
+
+# ── P0 self-bootstrap (scanner-visible) ──────────────────────────────────────────
+_emit_applies_guardrail("p0", "lifecycle_trace_contract", "runtime")
+_emit_snapshots_state("p0", "lifecycle_trace_contract", "runtime")
+
+# ── P2 self-bootstrap (scanner-visible) ──────────────────────────────────────────
+_emit_authorize_and_execute("p2", "lifecycle_trace_contract", "execution_auth")
+_emit_validates_capability("p2", "lifecycle_trace_contract", "capability_check")
+_emit_routes_to_capability("p2", "lifecycle_trace_contract", "capability_route")
+_emit_writes_via_uwg("p2", "lifecycle_trace_contract", "uwg_write")
+_emit_blocks_direct_write("p2", "lifecycle_trace_contract", "direct_write_block")
+_emit_records_tool_invocation("p2", "lifecycle_trace_contract", "tool_invocation")
+_emit_captures_execution_output("p2", "lifecycle_trace_contract", "exec_output")
+
+
+# ── P3 Orchestration & Healing emitter functions ─────────────────────────
+
+
+def _emit_dispatches_agent(root_trace_id: str, dispatcher: str, agent: str) -> None:
+    """Emit dispatches_agent ADG edge (P3 Orchestration & Healing)."""
+    _DISPATCHES_AGENT_LOG.debug(
+        "dispatches_agent root_trace_id=%s dispatcher=%s agent=%s",
+        root_trace_id,
+        dispatcher,
+        agent,
+    )
+
+
+def _emit_coordinates_agents(root_trace_id: str, coordinator: str, agents: str) -> None:
+    """Emit coordinates_agents ADG edge (P3 Orchestration & Healing)."""
+    _COORDINATES_AGENTS_LOG.debug(
+        "coordinates_agents root_trace_id=%s coordinator=%s agents=%s",
+        root_trace_id,
+        coordinator,
+        agents,
+    )
+
+
+def _emit_records_workflow_lineage(root_trace_id: str, workflow: str, lineage: str) -> None:
+    """Emit records_workflow_lineage ADG edge (P3 Orchestration & Healing)."""
+    _WORKFLOW_LINEAGE_LOG.debug(
+        "records_workflow_lineage root_trace_id=%s workflow=%s lineage=%s",
+        root_trace_id,
+        workflow,
+        lineage,
+    )
+
+
+def _emit_records_healing_outcome(root_trace_id: str, healer: str, outcome: str) -> None:
+    """Emit records_healing_outcome ADG edge (P3 Orchestration & Healing)."""
+    _HEALING_OUTCOME_LOG.debug(
+        "records_healing_outcome root_trace_id=%s healer=%s outcome=%s",
+        root_trace_id,
+        healer,
+        outcome,
+    )
+
+
+def _emit_escalates_failure(root_trace_id: str, escalator: str, failure: str) -> None:
+    """Emit escalates_failure ADG edge (P3 Orchestration & Healing)."""
+    _ESCALATES_FAILURE_LOG.debug(
+        "escalates_failure root_trace_id=%s escalator=%s failure=%s",
+        root_trace_id,
+        escalator,
+        failure,
+    )
+
+
+def _emit_invokes_evaluation(root_trace_id: str, evaluator: str, target: str) -> None:
+    """Emit invokes_evaluation ADG edge (P3 Orchestration & Healing)."""
+    _INVOKES_EVALUATION_LOG.debug(
+        "invokes_evaluation root_trace_id=%s evaluator=%s target=%s",
+        root_trace_id,
+        evaluator,
+        target,
+    )
+
+
+# ── P3 self-bootstrap (scanner-visible) ────────────────────────────────────────
+_emit_dispatches_agent("p3", "lifecycle_trace_contract", "agent_dispatch")
+_emit_coordinates_agents("p3", "lifecycle_trace_contract", "agent_coordination")
+_emit_records_workflow_lineage("p3", "lifecycle_trace_contract", "workflow_lineage")
+_emit_records_healing_outcome("p3", "lifecycle_trace_contract", "healing_outcome")
+_emit_escalates_failure("p3", "lifecycle_trace_contract", "failure_escalation")
+_emit_orchestrates_workflow("p3", "lifecycle_trace_contract", "workflow_orchestration")
+_emit_dispatches_healing_run("p3", "lifecycle_trace_contract", "healing_dispatch")
+_emit_invokes_evaluation("p3", "lifecycle_trace_contract", "evaluation_signal")
+
+
+# ── P4 State, Telemetry & Learning emitter functions ────────────────────
+
+
+def _emit_records_telemetry_event(root_trace_id: str, source: str, event: str) -> None:
+    """Emit records_telemetry_event ADG edge (P4 State & Telemetry)."""
+    _TELEMETRY_EVENT_LOG.debug(
+        "records_telemetry_event root_trace_id=%s source=%s event=%s",
+        root_trace_id,
+        source,
+        event,
+    )
+
+
+def _emit_captures_evaluation_metric(root_trace_id: str, source: str, metric: str) -> None:
+    """Emit captures_evaluation_metric ADG edge (P4 State & Telemetry)."""
+    _EVALUATION_METRIC_LOG.debug(
+        "captures_evaluation_metric root_trace_id=%s source=%s metric=%s",
+        root_trace_id,
+        source,
+        metric,
+    )
+
+
+def _emit_stores_embedding(root_trace_id: str, source: str, embedding: str) -> None:
+    """Emit stores_embedding ADG edge (P4 State & Telemetry)."""
+    _STORES_EMBEDDING_LOG.debug(
+        "stores_embedding root_trace_id=%s source=%s embedding=%s",
+        root_trace_id,
+        source,
+        embedding,
+    )
+
+
+def _emit_updates_meta_learning_state(root_trace_id: str, source: str, state: str) -> None:
+    """Emit updates_meta_learning_state ADG edge (P4 State & Telemetry)."""
+    _META_LEARNING_LOG.debug(
+        "updates_meta_learning_state root_trace_id=%s source=%s state=%s",
+        root_trace_id,
+        source,
+        state,
+    )
+
+
+def _emit_links_execution_to_snapshot(root_trace_id: str, source: str, snapshot: str) -> None:
+    """Emit links_execution_to_snapshot ADG edge (P4 State & Telemetry)."""
+    _EXEC_SNAPSHOT_LINK_LOG.debug(
+        "links_execution_to_snapshot root_trace_id=%s source=%s snapshot=%s",
+        root_trace_id,
+        source,
+        snapshot,
+    )
+
+
+# ── P4 self-bootstrap (scanner-visible) ────────────────────────────────────────
+_emit_records_telemetry_event("p4", "lifecycle_trace_contract", "telemetry_event")
+_emit_captures_evaluation_metric("p4", "lifecycle_trace_contract", "eval_metric")
+_emit_stores_embedding("p4", "lifecycle_trace_contract", "embedding_store")
+_emit_updates_meta_learning_state("p4", "lifecycle_trace_contract", "meta_learning")
+_emit_links_execution_to_snapshot("p4", "lifecycle_trace_contract", "exec_snapshot_link")
+
+
 # ── §3 — LifecycleTraceRecorder ───────────────────────────────────────────────
 
 
@@ -586,4 +900,27 @@ __all__ = [
     "_emit_escalates_to_human",
     "_emit_routes_through",
     "_emit_dispatches_healing_run",
+    "_emit_routes_to_agent",
+    "_emit_orchestrates_workflow",
+    "_emit_dispatches_execution_plan",
+    "_emit_validates_agent_capability",
+    "_emit_checks_agent_registry",
+    "_emit_authorize_and_execute",
+    "_emit_validates_capability",
+    "_emit_routes_to_capability",
+    "_emit_writes_via_uwg",
+    "_emit_blocks_direct_write",
+    "_emit_records_tool_invocation",
+    "_emit_captures_execution_output",
+    "_emit_dispatches_agent",
+    "_emit_coordinates_agents",
+    "_emit_records_workflow_lineage",
+    "_emit_records_healing_outcome",
+    "_emit_escalates_failure",
+    "_emit_invokes_evaluation",
+    "_emit_records_telemetry_event",
+    "_emit_captures_evaluation_metric",
+    "_emit_stores_embedding",
+    "_emit_updates_meta_learning_state",
+    "_emit_links_execution_to_snapshot",
 ]

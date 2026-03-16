@@ -17,10 +17,30 @@ from typing import Protocol, runtime_checkable
 
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_applies_guardrail,  # noqa: E402
+    _emit_authorize_and_execute,
+    _emit_blocks_direct_write,
+    _emit_captures_evaluation_metric,
+    _emit_captures_execution_output,
+    _emit_coordinates_agents,
+    _emit_dispatches_agent,
+    _emit_dispatches_healing_run,
+    _emit_escalates_failure,
+    _emit_invokes_evaluation,
+    _emit_links_execution_to_snapshot,
+    _emit_orchestrates_workflow,
     _emit_reads_policy_state,  # noqa: E402
     _emit_records_execution_trace,  # noqa: E402
+    _emit_records_healing_outcome,
+    _emit_records_telemetry_event,
+    _emit_records_tool_invocation,
+    _emit_records_workflow_lineage,
+    _emit_routes_to_capability,
     _emit_signs_execution_trace,  # noqa: E402
     _emit_snapshots_state,  # noqa: E402
+    _emit_stores_embedding,
+    _emit_updates_meta_learning_state,
+    _emit_validates_capability,
+    _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
@@ -32,6 +52,26 @@ _emit_snapshots_state("p0", "llm_judge", "state_snapshot")
 emit_replay_key("p0", "llm_judge")
 emit_determinism_digest("p0", "llm_judge")
 _emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_authorize_and_execute("p2", "llm_judge", "execution_auth")
+_emit_validates_capability("p2", "llm_judge", "capability_check")
+_emit_routes_to_capability("p2", "llm_judge", "capability_route")
+_emit_writes_via_uwg("p2", "llm_judge", "uwg_write")
+_emit_blocks_direct_write("p2", "llm_judge", "direct_write_block")
+_emit_records_tool_invocation("p2", "llm_judge", "tool_invocation")
+_emit_captures_execution_output("p2", "llm_judge", "exec_output")
+_emit_dispatches_agent("p3", "llm_judge", "agent_dispatch")
+_emit_coordinates_agents("p3", "llm_judge", "agent_coordination")
+_emit_records_workflow_lineage("p3", "llm_judge", "workflow_lineage")
+_emit_records_healing_outcome("p3", "llm_judge", "healing_outcome")
+_emit_escalates_failure("p3", "llm_judge", "failure_escalation")
+_emit_orchestrates_workflow("p3", "llm_judge", "workflow_orchestration")
+_emit_dispatches_healing_run("p3", "llm_judge", "healing_dispatch")
+_emit_invokes_evaluation("p3", "llm_judge", "evaluation_signal")
+_emit_records_telemetry_event("p4", "llm_judge", "telemetry_event")
+_emit_captures_evaluation_metric("p4", "llm_judge", "eval_metric")
+_emit_stores_embedding("p4", "llm_judge", "embedding_store")
+_emit_updates_meta_learning_state("p4", "llm_judge", "meta_learning")
+_emit_links_execution_to_snapshot("p4", "llm_judge", "exec_snapshot_link")
 
 _RUBRIC = '\nYou are an expert evaluator for RAG (Retrieval-Augmented Generation) systems.\nScore the following on a scale of 1-5 (integers only):\n\n- faithfulness: Is every claim in the answer supported by the provided context?\n  1=completely unsupported, 5=every claim fully grounded.\n- answer_relevancy: Does the answer directly and completely address the query?\n  1=off-topic, 5=directly addresses every part.\n- context_precision: Is the retrieved context relevant to answering the query?\n  1=irrelevant, 5=all context highly relevant.\n- groundedness: Are the factual claims in the answer grounded in the context?\n  1=hallucinated, 5=fully grounded.\n\nProvide a short reasoning (≤2 sentences).\n\nRespond ONLY with valid JSON:\n{"faithfulness": <1-5>, "answer_relevancy": <1-5>,\n "context_precision": <1-5>, "groundedness": <1-5>,\n "reasoning": "<text>"}\n'
 

@@ -2,12 +2,31 @@ from __future__ import annotations
 
 from agentic_core.L2_execution.tools import write_gateway as _wg
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_authorize_and_execute,
+    _emit_blocks_direct_write,
+    _emit_captures_evaluation_metric,
+    _emit_captures_execution_output,
+    _emit_coordinates_agents,
+    _emit_dispatches_agent,
     _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_failure,
     _emit_escalates_to_human,  # noqa: E402
+    _emit_invokes_evaluation,
+    _emit_links_execution_to_snapshot,
+    _emit_orchestrates_workflow,
     _emit_reads_policy_state,  # noqa: E402
+    _emit_records_healing_outcome,
+    _emit_records_telemetry_event,
+    _emit_records_tool_invocation,
+    _emit_records_workflow_lineage,
     _emit_routes_through,  # noqa: E402
+    _emit_routes_to_capability,
     _emit_signs_execution_trace,  # noqa: E402
     _emit_snapshots_state,  # noqa: E402
+    _emit_stores_embedding,
+    _emit_updates_meta_learning_state,
+    _emit_validates_capability,
+    _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
@@ -22,6 +41,26 @@ _emit_reads_policy_state("p1", "PreCommitSovereignAgent", "L5")
 
 _emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 _emit_snapshots_state("p0", "PreCommitSovereignAgent", "state_snapshot")
+_emit_authorize_and_execute("p2", "PreCommitSovereignAgent", "execution_auth")
+_emit_validates_capability("p2", "PreCommitSovereignAgent", "capability_check")
+_emit_routes_to_capability("p2", "PreCommitSovereignAgent", "capability_route")
+_emit_writes_via_uwg("p2", "PreCommitSovereignAgent", "uwg_write")
+_emit_blocks_direct_write("p2", "PreCommitSovereignAgent", "direct_write_block")
+_emit_records_tool_invocation("p2", "PreCommitSovereignAgent", "tool_invocation")
+_emit_captures_execution_output("p2", "PreCommitSovereignAgent", "exec_output")
+_emit_dispatches_agent("p3", "PreCommitSovereignAgent", "agent_dispatch")
+_emit_coordinates_agents("p3", "PreCommitSovereignAgent", "agent_coordination")
+_emit_records_workflow_lineage("p3", "PreCommitSovereignAgent", "workflow_lineage")
+_emit_records_healing_outcome("p3", "PreCommitSovereignAgent", "healing_outcome")
+_emit_escalates_failure("p3", "PreCommitSovereignAgent", "failure_escalation")
+_emit_orchestrates_workflow("p3", "PreCommitSovereignAgent", "workflow_orchestration")
+_emit_dispatches_healing_run("p3", "PreCommitSovereignAgent", "healing_dispatch")
+_emit_invokes_evaluation("p3", "PreCommitSovereignAgent", "evaluation_signal")
+_emit_records_telemetry_event("p4", "PreCommitSovereignAgent", "telemetry_event")
+_emit_captures_evaluation_metric("p4", "PreCommitSovereignAgent", "eval_metric")
+_emit_stores_embedding("p4", "PreCommitSovereignAgent", "embedding_store")
+_emit_updates_meta_learning_state("p4", "PreCommitSovereignAgent", "meta_learning")
+_emit_links_execution_to_snapshot("p4", "PreCommitSovereignAgent", "exec_snapshot_link")
 
 "\nPRE-COMMIT SOVEREIGN AGENT\n--------------------------\nL0 Infrastructure Agent designed to intercept git commits and enforce\nSovereign SSOT Gravity Laws. It ensures no new 'Upward Leaks' are\nintroduced into the codebase.\n\nDomain: Infrastructure & Enforcement\nLayer: L0 Maintenance\nPurpose: Git pre-commit hook for architectural compliance\n\nLogic:\n1. Identifies staged files in the git index.\n2. Scans files for top-level static imports.\n3. Validates import direction against Layered Gravity (L5 -> L0).\n4. Aborts commit (exit 1) if a violation is found.\n"
 import subprocess

@@ -2,10 +2,29 @@ from __future__ import annotations
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_authorize_and_execute,
+    _emit_blocks_direct_write,
+    _emit_captures_evaluation_metric,
+    _emit_captures_execution_output,
+    _emit_coordinates_agents,
+    _emit_dispatches_agent,
     _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_failure,
     _emit_escalates_to_human,  # noqa: E402
+    _emit_invokes_evaluation,
+    _emit_links_execution_to_snapshot,
+    _emit_orchestrates_workflow,
     _emit_reads_policy_state,  # noqa: E402
+    _emit_records_healing_outcome,
+    _emit_records_telemetry_event,
+    _emit_records_tool_invocation,
+    _emit_records_workflow_lineage,
     _emit_routes_through,  # noqa: E402
+    _emit_routes_to_capability,
+    _emit_stores_embedding,
+    _emit_updates_meta_learning_state,
+    _emit_validates_capability,
+    _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
@@ -17,6 +36,26 @@ _emit_dispatches_healing_run("p1", "AdversarialRedTeamerAgent", "L5")
 _emit_routes_through("p1", "AdversarialRedTeamerAgent", "L5")
 _emit_escalates_to_human("p1", "AdversarialRedTeamerAgent", "L5")
 _emit_reads_policy_state("p1", "AdversarialRedTeamerAgent", "L5")
+_emit_authorize_and_execute("p2", "AdversarialRedTeamerAgent", "execution_auth")
+_emit_validates_capability("p2", "AdversarialRedTeamerAgent", "capability_check")
+_emit_routes_to_capability("p2", "AdversarialRedTeamerAgent", "capability_route")
+_emit_writes_via_uwg("p2", "AdversarialRedTeamerAgent", "uwg_write")
+_emit_blocks_direct_write("p2", "AdversarialRedTeamerAgent", "direct_write_block")
+_emit_records_tool_invocation("p2", "AdversarialRedTeamerAgent", "tool_invocation")
+_emit_captures_execution_output("p2", "AdversarialRedTeamerAgent", "exec_output")
+_emit_dispatches_agent("p3", "AdversarialRedTeamerAgent", "agent_dispatch")
+_emit_coordinates_agents("p3", "AdversarialRedTeamerAgent", "agent_coordination")
+_emit_records_workflow_lineage("p3", "AdversarialRedTeamerAgent", "workflow_lineage")
+_emit_records_healing_outcome("p3", "AdversarialRedTeamerAgent", "healing_outcome")
+_emit_escalates_failure("p3", "AdversarialRedTeamerAgent", "failure_escalation")
+_emit_orchestrates_workflow("p3", "AdversarialRedTeamerAgent", "workflow_orchestration")
+_emit_dispatches_healing_run("p3", "AdversarialRedTeamerAgent", "healing_dispatch")
+_emit_invokes_evaluation("p3", "AdversarialRedTeamerAgent", "evaluation_signal")
+_emit_records_telemetry_event("p4", "AdversarialRedTeamerAgent", "telemetry_event")
+_emit_captures_evaluation_metric("p4", "AdversarialRedTeamerAgent", "eval_metric")
+_emit_stores_embedding("p4", "AdversarialRedTeamerAgent", "embedding_store")
+_emit_updates_meta_learning_state("p4", "AdversarialRedTeamerAgent", "meta_learning")
+_emit_links_execution_to_snapshot("p4", "AdversarialRedTeamerAgent", "exec_snapshot_link")
 
 "\n⚛️ Adversarial Red-Teamer - The Skeptic\n\nProactive vulnerability testing agent that finds edge cases and attempts to break\nsandbox rules before code reaches production.\n\nMission: Reduce manual QA by 70% via proactive stress tests\nStrategy: Conflict-first approach to ensure resilience\n\nIntegration: Runs in pre-deployment phase to probe boundaries of:\n- 90% Preservation Rule\n- Sandbox Security\n- Stage connectivity in HOP pipeline\n"
 import ast

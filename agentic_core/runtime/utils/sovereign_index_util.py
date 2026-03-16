@@ -2,9 +2,29 @@ from __future__ import annotations
 
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_applies_guardrail,  # noqa: E402
+    _emit_authorize_and_execute,
+    _emit_blocks_direct_write,
+    _emit_captures_evaluation_metric,
+    _emit_captures_execution_output,
+    _emit_coordinates_agents,
+    _emit_dispatches_agent,
+    _emit_dispatches_healing_run,
+    _emit_escalates_failure,
+    _emit_invokes_evaluation,
+    _emit_links_execution_to_snapshot,
+    _emit_orchestrates_workflow,
     _emit_reads_policy_state,  # noqa: E402
+    _emit_records_healing_outcome,
+    _emit_records_telemetry_event,
+    _emit_records_tool_invocation,
+    _emit_records_workflow_lineage,
+    _emit_routes_to_capability,
     _emit_signs_execution_trace,  # noqa: E402
     _emit_snapshots_state,  # noqa: E402
+    _emit_stores_embedding,
+    _emit_updates_meta_learning_state,
+    _emit_validates_capability,
+    _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
@@ -15,6 +35,26 @@ _emit_snapshots_state("p0", "sovereign_index_util", "state_snapshot")
 emit_replay_key("p0", "sovereign_index_util")
 emit_determinism_digest("p0", "sovereign_index_util")
 _emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_authorize_and_execute("p2", "sovereign_index_util", "execution_auth")
+_emit_validates_capability("p2", "sovereign_index_util", "capability_check")
+_emit_routes_to_capability("p2", "sovereign_index_util", "capability_route")
+_emit_writes_via_uwg("p2", "sovereign_index_util", "uwg_write")
+_emit_blocks_direct_write("p2", "sovereign_index_util", "direct_write_block")
+_emit_records_tool_invocation("p2", "sovereign_index_util", "tool_invocation")
+_emit_captures_execution_output("p2", "sovereign_index_util", "exec_output")
+_emit_dispatches_agent("p3", "sovereign_index_util", "agent_dispatch")
+_emit_coordinates_agents("p3", "sovereign_index_util", "agent_coordination")
+_emit_records_workflow_lineage("p3", "sovereign_index_util", "workflow_lineage")
+_emit_records_healing_outcome("p3", "sovereign_index_util", "healing_outcome")
+_emit_escalates_failure("p3", "sovereign_index_util", "failure_escalation")
+_emit_orchestrates_workflow("p3", "sovereign_index_util", "workflow_orchestration")
+_emit_dispatches_healing_run("p3", "sovereign_index_util", "healing_dispatch")
+_emit_invokes_evaluation("p3", "sovereign_index_util", "evaluation_signal")
+_emit_records_telemetry_event("p4", "sovereign_index_util", "telemetry_event")
+_emit_captures_evaluation_metric("p4", "sovereign_index_util", "eval_metric")
+_emit_stores_embedding("p4", "sovereign_index_util", "embedding_store")
+_emit_updates_meta_learning_state("p4", "sovereign_index_util", "meta_learning")
+_emit_links_execution_to_snapshot("p4", "sovereign_index_util", "exec_snapshot_link")
 
 '\nSovereignIndex - Cached File Indexer to Replace rglob Calls\n\nThis module provides a singleton file indexer that caches filesystem scans,\ndramatically reducing the performance impact of repeated rglob calls.\n\nUSAGE:\n\n    # Get the singleton instance\n    index = SovereignIndex.get_instance(project_root)\n\n    # Get files matching a pattern\n    python_files = index.get_files("*.py")\n    agent_files = index.get_files("*Agent.py")\n\n    # Force refresh if needed\n    index.refresh()\n\nPERFORMANCE:\n    - Initial scan: O(n) where n = number of files\n    - Subsequent queries: O(1) from cache\n    - Auto-invalidation: Checks mtime of project root\n\nSSOT PRINCIPLE:\n    All file discovery should use SovereignIndex instead of direct rglob calls.\n    This ensures consistent exclusion patterns and optimal performance.\n'
 import fnmatch

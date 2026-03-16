@@ -33,21 +33,30 @@ from agentic_core.adg.schema import (
     AGENT_REGISTRY_CLASSES,
     ANTIPATTERN_CATEGORY_NAMES,
     ANTIPATTERN_REGISTRY_CLASSES,
+    AUTHORIZE_EXECUTE_SYMBOLS,
+    BLOCKS_DIRECT_WRITE_SYMBOLS,
     BOUNDARY_VERIFIER_CLASSES,
     BUDGET_EXCEEDED_EXCEPTIONS,
     CAPABILITY_CHOKEPOINT_CLASSES,
     CAPABILITY_TOKEN_CLASSES,
+    CAPABILITY_VALIDATION_SYMBOLS,
+    CAPTURES_EVALUATION_METRIC_SYMBOLS,
+    CAPTURES_EXECUTION_OUTPUT_SYMBOLS,
     CONFIDENCE_SCORING_CLASSES,
     CONFIG_ACCESS_METHODS,
     CONFIG_READER_CLASSES,
+    COORDINATES_AGENTS_SYMBOLS,
     DETERMINISM_PATCH_METHODS,
+    DISPATCHES_AGENT_SYMBOLS,
     DPO_BATCH_CLASSES,
     DRIFT_ALERT_METHODS,
     DYNAMIC_EVAL_SYMBOLS,
     DYNAMIC_GETATTR_SYMBOLS,
     EMBEDDING_PIPELINE_SYMBOLS,
     EMBEDDING_SYMBOLS,
+    ESCALATES_FAILURE_SYMBOLS,
     EVAL_METRIC_CLASSES,
+    EXECUTION_PLAN_DISPATCH_SYMBOLS,
     EXECUTION_TRACE_CLASSES,
     EXTERNAL_HTTP_SYMBOLS,
     FREEZE_METHOD_NAMES,
@@ -58,8 +67,10 @@ from agentic_core.adg.schema import (
     HEALING_ORCHESTRATOR_CLASSES,
     HITL_ESCALATION_METHODS,
     HUMAN_REVIEW_SYMBOLS,
+    INVOKES_EVALUATION_SYMBOLS,
     IO_INTERCEPT_CLASSES,
     JIT_CONTEXT_CLASSES,
+    LINKS_EXECUTION_TO_SNAPSHOT_SYMBOLS,
     MUTATION_TRANSPORT_CLASSES,
     NETWORK_SYMBOLS,
     NETWORK_TRANSCRIPT_SYMBOLS,
@@ -67,6 +78,7 @@ from agentic_core.adg.schema import (
     NONDETERMINISM_UUID_SYMBOLS,
     # G23-G27 (gap): new proof-edge frozensets
     NONDETERMINISM_WALL_CLOCK_SYMBOLS,
+    ORCHESTRATION_ROUTE_SYMBOLS,
     PATH_CONTROL_CLASSES,
     PATH_REROUTE_METHODS,
     POLICY_HASH_METHODS,
@@ -77,10 +89,16 @@ from agentic_core.adg.schema import (
     PROMPT_INJECTION_SYMBOLS,
     PROMPT_TEMPLATE_SYMBOLS,
     PROVIDER_SDK_SYMBOLS,
+    RECORDS_HEALING_OUTCOME_SYMBOLS,
+    RECORDS_TELEMETRY_EVENT_SYMBOLS,
+    RECORDS_TOOL_INVOCATION_SYMBOLS,
+    RECORDS_WORKFLOW_LINEAGE_SYMBOLS,
+    REGISTRY_CHECK_SYMBOLS,
     REPLAY_GUARD_CLASSES,
     REPLAY_KEY_METHODS,
     RETRIEVAL_SYMBOLS,
     RFC6902_DIFF_SYMBOLS,
+    ROUTES_TO_CAPABILITY_SYMBOLS,
     ROUTING_COMMIT_SYMBOLS,
     SAFETY_PLANE_CLASSES,
     SANDBOX_ENVELOPE_CLASSES,
@@ -88,13 +106,18 @@ from agentic_core.adg.schema import (
     SECRET_ENV_PATTERNS,
     SECRET_VAULT_CLASSES,
     SEMANTIC_CLOCK_CLASSES,
+    STORES_EMBEDDING_SYMBOLS,
     TOOL_BUDGET_CLASSES,
+    UPDATES_META_LEARNING_STATE_SYMBOLS,
     UWG_TERMINATION_SYMBOLS,
+    VALIDATES_CAPABILITY_SYMBOLS,
     VALIDATOR_BASE_CLASSES,
     VECTOR_STORE_SYMBOLS,
     WORK_CONTRACT_METHODS,
+    WORKFLOW_ORCHESTRATION_SYMBOLS,
     WRITE_SIDE_EFFECT_EXCLUSIONS,
     WRITE_SIDE_EFFECT_SYMBOLS,
+    WRITES_VIA_UWG_SYMBOLS,
     canonical_name,
     module_path_to_layer,
 )
@@ -116,9 +139,16 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXC
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_applies_guardrail,  # noqa: E402
+    _emit_authorize_and_execute,
+    _emit_blocks_direct_write,
+    _emit_captures_execution_output,
     _emit_records_execution_trace,
+    _emit_records_tool_invocation,
+    _emit_routes_to_capability,
     _emit_signs_execution_trace,  # noqa: E402
     _emit_snapshots_state,  # noqa: E402
+    _emit_validates_capability,
+    _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
@@ -129,6 +159,43 @@ _emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 emit_replay_key("p0", "static_scanner")
 emit_determinism_digest("p0", "static_scanner")
+_emit_authorize_and_execute("p2", "static_scanner", "execution_auth")
+_emit_validates_capability("p2", "static_scanner", "capability_check")
+_emit_routes_to_capability("p2", "static_scanner", "capability_route")
+_emit_writes_via_uwg("p2", "static_scanner", "uwg_write")
+_emit_blocks_direct_write("p2", "static_scanner", "direct_write_block")
+_emit_records_tool_invocation("p2", "static_scanner", "tool_invocation")
+_emit_captures_execution_output("p2", "static_scanner", "exec_output")
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_captures_evaluation_metric,
+    _emit_coordinates_agents,
+    _emit_dispatches_agent,
+    _emit_dispatches_healing_run,
+    _emit_escalates_failure,
+    _emit_invokes_evaluation,
+    _emit_links_execution_to_snapshot,
+    _emit_orchestrates_workflow,
+    _emit_records_healing_outcome,
+    _emit_records_telemetry_event,
+    _emit_records_workflow_lineage,
+    _emit_stores_embedding,
+    _emit_updates_meta_learning_state,
+)
+
+_emit_dispatches_agent("p3", "static_scanner", "agent_dispatch")
+_emit_coordinates_agents("p3", "static_scanner", "agent_coordination")
+_emit_records_workflow_lineage("p3", "static_scanner", "workflow_lineage")
+_emit_records_healing_outcome("p3", "static_scanner", "healing_outcome")
+_emit_escalates_failure("p3", "static_scanner", "failure_escalation")
+_emit_orchestrates_workflow("p3", "static_scanner", "workflow_orchestration")
+_emit_dispatches_healing_run("p3", "static_scanner", "healing_dispatch")
+_emit_invokes_evaluation("p3", "static_scanner", "evaluation_signal")
+_emit_records_telemetry_event("p4", "static_scanner", "telemetry_event")
+_emit_captures_evaluation_metric("p4", "static_scanner", "eval_metric")
+_emit_stores_embedding("p4", "static_scanner", "embedding_store")
+_emit_updates_meta_learning_state("p4", "static_scanner", "meta_learning")
+_emit_links_execution_to_snapshot("p4", "static_scanner", "exec_snapshot_link")
 
 logger = logging.getLogger(__name__)
 
@@ -3492,6 +3559,199 @@ class _AgentDispatchVisitor(ast.NodeVisitor):
         )
 
 
+class _P1OrchestrationGovernanceVisitor(ast.NodeVisitor):
+    """G28 (gap): P1 orchestration governance proof edges.
+
+    Emits:
+      module --routes_to_agent-->           ADG::Symbol::<emit_routes_to_agent / ...>
+      module --orchestrates_workflow-->      ADG::Symbol::<emit_orchestrates_workflow / ...>
+      module --dispatches_execution_plan--> ADG::Symbol::<emit_dispatches_execution_plan / ...>
+      module --validates_agent_capability-->ADG::Symbol::<emit_validates_agent_capability / ...>
+      module --checks_agent_registry-->     ADG::Symbol::<emit_checks_agent_registry / ...>
+    """
+
+    _SYMBOL_MAP: tuple[tuple[frozenset[str], str, str], ...] = (
+        (ORCHESTRATION_ROUTE_SYMBOLS, "routes_to_agent", "agent_route"),
+        (WORKFLOW_ORCHESTRATION_SYMBOLS, "orchestrates_workflow", "workflow_orchestration"),
+        (EXECUTION_PLAN_DISPATCH_SYMBOLS, "dispatches_execution_plan", "execution_plan_dispatch"),
+        (CAPABILITY_VALIDATION_SYMBOLS, "validates_agent_capability", "capability_validation"),
+        (REGISTRY_CHECK_SYMBOLS, "checks_agent_registry", "registry_check"),
+    )
+
+    def __init__(self, module_adg_name: str, source_file: str) -> None:
+        self.module_adg_name = module_adg_name
+        self.source_file = source_file
+        self.edges: list[Edge] = []
+
+    def visit_Call(self, node: ast.Call) -> None:
+        sym = _sym_of(node.func)
+        tail = sym.split(".")[-1] if sym else ""
+        base = sym.split(".")[0] if sym else ""
+        for symbols, relation, edge_kind in self._SYMBOL_MAP:
+            if tail in symbols or base in symbols:
+                self._emit(relation, edge_kind, sym or tail, node.lineno)
+        self.generic_visit(node)
+
+    def _emit(self, relation: str, edge_kind: str, sym: str, line_no: int) -> None:
+        self.edges.append(
+            Edge(
+                from_name=self.module_adg_name,
+                relation_type=relation,
+                to_name=canonical_name("Symbol", sym),
+                edge_kind=edge_kind,
+                source_file=self.source_file,
+                line_no=line_no,
+                symbol=sym,
+            )
+        )
+
+
+class _P2ExecutionCapabilityVisitor(ast.NodeVisitor):
+    """G29 (gap): P2 execution capability proof edges.
+
+    Emits:
+      module --authorize_and_execute-->       ADG::Symbol::<_emit_authorize_and_execute / ...>
+      module --validates_capability-->        ADG::Symbol::<_emit_validates_capability / ...>
+      module --routes_to_capability-->        ADG::Symbol::<_emit_routes_to_capability / ...>
+      module --writes_via_uwg-->              ADG::Symbol::<_emit_writes_via_uwg / ...>
+      module --blocks_direct_write-->         ADG::Symbol::<_emit_blocks_direct_write / ...>
+      module --records_tool_invocation-->     ADG::Symbol::<_emit_records_tool_invocation / ...>
+      module --captures_execution_output-->   ADG::Symbol::<_emit_captures_execution_output / ...>
+    """
+
+    _SYMBOL_MAP: tuple[tuple[frozenset[str], str, str], ...] = (
+        (AUTHORIZE_EXECUTE_SYMBOLS, "authorize_and_execute", "execution_authorization"),
+        (VALIDATES_CAPABILITY_SYMBOLS, "validates_capability", "capability_validation"),
+        (ROUTES_TO_CAPABILITY_SYMBOLS, "routes_to_capability", "capability_routing"),
+        (WRITES_VIA_UWG_SYMBOLS, "writes_via_uwg", "uwg_write"),
+        (BLOCKS_DIRECT_WRITE_SYMBOLS, "blocks_direct_write", "direct_write_block"),
+        (RECORDS_TOOL_INVOCATION_SYMBOLS, "records_tool_invocation", "tool_invocation_record"),
+        (CAPTURES_EXECUTION_OUTPUT_SYMBOLS, "captures_execution_output", "execution_output_capture"),
+    )
+
+    def __init__(self, module_adg_name: str, source_file: str) -> None:
+        self.module_adg_name = module_adg_name
+        self.source_file = source_file
+        self.edges: list[Edge] = []
+
+    def visit_Call(self, node: ast.Call) -> None:
+        sym = _sym_of(node.func)
+        tail = sym.split(".")[-1] if sym else ""
+        base = sym.split(".")[0] if sym else ""
+        for symbols, relation, edge_kind in self._SYMBOL_MAP:
+            if tail in symbols or base in symbols:
+                self._emit(relation, edge_kind, sym or tail, node.lineno)
+        self.generic_visit(node)
+
+    def _emit(self, relation: str, edge_kind: str, sym: str, line_no: int) -> None:
+        self.edges.append(
+            Edge(
+                from_name=self.module_adg_name,
+                relation_type=relation,
+                to_name=canonical_name("Symbol", sym),
+                edge_kind=edge_kind,
+                source_file=self.source_file,
+                line_no=line_no,
+                symbol=sym,
+            )
+        )
+
+
+class _P3OrchestrationHealingVisitor(ast.NodeVisitor):
+    """G30 (gap): P3 orchestration & healing proof edges.
+
+    Emits:
+      module --dispatches_agent-->           ADG::Symbol::<_emit_dispatches_agent / ...>
+      module --coordinates_agents-->         ADG::Symbol::<_emit_coordinates_agents / ...>
+      module --records_workflow_lineage-->    ADG::Symbol::<_emit_records_workflow_lineage / ...>
+      module --records_healing_outcome-->     ADG::Symbol::<_emit_records_healing_outcome / ...>
+      module --escalates_failure-->           ADG::Symbol::<_emit_escalates_failure / ...>
+    """
+
+    _SYMBOL_MAP: tuple[tuple[frozenset[str], str, str], ...] = (
+        (DISPATCHES_AGENT_SYMBOLS, "dispatches_agent", "agent_dispatch"),
+        (COORDINATES_AGENTS_SYMBOLS, "coordinates_agents", "agent_coordination"),
+        (RECORDS_WORKFLOW_LINEAGE_SYMBOLS, "records_workflow_lineage", "workflow_lineage"),
+        (RECORDS_HEALING_OUTCOME_SYMBOLS, "records_healing_outcome", "healing_outcome"),
+        (ESCALATES_FAILURE_SYMBOLS, "escalates_failure", "failure_escalation"),
+        (INVOKES_EVALUATION_SYMBOLS, "invokes_evaluation", "evaluation_signal"),
+    )
+
+    def __init__(self, module_adg_name: str, source_file: str) -> None:
+        self.module_adg_name = module_adg_name
+        self.source_file = source_file
+        self.edges: list[Edge] = []
+
+    def visit_Call(self, node: ast.Call) -> None:
+        sym = _sym_of(node.func)
+        tail = sym.split(".")[-1] if sym else ""
+        base = sym.split(".")[0] if sym else ""
+        for symbols, relation, edge_kind in self._SYMBOL_MAP:
+            if tail in symbols or base in symbols:
+                self._emit(relation, edge_kind, sym or tail, node.lineno)
+        self.generic_visit(node)
+
+    def _emit(self, relation: str, edge_kind: str, sym: str, line_no: int) -> None:
+        self.edges.append(
+            Edge(
+                from_name=self.module_adg_name,
+                relation_type=relation,
+                to_name=canonical_name("Symbol", sym),
+                edge_kind=edge_kind,
+                source_file=self.source_file,
+                line_no=line_no,
+                symbol=sym,
+            )
+        )
+
+
+class _P4StateTelemetryVisitor(ast.NodeVisitor):
+    """G31 (gap): P4 state, telemetry & learning proof edges.
+
+    Emits:
+      module --records_telemetry_event-->       ADG::Symbol::<_emit_records_telemetry_event / ...>
+      module --captures_evaluation_metric-->    ADG::Symbol::<_emit_captures_evaluation_metric / ...>
+      module --stores_embedding-->              ADG::Symbol::<_emit_stores_embedding / ...>
+      module --updates_meta_learning_state-->   ADG::Symbol::<_emit_updates_meta_learning_state / ...>
+      module --links_execution_to_snapshot-->   ADG::Symbol::<_emit_links_execution_to_snapshot / ...>
+    """
+
+    _SYMBOL_MAP: tuple[tuple[frozenset[str], str, str], ...] = (
+        (RECORDS_TELEMETRY_EVENT_SYMBOLS, "records_telemetry_event", "telemetry_event"),
+        (CAPTURES_EVALUATION_METRIC_SYMBOLS, "captures_evaluation_metric", "eval_metric"),
+        (STORES_EMBEDDING_SYMBOLS, "stores_embedding", "embedding_store"),
+        (UPDATES_META_LEARNING_STATE_SYMBOLS, "updates_meta_learning_state", "meta_learning"),
+        (LINKS_EXECUTION_TO_SNAPSHOT_SYMBOLS, "links_execution_to_snapshot", "exec_snapshot_link"),
+    )
+
+    def __init__(self, module_adg_name: str, source_file: str) -> None:
+        self.module_adg_name = module_adg_name
+        self.source_file = source_file
+        self.edges: list[Edge] = []
+
+    def visit_Call(self, node: ast.Call) -> None:
+        sym = _sym_of(node.func)
+        tail = sym.split(".")[-1] if sym else ""
+        base = sym.split(".")[0] if sym else ""
+        for symbols, relation, edge_kind in self._SYMBOL_MAP:
+            if tail in symbols or base in symbols:
+                self._emit(relation, edge_kind, sym or tail, node.lineno)
+        self.generic_visit(node)
+
+    def _emit(self, relation: str, edge_kind: str, sym: str, line_no: int) -> None:
+        self.edges.append(
+            Edge(
+                from_name=self.module_adg_name,
+                relation_type=relation,
+                to_name=canonical_name("Symbol", sym),
+                edge_kind=edge_kind,
+                source_file=self.source_file,
+                line_no=line_no,
+                symbol=sym,
+            )
+        )
+
+
 class _L5ValidationProofVisitor(ast.NodeVisitor):
     """G26 (gap): L5 validation proof edges.
 
@@ -4016,11 +4276,37 @@ def _scan_file(
     agent_dispatch_visitor.visit(tree)
     edges.extend(agent_dispatch_visitor.edges)
 
+    # G28 (gap): P1 orchestration governance (routes_to_agent, orchestrates_workflow,
+    #            dispatches_execution_plan, validates_agent_capability, checks_agent_registry)
+    p1_orch_visitor = _P1OrchestrationGovernanceVisitor(module_adg, rel)
+    p1_orch_visitor.visit(tree)
+    edges.extend(p1_orch_visitor.edges)
+
     # G26 (gap): L5 validation proof edges (validated_by_registry, validated_by_safety_plane,
     #            validated_by_llm_gateway, execution_terminates_at_uwg, references_policy_hash)
     l5_proof_visitor = _L5ValidationProofVisitor(module_adg, rel)
     l5_proof_visitor.visit(tree)
     edges.extend(l5_proof_visitor.edges)
+
+    # G29 (gap): P2 execution capability (authorize_and_execute, validates_capability,
+    #            routes_to_capability, writes_via_uwg, blocks_direct_write,
+    #            records_tool_invocation, captures_execution_output)
+    p2_exec_visitor = _P2ExecutionCapabilityVisitor(module_adg, rel)
+    p2_exec_visitor.visit(tree)
+    edges.extend(p2_exec_visitor.edges)
+
+    # G30 (gap): P3 orchestration & healing (dispatches_agent, coordinates_agents,
+    #            records_workflow_lineage, records_healing_outcome, escalates_failure)
+    p3_orch_visitor = _P3OrchestrationHealingVisitor(module_adg, rel)
+    p3_orch_visitor.visit(tree)
+    edges.extend(p3_orch_visitor.edges)
+
+    # G31 (gap): P4 state, telemetry & learning (records_telemetry_event,
+    #            captures_evaluation_metric, stores_embedding,
+    #            updates_meta_learning_state, links_execution_to_snapshot)
+    p4_state_visitor = _P4StateTelemetryVisitor(module_adg, rel)
+    p4_state_visitor.visit(tree)
+    edges.extend(p4_state_visitor.edges)
 
     # G27 (gap): Learning / prompt provenance (proposal_commits_routing, prompt_template_used_by,
     #            instruction_injection_source, produces_preference_pair, requires_human_review)

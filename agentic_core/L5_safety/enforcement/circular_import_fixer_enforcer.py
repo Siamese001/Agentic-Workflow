@@ -2,10 +2,29 @@ from __future__ import annotations
 
 from agentic_core.L2_execution.tools import write_gateway as _wg
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_authorize_and_execute,
+    _emit_blocks_direct_write,
+    _emit_captures_evaluation_metric,
+    _emit_captures_execution_output,
+    _emit_coordinates_agents,
+    _emit_dispatches_agent,
     _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_failure,
     _emit_escalates_to_human,  # noqa: E402
+    _emit_invokes_evaluation,
+    _emit_links_execution_to_snapshot,
+    _emit_orchestrates_workflow,
     _emit_reads_policy_state,  # noqa: E402
+    _emit_records_healing_outcome,
+    _emit_records_telemetry_event,
+    _emit_records_tool_invocation,
+    _emit_records_workflow_lineage,
     _emit_routes_through,  # noqa: E402
+    _emit_routes_to_capability,
+    _emit_stores_embedding,
+    _emit_updates_meta_learning_state,
+    _emit_validates_capability,
+    _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
@@ -17,6 +36,26 @@ _emit_dispatches_healing_run("p1", "circular_import_fixer_enforcer", "L5")
 _emit_routes_through("p1", "circular_import_fixer_enforcer", "L5")
 _emit_escalates_to_human("p1", "circular_import_fixer_enforcer", "L5")
 _emit_reads_policy_state("p1", "circular_import_fixer_enforcer", "L5")
+_emit_authorize_and_execute("p2", "circular_import_fixer_enforcer", "execution_auth")
+_emit_validates_capability("p2", "circular_import_fixer_enforcer", "capability_check")
+_emit_routes_to_capability("p2", "circular_import_fixer_enforcer", "capability_route")
+_emit_writes_via_uwg("p2", "circular_import_fixer_enforcer", "uwg_write")
+_emit_blocks_direct_write("p2", "circular_import_fixer_enforcer", "direct_write_block")
+_emit_records_tool_invocation("p2", "circular_import_fixer_enforcer", "tool_invocation")
+_emit_captures_execution_output("p2", "circular_import_fixer_enforcer", "exec_output")
+_emit_dispatches_agent("p3", "circular_import_fixer_enforcer", "agent_dispatch")
+_emit_coordinates_agents("p3", "circular_import_fixer_enforcer", "agent_coordination")
+_emit_records_workflow_lineage("p3", "circular_import_fixer_enforcer", "workflow_lineage")
+_emit_records_healing_outcome("p3", "circular_import_fixer_enforcer", "healing_outcome")
+_emit_escalates_failure("p3", "circular_import_fixer_enforcer", "failure_escalation")
+_emit_orchestrates_workflow("p3", "circular_import_fixer_enforcer", "workflow_orchestration")
+_emit_dispatches_healing_run("p3", "circular_import_fixer_enforcer", "healing_dispatch")
+_emit_invokes_evaluation("p3", "circular_import_fixer_enforcer", "evaluation_signal")
+_emit_records_telemetry_event("p4", "circular_import_fixer_enforcer", "telemetry_event")
+_emit_captures_evaluation_metric("p4", "circular_import_fixer_enforcer", "eval_metric")
+_emit_stores_embedding("p4", "circular_import_fixer_enforcer", "embedding_store")
+_emit_updates_meta_learning_state("p4", "circular_import_fixer_enforcer", "meta_learning")
+_emit_links_execution_to_snapshot("p4", "circular_import_fixer_enforcer", "exec_snapshot_link")
 
 "\nFix circular imports in agentic_core by converting absolute imports to relative imports.\n\nThis script:\n1. Scans all Python files in agentic_core/\n3. Converts them to relative imports: from .L1_cognition... or from ..L1_cognition...\n4. Preserves imports from outside agentic_core (e.g., from apps_shared, from schemas)\n"
 import re

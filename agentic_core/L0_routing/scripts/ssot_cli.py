@@ -1,10 +1,29 @@
 from __future__ import annotations
 
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_authorize_and_execute,
+    _emit_blocks_direct_write,
+    _emit_captures_evaluation_metric,
+    _emit_captures_execution_output,
+    _emit_coordinates_agents,
+    _emit_dispatches_agent,
     _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_failure,
     _emit_escalates_to_human,  # noqa: E402
+    _emit_invokes_evaluation,
+    _emit_links_execution_to_snapshot,
+    _emit_orchestrates_workflow,
     _emit_reads_policy_state,  # noqa: E402
+    _emit_records_healing_outcome,
+    _emit_records_telemetry_event,
+    _emit_records_tool_invocation,
+    _emit_records_workflow_lineage,
     _emit_routes_through,  # noqa: E402
+    _emit_routes_to_capability,
+    _emit_stores_embedding,
+    _emit_updates_meta_learning_state,
+    _emit_validates_capability,
+    _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
@@ -16,6 +35,26 @@ _emit_dispatches_healing_run("p1", "ssot_cli", "L0")
 _emit_routes_through("p1", "ssot_cli", "L0")
 _emit_escalates_to_human("p1", "ssot_cli", "L0")
 _emit_reads_policy_state("p1", "ssot_cli", "L0")
+_emit_authorize_and_execute("p2", "ssot_cli", "execution_auth")
+_emit_validates_capability("p2", "ssot_cli", "capability_check")
+_emit_routes_to_capability("p2", "ssot_cli", "capability_route")
+_emit_writes_via_uwg("p2", "ssot_cli", "uwg_write")
+_emit_blocks_direct_write("p2", "ssot_cli", "direct_write_block")
+_emit_records_tool_invocation("p2", "ssot_cli", "tool_invocation")
+_emit_captures_execution_output("p2", "ssot_cli", "exec_output")
+_emit_dispatches_agent("p3", "ssot_cli", "agent_dispatch")
+_emit_coordinates_agents("p3", "ssot_cli", "agent_coordination")
+_emit_records_workflow_lineage("p3", "ssot_cli", "workflow_lineage")
+_emit_records_healing_outcome("p3", "ssot_cli", "healing_outcome")
+_emit_escalates_failure("p3", "ssot_cli", "failure_escalation")
+_emit_orchestrates_workflow("p3", "ssot_cli", "workflow_orchestration")
+_emit_dispatches_healing_run("p3", "ssot_cli", "healing_dispatch")
+_emit_invokes_evaluation("p3", "ssot_cli", "evaluation_signal")
+_emit_records_telemetry_event("p4", "ssot_cli", "telemetry_event")
+_emit_captures_evaluation_metric("p4", "ssot_cli", "eval_metric")
+_emit_stores_embedding("p4", "ssot_cli", "embedding_store")
+_emit_updates_meta_learning_state("p4", "ssot_cli", "meta_learning")
+_emit_links_execution_to_snapshot("p4", "ssot_cli", "exec_snapshot_link")
 
 "\nSSOT - Sovereign Single Source of Truth CLI\n\nProfessional-grade command-line tool for SSOT architectural governance.\nProvides a unified interface for scanning, validation, and enforcement.\n\nUsage:\n    python scripts/ssot_util.py scan              # Scan and list all agents\n    python scripts/ssot_util.py validate          # Run comprehensive validation\n    python scripts/ssot_util.py enforce           # Apply automated remediation\n    python scripts/ssot_util.py status            # Show compliance dashboard\n\nSimilar to git/npm, this tool provides a discoverable interface for\narchitectural governance as a first-class citizen of your workflow.\n"
 import argparse

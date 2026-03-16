@@ -22,10 +22,30 @@ from agentic_core.L0_routing.config.path_constants import (
 )
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_applies_guardrail,  # noqa: E402
+    _emit_authorize_and_execute,
+    _emit_blocks_direct_write,
+    _emit_captures_evaluation_metric,
+    _emit_captures_execution_output,
+    _emit_coordinates_agents,
+    _emit_dispatches_agent,
+    _emit_dispatches_healing_run,
+    _emit_escalates_failure,
+    _emit_invokes_evaluation,
+    _emit_links_execution_to_snapshot,
+    _emit_orchestrates_workflow,
     _emit_reads_policy_state,  # noqa: E402
     _emit_records_execution_trace,  # noqa: E402
+    _emit_records_healing_outcome,
+    _emit_records_telemetry_event,
+    _emit_records_tool_invocation,
+    _emit_records_workflow_lineage,
+    _emit_routes_to_capability,
     _emit_signs_execution_trace,  # noqa: E402
     _emit_snapshots_state,  # noqa: E402
+    _emit_stores_embedding,
+    _emit_updates_meta_learning_state,
+    _emit_validates_capability,
+    _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
@@ -37,6 +57,26 @@ _emit_snapshots_state("p0", "rename_to_agent_suffix_util", "state_snapshot")
 emit_replay_key("p0", "rename_to_agent_suffix_util")
 emit_determinism_digest("p0", "rename_to_agent_suffix_util")
 _emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+_emit_authorize_and_execute("p2", "rename_to_agent_suffix_util", "execution_auth")
+_emit_validates_capability("p2", "rename_to_agent_suffix_util", "capability_check")
+_emit_routes_to_capability("p2", "rename_to_agent_suffix_util", "capability_route")
+_emit_writes_via_uwg("p2", "rename_to_agent_suffix_util", "uwg_write")
+_emit_blocks_direct_write("p2", "rename_to_agent_suffix_util", "direct_write_block")
+_emit_records_tool_invocation("p2", "rename_to_agent_suffix_util", "tool_invocation")
+_emit_captures_execution_output("p2", "rename_to_agent_suffix_util", "exec_output")
+_emit_dispatches_agent("p3", "rename_to_agent_suffix_util", "agent_dispatch")
+_emit_coordinates_agents("p3", "rename_to_agent_suffix_util", "agent_coordination")
+_emit_records_workflow_lineage("p3", "rename_to_agent_suffix_util", "workflow_lineage")
+_emit_records_healing_outcome("p3", "rename_to_agent_suffix_util", "healing_outcome")
+_emit_escalates_failure("p3", "rename_to_agent_suffix_util", "failure_escalation")
+_emit_orchestrates_workflow("p3", "rename_to_agent_suffix_util", "workflow_orchestration")
+_emit_dispatches_healing_run("p3", "rename_to_agent_suffix_util", "healing_dispatch")
+_emit_invokes_evaluation("p3", "rename_to_agent_suffix_util", "evaluation_signal")
+_emit_records_telemetry_event("p4", "rename_to_agent_suffix_util", "telemetry_event")
+_emit_captures_evaluation_metric("p4", "rename_to_agent_suffix_util", "eval_metric")
+_emit_stores_embedding("p4", "rename_to_agent_suffix_util", "embedding_store")
+_emit_updates_meta_learning_state("p4", "rename_to_agent_suffix_util", "meta_learning")
+_emit_links_execution_to_snapshot("p4", "rename_to_agent_suffix_util", "exec_snapshot_link")
 RENAMES = {'SafeSystemCommandExecutorAgent': 'SafeSystemCommandExecutorAgent', 'ScriptToAgentClassifierAgent': 'ScriptToAgentClassifierAgent', 'ScriptsPlanningOrchestratorAgent': 'ScriptsPlanningOrchestratorAgent', 'SystemCommandExecutorAgent': 'SystemCommandExecutorAgent', 'WorkflowOrchestratorAgent': 'WorkflowOrchestratorAgent', 'AssertionInspector': 'AssertionInspectorAgent', 'BranchTracker': 'BranchTrackerAgent', 'CriticalPathAnalyzer': 'CriticalPathAnalyzerAgent', 'DecisionAnalyzer': 'DecisionAnalyzerAgent', 'DuplicateDetector': 'DuplicateDetectorAgent', 'DuplicateFunctionDetector': 'DuplicateFunctionDetectorAgent', 'ExceptionFlowAnalyzer': 'ExceptionFlowAnalyzerAgent', 'IntelligentOrchestratorAgent': 'IntelligentOrchestratorAgent', 'OrchestratorAgentAndScopeManagerAgent': 'OrchestratorAgentAndScopeManagerAgent', 'PatternEnforcerAgent': 'PatternEnforcerAgent', 'PrintStatementValidatorAgent': 'PrintStatementValidatorAgent', 'ReasoningRouterAgent': 'ReasoningRouterAgent', 'SafetyInspectorAgent': 'SafetyInspectorAgent', 'SemanticMapperAgent': 'SemanticMapperAgent', 'SovereignCognitivePlaneAgent': 'SovereignCognitivePlaneAgent', 'AuditTrailManager': 'AuditTrailManagerAgent', 'CircuitBreaker': 'CircuitBreakerAgent', 'CodeBlockValidator': 'CodeBlockValidatorAgent', 'DocumentHealer': 'DocumentHealerAgent', 'ImportHealerAgent': 'ImportHealerAgent', 'IntegrityGateExecutorAgent': 'IntegrityGateExecutorAgent', 'McpConnectionManagerAgent': 'McpConnectionManagerAgent', 'MemoryLeakDetectorAgent': 'MemoryLeakDetectorAgent', 'PeerIntelligenceAuditorAgent': 'PeerIntelligenceAuditorAgent', 'ProactiveResourceManagerAgent': 'ProactiveResourceManagerAgent', 'SovereignRedisOrchestrator': 'SovereignRedisOrchestrator', 'SovereigntyAuditorAgent': 'SovereigntyAuditorAgent', 'SprawlInspectorAgent': 'SprawlInspectorAgent', 'DeadlockDetectorAgent': 'DeadlockDetectorAgent', 'McpRouterAgent': 'McpRouterAgent', 'ModelRouterAgent': 'ModelRouterAgent', 'NervousSystemPhaseOrchestratorAgent': 'NervousSystemPhaseOrchestratorAgent', 'ResumeOrchestratorAgent': 'ResumeOrchestratorAgent', 'SelfRecoveringOrchestratorAgent': 'SelfRecoveringOrchestratorAgent', 'SovereignCanonAuditorAgent': 'SovereignCanonAuditorAgent', 'SovereignRagOrchestrator': 'SovereignRagOrchestrator', 'SubatomicOrchestratorAgent': 'SubatomicOrchestratorAgent', 'TaskMonitorAgent': 'TaskMonitorAgent', 'TerritoryChangeHandlerAgent': 'TerritoryChangeHandlerAgent', 'TokenBudgetInspectorAgent': 'TokenBudgetInspectorAgent', 'MemoryManagerAgent': 'MemoryManagerAgent', 'ValidationContextManagerAgent': 'ValidationContextManagerAgent', 'InputValidatorAgent': 'InputValidatorAgent', 'MethodChangeDetectorAgent': 'MethodChangeDetectorAgent', 'MultiProviderRouterAgent': 'MultiProviderRouterAgent', 'RedSentinelAgent': 'RedSentinelAgent', 'SecureCheckpointManagerAgent': 'SecureCheckpointManagerAgent', 'SecureConfigManagerAgent': 'SecureConfigManagerAgent', 'TypeHintFixerAgent': 'TypeHintFixerAgent', 'CapabilityMonitorAgent': 'CapabilityMonitorAgent', 'ConversationalRepairOrchestrator': 'ConversationalRepairOrchestratorAgent', 'MessageDiversityValidator': 'MessageDiversityValidator', 'OutreachCapabilityMonitorAgent': 'OutreachCapabilityMonitorAgent', 'OutreachHealingOrchestratorAgent': 'OutreachHealingOrchestratorAgent', 'OutreachPhase5Orchestrator': 'OutreachPhase5Orchestrator', 'OutreachSignalRouterAgent': 'OutreachSignalRouterAgent', 'OutreachValidationExecutorAgent': 'OutreachValidationExecutorAgent', 'Phase4OrchestratorAgent': 'Phase4OrchestratorAgent', 'Phase6OrchestratorAgent': 'Phase6OrchestratorAgent', 'Phase7OrchestratorAgent': 'Phase7OrchestratorAgent', 'PlaceholderDetectorAgent': 'PlaceholderDetectorAgent', 'SafetyExecutorAgent': 'SafetyExecutorAgent', 'SignalRouterAgent': 'SignalRouterAgent', 'StateValidatorAgent': 'StateValidatorAgent', 'StrategicPlannerAgent': 'StrategicPlannerAgent', 'StrictDocEnforcerAgent': 'StrictDocEnforcerAgent', 'TemplateOptimizerAgent': 'TemplateOptimizerAgent', 'Orchestrator': 'Orchestrator', 'Phase5Validator': 'Phase5ValidatorAgent', 'SystemValidator': 'SystemValidatorAgent', 'ValidationGateExecutor': 'ValidationGateExecutorAgent'}
 
 def rename_in_file(file_path: Path, renames: dict[str, str], dry_run: bool=True) -> list[tuple[str, str]]:

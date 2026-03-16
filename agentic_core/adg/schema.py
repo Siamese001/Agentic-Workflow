@@ -253,6 +253,11 @@ RelationType = Literal[
     "instruction_injection_source",
     "produces_preference_pair",
     "requires_human_review",
+    "routes_to_agent",
+    "orchestrates_workflow",
+    "dispatches_execution_plan",
+    "validates_agent_capability",
+    "checks_agent_registry",
 ]
 EdgeKind = Literal[
     "import",
@@ -363,6 +368,11 @@ EdgeKind = Literal[
     "injection_source_link",
     "preference_pair_link",
     "human_review_gate",
+    "agent_route",
+    "workflow_orchestration",
+    "execution_plan_dispatch",
+    "capability_validation",
+    "registry_check",
 ]
 PROMPT_SLOT_TYPES: tuple[str, ...] = ("S0", "D0", "I0", "C0", "U0")
 PROMPT_SLOT_AUTHORITY: dict[str, int] = {slot: i for i, slot in enumerate(PROMPT_SLOT_TYPES)}
@@ -1178,6 +1188,217 @@ AGENT_REGISTRY_CLASSES: frozenset[str] = frozenset(
         "get_agent_capability_registry",
     }
 )
+ORCHESTRATION_ROUTE_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "_emit_routes_to_agent",
+        "emit_routes_to_agent",
+        "route_to_agent",
+        "route_agent",
+    }
+)
+WORKFLOW_ORCHESTRATION_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "_emit_orchestrates_workflow",
+        "emit_orchestrates_workflow",
+        "orchestrate_workflow",
+        "orchestrate",
+    }
+)
+EXECUTION_PLAN_DISPATCH_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "_emit_dispatches_execution_plan",
+        "emit_dispatches_execution_plan",
+        "dispatch_execution_plan",
+        "dispatch_plan",
+    }
+)
+CAPABILITY_VALIDATION_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "_emit_validates_agent_capability",
+        "emit_validates_agent_capability",
+        "validate_agent_capability",
+        "validate_capability",
+        "resolve_agent_for_capability",
+    }
+)
+REGISTRY_CHECK_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "_emit_checks_agent_registry",
+        "emit_checks_agent_registry",
+        "check_agent_registry",
+        "check_registry",
+        "registry_lookup",
+    }
+)
+# ── P2 Execution Capability frozensets ────────────────────────────────────────
+AUTHORIZE_EXECUTE_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "_emit_authorize_and_execute",
+        "emit_authorize_and_execute",
+        "authorize_and_execute",
+        "authorize_execution",
+        "CapabilityRouter",
+        "ExecutionAuthorizationGate",
+    }
+)
+VALIDATES_CAPABILITY_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "_emit_validates_capability",
+        "emit_validates_capability",
+        "validates_capability",
+        "validate_capability",
+        "capability_check",
+    }
+)
+ROUTES_TO_CAPABILITY_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "_emit_routes_to_capability",
+        "emit_routes_to_capability",
+        "routes_to_capability",
+        "route_capability",
+        "resolve_capability",
+    }
+)
+WRITES_VIA_UWG_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "_emit_writes_via_uwg",
+        "emit_writes_via_uwg",
+        "writes_via_uwg",
+        "uwg_write",
+        "commit_via_uwg",
+        "UWGWriteEnforcer",
+    }
+)
+BLOCKS_DIRECT_WRITE_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "_emit_blocks_direct_write",
+        "emit_blocks_direct_write",
+        "blocks_direct_write",
+        "block_direct_write",
+        "SandboxMutationValidator",
+    }
+)
+RECORDS_TOOL_INVOCATION_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "_emit_records_tool_invocation",
+        "emit_records_tool_invocation",
+        "records_tool_invocation",
+        "record_tool_invocation",
+        "ToolInvocationRecorder",
+    }
+)
+CAPTURES_EXECUTION_OUTPUT_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "_emit_captures_execution_output",
+        "emit_captures_execution_output",
+        "captures_execution_output",
+        "capture_execution_output",
+        "ExecutionOutputCapture",
+    }
+)
+
+# ── P3 Orchestration & Healing frozensets ─────────────────────────────────────
+DISPATCHES_AGENT_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "_emit_dispatches_agent",
+        "emit_dispatches_agent",
+        "dispatches_agent",
+        "dispatch_agent",
+        "AgentDispatchRecorder",
+    }
+)
+COORDINATES_AGENTS_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "_emit_coordinates_agents",
+        "emit_coordinates_agents",
+        "coordinates_agents",
+        "coordinate_agents",
+    }
+)
+RECORDS_WORKFLOW_LINEAGE_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "_emit_records_workflow_lineage",
+        "emit_records_workflow_lineage",
+        "records_workflow_lineage",
+        "record_workflow_lineage",
+        "WorkflowLineageEmitter",
+    }
+)
+RECORDS_HEALING_OUTCOME_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "_emit_records_healing_outcome",
+        "emit_records_healing_outcome",
+        "records_healing_outcome",
+        "record_healing_outcome",
+        "HealingOutcomeRecorder",
+    }
+)
+ESCALATES_FAILURE_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "_emit_escalates_failure",
+        "emit_escalates_failure",
+        "escalates_failure",
+        "escalate_failure",
+        "FailureEscalationRouter",
+    }
+)
+INVOKES_EVALUATION_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "_emit_invokes_evaluation",
+        "emit_invokes_evaluation",
+        "invokes_evaluation",
+        "invoke_evaluation",
+        "EvaluationSignalEmitter",
+    }
+)
+
+# ── P4 State, Telemetry & Learning frozensets ────────────────────────────────
+RECORDS_TELEMETRY_EVENT_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "_emit_records_telemetry_event",
+        "emit_records_telemetry_event",
+        "records_telemetry_event",
+        "record_telemetry_event",
+        "TelemetryEventRecorder",
+    }
+)
+CAPTURES_EVALUATION_METRIC_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "_emit_captures_evaluation_metric",
+        "emit_captures_evaluation_metric",
+        "captures_evaluation_metric",
+        "capture_evaluation_metric",
+        "EvaluationMetricCapture",
+    }
+)
+STORES_EMBEDDING_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "_emit_stores_embedding",
+        "emit_stores_embedding",
+        "stores_embedding",
+        "store_embedding",
+        "EmbeddingPersistenceWriter",
+    }
+)
+UPDATES_META_LEARNING_STATE_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "_emit_updates_meta_learning_state",
+        "emit_updates_meta_learning_state",
+        "updates_meta_learning_state",
+        "update_meta_learning_state",
+        "MetaLearningStateUpdater",
+    }
+)
+LINKS_EXECUTION_TO_SNAPSHOT_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "_emit_links_execution_to_snapshot",
+        "emit_links_execution_to_snapshot",
+        "links_execution_to_snapshot",
+        "link_execution_to_snapshot",
+        "ExecutionSnapshotLinker",
+    }
+)
+
 ORCHESTRATION_CONTEXT_CLASSES: frozenset[str] = frozenset(
     {
         "OrchestrationContext",
@@ -1453,6 +1674,11 @@ __all__ = [
     "AGENT_DISPATCH_CLASSES",
     "AGENT_DISPATCH_METHODS",
     "AGENT_REGISTRY_CLASSES",
+    "ORCHESTRATION_ROUTE_SYMBOLS",
+    "WORKFLOW_ORCHESTRATION_SYMBOLS",
+    "EXECUTION_PLAN_DISPATCH_SYMBOLS",
+    "CAPABILITY_VALIDATION_SYMBOLS",
+    "REGISTRY_CHECK_SYMBOLS",
     "ORCHESTRATION_CONTEXT_CLASSES",
     "SAFETY_PLANE_CLASSES",
     "UWG_TERMINATION_SYMBOLS",
@@ -1462,4 +1688,22 @@ __all__ = [
     "PROMPT_INJECTION_SYMBOLS",
     "PREFERENCE_PAIR_SYMBOLS",
     "HUMAN_REVIEW_SYMBOLS",
+    "AUTHORIZE_EXECUTE_SYMBOLS",
+    "VALIDATES_CAPABILITY_SYMBOLS",
+    "ROUTES_TO_CAPABILITY_SYMBOLS",
+    "WRITES_VIA_UWG_SYMBOLS",
+    "BLOCKS_DIRECT_WRITE_SYMBOLS",
+    "RECORDS_TOOL_INVOCATION_SYMBOLS",
+    "CAPTURES_EXECUTION_OUTPUT_SYMBOLS",
+    "DISPATCHES_AGENT_SYMBOLS",
+    "COORDINATES_AGENTS_SYMBOLS",
+    "RECORDS_WORKFLOW_LINEAGE_SYMBOLS",
+    "RECORDS_HEALING_OUTCOME_SYMBOLS",
+    "ESCALATES_FAILURE_SYMBOLS",
+    "INVOKES_EVALUATION_SYMBOLS",
+    "RECORDS_TELEMETRY_EVENT_SYMBOLS",
+    "CAPTURES_EVALUATION_METRIC_SYMBOLS",
+    "STORES_EMBEDDING_SYMBOLS",
+    "UPDATES_META_LEARNING_STATE_SYMBOLS",
+    "LINKS_EXECUTION_TO_SNAPSHOT_SYMBOLS",
 ]
