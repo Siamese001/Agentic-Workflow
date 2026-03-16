@@ -75,6 +75,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
+    _emit_escalates_to_human,
 )
 
 _emit_emits_metric_event("memory_mcp_adapter", "p4obs", "metric_1")
@@ -109,6 +110,7 @@ _emit_reads_runtime_state("memory_mcp_adapter", "runtime_state", "p2_rt_2")
 _emit_applies_guardrail("p0", "memory_mcp_adapter", "p0_governance")
 _emit_reads_policy_state("p0", "memory_mcp_adapter", "policy_binding")
 _emit_snapshots_state("p0", "memory_mcp_adapter", "state_snapshot")
+_emit_escalates_to_human("p1", "memory_mcp_adapter", "human_escalation")
 _emit_pulls_context("p1", "memory_mcp_adapter", "context_pull")
 _emit_pulls_context("p1", "memory_mcp_adapter", "context_pull_secondary")
 _emit_execution_terminates_at_uwg("p1", "memory_mcp_adapter", "uwg_term")

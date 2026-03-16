@@ -66,6 +66,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
+    _emit_escalates_to_human,
 )
 
 _emit_emits_metric_event("state_lifecycle", "p4obs", "metric_1")
@@ -99,6 +100,7 @@ _emit_reads_runtime_state("state_lifecycle", "runtime_state", "p2_rt_2")
 
 _emit_applies_guardrail("p0", "state_lifecycle", "p0_governance")
 _emit_snapshots_state("p0", "state_lifecycle", "state_snapshot")
+_emit_escalates_to_human("p1", "state_lifecycle", "human_escalation")
 _emit_pulls_context("p1", "state_lifecycle", "context_pull")
 _emit_pulls_context("p1", "state_lifecycle", "context_pull_secondary")
 _emit_execution_terminates_at_uwg("p1", "state_lifecycle", "uwg_term")

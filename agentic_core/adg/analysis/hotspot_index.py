@@ -54,11 +54,13 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
+    _emit_escalates_to_human,
 )
 
 _emit_applies_guardrail("p0", "hotspot_index", "p0_governance")
 _emit_reads_policy_state("p0", "hotspot_index", "policy_binding")
 _emit_snapshots_state("p0", "hotspot_index", "state_snapshot")
+_emit_escalates_to_human("p1", "hotspot_index", "human_escalation")
 emit_replay_key("p0", "hotspot_index")
 emit_determinism_digest("p0", "hotspot_index")
 _emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
