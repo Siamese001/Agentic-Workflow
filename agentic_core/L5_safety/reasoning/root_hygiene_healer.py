@@ -197,6 +197,17 @@ _emit_writes_through("p1", "root_hygiene_healer", "write_through_2")
 _emit_validated_by_safety_plane("p1", "root_hygiene_healer", "safety_validation")
 _emit_invokes_eval("p1", "root_hygiene_healer", "eval_call")
 _emit_proposal_commits_routing("p1", "root_hygiene_healer", "routing_commit")
+from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
+emit_determinism_digest("trace_root_hygiene_healer", "root_hygiene_healer_dispatch_entry")
+emit_determinism_digest("trace_root_hygiene_healer", "root_hygiene_healer_dispatch_exit")
+emit_determinism_digest("trace_root_hygiene_healer", "root_hygiene_healer_tool_invoke")
+emit_determinism_digest("trace_root_hygiene_healer", "root_hygiene_healer_tool_complete")
+emit_determinism_digest("trace_root_hygiene_healer", "root_hygiene_healer_agent_entry")
+emit_determinism_digest("trace_root_hygiene_healer", "root_hygiene_healer_agent_exit")
+emit_determinism_digest("trace_root_hygiene_healer", "root_hygiene_healer_uwg_write")
+emit_determinism_digest("trace_root_hygiene_healer", "root_hygiene_healer_trace_sign")
+emit_determinism_digest("trace_root_hygiene_healer", "root_hygiene_healer_guardrail_check")
+emit_determinism_digest("trace_root_hygiene_healer", "root_hygiene_healer_policy_verify")
 
 # Optional: Import SovereignBaseAgent if available for full integration
 try:

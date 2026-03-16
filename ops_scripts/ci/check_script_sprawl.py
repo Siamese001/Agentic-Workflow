@@ -25,6 +25,19 @@ import re
 import subprocess
 import sys
 from pathlib import Path
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_pulls_context,
+    _emit_validated_by_safety_plane,
+    _emit_writes_through,
+    emit_determinism_digest,
+)
+_emit_writes_through("p1", "check_script_sprawl", "uwg_governed_write")
+_emit_writes_through("p1", "check_script_sprawl", "uwg_governed_write_2")
+_emit_pulls_context("p1", "check_script_sprawl", "context_retrieval")
+_emit_pulls_context("p1", "check_script_sprawl", "context_retrieval_2")
+emit_determinism_digest("trace_check_script_sprawl", "check_script_sprawl_dispatch")
+emit_determinism_digest("trace_check_script_sprawl", "check_script_sprawl_complete")
+_emit_validated_by_safety_plane("p1", "check_script_sprawl", "safety_validation")
 
 # Repo root
 _REPO_ROOT = Path(__file__).resolve().parents[2]

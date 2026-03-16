@@ -248,6 +248,17 @@ _emit_writes_through("p1", "remediation_dispatcher", "write_through_2")
 _emit_validated_by_safety_plane("p1", "remediation_dispatcher", "safety_validation")
 _emit_invokes_eval("p1", "remediation_dispatcher", "eval_call")
 _emit_proposal_commits_routing("p1", "remediation_dispatcher", "routing_commit")
+from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
+emit_determinism_digest("trace_remediation_dispatcher", "remediation_dispatcher_dispatch_entry")
+emit_determinism_digest("trace_remediation_dispatcher", "remediation_dispatcher_dispatch_exit")
+emit_determinism_digest("trace_remediation_dispatcher", "remediation_dispatcher_tool_invoke")
+emit_determinism_digest("trace_remediation_dispatcher", "remediation_dispatcher_tool_complete")
+emit_determinism_digest("trace_remediation_dispatcher", "remediation_dispatcher_agent_entry")
+emit_determinism_digest("trace_remediation_dispatcher", "remediation_dispatcher_agent_exit")
+emit_determinism_digest("trace_remediation_dispatcher", "remediation_dispatcher_uwg_write")
+emit_determinism_digest("trace_remediation_dispatcher", "remediation_dispatcher_trace_sign")
+emit_determinism_digest("trace_remediation_dispatcher", "remediation_dispatcher_guardrail_check")
+emit_determinism_digest("trace_remediation_dispatcher", "remediation_dispatcher_policy_verify")
 
 
 def _get_approval_types():

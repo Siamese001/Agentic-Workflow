@@ -13,7 +13,6 @@ import uuid
 from dataclasses import dataclass
 from typing import Any
 
-
 @dataclass(frozen=True)
 class ExecutionTrace:
     """Immutable execution trace for capability binding."""

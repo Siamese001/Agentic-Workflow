@@ -188,6 +188,17 @@ _emit_writes_through("p1", "vllm_replay_validator_types", "write_through_2")
 _emit_validated_by_safety_plane("p1", "vllm_replay_validator_types", "safety_validation")
 _emit_invokes_eval("p1", "vllm_replay_validator_types", "eval_call")
 _emit_proposal_commits_routing("p1", "vllm_replay_validator_types", "routing_commit")
+from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
+emit_determinism_digest("trace_vllm_replay_validator_types", "vllm_replay_validator_types_dispatch_entry")
+emit_determinism_digest("trace_vllm_replay_validator_types", "vllm_replay_validator_types_dispatch_exit")
+emit_determinism_digest("trace_vllm_replay_validator_types", "vllm_replay_validator_types_tool_invoke")
+emit_determinism_digest("trace_vllm_replay_validator_types", "vllm_replay_validator_types_tool_complete")
+emit_determinism_digest("trace_vllm_replay_validator_types", "vllm_replay_validator_types_agent_entry")
+emit_determinism_digest("trace_vllm_replay_validator_types", "vllm_replay_validator_types_agent_exit")
+emit_determinism_digest("trace_vllm_replay_validator_types", "vllm_replay_validator_types_uwg_write")
+emit_determinism_digest("trace_vllm_replay_validator_types", "vllm_replay_validator_types_trace_sign")
+emit_determinism_digest("trace_vllm_replay_validator_types", "vllm_replay_validator_types_guardrail_check")
+emit_determinism_digest("trace_vllm_replay_validator_types", "vllm_replay_validator_types_policy_verify")
 
 
 def canonical_prompt_hash(prompt: str) -> str:

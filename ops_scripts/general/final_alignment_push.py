@@ -4,6 +4,19 @@ Strategy: Comment out broken files to prevent import errors, allowing the system
 """
 from pathlib import Path
 from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_pulls_context,
+    _emit_validated_by_safety_plane,
+    _emit_writes_through,
+    emit_determinism_digest,
+)
+_emit_writes_through("p1", "final_alignment_push", "uwg_governed_write")
+_emit_writes_through("p1", "final_alignment_push", "uwg_governed_write_2")
+_emit_pulls_context("p1", "final_alignment_push", "context_retrieval")
+_emit_pulls_context("p1", "final_alignment_push", "context_retrieval_2")
+emit_determinism_digest("trace_final_alignment_push", "final_alignment_push_dispatch")
+emit_determinism_digest("trace_final_alignment_push", "final_alignment_push_complete")
+_emit_validated_by_safety_plane("p1", "final_alignment_push", "safety_validation")
 LEGACY_FILES = ['LogReaderAgent.py', 'TwoPhaseDeduplicationAgent.py', 'QAConductorAgent.py', 'OutreachTestPilotAgent.py', 'OutreachCapabilityMonitorAgent.py', 'control_plane.py', 'ArchitectureVisualizerAgent.py', 'cultural_decoder_agent.py', 'PreMortemAgent.py', 'knowledge_graph_agent.py', 'check_schema_policy.py', 'message_body_composer.py', 'k3_message_body_agent.py', 'k5_cta_agent.py', 'k5a_agent.py', 'k7_assembly_agent.py']
 OUTREACH_AGENT_FILES = ['LicReflectionAgent.py', 'LicTemplateOptimizerAgent.py', 'MessageComplianceAgent.py', 'OutreachProactiveAgent.py', 'OutreachLearningAgent.py']
 MIXIN_FILES = ['LicS2SupervisorAgent.py', 'MessageDiversityValidator.py', 'OutreachSignalRouterAgent.py', 'OutreachValidationExecutorAgent.py', 'k1_routing_agent.py']

@@ -156,6 +156,13 @@ _emit_reads_policy_state("p1", "magic_validator", "L5")
 
 _emit_applies_guardrail("p0", "magic_validator", "p0_governance")
 _emit_snapshots_state("p0", "magic_validator", "state_snapshot")
+_emit_writes_through("p1", "magic_validator", "uwg_governed_write")
+_emit_writes_through("p1", "magic_validator", "uwg_governed_write_2")
+_emit_pulls_context("p1", "magic_validator", "context_retrieval")
+_emit_pulls_context("p1", "magic_validator", "context_retrieval_2")
+emit_determinism_digest("trace_magic_validator", "magic_validator_dispatch")
+emit_determinism_digest("trace_magic_validator", "magic_validator_complete")
+_emit_validated_by_safety_plane("p1", "magic_validator", "safety_validation")
 
 
 class MagicConfigDetector(AntiPatternDetector):

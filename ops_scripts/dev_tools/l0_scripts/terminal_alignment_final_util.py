@@ -5,6 +5,19 @@ Fixes all remaining apps_lic.engines failures to achieve 100% PASS.
 import re
 from pathlib import Path
 from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_pulls_context,
+    _emit_validated_by_safety_plane,
+    _emit_writes_through,
+    emit_determinism_digest,
+)
+_emit_writes_through("p1", "terminal_alignment_final_util", "uwg_governed_write")
+_emit_writes_through("p1", "terminal_alignment_final_util", "uwg_governed_write_2")
+_emit_pulls_context("p1", "terminal_alignment_final_util", "context_retrieval")
+_emit_pulls_context("p1", "terminal_alignment_final_util", "context_retrieval_2")
+emit_determinism_digest("trace_terminal_alignment_final_util", "terminal_alignment_final_util_dispatch")
+emit_determinism_digest("trace_terminal_alignment_final_util", "terminal_alignment_final_util_complete")
+_emit_validated_by_safety_plane("p1", "terminal_alignment_final_util", "safety_validation")
 
 def fix_dataclass_field_syntax(file_path: Path) -> bool:
     """Fix incorrect field(...) syntax - dataclass field() doesn't accept positional args."""

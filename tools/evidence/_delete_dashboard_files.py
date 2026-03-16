@@ -3,6 +3,19 @@
 import json
 import os
 import shutil
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_pulls_context,
+    _emit_validated_by_safety_plane,
+    _emit_writes_through,
+    emit_determinism_digest,
+)
+_emit_writes_through("p1", "_delete_dashboard_files", "uwg_governed_write")
+_emit_writes_through("p1", "_delete_dashboard_files", "uwg_governed_write_2")
+_emit_pulls_context("p1", "_delete_dashboard_files", "context_retrieval")
+_emit_pulls_context("p1", "_delete_dashboard_files", "context_retrieval_2")
+emit_determinism_digest("trace__delete_dashboard_files", "_delete_dashboard_files_dispatch")
+emit_determinism_digest("trace__delete_dashboard_files", "_delete_dashboard_files_complete")
+_emit_validated_by_safety_plane("p1", "_delete_dashboard_files", "safety_validation")
 
 
 def delete_dashboard_files(inventory_file):

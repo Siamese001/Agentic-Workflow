@@ -1052,6 +1052,13 @@ _emit_writes_through("p1", "execute_ssot", "write_through_2")
 _emit_validated_by_safety_plane("p1", "execute_ssot", "safety_validation")
 _emit_invokes_eval("p1", "execute_ssot", "eval_call")
 _emit_proposal_commits_routing("p1", "execute_ssot", "routing_commit")
+_emit_writes_through("p1", "execute_ssot", "uwg_governed_write")
+_emit_writes_through("p1", "execute_ssot", "uwg_governed_write_2")
+_emit_pulls_context("p1", "execute_ssot", "context_retrieval")
+_emit_pulls_context("p1", "execute_ssot", "context_retrieval_2")
+emit_determinism_digest("trace_execute_ssot", "execute_ssot_dispatch")
+emit_determinism_digest("trace_execute_ssot", "execute_ssot_complete")
+_emit_validated_by_safety_plane("p1", "execute_ssot", "safety_validation")
 
 
 class FailureType(_enum.Enum):

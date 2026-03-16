@@ -155,6 +155,13 @@ _emit_captures_evaluation_metric("p4", "classification_kernel", "eval_metric")
 _emit_stores_embedding("p4", "classification_kernel", "embedding_store")
 _emit_updates_meta_learning_state("p4", "classification_kernel", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "classification_kernel", "exec_snapshot_link")
+_emit_writes_through("p1", "classification_kernel", "uwg_governed_write")
+_emit_writes_through("p1", "classification_kernel", "uwg_governed_write_2")
+_emit_pulls_context("p1", "classification_kernel", "context_retrieval")
+_emit_pulls_context("p1", "classification_kernel", "context_retrieval_2")
+emit_determinism_digest("trace_classification_kernel", "classification_kernel_dispatch")
+emit_determinism_digest("trace_classification_kernel", "classification_kernel_complete")
+_emit_validated_by_safety_plane("p1", "classification_kernel", "safety_validation")
 
 logger = logging.getLogger(__name__)
 

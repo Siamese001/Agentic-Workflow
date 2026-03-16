@@ -221,6 +221,17 @@ _emit_writes_through("p1", "CodeHealerAgent", "write_through_2")
 _emit_validated_by_safety_plane("p1", "CodeHealerAgent", "safety_validation")
 _emit_invokes_eval("p1", "CodeHealerAgent", "eval_call")
 _emit_proposal_commits_routing("p1", "CodeHealerAgent", "routing_commit")
+from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
+emit_determinism_digest("trace_CodeHealerAgent", "CodeHealerAgent_dispatch_entry")
+emit_determinism_digest("trace_CodeHealerAgent", "CodeHealerAgent_dispatch_exit")
+emit_determinism_digest("trace_CodeHealerAgent", "CodeHealerAgent_tool_invoke")
+emit_determinism_digest("trace_CodeHealerAgent", "CodeHealerAgent_tool_complete")
+emit_determinism_digest("trace_CodeHealerAgent", "CodeHealerAgent_agent_entry")
+emit_determinism_digest("trace_CodeHealerAgent", "CodeHealerAgent_agent_exit")
+emit_determinism_digest("trace_CodeHealerAgent", "CodeHealerAgent_uwg_write")
+emit_determinism_digest("trace_CodeHealerAgent", "CodeHealerAgent_trace_sign")
+emit_determinism_digest("trace_CodeHealerAgent", "CodeHealerAgent_guardrail_check")
+emit_determinism_digest("trace_CodeHealerAgent", "CodeHealerAgent_policy_verify")
 
 Logger = logging.getLogger(__name__)
 

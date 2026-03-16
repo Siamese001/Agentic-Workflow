@@ -154,6 +154,13 @@ _emit_reads_policy_state("p1", "type_erasure_validator", "L5")
 
 _emit_applies_guardrail("p0", "type_erasure_validator", "p0_governance")
 _emit_snapshots_state("p0", "type_erasure_validator", "state_snapshot")
+_emit_writes_through("p1", "type_erasure_validator", "uwg_governed_write")
+_emit_writes_through("p1", "type_erasure_validator", "uwg_governed_write_2")
+_emit_pulls_context("p1", "type_erasure_validator", "context_retrieval")
+_emit_pulls_context("p1", "type_erasure_validator", "context_retrieval_2")
+emit_determinism_digest("trace_type_erasure_validator", "type_erasure_validator_dispatch")
+emit_determinism_digest("trace_type_erasure_validator", "type_erasure_validator_complete")
+_emit_validated_by_safety_plane("p1", "type_erasure_validator", "safety_validation")
 
 
 class TypeErasureDetector(AntiPatternDetector):

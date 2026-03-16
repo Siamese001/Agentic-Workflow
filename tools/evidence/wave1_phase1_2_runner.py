@@ -11,6 +11,19 @@ import subprocess
 import sys
 from pathlib import Path
 from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_pulls_context,
+    _emit_validated_by_safety_plane,
+    _emit_writes_through,
+    emit_determinism_digest,
+)
+_emit_writes_through("p1", "wave1_phase1_2_runner", "uwg_governed_write")
+_emit_writes_through("p1", "wave1_phase1_2_runner", "uwg_governed_write_2")
+_emit_pulls_context("p1", "wave1_phase1_2_runner", "context_retrieval")
+_emit_pulls_context("p1", "wave1_phase1_2_runner", "context_retrieval_2")
+emit_determinism_digest("trace_wave1_phase1_2_runner", "wave1_phase1_2_runner_dispatch")
+emit_determinism_digest("trace_wave1_phase1_2_runner", "wave1_phase1_2_runner_complete")
+_emit_validated_by_safety_plane("p1", "wave1_phase1_2_runner", "safety_validation")
 REPO_ROOT = Path(__file__).resolve().parents[2]
 EVIDENCE_PATH = REPO_ROOT / 'docs' / REPORTS_DIR / 'plans' / 'wave1_phase1_2_evidence.md'
 SCOPE_FILES = ['tools/semantic_gap_analyzer.py', 'tests/architecture/test_wave1_phase1_2_sovereignty.py']

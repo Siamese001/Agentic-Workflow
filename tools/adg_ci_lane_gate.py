@@ -31,6 +31,19 @@ import json
 import subprocess
 import sys
 from pathlib import Path
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_pulls_context,
+    _emit_validated_by_safety_plane,
+    _emit_writes_through,
+    emit_determinism_digest,
+)
+_emit_writes_through("p1", "adg_ci_lane_gate", "uwg_governed_write")
+_emit_writes_through("p1", "adg_ci_lane_gate", "uwg_governed_write_2")
+_emit_pulls_context("p1", "adg_ci_lane_gate", "context_retrieval")
+_emit_pulls_context("p1", "adg_ci_lane_gate", "context_retrieval_2")
+emit_determinism_digest("trace_adg_ci_lane_gate", "adg_ci_lane_gate_dispatch")
+emit_determinism_digest("trace_adg_ci_lane_gate", "adg_ci_lane_gate_complete")
+_emit_validated_by_safety_plane("p1", "adg_ci_lane_gate", "safety_validation")
 
 REPO = Path(__file__).resolve().parent.parent
 CLASSIFICATION_PATH = REPO / "artifacts" / "adg_test_classification.json"

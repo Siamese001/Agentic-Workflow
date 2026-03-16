@@ -184,6 +184,17 @@ _emit_gated_by_confidence("p1", "meta_learning_mixin", "confidence_gate")
 emit_replay_key("p0", "meta_learning_mixin")
 emit_determinism_digest("p0", "meta_learning_mixin")
 _emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
+emit_determinism_digest("trace_meta_learning_mixin", "meta_learning_mixin_dispatch_entry")
+emit_determinism_digest("trace_meta_learning_mixin", "meta_learning_mixin_dispatch_exit")
+emit_determinism_digest("trace_meta_learning_mixin", "meta_learning_mixin_tool_invoke")
+emit_determinism_digest("trace_meta_learning_mixin", "meta_learning_mixin_tool_complete")
+emit_determinism_digest("trace_meta_learning_mixin", "meta_learning_mixin_agent_entry")
+emit_determinism_digest("trace_meta_learning_mixin", "meta_learning_mixin_agent_exit")
+emit_determinism_digest("trace_meta_learning_mixin", "meta_learning_mixin_uwg_write")
+emit_determinism_digest("trace_meta_learning_mixin", "meta_learning_mixin_trace_sign")
+emit_determinism_digest("trace_meta_learning_mixin", "meta_learning_mixin_guardrail_check")
+emit_determinism_digest("trace_meta_learning_mixin", "meta_learning_mixin_policy_verify")
 
 Logger = logging.getLogger(__name__)
 

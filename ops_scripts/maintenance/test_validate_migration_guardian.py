@@ -7,6 +7,19 @@ import pathlib
 import shutil
 import sys
 import tempfile
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_pulls_context,
+    _emit_validated_by_safety_plane,
+    _emit_writes_through,
+    emit_determinism_digest,
+)
+_emit_writes_through("p1", "test_validate_migration_guardian", "uwg_governed_write")
+_emit_writes_through("p1", "test_validate_migration_guardian", "uwg_governed_write_2")
+_emit_pulls_context("p1", "test_validate_migration_guardian", "context_retrieval")
+_emit_pulls_context("p1", "test_validate_migration_guardian", "context_retrieval_2")
+emit_determinism_digest("trace_test_validate_migration_guardian", "test_validate_migration_guardian_dispatch")
+emit_determinism_digest("trace_test_validate_migration_guardian", "test_validate_migration_guardian_complete")
+_emit_validated_by_safety_plane("p1", "test_validate_migration_guardian", "safety_validation")
 
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0

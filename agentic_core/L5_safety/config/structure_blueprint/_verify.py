@@ -192,6 +192,17 @@ _emit_writes_through("p1", "_verify", "write_through_2")
 _emit_validated_by_safety_plane("p1", "_verify", "safety_validation")
 _emit_invokes_eval("p1", "_verify", "eval_call")
 _emit_proposal_commits_routing("p1", "_verify", "routing_commit")
+from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
+emit_determinism_digest("trace__verify", "_verify_dispatch_entry")
+emit_determinism_digest("trace__verify", "_verify_dispatch_exit")
+emit_determinism_digest("trace__verify", "_verify_tool_invoke")
+emit_determinism_digest("trace__verify", "_verify_tool_complete")
+emit_determinism_digest("trace__verify", "_verify_agent_entry")
+emit_determinism_digest("trace__verify", "_verify_agent_exit")
+emit_determinism_digest("trace__verify", "_verify_uwg_write")
+emit_determinism_digest("trace__verify", "_verify_trace_sign")
+emit_determinism_digest("trace__verify", "_verify_guardrail_check")
+emit_determinism_digest("trace__verify", "_verify_policy_verify")
 
 ALLOWED_MODULES: frozenset[str] = frozenset(
     {"__future__", "typing", "types", "collections", "functools", "itertools", "dataclasses"}

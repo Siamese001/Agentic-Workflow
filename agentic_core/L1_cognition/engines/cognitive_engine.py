@@ -223,6 +223,17 @@ _emit_writes_through("p1", "cognitive_engine", "write_through_2")
 _emit_validated_by_safety_plane("p1", "cognitive_engine", "safety_validation")
 _emit_invokes_eval("p1", "cognitive_engine", "eval_call")
 _emit_proposal_commits_routing("p1", "cognitive_engine", "routing_commit")
+from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
+emit_determinism_digest("trace_cognitive_engine", "cognitive_engine_dispatch_entry")
+emit_determinism_digest("trace_cognitive_engine", "cognitive_engine_dispatch_exit")
+emit_determinism_digest("trace_cognitive_engine", "cognitive_engine_tool_invoke")
+emit_determinism_digest("trace_cognitive_engine", "cognitive_engine_tool_complete")
+emit_determinism_digest("trace_cognitive_engine", "cognitive_engine_agent_entry")
+emit_determinism_digest("trace_cognitive_engine", "cognitive_engine_agent_exit")
+emit_determinism_digest("trace_cognitive_engine", "cognitive_engine_uwg_write")
+emit_determinism_digest("trace_cognitive_engine", "cognitive_engine_trace_sign")
+emit_determinism_digest("trace_cognitive_engine", "cognitive_engine_guardrail_check")
+emit_determinism_digest("trace_cognitive_engine", "cognitive_engine_policy_verify")
 
 
 class CognitiveNodeRefactored:

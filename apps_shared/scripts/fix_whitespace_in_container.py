@@ -5,6 +5,19 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_pulls_context,
+    _emit_validated_by_safety_plane,
+    _emit_writes_through,
+    emit_determinism_digest,
+)
+_emit_writes_through("p1", "fix_whitespace_in_container", "uwg_governed_write")
+_emit_writes_through("p1", "fix_whitespace_in_container", "uwg_governed_write_2")
+_emit_pulls_context("p1", "fix_whitespace_in_container", "context_retrieval")
+_emit_pulls_context("p1", "fix_whitespace_in_container", "context_retrieval_2")
+emit_determinism_digest("trace_fix_whitespace_in_container", "fix_whitespace_in_container_dispatch")
+emit_determinism_digest("trace_fix_whitespace_in_container", "fix_whitespace_in_container_complete")
+_emit_validated_by_safety_plane("p1", "fix_whitespace_in_container", "safety_validation")
 
 
 def fix_whitespace_in_file(filepath: Any) -> Any:

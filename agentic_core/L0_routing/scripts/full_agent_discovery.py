@@ -259,6 +259,17 @@ _emit_writes_through("p1", "full_agent_discovery", "write_through_2")
 _emit_validated_by_safety_plane("p1", "full_agent_discovery", "safety_validation")
 _emit_invokes_eval("p1", "full_agent_discovery", "eval_call")
 _emit_proposal_commits_routing("p1", "full_agent_discovery", "routing_commit")
+from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
+emit_determinism_digest("trace_full_agent_discovery", "full_agent_discovery_dispatch_entry")
+emit_determinism_digest("trace_full_agent_discovery", "full_agent_discovery_dispatch_exit")
+emit_determinism_digest("trace_full_agent_discovery", "full_agent_discovery_tool_invoke")
+emit_determinism_digest("trace_full_agent_discovery", "full_agent_discovery_tool_complete")
+emit_determinism_digest("trace_full_agent_discovery", "full_agent_discovery_agent_entry")
+emit_determinism_digest("trace_full_agent_discovery", "full_agent_discovery_agent_exit")
+emit_determinism_digest("trace_full_agent_discovery", "full_agent_discovery_uwg_write")
+emit_determinism_digest("trace_full_agent_discovery", "full_agent_discovery_trace_sign")
+emit_determinism_digest("trace_full_agent_discovery", "full_agent_discovery_guardrail_check")
+emit_determinism_digest("trace_full_agent_discovery", "full_agent_discovery_policy_verify")
 
 # Standard error logging wrapper configuration
 Logger = logging.getLogger(__name__)

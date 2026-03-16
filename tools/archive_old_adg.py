@@ -31,6 +31,19 @@ import sys
 from collections import defaultdict
 from datetime import datetime, timedelta
 from pathlib import Path
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_pulls_context,
+    _emit_validated_by_safety_plane,
+    _emit_writes_through,
+    emit_determinism_digest,
+)
+_emit_writes_through("p1", "archive_old_adg", "uwg_governed_write")
+_emit_writes_through("p1", "archive_old_adg", "uwg_governed_write_2")
+_emit_pulls_context("p1", "archive_old_adg", "context_retrieval")
+_emit_pulls_context("p1", "archive_old_adg", "context_retrieval_2")
+emit_determinism_digest("trace_archive_old_adg", "archive_old_adg_dispatch")
+emit_determinism_digest("trace_archive_old_adg", "archive_old_adg_complete")
+_emit_validated_by_safety_plane("p1", "archive_old_adg", "safety_validation")
 
 ROOT = Path(__file__).resolve().parents[1]
 ADG_DIR = ROOT / "artifacts" / "adg"

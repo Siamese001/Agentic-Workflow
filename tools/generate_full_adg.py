@@ -214,12 +214,14 @@ def generate_full_adg(adg_artifacts_dir: Path, ts: str, archive_old: bool = True
     """
     print("[ADG] Starting full scan...")
 
-    scanner = ADGStaticScanner(repo_root=ROOT)
+    cache_path = adg_artifacts_dir / "scan_result_cache.json"
+    scanner = ADGStaticScanner(repo_root=ROOT, cache_path=cache_path)
     result = scanner.scan(commit_sha="")
 
     print(f"[ADG] Scan complete. Digest: {result.digest}")
     print(f"[ADG] Modules: {len(result.modules)}")
     print(f"[ADG] Edges: {len(result.edges)}")
+    print(f"[ADG] Cache: hits={result.manifest.cache_hits} misses={result.manifest.cache_misses} rate={result.manifest.cache_hit_rate:.1%}")
 
     # --- Build canonical artifact (schema v3) ---
     print("[ADG] Building canonical artifact...")

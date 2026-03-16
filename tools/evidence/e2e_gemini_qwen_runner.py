@@ -18,6 +18,19 @@ import subprocess
 import sys
 from pathlib import Path
 from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_pulls_context,
+    _emit_validated_by_safety_plane,
+    _emit_writes_through,
+    emit_determinism_digest,
+)
+_emit_writes_through("p1", "e2e_gemini_qwen_runner", "uwg_governed_write")
+_emit_writes_through("p1", "e2e_gemini_qwen_runner", "uwg_governed_write_2")
+_emit_pulls_context("p1", "e2e_gemini_qwen_runner", "context_retrieval")
+_emit_pulls_context("p1", "e2e_gemini_qwen_runner", "context_retrieval_2")
+emit_determinism_digest("trace_e2e_gemini_qwen_runner", "e2e_gemini_qwen_runner_dispatch")
+emit_determinism_digest("trace_e2e_gemini_qwen_runner", "e2e_gemini_qwen_runner_complete")
+_emit_validated_by_safety_plane("p1", "e2e_gemini_qwen_runner", "safety_validation")
 _SHELL_FALSE_ENFORCED = True
 
 def _assert_no_powershell(argv: list[str]) -> None:

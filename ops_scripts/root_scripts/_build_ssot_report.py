@@ -3,6 +3,19 @@ import json
 import re
 from collections import defaultdict
 from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_pulls_context,
+    _emit_validated_by_safety_plane,
+    _emit_writes_through,
+    emit_determinism_digest,
+)
+_emit_writes_through("p1", "_build_ssot_report", "uwg_governed_write")
+_emit_writes_through("p1", "_build_ssot_report", "uwg_governed_write_2")
+_emit_pulls_context("p1", "_build_ssot_report", "context_retrieval")
+_emit_pulls_context("p1", "_build_ssot_report", "context_retrieval_2")
+emit_determinism_digest("trace__build_ssot_report", "_build_ssot_report_dispatch")
+emit_determinism_digest("trace__build_ssot_report", "_build_ssot_report_complete")
+_emit_validated_by_safety_plane("p1", "_build_ssot_report", "safety_validation")
 data = json.load(open('_ssot_results_v2.json', encoding='utf-8'))
 stderr = open('_ssot_stderr_v2.log', encoding='utf-8').read()
 lines = []

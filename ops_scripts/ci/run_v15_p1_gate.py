@@ -9,6 +9,19 @@ import sys
 import tempfile
 from pathlib import Path
 from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_pulls_context,
+    _emit_validated_by_safety_plane,
+    _emit_writes_through,
+    emit_determinism_digest,
+)
+_emit_writes_through("p1", "run_v15_p1_gate", "uwg_governed_write")
+_emit_writes_through("p1", "run_v15_p1_gate", "uwg_governed_write_2")
+_emit_pulls_context("p1", "run_v15_p1_gate", "context_retrieval")
+_emit_pulls_context("p1", "run_v15_p1_gate", "context_retrieval_2")
+emit_determinism_digest("trace_run_v15_p1_gate", "run_v15_p1_gate_dispatch")
+emit_determinism_digest("trace_run_v15_p1_gate", "run_v15_p1_gate_complete")
+_emit_validated_by_safety_plane("p1", "run_v15_p1_gate", "safety_validation")
 
 def run_phase1_gate(repo_root: Path=None) -> int:
     """Run Phase 1 gate and return exit code."""

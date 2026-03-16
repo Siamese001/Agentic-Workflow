@@ -16,6 +16,19 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 from agentic_core.L5_safety.config.structure_blueprint.ssot import DISCOVERY_EXCLUDED_TERRITORIES, GLOBAL_EXCLUDED_DIRS, SOVEREIGN_EXCLUDED_FOLDERS
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_pulls_context,
+    _emit_validated_by_safety_plane,
+    _emit_writes_through,
+    emit_determinism_digest,
+)
+_emit_writes_through("p1", "_repair_and_fix_all", "uwg_governed_write")
+_emit_writes_through("p1", "_repair_and_fix_all", "uwg_governed_write_2")
+_emit_pulls_context("p1", "_repair_and_fix_all", "context_retrieval")
+_emit_pulls_context("p1", "_repair_and_fix_all", "context_retrieval_2")
+emit_determinism_digest("trace__repair_and_fix_all", "_repair_and_fix_all_dispatch")
+emit_determinism_digest("trace__repair_and_fix_all", "_repair_and_fix_all_complete")
+_emit_validated_by_safety_plane("p1", "_repair_and_fix_all", "safety_validation")
 SKIP_DIRS: frozenset[str] = frozenset({'.venv', 'venv', '__pycache__', ARCHIVES_DIR, 'node_modules', '.healing_backups', '.sovereign_healing_backup'})
 SSOT_IMPORT_BLOCK = 'from agentic_core.L5_safety.config.structure_blueprint.ssot import (\n    DISCOVERY_EXCLUDED_TERRITORIES,\n    GLOBAL_EXCLUDED_DIRS,\n    SOVEREIGN_EXCLUDED_FOLDERS,\n)'
 SSOT_UNION = 'GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES'

@@ -168,6 +168,13 @@ _emit_verifies_boundary("p1", "redis_coordination_fabric", "boundary_check")
 _emit_transcripts_response("p1", "redis_coordination_fabric", "transcript")
 _emit_hard_fails_untranscripted("p1", "redis_coordination_fabric")
 _emit_gated_by_confidence("p1", "redis_coordination_fabric", "confidence_gate")
+_emit_writes_through("p1", "redis_coordination_fabric", "uwg_governed_write")
+_emit_writes_through("p1", "redis_coordination_fabric", "uwg_governed_write_2")
+_emit_pulls_context("p1", "redis_coordination_fabric", "context_retrieval")
+_emit_pulls_context("p1", "redis_coordination_fabric", "context_retrieval_2")
+emit_determinism_digest("trace_redis_coordination_fabric", "redis_coordination_fabric_dispatch")
+emit_determinism_digest("trace_redis_coordination_fabric", "redis_coordination_fabric_complete")
+_emit_validated_by_safety_plane("p1", "redis_coordination_fabric", "safety_validation")
 
 logger = logging.getLogger(__name__)
 

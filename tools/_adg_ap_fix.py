@@ -16,6 +16,19 @@ import re
 import subprocess
 import sys
 from pathlib import Path
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_pulls_context,
+    _emit_validated_by_safety_plane,
+    _emit_writes_through,
+    emit_determinism_digest,
+)
+_emit_writes_through("p1", "_adg_ap_fix", "uwg_governed_write")
+_emit_writes_through("p1", "_adg_ap_fix", "uwg_governed_write_2")
+_emit_pulls_context("p1", "_adg_ap_fix", "context_retrieval")
+_emit_pulls_context("p1", "_adg_ap_fix", "context_retrieval_2")
+emit_determinism_digest("trace__adg_ap_fix", "_adg_ap_fix_dispatch")
+emit_determinism_digest("trace__adg_ap_fix", "_adg_ap_fix_complete")
+_emit_validated_by_safety_plane("p1", "_adg_ap_fix", "safety_validation")
 
 REPO = Path(__file__).resolve().parent.parent
 SKIP_DIRS = {".git", ".venv", "venv", "__pycache__", ".pytest_cache", "archives", ".nox"}

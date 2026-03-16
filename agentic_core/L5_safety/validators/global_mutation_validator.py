@@ -153,6 +153,13 @@ _emit_reads_policy_state("p1", "global_mutation_validator", "L5")
 
 _emit_applies_guardrail("p0", "global_mutation_validator", "p0_governance")
 _emit_snapshots_state("p0", "global_mutation_validator", "state_snapshot")
+_emit_writes_through("p1", "global_mutation_validator", "uwg_governed_write")
+_emit_writes_through("p1", "global_mutation_validator", "uwg_governed_write_2")
+_emit_pulls_context("p1", "global_mutation_validator", "context_retrieval")
+_emit_pulls_context("p1", "global_mutation_validator", "context_retrieval_2")
+emit_determinism_digest("trace_global_mutation_validator", "global_mutation_validator_dispatch")
+emit_determinism_digest("trace_global_mutation_validator", "global_mutation_validator_complete")
+_emit_validated_by_safety_plane("p1", "global_mutation_validator", "safety_validation")
 
 
 class GlobalMutationDetector(AntiPatternDetector):

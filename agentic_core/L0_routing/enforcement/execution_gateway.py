@@ -222,6 +222,17 @@ _emit_writes_through("p1", "execution_gateway", "write_through_2")
 _emit_validated_by_safety_plane("p1", "execution_gateway", "safety_validation")
 _emit_invokes_eval("p1", "execution_gateway", "eval_call")
 _emit_proposal_commits_routing("p1", "execution_gateway", "routing_commit")
+from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
+emit_determinism_digest("trace_execution_gateway", "execution_gateway_dispatch_entry")
+emit_determinism_digest("trace_execution_gateway", "execution_gateway_dispatch_exit")
+emit_determinism_digest("trace_execution_gateway", "execution_gateway_tool_invoke")
+emit_determinism_digest("trace_execution_gateway", "execution_gateway_tool_complete")
+emit_determinism_digest("trace_execution_gateway", "execution_gateway_agent_entry")
+emit_determinism_digest("trace_execution_gateway", "execution_gateway_agent_exit")
+emit_determinism_digest("trace_execution_gateway", "execution_gateway_uwg_write")
+emit_determinism_digest("trace_execution_gateway", "execution_gateway_trace_sign")
+emit_determinism_digest("trace_execution_gateway", "execution_gateway_guardrail_check")
+emit_determinism_digest("trace_execution_gateway", "execution_gateway_policy_verify")
 
 Logger = logging.getLogger(__name__)
 

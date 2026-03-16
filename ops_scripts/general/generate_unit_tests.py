@@ -8,6 +8,19 @@ import json
 from pathlib import Path
 from typing import Any
 from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_pulls_context,
+    _emit_validated_by_safety_plane,
+    _emit_writes_through,
+    emit_determinism_digest,
+)
+_emit_writes_through("p1", "generate_unit_tests", "uwg_governed_write")
+_emit_writes_through("p1", "generate_unit_tests", "uwg_governed_write_2")
+_emit_pulls_context("p1", "generate_unit_tests", "context_retrieval")
+_emit_pulls_context("p1", "generate_unit_tests", "context_retrieval_2")
+emit_determinism_digest("trace_generate_unit_tests", "generate_unit_tests_dispatch")
+emit_determinism_digest("trace_generate_unit_tests", "generate_unit_tests_complete")
+_emit_validated_by_safety_plane("p1", "generate_unit_tests", "safety_validation")
 
 def load_agents() -> list[dict[str, Any]]:
     """Load agent discovery data."""
