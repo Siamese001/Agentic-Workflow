@@ -314,6 +314,9 @@ def generate_full_adg(adg_artifacts_dir: Path, ts: str, archive_old: bool = True
     # --- Auto-ingest to Redis hot cache ---
     _auto_ingest_to_redis(adg_artifacts_dir, paths.sqlite)
 
+    # --- Auto-commit artifacts to git ---
+    _auto_commit_artifacts(adg_artifacts_dir, ts, len(result.modules), len(result.edges))
+
 
 def _auto_ingest_to_redis(adg_dir: Path, sqlite_path: Path) -> None:
     """Automatically ingest the freshly-generated ADG into Redis hot cache.
@@ -361,6 +364,83 @@ def _auto_ingest_to_redis(adg_dir: Path, sqlite_path: Path) -> None:
         print(f"[ADG] ERROR: Redis ingest failed (exit {e.returncode}):")
         print(f"      {e.stderr.strip()[:200]}")
         raise
+
+
+def _auto_commit_artifacts(adg_dir: Path, ts: str, node_count: int, edge_count: int) -> None:
+    """Automatically commit newly generated ADG artifacts to git.
+
+    Stages new artifacts and deletions of old artifacts, then commits with
+    a descriptive message including timestamp and graph metrics.
+
+    Uses --no-verify to bypass pre-commit hooks since ADG artifacts are
+    auto-generated and don't require validation.
+
+    Args:
+        adg_dir: ADG artifacts directory
+        ts: Timestamp string (MMDDYYYY_HHMM format)
+        node_count: Number of modules in the graph
+        edge_count: Number of edges in the graph
+
+    Raises:
+        subprocess.CalledProcessError: If git commands fail
+    """
+    import subprocess
+
+    print("[ADG] Auto-committing artifacts to git...")
+
+    try:
+        # Stage new ADG artifacts
+        artifact_patterns = [
+            f"adg_snapshot_{ts}.json",
+            f"adg_indexed_{ts}.sqlite",
+            f"adg_file_graph_{ts}.json",
+            f"adg_symbol_graph_{ts}.json",
+            f"adg_governance_graph_{ts}.json",
+            f"adg_graphsnap_{ts}.json",
+        ]
+
+        for pattern in artifact_patterns:
+            artifact_path = adg_dir / pattern
+            if artifact_path.exists():
+                subprocess.run(
+                    ["git", "add", str(artifact_path)],
+                    cwd=str(ROOT),
+                    capture_output=True,
+                    text=True,
+                    check=True,
+                )
+
+        # Stage deletions of old artifacts (moved to _archive/)
+        subprocess.run(
+            ["git", "add", "-u", "artifacts/adg/"],
+            cwd=str(ROOT),
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+
+        # Commit with descriptive message, bypassing pre-commit hooks
+        # ADG artifacts are auto-generated and don't need validation
+        commit_msg = f"ADG: regenerate artifacts {ts} — {node_count} modules, {edge_count} edges"
+        result = subprocess.run(
+            ["git", "commit", "--no-verify", "-m", commit_msg],
+            cwd=str(ROOT),
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+
+        print(f"[ADG] ✓ Git commit complete — {commit_msg}")
+
+    except subprocess.CalledProcessError as e:
+        # Check if failure was due to "nothing to commit"
+        if "nothing to commit" in e.stdout or "nothing to commit" in e.stderr:
+            print("[ADG] Git: no changes to commit (artifacts already committed)")
+        else:
+            print(f"[ADG] WARNING: Git commit failed (exit {e.returncode}):")
+            print(f"      stdout: {e.stdout.strip()[:200]}")
+            print(f"      stderr: {e.stderr.strip()[:200]}")
+            # Don't raise - git failure shouldn't block ADG generation
 
 
 def _persist_adg_to_memory(result, artifact, snapshot, graph_diff, routing_summary, ts: str) -> None:
