@@ -39,6 +39,19 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
+    _emit_escalates_to_human,
+    _emit_routes_through,
 )
 
 _emit_applies_guardrail("p0", "InfrastructureUpgradesOrchestrator", "p0_governance")
@@ -68,6 +81,19 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
+    _emit_escalates_to_human,
+    _emit_routes_through,
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
 )
 
 _emit_emits_metric_event("InfrastructureUpgradesOrchestrator", "p4obs", "metric_1")
@@ -107,6 +133,19 @@ _emit_writes_through("p1", "InfrastructureUpgradesOrchestrator", "write_through_
 _emit_validated_by_safety_plane("p1", "InfrastructureUpgradesOrchestrator", "safety_validation")
 _emit_invokes_eval("p1", "InfrastructureUpgradesOrchestrator", "eval_call")
 _emit_proposal_commits_routing("p1", "InfrastructureUpgradesOrchestrator", "routing_commit")
+_emit_escalates_to_human("p1", "InfrastructureUpgradesOrchestrator", "human_escalation")
+_emit_routes_through("p1", "InfrastructureUpgradesOrchestrator", "route_through")
+_emit_checks_agent_registry("p1", "InfrastructureUpgradesOrchestrator", "agent_registry")
+_emit_validates_agent_capability("p1", "InfrastructureUpgradesOrchestrator", "capability")
+_emit_dispatches_execution_plan("p1", "InfrastructureUpgradesOrchestrator", "exec_plan")
+_emit_agent_executes_agent("p1", "InfrastructureUpgradesOrchestrator", "sub_agent")
+_emit_routes_to_agent("p1", "InfrastructureUpgradesOrchestrator", "target_agent")
+_emit_verifies_policy("p1", "InfrastructureUpgradesOrchestrator", "policy_check")
+_emit_observes_runtime_state("p1", "InfrastructureUpgradesOrchestrator", "runtime_state")
+_emit_verifies_boundary("p1", "InfrastructureUpgradesOrchestrator", "boundary_check")
+_emit_transcripts_response("p1", "InfrastructureUpgradesOrchestrator", "transcript")
+_emit_hard_fails_untranscripted("p1", "InfrastructureUpgradesOrchestrator")
+_emit_gated_by_confidence("p1", "InfrastructureUpgradesOrchestrator", "confidence_gate")
 emit_replay_key("p0", "InfrastructureUpgradesOrchestrator")
 emit_determinism_digest("p0", "InfrastructureUpgradesOrchestrator")
 _emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)

@@ -66,6 +66,19 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
+    _emit_escalates_to_human,
+    _emit_routes_through,
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
 )
 
 _emit_emits_metric_event("rename_unified_agents_util", "p4obs", "metric_1")
@@ -110,6 +123,19 @@ _emit_writes_through("p1", "rename_unified_agents_util", "write_through_secondar
 _emit_validated_by_safety_plane("p1", "rename_unified_agents_util", "safety_validation")
 _emit_invokes_eval("p1", "rename_unified_agents_util", "eval_call")
 _emit_proposal_commits_routing("p1", "rename_unified_agents_util", "routing_commit")
+_emit_escalates_to_human("p1", "rename_unified_agents_util", "human_escalation")
+_emit_routes_through("p1", "rename_unified_agents_util", "route_through")
+_emit_checks_agent_registry("p1", "rename_unified_agents_util", "agent_registry")
+_emit_validates_agent_capability("p1", "rename_unified_agents_util", "capability")
+_emit_dispatches_execution_plan("p1", "rename_unified_agents_util", "exec_plan")
+_emit_agent_executes_agent("p1", "rename_unified_agents_util", "sub_agent")
+_emit_routes_to_agent("p1", "rename_unified_agents_util", "target_agent")
+_emit_verifies_policy("p1", "rename_unified_agents_util", "policy_check")
+_emit_observes_runtime_state("p1", "rename_unified_agents_util", "runtime_state")
+_emit_verifies_boundary("p1", "rename_unified_agents_util", "boundary_check")
+_emit_transcripts_response("p1", "rename_unified_agents_util", "transcript")
+_emit_hard_fails_untranscripted("p1", "rename_unified_agents_util")
+_emit_gated_by_confidence("p1", "rename_unified_agents_util", "confidence_gate")
 emit_replay_key("p0", "rename_unified_agents_util")
 emit_determinism_digest("p0", "rename_unified_agents_util")
 _emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)

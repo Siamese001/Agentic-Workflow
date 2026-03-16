@@ -32,6 +32,19 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
+    _emit_escalates_to_human,
+    _emit_routes_through,
 )
 
 _emit_records_execution_trace("p0", "evidence", "test_healing_config_optimizer_with_patterns")
@@ -98,6 +111,19 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
+    _emit_escalates_to_human,
+    _emit_routes_through,
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
 )
 from system_learning.engines.healing_config_optimizer import (
     HealingConfigOptimizer,
@@ -151,6 +177,19 @@ _emit_writes_through("p1", "test_healing_config_optimizer_with_patterns", "write
 _emit_validated_by_safety_plane("p1", "test_healing_config_optimizer_with_patterns", "safety_validation")
 _emit_invokes_eval("p1", "test_healing_config_optimizer_with_patterns", "eval_call")
 _emit_proposal_commits_routing("p1", "test_healing_config_optimizer_with_patterns", "routing_commit")
+_emit_escalates_to_human("p1", "test_healing_config_optimizer_with_patterns", "human_escalation")
+_emit_routes_through("p1", "test_healing_config_optimizer_with_patterns", "route_through")
+_emit_checks_agent_registry("p1", "test_healing_config_optimizer_with_patterns", "agent_registry")
+_emit_validates_agent_capability("p1", "test_healing_config_optimizer_with_patterns", "capability")
+_emit_dispatches_execution_plan("p1", "test_healing_config_optimizer_with_patterns", "exec_plan")
+_emit_agent_executes_agent("p1", "test_healing_config_optimizer_with_patterns", "sub_agent")
+_emit_routes_to_agent("p1", "test_healing_config_optimizer_with_patterns", "target_agent")
+_emit_verifies_policy("p1", "test_healing_config_optimizer_with_patterns", "policy_check")
+_emit_observes_runtime_state("p1", "test_healing_config_optimizer_with_patterns", "runtime_state")
+_emit_verifies_boundary("p1", "test_healing_config_optimizer_with_patterns", "boundary_check")
+_emit_transcripts_response("p1", "test_healing_config_optimizer_with_patterns", "transcript")
+_emit_hard_fails_untranscripted("p1", "test_healing_config_optimizer_with_patterns")
+_emit_gated_by_confidence("p1", "test_healing_config_optimizer_with_patterns", "confidence_gate")
 
 
 class TestHealingConfigOptimizerWithPatterns:

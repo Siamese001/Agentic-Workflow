@@ -36,6 +36,17 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
 )
 
 emit_replay_key("p0", "replay_key_computer")
@@ -43,6 +54,17 @@ emit_determinism_digest("p0", "replay_key_computer")
 
 _emit_dispatches_healing_run("p1", "replay_key_computer", "L6")
 _emit_routes_through("p1", "replay_key_computer", "L6")
+_emit_checks_agent_registry("p1", "replay_key_computer", "agent_registry")
+_emit_validates_agent_capability("p1", "replay_key_computer", "capability")
+_emit_dispatches_execution_plan("p1", "replay_key_computer", "exec_plan")
+_emit_agent_executes_agent("p1", "replay_key_computer", "sub_agent")
+_emit_routes_to_agent("p1", "replay_key_computer", "target_agent")
+_emit_verifies_policy("p1", "replay_key_computer", "policy_check")
+_emit_observes_runtime_state("p1", "replay_key_computer", "runtime_state")
+_emit_verifies_boundary("p1", "replay_key_computer", "boundary_check")
+_emit_transcripts_response("p1", "replay_key_computer", "transcript")
+_emit_hard_fails_untranscripted("p1", "replay_key_computer")
+_emit_gated_by_confidence("p1", "replay_key_computer", "confidence_gate")
 _emit_escalates_to_human("p1", "replay_key_computer", "L6")
 _emit_reads_policy_state("p1", "replay_key_computer", "L6")
 _emit_authorize_and_execute("p2", "replay_key_computer", "execution_auth")
@@ -89,6 +111,28 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
 )
 
 _emit_emits_metric_event("replay_key_computer", "p4obs", "metric_1")

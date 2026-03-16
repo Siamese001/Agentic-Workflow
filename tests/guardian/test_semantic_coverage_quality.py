@@ -40,6 +40,19 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
+    _emit_escalates_to_human,
+    _emit_routes_through,
 )
 
 _emit_records_execution_trace("p0", "evidence", "test_semantic_coverage_quality")
@@ -112,6 +125,19 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
+    _emit_escalates_to_human,
+    _emit_routes_through,
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
 )
 from tests.guardian._assertions import (
     assert_check,
@@ -156,6 +182,19 @@ _emit_writes_through("p1", "test_semantic_coverage_quality", "write_through_seco
 _emit_validated_by_safety_plane("p1", "test_semantic_coverage_quality", "safety_validation")
 _emit_invokes_eval("p1", "test_semantic_coverage_quality", "eval_call")
 _emit_proposal_commits_routing("p1", "test_semantic_coverage_quality", "routing_commit")
+_emit_escalates_to_human("p1", "test_semantic_coverage_quality", "human_escalation")
+_emit_routes_through("p1", "test_semantic_coverage_quality", "route_through")
+_emit_checks_agent_registry("p1", "test_semantic_coverage_quality", "agent_registry")
+_emit_validates_agent_capability("p1", "test_semantic_coverage_quality", "capability")
+_emit_dispatches_execution_plan("p1", "test_semantic_coverage_quality", "exec_plan")
+_emit_agent_executes_agent("p1", "test_semantic_coverage_quality", "sub_agent")
+_emit_routes_to_agent("p1", "test_semantic_coverage_quality", "target_agent")
+_emit_verifies_policy("p1", "test_semantic_coverage_quality", "policy_check")
+_emit_observes_runtime_state("p1", "test_semantic_coverage_quality", "runtime_state")
+_emit_verifies_boundary("p1", "test_semantic_coverage_quality", "boundary_check")
+_emit_transcripts_response("p1", "test_semantic_coverage_quality", "transcript")
+_emit_hard_fails_untranscripted("p1", "test_semantic_coverage_quality")
+_emit_gated_by_confidence("p1", "test_semantic_coverage_quality", "confidence_gate")
 
 pytestmark = pytest.mark.guardian
 

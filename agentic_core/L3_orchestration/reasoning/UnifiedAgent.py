@@ -56,6 +56,13 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
+    _emit_agent_executes_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
 )
 
 emit_replay_key("p0", "UnifiedAgent")
@@ -63,6 +70,13 @@ emit_determinism_digest("p0", "UnifiedAgent")
 
 _emit_dispatches_healing_run("p1", "UnifiedAgent", "L3")
 _emit_routes_through("p1", "UnifiedAgent", "L3")
+_emit_agent_executes_agent("p1", "UnifiedAgent", "sub_agent")
+_emit_verifies_policy("p1", "UnifiedAgent", "policy_check")
+_emit_observes_runtime_state("p1", "UnifiedAgent", "runtime_state")
+_emit_verifies_boundary("p1", "UnifiedAgent", "boundary_check")
+_emit_transcripts_response("p1", "UnifiedAgent", "transcript")
+_emit_hard_fails_untranscripted("p1", "UnifiedAgent")
+_emit_gated_by_confidence("p1", "UnifiedAgent", "confidence_gate")
 _emit_escalates_to_human("p1", "UnifiedAgent", "L3")
 _emit_reads_policy_state("p1", "UnifiedAgent", "L3")
 _emit_routes_to_agent("p1", "UnifiedAgent", "L3")
@@ -849,7 +863,6 @@ class UnifiedAgent(SovereignBaseAgent):
         self, **kwargs: Any
     ) -> ValidationResult | OrchestrationResult | HealingResult | dict[str, Any]:
         """Unified execute method delegating to category strategy."""
-        from agentic_core.runtime.lifecycle_trace_contract import (  # noqa: PLC0415
             LayerSegment,
             _emit_records_execution_trace,
         )

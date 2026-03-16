@@ -41,6 +41,19 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
+    _emit_escalates_to_human,
+    _emit_routes_through,
 )
 
 _emit_authorize_and_execute("p2", "profiles", "execution_auth")
@@ -100,6 +113,19 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
+    _emit_escalates_to_human,
+    _emit_routes_through,
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
 )
 
 _emit_emits_metric_event("profiles", "p4obs", "metric_1")
@@ -139,6 +165,19 @@ _emit_writes_through("p1", "profiles", "write_through_2")
 _emit_validated_by_safety_plane("p1", "profiles", "safety_validation")
 _emit_invokes_eval("p1", "profiles", "eval_call")
 _emit_proposal_commits_routing("p1", "profiles", "routing_commit")
+_emit_escalates_to_human("p1", "profiles", "human_escalation")
+_emit_routes_through("p1", "profiles", "route_through")
+_emit_checks_agent_registry("p1", "profiles", "agent_registry")
+_emit_validates_agent_capability("p1", "profiles", "capability")
+_emit_dispatches_execution_plan("p1", "profiles", "exec_plan")
+_emit_agent_executes_agent("p1", "profiles", "sub_agent")
+_emit_routes_to_agent("p1", "profiles", "target_agent")
+_emit_verifies_policy("p1", "profiles", "policy_check")
+_emit_observes_runtime_state("p1", "profiles", "runtime_state")
+_emit_verifies_boundary("p1", "profiles", "boundary_check")
+_emit_transcripts_response("p1", "profiles", "transcript")
+_emit_hard_fails_untranscripted("p1", "profiles")
+_emit_gated_by_confidence("p1", "profiles", "confidence_gate")
 emit_replay_key("p0", "profiles")
 emit_determinism_digest("p0", "profiles")
 _emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)

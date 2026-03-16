@@ -36,6 +36,17 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
 )
 
 _emit_authorize_and_execute("p2", "function_tool", "execution_auth")
@@ -82,6 +93,17 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
 )
 
 from .base import tool_registry
@@ -120,6 +142,17 @@ emit_determinism_digest("p0", "function_tool")
 
 _emit_dispatches_healing_run("p1", "function_tool", "L0")
 _emit_routes_through("p1", "function_tool", "L0")
+_emit_checks_agent_registry("p1", "function_tool", "agent_registry")
+_emit_validates_agent_capability("p1", "function_tool", "capability")
+_emit_dispatches_execution_plan("p1", "function_tool", "exec_plan")
+_emit_agent_executes_agent("p1", "function_tool", "sub_agent")
+_emit_routes_to_agent("p1", "function_tool", "target_agent")
+_emit_verifies_policy("p1", "function_tool", "policy_check")
+_emit_observes_runtime_state("p1", "function_tool", "runtime_state")
+_emit_verifies_boundary("p1", "function_tool", "boundary_check")
+_emit_transcripts_response("p1", "function_tool", "transcript")
+_emit_hard_fails_untranscripted("p1", "function_tool")
+_emit_gated_by_confidence("p1", "function_tool", "confidence_gate")
 _emit_escalates_to_human("p1", "function_tool", "L0")
 _emit_reads_policy_state("p1", "function_tool", "L0")
 _emit_pulls_context("p1", "function_tool", "context_pull")

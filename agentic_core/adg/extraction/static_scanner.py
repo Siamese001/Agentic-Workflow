@@ -165,6 +165,18 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
+    _emit_escalates_to_human,
 )
 
 _emit_applies_guardrail("p0", "static_scanner", "p0_governance")
@@ -217,6 +229,18 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
+    _emit_escalates_to_human,
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
 )
 
 _emit_dispatches_agent("p3", "static_scanner", "agent_dispatch")
@@ -238,6 +262,18 @@ _emit_writes_through("p1", "static_scanner", "write_through")
 _emit_validated_by_safety_plane("p1", "static_scanner", "safety_validation")
 _emit_invokes_eval("p1", "static_scanner", "eval_call")
 _emit_proposal_commits_routing("p1", "static_scanner", "routing_commit")
+_emit_escalates_to_human("p1", "static_scanner", "human_escalation")
+_emit_checks_agent_registry("p1", "static_scanner", "agent_registry")
+_emit_validates_agent_capability("p1", "static_scanner", "capability")
+_emit_dispatches_execution_plan("p1", "static_scanner", "exec_plan")
+_emit_agent_executes_agent("p1", "static_scanner", "sub_agent")
+_emit_routes_to_agent("p1", "static_scanner", "target_agent")
+_emit_verifies_policy("p1", "static_scanner", "policy_check")
+_emit_observes_runtime_state("p1", "static_scanner", "runtime_state")
+_emit_verifies_boundary("p1", "static_scanner", "boundary_check")
+_emit_transcripts_response("p1", "static_scanner", "transcript")
+_emit_hard_fails_untranscripted("p1", "static_scanner")
+_emit_gated_by_confidence("p1", "static_scanner", "confidence_gate")
 _emit_reads_environ("p2", "static_scanner", "env_read")
 _emit_reads_runtime_state("p2", "static_scanner", "runtime_state")
 _emit_captures_pattern("p3lm", "static_scanner", "pattern")

@@ -51,6 +51,17 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
 )
 
 emit_replay_key("p0", "heal_contract_types")
@@ -58,6 +69,17 @@ emit_determinism_digest("p0", "heal_contract_types")
 
 _emit_dispatches_healing_run("p1", "heal_contract_types", "L2")
 _emit_routes_through("p1", "heal_contract_types", "L2")
+_emit_checks_agent_registry("p1", "heal_contract_types", "agent_registry")
+_emit_validates_agent_capability("p1", "heal_contract_types", "capability")
+_emit_dispatches_execution_plan("p1", "heal_contract_types", "exec_plan")
+_emit_agent_executes_agent("p1", "heal_contract_types", "sub_agent")
+_emit_routes_to_agent("p1", "heal_contract_types", "target_agent")
+_emit_verifies_policy("p1", "heal_contract_types", "policy_check")
+_emit_observes_runtime_state("p1", "heal_contract_types", "runtime_state")
+_emit_verifies_boundary("p1", "heal_contract_types", "boundary_check")
+_emit_transcripts_response("p1", "heal_contract_types", "transcript")
+_emit_hard_fails_untranscripted("p1", "heal_contract_types")
+_emit_gated_by_confidence("p1", "heal_contract_types", "confidence_gate")
 _emit_escalates_to_human("p1", "heal_contract_types", "L2")
 _emit_reads_policy_state("p1", "heal_contract_types", "L2")
 _emit_authorize_and_execute("p2", "heal_contract_types", "execution_auth")
@@ -104,6 +126,28 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
 )
 
 _emit_emits_metric_event("heal_contract_types", "p4obs", "metric_1")

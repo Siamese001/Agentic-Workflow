@@ -68,6 +68,19 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
+    _emit_escalates_to_human,
+    _emit_routes_through,
 )
 
 _emit_emits_metric_event("answer_support", "p4obs", "metric_1")
@@ -126,6 +139,19 @@ _emit_captures_evaluation_metric("p4", "answer_support", "eval_metric")
 _emit_stores_embedding("p4", "answer_support", "embedding_store")
 _emit_updates_meta_learning_state("p4", "answer_support", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "answer_support", "exec_snapshot_link")
+_emit_escalates_to_human("p1", "answer_support", "human_escalation")
+_emit_routes_through("p1", "answer_support", "route_through")
+_emit_checks_agent_registry("p1", "answer_support", "agent_registry")
+_emit_validates_agent_capability("p1", "answer_support", "capability")
+_emit_dispatches_execution_plan("p1", "answer_support", "exec_plan")
+_emit_agent_executes_agent("p1", "answer_support", "sub_agent")
+_emit_routes_to_agent("p1", "answer_support", "target_agent")
+_emit_verifies_policy("p1", "answer_support", "policy_check")
+_emit_observes_runtime_state("p1", "answer_support", "runtime_state")
+_emit_verifies_boundary("p1", "answer_support", "boundary_check")
+_emit_transcripts_response("p1", "answer_support", "transcript")
+_emit_hard_fails_untranscripted("p1", "answer_support")
+_emit_gated_by_confidence("p1", "answer_support", "confidence_gate")
 
 # ---------------------------------------------------------------------------
 # Concrete Implementation
@@ -147,6 +173,19 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_validated_by_safety_plane,
     _emit_invokes_eval,
     _emit_proposal_commits_routing,
+    _emit_escalates_to_human,
+    _emit_routes_through,
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
 )
 _emit_pulls_context("p1", "answer_support", "context_pull")
 _emit_pulls_context("p1", "answer_support", "context_pull_secondary")
@@ -157,6 +196,19 @@ _emit_writes_through("p1", "answer_support", "write_through_secondary")
 _emit_validated_by_safety_plane("p1", "answer_support", "safety_validation")
 _emit_invokes_eval("p1", "answer_support", "eval_call")
 _emit_proposal_commits_routing("p1", "answer_support", "routing_commit")
+_emit_escalates_to_human("p1", "answer_support", "human_escalation")
+_emit_routes_through("p1", "answer_support", "route_through")
+_emit_checks_agent_registry("p1", "answer_support", "agent_registry")
+_emit_validates_agent_capability("p1", "answer_support", "capability")
+_emit_dispatches_execution_plan("p1", "answer_support", "exec_plan")
+_emit_agent_executes_agent("p1", "answer_support", "sub_agent")
+_emit_routes_to_agent("p1", "answer_support", "target_agent")
+_emit_verifies_policy("p1", "answer_support", "policy_check")
+_emit_observes_runtime_state("p1", "answer_support", "runtime_state")
+_emit_verifies_boundary("p1", "answer_support", "boundary_check")
+_emit_transcripts_response("p1", "answer_support", "transcript")
+_emit_hard_fails_untranscripted("p1", "answer_support")
+_emit_gated_by_confidence("p1", "answer_support", "confidence_gate")
     4. Sentences with insufficient evidence overlap are flagged as unsupported.
     5. support_score = supported_sentence_count / max(1, total_sentence_count).
     6. fully_supported = support_score >= fully_supported_threshold.

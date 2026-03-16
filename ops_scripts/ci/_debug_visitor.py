@@ -30,6 +30,19 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
+    _emit_escalates_to_human,
+    _emit_routes_through,
 )
 
 _emit_records_execution_trace("p0", "evidence", "_debug_visitor")
@@ -97,6 +110,19 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
+    _emit_escalates_to_human,
+    _emit_routes_through,
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
 )
 from ops_scripts.ci._fix_hardcoded_ssot_literals import _collect_safe_positions
 
@@ -137,6 +163,19 @@ _emit_writes_through("p1", "_debug_visitor", "write_through_secondary")
 _emit_validated_by_safety_plane("p1", "_debug_visitor", "safety_validation")
 _emit_invokes_eval("p1", "_debug_visitor", "eval_call")
 _emit_proposal_commits_routing("p1", "_debug_visitor", "routing_commit")
+_emit_escalates_to_human("p1", "_debug_visitor", "human_escalation")
+_emit_routes_through("p1", "_debug_visitor", "route_through")
+_emit_checks_agent_registry("p1", "_debug_visitor", "agent_registry")
+_emit_validates_agent_capability("p1", "_debug_visitor", "capability")
+_emit_dispatches_execution_plan("p1", "_debug_visitor", "exec_plan")
+_emit_agent_executes_agent("p1", "_debug_visitor", "sub_agent")
+_emit_routes_to_agent("p1", "_debug_visitor", "target_agent")
+_emit_verifies_policy("p1", "_debug_visitor", "policy_check")
+_emit_observes_runtime_state("p1", "_debug_visitor", "runtime_state")
+_emit_verifies_boundary("p1", "_debug_visitor", "boundary_check")
+_emit_transcripts_response("p1", "_debug_visitor", "transcript")
+_emit_hard_fails_untranscripted("p1", "_debug_visitor")
+_emit_gated_by_confidence("p1", "_debug_visitor", "confidence_gate")
 
 content = Path('agentic_core/L0_routing/utils/scorched_earth_merge_util.py').read_text(encoding='utf-8')
 safe_positions = _collect_safe_positions(content)

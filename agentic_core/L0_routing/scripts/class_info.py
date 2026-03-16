@@ -52,6 +52,17 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
 )
 
 emit_replay_key("p0", "class_info")
@@ -59,6 +70,17 @@ emit_determinism_digest("p0", "class_info")
 
 _emit_dispatches_healing_run("p1", "class_info", "L0")
 _emit_routes_through("p1", "class_info", "L0")
+_emit_checks_agent_registry("p1", "class_info", "agent_registry")
+_emit_validates_agent_capability("p1", "class_info", "capability")
+_emit_dispatches_execution_plan("p1", "class_info", "exec_plan")
+_emit_agent_executes_agent("p1", "class_info", "sub_agent")
+_emit_routes_to_agent("p1", "class_info", "target_agent")
+_emit_verifies_policy("p1", "class_info", "policy_check")
+_emit_observes_runtime_state("p1", "class_info", "runtime_state")
+_emit_verifies_boundary("p1", "class_info", "boundary_check")
+_emit_transcripts_response("p1", "class_info", "transcript")
+_emit_hard_fails_untranscripted("p1", "class_info")
+_emit_gated_by_confidence("p1", "class_info", "confidence_gate")
 _emit_escalates_to_human("p1", "class_info", "L0")
 _emit_reads_policy_state("p1", "class_info", "L0")
 _emit_authorize_and_execute("p2", "class_info", "execution_auth")
@@ -105,6 +127,28 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
 )
 
 _emit_emits_metric_event("class_info", "p4obs", "metric_1")

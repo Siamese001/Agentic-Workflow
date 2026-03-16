@@ -45,6 +45,19 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_updates_meta_learning_state,
     _emit_validates_capability,
     _emit_writes_via_uwg,
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
+    _emit_escalates_to_human,
+    _emit_routes_through,
 )
 
 _emit_reads_policy_state("p0", "HardenedopenaiexecutorStrategy", "policy_binding")
@@ -94,6 +107,19 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
+    _emit_escalates_to_human,
+    _emit_routes_through,
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
 )
 
 _emit_emits_metric_event("HardenedopenaiexecutorStrategy", "p4obs", "metric_1")
@@ -133,6 +159,19 @@ _emit_writes_through("p1", "HardenedopenaiexecutorStrategy", "write_through_2")
 _emit_validated_by_safety_plane("p1", "HardenedopenaiexecutorStrategy", "safety_validation")
 _emit_invokes_eval("p1", "HardenedopenaiexecutorStrategy", "eval_call")
 _emit_proposal_commits_routing("p1", "HardenedopenaiexecutorStrategy", "routing_commit")
+_emit_escalates_to_human("p1", "HardenedopenaiexecutorStrategy", "human_escalation")
+_emit_routes_through("p1", "HardenedopenaiexecutorStrategy", "route_through")
+_emit_checks_agent_registry("p1", "HardenedopenaiexecutorStrategy", "agent_registry")
+_emit_validates_agent_capability("p1", "HardenedopenaiexecutorStrategy", "capability")
+_emit_dispatches_execution_plan("p1", "HardenedopenaiexecutorStrategy", "exec_plan")
+_emit_agent_executes_agent("p1", "HardenedopenaiexecutorStrategy", "sub_agent")
+_emit_routes_to_agent("p1", "HardenedopenaiexecutorStrategy", "target_agent")
+_emit_verifies_policy("p1", "HardenedopenaiexecutorStrategy", "policy_check")
+_emit_observes_runtime_state("p1", "HardenedopenaiexecutorStrategy", "runtime_state")
+_emit_verifies_boundary("p1", "HardenedopenaiexecutorStrategy", "boundary_check")
+_emit_transcripts_response("p1", "HardenedopenaiexecutorStrategy", "transcript")
+_emit_hard_fails_untranscripted("p1", "HardenedopenaiexecutorStrategy")
+_emit_gated_by_confidence("p1", "HardenedopenaiexecutorStrategy", "confidence_gate")
 
 logger = logging.getLogger(__name__)
 

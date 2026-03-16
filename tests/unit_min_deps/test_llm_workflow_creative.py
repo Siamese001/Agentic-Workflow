@@ -64,6 +64,15 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
+    _emit_agent_executes_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
+    _emit_escalates_to_human,
+    _emit_routes_through,
 )
 
 _emit_records_execution_trace("p0", "evidence", "test_llm_workflow_creative")
@@ -99,6 +108,15 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
+    _emit_escalates_to_human,
+    _emit_routes_through,
+    _emit_agent_executes_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
 )
 
 _emit_emits_metric_event("test_llm_workflow_creative", "p4obs", "metric_1")
@@ -138,6 +156,15 @@ _emit_writes_through("p1", "test_llm_workflow_creative", "write_through_2")
 _emit_validated_by_safety_plane("p1", "test_llm_workflow_creative", "safety_validation")
 _emit_invokes_eval("p1", "test_llm_workflow_creative", "eval_call")
 _emit_proposal_commits_routing("p1", "test_llm_workflow_creative", "routing_commit")
+_emit_escalates_to_human("p1", "test_llm_workflow_creative", "human_escalation")
+_emit_routes_through("p1", "test_llm_workflow_creative", "route_through")
+_emit_agent_executes_agent("p1", "test_llm_workflow_creative", "sub_agent")
+_emit_verifies_policy("p1", "test_llm_workflow_creative", "policy_check")
+_emit_observes_runtime_state("p1", "test_llm_workflow_creative", "runtime_state")
+_emit_verifies_boundary("p1", "test_llm_workflow_creative", "boundary_check")
+_emit_transcripts_response("p1", "test_llm_workflow_creative", "transcript")
+_emit_hard_fails_untranscripted("p1", "test_llm_workflow_creative")
+_emit_gated_by_confidence("p1", "test_llm_workflow_creative", "confidence_gate")
 emit_replay_key("p0", "test_llm_workflow_creative")
 emit_determinism_digest("p0", "test_llm_workflow_creative")
 _emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)

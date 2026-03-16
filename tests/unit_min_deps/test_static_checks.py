@@ -61,6 +61,19 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
+    _emit_escalates_to_human,
+    _emit_routes_through,
 )
 
 _emit_emits_metric_event("test_static_checks", "p4obs", "metric_1")
@@ -119,6 +132,19 @@ _emit_captures_evaluation_metric("p4", "test_static_checks", "eval_metric")
 _emit_stores_embedding("p4", "test_static_checks", "embedding_store")
 _emit_updates_meta_learning_state("p4", "test_static_checks", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "test_static_checks", "exec_snapshot_link")
+_emit_escalates_to_human("p1", "test_static_checks", "human_escalation")
+_emit_routes_through("p1", "test_static_checks", "route_through")
+_emit_checks_agent_registry("p1", "test_static_checks", "agent_registry")
+_emit_validates_agent_capability("p1", "test_static_checks", "capability")
+_emit_dispatches_execution_plan("p1", "test_static_checks", "exec_plan")
+_emit_agent_executes_agent("p1", "test_static_checks", "sub_agent")
+_emit_routes_to_agent("p1", "test_static_checks", "target_agent")
+_emit_verifies_policy("p1", "test_static_checks", "policy_check")
+_emit_observes_runtime_state("p1", "test_static_checks", "runtime_state")
+_emit_verifies_boundary("p1", "test_static_checks", "boundary_check")
+_emit_transcripts_response("p1", "test_static_checks", "transcript")
+_emit_hard_fails_untranscripted("p1", "test_static_checks")
+_emit_gated_by_confidence("p1", "test_static_checks", "confidence_gate")
 
 
 @pytest.mark.unit_min_deps
@@ -345,6 +371,19 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_validated_by_safety_plane,
     _emit_invokes_eval,
     _emit_proposal_commits_routing,
+    _emit_escalates_to_human,
+    _emit_routes_through,
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
 )
 _emit_pulls_context("p1", "test_static_checks", "context_pull")
 _emit_pulls_context("p1", "test_static_checks", "context_pull_secondary")
@@ -355,6 +394,19 @@ _emit_writes_through("p1", "test_static_checks", "write_through_secondary")
 _emit_validated_by_safety_plane("p1", "test_static_checks", "safety_validation")
 _emit_invokes_eval("p1", "test_static_checks", "eval_call")
 _emit_proposal_commits_routing("p1", "test_static_checks", "routing_commit")
+_emit_escalates_to_human("p1", "test_static_checks", "human_escalation")
+_emit_routes_through("p1", "test_static_checks", "route_through")
+_emit_checks_agent_registry("p1", "test_static_checks", "agent_registry")
+_emit_validates_agent_capability("p1", "test_static_checks", "capability")
+_emit_dispatches_execution_plan("p1", "test_static_checks", "exec_plan")
+_emit_agent_executes_agent("p1", "test_static_checks", "sub_agent")
+_emit_routes_to_agent("p1", "test_static_checks", "target_agent")
+_emit_verifies_policy("p1", "test_static_checks", "policy_check")
+_emit_observes_runtime_state("p1", "test_static_checks", "runtime_state")
+_emit_verifies_boundary("p1", "test_static_checks", "boundary_check")
+_emit_transcripts_response("p1", "test_static_checks", "transcript")
+_emit_hard_fails_untranscripted("p1", "test_static_checks")
+_emit_gated_by_confidence("p1", "test_static_checks", "confidence_gate")
 subprocess.run(["pwsh", "-c", "echo test"])
 subprocess.call(["powershell", "-Command", "Get-Process"])
 open("file.txt", "w")

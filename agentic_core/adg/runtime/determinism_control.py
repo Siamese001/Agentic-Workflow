@@ -47,6 +47,19 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_validates_capability,
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
+    _emit_escalates_to_human,
+    _emit_routes_through,
 )
 
 _emit_applies_guardrail("p0", "determinism_control", "p0_governance")
@@ -77,6 +90,19 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
+    _emit_escalates_to_human,
+    _emit_routes_through,
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
 )
 
 _emit_emits_metric_event("determinism_control", "p4obs", "metric_1")
@@ -116,6 +142,19 @@ _emit_writes_through("p1", "determinism_control", "write_through_2")
 _emit_validated_by_safety_plane("p1", "determinism_control", "safety_validation")
 _emit_invokes_eval("p1", "determinism_control", "eval_call")
 _emit_proposal_commits_routing("p1", "determinism_control", "routing_commit")
+_emit_escalates_to_human("p1", "determinism_control", "human_escalation")
+_emit_routes_through("p1", "determinism_control", "route_through")
+_emit_checks_agent_registry("p1", "determinism_control", "agent_registry")
+_emit_validates_agent_capability("p1", "determinism_control", "capability")
+_emit_dispatches_execution_plan("p1", "determinism_control", "exec_plan")
+_emit_agent_executes_agent("p1", "determinism_control", "sub_agent")
+_emit_routes_to_agent("p1", "determinism_control", "target_agent")
+_emit_verifies_policy("p1", "determinism_control", "policy_check")
+_emit_observes_runtime_state("p1", "determinism_control", "runtime_state")
+_emit_verifies_boundary("p1", "determinism_control", "boundary_check")
+_emit_transcripts_response("p1", "determinism_control", "transcript")
+_emit_hard_fails_untranscripted("p1", "determinism_control")
+_emit_gated_by_confidence("p1", "determinism_control", "confidence_gate")
 
 emit_determinism_digest("p0", "determinism_control")
 _emit_authorize_and_execute("p2", "determinism_control", "execution_auth")

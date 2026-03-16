@@ -28,6 +28,17 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
 )
 
 emit_replay_key("p0", "spiffe_validator")
@@ -35,6 +46,17 @@ emit_determinism_digest("p0", "spiffe_validator")
 
 _emit_dispatches_healing_run("p1", "spiffe_validator", "L1")
 _emit_routes_through("p1", "spiffe_validator", "L1")
+_emit_checks_agent_registry("p1", "spiffe_validator", "agent_registry")
+_emit_validates_agent_capability("p1", "spiffe_validator", "capability")
+_emit_dispatches_execution_plan("p1", "spiffe_validator", "exec_plan")
+_emit_agent_executes_agent("p1", "spiffe_validator", "sub_agent")
+_emit_routes_to_agent("p1", "spiffe_validator", "target_agent")
+_emit_verifies_policy("p1", "spiffe_validator", "policy_check")
+_emit_observes_runtime_state("p1", "spiffe_validator", "runtime_state")
+_emit_verifies_boundary("p1", "spiffe_validator", "boundary_check")
+_emit_transcripts_response("p1", "spiffe_validator", "transcript")
+_emit_hard_fails_untranscripted("p1", "spiffe_validator")
+_emit_gated_by_confidence("p1", "spiffe_validator", "confidence_gate")
 _emit_escalates_to_human("p1", "spiffe_validator", "L1")
 _emit_reads_policy_state("p1", "spiffe_validator", "L1")
 _emit_authorize_and_execute("p2", "spiffe_validator", "execution_auth")
@@ -100,6 +122,28 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
 )
 from agentic_core.utils.decorators_compat_util import standard_heal
 

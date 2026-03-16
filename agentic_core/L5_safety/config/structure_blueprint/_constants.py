@@ -1611,6 +1611,17 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_via_uwg,
     emit_determinism_digest,
     emit_replay_key,
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
 )
 
 _emit_emits_metric_event("_constants", "p4obs", "metric_1")
@@ -1645,6 +1656,17 @@ _emit_reads_runtime_state("_constants", "runtime_state", "p2_rt_2")
 _emit_reads_policy_state("p1", "_constants", "L5")
 _emit_escalates_to_human("p1", "_constants", "L5")
 _emit_routes_through("p1", "_constants", "L5")
+_emit_checks_agent_registry("p1", "_constants", "agent_registry")
+_emit_validates_agent_capability("p1", "_constants", "capability")
+_emit_dispatches_execution_plan("p1", "_constants", "exec_plan")
+_emit_agent_executes_agent("p1", "_constants", "sub_agent")
+_emit_routes_to_agent("p1", "_constants", "target_agent")
+_emit_verifies_policy("p1", "_constants", "policy_check")
+_emit_observes_runtime_state("p1", "_constants", "runtime_state")
+_emit_verifies_boundary("p1", "_constants", "boundary_check")
+_emit_transcripts_response("p1", "_constants", "transcript")
+_emit_hard_fails_untranscripted("p1", "_constants")
+_emit_gated_by_confidence("p1", "_constants", "confidence_gate")
 _emit_dispatches_healing_run("p1", "_constants", "L5")
 _emit_records_execution_trace("p0", "evidence", "_constants")
 _emit_applies_guardrail("p0", "_constants", "p0_governance")

@@ -57,6 +57,15 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_dispatches_execution_plan,
     _emit_routes_to_agent,
     _emit_validates_agent_capability,
+    _emit_agent_executes_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
+    _emit_escalates_to_human,
+    _emit_routes_through,
 )
 
 _emit_records_execution_trace("p0", "evidence", "test_creative_cross_context")
@@ -111,6 +120,15 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
+    _emit_escalates_to_human,
+    _emit_routes_through,
+    _emit_agent_executes_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
 )
 
 _emit_emits_metric_event("test_creative_cross_context", "p4obs", "metric_1")
@@ -150,6 +168,15 @@ _emit_writes_through("p1", "test_creative_cross_context", "write_through_2")
 _emit_validated_by_safety_plane("p1", "test_creative_cross_context", "safety_validation")
 _emit_invokes_eval("p1", "test_creative_cross_context", "eval_call")
 _emit_proposal_commits_routing("p1", "test_creative_cross_context", "routing_commit")
+_emit_escalates_to_human("p1", "test_creative_cross_context", "human_escalation")
+_emit_routes_through("p1", "test_creative_cross_context", "route_through")
+_emit_agent_executes_agent("p1", "test_creative_cross_context", "sub_agent")
+_emit_verifies_policy("p1", "test_creative_cross_context", "policy_check")
+_emit_observes_runtime_state("p1", "test_creative_cross_context", "runtime_state")
+_emit_verifies_boundary("p1", "test_creative_cross_context", "boundary_check")
+_emit_transcripts_response("p1", "test_creative_cross_context", "transcript")
+_emit_hard_fails_untranscripted("p1", "test_creative_cross_context")
+_emit_gated_by_confidence("p1", "test_creative_cross_context", "confidence_gate")
 
 
 class TestW1MutationRecordCreative:

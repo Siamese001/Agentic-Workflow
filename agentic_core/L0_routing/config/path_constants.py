@@ -46,11 +46,33 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_via_uwg,
     emit_determinism_digest,
     emit_replay_key,
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
 )
 
 _emit_reads_policy_state("p1", "path_constants", "L0")
 _emit_escalates_to_human("p1", "path_constants", "L0")
 _emit_routes_through("p1", "path_constants", "L0")
+_emit_checks_agent_registry("p1", "path_constants", "agent_registry")
+_emit_validates_agent_capability("p1", "path_constants", "capability")
+_emit_dispatches_execution_plan("p1", "path_constants", "exec_plan")
+_emit_agent_executes_agent("p1", "path_constants", "sub_agent")
+_emit_routes_to_agent("p1", "path_constants", "target_agent")
+_emit_verifies_policy("p1", "path_constants", "policy_check")
+_emit_observes_runtime_state("p1", "path_constants", "runtime_state")
+_emit_verifies_boundary("p1", "path_constants", "boundary_check")
+_emit_transcripts_response("p1", "path_constants", "transcript")
+_emit_hard_fails_untranscripted("p1", "path_constants")
+_emit_gated_by_confidence("p1", "path_constants", "confidence_gate")
 _emit_dispatches_healing_run("p1", "path_constants", "L0")
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_captures_pattern,
@@ -76,6 +98,28 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
 )
 
 _emit_emits_metric_event("path_constants", "p4obs", "metric_1")

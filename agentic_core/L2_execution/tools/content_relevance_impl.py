@@ -26,6 +26,17 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
 )
 
 emit_replay_key("p0", "content_relevance_impl")
@@ -33,6 +44,17 @@ emit_determinism_digest("p0", "content_relevance_impl")
 
 _emit_dispatches_healing_run("p1", "content_relevance_impl", "L2")
 _emit_routes_through("p1", "content_relevance_impl", "L2")
+_emit_checks_agent_registry("p1", "content_relevance_impl", "agent_registry")
+_emit_validates_agent_capability("p1", "content_relevance_impl", "capability")
+_emit_dispatches_execution_plan("p1", "content_relevance_impl", "exec_plan")
+_emit_agent_executes_agent("p1", "content_relevance_impl", "sub_agent")
+_emit_routes_to_agent("p1", "content_relevance_impl", "target_agent")
+_emit_verifies_policy("p1", "content_relevance_impl", "policy_check")
+_emit_observes_runtime_state("p1", "content_relevance_impl", "runtime_state")
+_emit_verifies_boundary("p1", "content_relevance_impl", "boundary_check")
+_emit_transcripts_response("p1", "content_relevance_impl", "transcript")
+_emit_hard_fails_untranscripted("p1", "content_relevance_impl")
+_emit_gated_by_confidence("p1", "content_relevance_impl", "confidence_gate")
 _emit_escalates_to_human("p1", "content_relevance_impl", "L2")
 _emit_reads_policy_state("p1", "content_relevance_impl", "L2")
 _emit_authorize_and_execute("p2", "content_relevance_impl", "execution_auth")
@@ -88,6 +110,28 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
 )
 
 _emit_emits_metric_event("content_relevance_impl", "p4obs", "metric_1")

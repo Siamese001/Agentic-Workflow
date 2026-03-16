@@ -12,6 +12,15 @@ import argparse
 import ast
 import sys
 from pathlib import Path
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_agent_executes_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
+)
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 

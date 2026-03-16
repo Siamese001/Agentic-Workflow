@@ -51,6 +51,19 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
+    _emit_escalates_to_human,
+    _emit_routes_through,
 )
 
 _emit_records_execution_trace("p0", "evidence", "rag_sovereignty")
@@ -106,6 +119,19 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
+    _emit_escalates_to_human,
+    _emit_routes_through,
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
 )
 
 _emit_emits_metric_event("rag_sovereignty", "p4obs", "metric_1")
@@ -145,6 +171,19 @@ _emit_writes_through("p1", "rag_sovereignty", "write_through_secondary")
 _emit_validated_by_safety_plane("p1", "rag_sovereignty", "safety_validation")
 _emit_invokes_eval("p1", "rag_sovereignty", "eval_call")
 _emit_proposal_commits_routing("p1", "rag_sovereignty", "routing_commit")
+_emit_escalates_to_human("p1", "rag_sovereignty", "human_escalation")
+_emit_routes_through("p1", "rag_sovereignty", "route_through")
+_emit_checks_agent_registry("p1", "rag_sovereignty", "agent_registry")
+_emit_validates_agent_capability("p1", "rag_sovereignty", "capability")
+_emit_dispatches_execution_plan("p1", "rag_sovereignty", "exec_plan")
+_emit_agent_executes_agent("p1", "rag_sovereignty", "sub_agent")
+_emit_routes_to_agent("p1", "rag_sovereignty", "target_agent")
+_emit_verifies_policy("p1", "rag_sovereignty", "policy_check")
+_emit_observes_runtime_state("p1", "rag_sovereignty", "runtime_state")
+_emit_verifies_boundary("p1", "rag_sovereignty", "boundary_check")
+_emit_transcripts_response("p1", "rag_sovereignty", "transcript")
+_emit_hard_fails_untranscripted("p1", "rag_sovereignty")
+_emit_gated_by_confidence("p1", "rag_sovereignty", "confidence_gate")
 logger = logging.getLogger(__name__)
 _POLICY_ID = "ADG::Policy::RAG_C0_INFORMATIONAL_ONLY"
 _DECISION_NODES: frozenset[str] = frozenset(

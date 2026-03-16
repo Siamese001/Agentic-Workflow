@@ -151,6 +151,17 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_via_uwg,
     emit_determinism_digest,
     emit_replay_key,
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
 )
 
 _emit_emits_metric_event("structure_blueprint_config", "p4obs", "metric_1")
@@ -185,6 +196,17 @@ _emit_reads_runtime_state("structure_blueprint_config", "runtime_state", "p2_rt_
 _emit_reads_policy_state("p1", "structure_blueprint_config", "L5")
 _emit_escalates_to_human("p1", "structure_blueprint_config", "L5")
 _emit_routes_through("p1", "structure_blueprint_config", "L5")
+_emit_checks_agent_registry("p1", "structure_blueprint_config", "agent_registry")
+_emit_validates_agent_capability("p1", "structure_blueprint_config", "capability")
+_emit_dispatches_execution_plan("p1", "structure_blueprint_config", "exec_plan")
+_emit_agent_executes_agent("p1", "structure_blueprint_config", "sub_agent")
+_emit_routes_to_agent("p1", "structure_blueprint_config", "target_agent")
+_emit_verifies_policy("p1", "structure_blueprint_config", "policy_check")
+_emit_observes_runtime_state("p1", "structure_blueprint_config", "runtime_state")
+_emit_verifies_boundary("p1", "structure_blueprint_config", "boundary_check")
+_emit_transcripts_response("p1", "structure_blueprint_config", "transcript")
+_emit_hard_fails_untranscripted("p1", "structure_blueprint_config")
+_emit_gated_by_confidence("p1", "structure_blueprint_config", "confidence_gate")
 _emit_dispatches_healing_run("p1", "structure_blueprint_config", "L5")
 _emit_records_execution_trace("p0", "evidence", "structure_blueprint_config")
 _emit_applies_guardrail("p0", "structure_blueprint_config", "p0_governance")

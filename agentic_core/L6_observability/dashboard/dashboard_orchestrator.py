@@ -57,6 +57,16 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
 )
 
 emit_replay_key("p0", "dashboard_orchestrator")
@@ -64,6 +74,16 @@ emit_determinism_digest("p0", "dashboard_orchestrator")
 
 _emit_dispatches_healing_run("p1", "dashboard_orchestrator", "L6")
 _emit_routes_through("p1", "dashboard_orchestrator", "L6")
+_emit_checks_agent_registry("p1", "dashboard_orchestrator", "agent_registry")
+_emit_validates_agent_capability("p1", "dashboard_orchestrator", "capability")
+_emit_dispatches_execution_plan("p1", "dashboard_orchestrator", "exec_plan")
+_emit_agent_executes_agent("p1", "dashboard_orchestrator", "sub_agent")
+_emit_routes_to_agent("p1", "dashboard_orchestrator", "target_agent")
+_emit_verifies_policy("p1", "dashboard_orchestrator", "policy_check")
+_emit_verifies_boundary("p1", "dashboard_orchestrator", "boundary_check")
+_emit_transcripts_response("p1", "dashboard_orchestrator", "transcript")
+_emit_hard_fails_untranscripted("p1", "dashboard_orchestrator")
+_emit_gated_by_confidence("p1", "dashboard_orchestrator", "confidence_gate")
 _emit_escalates_to_human("p1", "dashboard_orchestrator", "L6")
 _emit_reads_policy_state("p1", "dashboard_orchestrator", "L6")
 
@@ -288,6 +308,16 @@ def aggregate_runtime_observability(
     from agentic_core.runtime.lifecycle_trace_contract import (  # noqa: PLC0415
         LayerSegment,
         _emit_records_execution_trace,
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
     )
 
     _emit_records_execution_trace(
@@ -391,6 +421,26 @@ def _gather_lifecycle_telemetry(telemetry_window: TelemetryWindow) -> dict[str, 
 
 def _compute_aggregate_metrics(
     telemetry_data: dict[str, Any], dashboard_policy: DashboardPolicy
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
 ) -> dict[str, Any]:
     """Compute aggregate metrics from telemetry data."""
     # This would normally compute real metrics from telemetry

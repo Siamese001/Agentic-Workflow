@@ -65,6 +65,17 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_via_uwg,
     emit_determinism_digest,
     emit_replay_key,
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
 )
 
 _emit_emits_metric_event("ssot_tier_constants", "p4obs", "metric_1")
@@ -99,6 +110,17 @@ _emit_reads_runtime_state("ssot_tier_constants", "runtime_state", "p2_rt_2")
 _emit_reads_policy_state("p1", "ssot_tier_constants", "L0")
 _emit_escalates_to_human("p1", "ssot_tier_constants", "L0")
 _emit_routes_through("p1", "ssot_tier_constants", "L0")
+_emit_checks_agent_registry("p1", "ssot_tier_constants", "agent_registry")
+_emit_validates_agent_capability("p1", "ssot_tier_constants", "capability")
+_emit_dispatches_execution_plan("p1", "ssot_tier_constants", "exec_plan")
+_emit_agent_executes_agent("p1", "ssot_tier_constants", "sub_agent")
+_emit_routes_to_agent("p1", "ssot_tier_constants", "target_agent")
+_emit_verifies_policy("p1", "ssot_tier_constants", "policy_check")
+_emit_observes_runtime_state("p1", "ssot_tier_constants", "runtime_state")
+_emit_verifies_boundary("p1", "ssot_tier_constants", "boundary_check")
+_emit_transcripts_response("p1", "ssot_tier_constants", "transcript")
+_emit_hard_fails_untranscripted("p1", "ssot_tier_constants")
+_emit_gated_by_confidence("p1", "ssot_tier_constants", "confidence_gate")
 _emit_dispatches_healing_run("p1", "ssot_tier_constants", "L0")
 _emit_records_execution_trace("p0", "evidence", "ssot_tier_constants")
 _emit_applies_guardrail("p0", "ssot_tier_constants", "p0_governance")

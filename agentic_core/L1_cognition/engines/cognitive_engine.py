@@ -29,6 +29,17 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
 )
 
 emit_replay_key("p0", "cognitive_engine")
@@ -36,6 +47,15 @@ emit_determinism_digest("p0", "cognitive_engine")
 
 _emit_dispatches_healing_run("p1", "cognitive_engine", "L1")
 _emit_routes_through("p1", "cognitive_engine", "L1")
+_emit_checks_agent_registry("p1", "cognitive_engine", "agent_registry")
+_emit_validates_agent_capability("p1", "cognitive_engine", "capability")
+_emit_dispatches_execution_plan("p1", "cognitive_engine", "exec_plan")
+_emit_agent_executes_agent("p1", "cognitive_engine", "sub_agent")
+_emit_routes_to_agent("p1", "cognitive_engine", "target_agent")
+_emit_verifies_policy("p1", "cognitive_engine", "policy_check")
+_emit_observes_runtime_state("p1", "cognitive_engine", "runtime_state")
+_emit_verifies_boundary("p1", "cognitive_engine", "boundary_check")
+_emit_hard_fails_untranscripted("p1", "cognitive_engine")
 _emit_escalates_to_human("p1", "cognitive_engine", "L1")
 _emit_reads_policy_state("p1", "cognitive_engine", "L1")
 
@@ -145,6 +165,25 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_hard_fails_untranscripted,
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
 )
 
 _emit_emits_metric_event("cognitive_engine", "p4obs", "metric_1")

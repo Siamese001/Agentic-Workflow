@@ -84,6 +84,12 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_dispatches_execution_plan,
     _emit_routes_to_agent,
     _emit_validates_agent_capability,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
 )
 
 emit_replay_key("p0", "agent_handoff")
@@ -91,6 +97,12 @@ emit_determinism_digest("p0", "agent_handoff")
 
 _emit_dispatches_healing_run("p1", "agent_handoff", "L3")
 _emit_routes_through("p1", "agent_handoff", "L3")
+_emit_verifies_policy("p1", "agent_handoff", "policy_check")
+_emit_observes_runtime_state("p1", "agent_handoff", "runtime_state")
+_emit_verifies_boundary("p1", "agent_handoff", "boundary_check")
+_emit_transcripts_response("p1", "agent_handoff", "transcript")
+_emit_hard_fails_untranscripted("p1", "agent_handoff")
+_emit_gated_by_confidence("p1", "agent_handoff", "confidence_gate")
 _emit_escalates_to_human("p1", "agent_handoff", "L3")
 _emit_reads_policy_state("p1", "agent_handoff", "L3")
 _emit_routes_to_agent("p1", "agent_handoff", "L3")
@@ -146,6 +158,18 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
 )
 
 _emit_emits_metric_event("agent_handoff", "p4obs", "metric_1")

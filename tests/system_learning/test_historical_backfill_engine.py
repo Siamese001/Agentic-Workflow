@@ -61,6 +61,19 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_via_uwg,
     emit_determinism_digest,
     emit_replay_key,
+    _emit_escalates_to_human,
+    _emit_routes_through,
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
 )
 
 emit_determinism_digest("p0", "test_historical_backfill_engine")
@@ -113,6 +126,19 @@ _emit_execution_terminates_at_uwg("p1", "test_historical_backfill_engine", "uwg_
 _emit_writes_through("p1", "test_historical_backfill_engine", "write_through")
 _emit_validated_by_safety_plane("p1", "test_historical_backfill_engine", "safety_validation")
 _emit_proposal_commits_routing("p1", "test_historical_backfill_engine", "routing_commit")
+_emit_escalates_to_human("p1", "test_historical_backfill_engine", "human_escalation")
+_emit_routes_through("p1", "test_historical_backfill_engine", "route_through")
+_emit_checks_agent_registry("p1", "test_historical_backfill_engine", "agent_registry")
+_emit_validates_agent_capability("p1", "test_historical_backfill_engine", "capability")
+_emit_dispatches_execution_plan("p1", "test_historical_backfill_engine", "exec_plan")
+_emit_agent_executes_agent("p1", "test_historical_backfill_engine", "sub_agent")
+_emit_routes_to_agent("p1", "test_historical_backfill_engine", "target_agent")
+_emit_verifies_policy("p1", "test_historical_backfill_engine", "policy_check")
+_emit_observes_runtime_state("p1", "test_historical_backfill_engine", "runtime_state")
+_emit_verifies_boundary("p1", "test_historical_backfill_engine", "boundary_check")
+_emit_transcripts_response("p1", "test_historical_backfill_engine", "transcript")
+_emit_hard_fails_untranscripted("p1", "test_historical_backfill_engine")
+_emit_gated_by_confidence("p1", "test_historical_backfill_engine", "confidence_gate")
 
 # ---------------------------------------------------------------------------
 # Fixtures

@@ -3,7 +3,7 @@
   "mcpServers": {
     "adg_redis": {
       "command": "python",
-      "args": ["tools/adg/adg_mcp_server.py"],
+      "args": ["C:\\Git\\Agentic-Workflow\\tools\\adg\\adg_mcp_server.py"],
       "cwd": "C:\\Git\\Agentic-Workflow",
       "disabled": false,
       "env": {
@@ -15,7 +15,7 @@
     },
     "memory": {
       "command": "python",
-      "args": ["tools/memory/adg_memory_server.py"],
+      "args": ["C:\\Git\\Agentic-Workflow\\tools\\memory\\adg_memory_server.py"],
       "cwd": "C:\\Git\\Agentic-Workflow",
       "disabled": false,
       "env": {

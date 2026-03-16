@@ -388,6 +388,56 @@ context, and session observations vanish. No cross-session knowledge accumulatio
 - ❌ NEVER rely on `@modelcontextprotocol/server-memory` — it is disabled
 - ❌ NEVER create duplicate entities — `add_observations` is idempotent; use it to extend
 
+### 2.8 MCP Server Health Gate — HARD PREREQUISITE
+
+**Both custom MCP servers MUST be green (connected) before any refactoring, ADG analysis, or code modification session begins.**
+
+| Server | Config key | Script | Status check |
+|---|---|---|---|
+| `adg_redis` | `adg_redis` | `tools/adg/adg_mcp_server.py` | Call `adg_status` — must return `is_fresh=True` |
+| `memory` | `memory` | `tools/memory/adg_memory_server.py` | Call `mem_recall_session_start` — must return without error |
+
+**Enforcement rules:**
+- ❌ **NEVER begin a refactoring phase** if either MCP server shows a red/error status in Windsurf Settings → MCP
+- ❌ **NEVER use ADG hot cache queries** (`adg_status`, `adg_node`, `adg_edge_fanout`, etc.) if `adg_redis` is red — results will be stale or absent
+- ❌ **NEVER read/write memory** (`mem_recall_session_start`, `create_entities`, etc.) if `memory` is red — session context will be lost
+- ✅ **If either server is red**, diagnose and fix BEFORE proceeding (see fix protocol below)
+- ✅ **At session start**, always verify both servers are green as part of the startup checklist
+
+**Fix protocol if servers go red:**
+
+1. Check `C:\Users\amita\.codeium\windsurf\mcp_config.json` — this is the file Windsurf actually reads (NOT the repo `mcp_config.json`)
+2. Both entries MUST use **absolute paths** in `args` and include `"cwd": "C:\\Git\\Agentic-Workflow"`
+3. `memory` server MUST have `"PYTHONPATH": "C:\\Git\\Agentic-Workflow"` in its `env` block (required for `from tools.memory.sqlite_memory_store import ...`)
+4. Restart via `Ctrl+Shift+P` → "MCP: Restart Server"
+
+**Canonical config entries** (copy verbatim if broken):
+```json
+"adg_redis": {
+  "args": ["C:\\Git\\Agentic-Workflow\\tools\\adg\\adg_mcp_server.py"],
+  "command": "python",
+  "cwd": "C:\\Git\\Agentic-Workflow",
+  "disabled": false,
+  "env": {
+    "ADG_DIR": "C:\\Git\\Agentic-Workflow\\artifacts\\adg",
+    "ADG_MCP_CACHE_META_TTL": "5",
+    "ADG_MCP_PAGE_SIZE": "500",
+    "ADG_REDIS_URL": "redis://localhost:6379/0"
+  }
+},
+"memory": {
+  "args": ["C:\\Git\\Agentic-Workflow\\tools\\memory\\adg_memory_server.py"],
+  "command": "python",
+  "cwd": "C:\\Git\\Agentic-Workflow",
+  "disabled": false,
+  "env": {
+    "ADG_REDIS_URL": "redis://localhost:6379/0",
+    "MEMORY_DB": "C:\\Git\\Agentic-Workflow\\artifacts\\memory\\knowledge_graph.sqlite",
+    "PYTHONPATH": "C:\\Git\\Agentic-Workflow"
+  }
+}
+```
+
 ---
 
 ## §3. EVIDENCE & DOCUMENTATION

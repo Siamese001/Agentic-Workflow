@@ -45,10 +45,32 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_updates_meta_learning_state,
     _emit_validates_capability,
     _emit_writes_via_uwg,
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
 )
 
 _emit_dispatches_healing_run("p1", "boot_sequence", "L0")
 _emit_routes_through("p1", "boot_sequence", "L0")
+_emit_checks_agent_registry("p1", "boot_sequence", "agent_registry")
+_emit_validates_agent_capability("p1", "boot_sequence", "capability")
+_emit_dispatches_execution_plan("p1", "boot_sequence", "exec_plan")
+_emit_agent_executes_agent("p1", "boot_sequence", "sub_agent")
+_emit_routes_to_agent("p1", "boot_sequence", "target_agent")
+_emit_verifies_policy("p1", "boot_sequence", "policy_check")
+_emit_observes_runtime_state("p1", "boot_sequence", "runtime_state")
+_emit_verifies_boundary("p1", "boot_sequence", "boundary_check")
+_emit_transcripts_response("p1", "boot_sequence", "transcript")
+_emit_hard_fails_untranscripted("p1", "boot_sequence")
+_emit_gated_by_confidence("p1", "boot_sequence", "confidence_gate")
 _emit_escalates_to_human("p1", "boot_sequence", "L0")
 _emit_reads_policy_state("p1", "boot_sequence", "L0")
 
@@ -109,6 +131,28 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_through,
     emit_determinism_digest,
     emit_replay_key,
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
 )
 
 _emit_emits_metric_event("boot_sequence", "p4obs", "metric_1")

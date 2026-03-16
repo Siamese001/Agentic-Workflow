@@ -36,10 +36,32 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_via_uwg,
     emit_determinism_digest,
     emit_replay_key,
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
 )
 
 _emit_dispatches_healing_run("p1", "json_formatter_util", "L0")
 _emit_routes_through("p1", "json_formatter_util", "L0")
+_emit_checks_agent_registry("p1", "json_formatter_util", "agent_registry")
+_emit_validates_agent_capability("p1", "json_formatter_util", "capability")
+_emit_dispatches_execution_plan("p1", "json_formatter_util", "exec_plan")
+_emit_agent_executes_agent("p1", "json_formatter_util", "sub_agent")
+_emit_routes_to_agent("p1", "json_formatter_util", "target_agent")
+_emit_verifies_policy("p1", "json_formatter_util", "policy_check")
+_emit_observes_runtime_state("p1", "json_formatter_util", "runtime_state")
+_emit_verifies_boundary("p1", "json_formatter_util", "boundary_check")
+_emit_transcripts_response("p1", "json_formatter_util", "transcript")
+_emit_hard_fails_untranscripted("p1", "json_formatter_util")
+_emit_gated_by_confidence("p1", "json_formatter_util", "confidence_gate")
 _emit_escalates_to_human("p1", "json_formatter_util", "L0")
 _emit_reads_policy_state("p1", "json_formatter_util", "L0")
 
@@ -90,6 +112,28 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
 )
 
 _emit_emits_metric_event("json_formatter_util", "p4obs", "metric_1")

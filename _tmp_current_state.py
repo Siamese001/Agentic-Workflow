@@ -1,90 +1,52 @@
-#!/usr/bin/env python3
-"""Current ADG state - all L0 gap metrics."""
+"""Get current state of all metrics below 100%."""
+import sqlite3, glob, os
 
-import os
-import sqlite3
+db = sorted(glob.glob("artifacts/adg/adg_indexed_*.sqlite"), key=os.path.getmtime)[-1]
+conn = sqlite3.connect(db)
+denom = conn.execute("SELECT COUNT(DISTINCT source_file) FROM edges WHERE relation_type='calls'").fetchone()[0]
+print(f"DB: {db}  Denom: {denom}\n")
 
-adg_dir = r"artifacts\adg"
-sqls = sorted([f for f in os.listdir(adg_dir) if f.endswith(".sqlite")], reverse=True)
-conn = sqlite3.connect(os.path.join(adg_dir, sqls[0]))
-c = conn.cursor()
-print(f"DB: {sqls[0]}")
+rows = conn.execute("""
+    SELECT relation_type, COUNT(DISTINCT source_file) as cnt
+    FROM edges GROUP BY relation_type ORDER BY cnt DESC
+""").fetchall()
 
-print("\n=== Edge counts (total / prod-only) ===")
-for rel in [
-    "routes_path",
-    "routes_through",
-    "proposal_commits_routing",
-    "emits_replay_key",
-    "emits_determinism_digest",
-    "uses_wall_clock",
-    "invokes_getattr_dynamic",
-    "patches_time",
-]:
-    c.execute("SELECT COUNT(*) FROM edges WHERE relation_type=?", (rel,))
-    total = c.fetchone()[0]
-    c.execute(
-        """SELECT COUNT(*) FROM edges e JOIN nodes n ON e.src_id=n.id
-                 WHERE e.relation_type=? AND n.layer NOT IN ('L_TEST')""",
-        (rel,),
-    )
-    prod = c.fetchone()[0]
-    print(f"  {rel:38} total={total:5}  prod={prod:5}")
+below = []
+at100 = 0
+for rt, cnt in rows:
+    r = cnt / denom * 100
+    if r >= 100.0:
+        at100 += 1
+    else:
+        below.append((rt, cnt, denom - cnt, r))
 
-print("\n=== Remaining uncovered routing sites (prod only) ===")
-c.execute("""
-    SELECT DISTINCT n.resolved_path, e.relation_type, e.line_no, n.layer
-    FROM edges e JOIN nodes n ON e.src_id = n.id
-    WHERE e.relation_type IN ('routes_path','routes_through')
-    AND n.layer NOT IN ('L_TEST')
-    AND n.resolved_path NOT IN (
-        SELECT DISTINCT n2.resolved_path FROM edges e2
-        JOIN nodes n2 ON e2.src_id = n2.id
-        WHERE e2.relation_type IN ('emits_replay_key','emits_determinism_digest')
-        AND n2.layer NOT IN ('L_TEST')
-    )
-    ORDER BY n.layer, n.resolved_path
-""")
-rows = c.fetchall()
-print(f"  Count: {len(rows)}")
-for r in rows:
-    print(f"  [{r[3]:8}] line {r[2]:4}  {r[1]:20}  {r[0]}")
+print(f"At 100%: {at100}")
+print(f"Below 100%: {len(below)}\n")
 
-print("\n=== uses_wall_clock by layer (prod only, top 10) ===")
-c.execute("""
-    SELECT n.layer, n.resolved_path, COUNT(*) as cnt
-    FROM edges e JOIN nodes n ON e.src_id=n.id
-    WHERE e.relation_type='uses_wall_clock' AND n.layer NOT IN ('L_TEST')
-    GROUP BY n.layer, n.resolved_path
-    ORDER BY cnt DESC
-    LIMIT 20
-""")
-for r in c.fetchall():
-    print(f"  [{r[0]:8}] cnt={r[2]:3}  {r[1]}")
+for rt, cnt, gap, r in sorted(below, key=lambda x: -x[3]):
+    print(f"  {rt:<45} {cnt:>5}/{denom}  gap={gap:>4}  {r:>6.2f}%")
 
-print("\n=== invokes_getattr_dynamic by layer (prod only, top 5 files) ===")
-c.execute("""
-    SELECT n.layer, n.resolved_path, COUNT(*) as cnt
-    FROM edges e JOIN nodes n ON e.src_id=n.id
-    WHERE e.relation_type='invokes_getattr_dynamic' AND n.layer NOT IN ('L_TEST')
-    GROUP BY n.layer, n.resolved_path
-    ORDER BY cnt DESC
-    LIMIT 10
-""")
-for r in c.fetchall():
-    print(f"  [{r[0]:8}] cnt={r[2]:3}  {r[1]}")
+# Check which are truly missing in source vs just stale ADG
+print("\n--- Source verification for top gaps ---")
+for rt, cnt, gap, r in sorted(below, key=lambda x: -x[3])[:10]:
+    missing_mods = [row[0] for row in conn.execute("""
+        SELECT DISTINCT e1.source_file FROM edges e1
+        WHERE e1.relation_type='calls'
+        AND e1.source_file NOT IN (
+            SELECT DISTINCT e2.source_file FROM edges e2
+            WHERE e2.relation_type=?
+        )
+    """, (rt,)).fetchall()]
 
-print("\n=== Summary ===")
-c.execute("""SELECT COUNT(*) FROM edges e JOIN nodes n ON e.src_id=n.id
-             WHERE e.relation_type IN ('routes_path','routes_through')
-             AND n.layer NOT IN ('L_TEST')""")
-total_route = c.fetchone()[0]
-c.execute("""SELECT COUNT(*) FROM edges e JOIN nodes n ON e.src_id=n.id
-             WHERE e.relation_type IN ('emits_replay_key','emits_determinism_digest')
-             AND n.layer NOT IN ('L_TEST')""")
-prod_proof = c.fetchone()[0]
-print(f"  Prod routing sites: {total_route}")
-print(f"  Prod replay proof edges: {prod_proof}")
-print(f"  Coverage: {prod_proof / max(total_route, 1) * 100:.1f}%")
+    emitter = f"_emit_{rt}"
+    truly_missing = 0
+    for mod in missing_mods:
+        try:
+            with open(mod, "r", encoding="utf-8") as f:
+                if emitter not in f.read():
+                    truly_missing += 1
+        except FileNotFoundError:
+            pass
+    print(f"  {rt:<40} ADG gap={gap:>4}  source gap={truly_missing:>4}")
 
 conn.close()

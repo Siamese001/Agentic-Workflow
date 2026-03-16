@@ -76,6 +76,18 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
     _emit_escalates_to_human,
+    _emit_routes_through,
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
 )
 
 _emit_emits_metric_event("memory_mcp_adapter", "p4obs", "metric_1")
@@ -120,6 +132,18 @@ _emit_writes_through("p1", "memory_mcp_adapter", "write_through_secondary")
 _emit_validated_by_safety_plane("p1", "memory_mcp_adapter", "safety_validation")
 _emit_invokes_eval("p1", "memory_mcp_adapter", "eval_call")
 _emit_proposal_commits_routing("p1", "memory_mcp_adapter", "routing_commit")
+_emit_routes_through("p1", "memory_mcp_adapter", "route_through")
+_emit_checks_agent_registry("p1", "memory_mcp_adapter", "agent_registry")
+_emit_validates_agent_capability("p1", "memory_mcp_adapter", "capability")
+_emit_dispatches_execution_plan("p1", "memory_mcp_adapter", "exec_plan")
+_emit_agent_executes_agent("p1", "memory_mcp_adapter", "sub_agent")
+_emit_routes_to_agent("p1", "memory_mcp_adapter", "target_agent")
+_emit_verifies_policy("p1", "memory_mcp_adapter", "policy_check")
+_emit_observes_runtime_state("p1", "memory_mcp_adapter", "runtime_state")
+_emit_verifies_boundary("p1", "memory_mcp_adapter", "boundary_check")
+_emit_transcripts_response("p1", "memory_mcp_adapter", "transcript")
+_emit_hard_fails_untranscripted("p1", "memory_mcp_adapter")
+_emit_gated_by_confidence("p1", "memory_mcp_adapter", "confidence_gate")
 emit_replay_key("p0", "memory_mcp_adapter")
 emit_determinism_digest("p0", "memory_mcp_adapter")
 _emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)

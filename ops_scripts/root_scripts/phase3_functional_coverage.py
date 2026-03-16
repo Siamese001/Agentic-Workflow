@@ -53,6 +53,19 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
+    _emit_escalates_to_human,
+    _emit_routes_through,
 )
 
 _emit_emits_metric_event("phase3_functional_coverage", "p4obs", "metric_1")
@@ -111,6 +124,19 @@ _emit_captures_evaluation_metric("p4", "phase3_functional_coverage", "eval_metri
 _emit_stores_embedding("p4", "phase3_functional_coverage", "embedding_store")
 _emit_updates_meta_learning_state("p4", "phase3_functional_coverage", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "phase3_functional_coverage", "exec_snapshot_link")
+_emit_escalates_to_human("p1", "phase3_functional_coverage", "human_escalation")
+_emit_routes_through("p1", "phase3_functional_coverage", "route_through")
+_emit_checks_agent_registry("p1", "phase3_functional_coverage", "agent_registry")
+_emit_validates_agent_capability("p1", "phase3_functional_coverage", "capability")
+_emit_dispatches_execution_plan("p1", "phase3_functional_coverage", "exec_plan")
+_emit_agent_executes_agent("p1", "phase3_functional_coverage", "sub_agent")
+_emit_routes_to_agent("p1", "phase3_functional_coverage", "target_agent")
+_emit_verifies_policy("p1", "phase3_functional_coverage", "policy_check")
+_emit_observes_runtime_state("p1", "phase3_functional_coverage", "runtime_state")
+_emit_verifies_boundary("p1", "phase3_functional_coverage", "boundary_check")
+_emit_transcripts_response("p1", "phase3_functional_coverage", "transcript")
+_emit_hard_fails_untranscripted("p1", "phase3_functional_coverage")
+_emit_gated_by_confidence("p1", "phase3_functional_coverage", "confidence_gate")
 
 _ROOT = get_validated_project_root()
 
@@ -264,6 +290,19 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_validated_by_safety_plane,
     _emit_invokes_eval,
     _emit_proposal_commits_routing,
+    _emit_escalates_to_human,
+    _emit_routes_through,
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
 )
 _emit_pulls_context("p1", "phase3_functional_coverage", "context_pull")
 _emit_pulls_context("p1", "phase3_functional_coverage", "context_pull_secondary")
@@ -274,6 +313,19 @@ _emit_writes_through("p1", "phase3_functional_coverage", "write_through_secondar
 _emit_validated_by_safety_plane("p1", "phase3_functional_coverage", "safety_validation")
 _emit_invokes_eval("p1", "phase3_functional_coverage", "eval_call")
 _emit_proposal_commits_routing("p1", "phase3_functional_coverage", "routing_commit")
+_emit_escalates_to_human("p1", "phase3_functional_coverage", "human_escalation")
+_emit_routes_through("p1", "phase3_functional_coverage", "route_through")
+_emit_checks_agent_registry("p1", "phase3_functional_coverage", "agent_registry")
+_emit_validates_agent_capability("p1", "phase3_functional_coverage", "capability")
+_emit_dispatches_execution_plan("p1", "phase3_functional_coverage", "exec_plan")
+_emit_agent_executes_agent("p1", "phase3_functional_coverage", "sub_agent")
+_emit_routes_to_agent("p1", "phase3_functional_coverage", "target_agent")
+_emit_verifies_policy("p1", "phase3_functional_coverage", "policy_check")
+_emit_observes_runtime_state("p1", "phase3_functional_coverage", "runtime_state")
+_emit_verifies_boundary("p1", "phase3_functional_coverage", "boundary_check")
+_emit_transcripts_response("p1", "phase3_functional_coverage", "transcript")
+_emit_hard_fails_untranscripted("p1", "phase3_functional_coverage")
+_emit_gated_by_confidence("p1", "phase3_functional_coverage", "confidence_gate")
 
     # Check that module has some content
     module_dict = {module_import_path}.__dict__

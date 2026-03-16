@@ -38,6 +38,13 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_dispatches_execution_plan,
     _emit_routes_to_agent,
     _emit_validates_agent_capability,
+    _emit_agent_executes_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
 )
 
 emit_replay_key("p0", "colors")
@@ -45,6 +52,13 @@ emit_determinism_digest("p0", "colors")
 
 _emit_dispatches_healing_run("p1", "colors", "L0")
 _emit_routes_through("p1", "colors", "L0")
+_emit_agent_executes_agent("p1", "colors", "sub_agent")
+_emit_verifies_policy("p1", "colors", "policy_check")
+_emit_observes_runtime_state("p1", "colors", "runtime_state")
+_emit_verifies_boundary("p1", "colors", "boundary_check")
+_emit_transcripts_response("p1", "colors", "transcript")
+_emit_hard_fails_untranscripted("p1", "colors")
+_emit_gated_by_confidence("p1", "colors", "confidence_gate")
 _emit_escalates_to_human("p1", "colors", "L0")
 _emit_reads_policy_state("p1", "colors", "L0")
 _emit_routes_to_agent("p1", "colors", "L0")
@@ -190,6 +204,20 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
+    _emit_agent_executes_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
+    _emit_agent_executes_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
 )
 
 _emit_emits_metric_event("colors", "p4obs", "metric_1")

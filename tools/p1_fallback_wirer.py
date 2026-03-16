@@ -10,6 +10,10 @@ Wires P1 edge emit calls into files that lack them. Supports all 4 P1 dimensions
 import argparse
 import ast
 from pathlib import Path
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_escalates_to_human,
+    _emit_routes_through,
+)
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 

@@ -50,6 +50,19 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_via_uwg,
     emit_determinism_digest,
     emit_replay_key,
+    _emit_escalates_to_human,
+    _emit_routes_through,
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
 )
 
 from system_learning.engines.cross_repo_system_learning_import import (
@@ -113,6 +126,19 @@ _emit_execution_terminates_at_uwg("p1", "test_cross_repo_system_learning_import"
 _emit_writes_through("p1", "test_cross_repo_system_learning_import", "write_through")
 _emit_validated_by_safety_plane("p1", "test_cross_repo_system_learning_import", "safety_validation")
 _emit_proposal_commits_routing("p1", "test_cross_repo_system_learning_import", "routing_commit")
+_emit_escalates_to_human("p1", "test_cross_repo_system_learning_import", "human_escalation")
+_emit_routes_through("p1", "test_cross_repo_system_learning_import", "route_through")
+_emit_checks_agent_registry("p1", "test_cross_repo_system_learning_import", "agent_registry")
+_emit_validates_agent_capability("p1", "test_cross_repo_system_learning_import", "capability")
+_emit_dispatches_execution_plan("p1", "test_cross_repo_system_learning_import", "exec_plan")
+_emit_agent_executes_agent("p1", "test_cross_repo_system_learning_import", "sub_agent")
+_emit_routes_to_agent("p1", "test_cross_repo_system_learning_import", "target_agent")
+_emit_verifies_policy("p1", "test_cross_repo_system_learning_import", "policy_check")
+_emit_observes_runtime_state("p1", "test_cross_repo_system_learning_import", "runtime_state")
+_emit_verifies_boundary("p1", "test_cross_repo_system_learning_import", "boundary_check")
+_emit_transcripts_response("p1", "test_cross_repo_system_learning_import", "transcript")
+_emit_hard_fails_untranscripted("p1", "test_cross_repo_system_learning_import")
+_emit_gated_by_confidence("p1", "test_cross_repo_system_learning_import", "confidence_gate")
 
 
 def _write_text(path: Path, content: str) -> None:

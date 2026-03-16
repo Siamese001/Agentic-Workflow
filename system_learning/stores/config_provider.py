@@ -41,6 +41,19 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
+    _emit_escalates_to_human,
+    _emit_routes_through,
 )
 
 _emit_applies_guardrail("p0", "config_provider", "p0_governance")
@@ -69,6 +82,19 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
+    _emit_escalates_to_human,
+    _emit_routes_through,
+    _emit_checks_agent_registry,
+    _emit_validates_agent_capability,
+    _emit_dispatches_execution_plan,
+    _emit_agent_executes_agent,
+    _emit_routes_to_agent,
+    _emit_verifies_policy,
+    _emit_observes_runtime_state,
+    _emit_verifies_boundary,
+    _emit_transcripts_response,
+    _emit_hard_fails_untranscripted,
+    _emit_gated_by_confidence,
 )
 
 _emit_emits_metric_event("config_provider", "p4obs", "metric_1")
@@ -108,6 +134,19 @@ _emit_writes_through("p1", "config_provider", "write_through_2")
 _emit_validated_by_safety_plane("p1", "config_provider", "safety_validation")
 _emit_invokes_eval("p1", "config_provider", "eval_call")
 _emit_proposal_commits_routing("p1", "config_provider", "routing_commit")
+_emit_escalates_to_human("p1", "config_provider", "human_escalation")
+_emit_routes_through("p1", "config_provider", "route_through")
+_emit_checks_agent_registry("p1", "config_provider", "agent_registry")
+_emit_validates_agent_capability("p1", "config_provider", "capability")
+_emit_dispatches_execution_plan("p1", "config_provider", "exec_plan")
+_emit_agent_executes_agent("p1", "config_provider", "sub_agent")
+_emit_routes_to_agent("p1", "config_provider", "target_agent")
+_emit_verifies_policy("p1", "config_provider", "policy_check")
+_emit_observes_runtime_state("p1", "config_provider", "runtime_state")
+_emit_verifies_boundary("p1", "config_provider", "boundary_check")
+_emit_transcripts_response("p1", "config_provider", "transcript")
+_emit_hard_fails_untranscripted("p1", "config_provider")
+_emit_gated_by_confidence("p1", "config_provider", "confidence_gate")
 emit_replay_key("p0", "config_provider")
 emit_determinism_digest("p0", "config_provider")
 _emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
