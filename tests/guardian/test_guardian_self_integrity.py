@@ -96,9 +96,26 @@ from agentic_core.L0_routing.types.guardian_contract_types import (
     check_schema_compatibility,
     validate_no_absolute_paths,
 )
-from agentic_core.runtime.lifecycle_trace_contract import _emit_records_execution_trace, _emit_reads_environ, _emit_reads_runtime_state
-from agentic_core.runtime.lifecycle_trace_contract import _emit_captures_pattern, _emit_records_learning_event, _emit_writes_learning_snapshot, _emit_feeds_meta_learning, _emit_updates_routing_strategy, _emit_improves_agent_policy, _emit_stores_learning_state
-from agentic_core.runtime.lifecycle_trace_contract import _emit_emits_metric_event, _emit_records_incident_event, _emit_captures_runtime_anomaly, _emit_writes_observability_log, _emit_updates_monitoring_state, _emit_triggers_alert, _emit_links_incident_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_captures_pattern,
+    _emit_captures_runtime_anomaly,
+    _emit_emits_metric_event,
+    _emit_feeds_meta_learning,
+    _emit_improves_agent_policy,
+    _emit_links_incident_trace,
+    _emit_reads_environ,
+    _emit_reads_runtime_state,
+    _emit_records_execution_trace,
+    _emit_records_incident_event,
+    _emit_records_learning_event,
+    _emit_stores_learning_state,
+    _emit_triggers_alert,
+    _emit_updates_monitoring_state,
+    _emit_updates_routing_strategy,
+    _emit_writes_learning_snapshot,
+    _emit_writes_observability_log,
+)
+
 _emit_emits_metric_event("test_guardian_self_integrity", "p4obs", "metric_1")
 _emit_emits_metric_event("test_guardian_self_integrity", "p4obs", "metric_2")
 _emit_emits_metric_event("test_guardian_self_integrity", "p4obs", "metric_3")

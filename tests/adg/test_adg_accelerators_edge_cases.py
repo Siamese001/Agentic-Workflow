@@ -89,6 +89,31 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_captures_pattern,
+    _emit_captures_runtime_anomaly,
+    _emit_emits_metric_event,
+    _emit_execution_terminates_at_uwg,
+    _emit_feeds_meta_learning,
+    _emit_improves_agent_policy,
+    _emit_invokes_eval,
+    _emit_links_incident_trace,
+    _emit_proposal_commits_routing,
+    _emit_pulls_context,
+    _emit_reads_environ,
+    _emit_reads_runtime_state,
+    _emit_records_execution_trace,
+    _emit_records_incident_event,
+    _emit_records_learning_event,
+    _emit_stores_learning_state,
+    _emit_triggers_alert,
+    _emit_updates_monitoring_state,
+    _emit_updates_routing_strategy,
+    _emit_validated_by_safety_plane,
+    _emit_writes_learning_snapshot,
+    _emit_writes_observability_log,
+    _emit_writes_through,
+)
 from ops_scripts.ci.adg_grep_ban_gate import (
     _BANNED_PATTERNS,
     _BANNED_POPEN_RE,
@@ -98,10 +123,7 @@ from ops_scripts.ci.adg_grep_ban_gate import (
     scan_file,
     scan_files,
 )
-from agentic_core.runtime.lifecycle_trace_contract import _emit_pulls_context, _emit_execution_terminates_at_uwg, _emit_writes_through, _emit_validated_by_safety_plane, _emit_invokes_eval, _emit_proposal_commits_routing
-from agentic_core.runtime.lifecycle_trace_contract import _emit_records_execution_trace, _emit_reads_environ, _emit_reads_runtime_state
-from agentic_core.runtime.lifecycle_trace_contract import _emit_captures_pattern, _emit_records_learning_event, _emit_writes_learning_snapshot, _emit_feeds_meta_learning, _emit_updates_routing_strategy, _emit_improves_agent_policy, _emit_stores_learning_state
-from agentic_core.runtime.lifecycle_trace_contract import _emit_emits_metric_event, _emit_records_incident_event, _emit_captures_runtime_anomaly, _emit_writes_observability_log, _emit_updates_monitoring_state, _emit_triggers_alert, _emit_links_incident_trace
+
 _emit_emits_metric_event("test_adg_accelerators_edge_cases", "p4obs", "metric_1")
 _emit_emits_metric_event("test_adg_accelerators_edge_cases", "p4obs", "metric_2")
 _emit_emits_metric_event("test_adg_accelerators_edge_cases", "p4obs", "metric_3")

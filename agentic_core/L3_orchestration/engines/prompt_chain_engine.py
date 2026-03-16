@@ -83,10 +83,32 @@ _emit_captures_evaluation_metric("p4", "prompt_chain_engine", "eval_metric")
 _emit_stores_embedding("p4", "prompt_chain_engine", "embedding_store")
 _emit_updates_meta_learning_state("p4", "prompt_chain_engine", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "prompt_chain_engine", "exec_snapshot_link")
-from agentic_core.runtime.lifecycle_trace_contract import _emit_pulls_context, _emit_execution_terminates_at_uwg, _emit_writes_through, _emit_validated_by_safety_plane, _emit_invokes_eval, _emit_proposal_commits_routing
-from agentic_core.runtime.lifecycle_trace_contract import _emit_records_execution_trace, _emit_reads_environ, _emit_reads_runtime_state
-from agentic_core.runtime.lifecycle_trace_contract import _emit_captures_pattern, _emit_records_learning_event, _emit_writes_learning_snapshot, _emit_feeds_meta_learning, _emit_updates_routing_strategy, _emit_improves_agent_policy, _emit_stores_learning_state
-from agentic_core.runtime.lifecycle_trace_contract import _emit_emits_metric_event, _emit_records_incident_event, _emit_captures_runtime_anomaly, _emit_writes_observability_log, _emit_updates_monitoring_state, _emit_triggers_alert, _emit_links_incident_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_captures_pattern,
+    _emit_captures_runtime_anomaly,
+    _emit_emits_metric_event,
+    _emit_execution_terminates_at_uwg,
+    _emit_feeds_meta_learning,
+    _emit_improves_agent_policy,
+    _emit_invokes_eval,
+    _emit_links_incident_trace,
+    _emit_proposal_commits_routing,
+    _emit_pulls_context,
+    _emit_reads_environ,
+    _emit_reads_runtime_state,
+    _emit_records_execution_trace,
+    _emit_records_incident_event,
+    _emit_records_learning_event,
+    _emit_stores_learning_state,
+    _emit_triggers_alert,
+    _emit_updates_monitoring_state,
+    _emit_updates_routing_strategy,
+    _emit_validated_by_safety_plane,
+    _emit_writes_learning_snapshot,
+    _emit_writes_observability_log,
+    _emit_writes_through,
+)
+
 _emit_emits_metric_event("prompt_chain_engine", "p4obs", "metric_1")
 _emit_emits_metric_event("prompt_chain_engine", "p4obs", "metric_2")
 _emit_emits_metric_event("prompt_chain_engine", "p4obs", "metric_3")
