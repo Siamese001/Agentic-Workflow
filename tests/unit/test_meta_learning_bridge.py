@@ -94,7 +94,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
-from apps_shared.scripts.meta_learning_bridge import (
+from system_learning.scripts.meta_learning_bridge import (
     emit_app_signal_aggregate,
     emit_app_signal_event,
     propose_from_signal_aggregate,

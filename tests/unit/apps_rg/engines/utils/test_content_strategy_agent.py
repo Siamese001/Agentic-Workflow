@@ -1,4 +1,4 @@
-"""ADG contract tests for apps_rg/reasoning/ContentStrategyAgent.py.
+"""ADG contract tests for apps_rg/reasoning/RGStrategyExecutor.py (canonical, replaces ContentStrategyAgent shim).
 
 Uses AST-based source inspection -- immune to broken transitive deps.
 """
@@ -9,7 +9,8 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-_SRC = pathlib.Path(__file__).parents[5] / "apps_rg" / "reasoning" / "ContentStrategyAgent.py"
+_SRC = pathlib.Path(__file__).parents[5] / "apps_rg" / "reasoning" / "RGStrategyExecutor.py"
+_CANONICAL = "apps_rg.reasoning.RGStrategyExecutor"  # canonical module path
 
 
 def _tree():
@@ -28,4 +29,4 @@ class TestContentStrategyAgentSource:
         _tree()
 
     def test_mentions_class_name(self):
-        assert "ContentStrategyAgent" in _src_text()
+        assert "RGStrategyExecutor" in _src_text()

@@ -385,7 +385,7 @@ class OutreachMemoryPersistence:
         self._save()
 
 
-class OutreachLearningAgent(SubatomicTestingMixin, SovereignBaseAgent):
+class OutreachLearningAgent(SovereignBaseAgent):
     """
     Learning agent for outreach campaigns.
 

@@ -569,6 +569,7 @@ class PipelineDependencies:
     arbitration_engine: ArbitrationEngine | None = None
     arbitration_policy: ArbitrationPolicy | None = None
     freeze_reader: FreezeStateReader | None = None
+    cross_repo_learning_context: dict[str, Any] | None = None
 
 
 def _analyze_historical_patterns(
@@ -845,8 +846,6 @@ def run_pipeline(
     """
     _emit_verifies_policy(str(uuid.uuid4()), "Module.run_pipeline", "L4_STATE")
     _emit_observes_runtime_state(str(uuid.uuid4()), "Module.run_pipeline", "L4_STATE")
-    import uuid  # noqa: PLC0415
-
     _emit_snapshots_state(str(uuid.uuid4()), "Module.run_pipeline", "L4_STATE")
     if window_start_utc >= window_end_utc:
         raise PipelineError(f"Invalid window: start={window_start_utc} >= end={window_end_utc}")
@@ -1116,6 +1115,8 @@ def run_pipeline(
                 deps.l4_state_writer.write_l4b_healing_snapshot(
                     payload_bytes=payload_bytes, component_name="meta-learning", created_utc=now_utc
                 )
+            except RuntimeError as e:
+                print(f"L4 write failed: {e}")
             except (AttributeError, TypeError, OSError) as e:
                 print(f"L4 write failed: {e}")
                 return None
@@ -1157,6 +1158,11 @@ def run_pipeline(
     embedding_metadata = _retrieve_semantic_context(
         rca_report=rca_report, pattern_report=pattern_report, now_utc=now_utc
     )
+    if deps.cross_repo_learning_context is not None:
+        embedding_metadata = {
+            **embedding_metadata,
+            "cross_repo_learning_context": deps.cross_repo_learning_context,
+        }
     if _8_5_aggregate_snapshot is not None:
         from system_learning.engines.retrieval_profile_manager import get_active_retrieval_profile
 

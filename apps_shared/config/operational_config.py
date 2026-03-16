@@ -9,7 +9,7 @@ This config is for OPERATIONAL agents that need to know what to scan/exclude.
 import sys
 from pathlib import Path
 
-MAX_RETRIES = 3
+from apps_shared.config.pipeline_constants_config import MAX_RETRIES  # noqa: F401
 DEFAULT_SLEEP = 1.0
 THRESHOLD = 0.95
 BUFFER_SIZE = 8192

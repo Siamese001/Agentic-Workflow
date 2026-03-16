@@ -251,6 +251,8 @@ class TestResumeGeneratorGatewayRouting:
         class _FakeRequest:
             def __init__(self, **kwargs):
                 self.model = kwargs.get("model")
+                self.agent_id = kwargs.get("agent_id", "test-agent")
+                self.provider = kwargs.get("provider", "gemini")
 
         with patch.dict(
             "sys.modules",

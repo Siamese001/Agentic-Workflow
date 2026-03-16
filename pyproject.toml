@@ -35,17 +35,26 @@ dependencies = [
     "watchdog>=3.0.0",
 ]
 
-[project.scripts]
-adg-build = "tools.adg_cli:main"
-adg-health = "tools.adg_cli:main"
-adg-impact = "tools.adg_cli:main"
-adg-scoped-tests = "tools.adg_cli:main"
+# [project.scripts]
+# Console entry points removed - use Python module invocation instead:
+#   python -m tools.adg_cli <args>
+#   python -m tools.adg.adg_stale_guard
+#   python -m tools.adg.adg_test_selector --from-diff
+# See FAST_DEV_COMMANDS.md for full command reference
 
 [project.optional-dependencies]
 dev = [
     "pytest>=7.4.0",
     "pytest-cov>=4.1.0",
     "pytest-asyncio>=0.21.0",
+    "pytest-xdist>=3.6.0",
+    "pytest-testmon>=2.1.0",
+    "pytest-timeout>=2.3.0",
+    "pytest-rerunfailures>=14.0",
+    "pre-commit>=3.7.0",
+    "pip-tools>=7.4.0",
+    "uv>=0.6.0",
+    "watchfiles>=0.23.0",
     "black>=23.0.0",
     "ruff>=0.1.0",
     "mypy>=1.5.0",
@@ -73,7 +82,7 @@ infra = [
 minversion = "7.0"
 # Pointing to 'agentic_core' based on actual repo structure.
 # Enforcing 100% coverage, branch checking, and detailed html reports.
-addopts = "--cov=agentic_core --cov-branch --cov-report=term-missing --cov-report=html:reports/coverage_html --cov-fail-under=100 -ra -v"
+addopts = "--cov=agentic_core --cov-branch --cov-report=term-missing --cov-report=html:reports/coverage_html --cov-fail-under=100 -ra -v -n auto --dist=loadfile --timeout=180"
 testpaths = ["tests"]
 python_files = ["test_*.py"]
 python_classes = ["Test*"]

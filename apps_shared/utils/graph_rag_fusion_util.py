@@ -4,6 +4,8 @@ This module implements the fusion of vector similarity search with knowledge gra
 traversal to enable multi-hop reasoning and relationship-based queries.
 """
 
+from __future__ import annotations
+
 import asyncio
 import logging
 import re
@@ -133,8 +135,31 @@ _emit_updates_meta_learning_state("p4", "graph_rag_fusion_util", "meta_learning"
 _emit_links_execution_to_snapshot("p4", "graph_rag_fusion_util", "exec_snapshot_link")
 
 logger = logging.getLogger(__name__)
+from apps_shared.config.pipeline_constants_config import MAX_RETRIES  # noqa: F401
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
 DEFAULT_CONFIDENCE_THRESHOLD: Final[float] = 0.6
 DEFAULT_MAX_RESULTS: Final[int] = 5
+
+
+@dataclass
+class GraphContext:
+    entities: list[dict[str, Any]] = None
+    relationships: list[dict[str, Any]] = None
+    confidence: float = 0.0
+
+    def __post_init__(self) -> None:
+        if self.entities is None:
+            self.entities = []
+        if self.relationships is None:
+            self.relationships = []
+
+
+class KnowledgeGraphAgent:
+    def query_context(self, _entity: str, hops: int = 2, limit: int = 5) -> GraphContext:
+        return GraphContext(confidence=0.0)
 
 
 class QueryType(Enum):

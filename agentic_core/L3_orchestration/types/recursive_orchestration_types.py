@@ -55,6 +55,10 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
+    _emit_checks_agent_registry,
+    _emit_dispatches_execution_plan,
+    _emit_routes_to_agent,
+    _emit_validates_agent_capability,
 )
 
 _emit_authorize_and_execute("p2", "recursive_orchestration_types", "execution_auth")

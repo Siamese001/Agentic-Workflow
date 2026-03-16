@@ -12,6 +12,9 @@ import logging
 from pathlib import Path
 from typing import Any
 
+from system_learning.engines.cross_repo_system_learning_import import (
+    load_cross_repo_learning_context,
+)
 from agentic_core.L0_routing.config import (
     RUNTIME_STATE_JSON,
 )
@@ -320,6 +323,8 @@ def build_pipeline_deps(
     except ImportError:
         logger.debug("FreezeStateReader not available; skipping.")
 
+    cross_repo_learning_context = load_cross_repo_learning_context(repo_root)
+
     return PipelineDependencies(
         audit_store=audit_store,
         telemetry_store=telemetry_store,
@@ -340,6 +345,7 @@ def build_pipeline_deps(
         arbitration_policy=arbitration_policy,
         rlhf_optimizer=rlhf_optimizer,
         freeze_reader=freeze_reader,
+        cross_repo_learning_context=cross_repo_learning_context,
     )
 
 

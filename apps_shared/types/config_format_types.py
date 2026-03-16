@@ -136,7 +136,7 @@ _emit_stores_embedding("p4", "config_format_types", "embedding_store")
 _emit_updates_meta_learning_state("p4", "config_format_types", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "config_format_types", "exec_snapshot_link")
 
-MAX_RETRIES = 3
+from apps_shared.config.pipeline_constants_config import MAX_RETRIES  # noqa: F401
 DEFAULT_SLEEP = 1.0
 THRESHOLD = 0.95
 BUFFER_SIZE = 8192

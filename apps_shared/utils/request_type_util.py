@@ -5,6 +5,8 @@ including metric parsing, log analysis, and trace extraction.
 Follows the canonical pattern with dataclass-first design and proper logging.
 """
 
+from __future__ import annotations
+
 import logging
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -133,6 +135,34 @@ _emit_updates_meta_learning_state("p4", "request_type_util", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "request_type_util", "exec_snapshot_link")
 
 logger = logging.getLogger(__name__)
+
+from apps_shared.config.pipeline_constants_config import MAX_RETRIES  # noqa: F401
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+
+
+@dataclass
+class LoadDataPlanningPlanConstraints:
+    safety_level: str = "strict"
+
+
+@dataclass
+class LoadDataPlanningPlanResult:
+    success: bool
+    data: dict[str, object] = field(default_factory=dict)
+    errors: list[str] = field(default_factory=list)
+    safety_validated: bool = False
+    timestamp: str = ""
+
+
+class LoadDataPlanningPlanProcessor:
+    def process(self, input_data: dict[str, object]) -> LoadDataPlanningPlanResult:
+        raise NotImplementedError
+
+    def validate_safety(self, data: dict[str, object]) -> bool:
+        raise NotImplementedError
 
 
 class RequestType(Enum):

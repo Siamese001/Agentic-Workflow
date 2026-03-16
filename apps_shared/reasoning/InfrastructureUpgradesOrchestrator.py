@@ -5,6 +5,8 @@ with the existing hardened infrastructure to provide enhanced consistency,
 performance, and brand compliance across all engines.
 """
 
+from __future__ import annotations
+
 import logging
 from typing import Any
 
@@ -130,6 +132,12 @@ _emit_updates_meta_learning_state("p4", "InfrastructureUpgradesOrchestrator", "m
 _emit_links_execution_to_snapshot("p4", "InfrastructureUpgradesOrchestrator", "exec_snapshot_link")
 
 logger = logging.getLogger(__name__)
+
+from apps_shared.config.pipeline_constants_config import MAX_RETRIES  # noqa: F401
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
 
 
 class InfrastructureUpgradesOrchestrator:

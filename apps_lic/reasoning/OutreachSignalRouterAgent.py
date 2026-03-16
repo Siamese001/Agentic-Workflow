@@ -16,7 +16,6 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_applies_guardrail,  # noqa: E402
@@ -163,17 +162,6 @@ if TYPE_CHECKING:
     from apps_lic.engines import AppWorkflowOrchestratorAgent
 
 
-class MCPHardenedMixin:
-    """Legacy mixin - use LICAgentBase instead."""
-
-    pass
-
-
-class HealerMixin:
-    """Legacy mixin - use LICAgentBase instead."""
-
-    pass
-
 
 class OutreachHealingStrategy(Enum):
     """Healing strategies for outreach campaigns."""
@@ -216,7 +204,7 @@ class OutreachHealingResult:
     final_campaign: dict[str, Any]
 
 
-class OutreachSignalRouterAgent(SubatomicTestingMixin, SovereignBaseAgent):
+class OutreachSignalRouterAgent(SovereignBaseAgent):
     """Routes signals to appropriate agents."""
 
     def __post_init__(self) -> None:

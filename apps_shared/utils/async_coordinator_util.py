@@ -4,13 +4,16 @@ This module provides coordination for async operations, preventing orphaned task
 managing timeouts safely, and ensuring proper cleanup of async resources.
 """
 
+from __future__ import annotations
+
 import asyncio
 import logging
 import time
 from collections.abc import Callable
+from contextlib import asynccontextmanager
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any
+from typing import Any, Awaitable
 
 from agentic_core.L0_routing.config.path_constants import DEFAULT_SLEEP
 from agentic_core.runtime.lifecycle_trace_contract import (
@@ -135,6 +138,11 @@ _emit_updates_meta_learning_state("p4", "async_coordinator_util", "meta_learning
 _emit_links_execution_to_snapshot("p4", "async_coordinator_util", "exec_snapshot_link")
 
 logger = logging.getLogger(__name__)
+
+from apps_shared.config.pipeline_constants_config import MAX_RETRIES  # noqa: F401
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
 
 
 class TaskState(Enum):

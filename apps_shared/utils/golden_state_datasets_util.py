@@ -1,5 +1,32 @@
+from __future__ import annotations
+
 import json
+from dataclasses import dataclass, field
 from pathlib import Path
+
+
+from apps_shared.config.pipeline_constants_config import MAX_RETRIES  # noqa: F401
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+
+
+@dataclass(frozen=True)
+class GoldenStateTestCase:
+    id: str
+    input_text: str
+    expected_behavior: str
+    metadata: dict[str, object] = field(default_factory=dict)
+
+
+@dataclass(frozen=True)
+class GoldenCase:
+    id: str
+    input_text: str
+    agent_sequence: list[str] = field(default_factory=list)
+    expected_keypoints: list[str] = field(default_factory=list)
+    correctness_criteria: dict[str, object] = field(default_factory=dict)
 
 _BASE_DIR = Path(__file__).resolve().parent
 _BASELINES_DIR = _BASE_DIR / "baselines"

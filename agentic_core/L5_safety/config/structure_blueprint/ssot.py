@@ -831,6 +831,8 @@ ROOT_ALLOWED_PATTERNS: Final[Sequence[Pattern]] = [
     re.compile(r"^.*\.bat$"),  # Allowed: Windows Batch scripts
     re.compile(r"^.*\.sh$"),  # Allowed: Shell scripts
     re.compile(r"^root_drift_.*\.py$"),  # Allowed: Remediation scripts (Temp)
+    re.compile(r"^ARCHITECTURE_LAYERS\.md$"),  # Allowed: Architecture documentation
+    re.compile(r"^README\.md$"),  # Allowed: Project README
 ]
 
 

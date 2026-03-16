@@ -64,7 +64,7 @@ class TestIngestionEngine:
         req = ExecBriefRequest(audience=AudiencePersona.RECRUITER, source_dirs=["/nonexistent/path/xyz"])
         result = engine.execute(req)
         assert len(result.documents) == 0
-        assert "/nonexistent/path/xyz" in result.skipped_paths
+        assert any(Path(p) == Path("/nonexistent/path/xyz") for p in result.skipped_paths)
 
     def test_ingests_markdown_files(self, tmp_path):
         (tmp_path / "test.md").write_text(

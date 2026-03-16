@@ -19,6 +19,7 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_checks_agent_registry,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
@@ -37,11 +38,14 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_records_telemetry_event,
     _emit_records_tool_invocation,
     _emit_records_workflow_lineage,
+    _emit_routes_to_agent,
+    _emit_dispatches_execution_plan,
     _emit_routes_to_capability,
     _emit_signs_execution_trace,  # noqa: E402
     _emit_snapshots_state,  # noqa: E402
     _emit_stores_embedding,
     _emit_updates_meta_learning_state,
+    _emit_validates_agent_capability,
     _emit_validates_capability,
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402

@@ -4,12 +4,23 @@
     "adg_redis": {
       "command": "python",
       "args": ["tools/adg/adg_mcp_server.py"],
+      "cwd": "C:\\Git\\Agentic-Workflow",
       "disabled": false,
       "env": {
         "ADG_REDIS_URL": "redis://localhost:6379/0",
         "ADG_DIR": "C:\\Git\\Agentic-Workflow\\artifacts\\adg",
         "ADG_MCP_PAGE_SIZE": "500",
         "ADG_MCP_CACHE_META_TTL": "5"
+      }
+    },
+    "memory": {
+      "command": "python",
+      "args": ["tools/memory/adg_memory_server.py"],
+      "cwd": "C:\\Git\\Agentic-Workflow",
+      "disabled": false,
+      "env": {
+        "ADG_REDIS_URL": "redis://localhost:6379/0",
+        "MEMORY_DB": "C:\\Git\\Agentic-Workflow\\artifacts\\memory\\knowledge_graph.sqlite"
       }
     },
     "redis": {

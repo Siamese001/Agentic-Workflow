@@ -4,6 +4,8 @@ This module provides a unified feedback system that allows both resume and outre
 engines to share insights, learn from each other, and maintain consistent quality.
 """
 
+from __future__ import annotations
+
 import logging
 import threading
 from collections import defaultdict
@@ -134,6 +136,12 @@ _emit_updates_meta_learning_state("p4", "feedback_category_util", "meta_learning
 _emit_links_execution_to_snapshot("p4", "feedback_category_util", "exec_snapshot_link")
 
 logger = logging.getLogger(__name__)
+
+from apps_shared.config.pipeline_constants_config import MAX_RETRIES  # noqa: F401
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
 
 
 class FeedbackCategory(Enum):

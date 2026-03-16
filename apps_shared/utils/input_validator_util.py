@@ -4,15 +4,18 @@ This module provides schema-based validation, type safety, and protection
 against malformed data, JSON/XML attacks, and boundary violations.
 """
 
+from __future__ import annotations
+
 import json
 import logging
 import re
+import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
-from typing import Any, Final
+from typing import Any, Callable, Final
 
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, ValidationError, validator
 
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
@@ -136,6 +139,11 @@ _emit_updates_meta_learning_state("p4", "input_validator_util", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "input_validator_util", "exec_snapshot_link")
 
 logger = logging.getLogger(__name__)
+from apps_shared.config.pipeline_constants_config import MAX_RETRIES  # noqa: F401
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
 HOP_ID_MAX_LENGTH: Final[int] = 100
 CONTEXT_DATA_MAX_KEYS: Final[int] = 1000
 RETRY_COUNT_MAX: Final[int] = 10
@@ -175,7 +183,7 @@ class ValidationRule:
     pattern: str | None = None
     allowed_values: list[Any] | None = None
     schema: dict[str, Any] | None = None
-    custom_validator: callable | None = None
+    custom_validator: Callable[[Any], Any] | None = None
     sanitize: bool = True
 
 
